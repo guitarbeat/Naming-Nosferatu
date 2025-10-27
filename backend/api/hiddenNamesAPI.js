@@ -23,7 +23,7 @@ export const hiddenNamesAPI = {
   /**
    * Hide a name for a user
    */
-  async hideName(nameId, userName) {
+  async hideName(userName, nameId) {
     try {
       if (!isSupabaseAvailable() || !nameId || !userName) {
         return false;
@@ -32,8 +32,8 @@ export const hiddenNamesAPI = {
       const { error } = await supabase
         .from('cat_name_ratings')
         .update({ is_hidden: true })
-        .eq('name_id', nameId)
-        .eq('user_name', userName);
+        .eq('user_name', userName)
+        .eq('name_id', nameId);
 
       if (error) {
         console.error('Error hiding name:', error);
@@ -50,7 +50,7 @@ export const hiddenNamesAPI = {
   /**
    * Unhide a name for a user
    */
-  async unhideName(nameId, userName) {
+  async unhideName(userName, nameId) {
     try {
       if (!isSupabaseAvailable() || !nameId || !userName) {
         return false;
@@ -59,8 +59,8 @@ export const hiddenNamesAPI = {
       const { error } = await supabase
         .from('cat_name_ratings')
         .update({ is_hidden: false })
-        .eq('name_id', nameId)
-        .eq('user_name', userName);
+        .eq('user_name', userName)
+        .eq('name_id', nameId);
 
       if (error) {
         console.error('Error unhiding name:', error);
