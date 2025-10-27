@@ -11,7 +11,7 @@ const resolveVitestBin = () => {
   try {
     vitestPackageJsonPath = require.resolve('vitest/package.json');
   } catch (error) {
-    throw new Error('Unable to locate vitest package. Ensure dependencies are installed.', { cause: error });
+    return { bin: null, error };
   }
 
   const vitestPackageJson = require(vitestPackageJsonPath);
@@ -23,10 +23,10 @@ const resolveVitestBin = () => {
     throw new Error('Could not determine Vitest CLI entry point from package metadata.');
   }
 
-  return resolve(dirname(vitestPackageJsonPath), binEntry);
+  return { bin: resolve(dirname(vitestPackageJsonPath), binEntry) };
 };
 
-const vitestBin = resolveVitestBin();
+const { bin: vitestBin, error: vitestResolveError } = resolveVitestBin();
 
 const rawArgs = process.argv.slice(2);
 const vitestArgs = ['run', '--config', 'config/vitest.config.mjs'];
@@ -54,10 +54,38 @@ if (pathArgs.length > 0) {
   vitestArgs.push(...pathArgs);
 }
 
-const child = spawn('node', [vitestBin, ...vitestArgs], {
-  stdio: 'inherit',
-  env: process.env,
-});
+const spawnWith = (command, args) =>
+  spawn(command, args, {
+    stdio: 'inherit',
+    env: process.env,
+  });
+
+let child;
+
+if (vitestBin) {
+  child = spawnWith('node', [vitestBin, ...vitestArgs]);
+} else {
+  if (vitestResolveError) {
+    console.warn('⚠️  Unable to resolve local Vitest installation, falling back to npx.', vitestResolveError);
+  }
+
+  let packageSpecifier = 'vitest';
+
+  try {
+    const projectPackageJson = require(resolve(process.cwd(), 'package.json'));
+    const declaredVersion =
+      projectPackageJson?.devDependencies?.vitest || projectPackageJson?.dependencies?.vitest;
+
+    if (declaredVersion) {
+      packageSpecifier = `vitest@${declaredVersion}`;
+    }
+  } catch (error) {
+    console.warn('⚠️  Unable to read package.json for Vitest version, using latest available.', error);
+  }
+
+  const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  child = spawnWith(npxCommand, ['--yes', packageSpecifier, ...vitestArgs]);
+}
 
 child.on('exit', (code, signal) => {
   if (signal) {
