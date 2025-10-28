@@ -12,6 +12,7 @@ import {
   SidebarMenu,
   useSidebar,
 } from "../ui/sidebar";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
@@ -37,7 +38,7 @@ export function AppSidebar({
   isLightTheme,
   onThemeChange,
   onTogglePerformanceDashboard,
-  breadcrumbItems: _breadcrumbItems = [],
+  breadcrumbItems = [],
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
 
