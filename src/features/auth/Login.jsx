@@ -339,7 +339,7 @@ function Login({ onLogin }) {
               <div className={styles.namePreview}>
                 {name ? (
                   <p className={styles.helperText}>
-                    You&apos;ll login or create an account as{" "}
+                    You&apos;ll log in or create an account as{" "}
                     <span className={styles.nameHighlight}>
                       &quot;{name}&quot;
                     </span>
