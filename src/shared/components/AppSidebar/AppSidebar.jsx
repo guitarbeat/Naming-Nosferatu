@@ -131,21 +131,25 @@ export function AppSidebar({
         <SidebarGroup open={true}>
           <SidebarGroupContent>
             <SidebarMenu>
-                {navItems.map((item) => (
-                  <MenuNavItem
-                    key={item.key}
-                    itemKey={item.key}
-                    icon={item.icon}
-                    label={item.label}
-                    view={view}
-                    onClick={setView}
-                  />
-                ))}
+              {navItems.map((item) => (
+                <MenuNavItem
+                  key={item.key}
+                  itemKey={item.key}
+                  icon={item.icon}
+                  label={item.label}
+                  view={view}
+                  onClick={setView}
+                />
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-          {/* Breadcrumb removed - redundant with active navigation */}
+        {!collapsed && breadcrumbItems.length > 0 && (
+          <div className="navbar-breadcrumb">
+            <Breadcrumb items={breadcrumbItems} />
+          </div>
+        )}
         </NavbarSection>
 
         {/* Right Section: User Info + Actions */}

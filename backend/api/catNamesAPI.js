@@ -42,12 +42,16 @@ export const catNamesAPI = {
         hiddenIds = hiddenData.map(item => item.name_id);
       }
 
-      // Get all names with their descriptions, excluding hidden ones
-      const { data: namesData, error: namesError } = await supabase
-        .from('cat_names')
-        .select('*')
-        .not('id', 'in', `(${hiddenIds.join(',')})`)
-        .order('name', { ascending: true });
+      // Get all names with their descriptions, excluding hidden ones when present
+      let namesQuery = supabase.from('cat_names').select('*');
+
+      if (hiddenIds.length > 0) {
+        namesQuery = namesQuery.not('id', 'in', `(${hiddenIds.join(',')})`);
+      }
+
+      const { data: namesData, error: namesError } = await namesQuery.order('name', {
+        ascending: true,
+      });
 
       if (namesError) {
         console.error('Error fetching names:', namesError);
