@@ -2,9 +2,11 @@
  * @fileoverview Simple tests for Login component
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import Login from './Login';
+import { validateUsername } from '../../shared/utils/validationUtils';
 
 // * Mock fetch for cat facts
 globalThis.fetch = vi.fn();
@@ -46,20 +48,52 @@ describe('Login Component - Simple Tests', () => {
 
   it('renders login form title', () => {
     render(<Login onLogin={mockOnLogin} />);
-    expect(screen.getByText('Cat Name Olympics')).toBeInTheDocument();
+    expect(screen.getByText('Your Judge Name')).toBeInTheDocument();
   });
 
   it('renders login subtitle', () => {
     render(<Login onLogin={mockOnLogin} />);
     expect(
-      screen.getByText('Enter your name to login or create a new account')
+      screen.getByText(/Enter your name to start judging cat names/i)
     ).toBeInTheDocument();
   });
 
-  it('renders collapsed description', () => {
+  it('renders random name description when collapsed', () => {
     render(<Login onLogin={mockOnLogin} />);
     expect(
-      screen.getByText(/Hover or focus here to open the judge/)
+      screen.getByText("We'll generate a fun name automatically!")
     ).toBeInTheDocument();
+  });
+
+  it('submits a valid name and calls onLogin', async () => {
+    const user = userEvent.setup();
+    validateUsername.mockReturnValue({ success: true, value: 'Judge Whisker' });
+    mockOnLogin.mockResolvedValueOnce();
+
+    render(<Login onLogin={mockOnLogin} />);
+
+    await user.type(screen.getByLabelText('Your name'), 'Judge Whisker');
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(validateUsername).toHaveBeenCalledWith('Judge Whisker');
+    await waitFor(() => {
+      expect(mockOnLogin).toHaveBeenCalledWith('Judge Whisker');
+    });
+  });
+
+  it('shows validation error and does not call onLogin when validation fails', async () => {
+    const user = userEvent.setup();
+    validateUsername.mockReturnValue({
+      success: false,
+      error: 'Name is invalid'
+    });
+
+    render(<Login onLogin={mockOnLogin} />);
+
+    await user.type(screen.getByLabelText('Your name'), 'Invalid Name');
+    await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(mockOnLogin).not.toHaveBeenCalled();
+    expect(screen.getByText('Name is invalid')).toBeInTheDocument();
   });
 });
