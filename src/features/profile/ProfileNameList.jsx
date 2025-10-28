@@ -455,6 +455,7 @@ const ProfileNameList = ({
             )}
         </div>
       )}
+
       {/* Filters */}
       <div className={styles.filterResults}>
         <span className={styles.resultsCount}>

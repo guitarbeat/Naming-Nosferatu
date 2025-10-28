@@ -28,7 +28,6 @@ const ProfileHighlights = ({ highlights }) => {
             shadow="small"
             background="transparent"
           >
-            <div className={styles.insightContent}>
               <h4>Top Rated</h4>
               <ul className={styles.compactList}>
                 {highlights.topRated.map((item) => (
@@ -38,7 +37,6 @@ const ProfileHighlights = ({ highlights }) => {
                   </li>
                 ))}
               </ul>
-            </div>
           </Card>
         )}
 
@@ -50,7 +48,6 @@ const ProfileHighlights = ({ highlights }) => {
             shadow="small"
             background="transparent"
           >
-            <div className={styles.insightContent}>
               <h4>Most Wins</h4>
               <ul className={styles.compactList}>
                 {highlights.mostWins.map((item) => (
@@ -60,7 +57,6 @@ const ProfileHighlights = ({ highlights }) => {
                   </li>
                 ))}
               </ul>
-            </div>
           </Card>
         )}
 
@@ -72,7 +68,6 @@ const ProfileHighlights = ({ highlights }) => {
             shadow="small"
             background="transparent"
           >
-            <div className={styles.insightContent}>
               <h4>Recent Updates</h4>
               <ul className={styles.compactList}>
                 {highlights.recent.map((item) => (
@@ -82,7 +77,6 @@ const ProfileHighlights = ({ highlights }) => {
                   </li>
                 ))}
               </ul>
-            </div>
           </Card>
         )}
       </div>
