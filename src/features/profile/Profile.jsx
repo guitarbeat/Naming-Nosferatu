@@ -519,13 +519,25 @@ const Profile = ({ userName }) => {
               )
             : prev
         );
+
+        // Reload hidden names from database to ensure persistence
+        const { data: hiddenData, error: hiddenError } = await supabaseClient
+          .from('cat_name_ratings')
+          .select('name_id')
+          .eq('user_name', userName)
+          .eq('is_hidden', true);
+
+        if (!hiddenError && hiddenData) {
+          const hiddenIds = new Set(hiddenData.map((r) => r.name_id));
+          setHiddenNames(hiddenIds);
+        }
       } catch (error) {
         console.error('Profile - Toggle Visibility error:', error);
         showToast('Failed to toggle name visibility', 'error');
         showError('Failed to update visibility');
       }
     },
-    [hiddenNames, userName, showSuccess, showError, showToast]
+    [hiddenNames, userName, showSuccess, showError, showToast, fetchNames]
   );
 
   // * Handle name deletion

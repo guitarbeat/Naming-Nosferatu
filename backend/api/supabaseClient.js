@@ -1032,7 +1032,7 @@ export const ratingsAPI = {
  */
 export const hiddenNamesAPI = {
   /**
-   * Hide a name for a user
+   * Hide a name globally for all users (admin only)
    */
   async hideName(userName, nameId) {
     try {
@@ -1040,47 +1040,24 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase not configured' };
       }
 
-      // First check if a record exists to avoid overwriting wins/losses
-      const { data: existing, error: fetchError } = await supabase
-        .from('cat_name_ratings')
-        .select('user_name, name_id')
-        .eq('user_name', userName)
-        .eq('name_id', nameId)
-        .single();
-
-      if (!fetchError && existing) {
-        // Existing record: update only the hidden flag
-        const { error: updateError } = await supabase
-          .from('cat_name_ratings')
+      // Update the global is_hidden flag in cat_name_options (affects all users)
+      const { error } = await supabase
+        .from('cat_name_options')
           .update({ is_hidden: true })
-          .eq('user_name', userName)
-          .eq('name_id', nameId);
-        if (updateError) throw updateError;
-      } else if (fetchError?.code === 'PGRST116') {
-        // No existing record: insert minimal new record with hidden flag
-        const { error: insertError } = await supabase
-          .from('cat_name_ratings')
-          .insert({
-            user_name: userName,
-            name_id: nameId,
-            is_hidden: true
-          });
-        if (insertError) throw insertError;
-      } else if (fetchError) {
-        throw fetchError;
-      }
+        .eq('id', nameId);
 
+      if (error) throw error;
       return { success: true };
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Error hiding name:', error);
+        console.error('Error hiding name globally:', error);
       }
       throw error;
     }
   },
 
   /**
-   * Unhide a name for a user
+   * Unhide a name globally for all users (admin only)
    */
   async unhideName(userName, nameId) {
     try {
@@ -1088,18 +1065,17 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase not configured' };
       }
 
-      // Update the hidden status to false in cat_name_ratings
+      // Update the global is_hidden flag in cat_name_options (affects all users)
       const { error } = await supabase
-        .from('cat_name_ratings')
+        .from('cat_name_options')
         .update({ is_hidden: false })
-        .eq('name_id', nameId)
-        .eq('user_name', userName);
+        .eq('id', nameId);
 
       if (error) throw error;
       return { success: true };
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Error unhiding name:', error);
+        console.error('Error unhiding name globally:', error);
       }
       throw error;
     }

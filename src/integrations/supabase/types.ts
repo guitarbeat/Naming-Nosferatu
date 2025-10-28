@@ -79,6 +79,7 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
+          is_hidden: boolean | null
           name: string
           popularity_score: number | null
           total_tournaments: number | null
@@ -90,6 +91,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_hidden?: boolean | null
           name: string
           popularity_score?: number | null
           total_tournaments?: number | null
@@ -101,6 +103,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
+          is_hidden?: boolean | null
           name?: string
           popularity_score?: number | null
           total_tournaments?: number | null

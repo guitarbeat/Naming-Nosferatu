@@ -304,7 +304,7 @@ const ProfileNameList = ({
     filteredAndSortedNames.length > 0 &&
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
-  // * Stats configuration - meaningful user activity data
+  // * Simplified stats configuration - only most relevant metrics
   const STAT_CARD_SECTIONS = {
     base: [
       {
@@ -316,24 +316,10 @@ const ProfileNameList = ({
       },
       {
         key: "avg_rating_given",
-        title: "Avg Rating Given",
+        title: "Avg Rating",
         emoji: "📊",
         variant: "info",
         getValue: ({ avg_rating_given = 0 }) => Math.round(avg_rating_given),
-      },
-      {
-        key: "active_ratings",
-        title: "Active Ratings",
-        emoji: "👁️",
-        variant: "success",
-        getValue: ({ active_ratings = 0 }) => active_ratings,
-      },
-      {
-        key: "hidden_ratings",
-        title: "Hidden Names",
-        emoji: "🙈",
-        variant: "secondary",
-        getValue: ({ hidden_ratings = 0 }) => hidden_ratings,
       },
       {
         key: "high_ratings",
@@ -342,16 +328,8 @@ const ProfileNameList = ({
         variant: "warning",
         getValue: ({ high_ratings = 0 }) => high_ratings,
       },
-      {
-        key: "rating_range",
-        title: "Rating Range",
-        emoji: "📈",
-        variant: "default",
-        getValue: ({ min_rating_given = 0, max_rating_given = 0 }) =>
-          `${Math.round(min_rating_given)}-${Math.round(max_rating_given)}`,
-      },
     ],
-    selection: [
+    selection: selectionStats ? [
       {
         key: "total_selections",
         title: "Total Selections",
@@ -361,27 +339,13 @@ const ProfileNameList = ({
       },
       {
         key: "tournaments_participated",
-        title: "Tournaments Played",
+        title: "Tournaments",
         emoji: "🏆",
         variant: "success",
         getValue: ({ tournaments_participated = 0 }) =>
           tournaments_participated,
       },
-      {
-        key: "unique_names_selected",
-        title: "Unique Names",
-        emoji: "🎲",
-        variant: "info",
-        getValue: ({ unique_names_selected = 0 }) => unique_names_selected,
-      },
-      {
-        key: "most_selected_name",
-        title: "Most Selected",
-        emoji: "❤️",
-        variant: "warning",
-        getValue: ({ most_selected_name = "None" }) => most_selected_name,
-      },
-    ],
+    ] : [],
   };
 
   // * Filter options
@@ -431,7 +395,7 @@ const ProfileNameList = ({
                 />
               )
             )}
-            {selectionStats &&
+            {selectionStats && STAT_CARD_SECTIONS.selection.length > 0 &&
               STAT_CARD_SECTIONS.selection.map(
                 ({ key, title, emoji, variant, getValue }) => (
                   <StatsCard
@@ -456,14 +420,11 @@ const ProfileNameList = ({
         </div>
       )}
 
-      {/* Filters */}
+      {/* Compact Results Counter */}
       <div className={styles.filterResults}>
         <span className={styles.resultsCount}>
-          {filteredCount}/{totalCount}
+          {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
         </span>
-        {filteredCount !== totalCount && (
-          <span className={styles.filteredIndicator}>filtered</span>
-        )}
       </div>
       <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>

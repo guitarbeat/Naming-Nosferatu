@@ -180,15 +180,6 @@ export function AppSidebar({
                   condition={isLoggedIn && isAdmin && !!onTogglePerformanceDashboard}
                 />
 
-                {/* New Tournament - Always available when logged in */}
-                <MenuActionItem
-                  icon={TournamentIcon}
-                  label="New Tournament"
-                  onClick={onStartNewTournament}
-                  ariaLabel="Start a new tournament setup"
-                  condition={isLoggedIn && !!onStartNewTournament}
-                />
-
               {/* Theme Toggle */}
                 <ThemeToggleActionItem
                     onClick={onThemeChange}
