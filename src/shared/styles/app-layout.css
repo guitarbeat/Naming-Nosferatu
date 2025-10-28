@@ -54,7 +54,7 @@
   min-width: 0;
   transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
-  max-width: 100%;
+  max-width: none; /* * Allow content to use full available space */
   overflow: auto;
   height: 100vh;
 }
@@ -112,8 +112,10 @@
   padding: 0 1rem 2rem 1rem;
   overflow: auto;
   width: 100%;
+  max-width: 100%; /* * Ensure it doesn't exceed parent */
   height: 100%;
   animation: fade-in 0.3s ease-out;
+  box-sizing: border-box; /* * Include padding in width calculation */
 }
 
 .main-content--login {

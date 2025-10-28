@@ -9,7 +9,6 @@ import { resolveSupabaseClient } from "../../integrations/supabase/client";
 import {
   getNamesWithDescriptions,
   tournamentsAPI,
-  catNamesAPI,
   imagesAPI,
 } from "../../integrations/supabase/api";
 import { compressImageFile, devLog } from "../../shared/utils/coreUtils";
@@ -21,88 +20,37 @@ import {
   Input,
   Select,
   CatImage,
-  StartTournamentButton,
 } from "../../shared/components";
 import useToast from "../../core/hooks/useToast";
 import useAppStore from "../../core/store/useAppStore";
 import useMobileGestures from "../../core/hooks/useMobileGestures";
-import {
-  validateCatName,
-  validateDescription,
-} from "../../shared/utils/validationUtils";
+import { validateCatName } from "../../shared/utils/validationUtils";
 import { isUserAdmin } from "../../shared/utils/authUtils";
+import {
+  CAT_IMAGES,
+  GALLERY_IMAGE_SIZES,
+  DEFAULT_DESCRIPTION,
+  FALLBACK_NAMES,
+  SORT_OPTIONS,
+} from "./constants";
+import {
+  getRandomCatImage,
+  validateNameObjects,
+  deduplicateImages,
+  filterAndSortNames,
+  generateCategoryOptions,
+  extractCategories,
+} from "./utils";
+import {
+  Lightbox,
+  NameSuggestionSection,
+  StartButton,
+} from "./components";
 import styles from "./TournamentSetup.module.css";
 
 // * Import Error components for specific use cases
 const ErrorDisplay = Error;
 const ErrorBoundary = Error;
-
-// Use absolute paths for better image loading compatibility
-const CAT_IMAGES = [
-  "/assets/images/IMG_4844.jpg",
-  "/assets/images/IMG_4845.jpg",
-  "/assets/images/IMG_4846.jpg",
-  "/assets/images/IMG_4847.jpg",
-  "/assets/images/IMG_5044.JPEG",
-  "/assets/images/IMG_5071.JPG",
-  "/assets/images/IMG_0778.jpg",
-  "/assets/images/IMG_0779.jpg",
-  "/assets/images/IMG_0865.jpg",
-  "/assets/images/IMG_0884.jpg",
-  "/assets/images/IMG_0923.jpg",
-  "/assets/images/IMG_1116.jpg",
-  "/assets/images/IMG_7205.jpg",
-  "/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.jpg",
-];
-
-const GALLERY_IMAGE_SIZES =
-  "(max-width: 480px) 88vw, (max-width: 768px) 44vw, (max-width: 1280px) 28vw, 200px";
-const LIGHTBOX_IMAGE_SIZES = "(max-width: 768px) 94vw, 80vw";
-
-const DEFAULT_DESCRIPTION = "A name as unique as your future companion";
-
-const FALLBACK_NAMES = [
-  {
-    id: "aaron",
-    name: "aaron",
-    description: "temporary fallback — backend offline",
-  },
-  {
-    id: "fix",
-    name: "fix",
-    description: "temporary fallback — backend offline",
-  },
-  {
-    id: "the",
-    name: "the",
-    description: "temporary fallback — backend offline",
-  },
-  {
-    id: "site",
-    name: "site",
-    description: "temporary fallback — backend offline",
-  },
-];
-
-// Helper function to get random cat images
-const getRandomCatImage = (nameId, imageList = CAT_IMAGES) => {
-  // Convert UUID string to a number for consistent image selection
-  let numericId;
-  if (typeof nameId === "string") {
-    // Use a simple hash of the UUID string to get a consistent number
-    numericId = nameId.split("").reduce((hash, char) => {
-      return char.charCodeAt(0) + ((hash << 5) - hash);
-    }, 0);
-  } else {
-    numericId = nameId;
-  }
-
-  // Use the numeric ID to consistently get the same image for the same name
-  const list =
-    Array.isArray(imageList) && imageList.length ? imageList : CAT_IMAGES;
-  const index = Math.abs(numericId) % list.length;
-  return list[index];
-};
 
 // Simple name selection - names and descriptions only
 const NameSelection = ({
@@ -122,71 +70,18 @@ const NameSelection = ({
   showCatPictures,
   imageList,
 }) => {
-  // For non-admin users, just show all names
+  // * For non-admin users, just show all names. For admins, filter and sort
   const displayNames = isAdmin
-    ? (() => {
-        // Filter names by category if selected
-        const filteredNames = selectedCategory
-          ? availableNames.filter(
-              (name) =>
-                name.categories && name.categories.includes(selectedCategory)
-            )
-          : availableNames;
+    ? filterAndSortNames(availableNames, {
+        category: selectedCategory,
+        searchTerm,
+        sortBy,
+      })
+    : availableNames;
 
-        // Filter by search term
-        const searchFilteredNames = searchTerm
-          ? filteredNames.filter(
-              (name) =>
-                name.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (name.description &&
-                  name.description
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()))
-            )
-          : filteredNames;
-
-        // Sort names
-        return [...searchFilteredNames].sort((a, b) => {
-          switch (sortBy) {
-            case "rating":
-              return (b.avg_rating || 1500) - (a.avg_rating || 1500);
-            case "popularity":
-              return (b.popularity_score || 0) - (a.popularity_score || 0);
-            case "alphabetical":
-              return a.name.localeCompare(b.name);
-            default:
-              return 0;
-          }
-        });
-      })()
-    : availableNames; // Non-admin users see all names
-
-  const categoryOptions = useMemo(() => {
-    if (!categories?.length) {
-      return [];
-    }
-
-    const categoryCounts = categories.map((category) => {
-      const count = availableNames.filter(
-        (name) => name.categories && name.categories.includes(category.name)
-      ).length;
-
-      return {
-        value: category.name,
-        label: `${category.name} (${count})`,
-      };
-    });
-
-    return [{ value: "", label: "All Categories" }, ...categoryCounts];
-  }, [categories, availableNames]);
-
-  const sortOptions = useMemo(
-    () => [
-      { value: "alphabetical", label: "Alphabetical" },
-      { value: "rating", label: "Rating (High to Low)" },
-      { value: "popularity", label: "Popularity" },
-    ],
-    []
+  const categoryOptions = useMemo(
+    () => generateCategoryOptions(categories, availableNames),
+    [categories, availableNames]
   );
 
   return (
@@ -238,7 +133,7 @@ const NameSelection = ({
               label="Sort by"
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value)}
-              options={sortOptions}
+              options={SORT_OPTIONS}
               className={styles.filterSelect}
               placeholder=""
             />
@@ -582,205 +477,10 @@ const SwipeableNameCards = ({
   );
 };
 
-const StartButton = ({ selectedNames, onStart, variant = "default" }) => {
-  const validateNames = (names) => {
-    return names.every((nameObj) => {
-      if (!nameObj || typeof nameObj !== "object" || !nameObj.id) {
-        return false;
-      }
+// * StartButton and NameSuggestionSection are imported from ./components
+// * Lightbox is imported from ./components
 
-      // Validate the name using our validation utility
-      const nameValidation = validateCatName(nameObj.name);
-      if (!nameValidation.success) {
-        console.warn(
-          "Invalid name detected:",
-          nameObj.name,
-          nameValidation.error
-        );
-        return false;
-      }
-
-      return true;
-    });
-  };
-
-  const handleStart = () => {
-    console.log(
-      "[DEV] 🎮 StartButton: handleStart called with selectedNames:",
-      selectedNames
-    );
-
-    if (!validateNames(selectedNames)) {
-      console.error("Invalid name objects detected:", selectedNames);
-      return;
-    }
-
-    console.log(
-      "[DEV] 🎮 StartButton: Calling onStart with validated names:",
-      selectedNames
-    );
-    onStart(selectedNames);
-  };
-
-  const buttonText =
-    selectedNames.length < 2
-      ? `Need ${2 - selectedNames.length} More Name${selectedNames.length === 0 ? "s" : ""} 🎯`
-      : "Start Tournament! 🏆";
-
-  const buttonClass =
-    variant === "header" ? styles.startButtonHeader : styles.startButton;
-  const isReady = selectedNames.length >= 2;
-
-  return (
-    <StartTournamentButton
-      onClick={handleStart}
-      className={buttonClass}
-      disabled={!isReady}
-      ariaLabel={
-        isReady ? "Start Tournament" : "Select at least 2 names to start"
-      }
-      size={variant === "header" ? "medium" : "large"}
-      startIcon={isReady ? undefined : null}
-    >
-      {buttonText}
-    </StartTournamentButton>
-  );
-};
-
-const NameSuggestionSection = () => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { showSuccess, showError } = useToast();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    const nameValidation = validateCatName(name.trim());
-    if (!nameValidation.success) {
-      setError(nameValidation.error);
-      return;
-    }
-
-    const descriptionValidation = validateDescription(description.trim());
-    if (!descriptionValidation.success) {
-      setError(descriptionValidation.error);
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      const res = await catNamesAPI.addName(
-        nameValidation.value,
-        descriptionValidation.value
-      );
-      if (res?.success === false) {
-        throw new Error(res.error || "Failed to add name");
-      }
-      setSuccess("Thank you for your suggestion!");
-      showSuccess("Name suggestion submitted successfully!", {
-        duration: 4000,
-      });
-      setName("");
-      setDescription("");
-    } catch {
-      setError("Failed to add name. It might already exist.");
-      showError("Failed to submit name suggestion. Please try again.", {
-        duration: 5000,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className={styles.suggestionSection}>
-      <div className={styles.suggestionCard}>
-        <h2>Suggest a Cat Name</h2>
-        <p className={styles.suggestionIntro}>
-          Have a great cat name in mind? Share it with the community!
-        </p>
-
-        <form
-          onSubmit={handleSubmit}
-          className={styles.suggestionForm}
-          role="form"
-          aria-label="Name suggestion form"
-        >
-          <div className={styles.formGroup}>
-            <Input
-              name="suggestion-name"
-              label="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter a cat name"
-              maxLength={50}
-              disabled={isSubmitting}
-              aria-required="true"
-              ariaDescribedBy="name-help"
-              required
-              type="text"
-            />
-            <div id="name-help" className={styles.helpText}>
-              Enter a unique cat name (maximum 50 characters)
-            </div>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="suggestion-description">Description</label>
-            <textarea
-              id="suggestion-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Tell us about this name's meaning or origin"
-              maxLength={500}
-              disabled={isSubmitting}
-              aria-required="false"
-              aria-describedby="description-help"
-            />
-            <div id="description-help" className={styles.helpText}>
-              Optional: Describe the name&apos;s meaning or origin (maximum 500
-              characters)
-            </div>
-          </div>
-
-          {error && (
-            <Error
-              variant="inline"
-              error={error}
-              context="form"
-              position="below"
-              onDismiss={() => setError("")}
-              showRetry={false}
-              showDismiss={true}
-              size="medium"
-              className={styles.loginError}
-            />
-          )}
-          {success && <p className={styles.successMessage}>{success}</p>}
-
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isSubmitting}
-            aria-label={
-              isSubmitting
-                ? "Submitting name suggestion..."
-                : "Submit name suggestion"
-            }
-          >
-            {isSubmitting ? "Submitting..." : "Submit Name"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
-
+// * Custom hook for tournament setup logic
 function useTournamentSetup(userName) {
   const [availableNames, setAvailableNames] = useState([]);
   const [selectedNames, setSelectedNames] = useState([]);
@@ -1015,22 +715,11 @@ function TournamentSetupContent({ onStart, userName }) {
       const supa = await trySupabase();
       const manifest = await tryStaticManifest();
 
-      // Merge: supa first, then manifest, then built-ins
+      // * Merge: supa first, then manifest, then built-ins
       const merged = [...(supa || []), ...(manifest || []), ...CAT_IMAGES];
 
-      // Deduplicate by base name (ignore extension), prefer earlier entries
-      const seen = new Set();
-      const deduped = [];
-      for (const url of merged) {
-        if (!url) continue;
-        // strip query/hash and extension
-        const [clean] = String(url).split(/[?#]/);
-        const name = clean.substring(clean.lastIndexOf("/") + 1);
-        const base = name.replace(/\.[^.]+$/, "").toLowerCase();
-        if (seen.has(base)) continue;
-        seen.add(base);
-        deduped.push(url);
-      }
+      // * Deduplicate by base name (ignore extension), prefer earlier entries
+      const deduped = deduplicateImages(merged);
 
       if (!cancelled) setGalleryImages(deduped);
     })();
@@ -1040,19 +729,12 @@ function TournamentSetupContent({ onStart, userName }) {
     };
   }, []);
 
-  // Get categories and other enhanced data
+  // * Get categories and other enhanced data
   const [categories, setCategories] = useState([]);
 
-  // Derive categories from available names to avoid schema coupling
+  // * Derive categories from available names to avoid schema coupling
   useEffect(() => {
-    const unique = new Set();
-    (availableNames || []).forEach((n) => {
-      (n.categories || []).forEach((c) => unique.add(c));
-    });
-    const list = Array.from(unique)
-      .sort((a, b) => a.localeCompare(b))
-      .map((name) => ({ id: name, name }));
-    setCategories(list);
+    setCategories(extractCategories(availableNames));
   }, [availableNames]);
 
   // Admin detection using role-based authentication
@@ -1575,99 +1257,3 @@ TournamentSetup.propTypes = {
 };
 
 export default TournamentSetup;
-
-// Lightweight lightbox component with keyboard navigation
-function Lightbox({ images, index, onClose, onPrev, onNext }) {
-  const closeBtnRef = useRef(null);
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowLeft") onPrev();
-      else if (e.key === "ArrowRight") onNext();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onPrev, onNext]);
-
-  useEffect(() => {
-    closeBtnRef.current?.focus();
-  }, []);
-
-  const current = images[index] || images[0];
-  const base = current.replace(/\.[^.]+$/, "");
-
-  return (
-    <div
-      className={styles.overlayBackdrop}
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Image gallery"
-    >
-      <div
-        className={styles.lightboxContent}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          className={styles.lightboxClose}
-          onClick={onClose}
-          aria-label="Close gallery"
-          ref={closeBtnRef}
-        >
-          ×
-        </button>
-        <button
-          type="button"
-          className={`${styles.lightboxNav} ${styles.left}`}
-          onClick={onPrev}
-          aria-label="Previous photo"
-        >
-          ‹
-        </button>
-        <div className={styles.lightboxImageWrap}>
-          <picture>
-            <source
-              type="image/avif"
-              srcSet={`${base}.avif`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
-            <source
-              type="image/webp"
-              srcSet={`${base}.webp`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
-            <img
-              src={current}
-              alt={`Cat photo ${index + 1} of ${images.length}`}
-              className={styles.lightboxImage}
-              loading="eager"
-              decoding="async"
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
-          </picture>
-        </div>
-        <button
-          type="button"
-          className={`${styles.lightboxNav} ${styles.right}`}
-          onClick={onNext}
-          aria-label="Next photo"
-        >
-          ›
-        </button>
-        <div className={styles.lightboxCounter} aria-live="polite">
-          {index + 1} / {images.length}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-Lightbox.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.string).isRequired,
-  index: PropTypes.number.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onPrev: PropTypes.func.isRequired,
-  onNext: PropTypes.func.isRequired,
-};
