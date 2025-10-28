@@ -93,9 +93,6 @@
   input[type="checkbox"],
   input[type="radio"],
   .btn,
-  .button,
-  .button-primary,
-  .button-secondary,
   a[role="button"],
   .nav-menu button {
     min-width: var(--mobile-touch-target-min);
@@ -117,7 +114,6 @@
 
   /* Ensure proper spacing between interactive elements */
   button + button,
-  .button + .button,
   .btn + .btn,
   input + input {
     margin-left: var(--space-3);
@@ -162,14 +158,7 @@
     border-radius: var(--radius-lg);
   }
 
-  .button-primary,
-  .button-secondary {
-    min-width: var(--mobile-touch-target-min);
-    min-height: var(--mobile-touch-target-min);
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--text-sm);
-    border-radius: var(--radius-md);
-  }
+  /* * Button component handles responsive sizing */
 
   /* Small mobile text adjustments */
   h1 { font-size: var(--text-2xl); }
@@ -199,9 +188,6 @@
   input[type="submit"]:active,
   input[type="reset"]:active,
   .btn:active,
-  .button:active,
-  .button-primary:active,
-  .button-secondary:active,
   .nav-menu button:active {
     transform: scale(0.95);
   }
@@ -213,15 +199,7 @@
     transform: scale(0.98);
   }
 
-  /* Button touch feedback */
-  .button-primary:active {
-    background: var(--button-primary-hover, var(--primary-dark));
-  }
-
-  .button-secondary:active {
-    background: var(--button-secondary-hover, var(--card-hover));
-    border-color: var(--primary-color);
-  }
+  /* * Button component handles touch feedback */
 
   .nav-menu button:active {
     color: var(--primary-700);
@@ -243,10 +221,7 @@
       border-width: 3px;
     }
 
-    .button-primary,
-    .button-secondary {
-      border-width: 3px;
-    }
+    /* * Button component handles high contrast mode */
 
     .nav-menu button {
       border: 2px solid var(--border-color);
@@ -257,8 +232,6 @@
     }
 
     /* Enhanced focus indicators */
-    .button-primary:focus,
-    .button-secondary:focus,
     .nav-menu button:focus,
     .input:focus {
       outline: 3px solid var(--primary-color);
@@ -271,15 +244,11 @@
 @media (prefers-reduced-motion: reduce) {
   @media (width <= 768px) {
     .name-card,
-    .button-primary,
-    .button-secondary,
     .nav-menu button {
       transition: none;
     }
 
     .name-card:hover,
-    .button-primary:hover,
-    .button-secondary:hover,
     .nav-menu button:hover {
       transform: none;
     }

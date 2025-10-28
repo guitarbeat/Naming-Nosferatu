@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Card from "../../shared/components/Card";
+import { Card, Button } from "../../shared/components";
 import { resolveSupabaseClient } from "../../integrations/supabase/client";
 import useToast from "../../core/hooks/useToast";
 import styles from "./DataMigration.module.css";
@@ -69,13 +69,14 @@ export default function DataMigration() {
           <li>Tournament Selections</li>
         </ul>
 
-        <button
+        <Button
           onClick={runMigration}
           disabled={isLoading}
-          className={`${styles.button} ${isLoading ? styles.loading : ""}`}
+          loading={isLoading}
+          size="large"
         >
-          {isLoading ? "Migrating Data..." : "Start Migration"}
-        </button>
+          Start Migration
+        </Button>
 
         {results && (
           <div

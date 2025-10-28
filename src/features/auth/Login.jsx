@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import { Card, Error } from "../../shared/components";
+import { Card, Error, Button } from "../../shared/components";
 import useToast from "../../core/hooks/useToast";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import styles from "./Login.module.css";
@@ -391,27 +391,16 @@ function Login({ onLogin }) {
                   )}
                 </div>
 
-                <button
+                <Button
                   type="submit"
-                  className={`${styles.singleButton} ${isLoading ? styles.loading : ""} ${name.trim() ? styles.hasName : ""}`}
+                  loading={isLoading}
                   disabled={isLoading}
+                  size="large"
+                  endIcon={name.trim() ? null : <span aria-hidden="true">🏆</span>}
+                  className={name.trim() ? styles.hasName : ""}
                 >
-                  <span className={styles.buttonContent}>
-                    {isLoading ? (
-                      <>
-                        <span className={styles.spinner} />
-                        Loading...
-                      </>
-                    ) : (
-                      <>
-                        {name.trim() ? "Continue" : "Get Random Name & Start"}
-                        <span className={styles.buttonEmoji} aria-hidden="true">
-                          🏆
-                        </span>
-                      </>
-                    )}
-                  </span>
-                </button>
+                  {name.trim() ? "Continue" : "Get Random Name & Start"}
+                </Button>
               </form>
 
               <div className={styles.namePreview}>

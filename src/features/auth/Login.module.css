@@ -526,66 +526,10 @@
   transition: width 0.3s ease;
 }
 
-.singleButton {
-  width: 100%;
-  padding: clamp(0.85rem, 3vw, 1.1rem) clamp(1.25rem, 4vw, 1.75rem);
-  margin-top: 1rem;
-  font-size: clamp(0.9rem, 3vw, 1rem);
-  font-weight: 600;
-  color: #1f2937;
-  cursor: pointer;
-  background: var(--accent-color);
-  border: none;
-  border-radius: 14px;
-  box-shadow: 0 12px 24px rgba(232, 191, 118, 0.28);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.singleButton:hover {
-  box-shadow: 0 16px 28px rgba(232, 191, 118, 0.32);
-  transform: translateY(-1px);
-}
-
-.singleButton:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 12px 18px rgba(232, 191, 118, 0.26);
-}
-
-.singleButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-  transform: none;
-  box-shadow: none;
-}
-
-.buttonContent {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgb(255 255 255 / 30%);
-  border-top: 2px solid white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.buttonEmoji {
-  font-size: 1.2rem;
+/* * Button styles have been migrated to shared Button component */
+/* ? Custom overrides can be added here if needed for Login-specific styling */
+.hasName {
+  /* * Add any Login-specific button overrides here */
 }
 
 .namePreview {
@@ -790,8 +734,5 @@
     max-width: 100%;
   }
 
-  .singleButton {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
+  /* * Button component handles responsive sizing */
 }

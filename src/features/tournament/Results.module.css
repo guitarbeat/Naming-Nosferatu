@@ -28,33 +28,7 @@
   gap: var(--space-3);
 }
 
-.actionButton {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--text-primary);
-  cursor: pointer;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  transition: all var(--duration-normal) var(--ease-out-expo);
-}
-
-.actionButton:hover {
-  color: white;
-  background: var(--primary-500);
-  border-color: var(--primary-500);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.actionButton:active {
-  box-shadow: var(--shadow-sm);
-  transform: translateY(0);
-}
+/* * Button styles have been migrated to shared Button component */
 
 .welcome {
   font-size: var(--text-lg);
@@ -116,10 +90,7 @@
   margin-top: var(--space-6);
 }
 
-.actions button {
-  flex: 1;
-  min-width: 200px;
-}
+/* * Action buttons handled by StartTournamentButton and CalendarButton components */
 
 .startNewButton {
   white-space: nowrap;
@@ -296,9 +267,7 @@
     margin-top: var(--space-4);
   }
 
-  .actions button {
-    width: 100%;
-  }
+  /* * Action buttons handled by shared button components */
 
   .startNewButton {
     justify-content: center;
@@ -354,9 +323,7 @@
   margin-bottom: var(--space-6);
 }
 
-.actionButton {
-  min-width: 200px;
-}
+/* * Button component handles sizing */
 
 @media (width <= 640px) {
   .header {
@@ -371,8 +338,5 @@
     width: 100%;
   }
 
-  .actionButton {
-    justify-content: center;
-    width: 100%;
-  }
+  /* * Button component handles responsive sizing */
 }

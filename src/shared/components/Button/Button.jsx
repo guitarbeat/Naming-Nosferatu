@@ -36,6 +36,7 @@ const Button = ({
   startIcon = null,
   endIcon = null,
   iconOnly = false,
+  style = {},
   ...rest
 }) => {
   const buttonClasses = [
@@ -63,6 +64,7 @@ const Button = ({
       disabled={disabled || loading}
       onClick={handleClick}
       aria-disabled={disabled || loading}
+      style={style}
       {...rest}
     >
       {loading && (
@@ -98,7 +100,8 @@ Button.propTypes = {
   onClick: PropTypes.func,
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,
-  iconOnly: PropTypes.bool
+  iconOnly: PropTypes.bool,
+  style: PropTypes.object
 };
 
 Button.displayName = 'Button';
