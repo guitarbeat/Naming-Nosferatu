@@ -159,21 +159,21 @@
 
 .extraOptionsButton {
   display: inline-flex;
+  gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  min-height: 48px;
   min-width: 120px;
+  min-height: 48px;
   padding: var(--space-2) var(--space-5);
   font-size: var(--text-base);
   font-weight: 600;
   color: var(--text-primary);
   background: linear-gradient(
     135deg,
-    var(--glass-bg-light, rgba(255, 255, 255, 0.5)),
-    var(--glass-bg, rgba(255, 255, 255, 0.7))
+    var(--glass-bg-light, rgb(255 255 255 / 50%)),
+    var(--glass-bg, rgb(255 255 255 / 70%))
   );
-  border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--glass-border, rgb(0 0 0 / 10%));
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-subtle, 0 1px 3px rgb(0 0 0 / 10%));
   backdrop-filter: blur(var(--glass-blur, 16px));
@@ -181,9 +181,9 @@
 }
 
 .extraOptionsButton:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: var(--glass-border-hover, rgba(0, 0, 0, 0.15));
+  border-color: var(--glass-border-hover, rgb(0 0 0 / 15%));
   box-shadow: var(--shadow-medium, 0 4px 12px rgb(0 0 0 / 15%));
+  transform: translateY(-1px);
 }
 
 .extraOptionsButton:active:not(:disabled) {
@@ -196,8 +196,8 @@
 }
 
 .extraOptionsButton:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
   transform: none;
 }
 
@@ -240,13 +240,13 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  min-height: 44px;
   min-width: 180px;
+  min-height: 44px;
   padding: var(--space-2) var(--space-5);
   font-size: var(--text-sm);
   font-weight: 700;
-  letter-spacing: 0.02em;
   color: var(--button-text-light, #fff);
+  letter-spacing: 0.02em;
   cursor: pointer;
   background: linear-gradient(135deg, var(--error-500), var(--error-600));
   border: 1px solid var(--error-400);
@@ -267,8 +267,8 @@
 }
 
 .controlButton:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .soundControls {
@@ -617,8 +617,8 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  min-height: 42px;
   min-width: 160px;
+  min-height: 42px;
   padding: var(--space-2) var(--space-5);
   font-weight: 700;
   color: var(--button-text-light, #fff);
@@ -634,8 +634,8 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  min-height: 42px;
   min-width: 140px;
+  min-height: 42px;
   padding: var(--space-2) var(--space-5);
   font-weight: 700;
   color: var(--text-primary);

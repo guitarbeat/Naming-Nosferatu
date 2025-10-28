@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 /**
  * * Icon component with consistent sizing and styling
  */
-export function Icon({ name, children, ...props }) {
+export function Icon({ name: _name, children, ...props }) {
   const defaultProps = {
     xmlns: "http://www.w3.org/2000/svg",
     width: "20",

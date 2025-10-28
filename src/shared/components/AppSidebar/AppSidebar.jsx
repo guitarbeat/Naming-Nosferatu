@@ -9,7 +9,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   useSidebar,
 } from "../ui/sidebar";
@@ -17,7 +16,6 @@ import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
-import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import {
   TournamentIcon,
   ProfileIcon,
@@ -39,7 +37,7 @@ export function AppSidebar({
   isLightTheme,
   onThemeChange,
   onTogglePerformanceDashboard,
-  breadcrumbItems = [],
+  breadcrumbItems: _breadcrumbItems = [],
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
 
@@ -65,7 +63,7 @@ export function AppSidebar({
     // * Toggle sidebar expansion/collapse
     console.log('Sidebar clicked, current collapsed state:', collapsed);
     toggleCollapsed();
-    
+
     // * If expanding, also navigate to tournament
     if (collapsed) {
       setView("tournament");

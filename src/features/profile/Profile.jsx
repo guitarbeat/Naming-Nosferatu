@@ -235,24 +235,24 @@ const generateImprovementTip = (
 
 // * Main Profile Component
 const Profile = ({ userName }) => {
-  // * Placeholder notification functions (can be replaced with actual toast system)
-  const showSuccess = (message) => {
+  // * Placeholder notification functions (wrapped in useCallback for stability)
+  const showSuccess = useCallback((message) => {
     if (process.env.NODE_ENV === 'development') {
       console.log('✅', message);
     }
-  };
+  }, []);
 
-  const showError = (message) => {
+  const showError = useCallback((message) => {
     if (process.env.NODE_ENV === 'development') {
       console.error('❌', message);
     }
-  };
+  }, []);
 
-  const showToast = (message, type = 'info') => {
+  const showToast = useCallback((message, type = 'info') => {
     if (process.env.NODE_ENV === 'development') {
       console.log(`📢 [${type}]`, message);
     }
-  };
+  }, []);
 
   // * State
   const [filterStatus, setFilterStatus] = useState(

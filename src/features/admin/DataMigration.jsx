@@ -15,10 +15,10 @@ export default function DataMigration() {
       const supabaseClient = await resolveSupabaseClient();
 
       if (!supabaseClient) {
-        showError("Supabase client is not configured.");
+        const errorMsg = "Supabase client is not configured.";
         setResults({
           success: false,
-          error: "Supabase client is not configured.",
+          error: errorMsg,
         });
         return;
       }

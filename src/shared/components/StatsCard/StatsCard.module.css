@@ -3,8 +3,8 @@
   align-items: center;
   min-height: 120px;
   padding: 1.5rem 1rem;
-  text-align: center;
   overflow: hidden;
+  text-align: center;
 }
 
 .card::before {

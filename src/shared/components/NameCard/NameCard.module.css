@@ -185,9 +185,7 @@
   /* Reset button defaults */
   background: var(--card-background);
   border: 2px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  border-image: linear-gradient(135deg, var(--border-color), var(--card-border))
-    1;
+  border-radius: 20px;
   box-shadow: var(--shadow-sm);
 
   /* Enhanced visual hierarchy */
@@ -202,7 +200,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   mix-blend-mode: soft-light;
   transition: background 0.1s ease-out;
 }
@@ -525,7 +523,7 @@
   .card {
     min-height: 120px;
     padding: var(--space-2);
-    border-radius: var(--radius-md);
+    border-radius: 20px;
   }
 
   .name {

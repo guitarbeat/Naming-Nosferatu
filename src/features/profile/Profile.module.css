@@ -32,9 +32,9 @@
 .profileContainer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   min-height: calc(100vh - 80px);
-  padding: 1.5rem;
+  padding: 1rem;
 }
 
 /* Left Sidebar - Admin Controls (removed) */
@@ -233,18 +233,18 @@
 /* Enhanced Stats Overview - Compact */
 .statsOverview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 /* Controls - Compact */
 .controls {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1.5rem;
+  gap: 0.75rem;
   align-items: start;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   backdrop-filter: blur(10px);
 }
 
@@ -851,8 +851,8 @@
 
 @media (width <= 1024px) {
   .profileContainer {
-    padding: 1.25rem;
     gap: 1.25rem;
+    padding: 1.25rem;
   }
 
   .statsOverview {
@@ -877,8 +877,8 @@
   }
 
   .profileContainer {
-    padding: 1rem;
     gap: 1rem;
+    padding: 1rem;
   }
 
   .statsOverview {

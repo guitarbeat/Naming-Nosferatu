@@ -1,12 +1,19 @@
 /* Base Layout */
 .container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-6);
   width: 100%;
   max-width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
   padding: var(--space-2);
   background: transparent; /* Let galaxy background show through */
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Name count display */
@@ -99,9 +106,9 @@
 
 .filterGroup {
   display: flex;
+  flex: 1 1 auto; /* * Allow flexible sizing on small screens */
   flex-direction: column;
   gap: var(--space-2);
-  flex: 1 1 auto; /* * Allow flexible sizing on small screens */
 }
 
 .filterGroup label {
@@ -187,6 +194,11 @@
   border-bottom: 2px solid var(--border-color);
 }
 
+.selectionHeader {
+  padding: var(--space-4) 0;
+  text-align: center;
+}
+
 .tournamentTitle {
   margin: 0 0 var(--space-3) 0;
   font-size: var(--text-2xl);
@@ -260,32 +272,32 @@
 /* Main Content Layout - simplified, no nested padding */
 .mainContent {
   display: grid;
+  flex: 1;
   grid-template-columns: 2fr 1fr;
   gap: var(--space-6);
-  flex: 1;
+  width: 100%;
   height: 100%;
   overflow: auto;
-  width: 100%;
 }
 
 /* Selection Panel */
 .selectionPanel {
   display: flex;
   flex-direction: column;
+  min-width: 0; /* * Allow panel to respect grid sizing */
+  height: 100%;
   overflow: hidden;
   background: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
-  height: 100%;
-  min-width: 0; /* * Allow panel to respect grid sizing */
 }
 
 .panelHeader {
+  box-sizing: border-box; /* * Include padding in width calculation */
+  width: 100%; /* * Ensure header takes full width */
   padding: var(--space-2);
   background: transparent;
-  width: 100%; /* * Ensure header takes full width */
-  box-sizing: border-box; /* * Include padding in width calculation */
 }
 
 /* Combined header layout */
@@ -294,21 +306,8 @@
   flex-wrap: wrap; /* * Allow wrapping on small screens */
   gap: var(--space-3); /* * Add gap between wrapped items */
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: center;
   margin-bottom: var(--space-4);
-}
-
-.headerContent {
-  flex: 1;
-  min-width: 0; /* * Prevent content from forcing overflow */
-}
-
-.headerContent .panelTitle {
-  margin-bottom: var(--space-2);
-}
-
-.headerContent .panelSubtitle {
-  margin: 0;
 }
 
 .headerActions {
@@ -495,18 +494,18 @@
 }
 
 .cardsContainer {
-  width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-2);
+  width: 100%;
 }
 
 /* Name Counter */
 .nameCount {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: var(--space-2);
+  align-items: center;
   margin: var(--space-6) 0;
   text-align: center;
 }
@@ -826,6 +825,110 @@
   background: var(--button-primary-hover, var(--primary-dark));
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Suggestion Form Styles */
+.suggestionTitle {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.suggestionDescription {
+  margin: 0 0 var(--space-4);
+  color: var(--text-secondary);
+}
+
+.suggestionButton {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--button-text-light, white);
+  cursor: pointer;
+  background: var(--button-primary-bg, var(--primary-color));
+  border: none;
+  border-radius: var(--radius-md);
+  transition: var(--transition-all);
+}
+
+.suggestionButton:hover:not(:disabled) {
+  background: var(--button-primary-hover, var(--primary-dark));
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.suggestionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formLabel {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: var(--space-3);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--input-background, var(--surface-color));
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: var(--transition-all);
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 20%);
+}
+
+.formInput:disabled,
+.formTextarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.formError {
+  padding: var(--space-2) var(--space-3);
+  color: var(--error-color);
+  background: var(--error-bg, rgba(239, 68, 68, 0.1));
+  border: 1px solid var(--error-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.formSuccess {
+  padding: var(--space-2) var(--space-3);
+  color: var(--success-color);
+  background: var(--success-bg, rgba(16, 185, 129, 0.1));
+  border: 1px solid var(--success-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
 }
 
 /* Image Overlay */
@@ -1178,8 +1281,8 @@
 /* Responsive Design */
 @media (width <= 1024px) {
   .mainContent {
-    grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;
+    grid-template-columns: 1fr;
     gap: var(--space-4);
   }
 
@@ -1210,7 +1313,7 @@
   }
 
   .cardsContainer {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-3);
   }
 
@@ -1711,6 +1814,7 @@
     --cat-image-fit,
     contain
   ); /* show full cat; blurred bg fills behind */
+
   object-position: 50% var(--image-pos-y, 20%);
   opacity: 0;
   filter: drop-shadow(0 18px 28px rgb(15 23 42 / 45%));
@@ -2135,6 +2239,13 @@
 }
 
 /* Extra small mobile devices */
+@media (width <= 600px) {
+  .cardsContainer {
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+}
+
 @media (width <= 480px) {
   .container {
     padding-top: var(--space-3);

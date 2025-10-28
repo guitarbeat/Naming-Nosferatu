@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
  */
 export function NavbarSection({ children, className = '', alignRight = false }) {
   const baseClass = alignRight ? 'navbar-section navbar-section--right' : 'navbar-section navbar-section--left';
-  
+
   return (
     <div className={`${baseClass} ${className}`}>
       {children}

@@ -22,12 +22,6 @@ function TournamentHeader({
   return (
     <div className={styles.panelHeader}>
       <div className={styles.headerRow}>
-        <div className={styles.headerContent}>
-          <h2 className={styles.panelTitle}>Select Tournament Competitors</h2>
-          <p className={styles.panelSubtitle}>
-            Choose at least 2 names to start your tournament
-          </p>
-        </div>
         <HeaderActions
           selectedNamesCount={selectedNames.length}
           availableNamesCount={availableNames.length}

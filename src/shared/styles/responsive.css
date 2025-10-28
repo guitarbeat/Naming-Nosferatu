@@ -326,6 +326,7 @@
   .main-content {
     margin-top: 70px; /* Reduced margin for landscape */
   }
+
   .scroll-to-top {
     right: var(--mobile-safe-spacing-small);
     bottom: var(--mobile-safe-spacing-small);

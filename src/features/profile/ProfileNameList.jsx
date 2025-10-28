@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
-import { SkeletonLoader, Card, Select, Button } from "../../shared/components";
+import { SkeletonLoader, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import ProfileHighlights from "../../shared/components/ProfileHighlights/ProfileHighlights";
@@ -536,12 +536,9 @@ const ProfileNameList = ({
         </div>
       </div>
 
-      <div className={styles.header}>
-        <h3 className={styles.sectionTitle}>
-          Names ({filteredAndSortedNames.length})
-        </h3>
+      <div className={styles.headerControls}>
         {isAdmin && (
-          <div className={styles.headerControls}>
+          <>
             {selectedNames.size > 0 && (
               <div className={styles.selectionInfo}>
                 {selectedNames.size} name{selectedNames.size !== 1 ? "s" : ""}{" "}
@@ -580,9 +577,10 @@ const ProfileNameList = ({
                 )}
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
+
       <div className={styles.namesGrid}>
         {filteredAndSortedNames.map((name) => {
           const isHidden = Boolean(name.isHidden) || hiddenIds.has(name.id);

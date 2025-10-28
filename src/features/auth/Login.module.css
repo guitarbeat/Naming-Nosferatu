@@ -30,17 +30,16 @@
 
 .loginWrapper {
   position: relative;
-  width: min(clamp(48rem, 85vw, 60rem), 100%);
-  margin: 0 auto;
-  min-height: 100vh;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  width: min(clamp(48rem, 85vw, 60rem), 100%);
+  min-height: 100vh;
+  min-height: 100dvh;
   padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
-  overflow-y: auto;
-  overflow-x: hidden;
+  margin: 0 auto;
+  overflow: hidden auto;
   overscroll-behavior: contain;
 }
 
@@ -57,8 +56,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.6) brightness(0.6);
   opacity: 0.25;
+  filter: saturate(0.6) brightness(0.6);
 }
 
 /* * Light mode background adjustment */
@@ -98,21 +97,21 @@
   align-items: center;
   justify-content: flex-start;
   width: min(clamp(36rem, 85vw, 40rem), 100%);
-  margin: 0 auto;
-  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
   min-height: auto;
+  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  margin: 0 auto;
 }
 
 /* Hero Content Section */
 .heroContent {
   display: flex;
+  flex: none;
   flex-direction: column;
   gap: clamp(1rem, 3vw, 1.5rem);
   align-items: center;
   width: min(clamp(28rem, 80vw, 32.5rem), 100%);
   margin-inline: auto;
   text-align: center;
-  flex: none;
 }
 
 .heroHighlights {
@@ -120,8 +119,8 @@
   grid-template-columns: repeat(auto-fit, minmax(clamp(12rem, 45vw, 14rem), 1fr));
   gap: 1rem;
   width: 100%;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
@@ -130,18 +129,18 @@
   gap: 0.75rem;
   align-items: center;
   padding: 0.85rem 1rem;
+  text-align: left;
   background: rgb(15 23 42 / 45%);
   border: 1px solid rgb(148 163 184 / 30%);
   border-radius: clamp(1rem, 3vw, 1.2rem);
-  backdrop-filter: blur(12px);
   box-shadow: 0 6px 24px rgba(var(--black-rgb), 0.2);
-  text-align: left;
+  backdrop-filter: blur(12px);
 }
 
 :root[data-theme="light"] .highlightItem {
   background: rgb(255 255 255 / 80%);
-  border-color: rgba(148, 163, 184, 0.4);
-  box-shadow: 0 10px 30px rgba(148, 163, 184, 0.25);
+  border-color: rgb(148 163 184 / 40%);
+  box-shadow: 0 10px 30px rgb(148 163 184 / 25%);
 }
 
 .highlightIcon {
@@ -165,14 +164,14 @@
 .formCard {
   width: 100%;
   max-width: 100%;
+  min-height: auto;
+  overflow: visible;
   color: var(--text-primary);
   background: var(--surface-elevated);
   border: 1px solid var(--border-color);
   border-radius: clamp(1.25rem, 4vw, 1.5rem);
-  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 16px 48px rgb(15 23 42 / 20%);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  overflow: visible;
-  min-height: auto;
 }
 
 .formCollapsed {
@@ -190,8 +189,8 @@
 
 .formCollapsed:hover {
   border-color: var(--border-color);
+  box-shadow: 0 12px 32px rgb(15 23 42 / 18%);
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
 }
 
 .formCollapsed:focus-visible {
@@ -201,18 +200,18 @@
 
 .formExpanded {
   max-width: 100%;
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+  height: auto;
   padding: clamp(1.75rem, 5vw, 2.25rem);
   overflow: visible;
-  height: auto;
+  box-shadow: 0 18px 48px rgb(15 23 42 / 22%);
 }
 
 .collapsedContent {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
-  position: relative;
 }
 
 .collapsedContent::after {
@@ -230,8 +229,8 @@
 }
 
 .formCollapsed:hover .collapsedDescription {
-  opacity: 1;
   color: var(--text-primary);
+  opacity: 1;
 }
 
 /* * Light mode contrast fixes */
@@ -243,9 +242,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: auto;
   padding: clamp(1rem, 2vw, 1.5rem) 0;
   overflow: visible;
-  min-height: auto;
 }
 
 /* Hero Content Styles */
@@ -425,9 +424,9 @@
 
 .loginInput:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgba(232, 191, 118, 0.2);
   background: var(--surface-elevated);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgb(232 191 118 / 20%);
 }
 
 .loginInput.error {
@@ -459,14 +458,14 @@
 
 .randomNameIndicator:hover:not([aria-disabled="true"]),
 .randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
-  transform: translateY(-50%) scale(1.05);
   background: rgb(232 191 118 / 18%);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .randomNameIndicator[aria-disabled="true"] {
+  pointer-events: none;
   cursor: not-allowed;
   opacity: 0.6;
-  pointer-events: none;
 }
 
 .diceIcon {
@@ -529,6 +528,7 @@
 }
 
 /* * Button styles have been migrated to shared Button component */
+
 /* ? Custom overrides can be added here if needed for Login-specific styling */
 .hasName {
   /* * Add any Login-specific button overrides here */
@@ -590,9 +590,9 @@
   gap: 0.75rem;
   align-items: center;
   justify-content: center;
-  margin-top: 1.75rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.25);
+  margin-top: 1.75rem;
+  border-top: 1px solid rgb(148 163 184 / 25%);
 }
 
 .supportText {
@@ -615,25 +615,25 @@
   font-weight: 600;
   color: white;
   text-decoration: none;
-  background: linear-gradient(135deg, #0f172a, rgba(14, 116, 144, 0.9));
+  background: linear-gradient(135deg, #0f172a, rgb(14 116 144 / 90%));
   border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(14, 116, 144, 0.35);
+  box-shadow: 0 10px 30px rgb(14 116 144 / 35%);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .supportLink::after {
-  content: "→";
   font-size: 1rem;
+  content: "→";
 }
 
 .supportLink:hover,
 .supportLink:focus-visible {
+  box-shadow: 0 14px 38px rgb(14 116 144 / 45%);
   transform: translateY(-1px);
-  box-shadow: 0 14px 38px rgba(14, 116, 144, 0.45);
 }
 
 .supportLink:focus-visible {
-  outline: 3px solid rgba(125, 211, 252, 0.5);
+  outline: 3px solid rgb(125 211 252 / 50%);
   outline-offset: 3px;
 }
 

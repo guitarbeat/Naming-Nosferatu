@@ -2,6 +2,7 @@
 
 .app-sidebar {
   /* Inherits from sidebar.css */
+
   /* * Enhanced app-specific styling */
   position: relative;
   height: auto;
@@ -11,10 +12,10 @@
 /* * Navbar sections for better layout control */
 .navbar-section {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1.5rem;
   flex-shrink: 0;
+  flex-direction: row;
+  gap: 1.5rem;
+  align-items: center;
 }
 
 .navbar-section--left {
@@ -28,9 +29,9 @@
 
 /* * Breadcrumb in navbar */
 .navbar-breadcrumb {
-  padding-left: 1.5rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
   position: relative;
+  padding-left: 1.5rem;
+  border-left: 1px solid rgb(255 255 255 / 8%);
 }
 
 .navbar-breadcrumb::before {
@@ -56,8 +57,8 @@
 
 .navbar-breadcrumb .breadcrumb__link,
 .navbar-breadcrumb .breadcrumb__current {
-  font-size: 0.85rem;
   padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
 }
 
 .navbar-breadcrumb .breadcrumb__link {
@@ -66,8 +67,8 @@
 }
 
 .navbar-breadcrumb .breadcrumb__link:hover {
-  background: rgba(var(--neon-cyan-rgb), 0.08);
   color: rgb(255 255 255 / 100%);
+  background: rgba(var(--neon-cyan-rgb), 0.08);
 }
 
 .navbar-breadcrumb .breadcrumb__separator {
@@ -76,8 +77,8 @@
 
 /* * Light theme breadcrumb in navbar */
 :root[data-theme="light"] .navbar-breadcrumb .breadcrumb__link:hover {
-  background: rgba(var(--neon-cyan-rgb), 0.06);
   color: #1e293b;
+  background: rgba(var(--neon-cyan-rgb), 0.06);
 }
 
 /* * Screen reader only utility */
@@ -88,36 +89,37 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+  clip: rect(0, 0, 0, 0);
 }
 
 .sidebar-top-controls {
   display: flex;
   justify-content: flex-end;
   padding: 1.5rem 1.25rem 1rem;
-  /* * Enhanced spacing and visual separation */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 1rem;
+
+  /* * Enhanced spacing and visual separation */
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
 }
 
 .sidebar-collapse-toggle {
+  /* * Minimal, clean design */
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(2.25rem, 6vw, 2.75rem);
+  height: clamp(2.25rem, 6vw, 2.75rem);
   padding: 0.5rem;
+  overflow: visible;
   color: rgb(255 255 255 / 70%);
   background: transparent;
   border: none;
   border-radius: clamp(0.5rem, 1.8vw, 0.75rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* * Minimal, clean design */
-  position: relative;
-  overflow: visible;
-  min-width: clamp(2.25rem, 6vw, 2.75rem);
-  height: clamp(2.25rem, 6vw, 2.75rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .sidebar-collapse-toggle:hover {
@@ -148,32 +150,33 @@
 
 /* * Hide text in collapsed state with smooth transition */
 .sidebar--collapsed .sidebar-collapse-toggle span {
-  opacity: 0;
   visibility: hidden;
   width: 0;
   overflow: hidden;
+  opacity: 0;
   transition: all 0.3s ease;
 }
 
 /* * Ensure text is not truncated when visible */
 .sidebar-collapse-toggle span {
-  white-space: nowrap;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .sidebar-logo {
-  padding: 0 1.5rem 0 0;
-  margin-right: 1rem;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
   /* * Enhanced visual separation */
   position: relative;
-  /* * Ensure full width for text */
-  min-width: 0;
-  overflow: visible;
-  text-align: center;
-  height: 100%;
   display: flex;
   align-items: center;
+
+  /* * Ensure full width for text */
+  min-width: 0;
+  height: 100%;
+  padding: 0 1.5rem 0 0;
+  margin-right: 1rem;
+  overflow: visible;
+  text-align: center;
+  border-right: 1px solid rgb(255 255 255 / 8%);
 }
 
 .sidebar-logo::after {
@@ -194,23 +197,24 @@
 }
 
 .sidebar-logo-button {
+  /* * Enhanced interactive effects */
+  position: relative;
   display: flex;
+  flex-shrink: 0;
   flex-direction: row;
   gap: 0.75rem;
   align-items: center;
   justify-content: center;
+
+  /* * Ensure text is not clipped */
+  min-width: 0;
   padding: 0.5rem;
+  overflow: visible;
   cursor: pointer;
   background: transparent;
   border: none;
   border-radius: clamp(0.5rem, 2vw, 0.75rem);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* * Enhanced interactive effects */
-  position: relative;
-  overflow: visible;
-  /* * Ensure text is not clipped */
-  min-width: 0;
-  flex-shrink: 0;
 }
 
 .sidebar-logo-button::before {
@@ -247,11 +251,12 @@
   flex-shrink: 0;
   width: clamp(2.5rem, 6vw, 3rem);
   height: clamp(2.5rem, 6vw, 3rem);
-  border-radius: clamp(0.5rem, 2vw, 0.75rem);
+
   /* * Enhanced visual effects */
   border: 1.5px solid rgba(var(--neon-cyan-rgb), 0.25);
+  border-radius: clamp(0.5rem, 2vw, 0.75rem);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgb(255 255 255 / 10%),
     0 2px 8px rgba(var(--neon-cyan-rgb), 0.15);
   transition: all 0.3s ease;
 }
@@ -259,34 +264,35 @@
 .sidebar-logo-button:hover .sidebar-logo-video {
   border-color: rgba(var(--neon-cyan-rgb), 0.45);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.25),
+    0 0 0 1px rgb(255 255 255 / 25%),
     0 6px 16px rgba(var(--neon-cyan-rgb), 0.3);
   transform: scale(1.05);
 }
 
 .sidebar-logo-text {
   display: block;
+  flex-shrink: 0;
+
+  /* * Ensure full text is visible */
+  min-width: max-content;
   overflow: visible;
   text-overflow: unset;
   font-size: clamp(0.9rem, 2.5vw, 1.1rem);
   font-weight: 800;
   color: rgb(255 255 255 / 95%);
   white-space: nowrap;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 40%);
+
   /* * Enhanced typography */
   background: linear-gradient(135deg, #fff, rgba(var(--neon-cyan-rgb), 0.8));
   background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   transition: all 0.3s ease;
-  /* * Ensure full text is visible */
-  min-width: max-content;
-  flex-shrink: 0;
+  -webkit-text-fill-color: transparent;
 }
 
 .sidebar-logo-button:hover .sidebar-logo-text {
-  transform: translateX(2px);
   filter: drop-shadow(0 0 8px rgba(var(--neon-cyan-rgb), 0.3));
+  transform: translateX(2px);
 }
 
 .sidebar--collapsed .sidebar-logo-button {
@@ -307,8 +313,8 @@
 
 .sidebar--collapsed .sidebar-logo-button {
   gap: 0.5rem;
-  padding: 0.5rem;
   justify-content: center;
+  padding: 0.5rem;
 }
 
 .sidebar--collapsed .sidebar-menu {
@@ -321,16 +327,16 @@
 }
 
 .sidebar-user-info {
-  padding: 0;
-  margin: 0;
-  padding-left: 1.5rem;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
   /* * Enhanced visual separation */
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: center;
   gap: 0.75rem;
+  align-items: center;
+  padding: 0;
+  padding-left: 1.5rem;
+  margin: 0;
+  border-left: 1px solid rgb(255 255 255 / 8%);
 }
 
 .sidebar-user-info::before {
@@ -351,13 +357,17 @@
 }
 
 .sidebar-user-greeting {
+  /* * Enhanced visual effects */
+  position: relative;
   display: flex;
   gap: 0.5rem;
   align-items: center;
   padding: 0.5rem 1rem;
+  overflow: hidden;
   font-size: 0.85rem;
   font-weight: 500;
   color: rgb(255 255 255 / 90%);
+  white-space: nowrap;
   background: linear-gradient(
     135deg,
     rgba(var(--neon-cyan-rgb), 0.08),
@@ -365,11 +375,7 @@
   );
   border: 1px solid rgba(var(--neon-cyan-rgb), 0.2);
   border-radius: 8px;
-  /* * Enhanced visual effects */
-  position: relative;
-  overflow: hidden;
   box-shadow: 0 2px 8px rgba(var(--neon-cyan-rgb), 0.1);
-  white-space: nowrap;
 }
 
 .sidebar-user-greeting::before {
@@ -398,13 +404,16 @@
 
 /* * Admin Badge for Aaron */
 .sidebar-admin-badge {
+  position: relative;
   display: flex;
   gap: 0.4rem;
   align-items: center;
   padding: 0.4rem 0.6rem;
+  overflow: hidden;
   font-size: 0.75rem;
   font-weight: 600;
   color: #fff;
+  white-space: nowrap;
   background: linear-gradient(
     135deg,
     rgba(var(--hot-pink-rgb), 0.9),
@@ -414,52 +423,50 @@
   border-radius: 6px;
   box-shadow:
     0 2px 8px rgba(var(--hot-pink-rgb), 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
+    0 0 0 1px rgb(255 255 255 / 10%);
   animation: adminGlow 2s ease-in-out infinite alternate;
-  white-space: nowrap;
 }
 
 @keyframes adminGlow {
   0% {
     box-shadow:
       0 2px 8px rgba(var(--hot-pink-rgb), 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.1);
+      0 0 0 1px rgb(255 255 255 / 10%);
   }
+
   100% {
     box-shadow:
       0 4px 16px rgba(var(--hot-pink-rgb), 0.5),
-      0 0 0 1px rgba(255, 255, 255, 0.2),
+      0 0 0 1px rgb(255 255 255 / 20%),
       0 0 20px rgba(var(--neon-cyan-rgb), 0.3);
   }
 }
 
 .sidebar-admin-badge svg {
   flex-shrink: 0;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
 }
 
 .sidebar-admin-badge span {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
 }
 
 /* * Light mode admin badge */
 :root[data-theme="light"] .sidebar-admin-badge {
+  color: #fff;
   background: linear-gradient(
     135deg,
-    rgba(220, 38, 127, 0.9),
-    rgba(6, 182, 212, 0.9)
+    rgb(220 38 127 / 90%),
+    rgb(6 182 212 / 90%)
   );
-  border-color: rgba(220, 38, 127, 0.4);
-  color: #fff;
+  border-color: rgb(220 38 127 / 40%);
 }
 
 .sidebar-logout-button {
-  color: #ff6b6b !important;
   position: relative;
   overflow: hidden;
+  color: #ff6b6b !important;
 }
 
 .sidebar-logout-button::before {
@@ -472,7 +479,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 107, 107, 0.1),
+    rgb(255 107 107 / 10%),
     transparent
   );
   transition: left 0.6s ease;
@@ -481,11 +488,11 @@
 .sidebar-logout-button:hover {
   background: linear-gradient(
     135deg,
-    rgba(255, 107, 107, 0.15),
-    rgba(255, 107, 107, 0.08)
+    rgb(255 107 107 / 15%),
+    rgb(255 107 107 / 8%)
   ) !important;
+  box-shadow: 0 4px 12px rgb(255 107 107 / 20%) !important;
   transform: translateX(2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2) !important;
 }
 
 .sidebar-logout-button:hover::before {
@@ -494,7 +501,7 @@
 
 /* Light theme */
 :root[data-theme="light"] .sidebar-top-controls {
-  border-bottom-color: rgba(0, 0, 0, 0.08);
+  border-bottom-color: rgb(0 0 0 / 8%);
 }
 
 :root[data-theme="light"] .sidebar-collapse-toggle {
@@ -508,7 +515,7 @@
 }
 
 :root[data-theme="light"] .sidebar-logo {
-  border-bottom-color: rgba(0, 0, 0, 0.08);
+  border-bottom-color: rgb(0 0 0 / 8%);
 }
 
 :root[data-theme="light"] .sidebar-logo::after {
@@ -528,28 +535,27 @@
 :root[data-theme="light"] .sidebar-logo-video {
   border-color: rgba(var(--neon-cyan-rgb), 0.15);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgb(0 0 0 / 5%),
     0 4px 12px rgba(var(--neon-cyan-rgb), 0.1);
 }
 
 :root[data-theme="light"] .sidebar-logo-button:hover .sidebar-logo-video {
   border-color: rgba(var(--neon-cyan-rgb), 0.3);
   box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgb(0 0 0 / 10%),
     0 6px 20px rgba(var(--neon-cyan-rgb), 0.2);
 }
 
 :root[data-theme="light"] .sidebar-logo-text {
+  text-shadow: none;
   background: linear-gradient(135deg, #1e293b, rgba(var(--neon-cyan-rgb), 0.6));
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: none;
 }
 
 :root[data-theme="light"] .sidebar-user-info {
-  border-top-color: rgba(0, 0, 0, 0.08);
-  border-bottom-color: rgba(0, 0, 0, 0.08);
+  border-top-color: rgb(0 0 0 / 8%);
+  border-bottom-color: rgb(0 0 0 / 8%);
 }
 
 :root[data-theme="light"] .sidebar-user-info::before {
@@ -580,8 +586,8 @@
 :root[data-theme="light"] .sidebar-logout-button:hover {
   background: linear-gradient(
     135deg,
-    rgba(220, 38, 38, 0.12),
-    rgba(220, 38, 38, 0.06)
+    rgb(220 38 38 / 12%),
+    rgb(220 38 38 / 6%)
   ) !important;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15) !important;
+  box-shadow: 0 4px 12px rgb(220 38 38 / 15%) !important;
 }

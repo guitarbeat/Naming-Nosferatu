@@ -53,8 +53,8 @@
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
   gap: 0.75rem;
+  align-items: flex-start;
   padding: 0.75rem;
   background: rgb(255 255 255 / 10%);
   border: 1px solid rgb(255 255 255 / 15%);
@@ -90,8 +90,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 5px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
 
@@ -110,22 +110,22 @@
 
 .compactItem:hover {
   background: rgb(255 255 255 / 55%);
-  transform: translateY(-1px);
   box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  transform: translateY(-1px);
 }
 
 .itemName {
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .itemValue {
   margin-left: 8px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--primary-600, #2563eb);
-  font-size: 0.75rem;
 }
 
 /* * Filters Section (now part of unified) */
@@ -135,10 +135,10 @@
 
 .filterResults {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  align-items: center;
   padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
   font-size: 0.85rem;
   color: var(--text-primary);
   background: rgb(255 255 255 / 20%);
@@ -201,10 +201,10 @@
   font-size: 1.1rem;
   font-weight: bold;
   color: var(--text-primary);
+  cursor: pointer;
   background: rgb(255 255 255 / 20%);
   border: 1px solid rgb(255 255 255 / 25%);
   border-radius: 8px;
-  cursor: pointer;
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
 }
@@ -219,17 +219,17 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: white;
+  cursor: pointer;
   background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
   border: none;
   border-radius: 8px;
-  cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .applyFiltersButton:hover {
   background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-  transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(59 130 246 / 30%);
+  transform: translateY(-1px);
 }
 
 .header {
@@ -274,16 +274,16 @@
 
 /* * Button styles have been migrated to shared Button component */
 
-/* * Names Grid Layout - Increased card sizes for better description visibility */
+/* * Names Grid Layout - Compact cards to show more items */
 .namesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 .nameWrapper {
   position: relative; /* allow positioned badges */
-  min-height: 280px; /* Increased minimum height for better description space */
+  min-height: 180px; /* Compact height to show more cards */
   overflow: visible; /* allow admin overlays to overflow */
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -327,13 +327,13 @@
   opacity: 1;
 }
 
-/* * Card Content Enhancement - More padding for better content spacing */
+/* * Card Content Enhancement - Compact padding for smaller cards */
 .nameWrapper .nameCard {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 /* * Floating Action Buttons */
@@ -414,11 +414,11 @@
   border: 2px dashed var(--hidden-border, #d1d5db);
 }
 
-/* * Loading States - Updated to match new card sizes */
+/* * Loading States - Updated to match compact card sizes */
 .loadingGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 /* * Empty State */
@@ -444,16 +444,16 @@
   color: var(--text-secondary, #6b7280);
 }
 
-/* * Responsive Design - Updated breakpoints for better mobile experience */
+/* * Responsive Design - Updated breakpoints for compact layout */
 @media (width <= 1200px) {
   .namesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
   }
 
   .loadingGrid {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
   }
 }
 
@@ -498,11 +498,11 @@
   }
 
   .nameWrapper {
-    min-height: 260px; /* Slightly reduced for mobile but still good for descriptions */
+    min-height: 160px; /* Compact for mobile */
   }
 
   .nameWrapper .nameCard {
-    padding: 1.5rem; /* Reduced padding for mobile */
+    padding: 0.75rem; /* Compact padding for mobile */
   }
 }
 
@@ -529,11 +529,11 @@
   }
 
   .nameWrapper {
-    min-height: 240px; /* Further reduced for small mobile */
+    min-height: 140px; /* Compact for small mobile */
   }
 
   .nameWrapper .nameCard {
-    padding: 1.25rem; /* Minimal padding for small mobile */
+    padding: 0.5rem; /* Minimal padding for small mobile */
   }
 }
 

@@ -16,11 +16,11 @@
 
 /* * Tournament mode visual: higher contrast glass/blur so it stands out over game UI */
 :global(.tournamentToast) .item {
-  background: rgb(17 24 39 / 75%);
   color: #fff;
+  background: rgb(17 24 39 / 75%);
   border-left-color: var(--secondary-500, #3b82f6);
-  backdrop-filter: blur(8px) saturate(120%);
   box-shadow: 0 8px 28px rgb(0 0 0 / 35%);
+  backdrop-filter: blur(8px) saturate(120%);
 }
 
 :global(.tournamentToast) .progressBar {

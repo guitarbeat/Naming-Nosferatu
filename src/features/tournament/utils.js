@@ -74,7 +74,7 @@ export const validateNameObjects = (names) => {
 export const deduplicateImages = (images) => {
   const seen = new Set();
   const deduped = [];
-  
+
   for (const url of images) {
     if (!url) continue;
     // * Strip query/hash and extension
@@ -85,7 +85,7 @@ export const deduplicateImages = (images) => {
     seen.add(base);
     deduped.push(url);
   }
-  
+
   return deduped;
 };
 

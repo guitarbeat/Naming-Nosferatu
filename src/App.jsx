@@ -14,7 +14,6 @@ import CatBackground from '@components/CatBackground/CatBackground';
 import ViewRouter from '@components/ViewRouter/ViewRouter';
 import { Error, Loading } from '@components';
 import PerformanceDashboard from '@components/PerformanceDashboard';
-import Breadcrumb from './shared/components/Breadcrumb/Breadcrumb';
 import { SidebarProvider, useSidebar } from './shared/components/ui/sidebar';
 import { AppSidebar } from './shared/components/AppSidebar/AppSidebar';
 

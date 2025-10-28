@@ -7,6 +7,11 @@ import { Card } from "../../../../shared/components";
 import styles from "../../TournamentSetup.module.css";
 
 function NameCounter({ selectedNamesCount }) {
+  // Don't render when no names are selected
+  if (selectedNamesCount === 0) {
+    return null;
+  }
+
   return (
     <Card
       className={styles.nameCount}
@@ -17,9 +22,7 @@ function NameCounter({ selectedNamesCount }) {
       aria-live="polite"
     >
       <span className={styles.countText}>
-        {selectedNamesCount === 0
-          ? "Pick some pawsome names! 🐾"
-          : `${selectedNamesCount} Names Selected`}
+        {`${selectedNamesCount} Names Selected`}
       </span>
 
       {selectedNamesCount === 1 && (

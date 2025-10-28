@@ -12,7 +12,6 @@ export {
   tournamentsAPI,
   userPreferencesAPI,
   categoriesAPI,
-  imagesAPI,
   adminAPI,
   deleteName,
   getNamesWithDescriptions,
@@ -23,3 +22,6 @@ export {
   getRatingHistory,
   ensureRatingHistoryTable
 } from '../../../backend/api/supabaseClient';
+
+// * Import imagesAPI separately to avoid circular dependency
+export { imagesAPI } from '../../../backend/api/supabaseClient';

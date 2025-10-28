@@ -3,31 +3,31 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
+  left: 0;
   z-index: var(--z-sticky, 100);
   display: flex;
+  flex-shrink: 0;
   flex-direction: row;
+  width: 100%;
   height: auto;
   min-height: 70px;
-  width: 100%;
-  flex-shrink: 0;
+
+  /* * Enhanced visual effects */
+  overflow: hidden;
   background: var(--glass-bg);
   border-bottom: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow-colored);
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* * Enhanced visual effects */
-  overflow: hidden;
 }
 
 /* * Subtle gradient overlay for depth */
 .sidebar::before {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
   content: "";
   background: linear-gradient(
     90deg,
@@ -36,8 +36,6 @@
     transparent 70%,
     rgba(var(--hot-pink-rgb), 0.03) 100%
   );
-  pointer-events: none;
-  z-index: 1;
 }
 
 /* * Ensure content is above the overlay */
@@ -48,6 +46,7 @@
 
 .sidebar--collapsed {
   min-height: 60px;
+
   /* * Enhanced collapsed state animation */
   transform: translateY(0);
 }
@@ -59,12 +58,13 @@
 
 @keyframes sidebarSlideIn {
   from {
-    transform: translateY(-100%);
     opacity: 0;
+    transform: translateY(-100%);
   }
+
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -93,18 +93,18 @@
 }
 
 .sidebar-content {
-  flex: 1;
-  width: 100%;
-  max-width: 100%;
-  padding: 0 1.5rem;
   display: flex;
+  flex: 1;
   flex-direction: row;
+  gap: 2rem;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
-  overflow-x: auto;
-  overflow-y: hidden;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
+  padding: 0 1.5rem;
+  overflow: auto hidden;
+
   /* * Hide scrollbar but keep scrolling functionality */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
@@ -118,27 +118,28 @@
 .sidebar-group {
   position: relative;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
   flex-shrink: 0;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
 }
 
 .sidebar-group-label {
+  /* * Enhanced typography */
+  position: relative;
+  display: flex;
+
+  /* * Hide labels in horizontal navbar for cleaner look */
+  display: none;
+  gap: 0.5rem;
+  align-items: center;
   padding: 0 0.5rem;
   font-size: 0.7rem;
   font-weight: 700;
   color: rgb(255 255 255 / 60%);
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  /* * Enhanced typography */
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
   white-space: nowrap;
-  /* * Hide labels in horizontal navbar for cleaner look */
-  display: none;
 }
 
 .sidebar--collapsed .sidebar-group-label {
@@ -149,18 +150,18 @@
 .sidebar-group-content {
   display: flex;
   flex-direction: row;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
 }
 
 .sidebar-menu {
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
+  align-items: center;
   padding: 0;
   margin: 0;
   list-style: none;
-  align-items: center;
 }
 
 .sidebar-menu-item {
@@ -173,21 +174,22 @@
   gap: 0.5rem;
   align-items: center;
   justify-content: center;
-  white-space: nowrap;
   min-height: 40px;
   padding: 0.5rem 1rem;
+
+  /* * Enhanced hover effects */
+  overflow: hidden;
   font-size: 0.9rem;
   font-weight: 500;
   color: rgb(255 255 255 / 90%);
   text-align: center;
+  white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
   background: transparent;
   border: none;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  /* * Enhanced hover effects */
-  overflow: hidden;
 }
 
 .sidebar-menu-button::before {
@@ -209,8 +211,8 @@
 .sidebar-menu-button:hover {
   color: #fff;
   background: rgba(var(--neon-cyan-rgb), 0.08);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(var(--neon-cyan-rgb), 0.15);
+  transform: translateY(-2px);
 }
 
 .sidebar-menu-button:hover::before {
@@ -233,7 +235,7 @@
   );
   box-shadow:
     0 4px 16px rgba(var(--neon-cyan-rgb), 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    inset 0 1px 0 rgb(255 255 255 / 10%);
   transform: translateY(-2px);
 }
 
@@ -247,8 +249,9 @@
   content: "";
   background: linear-gradient(90deg, var(--neon-cyan), var(--hot-pink));
   border-radius: 3px 3px 0 0;
-  transform: translateX(-50%);
   box-shadow: 0 0 8px rgba(var(--neon-cyan-rgb), 0.4);
+  transform: translateX(-50%);
+
   /* * Subtle pulse animation for active state */
   animation: activePulse 2s ease-in-out infinite;
 }
@@ -258,6 +261,7 @@
   100% {
     box-shadow: 0 0 8px rgba(var(--neon-cyan-rgb), 0.4);
   }
+
   50% {
     box-shadow: 0 0 12px rgba(var(--neon-cyan-rgb), 0.6);
   }
@@ -274,8 +278,8 @@
 
 .sidebar-menu-button:hover svg,
 .sidebar-menu-button:hover .icon {
-  transform: scale(1.1);
   filter: drop-shadow(0 0 4px rgba(var(--neon-cyan-rgb), 0.3));
+  transform: scale(1.1);
 }
 
 .sidebar-menu-button[aria-current="page"] svg,
@@ -287,18 +291,18 @@
 
 /* Collapsed state */
 .sidebar-menu-button--collapsed {
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   padding: 0.5rem;
 }
 
 .sidebar--collapsed .sidebar-menu-button {
-  padding: 0.5rem 0.75rem;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   width: 48px;
-  height: 48px;
   min-width: 48px;
+  height: 48px;
+  padding: 0.5rem 0.75rem;
 }
 
 .sidebar--collapsed .sidebar-menu-button svg {
@@ -315,9 +319,9 @@
 
 /* Ensure items are visually centered in collapsed mode */
 .sidebar--collapsed .sidebar-group-content {
+  gap: 0.5rem;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
 }
 
 .sidebar--collapsed .sidebar-menu {
@@ -330,8 +334,8 @@
 
 /* * Enhanced collapsed state with tooltip-like glow */
 .sidebar--collapsed .sidebar-menu-button:hover {
-  transform: scale(1.05);
   box-shadow: 0 8px 24px rgba(var(--neon-cyan-rgb), 0.25);
+  transform: scale(1.05);
 }
 
 /* Light theme */
@@ -374,8 +378,8 @@
 :root[data-theme="light"] .sidebar-menu-button:hover {
   color: #1e293b;
   background: rgba(var(--neon-cyan-rgb), 0.06);
-  transform: translateX(2px);
   box-shadow: 0 4px 12px rgba(var(--neon-cyan-rgb), 0.12);
+  transform: translateX(2px);
 }
 
 :root[data-theme="light"] .sidebar-menu-button[aria-current="page"],
@@ -388,7 +392,7 @@
   );
   box-shadow:
     0 4px 16px rgba(var(--neon-cyan-rgb), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    inset 0 1px 0 rgb(255 255 255 / 80%);
   transform: translateX(4px);
 }
 

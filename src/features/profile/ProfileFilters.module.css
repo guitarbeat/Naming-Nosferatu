@@ -232,22 +232,22 @@
   gap: var(--space-3, 0.75rem);
   padding: var(--space-4, 1rem);
   font-size: var(--text-sm, 0.875rem);
-  background: var(--overlay-light, rgba(255, 255, 255, 0.8));
-  border: 1px solid var(--border-light, rgba(209, 213, 219, 0.5));
+  background: var(--overlay-light, rgb(255 255 255 / 80%));
+  border: 1px solid var(--border-light, rgb(209 213 219 / 50%));
   border-radius: var(--radius-md, 6px);
 }
 
 .resultsBar {
   display: flex;
+  gap: var(--space-2, 0.5rem);
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2, 0.5rem);
 }
 
 .resultsInfo {
   display: flex;
-  align-items: center;
   gap: var(--space-2, 0.5rem);
+  align-items: center;
   font-weight: 600;
   color: var(--text-primary, #111827);
 }
@@ -261,8 +261,8 @@
   font-size: var(--text-2xs, 0.7rem);
   font-weight: 500;
   color: var(--text-accent, #3b82f6);
-  background: var(--accent-light, rgba(59, 130, 246, 0.1));
-  border: 1px solid var(--accent-border, rgba(59, 130, 246, 0.2));
+  background: var(--accent-light, rgb(59 130 246 / 10%));
+  border: 1px solid var(--accent-border, rgb(59 130 246 / 20%));
   border-radius: var(--radius-sm, 4px);
 }
 
@@ -271,10 +271,10 @@
   font-size: var(--text-xs, 0.75rem);
   font-weight: 600;
   color: #fff;
+  cursor: pointer;
   background: linear-gradient(180deg, #3b82f6, #1d4ed8);
   border: 1px solid #1d4ed8;
   border-radius: var(--radius-sm, 4px);
-  cursor: pointer;
   transition: var(--transition-all, all 0.15s ease);
 }
 

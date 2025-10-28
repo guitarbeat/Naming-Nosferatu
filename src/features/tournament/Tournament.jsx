@@ -20,6 +20,7 @@ import Bracket from "../../shared/components/Bracket/Bracket";
 import TournamentControls from "./TournamentControls";
 import styles from "./Tournament.module.css";
 import { shuffleArray } from "../../shared/utils/coreUtils";
+import { useToast } from './hooks/useToast';
 
 // * Custom hook for audio management
 function useAudioManager() {

@@ -69,7 +69,7 @@ const Button = ({
     >
       {/* * Shimmer effect overlay */}
       <span className={styles.shimmer} aria-hidden="true" />
-      
+
       {loading && (
         <span className={styles.loader} aria-hidden="true">
           <span className={styles.loader__spinner} />
