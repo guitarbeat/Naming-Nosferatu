@@ -56,6 +56,16 @@ img {
   height: auto;
 }
 
+/* ! Hide scrollbars but maintain scrolling functionality */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Remove outline on focused elements */
 :focus {
   outline: none;

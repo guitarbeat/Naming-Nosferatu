@@ -37,8 +37,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 0 clamp(1.5rem, 4vw, 2.5rem);
+  justify-content: flex-start;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
   overflow: visible;
 }
 
@@ -94,12 +94,11 @@
   flex-direction: column;
   gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: min(clamp(36rem, 85vw, 40rem), 100%);
   margin: 0 auto;
-  padding: clamp(2rem, 6vw, 3rem);
-  min-height: 100vh;
-  min-height: 100dvh;
+  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  min-height: auto;
 }
 
 /* Hero Content Section */
@@ -111,6 +110,7 @@
   width: min(clamp(28rem, 80vw, 32.5rem), 100%);
   margin-inline: auto;
   text-align: center;
+  flex: none;
 }
 
 .heroHighlights {
@@ -169,6 +169,8 @@
   border-radius: clamp(1.25rem, 4vw, 1.5rem);
   box-shadow: 0 16px 48px rgba(15, 23, 42, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: visible;
+  min-height: auto;
 }
 
 .formCollapsed {
@@ -198,6 +200,9 @@
 .formExpanded {
   max-width: 100%;
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22);
+  padding: clamp(1.75rem, 5vw, 2.25rem);
+  overflow: visible;
+  height: auto;
 }
 
 .collapsedContent {
@@ -232,56 +237,13 @@
   color: #475569;
 }
 
-.accessibilityHint {
-  margin: 0;
-  font-size: clamp(0.95rem, 2.4vw, 1.05rem);
-  line-height: 1.5;
-  color: var(--text-secondary);
-}
-
-:root[data-theme="light"] .accessibilityHint {
-  color: #475569;
-}
-
 .expandedContent {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-/* Step indicator */
-.stepIndicator {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  margin-inline: auto;
-  color: var(--text-secondary);
-}
-
-.stepNumber {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(1.5rem, 4.5vw, 1.75rem);
-  height: clamp(1.5rem, 4.5vw, 1.75rem);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--surface-muted);
-  border-radius: 999px;
-}
-
-.stepText {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-/* * Light mode contrast fixes */
-:root[data-theme="light"] .stepText {
-  color: #475569;
+  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  overflow: visible;
+  min-height: auto;
 }
 
 /* Hero Content Styles */
@@ -299,15 +261,6 @@
   color: #1e293b;
 }
 
-.catImage {
-  width: clamp(104px, 16vw, 160px);
-  height: clamp(104px, 16vw, 160px);
-  border-radius: clamp(1rem, 3vw, 1.25rem);
-  border: 1px solid var(--border-color);
-  object-fit: cover;
-  box-shadow: none;
-}
-
 .welcomeText {
   max-width: clamp(300px, 50vw, 450px);
   margin: 0;
@@ -323,19 +276,6 @@
 }
 
 /* Form Section Styles */
-.loginTitle {
-  margin: 0 0 clamp(1rem, 3vw, 1.5rem);
-  font-size: clamp(1.5rem, 5vw, 2rem);
-  font-weight: 700;
-  color: var(--text-primary);
-  text-align: center;
-}
-
-/* * Light mode contrast fixes */
-:root[data-theme="light"] .loginTitle {
-  color: #1f2937;
-}
-
 .catFact {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -758,12 +698,12 @@
 /* Responsive Design */
 @media (width <= 768px) {
   .loginWrapper {
-    padding-top: var(--space-6);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
   }
 
   .heroContainer {
     gap: 2rem;
-    min-height: 100vh;
+    min-height: auto;
     padding: 1rem;
   }
 
@@ -792,17 +732,8 @@
     max-width: none;
   }
 
-  .expandButton {
-    width: 100%;
-  }
-
   .welcomeTitle {
     font-size: 1.75rem;
-  }
-
-  .catImage {
-    width: 100px;
-    height: 100px;
   }
 
   .welcomeText {
@@ -810,9 +741,6 @@
     font-size: 1rem;
   }
 
-  .loginTitle {
-    font-size: 1.5rem;
-  }
 
   .catFact {
     grid-template-columns: 1fr;
@@ -829,12 +757,12 @@
 
 @media (width <= 480px) {
   .loginWrapper {
-    padding-top: var(--space-5);
+    padding: clamp(1rem, 3vw, 1.5rem);
   }
 
   .heroContainer {
     gap: 1.5rem;
-    min-height: 100vh;
+    min-height: auto;
     padding: 0.5rem;
   }
 
@@ -846,21 +774,12 @@
     padding: 1.5rem;
   }
 
-  .expandButton {
-    padding: 0.75rem 1.25rem;
-  }
-
   .heroContent {
     gap: 1rem;
   }
 
   .welcomeTitle {
     font-size: 1.5rem;
-  }
-
-  .catImage {
-    width: 80px;
-    height: 80px;
   }
 
   .welcomeText {
@@ -874,20 +793,5 @@
   .singleButton {
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
-  }
-
-  .stepIndicator {
-    gap: 0.5rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .stepNumber {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-  }
-
-  .stepText {
-    font-size: 0.8rem;
   }
 }

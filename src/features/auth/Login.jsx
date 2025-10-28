@@ -252,23 +252,7 @@ function Login({ onLogin }) {
       <div className={styles.heroContainer} ref={containerRef}>
         {/* Hero Content Section */}
         <div className={styles.heroContent}>
-          <div className={styles.stepIndicator}>
-            <span className={styles.stepNumber}>1</span>
-            <span className={styles.stepText}>Create Your Judge Profile</span>
-          </div>
           <h1 className={styles.welcomeTitle}>Ready to Judge the Names?</h1>
-          <picture>
-            <source type="image/avif" srcSet="/assets/images/IMG_5071.avif" />
-            <source type="image/webp" srcSet="/assets/images/IMG_5071.webp" />
-            <img
-              src="/assets/images/IMG_5071.JPG"
-              alt="Cute cat avatar"
-              className={styles.catImage}
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-            />
-          </picture>
           <p className={styles.welcomeText}>
             Now it&apos;s your turn! Enter your name to start judging cat names
             and help find the perfect one.
@@ -289,10 +273,6 @@ function Login({ onLogin }) {
           tabIndex={isExpanded ? -1 : 0}
           ref={formCardRef}
         >
-          <h2 className={styles.loginTitle}>Cat Name Olympics</h2>
-          <p className={styles.loginSubtitle}>
-            Enter your name to login or create a new account
-          </p>
           {!isExpanded ? (
             <div className={styles.collapsedContent}>
               <p className={styles.collapsedDescription}>
@@ -306,10 +286,6 @@ function Login({ onLogin }) {
               className={styles.expandedContent}
               aria-live="polite"
             >
-              <p className={styles.accessibilityHint}>
-                Hover or focus here to open the judge login form—no clicks
-                needed. We&apos;ll help you enter or generate a name in seconds.
-              </p>
               <p className={styles.catFact}>
                 <span className={styles.catFactIcon} aria-hidden="true">
                   🐱
