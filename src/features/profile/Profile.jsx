@@ -16,7 +16,6 @@ import {
   getNamesWithUserRatings,
   getUserStats
 } from '../../integrations/supabase/api';
-import useToast from '../../core/hooks/useToast';
 import { FILTER_OPTIONS } from '../../core/constants';
 // ErrorManager removed to prevent circular dependency
 import { isUserAdmin } from '../../shared/utils/authUtils';
@@ -236,6 +235,25 @@ const generateImprovementTip = (
 
 // * Main Profile Component
 const Profile = ({ userName }) => {
+  // * Placeholder notification functions (can be replaced with actual toast system)
+  const showSuccess = (message) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅', message);
+    }
+  };
+
+  const showError = (message) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌', message);
+    }
+  };
+
+  const showToast = (message, type = 'info') => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`📢 [${type}]`, message);
+    }
+  };
+
   // * State
   const [filterStatus, setFilterStatus] = useState(
     FILTER_OPTIONS.STATUS.ACTIVE
@@ -268,7 +286,6 @@ const Profile = ({ userName }) => {
     setFilteredCount((c) => c);
   }, []);
 
-  const { showSuccess, showError, showToast } = useToast();
   const [hasSupabaseClient, setHasSupabaseClient] = useState(
     () => !!getSupabaseClientSync()
   );

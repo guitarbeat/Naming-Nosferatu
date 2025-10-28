@@ -13,7 +13,6 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 import { useTournament } from "../../core/hooks/useTournament";
-import useToast from "../../core/hooks/useToast";
 import { Card, Loading, Error } from "../../shared/components";
 // ErrorBoundary import removed - using unified Error component
 import NameCard from "../../shared/components/NameCard/NameCard";

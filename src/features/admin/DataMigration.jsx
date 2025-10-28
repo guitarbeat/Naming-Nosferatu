@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { Card, Button } from "../../shared/components";
 import { resolveSupabaseClient } from "../../integrations/supabase/client";
-import useToast from "../../core/hooks/useToast";
 import styles from "./DataMigration.module.css";
 
 export default function DataMigration() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null);
-  const { showSuccess, showError } = useToast();
 
   const runMigration = async () => {
     try {
@@ -31,14 +29,8 @@ export default function DataMigration() {
       if (error) throw error;
 
       setResults(data);
-      if (data.success) {
-        showSuccess(data.message);
-      } else {
-        showError("Migration completed with errors");
-      }
     } catch (err) {
       console.error("Migration failed:", err);
-      showError(err.message || "Migration failed");
       setResults({
         success: false,
         error: err.message,

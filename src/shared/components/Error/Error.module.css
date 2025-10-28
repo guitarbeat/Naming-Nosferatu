@@ -2,11 +2,16 @@
 
 /* ===== BOUNDARY ERROR (Full-page error) ===== */
 .boundary {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 2rem;
   overflow: hidden;
   font-family: var(
@@ -18,6 +23,7 @@
     sans-serif
   );
   background: var(--gradient-mesh);
+  z-index: 9999;
 }
 
 .boundary::before {
@@ -141,15 +147,17 @@
 }
 
 .boundaryActions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
-  justify-content: center;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .boundaryRetryButton,
 .boundaryRefreshButton,
-.boundaryHomeButton {
+.boundaryHomeButton,
+.boundaryCopyButton {
   position: relative;
   display: inline-flex;
   gap: 0.5rem;
@@ -204,6 +212,85 @@
 .boundaryRefreshIcon,
 .boundaryHomeIcon {
   font-size: 1rem;
+}
+
+/* Backend Warning Banner */
+.boundaryBackendWarning {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background: linear-gradient(135deg, rgb(245 158 11 / 20%), rgb(251 191 36 / 15%));
+  border: 2px solid rgb(245 158 11 / 40%);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgb(245 158 11 / 20%);
+}
+
+.boundaryWarningIcon {
+  font-size: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.boundaryBackendWarning > div {
+  flex: 1;
+}
+
+.boundaryBackendWarning strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.boundaryBackendWarning p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Copy Diagnostics Button */
+.boundaryCopyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgb(47 243 224 / 15%);
+  border: 2px solid rgb(47 243 224 / 30%);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgb(47 243 224 / 15%);
+}
+
+.boundaryCopyButton:hover {
+  background: rgb(47 243 224 / 25%);
+  border-color: rgb(47 243 224 / 50%);
+  box-shadow: 0 6px 18px rgb(47 243 224 / 25%);
+  transform: translateY(-2px);
+}
+
+.boundaryCopyButton:active {
+  transform: translateY(0);
+}
+
+.boundaryCopyIcon {
+  font-size: 1.125rem;
+  transition: transform 0.2s ease;
+}
+
+.boundaryCopyButton:hover .boundaryCopyIcon {
+  transform: scale(1.1);
 }
 
 .boundaryDetails {

@@ -73,7 +73,6 @@ export {
     useKeyboardHandler,
     useFocusManager,
     useVisibilityManager,
-    useLocalStorage,
     useMediaQuery,
     usePrevious,
     useForceUpdate

@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { FILTER_OPTIONS } from "../../core/constants";
 import { Card, Select } from "../../shared/components";
+import FilterGroup from "../../shared/components/FilterGroup/FilterGroup";
 import styles from "./ProfileFilters.module.css";
 
 /**
@@ -92,7 +93,7 @@ const ProfileFilters = ({
 
       <div className={styles.filtersGrid}>
         {/* * Status Filter */}
-        <div className={styles.filterGroup}>
+        <FilterGroup>
           <Select
             name="status"
             label="Status"
@@ -102,10 +103,10 @@ const ProfileFilters = ({
             className={styles.filterSelect}
             placeholder=""
           />
-        </div>
+        </FilterGroup>
 
         {/* * User Filter */}
-        <div className={styles.filterGroup}>
+        <FilterGroup>
           <Select
             name="user"
             label="User"
@@ -115,11 +116,11 @@ const ProfileFilters = ({
             className={styles.filterSelect}
             placeholder=""
           />
-        </div>
+        </FilterGroup>
 
         {/* * NEW: Selection Status Filter */}
         {hasSelectionData && (
-          <div className={styles.filterGroup}>
+          <FilterGroup>
             <Select
               name="selection"
               label="Selection Status"
@@ -129,11 +130,11 @@ const ProfileFilters = ({
               className={styles.filterSelect}
               placeholder=""
             />
-          </div>
+          </FilterGroup>
         )}
 
         {/* * Sort By - Enhanced with selection options */}
-        <div className={styles.filterGroup}>
+        <FilterGroup>
           <Select
             name="sort"
             label="Sort By"
@@ -143,11 +144,10 @@ const ProfileFilters = ({
             className={styles.filterSelect}
             placeholder=""
           />
-        </div>
+        </FilterGroup>
 
         {/* * Sort Order Toggle */}
-        <div className={styles.filterGroup}>
-          <label className={styles.filterLabel}>Order</label>
+        <FilterGroup label="Order">
           <button
             type="button"
             onClick={handleSortOrderToggle}
@@ -163,7 +163,7 @@ const ProfileFilters = ({
                 : "Descending"}
             </span>
           </button>
-        </div>
+        </FilterGroup>
       </div>
 
       {/* * Filter Results Display */}

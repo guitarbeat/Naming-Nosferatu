@@ -1,0 +1,131 @@
+.insightsSection {
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 8%) 0%,
+    rgb(255 255 255 / 4%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 16px rgb(0 0 0 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 12%);
+  backdrop-filter: blur(16px);
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.insightCard {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.insightCard:hover {
+  background: rgb(255 255 255 / 15%);
+  border-color: rgb(255 255 255 / 25%);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+  transform: translateY(-1px);
+}
+
+.insightContent h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.insightContent p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Compact list for highlights */
+.compactList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compactItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 7px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  background: rgb(255 255 255 / 45%);
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.compactItem:hover {
+  background: rgb(255 255 255 / 55%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.itemName {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.itemValue {
+  margin-left: 8px;
+  font-weight: 600;
+  color: var(--primary-600, #2563eb);
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+  .insightsSection {
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .insightsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .insightCard {
+    padding: 0.5rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .insightCard,
+  .compactItem {
+    transition: none;
+  }
+
+  .insightCard:hover,
+  .compactItem:hover {
+    transform: none;
+  }
+}
+

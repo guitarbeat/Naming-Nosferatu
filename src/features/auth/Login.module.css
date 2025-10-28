@@ -39,7 +39,9 @@
   align-items: center;
   justify-content: flex-start;
   padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 4vw, 2.5rem);
-  overflow: visible;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
 }
 
 .backgroundContainer {

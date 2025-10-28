@@ -7,6 +7,7 @@ const DEFAULT_MAX_RETRIES = 3;
 
 function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   const [retryCount, setRetryCount] = useState(0);
+  const [copied, setCopied] = useState(false);
 
   const standardizedError = useMemo(
     () => createStandardizedError(error, 'React Component Error', {
@@ -35,6 +36,74 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
     resetErrorBoundary();
   };
 
+  const diagnosticInfo = {
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    url: window.location.href,
+    errorType: standardizedError?.errorType || 'Unknown',
+    errorMessage: error?.message || error?.toString() || 'Unknown error',
+    errorStack: error?.stack || 'No stack trace available',
+    retryCount,
+    hasNetwork: navigator.onLine ? 'Online' : 'Offline',
+    backendHealth: 'Not checked',
+    additionalInfo: standardizedError?.additionalInfo || {}
+  };
+
+  const handleCopyDiagnostics = async () => {
+    const diagnosticText = `Cat Name Tournament - Error Diagnostics
+═══════════════════════════════════════════
+
+TIMESTAMP: ${diagnosticInfo.timestamp}
+ERROR TYPE: ${diagnosticInfo.errorType}
+RETRY COUNT: ${diagnosticInfo.retryCount}
+NETWORK STATUS: ${diagnosticInfo.hasNetwork}
+
+ERROR MESSAGE:
+${diagnosticInfo.errorMessage}
+
+ERROR STACK:
+${diagnosticInfo.errorStack}
+
+USER AGENT:
+${diagnosticInfo.userAgent}
+
+URL:
+${diagnosticInfo.url}
+
+${diagnosticInfo.errorType === 'NetworkError' || diagnosticInfo.errorType === 'BackendError' ? `
+⚠️  BACKEND DIAGNOSTICS
+═══════════════════════════════════════════
+This appears to be a backend connectivity issue.
+
+Possible causes:
+• Supabase backend is unreachable
+• Network connectivity problems
+• Database service is down
+• RPC function errors
+
+Please check:
+1. Internet connection
+2. Supabase project status
+3. Browser console for network errors
+4. Backend API health
+
+If this persists, the backend infrastructure may need attention.
+` : ''}
+
+ADDITIONAL INFO:
+${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
+
+═══════════════════════════════════════════`;
+
+    try {
+      await navigator.clipboard.writeText(diagnosticText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy diagnostics:', err);
+    }
+  };
+
   return (
     <div className={styles.boundary}>
       <div className={styles.boundaryContent}>
@@ -42,6 +111,17 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
         <h2 className={styles.boundaryTitle}>Oops! Something went wrong</h2>
 
         <p className={styles.boundaryMessage}>{errorMessage}</p>
+
+        {/* Error Type Badge */}
+        {(diagnosticInfo.errorType === 'NetworkError' || diagnosticInfo.errorType === 'BackendError') && (
+          <div className={styles.boundaryBackendWarning}>
+            <span className={styles.boundaryWarningIcon}>⚠️</span>
+            <div>
+              <strong>Backend Connection Issue</strong>
+              <p>This appears to be a connectivity problem with our backend services.</p>
+            </div>
+          </div>
+        )}
 
         <div className={styles.boundarySuggestions}>
           <h3 className={styles.boundarySuggestionsTitle}>Here&apos;s what you can try:</h3>
@@ -73,6 +153,12 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
           <button onClick={() => { window.location.href = '/'; }} className={styles.boundaryHomeButton}>
             <span className={styles.boundaryHomeIcon}>🏠</span>
             Back to Cat Names
+          </button>
+
+          {/* Copy Diagnostics Button */}
+          <button onClick={handleCopyDiagnostics} className={styles.boundaryCopyButton}>
+            <span className={styles.boundaryCopyIcon}>{copied ? '✅' : '📋'}</span>
+            {copied ? 'Copied!' : 'Copy Diagnostics'}
           </button>
         </div>
 

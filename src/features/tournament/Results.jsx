@@ -48,7 +48,6 @@ import CalendarButton from '../../shared/components/CalendarButton/CalendarButto
 import StartTournamentButton from '../../shared/components/StartTournamentButton/StartTournamentButton';
 import StatsCard from '../../shared/components/StatsCard/StatsCard';
 import { Card, Toast } from '@components';
-import useToast from '@hooks/useToast';
 import styles from './Results.module.css';
 
 function Results({

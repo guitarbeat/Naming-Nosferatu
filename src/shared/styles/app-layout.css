@@ -2,135 +2,57 @@
 
 .app {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 100vh;
   width: 100%;
-  --sidebar-expanded-width: clamp(13rem, 24vw, 14rem);
-  --sidebar-collapsed-width: clamp(9.5rem, 20vw, 12rem);
+  --sidebar-expanded-width: 100%;
+  --sidebar-collapsed-width: 100%;
   --sidebar-current-width: var(--sidebar-expanded-width);
-}
-
-.app--login {
-  --sidebar-current-width: var(--sidebar-collapsed-width);
-}
-
-.app--login .sidebar {
-  position: fixed;
-  top: clamp(1rem, 4vh, 1.5rem);
-  left: clamp(0.75rem, 3vw, 1.5rem);
-  width: var(--sidebar-collapsed-width);
-  bottom: auto;
-  height: auto;
-  max-height: calc(100vh - clamp(2rem, 8vh, 3rem));
-  border-radius: clamp(1rem, 4vw, 1.5rem);
-  box-shadow: 0 20px 40px -15px hsl(var(--foreground) / 0.35);
-}
-
-/* * Allow sidebar to expand when not in login mode */
-.app:not(.app--login) .sidebar {
-  width: var(--sidebar-expanded-width) !important;
-}
-
-.app:not(.app--login).app--sidebar-collapsed .sidebar {
-  width: var(--sidebar-collapsed-width) !important;
-}
-
-/* * Force sidebar to expand when not collapsed and not in login mode */
-.app:not(.app--login):not(.app--sidebar-collapsed) .sidebar {
-  width: var(--sidebar-expanded-width) !important;
-}
-
-.app--sidebar-collapsed {
-  --sidebar-current-width: var(--sidebar-collapsed-width);
+  /* * No padding - navbar is fixed, so main wrapper handles spacing */
 }
 
 .app-main-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-left: var(--sidebar-current-width);
-  padding-top: 1rem;
-  padding-right: 1rem;
+  padding: calc(80px + 1rem) 1rem 2rem 1rem; /* * Navbar height + padding on all sides */
   min-width: 0;
-  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   max-width: none; /* * Allow content to use full available space */
   overflow: auto;
   height: 100vh;
+  box-sizing: border-box;
 }
 
-/* * Update padding based on sidebar state */
-.app:not(.app--login) .app-main-wrapper {
-  padding-left: var(--sidebar-expanded-width);
-}
-
-.app:not(.app--login).app--sidebar-collapsed .app-main-wrapper {
-  padding-left: var(--sidebar-collapsed-width);
+/* * Update padding for collapsed state */
+.app--sidebar-collapsed .app-main-wrapper {
+  padding-top: calc(70px + 1rem); /* * Smaller navbar height when collapsed + content padding */
 }
 
 .app-main-wrapper--login {
-  margin: 0 auto;
-  padding-left: clamp(1rem, 4vw, 2rem);
-  padding-right: clamp(1rem, 4vw, 2rem);
-  padding-top: clamp(1rem, 4vw, 2.5rem);
-}
-
-.app-breadcrumb-container {
-  padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 1.75rem);
-  margin: 0 clamp(0.5rem, 3vw, 1rem) clamp(1rem, 4vw, 1.75rem)
-    clamp(0.5rem, 3vw, 1rem);
-  position: sticky;
-  top: clamp(0.5rem, 4vw, 1rem);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: hsl(var(--card) / 0.95);
-  border: 1px solid hsl(var(--border) / 0.5);
-  border-radius: clamp(0.75rem, 2vw, 1rem);
-  box-shadow: 0 4px 6px -1px hsl(var(--foreground) / 0.1), 
-              0 2px 4px -2px hsl(var(--foreground) / 0.1);
-  backdrop-filter: blur(12px) saturate(180%);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.app-breadcrumb-container:hover {
-  box-shadow: 0 10px 15px -3px hsl(var(--foreground) / 0.1), 
-              0 4px 6px -4px hsl(var(--foreground) / 0.1);
-  transform: translateY(-1px);
-}
-
-.app-breadcrumb-container .breadcrumb {
-  margin-bottom: 0;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 0 1rem 2rem 1rem;
-  overflow: auto;
-  width: 100%;
-  max-width: 100%; /* * Ensure it doesn't exceed parent */
-  height: 100%;
-  animation: fade-in 0.3s ease-out;
-  box-sizing: border-box; /* * Include padding in width calculation */
-}
-
-.main-content--login {
   align-items: center;
   justify-content: center;
   gap: 2rem;
-  min-height: calc(100vh - 2rem);
-  padding-block: clamp(2rem, 6vh, 4rem);
+  padding-left: clamp(1rem, 4vw, 2rem);
+  padding-right: clamp(1rem, 4vw, 2rem);
+  padding-top: calc(80px + clamp(2rem, 6vh, 4rem)); /* * Navbar height + content padding */
+  padding-bottom: clamp(2rem, 6vh, 4rem);
+  height: 100vh;
 }
 
-.main-content--login > * {
+.app-main-wrapper--login > * {
   width: min(clamp(48rem, 80vw, 60rem), 100%);
   margin-left: auto;
   margin-right: auto;
 }
+
+/* * Breadcrumb moved to navbar - keeping for backward compatibility */
+.app-breadcrumb-container {
+  display: none;
+}
+
+/* * Removed .main-content wrapper - no longer needed */
 
 /* Adjust for CatBackground */
 .app .cat-background {
@@ -151,31 +73,13 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
-  .main-content {
-    max-width: 100%;
-  }
-
-  .app-breadcrumb-container {
-    margin: 0 0.5rem 1rem 0.5rem;
-  }
-}
-
 @media (max-width: 768px) {
   .app-main-wrapper {
-    padding-left: var(--sidebar-collapsed-width);
-    padding-top: 0.5rem;
-    padding-right: 0.5rem;
+    padding: calc(80px + 0.5rem) 0.5rem 1.5rem 0.5rem;
   }
 
-  .main-content {
-    padding: 0 0.5rem 1.5rem 0.5rem;
-  }
-
-  .app-breadcrumb-container {
-    padding: 0.5rem 1rem;
-    margin: 0 0.25rem 0.75rem 0.25rem;
-    top: 0.5rem;
+  .app--sidebar-collapsed .app-main-wrapper {
+    padding-top: calc(70px + 0.5rem);
   }
 }
 

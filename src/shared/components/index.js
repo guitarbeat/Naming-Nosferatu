@@ -41,26 +41,59 @@ export { SidebarProvider, useSidebar } from './ui/sidebar';
 // * Component prop types for external use
 export { default as PropTypes } from 'prop-types';
 
+// * Build component object once
+const components = {
+  // Core UI
+  Button,
+  Card,
+  Loading,
+  Error,
+  Toast,
+  SkeletonLoader,
+
+  // Form
+  Form,
+  Input,
+  Select,
+
+  // Layout
+  AppSidebar,
+  Breadcrumb,
+
+  // Features
+  NameCard,
+  StatsCard,
+  Bracket,
+  BongoCat,
+  CatBackground,
+  CatImage,
+  PerformanceDashboard,
+  StartTournamentButton,
+  CalendarButton,
+  ViewRouter,
+
+  // UI System
+  ErrorBoundary,
+  ErrorBoundaryFallback,
+
+  // Legacy helpers
+  LoadingSpinner,
+  SuspenseView,
+};
+
 // * Named exports
 export {
-  // Core UI
   Button,
   Card,
   Loading,
   Error,
   Toast,
   SkeletonLoader,
-
-  // Form
   Form,
   Input,
   Select,
-
-  // Layout
   AppSidebar,
   Breadcrumb,
-
-  // Features
   NameCard,
   StatsCard,
   Bracket,
@@ -71,52 +104,11 @@ export {
   StartTournamentButton,
   CalendarButton,
   ViewRouter,
-
-  // UI System
   ErrorBoundary,
   ErrorBoundaryFallback,
-
-  // Legacy helpers
   LoadingSpinner,
   SuspenseView,
 };
 
-// * Default export with all components
-export default {
-  // Core UI
-  Button,
-  Card,
-  Loading,
-  Error,
-  Toast,
-  SkeletonLoader,
-
-  // Form
-  Form,
-  Input,
-  Select,
-
-  // Layout
-  AppSidebar,
-  Breadcrumb,
-
-  // Features
-  NameCard,
-  StatsCard,
-  Bracket,
-  BongoCat,
-  CatBackground,
-  CatImage,
-  PerformanceDashboard,
-  StartTournamentButton,
-  CalendarButton,
-  ViewRouter,
-
-  // UI System
-  ErrorBoundary,
-  ErrorBoundaryFallback,
-
-  // Legacy helpers
-  LoadingSpinner,
-  SuspenseView,
-};
+// * Default export reuses the same object
+export default components;

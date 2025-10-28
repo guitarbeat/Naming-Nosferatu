@@ -6,7 +6,6 @@
 import { useState } from "react";
 import { catNamesAPI } from "../../../integrations/supabase/api";
 import { validateCatName, validateDescription } from "../../../shared/utils/validationUtils";
-import useToast from "../../../core/hooks/useToast";
 import styles from "../TournamentSetup.module.css";
 
 function NameSuggestionSection() {
@@ -15,7 +14,6 @@ function NameSuggestionSection() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { showSuccess, showError } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,16 +42,10 @@ function NameSuggestionSection() {
         throw new Error(res.error || "Failed to add name");
       }
       setSuccess("Thank you for your suggestion!");
-      showSuccess("Name suggestion submitted successfully!", {
-        duration: 4000,
-      });
       setName("");
       setDescription("");
     } catch {
       setError("Failed to add name. It might already exist.");
-      showError("Failed to submit name suggestion. Please try again.", {
-        duration: 5000,
-      });
     } finally {
       setIsSubmitting(false);
     }

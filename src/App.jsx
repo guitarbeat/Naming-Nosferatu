@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 // * Use path aliases for better tree shaking
 import CatBackground from '@components/CatBackground/CatBackground';
 import ViewRouter from '@components/ViewRouter/ViewRouter';
-import { Error, Toast, Loading } from '@components';
+import { Error, Loading } from '@components';
 import PerformanceDashboard from '@components/PerformanceDashboard';
 import Breadcrumb from './shared/components/Breadcrumb/Breadcrumb';
 import { SidebarProvider, useSidebar } from './shared/components/ui/sidebar';
@@ -20,7 +20,6 @@ import { AppSidebar } from './shared/components/AppSidebar/AppSidebar';
 
 // * Lazy load heavy components for better code splitting
 import useUserSession from '@hooks/useUserSession';
-import useToast from '@hooks/useToast';
 import { useRouting } from '@hooks/useRouting';
 import { useTournamentRoutingSync } from '@hooks/useTournamentRoutingSync';
 import { useThemeSync } from '@hooks/useThemeSync';
@@ -38,10 +37,7 @@ import { ErrorManager } from '@services/errorManager';
  * @returns {JSX.Element} Fully configured application layout.
  */
 function App() {
-  // * Toast notifications
-  const { toasts, removeToast, showToast } = useToast();
-
-  const { login, logout } = useUserSession({ showToast });
+  const { login, logout } = useUserSession();
 
   // * Initialize store from localStorage
   useAppStoreInitialization();
@@ -207,7 +203,9 @@ function App() {
       isLightTheme: ui.theme === 'light',
       onThemeChange: handleThemeChange,
       onTogglePerformanceDashboard: () =>
-        uiActions.togglePerformanceDashboard()
+        uiActions.togglePerformanceDashboard(),
+      // * Pass breadcrumbs to navbar
+      currentView: tournament.currentView || 'tournament'
     }),
     [
       tournament.currentView,
@@ -237,8 +235,6 @@ function App() {
         handleUpdateRatings={handleUpdateRatings}
         handleTournamentSetup={handleTournamentSetup}
         handleTournamentComplete={handleTournamentComplete}
-        toasts={toasts}
-        removeToast={removeToast}
         ui={ui}
         uiActions={uiActions}
         isAdmin={isAdmin}
@@ -261,8 +257,6 @@ function AppLayout({
   handleUpdateRatings,
   handleTournamentSetup,
   handleTournamentComplete,
-  toasts,
-  removeToast,
   ui,
   uiActions,
   isAdmin
@@ -298,13 +292,6 @@ function AppLayout({
     [isLoggedIn]
   );
 
-  const mainContentClassName = useMemo(
-    () =>
-      ['main-content', !isLoggedIn ? 'main-content--login' : '']
-        .filter(Boolean)
-        .join(' '),
-    [isLoggedIn]
-  );
 
   const handleBreadcrumbHome = useCallback(() => {
     setView('tournament');
@@ -344,15 +331,9 @@ function AppLayout({
       <CatBackground />
 
       {/* * Primary navigation lives in the sidebar */}
-      <AppSidebar {...sidebarProps} />
+      <AppSidebar {...sidebarProps} breadcrumbItems={breadcrumbItems} />
 
-      <main className={mainWrapperClassName}>
-        {breadcrumbItems.length > 0 && (
-          <div className="app-breadcrumb-container">
-            <Breadcrumb items={breadcrumbItems} />
-          </div>
-        )}
-        <div id="main-content" className={mainContentClassName} tabIndex="-1">
+      <main id="main-content" className={mainWrapperClassName} tabIndex="-1">
           {errors.current && isLoggedIn && (
             <Error
               variant="list"
@@ -373,7 +354,6 @@ function AppLayout({
             onTournamentComplete={handleTournamentComplete}
             onVote={(vote) => tournamentActions.addVote(vote)}
           />
-        </div>
 
         {/* * Global loading overlay */}
         {tournament.isLoading && (
@@ -387,17 +367,6 @@ function AppLayout({
           </div>
         )}
 
-        {/* * Toast notifications - optimized for tournament view */}
-        <Toast
-          variant="container"
-          toasts={toasts}
-          removeToast={removeToast}
-          position={
-            currentView === 'tournament' ? 'bottom-center' : 'top-right'
-          }
-          maxToasts={currentView === 'tournament' ? 1 : 5}
-          className={currentView === 'tournament' ? 'tournamentToast' : ''}
-        />
 
         {/* * Performance Dashboard - Admin (Aaron) only */}
         <PerformanceDashboard
@@ -435,8 +404,6 @@ AppLayout.propTypes = {
   handleUpdateRatings: PropTypes.func.isRequired,
   handleTournamentSetup: PropTypes.func.isRequired,
   handleTournamentComplete: PropTypes.func.isRequired,
-  toasts: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  removeToast: PropTypes.func.isRequired,
   ui: PropTypes.shape({
     showPerformanceDashboard: PropTypes.bool.isRequired
   }).isRequired,

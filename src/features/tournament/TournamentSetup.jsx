@@ -66,6 +66,7 @@ const NameSelection = ({
   sortBy,
   onSortChange,
   isSwipeMode,
+  onSwipeModeToggle,
   showCatPictures,
   imageList,
 }) => {
@@ -906,7 +907,6 @@ function TournamentSetupContent({ onStart, userName }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.mainContent}>
         {/* Selection Panel */}
         <div className={styles.selectionPanel}>
           <div className={styles.panelHeader}>
@@ -1022,7 +1022,6 @@ function TournamentSetupContent({ onStart, userName }) {
                 </span>
               </div>
             )}
-          </div>
 
           <NameSelection
             selectedNames={selectedNames}
@@ -1104,7 +1103,7 @@ function TournamentSetupContent({ onStart, userName }) {
                   >
                     {image.startsWith("/assets/images/") ? (
                       (() => {
-                        const base = image.replace(/\.[^.]+$/, "");
+                        const base = image.substring(0, image.lastIndexOf('.'));
                         return (
                           <picture>
                             <source
@@ -1222,7 +1221,6 @@ function TournamentSetupContent({ onStart, userName }) {
             <NameSuggestionSection />
           </Card>
         </aside>
-      </div>
 
       {lightboxOpen && (
         <Lightbox
@@ -1237,6 +1235,8 @@ function TournamentSetupContent({ onStart, userName }) {
           onNext={() => setLightboxIndex((i) => (i + 1) % galleryImages.length)}
         />
       )}
+    </div>
+    </div>
     </div>
   );
 }

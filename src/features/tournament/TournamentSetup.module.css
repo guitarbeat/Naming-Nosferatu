@@ -283,12 +283,7 @@
 
 .panelHeader {
   padding: var(--space-6);
-  background: linear-gradient(
-    135deg,
-    var(--surface-color) 0%,
-    var(--card-background) 100%
-  );
-  border-bottom: 1px solid var(--border-color);
+  background: transparent;
   width: 100%; /* * Ensure header takes full width */
   box-sizing: border-box; /* * Include padding in width calculation */
 }

@@ -444,44 +444,6 @@ export function useVisibilityManager(options = {}) {
 }
 
 /**
- * * Creates a standardized local storage manager
- * @param {string} key - Storage key
- * @param {any} defaultValue - Default value
- * @returns {Array} [value, setValue, removeValue]
- */
-export function useLocalStorage(key, defaultValue) {
-    const [value, setValue] = useState(() => {
-        try {
-            const item = window.localStorage.getItem(key);
-            return item ? JSON.parse(item) : defaultValue;
-        } catch (error) {
-            console.warn(`Error reading localStorage key "${key}":`, error);
-            return defaultValue;
-        }
-    });
-
-    const setStoredValue = useCallback((newValue) => {
-        try {
-            setValue(newValue);
-            window.localStorage.setItem(key, JSON.stringify(newValue));
-        } catch (error) {
-            console.warn(`Error setting localStorage key "${key}":`, error);
-        }
-    }, [key]);
-
-    const removeValue = useCallback(() => {
-        try {
-            setValue(defaultValue);
-            window.localStorage.removeItem(key);
-        } catch (error) {
-            console.warn(`Error removing localStorage key "${key}":`, error);
-        }
-    }, [key, defaultValue]);
-
-    return [value, setStoredValue, removeValue];
-}
-
-/**
  * * Creates a standardized media query hook
  * @param {string} query - Media query string
  * @returns {boolean} Whether the query matches

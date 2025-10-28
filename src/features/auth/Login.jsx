@@ -6,7 +6,6 @@ import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 import { Card, Error, Button } from "../../shared/components";
-import useToast from "../../core/hooks/useToast";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import styles from "./Login.module.css";
 
@@ -16,7 +15,6 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
   const [catFact, setCatFact] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const { showSuccess, showError } = useToast();
 
   const containerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -166,17 +164,14 @@ function Login({ onLogin }) {
     const validation = validateUsername(finalName);
     if (!validation.success) {
       setError(validation.error);
-      showError(validation.error);
       return;
     }
 
     try {
       setIsLoading(true);
       await onLogin(validation.value);
-      showSuccess(`Welcome back, ${validation.value}! 🎉`);
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
-      showError("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
