@@ -23,10 +23,6 @@ import {
   CatImage,
   StartTournamentButton,
 } from "../../shared/components";
-
-// * Import Error components for specific use cases
-const ErrorDisplay = Error;
-const ErrorBoundary = Error;
 import useToast from "../../core/hooks/useToast";
 import useAppStore from "../../core/store/useAppStore";
 import useMobileGestures from "../../core/hooks/useMobileGestures";
@@ -36,6 +32,10 @@ import {
 } from "../../shared/utils/validationUtils";
 import { isUserAdmin } from "../../shared/utils/authUtils";
 import styles from "./TournamentSetup.module.css";
+
+// * Import Error components for specific use cases
+const ErrorDisplay = Error;
+const ErrorBoundary = Error;
 
 // Use absolute paths for better image loading compatibility
 const CAT_IMAGES = [

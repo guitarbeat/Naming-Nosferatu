@@ -1444,9 +1444,17 @@ export const tournamentsAPI = {
       }
 
       // Sort by created_at (newest first)
-      tournaments.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
+      tournaments.sort((a, b) => {
+        const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
+        const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
+        
+        // * Ensure valid dates before sorting
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+          return 0; // * Treat invalid dates as equal
+        }
+        
+        return dateB - dateA;
+      });
 
       return tournaments;
     } catch (error) {
