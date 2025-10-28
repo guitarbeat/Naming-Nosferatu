@@ -75,7 +75,7 @@ npm run dev
 
 ## 🛠️ **Technical Stack**
 
-- **Frontend**: React 19 + Vite + CSS Modules
+- **Frontend**: React 18.x + Vite + CSS Modules
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **State**: Zustand
 - **Testing**: Vitest + React Testing Library
