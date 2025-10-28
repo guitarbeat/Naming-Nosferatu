@@ -67,6 +67,9 @@ const Button = ({
       style={style}
       {...rest}
     >
+      {/* * Shimmer effect overlay */}
+      <span className={styles.shimmer} aria-hidden="true" />
+      
       {loading && (
         <span className={styles.loader} aria-hidden="true">
           <span className={styles.loader__spinner} />
@@ -78,7 +81,7 @@ const Button = ({
             {startIcon}
           </span>
         )}
-        {children}
+        <span className={styles.btn__text}>{children}</span>
         {endIcon && (
           <span className={`${styles.btn__icon} ${styles['btn__icon--trailing']}`.trim()}>
             {endIcon}

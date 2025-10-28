@@ -16,11 +16,9 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
   const [catFact, setCatFact] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(true);
   const { showSuccess, showError } = useToast();
 
   const containerRef = useRef(null);
-  const formCardRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
   // Add login-page class to body and html when component mounts
@@ -106,9 +104,6 @@ function Login({ onLogin }) {
     if (error) {
       setError("");
     }
-    if (!isExpanded) {
-      setIsExpanded(true);
-    }
   };
 
   const handleRandomNameKeyDown = (event) => {
@@ -145,16 +140,6 @@ function Login({ onLogin }) {
     };
   }, []);
 
-  useEffect(() => {
-    const containerEl = containerRef.current;
-    if (isExpanded && containerEl && typeof containerEl.scrollIntoView === "function") {
-      containerEl.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [isExpanded]);
-
   const handleNameChange = (e) => {
     setName(e.target.value);
     setIsTyping(true);
@@ -165,38 +150,6 @@ function Login({ onLogin }) {
     if (error) {
       setError("");
     }
-    // * Always expand when user starts typing
-    if (!isExpanded) {
-      setIsExpanded(true);
-    }
-  };
-
-  const handleInputFocus = () => {
-    if (!isExpanded) {
-      setIsExpanded(true);
-    }
-  };
-
-  const handleCardMouseLeave = () => {
-    // * Don't collapse if user has entered text or is interacting
-    if (name.trim() || isLoading) {
-      return;
-    }
-
-    const activeElement =
-      typeof document !== "undefined" ? document.activeElement : null;
-    if (formCardRef.current && activeElement) {
-      if (formCardRef.current.contains(activeElement)) {
-        return;
-      }
-    }
-
-    // * Add a small delay to prevent accidental collapse
-    setTimeout(() => {
-      if (!name.trim() && !isLoading) {
-        setIsExpanded(false);
-      }
-    }, 300);
   };
 
   const handleSubmit = async (e) => {
@@ -261,31 +214,17 @@ function Login({ onLogin }) {
 
         {/* Form Section */}
         <Card
-          className={`${styles.formCard} ${isExpanded ? styles.formExpanded : styles.formCollapsed}`}
+          className={styles.formCard}
           variant="outlined"
           background="transparent"
           shadow="xl"
           padding="xl"
-          onMouseEnter={() => setIsExpanded(true)}
-          onMouseLeave={handleCardMouseLeave}
-          onFocusCapture={() => setIsExpanded(true)}
-          aria-expanded={isExpanded}
-          tabIndex={isExpanded ? -1 : 0}
-          ref={formCardRef}
         >
-          {!isExpanded ? (
-            <div className={styles.collapsedContent}>
-              <p className={styles.collapsedDescription}>
-                Hover or focus here to open the judge login form—no clicks
-                needed. We&apos;ll help you enter or generate a name in seconds.
-              </p>
-            </div>
-          ) : (
-            <div
-              id="loginInteraction"
-              className={styles.expandedContent}
-              aria-live="polite"
-            >
+          <div
+            id="loginInteraction"
+            className={styles.expandedContent}
+            aria-live="polite"
+          >
               <p className={styles.catFact}>
                 <span className={styles.catFactIcon} aria-hidden="true">
                   🐱
@@ -332,7 +271,6 @@ function Login({ onLogin }) {
                       type="text"
                       value={name}
                       onChange={handleNameChange}
-                      onFocus={handleInputFocus}
                       placeholder="Enter your judge name"
                       className={`${styles.loginInput} ${error ? styles.error : ""}`}
                       autoFocus
@@ -428,7 +366,6 @@ function Login({ onLogin }) {
                 )}
               </div>
             </div>
-          )}
         </Card>
       </div>
     </div>

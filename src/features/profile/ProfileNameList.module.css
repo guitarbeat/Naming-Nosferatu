@@ -272,52 +272,7 @@
   align-items: center;
 }
 
-.selectAllButton {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--button-text, #374151);
-  cursor: pointer;
-  background: var(--button-bg, #f3f4f6);
-  border: 1px solid var(--button-border, #d1d5db);
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.selectAllButton:hover {
-  background: var(--button-bg-hover, #e5e7eb);
-  border-color: var(--button-border-hover, #9ca3af);
-}
-
-.selectAllButton:active {
-  transform: translateY(1px);
-}
-
-.bulkActionButton {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--bulk-button-text, #fff);
-  cursor: pointer;
-  background: var(--bulk-button-bg, #3b82f6);
-  border: 1px solid var(--bulk-button-border, #2563eb);
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.bulkActionButton:hover {
-  background: var(--bulk-button-bg-hover, #2563eb);
-  border-color: var(--bulk-button-border-hover, #1d4ed8);
-}
-
-.bulkActionButton:active {
-  transform: translateY(1px);
-}
-
-.bulkActionButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
-}
+/* * Button styles have been migrated to shared Button component */
 
 /* * Names Grid Layout - Increased card sizes for better description visibility */
 .namesGrid {

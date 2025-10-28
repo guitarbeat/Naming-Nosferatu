@@ -21,7 +21,6 @@ import {
   Select,
   CatImage,
 } from "../../shared/components";
-import useToast from "../../core/hooks/useToast";
 import useAppStore from "../../core/store/useAppStore";
 import useMobileGestures from "../../core/hooks/useMobileGestures";
 import { validateCatName } from "../../shared/utils/validationUtils";

@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
-import { SkeletonLoader, Card, Select } from "../../shared/components";
+import { SkeletonLoader, Card, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import styles from "./ProfileNameList.module.css";
@@ -622,32 +622,32 @@ const ProfileNameList = ({
             )}
             {isAdmin && filteredAndSortedNames.length > 0 && (
               <div className={styles.bulkControls}>
-                <button
-                  type="button"
+                <Button
                   onClick={handleSelectAll}
-                  className={styles.selectAllButton}
+                  variant="secondary"
+                  size="small"
                   title={allVisibleSelected ? "Deselect All" : "Select All"}
                 >
                   {allVisibleSelected ? "Deselect All" : "Select All"}
-                </button>
+                </Button>
                 {selectedNames.size > 0 && (
                   <>
-                    <button
-                      type="button"
+                    <Button
                       onClick={handleBulkHide}
-                      className={styles.bulkActionButton}
+                      variant="danger"
+                      size="small"
                       title="Hide Selected Names"
                     >
                       Hide Selected
-                    </button>
-                    <button
-                      type="button"
+                    </Button>
+                    <Button
                       onClick={handleBulkUnhide}
-                      className={styles.bulkActionButton}
+                      variant="primary"
+                      size="small"
                       title="Unhide Selected Names"
                     >
                       Unhide Selected
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>
