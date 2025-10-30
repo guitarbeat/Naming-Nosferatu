@@ -45,4 +45,36 @@ describe('catNamesAPI.getNamesWithDescriptions', () => {
     expect(namesQuery.not).not.toHaveBeenCalled();
     expect(namesQuery.order).toHaveBeenCalledWith('name', { ascending: true });
   });
+
+  it('filters out hidden string ids with SQL-safe quoting', async () => {
+    const hiddenId = '123e4567-e89b-12d3-a456-426614174000';
+    const hiddenQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ data: [{ name_id: hiddenId }], error: null }),
+    };
+
+    const visibleNames = [{ id: 2, name: 'Whiskers' }];
+
+    const namesQuery = {
+      select: vi.fn().mockReturnThis(),
+      not: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({ data: visibleNames, error: null }),
+    };
+
+    fromMock.mockImplementation(table => {
+      if (table === 'cat_name_ratings') {
+        return hiddenQuery;
+      }
+      if (table === 'cat_names') {
+        return namesQuery;
+      }
+      throw new Error(`Unexpected table: ${table}`);
+    });
+
+    const result = await catNamesAPI.getNamesWithDescriptions();
+
+    expect(result).toEqual(visibleNames);
+    expect(namesQuery.not).toHaveBeenCalledWith('id', 'in', `('${hiddenId}')`);
+    expect(namesQuery.order).toHaveBeenCalledWith('name', { ascending: true });
+  });
 });

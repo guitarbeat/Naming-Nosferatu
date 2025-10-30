@@ -46,7 +46,13 @@ export const catNamesAPI = {
       let namesQuery = supabase.from('cat_names').select('*');
 
       if (hiddenIds.length > 0) {
-        namesQuery = namesQuery.not('id', 'in', `(${hiddenIds.join(',')})`);
+        const quotedHiddenIds = hiddenIds.map(id => {
+          const stringId = String(id);
+          const escapedId = stringId.replace(/'/g, "''");
+          return `'${escapedId}'`;
+        });
+
+        namesQuery = namesQuery.not('id', 'in', `(${quotedHiddenIds.join(',')})`);
       }
 
       const { data: namesData, error: namesError } = await namesQuery.order('name', {
