@@ -559,8 +559,13 @@ const ProfileNameList = ({
                   title="Click to unhide"
                   onClick={(e) => {
                     e.stopPropagation();
+                    if (!isAdmin) {
+                      return;
+                    }
                     onToggleVisibility?.(name.id);
                   }}
+                  disabled={!isAdmin}
+                  aria-disabled={!isAdmin}
                 >
                   Hidden
                 </button>

@@ -488,6 +488,12 @@ const Profile = ({ userName }) => {
           return;
         }
 
+        if (!isAdmin) {
+          showError('Only admins can change visibility');
+          showToast('Only admins can hide or unhide names', 'error');
+          return;
+        }
+
         if (currentlyHidden) {
           await hiddenNamesAPI.unhideName(userName, nameId);
           showSuccess('Unhidden');
@@ -537,7 +543,7 @@ const Profile = ({ userName }) => {
         showError('Failed to update visibility');
       }
     },
-    [hiddenNames, userName, showSuccess, showError, showToast, fetchNames]
+    [hiddenNames, userName, showSuccess, showError, showToast, isAdmin]
   );
 
   // * Handle name deletion
@@ -598,6 +604,12 @@ const Profile = ({ userName }) => {
           return;
         }
 
+        if (!isAdmin) {
+          showError('Only admins can hide names');
+          showToast('Only admins can hide names', 'error');
+          return;
+        }
+
         const result = await hiddenNamesAPI.hideNames(userName, nameIds);
 
         if (result.success) {
@@ -626,7 +638,7 @@ const Profile = ({ userName }) => {
         showError('Failed to hide names');
       }
     },
-    [userName, fetchNames, showSuccess, showError, showToast]
+    [userName, fetchNames, showSuccess, showError, showToast, isAdmin]
   );
 
   // * Handle bulk unhide operation
@@ -641,6 +653,12 @@ const Profile = ({ userName }) => {
             console.warn('Supabase not configured, cannot unhide names');
           }
           showError('Database not available');
+          return;
+        }
+
+        if (!isAdmin) {
+          showError('Only admins can unhide names');
+          showToast('Only admins can unhide names', 'error');
           return;
         }
 
@@ -672,7 +690,7 @@ const Profile = ({ userName }) => {
         showError('Failed to unhide names');
       }
     },
-    [userName, fetchNames, showSuccess, showError, showToast]
+    [userName, fetchNames, showSuccess, showError, showToast, isAdmin]
   );
 
   // * Handle error display
