@@ -2,253 +2,155 @@
  * @fileoverview Focused tests for Login component
  */
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import Login from './Login';
+import { validateUsername } from '../../shared/utils/validationUtils';
 
-// * Mock fetch for cat facts
 globalThis.fetch = vi.fn();
 
-// * Mock useToast hook
-const mockShowSuccess = vi.fn();
-const mockShowError = vi.fn();
-vi.mock('../../core/hooks/useToast', () => ({
-  default: () => ({
-    showSuccess: mockShowSuccess,
-    showError: mockShowError
-  })
-}));
-
-// * Mock validateUsername
 vi.mock('../../shared/utils/validationUtils', () => ({
   validateUsername: vi.fn()
 }));
 
 describe('Login Component - Focused Tests', () => {
   const mockOnLogin = vi.fn();
-  const user = userEvent.setup();
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // * Mock successful cat fact fetch
-    globalThis.fetch.mockResolvedValueOnce({
+    globalThis.fetch.mockReset();
+    globalThis.fetch.mockResolvedValue({
       json: () => Promise.resolve({ fact: 'Cats sleep 12-16 hours per day!' })
     });
-
-    // * Mock scrollIntoView for jsdom environment
-    Element.prototype.scrollIntoView = vi.fn();
   });
 
-  it('renders login form in expanded state initially', async () => {
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
-    });
+  it('renders hero copy, cat fact, and helper content', async () => {
+    render(<Login onLogin={mockOnLogin} />);
 
-    expect(screen.getByText('Cat Name Olympics')).toBeInTheDocument();
     expect(
-      screen.getByText('Enter your name to login or create a new account')
+      screen.getByRole('heading', { name: 'Ready to Judge the Names?' })
     ).toBeInTheDocument();
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
-  });
-
-  it('expands form on click', async () => {
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
-    });
-
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
-
-    await act(async () => {
-      await user.click(formCard);
-    });
+    expect(
+      screen.getByText(
+        "Now it's your turn! Enter your name to start judging cat names and help find the perfect one."
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Your name')).toBeInTheDocument();
+    expect(
+      screen.getByText("We'll generate a fun name automatically!")
+    ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByLabelText('Your name')).toBeInTheDocument();
+      expect(
+        screen.getByText('Cats sleep 12-16 hours per day!')
+      ).toBeInTheDocument();
     });
   });
 
-  it('shows input field when expanded', async () => {
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
+  it('fills in a generated name when the random name indicator is activated', async () => {
+    const user = userEvent.setup();
+    const deterministicRandom = vi
+      .spyOn(Math, 'random')
+      .mockReturnValue(0.01);
+
+    render(<Login onLogin={mockOnLogin} />);
+
+    await screen.findByText('Cats sleep 12-16 hours per day!');
+
+    const randomButton = screen.getByRole('button', {
+      name: 'Generate a random judge name'
     });
 
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
-
-    await act(async () => {
-      await user.click(formCard);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Your name')).toBeInTheDocument();
-    });
+    await user.click(randomButton);
 
     const input = screen.getByLabelText('Your name');
-    expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('placeholder', 'Enter your judge name');
-  });
-
-  it('shows submit button when expanded', async () => {
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
+    await waitFor(() => {
+      expect(input).toHaveValue('Captain Whiskers');
     });
-
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
-
-    await act(async () => {
-      await user.click(formCard);
-    });
-
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /get random name & start/i })
-      ).toBeInTheDocument();
+        screen.queryByRole('button', { name: 'Generate a random judge name' })
+      ).not.toBeInTheDocument();
     });
+
+    deterministicRandom.mockRestore();
   });
 
-  it('handles form submission with random name', async () => {
-    const { validateUsername } = await import(
-      '../../shared/utils/validationUtils'
-    );
-    validateUsername.mockReturnValue({
-      success: true,
-      value: 'Captain Whiskers'
-    });
-    mockOnLogin.mockResolvedValue(true);
+  it('submits a manually entered valid name', async () => {
+    validateUsername.mockReturnValue({ success: true, value: 'Judge Whisker' });
+    mockOnLogin.mockResolvedValueOnce();
 
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
-    });
+    render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
 
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
+    vi.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    await act(async () => {
-      await user.click(formCard);
-    });
+    try {
+      await user.type(screen.getByLabelText('Your name'), 'Judge Whisker');
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /get random name & start/i })
-      ).toBeInTheDocument();
-    });
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
-    const submitButton = screen.getByRole('button', {
-      name: /get random name & start/i
-    });
-
-    await act(async () => {
-      await user.click(submitButton);
-    });
-
-    await waitFor(() => {
-      expect(mockOnLogin).toHaveBeenCalledWith('Captain Whiskers');
-    });
+      expect(validateUsername).toHaveBeenCalledWith('Judge Whisker');
+      expect(mockOnLogin).toHaveBeenCalledWith('Judge Whisker');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
-  it('handles form submission with entered name', async () => {
-    const { validateUsername } = await import(
-      '../../shared/utils/validationUtils'
-    );
-    validateUsername.mockReturnValue({ success: true, value: 'Test User' });
-    mockOnLogin.mockResolvedValue(true);
-
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
-    });
-
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
-
-    await act(async () => {
-      await user.click(formCard);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText('Your name')).toBeInTheDocument();
-    });
-
-    const input = screen.getByLabelText('Your name');
-    await act(async () => {
-      await user.type(input, 'Test User');
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: /continue/i })
-      ).toBeInTheDocument();
-    });
-
-    const submitButton = screen.getByRole('button', { name: /continue/i });
-
-    await act(async () => {
-      await user.click(submitButton);
-    });
-
-    await waitFor(() => {
-      expect(mockOnLogin).toHaveBeenCalledWith('Test User');
-    });
-  });
-
-  it('shows error for invalid username', async () => {
-    const { validateUsername } = await import(
-      '../../shared/utils/validationUtils'
-    );
+  it('shows validation feedback when validation fails', async () => {
     const errorMessage = 'That name is cursed by ancient cat magic.';
+    validateUsername.mockReturnValue({ success: false, error: errorMessage });
 
-    validateUsername.mockReturnValue({
-      success: false,
-      error: errorMessage
-    });
+    render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
 
-    await act(async () => {
-      render(<Login onLogin={mockOnLogin} />);
-    });
+    vi.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    const formCard = screen
-      .getByText('Cat Name Olympics')
-      .closest('[tabindex="0"]');
+    try {
+      await user.type(screen.getByLabelText('Your name'), 'Bad Name');
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
 
-    await act(async () => {
-      await user.click(formCard);
-    });
+      await act(async () => {
+        vi.runAllTimers();
+      });
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Your name')).toBeInTheDocument();
-    });
+      expect(mockOnLogin).not.toHaveBeenCalled();
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 
-    const input = screen.getByLabelText('Your name');
-    await act(async () => {
-      await user.type(input, 'A');
-    });
+  it('falls back to a default fact when fetching a cat fact fails', async () => {
+    globalThis.fetch.mockRejectedValueOnce(new Error('nope'));
+
+    render(<Login onLogin={mockOnLogin} />);
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: /continue/i })
+        screen.getByText('Cats are amazing creatures with unique personalities!')
       ).toBeInTheDocument();
     });
+  });
 
-    const submitButton = screen.getByRole('button', { name: /continue/i });
+  it('disables browser autofill heuristics on the form controls', () => {
+    render(<Login onLogin={mockOnLogin} />);
 
-    await act(async () => {
-      await user.click(submitButton);
+    return screen.findByText('Cats sleep 12-16 hours per day!').then(() => {
+      const form = screen.getByRole('form', { name: 'Judge name login form' });
+      const input = screen.getByLabelText('Your name');
+
+      expect(form).toHaveAttribute('autocomplete', 'off');
+      expect(input).toHaveAttribute('autocomplete', 'off');
+      expect(input).toHaveAttribute('autocapitalize', 'none');
+      expect(input).toHaveAttribute('spellcheck', 'false');
+      expect(input).toHaveAttribute('name', 'judgeName');
     });
-
-    await waitFor(() => {
-      expect(mockShowError).toHaveBeenCalledWith(errorMessage);
-    });
-
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    expect(mockOnLogin).not.toHaveBeenCalled();
-
-    validateUsername.mockReset();
   });
 });

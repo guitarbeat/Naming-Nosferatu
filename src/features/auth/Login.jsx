@@ -255,6 +255,7 @@ function Login({ onLogin }) {
                 className={styles.loginForm}
                 role="form"
                 aria-label="Judge name login form"
+                autoComplete="off"
               >
                 <div className={styles.inputWrapper}>
                   <label htmlFor="loginName" className={styles.inputLabel}>
@@ -263,12 +264,16 @@ function Login({ onLogin }) {
                   <div className={styles.inputContainer}>
                     <input
                       id="loginName"
+                      name="judgeName"
                       type="text"
                       value={name}
                       onChange={handleNameChange}
                       placeholder="Enter your judge name"
                       className={`${styles.loginInput} ${error ? styles.error : ""}`}
                       autoFocus
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
                       disabled={isLoading}
                       aria-label="Your name"
                       aria-describedby={error ? "loginError" : "loginHelp"}
