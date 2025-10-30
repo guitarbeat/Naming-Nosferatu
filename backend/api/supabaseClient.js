@@ -1030,9 +1030,28 @@ export const ratingsAPI = {
 /**
  * Hidden Names Management
  */
+const isPermissionError = (error) => {
+  if (!error) return false;
+
+  const status = error.status ?? error.statusCode;
+  const code = typeof error.code === 'string' ? error.code.toUpperCase() : '';
+  const message = error.message?.toLowerCase?.() ?? '';
+
+  if (status === 401 || status === 403) return true;
+  if (status === 400 && message.includes('row-level security')) return true;
+  if (code === '42501' || code === 'PGRST301' || code === 'PGRST302' || code === 'PGRST303') {
+    return true;
+  }
+  if (message.includes('only admins') || message.includes('permission')) {
+    return true;
+  }
+
+  return false;
+};
+
 export const hiddenNamesAPI = {
   /**
-   * Hide a name globally for all users (admin only)
+   * Hide a name globally for all users (admin only).
    */
   async hideName(userName, nameId) {
     try {
@@ -1040,14 +1059,31 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase not configured' };
       }
 
-      // Update the global is_hidden flag in cat_name_options (affects all users)
-      const { error } = await supabase
-        .from('cat_name_options')
-          .update({ is_hidden: true })
-        .eq('id', nameId);
+      if (!nameId) {
+        return { success: false, error: 'Name ID is required' };
+      }
 
-      if (error) throw error;
-      return { success: true };
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: 'Supabase client unavailable' };
+      }
+
+      const { error } = await client.rpc('toggle_name_visibility', {
+        p_name_id: nameId,
+        p_hide: true
+      });
+
+      if (error) {
+        if (isPermissionError(error)) {
+          const permissionError = new Error('Only admins can hide names');
+          permissionError.code = 'NOT_ADMIN';
+          permissionError.originalError = error;
+          throw permissionError;
+        }
+        throw error;
+      }
+
+      return { success: true, scope: 'global' };
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error hiding name globally:', error);
@@ -1057,7 +1093,7 @@ export const hiddenNamesAPI = {
   },
 
   /**
-   * Unhide a name globally for all users (admin only)
+   * Unhide a name globally for all users (admin only).
    */
   async unhideName(userName, nameId) {
     try {
@@ -1065,14 +1101,31 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase not configured' };
       }
 
-      // Update the global is_hidden flag in cat_name_options (affects all users)
-      const { error } = await supabase
-        .from('cat_name_options')
-        .update({ is_hidden: false })
-        .eq('id', nameId);
+      if (!nameId) {
+        return { success: false, error: 'Name ID is required' };
+      }
 
-      if (error) throw error;
-      return { success: true };
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: 'Supabase client unavailable' };
+      }
+
+      const { error } = await client.rpc('toggle_name_visibility', {
+        p_name_id: nameId,
+        p_hide: false
+      });
+
+      if (error) {
+        if (isPermissionError(error)) {
+          const permissionError = new Error('Only admins can unhide names');
+          permissionError.code = 'NOT_ADMIN';
+          permissionError.originalError = error;
+          throw permissionError;
+        }
+        throw error;
+      }
+
+      return { success: true, scope: 'global' };
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error unhiding name globally:', error);
@@ -1082,7 +1135,7 @@ export const hiddenNamesAPI = {
   },
 
   /**
-   * Hide multiple names for a user
+   * Hide multiple names globally (admin only)
    */
   async hideNames(userName, nameIds) {
     try {
@@ -1100,7 +1153,11 @@ export const hiddenNamesAPI = {
       for (const nameId of nameIds) {
         try {
           const result = await this.hideName(userName, nameId);
-          results.push({ nameId, success: result.success });
+          results.push({
+            nameId,
+            success: result.success,
+            scope: result.scope || null
+          });
           if (result.success) processed++;
         } catch (error) {
           results.push({ nameId, success: false, error: error.message });
@@ -1117,7 +1174,7 @@ export const hiddenNamesAPI = {
   },
 
   /**
-   * Unhide multiple names for a user
+   * Unhide multiple names globally (admin only)
    */
   async unhideNames(userName, nameIds) {
     try {
@@ -1135,7 +1192,11 @@ export const hiddenNamesAPI = {
       for (const nameId of nameIds) {
         try {
           const result = await this.unhideName(userName, nameId);
-          results.push({ nameId, success: result.success });
+          results.push({
+            nameId,
+            success: result.success,
+            scope: result.scope || null
+          });
           if (result.success) processed++;
         } catch (error) {
           results.push({ nameId, success: false, error: error.message });
