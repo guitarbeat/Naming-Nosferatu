@@ -46,6 +46,14 @@ describe('catNamesAPI.getNamesWithDescriptions', () => {
     expect(namesQuery.order).toHaveBeenCalledWith('name', { ascending: true });
   });
 
+  it('filters out hidden string ids with SQL-safe quoting', async () => {
+    const hiddenId = '123e4567-e89b-12d3-a456-426614174000';
+    const hiddenQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ data: [{ name_id: hiddenId }], error: null }),
+    };
+
+    const visibleNames = [{ id: 2, name: 'Whiskers' }];
   it('excludes names whose ids are hidden including string values', async () => {
     const hiddenIds = [42, 'alpha', '550e8400-e29b-41d4-a716-446655440000'];
 
@@ -81,6 +89,7 @@ describe('catNamesAPI.getNamesWithDescriptions', () => {
     const result = await catNamesAPI.getNamesWithDescriptions();
 
     expect(result).toEqual(visibleNames);
+    expect(namesQuery.not).toHaveBeenCalledWith('id', 'in', `('${hiddenId}')`);
     expect(namesQuery.not).toHaveBeenCalledWith(
       'id',
       'in',
