@@ -13,7 +13,7 @@ import {
 /**
  * * Reusable action item component
  * @param {Object} props
- * @param {string} props.icon - Icon component to render
+ * @param {React.ComponentType} props.icon - Icon component to render
  * @param {string} props.label - Button label
  * @param {Function} props.onClick - Click handler
  * @param {string} props.className - Additional CSS classes
