@@ -2,7 +2,7 @@
  * @fileoverview Simple tests for Login component
  */
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import Login from './Login';
@@ -37,63 +37,88 @@ describe('Login Component - Simple Tests', () => {
     });
   });
 
-  it('renders without crashing', () => {
-    expect(() => render(<Login onLogin={mockOnLogin} />)).not.toThrow();
+  it('renders without crashing', async () => {
+    render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
   });
 
-  it('renders main title', () => {
+  it('renders main title', async () => {
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
     expect(screen.getByText('Ready to Judge the Names?')).toBeInTheDocument();
   });
 
-  it('renders login form title', () => {
+  it('renders login form title', async () => {
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
     expect(screen.getByText('Your Judge Name')).toBeInTheDocument();
   });
 
-  it('renders login subtitle', () => {
+  it('renders login subtitle', async () => {
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
     expect(
       screen.getByText(/Enter your name to start judging cat names/i)
     ).toBeInTheDocument();
   });
 
-  it('renders random name description when collapsed', () => {
+  it('renders random name description when collapsed', async () => {
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
     expect(
       screen.getByText("We'll generate a fun name automatically!")
     ).toBeInTheDocument();
   });
 
   it('submits a valid name and calls onLogin', async () => {
-    const user = userEvent.setup();
     validateUsername.mockReturnValue({ success: true, value: 'Judge Whisker' });
     mockOnLogin.mockResolvedValueOnce();
 
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
 
-    await user.type(screen.getByLabelText('Your name'), 'Judge Whisker');
-    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    vi.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    expect(validateUsername).toHaveBeenCalledWith('Judge Whisker');
-    await waitFor(() => {
+    try {
+      await user.type(screen.getByLabelText('Your name'), 'Judge Whisker');
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
+      expect(validateUsername).toHaveBeenCalledWith('Judge Whisker');
       expect(mockOnLogin).toHaveBeenCalledWith('Judge Whisker');
-    });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('shows validation error and does not call onLogin when validation fails', async () => {
-    const user = userEvent.setup();
     validateUsername.mockReturnValue({
       success: false,
       error: 'Name is invalid'
     });
 
     render(<Login onLogin={mockOnLogin} />);
+    await screen.findByText('Cats sleep 12-16 hours per day!');
 
-    await user.type(screen.getByLabelText('Your name'), 'Invalid Name');
-    await user.click(screen.getByRole('button', { name: 'Continue' }));
+    vi.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
-    expect(mockOnLogin).not.toHaveBeenCalled();
-    expect(screen.getByText('Name is invalid')).toBeInTheDocument();
+    try {
+      await user.type(screen.getByLabelText('Your name'), 'Invalid Name');
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      await act(async () => {
+        vi.runAllTimers();
+      });
+
+      expect(mockOnLogin).not.toHaveBeenCalled();
+      expect(screen.getByText('Name is invalid')).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
