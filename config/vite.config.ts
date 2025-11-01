@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
-const resolveFromRoot = (...segments) => path.resolve(projectRoot, ...segments);
+const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...segments);
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, '');
