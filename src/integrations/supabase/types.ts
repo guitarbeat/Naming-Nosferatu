@@ -79,7 +79,6 @@ export type Database = {
           description: string | null
           id: string
           is_active: boolean | null
-          is_hidden: boolean | null
           name: string
           popularity_score: number | null
           total_tournaments: number | null
@@ -91,7 +90,6 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
-          is_hidden?: boolean | null
           name: string
           popularity_score?: number | null
           total_tournaments?: number | null
@@ -103,7 +101,6 @@ export type Database = {
           description?: string | null
           id?: string
           is_active?: boolean | null
-          is_hidden?: boolean | null
           name?: string
           popularity_score?: number | null
           total_tournaments?: number | null
@@ -225,10 +222,7 @@ export type Database = {
       }
     }
     Functions: {
-      add_app_access_to_user: {
-        Args: { app_name: string }
-        Returns: undefined
-      }
+      add_app_access_to_user: { Args: { app_name: string }; Returns: undefined }
       calculate_elo_change: {
         Args: {
           current_rating: number
@@ -244,28 +238,19 @@ export type Database = {
         }
         Returns: boolean
       }
-      check_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      check_profile_access_rate_limit: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      check_current_user_admin: { Args: never; Returns: boolean }
+      check_profile_access_rate_limit: { Args: never; Returns: boolean }
       check_user_role_by_name: {
         Args: { required_role: string; user_name_param: string }
         Returns: boolean
       }
-      cleanup_orphaned_auth_users: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_orphaned_auth_users: { Args: never; Returns: undefined }
       delete_user_complete: {
         Args: { target_user_id: string }
         Returns: boolean
       }
       get_all_users_with_roles: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           created_at: string
@@ -276,12 +261,13 @@ export type Database = {
           username: string
         }[]
       }
+      get_current_user_name: { Args: never; Returns: string }
       get_current_user_role: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_existing_usernames: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           avatar_url: string
           display_name: string
@@ -298,10 +284,7 @@ export type Database = {
           username: string
         }[]
       }
-      get_secure_profile: {
-        Args: { target_user_id: string }
-        Returns: Json
-      }
+      get_secure_profile: { Args: { target_user_id: string }; Returns: Json }
       get_top_names_by_category: {
         Args: { p_category: string; p_limit?: number }
         Returns: {
@@ -347,7 +330,7 @@ export type Database = {
         }[]
       }
       get_users_with_flo_data: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           display_name: string
           email: string
@@ -356,27 +339,29 @@ export type Database = {
           user_id: string
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role:
+        | { Args: { _role?: string; _user_name: string }; Returns: boolean }
+        | { Args: { required_role: string }; Returns: boolean }
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
       increment_selection: {
         Args: { p_name_id: string; p_user_name: string }
         Returns: undefined
       }
-      is_user_admin: {
-        Args: { user_id_to_check: string }
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
+      is_user_admin: { Args: { user_id_to_check: string }; Returns: boolean }
       merge_user_accounts: {
         Args: { p_new_user_id: string; p_username: string }
         Returns: undefined
       }
-      refresh_materialized_views: {
-        Args: Record<PropertyKey, never>
+      refresh_materialized_views: { Args: never; Returns: undefined }
+      set_user_context: {
+        Args: { user_name_param: string }
         Returns: undefined
       }
       user_exists_by_username: {
@@ -393,14 +378,8 @@ export type Database = {
         Args: { app_name: string; user_id_param: string }
         Returns: boolean
       }
-      validate_environment_setup: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      validate_username: {
-        Args: { p_username: string }
-        Returns: Json
-      }
+      validate_environment_setup: { Args: never; Returns: boolean }
+      validate_username: { Args: { p_username: string }; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
