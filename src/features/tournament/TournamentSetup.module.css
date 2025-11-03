@@ -10,7 +10,7 @@
   background: transparent; /* Let galaxy background show through */
 }
 
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .container {
     grid-template-columns: 1fr;
   }
@@ -828,8 +828,8 @@
 }
 
 .submitButton:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* Suggestion Form Styles */
@@ -870,8 +870,8 @@
 }
 
 .suggestionButton:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .formLabel {
@@ -904,8 +904,8 @@
 
 .formInput:disabled,
 .formTextarea:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .formTextarea {
@@ -915,20 +915,20 @@
 
 .formError {
   padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
   color: var(--error-color);
-  background: var(--error-bg, rgba(239, 68, 68, 0.1));
+  background: var(--error-bg, rgb(239 68 68 / 10%));
   border: 1px solid var(--error-color);
   border-radius: var(--radius-md);
-  font-size: var(--text-sm);
 }
 
 .formSuccess {
   padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
   color: var(--success-color);
-  background: var(--success-bg, rgba(16, 185, 129, 0.1));
+  background: var(--success-bg, rgb(16 185 129 / 10%));
   border: 1px solid var(--success-color);
   border-radius: var(--radius-md);
-  font-size: var(--text-sm);
 }
 
 /* Image Overlay */
