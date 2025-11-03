@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: serverPort
+      port: 8080
     },
     preview: {
       host: true,
