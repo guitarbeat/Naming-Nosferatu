@@ -394,13 +394,6 @@ const fetchUserRole = async (activeSupabase, userName) => {
  * @returns {Promise<boolean>} True if user is an admin
  */
 export async function isUserAdmin(userIdOrName) {
-  // * Handle case-insensitive admin check for Aaron
-  if (userIdOrName && userIdOrName.toLowerCase() === 'aaron') {
-    // * Hardcoded fallback for Aaron to handle case sensitivity issues
-    console.log('🔍 Using hardcoded admin check for Aaron');
-    return true;
-  }
-
   return hasRole(userIdOrName, USER_ROLES.ADMIN);
 }
 
@@ -427,12 +420,6 @@ export async function hasRole(userName, requiredRole) {
 
     if (!normalizedRequiredRole) {
       return false;
-    }
-
-    // * Handle case-insensitive admin check for Aaron
-    if (trimmedUserName.toLowerCase() === 'aaron' && normalizedRequiredRole === 'admin') {
-      console.log('🔍 Using hardcoded admin check for Aaron in hasRole');
-      return true;
     }
 
     if (state?.canUseRoleRpc) {
