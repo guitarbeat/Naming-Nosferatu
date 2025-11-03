@@ -3,7 +3,7 @@
  * @description Main profile component that orchestrates user statistics and name management.
  * Now includes comprehensive selection analytics and tournament insights.
  */
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
   getSupabaseClientSync,
@@ -14,14 +14,15 @@ import {
   tournamentsAPI,
   hiddenNamesAPI,
   getNamesWithUserRatings,
-  getUserStats
+  getUserStats,
+  adminAPI
 } from '../../integrations/supabase/api';
 import { FILTER_OPTIONS } from '../../core/constants';
 // ErrorManager removed to prevent circular dependency
 import { isUserAdmin } from '../../shared/utils/authUtils';
 
 import ProfileNameList from './ProfileNameList';
-import { Error } from '../../shared/components';
+import { Error, Select } from '../../shared/components';
 import styles from './Profile.module.css';
 
 // * Use database-optimized stats calculation
@@ -258,7 +259,7 @@ const Profile = ({ userName }) => {
   const [filterStatus, setFilterStatus] = useState(
     FILTER_OPTIONS.STATUS.ACTIVE
   );
-  const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.ALL);
+  const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
   const [sortBy, setSortBy] = useState(FILTER_OPTIONS.SORT.RATING);
   const [sortOrder, setSortOrder] = useState(FILTER_OPTIONS.ORDER.DESC);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -268,12 +269,75 @@ const Profile = ({ userName }) => {
   const [selectionFilter, setSelectionFilter] = useState('all');
   // * Filter count state
   const [filteredCount, setFilteredCount] = useState(0);
+  const [activeUser, setActiveUser] = useState(userName);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [userListLoading, setUserListLoading] = useState(false);
+  const [userListError, setUserListError] = useState(null);
   // * Highlights derived from user ratings
   const [highlights, setHighlights] = useState({
     topRated: [],
     mostWins: [],
     recent: []
   });
+
+  const canManageActiveUser = useMemo(
+    () => isAdmin && activeUser === userName,
+    [isAdmin, activeUser, userName]
+  );
+
+  const userSelectOptions = useMemo(() => {
+    if (!isAdmin) {
+      return [
+        { value: FILTER_OPTIONS.USER.ALL, label: 'All Users' },
+        { value: FILTER_OPTIONS.USER.CURRENT, label: 'Current User' }
+      ];
+    }
+
+    const options = [
+      { value: FILTER_OPTIONS.USER.CURRENT, label: 'Your Data' }
+    ];
+
+    const uniqueUsers = new Map();
+
+    availableUsers.forEach((user) => {
+      if (!user?.user_name) return;
+
+      const badges = [];
+      if (user.user_role && user.user_role !== 'user') {
+        badges.push(user.user_role);
+      }
+      if (user.user_name === userName) {
+        badges.push('you');
+      }
+
+      const badgeText = badges.length ? ` (${badges.join(', ')})` : '';
+
+      uniqueUsers.set(user.user_name, {
+        value: user.user_name,
+        label: `${user.user_name}${badgeText}`
+      });
+    });
+
+    if (activeUser && activeUser !== userName && !uniqueUsers.has(activeUser)) {
+      uniqueUsers.set(activeUser, {
+        value: activeUser,
+        label: activeUser
+      });
+    }
+
+    if (userName && !uniqueUsers.has(userName)) {
+      uniqueUsers.set(userName, {
+        value: userName,
+        label: `${userName} (you)`
+      });
+    }
+
+    const sorted = Array.from(uniqueUsers.values()).sort((a, b) =>
+      a.value.localeCompare(b.value)
+    );
+
+    return [...options, ...sorted];
+  }, [isAdmin, availableUsers, userName, activeUser]);
 
   // * Handle filtered count change from ProfileNameList
   const handleFilteredCountChange = useCallback((count) => {
@@ -289,6 +353,34 @@ const Profile = ({ userName }) => {
   const [hasSupabaseClient, setHasSupabaseClient] = useState(
     () => !!getSupabaseClientSync()
   );
+
+  useEffect(() => {
+    if (!userName) {
+      return;
+    }
+
+    if (!isAdmin) {
+      if (activeUser !== userName) {
+        setActiveUser(userName);
+      }
+      return;
+    }
+
+    if (
+      !userFilter ||
+      userFilter === FILTER_OPTIONS.USER.CURRENT ||
+      userFilter === FILTER_OPTIONS.USER.ALL
+    ) {
+      if (activeUser !== userName) {
+        setActiveUser(userName);
+      }
+      return;
+    }
+
+    if (activeUser !== userFilter) {
+      setActiveUser(userFilter);
+    }
+  }, [isAdmin, userFilter, activeUser, userName]);
 
   useEffect(() => {
     let isMounted = true;
@@ -312,54 +404,65 @@ const Profile = ({ userName }) => {
   const [ratingsLoading, setRatingsLoading] = useState(true);
   const [ratingsError, setRatingsError] = useState(null);
 
-  const fetchNames = useCallback(async () => {
-    try {
-      setRatingsLoading(true);
-      setRatingsError(null);
-      const supabaseClient = await resolveSupabaseClient();
-      setHasSupabaseClient(!!supabaseClient);
+  const fetchNames = useCallback(
+    async (targetUser = activeUser) => {
+      const userToLoad = targetUser ?? activeUser;
+      if (!userToLoad) return;
 
-      if (!supabaseClient) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Supabase not configured, using empty data for Profile');
+      try {
+        setRatingsLoading(true);
+        setRatingsError(null);
+        const supabaseClient = await resolveSupabaseClient();
+        setHasSupabaseClient(!!supabaseClient);
+
+        if (!supabaseClient) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Supabase not configured, using empty data for Profile');
+          }
+          setAllNames([]);
+          setHiddenNames(new Set());
+          return;
         }
-        setAllNames([]);
-        return;
-      }
-      const names = await getNamesWithUserRatings(userName);
-      setAllNames(names);
+        const names = await getNamesWithUserRatings(userToLoad);
+        const namesWithOwner = (names || []).map((name) => ({
+          ...name,
+          owner: userToLoad
+        }));
+        setAllNames(namesWithOwner);
 
-      // Initialize hidden names from the data
-      const hiddenIds = new Set(
-        names.filter((name) => name.isHidden).map((name) => name.id)
-      );
-      setHiddenNames(hiddenIds);
+        // Initialize hidden names from the data
+        const hiddenIds = new Set(
+          namesWithOwner.filter((name) => name.isHidden).map((name) => name.id)
+        );
+        setHiddenNames(hiddenIds);
 
-      // * Debug logging for hidden names
-      if (process.env.NODE_ENV === 'development') {
-        const hiddenNames = names.filter((name) => name.isHidden);
-        console.log(
-          `🔍 Profile loaded ${names.length} names for user: ${userName}`
-        );
-        console.log(
-          `🔍 Found ${hiddenNames.length} hidden names:`,
-          hiddenNames.map((n) => ({
-            id: n.id,
-            name: n.name,
-            isHidden: n.isHidden
-          }))
-        );
-        console.log('🔍 Hidden IDs set:', Array.from(hiddenIds));
+        // * Debug logging for hidden names
+        if (process.env.NODE_ENV === 'development') {
+          const hiddenNamesForUser = namesWithOwner.filter((name) => name.isHidden);
+          console.log(
+            `🔍 Profile loaded ${namesWithOwner.length} names for user: ${userToLoad}`
+          );
+          console.log(
+            `🔍 Found ${hiddenNamesForUser.length} hidden names:`,
+            hiddenNamesForUser.map((n) => ({
+              id: n.id,
+              name: n.name,
+              isHidden: n.isHidden
+            }))
+          );
+          console.log('🔍 Hidden IDs set:', Array.from(hiddenIds));
+        }
+      } catch (err) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error fetching names:', err);
+        }
+        setRatingsError(err);
+      } finally {
+        setRatingsLoading(false);
       }
-    } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error fetching names:', err);
-      }
-      setRatingsError(err);
-    } finally {
-      setRatingsLoading(false);
-    }
-  }, [userName]);
+    },
+    [activeUser]
+  );
 
   // * Compute highlights whenever names change
   useEffect(() => {
@@ -399,50 +502,125 @@ const Profile = ({ userName }) => {
   }, [allNames]);
 
   // * Fetch selection statistics
-  const fetchSelectionStats = useCallback(async () => {
-    if (!userName) return;
+  const fetchSelectionStats = useCallback(
+    async (targetUser = activeUser) => {
+      const userToLoad = targetUser ?? activeUser;
+      if (!userToLoad) return;
 
-    try {
-      const supabaseClient = await resolveSupabaseClient();
-      setHasSupabaseClient(!!supabaseClient);
+      try {
+        const supabaseClient = await resolveSupabaseClient();
+        setHasSupabaseClient(!!supabaseClient);
 
-      if (!supabaseClient) {
+        if (!supabaseClient) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Supabase not configured, skipping selection stats');
+          }
+          setSelectionStats(null);
+          return;
+        }
+        const stats = await calculateSelectionStats(userToLoad);
+        setSelectionStats(stats);
+      } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          console.warn('Supabase not configured, skipping selection stats');
+          console.error('Error fetching selection stats:', error);
         }
         setSelectionStats(null);
-        return;
       }
-      const stats = await calculateSelectionStats(userName);
-      setSelectionStats(stats);
+    },
+    [activeUser]
+  );
+
+  const loadAvailableUsers = useCallback(async () => {
+    try {
+      setUserListLoading(true);
+      setUserListError(null);
+
+      const users = await adminAPI.listUsers();
+      const uniqueUsers = new Map();
+
+      (users || []).forEach((user) => {
+        if (user?.user_name) {
+          uniqueUsers.set(user.user_name, user);
+        }
+      });
+
+      if (userName) {
+        const existing = uniqueUsers.get(userName);
+        uniqueUsers.set(userName, {
+          user_name: userName,
+          user_role: existing?.user_role ?? null,
+          created_at: existing?.created_at ?? null,
+          updated_at: existing?.updated_at ?? null
+        });
+      }
+
+      const sortedUsers = Array.from(uniqueUsers.values()).sort((a, b) =>
+        a.user_name.localeCompare(b.user_name)
+      );
+
+      setAvailableUsers(sortedUsers);
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error('Error fetching selection stats:', error);
+        console.error('Error loading admin user list:', error);
       }
-      setSelectionStats(null);
+      setAvailableUsers([]);
+      setUserListError(error);
+    } finally {
+      setUserListLoading(false);
     }
   }, [userName]);
+
+  useEffect(() => {
+    if (!isAdmin) {
+      setAvailableUsers([]);
+      setUserListLoading(false);
+      setUserListError(null);
+      return;
+    }
+
+    void loadAvailableUsers();
+  }, [isAdmin, loadAvailableUsers]);
 
   // * State for selected names
   const [selectedNames, setSelectedNames] = useState(new Set());
 
+  useEffect(() => {
+    setSelectedNames(new Set());
+  }, [activeUser]);
+
   // * Fetch names and selection stats on component mount
   useEffect(() => {
-    if (userName) {
-      fetchNames();
-      fetchSelectionStats();
+    if (activeUser) {
+      fetchNames(activeUser);
+      fetchSelectionStats(activeUser);
     }
-  }, [userName, fetchNames, fetchSelectionStats]);
+  }, [activeUser, fetchNames, fetchSelectionStats]);
 
   // Check if the current user is an admin
   useEffect(() => {
+    let isMounted = true;
+
     const checkAdmin = async () => {
-      if (userName) {
-        const adminStatus = await isUserAdmin(userName);
+      if (!userName) {
+        if (isMounted) {
+          setIsAdmin(false);
+        }
+        return;
+      }
+
+      const adminStatus = await isUserAdmin(userName);
+      if (isMounted) {
         setIsAdmin(adminStatus);
       }
     };
-    checkAdmin();
+
+    setActiveUser(userName || '');
+    setUserFilter(FILTER_OPTIONS.USER.CURRENT);
+    void checkAdmin();
+
+    return () => {
+      isMounted = false;
+    };
   }, [userName]);
 
   // * State for statistics
@@ -452,12 +630,12 @@ const Profile = ({ userName }) => {
   // * Load statistics using database-optimized function
   useEffect(() => {
     const loadStats = async () => {
-      if (!userName) return;
+      if (!activeUser) return;
 
       setStatsLoading(true);
 
       // Try database-optimized stats first
-      const dbStats = await fetchUserStatsFromDB(userName);
+      const dbStats = await fetchUserStatsFromDB(activeUser);
       if (dbStats) {
         setStats(dbStats);
       } else {
@@ -468,8 +646,8 @@ const Profile = ({ userName }) => {
       setStatsLoading(false);
     };
 
-    loadStats();
-  }, [userName]);
+    void loadStats();
+  }, [activeUser]);
 
   // * Handle name visibility toggle
   const handleToggleVisibility = useCallback(
@@ -488,24 +666,24 @@ const Profile = ({ userName }) => {
           return;
         }
 
-        if (!isAdmin) {
+        if (!canManageActiveUser) {
           showError('Only admins can change visibility');
           showToast('Only admins can hide or unhide names', 'error');
           return;
         }
 
         if (currentlyHidden) {
-          await hiddenNamesAPI.unhideName(userName, nameId);
+          await hiddenNamesAPI.unhideName(activeUser, nameId);
           showSuccess('Unhidden');
         } else {
-          await hiddenNamesAPI.hideName(userName, nameId);
+          await hiddenNamesAPI.hideName(activeUser, nameId);
           showSuccess('Hidden');
         }
 
         // * Debug logging for visibility toggle
         if (process.env.NODE_ENV === 'development') {
           console.log(
-            `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? 'unhidden' : 'hidden'} for user: ${userName}`
+            `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? 'unhidden' : 'hidden'} for user: ${activeUser}`
           );
         }
 
@@ -530,7 +708,7 @@ const Profile = ({ userName }) => {
         const { data: hiddenData, error: hiddenError } = await supabaseClient
           .from('cat_name_ratings')
           .select('name_id')
-          .eq('user_name', userName)
+          .eq('user_name', activeUser)
           .eq('is_hidden', true);
 
         if (!hiddenError && hiddenData) {
@@ -543,7 +721,14 @@ const Profile = ({ userName }) => {
         showError('Failed to update visibility');
       }
     },
-    [hiddenNames, userName, showSuccess, showError, showToast, isAdmin]
+    [
+      hiddenNames,
+      activeUser,
+      showSuccess,
+      showError,
+      showToast,
+      canManageActiveUser
+    ]
   );
 
   // * Handle name deletion
@@ -561,19 +746,32 @@ const Profile = ({ userName }) => {
           return;
         }
 
+        if (!canManageActiveUser) {
+          showError('Only admins can delete names');
+          showToast('Only admins can delete names', 'error');
+          return;
+        }
+
         const { error } = await deleteName(name.id);
         if (error) throw error;
 
         // * Refresh names and selection stats
-        fetchNames();
-        fetchSelectionStats();
+        fetchNames(activeUser);
+        fetchSelectionStats(activeUser);
       } catch (error) {
         console.error('Profile - Delete Name error:', error);
         showToast('Failed to delete name', 'error');
         showError('Failed to delete name');
       }
     },
-    [fetchNames, fetchSelectionStats, showError, showToast]
+    [
+      fetchNames,
+      fetchSelectionStats,
+      showError,
+      showToast,
+      canManageActiveUser,
+      activeUser
+    ]
   );
 
   // * Handle name selection
@@ -604,13 +802,13 @@ const Profile = ({ userName }) => {
           return;
         }
 
-        if (!isAdmin) {
+        if (!canManageActiveUser) {
           showError('Only admins can hide names');
           showToast('Only admins can hide names', 'error');
           return;
         }
 
-        const result = await hiddenNamesAPI.hideNames(userName, nameIds);
+        const result = await hiddenNamesAPI.hideNames(activeUser, nameIds);
 
         if (result.success) {
           showSuccess(
@@ -628,7 +826,7 @@ const Profile = ({ userName }) => {
           setSelectedNames(new Set());
 
           // Refresh data
-          fetchNames();
+          fetchNames(activeUser);
         } else {
           showError('Failed to hide names');
         }
@@ -638,7 +836,14 @@ const Profile = ({ userName }) => {
         showError('Failed to hide names');
       }
     },
-    [userName, fetchNames, showSuccess, showError, showToast, isAdmin]
+    [
+      activeUser,
+      fetchNames,
+      showSuccess,
+      showError,
+      showToast,
+      canManageActiveUser
+    ]
   );
 
   // * Handle bulk unhide operation
@@ -656,13 +861,13 @@ const Profile = ({ userName }) => {
           return;
         }
 
-        if (!isAdmin) {
+        if (!canManageActiveUser) {
           showError('Only admins can unhide names');
           showToast('Only admins can unhide names', 'error');
           return;
         }
 
-        const result = await hiddenNamesAPI.unhideNames(userName, nameIds);
+        const result = await hiddenNamesAPI.unhideNames(activeUser, nameIds);
 
         if (result.success) {
           showSuccess(
@@ -680,7 +885,7 @@ const Profile = ({ userName }) => {
           setSelectedNames(new Set());
 
           // Refresh data
-          fetchNames();
+          fetchNames(activeUser);
         } else {
           showError('Failed to unhide names');
         }
@@ -690,7 +895,52 @@ const Profile = ({ userName }) => {
         showError('Failed to unhide names');
       }
     },
-    [userName, fetchNames, showSuccess, showError, showToast, isAdmin]
+    [
+      activeUser,
+      fetchNames,
+      showSuccess,
+      showError,
+      showToast,
+      canManageActiveUser
+    ]
+  );
+
+  const renderHeader = () => (
+    <div className={styles.header}>
+      <h1 className={styles.title}>Profile: {activeUser || userName}</h1>
+      {isAdmin && (
+        <div className={styles.userSwitcher}>
+          <label
+            htmlFor="profile-user-select"
+            className={styles.userSwitcherLabel}
+          >
+            View user
+          </label>
+          <Select
+            id="profile-user-select"
+            name="profile-user-select"
+            value={userFilter}
+            onChange={(e) => setUserFilter(e.target.value)}
+            options={userSelectOptions}
+            disabled={userListLoading}
+            className={styles.userSwitcherSelect}
+          />
+          {userListLoading && (
+            <span className={styles.userSwitcherHelper}>Loading users…</span>
+          )}
+          {userListError && (
+            <span className={styles.userSwitcherError}>
+              Unable to load users
+            </span>
+          )}
+          {activeUser && activeUser !== userName && (
+            <span className={styles.viewingNote}>
+              Viewing data for {activeUser}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
   );
 
   // * Handle error display
@@ -699,7 +949,7 @@ const Profile = ({ userName }) => {
       <div className={styles.errorContainer}>
         <h2>Error Loading Profile</h2>
         <p>{ratingsError.message}</p>
-        <button onClick={fetchNames}>Retry</button>
+        <button onClick={() => fetchNames(activeUser)}>Retry</button>
       </div>
     );
   }
@@ -708,9 +958,7 @@ const Profile = ({ userName }) => {
   if (!ratingsLoading && allNames.length === 0 && !ratingsError) {
     return (
       <div className={styles.profileContainer}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>{userName}</h1>
-        </div>
+        {renderHeader()}
         <div className={styles.noDataContainer}>
           <h2>No Data Available</h2>
           <p>
@@ -726,13 +974,11 @@ const Profile = ({ userName }) => {
   return (
     <div className={styles.profileContainer}>
       {/* * Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>Profile: {userName}</h1>
-      </div>
+      {renderHeader()}
 
       <ProfileNameList
         names={allNames}
-        ratings={{ userName }}
+        ratings={{ userName: activeUser }}
         isLoading={ratingsLoading || statsLoading}
         filterStatus={filterStatus}
         setFilterStatus={setFilterStatus}
@@ -742,13 +988,13 @@ const Profile = ({ userName }) => {
         setSortBy={setSortBy}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
-        isAdmin={isAdmin}
+        isAdmin={canManageActiveUser}
         onToggleVisibility={handleToggleVisibility}
         onDelete={handleDelete}
         onSelectionChange={handleSelectionChange}
         selectedNames={selectedNames}
         hiddenIds={hiddenNames}
-        showAdminControls={isAdmin}
+        showAdminControls={canManageActiveUser}
         selectionFilter={selectionFilter}
         setSelectionFilter={setSelectionFilter}
         selectionStats={selectionStats}
@@ -760,6 +1006,7 @@ const Profile = ({ userName }) => {
         highlights={highlights}
         filteredCount={filteredCount}
         totalCount={allNames.length}
+        showUserFilter={!isAdmin}
       />
     </div>
   );

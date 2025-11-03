@@ -43,7 +43,10 @@ const ProfileNameList = ({
   highlights,
   filteredCount,
   totalCount,
+  showUserFilter = true,
 }) => {
+  const currentUserName = ratings?.userName ?? '';
+
   // * Filter and sort names based on current filters
   const filteredAndSortedNames = useMemo(() => {
     if (!names || names.length === 0) return [];
@@ -75,18 +78,23 @@ const ProfileNameList = ({
 
     // * Apply user filter
     // Only apply user filter if user_name exists on items
-    if (
-      names.length &&
-      Object.prototype.hasOwnProperty.call(names[0], "user_name")
-    ) {
+    if (userFilter) {
+      const nameMatchesOwner = (name, owner) => {
+        const nameOwner = name.owner ?? currentUserName;
+        return owner ? nameOwner === owner : false;
+      };
+
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
-        filtered = filtered.filter(
-          (name) => name.user_name === ratings.userName
+        filtered = filtered.filter((name) =>
+          nameMatchesOwner(name, currentUserName)
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
-        filtered = filtered.filter(
-          (name) => name.user_name !== ratings.userName
-        );
+        filtered = filtered.filter((name) => {
+          const nameOwner = name.owner ?? currentUserName;
+          return nameOwner && nameOwner !== currentUserName;
+        });
+      } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
+        filtered = filtered.filter((name) => nameMatchesOwner(name, userFilter));
       }
     }
 
@@ -233,7 +241,7 @@ const ProfileNameList = ({
     userFilter,
     sortBy,
     sortOrder,
-    ratings.userName,
+    currentUserName,
     selectionFilter,
     selectionStats,
     hiddenIds,
@@ -358,6 +366,7 @@ const ProfileNameList = ({
   const userOptions = [
     { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
     { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
+    { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
   ];
 
   const sortOptions = [
@@ -430,6 +439,7 @@ const ProfileNameList = ({
         <div className={styles.filterGroup}>
           <label>Status</label>
           <Select
+            name="profile-status-filter"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
             options={statusOptions}
@@ -437,19 +447,23 @@ const ProfileNameList = ({
           />
         </div>
 
-        <div className={styles.filterGroup}>
-          <label>User</label>
-          <Select
-            value={userFilter}
-            onChange={(e) => setUserFilter(e.target.value)}
-            options={userOptions}
-            className={styles.filterSelect}
-          />
-        </div>
+        {showUserFilter && (
+          <div className={styles.filterGroup}>
+            <label>User</label>
+            <Select
+              name="profile-user-filter"
+              value={userFilter}
+              onChange={(e) => setUserFilter(e.target.value)}
+              options={userOptions}
+              className={styles.filterSelect}
+            />
+          </div>
+        )}
 
         <div className={styles.filterGroup}>
           <label>Sort</label>
           <Select
+            name="profile-sort-filter"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             options={sortOptions}
@@ -478,6 +492,7 @@ const ProfileNameList = ({
           <div className={styles.filterGroup}>
             <label>Selection</label>
             <Select
+              name="profile-selection-filter"
               value={selectionFilter}
               onChange={(e) => setSelectionFilter(e.target.value)}
               options={selectionFilterOptions}
@@ -650,6 +665,7 @@ ProfileNameList.propTypes = {
   highlights: PropTypes.object,
   filteredCount: PropTypes.number,
   totalCount: PropTypes.number,
+  showUserFilter: PropTypes.bool,
 };
 
 export default ProfileNameList;

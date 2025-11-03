@@ -2186,6 +2186,45 @@ export const adminAPI = {
       console.error('Error refreshing views:', error);
       return { success: false, error };
     }
+  },
+  /**
+   * List application users for admin tooling and auditing
+   * @param {Object} [options]
+   * @param {string} [options.searchTerm] Optional case-insensitive search string
+   * @param {number} [options.limit=200] Maximum number of users to return
+   * @returns {Promise<Array>} Array of user records with role metadata
+   */
+  async listUsers({ searchTerm, limit = 200 } = {}) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return [];
+      }
+
+      let query = supabase
+        .from('cat_app_users')
+        .select('user_name, user_role, created_at, updated_at')
+        .order('user_name', { ascending: true });
+
+      if (searchTerm) {
+        query = query.ilike('user_name', `%${searchTerm}%`);
+      }
+
+      if (Number.isFinite(limit) && limit > 0) {
+        query = query.limit(limit);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching user list for admin:', error);
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('Unexpected error fetching user list for admin:', error);
+      return [];
+    }
   }
 };
 
