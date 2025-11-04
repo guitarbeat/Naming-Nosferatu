@@ -6,7 +6,7 @@ import styles from './ProfileHighlights.module.css';
  * ProfileHighlights Component
  * Displays top rated, most wins, and recent updates in a compact grid layout
  */
-const ProfileHighlights = ({ highlights }) => {
+const ProfileHighlights = ({ highlights = { topRated: [], mostWins: [], recent: [] } }) => {
   // Early return if no highlights data
   if (
     !highlights ||
@@ -110,13 +110,4 @@ ProfileHighlights.propTypes = {
   }),
 };
 
-ProfileHighlights.defaultProps = {
-  highlights: {
-    topRated: [],
-    mostWins: [],
-    recent: [],
-  },
-};
-
 export default ProfileHighlights;
-
