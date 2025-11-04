@@ -760,8 +760,9 @@ const Profile = ({ userName }) => {
         fetchNames(activeUser);
         fetchSelectionStats(activeUser);
       } catch (error) {
-        console.error('Profile - Delete Name error:', error);
-        showToast('Failed to delete name', 'error');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Profile - Delete Name error:', errorMessage);
+        showToast(`Failed to delete name: ${errorMessage}`, 'error');
         showError('Failed to delete name');
       }
     },
