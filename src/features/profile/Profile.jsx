@@ -716,8 +716,9 @@ const Profile = ({ userName }) => {
           setHiddenNames(hiddenIds);
         }
       } catch (error) {
-        console.error('Profile - Toggle Visibility error:', error);
-        showToast('Failed to toggle name visibility', 'error');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Profile - Toggle Visibility error:', errorMessage);
+        showToast(`Failed to toggle name visibility: ${errorMessage}`, 'error');
         showError('Failed to update visibility');
       }
     },
