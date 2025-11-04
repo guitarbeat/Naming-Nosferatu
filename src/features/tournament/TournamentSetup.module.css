@@ -4,7 +4,8 @@
   grid-template-columns: 2fr 1fr;
   gap: var(--space-6);
   width: 100%;
-  max-width: 100%;
+  max-width: min(1200px, 100%);
+  margin-inline: auto;
   height: 100%;
   padding: var(--space-2);
   background: transparent; /* Let galaxy background show through */
