@@ -502,10 +502,10 @@ const ProfileNameList = ({
                 selected
               </div>
             )}
-            {isAdmin && filteredAndSortedNames.length > 0 && (
+            {!hideSelectAllButton && isAdmin && filteredAndSortedNames.length > 0 && (
               <div className={styles.bulkControls}>
                 <Button
-                  onClick={handleSelectAll}
+                  onClick={onSelectAllClick || handleSelectAll}
                   variant="secondary"
                   size="small"
                   title={allVisibleSelected ? "Deselect All" : "Select All"}
