@@ -454,6 +454,14 @@
 
 /* * Responsive Design - Updated breakpoints for compact layout */
 @media (width <= 1200px) {
+  .statsRow {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+
+  .filtersGrid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+
   .namesGrid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 0.75rem;
@@ -466,6 +474,34 @@
 }
 
 @media (width <= 768px) {
+  .unifiedDashboard {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .dashboardTop {
+    gap: 0.5rem;
+  }
+
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .highlightsRow {
+    flex-direction: column;
+  }
+
+  .filterSection {
+    gap: 0.35rem;
+    padding-top: 0.35rem;
+  }
+
+  .filtersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
   .header {
     flex-direction: column;
     gap: 0.75rem;
