@@ -21,63 +21,31 @@ const ProfileHighlights = ({ highlights = { topRated: [], mostWins: [], recent: 
     <div className={styles.insightsSection}>
       <div className={styles.insightsGrid}>
         {highlights.topRated.length > 0 && (
-          <Card
-            className={styles.insightCard}
-            variant="outlined"
-            padding="medium"
-            shadow="small"
-            background="transparent"
-          >
-              <h4>Top Rated</h4>
-              <ul className={styles.compactList}>
-                {highlights.topRated.map((item) => (
-                  <li key={item.id} className={styles.compactItem}>
-                    <span className={styles.itemName}>{item.name}</span>
-                    <span className={styles.itemValue}>{item.value}</span>
-                  </li>
-                ))}
-              </ul>
-          </Card>
+          <div className={styles.insightCard}>
+            <h4>Top Rated</h4>
+            <ul className={styles.compactList}>
+              {highlights.topRated.map((item) => (
+                <li key={item.id} className={styles.compactItem}>
+                  <span className={styles.itemName}>{item.name}</span>
+                  <span className={styles.itemValue}>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
 
         {highlights.mostWins.length > 0 && (
-          <Card
-            className={styles.insightCard}
-            variant="outlined"
-            padding="medium"
-            shadow="small"
-            background="transparent"
-          >
-              <h4>Most Wins</h4>
-              <ul className={styles.compactList}>
-                {highlights.mostWins.map((item) => (
-                  <li key={item.id} className={styles.compactItem}>
-                    <span className={styles.itemName}>{item.name}</span>
-                    <span className={styles.itemValue}>{item.value}</span>
-                  </li>
-                ))}
-              </ul>
-          </Card>
-        )}
-
-        {highlights.recent.length > 0 && (
-          <Card
-            className={styles.insightCard}
-            variant="outlined"
-            padding="medium"
-            shadow="small"
-            background="transparent"
-          >
-              <h4>Recent Updates</h4>
-              <ul className={styles.compactList}>
-                {highlights.recent.map((item) => (
-                  <li key={item.id} className={styles.compactItem}>
-                    <span className={styles.itemName}>{item.name}</span>
-                    <span className={styles.itemValue}>{item.value}</span>
-                  </li>
-                ))}
-              </ul>
-          </Card>
+          <div className={styles.insightCard}>
+            <h4>Most Wins</h4>
+            <ul className={styles.compactList}>
+              {highlights.mostWins.map((item) => (
+                <li key={item.id} className={styles.compactItem}>
+                  <span className={styles.itemName}>{item.name}</span>
+                  <span className={styles.itemValue}>{item.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>
