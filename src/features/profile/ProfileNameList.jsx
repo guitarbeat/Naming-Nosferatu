@@ -381,8 +381,8 @@ const ProfileNameList = ({
       {/* Unified Dashboard: Stats, Highlights & Filters */}
       {stats && (
         <div className={styles.unifiedDashboard}>
-          {/* Stats & Highlights Row */}
-          <div className={styles.dashboardTop}>
+          {/* Left: Stats & Highlights */}
+          <div className={styles.dashboardLeft}>
             {/* Stats Row */}
             <div className={styles.statsRow}>
               {STAT_CARDS.map(
@@ -408,11 +408,13 @@ const ProfileNameList = ({
               )}
           </div>
 
-          {/* Filters Row */}
+          {/* Right: Filters */}
           <div className={styles.filterSection}>
-            <span className={styles.resultsCount}>
-              {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
-            </span>
+            <div className={styles.filterHeader}>
+              <span className={styles.resultsCount}>
+                {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
+              </span>
+            </div>
             <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label>Status</label>
