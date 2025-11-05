@@ -22,7 +22,7 @@ import { FILTER_OPTIONS } from '../../core/constants';
 import { isUserAdmin } from '../../shared/utils/authUtils';
 
 import ProfileNameList from './ProfileNameList';
-import { Error, Select } from '../../shared/components';
+import { Error, Select, Button } from '../../shared/components';
 import styles from './Profile.module.css';
 
 // * Use database-optimized stats calculation
