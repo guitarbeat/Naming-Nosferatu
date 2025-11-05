@@ -947,9 +947,9 @@ const Profile = ({ userName }) => {
               onClick={() => {
                 const allSelected = allNames.every((n) => selectedNames.has(n.id));
                 if (allSelected) {
-                  allNames.forEach((n) => onSelectionChange?.(n.id, false));
+                  allNames.forEach((n) => handleSelectionChange(n.id, false));
                 } else {
-                  allNames.forEach((n) => onSelectionChange?.(n.id, true));
+                  allNames.forEach((n) => handleSelectionChange(n.id, true));
                 }
               }}
               variant="secondary"
