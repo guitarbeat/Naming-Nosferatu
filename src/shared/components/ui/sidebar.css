@@ -102,7 +102,7 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: 0 0.5rem;
+  padding: 0 1rem;
   overflow: auto hidden;
 
   /* * Hide scrollbar but keep scrolling functionality */
