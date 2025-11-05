@@ -2,24 +2,24 @@
 .insightsSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 0.5rem);
-  padding: var(--space-2, 0.5rem);
-  margin-top: var(--space-2, 0.5rem);
-  background: var(--glass-bg, rgb(255 255 255 / 95%));
-  border: 1px solid var(--glass-border, rgb(255 255 255 / 20%));
-  border-radius: var(--radius-lg, 12px);
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-md, 0 4px 12px rgb(0 0 0 / 15%));
-  transition: all 0.3s ease;
+  gap: var(--space-1, 0.25rem);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+  transition: none;
 }
 
 .insightsSection:hover {
-  box-shadow: var(--shadow-lg, 0 8px 24px rgb(0 0 0 / 20%));
+  box-shadow: none;
 }
 
 .insightsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2, 0.5rem);
   align-items: stretch;
 }
