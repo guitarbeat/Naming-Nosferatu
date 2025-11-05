@@ -21,42 +21,91 @@ let initializationPromise: Promise<SupabaseClient<Database> | null> | null = nul
 const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     if (process.env.NODE_ENV === 'development') {
-      console.warn(
-        'Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.'
+      console.error(
+        '❌ Database Configuration Error: Missing Supabase credentials.',
+        '\n   Please check that SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file.',
+        '\n   Expected format:',
+        '\n   SUPABASE_URL=https://your-project.supabase.co',
+        '\n   SUPABASE_ANON_KEY=your-anon-key'
       );
     }
     return null;
   }
 
-  const { createClient } = await import('@supabase/supabase-js');
+  try {
+    console.log('🔌 Initializing Supabase connection...');
+    
+    const { createClient } = await import('@supabase/supabase-js');
 
-  const authOptions = {
-    persistSession: true,
-    autoRefreshToken: true,
-    storage: (() => {
-      try {
-        return typeof window !== 'undefined' ? window.localStorage : undefined;
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Supabase auth storage unavailable:', error);
+    const authOptions = {
+      persistSession: true,
+      autoRefreshToken: true,
+      storage: (() => {
+        try {
+          return typeof window !== 'undefined' ? window.localStorage : undefined;
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️ Local storage unavailable, session persistence disabled:', error);
+          }
+          return undefined;
         }
-        return undefined;
+      })()
+    } as const;
+
+    const client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: authOptions,
+      global: {
+        headers: {
+          'X-Client-Info': 'cat-name-tournament'
+        }
+      },
+      db: {
+        schema: 'public'
       }
-    })()
-  } as const;
+    });
 
-  const client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: authOptions
-  });
+    // Test connection with a simple query
+    try {
+      const { error: testError } = await client
+        .from('cat_name_options')
+        .select('id')
+        .limit(1);
+      
+      if (testError) {
+        console.error('⚠️ Database connection test failed:', testError.message);
+        // Don't fail initialization, just warn
+      } else {
+        console.log('✅ Supabase connection established successfully');
+      }
+    } catch (testErr) {
+      console.warn('⚠️ Could not verify database connection:', testErr);
+      // Continue anyway - connection might work for actual queries
+    }
 
-  if (typeof window !== 'undefined') {
-    window.__supabaseClient = client;
+    if (typeof window !== 'undefined') {
+      window.__supabaseClient = client;
+    }
+
+    return client;
+  } catch (error) {
+    console.error('❌ Failed to create Supabase client:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error(
+        '   This could be due to:',
+        '\n   - Invalid credentials',
+        '\n   - Network connectivity issues',
+        '\n   - CORS configuration problems',
+        '\n   - Supabase service outage'
+      );
+    }
+    return null;
   }
-
-  return client;
 };
 
-export const getSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
+export const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 1000;
+
   if (supabase) {
     return supabase;
   }
@@ -67,9 +116,25 @@ export const getSupabaseClient = async (): Promise<SupabaseClient<Database> | nu
         supabase = client;
         return client;
       })
-      .catch((error) => {
-        console.error('Failed to initialize Supabase client:', error);
+      .catch(async (error) => {
+        console.error(`❌ Supabase initialization failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`, error);
         initializationPromise = null;
+        
+        // Retry logic for network/temporary errors
+        if (retryCount < MAX_RETRIES) {
+          const shouldRetry = 
+            error.message?.includes('fetch') ||
+            error.message?.includes('network') ||
+            error.message?.includes('timeout');
+          
+          if (shouldRetry) {
+            const delay = RETRY_DELAY * Math.pow(2, retryCount);
+            console.log(`⏳ Retrying connection in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return getSupabaseClient(retryCount + 1);
+          }
+        }
+        
         return null;
       });
   }
