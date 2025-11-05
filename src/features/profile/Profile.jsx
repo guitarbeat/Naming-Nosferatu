@@ -22,7 +22,7 @@ import { FILTER_OPTIONS } from '../../core/constants';
 import { isUserAdmin } from '../../shared/utils/authUtils';
 
 import ProfileNameList from './ProfileNameList';
-import { Error, Select } from '../../shared/components';
+import { Error, Select, Button } from '../../shared/components';
 import styles from './Profile.module.css';
 
 // * Use database-optimized stats calculation
@@ -716,8 +716,9 @@ const Profile = ({ userName }) => {
           setHiddenNames(hiddenIds);
         }
       } catch (error) {
-        console.error('Profile - Toggle Visibility error:', error);
-        showToast('Failed to toggle name visibility', 'error');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Profile - Toggle Visibility error:', errorMessage);
+        showToast(`Failed to toggle name visibility: ${errorMessage}`, 'error');
         showError('Failed to update visibility');
       }
     },
@@ -759,8 +760,9 @@ const Profile = ({ userName }) => {
         fetchNames(activeUser);
         fetchSelectionStats(activeUser);
       } catch (error) {
-        console.error('Profile - Delete Name error:', error);
-        showToast('Failed to delete name', 'error');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        console.error('Profile - Delete Name error:', errorMessage);
+        showToast(`Failed to delete name: ${errorMessage}`, 'error');
         showError('Failed to delete name');
       }
     },
@@ -909,34 +911,53 @@ const Profile = ({ userName }) => {
     <div className={styles.header}>
       <h1 className={styles.title}>Profile: {activeUser || userName}</h1>
       {isAdmin && (
-        <div className={styles.userSwitcher}>
-          <label
-            htmlFor="profile-user-select"
-            className={styles.userSwitcherLabel}
-          >
-            View user
-          </label>
-          <Select
-            id="profile-user-select"
-            name="profile-user-select"
-            value={userFilter}
-            onChange={(e) => setUserFilter(e.target.value)}
-            options={userSelectOptions}
-            disabled={userListLoading}
-            className={styles.userSwitcherSelect}
-          />
-          {userListLoading && (
-            <span className={styles.userSwitcherHelper}>Loading users…</span>
-          )}
-          {userListError && (
-            <span className={styles.userSwitcherError}>
-              Unable to load users
-            </span>
-          )}
-          {activeUser && activeUser !== userName && (
-            <span className={styles.viewingNote}>
-              Viewing data for {activeUser}
-            </span>
+        <div className={styles.headerActions}>
+          <div className={styles.userSwitcher}>
+            <label
+              htmlFor="profile-user-select"
+              className={styles.userSwitcherLabel}
+            >
+              View user
+            </label>
+            <Select
+              id="profile-user-select"
+              name="profile-user-select"
+              value={userFilter}
+              onChange={(e) => setUserFilter(e.target.value)}
+              options={userSelectOptions}
+              disabled={userListLoading}
+              className={styles.userSwitcherSelect}
+            />
+            {userListLoading && (
+              <span className={styles.userSwitcherHelper}>Loading users…</span>
+            )}
+            {userListError && (
+              <span className={styles.userSwitcherError}>
+                Unable to load users
+              </span>
+            )}
+            {activeUser && activeUser !== userName && (
+              <span className={styles.viewingNote}>
+                Viewing data for {activeUser}
+              </span>
+            )}
+          </div>
+          {allNames.length > 0 && (
+            <Button
+              onClick={() => {
+                const allSelected = allNames.every((n) => selectedNames.has(n.id));
+                if (allSelected) {
+                  allNames.forEach((n) => handleSelectionChange(n.id, false));
+                } else {
+                  allNames.forEach((n) => handleSelectionChange(n.id, true));
+                }
+              }}
+              variant="secondary"
+              size="small"
+              title={allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+            >
+              {allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+            </Button>
           )}
         </div>
       )}
@@ -996,6 +1017,7 @@ const Profile = ({ userName }) => {
         hiddenIds={hiddenNames}
         showAdminControls={canManageActiveUser}
         selectionFilter={selectionFilter}
+        hideSelectAllButton={true}
         setSelectionFilter={setSelectionFilter}
         selectionStats={selectionStats}
         onBulkHide={handleBulkHide}

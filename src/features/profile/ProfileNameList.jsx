@@ -44,6 +44,8 @@ const ProfileNameList = ({
   filteredCount,
   totalCount,
   showUserFilter = true,
+  hideSelectAllButton = false,
+  onSelectAllClick,
 }) => {
   const currentUserName = ratings?.userName ?? '';
 
@@ -312,49 +314,37 @@ const ProfileNameList = ({
     filteredAndSortedNames.length > 0 &&
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
-  // * Simplified stats configuration - only most relevant metrics
-  const STAT_CARD_SECTIONS = {
-    base: [
-      {
-        key: "names_rated",
-        title: "Names Rated",
-        emoji: "⭐",
-        variant: "primary",
-        getValue: ({ names_rated = 0 }) => names_rated,
-      },
-      {
-        key: "avg_rating_given",
-        title: "Avg Rating",
-        emoji: "📊",
-        variant: "info",
-        getValue: ({ avg_rating_given = 0 }) => Math.round(avg_rating_given),
-      },
-      {
-        key: "high_ratings",
-        title: "High Ratings",
-        emoji: "🔥",
-        variant: "warning",
-        getValue: ({ high_ratings = 0 }) => high_ratings,
-      },
-    ],
-    selection: selectionStats ? [
-      {
-        key: "total_selections",
-        title: "Total Selections",
-        emoji: "🎯",
-        variant: "primary",
-        getValue: ({ total_selections = 0 }) => total_selections,
-      },
-      {
-        key: "tournaments_participated",
-        title: "Tournaments",
-        emoji: "🏆",
-        variant: "success",
-        getValue: ({ tournaments_participated = 0 }) =>
-          tournaments_participated,
-      },
-    ] : [],
-  };
+  // * Core metrics - only most relevant for profile view
+  const STAT_CARDS = [
+    {
+      key: "names_rated",
+      title: "Names Rated",
+      emoji: "⭐",
+      variant: "primary",
+      getValue: ({ names_rated = 0 }) => names_rated,
+    },
+    {
+      key: "tournaments_participated",
+      title: "Tournaments",
+      emoji: "🏆",
+      variant: "success",
+      getValue: (s) => selectionStats?.tournaments_participated || stats?.tournaments_participated || 0,
+    },
+    {
+      key: "total_selections",
+      title: "Total Selections",
+      emoji: "🎯",
+      variant: "primary",
+      getValue: (s) => selectionStats?.total_selections || stats?.total_selections || 0,
+    },
+    {
+      key: "high_ratings",
+      title: "High Ratings",
+      emoji: "🔥",
+      variant: "warning",
+      getValue: ({ high_ratings = 0 }) => high_ratings,
+    },
+  ];
 
   // * Filter options
   const statusOptions = [
@@ -388,54 +378,42 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Unified Stats & Filters */}
+      {/* Unified Dashboard: Stats, Highlights & Filters */}
       {stats && (
-        <div className={styles.unifiedSection}>
-          <div className={styles.statsGrid}>
-            {STAT_CARD_SECTIONS.base.map(
-              ({ key, title, emoji, variant, getValue }) => (
-                <StatsCard
-                  key={key}
-                  title={title}
-                  value={getValue(stats)}
-                  emoji={emoji}
-                  variant={variant}
-                  size="small"
-                />
-              )
-            )}
-            {selectionStats && STAT_CARD_SECTIONS.selection.length > 0 &&
-              STAT_CARD_SECTIONS.selection.map(
+        <div className={styles.unifiedDashboard}>
+          {/* Stats & Highlights Row */}
+          <div className={styles.dashboardTop}>
+            {/* Stats Row */}
+            <div className={styles.statsRow}>
+              {STAT_CARDS.map(
                 ({ key, title, emoji, variant, getValue }) => (
                   <StatsCard
                     key={key}
                     title={title}
-                    value={getValue(selectionStats)}
+                    value={getValue(selectionStats || stats)}
                     emoji={emoji}
                     variant={variant}
                     size="small"
                   />
                 )
               )}
+            </div>
+
+            {/* Highlights Row */}
+            {highlights &&
+              (highlights.topRated.length || highlights.mostWins.length) > 0 && (
+                <div className={styles.highlightsRow}>
+                  <ProfileHighlights highlights={highlights} />
+                </div>
+              )}
           </div>
 
-          {/* Highlights Section */}
-          {highlights &&
-            (highlights.topRated.length ||
-              highlights.mostWins.length ||
-              highlights.recent.length) > 0 && (
-              <ProfileHighlights highlights={highlights} />
-            )}
-        </div>
-      )}
-
-      {/* Compact Results Counter */}
-      <div className={styles.filterResults}>
-        <span className={styles.resultsCount}>
-          {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
-        </span>
-      </div>
-      <div className={styles.filtersGrid}>
+          {/* Filters Row */}
+          <div className={styles.filterSection}>
+            <span className={styles.resultsCount}>
+              {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
+            </span>
+            <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label>Status</label>
           <Select
@@ -510,7 +488,10 @@ const ProfileNameList = ({
             Apply
           </button>
         </div>
-      </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.headerControls}>
         {isAdmin && (
@@ -521,10 +502,10 @@ const ProfileNameList = ({
                 selected
               </div>
             )}
-            {isAdmin && filteredAndSortedNames.length > 0 && (
+            {!hideSelectAllButton && isAdmin && filteredAndSortedNames.length > 0 && (
               <div className={styles.bulkControls}>
                 <Button
-                  onClick={handleSelectAll}
+                  onClick={onSelectAllClick || handleSelectAll}
                   variant="secondary"
                   size="small"
                   title={allVisibleSelected ? "Deselect All" : "Select All"}
