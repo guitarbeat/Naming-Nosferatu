@@ -1000,6 +1000,7 @@ const Profile = ({ userName }) => {
         hiddenIds={hiddenNames}
         showAdminControls={canManageActiveUser}
         selectionFilter={selectionFilter}
+        hideSelectAllButton={true}
         setSelectionFilter={setSelectionFilter}
         selectionStats={selectionStats}
         onBulkHide={handleBulkHide}
