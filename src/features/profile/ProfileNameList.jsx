@@ -376,54 +376,42 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Unified Stats & Filters */}
+      {/* Unified Dashboard: Stats, Highlights & Filters */}
       {stats && (
-        <div className={styles.unifiedSection}>
-          <div className={styles.statsGrid}>
-            {STAT_CARD_SECTIONS.base.map(
-              ({ key, title, emoji, variant, getValue }) => (
-                <StatsCard
-                  key={key}
-                  title={title}
-                  value={getValue(stats)}
-                  emoji={emoji}
-                  variant={variant}
-                  size="small"
-                />
-              )
-            )}
-            {selectionStats && STAT_CARD_SECTIONS.selection.length > 0 &&
-              STAT_CARD_SECTIONS.selection.map(
+        <div className={styles.unifiedDashboard}>
+          {/* Stats & Highlights Row */}
+          <div className={styles.dashboardTop}>
+            {/* Stats Row */}
+            <div className={styles.statsRow}>
+              {STAT_CARDS.map(
                 ({ key, title, emoji, variant, getValue }) => (
                   <StatsCard
                     key={key}
                     title={title}
-                    value={getValue(selectionStats)}
+                    value={getValue(selectionStats || stats)}
                     emoji={emoji}
                     variant={variant}
                     size="small"
                   />
                 )
               )}
+            </div>
+
+            {/* Highlights Row */}
+            {highlights &&
+              (highlights.topRated.length || highlights.mostWins.length) > 0 && (
+                <div className={styles.highlightsRow}>
+                  <ProfileHighlights highlights={highlights} />
+                </div>
+              )}
           </div>
 
-          {/* Highlights Section */}
-          {highlights &&
-            (highlights.topRated.length ||
-              highlights.mostWins.length ||
-              highlights.recent.length) > 0 && (
-              <ProfileHighlights highlights={highlights} />
-            )}
-        </div>
-      )}
-
-      {/* Compact Results Counter */}
-      <div className={styles.filterResults}>
-        <span className={styles.resultsCount}>
-          {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
-        </span>
-      </div>
-      <div className={styles.filtersGrid}>
+          {/* Filters Row */}
+          <div className={styles.filterSection}>
+            <span className={styles.resultsCount}>
+              {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
+            </span>
+            <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label>Status</label>
           <Select
@@ -498,7 +486,10 @@ const ProfileNameList = ({
             Apply
           </button>
         </div>
-      </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.headerControls}>
         {isAdmin && (
