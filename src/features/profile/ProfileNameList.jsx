@@ -44,6 +44,8 @@ const ProfileNameList = ({
   filteredCount,
   totalCount,
   showUserFilter = true,
+  hideSelectAllButton = false,
+  onSelectAllClick,
 }) => {
   const currentUserName = ratings?.userName ?? '';
 
