@@ -74,7 +74,7 @@
 .compactList {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.5rem;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -84,20 +84,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-1, 0.25rem);
-  padding: 2px 6px;
-  font-size: 0.65rem;
-  color: var(--text-primary, #1e293b);
-  background: transparent;
-  border: none;
-  border-radius: 0;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--text-primary, #f9fafb);
   transition: all 0.2s ease;
 }
 
 .compactItem:hover {
-  background: var(--card-hover, #f1f5f9);
-  transform: none;
-  box-shadow: none;
+  transform: translateX(2px);
 }
 
 .itemName {
@@ -106,17 +101,18 @@
   text-overflow: ellipsis;
   font-weight: 500;
   white-space: nowrap;
+  color: var(--text-primary, #f9fafb);
 }
 
-.itemValue {
+.itemValueBadge {
   flex-shrink: 0;
-  padding: 1px 4px;
-  font-size: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: white;
-  background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-700, #1a2324));
-  border-radius: var(--radius-full, 20px);
-  letter-spacing: 0.2px;
+  background: rgb(0 0 0 / 20%);
+  border-radius: 6px;
+  letter-spacing: 0.3px;
 }
 
 /* Light Theme */
