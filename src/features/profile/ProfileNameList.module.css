@@ -143,13 +143,17 @@
   color: var(--primary-600, #2563eb);
 }
 
-/* * Filter Section (inline within dashboard) */
+/* * Filter Section (right column within dashboard) */
 .filterSection {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid rgb(255 255 255 / 10%);
+  gap: 0.5rem;
+}
+
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .resultsCount {
@@ -171,9 +175,9 @@
 
 .filtersGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.5rem;
-  align-items: end;
+  align-items: start;
 }
 
 .filterGroup {
