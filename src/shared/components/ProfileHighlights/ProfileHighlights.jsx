@@ -21,13 +21,13 @@ const ProfileHighlights = ({ highlights = { topRated: [], mostWins: [], recent: 
     <div className={styles.insightsSection}>
       <div className={styles.insightsGrid}>
         {highlights.topRated.length > 0 && (
-          <div className={styles.insightCard}>
-            <h4>Top Rated</h4>
+          <div className={`${styles.insightCard} ${styles.cardPrimary}`}>
+            <h3 className={styles.cardLabel}>Top Rated</h3>
             <ul className={styles.compactList}>
-              {highlights.topRated.map((item) => (
+              {highlights.topRated.slice(0, 5).map((item) => (
                 <li key={item.id} className={styles.compactItem}>
                   <span className={styles.itemName}>{item.name}</span>
-                  <span className={styles.itemValue}>{item.value}</span>
+                  <span className={styles.itemValueBadge}>{item.value}</span>
                 </li>
               ))}
             </ul>
@@ -35,13 +35,13 @@ const ProfileHighlights = ({ highlights = { topRated: [], mostWins: [], recent: 
         )}
 
         {highlights.mostWins.length > 0 && (
-          <div className={styles.insightCard}>
-            <h4>Most Wins</h4>
+          <div className={`${styles.insightCard} ${styles.cardSuccess}`}>
+            <h3 className={styles.cardLabel}>Most Wins</h3>
             <ul className={styles.compactList}>
-              {highlights.mostWins.map((item) => (
+              {highlights.mostWins.slice(0, 5).map((item) => (
                 <li key={item.id} className={styles.compactItem}>
                   <span className={styles.itemName}>{item.name}</span>
-                  <span className={styles.itemValue}>{item.value}</span>
+                  <span className={styles.itemValueBadge}>{item.value}</span>
                 </li>
               ))}
             </ul>
