@@ -942,6 +942,23 @@ const Profile = ({ userName }) => {
               </span>
             )}
           </div>
+          {allNames.length > 0 && (
+            <Button
+              onClick={() => {
+                const allSelected = allNames.every((n) => selectedNames.has(n.id));
+                if (allSelected) {
+                  allNames.forEach((n) => onSelectionChange?.(n.id, false));
+                } else {
+                  allNames.forEach((n) => onSelectionChange?.(n.id, true));
+                }
+              }}
+              variant="secondary"
+              size="small"
+              title={allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+            >
+              {allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+            </Button>
+          )}
         </div>
       )}
     </div>
