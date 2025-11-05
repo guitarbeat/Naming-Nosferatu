@@ -7,7 +7,7 @@
 // * Core UI Components
 import Button from './Button/Button';
 import Card from './Card/Card';
-import Loading, { LoadingSpinner, SuspenseView } from './Loading/Loading';
+import Loading from './Loading/Loading';
 import Error from './Error/Error';
 import Toast from './Toast/Toast';
 import SkeletonLoader from './SkeletonLoader/SkeletonLoader';
@@ -76,9 +76,6 @@ const components = {
   ErrorBoundary,
   ErrorBoundaryFallback,
 
-  // Legacy helpers
-  LoadingSpinner,
-  SuspenseView,
 };
 
 // * Named exports
@@ -106,8 +103,6 @@ export {
   ViewRouter,
   ErrorBoundary,
   ErrorBoundaryFallback,
-  LoadingSpinner,
-  SuspenseView,
 };
 
 // * Default export reuses the same object
