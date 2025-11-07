@@ -36,7 +36,7 @@ import { ErrorManager } from '@services/errorManager';
  * @returns {JSX.Element} Fully configured application layout.
  */
 function App() {
-  const { login, logout } = useUserSession();
+  const { login, logout, isInitialized } = useUserSession();
 
   // * Initialize store from localStorage
   useAppStoreInitialization();
