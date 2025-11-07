@@ -71,6 +71,7 @@ const Loading = ({
   );
 };
 
+
 // PropTypes
 Loading.propTypes = {
   variant: PropTypes.oneOf(['spinner', 'suspense', 'skeleton']),

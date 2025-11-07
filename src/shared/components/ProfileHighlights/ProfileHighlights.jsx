@@ -26,7 +26,7 @@ function HighlightCard({ title, variant, items }) {
         {items.slice(0, 5).map((item) => (
           <li key={item.id} className={styles.compactItem}>
             <span className={styles.itemName}>{item.name}</span>
-            <span className={styles.itemValueBadge}>{item.value}</span>
+            <span className={styles.itemValue}>{item.value}</span>
           </li>
         ))}
       </ul>

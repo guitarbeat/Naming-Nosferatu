@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import { SkeletonLoader, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
-import StatsCard from "../../shared/components/StatsCard/StatsCard";
+import MiniStatsBar from "./MiniStatsBar";
 import ProfileHighlights from "../../shared/components/ProfileHighlights/ProfileHighlights";
 import styles from "./ProfileNameList.module.css";
 
@@ -315,36 +315,6 @@ const ProfileNameList = ({
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
   // * Core metrics - only most relevant for profile view
-  const STAT_CARDS = [
-    {
-      key: "names_rated",
-      title: "Names Rated",
-      emoji: "⭐",
-      variant: "primary",
-      getValue: ({ names_rated = 0 }) => names_rated,
-    },
-    {
-      key: "tournaments_participated",
-      title: "Tournaments",
-      emoji: "🏆",
-      variant: "success",
-      getValue: (s) => selectionStats?.tournaments_participated || stats?.tournaments_participated || 0,
-    },
-    {
-      key: "total_selections",
-      title: "Total Selections",
-      emoji: "🎯",
-      variant: "primary",
-      getValue: (s) => selectionStats?.total_selections || stats?.total_selections || 0,
-    },
-    {
-      key: "high_ratings",
-      title: "High Ratings",
-      emoji: "🔥",
-      variant: "warning",
-      getValue: ({ high_ratings = 0 }) => high_ratings,
-    },
-  ];
 
   // * Filter options
   const statusOptions = [
@@ -378,28 +348,14 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Unified Dashboard: Stats, Highlights & Filters */}
+      {/* Mini Stats Bar */}
+      {stats && <MiniStatsBar stats={stats} selectionStats={selectionStats} />}
+
+      {/* Unified Dashboard: Highlights & Filters */}
       {stats && (
         <div className={styles.unifiedDashboard}>
-          {/* Left: Stats & Highlights */}
+          {/* Left: Highlights */}
           <div className={styles.dashboardLeft}>
-            {/* Stats Row */}
-            <div className={styles.statsRow}>
-              {STAT_CARDS.map(
-                ({ key, title, emoji, variant, getValue }) => (
-                  <StatsCard
-                    key={key}
-                    title={title}
-                    value={getValue(selectionStats || stats)}
-                    emoji={emoji}
-                    variant={variant}
-                    size="small"
-                  />
-                )
-              )}
-            </div>
-
-            {/* Highlights Row */}
             {highlights &&
               (highlights.topRated.length || highlights.mostWins.length) > 0 && (
                 <div className={styles.highlightsRow}>

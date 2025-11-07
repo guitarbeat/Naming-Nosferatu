@@ -36,7 +36,7 @@ import { ErrorManager } from '@services/errorManager';
  * @returns {JSX.Element} Fully configured application layout.
  */
 function App() {
-  const { login, logout } = useUserSession();
+  const { login, logout, isInitialized } = useUserSession();
 
   // * Initialize store from localStorage
   useAppStoreInitialization();
@@ -219,6 +219,15 @@ function App() {
       uiActions
     ]
   );
+
+  // * Show loading screen while initializing user session from localStorage
+  if (!isInitialized) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
+        <Loading variant="spinner" text="Loading..." />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider collapsedWidth={160} defaultCollapsed={false}>

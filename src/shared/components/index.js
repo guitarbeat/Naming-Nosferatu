@@ -74,6 +74,7 @@ const components = {
 
   // UI System
   ErrorBoundary,
+  ErrorBoundaryFallback
   ErrorBoundaryFallback,
 
 };
@@ -102,6 +103,7 @@ export {
   CalendarButton,
   ViewRouter,
   ErrorBoundary,
+  ErrorBoundaryFallback
   ErrorBoundaryFallback,
 };
 
