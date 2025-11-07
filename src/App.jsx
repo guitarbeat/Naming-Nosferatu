@@ -166,15 +166,6 @@ function App() {
 
   useThemeSync(ui.theme);
 
-  // * Show loading screen while initializing user session from localStorage
-  if (!isInitialized) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
-        <Loading variant="spinner" text="Loading..." />
-      </div>
-    );
-  }
-
   // * Welcome screen removed
 
   // * Handle user login
@@ -228,6 +219,15 @@ function App() {
       uiActions
     ]
   );
+
+  // * Show loading screen while initializing user session from localStorage
+  if (!isInitialized) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
+        <Loading variant="spinner" text="Loading..." />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider collapsedWidth={160} defaultCollapsed={false}>
