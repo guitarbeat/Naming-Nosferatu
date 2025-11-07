@@ -71,23 +71,6 @@ const Loading = ({
   );
 };
 
-/**
- * Legacy LoadingSpinner component (for backward compatibility)
- * @deprecated Use Loading component with variant="spinner" instead
- */
-export const LoadingSpinner = ({ size = 'medium', text }) => {
-  console.warn('LoadingSpinner is deprecated. Use Loading component with variant="spinner" instead.');
-  return <Loading variant="spinner" size={size} text={text} />;
-};
-
-/**
- * Legacy SuspenseView component (for backward compatibility)
- * @deprecated Use Loading component with variant="suspense" instead
- */
-export const SuspenseView = ({ text, children }) => {
-  console.warn('SuspenseView is deprecated. Use Loading component with variant="suspense" instead.');
-  return <Loading variant="suspense" text={text}>{children}</Loading>;
-};
 
 // PropTypes
 Loading.propTypes = {
