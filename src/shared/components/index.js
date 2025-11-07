@@ -74,11 +74,7 @@ const components = {
 
   // UI System
   ErrorBoundary,
-  ErrorBoundaryFallback,
-
-  // Legacy helpers
-  LoadingSpinner,
-  SuspenseView,
+  ErrorBoundaryFallback
 };
 
 // * Named exports
