@@ -36,7 +36,3 @@ SkeletonLoader.propTypes = {
 };
 
 export default SkeletonLoader;
-
-// Additional skeleton variants for specific use cases
-export const TournamentSkeleton = () => <SkeletonLoader height={120} />;
-export const NameCardSkeleton = () => <SkeletonLoader height={80} />;
