@@ -348,28 +348,14 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Unified Dashboard: Stats, Highlights & Filters */}
+      {/* Mini Stats Bar */}
+      {stats && <MiniStatsBar stats={stats} selectionStats={selectionStats} />}
+
+      {/* Unified Dashboard: Highlights & Filters */}
       {stats && (
         <div className={styles.unifiedDashboard}>
-          {/* Left: Stats & Highlights */}
+          {/* Left: Highlights */}
           <div className={styles.dashboardLeft}>
-            {/* Stats Row */}
-            <div className={styles.statsRow}>
-              {STAT_CARDS.map(
-                ({ key, title, emoji, variant, getValue }) => (
-                  <StatsCard
-                    key={key}
-                    title={title}
-                    value={getValue(selectionStats || stats)}
-                    emoji={emoji}
-                    variant={variant}
-                    size="small"
-                  />
-                )
-              )}
-            </div>
-
-            {/* Highlights Row */}
             {highlights &&
               (highlights.topRated.length || highlights.mostWins.length) > 0 && (
                 <div className={styles.highlightsRow}>
