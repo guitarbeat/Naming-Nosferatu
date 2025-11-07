@@ -1,29 +1,28 @@
 /**
  * @module Button
- * @description Unified button component system replacing 8+ button variants.
+ * @description Unified button component system using shadcn/ui.
  * Provides consistent styling, accessibility, and behavior across the app.
- * Now supports leading/trailing icons so feature-specific buttons can reuse
- * the shared presentation layer.
+ * This component wraps the shadcn Button and maintains the legacy API.
  */
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import styles from './Button.module.css';
+import { Loader2 } from 'lucide-react';
+import { Button as ShadcnButton } from '../ui/button';
 
-/**
- * Unified Button component
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Button content
- * @param {string} props.variant - Button variant (primary, secondary, danger, ghost)
- * @param {string} props.size - Button size (small, medium, large)
- * @param {boolean} props.disabled - Whether button is disabled
- * @param {boolean} props.loading - Whether button is in loading state
- * @param {string} props.type - HTML button type
- * @param {string} props.className - Additional CSS classes
- * @param {Function} props.onClick - Click handler
- * @param {Object} props.rest - Additional props
- * @returns {JSX.Element} Button component
- */
+const variantMapping = {
+  primary: 'default',
+  secondary: 'secondary',
+  danger: 'destructive',
+  ghost: 'ghost',
+};
+
+const sizeMapping = {
+  small: 'sm',
+  medium: 'default',
+  large: 'lg',
+};
+
 const Button = ({
   children,
   variant = 'primary',
@@ -36,18 +35,14 @@ const Button = ({
   startIcon = null,
   endIcon = null,
   iconOnly = false,
-  style = {},
   ...rest
 }) => {
-  const buttonClasses = [
-    styles.btn,
-    styles[`btn--${variant}`],
-    styles[`btn--${size}`],
-    iconOnly && styles['btn--icon'],
-    loading && styles['btn--loading'],
-    disabled && styles['btn--disabled'],
-    className
-  ].filter(Boolean).join(' ');
+  const shadcnVariant = variantMapping[variant] || 'default';
+  let shadcnSize = sizeMapping[size] || 'default';
+
+  if (iconOnly) {
+    shadcnSize = 'icon';
+  }
 
   const handleClick = (event) => {
     if (disabled || loading) {
@@ -58,37 +53,21 @@ const Button = ({
   };
 
   return (
-    <button
+    <ShadcnButton
       type={type}
-      className={buttonClasses}
+      variant={shadcnVariant}
+      size={shadcnSize}
       disabled={disabled || loading}
+      className={className}
       onClick={handleClick}
-      aria-disabled={disabled || loading}
-      style={style}
       {...rest}
     >
-      {/* * Shimmer effect overlay */}
-      <span className={styles.shimmer} aria-hidden="true" />
-
-      {loading && (
-        <span className={styles.loader} aria-hidden="true">
-          <span className={styles.loader__spinner} />
-        </span>
-      )}
-      <span className={loading ? styles['btn__content--loading'] : styles.btn__content}>
-        {startIcon && (
-          <span className={`${styles.btn__icon} ${styles['btn__icon--leading']}`.trim()}>
-            {startIcon}
-          </span>
-        )}
-        <span className={styles.btn__text}>{children}</span>
-        {endIcon && (
-          <span className={`${styles.btn__icon} ${styles['btn__icon--trailing']}`.trim()}>
-            {endIcon}
-          </span>
-        )}
-      </span>
-    </button>
+      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {startIcon && !loading && <span className="mr-2">{startIcon}</span>}
+      {!iconOnly && children}
+      {iconOnly && !startIcon && !loading && children}
+      {endIcon && !loading && <span className="ml-2">{endIcon}</span>}
+    </ShadcnButton>
   );
 };
 
@@ -104,7 +83,6 @@ Button.propTypes = {
   startIcon: PropTypes.node,
   endIcon: PropTypes.node,
   iconOnly: PropTypes.bool,
-  style: PropTypes.object
 };
 
 Button.displayName = 'Button';

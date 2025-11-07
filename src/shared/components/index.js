@@ -75,6 +75,8 @@ const components = {
   // UI System
   ErrorBoundary,
   ErrorBoundaryFallback
+  ErrorBoundaryFallback,
+
 };
 
 // * Named exports
@@ -102,6 +104,7 @@ export {
   ViewRouter,
   ErrorBoundary,
   ErrorBoundaryFallback
+  ErrorBoundaryFallback,
 };
 
 // * Default export reuses the same object
