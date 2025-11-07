@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import { SkeletonLoader, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
-import StatsCard from "../../shared/components/StatsCard/StatsCard";
+import MiniStatsBar from "./MiniStatsBar";
 import ProfileHighlights from "../../shared/components/ProfileHighlights/ProfileHighlights";
 import styles from "./ProfileNameList.module.css";
 
