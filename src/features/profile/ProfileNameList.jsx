@@ -315,36 +315,6 @@ const ProfileNameList = ({
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
   // * Core metrics - only most relevant for profile view
-  const STAT_CARDS = [
-    {
-      key: "names_rated",
-      title: "Names Rated",
-      emoji: "⭐",
-      variant: "primary",
-      getValue: ({ names_rated = 0 }) => names_rated,
-    },
-    {
-      key: "tournaments_participated",
-      title: "Tournaments",
-      emoji: "🏆",
-      variant: "success",
-      getValue: (s) => selectionStats?.tournaments_participated || stats?.tournaments_participated || 0,
-    },
-    {
-      key: "total_selections",
-      title: "Total Selections",
-      emoji: "🎯",
-      variant: "primary",
-      getValue: (s) => selectionStats?.total_selections || stats?.total_selections || 0,
-    },
-    {
-      key: "high_ratings",
-      title: "High Ratings",
-      emoji: "🔥",
-      variant: "warning",
-      getValue: ({ high_ratings = 0 }) => high_ratings,
-    },
-  ];
 
   // * Filter options
   const statusOptions = [
