@@ -199,6 +199,12 @@ const useAppStore = create(
         matrixMode: false
       },
 
+      // * Site Settings State
+      siteSettings: {
+        catChosenName: null,
+        isLoaded: false
+      },
+
       // * Error State
       errors: {
         current: null,
@@ -535,6 +541,41 @@ const useAppStore = create(
             console.error('Error logged:', errorLog);
           }
         }
+      },
+
+      // * Site Settings Actions
+      siteSettingsActions: {
+        loadCatChosenName: async () => {
+          const { siteSettingsAPI } = await import('../../integrations/supabase/api');
+          try {
+            const data = await siteSettingsAPI.getCatChosenName();
+            set((state) => ({
+              siteSettings: {
+                ...state.siteSettings,
+                catChosenName: data,
+                isLoaded: true
+              }
+            }));
+            return data;
+          } catch (error) {
+            console.error('Error loading cat chosen name:', error);
+            set((state) => ({
+              siteSettings: {
+                ...state.siteSettings,
+                isLoaded: true
+              }
+            }));
+            return null;
+          }
+        },
+
+        updateCatChosenName: (nameData) =>
+          set((state) => ({
+            siteSettings: {
+              ...state.siteSettings,
+              catChosenName: nameData
+            }
+          }))
       },
 
       // * Computed Selectors

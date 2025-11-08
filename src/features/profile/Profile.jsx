@@ -22,6 +22,7 @@ import { FILTER_OPTIONS } from '../../core/constants';
 import { isUserAdmin } from '../../shared/utils/authUtils';
 
 import ProfileNameList from './ProfileNameList';
+import CatNameEditor from '../admin/CatNameEditor';
 import { Error, Select, Button } from '../../shared/components';
 import styles from './Profile.module.css';
 
@@ -994,6 +995,11 @@ const Profile = ({ userName }) => {
 
   return (
     <div className={styles.profileContainer}>
+      {/* * Cat Name Editor for Admin */}
+      {canManageActiveUser && userName === 'aaron' && (
+        <CatNameEditor userName={userName} />
+      )}
+
       {/* * Header */}
       {renderHeader()}
 

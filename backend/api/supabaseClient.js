@@ -2228,6 +2228,9 @@ export const adminAPI = {
   }
 };
 
+// ===== SITE SETTINGS API =====
+export { siteSettingsAPI } from './siteSettingsAPI.js';
+
 // ===== LEGACY EXPORTS (for backward compatibility) =====
 
 // Keep these for existing code that might still use them

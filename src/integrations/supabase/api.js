@@ -13,6 +13,7 @@ export {
   userPreferencesAPI,
   categoriesAPI,
   adminAPI,
+  siteSettingsAPI,
   deleteName,
   getNamesWithDescriptions,
   getNamesWithUserRatings,

@@ -1,0 +1,223 @@
+.card {
+  margin-bottom: 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: hsl(var(--foreground));
+}
+
+.subtitle {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.middleNamesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.middleNameInput {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.middleNameInput > div {
+  flex: 1;
+}
+
+.middleNamesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.middleNameTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: hsl(var(--destructive));
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.removeButton:hover {
+  background: hsl(var(--destructive) / 0.1);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.suggestionButton {
+  padding: 0.4rem 0.75rem;
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestionButton:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+.preview {
+  padding: 1.5rem;
+  background: hsl(var(--secondary) / 0.3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.previewLabel {
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.previewNameTag {
+  width: 280px;
+  background: hsl(0, 0%, 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.15);
+  overflow: hidden;
+  transform: rotate(-1deg);
+}
+
+.previewHello {
+  background: hsl(4, 80%, 58%);
+  padding: 12px;
+  text-align: center;
+  color: hsl(0, 0%, 100%);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-family: 'Arial Black', sans-serif;
+}
+
+.previewGreeting {
+  padding: 12px 20px 6px;
+  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
+  font-size: 1.1rem;
+  color: hsl(0, 0%, 40%);
+  text-align: center;
+}
+
+.previewName {
+  padding: 6px 20px 24px;
+  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  color: hsl(210, 29%, 24%);
+  word-wrap: break-word;
+  text-align: center;
+  line-height: 1.2;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.success {
+  padding: 1rem;
+  background: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+  border-radius: 8px;
+  border-left: 4px solid hsl(var(--success));
+}
+
+@media (max-width: 640px) {
+  .middleNameInput {
+    flex-direction: column;
+  }
+
+  .previewNameTag {
+    width: 240px;
+  }
+
+  .previewHello {
+    font-size: 1.25rem;
+  }
+
+  .previewGreeting {
+    font-size: 1rem;
+  }
+
+  .previewName {
+    font-size: 1.75rem;
+  }
+}

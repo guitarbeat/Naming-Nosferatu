@@ -7,6 +7,8 @@ import PropTypes from "prop-types";
 
 import { Card, Error, Button } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
+import { siteSettingsAPI } from "../../integrations/supabase/api";
+import CatNameBanner from "../home/CatNameBanner";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
@@ -15,6 +17,8 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
   const [catFact, setCatFact] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [catName, setCatName] = useState(null);
+  const [loadingCatName, setLoadingCatName] = useState(true);
 
   const containerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -30,6 +34,22 @@ function Login({ onLogin }) {
       document.documentElement.classList.remove("login-page");
     };
   }, []);
+
+  // Load cat's chosen name
+  useEffect(() => {
+    loadCatName();
+  }, []);
+
+  const loadCatName = async () => {
+    try {
+      const data = await siteSettingsAPI.getCatChosenName();
+      setCatName(data);
+    } catch (error) {
+      console.error('Error loading cat name:', error);
+    } finally {
+      setLoadingCatName(false);
+    }
+  };
 
   const funnyPrefixes = [
     "Captain",
@@ -198,6 +218,11 @@ function Login({ onLogin }) {
 
       {/* Centered Hero Container */}
       <div className={styles.heroContainer} ref={containerRef}>
+        {/* Cat Name Banner */}
+        {!loadingCatName && catName && (
+          <CatNameBanner catName={catName} isAdmin={false} />
+        )}
+
         {/* Hero Content Section */}
         <div className={styles.heroContent}>
           <h1 className={styles.welcomeTitle}>Ready to Judge the Names?</h1>
