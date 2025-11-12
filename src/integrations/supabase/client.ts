@@ -8,12 +8,9 @@ declare global {
   }
 }
 
-const SUPABASE_URL =
-  import.meta.env.SUPABASE_URL ?? import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY =
-  import.meta.env.SUPABASE_ANON_KEY ??
-  import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Hardcoded Supabase credentials for reliability
+const SUPABASE_URL = 'https://ocghxwwwuubgmwsxgyoy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0';
 
 let supabase: SupabaseClient<Database> | null =
   typeof window !== 'undefined' ? window.__supabaseClient ?? null : null;
