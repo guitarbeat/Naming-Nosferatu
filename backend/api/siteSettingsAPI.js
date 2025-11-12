@@ -5,9 +5,11 @@
 
 import { supabase } from './supabaseClientIsolated.js';
 
+const isDev = true; // Always log in prototype mode
+
 const isSupabaseAvailable = () => {
   if (!supabase) {
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev) {
       console.warn('Supabase not configured. Some features may not work.');
     }
     return false;
