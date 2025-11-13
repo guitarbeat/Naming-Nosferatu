@@ -33,6 +33,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTiltEffect } from '../../hooks/useTiltEffect';
 import CatImage from '../CatImage';
 import styles from './NameCard.module.css';
 
