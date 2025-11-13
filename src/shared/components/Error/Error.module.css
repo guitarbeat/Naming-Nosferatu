@@ -362,8 +362,8 @@
 .list {
   width: 100%;
   max-width: 900px;
-  margin: 0 auto;
   padding: 2rem;
+  margin: 0 auto;
 }
 
 .listHeader {
@@ -613,7 +613,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .list {
     padding: 1rem;
   }
@@ -628,8 +628,8 @@
   }
   
   .listItemActions {
-    width: 100%;
     justify-content: flex-end;
+    width: 100%;
   }
   
   .listSuggestion {

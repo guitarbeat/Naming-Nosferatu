@@ -16,10 +16,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  padding: 0.75rem;
   min-height: 120px;
-  text-align: left;
+  padding: 0.75rem;
   overflow: hidden;
+  text-align: left;
   background: linear-gradient(135deg, rgb(59 130 246 / 10%) 0%, rgb(59 130 246 / 5%) 100%);
   border: 1px solid rgb(59 130 246 / 20%);
   border-radius: 8px;
@@ -55,45 +55,45 @@
 }
 
 .insightCard:hover {
-  transform: translateY(-2px);
   border-color: rgb(255 255 255 / 25%);
   box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+  transform: translateY(-2px);
 }
 
 .cardLabel {
+  flex-shrink: 0;
   margin: 0;
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: var(--text-secondary, #9ca3af);
-  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 /* Compact list for highlights */
 .compactList {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.3rem;
-  padding: 0;
-  margin: 0;
-  list-style: none;
   width: 100%;
   max-height: 100px;
+  padding: 0;
+  margin: 0;
   overflow-y: auto;
-  flex: 1;
+  list-style: none;
 }
 
 .compactItem {
   display: flex;
+  gap: 0.4rem;
   align-items: center;
   justify-content: space-between;
-  gap: 0.4rem;
   padding: 0.25rem 0;
   font-size: 0.7rem;
+  line-height: 1.2;
   color: var(--text-primary, #f9fafb);
   transition: all 0.2s ease;
-  line-height: 1.2;
 }
 
 .compactItem:hover {
@@ -104,8 +104,8 @@
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .itemValue {
@@ -114,9 +114,9 @@
   font-size: 0.65rem;
   font-weight: 700;
   color: white;
+  letter-spacing: 0.3px;
   background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-700, #1a2324));
   border-radius: 12px;
-  letter-spacing: 0.3px;
 }
 
 /* Dark Theme */
@@ -138,8 +138,8 @@
 
   .insightCard {
     gap: 0.3rem;
-    padding: 0.6rem;
     min-height: 110px;
+    padding: 0.6rem;
   }
 
   .cardLabel {
@@ -170,8 +170,8 @@
 
   .insightCard {
     gap: 0.3rem;
-    padding: 0.5rem;
     min-height: 100px;
+    padding: 0.5rem;
   }
 
   .cardLabel {
@@ -202,8 +202,8 @@
 
   .insightCard {
     gap: 0.25rem;
-    padding: 0.4rem;
     min-height: 90px;
+    padding: 0.4rem;
   }
 
   .cardLabel {

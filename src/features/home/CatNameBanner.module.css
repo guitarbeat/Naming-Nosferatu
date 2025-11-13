@@ -1,8 +1,8 @@
 .bannerContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
   margin-bottom: 2rem;
   animation: fadeIn 0.6s ease-out;
 }
@@ -10,10 +10,10 @@
 .nameTag {
   width: 320px;
   max-width: 90vw;
-  background: hsl(0, 0%, 100%);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.15);
   overflow: hidden;
+  background: hsl(0deg 0% 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px hsl(0deg 0% 0% / 15%);
   transform: rotate(-1deg);
   transition: transform 0.3s ease;
 }
@@ -23,45 +23,45 @@
 }
 
 .helloSection {
-  background: hsl(4, 80%, 58%);
   padding: 14px;
-  text-align: center;
-  color: hsl(0, 0%, 100%);
+  font-family: 'Arial Black', sans-serif;
   font-size: 2rem;
   font-weight: 900;
+  color: hsl(0deg 0% 100%);
+  text-align: center;
   letter-spacing: 3px;
-  font-family: 'Arial Black', sans-serif;
+  background: hsl(4deg 80% 58%);
 }
 
 .greetingSection {
   padding: 16px 24px 8px;
-  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
+  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
   font-size: 1.3rem;
-  color: hsl(0, 0%, 40%);
+  color: hsl(0deg 0% 40%);
   text-align: center;
 }
 
 .nameSection {
-  padding: 8px 24px 28px;
-  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
-  font-size: 2.8rem;
-  font-weight: 700;
-  color: hsl(210, 29%, 24%);
-  word-wrap: break-word;
-  text-align: center;
-  line-height: 1.2;
-  min-height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 60px;
+  padding: 8px 24px 28px;
+  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: hsl(210deg 29% 24%);
+  text-align: center;
+  word-wrap: break-word;
 }
 
 .adminNote {
+  margin: 0;
   font-size: 0.875rem;
   color: hsl(var(--muted-foreground));
-  margin: 0;
-  opacity: 0.8;
   text-align: center;
+  opacity: 0.8;
 }
 
 @keyframes fadeIn {
@@ -69,29 +69,30 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .nameTag {
     width: 280px;
   }
 
   .helloSection {
-    font-size: 1.75rem;
     padding: 12px;
+    font-size: 1.75rem;
   }
 
   .greetingSection {
-    font-size: 1.1rem;
     padding: 12px 20px 6px;
+    font-size: 1.1rem;
   }
 
   .nameSection {
-    font-size: 2.2rem;
     padding: 6px 20px 24px;
+    font-size: 2.2rem;
   }
 }

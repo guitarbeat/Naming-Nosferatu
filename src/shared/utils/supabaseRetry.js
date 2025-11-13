@@ -135,8 +135,8 @@ function isRetryableError(error, config = DEFAULT_RETRY_CONFIG) {
   if (!error) return false;
 
   const errorStr = String(error.message || error.code || error.status || error).toLowerCase();
-  
-  return config.retryableErrors.some(retryableError => 
+
+  return config.retryableErrors.some(retryableError =>
     errorStr.includes(String(retryableError).toLowerCase())
   );
 }
@@ -175,15 +175,15 @@ export async function retryOperation(
     try {
       console.log(`🔄 ${operationName}: Attempt ${attempt + 1}/${retryConfig.maxRetries + 1}`);
       const result = await operation();
-      
+
       if (attempt > 0) {
         console.log(`✅ ${operationName}: Succeeded after ${attempt + 1} attempts`);
       }
-      
+
       return { success: true, data: result, error: null };
     } catch (error) {
       lastError = error;
-      
+
       console.warn(`⚠️ ${operationName}: Attempt ${attempt + 1} failed`, error);
 
       // If this is the last attempt or error is not retryable, throw
@@ -237,7 +237,7 @@ export async function withRetry(queryBuilder, operationName = 'Database query') 
  */
 export function createErrorToast(error) {
   const userError = error.error || parseSupabaseError(error);
-  
+
   return {
     type: 'error',
     message: userError.title,
@@ -255,14 +255,14 @@ export async function checkConnection(supabaseClient, tableName = 'cat_name_opti
       if (!supabaseClient) {
         throw new Error('Supabase client not configured');
       }
-      
+
       const { error } = await supabaseClient
         .from(tableName)
         .select('id')
         .limit(1);
-      
+
       if (error) throw error;
-      
+
       return true;
     },
     { maxRetries: 2, initialDelay: 500 },
