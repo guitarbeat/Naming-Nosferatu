@@ -216,15 +216,17 @@ function Login({ onLogin }) {
         <div className={styles.overlay} />
       </div>
 
-      {/* Centered Hero Container */}
+      {/* Centered Hero Container with Generous Spacing */}
       <div className={styles.heroContainer} ref={containerRef}>
-        {/* Cat Name Banner */}
-        {!loadingCatName && catName && (
-          <CatNameBanner catName={catName} isAdmin={false} />
-        )}
-
-        {/* Hero Content Section */}
+        {/* Premium Hero Section - Tournament Info */}
         <div className={styles.heroContent}>
+          <div style={{ marginBottom: 'clamp(1rem, 4vw, 2rem)' }}>
+            {/* Cat Name Banner */}
+            {!loadingCatName && catName && (
+              <CatNameBanner catName={catName} isAdmin={false} />
+            )}
+          </div>
+
           <h1 className={styles.welcomeTitle}>Ready to Judge the Names?</h1>
           <p className={styles.welcomeText}>
             Now it&apos;s your turn! Enter your name to start judging cat names
@@ -232,7 +234,7 @@ function Login({ onLogin }) {
           </p>
         </div>
 
-        {/* Form Section */}
+        {/* Premium Form Card - Call to Action */}
         <Card
           className={styles.formCard}
           variant="outlined"

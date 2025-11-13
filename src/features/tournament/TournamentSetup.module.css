@@ -307,7 +307,7 @@
   flex-direction: column;
   min-width: 0; /* * Allow panel to respect grid sizing */
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   background: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);

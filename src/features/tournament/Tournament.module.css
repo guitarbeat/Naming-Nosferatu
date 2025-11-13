@@ -14,26 +14,27 @@
  * - Accessibility
  */
 
-/* Layout & Container
+/* Layout & Container - Premium Full-Width Design
    ========================================================================== */
 .tournament {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
-  max-width: 1800px;
-  min-height: calc(100vh - var(--space-16));
-  padding: var(--space-4);
+  max-width: 100%;
+  min-height: calc(100vh - clamp(4rem, 10vw, 8rem));
+  padding: clamp(2rem, 6vw, 4rem) clamp(2rem, 8vw, 6rem);
   margin: 0 auto;
+  gap: clamp(3rem, 8vw, 5rem);
 
   /* Prevent content shift during voting */
   overflow-x: hidden;
   isolation: isolate;
 }
 
-/* Progress & Info Section
+/* Progress & Info Section - Prominent Hero Information
    ========================================================================== */
 .progressInfo {
   display: flex;
@@ -42,86 +43,111 @@
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  padding: var(--space-4);
-  margin-bottom: var(--space-6);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: clamp(2rem, 6vw, 4rem);
   transition:
     transform var(--duration-normal) var(--ease-out),
     box-shadow var(--duration-normal) var(--ease-out);
   will-change: transform, box-shadow;
+  background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
+  border: 1px solid var(--border-color, rgb(148 163 184 / 20%));
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 15%);
+  backdrop-filter: blur(16px);
 }
 
 .progressInfo:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-1px);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
 }
 
 .roundInfo {
-  gap: var(--space-2);
+  display: flex;
+  gap: var(--space-4);
   font-weight: 500;
 }
 
 .roundNumber {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  color: var(--primary-color);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--accent-color, #e8bf76);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .matchCount {
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
   color: var(--text-secondary);
+  display: flex;
+  align-items: center;
 }
 
 .percentageInfo {
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: var(--surface-color);
-  border-radius: var(--radius-full);
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  font-weight: 600;
+  color: var(--accent-color, #e8bf76);
+  background: var(--surface-color, rgb(15 23 42 / 70%));
+  border: 1px solid var(--accent-color, rgb(232 191 118 / 30%));
+  border-radius: var(--radius-full, 999px);
   transition: all var(--duration-normal) var(--ease-out);
+  box-shadow: 0 4px 12px rgb(232 191 118 / 15%);
 }
 
-/* Matchup & Voting Area
+/* Matchup & Voting Area - Dramatic Spacing
    ========================================================================== */
 .tournamentLayout {
   display: grid;
-  gap: var(--space-8);
-  margin-top: var(--space-4);
+  gap: clamp(3rem, 8vw, 6rem);
+  margin-top: clamp(2rem, 6vw, 4rem);
+  width: 100%;
+  max-width: 1600px;
 }
 
 .matchup {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: clamp(2.5rem, 6vw, 4rem);
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
 
-  /* Improve touch target size on mobile */
-  min-height: 200px;
-  padding: var(--space-6);
+  min-height: auto;
+  padding: clamp(2.5rem, 6vw, 4rem);
   transition: all var(--duration-normal) var(--ease-out);
   will-change: transform, box-shadow;
+  background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 40%)), var(--surface-muted, rgb(15 23 42 / 30%)));
+  border: 1px solid var(--border-color, rgb(148 163 184 / 15%));
+  border-radius: clamp(1.5rem, 4vw, 2rem);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 20%);
+  backdrop-filter: blur(16px);
+}
+
+.matchup:hover {
+  box-shadow: 0 32px 80px rgb(0 0 0 / 25%);
+  transform: translateY(-2px);
 }
 
 .namesRow {
   display: flex;
-  gap: var(--space-8);
+  gap: clamp(2rem, 8vw, 4rem);
   align-items: center;
   justify-content: center;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .nameContainer {
   flex: 1;
-  min-width: 320px;
-  max-width: 500px;
+  min-width: clamp(280px, 40vw, 600px);
+  max-width: 600px;
   transition: transform var(--duration-normal) var(--ease-out);
   animation: fadeInSlide 0.5s ease-out;
 }
 
 .nameContainer.selected {
-  transform: scale(1.02);
+  transform: scale(1.04);
 }
 
 .nameContainer.loading {
@@ -133,28 +159,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: var(--surface-color);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-full);
+  width: clamp(80px, 15vw, 120px);
+  height: clamp(80px, 15vw, 120px);
+  background: linear-gradient(135deg, var(--accent-color, #e8bf76), var(--highlight-color, #f1a438));
+  border: 2px solid var(--border-color, rgb(232 191 118 / 30%));
+  border-radius: var(--radius-full, 999px);
   transition: all var(--duration-normal) var(--ease-out);
+  box-shadow: 0 8px 24px rgb(232 191 118 / 25%);
+}
+
+.vsSection:hover {
+  box-shadow: 0 12px 32px rgb(232 191 118 / 35%);
+  transform: scale(1.05);
 }
 
 .vsText {
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--primary-color);
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  font-weight: 700;
+  color: #2c3e40;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .extraOptions {
   display: flex;
-  gap: var(--space-4);
+  gap: clamp(1rem, 3vw, 2rem);
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 600px;
-  margin-top: var(--space-4);
+  max-width: 800px;
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  flex-wrap: wrap;
 }
 
 .extraOptionsButton {
@@ -162,28 +197,30 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  min-width: 120px;
-  min-height: 48px;
-  padding: var(--space-2) var(--space-5);
-  font-size: var(--text-base);
-  font-weight: 600;
+  min-width: clamp(140px, 30vw, 240px);
+  min-height: clamp(48px, 10vw, 56px);
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--text-primary);
   background: linear-gradient(
     135deg,
     var(--glass-bg-light, rgb(255 255 255 / 50%)),
     var(--glass-bg, rgb(255 255 255 / 70%))
   );
-  border: 1px solid var(--glass-border, rgb(0 0 0 / 10%));
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-subtle, 0 1px 3px rgb(0 0 0 / 10%));
+  border: 1.5px solid var(--glass-border, rgb(0 0 0 / 10%));
+  border-radius: var(--radius-full, 999px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
   backdrop-filter: blur(var(--glass-blur, 16px));
   transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
 }
 
 .extraOptionsButton:hover:not(:disabled) {
   border-color: var(--glass-border-hover, rgb(0 0 0 / 15%));
-  box-shadow: var(--shadow-medium, 0 4px 12px rgb(0 0 0 / 15%));
-  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
 }
 
 .extraOptionsButton:active:not(:disabled) {
@@ -191,25 +228,21 @@
 }
 
 .extraOptionsButton:focus-visible {
-  outline: 2px solid var(--primary-400);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent-color, #e8bf76);
+  outline-offset: 3px;
 }
 
 .extraOptionsButton:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
   transform: none;
 }
 
 .extraOptionsButton.selected {
-  color: var(--button-text-light, #fff);
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-color, #e8bf76), var(--highlight-color, #f1a438));
   border-color: transparent;
-  box-shadow: var(
-    --glass-shadow-colored,
-    0 8px 32px rgb(47 243 224 / 10%),
-    0 8px 16px rgb(250 38 160 / 5%)
-  );
+  box-shadow: 0 12px 40px rgb(232 191 118 / 35%);
 }
 
 /* Controls & Buttons
