@@ -67,11 +67,15 @@ function FloatingGallery({
 
         if (!photo) return null;
 
+        const floatStyle = {
+          '--col-index': colIndex
+        };
+
         return (
           <div
             key={colIndex}
             className={styles.photoFloat}
-            style={{ '--col-index': colIndex } as React.CSSProperties & { '--col-index': number }}
+            style={floatStyle}
           >
             <picture className={styles.photoPicture}>
               {photo.avif && (
