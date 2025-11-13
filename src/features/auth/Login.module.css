@@ -80,29 +80,30 @@
   );
 }
 
-/* Centered Hero Container */
+/* Centered Hero Container - Premium Full-Width Hero */
 .heroContainer {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(2.5rem, 8vw, 4rem);
   align-items: center;
   justify-content: flex-start;
-  width: min(clamp(36rem, 85vw, 40rem), 100%);
+  width: 100%;
+  max-width: 1200px;
   min-height: auto;
-  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+  padding: 0 clamp(1.5rem, 4vw, 2.5rem);
   margin: 0 auto;
 }
 
-/* Hero Content Section */
+/* Hero Content Section - Dramatic Spacing */
 .heroContent {
   display: flex;
   flex: none;
   flex-direction: column;
-  gap: clamp(1rem, 3vw, 1.5rem);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: center;
-  width: min(clamp(28rem, 80vw, 32.5rem), 100%);
+  width: min(clamp(32rem, 90vw, 48rem), 100%);
   margin-inline: auto;
   text-align: center;
 }
