@@ -349,24 +349,19 @@
 /* Enhanced depth on hover */
 .card:not(.disabled):hover {
   border-color: var(--accent-color, #e8bf76);
-  box-shadow: 0 20px 60px rgb(0 0 0 / 25%), 0 0 40px rgba(232 191 118 / 20%);
+  transform: rotateX(5deg) rotateY(-5deg);
 }
 
 .card:not(.disabled):hover .name {
   color: var(--accent-color, #e8bf76);
-  text-shadow: 0 4px 16px rgba(232 191 118 / 35%);
-  transform: translateY(-3px);
 }
 
 .card:not(.disabled):hover .description {
-  opacity: 1;
-  transform: translateY(-2px);
   color: var(--text-primary);
 }
 
 .card:not(.disabled):hover .checkMark {
-  filter: drop-shadow(0 6px 12px rgb(0 0 0 / 25%));
-  transform: scale(1.2) rotate(5deg);
+  transform: scale(1.1);
 }
 
 /* Smooth float animation */
