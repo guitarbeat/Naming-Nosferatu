@@ -6,17 +6,35 @@ import PropTypes from "prop-types";
 import { Card } from "../../../../shared/components";
 import { NameSuggestionSection } from "../index";
 import TournamentInfo from "./TournamentInfo";
+import PhotoGallery from "./PhotoGallery";
 import styles from "../../TournamentSetup.module.css";
 
 function TournamentSidebar({
   selectedNamesCount,
   availableNamesCount,
+  galleryImages,
+  showAllPhotos,
+  onShowAllPhotosToggle,
+  onImageOpen,
+  isAdmin,
+  userName,
+  onImagesUploaded,
 }) {
   return (
     <aside className={styles.sidebar}>
       <TournamentInfo
         selectedNamesCount={selectedNamesCount}
         availableNamesCount={availableNamesCount}
+      />
+
+      <PhotoGallery
+        galleryImages={galleryImages}
+        showAllPhotos={showAllPhotos}
+        onShowAllPhotosToggle={onShowAllPhotosToggle}
+        onImageOpen={onImageOpen}
+        isAdmin={isAdmin}
+        userName={userName}
+        onImagesUploaded={onImagesUploaded}
       />
 
       <Card
@@ -35,6 +53,13 @@ function TournamentSidebar({
 TournamentSidebar.propTypes = {
   selectedNamesCount: PropTypes.number.isRequired,
   availableNamesCount: PropTypes.number.isRequired,
+  galleryImages: PropTypes.arrayOf(PropTypes.string).isRequired,
+  showAllPhotos: PropTypes.bool.isRequired,
+  onShowAllPhotosToggle: PropTypes.func.isRequired,
+  onImageOpen: PropTypes.func.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  userName: PropTypes.string,
+  onImagesUploaded: PropTypes.func.isRequired,
 };
 
 export default TournamentSidebar;
