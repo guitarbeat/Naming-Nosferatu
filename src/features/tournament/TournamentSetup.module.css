@@ -1269,20 +1269,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  font-size: var(--text-2xl);
+  width: 48px;
+  height: 48px;
+  font-size: 1.75rem;
   line-height: 1;
   color: rgb(var(--white-rgb));
   cursor: pointer;
-  background: var(--overlay-medium);
-  border: none;
+  background: rgba(var(--black-rgb), 0.6);
+  border: 2px solid rgba(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transition: var(--transition-all);
+  z-index: calc(var(--z-modal) + 2);
 }
 
 .lightboxClose:hover {
-  background: var(--overlay-dark);
+  background: rgba(var(--black-rgb), 0.8);
+  border-color: rgba(var(--white-rgb), 0.6);
+  transform: scale(1.1);
+}
+
+.lightboxClose:focus {
+  outline: 2px solid rgba(var(--primary-rgb), 0.8);
+  outline-offset: 2px;
 }
 
 .lightboxCounter {
