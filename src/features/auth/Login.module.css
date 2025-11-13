@@ -241,33 +241,32 @@
   overflow: visible;
 }
 
-/* Hero Content Styles */
+/* Hero Content Styles - Premium Typography */
 .welcomeTitle {
   margin: 0;
-  font-size: clamp(2rem, 6vw, 3rem);
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
   color: var(--text-primary);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 16px rgba(0 0 0 / 20%);
 }
 
-/* * Light mode contrast fixes */
 :root[data-theme="light"] .welcomeTitle {
   color: #1e293b;
+  text-shadow: 0 2px 8px rgba(0 0 0 / 10%);
 }
 
 .welcomeText {
-  max-width: clamp(300px, 50vw, 450px);
+  max-width: clamp(320px, 70vw, 500px);
   margin: 0;
-  font-size: clamp(1rem, 3.5vw, 1.3rem);
-  line-height: 1.6;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  line-height: 1.7;
   color: var(--text-secondary);
   text-align: center;
-}
-
-/* * Light mode contrast fixes */
-:root[data-theme="light"] .welcomeText {
-  color: #334155;
+  font-weight: 500;
 }
 
 /* Form Section Styles */
