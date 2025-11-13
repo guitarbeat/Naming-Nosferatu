@@ -3,20 +3,22 @@
  * @description Lightweight lightbox component with keyboard navigation and smooth transitions
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { LIGHTBOX_IMAGE_SIZES } from "../constants";
 import styles from "../TournamentSetup.module.css";
 
 function Lightbox({ images, currentIndex, onClose, onNavigate }) {
   const closeBtnRef = useRef(null);
+  const transitionTimerRef = useRef(null);
   const [slideDirection, setSlideDirection] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const handleNavigate = (newIndex) => {
+  const handleNavigate = useCallback((newIndex) => {
     if (isTransitioning) return;
 
     setIsTransitioning(true);
+
     if (newIndex > currentIndex) {
       setSlideDirection("right");
     } else if (newIndex < currentIndex) {
@@ -24,18 +26,23 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
     }
 
     onNavigate(newIndex);
-    setTimeout(() => setIsTransitioning(false), 300);
-  };
 
-  const handlePrev = () => {
+    if (transitionTimerRef.current) {
+      clearTimeout(transitionTimerRef.current);
+    }
+
+    transitionTimerRef.current = setTimeout(() => setIsTransitioning(false), 300);
+  }, [currentIndex, isTransitioning, onNavigate]);
+
+  const handlePrev = useCallback(() => {
     const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
     handleNavigate(newIndex);
-  };
+  }, [currentIndex, handleNavigate, images.length]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
     handleNavigate(newIndex);
-  };
+  }, [currentIndex, handleNavigate, images.length]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -45,10 +52,16 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, currentIndex, images.length]);
+  }, [handleNext, handlePrev, onClose]);
 
   useEffect(() => {
     closeBtnRef.current?.focus();
+  }, []);
+
+  useEffect(() => () => {
+    if (transitionTimerRef.current) {
+      clearTimeout(transitionTimerRef.current);
+    }
   }, []);
 
   const current = images[currentIndex] || images[0];

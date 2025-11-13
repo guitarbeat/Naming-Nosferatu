@@ -1,5 +1,33 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
+const getMediaQueryList = (query) => {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return null;
+  }
+
+  return window.matchMedia(query);
+};
+
+const addMediaQueryListener = (mediaQueryList, listener) => {
+  if (!mediaQueryList) return;
+
+  if (typeof mediaQueryList.addEventListener === "function") {
+    mediaQueryList.addEventListener("change", listener);
+  } else if (typeof mediaQueryList.addListener === "function") {
+    mediaQueryList.addListener(listener);
+  }
+};
+
+const removeMediaQueryListener = (mediaQueryList, listener) => {
+  if (!mediaQueryList) return;
+
+  if (typeof mediaQueryList.removeEventListener === "function") {
+    mediaQueryList.removeEventListener("change", listener);
+  } else if (typeof mediaQueryList.removeListener === "function") {
+    mediaQueryList.removeListener(listener);
+  }
+};
+
 export function useTiltEffect(options = {}) {
   const {
     maxRotation = 10,
@@ -16,23 +44,110 @@ export function useTiltEffect(options = {}) {
   const animationFrameRef = useRef(null);
   const targetRotationRef = useRef({ rotateX: 0, rotateY: 0 });
 
-  const prefersReducedMotion = useCallback(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }, []);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    const mediaQueryList = getMediaQueryList("(prefers-reduced-motion: reduce)");
+    return mediaQueryList ? mediaQueryList.matches : false;
+  });
+  const [isCoarsePointer, setIsCoarsePointer] = useState(() => {
+    const mediaQueryList = getMediaQueryList("(pointer: coarse)");
+    return mediaQueryList ? mediaQueryList.matches : false;
+  });
 
-  const isTouchDevice = useCallback(() => {
-    if (typeof window === "undefined") return false;
-    return (
-      "ontouchstart" in window ||
-      navigator.maxTouchPoints > 0 ||
-      navigator.msMaxTouchPoints > 0
-    );
+  useEffect(() => {
+    const reducedMotionQuery = getMediaQueryList("(prefers-reduced-motion: reduce)");
+    const pointerQuery = getMediaQueryList("(pointer: coarse)");
+
+    const handleReducedMotionChange = (event) => {
+      setPrefersReducedMotion(event.matches);
+    };
+
+    const handlePointerChange = (event) => {
+      setIsCoarsePointer(event.matches);
+    };
+
+    if (reducedMotionQuery) {
+      setPrefersReducedMotion(reducedMotionQuery.matches);
+      addMediaQueryListener(reducedMotionQuery, handleReducedMotionChange);
+    }
+
+    if (pointerQuery) {
+      setIsCoarsePointer(pointerQuery.matches);
+      addMediaQueryListener(pointerQuery, handlePointerChange);
+    }
+
+    return () => {
+      removeMediaQueryListener(reducedMotionQuery, handleReducedMotionChange);
+      removeMediaQueryListener(pointerQuery, handlePointerChange);
+    };
   }, []);
 
   const shouldDisableTilt = useCallback(() => {
-    return prefersReducedMotion() || isTouchDevice();
-  }, [prefersReducedMotion, isTouchDevice]);
+    return prefersReducedMotion || isCoarsePointer;
+  }, [prefersReducedMotion, isCoarsePointer]);
+  const [environment, setEnvironment] = useState({
+    prefersReducedMotion: false,
+    hasFinePointer: true,
+    hasHoverSupport: true,
+  });
+
+  const shouldDisableTilt = useCallback(() => {
+    return (
+      environment.prefersReducedMotion ||
+      !(environment.hasFinePointer && environment.hasHoverSupport)
+    );
+  }, [environment]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return undefined;
+    }
+
+    const queries = {
+      prefersReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)"),
+      hasFinePointer: window.matchMedia("(any-pointer: fine)"),
+      hasHoverSupport: window.matchMedia("(any-hover: hover)"),
+    };
+
+    const updateEnvironment = () => {
+      setEnvironment((prev) => {
+        const next = {
+          prefersReducedMotion: queries.prefersReducedMotion?.matches ?? false,
+          hasFinePointer: queries.hasFinePointer?.matches ?? false,
+          hasHoverSupport: queries.hasHoverSupport?.matches ?? false,
+        };
+
+        if (
+          prev.prefersReducedMotion === next.prefersReducedMotion &&
+          prev.hasFinePointer === next.hasFinePointer &&
+          prev.hasHoverSupport === next.hasHoverSupport
+        ) {
+          return prev;
+        }
+
+        return next;
+      });
+    };
+
+    updateEnvironment();
+
+    const cleanups = Object.values(queries).map((query) => {
+      if (!query) return () => {};
+      const handler = () => updateEnvironment();
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", handler);
+        return () => query.removeEventListener("change", handler);
+      }
+      if (typeof query.addListener === "function") {
+        query.addListener(handler);
+        return () => query.removeListener(handler);
+      }
+      return () => {};
+    });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, []);
 
   const smoothTransform = useCallback(() => {
     setTransform((current) => ({

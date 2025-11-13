@@ -9,7 +9,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarMenu,
   useSidebar,
 } from "../ui/sidebar";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
@@ -121,7 +120,7 @@ export function AppSidebar({
                 height="96"
                 loading="lazy"
                 decoding="async"
-                fetchpriority="low"
+                fetchPriority="low"
                 style={{ display: "none" }}
               />
             </video>

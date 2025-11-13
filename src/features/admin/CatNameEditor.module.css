@@ -7,16 +7,16 @@
 }
 
 .title {
+  margin: 0 0 0.5rem;
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
   color: hsl(var(--foreground));
 }
 
 .subtitle {
-  color: hsl(var(--muted-foreground));
   margin: 0;
   font-size: 0.95rem;
+  color: hsl(var(--muted-foreground));
 }
 
 .form {
@@ -32,11 +32,11 @@
 }
 
 .label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: hsl(var(--foreground));
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-  display: block;
 }
 
 .middleNameInput {
@@ -57,34 +57,34 @@
 
 .middleNameTag {
   display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
+  align-items: center;
   padding: 0.4rem 0.75rem;
-  background: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
-  border-radius: 20px;
   font-size: 0.9rem;
+  color: hsl(var(--accent-foreground));
+  background: hsl(var(--accent));
+  border-radius: 20px;
 }
 
 .removeButton {
-  background: none;
-  border: none;
-  color: hsl(var(--destructive));
-  cursor: pointer;
-  font-size: 1.25rem;
-  line-height: 1;
-  padding: 0;
-  width: 20px;
-  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: hsl(var(--destructive));
+  cursor: pointer;
+  background: none;
+  border: none;
   border-radius: 50%;
   transition: background 0.2s;
 }
 
 .removeButton:hover {
-  background: hsl(var(--destructive) / 0.1);
+  background: hsl(var(--destructive) / 10%);
 }
 
 .suggestions {
@@ -96,111 +96,111 @@
 
 .suggestionButton {
   padding: 0.4rem 0.75rem;
-  background: hsl(var(--secondary));
+  font-size: 0.85rem;
   color: hsl(var(--secondary-foreground));
+  cursor: pointer;
+  background: hsl(var(--secondary));
   border: 1px solid hsl(var(--border));
   border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
   transition: all 0.2s;
 }
 
 .suggestionButton:hover {
-  background: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
+  background: hsl(var(--accent));
 }
 
 .checkboxLabel {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
-  cursor: pointer;
+  align-items: center;
   font-size: 0.95rem;
+  cursor: pointer;
 }
 
 .checkboxLabel input[type="checkbox"] {
-  cursor: pointer;
   width: 18px;
   height: 18px;
+  cursor: pointer;
 }
 
 .preview {
-  padding: 1.5rem;
-  background: hsl(var(--secondary) / 0.3);
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 1rem;
+  align-items: center;
+  padding: 1.5rem;
+  background: hsl(var(--secondary) / 30%);
+  border-radius: 8px;
 }
 
 .previewLabel {
+  margin: 0;
   font-size: 0.85rem;
   color: hsl(var(--muted-foreground));
-  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .previewNameTag {
   width: 280px;
-  background: hsl(0, 0%, 100%);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.15);
   overflow: hidden;
+  background: hsl(0deg 0% 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px hsl(0deg 0% 0% / 15%);
   transform: rotate(-1deg);
 }
 
 .previewHello {
-  background: hsl(4, 80%, 58%);
   padding: 12px;
-  text-align: center;
-  color: hsl(0, 0%, 100%);
+  font-family: 'Arial Black', sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
+  color: hsl(0deg 0% 100%);
+  text-align: center;
   letter-spacing: 2px;
-  font-family: 'Arial Black', sans-serif;
+  background: hsl(4deg 80% 58%);
 }
 
 .previewGreeting {
   padding: 12px 20px 6px;
-  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
+  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
   font-size: 1.1rem;
-  color: hsl(0, 0%, 40%);
+  color: hsl(0deg 0% 40%);
   text-align: center;
 }
 
 .previewName {
-  padding: 6px 20px 24px;
-  font-family: 'Caveat', 'Indie Flower', 'Comic Sans MS', cursive;
-  font-size: 2rem;
-  font-weight: 700;
-  color: hsl(210, 29%, 24%);
-  word-wrap: break-word;
-  text-align: center;
-  line-height: 1.2;
-  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 50px;
+  padding: 6px 20px 24px;
+  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: hsl(210deg 29% 24%);
+  text-align: center;
+  word-wrap: break-word;
 }
 
 .actions {
   display: flex;
-  justify-content: flex-end;
   gap: 1rem;
+  justify-content: flex-end;
   margin-top: 1rem;
 }
 
 .success {
   padding: 1rem;
-  background: hsl(var(--success) / 0.1);
   color: hsl(var(--success));
-  border-radius: 8px;
+  background: hsl(var(--success) / 10%);
   border-left: 4px solid hsl(var(--success));
+  border-radius: 8px;
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .middleNameInput {
     flex-direction: column;
   }

@@ -10,13 +10,13 @@
  */
 export const formatFullName = (nameObj) => {
   if (!nameObj) return '';
-  
+
   const parts = [
     nameObj.first_name,
     ...(Array.isArray(nameObj.middle_names) ? nameObj.middle_names : []),
     nameObj.last_name
   ].filter(Boolean).map(part => part.trim()).filter(part => part);
-  
+
   return parts.join(' ');
 };
 
@@ -29,19 +29,19 @@ export const validateNameData = (nameData) => {
   if (!nameData) {
     return { valid: false, error: 'Name data is required' };
   }
-  
+
   if (!nameData.first_name || nameData.first_name.trim() === '') {
     return { valid: false, error: 'First name is required' };
   }
-  
+
   if (nameData.first_name.length > 50) {
     return { valid: false, error: 'First name must be less than 50 characters' };
   }
-  
+
   if (nameData.last_name && nameData.last_name.length > 50) {
     return { valid: false, error: 'Last name must be less than 50 characters' };
   }
-  
+
   return { valid: true, error: null };
 };
 
@@ -52,14 +52,14 @@ export const validateNameData = (nameData) => {
  */
 export const formatMiddleNames = (middleNames) => {
   if (!middleNames) return '';
-  
+
   if (typeof middleNames === 'string') {
     return middleNames.split(',').map(n => n.trim()).filter(n => n).join(', ');
   }
-  
+
   if (Array.isArray(middleNames)) {
     return middleNames.filter(Boolean).join(', ');
   }
-  
+
   return '';
 };

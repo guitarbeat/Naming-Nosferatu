@@ -16,8 +16,8 @@
   background: var(--glass-bg, rgb(255 255 255 / 95%));
   border: 1px solid var(--glass-border, rgb(255 255 255 / 20%));
   border-radius: var(--radius-lg, 12px);
-  backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 10%));
+  backdrop-filter: blur(12px);
   transition: all 0.2s ease;
 }
 
@@ -28,10 +28,10 @@
 /* Filter Inputs Container */
 .filterInputs {
   display: flex;
+  flex: 1;
   flex-wrap: wrap;
   gap: var(--space-2, 0.5rem);
   align-items: center;
-  flex: 1;
   min-width: 0;
 }
 
@@ -42,12 +42,12 @@
   font-size: var(--text-sm, 0.875rem);
   font-weight: 500;
   color: var(--text-primary, #1e293b);
+  white-space: nowrap;
   cursor: pointer;
-  background: var(--surface-color, #ffffff);
+  background: var(--surface-color, #fff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: var(--radius-md, 8px);
   transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
 .filterSelect:hover {
@@ -74,7 +74,7 @@
   font-weight: bold;
   color: var(--text-secondary, #64748b);
   cursor: pointer;
-  background: var(--surface-color, #ffffff);
+  background: var(--surface-color, #fff);
   border: 1px solid var(--border-color, #e2e8f0);
   border-radius: var(--radius-md, 8px);
   transition: all 0.2s ease;
@@ -118,18 +118,18 @@
   font-size: var(--text-sm, 0.875rem);
   font-weight: 600;
   color: white;
+  white-space: nowrap;
   cursor: pointer;
   background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-700, #1a2324));
   border: 1px solid var(--primary-color, #2c3e40);
   border-radius: var(--radius-md, 8px);
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
 .applyButton:hover:not(:disabled) {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
 }
 
 .applyButton:active:not(:disabled) {
@@ -142,8 +142,8 @@
 }
 
 .applyButton:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* Light Theme Overrides */
@@ -154,8 +154,8 @@
 
 :global(.light-theme) .filterSelect,
 :global(.light-theme) .orderButton {
-  background: var(--surface-color, #ffffff);
   color: var(--text-primary, #1e293b);
+  background: var(--surface-color, #fff);
 }
 
 :global(.light-theme) .filterSelect:hover,
@@ -176,8 +176,8 @@
 
 :global(.dark-theme) .filterSelect,
 :global(.dark-theme) .orderButton {
-  background: var(--card-background, #0f172a);
   color: var(--text-primary, #f8fafc);
+  background: var(--card-background, #0f172a);
   border-color: var(--card-border, #1e293b);
 }
 
@@ -232,8 +232,8 @@
   }
 
   .filterInputs {
-    width: 100%;
     gap: var(--space-2, 0.5rem);
+    width: 100%;
   }
 
   .filterSelect {
@@ -250,9 +250,9 @@
   }
 
   .resultsSummary {
-    width: 100%;
-    justify-content: space-between;
     gap: var(--space-2, 0.5rem);
+    justify-content: space-between;
+    width: 100%;
   }
 
   .summaryText {
@@ -290,8 +290,8 @@
   }
 
   .resultsSummary {
-    width: 100%;
     flex-direction: column;
+    width: 100%;
   }
 
   .applyButton {

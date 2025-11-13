@@ -1,12 +1,14 @@
 /* Base Layout */
 .container {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: var(--space-6);
   width: 100%;
   margin-inline: auto;
+  max-width: min(1600px, 95vw);
   height: 100%;
-  padding: var(--space-2);
+  padding: var(--space-4);
+  margin-inline: auto;
   background: transparent; /* Let galaxy background show through */
 }
 
@@ -259,7 +261,7 @@
 .tournamentInfoIntegrated {
   padding: var(--space-4) var(--space-5);
   margin-bottom: var(--space-6);
-  background: linear-gradient(135deg, rgba(148, 163, 184, 0.05) 0%, rgba(100, 116, 139, 0.05) 100%);
+  background: linear-gradient(135deg, rgb(148 163 184 / 5%) 0%, rgb(100 116 139 / 5%) 100%);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   animation: slideDown 0.3s ease-out;
@@ -270,6 +272,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -529,6 +532,12 @@
   gap: var(--space-4);
   width: 100%;
   justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 /* Name Counter */
@@ -1148,19 +1157,20 @@
   position: fixed;
   inset: 0;
   z-index: calc(var(--z-modal) + 1);
-  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.3s ease-out;
+  background: rgb(0 0 0 / 80%);
   backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    backdrop-filter: blur(0px);
+    backdrop-filter: blur(0);
   }
+
   to {
     opacity: 1;
     backdrop-filter: blur(4px);
@@ -1183,6 +1193,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1190,13 +1201,13 @@
 }
 
 .lightboxImageWrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   max-width: min(92vw, 1200px);
   max-height: 80vh;
   animation: imageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
 }
 
 @keyframes imageEnter {
@@ -1204,6 +1215,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1223,6 +1235,7 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+
   to {
     opacity: 0;
     transform: translateX(-80px) scale(0.95);
@@ -1234,6 +1247,7 @@
     opacity: 1;
     transform: translateX(0) scale(1);
   }
+
   to {
     opacity: 0;
     transform: translateX(80px) scale(0.95);
@@ -1254,6 +1268,7 @@
     opacity: 0;
     transform: scale(0.85);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1263,6 +1278,7 @@
 .lightboxNav {
   position: absolute;
   top: 50%;
+  z-index: calc(var(--z-modal) + 2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1277,7 +1293,6 @@
   border-radius: var(--radius-full);
   transform: translateY(-50%);
   transition: var(--transition-all);
-  z-index: calc(var(--z-modal) + 2);
 }
 
 .lightboxNav:hover {
@@ -1303,6 +1318,7 @@
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
+  z-index: calc(var(--z-modal) + 2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1316,7 +1332,6 @@
   border: 2px solid rgba(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transition: var(--transition-all);
-  z-index: calc(var(--z-modal) + 2);
 }
 
 .lightboxClose:hover {
@@ -1453,6 +1468,7 @@
 
   .cardsContainer {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--space-3);
     justify-content: center;
   }
@@ -2383,6 +2399,7 @@
   .cardsContainer {
     grid-template-columns: 1fr;
     gap: var(--space-3);
+    gap: var(--space-2);
     justify-content: center;
   }
 }

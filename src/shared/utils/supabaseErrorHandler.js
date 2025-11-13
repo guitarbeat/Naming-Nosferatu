@@ -10,7 +10,7 @@ import { parseSupabaseError, createErrorToast } from './supabaseRetry';
  */
 export function formatSupabaseError(error) {
   const parsed = parseSupabaseError(error);
-  
+
   return {
     title: parsed.title,
     message: parsed.message,
@@ -25,7 +25,7 @@ export function formatSupabaseError(error) {
  */
 export function logSupabaseError(error, context = {}) {
   const formatted = formatSupabaseError(error);
-  
+
   console.group('🔴 Supabase Error');
   console.error('Title:', formatted.title);
   console.error('Message:', formatted.message);
@@ -43,7 +43,7 @@ export function logSupabaseError(error, context = {}) {
     console.error('Original Error:', formatted.originalError);
   }
   console.groupEnd();
-  
+
   return formatted;
 }
 
@@ -52,7 +52,7 @@ export function logSupabaseError(error, context = {}) {
  */
 export function handleQueryError(error, context = {}) {
   const formatted = logSupabaseError(error, context);
-  
+
   // Return formatted error for UI display
   return {
     success: false,
@@ -70,12 +70,12 @@ export async function executeWithErrorHandling(
 ) {
   try {
     const result = await queryFn();
-    
+
     // Check for Supabase error in result
     if (result?.error) {
       return handleQueryError(result.error, context);
     }
-    
+
     return {
       success: true,
       data: result.data || result,
@@ -94,7 +94,7 @@ export function showErrorToast(error, showToastFn) {
     console.warn('No toast function provided to showErrorToast');
     return;
   }
-  
+
   const toast = createErrorToast(error);
   showToastFn({
     type: toast.type,
@@ -148,7 +148,7 @@ export function getOperationError(operationType, originalError = null) {
     message: 'The requested operation could not be completed.',
     suggestion: 'Please try again or contact support if the issue persists.'
   };
-  
+
   return {
     ...operationError,
     originalError
