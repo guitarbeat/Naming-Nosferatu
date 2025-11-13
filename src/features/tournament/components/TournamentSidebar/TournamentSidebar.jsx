@@ -1,17 +1,14 @@
 /**
  * @module TournamentSetup/components/TournamentSidebar
- * @description Sidebar with tournament info, photo gallery, and name suggestions
+ * @description Sidebar with photo gallery and name suggestions
  */
 import PropTypes from "prop-types";
 import { Card } from "../../../../shared/components";
 import { NameSuggestionSection } from "../index";
-import TournamentInfo from "./TournamentInfo";
 import PhotoGallery from "./PhotoGallery";
 import styles from "../../TournamentSetup.module.css";
 
 function TournamentSidebar({
-  selectedNamesCount,
-  availableNamesCount,
   galleryImages,
   showAllPhotos,
   onShowAllPhotosToggle,
@@ -22,11 +19,6 @@ function TournamentSidebar({
 }) {
   return (
     <aside className={styles.sidebar}>
-      <TournamentInfo
-        selectedNamesCount={selectedNamesCount}
-        availableNamesCount={availableNamesCount}
-      />
-
       <PhotoGallery
         galleryImages={galleryImages}
         showAllPhotos={showAllPhotos}
