@@ -4,6 +4,7 @@
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: var(--space-6);
   width: 100%;
+  margin-inline: auto;
   max-width: min(1600px, 95vw);
   height: 100%;
   padding: var(--space-4);
@@ -205,16 +206,26 @@
   font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--text-primary);
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .tournamentTitle {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :global(:root[data-theme="light"]) .tournamentTitle {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
 }
 
 .tournamentSubtitle {
   margin: 0;
   font-size: var(--text-sm);
   line-height: 1.5;
-  color: var(--text-secondary);
+  color: var(--text-primary-light, var(--text-secondary));
 }
 
 .progressSection {
@@ -517,6 +528,10 @@
 
 .cardsContainer {
   display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-4);
+  width: 100%;
+  justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-4);
   justify-content: center;
@@ -1452,6 +1467,7 @@
   }
 
   .cardsContainer {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: var(--space-3);
     justify-content: center;
@@ -2382,6 +2398,7 @@
 @media (width <= 600px) {
   .cardsContainer {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
     gap: var(--space-2);
     justify-content: center;
   }
@@ -2453,6 +2470,10 @@
 
     /* * Reduce effects on very small screens for performance */
     backdrop-filter: blur(8px);
+  }
+
+  .cardsContainer {
+    gap: var(--space-2);
   }
 }
 
