@@ -5,6 +5,10 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    attachMediaQueryListener,
+    getMediaQueryList
+} from './mediaQueries';
 import { UI } from '../../core/constants';
 import useLocalStorage from '../../core/hooks/useLocalStorage';
 
@@ -451,20 +455,34 @@ export function useVisibilityManager(options = {}) {
  */
 export function useMediaQuery(query) {
     const [matches, setMatches] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        return window.matchMedia(query).matches;
+        const mediaQuery = getMediaQueryList(query);
+        return mediaQuery ? mediaQuery.matches : false;
     });
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        const mediaQuery = getMediaQueryList(query);
+        if (!mediaQuery) {
+            return undefined;
+        }
 
-        const mediaQuery = window.matchMedia(query);
-        const handleChange = (event) => setMatches(event.matches);
+        const handleChange = (event) => {
+            const nextValue =
+                typeof event?.matches === 'boolean'
+                    ? event.matches
+                    : mediaQuery.matches;
 
-        mediaQuery.addEventListener('change', handleChange);
-        return () => {
-            mediaQuery.removeEventListener('change', handleChange);
+            setMatches((current) => {
+                if (current === nextValue) {
+                    return current;
+                }
+
+                return nextValue;
+            });
         };
+
+        handleChange();
+
+        return attachMediaQueryListener(mediaQuery, handleChange);
     }, [query]);
 
     return matches;

@@ -1,17 +1,17 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { useEffect } from 'react';
+import {
+  attachMediaQueryListener,
+  getMediaQueryList,
+  getMediaQueryMatches,
+} from '../../shared/utils/mediaQueries';
 
 const THEME_STORAGE_KEY = 'theme';
 const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-const getSystemTheme = () => {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-    return 'light';
-  }
-
-  return window.matchMedia(COLOR_SCHEME_QUERY).matches ? 'dark' : 'light';
-};
+const getSystemTheme = () =>
+  getMediaQueryMatches(COLOR_SCHEME_QUERY) ? 'dark' : 'light';
 
 const normalizeStoredTheme = (value) => {
   if (!value) {
@@ -92,18 +92,20 @@ const subscribeToSystemTheme = (set, get) => {
     return;
   }
 
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+  const mediaQuery = getMediaQueryList(COLOR_SCHEME_QUERY);
+  if (!mediaQuery) {
     return;
   }
 
-  const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY);
-
   const handleChange = (event) => {
+    const matches =
+      typeof event?.matches === 'boolean' ? event.matches : mediaQuery.matches;
+
     if (get().ui.themePreference !== 'system') {
       return;
     }
 
-    const nextTheme = event.matches ? 'dark' : 'light';
+    const nextTheme = matches ? 'dark' : 'light';
 
     set((state) => {
       if (state.ui.theme === nextTheme) {
@@ -119,11 +121,7 @@ const subscribeToSystemTheme = (set, get) => {
     });
   };
 
-  if (typeof mediaQuery.addEventListener === 'function') {
-    mediaQuery.addEventListener('change', handleChange);
-  } else {
-    mediaQuery.addListener(handleChange);
-  }
+  attachMediaQueryListener(mediaQuery, handleChange);
 
   hasSubscribedToSystemTheme = true;
 
