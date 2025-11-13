@@ -43,8 +43,6 @@ function TournamentSidebar({
 }
 
 TournamentSidebar.propTypes = {
-  selectedNamesCount: PropTypes.number.isRequired,
-  availableNamesCount: PropTypes.number.isRequired,
   galleryImages: PropTypes.arrayOf(PropTypes.string).isRequired,
   showAllPhotos: PropTypes.bool.isRequired,
   onShowAllPhotosToggle: PropTypes.func.isRequired,
