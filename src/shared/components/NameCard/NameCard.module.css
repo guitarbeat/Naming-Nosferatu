@@ -215,30 +215,30 @@
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
-/* Name styling - Ensure it doesn't take too much space */
+/* Name styling - Large and Prominent */
 .name {
-  flex-shrink: 0; /* Prevent name from shrinking */
+  flex-shrink: 0;
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 800;
   line-height: 1.2;
   color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 8px rgba(0 0 0 / 15%);
 }
 
-/* Description styling - Enhanced for better readability and space */
+/* Description styling - Large and Legible */
 .description {
-  flex: 1; /* Take remaining space */
-  min-height: 4.8em; /* Ensure minimum height for description (6 lines * 1.6 line-height * 0.5em) */
+  flex: 1;
+  min-height: auto;
   margin: 0;
-  overflow: visible; /* Allow text to expand naturally */
-  font-size: var(
-    --text-base
-  ); /* Increased from text-sm for better readability */
-
-  font-weight: 450; /* Slightly heavier for better readability */
-  line-height: 1.6;
+  overflow: visible;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.7;
   color: var(--text-secondary);
-  opacity: 0.9; /* Increased from 0.85 for better visibility */
+  opacity: 0.95;
   transition: opacity var(--duration-normal) var(--ease-out);
 }
 
