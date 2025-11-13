@@ -94,7 +94,7 @@ function NameCard({
 
   // Mouse follow effect for background
   useEffect(() => {
-    const card = cardRef.current;
+    const card = tiltRef.current;
     if (!card || disabled) return;
 
     const handleMouseMove = (e) => {
