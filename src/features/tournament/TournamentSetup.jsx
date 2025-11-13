@@ -116,6 +116,27 @@ function TournamentSetupContent({ onStart, userName }) {
           isAdmin={isAdmin}
         />
 
+        {/* Tournament Info - Integrated */}
+        <div className={styles.tournamentInfoIntegrated}>
+          <h1 className={styles.tournamentTitle}>🏆 Cat Name Tournament</h1>
+          <p className={styles.tournamentSubtitle}>
+            Pick the perfect name for your cat through fun head-to-head battles!
+          </p>
+          <div className={styles.progressSection}>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{
+                  width: `${Math.max((selectedNames.length / Math.max(availableNames.length, 1)) * 100, 5)}%`,
+                }}
+              />
+            </div>
+            <span className={styles.progressText}>
+              {selectedNames.length} of {availableNames.length} names selected
+            </span>
+          </div>
+        </div>
+
           <NameSelection
             selectedNames={selectedNames}
             availableNames={availableNames}
