@@ -767,7 +767,7 @@
 /* * Special styling for cards with images - Tinder-style layout */
 .hasImage {
   /* * Increase card height for better image display */
-  min-height: 320px;
+  min-height: auto;
   overflow: hidden;
 
   /* * Enhanced Tinder-style appearance */
@@ -797,8 +797,8 @@
   z-index: 1;
 
   /* * Match swipe card image height */
-  height: 220px; /* Slightly taller to reduce perceived cropping */
-  margin-bottom: var(--space-4);
+  height: 180px; /* Reduced from 220px for smaller cards */
+  margin-bottom: var(--space-3);
 }
 
 .hasImage .name,
