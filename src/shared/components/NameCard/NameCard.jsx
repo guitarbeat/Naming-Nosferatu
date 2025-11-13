@@ -79,10 +79,10 @@ function NameCard({
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = useRef(null);
   const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
-    maxRotation: 6,
-    perspective: 1000,
-    smoothing: 0.12,
-    scale: 1.02,
+    maxRotation: 12,
+    perspective: 800,
+    smoothing: 0.1,
+    scale: 1.05,
   });
 
   useEffect(() => {
