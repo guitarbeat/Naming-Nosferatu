@@ -7,6 +7,9 @@
 // * Import Supabase client directly to avoid TypeScript/JavaScript compatibility issues
 import { createClient } from '@supabase/supabase-js';
 
+// Development mode check (browser-compatible)
+const isDev = true; // Always log in prototype mode
+
 // * Supabase configuration (isomorphic: works in browser and Node)
 const readFromViteEnv = (key) => {
   try {
@@ -19,17 +22,9 @@ const readFromViteEnv = (key) => {
   }
 };
 
-const SUPABASE_URL =
-  readFromViteEnv('SUPABASE_URL') ||
-  readFromViteEnv('VITE_SUPABASE_URL') ||
-  process.env.SUPABASE_URL ||
-  process.env.VITE_SUPABASE_URL;
-
-const SUPABASE_ANON_KEY =
-  readFromViteEnv('SUPABASE_ANON_KEY') ||
-  readFromViteEnv('VITE_SUPABASE_ANON_KEY') ||
-  process.env.SUPABASE_ANON_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY;
+// Hardcoded Supabase credentials for reliability in browser
+const SUPABASE_URL = 'https://ocghxwwwuubgmwsxgyoy.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0';
 
 let supabase = null;
 
@@ -43,9 +38,7 @@ const resolveSupabaseClient = async () => {
   console.log('   SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.');
-    }
+    console.warn('Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.');
     return null;
   }
 
@@ -72,7 +65,7 @@ export const getSupabaseServiceClient = resolveSupabaseClient;
 const isSupabaseAvailable = async () => {
   const client = await resolveSupabaseClient();
   if (!client) {
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev) {
       console.warn('Supabase not configured. Some features may not work.');
     }
     return false;
@@ -425,7 +418,7 @@ export const catNamesAPI = {
         }))
       );
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching names:', error);
       }
       throw error;
@@ -453,7 +446,7 @@ export const catNamesAPI = {
       }
       return { success: true, data };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error adding name:', error);
       }
       return {
@@ -486,7 +479,7 @@ export const catNamesAPI = {
       }
       return { success: true };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error removing name:', error);
       }
       return {
@@ -535,7 +528,7 @@ export const catNamesAPI = {
       }
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching leaderboard:', error);
       }
       return [];
@@ -633,7 +626,7 @@ export const catNamesAPI = {
         const isHidden = userRating?.is_hidden === true;
 
         // * Debug logging for hidden names
-        if (process.env.NODE_ENV === 'development' && isHidden) {
+        if (isDev && isHidden) {
           console.log(`🔍 Found hidden name: ${item.name} (${item.id}) for user: ${userName}`, {
             userRating,
             isHidden,
@@ -652,7 +645,7 @@ export const catNamesAPI = {
         };
       }) || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching names with user ratings:', error);
       }
       return [];
@@ -758,7 +751,7 @@ export const catNamesAPI = {
         last_selection: lastSelection ? new Date(lastSelection).toISOString() : null
       };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching user stats:', error);
       }
       return null;
@@ -815,7 +808,7 @@ export const catNamesAPI = {
         has_user_rating: true
       })) || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching Aaron\'s top names:', error);
       }
       return [];
@@ -904,7 +897,7 @@ export const ratingsAPI = {
         updated_at: now
       };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error updating rating:', error);
       }
       return {
@@ -949,7 +942,7 @@ export const ratingsAPI = {
 
       return allHistory;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching rating history:', error);
       }
       return [];
@@ -1019,7 +1012,7 @@ export const ratingsAPI = {
       if (error) throw error;
       return { success: true };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error saving rating history:', error);
       }
       throw error;
@@ -1085,7 +1078,7 @@ export const hiddenNamesAPI = {
 
       return { success: true, scope: 'global' };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error hiding name globally:', error);
       }
       throw error;
@@ -1127,7 +1120,7 @@ export const hiddenNamesAPI = {
 
       return { success: true, scope: 'global' };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error unhiding name globally:', error);
       }
       throw error;
@@ -1166,7 +1159,7 @@ export const hiddenNamesAPI = {
 
       return { success: true, processed, results };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error hiding names:', error);
       }
       throw error;
@@ -1205,7 +1198,7 @@ export const hiddenNamesAPI = {
 
       return { success: true, processed, results };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error unhiding names:', error);
       }
       throw error;
@@ -1240,7 +1233,7 @@ export const hiddenNamesAPI = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching hidden names:', error);
       }
       return [];
@@ -1353,7 +1346,7 @@ export const tournamentsAPI = {
       }
       return newTournament;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error creating tournament:', error);
       }
       throw error;
@@ -1436,7 +1429,7 @@ export const tournamentsAPI = {
         message: `Tournament status updated to ${status}`
       };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error updating tournament status:', error);
       }
       return {
@@ -1495,7 +1488,7 @@ export const tournamentsAPI = {
 
       return tournaments;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching tournaments:', error);
       }
       return [];
@@ -1602,7 +1595,7 @@ export const tournamentsAPI = {
         }
       } catch (tournamentError) {
         // Don't fail if tournament creation fails
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.warn('Could not save tournament record:', tournamentError);
         }
       }
@@ -1615,7 +1608,7 @@ export const tournamentsAPI = {
         method: 'cat_name_ratings_update'
       };
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error saving tournament selections:', error);
       }
       throw error;
@@ -1635,7 +1628,7 @@ export const tournamentsAPI = {
         'create_tournament_selections_table'
       );
       if (error) {
-        if (process.env.NODE_ENV === 'development') {
+        if (isDev) {
           console.warn(
             'Could not create table via RPC, table may already exist:',
             error
@@ -1643,7 +1636,7 @@ export const tournamentsAPI = {
         }
       }
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.warn(
           'Table creation RPC not available, table may already exist:',
           error
@@ -1689,7 +1682,7 @@ export const tournamentsAPI = {
 
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching tournament selection history:', error);
       }
       return [];
@@ -1733,7 +1726,7 @@ export const tournamentsAPI = {
 
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching popular tournament names:', error);
       }
       return [];
@@ -1767,7 +1760,7 @@ export const tournamentsAPI = {
 
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error getting personalized recommendations:', error);
       }
       return [];
@@ -1796,7 +1789,7 @@ export const tournamentsAPI = {
 
       return data;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error getting selection dashboard:', error);
       }
       return null;
@@ -1826,7 +1819,7 @@ export const tournamentsAPI = {
 
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error getting popular names:', error);
       }
       return [];
@@ -1891,7 +1884,7 @@ export const userPreferencesAPI = {
         }
       );
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching preferences:', error);
       }
       // Return defaults on any error to prevent app crashes
@@ -1943,7 +1936,7 @@ export const userPreferencesAPI = {
       }
       return data?.preferences;
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error updating preferences:', error);
       }
       // Return the preferences object on error to prevent app crashes
@@ -1974,7 +1967,7 @@ export const categoriesAPI = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching categories:', error);
       }
       return [];
@@ -1999,7 +1992,7 @@ export const categoriesAPI = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
+      if (isDev) {
         console.error('Error fetching names by category:', error);
       }
       return [];
@@ -2066,7 +2059,7 @@ export const deleteName = async (nameId) => {
     if (error) throw error;
     return { success: true };
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev) {
       console.error('Error in deleteName function:', error);
     }
     throw error;
@@ -2091,7 +2084,7 @@ export const imagesAPI = {
       const opts = { limit, search: undefined, sortBy: { column: 'updated_at', order: 'desc' } };
       const { data, error } = await supabase.storage.from('cat-images').list(prefix, opts);
       if (error) {
-        if (process.env.NODE_ENV === 'development') console.warn('imagesAPI.list error:', error);
+        if (isDev) console.warn('imagesAPI.list error:', error);
         return [];
       }
       const files = (data || []).filter((f) => f && f.name);
@@ -2135,7 +2128,7 @@ export const imagesAPI = {
         .map((f) => toUrl(f.name))
         .filter(Boolean);
     } catch (e) {
-      if (process.env.NODE_ENV === 'development') console.error('imagesAPI.list fatal:', e);
+      if (isDev) console.error('imagesAPI.list fatal:', e);
       return [];
     }
   },
@@ -2186,8 +2179,50 @@ export const adminAPI = {
       console.error('Error refreshing views:', error);
       return { success: false, error };
     }
+  },
+  /**
+   * List application users for admin tooling and auditing
+   * @param {Object} [options]
+   * @param {string} [options.searchTerm] Optional case-insensitive search string
+   * @param {number} [options.limit=200] Maximum number of users to return
+   * @returns {Promise<Array>} Array of user records with role metadata
+   */
+  async listUsers({ searchTerm, limit = 200 } = {}) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return [];
+      }
+
+      let query = supabase
+        .from('cat_app_users')
+        .select('user_name, user_role, created_at, updated_at')
+        .order('user_name', { ascending: true });
+
+      if (searchTerm) {
+        query = query.ilike('user_name', `%${searchTerm}%`);
+      }
+
+      if (Number.isFinite(limit) && limit > 0) {
+        query = query.limit(limit);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching user list for admin:', error);
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('Unexpected error fetching user list for admin:', error);
+      return [];
+    }
   }
 };
+
+// ===== SITE SETTINGS API =====
+export { siteSettingsAPI } from './siteSettingsAPI.js';
 
 // ===== LEGACY EXPORTS (for backward compatibility) =====
 

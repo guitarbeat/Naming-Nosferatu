@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FILTER_OPTIONS } from "../../core/constants";
-import { Card, Select } from "../../shared/components";
-import FilterGroup from "../../shared/components/FilterGroup/FilterGroup";
+import { Select } from "../../shared/components";
 import styles from "./ProfileFilters.module.css";
 
 /**
@@ -22,11 +21,9 @@ const ProfileFilters = ({
   setSortOrder,
   isAdmin = false,
   className = "",
-  // * New selection-based filter props
   selectionFilter = "all",
   setSelectionFilter,
   hasSelectionData = false,
-  // * Filter count and apply function
   filteredCount = 0,
   totalCount = 0,
   onApplyFilters = null,
@@ -88,139 +85,71 @@ const ProfileFilters = ({
     .join(" ");
 
   return (
-    <Card className={containerClasses} shadow="medium">
-      <h3 className={styles.sectionTitle}>Filters & Sorting</h3>
-
-      <div className={styles.filtersGrid}>
-        {/* * Status Filter */}
-        <FilterGroup>
+    <div className={containerClasses}>
+      <div className={styles.controlBar}>
+        <div className={styles.filterInputs}>
           <Select
             name="status"
-            label="Status"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
             options={statusOptions}
             className={styles.filterSelect}
-            placeholder=""
+            placeholder="Status"
           />
-        </FilterGroup>
-
-        {/* * User Filter */}
-        <FilterGroup>
           <Select
             name="user"
-            label="User"
             value={userFilter}
             onChange={(e) => setUserFilter(e.target.value)}
             options={userOptions}
             className={styles.filterSelect}
-            placeholder=""
+            placeholder="User"
           />
-        </FilterGroup>
-
-        {/* * NEW: Selection Status Filter */}
-        {hasSelectionData && (
-          <FilterGroup>
+          {hasSelectionData && (
             <Select
               name="selection"
-              label="Selection Status"
               value={selectionFilter}
               onChange={(e) => setSelectionFilter(e.target.value)}
               options={selectionOptions}
               className={styles.filterSelect}
-              placeholder=""
+              placeholder="Selection"
             />
-          </FilterGroup>
-        )}
-
-        {/* * Sort By - Enhanced with selection options */}
-        <FilterGroup>
+          )}
           <Select
             name="sort"
-            label="Sort By"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             options={sortOptions}
             className={styles.filterSelect}
-            placeholder=""
+            placeholder="Sort"
           />
-        </FilterGroup>
-
-        {/* * Sort Order Toggle */}
-        <FilterGroup label="Order">
           <button
             type="button"
             onClick={handleSortOrderToggle}
-            className={styles.sortOrderButton}
+            className={styles.orderButton}
             aria-label={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "ascending" : "descending"}`}
+            title={sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Ascending" : "Descending"}
           >
-            <span className={styles.sortOrderIcon}>
-              {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-            </span>
-            <span className={styles.sortOrderText}>
-              {sortOrder === FILTER_OPTIONS.ORDER.ASC
-                ? "Ascending"
-                : "Descending"}
-            </span>
+            {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
           </button>
-        </FilterGroup>
-      </div>
+        </div>
 
-      {/* * Filter Results Display */}
-      <Card
-        className={styles.filterResults}
-        padding="small"
-        shadow="small"
-        background="glass"
-        as="section"
-        aria-label="Filter results summary"
-      >
-        <div className={styles.resultsBar}>
-          <div className={styles.resultsInfo}>
-            <span className={styles.resultsCount}>
-              Showing {filteredCount} of {totalCount} names
-            </span>
-            {filteredCount !== totalCount && (
-              <span className={styles.filteredIndicator}>(Filtered)</span>
-            )}
-          </div>
+        <div className={styles.resultsSummary}>
+          <span className={styles.summaryText}>
+            {filteredCount} of {totalCount}
+            {filteredCount !== totalCount && " (Filtered)"}
+          </span>
           {onApplyFilters && (
             <button
               type="button"
               className={styles.applyButton}
               onClick={onApplyFilters}
             >
-              Apply Filters
+              Apply
             </button>
           )}
         </div>
-
-        {/* * Active Filters Display */}
-        <div className={styles.activeFiltersList}>
-          <span className={styles.activeFilterLabel}>Active:</span>
-          <span className={styles.activeFilter}>
-            Status:{" "}
-            {filterStatus === FILTER_OPTIONS.STATUS.ALL ? "All" : filterStatus}
-          </span>
-          <span className={styles.activeFilter}>
-            User: {userFilter === FILTER_OPTIONS.USER.ALL ? "All" : userFilter}
-          </span>
-          {hasSelectionData && selectionFilter !== "all" && (
-            <span className={styles.activeFilter}>
-              Selection:{" "}
-              {selectionFilter
-                .replace("_", " ")
-                .replace(/\b\w/g, (l) => l.toUpperCase())}
-            </span>
-          )}
-          <span className={styles.activeFilter}>
-            Sort:{" "}
-            {sortBy.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}{" "}
-            ({sortOrder})
-          </span>
-        </div>
-      </Card>
-    </Card>
+      </div>
+    </div>
   );
 };
 

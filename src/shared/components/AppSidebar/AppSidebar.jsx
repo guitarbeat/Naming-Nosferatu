@@ -9,7 +9,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarMenu,
   useSidebar,
 } from "../ui/sidebar";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
@@ -131,7 +130,6 @@ export function AppSidebar({
         {/* Main Navigation */}
         <SidebarGroup open={true}>
           <SidebarGroupContent>
-            <SidebarMenu>
               {navItems.map((item) => (
                 <MenuNavItem
                   key={item.key}
@@ -142,7 +140,6 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -175,7 +172,6 @@ export function AppSidebar({
         {/* Actions Section */}
         <SidebarGroup open={true}>
           <SidebarGroupContent>
-            <SidebarMenu>
                 {/* Performance Dashboard - Admin only */}
                 <MenuActionItem
                   icon={DashboardIcon}
@@ -199,7 +195,6 @@ export function AppSidebar({
                       className="sidebar-logout-button"
                   condition={isLoggedIn}
                 />
-            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
         </NavbarSection>

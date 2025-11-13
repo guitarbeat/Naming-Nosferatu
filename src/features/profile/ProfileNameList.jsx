@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import { SkeletonLoader, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
-import StatsCard from "../../shared/components/StatsCard/StatsCard";
+import MiniStatsBar from "./MiniStatsBar";
 import ProfileHighlights from "../../shared/components/ProfileHighlights/ProfileHighlights";
 import styles from "./ProfileNameList.module.css";
 
@@ -43,7 +43,12 @@ const ProfileNameList = ({
   highlights,
   filteredCount,
   totalCount,
+  showUserFilter = true,
+  hideSelectAllButton = false,
+  onSelectAllClick,
 }) => {
+  const currentUserName = ratings?.userName ?? '';
+
   // * Filter and sort names based on current filters
   const filteredAndSortedNames = useMemo(() => {
     if (!names || names.length === 0) return [];
@@ -75,18 +80,23 @@ const ProfileNameList = ({
 
     // * Apply user filter
     // Only apply user filter if user_name exists on items
-    if (
-      names.length &&
-      Object.prototype.hasOwnProperty.call(names[0], "user_name")
-    ) {
+    if (userFilter) {
+      const nameMatchesOwner = (name, owner) => {
+        const nameOwner = name.owner ?? currentUserName;
+        return owner ? nameOwner === owner : false;
+      };
+
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
-        filtered = filtered.filter(
-          (name) => name.user_name === ratings.userName
+        filtered = filtered.filter((name) =>
+          nameMatchesOwner(name, currentUserName)
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
-        filtered = filtered.filter(
-          (name) => name.user_name !== ratings.userName
-        );
+        filtered = filtered.filter((name) => {
+          const nameOwner = name.owner ?? currentUserName;
+          return nameOwner && nameOwner !== currentUserName;
+        });
+      } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
+        filtered = filtered.filter((name) => nameMatchesOwner(name, userFilter));
       }
     }
 
@@ -233,7 +243,7 @@ const ProfileNameList = ({
     userFilter,
     sortBy,
     sortOrder,
-    ratings.userName,
+    currentUserName,
     selectionFilter,
     selectionStats,
     hiddenIds,
@@ -304,49 +314,7 @@ const ProfileNameList = ({
     filteredAndSortedNames.length > 0 &&
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
-  // * Simplified stats configuration - only most relevant metrics
-  const STAT_CARD_SECTIONS = {
-    base: [
-      {
-        key: "names_rated",
-        title: "Names Rated",
-        emoji: "⭐",
-        variant: "primary",
-        getValue: ({ names_rated = 0 }) => names_rated,
-      },
-      {
-        key: "avg_rating_given",
-        title: "Avg Rating",
-        emoji: "📊",
-        variant: "info",
-        getValue: ({ avg_rating_given = 0 }) => Math.round(avg_rating_given),
-      },
-      {
-        key: "high_ratings",
-        title: "High Ratings",
-        emoji: "🔥",
-        variant: "warning",
-        getValue: ({ high_ratings = 0 }) => high_ratings,
-      },
-    ],
-    selection: selectionStats ? [
-      {
-        key: "total_selections",
-        title: "Total Selections",
-        emoji: "🎯",
-        variant: "primary",
-        getValue: ({ total_selections = 0 }) => total_selections,
-      },
-      {
-        key: "tournaments_participated",
-        title: "Tournaments",
-        emoji: "🏆",
-        variant: "success",
-        getValue: ({ tournaments_participated = 0 }) =>
-          tournaments_participated,
-      },
-    ] : [],
-  };
+  // * Core metrics - only most relevant for profile view
 
   // * Filter options
   const statusOptions = [
@@ -358,6 +326,7 @@ const ProfileNameList = ({
   const userOptions = [
     { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
     { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
+    { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
   ];
 
   const sortOptions = [
@@ -379,57 +348,34 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Unified Stats & Filters */}
+      {/* Mini Stats Bar */}
+      {stats && <MiniStatsBar stats={stats} selectionStats={selectionStats} />}
+
+      {/* Unified Dashboard: Highlights & Filters */}
       {stats && (
-        <div className={styles.unifiedSection}>
-          <div className={styles.statsGrid}>
-            {STAT_CARD_SECTIONS.base.map(
-              ({ key, title, emoji, variant, getValue }) => (
-                <StatsCard
-                  key={key}
-                  title={title}
-                  value={getValue(stats)}
-                  emoji={emoji}
-                  variant={variant}
-                  size="small"
-                />
-              )
-            )}
-            {selectionStats && STAT_CARD_SECTIONS.selection.length > 0 &&
-              STAT_CARD_SECTIONS.selection.map(
-                ({ key, title, emoji, variant, getValue }) => (
-                  <StatsCard
-                    key={key}
-                    title={title}
-                    value={getValue(selectionStats)}
-                    emoji={emoji}
-                    variant={variant}
-                    size="small"
-                  />
-                )
+        <div className={styles.unifiedDashboard}>
+          {/* Left: Highlights */}
+          <div className={styles.dashboardLeft}>
+            {highlights &&
+              (highlights.topRated.length || highlights.mostWins.length) > 0 && (
+                <div className={styles.highlightsRow}>
+                  <ProfileHighlights highlights={highlights} />
+                </div>
               )}
           </div>
 
-          {/* Highlights Section */}
-          {highlights &&
-            (highlights.topRated.length ||
-              highlights.mostWins.length ||
-              highlights.recent.length) > 0 && (
-              <ProfileHighlights highlights={highlights} />
-            )}
-        </div>
-      )}
-
-      {/* Compact Results Counter */}
-      <div className={styles.filterResults}>
-        <span className={styles.resultsCount}>
-          {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
-        </span>
-      </div>
-      <div className={styles.filtersGrid}>
+          {/* Right: Filters */}
+          <div className={styles.filterSection}>
+            <div className={styles.filterHeader}>
+              <span className={styles.resultsCount}>
+                {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
+              </span>
+            </div>
+            <div className={styles.filtersGrid}>
         <div className={styles.filterGroup}>
           <label>Status</label>
           <Select
+            name="profile-status-filter"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
             options={statusOptions}
@@ -437,19 +383,23 @@ const ProfileNameList = ({
           />
         </div>
 
-        <div className={styles.filterGroup}>
-          <label>User</label>
-          <Select
-            value={userFilter}
-            onChange={(e) => setUserFilter(e.target.value)}
-            options={userOptions}
-            className={styles.filterSelect}
-          />
-        </div>
+        {showUserFilter && (
+          <div className={styles.filterGroup}>
+            <label>User</label>
+            <Select
+              name="profile-user-filter"
+              value={userFilter}
+              onChange={(e) => setUserFilter(e.target.value)}
+              options={userOptions}
+              className={styles.filterSelect}
+            />
+          </div>
+        )}
 
         <div className={styles.filterGroup}>
           <label>Sort</label>
           <Select
+            name="profile-sort-filter"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
             options={sortOptions}
@@ -478,6 +428,7 @@ const ProfileNameList = ({
           <div className={styles.filterGroup}>
             <label>Selection</label>
             <Select
+              name="profile-selection-filter"
               value={selectionFilter}
               onChange={(e) => setSelectionFilter(e.target.value)}
               options={selectionFilterOptions}
@@ -495,7 +446,10 @@ const ProfileNameList = ({
             Apply
           </button>
         </div>
-      </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.headerControls}>
         {isAdmin && (
@@ -506,10 +460,10 @@ const ProfileNameList = ({
                 selected
               </div>
             )}
-            {isAdmin && filteredAndSortedNames.length > 0 && (
+            {!hideSelectAllButton && isAdmin && filteredAndSortedNames.length > 0 && (
               <div className={styles.bulkControls}>
                 <Button
-                  onClick={handleSelectAll}
+                  onClick={onSelectAllClick || handleSelectAll}
                   variant="secondary"
                   size="small"
                   title={allVisibleSelected ? "Deselect All" : "Select All"}
@@ -650,6 +604,7 @@ ProfileNameList.propTypes = {
   highlights: PropTypes.object,
   filteredCount: PropTypes.number,
   totalCount: PropTypes.number,
+  showUserFilter: PropTypes.bool,
 };
 
 export default ProfileNameList;

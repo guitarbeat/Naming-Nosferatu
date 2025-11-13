@@ -11,46 +11,47 @@ function Breadcrumb({ items, separator = '›' }) {
     <nav className="breadcrumb" aria-label="Breadcrumb navigation">
       <ol className="breadcrumb__list">
         {items.map((item, index) => {
-          const isLast = index === items.length - 1;
+          const key = item.id ?? index;
+          const isCurrent = index === items.length - 1;
+
+          const content = (
+            <>
+              {item.icon && <span className="breadcrumb__icon" aria-hidden="true">{item.icon}</span>}
+              <span>{item.label}</span>
+            </>
+          );
 
           return (
-            <li key={item.id || index} className="breadcrumb__item">
-              {!isLast ? (
-                <>
-                  <a
-                    href={item.href || '#'}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (item.onClick) {
-                        item.onClick();
-                      }
-                    }}
-                    className="breadcrumb__link"
-                    aria-label={item.ariaLabel || `Go to ${item.label}`}
-                  >
-                    {item.icon && (
-                      <span className="breadcrumb__icon" aria-hidden="true">
-                        {item.icon}
-                      </span>
-                    )}
-                    <span>{item.label}</span>
-                  </a>
-                  <span className="breadcrumb__separator" aria-hidden="true">
-                    {separator}
-                  </span>
-                </>
-              ) : (
-                <span
-                  className="breadcrumb__current"
-                  aria-current="page"
-                  aria-label={`Current page: ${item.label}`}
+            <li className="breadcrumb__item" key={key}>
+              {isCurrent ? (
+                <span className="breadcrumb__current" aria-current="page">
+                  {content}
+                </span>
+              ) : item.onClick ? (
+                <button
+                  type="button"
+                  className="breadcrumb__link"
+                  onClick={item.onClick}
+                  aria-label={item.ariaLabel}
                 >
-                  {item.icon && (
-                    <span className="breadcrumb__icon" aria-hidden="true">
-                      {item.icon}
-                    </span>
-                  )}
-                  <span>{item.label}</span>
+                  {content}
+                </button>
+              ) : item.href ? (
+                <a
+                  className="breadcrumb__link"
+                  href={item.href}
+                  aria-label={item.ariaLabel}
+                >
+                  {content}
+                </a>
+              ) : (
+                <span className="breadcrumb__link" aria-label={item.ariaLabel}>
+                  {content}
+                </span>
+              )}
+              {!isCurrent && (
+                <span className="breadcrumb__separator" aria-hidden="true">
+                  {separator}
                 </span>
               )}
             </li>
@@ -64,16 +65,14 @@ function Breadcrumb({ items, separator = '›' }) {
 Breadcrumb.displayName = 'Breadcrumb';
 
 Breadcrumb.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      label: PropTypes.string.isRequired,
-      href: PropTypes.string,
-      onClick: PropTypes.func,
-      icon: PropTypes.node,
-      ariaLabel: PropTypes.string
-    })
-  ).isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    label: PropTypes.string.isRequired,
+    href: PropTypes.string,
+    onClick: PropTypes.func,
+    icon: PropTypes.node,
+    ariaLabel: PropTypes.string
+  })).isRequired,
   separator: PropTypes.string
 };
 

@@ -7,6 +7,8 @@ import PropTypes from "prop-types";
 
 import { Card, Error, Button } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
+import { siteSettingsAPI } from "../../integrations/supabase/api";
+import CatNameBanner from "../home/CatNameBanner";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
@@ -15,6 +17,8 @@ function Login({ onLogin }) {
   const [error, setError] = useState("");
   const [catFact, setCatFact] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [catName, setCatName] = useState(null);
+  const [loadingCatName, setLoadingCatName] = useState(true);
 
   const containerRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -30,6 +34,22 @@ function Login({ onLogin }) {
       document.documentElement.classList.remove("login-page");
     };
   }, []);
+
+  // Load cat's chosen name
+  useEffect(() => {
+    loadCatName();
+  }, []);
+
+  const loadCatName = async () => {
+    try {
+      const data = await siteSettingsAPI.getCatChosenName();
+      setCatName(data);
+    } catch (error) {
+      console.error('Error loading cat name:', error);
+    } finally {
+      setLoadingCatName(false);
+    }
+  };
 
   const funnyPrefixes = [
     "Captain",
@@ -196,10 +216,17 @@ function Login({ onLogin }) {
         <div className={styles.overlay} />
       </div>
 
-      {/* Centered Hero Container */}
+      {/* Centered Hero Container with Generous Spacing */}
       <div className={styles.heroContainer} ref={containerRef}>
-        {/* Hero Content Section */}
+        {/* Premium Hero Section - Tournament Info */}
         <div className={styles.heroContent}>
+          <div style={{ marginBottom: 'clamp(1rem, 4vw, 2rem)' }}>
+            {/* Cat Name Banner */}
+            {!loadingCatName && catName && (
+              <CatNameBanner catName={catName} isAdmin={false} />
+            )}
+          </div>
+
           <h1 className={styles.welcomeTitle}>Ready to Judge the Names?</h1>
           <p className={styles.welcomeText}>
             Now it&apos;s your turn! Enter your name to start judging cat names
@@ -207,7 +234,7 @@ function Login({ onLogin }) {
           </p>
         </div>
 
-        {/* Form Section */}
+        {/* Premium Form Card - Call to Action */}
         <Card
           className={styles.formCard}
           variant="outlined"
@@ -255,6 +282,7 @@ function Login({ onLogin }) {
                 className={styles.loginForm}
                 role="form"
                 aria-label="Judge name login form"
+                autoComplete="off"
               >
                 <div className={styles.inputWrapper}>
                   <label htmlFor="loginName" className={styles.inputLabel}>
@@ -263,12 +291,16 @@ function Login({ onLogin }) {
                   <div className={styles.inputContainer}>
                     <input
                       id="loginName"
+                      name="judgeName"
                       type="text"
                       value={name}
                       onChange={handleNameChange}
                       placeholder="Enter your judge name"
                       className={`${styles.loginInput} ${error ? styles.error : ""}`}
                       autoFocus
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      spellCheck={false}
                       disabled={isLoading}
                       aria-label="Your name"
                       aria-describedby={error ? "loginError" : "loginHelp"}

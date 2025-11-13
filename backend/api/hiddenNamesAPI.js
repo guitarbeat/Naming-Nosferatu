@@ -24,53 +24,41 @@ export const hiddenNamesAPI = {
    * Hide a name for a user
    */
   async hideName(userName, nameId) {
-    try {
-      if (!isSupabaseAvailable() || !nameId || !userName) {
-        return false;
-      }
-
-      const { error } = await supabase
-        .from('cat_name_ratings')
-        .update({ is_hidden: true })
-        .eq('user_name', userName)
-        .eq('name_id', nameId);
-
-      if (error) {
-        console.error('Error hiding name:', error);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error in hideName:', error);
-      return false;
+    if (!isSupabaseAvailable() || !nameId || !userName) {
+      throw new Error('Supabase not available or missing required parameters');
     }
+
+    const { error } = await supabase
+      .from('cat_name_ratings')
+      .update({ is_hidden: true })
+      .eq('user_name', userName)
+      .eq('name_id', nameId);
+
+    if (error) {
+      throw new Error(`Failed to hide name: ${error.message}`);
+    }
+
+    return true;
   },
 
   /**
    * Unhide a name for a user
    */
   async unhideName(userName, nameId) {
-    try {
-      if (!isSupabaseAvailable() || !nameId || !userName) {
-        return false;
-      }
-
-      const { error } = await supabase
-        .from('cat_name_ratings')
-        .update({ is_hidden: false })
-        .eq('user_name', userName)
-        .eq('name_id', nameId);
-
-      if (error) {
-        console.error('Error unhiding name:', error);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error in unhideName:', error);
-      return false;
+    if (!isSupabaseAvailable() || !nameId || !userName) {
+      throw new Error('Supabase not available or missing required parameters');
     }
+
+    const { error } = await supabase
+      .from('cat_name_ratings')
+      .update({ is_hidden: false })
+      .eq('user_name', userName)
+      .eq('name_id', nameId);
+
+    if (error) {
+      throw new Error(`Failed to unhide name: ${error.message}`);
+    }
+
+    return true;
   }
 };

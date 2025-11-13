@@ -180,7 +180,19 @@ const ErrorList = ({
                 <span className={styles.listSeverityIcon}>
                   {getSeverityIcon(error.severity)}
                 </span>
-                <span className={styles.listMessage}>{error.message}</span>
+                <div style={{ flex: 1 }}>
+                  <div className={styles.listMessage}>{error.message}</div>
+                  {error.details && (
+                    <div className={styles.listDescription}>
+                      {error.details}
+                    </div>
+                  )}
+                  {error.suggestion && (
+                    <div className={styles.listSuggestion}>
+                      💡 <strong>Suggestion:</strong> {error.suggestion}
+                    </div>
+                  )}
+                </div>
                 <span className={styles.listTime}>
                   {formatTimestamp(error.timestamp)}
                 </span>
@@ -216,8 +228,8 @@ const ErrorList = ({
                     aria-label="Toggle error details"
                   >
                     {expandedErrors.has(`${error.timestamp}-${index}`)
-                      ? "−"
-                      : "+"}
+                      ? "Hide Details"
+                      : "Show Details"}
                   </button>
                 )}
               </div>
@@ -227,20 +239,33 @@ const ErrorList = ({
             {showDetails &&
               expandedErrors.has(`${error.timestamp}-${index}`) && (
                 <div className={styles.listDetails}>
-                  <div className={styles.listDetailRow}>
-                    <strong>Type:</strong> {error.errorType}
-                  </div>
-                  <div className={styles.listDetailRow}>
-                    <strong>Severity:</strong> {error.severity}
-                  </div>
-                  <div className={styles.listDetailRow}>
-                    <strong>Context:</strong> {error.context}
-                  </div>
+                  {error.errorType && (
+                    <div className={styles.listDetailRow}>
+                      <strong>Error Type:</strong> <code>{error.errorType}</code>
+                    </div>
+                  )}
+                  {error.severity && (
+                    <div className={styles.listDetailRow}>
+                      <strong>Severity Level:</strong> <code>{error.severity}</code>
+                    </div>
+                  )}
+                  {error.context && (
+                    <div className={styles.listDetailRow}>
+                      <strong>Context:</strong> {error.context}
+                    </div>
+                  )}
+                  {error.attempts && (
+                    <div className={styles.listDetailRow}>
+                      <strong>Retry Attempts:</strong> {error.attempts}
+                    </div>
+                  )}
                   {error.originalError && (
                     <div className={styles.listDetailRow}>
-                      <strong>Original Error:</strong>
+                      <strong>Technical Details:</strong>
                       <pre className={styles.listErrorStack}>
-                        {error.originalError.toString()}
+                        {typeof error.originalError === 'object'
+                          ? JSON.stringify(error.originalError, null, 2)
+                          : error.originalError.toString()}
                       </pre>
                     </div>
                   )}

@@ -43,10 +43,16 @@ export const catNamesAPI = {
       }
 
       // Get all names with their descriptions, excluding hidden ones when present
-      let namesQuery = supabase.from('cat_names').select('*');
+      let namesQuery = supabase.from('cat_name_options').select('*');
 
       if (hiddenIds.length > 0) {
-        namesQuery = namesQuery.not('id', 'in', `(${hiddenIds.join(',')})`);
+        const quotedHiddenIds = hiddenIds.map(id => {
+          const stringId = String(id);
+          const escapedId = stringId.replace(/'/g, "''");
+          return `'${escapedId}'`;
+        });
+
+        namesQuery = namesQuery.not('id', 'in', `(${quotedHiddenIds.join(',')})`);
       }
 
       const { data: namesData, error: namesError } = await namesQuery.order('name', {
@@ -54,8 +60,12 @@ export const catNamesAPI = {
       });
 
       if (namesError) {
-        console.error('Error fetching names:', namesError);
-        return [];
+        console.error('Error fetching names from cat_name_options:', namesError);
+        console.error('Error details:', {
+          message: namesError.message,
+          code: namesError.code,
+          details: namesError.details
+        });
       }
 
       return namesData || [];

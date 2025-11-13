@@ -8,22 +8,58 @@ import { useRouting } from '@hooks/useRouting';
 // * Dynamic imports with better error handling and loading states
 const Tournament = lazy(() =>
   import('@features/tournament/Tournament').catch(() => ({
-    default: () => <Error variant="list" error={{ message: 'Failed to load Tournament' }} />
+    default: () => (
+      <Error
+        variant="list"
+        error={{
+          message: 'Failed to load Tournament',
+          details: 'The tournament comparison page could not be loaded. This might be due to a network issue or corrupted data.',
+          suggestion: 'Try refreshing the page or returning to the setup screen to start a new tournament.'
+        }}
+      />
+    )
   }))
 );
 const TournamentSetup = lazy(() =>
   import('@features/tournament/TournamentSetup').catch(() => ({
-    default: () => <Error variant="list" error={{ message: 'Failed to load Tournament Setup' }} />
+    default: () => (
+      <Error
+        variant="list"
+        error={{
+          message: 'Failed to load Tournament Setup',
+          details: 'There was an error loading the cat name selection page. This could be due to a network issue or a problem with the application code.',
+          suggestion: 'Please try refreshing the page. If the problem persists, check your internet connection or contact support.'
+        }}
+      />
+    )
   }))
 );
 const Results = lazy(() =>
   import('@features/tournament/Results').catch(() => ({
-    default: () => <Error variant="list" error={{ message: 'Failed to load Results' }} />
+    default: () => (
+      <Error
+        variant="list"
+        error={{
+          message: 'Failed to load Results',
+          details: 'The tournament results page could not be loaded. Your tournament data may still be saved.',
+          suggestion: 'Try refreshing the page. If you just completed a tournament, you can check your profile to see your saved results.'
+        }}
+      />
+    )
   }))
 );
 const Profile = lazy(() =>
   import('@features/profile/Profile').catch(() => ({
-    default: () => <Error variant="list" error={{ message: 'Failed to load Profile' }} />
+    default: () => (
+      <Error
+        variant="list"
+        error={{
+          message: 'Failed to load Profile',
+          details: 'Your profile page could not be loaded. This might be due to a network issue or a problem accessing your data.',
+          suggestion: 'Please try refreshing the page. If the problem continues, log out and log back in.'
+        }}
+      />
+    )
   }))
 );
 const BongoPage = lazy(() =>

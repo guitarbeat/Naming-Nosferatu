@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* CSS Reset - Clean foundation for consistent styling */
 
 /* Box sizing reset */

@@ -1,4 +1,4 @@
-/* * Profile Filters Container */
+/* Profile Filters - Compact Control Bar */
 .container {
   display: flex;
   flex-direction: column;
@@ -6,304 +6,332 @@
   margin-bottom: var(--space-4, 1rem);
 }
 
-.sectionTitle {
-  margin: 0 0 var(--space-3, 0.75rem) 0;
-  font-size: var(--text-base, 1rem);
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-  text-align: center;
-}
-
-/* * Filters Grid Layout */
-.filtersGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-3, 0.75rem);
-  margin-bottom: var(--space-3, 0.75rem);
-}
-
-/* * Filter Group */
-.filterGroup {
+/* Main Control Bar */
+.controlBar {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1, 0.25rem);
+  flex-wrap: wrap;
+  gap: var(--space-3, 0.75rem);
+  align-items: center;
+  padding: var(--space-3, 0.75rem);
+  background: var(--glass-bg, rgb(255 255 255 / 95%));
+  border: 1px solid var(--glass-border, rgb(255 255 255 / 20%));
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-sm, 0 2px 8px rgb(0 0 0 / 10%));
+  backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
 }
 
-.filterLabel {
-  margin: 0;
+.controlBar:hover {
+  box-shadow: var(--shadow-md, 0 4px 12px rgb(0 0 0 / 15%));
+}
+
+/* Filter Inputs Container */
+.filterInputs {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: var(--space-2, 0.5rem);
+  align-items: center;
+  min-width: 0;
+}
+
+/* Filter Select Dropdowns */
+.filterSelect {
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  font-family: inherit;
   font-size: var(--text-sm, 0.875rem);
   font-weight: 500;
-  color: var(--text-secondary, #374151);
-}
-
-.filterSelect {
-  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  font-family: inherit;
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--text-primary, #111827);
+  color: var(--text-primary, #1e293b);
+  white-space: nowrap;
   cursor: pointer;
-  background: var(--card-background, #fff);
-  border: 1px solid var(--border-color, #d1d5db);
-  border-radius: var(--radius-sm, 4px);
-  transition: var(--transition-all, all 0.15s ease);
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  transition: all 0.2s ease;
 }
 
 .filterSelect:hover {
-  background: var(--card-hover);
-  border-color: var(--primary-color);
+  background: var(--card-hover, #f1f5f9);
+  border-color: var(--primary-color, #2c3e40);
+  box-shadow: 0 0 0 2px var(--primary-light, rgb(44 62 64 / 10%));
 }
 
 .filterSelect:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-light);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 15%);
+  border-color: var(--accent-color, #e8bf76);
+  box-shadow: 0 0 0 3px var(--accent-50, rgb(232 191 118 / 10%));
 }
 
-/* * Sort Order Button */
-.sortOrderButton {
+/* Order Button */
+.orderButton {
   display: flex;
-  gap: var(--space-2, 0.5rem);
   align-items: center;
-  min-height: 32px;
-  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  font-family: inherit;
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--text-primary);
-  cursor: pointer;
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm, 4px);
-  transition: var(--transition-all, all 0.15s ease);
-}
-
-.sortOrderButton:hover {
-  background: var(--card-hover);
-  border-color: var(--primary-color);
-  transform: translateY(-1px);
-}
-
-.sortOrderButton:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px var(--primary-light);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 15%);
-}
-
-.sortOrderIcon {
-  font-size: var(--text-base, 1rem);
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 var(--space-2, 0.5rem);
+  font-size: var(--text-lg, 1.125rem);
   font-weight: bold;
-  color: var(--text-secondary, #6b7280);
-  transition: var(--transition-all, all 0.2s ease);
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  background: var(--surface-color, #fff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  transition: all 0.2s ease;
 }
 
-.sortOrderButton:hover .sortOrderIcon {
-  color: var(--primary-color, #3b82f6);
-}
-
-.sortOrderText {
-  font-weight: 500;
-}
-
-/* * Active Filters Display */
-.activeFilters {
-  display: flex;
-  flex-flow: row wrap;
-  gap: var(--space-3, 0.75rem);
-  align-items: center;
-}
-
-.activeFilterLabel {
-  margin-right: var(--space-2, 0.5rem);
-  font-size: var(--text-sm, 0.875rem);
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.activeFilter {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
-  font-size: var(--text-xs, 0.75rem);
-  font-weight: 500;
-  color: var(--primary-color);
-  background: rgb(var(--primary-rgb) / 12%);
-  border: 1px solid var(--primary-400);
-  border-radius: var(--radius-full, 20px);
-  transition: var(--transition-all, all 0.2s ease);
-}
-
-.activeFilter:hover {
-  color: var(--button-text-light);
-  background: var(--primary-color);
-  box-shadow: var(--shadow-sm);
+.orderButton:hover {
+  color: var(--primary-color, #2c3e40);
+  background: var(--card-hover, #f1f5f9);
+  border-color: var(--primary-color, #2c3e40);
   transform: translateY(-1px);
 }
 
-/* * Responsive Design */
-@media (width <= 768px) {
-  .filtersGrid {
-    grid-template-columns: 1fr;
-    gap: var(--space-3, 1rem);
-  }
-
-  .sectionTitle {
-    margin-bottom: var(--space-3, 1rem);
-    font-size: var(--text-base, 1.125rem);
-  }
-
-  .activeFilters {
-    flex-direction: column;
-    gap: var(--space-2, 0.5rem);
-    align-items: flex-start;
-  }
+.orderButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
-@media (width <= 480px) {
-  .filtersGrid {
-    gap: var(--space-2, 0.75rem);
-  }
-
-  .filterSelect,
-  .sortOrderButton {
-    padding: var(--space-2, 0.625rem) var(--space-2, 0.5rem);
-    font-size: var(--text-xs, 0.8125rem);
-  }
-
-  .activeFilters {
-    padding: var(--space-2, 0.75rem);
-  }
-
-  .activeFilter {
-    padding: var(--space-1, 0.1875rem) var(--space-2, 0.5rem);
-    font-size: var(--text-xs, 0.6875rem);
-  }
-}
-
-/* Theme is driven by global CSS variables on :root[data-theme] */
-
-/* Component respects global variables; no local theme overrides here */
-
-/* * High Contrast Mode Support */
-@media (prefers-contrast: more) {
-  .container,
-  .activeFilters {
-    border-width: 2px;
-  }
-
-  .filterSelect,
-  .sortOrderButton {
-    border-width: 2px;
-  }
-
-  .filterSelect:focus,
-  .sortOrderButton:focus {
-    outline: 3px solid var(--primary-color, #000);
-    outline-offset: 2px;
-  }
-}
-
-/* * Focus Visible Support */
-.filterSelect:focus-visible,
-.sortOrderButton:focus-visible {
-  outline: 2px solid var(--primary-color, #3b82f6);
+.orderButton:focus-visible {
+  outline: 2px solid var(--accent-color, #e8bf76);
   outline-offset: 2px;
 }
 
-/* * Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  .container,
+/* Results Summary */
+.resultsSummary {
+  display: flex;
+  gap: var(--space-2, 0.5rem);
+  align-items: center;
+  padding: 0 var(--space-2, 0.5rem);
+  white-space: nowrap;
+}
+
+.summaryText {
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+  letter-spacing: 0.3px;
+}
+
+/* Apply Button */
+.applyButton {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-700, #1a2324));
+  border: 1px solid var(--primary-color, #2c3e40);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  transition: all 0.2s ease;
+}
+
+.applyButton:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
+}
+
+.applyButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.applyButton:focus-visible {
+  outline: 2px solid var(--accent-color, #e8bf76);
+  outline-offset: 2px;
+}
+
+.applyButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Light Theme Overrides */
+:global(.light-theme) .controlBar {
+  background: var(--glass-bg, rgb(255 255 255 / 90%));
+  border-color: var(--border-color, #e2e8f0);
+}
+
+:global(.light-theme) .filterSelect,
+:global(.light-theme) .orderButton {
+  color: var(--text-primary, #1e293b);
+  background: var(--surface-color, #fff);
+}
+
+:global(.light-theme) .filterSelect:hover,
+:global(.light-theme) .orderButton:hover {
+  background: var(--card-hover, #f1f5f9);
+  border-color: var(--primary-color, #2c3e40);
+}
+
+:global(.light-theme) .summaryText {
+  color: var(--text-secondary, #64748b);
+}
+
+/* Dark Theme Overrides */
+:global(.dark-theme) .controlBar {
+  background: var(--glass-bg, rgb(15 23 42 / 28%));
+  border-color: var(--glass-border, rgb(255 255 255 / 18%));
+}
+
+:global(.dark-theme) .filterSelect,
+:global(.dark-theme) .orderButton {
+  color: var(--text-primary, #f8fafc);
+  background: var(--card-background, #0f172a);
+  border-color: var(--card-border, #1e293b);
+}
+
+:global(.dark-theme) .filterSelect:hover,
+:global(.dark-theme) .orderButton:hover {
+  background: var(--card-hover, #1e293b);
+  border-color: var(--accent-color, #e8bf76);
+}
+
+:global(.dark-theme) .summaryText {
+  color: var(--text-secondary, #e2e8f0);
+}
+
+:global(.dark-theme) .applyButton {
+  background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-600, #1a2324));
+}
+
+/* Tablet */
+@media (width <= 1024px) {
+  .controlBar {
+    gap: var(--space-2, 0.5rem);
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .filterSelect {
+    padding: var(--space-2, 0.5rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .orderButton {
+    min-width: 40px;
+    height: 40px;
+    font-size: var(--text-base, 1rem);
+  }
+
+  .summaryText {
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .applyButton {
+    padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+}
+
+/* Mobile */
+@media (width <= 768px) {
+  .controlBar {
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .filterInputs {
+    gap: var(--space-2, 0.5rem);
+    width: 100%;
+  }
+
+  .filterSelect {
+    flex: 1;
+    min-width: 120px;
+    padding: var(--space-2, 0.5rem) var(--space-2, 0.5rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .orderButton {
+    min-width: 40px;
+    height: 40px;
+    font-size: var(--text-base, 1rem);
+  }
+
+  .resultsSummary {
+    gap: var(--space-2, 0.5rem);
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .summaryText {
+    flex: 1;
+    font-size: var(--text-xs, 0.75rem);
+  }
+
+  .applyButton {
+    width: auto;
+    padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+}
+
+/* Small Mobile */
+@media (width <= 480px) {
+  .controlBar {
+    gap: var(--space-1, 0.25rem);
+    padding: var(--space-2, 0.5rem);
+  }
+
+  .filterInputs {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .orderButton {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .resultsSummary {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .applyButton {
+    width: 100%;
+  }
+
+  .summaryText {
+    font-size: var(--text-xs, 0.75rem);
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+  .controlBar {
+    border-width: 2px;
+  }
+
   .filterSelect,
-  .sortOrderButton,
-  .activeFilter {
+  .orderButton {
+    border-width: 2px;
+  }
+
+  .filterSelect:focus-visible,
+  .orderButton:focus-visible,
+  .applyButton:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .controlBar,
+  .filterSelect,
+  .orderButton,
+  .applyButton {
     transition: none;
   }
 
-  .sortOrderButton:hover,
-  .activeFilter:hover {
+  .orderButton:hover,
+  .applyButton:hover {
     transform: none;
   }
-}
-
-/* * Filter Results Display */
-.filterResults {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3, 0.75rem);
-  padding: var(--space-4, 1rem);
-  font-size: var(--text-sm, 0.875rem);
-  background: var(--overlay-light, rgb(255 255 255 / 80%));
-  border: 1px solid var(--border-light, rgb(209 213 219 / 50%));
-  border-radius: var(--radius-md, 6px);
-}
-
-.resultsBar {
-  display: flex;
-  gap: var(--space-2, 0.5rem);
-  align-items: center;
-  justify-content: space-between;
-}
-
-.resultsInfo {
-  display: flex;
-  gap: var(--space-2, 0.5rem);
-  align-items: center;
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-}
-
-.resultsCount {
-  font-size: var(--text-sm, 0.875rem);
-}
-
-.filteredIndicator {
-  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  font-size: var(--text-2xs, 0.7rem);
-  font-weight: 500;
-  color: var(--text-accent, #3b82f6);
-  background: var(--accent-light, rgb(59 130 246 / 10%));
-  border: 1px solid var(--accent-border, rgb(59 130 246 / 20%));
-  border-radius: var(--radius-sm, 4px);
-}
-
-.applyButton {
-  padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
-  font-size: var(--text-xs, 0.75rem);
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
-  border: 1px solid #1d4ed8;
-  border-radius: var(--radius-sm, 4px);
-  transition: var(--transition-all, all 0.15s ease);
-}
-
-.applyButton:hover {
-  filter: brightness(1.05);
-}
-
-.applyButton:active {
-  transform: translateY(1px);
-}
-
-/* * Active Filters Display */
-.activeFiltersList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2, 0.5rem);
-  align-items: center;
-}
-
-.activeFilterLabel {
-  font-weight: 600;
-  color: var(--text-primary, #111827);
-}
-
-.activeFilter {
-  padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--text-secondary, #6b7280);
-  background: var(--background-secondary, #f9fafb);
-  border: 1px solid var(--border-color, #d1d5db);
-  border-radius: var(--radius-sm, 4px);
 }

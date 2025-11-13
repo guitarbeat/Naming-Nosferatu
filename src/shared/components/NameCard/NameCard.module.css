@@ -166,30 +166,30 @@
   background: linear-gradient(135deg, var(--warning-500), var(--warning-700));
 }
 
-/* Ensure card takes remaining space */
+/* Ensure card takes remaining space - Premium Design */
 .card {
   position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-4);
-  height: auto; /* Allow height to grow with content */
-  min-height: 200px; /* Increased from 140px for better description space */
-  max-height: none; /* Remove max-height constraint to allow descriptions to expand */
-  padding: var(--space-5);
-  overflow: visible; /* Changed from hidden to allow content to expand */
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  height: auto;
+  min-height: auto;
+  max-height: none;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  overflow: visible;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
 
   /* Reset button defaults */
-  background: var(--card-background);
-  border: 2px solid var(--border-color);
-  border-radius: 20px;
-  box-shadow: var(--shadow-sm);
+  background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 50%)), var(--surface-muted, rgb(15 23 42 / 40%)));
+  border: 1.5px solid var(--border-color, rgb(148 163 184 / 25%));
+  border-radius: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
 
   /* Enhanced visual hierarchy */
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(16px);
   transition: all var(--duration-normal) var(--ease-out);
   will-change: transform, box-shadow;
 }
@@ -215,30 +215,30 @@
   transition: transform var(--duration-normal) var(--ease-out);
 }
 
-/* Name styling - Ensure it doesn't take too much space */
+/* Name styling - Large and Prominent */
 .name {
-  flex-shrink: 0; /* Prevent name from shrinking */
+  flex-shrink: 0;
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 800;
   line-height: 1.2;
   color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 8px rgba(0 0 0 / 15%);
 }
 
-/* Description styling - Enhanced for better readability and space */
+/* Description styling - Large and Legible */
 .description {
-  flex: 1; /* Take remaining space */
-  min-height: 4.8em; /* Ensure minimum height for description (6 lines * 1.6 line-height * 0.5em) */
+  flex: 1;
+  min-height: auto;
   margin: 0;
-  overflow: visible; /* Allow text to expand naturally */
-  font-size: var(
-    --text-base
-  ); /* Increased from text-sm for better readability */
-
-  font-weight: 450; /* Slightly heavier for better readability */
-  line-height: 1.6;
+  overflow: visible;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.7;
   color: var(--text-secondary);
-  opacity: 0.9; /* Increased from 0.85 for better visibility */
+  opacity: 0.95;
   transition: opacity var(--duration-normal) var(--ease-out);
 }
 
@@ -347,70 +347,51 @@
 }
 
 /* Enhanced depth on hover */
+.card:not(.disabled):hover {
+  border-color: var(--accent-color, #e8bf76);
+  transform: rotateX(5deg) rotateY(-5deg);
+}
+
 .card:not(.disabled):hover .name {
-  color: var(--text-primary);
-  text-shadow: 0 4px 8px rgba(var(--neon-cyan-rgb), 0.4);
-  transform: translateY(-2px);
+  color: var(--accent-color, #e8bf76);
 }
 
 .card:not(.disabled):hover .description {
-  opacity: 1;
-  transform: translateY(-1px);
+  color: var(--text-primary);
 }
 
 .card:not(.disabled):hover .checkMark {
-  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 20%));
   transform: scale(1.1);
 }
 
-/* Smooth float animation */
+/* Tilt effect only - no float animation */
 .card:not(.disabled) {
-  animation: float 6s ease-in-out infinite;
-}
-
-.card:not(.disabled):hover {
-  animation: none;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
+  perspective: 1000px;
 }
 
 .selected {
-  background: var(
-    --namecard-selected-bg,
-    linear-gradient(135deg, var(--primary-50), var(--primary-100))
-  );
-  border-color: var(--namecard-selected-border, var(--primary-500));
-  box-shadow:
-    0 0 0 2px rgba(var(--primary-rgb), 0.2),
-    var(--shadow-lg);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(232 191 118 / 12%), rgba(241 164 56 / 10%));
+  border: 2px solid var(--accent-color, #e8bf76);
 }
 
 .selected .name {
-  color: var(--text-primary);
-  text-shadow: 0 0 6px rgba(var(--hot-pink-rgb), 0.4);
-  transform: translateY(-1px);
-}
-
-/* * Enhanced hover effect for selected state */
-.selected:hover .name {
-  color: var(--text-primary);
-  text-shadow: 0 0 8px rgba(var(--hot-pink-rgb), 0.6);
+  color: var(--accent-color, #e8bf76);
+  text-shadow: 0 0 12px rgba(232 191 118 / 50%);
   transform: translateY(-2px);
 }
 
+.selected:hover {
+  border-color: var(--highlight-color, #f1a438);
+  transform: rotateX(5deg) rotateY(-5deg) scale(1.02);
+}
+
+.selected:hover .name {
+  color: var(--highlight-color, #f1a438);
+}
+
 .selected .description {
-  color: var(--namecard-selected-description, var(--primary-600));
-  opacity: 0.9;
+  color: var(--text-primary);
+  opacity: 1;
 }
 
 .checkMark {
@@ -483,38 +464,35 @@
 /* Responsive Adjustments */
 @media (width <= 768px) {
   .card {
-    min-height: 140px;
-    padding: var(--space-3);
-    background: var(--mobile-card-background, var(--card-background));
-    border-color: var(--mobile-card-border, var(--card-border));
-    box-shadow: 0 2px 4px var(--shadow-color-light);
+    min-height: auto;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 50%)), var(--surface-muted, rgb(15 23 42 / 40%)));
+    border-color: var(--border-color, rgb(148 163 184 / 25%));
+    box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
   }
 
   .card:hover {
-    background: var(--mobile-card-hover, var(--card-hover));
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 8px var(--shadow-color-medium);
-    transform: translateY(-1px) scale(1.01);
+    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
+    border-color: var(--accent-color, #e8bf76);
+    box-shadow: 0 16px 40px rgb(0 0 0 / 20%);
+    transform: translateY(-4px) scale(1.02);
   }
 
   .name {
-    font-size: var(--text-lg);
-    color: var(--mobile-text-primary, var(--text-primary));
+    font-size: clamp(1.125rem, 3.5vw, 1.5rem);
   }
 
   .description {
-    font-size: var(--text-sm);
-    color: var(--mobile-text-secondary, var(--text-secondary));
+    font-size: clamp(0.875rem, 2vw, 1rem);
   }
 
   .small {
-    min-height: 120px;
+    min-height: auto;
   }
 
-  /* Enhanced mobile touch feedback */
   .card:active {
-    background: var(--mobile-card-hover, var(--card-hover));
-    box-shadow: 0 1px 2px var(--shadow-color-light);
+    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
+    box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
     transform: scale(0.98);
   }
 }
@@ -761,7 +739,7 @@
 /* * Special styling for cards with images - Tinder-style layout */
 .hasImage {
   /* * Increase card height for better image display */
-  min-height: 320px;
+  min-height: auto;
   overflow: hidden;
 
   /* * Enhanced Tinder-style appearance */
@@ -791,8 +769,8 @@
   z-index: 1;
 
   /* * Match swipe card image height */
-  height: 220px; /* Slightly taller to reduce perceived cropping */
-  margin-bottom: var(--space-4);
+  height: 180px; /* Reduced from 220px for smaller cards */
+  margin-bottom: var(--space-3);
 }
 
 .hasImage .name,
@@ -817,20 +795,20 @@
 /* Mobile responsive styles for card images */
 @media (width <= 768px) {
   .cardImageContainer {
-    height: 150px;
+    height: 120px;
     margin-bottom: var(--space-2);
   }
 
   .hasImage .cardImageContainer {
-    height: 150px;
+    height: 120px;
   }
 
   .hasImage {
-    min-height: 280px;
+    min-height: auto;
   }
 
   .card:has(.cardImageContainer) {
-    min-height: 280px;
+    min-height: auto;
   }
 }
 

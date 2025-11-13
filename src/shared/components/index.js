@@ -7,7 +7,7 @@
 // * Core UI Components
 import Button from './Button/Button';
 import Card from './Card/Card';
-import Loading, { LoadingSpinner, SuspenseView } from './Loading/Loading';
+import Loading from './Loading/Loading';
 import Error from './Error/Error';
 import Toast from './Toast/Toast';
 import SkeletonLoader from './SkeletonLoader/SkeletonLoader';
@@ -28,6 +28,7 @@ import Bracket from './Bracket/Bracket';
 import BongoCat from './BongoCat/BongoCat';
 import CatBackground from './CatBackground/CatBackground';
 import CatImage from './CatImage/CatImage';
+import FloatingGallery from './FloatingGallery/FloatingGallery';
 import PerformanceDashboard from './PerformanceDashboard/PerformanceDashboard';
 import StartTournamentButton from './StartTournamentButton/StartTournamentButton';
 import CalendarButton from './CalendarButton/CalendarButton';
@@ -67,6 +68,7 @@ const components = {
   BongoCat,
   CatBackground,
   CatImage,
+  FloatingGallery,
   PerformanceDashboard,
   StartTournamentButton,
   CalendarButton,
@@ -74,11 +76,7 @@ const components = {
 
   // UI System
   ErrorBoundary,
-  ErrorBoundaryFallback,
-
-  // Legacy helpers
-  LoadingSpinner,
-  SuspenseView,
+  ErrorBoundaryFallback
 };
 
 // * Named exports
@@ -100,14 +98,13 @@ export {
   BongoCat,
   CatBackground,
   CatImage,
+  FloatingGallery,
   PerformanceDashboard,
   StartTournamentButton,
   CalendarButton,
   ViewRouter,
   ErrorBoundary,
-  ErrorBoundaryFallback,
-  LoadingSpinner,
-  SuspenseView,
+  ErrorBoundaryFallback
 };
 
 // * Default export reuses the same object

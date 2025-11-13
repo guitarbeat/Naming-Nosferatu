@@ -11,7 +11,7 @@
   flex-direction: row;
   width: 100%;
   height: auto;
-  min-height: 70px;
+  min-height: 50px;
 
   /* * Enhanced visual effects */
   overflow: hidden;
@@ -45,7 +45,7 @@
 }
 
 .sidebar--collapsed {
-  min-height: 60px;
+  min-height: 50px;
 
   /* * Enhanced collapsed state animation */
   transform: translateY(0);
@@ -96,13 +96,13 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  gap: 2rem;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: 0 1.5rem;
+  padding: 0 1rem;
   overflow: auto hidden;
 
   /* * Hide scrollbar but keep scrolling functionality */
@@ -120,7 +120,7 @@
   display: flex;
   flex-shrink: 0;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -150,7 +150,7 @@
 .sidebar-group-content {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
@@ -174,8 +174,8 @@
   gap: 0.5rem;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
-  padding: 0.5rem 1rem;
+  min-height: 36px;
+  padding: 0.4rem 0.75rem;
 
   /* * Enhanced hover effects */
   overflow: hidden;
@@ -409,8 +409,8 @@
 
   /* * Improve touch targets on mobile */
   .sidebar-menu-button {
-    min-height: 52px;
-    padding: 1rem 1.25rem;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
   }
 
   .sidebar-collapse-toggle {
