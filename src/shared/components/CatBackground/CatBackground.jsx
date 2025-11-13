@@ -12,7 +12,7 @@ function createCatVideo(index) {
       preload="none"
     >
       <source src="/assets/images/cat.webm" type="video/webm" />
-      <img src="/assets/images/cat.gif" alt="" loading="lazy" decoding="async" fetchPriority="low" />
+      <img src="/assets/images/cat.gif" alt="" loading="lazy" decoding="async" fetchpriority="low" />
     </video>
   );
 }
