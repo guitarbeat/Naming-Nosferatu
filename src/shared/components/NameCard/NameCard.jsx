@@ -78,6 +78,13 @@ function NameCard({
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = useRef(null);
+  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
+    maxRotation: 6,
+    perspective: 1000,
+    smoothing: 0.12,
+    scale: 1.02,
+  });
+
   useEffect(() => {
     if (isRippling) {
       const timer = setTimeout(() => setIsRippling(false), 600);
