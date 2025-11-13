@@ -98,6 +98,7 @@ export {
   BongoCat,
   CatBackground,
   CatImage,
+  FloatingGallery,
   PerformanceDashboard,
   StartTournamentButton,
   CalendarButton,
