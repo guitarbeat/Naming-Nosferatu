@@ -230,7 +230,7 @@ function NameCard({
     <div className={styles.cardContainer}>
       {/* Main card content */}
       <button
-        ref={cardRef}
+        ref={tiltRef}
         className={cardClasses}
         onClick={handleInteraction}
         onKeyDown={handleInteraction}
@@ -242,6 +242,7 @@ function NameCard({
         }
         aria-labelledby={`${getSafeId(name)}-title`}
         type="button"
+        style={tiltStyle}
       >
         {/* Background mouse follow effect */}
         <div
