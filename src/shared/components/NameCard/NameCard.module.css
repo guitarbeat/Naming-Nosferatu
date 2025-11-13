@@ -823,20 +823,20 @@
 /* Mobile responsive styles for card images */
 @media (width <= 768px) {
   .cardImageContainer {
-    height: 150px;
+    height: 120px;
     margin-bottom: var(--space-2);
   }
 
   .hasImage .cardImageContainer {
-    height: 150px;
+    height: 120px;
   }
 
   .hasImage {
-    min-height: 280px;
+    min-height: auto;
   }
 
   .card:has(.cardImageContainer) {
-    min-height: 280px;
+    min-height: auto;
   }
 }
 
