@@ -236,9 +236,9 @@
 .expandedContent {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: clamp(1.5rem, 4vw, 2rem);
   min-height: auto;
-  padding: clamp(1rem, 2vw, 1.5rem) 0;
+  padding: 0;
   overflow: visible;
 }
 
