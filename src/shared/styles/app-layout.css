@@ -1,4 +1,4 @@
-/* App Layout Styles - Full Width Premium Design */
+/* App Layout Styles */
 
 .app {
   display: flex;
@@ -6,15 +6,9 @@
   width: 100%;
   height: 100vh;
 
-  --sidebar-expanded-width: 0px;
-  --sidebar-collapsed-width: 0px;
+  --sidebar-expanded-width: 280px;
+  --sidebar-collapsed-width: 80px;
   --sidebar-current-width: var(--sidebar-expanded-width);
-}
-
-/* Hide sidebar entirely */
-.app .sidebar,
-.app :is(.sidebar) {
-  display: none !important;
 }
 
 .app-main-wrapper {
