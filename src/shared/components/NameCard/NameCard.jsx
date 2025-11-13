@@ -33,6 +33,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTiltEffect } from '../../hooks/useTiltEffect';
 import CatImage from '../CatImage';
 import styles from './NameCard.module.css';
 
@@ -77,6 +78,13 @@ function NameCard({
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = useRef(null);
+  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
+    maxRotation: 12,
+    perspective: 800,
+    smoothing: 0.1,
+    scale: 1.05,
+  });
+
   useEffect(() => {
     if (isRippling) {
       const timer = setTimeout(() => setIsRippling(false), 600);
@@ -86,7 +94,7 @@ function NameCard({
 
   // Mouse follow effect for background
   useEffect(() => {
-    const card = cardRef.current;
+    const card = tiltRef.current;
     if (!card || disabled) return;
 
     const handleMouseMove = (e) => {
@@ -222,7 +230,7 @@ function NameCard({
     <div className={styles.cardContainer}>
       {/* Main card content */}
       <button
-        ref={cardRef}
+        ref={tiltRef}
         className={cardClasses}
         onClick={handleInteraction}
         onKeyDown={handleInteraction}
@@ -234,6 +242,7 @@ function NameCard({
         }
         aria-labelledby={`${getSafeId(name)}-title`}
         type="button"
+        style={tiltStyle}
       >
         {/* Background mouse follow effect */}
         <div

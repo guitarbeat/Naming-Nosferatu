@@ -121,7 +121,7 @@ export function AppSidebar({
                 height="96"
                 loading="lazy"
                 decoding="async"
-                fetchPriority="low"
+                fetchpriority="low"
                 style={{ display: "none" }}
               />
             </video>

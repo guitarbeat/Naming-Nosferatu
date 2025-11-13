@@ -247,6 +247,26 @@
   text-align: center;
 }
 
+.tournamentInfoIntegrated {
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  background: linear-gradient(135deg, rgba(148, 163, 184, 0.05) 0%, rgba(100, 116, 139, 0.05) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .starsSection {
   padding: var(--space-2);
   margin-bottom: var(--space-4);
@@ -1114,6 +1134,29 @@
 }
 
 /* Lightbox styles */
+.lightboxOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) + 1);
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
 .lightboxContent {
   position: fixed;
   inset: 0;
@@ -1122,6 +1165,18 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-8);
+  animation: contentEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes contentEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .lightboxImageWrap {
@@ -1130,6 +1185,49 @@
   justify-content: center;
   max-width: min(92vw, 1200px);
   max-height: 80vh;
+  animation: imageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes imageEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lightboxImageWrap.slideLeft {
+  animation: slideOutLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lightboxImageWrap.slideRight {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-80px) scale(0.95);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(80px) scale(0.95);
+  }
 }
 
 .lightboxImage {
@@ -1138,6 +1236,18 @@
   object-fit: contain;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
+  animation: imageZoom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes imageZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .lightboxNav {
@@ -1146,22 +1256,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  font-size: var(--text-2xl);
+  width: 52px;
+  height: 52px;
+  font-size: 1.75rem;
   line-height: 1;
   color: rgb(var(--white-rgb));
   cursor: pointer;
-  background: var(--overlay-medium);
-  border: none;
+  background: rgba(var(--black-rgb), 0.6);
+  border: 2px solid rgba(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transform: translateY(-50%);
   transition: var(--transition-all);
+  z-index: calc(var(--z-modal) + 2);
 }
 
 .lightboxNav:hover {
-  background: var(--overlay-dark);
-  transform: translateY(-50%) scale(1.05);
+  background: rgba(var(--black-rgb), 0.8);
+  border-color: rgba(var(--white-rgb), 0.6);
+  transform: translateY(-50%) scale(1.15);
+}
+
+.lightboxNav:focus {
+  outline: 2px solid rgba(var(--primary-rgb), 0.8);
+  outline-offset: 2px;
 }
 
 .lightboxNav.left {
@@ -1179,20 +1296,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  font-size: var(--text-2xl);
+  width: 48px;
+  height: 48px;
+  font-size: 1.75rem;
   line-height: 1;
   color: rgb(var(--white-rgb));
   cursor: pointer;
-  background: var(--overlay-medium);
-  border: none;
+  background: rgba(var(--black-rgb), 0.6);
+  border: 2px solid rgba(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transition: var(--transition-all);
+  z-index: calc(var(--z-modal) + 2);
 }
 
 .lightboxClose:hover {
-  background: var(--overlay-dark);
+  background: rgba(var(--black-rgb), 0.8);
+  border-color: rgba(var(--white-rgb), 0.6);
+  transform: scale(1.1);
+}
+
+.lightboxClose:focus {
+  outline: 2px solid rgba(var(--primary-rgb), 0.8);
+  outline-offset: 2px;
 }
 
 .lightboxCounter {
