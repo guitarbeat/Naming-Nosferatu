@@ -1,18 +1,28 @@
 /**
  * @module TournamentSetup/components/PhotoThumbnail
- * @description Photo thumbnail with responsive image sources
+ * @description Photo thumbnail with responsive image sources and 3D tilt effect
  */
 import PropTypes from "prop-types";
+import { useTiltEffect } from "../../../../shared/hooks/useTiltEffect";
 import { GALLERY_IMAGE_SIZES } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
 
 function PhotoThumbnail({ image, index, onImageOpen }) {
+  const { elementRef, style } = useTiltEffect({
+    maxRotation: 8,
+    perspective: 1000,
+    smoothing: 0.1,
+    scale: 1.03,
+  });
+
   return (
     <button
       key={image}
+      ref={elementRef}
       type="button"
       className={`${styles.photoThumbnail} ${styles.photoThumbButton}`}
       onClick={() => onImageOpen(image)}
+      style={style}
       aria-label={`Open cat photo ${index + 1}`}
     >
       {image.startsWith("/assets/images/") ? (

@@ -248,7 +248,7 @@
 }
 
 .starsSection {
-  padding: var(--space-4);
+  padding: var(--space-2);
   margin-bottom: var(--space-4);
   background: var(--card-background);
   border: 1px solid var(--card-border);
@@ -257,14 +257,14 @@
 }
 
 .starsTitle {
-  margin: 0 0 var(--space-2) 0;
+  margin: 0 0 var(--space-1) 0;
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .starsDescription {
-  margin: 0 0 var(--space-4) 0;
+  margin: 0 0 var(--space-3) 0;
   font-size: var(--text-sm);
   line-height: 1.5;
   color: var(--text-secondary);
@@ -607,6 +607,7 @@
   grid-auto-flow: row dense;
   gap: var(--space-3);
   align-items: stretch;
+  perspective: 1000px;
 }
 
 .photoThumbnail {
@@ -617,6 +618,8 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   transition: all var(--duration-normal) var(--ease-out);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .photoThumbnail:hover {
@@ -737,7 +740,7 @@
 
 @media (width <= 768px) {
   .starsSection {
-    padding: var(--space-3);
+    padding: var(--space-2);
   }
 }
 
