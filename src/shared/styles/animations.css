@@ -89,15 +89,17 @@
 
 @keyframes shimmer-sweep {
   0% {
-    transform: translateX(-100%) skewX(-15deg);
     opacity: 0;
+    transform: translateX(-100%) skewX(-15deg);
   }
+
   50% {
     opacity: 0.8;
   }
+
   100% {
-    transform: translateX(200%) skewX(-15deg);
     opacity: 0;
+    transform: translateX(200%) skewX(-15deg);
   }
 }
 

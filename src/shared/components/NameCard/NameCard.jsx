@@ -31,7 +31,7 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTiltEffect } from '../../hooks/useTiltEffect';
 import CatImage from '../CatImage';
@@ -77,7 +77,6 @@ function NameCard({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const cardRef = useRef(null);
   const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
     maxRotation: 12,
     perspective: 800,
@@ -149,7 +148,7 @@ function NameCard({
       card.removeEventListener('mousemove', handleMouseMove);
       card.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [disabled, metadata]);
+  }, [disabled, metadata, tiltRef]);
 
   const handleInteraction = (event) => {
     if (disabled) {

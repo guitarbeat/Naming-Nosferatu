@@ -25,7 +25,7 @@ function CatNameEditor({ userName, onUpdate }) {
     greeting_text: 'Hello! My name is',
     show_banner: true
   });
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -39,7 +39,7 @@ function CatNameEditor({ userName, onUpdate }) {
   const loadCatName = async () => {
     setIsLoading(true);
     setError('');
-    
+
     try {
       const data = await siteSettingsAPI.getCatChosenName();
       if (data) {
@@ -52,7 +52,7 @@ function CatNameEditor({ userName, onUpdate }) {
         });
       }
     } catch (err) {
-      setError('Failed to load cat name: ' + err.message);
+      setError(`Failed to load cat name: ${  err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -93,10 +93,10 @@ function CatNameEditor({ userName, onUpdate }) {
     }
 
     setIsSaving(true);
-    
+
     try {
       const result = await siteSettingsAPI.updateCatChosenName(formData, userName);
-      
+
       if (result.success) {
         setSuccess('✅ Cat name saved successfully!');
         if (onUpdate) {
@@ -106,7 +106,7 @@ function CatNameEditor({ userName, onUpdate }) {
         setError(result.error || 'Failed to save cat name');
       }
     } catch (err) {
-      setError('Error saving cat name: ' + err.message);
+      setError(`Error saving cat name: ${  err.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -125,7 +125,7 @@ function CatNameEditor({ userName, onUpdate }) {
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
-        <h2 className={styles.title}>🐱 Cat's Name Tag</h2>
+        <h2 className={styles.title}>🐱 Cat&apos;s Name Tag</h2>
         <p className={styles.subtitle}>
           Set the name that your cat will introduce themselves with
         </p>
@@ -165,7 +165,7 @@ function CatNameEditor({ userName, onUpdate }) {
               Add
             </Button>
           </div>
-          
+
           {formData.middle_names.length > 0 && (
             <div className={styles.middleNamesList}>
               {formData.middle_names.map((name, index) => (

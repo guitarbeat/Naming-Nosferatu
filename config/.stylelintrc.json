@@ -8,7 +8,20 @@
     "selector-pseudo-class-no-unknown": [true, {"ignorePseudoClasses": ["global", "export"]}],
     "selector-pseudo-element-no-unknown": [true, {"ignorePseudoElements": ["-webkit-scrollbar", "-webkit-slider-thumb", "-moz-range-thumb"]}],
     "property-no-unknown": [true, {"ignoreProperties": ["composes", "cardBase", "pageContainer", "gridLayout"]}],
-    "at-rule-no-unknown": [true, {"ignoreAtRules": ["value"]}],
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "value",
+          "tailwind",
+          "apply",
+          "layer",
+          "variants",
+          "responsive",
+          "screen"
+        ]
+      }
+    ],
     "no-duplicate-selectors": null,
     "no-descending-specificity": null,
     "block-no-empty": null,
