@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
+import { getMediaQueryMatches } from '../../utils/mediaQueries';
 import './CatBackground.css';
 
 function createCatVideo(index) {
@@ -21,10 +22,7 @@ export default function CatBackground() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const prefersReduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReduced = getMediaQueryMatches('(prefers-reduced-motion: reduce)');
     if (prefersReduced) {
       return;
     }
@@ -123,9 +121,9 @@ export default function CatBackground() {
 
   const showCats = useMemo(() => {
     const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? getMediaQueryMatches('(prefers-reduced-motion: reduce)')
+        : false;
     const saveData =
       typeof navigator !== 'undefined' &&
       navigator.connection &&
