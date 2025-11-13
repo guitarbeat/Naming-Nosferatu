@@ -364,24 +364,9 @@
   transform: scale(1.1);
 }
 
-/* Smooth float animation */
+/* Tilt effect only - no float animation */
 .card:not(.disabled) {
-  animation: premiumFloat 8s ease-in-out infinite;
-}
-
-.card:not(.disabled):hover {
-  animation: none;
-}
-
-@keyframes premiumFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-8px);
-  }
+  perspective: 1000px;
 }
 
 .selected {
