@@ -28,6 +28,7 @@ import Bracket from './Bracket/Bracket';
 import BongoCat from './BongoCat/BongoCat';
 import CatBackground from './CatBackground/CatBackground';
 import CatImage from './CatImage/CatImage';
+import FloatingGallery from './FloatingGallery/FloatingGallery';
 import PerformanceDashboard from './PerformanceDashboard/PerformanceDashboard';
 import StartTournamentButton from './StartTournamentButton/StartTournamentButton';
 import CalendarButton from './CalendarButton/CalendarButton';
