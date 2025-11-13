@@ -401,15 +401,11 @@
 
 .selected:hover {
   border-color: var(--highlight-color, #f1a438);
-  box-shadow:
-    0 0 0 3px rgba(232 191 118 / 30%),
-    0 20px 60px rgba(232 191 118 / 30%);
+  transform: rotateX(5deg) rotateY(-5deg) scale(1.02);
 }
 
 .selected:hover .name {
   color: var(--highlight-color, #f1a438);
-  text-shadow: 0 0 16px rgba(241 164 56 / 60%);
-  transform: translateY(-3px);
 }
 
 .selected .description {
