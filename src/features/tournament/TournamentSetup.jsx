@@ -8,7 +8,6 @@ import PropTypes from "prop-types";
 import { Loading, Error } from "../../shared/components";
 import {
   useTournamentSetup,
-  useImageGallery,
   useAdminStatus,
   useCategoryFilters,
 } from "./hooks";
@@ -18,7 +17,6 @@ import {
   TournamentHeader,
   TournamentSidebar,
   StartButton,
-  Lightbox,
 } from "./components";
 import styles from "./TournamentSetup.module.css";
 
