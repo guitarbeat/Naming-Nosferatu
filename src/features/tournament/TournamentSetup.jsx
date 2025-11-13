@@ -127,24 +127,7 @@ function TournamentSetupContent({ onStart, userName }) {
       <TournamentSidebar
         selectedNamesCount={selectedNames.length}
         availableNamesCount={availableNames.length}
-        galleryImages={galleryImages}
-        showAllPhotos={showAllPhotos}
-        onShowAllPhotosToggle={() => setShowAllPhotos((v) => !v)}
-        onImageOpen={handleImageOpen}
-        isAdmin={isAdmin}
-        userName={userName}
-        onImagesUploaded={handleImagesUploaded}
-                      />
-
-      {/* Lightbox */}
-      {lightboxOpen && (
-        <Lightbox
-          images={galleryImages}
-          currentIndex={lightboxIndex}
-          onClose={() => setLightboxOpen(false)}
-          onNavigate={setLightboxIndex}
-        />
-      )}
+      />
     </div>
   );
 }
