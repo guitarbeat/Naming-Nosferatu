@@ -120,7 +120,10 @@ export default function CatBackground() {
   }, []);
 
   const showCats = useMemo(() => {
-    const prefersReducedMotion = getMediaQueryMatches('(prefers-reduced-motion: reduce)');
+    const prefersReducedMotion =
+      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? getMediaQueryMatches('(prefers-reduced-motion: reduce)')
+        : false;
     const saveData =
       typeof navigator !== 'undefined' &&
       navigator.connection &&
