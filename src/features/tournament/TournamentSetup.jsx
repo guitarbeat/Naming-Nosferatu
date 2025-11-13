@@ -113,8 +113,7 @@ function TournamentSetupContent({ onStart, userName }) {
             onSortChange={setSortBy}
             isSwipeMode={isSwipeMode}
             showCatPictures={showCatPictures}
-            imageList={galleryImages}
-          SwipeableCards={SwipeableNameCards}
+            SwipeableCards={SwipeableNameCards}
           />
 
           {selectedNames.length >= 2 && (
