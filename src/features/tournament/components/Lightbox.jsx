@@ -70,7 +70,8 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
           type="button"
           className={styles.lightboxClose}
           onClick={onClose}
-          aria-label="Close gallery"
+          aria-label="Close gallery (or press Escape)"
+          title="Close (ESC)"
           ref={closeBtnRef}
         >
           ×
