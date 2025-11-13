@@ -492,8 +492,8 @@
 /* Responsive Adjustments */
 @media (width <= 768px) {
   .card {
-    min-height: clamp(260px, 45vh, 380px);
-    padding: clamp(1.5rem, 3vw, 2rem);
+    min-height: auto;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
     background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 50%)), var(--surface-muted, rgb(15 23 42 / 40%)));
     border-color: var(--border-color, rgb(148 163 184 / 25%));
     box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
@@ -507,15 +507,15 @@
   }
 
   .name {
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-size: clamp(1.125rem, 3.5vw, 1.5rem);
   }
 
   .description {
-    font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+    font-size: clamp(0.875rem, 2vw, 1rem);
   }
 
   .small {
-    min-height: clamp(200px, 40vh, 320px);
+    min-height: auto;
   }
 
   .card:active {
