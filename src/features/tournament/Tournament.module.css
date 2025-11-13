@@ -183,12 +183,13 @@
 
 .extraOptions {
   display: flex;
-  gap: var(--space-4);
+  gap: clamp(1rem, 3vw, 2rem);
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 600px;
-  margin-top: var(--space-4);
+  max-width: 800px;
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  flex-wrap: wrap;
 }
 
 .extraOptionsButton {
@@ -196,28 +197,30 @@
   gap: var(--space-2);
   align-items: center;
   justify-content: center;
-  min-width: 120px;
-  min-height: 48px;
-  padding: var(--space-2) var(--space-5);
-  font-size: var(--text-base);
-  font-weight: 600;
+  min-width: clamp(140px, 30vw, 240px);
+  min-height: clamp(48px, 10vw, 56px);
+  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem);
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
   color: var(--text-primary);
   background: linear-gradient(
     135deg,
     var(--glass-bg-light, rgb(255 255 255 / 50%)),
     var(--glass-bg, rgb(255 255 255 / 70%))
   );
-  border: 1px solid var(--glass-border, rgb(0 0 0 / 10%));
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-subtle, 0 1px 3px rgb(0 0 0 / 10%));
+  border: 1.5px solid var(--glass-border, rgb(0 0 0 / 10%));
+  border-radius: var(--radius-full, 999px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
   backdrop-filter: blur(var(--glass-blur, 16px));
   transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
 }
 
 .extraOptionsButton:hover:not(:disabled) {
   border-color: var(--glass-border-hover, rgb(0 0 0 / 15%));
-  box-shadow: var(--shadow-medium, 0 4px 12px rgb(0 0 0 / 15%));
-  transform: translateY(-1px);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
 }
 
 .extraOptionsButton:active:not(:disabled) {
@@ -225,25 +228,21 @@
 }
 
 .extraOptionsButton:focus-visible {
-  outline: 2px solid var(--primary-400);
-  outline-offset: 2px;
+  outline: 2px solid var(--accent-color, #e8bf76);
+  outline-offset: 3px;
 }
 
 .extraOptionsButton:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.5;
   transform: none;
 }
 
 .extraOptionsButton.selected {
-  color: var(--button-text-light, #fff);
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-color, #e8bf76), var(--highlight-color, #f1a438));
   border-color: transparent;
-  box-shadow: var(
-    --glass-shadow-colored,
-    0 8px 32px rgb(47 243 224 / 10%),
-    0 8px 16px rgb(250 38 160 / 5%)
-  );
+  box-shadow: 0 12px 40px rgb(232 191 118 / 35%);
 }
 
 /* Controls & Buttons
