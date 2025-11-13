@@ -164,8 +164,6 @@ function TournamentSetupContent({ onStart, userName }) {
 
         {/* Sidebar */}
       <TournamentSidebar
-        selectedNamesCount={selectedNames.length}
-        availableNamesCount={availableNames.length}
         galleryImages={galleryImages}
         showAllPhotos={showAllPhotos}
         onShowAllPhotosToggle={() => setShowAllPhotos((v) => !v)}
