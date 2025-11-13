@@ -38,7 +38,6 @@ function TournamentSetupContent({ onStart, userName }) {
     handleSelectAll,
   } = useTournamentSetup(userName);
 
-  const { galleryImages, setGalleryImages } = useImageGallery();
   const isAdmin = useAdminStatus(userName);
   const categories = useCategoryFilters(availableNames);
 
@@ -48,20 +47,6 @@ function TournamentSetupContent({ onStart, userName }) {
   const [sortBy, setSortBy] = useState("alphabetical");
   const [isSwipeMode, setIsSwipeMode] = useState(false);
   const [showCatPictures, setShowCatPictures] = useState(false);
-  const [showAllPhotos, setShowAllPhotos] = useState(false);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-
-  // * Lightbox handlers
-  const handleImageOpen = (image) => {
-    const idx = galleryImages.indexOf(image);
-    setLightboxIndex(idx >= 0 ? idx : 0);
-    setLightboxOpen(true);
-  };
-
-  const handleImagesUploaded = (uploaded) => {
-    setGalleryImages((prev) => [...uploaded, ...prev]);
-  };
 
   // * Loading state
   if (isLoading) {
