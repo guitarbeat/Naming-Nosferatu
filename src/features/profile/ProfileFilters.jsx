@@ -1,8 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FILTER_OPTIONS } from "../../core/constants";
-import { Card, Select } from "../../shared/components";
-import FilterGroup from "../../shared/components/FilterGroup/FilterGroup";
+import { Select } from "../../shared/components";
 import styles from "./ProfileFilters.module.css";
 
 /**

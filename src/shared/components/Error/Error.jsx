@@ -263,7 +263,7 @@ const ErrorList = ({
                     <div className={styles.listDetailRow}>
                       <strong>Technical Details:</strong>
                       <pre className={styles.listErrorStack}>
-                        {typeof error.originalError === 'object' 
+                        {typeof error.originalError === 'object'
                           ? JSON.stringify(error.originalError, null, 2)
                           : error.originalError.toString()}
                       </pre>

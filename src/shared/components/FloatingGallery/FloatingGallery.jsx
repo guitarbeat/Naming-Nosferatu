@@ -53,7 +53,7 @@ function FloatingGallery({
     }, rotationDelay);
 
     return () => clearInterval(interval);
-  }, [autoRotate, photos.length, rotationDelay, columns]);
+  }, [autoRotate, columns, isLoading, photos.length, rotationDelay]);
 
   if (photos.length === 0 || isLoading) {
     return null;

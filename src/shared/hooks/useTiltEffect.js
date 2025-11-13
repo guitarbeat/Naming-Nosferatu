@@ -84,6 +84,70 @@ export function useTiltEffect(options = {}) {
   const shouldDisableTilt = useCallback(() => {
     return prefersReducedMotion || isCoarsePointer;
   }, [prefersReducedMotion, isCoarsePointer]);
+  const [environment, setEnvironment] = useState({
+    prefersReducedMotion: false,
+    hasFinePointer: true,
+    hasHoverSupport: true,
+  });
+
+  const shouldDisableTilt = useCallback(() => {
+    return (
+      environment.prefersReducedMotion ||
+      !(environment.hasFinePointer && environment.hasHoverSupport)
+    );
+  }, [environment]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return undefined;
+    }
+
+    const queries = {
+      prefersReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)"),
+      hasFinePointer: window.matchMedia("(any-pointer: fine)"),
+      hasHoverSupport: window.matchMedia("(any-hover: hover)"),
+    };
+
+    const updateEnvironment = () => {
+      setEnvironment((prev) => {
+        const next = {
+          prefersReducedMotion: queries.prefersReducedMotion?.matches ?? false,
+          hasFinePointer: queries.hasFinePointer?.matches ?? false,
+          hasHoverSupport: queries.hasHoverSupport?.matches ?? false,
+        };
+
+        if (
+          prev.prefersReducedMotion === next.prefersReducedMotion &&
+          prev.hasFinePointer === next.hasFinePointer &&
+          prev.hasHoverSupport === next.hasHoverSupport
+        ) {
+          return prev;
+        }
+
+        return next;
+      });
+    };
+
+    updateEnvironment();
+
+    const cleanups = Object.values(queries).map((query) => {
+      if (!query) return () => {};
+      const handler = () => updateEnvironment();
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", handler);
+        return () => query.removeEventListener("change", handler);
+      }
+      if (typeof query.addListener === "function") {
+        query.addListener(handler);
+        return () => query.removeListener(handler);
+      }
+      return () => {};
+    });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, []);
 
   const smoothTransform = useCallback(() => {
     setTransform((current) => ({

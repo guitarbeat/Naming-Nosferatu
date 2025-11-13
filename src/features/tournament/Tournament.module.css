@@ -20,6 +20,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: clamp(3rem, 8vw, 5rem);
   align-items: center;
   justify-content: flex-start;
   width: 100%;
@@ -27,7 +28,6 @@
   min-height: calc(100vh - clamp(4rem, 10vw, 8rem));
   padding: clamp(2rem, 6vw, 4rem) clamp(2rem, 8vw, 6rem);
   margin: 0 auto;
-  gap: clamp(3rem, 8vw, 5rem);
 
   /* Prevent content shift during voting */
   overflow-x: hidden;
@@ -45,15 +45,15 @@
   max-width: 1200px;
   padding: clamp(1.5rem, 4vw, 2.5rem);
   margin-bottom: clamp(2rem, 6vw, 4rem);
-  transition:
-    transform var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
-  will-change: transform, box-shadow;
   background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
   border: 1px solid var(--border-color, rgb(148 163 184 / 20%));
   border-radius: var(--radius-lg, 16px);
   box-shadow: 0 16px 48px rgb(0 0 0 / 15%);
   backdrop-filter: blur(16px);
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+  will-change: transform, box-shadow;
 }
 
 .progressInfo:hover {
@@ -76,10 +76,10 @@
 }
 
 .matchCount {
-  font-size: clamp(0.95rem, 3vw, 1.1rem);
-  color: var(--text-secondary);
   display: flex;
   align-items: center;
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  color: var(--text-secondary);
 }
 
 .percentageInfo {
@@ -90,8 +90,8 @@
   background: var(--surface-color, rgb(15 23 42 / 70%));
   border: 1px solid var(--accent-color, rgb(232 191 118 / 30%));
   border-radius: var(--radius-full, 999px);
-  transition: all var(--duration-normal) var(--ease-out);
   box-shadow: 0 4px 12px rgb(232 191 118 / 15%);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 /* Matchup & Voting Area - Dramatic Spacing
@@ -99,9 +99,9 @@
 .tournamentLayout {
   display: grid;
   gap: clamp(3rem, 8vw, 6rem);
-  margin-top: clamp(2rem, 6vw, 4rem);
   width: 100%;
   max-width: 1600px;
+  margin-top: clamp(2rem, 6vw, 4rem);
 }
 
 .matchup {
@@ -112,16 +112,15 @@
   justify-content: center;
   width: 100%;
   max-width: 100%;
-
   min-height: auto;
   padding: clamp(2.5rem, 6vw, 4rem);
-  transition: all var(--duration-normal) var(--ease-out);
-  will-change: transform, box-shadow;
   background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 40%)), var(--surface-muted, rgb(15 23 42 / 30%)));
   border: 1px solid var(--border-color, rgb(148 163 184 / 15%));
   border-radius: clamp(1.5rem, 4vw, 2rem);
   box-shadow: 0 24px 64px rgb(0 0 0 / 20%);
   backdrop-filter: blur(16px);
+  transition: all var(--duration-normal) var(--ease-out);
+  will-change: transform, box-shadow;
 }
 
 .matchup:hover {
@@ -131,11 +130,11 @@
 
 .namesRow {
   display: flex;
+  flex-wrap: wrap;
   gap: clamp(2rem, 8vw, 4rem);
   align-items: center;
   justify-content: center;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .nameContainer {
@@ -164,8 +163,8 @@
   background: linear-gradient(135deg, var(--accent-color, #e8bf76), var(--highlight-color, #f1a438));
   border: 2px solid var(--border-color, rgb(232 191 118 / 30%));
   border-radius: var(--radius-full, 999px);
-  transition: all var(--duration-normal) var(--ease-out);
   box-shadow: 0 8px 24px rgb(232 191 118 / 25%);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .vsSection:hover {
@@ -183,13 +182,13 @@
 
 .extraOptions {
   display: flex;
+  flex-wrap: wrap;
   gap: clamp(1rem, 3vw, 2rem);
   align-items: center;
   justify-content: center;
   width: 100%;
   max-width: 800px;
   margin-top: clamp(1.5rem, 4vw, 2.5rem);
-  flex-wrap: wrap;
 }
 
 .extraOptionsButton {
@@ -202,8 +201,9 @@
   padding: clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem);
   font-size: clamp(0.95rem, 3vw, 1.1rem);
   font-weight: 700;
-  letter-spacing: 0.02em;
   color: var(--text-primary);
+  letter-spacing: 0.02em;
+  cursor: pointer;
   background: linear-gradient(
     135deg,
     var(--glass-bg-light, rgb(255 255 255 / 50%)),
@@ -214,7 +214,6 @@
   box-shadow: 0 6px 20px rgb(0 0 0 / 12%);
   backdrop-filter: blur(var(--glass-blur, 16px));
   transition: all var(--duration-normal) var(--ease-out);
-  cursor: pointer;
 }
 
 .extraOptionsButton:hover:not(:disabled) {
