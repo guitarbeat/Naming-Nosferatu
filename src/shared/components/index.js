@@ -68,6 +68,7 @@ const components = {
   BongoCat,
   CatBackground,
   CatImage,
+  FloatingGallery,
   PerformanceDashboard,
   StartTournamentButton,
   CalendarButton,
