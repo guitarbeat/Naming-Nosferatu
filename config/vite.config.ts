@@ -41,11 +41,11 @@ export default defineConfig(({ mode }) => {
       include: ['react', 'react-dom']
     },
     server: {
-      host: '::',
-      port: 8080
+      host: '127.0.0.1',
+      port: 8081
     },
     preview: {
-      host: true,
+      host: '127.0.0.1',
       port: previewPort
     },
     build: {

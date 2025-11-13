@@ -8,7 +8,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Loader2 } from 'lucide-react';
-import { Button as ShadcnButton } from 'src/shared/components/ui/button';
+import { Button as ShadcnButton } from '@components/ui/button';
 
 const variantMapping = {
   primary: 'default',
