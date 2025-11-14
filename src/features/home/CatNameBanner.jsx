@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { formatFullName } from '../../shared/utils/nameFormatter';
 import styles from './CatNameBanner.module.css';
 
-function CatNameBanner({ catName, isAdmin }) {
+function CatNameBanner({ catName = null, isAdmin = false }) {
   if (!catName || !catName.is_set || !catName.show_banner) {
     return null;
   }
@@ -48,11 +48,6 @@ CatNameBanner.propTypes = {
     show_banner: PropTypes.bool
   }),
   isAdmin: PropTypes.bool
-};
-
-CatNameBanner.defaultProps = {
-  catName: null,
-  isAdmin: false
 };
 
 export default CatNameBanner;
