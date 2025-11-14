@@ -151,8 +151,8 @@ function useUserSession({ showToast } = {}) {
             showToast?.({ message: 'Logging in...', type: 'info' });
             // User exists, continue with login
           } else {
-            console.error('Error creating user:', insertError);
             const errorMessage = insertError.message || 'Failed to create user account';
+            console.error('Error creating user:', errorMessage);
             showToast?.({ message: errorMessage, type: 'error' });
             throw insertError;
           }
@@ -173,7 +173,6 @@ function useUserSession({ showToast } = {}) {
 
       return true;
     } catch (err) {
-      console.error('Login error:', err);
       let errorMessage = 'Failed to login';
 
       // Handle specific error types
@@ -185,6 +184,7 @@ function useUserSession({ showToast } = {}) {
         errorMessage = err.message;
       }
 
+      console.error('Login error:', errorMessage);
       setError(errorMessage);
       showToast?.({ message: errorMessage, type: 'error' });
       return false;

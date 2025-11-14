@@ -689,6 +689,47 @@
   --text-secondary: #6b7280;
 }
 
+/* * Light theme overrides for glassmorphic elements */
+:root[data-theme='light'] .insightCard {
+  background: rgb(15 23 42 / 6%);
+  border-color: rgb(15 23 42 / 12%);
+}
+
+:root[data-theme='light'] .insightCard:hover {
+  background: rgb(15 23 42 / 12%);
+  border-color: rgb(15 23 42 / 18%);
+}
+
+:root[data-theme='light'] .compactItem {
+  background: rgb(15 23 42 / 8%);
+  border-color: rgb(15 23 42 / 15%);
+}
+
+:root[data-theme='light'] .compactItem:hover {
+  background: rgb(15 23 42 / 15%);
+}
+
+:root[data-theme='light'] .filterSelect {
+  background: rgb(15 23 42 / 6%);
+  border-color: rgb(15 23 42 / 12%);
+}
+
+:root[data-theme='light'] .selectAllButton {
+  --button-bg: #eef2f9;
+  --button-border: #cbd5e1;
+  --button-bg-hover: #e2e8f0;
+  --button-border-hover: #94a3b8;
+}
+
+:root[data-theme='light'] .sortOrderButton {
+  background: rgb(15 23 42 / 8%);
+  border-color: rgb(15 23 42 / 15%);
+}
+
+:root[data-theme='light'] .sortOrderButton:hover {
+  background: rgb(15 23 42 / 15%);
+}
+
 /* * Enhanced Card Variables */
 .nameWrapper {
   --card-bg-start: #fff;

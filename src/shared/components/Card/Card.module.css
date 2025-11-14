@@ -107,6 +107,47 @@
   background: transparent;
 }
 
+/* Light theme overrides */
+:root[data-theme='light'] .default {
+  background: #fff;
+  border-color: #dbe3f0;
+}
+
+:root[data-theme='light'] .elevated {
+  background: #fff;
+  border-color: #dbe3f0;
+}
+
+:root[data-theme='light'] .outlined {
+  border-color: #cbd5e1;
+}
+
+:root[data-theme='light'] .filled {
+  background: linear-gradient(
+    135deg,
+    #fff 0%,
+    #f8fafc 100%
+  );
+  border-color: #dbe3f0;
+}
+
+:root[data-theme='light'] .bordered {
+  border-color: #cbd5e1;
+}
+
+:root[data-theme='light'] .background-glass {
+  background: rgb(255 255 255 / 90%);
+  border-color: #dbe3f0;
+}
+
+:root[data-theme='light'] .background-gradient {
+  background: linear-gradient(
+    135deg,
+    #fff 0%,
+    #f8fafc 100%
+  );
+}
+
 /* Hover effects - only on devices that support hover */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
