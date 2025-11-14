@@ -1,0 +1,19 @@
+/* ===== COLOR UTILITIES ===== */
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+/* ===== STATE UTILITIES ===== */
+.hidden {
+  display: none;
+}
+
+/* ===== POSITION UTILITIES ===== */
+.relative {
+  position: relative;
+}
+
+/* ===== TRANSITION UTILITIES ===== */
+.transition-all {
+  transition: var(--transition-all);
+}

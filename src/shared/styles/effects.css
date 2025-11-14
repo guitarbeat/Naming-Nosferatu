@@ -1,0 +1,30 @@
+/* Effects */
+:root {
+  --shadow-sm: 0 1px 2px var(--shadow-color);
+  --shadow-md: 0 4px 6px -1px var(--shadow-color),
+    0 2px 4px -2px var(--shadow-color);
+  --shadow-lg: 0 10px 15px -3px var(--shadow-color),
+    0 4px 6px -4px var(--shadow-color);
+  --shadow-xl: 0 20px 25px -5px var(--shadow-color),
+    0 8px 10px -6px var(--shadow-color);
+  --text-shadow-sm: 0 2px 8px rgba(var(--black-rgb), 0.2);
+  --text-shadow-lg: 0 2px 12px rgba(var(--black-rgb), 0.4);
+  --shadow-color: rgb(0 0 0 / 40%);
+  --shadow-color-light: rgb(0 0 0 / 15%);
+  --shadow-color-medium: rgb(0 0 0 / 25%);
+  --shadow-color-strong: rgb(0 0 0 / 35%);
+
+  /* * Overlay Colors */
+  --overlay-light: rgb(0 0 0 / 25%);
+  --overlay-medium: rgb(0 0 0 / 40%);
+  --overlay-dark: rgb(0 0 0 / 55%);
+  --overlay-darker: rgb(0 0 0 / 65%);
+
+  /* * Vibrant Overlay Options */
+  --overlay-cyan: rgba(var(--neon-cyan-rgb), 0.1);
+  --overlay-pink: rgba(var(--hot-pink-rgb), 0.1);
+  --overlay-red: rgba(var(--fire-red-rgb), 0.1);
+  --overlay-cyan-medium: rgba(var(--neon-cyan-rgb), 0.2);
+  --overlay-pink-medium: rgba(var(--hot-pink-rgb), 0.2);
+  --overlay-red-medium: rgba(var(--fire-red-rgb), 0.2);
+}

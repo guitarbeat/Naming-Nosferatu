@@ -1,0 +1,13 @@
+/* Glass surface tokens - Enhanced glassmorphism */
+:root {
+  --glass-bg: rgb(15 23 42 / 40%);
+  --glass-bg-light: rgb(15 23 42 / 20%);
+  --glass-bg-strong: rgb(15 23 42 / 60%);
+  --glass-border: rgb(255 255 255 / 15%);
+  --glass-border-hover: rgb(255 255 255 / 25%);
+  --glass-shadow: 0 8px 32px rgb(0 0 0 / 40%);
+  --glass-shadow-colored: 0 8px 32px rgb(47 243 224 / 15%),
+    0 8px 16px rgb(250 38 160 / 10%);
+  --glass-blur: 20px;
+  --glass-blur-strong: 30px;
+}

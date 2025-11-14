@@ -1,0 +1,18 @@
+/* Reduced motion for mobile */
+@media (prefers-reduced-motion: reduce) {
+  @media (width <= 768px) {
+    .name-card,
+    .nav-menu button {
+      transition: none;
+    }
+
+    .name-card:hover,
+    .nav-menu button:hover {
+      transform: none;
+    }
+
+    .header-image {
+      animation: none;
+    }
+  }
+}
