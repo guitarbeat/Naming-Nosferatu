@@ -243,6 +243,26 @@
   --loading-text-bg: #e5e7eb;
 }
 
+/* * Light theme overrides for glassmorphic elements */
+:root[data-theme='light'] .compactItem {
+  background: rgb(15 23 42 / 8%);
+  border-color: rgb(15 23 42 / 15%);
+}
+
+:root[data-theme='light'] .compactItem:hover {
+  background: rgb(15 23 42 / 15%);
+}
+
+:root[data-theme='light'] .insightsSection {
+  background: linear-gradient(
+    135deg,
+    rgb(15 23 42 / 4%) 0%,
+    rgb(15 23 42 / 2%) 100%
+  );
+  border-color: rgb(15 23 42 / 10%);
+  box-shadow: 0 4px 16px rgb(15 23 42 / 8%), inset 0 1px 0 rgb(15 23 42 / 6%);
+}
+
 /* * High Contrast Mode Support */
 @media (prefers-contrast: more) {
   .loadingCard {
