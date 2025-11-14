@@ -1,0 +1,35 @@
+/* High Contrast Mode */
+@media (prefers-contrast: more) {
+  :root {
+    --primary-600: #1a1f2e;
+    --error-600: #dc2626;
+    --success-600: #059669;
+    --warning-600: #b45309;
+
+    /* Enhanced contrast for high contrast mode */
+    --text-primary: #fff;
+    --text-secondary: #fff;
+    --background-color: #000;
+    --card-background: #1a1a1a;
+    --border-color: #fff;
+    --accent-color: #ff0;
+  }
+
+  /* Enhanced focus indicators for high contrast */
+  :focus-visible {
+    outline: 4px solid var(--accent-color);
+    outline-offset: 4px;
+  }
+
+  /* Enhanced button contrast */
+  button {
+    color: var(--text-primary);
+    background-color: var(--card-background);
+    border: 3px solid var(--border-color);
+  }
+
+  button:hover:not(:disabled) {
+    color: var(--background-color);
+    background-color: var(--accent-color);
+  }
+}
