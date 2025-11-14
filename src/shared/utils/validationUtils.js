@@ -56,7 +56,10 @@ export const validateCatName = (name) => {
   const trimmed = name.trim();
 
   if (trimmed.length < VALIDATION.MIN_CAT_NAME_LENGTH) {
-    return { success: false, error: 'Cat name cannot be empty' };
+    return {
+      success: false,
+      error: `Cat name must be at least ${VALIDATION.MIN_CAT_NAME_LENGTH} character long`
+    };
   }
 
   if (trimmed.length > VALIDATION.MAX_CAT_NAME_LENGTH) {
