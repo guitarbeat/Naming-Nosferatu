@@ -343,7 +343,6 @@
 }
 
 .headerActionButton:disabled {
-  composes: headerActionButton;
   color: var(--text-tertiary);
   text-shadow: none;
   background: var(--glass-bg-light, rgb(255 255 255 / 10%));
