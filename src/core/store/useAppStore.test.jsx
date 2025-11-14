@@ -80,6 +80,10 @@ describe('theme initialization', () => {
     vi.resetModules();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('preserves a persisted light theme value', async () => {
     window.localStorage.setItem('theme', 'light');
 
@@ -88,12 +92,21 @@ describe('theme initialization', () => {
     expect(store.getState().ui.theme).toBe('light');
   });
 
-  it('supports legacy boolean theme values', async () => {
-    window.localStorage.setItem('theme', 'false');
-
-    const { default: store } = await import('./useAppStore');
-
-    expect(store.getState().ui.theme).toBe('dark');
+  it('should not convert "true" or "false" to a theme', async () => {
+    window.localStorage.setItem('theme', 'true');
+    vi.spyOn(window, 'matchMedia').mockImplementation(() => ({
+      matches: true,
+      media: '(prefers-color-scheme: dark)',
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
+    let { getInitialThemeState } = await import('./useAppStore');
+    let themeState = getInitialThemeState();
+    expect(themeState.theme).toBe('dark');
   });
 });
 

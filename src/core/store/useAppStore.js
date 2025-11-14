@@ -14,26 +14,14 @@ const getSystemTheme = () =>
   getMediaQueryMatches(COLOR_SCHEME_QUERY) ? 'dark' : 'light';
 
 const normalizeStoredTheme = (value) => {
-  if (!value) {
-    return null;
-  }
-
   if (value === 'light' || value === 'dark') {
     return value;
-  }
-
-  if (value === 'true') {
-    return 'light';
-  }
-
-  if (value === 'false') {
-    return 'dark';
   }
 
   return null;
 };
 
-const getInitialThemeState = () => {
+export const getInitialThemeState = () => {
   const defaultState = {
     theme: 'light',
     themePreference: 'system'
