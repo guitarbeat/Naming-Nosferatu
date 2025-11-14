@@ -11,13 +11,13 @@ import styles from "../TournamentSetup.module.css";
 function Lightbox({ images, currentIndex, onClose, onNavigate }) {
   const closeBtnRef = useRef(null);
   const transitionTimerRef = useRef(null);
+  const isTransitioningRef = useRef(false);
   const [slideDirection, setSlideDirection] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const handleNavigate = useCallback((newIndex) => {
-    if (isTransitioning) return;
+    if (isTransitioningRef.current) return;
 
-    setIsTransitioning(true);
+    isTransitioningRef.current = true;
 
     if (newIndex > currentIndex) {
       setSlideDirection("right");
@@ -31,8 +31,10 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
       clearTimeout(transitionTimerRef.current);
     }
 
-    transitionTimerRef.current = setTimeout(() => setIsTransitioning(false), 300);
-  }, [currentIndex, isTransitioning, onNavigate]);
+    transitionTimerRef.current = setTimeout(() => {
+      isTransitioningRef.current = false;
+    }, 300);
+  }, [currentIndex, onNavigate]);
 
   const handlePrev = useCallback(() => {
     const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
