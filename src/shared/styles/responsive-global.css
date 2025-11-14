@@ -1,0 +1,139 @@
+/* Global mobile spacing adjustments */
+@media (width <= 768px) {
+  /* Mobile navigation improvements - Updated to 48x48px minimum */
+  .nav-menu button {
+    min-width: var(--mobile-touch-target-min);
+    min-height: var(--mobile-touch-target-min);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+  }
+
+  .nav-menu button:hover {
+    background: var(--primary-100);
+    border-color: var(--primary-300);
+  }
+
+  .nav-menu button.active {
+    color: white;
+    background: var(--primary-500);
+    border-color: var(--primary-600);
+  }
+
+  /* Mobile header improvements */
+  header {
+    background: var(--header-background);
+    border-bottom: 2px solid var(--header-border);
+  }
+
+  .header-image {
+    border: 3px solid var(--primary-color);
+    box-shadow: 0 4px 12px var(--shadow-color-medium);
+  }
+
+  /* Mobile text improvements */
+  h1,
+  h2,
+  h3 {
+    color: var(--mobile-text-primary, var(--text-primary));
+    text-shadow: 0 1px 2px var(--shadow-color-light);
+  }
+
+  p,
+  span,
+  li {
+    color: var(--mobile-text-secondary, var(--text-secondary));
+  }
+
+  /* Mobile form improvements - Updated to 48x48px minimum */
+  .input {
+    min-height: var(--mobile-touch-target-min);
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    background: var(--surface-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+  }
+
+  .input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+
+  /* Ensure floating elements don't overlap content */
+  .main-content {
+    padding-bottom: var(--mobile-content-padding);
+  }
+
+  /* Ensure scroll-to-top button doesn't overlap content */
+  .scroll-to-top {
+    right: var(--mobile-safe-spacing);
+    bottom: var(--mobile-safe-spacing);
+  }
+
+  /* Ensure all interactive elements meet touch target requirements */
+  button,
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  .btn,
+  a[role='button'],
+  .nav-menu button {
+    min-width: var(--mobile-touch-target-min);
+    min-height: var(--mobile-touch-target-min);
+  }
+
+  /* Form inputs should have minimum height for touch */
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='search'],
+  input[type='tel'],
+  input[type='url'],
+  input[type='number'],
+  textarea,
+  select {
+    min-height: var(--mobile-touch-target-min);
+  }
+
+  /* Ensure proper spacing between interactive elements */
+  button + button,
+  .btn + .btn,
+  input + input {
+    margin-left: var(--space-3);
+  }
+
+  /* Improve form layout on mobile */
+  .form-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-size: var(--text-base);
+  }
+
+  /* Ensure proper spacing for mobile cards */
+  .card,
+  .name-card,
+  .tournament-card {
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Improve mobile list spacing */
+  ul,
+  ol {
+    padding-left: var(--space-4);
+  }
+
+  li {
+    margin-bottom: var(--space-2);
+  }
+}

@@ -1,0 +1,12 @@
+/* ===== TYPOGRAPHY UTILITIES ===== */
+.text-center {
+  text-align: center;
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}

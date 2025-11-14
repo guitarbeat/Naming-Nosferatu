@@ -1,0 +1,26 @@
+/* High contrast mode for mobile */
+@media (prefers-contrast: more) {
+  @media (width <= 768px) {
+    .name-card {
+      border-color: var(--text-primary);
+      border-width: 3px;
+    }
+
+    /* * Button component handles high contrast mode */
+
+    .nav-menu button {
+      border: 2px solid var(--border-color);
+    }
+
+    .input {
+      border-width: 3px;
+    }
+
+    /* Enhanced focus indicators */
+    .nav-menu button:focus,
+    .input:focus {
+      outline: 3px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  }
+}

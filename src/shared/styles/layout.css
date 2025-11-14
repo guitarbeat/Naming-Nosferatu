@@ -1,0 +1,4 @@
+/* Layout */
+:root {
+  --container-max-width: clamp(70rem, 95vw, 112.5rem);
+}

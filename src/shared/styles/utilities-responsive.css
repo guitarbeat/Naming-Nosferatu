@@ -1,0 +1,14 @@
+/* Responsive utilities */
+@media (width <= 640px) {
+  .container {
+    padding: 0 var(--space-3);
+  }
+
+  .btn-base {
+    min-height: 44px; /* Touch-friendly */
+  }
+
+  .form-input {
+    min-height: 48px; /* Touch-friendly */
+  }
+}
