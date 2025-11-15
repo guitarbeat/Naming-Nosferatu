@@ -6,6 +6,7 @@
 
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
+import BongoCat from '../BongoCat/BongoCat';
 import styles from './Loading.module.css';
 
 /**
@@ -33,7 +34,7 @@ const Loading = ({
 
     const fallback = (
       <div className={`${styles.container} ${overlay ? styles.overlay : ''} ${className}`}>
-        <div className={`${styles.spinner} ${styles[size]}`}>🐈‍⬛</div>
+        <BongoCat />
         {text && <p className={styles.text}>{text}</p>}
         <span className={styles.srOnly}>Loading...</span>
       </div>
@@ -64,7 +65,7 @@ const Loading = ({
 
   return (
     <div className={containerClasses} role="status" aria-label="Loading">
-      <div className={`${styles.spinner} ${styles[size]}`}>🐈‍⬛</div>
+      <BongoCat />
       {text && <p className={styles.text}>{text}</p>}
       <span className={styles.srOnly}>Loading...</span>
     </div>
