@@ -104,8 +104,8 @@ describe('theme initialization', () => {
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     }));
-    let { getInitialThemeState } = await import('./useAppStore');
-    let themeState = getInitialThemeState();
+    const { getInitialThemeState } = await import('./useAppStore');
+    const themeState = getInitialThemeState();
     expect(themeState.theme).toBe('dark');
   });
 });

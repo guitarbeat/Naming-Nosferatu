@@ -182,7 +182,7 @@
   line-height: 1.2;
   color: hsl(210deg 29% 24%);
   text-align: center;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .actions {

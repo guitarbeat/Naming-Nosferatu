@@ -22,7 +22,6 @@ import styles from './Loading.module.css';
  */
 const Loading = ({
   variant = 'spinner',
-  size = 'medium',
   text,
   overlay = false,
   className = '',
@@ -76,7 +75,6 @@ const Loading = ({
 // PropTypes
 Loading.propTypes = {
   variant: PropTypes.oneOf(['spinner', 'suspense', 'skeleton']),
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
   text: PropTypes.string,
   overlay: PropTypes.bool,
   className: PropTypes.string,

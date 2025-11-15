@@ -27,14 +27,6 @@ function useAudioManager() {
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState({ music: 0.2, effects: 0.3 });
   const [audioError, setAudioError] = useState(null);
-  const [currentTrack, setCurrentTrack] = useState(0);
-  const [isShuffle, setIsShuffle] = useState(false);
-
-  const audioRef = useRef(null);
-  const musicRef = useRef(null);
-  const audioEventListeners = useRef(new Set());
-  const musicEventListeners = useRef(new Set());
-
   const musicTracks = useMemo(
     () => [
       {
@@ -51,6 +43,16 @@ function useAudioManager() {
     ],
     []
   );
+
+  const [currentTrack, setCurrentTrack] = useState(
+    () => Math.floor(Math.random() * musicTracks.length)
+  );
+  const [isShuffle, setIsShuffle] = useState(false);
+
+  const audioRef = useRef(null);
+  const musicRef = useRef(null);
+  const audioEventListeners = useRef(new Set());
+  const musicEventListeners = useRef(new Set());
 
   const soundEffects = useMemo(
     () => [
@@ -101,10 +103,6 @@ function useAudioManager() {
     };
   }, [soundEffects, volume.effects, musicTracks, volume.music]);
 
-  // * Pick a random starting track on mount
-  useEffect(() => {
-    setCurrentTrack(Math.floor(Math.random() * musicTracks.length));
-  }, [musicTracks.length]);
 
   // * Get random sound effect based on weights
   const getRandomSoundEffect = useCallback(() => {
@@ -317,6 +315,7 @@ function useTournamentState(names, existingRatings, onComplete, _onVote) {
   );
   useEffect(() => {
     if (Array.isArray(names) && names.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRandomizedNames((prev) => {
         const prevIds = Array.isArray(prev)
           ? prev.map((n) => n.id || n.name).join(",")
@@ -337,8 +336,11 @@ function useTournamentState(names, existingRatings, onComplete, _onVote) {
   // * Reset state on error
   useEffect(() => {
     if (tournament.isError) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedOption(null);
+
       setIsTransitioning(false);
+
       setIsProcessing(false);
       tournamentStateRef.current.isActive = false;
     }
@@ -354,7 +356,9 @@ function useTournamentState(names, existingRatings, onComplete, _onVote) {
   // * Round transition effect
   useEffect(() => {
     if (tournament.roundNumber > 1) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowRoundTransition(true);
+
       setNextRoundNumber(tournament.roundNumber);
 
       const timer = setTimeout(() => {

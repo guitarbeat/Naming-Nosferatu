@@ -127,7 +127,7 @@
   background: rgb(15 23 42 / 45%);
   border: 1px solid rgb(148 163 184 / 30%);
   border-radius: clamp(1rem, 3vw, 1.2rem);
-  box-shadow: 0 6px 24px rgba(var(--black-rgb), 0.2);
+  box-shadow: 0 6px 24px rgb(var(--black-rgb), 0.2);
   backdrop-filter: blur(12px);
 }
 
@@ -139,7 +139,7 @@
 
 .highlightIcon {
   font-size: 1.35rem;
-  filter: drop-shadow(0 2px 4px rgba(var(--black-rgb), 0.35));
+  filter: drop-shadow(0 2px 4px rgb(var(--black-rgb), 0.35));
 }
 
 .highlightText {
@@ -253,13 +253,13 @@
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  text-shadow: 0 4px 16px rgba(0 0 0 / 20%);
+  text-shadow: 0 4px 16px rgb(0 0 0 / 20%);
   animation: titleFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
 }
 
 :root[data-theme="light"] .welcomeTitle {
   color: #1e293b;
-  text-shadow: 0 2px 8px rgba(0 0 0 / 10%);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .welcomeText {
@@ -509,7 +509,7 @@
 .loginInput.error {
   outline: none;
   border-color: var(--vibrant-error);
-  box-shadow: 0 0 0 3px rgba(var(--fire-red-rgb), 0.25);
+  box-shadow: 0 0 0 3px rgb(var(--fire-red-rgb), 0.25);
   animation: errorShake 0.4s ease-out;
 }
 
@@ -967,8 +967,8 @@
   .randomNameIndicator,
   .characterCounter,
   .namePreview {
-    animation: none !important;
     transition: none !important;
+    animation: none !important;
   }
 
   .loginInput:focus {
@@ -977,7 +977,7 @@
 
   .randomNameIndicator:hover:not([aria-disabled="true"]),
   .randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
-    animation: none;
     transform: translateY(-50%);
+    animation: none;
   }
 }

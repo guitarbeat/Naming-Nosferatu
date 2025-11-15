@@ -45,7 +45,7 @@
   object-fit: cover;
   object-position: center;
   border-radius: clamp(1.25rem, 3vw, 1.75rem);
-  box-shadow: 0 16px 48px rgba(0 0 0 / 24%);
+  box-shadow: 0 16px 48px rgb(0 0 0 / 24%);
   filter: brightness(0.95) contrast(1.05);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, filter, box-shadow;
@@ -54,8 +54,8 @@
 /* Photo hover state - More prominent */
 .photoFloat:hover .photo {
   box-shadow:
-    0 24px 64px rgba(0 0 0 / 32%),
-    0 0 40px rgba(232 191 118 / 20%);
+    0 24px 64px rgb(0 0 0 / 32%),
+    0 0 40px rgb(232 191 118 / 20%);
   filter: brightness(1) contrast(1.1) saturate(1.1);
   transform: translateY(-6px) scale(1.02);
 }
@@ -87,13 +87,13 @@
 
   .photo {
     border-radius: clamp(1rem, 2.5vw, 1.5rem);
-    box-shadow: 0 12px 36px rgba(0 0 0 / 20%);
+    box-shadow: 0 12px 36px rgb(0 0 0 / 20%);
   }
 
   .photoFloat:hover .photo {
     box-shadow:
-      0 16px 48px rgba(0 0 0 / 25%),
-      0 0 30px rgba(232 191 118 / 15%);
+      0 16px 48px rgb(0 0 0 / 25%),
+      0 0 30px rgb(232 191 118 / 15%);
   }
 }
 
@@ -116,13 +116,13 @@
 
   .photo {
     border-radius: clamp(1rem, 2vw, 1.25rem);
-    box-shadow: 0 8px 24px rgba(0 0 0 / 18%);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
   }
 
   .photoFloat:hover .photo {
     box-shadow:
-      0 12px 32px rgba(0 0 0 / 22%),
-      0 0 24px rgba(232 191 118 / 12%);
+      0 12px 32px rgb(0 0 0 / 22%),
+      0 0 24px rgb(232 191 118 / 12%);
     transform: translateY(-4px) scale(1.01);
   }
 }
@@ -143,13 +143,13 @@
 
   .photo {
     border-radius: 1rem;
-    box-shadow: 0 6px 16px rgba(0 0 0 / 16%);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 16%);
   }
 
   .photoFloat:hover .photo {
     box-shadow:
-      0 8px 24px rgba(0 0 0 / 20%),
-      0 0 16px rgba(232 191 118 / 10%);
+      0 8px 24px rgb(0 0 0 / 20%),
+      0 0 16px rgb(232 191 118 / 10%);
   }
 }
 

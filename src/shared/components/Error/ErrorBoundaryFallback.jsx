@@ -10,11 +10,18 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   const [copied, setCopied] = useState(false);
 
   const standardizedError = useMemo(
-    () => createStandardizedError(error, 'React Component Error', {
-      isRetryable: true,
-      affectsUserData: false,
-      isCritical: false
-    }),
+    () =>
+      createStandardizedError(
+        error,
+        'React Component Error',
+        {
+          isRetryable: true,
+          affectsUserData: false,
+          isCritical: false,
+        },
+        // eslint-disable-next-line react-hooks/purity
+        Date.now()
+      ),
     [error]
   );
 
@@ -188,6 +195,7 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
         <div className={styles.boundarySupport}>
           <p>If this problem persists, please contact support with the following information:</p>
           <p className={styles.boundaryErrorId}>
+            {/* eslint-disable-next-line react-hooks/purity */}
             Error ID: {standardizedError?.timestamp || Date.now()}
           </p>
         </div>

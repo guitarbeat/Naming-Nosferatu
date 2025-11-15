@@ -1,11 +1,11 @@
 /* stylelint-disable value-keyword-case */
+
 /* Base Layout */
 .container {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: var(--space-6);
   width: 100%;
-  margin-inline: auto;
   max-width: min(1600px, 95vw);
   height: 100%;
   padding: var(--space-4);
@@ -164,7 +164,6 @@
   .tournamentTitle {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     background-clip: text;
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
@@ -366,9 +365,6 @@
 .cardsContainer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  gap: var(--space-4);
-  width: 100%;
-  justify-content: center;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-4);
   justify-content: center;
@@ -1110,21 +1106,21 @@
   line-height: 1;
   color: rgb(var(--white-rgb));
   cursor: pointer;
-  background: rgba(var(--black-rgb), 0.6);
-  border: 2px solid rgba(var(--white-rgb), 0.3);
+  background: rgb(var(--black-rgb), 0.6);
+  border: 2px solid rgb(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transform: translateY(-50%);
   transition: var(--transition-all);
 }
 
 .lightboxNav:hover {
-  background: rgba(var(--black-rgb), 0.8);
-  border-color: rgba(var(--white-rgb), 0.6);
+  background: rgb(var(--black-rgb), 0.8);
+  border-color: rgb(var(--white-rgb), 0.6);
   transform: translateY(-50%) scale(1.15);
 }
 
 .lightboxNav:focus {
-  outline: 2px solid rgba(var(--primary-rgb), 0.8);
+  outline: 2px solid rgb(var(--primary-rgb), 0.8);
   outline-offset: 2px;
 }
 
@@ -1150,20 +1146,20 @@
   line-height: 1;
   color: rgb(var(--white-rgb));
   cursor: pointer;
-  background: rgba(var(--black-rgb), 0.6);
-  border: 2px solid rgba(var(--white-rgb), 0.3);
+  background: rgb(var(--black-rgb), 0.6);
+  border: 2px solid rgb(var(--white-rgb), 0.3);
   border-radius: var(--radius-full);
   transition: var(--transition-all);
 }
 
 .lightboxClose:hover {
-  background: rgba(var(--black-rgb), 0.8);
-  border-color: rgba(var(--white-rgb), 0.6);
+  background: rgb(var(--black-rgb), 0.8);
+  border-color: rgb(var(--white-rgb), 0.6);
   transform: scale(1.1);
 }
 
 .lightboxClose:focus {
-  outline: 2px solid rgba(var(--primary-rgb), 0.8);
+  outline: 2px solid rgb(var(--primary-rgb), 0.8);
   outline-offset: 2px;
 }
 
@@ -2063,7 +2059,6 @@
 @media (width <= 600px) {
   .cardsContainer {
     grid-template-columns: 1fr;
-    gap: var(--space-3);
     gap: var(--space-2);
     justify-content: center;
   }
@@ -2135,6 +2130,7 @@
 
 .photoThumbnail:hover .photoOverlay {
   opacity: 1;
+
   .catPicturesToggleButton {
     max-width: 100%; /* * Ensure button doesn't overflow container */
     min-height: 44px; /* * Ensure minimum height on very small screens */

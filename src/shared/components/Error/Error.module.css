@@ -640,8 +640,8 @@
 /* ===== INLINE ERROR (Single error) ===== */
 .inline {
   --inline-accent: var(--primary-600);
-  --inline-accent-border: rgba(var(--primary-rgb, 44, 62, 64), 0.25);
-  --inline-accent-surface: rgba(var(--primary-rgb, 44, 62, 64), 0.08);
+  --inline-accent-border: rgb(var(--primary-rgb, 44, 62, 64), 0.25);
+  --inline-accent-surface: rgb(var(--primary-rgb, 44, 62, 64), 0.08);
   --inline-text: var(--text-primary);
 
   margin-top: var(--space-3, 0.75rem);
@@ -714,7 +714,7 @@
     var(--button-primary-bg, var(--primary-600)),
     var(--button-primary-hover, var(--primary-700))
   );
-  border-color: rgba(var(--primary-rgb, 44, 62, 64), 0.35);
+  border-color: rgb(var(--primary-rgb, 44, 62, 64), 0.35);
   box-shadow: var(--shadow-subtle, 0 1px 3px rgb(0 0 0 / 10%));
 }
 
@@ -728,12 +728,12 @@
 
 .inlineDismissButton {
   color: var(--text-primary);
-  background: rgba(var(--secondary-rgb, 128, 159, 176), 0.12);
-  border-color: rgba(var(--secondary-rgb, 128, 159, 176), 0.25);
+  background: rgb(var(--secondary-rgb, 128, 159, 176), 0.12);
+  border-color: rgb(var(--secondary-rgb, 128, 159, 176), 0.25);
 }
 
 .inlineDismissButton:hover {
-  background: rgba(var(--secondary-rgb, 128, 159, 176), 0.18);
+  background: rgb(var(--secondary-rgb, 128, 159, 176), 0.18);
 }
 
 .inlineRetryButton:focus-visible,

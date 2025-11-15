@@ -305,14 +305,14 @@ export function useDebounce(value, delay = UI.DEBOUNCE_DELAY) {
  * @returns {Function} Throttled callback
  */
 export function useThrottle(callback, delay = UI.THROTTLE_DELAY) {
-    const lastRun = useRef(Date.now());
+    const [lastRun, setLastRun] = useState(() => Date.now());
 
     return useCallback((...args) => {
-        if (Date.now() - lastRun.current >= delay) {
+        if (Date.now() - lastRun >= delay) {
             callback(...args);
-            lastRun.current = Date.now();
+            setLastRun(Date.now());
         }
-    }, [callback, delay]);
+    }, [callback, delay, lastRun]);
 }
 
 /**
@@ -500,6 +500,7 @@ export function usePrevious(value) {
         ref.current = value;
     }, [value]);
 
+    // eslint-disable-next-line react-hooks/refs
     return ref.current;
 }
 

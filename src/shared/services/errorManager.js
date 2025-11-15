@@ -974,19 +974,24 @@ export class ErrorManager {
    * @param {Object} additionalInfo - Additional context
    * @returns {Object} Standardized error object
    */
-  static createStandardizedError(error, context = 'Unknown', additionalInfo = {}) {
+  static createStandardizedError(
+    error,
+    context = 'Unknown',
+    additionalInfo = {},
+    timestamp = Date.now()
+  ) {
     const errorInfo = this.handleError(error, context, additionalInfo);
 
     return {
       ...errorInfo,
       originalError: error,
       context,
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(timestamp).toISOString(),
       retry: () => {
         if (errorInfo.isRetryable) {
           GLOBAL_SCOPE.location?.reload?.();
         }
-      }
+      },
     };
   }
 }
@@ -997,7 +1002,17 @@ export const withRetry = (operation, options) => ErrorManager.withRetry(operatio
 export const createResilientFunction = (fn, options) => ErrorManager.createResilientFunction(fn, options);
 export const setupGlobalErrorHandling = () => ErrorManager.setupGlobalErrorHandling();
 export const getSeverityClass = (severity, styles) => ErrorManager.getSeverityClass(severity, styles);
-export const createStandardizedError = (error, context, additionalInfo) =>
-  ErrorManager.createStandardizedError(error, context, additionalInfo);
+export const createStandardizedError = (
+  error,
+  context,
+  additionalInfo,
+  timestamp
+) =>
+  ErrorManager.createStandardizedError(
+    error,
+    context,
+    additionalInfo,
+    timestamp
+  );
 
 export default ErrorManager;
