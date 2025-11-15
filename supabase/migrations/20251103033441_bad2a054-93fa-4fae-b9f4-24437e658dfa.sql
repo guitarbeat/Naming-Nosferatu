@@ -18,7 +18,7 @@ DROP POLICY IF EXISTS "Users can delete own selections" ON tournament_selections
 
 -- cat_app_users policies
 CREATE POLICY "Anyone can insert user data" ON cat_app_users
-  FOR INSERT WITH CHECK (user_name IS NOT NULL AND length(trim(user_name)) > 0);
+  FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Anyone can update user data" ON cat_app_users
   FOR UPDATE USING (user_name IS NOT NULL);
