@@ -24,20 +24,15 @@ function FloatingGallery({
   rotationDelay = 5000,
   className = ''
 }) {
-  const [imageIndices, setImageIndices] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Initialize random images for each position
-  useEffect(() => {
-    if (photos.length === 0) return;
-
+  const [imageIndices, setImageIndices] = useState(() => {
+    if (photos.length === 0) return {};
     const indices = {};
     for (let i = 0; i < columns; i++) {
       indices[i] = Math.floor(Math.random() * photos.length);
     }
-    setImageIndices(indices);
-    setIsLoading(false);
-  }, [photos.length, columns]);
+    return indices;
+  });
+  const [isLoading] = useState(photos.length > 0);
 
   // Auto-rotate photos
   useEffect(() => {

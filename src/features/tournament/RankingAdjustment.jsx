@@ -86,15 +86,18 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
       // Finally, sort by rating
       return b.rating - a.rating;
     });
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(sortedRankings);
   }, [rankings]);
 
   useEffect(() => {
     if (items && rankings && haveRankingsChanged(items, rankings)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSaveStatus('saving');
       const saveTimer = setTimeout(() => {
         onSave(items)
           .then(() => {
+
             setSaveStatus('success');
             setTimeout(() => setSaveStatus(''), 2000);
           })

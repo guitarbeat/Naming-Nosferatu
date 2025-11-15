@@ -193,6 +193,7 @@ export const SidebarMenuButton = forwardRef(
     const { collapsed } = useSidebar();
 
     if (asChild && isValidElement(children)) {
+      // eslint-disable-next-line react-hooks/refs
       return cloneElement(children, {
         ref,
         className: `sidebar-menu-button ${collapsed ? 'sidebar-menu-button--collapsed' : ''} ${children.props.className || ''} ${className}`,

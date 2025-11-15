@@ -71,15 +71,18 @@ export function useTournament({
     return `tournament-${userPrefix}-${sortedNames}`;
   }, [names, userName]);
 
-  const [persistentState, setPersistentState] = useLocalStorage(tournamentId, {
-    matchHistory: [],
-    currentRound: 1,
-    currentMatch: 1,
-    totalMatches: 0,
-    userName: userName || 'anonymous',
-    lastUpdated: Date.now(),
-    namesKey: ''
-  });
+  const [persistentState, setPersistentState] = useLocalStorage(
+    tournamentId,
+    () => ({
+      matchHistory: [],
+      currentRound: 1,
+      currentMatch: 1,
+      totalMatches: 0,
+      userName: userName || 'anonymous',
+      lastUpdated: Date.now(),
+      namesKey: '',
+    })
+  );
 
   // * Get persistent state values for backward compatibility
   const roundNumber = persistentState.currentRound;
@@ -184,6 +187,7 @@ export function useTournament({
 
   // * Initialize tournament when names change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     initializeTournament();
   }, [initializeTournament]);
 
@@ -196,6 +200,7 @@ export function useTournament({
       if (invalid && process.env.NODE_ENV === 'development') {
         console.warn('[DEV] 🎮 useTournament: Invalid names array detected');
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       updateTournamentState({ isError: invalid });
     }
   }, [names, isError, updateTournamentState]);
@@ -468,7 +473,9 @@ export function useTournament({
       sorter.preferences.delete(key);
       sorter.preferences.delete(reverseKey);
       if (typeof sorter._pairIndex === 'number') {
-        sorter._pairIndex = Math.max(0, sorter._pairIndex - 1);
+        const newSorter = { ...sorter };
+        newSorter._pairIndex = Math.max(0, sorter._pairIndex - 1);
+        updateTournamentState({ sorter: newSorter });
       }
     }
 

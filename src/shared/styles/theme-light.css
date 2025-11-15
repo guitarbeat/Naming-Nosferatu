@@ -77,17 +77,17 @@
 :root[data-theme='light'] body {
   background-image: radial-gradient(
       circle at -10% -10%,
-      rgba(var(--accent-rgb), 0.16),
+      rgb(var(--accent-rgb), 0.16),
       transparent 60%
     ),
     radial-gradient(
       circle at 120% -20%,
-      rgba(var(--neon-cyan-rgb), 0.12),
+      rgb(var(--neon-cyan-rgb), 0.12),
       transparent 55%
     ),
     radial-gradient(
       circle at 10% 120%,
-      rgba(var(--hot-pink-rgb), 0.1),
+      rgb(var(--hot-pink-rgb), 0.1),
       transparent 60%
     );
   background-repeat: no-repeat;

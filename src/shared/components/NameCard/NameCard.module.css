@@ -155,7 +155,7 @@
 /* Enhanced hover effect for hidden cards */
 .hidden:hover {
   box-shadow:
-    0 8px 25px rgba(var(--warning-rgb), 0.3),
+    0 8px 25px rgb(var(--warning-rgb), 0.3),
     var(--shadow-lg);
   opacity: 0.9;
   filter: grayscale(20%) sepia(10%);
@@ -225,7 +225,7 @@
   color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  text-shadow: 0 2px 8px rgba(0 0 0 / 15%);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 15%);
 }
 
 /* Description styling - Large and Legible */
@@ -334,8 +334,8 @@
 .card:hover .backgroundEffect {
   background: radial-gradient(
     circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(var(--primary-rgb), 0.15) 0%,
-    rgba(var(--primary-rgb), 0.05) 30%,
+    rgb(var(--primary-rgb), 0.15) 0%,
+    rgb(var(--primary-rgb), 0.05) 30%,
     transparent 70%
   );
 }
@@ -370,13 +370,13 @@
 }
 
 .selected {
-  background: linear-gradient(135deg, rgba(232 191 118 / 12%), rgba(241 164 56 / 10%));
+  background: linear-gradient(135deg, rgb(232 191 118 / 12%), rgb(241 164 56 / 10%));
   border: 2px solid var(--accent-color, #e8bf76);
 }
 
 .selected .name {
   color: var(--accent-color, #e8bf76);
-  text-shadow: 0 0 12px rgba(232 191 118 / 50%);
+  text-shadow: 0 0 12px rgb(232 191 118 / 50%);
   transform: translateY(-2px);
 }
 
@@ -401,7 +401,7 @@
   font-size: var(--text-2xl);
   color: var(--hot-pink);
   opacity: 0;
-  filter: drop-shadow(0 2px 4px rgba(var(--hot-pink-rgb), 0.3));
+  filter: drop-shadow(0 2px 4px rgb(var(--hot-pink-rgb), 0.3));
   transform: scale(0.5) rotate(-10deg);
   transition: all var(--duration-normal) var(--ease-out);
 }
