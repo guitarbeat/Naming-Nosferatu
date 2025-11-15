@@ -1259,6 +1259,20 @@ export const tournamentsAPI = {
         return { success: false, error: 'Supabase not configured' };
       }
 
+      // Ensure the user account exists by calling the RPC function.
+      // This will create the user if they don't exist, and do nothing if they do.
+      const { error: rpcError } = await supabase.rpc('create_user_account', {
+        p_user_name: userName,
+      });
+
+      if (rpcError) {
+        // Log the error for debugging, but don't throw, as the user may have been created
+        // in a race condition. The subsequent logic will handle it.
+        if (isDev) {
+          console.warn('RPC create_user_account error (ignoring):', rpcError);
+        }
+      }
+
       // Create tournament in the consolidated cat_app_users table
       const newTournament = {
         id: crypto.randomUUID(), // Generate unique ID
