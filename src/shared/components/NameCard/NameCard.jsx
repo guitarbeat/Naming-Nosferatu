@@ -33,7 +33,6 @@
 
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useTiltEffect } from '../../hooks/useTiltEffect';
 import CatImage from '../CatImage';
 import styles from './NameCard.module.css';
 
@@ -77,12 +76,7 @@ function NameCard({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
-    maxRotation: 12,
-    perspective: 800,
-    smoothing: 0.1,
-    scale: 1.05,
-  });
+  const cardRef = React.useRef(null);
 
   useEffect(() => {
     if (isRippling) {
@@ -93,26 +87,10 @@ function NameCard({
 
   // Mouse follow effect for background
   useEffect(() => {
-    const card = tiltRef.current;
+    const card = cardRef.current;
     if (!card || disabled) return;
 
     const handleMouseMove = (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      // Calculate mouse position for background effect
-      const mouseX = (x / rect.width) * 100;
-      const mouseY = (y / rect.height) * 100;
-
-      setMousePosition({ x: mouseX, y: mouseY });
-
-      // Set CSS custom properties for mouse position
-      if (card) {
-        card.style.setProperty('--mouse-x', `${mouseX}%`);
-        card.style.setProperty('--mouse-y', `${mouseY}%`);
-      }
-
       // Show tooltip if metadata is available and has relevant data
       if (metadata && (
         metadata.rating ||
@@ -131,14 +109,7 @@ function NameCard({
     };
 
     const handleMouseLeave = () => {
-      setMousePosition({ x: 50, y: 50 });
       setShowTooltip(false);
-
-      // Reset CSS custom properties
-      if (card) {
-        card.style.setProperty('--mouse-x', '50%');
-        card.style.setProperty('--mouse-y', '50%');
-      }
     };
 
     card.addEventListener('mousemove', handleMouseMove);
@@ -148,7 +119,7 @@ function NameCard({
       card.removeEventListener('mousemove', handleMouseMove);
       card.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [disabled, metadata, tiltRef]);
+  }, [disabled, metadata, cardRef]);
 
   const handleInteraction = (event) => {
     if (disabled) {
@@ -229,7 +200,7 @@ function NameCard({
     <div className={styles.cardContainer}>
       {/* Main card content */}
       <button
-        ref={tiltRef}
+        ref={cardRef}
         className={cardClasses}
         onClick={handleInteraction}
         onKeyDown={handleInteraction}
@@ -241,16 +212,7 @@ function NameCard({
         }
         aria-labelledby={`${getSafeId(name)}-title`}
         type="button"
-        style={tiltStyle}
       >
-        {/* Background mouse follow effect */}
-        <div
-          className={styles.backgroundEffect}
-          style={{
-            background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(var(--primary-rgb), 0.1) 0%, transparent 50%)`,
-            opacity: disabled ? 0 : 1
-          }}
-        />
 
         {/* Cat image when provided */}
         {image && (

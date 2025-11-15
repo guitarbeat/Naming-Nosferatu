@@ -172,11 +172,11 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
   height: auto;
   min-height: auto;
   max-height: none;
-  padding: clamp(1.25rem, 3vw, 1.75rem);
+  padding: clamp(1.5rem, 4vw, 2rem);
   overflow: visible;
   font-family: inherit;
   text-align: left;
@@ -330,15 +330,6 @@
   opacity: 1;
 }
 
-/* Enhanced tilt hover effect */
-.card:hover .backgroundEffect {
-  background: radial-gradient(
-    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgb(var(--primary-rgb), 0.15) 0%,
-    rgb(var(--primary-rgb), 0.05) 30%,
-    transparent 70%
-  );
-}
 
 /* Dynamic mouse position variables */
 .card {
@@ -349,7 +340,6 @@
 /* Enhanced depth on hover */
 .card:not(.disabled):hover {
   border-color: var(--accent-color, #e8bf76);
-  transform: rotateX(5deg) rotateY(-5deg);
 }
 
 .card:not(.disabled):hover .name {
@@ -382,7 +372,6 @@
 
 .selected:hover {
   border-color: var(--highlight-color, #f1a438);
-  transform: rotateX(5deg) rotateY(-5deg) scale(1.02);
 }
 
 .selected:hover .name {
@@ -744,9 +733,10 @@
 
   /* * Enhanced Tinder-style appearance */
   border: 2px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
   perspective: none;
+  padding: clamp(1rem, 2vw, 1.5rem);
 
   /* * Simplified transforms when images are present */
 }
@@ -755,7 +745,6 @@
   box-shadow: 0 15px 50px rgb(0 0 0 / 30%);
 
   /* * Simpler hover effect for cards with images */
-  transform: translateY(-4px) scale(1.02);
 }
 
 .hasImage .backgroundEffect {
@@ -773,23 +762,20 @@
   margin-bottom: var(--space-3);
 }
 
-.hasImage .name,
-.hasImage .description,
-.hasImage .metadata {
-  position: relative;
-  z-index: 2;
-}
-
 /* * Enhanced spacing for cards with images */
 .hasImage .name {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   font-size: var(--text-xl);
   font-weight: 700;
 }
 
 .hasImage .description {
-  margin-top: var(--space-3);
-  line-height: 1.5;
+  margin-top: var(--space-2);
+  line-height: 1.6;
+}
+
+.hasImage .metadata {
+  margin-top: var(--space-4);
 }
 
 /* Mobile responsive styles for card images */
