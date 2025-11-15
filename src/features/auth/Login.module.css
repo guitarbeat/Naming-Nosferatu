@@ -167,6 +167,7 @@
   box-shadow: 0 24px 64px rgb(0 0 0 / 22%);
   backdrop-filter: blur(16px);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  animation: cardFadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
 }
 
 .formCollapsed {
@@ -253,6 +254,7 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
   text-shadow: 0 4px 16px rgba(0 0 0 / 20%);
+  animation: titleFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
 }
 
 :root[data-theme="light"] .welcomeTitle {
@@ -268,6 +270,7 @@
   line-height: 1.7;
   color: var(--text-secondary);
   text-align: center;
+  animation: textFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
 }
 
 /* Form Section Styles */
@@ -285,6 +288,7 @@
   background: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: clamp(0.75rem, 2.5vw, 1rem);
+  animation: cardFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
 }
 
 /* Start Button Styling */
@@ -486,7 +490,8 @@
   background: var(--surface-muted);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  animation: inputFadeIn 0.6s ease 0.8s both;
 }
 
 .loginInput::placeholder {
@@ -498,12 +503,14 @@
   background: var(--surface-elevated);
   border-color: var(--accent-color);
   box-shadow: 0 0 0 3px rgb(232 191 118 / 20%);
+  transform: translateY(-2px);
 }
 
 .loginInput.error {
   outline: none;
   border-color: var(--vibrant-error);
   box-shadow: 0 0 0 3px rgba(var(--fire-red-rgb), 0.25);
+  animation: errorShake 0.4s ease-out;
 }
 
 .randomNameIndicator {
@@ -520,6 +527,7 @@
   border-radius: 50%;
   transform: translateY(-50%);
   transition: transform 0.2s ease, background 0.2s ease;
+  animation: diceSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s both;
 }
 
 .randomNameIndicator:focus-visible {
@@ -530,7 +538,7 @@
 .randomNameIndicator:hover:not([aria-disabled="true"]),
 .randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
   background: rgb(232 191 118 / 18%);
-  transform: translateY(-50%) scale(1.05);
+  animation: diceRoll 0.6s ease-out forwards;
 }
 
 .randomNameIndicator[aria-disabled="true"] {
@@ -566,12 +574,14 @@
   flex-direction: column;
   gap: 0.25rem;
   margin-top: 0.5rem;
+  animation: fadeInUp 0.6s ease 0.85s both;
 }
 
 .counterText {
   font-size: 0.75rem;
   color: rgb(255 255 255 / 60%);
   text-align: center;
+  transition: color 0.3s ease;
 }
 
 /* * Light mode contrast fixes */
@@ -585,6 +595,7 @@
   overflow: hidden;
   background: rgb(255 255 255 / 10%);
   border-radius: 2px;
+  transition: background 0.3s ease;
 }
 
 .counterProgress {
@@ -595,7 +606,7 @@
     var(--highlight-color)
   );
   border-radius: 2px;
-  transition: width 0.3s ease;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* * Button styles have been migrated to shared Button component */
@@ -608,12 +619,14 @@
 .namePreview {
   margin-top: 1rem;
   text-align: center;
+  animation: fadeInUp 0.6s ease 1s both;
 }
 
 .helperText {
   margin: 0;
   font-size: 0.9rem;
   color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 /* * Light mode contrast fixes */
@@ -808,4 +821,163 @@
   }
 
   /* * Button component handles responsive sizing */
+}
+
+/* ===========================
+   ANIMATION KEYFRAMES
+   =========================== */
+
+@keyframes titleFadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes textFadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardFadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cardFadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes inputFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes diceSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(20px) scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scale(1);
+  }
+}
+
+@keyframes diceRoll {
+  0% {
+    transform: translateY(-50%) scale(1.05) rotateZ(0deg);
+  }
+
+  50% {
+    transform: translateY(-50%) scale(1.1) rotateZ(45deg);
+  }
+
+  100% {
+    transform: translateY(-50%) scale(1.05) rotateZ(360deg);
+  }
+}
+
+@keyframes errorShake {
+  0% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-8px);
+  }
+
+  50% {
+    transform: translateX(8px);
+  }
+
+  75% {
+    transform: translateX(-4px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+
+  100% {
+    transform: translateX(100%) skewX(-15deg);
+  }
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .welcomeTitle,
+  .welcomeText,
+  .formCard,
+  .catFact,
+  .loginInput,
+  .randomNameIndicator,
+  .characterCounter,
+  .namePreview {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .loginInput:focus {
+    transform: none;
+  }
+
+  .randomNameIndicator:hover:not([aria-disabled="true"]),
+  .randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
+    animation: none;
+    transform: translateY(-50%);
+  }
 }
