@@ -130,7 +130,8 @@ vi.mock('@core/store/useAppStore', () => {
 vi.mock('@hooks/useUserSession', () => ({
   default: () => ({
     login: vi.fn(),
-    logout: vi.fn()
+    logout: vi.fn(),
+    isInitialized: true
   })
 }));
 
