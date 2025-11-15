@@ -3,8 +3,7 @@ import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import { SkeletonLoader, Select, Button } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
-import MiniStatsBar from "./MiniStatsBar";
-import ProfileHighlights from "../../shared/components/ProfileHighlights/ProfileHighlights";
+import ProfileDashboard from "../../shared/components/ProfileDashboard/ProfileDashboard";
 import styles from "./ProfileNameList.module.css";
 
 /**
@@ -348,23 +347,18 @@ const ProfileNameList = ({
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {/* Mini Stats Bar */}
-      {stats && <MiniStatsBar stats={stats} selectionStats={selectionStats} />}
+      {stats && (
+        <ProfileDashboard
+          stats={stats}
+          selectionStats={selectionStats}
+          highlights={highlights}
+        />
+      )}
 
-      {/* Unified Dashboard: Highlights & Filters */}
+      {/* Unified Dashboard: Filters */}
       {stats && (
         <div className={styles.unifiedDashboard}>
-          {/* Left: Highlights */}
-          <div className={styles.dashboardLeft}>
-            {highlights &&
-              (highlights.topRated.length || highlights.mostWins.length) > 0 && (
-                <div className={styles.highlightsRow}>
-                  <ProfileHighlights highlights={highlights} />
-                </div>
-              )}
-          </div>
-
-          {/* Right: Filters */}
+          {/* Filters */}
           <div className={styles.filterSection}>
             <div className={styles.filterHeader}>
               <span className={styles.resultsCount}>
