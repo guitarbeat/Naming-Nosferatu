@@ -160,4 +160,37 @@ describe('catNamesAPI.getNamesWithDescriptions', () => {
     expect(result).toEqual([]);
     expect(consoleErrorSpy).toHaveBeenCalled();
   });
+
+  it('queries the correct "cat_names" table', async () => {
+    const hiddenQuery = {
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockResolvedValue({ data: [], error: null })
+    };
+    const namesQuery = {
+      select: vi.fn().mockReturnThis(),
+      order: vi.fn().mockResolvedValue({ data: [], error: null }),
+      not: vi.fn().mockReturnThis()
+    };
+
+    fromMock.mockImplementation(table => {
+      if (table === 'cat_name_ratings') {
+        return hiddenQuery;
+      }
+      if (table === 'cat_names') {
+        return namesQuery;
+      }
+      // Return a dummy mock for any other table to avoid errors in the test
+      return {
+        select: vi.fn().mockReturnThis(),
+        not: vi.fn().mockReturnThis(),
+        order: vi.fn().mockResolvedValue({ data: [], error: null })
+      };
+    });
+
+    await catNamesAPI.getNamesWithDescriptions();
+
+    const fromMockCalls = fromMock.mock.calls;
+    const calledTables = fromMockCalls.map(call => call[0]);
+    expect(calledTables).toContain('cat_names');
+  });
 });
