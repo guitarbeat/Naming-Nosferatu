@@ -37,7 +37,7 @@ import ViewRouter from './ViewRouter/ViewRouter';
 // * UI System Components
 import ErrorBoundary from './Error/ErrorBoundary';
 import ErrorBoundaryFallback from './Error/ErrorBoundaryFallback';
-export { SidebarProvider, useSidebar } from './ui/sidebar';
+export { SidebarProvider, useSidebar } from './AppSidebar/BaseSidebar';
 
 // * Component prop types for external use
 export { default as PropTypes } from 'prop-types';

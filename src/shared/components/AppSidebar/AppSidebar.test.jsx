@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { SidebarProvider } from "../ui/sidebar";
+import { SidebarProvider } from "./BaseSidebar";
 import { AppSidebar } from "./AppSidebar";
 
 describe("AppSidebar", () => {

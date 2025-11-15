@@ -10,7 +10,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   useSidebar,
-} from "../ui/sidebar";
+} from "./BaseSidebar";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";

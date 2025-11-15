@@ -17,8 +17,9 @@
   pointer-events: none;
   cursor: pointer;
   background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
-  border: none;
+  border: 1px solid var(--primary-500);
   border-radius: var(--radius-full);
+  backdrop-filter: blur(10px);
   box-shadow: 0 16px 35px rgb(15 23 42 / 35%);
   opacity: 0;
   transform: translate3d(0, var(--space-4), 0) scale(0.95);

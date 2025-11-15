@@ -4,11 +4,7 @@
  */
 
 import PropTypes from 'prop-types';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '../ui/sidebar';
+import { useSidebar } from './BaseSidebar';
 
 /**
  * * Reusable action item component
@@ -37,20 +33,18 @@ export function MenuActionItem({
   const buttonAriaLabel = ariaLabel || label;
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton asChild>
-        <button
-          type="button"
-          onClick={onClick}
-          className={className}
-          aria-label={buttonAriaLabel}
-          title={collapsed ? label : undefined}
-        >
-          <Icon />
-          <span>{label}</span>
-        </button>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+    <li className="sidebar-menu-item">
+      <button
+        type="button"
+        onClick={onClick}
+        className={`sidebar-menu-button ${className}`}
+        aria-label={buttonAriaLabel}
+        title={collapsed ? label : undefined}
+      >
+        <Icon />
+        <span>{label}</span>
+      </button>
+    </li>
   );
 }
 

@@ -5,7 +5,7 @@
 
 import { cloneElement, createContext, forwardRef, isValidElement, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import './sidebar.css';
+import './BaseSidebar.css';
 
 // Sidebar Context
 const SidebarContext = createContext({
@@ -61,39 +61,6 @@ Sidebar.propTypes = {
   collapsible: PropTypes.bool
 };
 
-// SidebarTrigger
-export function SidebarTrigger({ className = '' }) {
-  const { toggleCollapsed } = useSidebar();
-
-  return (
-    <button
-      type="button"
-      onClick={toggleCollapsed}
-      className={`sidebar-trigger ${className}`}
-      aria-label="Toggle sidebar"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-        <path d="M9 3v18" />
-      </svg>
-    </button>
-  );
-}
-
-SidebarTrigger.propTypes = {
-  className: PropTypes.string
-};
-
 // SidebarContent
 export function SidebarContent({ children, className = '' }) {
   return (
@@ -131,20 +98,6 @@ SidebarGroup.propTypes = {
   open: PropTypes.bool
 };
 
-// SidebarGroupLabel
-export function SidebarGroupLabel({ children, className = '' }) {
-  return (
-    <div className={`sidebar-group-label ${className}`}>
-      {children}
-    </div>
-  );
-}
-
-SidebarGroupLabel.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string
-};
-
 // SidebarGroupContent
 export function SidebarGroupContent({ children, className = '' }) {
   return (
@@ -159,64 +112,3 @@ SidebarGroupContent.propTypes = {
   className: PropTypes.string
 };
 
-// SidebarMenu
-export function SidebarMenu({ children, className = '' }) {
-  return (
-    <ul className={`sidebar-menu ${className}`}>
-      {children}
-    </ul>
-  );
-}
-
-SidebarMenu.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string
-};
-
-// SidebarMenuItem
-export function SidebarMenuItem({ children, className = '' }) {
-  return (
-    <li className={`sidebar-menu-item ${className}`}>
-      {children}
-    </li>
-  );
-}
-
-SidebarMenuItem.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string
-};
-
-// SidebarMenuButton
-export const SidebarMenuButton = forwardRef(
-  ({ children, className = '', asChild = false, ...props }, ref) => {
-    const { collapsed } = useSidebar();
-
-    if (asChild && isValidElement(children)) {
-      return cloneElement(children, {
-        ref,
-        className: `sidebar-menu-button ${collapsed ? 'sidebar-menu-button--collapsed' : ''} ${children.props.className || ''} ${className}`,
-        ...props
-      });
-    }
-
-    return (
-      <button
-        ref={ref}
-        type="button"
-        className={`sidebar-menu-button ${collapsed ? 'sidebar-menu-button--collapsed' : ''} ${className}`}
-        {...props}
-      >
-        {children}
-      </button>
-    );
-  }
-);
-
-SidebarMenuButton.displayName = 'SidebarMenuButton';
-
-SidebarMenuButton.propTypes = {
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
-  asChild: PropTypes.bool
-};

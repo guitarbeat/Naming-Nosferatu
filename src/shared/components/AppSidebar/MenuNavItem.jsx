@@ -4,11 +4,7 @@
  */
 
 import PropTypes from 'prop-types';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '../ui/sidebar';
+import { useSidebar } from './BaseSidebar';
 
 /**
  * * Reusable navigation item component
@@ -29,20 +25,18 @@ export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
   };
 
   return (
-    <SidebarMenuItem key={itemKey}>
-      <SidebarMenuButton asChild>
-        <a
-          href="#"
-          onClick={handleClick}
-          className={isActive ? 'active' : ''}
-          aria-current={isActive ? 'page' : undefined}
-          title={collapsed ? label : undefined}
-        >
-          <Icon />
-          <span>{label}</span>
-        </a>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+    <li key={itemKey} className="sidebar-menu-item">
+      <a
+        href="#"
+        onClick={handleClick}
+        className={`sidebar-menu-button ${isActive ? 'active' : ''}`}
+        aria-current={isActive ? 'page' : undefined}
+        title={collapsed ? label : undefined}
+      >
+        <Icon />
+        <span>{label}</span>
+      </a>
+    </li>
   );
 }
 
