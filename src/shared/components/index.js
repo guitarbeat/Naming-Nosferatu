@@ -33,6 +33,7 @@ import PerformanceDashboard from './PerformanceDashboard/PerformanceDashboard';
 import StartTournamentButton from './StartTournamentButton/StartTournamentButton';
 import CalendarButton from './CalendarButton/CalendarButton';
 import ViewRouter from './ViewRouter/ViewRouter';
+import ScrollToTopButton from './ScrollToTopButton';
 
 // * UI System Components
 import ErrorBoundary from './Error/ErrorBoundary';
@@ -73,6 +74,7 @@ const components = {
   StartTournamentButton,
   CalendarButton,
   ViewRouter,
+  ScrollToTopButton,
 
   // UI System
   ErrorBoundary,
@@ -103,6 +105,7 @@ export {
   StartTournamentButton,
   CalendarButton,
   ViewRouter,
+  ScrollToTopButton,
   ErrorBoundary,
   ErrorBoundaryFallback
 };
