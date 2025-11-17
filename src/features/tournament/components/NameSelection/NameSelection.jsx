@@ -107,10 +107,10 @@ function NameSelection({
               metadata={
                 isAdmin
                   ? {
-                      rating: nameObj.avg_rating,
-                      popularity: nameObj.popularity_score,
-                      tournaments: nameObj.total_tournaments,
-                      categories: nameObj.categories,
+                      rating: nameObj.avg_rating || 0,
+                      popularity: nameObj.popularity_score || 0,
+                      tournaments: nameObj.total_tournaments || 0,
+                      categories: nameObj.categories || [],
                     }
                   : undefined
               }

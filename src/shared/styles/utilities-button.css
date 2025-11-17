@@ -17,13 +17,14 @@
 
 .btn-primary {
   color: var(--text-primary);
-  background: var(--primary-color);
-  border-color: var(--primary-color);
+  border-color: transparent;
+  background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+  transition: all 0.3s ease-in-out;
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
+  border-color: transparent;
+  background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
 }
 
 .btn-secondary {

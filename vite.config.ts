@@ -42,7 +42,8 @@ export default defineConfig(({ mode }) => {
     server: {
       host: '::',
       port: 8080,
-      hmr: { overlay: false }
+      hmr: { overlay: false },
+      appType: 'spa'
     },
     preview: {
       host: true,
