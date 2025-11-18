@@ -11,10 +11,12 @@
   }
 
   /* Name card touch feedback */
-  .name-card:active {
+  .name-card:active,
+  .card:not(.disabled):active {
     background: var(--mobile-card-hover, var(--card-hover));
     box-shadow: 0 1px 2px var(--shadow-color-light);
     transform: scale(0.98);
+    cursor: pointer;
   }
 
   /* * Button component handles touch feedback */

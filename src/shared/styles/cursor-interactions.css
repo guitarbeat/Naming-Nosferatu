@@ -1,0 +1,252 @@
+/* Cursor Interaction System - Enhanced usability and pointer feedback */
+
+/* ===== BASE CURSOR STYLES ===== */
+
+/* * Default cursor for interactive elements */
+button,
+a,
+[role="button"],
+[tabindex]:not([tabindex="-1"]),
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+label[for],
+.clickable {
+  cursor: pointer;
+}
+
+/* * Text input cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+textarea {
+  cursor: text;
+}
+
+/* * Disabled state cursor */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+.disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
+/* * Loading state cursor */
+.loading,
+[aria-busy="true"] {
+  cursor: wait !important;
+}
+
+/* * Grab/grabbing cursors for draggable elements */
+.draggable,
+[draggable="true"],
+.swipeCard {
+  cursor: grab;
+}
+
+.draggable:active,
+[draggable="true"]:active,
+.swipeCard:active,
+.dragging {
+  cursor: grabbing !important;
+}
+
+/* * Resize cursors */
+.resize-horizontal {
+  cursor: ew-resize;
+}
+
+.resize-vertical {
+  cursor: ns-resize;
+}
+
+.resize-both {
+  cursor: nwse-resize;
+}
+
+/* * Help cursor for tooltips and help text */
+.help,
+[aria-describedby],
+[title]:not([title=""]):not(button):not(a) {
+  cursor: help;
+}
+
+/* * Copy cursor for copyable content */
+.copyable,
+[data-copy] {
+  cursor: copy;
+}
+
+/* ===== ENHANCED HOVER FEEDBACK ===== */
+
+/* * Visual feedback on hover for interactive elements */
+button:not(:disabled):hover,
+a:not([aria-disabled="true"]):hover,
+[role="button"]:not([aria-disabled="true"]):hover,
+.clickable:not(.disabled):hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* * Scale feedback for buttons */
+button:not(:disabled):hover:not(.no-hover-scale) {
+  transform: translateY(-1px);
+}
+
+button:not(:disabled):active:not(.no-hover-scale) {
+  transform: translateY(0);
+}
+
+/* * Enhanced focus ring for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--accent-color, #e8bf76);
+  outline-offset: 3px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgb(232 191 118 / 30%);
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* * Remove hover effects on touch devices */
+  button:not(:disabled):hover,
+  a:not([aria-disabled="true"]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform: none;
+  }
+
+  /* * Enhanced active state for touch */
+  button:not(:disabled):active,
+  a:not([aria-disabled="true"]):active,
+  [role="button"]:not([aria-disabled="true"]):active,
+  .clickable:not(.disabled):active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  /* * Larger touch targets */
+  button,
+  a,
+  [role="button"],
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ===== POINTER EVENTS MANAGEMENT ===== */
+
+/* * Disable pointer events for disabled elements */
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+.disabled,
+[aria-disabled="true"] {
+  pointer-events: none;
+}
+
+/* * Enable pointer events for loading overlays */
+.loading-overlay {
+  pointer-events: auto;
+  cursor: wait;
+}
+
+/* * Prevent text selection on interactive elements */
+button,
+[role="button"],
+.draggable,
+[draggable="true"] {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* * Allow text selection in inputs and textareas */
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* ===== CONTEXT-SPECIFIC CURSORS ===== */
+
+/* * Link cursor */
+a[href]:not([href=""]):not([href="#"]):not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+a[href=""]:not([aria-disabled="true"]),
+a[href="#"]:not([aria-disabled="true"]) {
+  cursor: default;
+}
+
+/* * Image cursor */
+img[onclick],
+img[role="button"],
+img.clickable {
+  cursor: pointer;
+}
+
+/* * Card cursor */
+.card:not(.disabled):not(.static) {
+  cursor: pointer;
+}
+
+.card.static {
+  cursor: default;
+}
+
+/* * Name card specific */
+.name-card:not(.disabled) {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.name-card:not(.disabled):hover {
+  transform: translateY(-2px);
+}
+
+.name-card:not(.disabled):active {
+  transform: translateY(0);
+}
+
+/* ===== REDUCED MOTION SUPPORT ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  button:not(:disabled):hover,
+  a:not([aria-disabled="true"]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover,
+  .clickable:not(.disabled):hover,
+  .name-card:not(.disabled):hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+
+@media (prefers-contrast: more) {
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 4px solid;
+    outline-offset: 4px;
+  }
+}
+

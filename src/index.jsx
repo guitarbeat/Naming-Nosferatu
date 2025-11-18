@@ -51,6 +51,7 @@ import '@styles/responsive-high-contrast.css';
 import '@styles/responsive-reduced-motion.css';
 import '@styles/responsive-safe-area.css';
 import '@styles/responsive-landscape.css';
+import '@styles/cursor-interactions.css';
 import App from './App.jsx';
 import ErrorBoundary from './shared/components/Error/ErrorBoundary.jsx';
 import ErrorBoundaryFallback from './shared/components/Error/ErrorBoundaryFallback.jsx';

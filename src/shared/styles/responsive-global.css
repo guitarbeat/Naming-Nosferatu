@@ -83,9 +83,12 @@
   input[type='radio'],
   .btn,
   a[role='button'],
-  .nav-menu button {
+  .nav-menu button,
+  [role='button'],
+  .clickable {
     min-width: var(--mobile-touch-target-min);
     min-height: var(--mobile-touch-target-min);
+    cursor: pointer;
   }
 
   /* Form inputs should have minimum height for touch */
