@@ -30,8 +30,7 @@
   },
   "include": [
     "src/**/*",
-    "config/**/*",
-    "vite.config.ts"
+    "config/**/*"
   ],
   "exclude": [
     "node_modules",
