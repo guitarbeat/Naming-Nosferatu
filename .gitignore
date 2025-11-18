@@ -238,3 +238,15 @@ analysis/
 # Temporary files
 *.tmp
 *.temp
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Debug screenshots and test artifacts
+verification/*.png
+verification/*.jpg
+verification/*.jpeg
+!verification/verify_button_style.py
