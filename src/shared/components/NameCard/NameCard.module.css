@@ -920,3 +920,32 @@
   background: var(--primary-50);
   border-radius: var(--radius-sm);
 }
+
+/* Mobile-specific enhancements */
+@media (width <= 768px) {
+  .card {
+    padding: var(--mobile-card-padding);
+    border-radius: var(--mobile-border-radius);
+  }
+
+  .name {
+    font-size: 1.25rem;
+  }
+
+  .description {
+    font-size: 0.875rem;
+  }
+
+  .tooltip {
+    display: none;
+  }
+
+  .card:hover {
+    transform: none;
+    box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
+  }
+
+  .card:active {
+    transform: scale(0.98);
+  }
+}

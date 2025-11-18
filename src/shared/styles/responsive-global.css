@@ -49,13 +49,13 @@
 
   /* Mobile form improvements - Updated to 48x48px minimum */
   .input {
-    min-height: var(--mobile-touch-target-min);
+    min-height: var(--mobile-input-height);
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-base);
     color: var(--text-primary);
     background: var(--surface-color);
     border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border-radius: var(--mobile-border-radius);
   }
 
   .input:focus {
@@ -98,7 +98,7 @@
   input[type='number'],
   textarea,
   select {
-    min-height: var(--mobile-touch-target-min);
+    min-height: var(--mobile-input-height);
   }
 
   /* Ensure proper spacing between interactive elements */
@@ -110,7 +110,7 @@
 
   /* Improve form layout on mobile */
   .form-group {
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--mobile-margin);
   }
 
   .form-group label {
@@ -123,8 +123,9 @@
   .card,
   .name-card,
   .tournament-card {
-    padding: var(--space-4);
-    margin-bottom: var(--space-4);
+    padding: var(--mobile-card-padding);
+    margin-bottom: var(--mobile-margin);
+    border-radius: var(--mobile-border-radius);
   }
 
   /* Improve mobile list spacing */
