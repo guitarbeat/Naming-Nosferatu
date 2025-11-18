@@ -592,3 +592,44 @@
   ) !important;
   box-shadow: 0 4px 12px rgb(220 38 38 / 15%) !important;
 }
+
+/* Responsive improvements for mobile */
+@media (width <= 768px) {
+  .app-sidebar {
+    min-height: 60px;
+    padding: 0 var(--mobile-padding);
+  }
+
+  .sidebar-logo {
+    padding: 0;
+    margin-right: 0;
+    border-right: none;
+  }
+
+  .sidebar-logo::after {
+    display: none;
+  }
+
+  .sidebar-logo-button {
+    padding: 0.25rem;
+  }
+
+  .sidebar-logo-video {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .sidebar-logo-text {
+    display: none;
+  }
+
+  .navbar-breadcrumb,
+  .sidebar-user-info,
+  .sidebar-admin-badge {
+    display: none;
+  }
+
+  .navbar-section {
+    gap: 0.5rem;
+  }
+}
