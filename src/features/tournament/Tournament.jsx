@@ -9,19 +9,19 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import { useTournament } from "../../core/hooks/useTournament";
 import { Card, Loading, Error } from "../../shared/components";
-// ErrorBoundary import removed - using unified Error component
-import { ErrorManager } from "../../shared/services/errorManager";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import Bracket from "../../shared/components/Bracket/Bracket";
 import TournamentControls from "./TournamentControls";
-import styles from "./Tournament.module.css";
-import { shuffleArray } from "../../shared/utils/coreUtils";
+import MatchResult from "./components/MatchResult/MatchResult";
+import RoundTransition from "./components/RoundTransition/RoundTransition";
+import { useAudioManager } from "./hooks/useAudioManager";
+import { useTournamentState } from "./hooks/useTournamentState";
 import { useToast } from './hooks/useToast';
+import { TOURNAMENT_TIMING } from "../../core/constants";
+import styles from "./Tournament.module.css";
 
 // * Custom hook for audio management
 function useAudioManager() {
@@ -501,41 +501,6 @@ function useKeyboardControls(
 }
 
 // * Match result component
-function MatchResult({
-  showMatchResult,
-  lastMatchResult,
-  roundNumber,
-  currentMatchNumber,
-  totalMatches,
-}) {
-  if (!showMatchResult || !lastMatchResult) return null;
-
-  return (
-    <div className={styles.matchResult} role="status" aria-live="polite">
-      <div className={styles.resultContent}>
-        <span className={styles.resultMessage}>{lastMatchResult}</span>
-        <span className={styles.tournamentProgress}>
-          Round {roundNumber} - Match {currentMatchNumber} of {totalMatches}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-// * Round transition component
-function RoundTransition({ showRoundTransition, nextRoundNumber }) {
-  if (!showRoundTransition || !nextRoundNumber) return null;
-
-  return (
-    <div className={styles.roundTransition} role="status" aria-live="polite">
-      <div className={styles.transitionContent}>
-        <div className={styles.roundIcon}>🏆</div>
-        <h2 className={styles.roundTitle}>Round {nextRoundNumber}</h2>
-        <p className={styles.roundSubtitle}>Tournament continues...</p>
-      </div>
-    </div>
-  );
-}
 
 // * Main tournament content component
 function TournamentContent({
@@ -609,8 +574,7 @@ function TournamentContent({
   const lastRenderLogRef = useRef(0);
   if (process.env.NODE_ENV === "development") {
     const now = Date.now();
-    if (now - lastRenderLogRef.current > 1000) {
-      // Reduced frequency from 500ms to 1000ms
+    if (now - lastRenderLogRef.current > TOURNAMENT_TIMING.RENDER_LOG_THROTTLE) {
       console.debug("[DEV] 🎮 Tournament: render", {
         namesCount: names?.length || 0,
         randomizedCount: randomizedNames?.length || 0,
@@ -622,9 +586,8 @@ function TournamentContent({
 
   // * Rate limiting for voting
   const lastVoteTimeRef = useRef(0);
-  const VOTE_COOLDOWN = 500;
 
-  // * Undo window (2.5s)
+  // * Undo window
   const [undoExpiresAt, setUndoExpiresAt] = useState(null);
   const undoRemainingMs = undoExpiresAt
     ? Math.max(0, undoExpiresAt - Date.now())
@@ -639,7 +602,7 @@ function TournamentContent({
         // trigger re-render
         setUndoExpiresAt((ts) => ts);
       }
-    }, 200);
+    }, TOURNAMENT_TIMING.UNDO_UPDATE_INTERVAL);
     return () => clearInterval(id);
   }, [undoExpiresAt]);
 
@@ -658,11 +621,11 @@ function TournamentContent({
       }
 
       setLastMatchResult(resultMessage);
-      setTimeout(() => setShowMatchResult(true), 500);
-      setTimeout(() => setShowMatchResult(false), 2500);
-      showSuccess("Vote recorded successfully!", { duration: 3000 });
+      setTimeout(() => setShowMatchResult(true), TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY);
+      setTimeout(() => setShowMatchResult(false), TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY);
+      showSuccess("Vote recorded successfully!", { duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION });
       // Start undo window
-      setUndoExpiresAt(Date.now() + 2500);
+      setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
     },
     [currentMatch, showSuccess, setLastMatchResult, setShowMatchResult]
   );
@@ -674,7 +637,7 @@ function TournamentContent({
 
       // Rate limiting check
       const now = Date.now();
-      if (now - lastVoteTimeRef.current < VOTE_COOLDOWN) return;
+      if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN) return;
       lastVoteTimeRef.current = now;
 
       try {
@@ -741,9 +704,9 @@ function TournamentContent({
         }
 
         setSelectedOption(null);
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        await new Promise((resolve) => setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM));
         setIsProcessing(false);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT));
         setIsTransitioning(false);
       } catch (error) {
         if (process.env.NODE_ENV === "development") {
@@ -757,7 +720,7 @@ function TournamentContent({
         });
 
         showError("Failed to submit vote. Please try again.", {
-          duration: 5000,
+          duration: TOURNAMENT_TIMING.TOAST_ERROR_DURATION,
         });
         setIsProcessing(false);
         setIsTransitioning(false);

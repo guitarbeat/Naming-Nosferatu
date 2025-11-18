@@ -1,0 +1,70 @@
+/* Match Result Component Styles */
+
+.matchResult {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  max-width: 600px;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 95%)), var(--surface-muted, rgb(15 23 42 / 95%)));
+  border: 2px solid var(--accent-color, #e8bf76);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
+  transform: translate(-50%, -50%);
+  animation: matchResultSlideIn 0.3s ease-out;
+  backdrop-filter: blur(12px);
+}
+
+.resultContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  text-align: center;
+}
+
+.resultMessage {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  color: var(--accent-color, #e8bf76);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.tournamentProgress {
+  font-size: clamp(0.875rem, 2.5vw, 1rem);
+  color: var(--text-secondary, #94a3b8);
+}
+
+@keyframes matchResultSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Responsive Design */
+@media (width <= 768px) {
+  .matchResult {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .resultMessage {
+    font-size: 1.25rem;
+  }
+
+  .tournamentProgress {
+    font-size: 0.875rem;
+  }
+}
+

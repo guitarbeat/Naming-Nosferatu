@@ -170,6 +170,52 @@ export const PERFORMANCE = {
   MEMOIZATION_TTL: 5 * 60 * 1000 // 5 minutes
 };
 
+// * Tournament Timing Constants
+export const TOURNAMENT_TIMING = {
+  VOTE_COOLDOWN: 500,
+  UNDO_WINDOW_MS: 2500,
+  MATCH_RESULT_SHOW_DELAY: 500,
+  MATCH_RESULT_HIDE_DELAY: 2500,
+  TOAST_SUCCESS_DURATION: 3000,
+  TOAST_ERROR_DURATION: 5000,
+  RENDER_LOG_THROTTLE: 1000,
+  ROUND_TRANSITION_DELAY: 2000,
+  UNDO_UPDATE_INTERVAL: 200,
+  TRANSITION_DELAY_SHORT: 100,
+  TRANSITION_DELAY_MEDIUM: 200
+};
+
+// * Audio Constants
+export const AUDIO = {
+  DEFAULT_MUSIC_VOLUME: 0.2,
+  DEFAULT_EFFECTS_VOLUME: 0.3,
+  AUDIO_RETRY_DELAY: 50,
+  TRACK_CHANGE_DELAY: 50
+};
+
+// * Music Tracks
+export const MUSIC_TRACKS = [
+  {
+    path: "/assets/sounds/AdhesiveWombat - Night Shade.mp3",
+    name: "Night Shade",
+  },
+  { path: "/assets/sounds/MiseryBusiness.mp3", name: "Misery Business" },
+  { path: "/assets/sounds/what-is-love.mp3", name: "What is Love" },
+  {
+    path: "/assets/sounds/Lemon Demon - The Ultimate Showdown (8-Bit Remix).mp3",
+    name: "Ultimate Showdown (8-Bit)",
+  },
+  { path: "/assets/sounds/Main Menu 1 (Ruins).mp3", name: "Ruins" },
+];
+
+// * Sound Effects
+export const SOUND_EFFECTS = [
+  { path: "/assets/sounds/gameboy-pluck.mp3", weight: 0.5 },
+  { path: "/assets/sounds/wow.mp3", weight: 0.2 },
+  { path: "/assets/sounds/surprise.mp3", weight: 0.1 },
+  { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
+];
+
 export default {
   VIEWS,
   TOURNAMENT,
@@ -183,5 +229,9 @@ export default {
   STORAGE_KEYS,
   ANIMATION,
   A11Y,
-  PERFORMANCE
+  PERFORMANCE,
+  TOURNAMENT_TIMING,
+  AUDIO,
+  MUSIC_TRACKS,
+  SOUND_EFFECTS
 };
