@@ -16,15 +16,37 @@
 }
 
 .btn-primary {
-  color: var(--text-primary);
+  color: var(--white-rgb);
   border-color: transparent;
-  background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(45deg, var(--neon-cyan), var(--hot-pink));
   transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
 }
 
 .btn-primary:hover {
   border-color: transparent;
-  background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+  background: linear-gradient(45deg, var(--hot-pink), var(--neon-cyan));
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 0 25px rgba(250, 38, 160, 0.7), 0 0 25px rgba(47, 243, 224, 0.7);
+}
+
+.btn-glow {
+  animation: pulse 2s 2;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(250, 38, 160, 0.7), 0 0 25px rgba(47, 243, 224, 0.7);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
+  }
 }
 
 .btn-secondary {

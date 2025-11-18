@@ -362,7 +362,7 @@ function Login({ onLogin }) {
                   disabled={isLoading}
                   size="large"
                   endIcon={name.trim() ? null : <span aria-hidden="true">🏆</span>}
-                  className={name.trim() ? styles.hasName : ""}
+                  className={`${name.trim() ? styles.hasName : ""} btn-glow`}
                 >
                   {name.trim() ? "Continue" : "Get Random Name & Start"}
                 </Button>

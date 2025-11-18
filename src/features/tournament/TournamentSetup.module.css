@@ -496,7 +496,6 @@
 }
 
 .photoThumbnail:hover img {
-  transform: scale(1.02);
 }
 
 .photoOverlay {
@@ -511,7 +510,6 @@
     rgb(0 0 0 / 55%) 100%
   );
   opacity: 0;
-  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .photoIcon {
@@ -2128,29 +2126,6 @@
   transition: opacity var(--duration-normal) var(--ease-out);
 }
 
-.photoThumbnail:hover .photoOverlay {
-  opacity: 1;
-
-  .catPicturesToggleButton {
-    max-width: 100%; /* * Ensure button doesn't overflow container */
-    min-height: 44px; /* * Ensure minimum height on very small screens */
-    padding: var(--space-2) var(--space-2); /* * Optimized padding for very small screens */
-    overflow: hidden; /* * Hide any overflow */
-    text-overflow: ellipsis; /* * Show ellipsis for very long text */
-    font-size: var(--text-xs); /* * Reduce font size for better fit */
-    white-space: nowrap; /* * Prevent text wrapping */
-    border-radius: var(
-      --radius-md
-    ); /* * Smaller radius on very small screens */
-
-    /* * Reduce effects on very small screens for performance */
-    backdrop-filter: blur(8px);
-  }
-
-  .cardsContainer {
-    gap: var(--space-2);
-  }
-}
 
 .photoIcon {
   font-size: var(--text-2xl);
