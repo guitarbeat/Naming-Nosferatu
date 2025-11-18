@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { ErrorManager } from '../../services/errorManager';
 
 /**
  * Minimal React error boundary implementation that mirrors the key ergonomics
@@ -22,6 +23,19 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     const { onError } = this.props;
+
+    // * Use ErrorManager for consistent error handling
+    const context = errorInfo?.componentStack 
+      ? `React Component Error in ${errorInfo.componentStack.split('\n')[1]?.trim() || 'Unknown Component'}`
+      : 'React Component Error';
+    
+    ErrorManager.handleError(error, context, {
+      isRetryable: true,
+      affectsUserData: false,
+      isCritical: false,
+      componentStack: errorInfo?.componentStack,
+      errorBoundary: true
+    });
 
     if (typeof onError === 'function') {
       onError(error, errorInfo);

@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import { Card, Error, Button } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import { siteSettingsAPI } from "../../integrations/supabase/api";
+import { ErrorManager } from "../../shared/services/errorManager";
 import CatNameBanner from "../home/CatNameBanner";
 import styles from "./Login.module.css";
 
@@ -45,7 +46,16 @@ function Login({ onLogin }) {
       const data = await siteSettingsAPI.getCatChosenName();
       setCatName(data);
     } catch (error) {
-      console.error('Error loading cat name:', error);
+      // * Use ErrorManager for consistent error handling
+      ErrorManager.handleError(error, 'Load Cat Name', {
+        isRetryable: true,
+        affectsUserData: false,
+        isCritical: false
+      });
+      // * Silently fail - cat name banner is optional
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to load cat name (non-critical):', error);
+      }
     } finally {
       setLoadingCatName(false);
     }
@@ -140,17 +150,58 @@ function Login({ onLogin }) {
 
   // Fetch cat fact on component mount
   useEffect(() => {
-    fetch("https://catfact.ninja/fact")
-      .then((response) => response.json())
-      .then((data) => setCatFact(data.fact))
-      .catch((error) => {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error fetching cat fact:", error);
+    let isMounted = true;
+    
+    const fetchCatFact = async () => {
+      // * Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      try {
+        const response = await fetch("https://catfact.ninja/fact", {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        setCatFact("Cats are amazing creatures with unique personalities!");
-      });
+        
+        const data = await response.json();
+        
+        // * Validate response structure
+        if (data && typeof data.fact === 'string' && isMounted) {
+          setCatFact(data.fact);
+        } else if (isMounted) {
+          throw new Error('Invalid response format from cat fact API');
+        }
+      } catch (error) {
+        // * Handle abort/timeout gracefully
+        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Cat fact request timed out');
+          }
+        } else {
+          // * Use ErrorManager for consistent error handling
+          ErrorManager.handleError(error, 'Fetch Cat Fact', {
+            isRetryable: true,
+            affectsUserData: false,
+            isCritical: false
+          });
+        }
+        
+        // * Set fallback message if component is still mounted
+        if (isMounted) {
+          setCatFact("Cats are amazing creatures with unique personalities!");
+        }
+      }
+    };
+
+    fetchCatFact();
 
     return () => {
+      isMounted = false;
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = null;
@@ -189,9 +240,22 @@ function Login({ onLogin }) {
 
     try {
       setIsLoading(true);
+      setError(""); // Clear any previous errors
       await onLogin(validation.value);
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      // * Use ErrorManager for consistent error handling
+      const formattedError = ErrorManager.handleError(err, 'User Login', {
+        isRetryable: true,
+        affectsUserData: false,
+        isCritical: false
+      });
+      
+      // * Set user-friendly error message
+      setError(
+        formattedError.userMessage || 
+        err.message || 
+        "Unable to log in. Please check your connection and try again."
+      );
     } finally {
       setIsLoading(false);
     }

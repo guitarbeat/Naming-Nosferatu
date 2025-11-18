@@ -184,6 +184,11 @@ export class ErrorManager {
    * @returns {string} Error type
    */
   static determineErrorType(error) {
+    // * Check for network connectivity first
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return ERROR_TYPES.NETWORK;
+    }
+
     if (error.code === 'PGRST301' || error.code === 'PGRST302') {
       return ERROR_TYPES.AUTH;
     }
@@ -192,7 +197,26 @@ export class ErrorManager {
       return ERROR_TYPES.VALIDATION;
     }
 
-    if (error.code === 'NETWORK_ERROR' || error.message?.includes('fetch')) {
+    // * Enhanced network error detection
+    if (
+      error.code === 'NETWORK_ERROR' || 
+      error.name === 'NetworkError' ||
+      (error.name === 'TypeError' && error.message?.includes('fetch')) ||
+      error.message?.includes('fetch') ||
+      error.message?.includes('network') ||
+      error.message?.includes('Failed to fetch') ||
+      error.message?.includes('Network request failed')
+    ) {
+      return ERROR_TYPES.NETWORK;
+    }
+
+    // * Check for timeout errors
+    if (
+      error.name === 'TimeoutError' ||
+      (error.name === 'AbortError' && error.message?.includes('timeout')) ||
+      error.message?.includes('timeout') ||
+      error.message?.includes('timed out')
+    ) {
       return ERROR_TYPES.NETWORK;
     }
 
@@ -296,13 +320,29 @@ export class ErrorManager {
       'Tournament Completion': 'Failed to complete tournament',
       'Tournament Setup': 'Failed to set up tournament',
       'Rating Update': 'Failed to update ratings',
+      'Save Rankings': 'Failed to save ranking changes',
       Login: 'Failed to log in',
+      'User Login': 'Unable to log in',
       'Profile Load': 'Failed to load profile',
-      'Database Query': 'Failed to fetch data'
+      'Database Query': 'Failed to fetch data',
+      'Load Cat Name': 'Failed to load cat name',
+      'Fetch Cat Fact': 'Unable to load cat fact',
+      'Audio Playback': 'Unable to play audio',
+      'React Component Error': 'A component error occurred'
     };
 
     const contextMessage = contextMap[context] || 'An error occurred';
     const severity = this.determineSeverity(errorInfo, {});
+
+    // * Check for network connectivity
+    if (errorInfo.type === ERROR_TYPES.NETWORK) {
+      const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+      if (isOffline) {
+        return 'You appear to be offline. Please check your internet connection and try again.';
+      }
+      return USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
+             `${contextMessage}. Please check your connection and try again.`;
+    }
 
     return USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
            `${contextMessage}. Please try again.`;
@@ -373,10 +413,26 @@ export class ErrorManager {
       timestamp: new Date().toISOString()
     };
 
-    // * Console logging for development
+    // * Enhanced structured logging for development
     if (process.env.NODE_ENV === 'development') {
-      console.group(`🚨 Error in ${context}`);
-      console.error('Error Details:', logData);
+      const isMobile = typeof navigator !== 'undefined' && 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      console.group(`🔴 Error [${formattedError.type}]${isMobile ? ' (Mobile)' : ''}`);
+      console.error('Context:', context);
+      console.error('Message:', formattedError.userMessage || formattedError.message);
+      console.error('Severity:', formattedError.severity);
+      console.error('Retryable:', formattedError.isRetryable);
+      if (formattedError.metadata?.stack) {
+        console.error('Stack:', formattedError.metadata.stack);
+      }
+      if (logData.diagnostics?.debugHints?.length) {
+        console.group('Debug Hints');
+        logData.diagnostics.debugHints.forEach((hint, i) => {
+          console.log(`${i + 1}. ${hint.title}:`, hint.detail);
+        });
+        console.groupEnd();
+      }
       console.groupEnd();
     }
 

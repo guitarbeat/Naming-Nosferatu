@@ -611,7 +611,14 @@
   }
 
   .sidebar-logo-button {
-    padding: 0.25rem;
+    /* * Ensure minimum touch target size (48px) */
+    min-width: var(--mobile-touch-target-min, 48px);
+    min-height: var(--mobile-touch-target-min, 48px);
+    padding: 0.5rem;
+    /* * Center content within touch target */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .sidebar-logo-video {

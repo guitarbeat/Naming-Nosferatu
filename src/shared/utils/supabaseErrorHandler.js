@@ -104,6 +104,25 @@ export function showErrorToast(error, showToastFn) {
 }
 
 /**
+ * Show success toast notification
+ * @param {string} message - Success message to display
+ * @param {Function} showToastFn - Toast function from useToast hook
+ * @param {number} duration - Duration in milliseconds (default: 3000)
+ */
+export function showSuccessToast(message, showToastFn, duration = 3000) {
+  if (!showToastFn) {
+    console.warn('No toast function provided to showSuccessToast');
+    return;
+  }
+
+  showToastFn({
+    type: 'success',
+    message,
+    duration
+  });
+}
+
+/**
  * Create user-friendly error message for specific operations
  */
 export const OPERATION_ERRORS = {

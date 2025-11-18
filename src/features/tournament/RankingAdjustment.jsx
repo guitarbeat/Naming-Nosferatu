@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card } from '../../shared/components';
+import { ErrorManager } from '../../shared/services/errorManager';
 import './RankingAdjustment.css';
 /**
  * --- AUTO-GENERATED DOCSTRING ---
@@ -97,13 +98,23 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
       const saveTimer = setTimeout(() => {
         onSave(items)
           .then(() => {
-
             setSaveStatus('success');
             setTimeout(() => setSaveStatus(''), 2000);
           })
-          .catch(() => {
+          .catch((error) => {
+            // * Use ErrorManager for consistent error handling
+            ErrorManager.handleError(error, 'Save Rankings', {
+              isRetryable: true,
+              affectsUserData: true,
+              isCritical: false
+            });
+            
             setSaveStatus('error');
             setTimeout(() => setSaveStatus(''), 3000);
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.error('Failed to save rankings:', error);
+            }
           });
       }, 500);
 
@@ -147,12 +158,22 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
   const getSaveStatusDisplay = () => {
     switch (saveStatus) {
       case 'saving':
-        return <div className="save-status saving">Saving changes...</div>;
+        return (
+          <div className="save-status saving" role="status" aria-live="polite">
+            Saving changes...
+          </div>
+        );
       case 'success':
-        return <div className="save-status success">✓ Changes saved</div>;
+        return (
+          <div className="save-status success" role="status" aria-live="polite">
+            ✓ Changes saved successfully
+          </div>
+        );
       case 'error':
         return (
-          <div className="save-status error">Failed to save. Try again.</div>
+          <div className="save-status error" role="alert" aria-live="assertive">
+            Failed to save changes. Your changes are still visible but not saved. Please try again or refresh the page.
+          </div>
         );
       default:
         return null;

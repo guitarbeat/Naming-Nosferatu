@@ -614,6 +614,51 @@
 
 /* Responsive adjustments */
 @media (width <= 768px) {
+  .boundary {
+    padding: 1rem;
+  }
+
+  .boundaryContent {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
+  }
+
+  .boundaryTitle {
+    font-size: 1.5rem;
+  }
+
+  .boundaryMessage {
+    font-size: 1rem;
+  }
+
+  .boundaryActions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .boundaryRetryButton,
+  .boundaryRefreshButton,
+  .boundaryHomeButton,
+  .boundaryCopyButton {
+    /* * Ensure minimum touch target size (48px) */
+    min-height: var(--mobile-touch-target-min, 48px);
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .boundarySuggestions {
+    padding: 1rem;
+  }
+
+  .boundarySuggestionsTitle {
+    font-size: 0.9375rem;
+  }
+
+  .boundarySuggestionsList li {
+    font-size: 0.8125rem;
+  }
+
   .list {
     padding: 1rem;
   }
@@ -634,6 +679,28 @@
   
   .listSuggestion {
     font-size: 0.8125rem;
+  }
+
+  .inlineContent {
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    padding: 0.875rem;
+  }
+
+  .inlineActions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+    margin-top: 0.5rem;
+  }
+
+  .inlineRetryButton,
+  .inlineDismissButton {
+    /* * Ensure minimum touch target size (48px) */
+    min-height: var(--mobile-touch-target-min, 48px);
+    flex: 1;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
   }
 }
 

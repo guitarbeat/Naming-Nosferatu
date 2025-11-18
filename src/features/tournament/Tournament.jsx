@@ -15,6 +15,7 @@ import PropTypes from "prop-types";
 import { useTournament } from "../../core/hooks/useTournament";
 import { Card, Loading, Error } from "../../shared/components";
 // ErrorBoundary import removed - using unified Error component
+import { ErrorManager } from "../../shared/services/errorManager";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import Bracket from "../../shared/components/Bracket/Bracket";
 import TournamentControls from "./TournamentControls";
@@ -246,13 +247,25 @@ function useAudioManager() {
         if (musicRef.current && !isMuted) {
           musicRef.current
             .play()
-            .then(() => setAudioError(null))
+            .then(() => {
+              setAudioError(null);
+            })
             .catch((error) => {
+              // * Ignore abort errors (user-initiated stops)
               if (error.name !== "AbortError") {
-                if (process.env.NODE_ENV === "development") {
-                  console.error("Error retrying audio:", error);
-                }
+                // * Use ErrorManager for consistent error handling
+                ErrorManager.handleError(error, 'Audio Playback', {
+                  isRetryable: true,
+                  affectsUserData: false,
+                  isCritical: false
+                });
+                
+                // * Set user-friendly error message
                 setAudioError("Unable to play audio. Click to try again.");
+                
+                if (process.env.NODE_ENV === "development") {
+                  console.warn("Audio playback error (non-critical):", error);
+                }
               }
             });
         }
