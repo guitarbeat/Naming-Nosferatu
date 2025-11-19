@@ -110,7 +110,12 @@ export function useTournamentVoting({
           lossesA: newLeftLosses,
           winsB: newRightWins,
           lossesB: newRightLosses,
-        } = elo.calculateNewRatings(leftRating, rightRating, eloOutcome, leftStats);
+        } = elo.calculateNewRatings(
+          leftRating,
+          rightRating,
+          eloOutcome,
+          leftStats,
+        );
 
         if (sorter && typeof sorter.addPreference === "function") {
           sorter.addPreference(leftName, rightName, voteValue);
@@ -295,4 +300,3 @@ function createVoteData({
     },
   };
 }
-

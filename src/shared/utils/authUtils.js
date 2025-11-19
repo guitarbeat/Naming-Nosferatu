@@ -4,15 +4,15 @@
  * Re-exports from modular auth utilities for backward compatibility
  */
 
+// * Import for default export
+import { USER_ROLES } from "./auth/authConstants";
+import { isUserAdmin, hasRole, getUserRole } from "./auth/authApi";
+
 // * Re-export constants
 export { USER_ROLES } from "./auth/authConstants";
 
 // * Re-export API functions
-export {
-  isUserAdmin,
-  hasRole,
-  getUserRole,
-} from "./auth/authApi";
+export { isUserAdmin, hasRole, getUserRole } from "./auth/authApi";
 
 // * Re-export validation utilities (if needed externally)
 export { normalizeRole, compareRoles } from "./auth/authValidation";

@@ -13,4 +13,3 @@ export const USER_ROLES = {
 };
 
 export const ROLE_SOURCES = ["user_roles", "cat_app_users"];
-

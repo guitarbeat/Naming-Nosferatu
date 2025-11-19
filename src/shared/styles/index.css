@@ -3,55 +3,54 @@
  */
 
 /* Base reset and primitives */
-@import "./reset.css";
-@import "./colors.css";
-@import "./typography.css";
-@import "./spacing.css";
-@import "./layout.css";
-@import "./borders.css";
-@import "./z-index.css";
+@import url("./reset.css");
+@import url("./colors.css");
+@import url("./typography.css");
+@import url("./spacing.css");
+@import url("./layout.css");
+@import url("./borders.css");
+@import url("./z-index.css");
 
 /* Effects & transitions */
-@import "./effects.css";
-@import "./transitions.css";
-@import "./animations.css";
-@import "./background-effects.css";
-@import "./shimmer.css";
-@import "./glass.css";
-@import "./cursor-interactions.css";
+@import url("./effects.css");
+@import url("./transitions.css");
+@import url("./animations.css");
+@import url("./background-effects.css");
+@import url("./shimmer.css");
+@import url("./glass.css");
+@import url("./cursor-interactions.css");
 
 /* Buttons & interactive elements */
-@import "./buttons.css";
-@import "./utilities-button.css";
-@import "./utilities-form.css";
+@import url("./buttons.css");
+@import url("./utilities-button.css");
+@import url("./utilities-form.css");
 
 /* Component-level styles */
-@import "./components-global.css";
-@import "./app-layout.css";
-@import "./utilities-card.css";
-@import "./utilities-feedback.css";
-@import "./utilities-scroll-to-top.css";
+@import url("./components-global.css");
+@import url("./app-layout.css");
+@import url("./utilities-card.css");
+@import url("./utilities-feedback.css");
+@import url("./utilities-scroll-to-top.css");
 
 /* Utility layers */
-@import "./utilities-layout.css";
-@import "./utilities-spacing.css";
-@import "./utilities-typography.css";
-@import "./utilities-misc.css";
-@import "./utilities-responsive.css";
+@import url("./utilities-layout.css");
+@import url("./utilities-spacing.css");
+@import url("./utilities-typography.css");
+@import url("./utilities-misc.css");
+@import url("./utilities-responsive.css");
 
 /* Theme variants */
-@import "./theme-light.css";
-@import "./theme-dark.css";
-@import "./theme-high-contrast.css";
+@import url("./theme-light.css");
+@import url("./theme-dark.css");
+@import url("./theme-high-contrast.css");
 
 /* Responsive & device-specific tweaks */
-@import "./mobile.css";
-@import "./responsive-variables.css";
-@import "./responsive-global.css";
-@import "./responsive-small-mobile.css";
-@import "./responsive-touch.css";
-@import "./responsive-high-contrast.css";
-@import "./responsive-reduced-motion.css";
-@import "./responsive-safe-area.css";
-@import "./responsive-landscape.css";
-
+@import url("./mobile.css");
+@import url("./responsive-variables.css");
+@import url("./responsive-global.css");
+@import url("./responsive-small-mobile.css");
+@import url("./responsive-touch.css");
+@import url("./responsive-high-contrast.css");
+@import url("./responsive-reduced-motion.css");
+@import url("./responsive-safe-area.css");
+@import url("./responsive-landscape.css");

@@ -3,7 +3,7 @@
  * @description Utility hooks for common patterns (debounce, throttle, media queries, etc.)
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { attachMediaQueryListener, getMediaQueryList } from "../mediaQueries";
 import { UI } from "../../../core/constants";
 
@@ -161,4 +161,3 @@ export function useForceUpdate() {
     setTick((tick) => tick + 1);
   }, []);
 }
-

@@ -24,9 +24,7 @@ function TournamentFooter({
           aria-expanded={showBracket}
           aria-controls="bracketView"
         >
-          {showBracket
-            ? "Hide Tournament History"
-            : "Show Tournament History"}
+          {showBracket ? "Hide Tournament History" : "Show Tournament History"}
           <span className={styles.bracketToggleIcon}>
             {showBracket ? "▼" : "▶"}
           </span>
@@ -106,4 +104,3 @@ TournamentFooter.propTypes = {
 };
 
 export default TournamentFooter;
-

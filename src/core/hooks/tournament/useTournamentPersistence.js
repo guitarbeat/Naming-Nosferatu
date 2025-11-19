@@ -64,4 +64,3 @@ export function useTournamentPersistence({ names = [], userName }) {
     canUndo: persistentState.matchHistory.length > 1,
   };
 }
-

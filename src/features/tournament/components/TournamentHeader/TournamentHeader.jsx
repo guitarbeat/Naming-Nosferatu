@@ -7,7 +7,12 @@ import PropTypes from "prop-types";
 import { Card } from "../../../../shared/components";
 import styles from "../../Tournament.module.css";
 
-function TournamentHeader({ roundNumber, currentMatchNumber, totalMatches, progress }) {
+function TournamentHeader({
+  roundNumber,
+  currentMatchNumber,
+  totalMatches,
+  progress,
+}) {
   return (
     <Card
       className={styles.progressInfo}

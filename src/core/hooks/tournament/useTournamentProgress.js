@@ -94,4 +94,3 @@ export function useTournamentProgress({
     progress,
   };
 }
-

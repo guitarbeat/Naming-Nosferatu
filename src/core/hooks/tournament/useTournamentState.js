@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
 import {
   buildComparisonsMap,
@@ -19,9 +19,13 @@ export function useTournamentState({
     totalMatches: 0,
     canUndo: false,
     currentRatings: existingRatings,
-    isError: false,
     sorter: null,
   });
+
+  // * Compute isError as a derived value to avoid setState in effect
+  const isError = useMemo(() => {
+    return !Array.isArray(names) || (names.length > 0 && names.length < 2);
+  }, [names]);
 
   const updateTournamentState = useCallback((updates) => {
     setTournamentState((prev) => ({ ...prev, ...updates }));
@@ -29,7 +33,8 @@ export function useTournamentState({
 
   const lastInitKeyRef = useRef("");
 
-  const initializeTournament = useCallback(() => {
+  // * Initialize tournament when names change
+  useEffect(() => {
     if (!Array.isArray(names) || names.length < 2) {
       return;
     }
@@ -50,15 +55,15 @@ export function useTournamentState({
           ? Math.ceil(names.length * Math.log2(Math.max(1, names.length)))
           : 0;
 
-    updateTournamentState({
+    setTournamentState((prev) => ({
+      ...prev,
       sorter: newSorter,
       totalMatches: estimatedMatches,
       currentMatchNumber: 1,
       roundNumber: 1,
       canUndo: false,
       currentRatings: existingRatings,
-      isError: false,
-    });
+    }));
 
     updatePersistentState?.({
       matchHistory: [],
@@ -74,44 +79,39 @@ export function useTournamentState({
         history: [],
       });
       if (first) {
-        updateTournamentState({ currentMatch: first });
+        setTournamentState((prev) => ({ ...prev, currentMatch: first }));
       } else {
         const [left, right] = names;
-        updateTournamentState({ currentMatch: { left, right } });
+        setTournamentState((prev) => ({
+          ...prev,
+          currentMatch: { left, right },
+        }));
       }
     }
-  }, [names, existingRatings, updatePersistentState, updateTournamentState]);
-
-  const { isError } = tournamentState;
-
-  useEffect(() => {
-    initializeTournament();
-  }, [initializeTournament]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [names, existingRatings]);
 
   useEffect(() => {
-    const invalid =
-      !Array.isArray(names) || (names.length > 0 && names.length < 2);
-    if (invalid !== isError) {
-      if (invalid && process.env.NODE_ENV === "development") {
-        console.warn("[DEV] 🎮 useTournament: Invalid names array detected");
-      }
-      updateTournamentState({ isError: invalid });
+    if (isError && process.env.NODE_ENV === "development") {
+      console.warn("[DEV] 🎮 useTournament: Invalid names array detected");
     }
-  }, [names, isError, updateTournamentState]);
+  }, [isError]);
 
   useEffect(() => {
     return () => {
-      updateTournamentState({
+      // * Cleanup on unmount - setState in cleanup is acceptable
+      setTournamentState((prev) => ({
+        ...prev,
         currentMatch: null,
         isTransitioning: false,
         currentMatchNumber: 1,
         roundNumber: 1,
-      });
+      }));
     };
-  }, [updateTournamentState]);
+  }, []);
 
   return {
-    tournamentState,
+    tournamentState: { ...tournamentState, isError },
     updateTournamentState,
   };
 }
@@ -247,4 +247,3 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
 
   return null;
 }
-

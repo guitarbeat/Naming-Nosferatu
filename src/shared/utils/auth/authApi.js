@@ -290,4 +290,3 @@ export async function getUserRole(userName) {
     return USER_ROLES.USER;
   }
 }
-

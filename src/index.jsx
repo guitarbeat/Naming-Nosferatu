@@ -23,7 +23,9 @@ import ErrorBoundaryFallback from "./shared/components/Error/ErrorBoundaryFallba
 setupGlobalErrorHandling();
 
 // Boot log to verify app mounting during preview
-console.info("[Boot] index.jsx loaded");
+if (process.env.NODE_ENV === "development") {
+  console.info("[Boot] index.jsx loaded");
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

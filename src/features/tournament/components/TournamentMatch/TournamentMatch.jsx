@@ -143,4 +143,3 @@ TournamentMatch.propTypes = {
 };
 
 export default TournamentMatch;
-

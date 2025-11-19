@@ -31,4 +31,3 @@ export const compareRoles = (currentRole, requiredRole) => {
 
   return current >= required;
 };
-
