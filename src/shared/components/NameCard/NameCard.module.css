@@ -920,3 +920,10 @@
   background: var(--primary-50);
   border-radius: var(--radius-sm);
 }
+
+@media (max-width: 768px) {
+  .actionButton {
+    min-width: var(--min-touch-target-size);
+    min-height: var(--min-touch-target-size);
+  }
+}

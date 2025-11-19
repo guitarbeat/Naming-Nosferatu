@@ -592,3 +592,9 @@
   ) !important;
   box-shadow: 0 4px 12px rgb(220 38 38 / 15%) !important;
 }
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    display: none;
+  }
+}
