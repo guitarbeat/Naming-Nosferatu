@@ -26,23 +26,25 @@ export function formatSupabaseError(error) {
 export function logSupabaseError(error, context = {}) {
   const formatted = formatSupabaseError(error);
 
-  console.group("🔴 Supabase Error");
-  console.error("Title:", formatted.title);
-  console.error("Message:", formatted.message);
-  console.error("Suggestion:", formatted.suggestion);
-  if (context.operation) {
-    console.error("Operation:", context.operation);
+  if (process.env.NODE_ENV === "development") {
+    console.group("🔴 Supabase Error");
+    console.error("Title:", formatted.title);
+    console.error("Message:", formatted.message);
+    console.error("Suggestion:", formatted.suggestion);
+    if (context.operation) {
+      console.error("Operation:", context.operation);
+    }
+    if (context.table) {
+      console.error("Table:", context.table);
+    }
+    if (formatted.details) {
+      console.error("Details:", formatted.details);
+    }
+    if (formatted.originalError) {
+      console.error("Original Error:", formatted.originalError);
+    }
+    console.groupEnd();
   }
-  if (context.table) {
-    console.error("Table:", context.table);
-  }
-  if (formatted.details) {
-    console.error("Details:", formatted.details);
-  }
-  if (formatted.originalError) {
-    console.error("Original Error:", formatted.originalError);
-  }
-  console.groupEnd();
 
   return formatted;
 }
@@ -88,7 +90,9 @@ export async function executeWithErrorHandling(queryFn, context = {}) {
  */
 export function showErrorToast(error, showToastFn) {
   if (!showToastFn) {
-    console.warn("No toast function provided to showErrorToast");
+    if (process.env.NODE_ENV === "development") {
+      console.warn("No toast function provided to showErrorToast");
+    }
     return;
   }
 
@@ -108,7 +112,9 @@ export function showErrorToast(error, showToastFn) {
  */
 export function showSuccessToast(message, showToastFn, duration = 3000) {
   if (!showToastFn) {
-    console.warn("No toast function provided to showSuccessToast");
+    if (process.env.NODE_ENV === "development") {
+      console.warn("No toast function provided to showSuccessToast");
+    }
     return;
   }
 

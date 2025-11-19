@@ -2,7 +2,7 @@
  * @fileoverview Focused tests for Login component
  */
 import React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "./Login";
@@ -84,22 +84,15 @@ describe("Login Component - Focused Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
 
-    vi.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const user = userEvent.setup();
 
-    try {
-      await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
-      await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
 
-      await act(async () => {
-        vi.runAllTimers();
-      });
-
+    await waitFor(() => {
       expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
       expect(mockOnLogin).toHaveBeenCalledWith("Judge Whisker");
-    } finally {
-      vi.useRealTimers();
-    }
+    });
   });
 
   it("shows validation feedback when validation fails", async () => {
@@ -109,22 +102,15 @@ describe("Login Component - Focused Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
 
-    vi.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const user = userEvent.setup();
 
-    try {
-      await user.type(screen.getByLabelText("Your name"), "Bad Name");
-      await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.type(screen.getByLabelText("Your name"), "Bad Name");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
 
-      await act(async () => {
-        vi.runAllTimers();
-      });
-
+    await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
+    });
   });
 
   it("falls back to a default fact when fetching a cat fact fails", async () => {

@@ -175,7 +175,9 @@ function App() {
         const success = await login(userName);
         return success;
       } catch (error) {
-        console.error("Login error:", error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Login error:", error);
+        }
         throw error;
       }
     },

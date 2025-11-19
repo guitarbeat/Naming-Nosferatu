@@ -191,12 +191,14 @@ export async function retryOperation(
 
   for (let attempt = 0; attempt <= retryConfig.maxRetries; attempt++) {
     try {
-      console.log(
-        `🔄 ${operationName}: Attempt ${attempt + 1}/${retryConfig.maxRetries + 1}`,
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `🔄 ${operationName}: Attempt ${attempt + 1}/${retryConfig.maxRetries + 1}`,
+        );
+      }
       const result = await operation();
 
-      if (attempt > 0) {
+      if (attempt > 0 && process.env.NODE_ENV === "development") {
         console.log(
           `✅ ${operationName}: Succeeded after ${attempt + 1} attempts`,
         );
@@ -206,17 +208,21 @@ export async function retryOperation(
     } catch (error) {
       lastError = error;
 
-      console.warn(`⚠️ ${operationName}: Attempt ${attempt + 1} failed`, error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`⚠️ ${operationName}: Attempt ${attempt + 1} failed`, error);
+      }
 
       // If this is the last attempt or error is not retryable, throw
       if (
         attempt === retryConfig.maxRetries ||
         !isRetryableError(error, retryConfig)
       ) {
-        console.error(
-          `❌ ${operationName}: Failed after ${attempt + 1} attempts`,
-          error,
-        );
+        if (process.env.NODE_ENV === "development") {
+          console.error(
+            `❌ ${operationName}: Failed after ${attempt + 1} attempts`,
+            error,
+          );
+        }
         const userError = parseSupabaseError(error);
         return {
           success: false,
@@ -231,7 +237,9 @@ export async function retryOperation(
 
       // Wait before retrying
       const delay = calculateDelay(attempt, retryConfig);
-      console.log(`⏳ ${operationName}: Retrying in ${Math.round(delay)}ms...`);
+      if (process.env.NODE_ENV === "development") {
+        console.log(`⏳ ${operationName}: Retrying in ${Math.round(delay)}ms...`);
+      }
       await sleep(delay);
     }
   }

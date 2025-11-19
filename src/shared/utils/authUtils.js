@@ -394,10 +394,12 @@ const fetchUserRole = async (activeSupabase, userName) => {
         return normalizeRole(result.role);
       }
     } catch (error) {
-      console.error(
-        `Error fetching user role from Supabase source "${source}":`,
-        error,
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.error(
+          `Error fetching user role from Supabase source "${source}":`,
+          error,
+        );
+      }
       continue;
     }
   }
@@ -426,9 +428,11 @@ export async function hasRole(userName, requiredRole) {
   const activeSupabase = await resolveSupabaseClient();
 
   if (!activeSupabase) {
-    console.warn(
-      "Supabase client is not configured. Role check will default to false.",
-    );
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "Supabase client is not configured. Role check will default to false.",
+      );
+    }
     return false;
   }
 
@@ -488,7 +492,9 @@ export async function hasRole(userName, requiredRole) {
 
     return compareRoles(userRole, normalizedRequiredRole);
   } catch (error) {
-    console.error("Error checking user role:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error checking user role:", error);
+    }
     return false;
   }
 }
@@ -504,7 +510,9 @@ export async function getUserRole(userName) {
   const activeSupabase = await resolveSupabaseClient();
 
   if (!activeSupabase) {
-    console.warn("Supabase client is not configured. Using default user role.");
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Supabase client is not configured. Using default user role.");
+    }
     return USER_ROLES.USER;
   }
 
@@ -514,7 +522,9 @@ export async function getUserRole(userName) {
 
     return role ?? USER_ROLES.USER;
   } catch (error) {
-    console.error("Error getting user role:", error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error getting user role:", error);
+    }
     return USER_ROLES.USER;
   }
 }

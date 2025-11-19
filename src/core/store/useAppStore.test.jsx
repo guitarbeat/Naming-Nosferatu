@@ -93,6 +93,13 @@ describe("theme initialization", () => {
 
   it('should not convert "true" or "false" to a theme', async () => {
     window.localStorage.setItem("theme", "true");
+    // * Ensure matchMedia is defined before spying
+    if (!window.matchMedia) {
+      Object.defineProperty(window, "matchMedia", {
+        writable: true,
+        value: vi.fn(),
+      });
+    }
     vi.spyOn(window, "matchMedia").mockImplementation(() => ({
       matches: true,
       media: "(prefers-color-scheme: dark)",

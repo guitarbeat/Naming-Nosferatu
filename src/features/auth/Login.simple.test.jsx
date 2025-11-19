@@ -2,7 +2,7 @@
  * @fileoverview Simple tests for Login component
  */
 import React from "react";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "./Login";
@@ -84,13 +84,10 @@ describe("Login Component - Simple Tests", () => {
     await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
-    await act(async () => {
-      // * Wait for async operations to complete
-      await new Promise((resolve) => setTimeout(resolve, 100));
+    await waitFor(() => {
+      expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
+      expect(mockOnLogin).toHaveBeenCalledWith("Judge Whisker");
     });
-
-    expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
-    expect(mockOnLogin).toHaveBeenCalledWith("Judge Whisker");
   });
 
   it("shows validation error and does not call onLogin when validation fails", async () => {
@@ -102,21 +99,14 @@ describe("Login Component - Simple Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
 
-    vi.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    const user = userEvent.setup();
 
-    try {
-      await user.type(screen.getByLabelText("Your name"), "Invalid Name");
-      await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.type(screen.getByLabelText("Your name"), "Invalid Name");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
 
-      await act(async () => {
-        vi.runAllTimers();
-      });
-
+    await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();
       expect(screen.getByText("Name is invalid")).toBeInTheDocument();
-    } finally {
-      vi.useRealTimers();
-    }
+    });
   });
 });

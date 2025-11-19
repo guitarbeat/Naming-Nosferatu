@@ -366,7 +366,9 @@ class MobileGestures {
           }
           gesture.callback(data);
         } catch (error) {
-          console.error(`Error in gesture callback for ${gestureType}:`, error);
+          if (process.env.NODE_ENV === "development") {
+            console.error(`Error in gesture callback for ${gestureType}:`, error);
+          }
         }
       }
     });

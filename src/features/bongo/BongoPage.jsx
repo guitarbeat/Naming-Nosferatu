@@ -27,7 +27,9 @@ function BongoPage({ isLoggedIn, userName }) {
   }, []);
 
   const handleBongo = () => {
-    console.log("🐱 Bongo cat says hello from the secret page!");
+    if (process.env.NODE_ENV === "development") {
+      console.log("🐱 Bongo cat says hello from the secret page!");
+    }
   };
 
   return (

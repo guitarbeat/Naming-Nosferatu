@@ -32,10 +32,12 @@ export class PerformanceMonitor {
         timestamp: Date.now(),
         mode: "development-estimate",
       };
-      console.log(
-        "📊 Bundle Size Metrics (Dev Estimate):",
-        this.metrics.bundleSize,
-      );
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          "📊 Bundle Size Metrics (Dev Estimate):",
+          this.metrics.bundleSize,
+        );
+      }
       return;
     }
 
@@ -91,7 +93,9 @@ export class PerformanceMonitor {
       mode: "production",
     };
 
-    console.log("📊 Bundle Size Metrics:", this.metrics.bundleSize);
+    if (process.env.NODE_ENV === "development") {
+      console.log("📊 Bundle Size Metrics:", this.metrics.bundleSize);
+    }
   }
 
   /**
@@ -135,7 +139,9 @@ export class PerformanceMonitor {
           timestamp: Date.now(),
         };
 
-        console.log("⏱️ Load Time Metrics:", this.metrics.loadTimes);
+        if (process.env.NODE_ENV === "development") {
+          console.log("⏱️ Load Time Metrics:", this.metrics.loadTimes);
+        }
       });
     };
 
@@ -212,12 +218,14 @@ export class PerformanceMonitor {
       timestamp: Date.now(),
     };
 
-    console.log("🖼️ Image Loading Metrics:", {
-      loaded: loadedCount,
-      failed: failedCount,
-      total: totalImages,
-      successRate: `${successRate.toFixed(1)}%`,
-    });
+    if (process.env.NODE_ENV === "development") {
+      console.log("🖼️ Image Loading Metrics:", {
+        loaded: loadedCount,
+        failed: failedCount,
+        total: totalImages,
+        successRate: `${successRate.toFixed(1)}%`,
+      });
+    }
 
     // * Warn if success rate is low
     if (successRate < 80 && totalImages > 0) {
