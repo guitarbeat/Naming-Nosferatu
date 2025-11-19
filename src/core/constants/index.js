@@ -214,4 +214,3 @@ export const SOUND_EFFECTS = [
   { path: "/assets/sounds/surprise.mp3", weight: 0.1 },
   { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
 ];
-

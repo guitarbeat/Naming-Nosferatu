@@ -51,4 +51,3 @@ export const attachMediaQueryListener = (mediaQueryList, listener) => {
 //     cleanup();
 //   };
 // };
-

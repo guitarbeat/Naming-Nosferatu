@@ -4,5 +4,3 @@
  */
 
 export { default as SwipeableNameCards } from "./SwipeableNameCards";
-
-

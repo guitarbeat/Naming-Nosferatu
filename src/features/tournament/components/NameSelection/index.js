@@ -4,5 +4,3 @@
  */
 
 export { default as NameSelection } from "./NameSelection";
-
-

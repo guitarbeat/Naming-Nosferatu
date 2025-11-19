@@ -17,12 +17,7 @@ import { getGlobalScope } from "./helpers";
 import { ERROR_SEVERITY } from "./constants";
 
 // * Re-export constants for convenience
-export {
-
-  ERROR_SEVERITY,
-
-
-} from "./constants";
+export { ERROR_SEVERITY } from "./constants";
 
 /**
  * * Comprehensive error management class
@@ -254,4 +249,3 @@ export const createStandardizedError = (
     additionalInfo,
     timestamp,
   );
-

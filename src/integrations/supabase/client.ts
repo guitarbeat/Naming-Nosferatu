@@ -167,5 +167,3 @@ export const resolveSupabaseClient =
 if (!supabase) {
   void getSupabaseClient();
 }
-
-;

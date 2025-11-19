@@ -27,9 +27,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 // * UI System Components
 
-
 // * Component prop types for external use
-
 
 // * Unused variable removed
 // const components = { ... }
@@ -42,25 +40,13 @@ export {
   Error,
   Toast,
   SkeletonLoader,
-
   Input,
   Select,
-
-
   NameCard,
-
   Bracket,
-
-
   CatImage,
-
-
   StartTournamentButton,
-
-
   ScrollToTopButton,
-
-
 };
 
 // * Default export reuses the same object

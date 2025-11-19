@@ -109,4 +109,3 @@ export const validateDescription = (description) => {
 // const validateForm = (validations, values) => { ... }
 // const validateName = (name) => { ... }
 // const validateGeneralDescription = (description) => { ... }
-

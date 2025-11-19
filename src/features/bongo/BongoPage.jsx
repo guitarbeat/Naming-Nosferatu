@@ -98,4 +98,3 @@ BongoPage.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   userName: PropTypes.string,
 };
-

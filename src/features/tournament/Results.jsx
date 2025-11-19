@@ -383,4 +383,3 @@ Results.propTypes = {
   currentTournamentNames: PropTypes.array,
   voteHistory: PropTypes.array,
 };
-

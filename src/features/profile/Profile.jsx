@@ -206,4 +206,3 @@ Profile.propTypes = {
 
 // * Unused component removed
 // function ProfileWithErrorBoundary(props) { ... }
-

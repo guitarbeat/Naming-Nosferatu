@@ -20,8 +20,6 @@ export * from "./performanceUtils";
 export * from "./logger";
 
 // * Re-export performance monitor
-export {  performanceMonitor } from "./performanceMonitor";
+export { performanceMonitor } from "./performanceMonitor";
 
 // * Default export with all utilities for backward compatibility
-
-
