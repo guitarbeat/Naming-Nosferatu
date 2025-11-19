@@ -1,0 +1,57 @@
+/* Centralized stylesheet imports for the entire application.
+ * The order matters – keep foundational layers before utilities and themes.
+ */
+
+/* Base reset and primitives */
+@import "./reset.css";
+@import "./colors.css";
+@import "./typography.css";
+@import "./spacing.css";
+@import "./layout.css";
+@import "./borders.css";
+@import "./z-index.css";
+
+/* Effects & transitions */
+@import "./effects.css";
+@import "./transitions.css";
+@import "./animations.css";
+@import "./background-effects.css";
+@import "./shimmer.css";
+@import "./glass.css";
+@import "./cursor-interactions.css";
+
+/* Buttons & interactive elements */
+@import "./buttons.css";
+@import "./utilities-button.css";
+@import "./utilities-form.css";
+
+/* Component-level styles */
+@import "./components-global.css";
+@import "./app-layout.css";
+@import "./utilities-card.css";
+@import "./utilities-feedback.css";
+@import "./utilities-scroll-to-top.css";
+
+/* Utility layers */
+@import "./utilities-layout.css";
+@import "./utilities-spacing.css";
+@import "./utilities-typography.css";
+@import "./utilities-misc.css";
+@import "./utilities-responsive.css";
+
+/* Theme variants */
+@import "./theme-light.css";
+@import "./theme-dark.css";
+@import "./theme-high-contrast.css";
+
+/* Responsive & device-specific tweaks */
+@import "./mobile.css";
+@import "./responsive-variables.css";
+@import "./responsive-global.css";
+@import "./responsive-small-mobile.css";
+@import "./responsive-touch.css";
+@import "./responsive-high-contrast.css";
+@import "./responsive-reduced-motion.css";
+@import "./responsive-safe-area.css";
+@import "./responsive-landscape.css";
+

@@ -10,6 +10,7 @@ CREATE OR REPLACE FUNCTION public.create_user_account(
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
   -- Insert a new user into the cat_app_users table

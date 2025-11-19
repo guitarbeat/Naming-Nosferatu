@@ -173,6 +173,11 @@ export function AppSidebar({
             </div>
           )}
 
+          {/* Spacer to separate user info from actions */}
+          {isLoggedIn && userName && !collapsed && (
+            <div style={{ width: "0.5rem", flexShrink: 0 }} />
+          )}
+
           {/* Actions Section */}
           <SidebarGroup open={true}>
             <SidebarGroupContent>
