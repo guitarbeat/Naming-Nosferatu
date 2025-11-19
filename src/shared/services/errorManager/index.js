@@ -18,10 +18,10 @@ import { ERROR_SEVERITY } from "./constants";
 
 // * Re-export constants for convenience
 export {
-  ERROR_TYPES,
+
   ERROR_SEVERITY,
-  USER_FRIENDLY_MESSAGES,
-  RETRY_CONFIG,
+
+
 } from "./constants";
 
 /**
@@ -234,10 +234,10 @@ export class ErrorManager {
   }
 }
 
-// * Convenience functions for backward compatibility
-export const handleError = (error, context, metadata) =>
-  ErrorManager.handleError(error, context, metadata);
-export { withRetry, createResilientFunction } from "./retry";
+// * Unused convenience function removed (use ErrorManager.handleError directly)
+// const handleError = (error, context, metadata) =>
+//   ErrorManager.handleError(error, context, metadata);
+
 export const setupGlobalErrorHandling = () =>
   ErrorManager.setupGlobalErrorHandling();
 export const getSeverityClass = (severity, styles) =>
@@ -255,4 +255,3 @@ export const createStandardizedError = (
     timestamp,
   );
 
-export default ErrorManager;

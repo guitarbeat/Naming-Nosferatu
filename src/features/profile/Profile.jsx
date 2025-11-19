@@ -10,7 +10,6 @@ import { FILTER_OPTIONS } from "../../core/constants";
 import ProfileNameList from "./ProfileNameList";
 import CatNameEditor from "../admin/CatNameEditor";
 import { ProfileHeader } from "./components/ProfileHeader";
-import { Error } from "../../shared/components";
 import { useProfileNotifications } from "./hooks/useProfileNotifications";
 import { useProfileUser } from "./hooks/useProfileUser";
 import { useProfileNames } from "./hooks/useProfileNames";
@@ -205,13 +204,6 @@ Profile.propTypes = {
   userName: PropTypes.string.isRequired,
 };
 
-// * Wrap Profile with error boundary
-function ProfileWithErrorBoundary(props) {
-  return (
-    <Error variant="boundary">
-      <Profile {...props} />
-    </Error>
-  );
-}
+// * Unused component removed
+// function ProfileWithErrorBoundary(props) { ... }
 
-export default ProfileWithErrorBoundary;

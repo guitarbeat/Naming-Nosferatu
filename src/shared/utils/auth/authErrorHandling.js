@@ -8,7 +8,7 @@
  * @param {any} value - Status code value
  * @returns {number|null} Normalized status code or null
  */
-export const normalizeStatusCode = (value) => {
+const normalizeStatusCode = (value) => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
   }
@@ -28,7 +28,7 @@ export const normalizeStatusCode = (value) => {
  * @param {Error|Object|string} error - Error to extract metadata from
  * @returns {Object} Object with statuses, codes, and messages arrays
  */
-export const extractErrorMetadata = (error) => {
+const extractErrorMetadata = (error) => {
   const statuses = new Set();
   const codes = new Set();
   const messages = new Set();

@@ -112,7 +112,7 @@ const createSupabaseClient =
     }
   };
 
-export const getSupabaseClient = async (
+const getSupabaseClient = async (
   retryCount = 0,
 ): Promise<SupabaseClient<Database> | null> => {
   const MAX_RETRIES = 3;
@@ -168,4 +168,4 @@ if (!supabase) {
   void getSupabaseClient();
 }
 
-export { supabase };
+;

@@ -38,7 +38,7 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import PropTypes from "prop-types";
 
@@ -384,4 +384,3 @@ Results.propTypes = {
   voteHistory: PropTypes.array,
 };
 
-export default memo(Results);

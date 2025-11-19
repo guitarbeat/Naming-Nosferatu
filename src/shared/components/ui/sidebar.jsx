@@ -75,7 +75,7 @@ Sidebar.propTypes = {
 };
 
 // SidebarTrigger
-export function SidebarTrigger({ className = "" }) {
+function SidebarTrigger({ className = "" }) {
   const { toggleCollapsed } = useSidebar();
 
   return (
@@ -146,7 +146,7 @@ SidebarGroup.propTypes = {
 };
 
 // SidebarGroupLabel
-export function SidebarGroupLabel({ children, className = "" }) {
+function SidebarGroupLabel({ children, className = "" }) {
   return <div className={`sidebar-group-label ${className}`}>{children}</div>;
 }
 
@@ -166,7 +166,7 @@ SidebarGroupContent.propTypes = {
 };
 
 // SidebarMenu
-export function SidebarMenu({ children, className = "" }) {
+function SidebarMenu({ children, className = "" }) {
   return <ul className={`sidebar-menu ${className}`}>{children}</ul>;
 }
 

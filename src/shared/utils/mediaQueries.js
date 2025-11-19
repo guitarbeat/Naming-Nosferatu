@@ -1,6 +1,6 @@
 const isBrowser = () => typeof window !== "undefined";
 
-export const canUseMatchMedia = () =>
+const canUseMatchMedia = () =>
   isBrowser() && typeof window.matchMedia === "function";
 
 export const getMediaQueryList = (query) => {
@@ -39,25 +39,16 @@ export const attachMediaQueryListener = (mediaQueryList, listener) => {
   return () => {};
 };
 
-export const subscribeToMediaQuery = (query, listener) => {
-  const mediaQueryList =
-    typeof query === "string" ? getMediaQueryList(query) : query;
+// * Unused function removed
+// const subscribeToMediaQuery = (query, listener) => {
+//   const mediaQueryList =
+//     typeof query === "string" ? getMediaQueryList(query) : query;
+//   if (!mediaQueryList) {
+//     return () => {};
+//   }
+//   const cleanup = attachMediaQueryListener(mediaQueryList, listener);
+//   return () => {
+//     cleanup();
+//   };
+// };
 
-  if (!mediaQueryList) {
-    return () => {};
-  }
-
-  const cleanup = attachMediaQueryListener(mediaQueryList, listener);
-
-  return () => {
-    cleanup();
-  };
-};
-
-export default {
-  canUseMatchMedia,
-  getMediaQueryList,
-  getMediaQueryMatches,
-  attachMediaQueryListener,
-  subscribeToMediaQuery,
-};

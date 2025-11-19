@@ -99,4 +99,3 @@ BongoPage.propTypes = {
   userName: PropTypes.string,
 };
 
-export default BongoPage;

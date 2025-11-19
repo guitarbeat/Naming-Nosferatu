@@ -40,7 +40,7 @@ export async function fetchUserStatsFromDB(userName) {
  * @param {Array} selections - Array of selection objects
  * @returns {string} Selection pattern description
  */
-export function generateSelectionPattern(selections) {
+function generateSelectionPattern(selections) {
   if (!selections || selections.length === 0)
     return "No selection data available";
 
@@ -64,7 +64,7 @@ export function generateSelectionPattern(selections) {
  * @param {Array} selections - Array of selection objects
  * @returns {Promise<string>} Preferred categories description
  */
-export async function generatePreferredCategories(selections) {
+async function generatePreferredCategories(selections) {
   try {
     const nameIds = selections.map((s) => s.name_id);
     const supabaseClient = await resolveSupabaseClient();
@@ -111,7 +111,7 @@ export async function generatePreferredCategories(selections) {
  * @param {number} currentStreak - Current selection streak
  * @returns {string} Improvement tip
  */
-export function generateImprovementTip(
+function generateImprovementTip(
   totalSelections,
   totalTournaments,
   currentStreak,

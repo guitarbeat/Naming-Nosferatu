@@ -4,9 +4,10 @@
  */
 
 /**
- * * Performance monitoring class
+ * * Performance monitoring class (unused - kept for potential future use)
  */
-export class PerformanceMonitor {
+// export class PerformanceMonitor {
+class _PerformanceMonitor {
   constructor() {
     this.metrics = {
       bundleSize: {},
@@ -372,7 +373,7 @@ export class PerformanceMonitor {
 }
 
 // * Create singleton instance
-const performanceMonitor = new PerformanceMonitor();
+const performanceMonitor = new _PerformanceMonitor();
 
 // * Auto-initialize in development
 if (process.env.NODE_ENV === "development") {

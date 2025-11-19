@@ -5,35 +5,16 @@
  */
 
 // * Import for default export
-import { USER_ROLES } from "./auth/authConstants";
-import { isUserAdmin, hasRole, getUserRole } from "./auth/authApi";
 
 // * Re-export constants
-export { USER_ROLES } from "./auth/authConstants";
+
 
 // * Re-export API functions
-export { isUserAdmin, hasRole, getUserRole } from "./auth/authApi";
+export { isUserAdmin,   } from "./auth/authApi";
 
 // * Re-export validation utilities (if needed externally)
-export { normalizeRole, compareRoles } from "./auth/authValidation";
 
-/**
- * Gets the current authentication configuration
- * @returns {Object} Authentication configuration object
- */
-export function getAuthConfig() {
-  return {
-    isRoleBased: true,
-    supportedRoles: Object.values(USER_ROLES),
-    version: "3.0.0",
-    usesSupabaseAuth: true,
-  };
-}
 
-export default {
-  isUserAdmin,
-  hasRole,
-  getUserRole,
-  getAuthConfig,
-  USER_ROLES,
-};
+// * Unused function removed
+// function getAuthConfig() { ... }
+

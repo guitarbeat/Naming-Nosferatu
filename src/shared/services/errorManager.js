@@ -6,4 +6,4 @@
 
 // * Re-export everything from the new modular structure
 export * from "./errorManager/index";
-export { default } from "./errorManager/index";
+

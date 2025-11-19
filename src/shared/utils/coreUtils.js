@@ -20,44 +20,8 @@ export * from "./performanceUtils";
 export * from "./logger";
 
 // * Re-export performance monitor
-export { PerformanceMonitor, performanceMonitor } from "./performanceMonitor";
+export {  performanceMonitor } from "./performanceMonitor";
 
 // * Default export with all utilities for backward compatibility
-import { shuffleArray, generatePairs, buildComparisonsMap } from "./arrayUtils";
 
-import {
-  validateImageUrl,
-  preloadImage,
-  getFallbackImageUrl,
-  compressImageFile,
-} from "./imageUtils";
 
-import {
-  initializeSorterPairs,
-  getPreferencesMap,
-  computeRating,
-} from "./tournamentUtils";
-
-import { PerformanceMonitor, performanceMonitor } from "./performanceMonitor";
-
-export default {
-  // Array utilities
-  shuffleArray,
-  generatePairs,
-  buildComparisonsMap,
-
-  // Image utilities
-  validateImageUrl,
-  preloadImage,
-  getFallbackImageUrl,
-  compressImageFile,
-
-  // Tournament utilities
-  initializeSorterPairs,
-  getPreferencesMap,
-  computeRating,
-
-  // Performance monitoring
-  PerformanceMonitor,
-  performanceMonitor,
-};

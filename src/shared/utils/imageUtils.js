@@ -8,7 +8,7 @@
  * @param {File} file - Image file to load
  * @returns {Promise<HTMLImageElement>} Loaded image element
  */
-export async function loadImageFromFile(file) {
+async function loadImageFromFile(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -25,11 +25,12 @@ export async function loadImageFromFile(file) {
 }
 
 /**
- * * Validate if an image URL is accessible
+ * * Validate if an image URL is accessible (unused - kept for potential future use)
  * @param {string} url - Image URL to validate
  * @returns {Promise<boolean>} True if image is accessible
  */
-export async function validateImageUrl(url) {
+// export async function validateImageUrl(url) {
+async function _validateImageUrl(url) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(true);
@@ -39,11 +40,12 @@ export async function validateImageUrl(url) {
 }
 
 /**
- * * Preload an image with error handling
+ * * Preload an image with error handling (unused - kept for potential future use)
  * @param {string} src - Image source URL
  * @returns {Promise<HTMLImageElement>} Loaded image element
  */
-export async function preloadImage(src) {
+// export async function preloadImage(src) {
+async function _preloadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -53,11 +55,12 @@ export async function preloadImage(src) {
 }
 
 /**
- * * Get fallback image URL when primary image fails
+ * * Get fallback image URL when primary image fails (unused - kept for potential future use)
  * @param {string} originalSrc - Original image source
  * @returns {string} Fallback image URL
  */
-export function getFallbackImageUrl(_originalSrc) {
+// export function getFallbackImageUrl(_originalSrc) {
+function _getFallbackImageUrl(_originalSrc) {
   return "/assets/images/IMG_0778.jpg";
 }
 

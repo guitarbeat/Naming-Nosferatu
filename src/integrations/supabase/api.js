@@ -7,21 +7,19 @@
 // Re-export all API functions from the backend client
 export {
   catNamesAPI,
-  ratingsAPI,
+
   hiddenNamesAPI,
   tournamentsAPI,
-  userPreferencesAPI,
-  categoriesAPI,
+
+
   adminAPI,
   siteSettingsAPI,
   deleteName,
   getNamesWithDescriptions,
   getNamesWithUserRatings,
   getUserStats,
-  addRatingHistory,
-  updateRating,
-  getRatingHistory,
-  ensureRatingHistoryTable,
+
+
 } from "../../../backend/api/supabaseClient";
 
 // * Import imagesAPI separately to avoid circular dependency

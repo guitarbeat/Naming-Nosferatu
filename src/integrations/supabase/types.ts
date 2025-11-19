@@ -1,4 +1,4 @@
-export type Json =
+type Json =
   | string
   | number
   | boolean
@@ -427,7 +427,7 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<
   "public"
 >];
 
-export type Tables<
+type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
@@ -456,7 +456,7 @@ export type Tables<
       : never
     : never;
 
-export type TablesInsert<
+type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
@@ -481,7 +481,7 @@ export type TablesInsert<
       : never
     : never;
 
-export type TablesUpdate<
+type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
@@ -506,7 +506,7 @@ export type TablesUpdate<
       : never
     : never;
 
-export type Enums<
+type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
@@ -523,7 +523,7 @@ export type Enums<
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never;
 
-export type CompositeTypes<
+type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
@@ -540,7 +540,7 @@ export type CompositeTypes<
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never;
 
-export const Constants = {
+const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],

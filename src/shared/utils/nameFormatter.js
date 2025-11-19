@@ -51,25 +51,5 @@ export const validateNameData = (nameData) => {
   return { valid: true, error: null };
 };
 
-/**
- * Formats middle names array for display
- * @param {Array|string} middleNames - Array of middle names or comma-separated string
- * @returns {string} Formatted middle names
- */
-export const formatMiddleNames = (middleNames) => {
-  if (!middleNames) return "";
-
-  if (typeof middleNames === "string") {
-    return middleNames
-      .split(",")
-      .map((n) => n.trim())
-      .filter((n) => n)
-      .join(", ");
-  }
-
-  if (Array.isArray(middleNames)) {
-    return middleNames.filter(Boolean).join(", ");
-  }
-
-  return "";
-};
+// * Unused function removed
+// const formatMiddleNames = (middleNames) => { ... }

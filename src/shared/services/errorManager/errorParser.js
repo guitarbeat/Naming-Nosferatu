@@ -10,7 +10,7 @@ import { ERROR_TYPES } from "./constants";
  * @param {Error|Object} error - The error to analyze
  * @returns {string} Error type
  */
-export function determineErrorType(error) {
+function determineErrorType(error) {
   // * Check for network connectivity first
   if (typeof navigator !== "undefined" && !navigator.onLine) {
     return ERROR_TYPES.NETWORK;

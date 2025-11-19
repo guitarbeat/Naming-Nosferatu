@@ -30,41 +30,8 @@ export const getRandomCatImage = (nameId, imageList = CAT_IMAGES) => {
   return list[index];
 };
 
-/**
- * Validate that name objects have required properties
- * @param {Array} names - Array of name objects to validate
- * @returns {boolean} True if all names are valid
- */
-export const validateNameObjects = (names) => {
-  if (!Array.isArray(names)) {
-    console.error("[validateNames] Not an array:", names);
-    return false;
-  }
-
-  if (names.length < 2) {
-    console.error("[validateNames] Need at least 2 names:", names.length);
-    return false;
-  }
-
-  return names.every((n) => {
-    if (!n || typeof n !== "object") {
-      console.error("[validateNames] Invalid name object (not object):", n);
-      return false;
-    }
-
-    if (!n.name || typeof n.name !== "string") {
-      console.error("[validateNames] Missing or invalid name property:", n);
-      return false;
-    }
-
-    if (!n.id) {
-      console.error("[validateNames] Missing id property:", n);
-      return false;
-    }
-
-    return true;
-  });
-};
+// * Unused function removed
+// const validateNameObjects = (names) => { ... }
 
 /**
  * Deduplicate images by base name

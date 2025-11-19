@@ -206,4 +206,3 @@ TournamentSetup.propTypes = {
   userName: PropTypes.string,
 };
 
-export default TournamentSetup;

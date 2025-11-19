@@ -43,7 +43,7 @@ export function buildDiagnostics(errorInfo, context, metadata) {
  * @param {string} stack - Error stack trace
  * @returns {Array} Array of parsed stack frames
  */
-export function extractStackFrames(stack) {
+function extractStackFrames(stack) {
   if (!stack || typeof stack !== "string") {
     return [];
   }
@@ -73,7 +73,7 @@ export function extractStackFrames(stack) {
  * * Collects environment snapshot for error diagnostics
  * @returns {Object} Environment information
  */
-export function collectEnvironmentSnapshot() {
+function collectEnvironmentSnapshot() {
   const GLOBAL_SCOPE = getGlobalScope();
 
   try {
@@ -129,7 +129,7 @@ export function collectEnvironmentSnapshot() {
  * @param {Object} environment - Environment snapshot
  * @returns {Array} Array of debug hints
  */
-export function deriveDebugHints(errorInfo, context, metadata, environment) {
+function deriveDebugHints(errorInfo, context, metadata, environment) {
   const hints = [];
 
   if (errorInfo.cause) {
@@ -215,7 +215,7 @@ export function deriveDebugHints(errorInfo, context, metadata, environment) {
  * @param {Object} environment - Environment snapshot
  * @returns {string} Error fingerprint
  */
-export function generateFingerprint(errorInfo, context, metadata, environment) {
+function generateFingerprint(errorInfo, context, metadata, environment) {
   const source = {
     type: errorInfo.type,
     name: errorInfo.name,
@@ -233,7 +233,7 @@ export function generateFingerprint(errorInfo, context, metadata, environment) {
  * @param {Object} metadata - Error metadata
  * @returns {Array} Array of related identifiers
  */
-export function collectRelatedIdentifiers(metadata) {
+function collectRelatedIdentifiers(metadata) {
   const identifiers = new Set();
 
   if (metadata?.userId) {

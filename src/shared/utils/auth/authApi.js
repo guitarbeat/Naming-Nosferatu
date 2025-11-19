@@ -168,12 +168,13 @@ const fetchUserRole = async (activeSupabase, userName) => {
 };
 
 /**
- * Checks if a user has a specific role or higher
+ * Checks if a user has a specific role or higher (unused - kept for potential future use)
  * @param {string} userName - The username to check
  * @param {string} requiredRole - The minimum role required
  * @returns {Promise<boolean>} True if user has the required role or higher
  */
-export async function hasRole(userName, requiredRole) {
+// export async function hasRole(userName, requiredRole) {
+async function _hasRole(userName, requiredRole) {
   if (!userName || !requiredRole) return false;
 
   const activeSupabase = await resolveSupabaseClient();
@@ -256,15 +257,16 @@ export async function hasRole(userName, requiredRole) {
  * @returns {Promise<boolean>} True if user is an admin
  */
 export async function isUserAdmin(userIdOrName) {
-  return hasRole(userIdOrName, USER_ROLES.ADMIN);
+  return _hasRole(userIdOrName, USER_ROLES.ADMIN);
 }
 
 /**
- * Gets the current user's role
+ * Gets the current user's role (unused - kept for potential future use)
  * @param {string} userName - The username to check
  * @returns {Promise<string|null>} The user's role or null if not found
  */
-export async function getUserRole(userName) {
+// export async function getUserRole(userName) {
+async function _getUserRole(userName) {
   if (!userName) return null;
 
   const activeSupabase = await resolveSupabaseClient();

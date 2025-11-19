@@ -3,13 +3,13 @@
  * @description Centralized application constants for consistency and maintainability.
  */
 
-// * Application Views
-export const VIEWS = {
-  TOURNAMENT: "tournament",
-  PROFILE: "profile",
-  RESULTS: "results",
-  LOADING: "loading",
-};
+// * Application Views (unused - kept for potential future use)
+// const VIEWS = {
+//   TOURNAMENT: "tournament",
+//   PROFILE: "profile",
+//   RESULTS: "results",
+//   LOADING: "loading",
+// };
 
 // * Tournament Constants
 export const TOURNAMENT = {
@@ -46,53 +46,53 @@ export const FILTER_OPTIONS = {
   },
 };
 
-// * Error Types
-export const ERROR_TYPES = {
-  NETWORK: "network",
-  VALIDATION: "validation",
-  AUTH: "auth",
-  DATABASE: "database",
-  UNKNOWN: "unknown",
-};
+// * Error Types (unused - kept for potential future use)
+// const ERROR_TYPES = {
+//   NETWORK: "network",
+//   VALIDATION: "validation",
+//   AUTH: "auth",
+//   DATABASE: "database",
+//   UNKNOWN: "unknown",
+// };
 
-// * Error Severity Levels
-export const ERROR_SEVERITY = {
-  LOW: "low",
-  MEDIUM: "medium",
-  HIGH: "high",
-  CRITICAL: "critical",
-};
+// * Error Severity Levels (unused - kept for potential future use)
+// const ERROR_SEVERITY = {
+//   LOW: "low",
+//   MEDIUM: "medium",
+//   HIGH: "high",
+//   CRITICAL: "critical",
+// };
 
-// * UI Constants
-export const UI = {
-  THEMES: {
-    LIGHT: "light",
-    DARK: "dark",
-  },
-  TOAST_POSITIONS: {
-    TOP_RIGHT: "top-right",
-    TOP_LEFT: "top-left",
-    BOTTOM_RIGHT: "bottom-right",
-    BOTTOM_LEFT: "bottom-left",
-    TOP_CENTER: "top-center",
-    BOTTOM_CENTER: "bottom-center",
-  },
-  TOAST_MAX_COUNT: 5,
-  LOADING_DELAY: 300,
-  ANIMATION_DURATION: 300,
-};
+// * UI Constants (unused - kept for potential future use)
+// const UI = {
+//   THEMES: {
+//     LIGHT: "light",
+//     DARK: "dark",
+//   },
+//   TOAST_POSITIONS: {
+//     TOP_RIGHT: "top-right",
+//     TOP_LEFT: "top-left",
+//     BOTTOM_RIGHT: "bottom-right",
+//     BOTTOM_LEFT: "bottom-left",
+//     TOP_CENTER: "top-center",
+//     BOTTOM_CENTER: "bottom-center",
+//   },
+//   TOAST_MAX_COUNT: 5,
+//   LOADING_DELAY: 300,
+//   ANIMATION_DURATION: 300,
+// };
 
-// * Database Constants
-export const DATABASE = {
-  TABLES: {
-    CAT_NAME_OPTIONS: "cat_name_options",
-    CAT_NAME_RATINGS: "cat_name_ratings",
-    USER_PREFERENCES: "user_preferences",
-  },
-  CONFLICT_RESOLUTION: {
-    USER_NAME_ID: "user_name,name_id",
-  },
-};
+// * Database Constants (unused - kept for potential future use)
+// const DATABASE = {
+//   TABLES: {
+//     CAT_NAME_OPTIONS: "cat_name_options",
+//     CAT_NAME_RATINGS: "cat_name_ratings",
+//     USER_PREFERENCES: "user_preferences",
+//   },
+//   CONFLICT_RESOLUTION: {
+//     USER_NAME_ID: "user_name,name_id",
+//   },
+// };
 
 // * Validation Constants
 export const VALIDATION = {
@@ -118,57 +118,56 @@ export const VALIDATION = {
   MIN_DESCRIPTION_LENGTH_EXTENDED: 10,
 };
 
-// * API Constants
-export const API = {
-  ENDPOINTS: {
-    AUTH: "/auth",
-    TOURNAMENT: "/tournament",
-    RATINGS: "/ratings",
-    PROFILE: "/profile",
-  },
-  TIMEOUT: 10000,
-  RETRY_ATTEMPTS: 3,
-  RETRY_DELAY: 1000,
-};
+// * API Constants (unused - kept for potential future use)
+// const API = {
+//   ENDPOINTS: {
+//     AUTH: "/auth",
+//     TOURNAMENT: "/tournament",
+//     RATINGS: "/ratings",
+//     PROFILE: "/profile",
+//   },
+//   TIMEOUT: 10000,
+//   RETRY_ATTEMPTS: 3,
+//   RETRY_DELAY: 1000,
+// };
 
-// * Local Storage Keys
-export const STORAGE_KEYS = {
-  THEME: "name-nosferatu-theme",
+// * Local Storage Keys (unused - kept for potential future use)
+// const STORAGE_KEYS = {
+//   THEME: "name-nosferatu-theme",
+//   USER_PREFERENCES: "name-nosferatu-preferences",
+//   TOURNAMENT_STATE: "name-nosferatu-tournament-state",
+// };
 
-  USER_PREFERENCES: "name-nosferatu-preferences",
-  TOURNAMENT_STATE: "name-nosferatu-tournament-state",
-};
+// * Animation Constants (unused - kept for potential future use)
+// const ANIMATION = {
+//   DURATION: {
+//     FAST: 150,
+//     NORMAL: 300,
+//     SLOW: 500,
+//   },
+//   EASING: {
+//     EASE_IN: "cubic-bezier(0.4, 0, 1, 1)",
+//     EASE_OUT: "cubic-bezier(0, 0, 0.2, 1)",
+//     EASE_IN_OUT: "cubic-bezier(0.4, 0, 0.2, 1)",
+//   },
+// };
 
-// * Animation Constants
-export const ANIMATION = {
-  DURATION: {
-    FAST: 150,
-    NORMAL: 300,
-    SLOW: 500,
-  },
-  EASING: {
-    EASE_IN: "cubic-bezier(0.4, 0, 1, 1)",
-    EASE_OUT: "cubic-bezier(0, 0, 0.2, 1)",
-    EASE_IN_OUT: "cubic-bezier(0.4, 0, 0.2, 1)",
-  },
-};
+// * Accessibility Constants (unused - kept for potential future use)
+// const A11Y = {
+//   SKIP_LINK_ID: "main-content",
+//   ARIA_LIVE_POLITE: "polite",
+//   ARIA_LIVE_ASSERTIVE: "assertive",
+//   ARIA_BUSY: "true",
+//   ARIA_STATUS: "status",
+// };
 
-// * Accessibility Constants
-export const A11Y = {
-  SKIP_LINK_ID: "main-content",
-  ARIA_LIVE_POLITE: "polite",
-  ARIA_LIVE_ASSERTIVE: "assertive",
-  ARIA_BUSY: "true",
-  ARIA_STATUS: "status",
-};
-
-// * Performance Constants
-export const PERFORMANCE = {
-  LAZY_LOAD_THRESHOLD: 100,
-  DEBOUNCE_DELAY: 300,
-  THROTTLE_DELAY: 100,
-  MEMOIZATION_TTL: 5 * 60 * 1000, // 5 minutes
-};
+// * Performance Constants (unused - kept for potential future use)
+// const PERFORMANCE = {
+//   LAZY_LOAD_THRESHOLD: 100,
+//   DEBOUNCE_DELAY: 300,
+//   THROTTLE_DELAY: 100,
+//   MEMOIZATION_TTL: 5 * 60 * 1000, // 5 minutes
+// };
 
 // * Tournament Timing Constants
 export const TOURNAMENT_TIMING = {
@@ -216,22 +215,3 @@ export const SOUND_EFFECTS = [
   { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
 ];
 
-export default {
-  VIEWS,
-  TOURNAMENT,
-  FILTER_OPTIONS,
-  ERROR_TYPES,
-  ERROR_SEVERITY,
-  UI,
-  DATABASE,
-  VALIDATION,
-  API,
-  STORAGE_KEYS,
-  ANIMATION,
-  A11Y,
-  PERFORMANCE,
-  TOURNAMENT_TIMING,
-  AUDIO,
-  MUSIC_TRACKS,
-  SOUND_EFFECTS,
-};
