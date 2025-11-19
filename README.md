@@ -242,6 +242,7 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 ### **Code Quality**
 
 - **Linting**: ESLint with Airbnb configuration
+- **Unused Imports**: `eslint-plugin-unused-imports` automatically removes unused imports on save (when autofix is enabled)
 - **Formatting**: Prettier with consistent rules
 - **TypeScript**: Full type safety (where applicable)
 - **Testing**: Comprehensive unit and integration tests
