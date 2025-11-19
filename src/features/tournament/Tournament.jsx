@@ -12,10 +12,11 @@ import React, {
   useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import { Card, Loading, Error } from "../../shared/components";
-import NameCard from "../../shared/components/NameCard/NameCard";
-import Bracket from "../../shared/components/Bracket/Bracket";
+import { Loading, Error } from "../../shared/components";
 import TournamentControls from "./TournamentControls";
+import TournamentHeader from "./components/TournamentHeader";
+import TournamentMatch from "./components/TournamentMatch";
+import TournamentFooter from "./components/TournamentFooter";
 import MatchResult from "./components/MatchResult/MatchResult";
 import RoundTransition from "./components/RoundTransition/RoundTransition";
 import { useAudioManager } from "./hooks/useAudioManager";
@@ -431,28 +432,12 @@ function TournamentContent({
   return (
     <div className={styles.tournament} role="main" aria-live="polite">
       {/* Progress Information */}
-      <Card
-        className={styles.progressInfo}
-        background="glass"
-        padding="none"
-        shadow="medium"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        <div className={styles.roundInfo}>
-          <span className={styles.roundNumber}>Round {roundNumber}</span>
-          <span className={styles.matchCount}>
-            Match {currentMatchNumber} of {totalMatches}
-          </span>
-        </div>
-        <div
-          className={styles.percentageInfo}
-          aria-label={`Tournament is ${progress}% complete`}
-        >
-          {progress}% Complete
-        </div>
-      </Card>
+      <TournamentHeader
+        roundNumber={roundNumber}
+        currentMatchNumber={currentMatchNumber}
+        totalMatches={totalMatches}
+        progress={progress}
+      />
 
       {/* Tournament Controls */}
       <TournamentControls
@@ -500,182 +485,26 @@ function TournamentContent({
         aria-label="Tournament voting interface"
       >
         {/* Matchup Section */}
-        <Card
-          className={styles.matchup}
-          background="glass"
-          padding="none"
-          shadow="medium"
-          role="region"
-          aria-label="Current matchup"
-          aria-busy={isTransitioning || isProcessing}
-        >
-          <div className={styles.namesRow}>
-            <div
-              className={`${styles.nameContainer} ${selectedOption === "left" ? styles.selected : ""}`}
-              role="group"
-              aria-label="Left name option"
-            >
-              <NameCard
-                name={currentMatch.left?.name || "Unknown"}
-                description={currentMatch.left?.description || ""}
-                onClick={() => handleNameCardClick("left")}
-                selected={selectedOption === "left"}
-                disabled={isProcessing || isTransitioning}
-                shortcutHint="Press ← arrow key"
-                size="medium"
-              />
-            </div>
+        <TournamentMatch
+          currentMatch={currentMatch}
+          selectedOption={selectedOption}
+          isProcessing={isProcessing}
+          isTransitioning={isTransitioning}
+          votingError={votingError}
+          onNameCardClick={handleNameCardClick}
+          onVoteWithAnimation={handleVoteWithAnimation}
+          onVoteRetry={handleVoteRetry}
+          onDismissError={() => setVotingError(null)}
+        />
 
-            <div className={styles.vsSection} aria-hidden="true">
-              <span className={styles.vsText}>vs</span>
-            </div>
-
-            <div
-              className={`${styles.nameContainer} ${selectedOption === "right" ? styles.selected : ""}`}
-              role="group"
-              aria-label="Right name option"
-            >
-              <NameCard
-                name={currentMatch.right?.name || "Unknown"}
-                description={currentMatch.right?.description || ""}
-                onClick={() => handleNameCardClick("right")}
-                selected={selectedOption === "right"}
-                disabled={isProcessing || isTransitioning}
-                shortcutHint="Press → arrow key"
-                size="medium"
-              />
-            </div>
-          </div>
-
-          {/* Extra Voting Options */}
-          <div
-            className={styles.extraOptions}
-            role="group"
-            aria-label="Additional voting options"
-          >
-            <button
-              className={`${styles.extraOptionsButton} ${selectedOption === "both" ? styles.selected : ""}`}
-              onClick={() => handleVoteWithAnimation("both")}
-              disabled={isProcessing || isTransitioning}
-              aria-pressed={selectedOption === "both"}
-              aria-label="Vote for both names (Press Up arrow key)"
-              type="button"
-            >
-              I Like Both!{" "}
-              <span className={styles.shortcutHint} aria-hidden="true">
-                (↑ Up)
-              </span>
-            </button>
-
-            <button
-              className={`${styles.extraOptionsButton} ${selectedOption === "neither" ? styles.selected : ""}`}
-              onClick={() => handleVoteWithAnimation("neither")}
-              disabled={isProcessing || isTransitioning}
-              aria-pressed={selectedOption === "neither"}
-              aria-label="Skip this match (Press Down arrow key)"
-              type="button"
-            >
-              Skip{" "}
-              <span className={styles.shortcutHint} aria-hidden="true">
-                (↓ Down)
-              </span>
-            </button>
-          </div>
-
-          {/* Voting Error Display */}
-          {votingError && (
-            <Error
-              variant="inline"
-              error={votingError}
-              context="vote"
-              position="below"
-              onRetry={handleVoteRetry}
-              onDismiss={() => setVotingError(null)}
-              showRetry={true}
-              showDismiss={true}
-              size="medium"
-              className={styles.votingError}
-            />
-          )}
-        </Card>
-
-        {/* Tournament Controls */}
-        <div className={styles.tournamentControls}>
-          <button
-            className={styles.bracketToggle}
-            onClick={() => setShowBracket(!showBracket)}
-            aria-expanded={showBracket}
-            aria-controls="bracketView"
-          >
-            {showBracket
-              ? "Hide Tournament History"
-              : "Show Tournament History"}
-            <span className={styles.bracketToggleIcon}>
-              {showBracket ? "▼" : "▶"}
-            </span>
-          </button>
-
-          <button
-            className={styles.keyboardHelpToggle}
-            onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-            aria-expanded={showKeyboardHelp}
-            aria-controls="keyboardHelp"
-            type="button"
-          >
-            <span className={styles.keyboardIcon}>⌨️</span>
-            Keyboard Shortcuts
-            <span className={styles.keyboardHelpIcon}>
-              {showKeyboardHelp ? "▼" : "▶"}
-            </span>
-          </button>
-        </div>
-
-        {/* Keyboard Help */}
-        {showKeyboardHelp && (
-          <div
-            id="keyboardHelp"
-            className={styles.keyboardHelp}
-            role="complementary"
-            aria-label="Keyboard shortcuts help"
-          >
-            <h3>Keyboard Shortcuts</h3>
-            <ul>
-              <li>
-                <kbd>←</kbd> Select left name
-              </li>
-              <li>
-                <kbd>→</kbd> Select right name
-              </li>
-              <li>
-                <kbd>↑</kbd> Vote for both names
-              </li>
-              <li>
-                <kbd>↓</kbd> Skip this match
-              </li>
-              <li>
-                <kbd>Space</kbd> or <kbd>Enter</kbd> Vote for selected name
-              </li>
-              <li>
-                <kbd>Escape</kbd> Clear selection
-              </li>
-              <li>
-                <kbd>Tab</kbd> Navigate between elements
-              </li>
-            </ul>
-          </div>
-        )}
-
-        {/* Bracket View */}
-        {showBracket && (
-          <div
-            id="bracketView"
-            className={styles.bracketView}
-            role="complementary"
-            aria-label="Tournament bracket history"
-          >
-            <Bracket matches={transformedMatches} />
-          </div>
-        )}
+        {/* Tournament Footer with Controls, Keyboard Help, and Bracket */}
+        <TournamentFooter
+          showBracket={showBracket}
+          showKeyboardHelp={showKeyboardHelp}
+          transformedMatches={transformedMatches}
+          onToggleBracket={() => setShowBracket(!showBracket)}
+          onToggleKeyboardHelp={() => setShowKeyboardHelp(!showKeyboardHelp)}
+        />
       </div>
 
       {/* Match Result and Round Transition */}
