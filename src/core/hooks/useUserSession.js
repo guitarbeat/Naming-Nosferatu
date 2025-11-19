@@ -177,7 +177,7 @@ function useUserSession({ showToast } = {}) {
               .from("cat_app_users")
               .select("user_name")
               .eq("user_name", trimmedName)
-              .single();
+              .maybeSingle();
 
             if (!verifyUser) {
               // * User was not created, throw error

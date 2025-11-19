@@ -39,13 +39,16 @@ export function useTournamentState({
       return;
     }
 
-    const namesKey = names.map((n) => n.id || n.name).join(",");
+    const namesKey = names
+      .map((n) => n?.id || n?.name || "")
+      .filter(Boolean)
+      .join(",");
     if (lastInitKeyRef.current === namesKey) {
       return;
     }
 
     lastInitKeyRef.current = namesKey;
-    const nameStrings = names.map((n) => n.name);
+    const nameStrings = names.map((n) => n?.name || "").filter(Boolean);
     const newSorter = new PreferenceSorter(nameStrings);
 
     const estimatedMatches =
@@ -123,7 +126,7 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
 
   if (options && (options.currentRatings || options.history)) {
     try {
-      const nameList = names.map((n) => n.name);
+      const nameList = names.map((n) => n?.name || "").filter(Boolean);
       initializeSorterPairs(sorter, nameList);
 
       const prefs = getPreferencesMap(sorter);
@@ -162,8 +165,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
           sorter._pairs.findIndex((p) => p[0] === a && p[1] === b),
         );
         return {
-          left: names.find((n) => n.name === a) || { name: a },
-          right: names.find((n) => n.name === b) || { name: b },
+          left: names.find((n) => n?.name === a) || { name: a },
+          right: names.find((n) => n?.name === b) || { name: b },
         };
       }
     } catch (e) {
@@ -177,8 +180,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     try {
       const nextMatch = sorter.getNextMatch();
       if (nextMatch) {
-        const leftName = names.find((n) => n.name === nextMatch.left);
-        const rightName = names.find((n) => n.name === nextMatch.right);
+        const leftName = names.find((n) => n?.name === nextMatch.left);
+        const rightName = names.find((n) => n?.name === nextMatch.right);
 
         return {
           left: leftName || { name: nextMatch.left, id: nextMatch.left },
@@ -193,7 +196,7 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
   }
 
   try {
-    const nameList = names.map((n) => n.name);
+    const nameList = names.map((n) => n?.name || "").filter(Boolean);
     initializeSorterPairs(sorter, nameList);
 
     const prefs = getPreferencesMap(sorter);

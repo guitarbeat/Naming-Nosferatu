@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { getNextMatch } from "./useTournamentState";
 import { computeRating } from "../../../shared/utils/coreUtils";
 
@@ -20,6 +20,18 @@ export function useTournamentVoting({
   elo,
   tournamentActions,
 }) {
+  // * Ref to track transition timeout for cleanup
+  const transitionTimeoutRef = useRef(null);
+
+  // * Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const getCurrentRatings = useCallback(() => {
     const countPlayerVotes = (playerName, outcome) => {
       return persistentState.matchHistory.filter((vote) => {
@@ -197,12 +209,21 @@ export function useTournamentVoting({
           updateTournamentState({ currentMatch: nextMatch });
         }
 
-        const timeoutId = setTimeout(() => {
-          updateTournamentState({ isTransitioning: false });
-        }, 500);
+        // * Clear any existing timeout before setting a new one
+        if (transitionTimeoutRef.current) {
+          clearTimeout(transitionTimeoutRef.current);
+        }
 
-        return () => clearTimeout(timeoutId);
+        transitionTimeoutRef.current = setTimeout(() => {
+          updateTournamentState({ isTransitioning: false });
+          transitionTimeoutRef.current = null;
+        }, 500);
       } catch (error) {
+        // * Clear timeout on error
+        if (transitionTimeoutRef.current) {
+          clearTimeout(transitionTimeoutRef.current);
+          transitionTimeoutRef.current = null;
+        }
         if (process.env.NODE_ENV === "development") {
           console.error("Vote handling error:", error);
         }

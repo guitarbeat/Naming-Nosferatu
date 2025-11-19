@@ -55,30 +55,42 @@ export class TournamentService {
       });
 
       // * Process vote history to count wins and losses
-      voteHistory.forEach((vote) => {
-        const { match, result } = vote;
-        const { left, right } = match;
+      if (Array.isArray(voteHistory)) {
+        voteHistory.forEach((vote) => {
+          if (!vote || !vote.match) return;
 
-        // * Initialize if not exists (safety check)
-        if (!tournamentResults[left.name]) {
-          tournamentResults[left.name] = { wins: 0, losses: 0 };
-        }
-        if (!tournamentResults[right.name]) {
-          tournamentResults[right.name] = { wins: 0, losses: 0 };
-        }
+          const { match, result } = vote;
+          const { left, right } = match;
 
-        // * Update based on numeric result
-        if (result < -0.1) {
-          // * left won (using threshold to account for floating point)
-          tournamentResults[left.name].wins++;
-          tournamentResults[right.name].losses++;
-        } else if (result > 0.1) {
-          // * right won
-          tournamentResults[right.name].wins++;
-          tournamentResults[left.name].losses++;
-        }
-        // * For values near 0 (both/none), we don't update wins/losses
-      });
+          // * Validate match structure
+          if (!left || !right || !left.name || !right.name) {
+            if (process.env.NODE_ENV === "development") {
+              console.warn("Invalid vote match structure:", vote);
+            }
+            return;
+          }
+
+          // * Initialize if not exists (safety check)
+          if (!tournamentResults[left.name]) {
+            tournamentResults[left.name] = { wins: 0, losses: 0 };
+          }
+          if (!tournamentResults[right.name]) {
+            tournamentResults[right.name] = { wins: 0, losses: 0 };
+          }
+
+          // * Update based on numeric result
+          if (result < -0.1) {
+            // * left won (using threshold to account for floating point)
+            tournamentResults[left.name].wins++;
+            tournamentResults[right.name].losses++;
+          } else if (result > 0.1) {
+            // * right won
+            tournamentResults[right.name].wins++;
+            tournamentResults[left.name].losses++;
+          }
+          // * For values near 0 (both/none), we don't update wins/losses
+        });
+      }
 
       const supabaseClient = await resolveSupabaseClient();
 

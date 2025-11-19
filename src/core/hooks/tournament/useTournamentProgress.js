@@ -48,8 +48,15 @@ export function useTournamentProgress({
       lastVote?.match?.left?.name &&
       lastVote?.match?.right?.name
     ) {
-      const key = `${lastVote.match.left.name}-${lastVote.match.right.name}`;
-      const reverseKey = `${lastVote.match.right.name}-${lastVote.match.left.name}`;
+      // * Use optional chaining for safety (already validated above, but defensive)
+      const leftName = lastVote.match.left?.name;
+      const rightName = lastVote.match.right?.name;
+      if (!leftName || !rightName) {
+        updateTournamentState({ isTransitioning: false });
+        return;
+      }
+      const key = `${leftName}-${rightName}`;
+      const reverseKey = `${rightName}-${leftName}`;
       sorter.preferences.delete(key);
       sorter.preferences.delete(reverseKey);
       if (typeof sorter._pairIndex === "number") {

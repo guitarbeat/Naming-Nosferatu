@@ -39,7 +39,10 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\"",
     "check": "npm run lint && prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && tsc --noEmit",
     "ci": "npm run check && npm test && npm run build",
-    "clean": "rm -rf build dist node_modules/.vite"
+    "clean": "rm -rf build dist node_modules/.vite",
+    "knip": "knip",
+    "knip:fix": "knip --fix",
+    "knip:production": "knip --production"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -74,9 +77,11 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "glob": "^12.0.0",
     "globals": "^16.5.0",
     "jsdom": "^27.2.0",
+    "knip": "^5.70.1",
     "npm-check-updates": "^19.1.2",
     "postcss": "^8.5.6",
     "postcss-preset-env": "^10.4.0",
