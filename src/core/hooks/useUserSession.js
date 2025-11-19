@@ -148,30 +148,49 @@ function useUserSession({ showToast } = {}) {
           throw fetchError;
         }
 
-        // Create user if doesn't exist
+        // Create user if doesn't exist using RPC function (bypasses RLS)
         if (!existingUser) {
-          const { error: insertError } = await activeSupabase
-            .from("cat_app_users")
-            .insert({
-              user_name: trimmedName,
-              preferences: {
+          // * Use the create_user_account RPC function which bypasses RLS
+          const { error: rpcError } = await activeSupabase.rpc(
+            "create_user_account",
+            {
+              p_user_name: trimmedName,
+              p_preferences: {
                 sound_enabled: true,
                 theme_preference: "dark",
               },
-              user_role: "user",
-            });
+              p_user_role: "user",
+            },
+          );
 
-          if (insertError) {
-            // Handle 409 conflict (user already exists) as success
-            if (insertError.code === "23505") {
-              showToast?.({ message: "Logging in...", type: "info" });
-              // User exists, continue with login
-            } else {
+          if (rpcError) {
+            // * Handle errors - if user was created in a race condition, continue
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "RPC create_user_account error (may be race condition):",
+                rpcError,
+              );
+            }
+
+            // * Try to verify if user was actually created (race condition)
+            const { data: verifyUser } = await activeSupabase
+              .from("cat_app_users")
+              .select("user_name")
+              .eq("user_name", trimmedName)
+              .single();
+
+            if (!verifyUser) {
+              // * User was not created, throw error
               const errorMessage =
-                insertError.message || "Failed to create user account";
-              console.error("Error creating user:", errorMessage);
+                rpcError.message || "Failed to create user account";
+              if (process.env.NODE_ENV === "development") {
+                console.error("Error creating user:", errorMessage);
+              }
               showToast?.({ message: errorMessage, type: "error" });
-              throw insertError;
+              throw rpcError;
+            } else {
+              // * User was created (race condition), continue
+              showToast?.({ message: "Logging in...", type: "info" });
             }
           } else {
             showToast?.({

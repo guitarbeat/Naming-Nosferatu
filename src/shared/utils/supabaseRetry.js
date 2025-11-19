@@ -209,7 +209,10 @@ export async function retryOperation(
       lastError = error;
 
       if (process.env.NODE_ENV === "development") {
-        console.warn(`⚠️ ${operationName}: Attempt ${attempt + 1} failed`, error);
+        console.warn(
+          `⚠️ ${operationName}: Attempt ${attempt + 1} failed`,
+          error,
+        );
       }
 
       // If this is the last attempt or error is not retryable, throw
@@ -238,7 +241,9 @@ export async function retryOperation(
       // Wait before retrying
       const delay = calculateDelay(attempt, retryConfig);
       if (process.env.NODE_ENV === "development") {
-        console.log(`⏳ ${operationName}: Retrying in ${Math.round(delay)}ms...`);
+        console.log(
+          `⏳ ${operationName}: Retrying in ${Math.round(delay)}ms...`,
+        );
       }
       await sleep(delay);
     }

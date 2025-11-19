@@ -511,7 +511,9 @@ export async function getUserRole(userName) {
 
   if (!activeSupabase) {
     if (process.env.NODE_ENV === "development") {
-      console.warn("Supabase client is not configured. Using default user role.");
+      console.warn(
+        "Supabase client is not configured. Using default user role.",
+      );
     }
     return USER_ROLES.USER;
   }

@@ -79,7 +79,9 @@ export class PerformanceMonitor {
       );
       totalCSS = stylesheetSizes.reduce((sum, size) => sum + (size || 0), 0);
     } catch (error) {
-      console.warn("⚠️ Error calculating bundle size:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("⚠️ Error calculating bundle size:", error);
+      }
       // * Fallback to 0 if calculation fails
       totalJS = 0;
       totalCSS = 0;
@@ -111,7 +113,9 @@ export class PerformanceMonitor {
         const [navigation] = performance.getEntriesByType("navigation");
 
         if (!navigation) {
-          console.warn("⚠️ Navigation timing not available");
+          if (process.env.NODE_ENV === "development") {
+            console.warn("⚠️ Navigation timing not available");
+          }
           return;
         }
 
@@ -186,11 +190,13 @@ export class PerformanceMonitor {
         }
         if (worst && (now - lastLogTs) >= minIntervalMs) {
           lastLogTs = now;
-          console.warn('🐌 Long Task Detected:', {
-            duration: Math.round(worst.duration),
-            startTime: Math.round(worst.startTime),
-            name: worst.name
-          });
+          if (process.env.NODE_ENV === "development") {
+            console.warn('🐌 Long Task Detected:', {
+              duration: Math.round(worst.duration),
+              startTime: Math.round(worst.startTime),
+              name: worst.name
+            });
+          }
         }
       });
 
@@ -351,7 +357,9 @@ export class PerformanceMonitor {
   initializeMonitoring() {
     // * Run bundle size calculation in background to avoid blocking
     this.trackBundleSize().catch((error) => {
-      console.warn("Bundle size calculation failed:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Bundle size calculation failed:", error);
+      }
     });
     this.trackLoadTimes();
     this.trackRuntimePerformance();

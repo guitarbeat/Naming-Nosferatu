@@ -426,9 +426,13 @@ function Login({ onLogin }) {
                 disabled={isLoading}
                 size="large"
                 endIcon={
-                  name.trim() ? null : <span aria-hidden="true">🏆</span>
+                  name.trim() ? null : (
+                    <span aria-hidden="true" style={{ fontSize: "1.2em" }}>
+                      🏆
+                    </span>
+                  )
                 }
-                className={`${name.trim() ? styles.hasName : ""}`}
+                className={`${name.trim() ? styles.hasName : styles.randomNameButton}`}
               >
                 {name.trim() ? "Continue" : "Get Random Name & Start"}
               </Button>

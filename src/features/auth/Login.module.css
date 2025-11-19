@@ -381,12 +381,100 @@
   z-index: 1;
 }
 
+/* * Enhanced button styling for login form */
+.loginForm button[type="submit"],
+.randomNameButton {
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  box-shadow: 0 4px 14px 0 rgb(0 0 0 / 15%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.randomNameButton {
+  padding: clamp(0.875rem, 2vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+  color: hsl(var(--primary-900)) !important;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--accent-500)),
+    hsl(var(--accent-600))
+  ) !important;
+  box-shadow:
+    0 4px 14px 0 rgb(232 191 118 / 30%),
+    0 0 0 1px rgb(232 191 118 / 20%);
+}
+
+.randomNameButton:hover {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--accent-400)),
+    hsl(var(--accent-500))
+  ) !important;
+  box-shadow:
+    0 8px 25px 0 rgb(232 191 118 / 40%),
+    0 0 0 1px rgb(232 191 118 / 30%);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.randomNameButton:active {
+  box-shadow:
+    0 2px 8px 0 rgb(232 191 118 / 30%),
+    0 0 0 1px rgb(232 191 118 / 20%);
+  transform: translateY(0) scale(0.98);
+}
+
+.randomNameButton::before {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 30%),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.loginForm button[type="submit"]:not(.hasName):hover::before {
+  left: 100%;
+}
+
 .hasName {
+  font-weight: 600;
+  color: hsl(var(--primary-900)) !important;
   background: linear-gradient(
     135deg,
     hsl(var(--neon-cyan)),
     hsl(var(--neon-cyan-600))
   ) !important;
+  box-shadow:
+    0 4px 14px 0 rgb(6 182 212 / 30%),
+    0 0 0 1px rgb(6 182 212 / 20%);
+}
+
+.hasName:hover {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan-400)),
+    hsl(var(--neon-cyan-500))
+  ) !important;
+  box-shadow:
+    0 8px 25px 0 rgb(6 182 212 / 40%),
+    0 0 0 1px rgb(6 182 212 / 30%);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.hasName:active {
+  box-shadow:
+    0 2px 8px 0 rgb(6 182 212 / 30%),
+    0 0 0 1px rgb(6 182 212 / 20%);
+  transform: translateY(0) scale(0.98);
 }
 
 .hasName::before {

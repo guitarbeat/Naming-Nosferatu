@@ -117,7 +117,9 @@ export class TournamentService {
         .map(([name, results]) => {
           const name_id = nameToIdMap[name];
           if (!name_id) {
-            console.warn(`No name_id found for ${name}`);
+            if (process.env.NODE_ENV === "development") {
+              console.warn(`No name_id found for ${name}`);
+            }
             return null;
           }
 
@@ -162,7 +164,9 @@ export class TournamentService {
 
       return updatedRatings;
     } catch (error) {
-      console.error("Error in tournament completion:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error in tournament completion:", error);
+      }
       throw error;
     }
   }
@@ -228,7 +232,9 @@ export class TournamentService {
 
       return updatedRatings;
     } catch (error) {
-      console.error("Error updating ratings:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error updating ratings:", error);
+      }
       throw error;
     }
   }
@@ -347,7 +353,9 @@ export class TournamentService {
         sortedNames || visibleNames.map((n) => n.name).join(" ");
       return finalName ? `${finalName} Woods` : "Mystery Cat Woods";
     } catch (error) {
-      console.error("Error generating cat name:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error generating cat name:", error);
+      }
       return "Mystery Cat Woods";
     }
   }
@@ -523,7 +531,9 @@ export class TournamentService {
 
       return [...processedNames, ...namesWithoutData];
     } catch (error) {
-      console.error("Error fetching cat name stats:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error fetching cat name stats:", error);
+      }
       return [];
     }
   }
