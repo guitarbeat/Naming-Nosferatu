@@ -102,17 +102,17 @@ function TournamentSetupContent({ onStart, userName }) {
 
   return (
     <div className={styles.container}>
-        {/* Selection Panel */}
-        <div className={styles.selectionPanel}>
+      {/* Selection Panel */}
+      <div className={styles.selectionPanel}>
         <TournamentHeader
-                    selectedNames={selectedNames}
+          selectedNames={selectedNames}
           availableNames={availableNames}
           onSelectAll={handleSelectAll}
           isSwipeMode={isSwipeMode}
           onSwipeModeToggle={() => setIsSwipeMode(!isSwipeMode)}
           showCatPictures={showCatPictures}
           onCatPicturesToggle={() => setShowCatPictures(!showCatPictures)}
-                    onStart={onStart}
+          onStart={onStart}
           isAdmin={isAdmin}
         />
 
@@ -137,32 +137,32 @@ function TournamentSetupContent({ onStart, userName }) {
           </div>
         </div>
 
-          <NameSelection
-            selectedNames={selectedNames}
-            availableNames={availableNames}
-            onToggleName={toggleName}
-            isAdmin={isAdmin}
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            isSwipeMode={isSwipeMode}
-            showCatPictures={showCatPictures}
-            imageList={galleryImages}
-            SwipeableCards={SwipeableNameCards}
-          />
+        <NameSelection
+          selectedNames={selectedNames}
+          availableNames={availableNames}
+          onToggleName={toggleName}
+          isAdmin={isAdmin}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          isSwipeMode={isSwipeMode}
+          showCatPictures={showCatPictures}
+          imageList={galleryImages}
+          SwipeableCards={SwipeableNameCards}
+        />
 
-          {selectedNames.length >= 2 && (
-            <div className={styles.startSection}>
-              <StartButton selectedNames={selectedNames} onStart={onStart} />
-            </div>
-          )}
-        </div>
+        {selectedNames.length >= 2 && (
+          <div className={styles.startSection}>
+            <StartButton selectedNames={selectedNames} onStart={onStart} />
+          </div>
+        )}
+      </div>
 
-        {/* Sidebar */}
+      {/* Sidebar */}
       <TournamentSidebar
         galleryImages={galleryImages}
         showAllPhotos={showAllPhotos}

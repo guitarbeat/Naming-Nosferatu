@@ -1,7 +1,7 @@
-const isBrowser = () => typeof window !== 'undefined';
+const isBrowser = () => typeof window !== "undefined";
 
 export const canUseMatchMedia = () =>
-  isBrowser() && typeof window.matchMedia === 'function';
+  isBrowser() && typeof window.matchMedia === "function";
 
 export const getMediaQueryList = (query) => {
   if (!canUseMatchMedia()) {
@@ -11,8 +11,8 @@ export const getMediaQueryList = (query) => {
   try {
     return window.matchMedia(query);
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Invalid media query:', query, error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Invalid media query:", query, error);
     }
     return null;
   }
@@ -22,16 +22,16 @@ export const getMediaQueryMatches = (query) =>
   getMediaQueryList(query)?.matches ?? false;
 
 export const attachMediaQueryListener = (mediaQueryList, listener) => {
-  if (!mediaQueryList || typeof listener !== 'function') {
+  if (!mediaQueryList || typeof listener !== "function") {
     return () => {};
   }
 
-  if (typeof mediaQueryList.addEventListener === 'function') {
-    mediaQueryList.addEventListener('change', listener);
-    return () => mediaQueryList.removeEventListener('change', listener);
+  if (typeof mediaQueryList.addEventListener === "function") {
+    mediaQueryList.addEventListener("change", listener);
+    return () => mediaQueryList.removeEventListener("change", listener);
   }
 
-  if (typeof mediaQueryList.addListener === 'function') {
+  if (typeof mediaQueryList.addListener === "function") {
     mediaQueryList.addListener(listener);
     return () => mediaQueryList.removeListener(listener);
   }
@@ -41,7 +41,7 @@ export const attachMediaQueryListener = (mediaQueryList, listener) => {
 
 export const subscribeToMediaQuery = (query, listener) => {
   const mediaQueryList =
-    typeof query === 'string' ? getMediaQueryList(query) : query;
+    typeof query === "string" ? getMediaQueryList(query) : query;
 
   if (!mediaQueryList) {
     return () => {};

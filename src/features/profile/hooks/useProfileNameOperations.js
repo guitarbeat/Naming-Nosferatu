@@ -3,9 +3,9 @@
  * @description Custom hook for managing name operations (visibility, delete, bulk operations).
  */
 
-import { useState, useCallback } from 'react';
-import { resolveSupabaseClient } from '../../../integrations/supabase/client';
-import { deleteName, hiddenNamesAPI } from '../../../integrations/supabase/api';
+import { useState, useCallback } from "react";
+import { resolveSupabaseClient } from "../../../integrations/supabase/client";
+import { deleteName, hiddenNamesAPI } from "../../../integrations/supabase/api";
 
 /**
  * * Hook for managing name operations
@@ -31,7 +31,7 @@ export function useProfileNameOperations(
   fetchSelectionStats,
   showSuccess,
   showError,
-  showToast
+  showToast,
 ) {
   const [selectedNames, setSelectedNames] = useState(new Set());
 
@@ -44,31 +44,31 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Supabase not configured, cannot toggle visibility');
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Supabase not configured, cannot toggle visibility");
           }
-          showError('Database not available');
+          showError("Database not available");
           return;
         }
 
         if (!canManageActiveUser) {
-          showError('Only admins can change visibility');
-          showToast('Only admins can hide or unhide names', 'error');
+          showError("Only admins can change visibility");
+          showToast("Only admins can hide or unhide names", "error");
           return;
         }
 
         if (currentlyHidden) {
           await hiddenNamesAPI.unhideName(activeUser, nameId);
-          showSuccess('Unhidden');
+          showSuccess("Unhidden");
         } else {
           await hiddenNamesAPI.hideName(activeUser, nameId);
-          showSuccess('Hidden');
+          showSuccess("Hidden");
         }
 
         // * Debug logging for visibility toggle
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log(
-            `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? 'unhidden' : 'hidden'} for user: ${activeUser}`
+            `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? "unhidden" : "hidden"} for user: ${activeUser}`,
           );
         }
 
@@ -84,27 +84,28 @@ export function useProfileNameOperations(
         setAllNames((prev) =>
           Array.isArray(prev)
             ? prev.map((n) =>
-                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n
+                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
               )
-            : prev
+            : prev,
         );
 
         // Reload hidden names from database to ensure persistence
         const { data: hiddenData, error: hiddenError } = await supabaseClient
-          .from('cat_name_ratings')
-          .select('name_id')
-          .eq('user_name', activeUser)
-          .eq('is_hidden', true);
+          .from("cat_name_ratings")
+          .select("name_id")
+          .eq("user_name", activeUser)
+          .eq("is_hidden", true);
 
         if (!hiddenError && hiddenData) {
           const hiddenIds = new Set(hiddenData.map((r) => r.name_id));
           setHiddenNames(hiddenIds);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Profile - Toggle Visibility error:', errorMessage);
-        showToast(`Failed to toggle name visibility: ${errorMessage}`, 'error');
-        showError('Failed to update visibility');
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error("Profile - Toggle Visibility error:", errorMessage);
+        showToast(`Failed to toggle name visibility: ${errorMessage}`, "error");
+        showError("Failed to update visibility");
       }
     },
     [
@@ -115,8 +116,8 @@ export function useProfileNameOperations(
       showToast,
       canManageActiveUser,
       setHiddenNames,
-      setAllNames
-    ]
+      setAllNames,
+    ],
   );
 
   // * Handle name deletion
@@ -126,16 +127,16 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Supabase not configured, cannot delete name');
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Supabase not configured, cannot delete name");
           }
-          showError('Database not available');
+          showError("Database not available");
           return;
         }
 
         if (!canManageActiveUser) {
-          showError('Only admins can delete names');
-          showToast('Only admins can delete names', 'error');
+          showError("Only admins can delete names");
+          showToast("Only admins can delete names", "error");
           return;
         }
 
@@ -146,10 +147,11 @@ export function useProfileNameOperations(
         fetchNames(activeUser);
         fetchSelectionStats(activeUser);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Profile - Delete Name error:', errorMessage);
-        showToast(`Failed to delete name: ${errorMessage}`, 'error');
-        showError('Failed to delete name');
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
+        console.error("Profile - Delete Name error:", errorMessage);
+        showToast(`Failed to delete name: ${errorMessage}`, "error");
+        showError("Failed to delete name");
       }
     },
     [
@@ -158,8 +160,8 @@ export function useProfileNameOperations(
       showError,
       showToast,
       canManageActiveUser,
-      activeUser
-    ]
+      activeUser,
+    ],
   );
 
   // * Handle name selection
@@ -182,16 +184,16 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Supabase not configured, cannot hide names');
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Supabase not configured, cannot hide names");
           }
-          showError('Database not available');
+          showError("Database not available");
           return;
         }
 
         if (!canManageActiveUser) {
-          showError('Only admins can hide names');
-          showToast('Only admins can hide names', 'error');
+          showError("Only admins can hide names");
+          showToast("Only admins can hide names", "error");
           return;
         }
 
@@ -199,7 +201,7 @@ export function useProfileNameOperations(
 
         if (result.success) {
           showSuccess(
-            `Hidden ${result.processed} name${result.processed !== 1 ? 's' : ''}`
+            `Hidden ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
           );
 
           // Update local state optimistically
@@ -215,12 +217,12 @@ export function useProfileNameOperations(
           // Refresh data
           fetchNames(activeUser);
         } else {
-          showError('Failed to hide names');
+          showError("Failed to hide names");
         }
       } catch (error) {
-        console.error('Profile - Bulk Hide error:', error);
-        showToast('Failed to hide names', 'error');
-        showError('Failed to hide names');
+        console.error("Profile - Bulk Hide error:", error);
+        showToast("Failed to hide names", "error");
+        showError("Failed to hide names");
       }
     },
     [
@@ -230,8 +232,8 @@ export function useProfileNameOperations(
       showError,
       showToast,
       canManageActiveUser,
-      setHiddenNames
-    ]
+      setHiddenNames,
+    ],
   );
 
   // * Handle bulk unhide operation
@@ -241,16 +243,16 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Supabase not configured, cannot unhide names');
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Supabase not configured, cannot unhide names");
           }
-          showError('Database not available');
+          showError("Database not available");
           return;
         }
 
         if (!canManageActiveUser) {
-          showError('Only admins can unhide names');
-          showToast('Only admins can unhide names', 'error');
+          showError("Only admins can unhide names");
+          showToast("Only admins can unhide names", "error");
           return;
         }
 
@@ -258,7 +260,7 @@ export function useProfileNameOperations(
 
         if (result.success) {
           showSuccess(
-            `Unhidden ${result.processed} name${result.processed !== 1 ? 's' : ''}`
+            `Unhidden ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
           );
 
           // Update local state optimistically
@@ -274,12 +276,12 @@ export function useProfileNameOperations(
           // Refresh data
           fetchNames(activeUser);
         } else {
-          showError('Failed to unhide names');
+          showError("Failed to unhide names");
         }
       } catch (error) {
-        console.error('Profile - Bulk Unhide error:', error);
-        showToast('Failed to unhide names', 'error');
-        showError('Failed to unhide names');
+        console.error("Profile - Bulk Unhide error:", error);
+        showToast("Failed to unhide names", "error");
+        showError("Failed to unhide names");
       }
     },
     [
@@ -289,8 +291,8 @@ export function useProfileNameOperations(
       showError,
       showToast,
       canManageActiveUser,
-      setHiddenNames
-    ]
+      setHiddenNames,
+    ],
   );
 
   return {
@@ -300,7 +302,6 @@ export function useProfileNameOperations(
     handleDelete,
     handleSelectionChange,
     handleBulkHide,
-    handleBulkUnhide
+    handleBulkUnhide,
   };
 }
-

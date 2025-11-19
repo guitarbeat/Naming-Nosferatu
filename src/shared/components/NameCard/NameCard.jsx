@@ -31,10 +31,10 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import CatImage from '../CatImage';
-import styles from './NameCard.module.css';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import CatImage from "../CatImage";
+import styles from "./NameCard.module.css";
 
 /**
  * NameCard Component
@@ -61,19 +61,18 @@ function NameCard({
   onClick,
   disabled = false,
   shortcutHint,
-  className = '',
-  size = 'medium',
+  className = "",
+  size = "medium",
   metadata,
   isAdmin = false,
   isHidden = false,
   onToggleVisibility,
   onDelete,
   onSelectionChange,
-  image
+  image,
 }) {
   const [rippleStyle, setRippleStyle] = useState({});
   const [isRippling, setIsRippling] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = React.useRef(null);
@@ -92,16 +91,17 @@ function NameCard({
 
     const handleMouseMove = (e) => {
       // Show tooltip if metadata is available and has relevant data
-      if (metadata && (
-        metadata.rating ||
-        metadata.wins !== undefined ||
-        metadata.losses !== undefined ||
-        metadata.popularity ||
-        metadata.tournaments ||
-        (metadata.categories && metadata.categories.length > 0)
-      )) {
+      if (
+        metadata &&
+        (metadata.rating ||
+          metadata.wins !== undefined ||
+          metadata.losses !== undefined ||
+          metadata.popularity ||
+          metadata.tournaments ||
+          (metadata.categories && metadata.categories.length > 0))
+      ) {
         // * Safety check for clientX/clientY
-        if (typeof e.clientX === 'number' && typeof e.clientY === 'number') {
+        if (typeof e.clientX === "number" && typeof e.clientY === "number") {
           setTooltipPosition({ x: e.clientX, y: e.clientY });
           setShowTooltip(true);
         }
@@ -112,12 +112,12 @@ function NameCard({
       setShowTooltip(false);
     };
 
-    card.addEventListener('mousemove', handleMouseMove);
-    card.addEventListener('mouseleave', handleMouseLeave);
+    card.addEventListener("mousemove", handleMouseMove);
+    card.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      card.removeEventListener('mousemove', handleMouseMove);
-      card.removeEventListener('mouseleave', handleMouseLeave);
+      card.removeEventListener("mousemove", handleMouseMove);
+      card.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [disabled, metadata, cardRef]);
 
@@ -127,8 +127,8 @@ function NameCard({
     }
 
     if (
-      event.type === 'click' ||
-      (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))
+      event.type === "click" ||
+      (event.type === "keydown" && (event.key === "Enter" || event.key === " "))
     ) {
       event.preventDefault();
 
@@ -139,7 +139,7 @@ function NameCard({
 
       setRippleStyle({
         left: `${x}px`,
-        top: `${y}px`
+        top: `${y}px`,
       });
 
       setIsRippling(true);
@@ -168,20 +168,20 @@ function NameCard({
       label += ` - ${description}`;
     }
     if (isSelected) {
-      label += ' (selected)';
+      label += " (selected)";
     }
     if (disabled) {
-      label += ' (disabled)';
+      label += " (disabled)";
     }
     if (isHidden) {
-      label += ' (hidden)';
+      label += " (hidden)";
     }
     return label;
   };
 
   // Generate safe ID for aria-describedby
   const getSafeId = (text) => {
-    return text.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase();
+    return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
   };
 
   const cardClasses = [
@@ -191,10 +191,10 @@ function NameCard({
     disabled && styles.disabled,
     isHidden && styles.hidden,
     image && styles.hasImage, // * Add special class for cards with images
-    className
+    className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <div className={styles.cardContainer}>
@@ -213,7 +213,6 @@ function NameCard({
         aria-labelledby={`${getSafeId(name)}-title`}
         type="button"
       >
-
         {/* Cat image when provided */}
         {image && (
           <CatImage
@@ -295,10 +294,10 @@ function NameCard({
           <button
             onClick={(e) => handleAdminAction(e, () => onToggleVisibility?.())}
             className={styles.actionButton}
-            aria-label={`${isHidden ? 'Show' : 'Hide'} ${name}`}
-            title={`${isHidden ? 'Show' : 'Hide'} ${name}`}
+            aria-label={`${isHidden ? "Show" : "Hide"} ${name}`}
+            title={`${isHidden ? "Show" : "Hide"} ${name}`}
           >
-            {isHidden ? '🔒' : '🔓'}
+            {isHidden ? "🔒" : "🔓"}
           </button>
           {isHidden && onDelete && (
             <button
@@ -314,79 +313,99 @@ function NameCard({
       )}
 
       {/* Enhanced tooltip with detailed stats */}
-      {showTooltip && metadata && tooltipPosition.x > 0 && tooltipPosition.y > 0 && (
-        <div
-          className={styles.tooltip}
-          style={{
-            left: Math.min(tooltipPosition.x + 10, typeof window !== 'undefined' ? window.innerWidth - 320 : tooltipPosition.x + 10),
-            top: Math.max(tooltipPosition.y - 10, 10),
-            zIndex: 1000
-          }}
-        >
-          <div className={styles.tooltipContent}>
-            <div className={styles.tooltipHeader}>
-              <h3 className={styles.tooltipName}>{name}</h3>
-              {metadata.rank && (
-                <span className={styles.tooltipRank}>#{metadata.rank}</span>
-              )}
-            </div>
-
-            {metadata.description && (
-              <p className={styles.tooltipDescription}>{metadata.description}</p>
-            )}
-
-            <div className={styles.tooltipStats}>
-              {metadata.rating && (
-                <div className={styles.tooltipStat}>
-                  <span className={styles.tooltipLabel}>Rating</span>
-                  <span className={styles.tooltipValue}>{metadata.rating}</span>
-                </div>
-              )}
-
-              {metadata.wins !== undefined && (
-                <div className={styles.tooltipStat}>
-                  <span className={styles.tooltipLabel}>Wins</span>
-                  <span className={styles.tooltipValue}>{metadata.wins}</span>
-                </div>
-              )}
-
-              {metadata.losses !== undefined && (
-                <div className={styles.tooltipStat}>
-                  <span className={styles.tooltipLabel}>Losses</span>
-                  <span className={styles.tooltipValue}>{metadata.losses}</span>
-                </div>
-              )}
-
-              {metadata.totalMatches && (
-                <div className={styles.tooltipStat}>
-                  <span className={styles.tooltipLabel}>Total Matches</span>
-                  <span className={styles.tooltipValue}>{metadata.totalMatches}</span>
-                </div>
-              )}
-
-              {metadata.winRate && (
-                <div className={styles.tooltipStat}>
-                  <span className={styles.tooltipLabel}>Win Rate</span>
-                  <span className={styles.tooltipValue}>{metadata.winRate}%</span>
-                </div>
-              )}
-            </div>
-
-            {metadata.categories && metadata.categories.length > 0 && (
-              <div className={styles.tooltipCategories}>
-                <span className={styles.tooltipCategoriesLabel}>Categories:</span>
-                <div className={styles.tooltipCategoryTags}>
-                  {metadata.categories.map((category, index) => (
-                    <span key={index} className={styles.tooltipCategoryTag}>
-                      {category}
-                    </span>
-                  ))}
-                </div>
+      {showTooltip &&
+        metadata &&
+        tooltipPosition.x > 0 &&
+        tooltipPosition.y > 0 && (
+          <div
+            className={styles.tooltip}
+            style={{
+              left: Math.min(
+                tooltipPosition.x + 10,
+                typeof window !== "undefined"
+                  ? window.innerWidth - 320
+                  : tooltipPosition.x + 10,
+              ),
+              top: Math.max(tooltipPosition.y - 10, 10),
+              zIndex: 1000,
+            }}
+          >
+            <div className={styles.tooltipContent}>
+              <div className={styles.tooltipHeader}>
+                <h3 className={styles.tooltipName}>{name}</h3>
+                {metadata.rank && (
+                  <span className={styles.tooltipRank}>#{metadata.rank}</span>
+                )}
               </div>
-            )}
+
+              {metadata.description && (
+                <p className={styles.tooltipDescription}>
+                  {metadata.description}
+                </p>
+              )}
+
+              <div className={styles.tooltipStats}>
+                {metadata.rating && (
+                  <div className={styles.tooltipStat}>
+                    <span className={styles.tooltipLabel}>Rating</span>
+                    <span className={styles.tooltipValue}>
+                      {metadata.rating}
+                    </span>
+                  </div>
+                )}
+
+                {metadata.wins !== undefined && (
+                  <div className={styles.tooltipStat}>
+                    <span className={styles.tooltipLabel}>Wins</span>
+                    <span className={styles.tooltipValue}>{metadata.wins}</span>
+                  </div>
+                )}
+
+                {metadata.losses !== undefined && (
+                  <div className={styles.tooltipStat}>
+                    <span className={styles.tooltipLabel}>Losses</span>
+                    <span className={styles.tooltipValue}>
+                      {metadata.losses}
+                    </span>
+                  </div>
+                )}
+
+                {metadata.totalMatches && (
+                  <div className={styles.tooltipStat}>
+                    <span className={styles.tooltipLabel}>Total Matches</span>
+                    <span className={styles.tooltipValue}>
+                      {metadata.totalMatches}
+                    </span>
+                  </div>
+                )}
+
+                {metadata.winRate && (
+                  <div className={styles.tooltipStat}>
+                    <span className={styles.tooltipLabel}>Win Rate</span>
+                    <span className={styles.tooltipValue}>
+                      {metadata.winRate}%
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {metadata.categories && metadata.categories.length > 0 && (
+                <div className={styles.tooltipCategories}>
+                  <span className={styles.tooltipCategoriesLabel}>
+                    Categories:
+                  </span>
+                  <div className={styles.tooltipCategoryTags}>
+                    {metadata.categories.map((category, index) => (
+                      <span key={index} className={styles.tooltipCategoryTag}>
+                        {category}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }
@@ -399,7 +418,7 @@ NameCard.propTypes = {
   disabled: PropTypes.bool,
   shortcutHint: PropTypes.string,
   className: PropTypes.string,
-  size: PropTypes.oneOf(['small', 'medium']),
+  size: PropTypes.oneOf(["small", "medium"]),
   metadata: PropTypes.shape({
     rating: PropTypes.number,
     popularity: PropTypes.number,
@@ -410,13 +429,13 @@ NameCard.propTypes = {
     totalMatches: PropTypes.number,
     winRate: PropTypes.number,
     rank: PropTypes.number,
-    description: PropTypes.string
+    description: PropTypes.string,
   }),
   isAdmin: PropTypes.bool,
   isHidden: PropTypes.bool,
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
-  onSelectionChange: PropTypes.func
+  onSelectionChange: PropTypes.func,
 };
 
 export default NameCard;

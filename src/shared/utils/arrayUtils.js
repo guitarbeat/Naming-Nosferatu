@@ -10,7 +10,7 @@
  */
 export function shuffleArray(array) {
   if (!Array.isArray(array)) {
-    console.warn('shuffleArray received non-array input:', array);
+    console.warn("shuffleArray received non-array input:", array);
     return [];
   }
 
@@ -22,8 +22,8 @@ export function shuffleArray(array) {
     }
     return newArray;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error in shuffleArray:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error in shuffleArray:", error);
     }
     return array;
   }
@@ -59,4 +59,3 @@ export function buildComparisonsMap(history) {
   }
   return comparisons;
 }
-

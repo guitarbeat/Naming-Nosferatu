@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react';
-import { getMediaQueryMatches } from '../../utils/mediaQueries';
-import './CatBackground.css';
+import { useEffect, useMemo, useRef } from "react";
+import { getMediaQueryMatches } from "../../utils/mediaQueries";
+import "./CatBackground.css";
 
 function createCatVideo(index) {
   return (
@@ -13,7 +13,13 @@ function createCatVideo(index) {
       preload="none"
     >
       <source src="/assets/images/cat.webm" type="video/webm" />
-      <img src="/assets/images/cat.gif" alt="" loading="lazy" decoding="async" fetchPriority="low" />
+      <img
+        src="/assets/images/cat.gif"
+        alt=""
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+      />
     </video>
   );
 }
@@ -22,7 +28,9 @@ export default function CatBackground() {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const prefersReduced = getMediaQueryMatches('(prefers-reduced-motion: reduce)');
+    const prefersReduced = getMediaQueryMatches(
+      "(prefers-reduced-motion: reduce)",
+    );
     if (prefersReduced) {
       return;
     }
@@ -30,9 +38,9 @@ export default function CatBackground() {
     const el = containerRef.current;
     if (!el) return;
 
-    const stars = el.querySelector('.cat-background__stars');
-    const nebula = el.querySelector('.cat-background__nebula');
-    const cats = Array.from(el.querySelectorAll('.cat-background__cat'));
+    const stars = el.querySelector(".cat-background__stars");
+    const nebula = el.querySelector(".cat-background__nebula");
+    const cats = Array.from(el.querySelectorAll(".cat-background__cat"));
 
     let ticking = false;
     let mouseX = window.innerWidth / 2;
@@ -70,8 +78,10 @@ export default function CatBackground() {
             const cTranslateY = Math.min(100, y * speed);
             const swayX = Math.sin((y + idx * 150) * 0.003) * 15;
             const swayY = Math.cos((y + idx * 100) * 0.002) * 8;
-            const mouseParX = (mouseX - window.innerWidth / 2) * (0.0008 + idx * 0.0002);
-            const mouseParY = (mouseY - window.innerHeight / 2) * (0.0006 + idx * 0.0001);
+            const mouseParX =
+              (mouseX - window.innerWidth / 2) * (0.0008 + idx * 0.0002);
+            const mouseParY =
+              (mouseY - window.innerHeight / 2) * (0.0006 + idx * 0.0001);
             const catRotate = Math.sin((time + idx) * 0.4) * 2;
             const catScale = 1 + Math.sin((time + idx * 0.5) * 0.6) * 0.03;
             node.style.transform = `translate(${swayX + mouseParX * 45}px, ${cTranslateY + swayY + mouseParY * 35}px) rotate(${catRotate}deg) scale(${catScale})`;
@@ -89,12 +99,12 @@ export default function CatBackground() {
 
     const onCatClick = (e) => {
       // * Add a fun interaction when cats are clicked
-      const cat = e.target.closest('.cat-background__cat');
+      const cat = e.target.closest(".cat-background__cat");
       if (cat) {
-        cat.style.transform += ' scale(1.2)';
-        cat.style.transition = 'transform 0.3s ease';
+        cat.style.transform += " scale(1.2)";
+        cat.style.transition = "transform 0.3s ease";
         setTimeout(() => {
-          cat.style.transform = cat.style.transform.replace(' scale(1.2)', '');
+          cat.style.transform = cat.style.transform.replace(" scale(1.2)", "");
         }, 300);
       }
     };
@@ -105,27 +115,27 @@ export default function CatBackground() {
       requestAnimationFrame(animate);
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
-    el.addEventListener('click', onCatClick);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    el.addEventListener("click", onCatClick);
 
     // * Start the animation loop
     animate();
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('mousemove', onMouseMove);
-      el.removeEventListener('click', onCatClick);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("click", onCatClick);
     };
   }, []);
 
   const showCats = useMemo(() => {
     const prefersReducedMotion =
-      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-        ? getMediaQueryMatches('(prefers-reduced-motion: reduce)')
+      typeof window !== "undefined" && typeof window.matchMedia === "function"
+        ? getMediaQueryMatches("(prefers-reduced-motion: reduce)")
         : false;
     const saveData =
-      typeof navigator !== 'undefined' &&
+      typeof navigator !== "undefined" &&
       navigator.connection &&
       navigator.connection.saveData;
     return !(prefersReducedMotion || saveData);

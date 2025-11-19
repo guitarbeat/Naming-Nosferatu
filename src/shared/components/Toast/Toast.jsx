@@ -4,9 +4,9 @@
  * Supports both individual toast rendering and container management with multiple toasts.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-import styles from './Toast.module.css';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
+import styles from "./Toast.module.css";
 
 /**
  * Individual Toast Component
@@ -21,11 +21,11 @@ import styles from './Toast.module.css';
  */
 const ToastItem = ({
   message,
-  type = 'info',
+  type = "info",
   duration = 5000,
   onDismiss,
   autoDismiss = true,
-  className = ''
+  className = "",
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -52,21 +52,29 @@ const ToastItem = ({
 
   const getTypeIcon = () => {
     switch (type) {
-      case 'success': return '✅';
-      case 'error': return '❌';
-      case 'warning': return '⚠️';
-      case 'info':
-      default: return 'ℹ️';
+      case "success":
+        return "✅";
+      case "error":
+        return "❌";
+      case "warning":
+        return "⚠️";
+      case "info":
+      default:
+        return "ℹ️";
     }
   };
 
   const getTypeClass = () => {
     switch (type) {
-      case 'success': return styles.success;
-      case 'error': return styles.error;
-      case 'warning': return styles.warning;
-      case 'info':
-      default: return styles.info;
+      case "success":
+        return styles.success;
+      case "error":
+        return styles.error;
+      case "warning":
+        return styles.warning;
+      case "info":
+      default:
+        return styles.info;
     }
   };
 
@@ -75,7 +83,7 @@ const ToastItem = ({
       className={`
         ${styles.item}
         ${getTypeClass()}
-        ${isExiting ? styles.exiting : ''}
+        ${isExiting ? styles.exiting : ""}
         ${className}
       `}
       role="alert"
@@ -102,7 +110,7 @@ const ToastItem = ({
             className={styles.progressFill}
             style={{
               animationDuration: `${duration}ms`,
-              animationPlayState: isExiting ? 'paused' : 'running'
+              animationPlayState: isExiting ? "paused" : "running",
             }}
           />
         </div>
@@ -124,9 +132,9 @@ const ToastItem = ({
 const ToastContainer = ({
   toasts = [],
   removeToast,
-  position = 'top-right',
+  position = "top-right",
   maxToasts = 5,
-  className = ''
+  className = "",
 }) => {
   const containerRef = useRef(null);
 
@@ -135,13 +143,20 @@ const ToastContainer = ({
 
   const getPositionClass = () => {
     switch (position) {
-      case 'top-left': return styles.topLeft;
-      case 'top-center': return styles.topCenter;
-      case 'top-right': return styles.topRight;
-      case 'bottom-left': return styles.bottomLeft;
-      case 'bottom-center': return styles.bottomCenter;
-      case 'bottom-right': return styles.bottomRight;
-      default: return styles.topRight;
+      case "top-left":
+        return styles.topLeft;
+      case "top-center":
+        return styles.topCenter;
+      case "top-right":
+        return styles.topRight;
+      case "bottom-left":
+        return styles.bottomLeft;
+      case "bottom-center":
+        return styles.bottomCenter;
+      case "bottom-right":
+        return styles.bottomRight;
+      default:
+        return styles.topRight;
     }
   };
 
@@ -149,7 +164,7 @@ const ToastContainer = ({
     (toastId) => {
       removeToast?.(toastId);
     },
-    [removeToast]
+    [removeToast],
   );
 
   if (toasts.length === 0) {
@@ -204,19 +219,19 @@ const ToastContainer = ({
  * @returns {JSX.Element|null} The appropriate toast component
  */
 const Toast = ({
-  variant = 'item',
+  variant = "item",
   toasts,
   onDismiss,
   removeToast,
-  position = 'top-right',
+  position = "top-right",
   maxToasts = 5,
   message,
-  type = 'info',
+  type = "info",
   duration = 5000,
   autoDismiss = true,
-  className = ''
+  className = "",
 }) => {
-  if (variant === 'container') {
+  if (variant === "container") {
     return (
       <ToastContainer
         toasts={toasts}
@@ -243,42 +258,42 @@ const Toast = ({
 
 // PropTypes
 Toast.propTypes = {
-  variant: PropTypes.oneOf(['item', 'container']),
+  variant: PropTypes.oneOf(["item", "container"]),
   toasts: PropTypes.oneOfType([
     PropTypes.array,
     PropTypes.shape({
       id: PropTypes.string,
       message: PropTypes.string,
-      type: PropTypes.oneOf(['success', 'error', 'info', 'warning']),
+      type: PropTypes.oneOf(["success", "error", "info", "warning"]),
       duration: PropTypes.number,
-      autoDismiss: PropTypes.bool
-    })
+      autoDismiss: PropTypes.bool,
+    }),
   ]),
   onDismiss: PropTypes.func,
   removeToast: PropTypes.func,
   position: PropTypes.oneOf([
-    'top-left',
-    'top-center',
-    'top-right',
-    'bottom-left',
-    'bottom-center',
-    'bottom-right'
+    "top-left",
+    "top-center",
+    "top-right",
+    "bottom-left",
+    "bottom-center",
+    "bottom-right",
   ]),
   maxToasts: PropTypes.number,
   message: PropTypes.string,
-  type: PropTypes.oneOf(['success', 'error', 'info', 'warning']),
+  type: PropTypes.oneOf(["success", "error", "info", "warning"]),
   duration: PropTypes.number,
   autoDismiss: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 ToastItem.propTypes = {
   message: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['success', 'error', 'info', 'warning']),
+  type: PropTypes.oneOf(["success", "error", "info", "warning"]),
   duration: PropTypes.number,
   onDismiss: PropTypes.func,
   autoDismiss: PropTypes.bool,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 ToastContainer.propTypes = {
@@ -286,25 +301,25 @@ ToastContainer.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(['success', 'error', 'info', 'warning']),
+      type: PropTypes.oneOf(["success", "error", "info", "warning"]),
       duration: PropTypes.number,
-      autoDismiss: PropTypes.bool
-    })
+      autoDismiss: PropTypes.bool,
+    }),
   ),
   removeToast: PropTypes.func.isRequired,
   position: PropTypes.oneOf([
-    'top-left',
-    'top-center',
-    'top-right',
-    'bottom-left',
-    'bottom-center',
-    'bottom-right'
+    "top-left",
+    "top-center",
+    "top-right",
+    "bottom-left",
+    "bottom-center",
+    "bottom-right",
   ]),
   maxToasts: PropTypes.number,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
-Toast.displayName = 'Toast';
+Toast.displayName = "Toast";
 
 export default Toast;
 export { ToastItem, ToastContainer };

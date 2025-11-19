@@ -5,7 +5,12 @@
 import PropTypes from "prop-types";
 import styles from "../../TournamentSetup.module.css";
 
-function SwipeControls({ onSwipeLeft, onSwipeRight, currentIndex, totalCount }) {
+function SwipeControls({
+  onSwipeLeft,
+  onSwipeRight,
+  currentIndex,
+  totalCount,
+}) {
   return (
     <div className={styles.swipeButtons}>
       <button
@@ -37,4 +42,3 @@ SwipeControls.propTypes = {
 };
 
 export default SwipeControls;
-

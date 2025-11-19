@@ -6,4 +6,3 @@
 export { default as NameSelection } from "./NameSelection";
 export { default as FilterControls } from "./FilterControls";
 export { default as ResultsInfo } from "./ResultsInfo";
-

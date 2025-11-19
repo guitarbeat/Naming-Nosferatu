@@ -32,7 +32,7 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Custom hook for BongoCat component functionality
@@ -85,10 +85,10 @@ export function useBongoCat({ containerRef, size, onBongo }) {
 
       // Get container's z-index for layering
       const containerComputedStyle = window.getComputedStyle(
-        containerRef.current
+        containerRef.current,
       );
       const containerZ =
-        containerComputedStyle.zIndex === 'auto'
+        containerComputedStyle.zIndex === "auto"
           ? 1
           : parseInt(containerComputedStyle.zIndex, 10);
       setContainerZIndex(containerZ);
@@ -115,7 +115,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
         onBongo();
       }
     },
-    [isPawsDown, onBongo]
+    [isPawsDown, onBongo],
   );
 
   const handleKeyUp = useCallback((e) => {
@@ -136,8 +136,8 @@ export function useBongoCat({ containerRef, size, onBongo }) {
 
   // Set up event listeners and observers with performance optimizations
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("keyup", handleKeyUp);
 
     // Set up ResizeObserver for container positioning
     if (containerRef && containerRef.current) {
@@ -166,8 +166,8 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       };
 
       // Track container position with throttled events
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      window.addEventListener('resize', handleResize, { passive: true });
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      window.addEventListener("resize", handleResize, { passive: true });
 
       // Debounced orientation change handler
       const handleOrientationChange = () => {
@@ -178,7 +178,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
         }, 100);
       };
 
-      window.addEventListener('orientationchange', handleOrientationChange);
+      window.addEventListener("orientationchange", handleOrientationChange);
 
       // Throttled MutationObserver to reduce DOM observation overhead
       const handleMutation = () => {
@@ -193,7 +193,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       mutationObserver.observe(document.body, {
         childList: true,
         subtree: false, // Only observe direct children to reduce overhead
-        attributes: false // Disable attribute observation to reduce reflows
+        attributes: false, // Disable attribute observation to reduce reflows
       });
 
       return () => {
@@ -201,9 +201,12 @@ export function useBongoCat({ containerRef, size, onBongo }) {
           resizeObserverRef.current.disconnect();
         }
 
-        window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('resize', handleResize);
-        window.removeEventListener('orientationchange', handleOrientationChange);
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleResize);
+        window.removeEventListener(
+          "orientationchange",
+          handleOrientationChange,
+        );
         mutationObserver.disconnect();
 
         // Clean up timeouts
@@ -227,8 +230,8 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('keyup', handleKeyUp);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keyup", handleKeyUp);
     };
   }, [handleKeyDown, handleKeyUp, containerRef, updatePosition]);
 
@@ -238,6 +241,6 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     catSize,
     isVisible,
     containerZIndex,
-    updatePosition
+    updatePosition,
   };
 }

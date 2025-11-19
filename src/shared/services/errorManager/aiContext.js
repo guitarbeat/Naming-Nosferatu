@@ -12,11 +12,11 @@
  */
 export function buildAIContext({ formattedError, diagnostics }) {
   const baseInfo = [
-    `Error ID: ${formattedError.id || 'unknown'}`,
+    `Error ID: ${formattedError.id || "unknown"}`,
     `Type: ${formattedError.type}`,
     `Severity: ${formattedError.severity}`,
     `Context: ${formattedError.context}`,
-    `Message: ${formattedError.message}`
+    `Message: ${formattedError.message}`,
   ];
 
   if (formattedError.code) {
@@ -28,24 +28,25 @@ export function buildAIContext({ formattedError, diagnostics }) {
   }
 
   if (diagnostics?.debugHints?.length) {
-    baseInfo.push('Hints:');
+    baseInfo.push("Hints:");
     diagnostics.debugHints.forEach((hint, index) => {
       baseInfo.push(`  ${index + 1}. ${hint.title} - ${hint.detail}`);
     });
   }
 
   if (diagnostics?.stackFrames?.length) {
-    baseInfo.push('Top stack frame:');
+    baseInfo.push("Top stack frame:");
     const [topFrame] = diagnostics.stackFrames;
     if (topFrame?.raw) {
       baseInfo.push(`  ${topFrame.raw}`);
     } else {
-      baseInfo.push(`  ${topFrame.functionName} at ${topFrame.file}:${topFrame.line}:${topFrame.column}`);
+      baseInfo.push(
+        `  ${topFrame.functionName} at ${topFrame.file}:${topFrame.line}:${topFrame.column}`,
+      );
     }
   }
 
   baseInfo.push(`Fingerprint: ${diagnostics?.fingerprint}`);
 
-  return baseInfo.join('\n');
+  return baseInfo.join("\n");
 }
-

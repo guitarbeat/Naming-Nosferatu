@@ -43,17 +43,17 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import { memo, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import styles from './Bracket.module.css';
+import { memo, useMemo } from "react";
+import PropTypes from "prop-types";
+import styles from "./Bracket.module.css";
 
 const MatchResult = {
-  PENDING: 'pending',
-  FIRST_WIN: 'first',
-  SECOND_WIN: 'second',
-  BOTH_ADVANCE: 'both',
-  SKIPPED: 'skip',
-  NEITHER: 'neither'
+  PENDING: "pending",
+  FIRST_WIN: "first",
+  SECOND_WIN: "second",
+  BOTH_ADVANCE: "both",
+  SKIPPED: "skip",
+  NEITHER: "neither",
 };
 
 function Match({ match, isLastRound }) {
@@ -159,7 +159,7 @@ function Round({ matches, roundNumber, isLastRound }) {
       <div className={styles.roundHeader}>
         <span className={styles.roundTitle}>Round {roundNumber}</span>
         <span className={styles.roundMatches}>
-          {matches.length} {matches.length === 1 ? 'match' : 'matches'}
+          {matches.length} {matches.length === 1 ? "match" : "matches"}
         </span>
       </div>
       <div className={styles.matches}>
@@ -178,10 +178,10 @@ function Bracket({ matches }) {
     }
 
     // If caller provides explicit round numbers, group by them.
-    const hasExplicitRounds = matches.some((m) => typeof m.round === 'number');
+    const hasExplicitRounds = matches.some((m) => typeof m.round === "number");
     if (hasExplicitRounds) {
       const maxRound = Math.max(
-        ...matches.map((m) => (typeof m.round === 'number' ? m.round : 1))
+        ...matches.map((m) => (typeof m.round === "number" ? m.round : 1)),
       );
       const grouped = Array.from({ length: maxRound }, () => []);
       matches.forEach((m) => {
@@ -190,21 +190,24 @@ function Bracket({ matches }) {
       });
       // Sort within each round by id if present
       grouped.forEach((round) =>
-        round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0))
+        round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0)),
       );
       return grouped;
     }
 
     // Fallback: heuristic grouping based on match id using log2
-    const totalRounds = Math.ceil(Math.log2(matches.length + 1));
+    const totalRounds =
+      matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
     const rounds = Array(totalRounds)
       .fill()
       .map(() => []);
 
     matches.forEach((match) => {
-      const roundIndex = Math.floor(Math.log2(Math.max(1, match.id)));
-      if (roundIndex >= 0 && roundIndex < totalRounds) {
-        rounds[roundIndex].push(match);
+      if (match?.id != null && match.id > 0) {
+        const roundIndex = Math.floor(Math.log2(match.id));
+        if (roundIndex >= 0 && roundIndex < totalRounds) {
+          rounds[roundIndex].push(match);
+        }
       }
     });
 
@@ -234,7 +237,7 @@ function Bracket({ matches }) {
   );
 }
 
-Bracket.displayName = 'Bracket';
+Bracket.displayName = "Bracket";
 
 Bracket.propTypes = {
   matches: PropTypes.arrayOf(
@@ -243,9 +246,9 @@ Bracket.propTypes = {
       name1: PropTypes.string.isRequired,
       name2: PropTypes.string,
       winner: PropTypes.number,
-      round: PropTypes.number
-    })
-  ).isRequired
+      round: PropTypes.number,
+    }),
+  ).isRequired,
 };
 
 export default memo(Bracket);

@@ -2,35 +2,38 @@
  * @module CatNameEditor
  * @description Admin component for editing the cat's chosen name
  */
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { Card, Button, Error } from '../../shared/components';
-import { Form, Input } from '../../shared/components/Form';
-import { siteSettingsAPI } from '../../integrations/supabase/api';
-import { validateNameData, formatFullName } from '../../shared/utils/nameFormatter';
-import styles from './CatNameEditor.module.css';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { Card, Button, Error } from "../../shared/components";
+import { Form, Input } from "../../shared/components/Form";
+import { siteSettingsAPI } from "../../integrations/supabase/api";
+import {
+  validateNameData,
+  formatFullName,
+} from "../../shared/utils/nameFormatter";
+import styles from "./CatNameEditor.module.css";
 
 const GREETING_SUGGESTIONS = [
-  'Hello! My name is',
-  'Hi! I\'m',
-  'Meow! They call me',
-  'Hey there! I\'m'
+  "Hello! My name is",
+  "Hi! I'm",
+  "Meow! They call me",
+  "Hey there! I'm",
 ];
 
 function CatNameEditor({ userName, onUpdate }) {
   const [formData, setFormData] = useState({
-    first_name: '',
+    first_name: "",
     middle_names: [],
-    last_name: '',
-    greeting_text: 'Hello! My name is',
-    show_banner: true
+    last_name: "",
+    greeting_text: "Hello! My name is",
+    show_banner: true,
   });
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [middleNameInput, setMiddleNameInput] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [middleNameInput, setMiddleNameInput] = useState("");
 
   useEffect(() => {
     loadCatName();
@@ -38,53 +41,53 @@ function CatNameEditor({ userName, onUpdate }) {
 
   const loadCatName = async () => {
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
       const data = await siteSettingsAPI.getCatChosenName();
       if (data) {
         setFormData({
-          first_name: data.first_name || '',
+          first_name: data.first_name || "",
           middle_names: data.middle_names || [],
-          last_name: data.last_name || '',
-          greeting_text: data.greeting_text || 'Hello! My name is',
-          show_banner: data.show_banner !== false
+          last_name: data.last_name || "",
+          greeting_text: data.greeting_text || "Hello! My name is",
+          show_banner: data.show_banner !== false,
         });
       }
     } catch (err) {
-      setError(`Failed to load cat name: ${  err.message}`);
+      setError(`Failed to load cat name: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError('');
-    setSuccess('');
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    setError("");
+    setSuccess("");
   };
 
   const handleAddMiddleName = () => {
     const trimmed = middleNameInput.trim();
     if (trimmed && !formData.middle_names.includes(trimmed)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        middle_names: [...prev.middle_names, trimmed]
+        middle_names: [...prev.middle_names, trimmed],
       }));
-      setMiddleNameInput('');
+      setMiddleNameInput("");
     }
   };
 
   const handleRemoveMiddleName = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      middle_names: prev.middle_names.filter((_, i) => i !== index)
+      middle_names: prev.middle_names.filter((_, i) => i !== index),
     }));
   };
 
   const handleSave = async () => {
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     const validation = validateNameData(formData);
     if (!validation.valid) {
@@ -95,18 +98,21 @@ function CatNameEditor({ userName, onUpdate }) {
     setIsSaving(true);
 
     try {
-      const result = await siteSettingsAPI.updateCatChosenName(formData, userName);
+      const result = await siteSettingsAPI.updateCatChosenName(
+        formData,
+        userName,
+      );
 
       if (result.success) {
-        setSuccess('✅ Cat name saved successfully!');
+        setSuccess("✅ Cat name saved successfully!");
         if (onUpdate) {
           onUpdate(result.data);
         }
       } else {
-        setError(result.error || 'Failed to save cat name');
+        setError(result.error || "Failed to save cat name");
       }
     } catch (err) {
-      setError(`Error saving cat name: ${  err.message}`);
+      setError(`Error saving cat name: ${err.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -138,7 +144,7 @@ function CatNameEditor({ userName, onUpdate }) {
         <Input
           label="First Name *"
           value={formData.first_name}
-          onChange={(e) => handleInputChange('first_name', e.target.value)}
+          onChange={(e) => handleInputChange("first_name", e.target.value)}
           placeholder="e.g., Shadow"
           required
         />
@@ -151,7 +157,7 @@ function CatNameEditor({ userName, onUpdate }) {
               onChange={(e) => setMiddleNameInput(e.target.value)}
               placeholder="e.g., Midnight"
               onKeyPress={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                   handleAddMiddleName();
                 }
@@ -188,7 +194,7 @@ function CatNameEditor({ userName, onUpdate }) {
         <Input
           label="Last Name (optional)"
           value={formData.last_name}
-          onChange={(e) => handleInputChange('last_name', e.target.value)}
+          onChange={(e) => handleInputChange("last_name", e.target.value)}
           placeholder="e.g., Whiskers"
         />
 
@@ -196,7 +202,7 @@ function CatNameEditor({ userName, onUpdate }) {
           <label className={styles.label}>Greeting Text</label>
           <Input
             value={formData.greeting_text}
-            onChange={(e) => handleInputChange('greeting_text', e.target.value)}
+            onChange={(e) => handleInputChange("greeting_text", e.target.value)}
             placeholder="Hello! My name is"
           />
           <div className={styles.suggestions}>
@@ -205,7 +211,7 @@ function CatNameEditor({ userName, onUpdate }) {
                 key={suggestion}
                 type="button"
                 className={styles.suggestionButton}
-                onClick={() => handleInputChange('greeting_text', suggestion)}
+                onClick={() => handleInputChange("greeting_text", suggestion)}
               >
                 {suggestion}
               </button>
@@ -217,7 +223,7 @@ function CatNameEditor({ userName, onUpdate }) {
           <input
             type="checkbox"
             checked={formData.show_banner}
-            onChange={(e) => handleInputChange('show_banner', e.target.checked)}
+            onChange={(e) => handleInputChange("show_banner", e.target.checked)}
           />
           Show name tag on home page
         </label>
@@ -227,7 +233,9 @@ function CatNameEditor({ userName, onUpdate }) {
             <p className={styles.previewLabel}>Preview:</p>
             <div className={styles.previewNameTag}>
               <div className={styles.previewHello}>HELLO</div>
-              <div className={styles.previewGreeting}>{formData.greeting_text}</div>
+              <div className={styles.previewGreeting}>
+                {formData.greeting_text}
+              </div>
               <div className={styles.previewName}>{previewName}</div>
             </div>
           </div>
@@ -239,7 +247,7 @@ function CatNameEditor({ userName, onUpdate }) {
             disabled={isSaving || !formData.first_name.trim()}
             variant="primary"
           >
-            {isSaving ? 'Saving...' : 'Save Cat Name'}
+            {isSaving ? "Saving..." : "Save Cat Name"}
           </Button>
         </div>
       </Form>
@@ -249,7 +257,7 @@ function CatNameEditor({ userName, onUpdate }) {
 
 CatNameEditor.propTypes = {
   userName: PropTypes.string.isRequired,
-  onUpdate: PropTypes.func
+  onUpdate: PropTypes.func,
 };
 
 export default CatNameEditor;

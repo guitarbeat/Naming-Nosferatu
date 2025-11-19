@@ -3,11 +3,11 @@
  * @description Real-time performance monitoring dashboard restricted to administrators (as enforced in App.jsx)
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import PropTypes from 'prop-types';
-import Card from '../Card';
-import { performanceMonitor, throttle } from '../../utils/coreUtils';
-import styles from './PerformanceDashboard.module.css';
+import { useState, useEffect, useCallback, useRef } from "react";
+import PropTypes from "prop-types";
+import Card from "../Card";
+import { performanceMonitor, throttle } from "../../utils/coreUtils";
+import styles from "./PerformanceDashboard.module.css";
 
 const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
   const [metrics, setMetrics] = useState(null);
@@ -92,11 +92,11 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
   }
 
   const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))  } ${  sizes[i]}`;
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
   };
 
   const formatTime = (ms) => {
@@ -105,19 +105,19 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
   };
 
   const getPerformanceGrade = (loadTime) => {
-    if (loadTime < 1000) return { grade: 'A+', color: '#28a745' };
-    if (loadTime < 2000) return { grade: 'A', color: '#28a745' };
-    if (loadTime < 3000) return { grade: 'B', color: '#ffc107' };
-    if (loadTime < 5000) return { grade: 'C', color: '#fd7e14' };
-    return { grade: 'D', color: '#dc3545' };
+    if (loadTime < 1000) return { grade: "A+", color: "#28a745" };
+    if (loadTime < 2000) return { grade: "A", color: "#28a745" };
+    if (loadTime < 3000) return { grade: "B", color: "#ffc107" };
+    if (loadTime < 5000) return { grade: "C", color: "#fd7e14" };
+    return { grade: "D", color: "#dc3545" };
   };
 
   const getBundleGrade = (size) => {
-    if (size < 500000) return { grade: 'A+', color: '#28a745' };
-    if (size < 1000000) return { grade: 'A', color: '#28a745' };
-    if (size < 2000000) return { grade: 'B', color: '#ffc107' };
-    if (size < 5000000) return { grade: 'C', color: '#fd7e14' };
-    return { grade: 'D', color: '#dc3545' };
+    if (size < 500000) return { grade: "A+", color: "#28a745" };
+    if (size < 1000000) return { grade: "A", color: "#28a745" };
+    if (size < 2000000) return { grade: "B", color: "#ffc107" };
+    if (size < 5000000) return { grade: "C", color: "#fd7e14" };
+    return { grade: "D", color: "#dc3545" };
   };
 
   return (
@@ -174,7 +174,7 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
                 <span
                   className={styles.grade}
                   style={{
-                    color: getBundleGrade(metrics.bundleSize.total || 0).color
+                    color: getBundleGrade(metrics.bundleSize.total || 0).color,
                   }}
                 >
                   {getBundleGrade(metrics.bundleSize.total || 0).grade}
@@ -213,10 +213,15 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
                 <span
                   className={styles.grade}
                   style={{
-                    color: getPerformanceGrade(metrics.loadTimes.totalLoadTime || 0).color
+                    color: getPerformanceGrade(
+                      metrics.loadTimes.totalLoadTime || 0,
+                    ).color,
                   }}
                 >
-                  {getPerformanceGrade(metrics.loadTimes.totalLoadTime || 0).grade}
+                  {
+                    getPerformanceGrade(metrics.loadTimes.totalLoadTime || 0)
+                      .grade
+                  }
                 </span>
               </div>
             </div>
@@ -269,19 +274,23 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
                 <div className={styles.metric}>
                   <span className={styles.label}>Type:</span>
                   <span className={styles.value}>
-                    {metrics.connection.effectiveType || 'Unknown'}
+                    {metrics.connection.effectiveType || "Unknown"}
                   </span>
                 </div>
                 <div className={styles.metric}>
                   <span className={styles.label}>Downlink:</span>
                   <span className={styles.value}>
-                    {metrics.connection.downlink ? `${metrics.connection.downlink} Mbps` : 'Unknown'}
+                    {metrics.connection.downlink
+                      ? `${metrics.connection.downlink} Mbps`
+                      : "Unknown"}
                   </span>
                 </div>
                 <div className={styles.metric}>
                   <span className={styles.label}>RTT:</span>
                   <span className={styles.value}>
-                    {metrics.connection.rtt ? `${metrics.connection.rtt}ms` : 'Unknown'}
+                    {metrics.connection.rtt
+                      ? `${metrics.connection.rtt}ms`
+                      : "Unknown"}
                   </span>
                 </div>
               </div>
@@ -319,7 +328,7 @@ const PerformanceDashboard = ({ userName, isVisible = false, onClose }) => {
 PerformanceDashboard.propTypes = {
   userName: PropTypes.string,
   isVisible: PropTypes.bool,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
 };
 
 export default PerformanceDashboard;

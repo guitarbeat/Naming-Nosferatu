@@ -52,7 +52,9 @@ export function useTiltEffect(options = {}) {
 
   useEffect(() => {
     const queries = {
-      prefersReducedMotion: getMediaQueryList("(prefers-reduced-motion: reduce)"),
+      prefersReducedMotion: getMediaQueryList(
+        "(prefers-reduced-motion: reduce)",
+      ),
       hasFinePointer: getMediaQueryList("(any-pointer: fine)"),
       hasHoverSupport: getMediaQueryList("(any-hover: hover)"),
     };
@@ -80,7 +82,7 @@ export function useTiltEffect(options = {}) {
     updateEnvironment();
 
     const cleanups = Object.values(queries).map((query) =>
-      attachMediaQueryListener(query, updateEnvironment)
+      attachMediaQueryListener(query, updateEnvironment),
     );
 
     return () => {
@@ -127,7 +129,7 @@ export function useTiltEffect(options = {}) {
         return next;
       });
     },
-    [smoothing]
+    [smoothing],
   );
 
   const startAnimation = useCallback(() => {
@@ -166,7 +168,7 @@ export function useTiltEffect(options = {}) {
 
       startAnimation();
     },
-    [maxRotation, startAnimation]
+    [maxRotation, startAnimation],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -200,7 +202,9 @@ export function useTiltEffect(options = {}) {
 
     return {
       transform: `perspective(${perspective}px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(${scale})`,
-      transition: animationFrameRef.current ? "none" : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      transition: animationFrameRef.current
+        ? "none"
+        : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
       willChange: "transform",
     };
   }, [transform, perspective, scale, isTiltDisabled]);

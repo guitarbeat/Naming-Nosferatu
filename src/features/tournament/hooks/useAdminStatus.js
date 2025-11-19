@@ -34,4 +34,3 @@ export function useAdminStatus(userName) {
 
   return isAdmin;
 }
-

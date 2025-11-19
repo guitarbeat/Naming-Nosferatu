@@ -20,4 +20,3 @@ export function useCategoryFilters(availableNames) {
 
   return categories;
 }
-

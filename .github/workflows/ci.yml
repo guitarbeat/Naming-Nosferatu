@@ -39,6 +39,6 @@ jobs:
         run: |
           export BAG_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_URL }}"
           export BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          npm run build:analyze
+          vite build --mode analyze --config config/vite.config.ts
 
 

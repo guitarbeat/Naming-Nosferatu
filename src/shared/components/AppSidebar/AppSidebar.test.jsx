@@ -34,8 +34,8 @@ describe("AppSidebar", () => {
             onTogglePerformanceDashboard={vi.fn()}
             breadcrumbItems={breadcrumbItems}
           />
-        </SidebarProvider>
-      )
+        </SidebarProvider>,
+      ),
     ).not.toThrow();
 
     expect(screen.getByText("Home")).toBeInTheDocument();

@@ -47,14 +47,14 @@ function Login({ onLogin }) {
       setCatName(data);
     } catch (error) {
       // * Use ErrorManager for consistent error handling
-      ErrorManager.handleError(error, 'Load Cat Name', {
+      ErrorManager.handleError(error, "Load Cat Name", {
         isRetryable: true,
         affectsUserData: false,
-        isCritical: false
+        isCritical: false,
       });
       // * Silently fail - cat name banner is optional
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Failed to load cat name (non-critical):', error);
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Failed to load cat name (non-critical):", error);
       }
     } finally {
       setLoadingCatName(false);
@@ -151,46 +151,46 @@ function Login({ onLogin }) {
   // Fetch cat fact on component mount
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchCatFact = async () => {
       // * Create abort controller for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
+
       try {
         const response = await fetch("https://catfact.ninja/fact", {
-          signal: controller.signal
+          signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // * Validate response structure
-        if (data && typeof data.fact === 'string' && isMounted) {
+        if (data && typeof data.fact === "string" && isMounted) {
           setCatFact(data.fact);
         } else if (isMounted) {
-          throw new Error('Invalid response format from cat fact API');
+          throw new Error("Invalid response format from cat fact API");
         }
       } catch (error) {
         // * Handle abort/timeout gracefully
-        if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Cat fact request timed out');
+        if (error.name === "AbortError" || error.name === "TimeoutError") {
+          if (process.env.NODE_ENV === "development") {
+            console.warn("Cat fact request timed out");
           }
         } else {
           // * Use ErrorManager for consistent error handling
-          ErrorManager.handleError(error, 'Fetch Cat Fact', {
+          ErrorManager.handleError(error, "Fetch Cat Fact", {
             isRetryable: true,
             affectsUserData: false,
-            isCritical: false
+            isCritical: false,
           });
         }
-        
+
         // * Set fallback message if component is still mounted
         if (isMounted) {
           setCatFact("Cats are amazing creatures with unique personalities!");
@@ -244,17 +244,17 @@ function Login({ onLogin }) {
       await onLogin(validation.value);
     } catch (err) {
       // * Use ErrorManager for consistent error handling
-      const formattedError = ErrorManager.handleError(err, 'User Login', {
+      const formattedError = ErrorManager.handleError(err, "User Login", {
         isRetryable: true,
         affectsUserData: false,
-        isCritical: false
+        isCritical: false,
       });
-      
+
       // * Set user-friendly error message
       setError(
-        formattedError.userMessage || 
-        err.message || 
-        "Unable to log in. Please check your connection and try again."
+        formattedError.userMessage ||
+          err.message ||
+          "Unable to log in. Please check your connection and try again.",
       );
     } finally {
       setIsLoading(false);
@@ -284,7 +284,7 @@ function Login({ onLogin }) {
       <div className={styles.heroContainer} ref={containerRef}>
         {/* Premium Hero Section - Tournament Info */}
         <div className={styles.heroContent}>
-          <div style={{ marginBottom: 'clamp(1rem, 4vw, 2rem)' }}>
+          <div style={{ marginBottom: "clamp(1rem, 4vw, 2rem)" }}>
             {/* Cat Name Banner */}
             {!loadingCatName && catName && (
               <CatNameBanner catName={catName} isAdmin={false} />
@@ -311,152 +311,154 @@ function Login({ onLogin }) {
             className={styles.expandedContent}
             aria-live="polite"
           >
-              <p className={styles.catFact}>
-                <span className={styles.catFactIcon} aria-hidden="true">
-                  🐱
-                </span>
-                <span>
-                  {catFact ? (
-                    <>{catFact}</>
-                  ) : (
-                    <span className={styles.loadingFact}>
-                      <span className={styles.loadingDots}>
-                        Loading a fun cat fact
-                      </span>
-                      <span className={styles.loadingDots}>...</span>
+            <p className={styles.catFact}>
+              <span className={styles.catFactIcon} aria-hidden="true">
+                🐱
+              </span>
+              <span>
+                {catFact ? (
+                  <>{catFact}</>
+                ) : (
+                  <span className={styles.loadingFact}>
+                    <span className={styles.loadingDots}>
+                      Loading a fun cat fact
                     </span>
-                  )}
+                    <span className={styles.loadingDots}>...</span>
+                  </span>
+                )}
+              </span>
+            </p>
+            {isTyping ? (
+              <div className={styles.typingIndicator}>
+                <span className={styles.typingText}>
+                  The cat is watching you type!
                 </span>
-              </p>
-              {isTyping ? (
-                <div className={styles.typingIndicator}>
-                  <span className={styles.typingText}>
-                    The cat is watching you type!
-                  </span>
-                  <span className={styles.typingDots}>
-                    <span className={styles.dot}>.</span>
-                    <span className={styles.dot}>.</span>
-                    <span className={styles.dot}>.</span>
-                  </span>
-                </div>
-              ) : null}
+                <span className={styles.typingDots}>
+                  <span className={styles.dot}>.</span>
+                  <span className={styles.dot}>.</span>
+                  <span className={styles.dot}>.</span>
+                </span>
+              </div>
+            ) : null}
 
-              <form
-                onSubmit={handleSubmit}
-                className={styles.loginForm}
-                role="form"
-                aria-label="Judge name login form"
-                autoComplete="off"
-              >
-                <div className={styles.inputWrapper}>
-                  <label htmlFor="loginName" className={styles.inputLabel}>
-                    Your Judge Name
-                  </label>
-                  <div className={styles.inputContainer}>
-                    <input
-                      id="loginName"
-                      name="judgeName"
-                      type="text"
-                      value={name}
-                      onChange={handleNameChange}
-                      placeholder="Enter your judge name"
-                      className={`${styles.loginInput} ${error ? styles.error : ""}`}
-                      autoFocus
-                      autoComplete="off"
-                      autoCapitalize="none"
-                      spellCheck={false}
-                      disabled={isLoading}
-                      aria-label="Your name"
-                      aria-describedby={error ? "loginError" : "loginHelp"}
-                      aria-required="false"
-                      maxLength={30}
-                    />
-                    {!name.trim() && (
-                      <div
-                        className={styles.randomNameIndicator}
-                        title="Generate a random judge name"
-                        role="button"
-                        tabIndex={isLoading ? -1 : 0}
-                        aria-label="Generate a random judge name"
-                        aria-disabled={isLoading}
-                        onClick={handleRandomNameClick}
-                        onKeyDown={handleRandomNameKeyDown}
-                      >
-                        <span aria-hidden="true" className={styles.diceIcon}>
-                          🎲
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  {error && (
-                    <Error
-                      variant="inline"
-                      error={error}
-                      context="form"
-                      position="below"
-                      onDismiss={() => setError("")}
-                      showRetry={false}
-                      showDismiss={true}
-                      size="medium"
-                      className={styles.loginError}
-                    />
-                  )}
-                  <p id="loginHelp" className={styles.explainerText}>
-                    Type your judge name to sign in. We&apos;ll create an
-                    account automatically if it&apos;s your first time.
-                  </p>
-                  {name.trim() && (
-                    <div className={styles.characterCounter}>
-                      <span className={styles.counterText}>
-                        {name.length}/30 characters
+            <form
+              onSubmit={handleSubmit}
+              className={styles.loginForm}
+              role="form"
+              aria-label="Judge name login form"
+              autoComplete="off"
+            >
+              <div className={styles.inputWrapper}>
+                <label htmlFor="loginName" className={styles.inputLabel}>
+                  Your Judge Name
+                </label>
+                <div className={styles.inputContainer}>
+                  <input
+                    id="loginName"
+                    name="judgeName"
+                    type="text"
+                    value={name}
+                    onChange={handleNameChange}
+                    placeholder="Enter your judge name"
+                    className={`${styles.loginInput} ${error ? styles.error : ""}`}
+                    autoFocus
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    disabled={isLoading}
+                    aria-label="Your name"
+                    aria-describedby={error ? "loginError" : "loginHelp"}
+                    aria-required="false"
+                    maxLength={30}
+                  />
+                  {!name.trim() && (
+                    <div
+                      className={styles.randomNameIndicator}
+                      title="Generate a random judge name"
+                      role="button"
+                      tabIndex={isLoading ? -1 : 0}
+                      aria-label="Generate a random judge name"
+                      aria-disabled={isLoading}
+                      onClick={handleRandomNameClick}
+                      onKeyDown={handleRandomNameKeyDown}
+                    >
+                      <span aria-hidden="true" className={styles.diceIcon}>
+                        🎲
                       </span>
-                      <div className={styles.counterBar}>
-                        <div
-                          className={styles.counterProgress}
-                          style={{ width: `${(name.length / 30) * 100}%` }}
-                        />
-                      </div>
                     </div>
                   )}
                 </div>
-
-                <Button
-                  type="submit"
-                  loading={isLoading}
-                  disabled={isLoading}
-                  size="large"
-                  endIcon={name.trim() ? null : <span aria-hidden="true">🏆</span>}
-                  className={`${name.trim() ? styles.hasName : ""}`}
-                >
-                  {name.trim() ? "Continue" : "Get Random Name & Start"}
-                </Button>
-              </form>
-
-              <div className={styles.namePreview}>
-                {name ? (
-                  <p className={styles.helperText}>
-                    You&apos;ll log in or create an account as{" "}
-                    <span className={styles.nameHighlight}>
-                      &quot;{name}&quot;
+                {error && (
+                  <Error
+                    variant="inline"
+                    error={error}
+                    context="form"
+                    position="below"
+                    onDismiss={() => setError("")}
+                    showRetry={false}
+                    showDismiss={true}
+                    size="medium"
+                    className={styles.loginError}
+                  />
+                )}
+                <p id="loginHelp" className={styles.explainerText}>
+                  Type your judge name to sign in. We&apos;ll create an account
+                  automatically if it&apos;s your first time.
+                </p>
+                {name.trim() && (
+                  <div className={styles.characterCounter}>
+                    <span className={styles.counterText}>
+                      {name.length}/30 characters
                     </span>
-                  </p>
-                ) : (
-                  <div className={styles.randomPreview}>
-                    <p
-                      className={`${styles.helperText} ${styles.randomNameText}`}
-                    >
-                      We&apos;ll generate a fun name automatically!
-                    </p>
-                    <p className={styles.randomNameExample}>
-                      <span className={styles.exampleLabel}>Example: </span>
-                      <span className={styles.exampleValue}>
-                        {exampleRandomName}
-                      </span>
-                    </p>
+                    <div className={styles.counterBar}>
+                      <div
+                        className={styles.counterProgress}
+                        style={{ width: `${(name.length / 30) * 100}%` }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
+
+              <Button
+                type="submit"
+                loading={isLoading}
+                disabled={isLoading}
+                size="large"
+                endIcon={
+                  name.trim() ? null : <span aria-hidden="true">🏆</span>
+                }
+                className={`${name.trim() ? styles.hasName : ""}`}
+              >
+                {name.trim() ? "Continue" : "Get Random Name & Start"}
+              </Button>
+            </form>
+
+            <div className={styles.namePreview}>
+              {name ? (
+                <p className={styles.helperText}>
+                  You&apos;ll log in or create an account as{" "}
+                  <span className={styles.nameHighlight}>
+                    &quot;{name}&quot;
+                  </span>
+                </p>
+              ) : (
+                <div className={styles.randomPreview}>
+                  <p
+                    className={`${styles.helperText} ${styles.randomNameText}`}
+                  >
+                    We&apos;ll generate a fun name automatically!
+                  </p>
+                  <p className={styles.randomNameExample}>
+                    <span className={styles.exampleLabel}>Example: </span>
+                    <span className={styles.exampleValue}>
+                      {exampleRandomName}
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
+          </div>
         </Card>
       </div>
     </div>

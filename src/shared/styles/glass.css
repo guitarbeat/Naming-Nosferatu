@@ -6,8 +6,8 @@
   --glass-border: rgb(255 255 255 / 15%);
   --glass-border-hover: rgb(255 255 255 / 25%);
   --glass-shadow: 0 8px 32px rgb(0 0 0 / 40%);
-  --glass-shadow-colored: 0 8px 32px rgb(47 243 224 / 15%),
-    0 8px 16px rgb(250 38 160 / 10%);
+  --glass-shadow-colored:
+    0 8px 32px rgb(47 243 224 / 15%), 0 8px 16px rgb(250 38 160 / 10%);
   --glass-blur: 20px;
   --glass-blur-strong: 30px;
 }

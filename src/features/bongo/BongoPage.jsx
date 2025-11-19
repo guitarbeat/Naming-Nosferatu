@@ -6,28 +6,28 @@
  * Users must manually type "/bongo" in the URL to access this page.
  * This is a secret feature for cat lovers who discover the URL!
  */
-import React, { useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import BongoCat from '../../shared/components/BongoCat/BongoCat';
-import styles from './BongoPage.module.css';
+import React, { useRef, useEffect } from "react";
+import PropTypes from "prop-types";
+import BongoCat from "../../shared/components/BongoCat/BongoCat";
+import styles from "./BongoPage.module.css";
 
 function BongoPage({ isLoggedIn, userName }) {
   const containerRef = useRef(null);
 
   // Add bongo-page class to body when component mounts
   useEffect(() => {
-    document.body.classList.add('bongo-page');
-    document.documentElement.classList.add('bongo-page');
+    document.body.classList.add("bongo-page");
+    document.documentElement.classList.add("bongo-page");
 
     // Remove class when component unmounts
     return () => {
-      document.body.classList.remove('bongo-page');
-      document.documentElement.classList.remove('bongo-page');
+      document.body.classList.remove("bongo-page");
+      document.documentElement.classList.remove("bongo-page");
     };
   }, []);
 
   const handleBongo = () => {
-    console.log('🐱 Bongo cat says hello from the secret page!');
+    console.log("🐱 Bongo cat says hello from the secret page!");
   };
 
   return (
@@ -43,7 +43,8 @@ function BongoPage({ isLoggedIn, userName }) {
         <div className={styles.header}>
           <h1 className={styles.title}>🐱 Secret Bongo Cat Page 🐱</h1>
           <p className={styles.subtitle}>
-            You found the hidden bongo cat! This is a special page only accessible via the /bongo route.
+            You found the hidden bongo cat! This is a special page only
+            accessible via the /bongo route.
           </p>
           {isLoggedIn && userName && (
             <p className={styles.greeting}>
@@ -89,11 +90,11 @@ function BongoPage({ isLoggedIn, userName }) {
   );
 }
 
-BongoPage.displayName = 'BongoPage';
+BongoPage.displayName = "BongoPage";
 
 BongoPage.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
-  userName: PropTypes.string
+  userName: PropTypes.string,
 };
 
 export default BongoPage;

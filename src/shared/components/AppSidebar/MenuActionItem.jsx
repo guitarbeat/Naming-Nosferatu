@@ -3,12 +3,8 @@
  * @description Reusable action item component for sidebar menu
  */
 
-import PropTypes from 'prop-types';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '../ui/sidebar';
+import PropTypes from "prop-types";
+import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
 
 /**
  * * Reusable action item component
@@ -24,7 +20,7 @@ export function MenuActionItem({
   icon: Icon,
   label,
   onClick,
-  className = '',
+  className = "",
   ariaLabel,
   condition = true,
 }) {
@@ -62,4 +58,3 @@ MenuActionItem.propTypes = {
   ariaLabel: PropTypes.string,
   condition: PropTypes.bool,
 };
-

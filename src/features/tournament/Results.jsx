@@ -38,18 +38,18 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect, useCallback, memo } from 'react';
+import React, { useState, useEffect, useCallback, memo } from "react";
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import RankingAdjustment from './RankingAdjustment';
-import Bracket from '../../shared/components/Bracket/Bracket';
-import CalendarButton from '../../shared/components/CalendarButton/CalendarButton';
-import StartTournamentButton from '../../shared/components/StartTournamentButton/StartTournamentButton';
-import StatsCard from '../../shared/components/StatsCard/StatsCard';
-import { Card, Toast } from '@components';
-import { useToast } from './hooks/useToast';
-import styles from './Results.module.css';
+import RankingAdjustment from "./RankingAdjustment";
+import Bracket from "../../shared/components/Bracket/Bracket";
+import CalendarButton from "../../shared/components/CalendarButton/CalendarButton";
+import StartTournamentButton from "../../shared/components/StartTournamentButton/StartTournamentButton";
+import StatsCard from "../../shared/components/StatsCard/StatsCard";
+import { Card, Toast } from "@components";
+import { useToast } from "./hooks/useToast";
+import styles from "./Results.module.css";
 
 function Results({
   ratings,
@@ -57,7 +57,7 @@ function Results({
   userName,
   onUpdateRatings,
   currentTournamentNames,
-  voteHistory
+  voteHistory,
 }) {
   const [currentRankings, setCurrentRankings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,15 +65,18 @@ function Results({
 
   const { toasts, showToast, removeToast } = useToast({
     maxToasts: 1,
-    defaultDuration: 3000
+    defaultDuration: 3000,
   });
 
-  const showToastMessage = useCallback((message, type = 'info') => {
-    showToast({
-      message,
-      type
-    });
-  }, [showToast]);
+  const showToastMessage = useCallback(
+    (message, type = "info") => {
+      showToast({
+        message,
+        type,
+      });
+    },
+    [showToast],
+  );
 
   // Convert vote history to bracket matches
   const getBracketMatches = useCallback(() => {
@@ -83,7 +86,7 @@ function Results({
 
     // Filter to only include matches from the current tournament
     const tournamentNameSet = new Set(
-      currentTournamentNames?.map((n) => n.name) || []
+      currentTournamentNames?.map((n) => n.name) || [],
     );
 
     const namesCount = currentTournamentNames?.length || 0;
@@ -92,8 +95,10 @@ function Results({
     return voteHistory
       .filter(
         (vote) =>
+          vote?.match?.left?.name &&
+          vote?.match?.right?.name &&
           tournamentNameSet.has(vote.match.left.name) &&
-          tournamentNameSet.has(vote.match.right.name)
+          tournamentNameSet.has(vote.match.right.name),
       )
       .map((vote, index) => {
         // Prefer outcome fields if present
@@ -101,14 +106,14 @@ function Results({
         const rightOutcome = vote?.match?.right?.outcome;
         let winner;
         if (leftOutcome || rightOutcome) {
-          const leftWin = leftOutcome === 'win';
-          const rightWin = rightOutcome === 'win';
+          const leftWin = leftOutcome === "win";
+          const rightWin = rightOutcome === "win";
           if (leftWin && rightWin)
             winner = 0; // both
           else if (leftWin && !rightWin) winner = -1;
           else if (!leftWin && rightWin) winner = 1;
           else winner = 2; // neither/skip
-        } else if (typeof vote.result === 'number') {
+        } else if (typeof vote.result === "number") {
           // Handle exact values (-1, 1, 0.5, 0) and fallback thresholds
           if (vote.result === -1) winner = -1;
           else if (vote.result === 1) winner = 1;
@@ -125,15 +130,15 @@ function Results({
         const matchNumber = vote?.matchNumber ?? index + 1;
         const round = Math.max(
           1,
-          Math.ceil(matchNumber / Math.max(1, matchesPerRound))
+          Math.ceil(matchNumber / Math.max(1, matchesPerRound)),
         );
 
         return {
           id: matchNumber,
           round,
-          name1: vote.match.left.name,
-          name2: vote.match.right.name,
-          winner
+          name1: vote?.match?.left?.name || "Unknown",
+          name2: vote?.match?.right?.name || "Unknown",
+          winner,
         };
       });
   }, [voteHistory, currentTournamentNames]);
@@ -143,12 +148,12 @@ function Results({
     (ratingsData) => {
       // Filter to only include names from the current tournament
       const tournamentNameSet = new Set(
-        currentTournamentNames?.map((n) => n.name) || []
+        currentTournamentNames?.map((n) => n.name) || [],
       );
       const nameToIdMap = new Map(
         (currentTournamentNames || [])
           .filter((name) => name?.name)
-          .map(({ id, name }) => [name, id])
+          .map(({ id, name }) => [name, id]),
       );
 
       return Object.entries(ratingsData || {})
@@ -157,15 +162,15 @@ function Results({
           id: nameToIdMap.get(name),
           name,
           rating: Math.round(
-            typeof rating === 'number' ? rating : rating?.rating || 1500
+            typeof rating === "number" ? rating : rating?.rating || 1500,
           ),
-          wins: typeof rating === 'object' ? rating.wins || 0 : 0,
-          losses: typeof rating === 'object' ? rating.losses || 0 : 0,
-          change: 0
+          wins: typeof rating === "object" ? rating.wins || 0 : 0,
+          losses: typeof rating === "object" ? rating.losses || 0 : 0,
+          change: 0,
         }))
         .sort((a, b) => b.rating - a.rating);
     },
-    [currentTournamentNames]
+    [currentTournamentNames],
   );
 
   useEffect(() => {
@@ -173,8 +178,8 @@ function Results({
       const processedRankings = processRankings(ratings);
       setCurrentRankings(processedRankings);
     } catch (error) {
-      console.error('Error processing rankings:', error);
-      showToastMessage('Error processing rankings data', 'error');
+      console.error("Error processing rankings:", error);
+      showToastMessage("Error processing rankings data", "error");
     } finally {
       setIsLoading(false);
     }
@@ -187,11 +192,11 @@ function Results({
 
         const updatedRankings = adjustedRankings.map((ranking) => {
           const oldRanking = currentRankings.find(
-            (r) => r.name === ranking.name
+            (r) => r.name === ranking.name,
           );
           return {
             ...ranking,
-            change: oldRanking ? ranking.rating - oldRanking.rating : 0
+            change: oldRanking ? ranking.rating - oldRanking.rating : 0,
           };
         });
 
@@ -201,43 +206,46 @@ function Results({
             name,
             rating: Math.round(rating),
             wins: existingRating?.wins || 0,
-            losses: existingRating?.losses || 0
+            losses: existingRating?.losses || 0,
           };
         });
 
         await onUpdateRatings(newRatings);
         setCurrentRankings(updatedRankings);
 
-        showToastMessage('Rankings updated successfully!', 'success');
+        showToastMessage("Rankings updated successfully!", "success");
       } catch (error) {
-        console.error('Failed to update rankings:', error);
-        showToastMessage('Failed to update rankings. Please try again.', 'error');
+        console.error("Failed to update rankings:", error);
+        showToastMessage(
+          "Failed to update rankings. Please try again.",
+          "error",
+        );
       } finally {
         setIsLoading(false);
       }
     },
-    [currentRankings, ratings, onUpdateRatings, showToastMessage]
+    [currentRankings, ratings, onUpdateRatings, showToastMessage],
   );
 
   useEffect(() => {
     // Add cool effects to the results header
-    const header = document.querySelector('.results-header');
+    const header = document.querySelector(".results-header");
     if (header && window.vfx) {
-      window.vfx.add(header, { shader: 'wave', frequency: 2, amplitude: 0.01 });
+      window.vfx.add(header, { shader: "wave", frequency: 2, amplitude: 0.01 });
     }
 
     // Add glitch effect to stats cards
-    const statCards = document.querySelectorAll('.stat-card');
+    const statCards = document.querySelectorAll(".stat-card");
     statCards.forEach((card) => {
       if (window.vfx) {
-        window.vfx.add(card, { shader: 'glitch', intensity: 0.2 });
+        window.vfx.add(card, { shader: "glitch", intensity: 0.2 });
       }
     });
 
     // Add RGB shift to the tournament bracket
-    const bracket = document.querySelector('.tournament-bracket');
+    const bracket = document.querySelector(".tournament-bracket");
     if (bracket && window.vfx) {
-      window.vfx.add(bracket, { shader: 'rgbShift', intensity: 0.3 });
+      window.vfx.add(bracket, { shader: "rgbShift", intensity: 0.3 });
     }
 
     return () => {
@@ -265,13 +273,13 @@ function Results({
       }
     };
 
-    addVfx('.results-header', {
-      shader: 'wave',
+    addVfx(".results-header", {
+      shader: "wave",
       frequency: 2,
-      amplitude: 0.01
+      amplitude: 0.01,
     });
-    addVfx('.stat-card', { shader: 'glitch', intensity: 0.2 });
-    addVfx('.tournament-bracket', { shader: 'rgbShift', intensity: 0.3 });
+    addVfx(".stat-card", { shader: "glitch", intensity: 0.2 });
+    addVfx(".tournament-bracket", { shader: "rgbShift", intensity: 0.3 });
 
     return () => {
       vfxElements.forEach((el) => window.vfx?.remove(el));
@@ -365,7 +373,7 @@ function Results({
   );
 }
 
-Results.displayName = 'Results';
+Results.displayName = "Results";
 
 Results.propTypes = {
   ratings: PropTypes.object.isRequired,
@@ -373,7 +381,7 @@ Results.propTypes = {
   userName: PropTypes.string.isRequired,
   onUpdateRatings: PropTypes.func.isRequired,
   currentTournamentNames: PropTypes.array,
-  voteHistory: PropTypes.array
+  voteHistory: PropTypes.array,
 };
 
 export default memo(Results);

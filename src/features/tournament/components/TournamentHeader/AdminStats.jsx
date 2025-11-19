@@ -11,13 +11,13 @@ function AdminStats({ availableNames }) {
       ? Math.round(
           availableNames.reduce(
             (sum, name) => sum + (name.avg_rating || 1500),
-            0
-          ) / availableNames.length
+            0,
+          ) / availableNames.length,
         )
       : 1500;
 
   const popularCount = availableNames.filter(
-    (name) => (name.popularity_score || 0) > 5
+    (name) => (name.popularity_score || 0) > 5,
   ).length;
 
   return (
@@ -26,9 +26,7 @@ function AdminStats({ availableNames }) {
         📊 {availableNames.length} total names
       </span>
       <span className={styles.statItem}>⭐ {avgRating} avg rating</span>
-      <span className={styles.statItem}>
-        🔥 {popularCount} popular names
-      </span>
+      <span className={styles.statItem}>🔥 {popularCount} popular names</span>
     </div>
   );
 }
@@ -38,4 +36,3 @@ AdminStats.propTypes = {
 };
 
 export default AdminStats;
-

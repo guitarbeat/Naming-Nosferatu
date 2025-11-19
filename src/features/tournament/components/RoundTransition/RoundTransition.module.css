@@ -20,14 +20,18 @@
   flex-direction: column;
   gap: 1.5rem;
   align-items: center;
-  text-align: center;
   padding: 3rem;
-  background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 95%)), var(--surface-muted, rgb(15 23 42 / 95%)));
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    var(--surface-elevated, rgb(31 41 55 / 95%)),
+    var(--surface-muted, rgb(15 23 42 / 95%))
+  );
   border: 2px solid var(--accent-color, #e8bf76);
   border-radius: var(--radius-lg, 16px);
   box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
-  animation: roundTransitionScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   backdrop-filter: blur(12px);
+  animation: roundTransitionScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .roundIcon {
@@ -36,17 +40,17 @@
 }
 
 .roundTitle {
+  margin: 0;
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: 700;
   color: var(--accent-color, #e8bf76);
   text-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-  margin: 0;
 }
 
 .roundSubtitle {
+  margin: 0;
   font-size: clamp(1rem, 3vw, 1.25rem);
   color: var(--text-secondary, #94a3b8);
-  margin: 0;
 }
 
 @keyframes roundTransitionFadeIn {
@@ -72,7 +76,8 @@
 }
 
 @keyframes roundTransitionPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
 
@@ -99,4 +104,3 @@
     font-size: 1rem;
   }
 }
-

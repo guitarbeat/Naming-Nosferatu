@@ -39,4 +39,3 @@ NameCounter.propTypes = {
 };
 
 export default NameCounter;
-

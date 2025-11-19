@@ -1,5 +1,5 @@
 /* Light Theme Overrides */
-:root[data-theme='light'] {
+:root[data-theme="light"] {
   --primary-color: var(--primary-600);
   --primary-light: var(--primary-100);
   --primary-dark: var(--primary-800);
@@ -32,8 +32,8 @@
   --glass-border: rgb(15 23 42 / 12%);
   --glass-border-hover: rgb(15 23 42 / 18%);
   --glass-shadow: 0 24px 45px rgb(15 23 42 / 12%);
-  --glass-shadow-colored: 0 12px 40px rgb(47 243 224 / 12%),
-    0 8px 24px rgb(250 38 160 / 10%);
+  --glass-shadow-colored:
+    0 12px 40px rgb(47 243 224 / 12%), 0 8px 24px rgb(250 38 160 / 10%);
   --glass-blur: 18px;
   --glass-blur-strong: 26px;
   --shadow-subtle: 0 8px 20px rgb(15 23 42 / 6%);
@@ -74,8 +74,9 @@
   color-scheme: light;
 }
 
-:root[data-theme='light'] body {
-  background-image: radial-gradient(
+:root[data-theme="light"] body {
+  background-image:
+    radial-gradient(
       circle at -10% -10%,
       rgb(var(--accent-rgb), 0.16),
       transparent 60%

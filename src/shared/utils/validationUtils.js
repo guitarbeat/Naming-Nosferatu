@@ -4,7 +4,7 @@
  * Provides consistent validation across all user inputs using centralized constants.
  */
 
-import { VALIDATION } from '../../core/constants';
+import { VALIDATION } from "../../core/constants";
 
 /**
  * * Validates a username
@@ -12,8 +12,8 @@ import { VALIDATION } from '../../core/constants';
  * @returns {Object} Validation result with success and error message
  */
 export const validateUsername = (username) => {
-  if (!username || typeof username !== 'string') {
-    return { success: false, error: 'Username is required' };
+  if (!username || typeof username !== "string") {
+    return { success: false, error: "Username is required" };
   }
 
   const trimmed = username.trim();
@@ -21,14 +21,14 @@ export const validateUsername = (username) => {
   if (trimmed.length < VALIDATION.MIN_USERNAME_LENGTH) {
     return {
       success: false,
-      error: `Username must be at least ${VALIDATION.MIN_USERNAME_LENGTH} characters long`
+      error: `Username must be at least ${VALIDATION.MIN_USERNAME_LENGTH} characters long`,
     };
   }
 
   if (trimmed.length > VALIDATION.MAX_USERNAME_LENGTH) {
     return {
       success: false,
-      error: `Username must be less than ${VALIDATION.MAX_USERNAME_LENGTH} characters`
+      error: `Username must be less than ${VALIDATION.MAX_USERNAME_LENGTH} characters`,
     };
   }
 
@@ -36,7 +36,8 @@ export const validateUsername = (username) => {
   if (!VALIDATION.USERNAME_PATTERN_EXTENDED.test(trimmed)) {
     return {
       success: false,
-      error: 'Username can only contain letters, numbers, spaces, hyphens, and underscores'
+      error:
+        "Username can only contain letters, numbers, spaces, hyphens, and underscores",
     };
   }
 
@@ -49,8 +50,8 @@ export const validateUsername = (username) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateCatName = (name) => {
-  if (!name || typeof name !== 'string') {
-    return { success: false, error: 'Cat name is required' };
+  if (!name || typeof name !== "string") {
+    return { success: false, error: "Cat name is required" };
   }
 
   const trimmed = name.trim();
@@ -58,14 +59,14 @@ export const validateCatName = (name) => {
   if (trimmed.length < VALIDATION.MIN_CAT_NAME_LENGTH) {
     return {
       success: false,
-      error: `Cat name must be at least ${VALIDATION.MIN_CAT_NAME_LENGTH} character long`
+      error: `Cat name must be at least ${VALIDATION.MIN_CAT_NAME_LENGTH} character long`,
     };
   }
 
   if (trimmed.length > VALIDATION.MAX_CAT_NAME_LENGTH) {
     return {
       success: false,
-      error: `Cat name must be less than ${VALIDATION.MAX_CAT_NAME_LENGTH} characters`
+      error: `Cat name must be less than ${VALIDATION.MAX_CAT_NAME_LENGTH} characters`,
     };
   }
 
@@ -78,8 +79,8 @@ export const validateCatName = (name) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateDescription = (description) => {
-  if (!description || typeof description !== 'string') {
-    return { success: false, error: 'Description is required' };
+  if (!description || typeof description !== "string") {
+    return { success: false, error: "Description is required" };
   }
 
   const trimmed = description.trim();
@@ -87,14 +88,14 @@ export const validateDescription = (description) => {
   if (trimmed.length < VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED) {
     return {
       success: false,
-      error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED} characters long`
+      error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED} characters long`,
     };
   }
 
   if (trimmed.length > VALIDATION.MAX_DESCRIPTION_LENGTH) {
     return {
       success: false,
-      error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters`
+      error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters`,
     };
   }
 
@@ -107,21 +108,21 @@ export const validateDescription = (description) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateTournamentSize = (size) => {
-  if (typeof size !== 'number' || isNaN(size)) {
-    return { success: false, error: 'Tournament size must be a number' };
+  if (typeof size !== "number" || isNaN(size)) {
+    return { success: false, error: "Tournament size must be a number" };
   }
 
   if (size < VALIDATION.MIN_TOURNAMENT_SIZE) {
     return {
       success: false,
-      error: `Tournament size must be at least ${VALIDATION.MIN_TOURNAMENT_SIZE}`
+      error: `Tournament size must be at least ${VALIDATION.MIN_TOURNAMENT_SIZE}`,
     };
   }
 
   if (size > VALIDATION.MAX_TOURNAMENT_SIZE) {
     return {
       success: false,
-      error: `Tournament size must be ${VALIDATION.MAX_TOURNAMENT_SIZE} or less`
+      error: `Tournament size must be ${VALIDATION.MAX_TOURNAMENT_SIZE} or less`,
     };
   }
 
@@ -129,7 +130,7 @@ export const validateTournamentSize = (size) => {
   if ((size & (size - 1)) !== 0) {
     return {
       success: false,
-      error: 'Tournament size must be a power of 2 (2, 4, 8, 16, 32, 64)'
+      error: "Tournament size must be a power of 2 (2, 4, 8, 16, 32, 64)",
     };
   }
 
@@ -142,18 +143,18 @@ export const validateTournamentSize = (size) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateRating = (rating) => {
-  if (typeof rating !== 'number' || isNaN(rating)) {
-    return { success: false, error: 'Rating must be a number' };
+  if (typeof rating !== "number" || isNaN(rating)) {
+    return { success: false, error: "Rating must be a number" };
   }
 
   if (rating < VALIDATION.MIN_RATING) {
-    return { success: false, error: 'Rating cannot be negative' };
+    return { success: false, error: "Rating cannot be negative" };
   }
 
   if (rating > VALIDATION.MAX_RATING) {
     return {
       success: false,
-      error: `Rating cannot exceed ${VALIDATION.MAX_RATING}`
+      error: `Rating cannot exceed ${VALIDATION.MAX_RATING}`,
     };
   }
 
@@ -166,14 +167,14 @@ export const validateRating = (rating) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateEmail = (email) => {
-  if (!email || typeof email !== 'string') {
-    return { success: false, error: 'Email is required' };
+  if (!email || typeof email !== "string") {
+    return { success: false, error: "Email is required" };
   }
 
   const trimmed = email.trim();
 
   if (!VALIDATION.EMAIL_PATTERN.test(trimmed)) {
-    return { success: false, error: 'Please enter a valid email address' };
+    return { success: false, error: "Please enter a valid email address" };
   }
 
   return { success: true, value: trimmed };
@@ -200,7 +201,7 @@ export const validateForm = (validations, values) => {
   return {
     success: isValid,
     errors,
-    values: isValid ? values : null
+    values: isValid ? values : null,
   };
 };
 
@@ -210,8 +211,8 @@ export const validateForm = (validations, values) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateName = (name) => {
-  if (!name || typeof name !== 'string') {
-    return { success: false, error: 'Name is required' };
+  if (!name || typeof name !== "string") {
+    return { success: false, error: "Name is required" };
   }
 
   const trimmed = name.trim();
@@ -219,14 +220,14 @@ export const validateName = (name) => {
   if (trimmed.length < VALIDATION.MIN_NAME_LENGTH) {
     return {
       success: false,
-      error: `Name must be at least ${VALIDATION.MIN_NAME_LENGTH} character long`
+      error: `Name must be at least ${VALIDATION.MIN_NAME_LENGTH} character long`,
     };
   }
 
   if (trimmed.length > VALIDATION.MAX_NAME_LENGTH) {
     return {
       success: false,
-      error: `Name must be less than ${VALIDATION.MAX_NAME_LENGTH} characters`
+      error: `Name must be less than ${VALIDATION.MAX_NAME_LENGTH} characters`,
     };
   }
 
@@ -239,8 +240,8 @@ export const validateName = (name) => {
  * @returns {Object} Validation result with success and error message
  */
 export const validateGeneralDescription = (description) => {
-  if (!description || typeof description !== 'string') {
-    return { success: false, error: 'Description is required' };
+  if (!description || typeof description !== "string") {
+    return { success: false, error: "Description is required" };
   }
 
   const trimmed = description.trim();
@@ -248,14 +249,14 @@ export const validateGeneralDescription = (description) => {
   if (trimmed.length < VALIDATION.MIN_DESCRIPTION_LENGTH) {
     return {
       success: false,
-      error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH} characters long`
+      error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH} characters long`,
     };
   }
 
   if (trimmed.length > VALIDATION.MAX_DESCRIPTION_LENGTH) {
     return {
       success: false,
-      error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters`
+      error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters`,
     };
   }
 
@@ -271,5 +272,5 @@ export default {
   validateEmail,
   validateForm,
   validateName,
-  validateGeneralDescription
+  validateGeneralDescription,
 };

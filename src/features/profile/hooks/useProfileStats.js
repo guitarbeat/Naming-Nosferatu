@@ -3,8 +3,11 @@
  * @description Custom hook for managing profile statistics.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchUserStatsFromDB, calculateSelectionStats } from '../utils/profileStats';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  fetchUserStatsFromDB,
+  calculateSelectionStats,
+} from "../utils/profileStats";
 
 /**
  * * Hook for managing profile statistics
@@ -28,9 +31,9 @@ export function useProfileStats(activeUser) {
 
       // Try database-optimized stats first
       const dbStats = await fetchUserStatsFromDB(activeUser);
-      
+
       if (!isMountedRef.current) return;
-      
+
       if (dbStats) {
         setStats(dbStats);
       } else {
@@ -56,23 +59,24 @@ export function useProfileStats(activeUser) {
 
       try {
         const stats = await calculateSelectionStats(userToLoad);
-        
+
         if (!isMountedRef.current) return;
-        
+
         setSelectionStats(stats);
       } catch (error) {
         if (!isMountedRef.current) return;
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Error fetching selection stats:', error);
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error fetching selection stats:", error);
         }
         setSelectionStats(null);
       }
     },
-    [activeUser]
+    [activeUser],
   );
 
   useEffect(() => {
     if (activeUser) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchSelectionStats(activeUser);
     }
   }, [activeUser, fetchSelectionStats]);
@@ -81,7 +85,6 @@ export function useProfileStats(activeUser) {
     stats,
     statsLoading,
     selectionStats,
-    fetchSelectionStats
+    fetchSelectionStats,
   };
 }
-

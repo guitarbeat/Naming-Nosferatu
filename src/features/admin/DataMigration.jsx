@@ -111,7 +111,7 @@ export default function DataMigration() {
                 </div>
 
                 {Object.values(results.details).some(
-                  (d) => Array.isArray(d.errors) && d.errors.length > 0
+                  (d) => Array.isArray(d.errors) && d.errors.length > 0,
                 ) && (
                   <div className={styles.errors}>
                     <h4>Errors:</h4>
@@ -127,7 +127,7 @@ export default function DataMigration() {
                               ))}
                             </ul>
                           </div>
-                        )
+                        ),
                     )}
                   </div>
                 )}

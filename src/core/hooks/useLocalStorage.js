@@ -4,7 +4,7 @@
  * Provides a React-friendly interface for localStorage operations.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 /**
  * Custom hook for localStorage management
@@ -15,22 +15,24 @@ import { useState, useCallback } from 'react';
 export default function useLocalStorage(key, initialValue) {
   // Get from local storage then parse stored json or return initialValue
   const [storedValue, setStoredValue] = useState(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return initialValue;
     }
     try {
       const item = window.localStorage.getItem(key);
       // Try to parse as JSON, but fallback to raw value if parsing fails
-      return item ? (() => {
-        try {
-          return JSON.parse(item);
-        } catch {
-          return item;
-        }
-      })() : initialValue;
+      return item
+        ? (() => {
+            try {
+              return JSON.parse(item);
+            } catch {
+              return item;
+            }
+          })()
+        : initialValue;
     } catch (error) {
       // Silently handle parsing errors in production
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.error(`Error reading localStorage key "${key}":`, error);
       }
       return initialValue;
@@ -45,17 +47,17 @@ export default function useLocalStorage(key, initialValue) {
         const valueToStore =
           value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
         // Silently handle storage errors in production
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.error(`Error setting localStorage key "${key}":`, error);
         }
       }
     },
-    [key, storedValue]
+    [key, storedValue],
   );
 
   return [storedValue, setValue];

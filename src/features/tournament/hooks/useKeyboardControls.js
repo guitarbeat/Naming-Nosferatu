@@ -4,8 +4,7 @@
  * Handles arrow keys, space/enter for voting, escape for undo/clear, and help toggle.
  */
 
-import { useEffect } from 'react';
-import { TOURNAMENT_TIMING } from '../../../core/constants';
+import { useEffect } from "react";
 
 /**
  * Custom hook for keyboard controls
@@ -28,7 +27,7 @@ export function useKeyboardControls(
   isMuted,
   handleVoteWithAnimation,
   globalEventListeners,
-  { onToggleHelp, onUndo, canUndoNow, onClearSelection } = {}
+  { onToggleHelp, onUndo, canUndoNow, onClearSelection } = {},
 ) {
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -111,4 +110,3 @@ export function useKeyboardControls(
     onClearSelection,
   ]);
 }
-

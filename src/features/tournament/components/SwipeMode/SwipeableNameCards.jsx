@@ -202,4 +202,3 @@ SwipeableNameCards.propTypes = {
 };
 
 export default SwipeableNameCards;
-

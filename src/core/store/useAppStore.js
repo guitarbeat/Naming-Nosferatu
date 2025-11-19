@@ -1,20 +1,20 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { useEffect } from 'react';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { useEffect } from "react";
 import {
   attachMediaQueryListener,
   getMediaQueryList,
   getMediaQueryMatches,
-} from '../../shared/utils/mediaQueries';
+} from "../../shared/utils/mediaQueries";
 
-const THEME_STORAGE_KEY = 'theme';
-const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
+const THEME_STORAGE_KEY = "theme";
+const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 
 const getSystemTheme = () =>
-  getMediaQueryMatches(COLOR_SCHEME_QUERY) ? 'dark' : 'light';
+  getMediaQueryMatches(COLOR_SCHEME_QUERY) ? "dark" : "light";
 
 const normalizeStoredTheme = (value) => {
-  if (value === 'light' || value === 'dark') {
+  if (value === "light" || value === "dark") {
     return value;
   }
 
@@ -23,11 +23,11 @@ const normalizeStoredTheme = (value) => {
 
 export const getInitialThemeState = () => {
   const defaultState = {
-    theme: 'light',
-    themePreference: 'system'
+    theme: "light",
+    themePreference: "system",
   };
 
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return defaultState;
   }
 
@@ -46,30 +46,33 @@ export const getInitialThemeState = () => {
       window.localStorage.removeItem(THEME_STORAGE_KEY);
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Unable to read stored theme from localStorage:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Unable to read stored theme from localStorage:", error);
     }
   }
 
   if (storedPreference) {
     return {
       theme: storedPreference,
-      themePreference: storedPreference
+      themePreference: storedPreference,
     };
   }
 
-  const domTheme = typeof document !== 'undefined' ? document.documentElement?.dataset?.theme : null;
+  const domTheme =
+    typeof document !== "undefined"
+      ? document.documentElement?.dataset?.theme
+      : null;
 
-  if (domTheme === 'light' || domTheme === 'dark') {
+  if (domTheme === "light" || domTheme === "dark") {
     return {
       theme: domTheme,
-      themePreference: 'system'
+      themePreference: "system",
     };
   }
 
   return {
     theme: getSystemTheme(),
-    themePreference: 'system'
+    themePreference: "system",
   };
 };
 
@@ -87,13 +90,13 @@ const subscribeToSystemTheme = (set, get) => {
 
   const handleChange = (event) => {
     const matches =
-      typeof event?.matches === 'boolean' ? event.matches : mediaQuery.matches;
+      typeof event?.matches === "boolean" ? event.matches : mediaQuery.matches;
 
-    if (get().ui.themePreference !== 'system') {
+    if (get().ui.themePreference !== "system") {
       return;
     }
 
-    const nextTheme = matches ? 'dark' : 'light';
+    const nextTheme = matches ? "dark" : "light";
 
     set((state) => {
       if (state.ui.theme === nextTheme) {
@@ -103,8 +106,8 @@ const subscribeToSystemTheme = (set, get) => {
       return {
         ui: {
           ...state.ui,
-          theme: nextTheme
-        }
+          theme: nextTheme,
+        },
       };
     });
   };
@@ -113,41 +116,44 @@ const subscribeToSystemTheme = (set, get) => {
 
   hasSubscribedToSystemTheme = true;
 
-  const preferredTheme = mediaQuery.matches ? 'dark' : 'light';
-  if (get().ui.themePreference === 'system' && get().ui.theme !== preferredTheme) {
+  const preferredTheme = mediaQuery.matches ? "dark" : "light";
+  if (
+    get().ui.themePreference === "system" &&
+    get().ui.theme !== preferredTheme
+  ) {
     set((state) => ({
       ui: {
         ...state.ui,
-        theme: preferredTheme
-      }
+        theme: preferredTheme,
+      },
     }));
   }
 };
 
 const getInitialUserState = () => {
   const defaultState = {
-    name: '',
+    name: "",
     isLoggedIn: false,
     isAdmin: false,
-    preferences: {}
+    preferences: {},
   };
 
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return defaultState;
   }
 
   try {
-    const storedUser = window.localStorage.getItem('catNamesUser');
+    const storedUser = window.localStorage.getItem("catNamesUser");
     if (storedUser && storedUser.trim()) {
       return {
         ...defaultState,
         name: storedUser.trim(),
-        isLoggedIn: true
+        isLoggedIn: true,
       };
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Unable to read stored user from localStorage:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Unable to read stored user from localStorage:", error);
     }
   }
 
@@ -170,7 +176,7 @@ const useAppStore = create(
         isComplete: false,
         isLoading: false,
         voteHistory: [],
-        currentView: 'tournament'
+        currentView: "tournament",
       },
 
       // * User State
@@ -182,19 +188,19 @@ const useAppStore = create(
         showPerformanceDashboard: false,
         showGlobalAnalytics: false,
         showUserComparison: false,
-        matrixMode: false
+        matrixMode: false,
       },
 
       // * Site Settings State
       siteSettings: {
         catChosenName: null,
-        isLoaded: false
+        isLoaded: false,
       },
 
       // * Error State
       errors: {
         current: null,
-        history: []
+        history: [],
       },
 
       // * Tournament Actions
@@ -207,41 +213,41 @@ const useAppStore = create(
                 id: n.id,
                 name: n.name,
                 description: n.description,
-                rating: state.tournament.ratings[n.name]?.rating || 1500
-              }))
-            }
+                rating: state.tournament.ratings[n.name]?.rating || 1500,
+              })),
+            },
           })),
 
         setRatings: (ratings) =>
           set((state) => ({
             tournament: {
               ...state.tournament,
-              ratings: { ...state.tournament.ratings, ...ratings }
-            }
+              ratings: { ...state.tournament.ratings, ...ratings },
+            },
           })),
 
         setComplete: (isComplete) =>
           set((state) => ({
             tournament: {
               ...state.tournament,
-              isComplete
-            }
+              isComplete,
+            },
           })),
 
         setLoading: (isLoading) =>
           set((state) => ({
             tournament: {
               ...state.tournament,
-              isLoading
-            }
+              isLoading,
+            },
           })),
 
         addVote: (vote) =>
           set((state) => ({
             tournament: {
               ...state.tournament,
-              voteHistory: [...state.tournament.voteHistory, vote]
-            }
+              voteHistory: [...state.tournament.voteHistory, vote],
+            },
           })),
 
         resetTournament: () =>
@@ -251,17 +257,17 @@ const useAppStore = create(
               names: null,
               isComplete: false,
               voteHistory: [],
-              isLoading: false // * Explicitly set loading to false to prevent flashing
-            }
+              isLoading: false, // * Explicitly set loading to false to prevent flashing
+            },
           })),
 
         setView: (view) =>
           set((state) => ({
             tournament: {
               ...state.tournament,
-              currentView: view
-            }
-          }))
+              currentView: view,
+            },
+          })),
       },
 
       // * User Actions
@@ -270,22 +276,22 @@ const useAppStore = create(
           set((state) => {
             const newUser = {
               ...state.user,
-              ...userData
+              ...userData,
             };
             // * Persist to localStorage
             try {
               if (newUser.name) {
-                localStorage.setItem('catNamesUser', newUser.name);
+                localStorage.setItem("catNamesUser", newUser.name);
               } else {
-                localStorage.removeItem('catNamesUser');
+                localStorage.removeItem("catNamesUser");
               }
             } catch (error) {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('Error updating localStorage:', error);
+              if (process.env.NODE_ENV === "development") {
+                console.error("Error updating localStorage:", error);
               }
             }
             return {
-              user: newUser
+              user: newUser,
             };
           }),
 
@@ -294,18 +300,18 @@ const useAppStore = create(
             const newUser = {
               ...state.user,
               name: userName,
-              isLoggedIn: true
+              isLoggedIn: true,
             };
             // * Persist to localStorage
             try {
-              localStorage.setItem('catNamesUser', userName);
+              localStorage.setItem("catNamesUser", userName);
             } catch (error) {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('Error updating localStorage:', error);
+              if (process.env.NODE_ENV === "development") {
+                console.error("Error updating localStorage:", error);
               }
             }
             return {
-              user: newUser
+              user: newUser,
             };
           }),
 
@@ -313,25 +319,25 @@ const useAppStore = create(
           set((state) => {
             // * Clear localStorage
             try {
-              localStorage.removeItem('catNamesUser');
+              localStorage.removeItem("catNamesUser");
             } catch (error) {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('Error clearing localStorage:', error);
+              if (process.env.NODE_ENV === "development") {
+                console.error("Error clearing localStorage:", error);
               }
             }
             return {
               user: {
                 ...state.user,
-                name: '',
+                name: "",
                 isLoggedIn: false,
-                isAdmin: false
+                isAdmin: false,
               },
               tournament: {
                 ...state.tournament,
                 names: null,
                 isComplete: false,
-                voteHistory: []
-              }
+                voteHistory: [],
+              },
             };
           }),
 
@@ -339,47 +345,47 @@ const useAppStore = create(
           set((state) => ({
             user: {
               ...state.user,
-              isAdmin
-            }
+              isAdmin,
+            },
           })),
 
         // * Initialize user from localStorage
         initializeFromStorage: () =>
           set((state) => {
             try {
-              const storedUser = localStorage.getItem('catNamesUser');
+              const storedUser = localStorage.getItem("catNamesUser");
               if (storedUser && state.user.name !== storedUser) {
                 return {
                   user: {
                     ...state.user,
                     name: storedUser,
-                    isLoggedIn: true
-                  }
+                    isLoggedIn: true,
+                  },
                 };
               }
             } catch (error) {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('Error reading from localStorage:', error);
+              if (process.env.NODE_ENV === "development") {
+                console.error("Error reading from localStorage:", error);
               }
             }
             return state;
-          })
+          }),
       },
 
       // * UI Actions
       uiActions: {
         // * Initialize theme from DOM and system preference
         initializeTheme: () => {
-          if (typeof document !== 'undefined') {
+          if (typeof document !== "undefined") {
             const domTheme = document.documentElement?.dataset?.theme;
-            if (domTheme === 'light' || domTheme === 'dark') {
+            if (domTheme === "light" || domTheme === "dark") {
               const { theme, themePreference } = get().ui;
-              if (themePreference === 'system' && theme !== domTheme) {
+              if (themePreference === "system" && theme !== domTheme) {
                 set((state) => ({
                   ui: {
                     ...state.ui,
-                    theme: domTheme
-                  }
+                    theme: domTheme,
+                  },
                 }));
               }
             }
@@ -389,15 +395,17 @@ const useAppStore = create(
         },
 
         setTheme: (nextPreference) => {
-          if (!['light', 'dark', 'system'].includes(nextPreference)) {
+          if (!["light", "dark", "system"].includes(nextPreference)) {
             return;
           }
 
-          const isSystemPreference = nextPreference === 'system';
-          const themeToApply = isSystemPreference ? getSystemTheme() : nextPreference;
+          const isSystemPreference = nextPreference === "system";
+          const themeToApply = isSystemPreference
+            ? getSystemTheme()
+            : nextPreference;
 
           try {
-            if (typeof window !== 'undefined' && window.localStorage) {
+            if (typeof window !== "undefined" && window.localStorage) {
               if (isSystemPreference) {
                 window.localStorage.removeItem(THEME_STORAGE_KEY);
               } else {
@@ -405,8 +413,8 @@ const useAppStore = create(
               }
             }
           } catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-              console.error('Error updating theme localStorage:', error);
+            if (process.env.NODE_ENV === "development") {
+              console.error("Error updating theme localStorage:", error);
             }
           }
 
@@ -414,8 +422,8 @@ const useAppStore = create(
             ui: {
               ...state.ui,
               theme: themeToApply,
-              themePreference: isSystemPreference ? 'system' : nextPreference
-            }
+              themePreference: isSystemPreference ? "system" : nextPreference,
+            },
           }));
 
           if (isSystemPreference) {
@@ -425,15 +433,15 @@ const useAppStore = create(
 
         toggleTheme: () => {
           const currentTheme = get().ui.theme;
-          const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+          const newTheme = currentTheme === "light" ? "dark" : "light";
 
           try {
-            if (typeof window !== 'undefined' && window.localStorage) {
+            if (typeof window !== "undefined" && window.localStorage) {
               window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
             }
           } catch (error) {
-            if (process.env.NODE_ENV === 'development') {
-              console.error('Error updating theme localStorage:', error);
+            if (process.env.NODE_ENV === "development") {
+              console.error("Error updating theme localStorage:", error);
             }
           }
 
@@ -441,8 +449,8 @@ const useAppStore = create(
             ui: {
               ...state.ui,
               theme: newTheme,
-              themePreference: newTheme
-            }
+              themePreference: newTheme,
+            },
           }));
         },
 
@@ -450,41 +458,41 @@ const useAppStore = create(
           set((state) => ({
             ui: {
               ...state.ui,
-              showPerformanceDashboard: !!show
-            }
+              showPerformanceDashboard: !!show,
+            },
           })),
 
         togglePerformanceDashboard: () =>
           set((state) => ({
             ui: {
               ...state.ui,
-              showPerformanceDashboard: !state.ui.showPerformanceDashboard
-            }
+              showPerformanceDashboard: !state.ui.showPerformanceDashboard,
+            },
           })),
 
         setMatrixMode: (enabled) =>
           set((state) => ({
             ui: {
               ...state.ui,
-              matrixMode: enabled
-            }
+              matrixMode: enabled,
+            },
           })),
 
         setGlobalAnalytics: (show) =>
           set((state) => ({
             ui: {
               ...state.ui,
-              showGlobalAnalytics: show
-            }
+              showGlobalAnalytics: show,
+            },
           })),
 
         setUserComparison: (show) =>
           set((state) => ({
             ui: {
               ...state.ui,
-              showUserComparison: show
-            }
-          }))
+              showUserComparison: show,
+            },
+          })),
       },
 
       // * Error Actions
@@ -495,16 +503,16 @@ const useAppStore = create(
               current: error,
               history: error
                 ? [...state.errors.history, error]
-                : state.errors.history
-            }
+                : state.errors.history,
+            },
           })),
 
         clearError: () =>
           set((state) => ({
             errors: {
               ...state.errors,
-              current: null
-            }
+              current: null,
+            },
           })),
 
         logError: (error, context, metadata = {}) => {
@@ -512,44 +520,46 @@ const useAppStore = create(
             error,
             context,
             metadata,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           };
 
           set((state) => ({
             errors: {
               ...state.errors,
-              history: [...state.errors.history, errorLog]
-            }
+              history: [...state.errors.history, errorLog],
+            },
           }));
 
           // * Log to console for development
-          if (process.env.NODE_ENV === 'development') {
-            console.error('Error logged:', errorLog);
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error logged:", errorLog);
           }
-        }
+        },
       },
 
       // * Site Settings Actions
       siteSettingsActions: {
         loadCatChosenName: async () => {
-          const { siteSettingsAPI } = await import('../../integrations/supabase/api');
+          const { siteSettingsAPI } = await import(
+            "../../integrations/supabase/api"
+          );
           try {
             const data = await siteSettingsAPI.getCatChosenName();
             set((state) => ({
               siteSettings: {
                 ...state.siteSettings,
                 catChosenName: data,
-                isLoaded: true
-              }
+                isLoaded: true,
+              },
             }));
             return data;
           } catch (error) {
-            console.error('Error loading cat chosen name:', error);
+            console.error("Error loading cat chosen name:", error);
             set((state) => ({
               siteSettings: {
                 ...state.siteSettings,
-                isLoaded: true
-              }
+                isLoaded: true,
+              },
             }));
             return null;
           }
@@ -559,9 +569,9 @@ const useAppStore = create(
           set((state) => ({
             siteSettings: {
               ...state.siteSettings,
-              catChosenName: nameData
-            }
-          }))
+              catChosenName: nameData,
+            },
+          })),
       },
 
       // * Computed Selectors
@@ -578,14 +588,14 @@ const useAppStore = create(
         getTheme: () => get().ui.theme,
         getShowPerformanceDashboard: () => get().ui.showPerformanceDashboard,
 
-        getCurrentError: () => get().errors.current
-      }
+        getCurrentError: () => get().errors.current,
+      },
     }),
     {
-      name: 'name-nosferatu-store',
-      enabled: process.env.NODE_ENV === 'development'
-    }
-  )
+      name: "name-nosferatu-store",
+      enabled: process.env.NODE_ENV === "development",
+    },
+  ),
 );
 
 // * Hook to initialize store from localStorage
@@ -619,30 +629,33 @@ export const selectTournamentStats = (state) => {
     isComplete: state.tournament.isComplete,
     isLoading: state.tournament.isLoading,
     progress:
-      totalPossibleMatches > 0
-        ? (totalVotes / totalPossibleMatches) * 100
-        : 0
+      totalPossibleMatches > 0 ? (totalVotes / totalPossibleMatches) * 100 : 0,
   };
 };
 
 export const useTournamentStats = () => useAppStore(selectTournamentStats);
 
-export const useCurrentView = () => useAppStore((state) => state.tournament.currentView);
+export const useCurrentView = () =>
+  useAppStore((state) => state.tournament.currentView);
 
-export const useTournamentProgress = () => useAppStore((state) => {
-  const totalNames = state.tournament.names?.length || 0;
-  const totalVotes = state.tournament.voteHistory.length;
-  const totalPossibleVotes = totalNames > 0 ? (totalNames * (totalNames - 1)) / 2 : 0;
+export const useTournamentProgress = () =>
+  useAppStore((state) => {
+    const totalNames = state.tournament.names?.length || 0;
+    const totalVotes = state.tournament.voteHistory.length;
+    const totalPossibleVotes =
+      totalNames > 0 ? (totalNames * (totalNames - 1)) / 2 : 0;
 
-  return {
-    current: totalVotes,
-    total: totalPossibleVotes,
-    percentage: totalPossibleVotes > 0 ? (totalVotes / totalPossibleVotes) * 100 : 0
-  };
-});
+    return {
+      current: totalVotes,
+      total: totalPossibleVotes,
+      percentage:
+        totalPossibleVotes > 0 ? (totalVotes / totalPossibleVotes) * 100 : 0,
+    };
+  });
 
 // * Action selectors for better performance
-export const useTournamentActions = () => useAppStore((state) => state.tournamentActions);
+export const useTournamentActions = () =>
+  useAppStore((state) => state.tournamentActions);
 export const useUserActions = () => useAppStore((state) => state.userActions);
 export const useUIActions = () => useAppStore((state) => state.uiActions);
 export const useErrorActions = () => useAppStore((state) => state.errorActions);

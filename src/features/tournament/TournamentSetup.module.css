@@ -77,7 +77,9 @@
   background: var(--card-background);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .inputBase:focus {
@@ -285,7 +287,8 @@
   padding-inline: var(--space-5);
   letter-spacing: 0.02em;
   text-shadow: 0 1px 2px rgb(0 0 0 / 15%);
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgb(var(--primary-rgb) / 12%) 0%,
       rgb(var(--primary-rgb) / 4%) 100%
@@ -304,7 +307,12 @@
   position: absolute;
   inset: 0;
   content: "";
-  background: linear-gradient(120deg, transparent, rgb(255 255 255 / 18%), transparent);
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgb(255 255 255 / 18%),
+    transparent
+  );
   opacity: 0;
   transition: opacity var(--duration-normal) var(--ease-out);
 }
@@ -330,7 +338,8 @@
   composes: headerActionButton;
   color: var(--charcoal, #111827);
   text-shadow: none;
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       var(--accent-color) 0%,
       var(--highlight-color, var(--primary-200)) 100%
@@ -410,7 +419,8 @@
 .tournamentInfoIntegrated {
   composes: surfaceCard stack stackGapMd;
   padding: var(--space-5);
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgb(148 163 184 / 8%) 0%,
       rgb(100 116 139 / 8%) 100%
@@ -1749,8 +1759,16 @@
   pointer-events: none;
   content: "";
   background-image:
-    radial-gradient(circle at 20% 80%, rgb(var(--primary-rgb) / 12%) 0%, transparent 55%),
-    radial-gradient(circle at 80% 20%, rgb(var(--primary-rgb) / 12%) 0%, transparent 55%);
+    radial-gradient(
+      circle at 20% 80%,
+      rgb(var(--primary-rgb) / 12%) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgb(var(--primary-rgb) / 12%) 0%,
+      transparent 55%
+    );
   opacity: 0.15;
 }
 
@@ -1879,12 +1897,20 @@
 }
 
 .swipeLeftButton {
-  background: linear-gradient(135deg, rgb(239 68 68 / 90%), rgb(185 28 28 / 80%));
+  background: linear-gradient(
+    135deg,
+    rgb(239 68 68 / 90%),
+    rgb(185 28 28 / 80%)
+  );
   border-color: rgb(248 113 113 / 45%);
 }
 
 .swipeRightButton {
-  background: linear-gradient(135deg, rgb(34 197 94 / 85%), rgb(22 163 74 / 80%));
+  background: linear-gradient(
+    135deg,
+    rgb(34 197 94 / 85%),
+    rgb(22 163 74 / 80%)
+  );
   border-color: rgb(74 222 128 / 45%);
 }
 
@@ -1906,7 +1932,9 @@
   position: relative;
   padding: var(--space-5);
   text-align: left;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .swipeCard.withCatPictures {
@@ -1915,7 +1943,9 @@
 
 .swipeCard.selected {
   border-color: var(--primary-300);
-  box-shadow: var(--shadow-lg), 0 0 0 4px rgb(var(--primary-rgb) / 10%);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 4px rgb(var(--primary-rgb) / 10%);
 }
 
 .swipeCard.longPressing {
@@ -1961,11 +1991,19 @@
 }
 
 .swipeRight {
-  background: linear-gradient(135deg, rgb(34 197 94 / 0%), rgb(34 197 94 / 45%));
+  background: linear-gradient(
+    135deg,
+    rgb(34 197 94 / 0%),
+    rgb(34 197 94 / 45%)
+  );
 }
 
 .swipeLeft {
-  background: linear-gradient(135deg, rgb(239 68 68 / 0%), rgb(239 68 68 / 45%));
+  background: linear-gradient(
+    135deg,
+    rgb(239 68 68 / 0%),
+    rgb(239 68 68 / 45%)
+  );
 }
 
 .swipeText {
@@ -2021,7 +2059,9 @@
   box-shadow: 0 6px 20px rgb(var(--success-rgb) / 25%);
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .selectionIndicator.selected {
@@ -2125,7 +2165,6 @@
   opacity: 0;
   transition: opacity var(--duration-normal) var(--ease-out);
 }
-
 
 .photoIcon {
   font-size: var(--text-2xl);

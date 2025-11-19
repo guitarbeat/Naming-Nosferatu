@@ -4,15 +4,25 @@
  * Consolidates error handling, logging, retry logic, and circuit breaker patterns.
  */
 
-import { parseError } from './errorParser';
-import { formatError, determineSeverity, getUserFriendlyMessage, isRetryable } from './errorFormatter';
-import { logError } from './errorTracking';
-import { withRetry, createResilientFunction, CircuitBreaker } from './retry';
-import { getGlobalScope } from './helpers';
-import { ERROR_SEVERITY } from './constants';
+import { parseError } from "./errorParser";
+import {
+  formatError,
+  determineSeverity,
+  getUserFriendlyMessage,
+  isRetryable,
+} from "./errorFormatter";
+import { logError } from "./errorTracking";
+import { withRetry, createResilientFunction, CircuitBreaker } from "./retry";
+import { getGlobalScope } from "./helpers";
+import { ERROR_SEVERITY } from "./constants";
 
 // * Re-export constants for convenience
-export { ERROR_TYPES, ERROR_SEVERITY, USER_FRIENDLY_MESSAGES, RETRY_CONFIG } from './constants';
+export {
+  ERROR_TYPES,
+  ERROR_SEVERITY,
+  USER_FRIENDLY_MESSAGES,
+  RETRY_CONFIG,
+} from "./constants";
 
 /**
  * * Comprehensive error management class
@@ -25,7 +35,7 @@ export class ErrorManager {
    * @param {Object} metadata - Additional metadata about the error
    * @returns {Object} Formatted error object for UI display
    */
-  static handleError(error, context = 'Unknown', metadata = {}) {
+  static handleError(error, context = "Unknown", metadata = {}) {
     const errorInfo = parseError(error);
     const formattedError = formatError(errorInfo, context, metadata);
 
@@ -136,7 +146,7 @@ export class ErrorManager {
    */
   static setupGlobalErrorHandling() {
     const GLOBAL_SCOPE = getGlobalScope();
-    
+
     if (!GLOBAL_SCOPE.addEventListener) {
       return;
     }
@@ -144,28 +154,31 @@ export class ErrorManager {
     // Handle unhandled promise rejections
     const rejectionHandler = (event) => {
       event.preventDefault();
-      this.handleError(event.reason, 'Unhandled Promise Rejection', {
+      this.handleError(event.reason, "Unhandled Promise Rejection", {
         isRetryable: false,
         affectsUserData: false,
-        isCritical: true
+        isCritical: true,
       });
     };
-    GLOBAL_SCOPE.addEventListener('unhandledrejection', rejectionHandler);
+    GLOBAL_SCOPE.addEventListener("unhandledrejection", rejectionHandler);
 
     // Handle unhandled errors
     const errorHandler = (event) => {
       event.preventDefault();
-      this.handleError(event.error, 'Unhandled Error', {
+      this.handleError(event.error, "Unhandled Error", {
         isRetryable: false,
         affectsUserData: false,
-        isCritical: true
+        isCritical: true,
       });
     };
-    GLOBAL_SCOPE.addEventListener('error', errorHandler);
+    GLOBAL_SCOPE.addEventListener("error", errorHandler);
 
     return () => {
-      GLOBAL_SCOPE.removeEventListener?.('unhandledrejection', rejectionHandler);
-      GLOBAL_SCOPE.removeEventListener?.('error', errorHandler);
+      GLOBAL_SCOPE.removeEventListener?.(
+        "unhandledrejection",
+        rejectionHandler,
+      );
+      GLOBAL_SCOPE.removeEventListener?.("error", errorHandler);
     };
   }
 
@@ -200,9 +213,9 @@ export class ErrorManager {
    */
   static createStandardizedError(
     error,
-    context = 'Unknown',
+    context = "Unknown",
     additionalInfo = {},
-    timestamp = Date.now()
+    timestamp = Date.now(),
   ) {
     const GLOBAL_SCOPE = getGlobalScope();
     const errorInfo = this.handleError(error, context, additionalInfo);
@@ -222,23 +235,24 @@ export class ErrorManager {
 }
 
 // * Convenience functions for backward compatibility
-export const handleError = (error, context, metadata) => ErrorManager.handleError(error, context, metadata);
-export const withRetry = (operation, options) => ErrorManager.withRetry(operation, options);
-export const createResilientFunction = (fn, options) => ErrorManager.createResilientFunction(fn, options);
-export const setupGlobalErrorHandling = () => ErrorManager.setupGlobalErrorHandling();
-export const getSeverityClass = (severity, styles) => ErrorManager.getSeverityClass(severity, styles);
+export const handleError = (error, context, metadata) =>
+  ErrorManager.handleError(error, context, metadata);
+export { withRetry, createResilientFunction } from "./retry";
+export const setupGlobalErrorHandling = () =>
+  ErrorManager.setupGlobalErrorHandling();
+export const getSeverityClass = (severity, styles) =>
+  ErrorManager.getSeverityClass(severity, styles);
 export const createStandardizedError = (
   error,
   context,
   additionalInfo,
-  timestamp
+  timestamp,
 ) =>
   ErrorManager.createStandardizedError(
     error,
     context,
     additionalInfo,
-    timestamp
+    timestamp,
   );
 
 export default ErrorManager;
-

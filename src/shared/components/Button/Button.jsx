@@ -5,43 +5,43 @@
  * This component wraps the shadcn Button and maintains the legacy API.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Loader2 } from 'lucide-react';
-import { Button as ShadcnButton } from '../ui/button';
+import React from "react";
+import PropTypes from "prop-types";
+import { Loader2 } from "lucide-react";
+import { Button as ShadcnButton } from "../ui/button";
 
 const variantMapping = {
-  primary: 'default',
-  secondary: 'secondary',
-  danger: 'destructive',
-  ghost: 'ghost',
+  primary: "default",
+  secondary: "secondary",
+  danger: "destructive",
+  ghost: "ghost",
 };
 
 const sizeMapping = {
-  small: 'sm',
-  medium: 'default',
-  large: 'lg',
+  small: "sm",
+  medium: "default",
+  large: "lg",
 };
 
 const Button = ({
   children,
-  variant = 'primary',
-  size = 'medium',
+  variant = "primary",
+  size = "medium",
   disabled = false,
   loading = false,
-  type = 'button',
-  className = '',
+  type = "button",
+  className = "",
   onClick,
   startIcon = null,
   endIcon = null,
   iconOnly = false,
   ...rest
 }) => {
-  const shadcnVariant = variantMapping[variant] || 'default';
-  let shadcnSize = sizeMapping[size] || 'default';
+  const shadcnVariant = variantMapping[variant] || "default";
+  let shadcnSize = sizeMapping[size] || "default";
 
   if (iconOnly) {
-    shadcnSize = 'icon';
+    shadcnSize = "icon";
   }
 
   const handleClick = (event) => {
@@ -73,11 +73,11 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'ghost']),
-  size: PropTypes.oneOf(['small', 'medium', 'large']),
+  variant: PropTypes.oneOf(["primary", "secondary", "danger", "ghost"]),
+  size: PropTypes.oneOf(["small", "medium", "large"]),
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
-  type: PropTypes.oneOf(['button', 'submit', 'reset']),
+  type: PropTypes.oneOf(["button", "submit", "reset"]),
   className: PropTypes.string,
   onClick: PropTypes.func,
   startIcon: PropTypes.node,
@@ -85,6 +85,6 @@ Button.propTypes = {
   iconOnly: PropTypes.bool,
 };
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
 
 export default Button;

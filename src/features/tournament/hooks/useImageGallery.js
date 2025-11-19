@@ -63,4 +63,3 @@ export function useImageGallery() {
 
   return { galleryImages, setGalleryImages };
 }
-

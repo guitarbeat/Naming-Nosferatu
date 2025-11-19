@@ -55,17 +55,17 @@ export function useTournamentSetup(userName) {
 
         // Create Set of hidden IDs for O(1) lookup
         const hiddenIds = new Set(
-          hiddenData?.map((item) => item.name_id) || []
+          hiddenData?.map((item) => item.name_id) || [],
         );
 
         // Filter out hidden names
         const filteredNames = namesData.filter(
-          (name) => !hiddenIds.has(name.id)
+          (name) => !hiddenIds.has(name.id),
         );
 
         // Sort names alphabetically for better UX
         const sortedNames = filteredNames.sort((a, b) =>
-          a.name.localeCompare(b.name)
+          (a?.name || "").localeCompare(b?.name || ""),
         );
 
         devLog("🎮 TournamentSetup: Data loaded", {
@@ -78,7 +78,7 @@ export function useTournamentSetup(userName) {
 
         // If any currently selected names are now hidden, remove them
         setSelectedNames((prev) =>
-          prev.filter((name) => !hiddenIds.has(name.id))
+          prev.filter((name) => !hiddenIds.has(name.id)),
         );
       } catch (err) {
         // Provide a clear offline fallback list when backend fails
@@ -111,7 +111,7 @@ export function useTournamentSetup(userName) {
         const result = await tournamentsAPI.saveTournamentSelections(
           userName,
           selectedNames,
-          tournamentId
+          tournamentId,
         );
 
         devLog("🎮 TournamentSetup: Selections saved to database", result);
@@ -120,7 +120,7 @@ export function useTournamentSetup(userName) {
         // Don't block the UI if saving fails
       }
     },
-    [userName]
+    [userName],
   );
 
   const scheduleSave = useCallback(
@@ -139,11 +139,11 @@ export function useTournamentSetup(userName) {
       saveTimeoutRef.current = setTimeout(() => {
         lastSavedHashRef.current = hash;
         saveTournamentSelections(namesToSave).catch((e) =>
-          console.warn("Save selections debounce error:", e)
+          console.warn("Save selections debounce error:", e),
         );
       }, 800);
     },
-    [userName, saveTournamentSelections]
+    [userName, saveTournamentSelections],
   );
 
   useEffect(() => {
@@ -173,7 +173,7 @@ export function useTournamentSetup(userName) {
 
   const handleSelectAll = () => {
     setSelectedNames(
-      selectedNames.length === availableNames.length ? [] : [...availableNames]
+      selectedNames.length === availableNames.length ? [] : [...availableNames],
     );
   };
 
@@ -189,4 +189,3 @@ export function useTournamentSetup(userName) {
     handleSelectAll,
   };
 }
-

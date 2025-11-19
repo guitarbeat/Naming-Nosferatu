@@ -1,9 +1,9 @@
-import React, { useSyncExternalStore } from 'react';
-import { act, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import React, { useSyncExternalStore } from "react";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 function isPlainObject(value) {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function deepMerge(target, source) {
@@ -28,8 +28,8 @@ function createMockStoreState(overrides = {}) {
   const baseState = {
     user: {
       isLoggedIn: true,
-      name: 'Admin Cat',
-      isAdmin: false
+      name: "Admin Cat",
+      isAdmin: false,
     },
     tournament: {
       names: [],
@@ -37,18 +37,18 @@ function createMockStoreState(overrides = {}) {
       isComplete: false,
       isLoading: false,
       voteHistory: [],
-      currentView: 'tournament'
+      currentView: "tournament",
     },
     ui: {
-      theme: 'light',
+      theme: "light",
       showPerformanceDashboard: false,
       showGlobalAnalytics: false,
       showUserComparison: false,
-      matrixMode: false
+      matrixMode: false,
     },
     errors: {
       current: null,
-      history: []
+      history: [],
     },
     tournamentActions: {
       addVote: vi.fn(),
@@ -57,29 +57,29 @@ function createMockStoreState(overrides = {}) {
       setRatings: vi.fn(),
       setNames: vi.fn(),
       setLoading: vi.fn(),
-      setComplete: vi.fn()
+      setComplete: vi.fn(),
     },
     userActions: {
       login: vi.fn(),
       logout: vi.fn(),
       setAdminStatus: vi.fn(),
       setUser: vi.fn(),
-      initializeFromStorage: vi.fn()
+      initializeFromStorage: vi.fn(),
     },
     uiActions: {
       togglePerformanceDashboard: vi.fn(),
       setPerformanceDashboardVisible: vi.fn(),
-      toggleTheme: vi.fn()
+      toggleTheme: vi.fn(),
     },
     errorActions: {
-      clearError: vi.fn()
-    }
+      clearError: vi.fn(),
+    },
   };
 
   return deepMerge(baseState, overrides);
 }
 
-vi.mock('@core/store/useAppStore', () => {
+vi.mock("@core/store/useAppStore", () => {
   let storeState = createMockStoreState();
   const listeners = new Set();
 
@@ -92,7 +92,7 @@ vi.mock('@core/store/useAppStore', () => {
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
-      () => selector(storeState)
+      () => selector(storeState),
     );
 
   const mergeState = (partial) => {
@@ -106,7 +106,7 @@ vi.mock('@core/store/useAppStore', () => {
   };
 
   const setState = (update) => {
-    const partial = typeof update === 'function' ? update(storeState) : update;
+    const partial = typeof update === "function" ? update(storeState) : update;
     return mergeState(partial);
   };
 
@@ -123,111 +123,113 @@ vi.mock('@core/store/useAppStore', () => {
     default: useAppStore,
     useAppStoreInitialization: () => {},
     __setMockState: setState,
-    __resetMockState: resetState
+    __resetMockState: resetState,
   };
 });
 
-vi.mock('@hooks/useUserSession', () => ({
+vi.mock("@hooks/useUserSession", () => ({
   default: () => ({
     login: vi.fn(),
     logout: vi.fn(),
-    isInitialized: true
-  })
+    isInitialized: true,
+  }),
 }));
 
-vi.mock('@hooks/useRouting', () => ({
+vi.mock("@hooks/useRouting", () => ({
   useRouting: () => ({
-    currentRoute: '/',
+    currentRoute: "/",
     navigateTo: vi.fn(),
-    isRoute: vi.fn()
-  })
+    isRoute: vi.fn(),
+  }),
 }));
 
-vi.mock('@hooks/useTournamentRoutingSync', () => ({
-  useTournamentRoutingSync: () => '/'
+vi.mock("@hooks/useTournamentRoutingSync", () => ({
+  useTournamentRoutingSync: () => "/",
 }));
 
-vi.mock('@hooks/useThemeSync', () => ({
-  useThemeSync: () => {}
+vi.mock("@hooks/useThemeSync", () => ({
+  useThemeSync: () => {},
 }));
 
-vi.mock('@components/CatBackground/CatBackground', () => ({
-  default: () => <div data-testid="cat-background" />
+vi.mock("@components/CatBackground/CatBackground", () => ({
+  default: () => <div data-testid="cat-background" />,
 }));
 
-vi.mock('@components/ViewRouter/ViewRouter', () => ({
-  default: () => <div data-testid="view-router" />
+vi.mock("@components/ViewRouter/ViewRouter", () => ({
+  default: () => <div data-testid="view-router" />,
 }));
 
-vi.mock('@components/PerformanceDashboard', () => ({
+vi.mock("@components/PerformanceDashboard", () => ({
   default: ({ isVisible }) =>
     isVisible ? (
       <div data-testid="performance-dashboard">Performance Dashboard</div>
-    ) : null
+    ) : null,
 }));
 
-vi.mock('./shared/components/AppSidebar/AppSidebar', () => ({
+vi.mock("./shared/components/AppSidebar/AppSidebar", () => ({
   AppSidebar: () => (
     <aside>
       <button type="button" aria-label="Go to home page">
         Home
       </button>
     </aside>
-  )
+  ),
 }));
 
-import App from './App';
-import { __resetMockState, __setMockState } from '@core/store/useAppStore';
+import App from "./App";
+import { __resetMockState, __setMockState } from "@core/store/useAppStore";
 
-describe('App', () => {
+describe("App", () => {
   beforeEach(() => {
     __resetMockState();
   });
 
-  it('renders primary navigation landmarks for users', () => {
+  it("renders primary navigation landmarks for users", () => {
     render(<App />);
 
-    const skipLink = screen.getByRole('link', {
-      name: /skip to main content/i
+    const skipLink = screen.getByRole("link", {
+      name: /skip to main content/i,
     });
     expect(skipLink).toBeVisible();
-    expect(skipLink).toHaveAttribute('href', '#main-content');
+    expect(skipLink).toHaveAttribute("href", "#main-content");
 
-    const homeButton = screen.getByRole('button', { name: /go to home page/i });
+    const homeButton = screen.getByRole("button", { name: /go to home page/i });
     expect(homeButton).toBeInTheDocument();
   });
 
-  it('displays the global loading overlay while the tournament initializes', async () => {
+  it("displays the global loading overlay while the tournament initializes", async () => {
     __resetMockState({
       tournament: { isLoading: true },
-      user: { isLoggedIn: true }
+      user: { isLoggedIn: true },
     });
 
     render(<App />);
 
     const overlayMessage = await screen.findByText(/initializing tournament/i);
     expect(overlayMessage).toBeInTheDocument();
-    expect(overlayMessage.closest('.global-loading-overlay')).not.toBeNull();
+    expect(overlayMessage.closest(".global-loading-overlay")).not.toBeNull();
   });
 
-  it('renders the admin performance dashboard when toggled on', async () => {
+  it("renders the admin performance dashboard when toggled on", async () => {
     __resetMockState({
       user: { isLoggedIn: true, isAdmin: true },
-      ui: { showPerformanceDashboard: false }
+      ui: { showPerformanceDashboard: false },
     });
 
     render(<App />);
 
-    expect(screen.queryByTestId('performance-dashboard')).not.toBeInTheDocument();
+    expect(
+      screen.queryByTestId("performance-dashboard"),
+    ).not.toBeInTheDocument();
 
     await act(async () => {
       __setMockState({
-        ui: { showPerformanceDashboard: true }
+        ui: { showPerformanceDashboard: true },
       });
     });
 
     await waitFor(() => {
-      expect(screen.getByTestId('performance-dashboard')).toBeVisible();
+      expect(screen.getByTestId("performance-dashboard")).toBeVisible();
     });
   });
 });

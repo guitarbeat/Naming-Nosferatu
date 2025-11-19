@@ -5,45 +5,40 @@
  */
 
 // * Re-export array utilities
-export * from './arrayUtils';
+export * from "./arrayUtils";
 
 // * Re-export image utilities
-export * from './imageUtils';
+export * from "./imageUtils";
 
 // * Re-export tournament utilities
-export * from './tournamentUtils';
+export * from "./tournamentUtils";
 
 // * Re-export performance utilities
-export * from './performanceUtils';
+export * from "./performanceUtils";
 
 // * Re-export logger utilities
-export * from './logger';
+export * from "./logger";
 
 // * Re-export performance monitor
-export { PerformanceMonitor, performanceMonitor } from './performanceMonitor';
+export { PerformanceMonitor, performanceMonitor } from "./performanceMonitor";
 
 // * Default export with all utilities for backward compatibility
-import {
-  shuffleArray,
-  generatePairs,
-  buildComparisonsMap
-} from './arrayUtils';
+import { shuffleArray, generatePairs, buildComparisonsMap } from "./arrayUtils";
 
 import {
   validateImageUrl,
   preloadImage,
   getFallbackImageUrl,
   compressImageFile,
-  loadImageFromFile
-} from './imageUtils';
+} from "./imageUtils";
 
 import {
   initializeSorterPairs,
   getPreferencesMap,
-  computeRating
-} from './tournamentUtils';
+  computeRating,
+} from "./tournamentUtils";
 
-import { PerformanceMonitor, performanceMonitor } from './performanceMonitor';
+import { PerformanceMonitor, performanceMonitor } from "./performanceMonitor";
 
 export default {
   // Array utilities
@@ -64,5 +59,5 @@ export default {
 
   // Performance monitoring
   PerformanceMonitor,
-  performanceMonitor
+  performanceMonitor,
 };

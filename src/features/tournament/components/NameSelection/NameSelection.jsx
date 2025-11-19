@@ -6,7 +6,11 @@ import { useMemo } from "react";
 import PropTypes from "prop-types";
 import { NameCard } from "../../../../shared/components";
 import { DEFAULT_DESCRIPTION } from "../../constants";
-import { filterAndSortNames, generateCategoryOptions, getRandomCatImage } from "../../utils";
+import {
+  filterAndSortNames,
+  generateCategoryOptions,
+  getRandomCatImage,
+} from "../../utils";
 import FilterControls from "./FilterControls";
 import ResultsInfo from "./ResultsInfo";
 import styles from "../../TournamentSetup.module.css";
@@ -41,7 +45,7 @@ function NameSelection({
 
   const categoryOptions = useMemo(
     () => generateCategoryOptions(categories, availableNames),
-    [categories, availableNames]
+    [categories, availableNames],
   );
 
   return (
@@ -148,4 +152,3 @@ NameSelection.propTypes = {
 };
 
 export default NameSelection;
-

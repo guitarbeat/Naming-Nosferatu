@@ -21,7 +21,7 @@ import RoundTransition from "./components/RoundTransition/RoundTransition";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
-import { useToast } from './hooks/useToast';
+import { useToast } from "./hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import styles from "./Tournament.module.css";
 
@@ -43,7 +43,7 @@ function TournamentContent({
     names,
     existingRatings,
     onComplete,
-    onVote
+    onVote,
   );
 
   const {
@@ -97,7 +97,10 @@ function TournamentContent({
   const lastRenderLogRef = useRef(0);
   if (process.env.NODE_ENV === "development") {
     const now = Date.now();
-    if (now - lastRenderLogRef.current > TOURNAMENT_TIMING.RENDER_LOG_THROTTLE) {
+    if (
+      now - lastRenderLogRef.current >
+      TOURNAMENT_TIMING.RENDER_LOG_THROTTLE
+    ) {
       console.debug("[DEV] 🎮 Tournament: render", {
         namesCount: names?.length || 0,
         randomizedCount: randomizedNames?.length || 0,
@@ -135,7 +138,7 @@ function TournamentContent({
   // * Cleanup match result timers on unmount
   useEffect(() => {
     return () => {
-      matchResultTimersRef.current.forEach(timer => clearTimeout(timer));
+      matchResultTimersRef.current.forEach((timer) => clearTimeout(timer));
       matchResultTimersRef.current = [];
     };
   }, []);
@@ -155,14 +158,22 @@ function TournamentContent({
       }
 
       setLastMatchResult(resultMessage);
-      const showTimer = setTimeout(() => setShowMatchResult(true), TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY);
-      const hideTimer = setTimeout(() => setShowMatchResult(false), TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY);
+      const showTimer = setTimeout(
+        () => setShowMatchResult(true),
+        TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY,
+      );
+      const hideTimer = setTimeout(
+        () => setShowMatchResult(false),
+        TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY,
+      );
       matchResultTimersRef.current.push(showTimer, hideTimer);
-      showSuccess("Vote recorded successfully!", { duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION });
+      showSuccess("Vote recorded successfully!", {
+        duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION,
+      });
       // Start undo window
       setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
     },
-    [currentMatch, showSuccess, setLastMatchResult, setShowMatchResult]
+    [currentMatch, showSuccess, setLastMatchResult, setShowMatchResult],
   );
 
   // * Handle vote with animation
@@ -172,7 +183,8 @@ function TournamentContent({
 
       // Rate limiting check
       const now = Date.now();
-      if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN) return;
+      if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN)
+        return;
       lastVoteTimeRef.current = now;
 
       try {
@@ -239,9 +251,13 @@ function TournamentContent({
         }
 
         setSelectedOption(null);
-        await new Promise((resolve) => setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM));
+        await new Promise((resolve) =>
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM),
+        );
         setIsProcessing(false);
-        await new Promise((resolve) => setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT));
+        await new Promise((resolve) =>
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT),
+        );
         setIsTransitioning(false);
       } catch (error) {
         // Reset state on error
@@ -279,7 +295,7 @@ function TournamentContent({
       setIsTransitioning,
       setSelectedOption,
       setVotingError,
-    ]
+    ],
   );
 
   // * Handle name card click
@@ -289,7 +305,7 @@ function TournamentContent({
       setSelectedOption(option);
       handleVoteWithAnimation(option);
     },
-    [isProcessing, isTransitioning, handleVoteWithAnimation, setSelectedOption]
+    [isProcessing, isTransitioning, handleVoteWithAnimation, setSelectedOption],
   );
 
   // * Handle end early
@@ -336,7 +352,7 @@ function TournamentContent({
       },
       canUndoNow,
       onClearSelection: () => setSelectedOption(null),
-    }
+    },
   );
 
   // * Transform match history for bracket
@@ -369,7 +385,7 @@ function TournamentContent({
       const matchNumber = vote?.matchNumber ?? index + 1;
       const round = Math.max(
         1,
-        Math.ceil(matchNumber / Math.max(1, matchesPerRound))
+        Math.ceil(matchNumber / Math.max(1, matchesPerRound)),
       );
 
       return {

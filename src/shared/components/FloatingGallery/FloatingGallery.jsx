@@ -5,9 +5,9 @@
  * The photos appear to float naturally on the page background.
  */
 
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import styles from './FloatingGallery.module.css';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import styles from "./FloatingGallery.module.css";
 
 /**
  * FloatingGallery Component
@@ -22,7 +22,7 @@ function FloatingGallery({
   columns = 3,
   autoRotate = false,
   rotationDelay = 5000,
-  className = ''
+  className = "",
 }) {
   const [imageIndices, setImageIndices] = useState(() => {
     if (photos.length === 0) return {};
@@ -39,7 +39,7 @@ function FloatingGallery({
     if (!autoRotate || photos.length === 0 || isLoading) return;
 
     const interval = setInterval(() => {
-      setImageIndices(prev => {
+      setImageIndices((prev) => {
         const newIndices = { ...prev };
         const randomCol = Math.floor(Math.random() * columns);
         newIndices[randomCol] = (newIndices[randomCol] + 1) % photos.length;
@@ -55,7 +55,11 @@ function FloatingGallery({
   }
 
   return (
-    <div className={`${styles.gallery} ${className}`} role="region" aria-label="Photo gallery">
+    <div
+      className={`${styles.gallery} ${className}`}
+      role="region"
+      aria-label="Photo gallery"
+    >
       {Array.from({ length: columns }).map((_, colIndex) => {
         const photoIndex = imageIndices[colIndex] || 0;
         const photo = photos[photoIndex];
@@ -63,22 +67,14 @@ function FloatingGallery({
         if (!photo) return null;
 
         const floatStyle = {
-          '--col-index': colIndex
+          "--col-index": colIndex,
         };
 
         return (
-          <div
-            key={colIndex}
-            className={styles.photoFloat}
-            style={floatStyle}
-          >
+          <div key={colIndex} className={styles.photoFloat} style={floatStyle}>
             <picture className={styles.photoPicture}>
-              {photo.avif && (
-                <source type="image/avif" srcSet={photo.avif} />
-              )}
-              {photo.webp && (
-                <source type="image/webp" srcSet={photo.webp} />
-              )}
+              {photo.avif && <source type="image/avif" srcSet={photo.avif} />}
+              {photo.webp && <source type="image/webp" srcSet={photo.webp} />}
               <img
                 src={photo.src}
                 alt={photo.alt || `Gallery photo ${photoIndex + 1}`}
@@ -100,13 +96,13 @@ FloatingGallery.propTypes = {
       src: PropTypes.string.isRequired,
       alt: PropTypes.string,
       webp: PropTypes.string,
-      avif: PropTypes.string
-    })
+      avif: PropTypes.string,
+    }),
   ),
   columns: PropTypes.number,
   autoRotate: PropTypes.bool,
   rotationDelay: PropTypes.number,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 export default FloatingGallery;

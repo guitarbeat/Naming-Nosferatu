@@ -3,9 +3,9 @@
  * @description Retry logic and circuit breaker implementation.
  */
 
-import { RETRY_CONFIG } from './constants';
-import { parseError } from './errorParser';
-import { isRetryable } from './errorFormatter';
+import { RETRY_CONFIG } from "./constants";
+import { parseError } from "./errorParser";
+import { isRetryable } from "./errorFormatter";
 
 /**
  * * Circuit breaker implementation
@@ -16,15 +16,15 @@ export class CircuitBreaker {
     this.resetTimeout = resetTimeout;
     this.failureCount = 0;
     this.lastFailureTime = null;
-    this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN
+    this.state = "CLOSED"; // CLOSED, OPEN, HALF_OPEN
   }
 
   async execute(fn) {
-    if (this.state === 'OPEN') {
+    if (this.state === "OPEN") {
       if (this.shouldAttemptReset()) {
-        this.state = 'HALF_OPEN';
+        this.state = "HALF_OPEN";
       } else {
-        throw new Error('Circuit breaker is OPEN - service is unavailable');
+        throw new Error("Circuit breaker is OPEN - service is unavailable");
       }
     }
 
@@ -40,7 +40,7 @@ export class CircuitBreaker {
 
   onSuccess() {
     this.failureCount = 0;
-    this.state = 'CLOSED';
+    this.state = "CLOSED";
     this.lastFailureTime = null;
   }
 
@@ -49,7 +49,7 @@ export class CircuitBreaker {
     this.lastFailureTime = Date.now();
 
     if (this.failureCount >= this.failureThreshold) {
-      this.state = 'OPEN';
+      this.state = "OPEN";
     }
   }
 
@@ -66,12 +66,12 @@ export class CircuitBreaker {
       lastFailureTime: this.lastFailureTime,
       timeUntilReset: this.lastFailureTime
         ? Math.max(0, this.resetTimeout - (Date.now() - this.lastFailureTime))
-        : 0
+        : 0,
     };
   }
 
   reset() {
-    this.state = 'CLOSED';
+    this.state = "CLOSED";
     this.failureCount = 0;
     this.lastFailureTime = null;
   }
@@ -90,7 +90,7 @@ export function withRetry(operation, options = {}) {
     baseDelay = config.baseDelay,
     backoffMultiplier = config.backoffMultiplier,
     jitter = config.jitter,
-    shouldRetry = (error) => isRetryable(parseError(error), {})
+    shouldRetry = (error) => isRetryable(parseError(error), {}),
   } = config;
 
   return async (...args) => {
@@ -130,11 +130,10 @@ export function withRetry(operation, options = {}) {
 export function createResilientFunction(fn, options = {}) {
   const circuitBreaker = new CircuitBreaker(
     options.failureThreshold ?? 5,
-    options.resetTimeout ?? 60000
+    options.resetTimeout ?? 60000,
   );
 
   return async (...args) => {
     return circuitBreaker.execute(() => withRetry(() => fn(...args), options));
   };
 }
-

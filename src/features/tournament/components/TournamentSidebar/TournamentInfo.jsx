@@ -47,4 +47,3 @@ TournamentInfo.propTypes = {
 };
 
 export default TournamentInfo;
-

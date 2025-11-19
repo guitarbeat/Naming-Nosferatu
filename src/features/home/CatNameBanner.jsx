@@ -2,10 +2,10 @@
  * @module CatNameBanner
  * @description "Hello my name is" name tag banner for displaying cat's chosen name
  */
-import React from 'react';
-import PropTypes from 'prop-types';
-import { formatFullName } from '../../shared/utils/nameFormatter';
-import styles from './CatNameBanner.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { formatFullName } from "../../shared/utils/nameFormatter";
+import styles from "./CatNameBanner.module.css";
 
 function CatNameBanner({ catName = null, isAdmin = false }) {
   if (!catName || !catName.is_set || !catName.show_banner) {
@@ -13,25 +13,17 @@ function CatNameBanner({ catName = null, isAdmin = false }) {
   }
 
   const fullName = formatFullName(catName);
-  const greetingText = catName.greeting_text || 'Hello! My name is';
+  const greetingText = catName.greeting_text || "Hello! My name is";
 
   return (
     <div className={styles.bannerContainer}>
       <div className={styles.nameTag}>
-        <div className={styles.helloSection}>
-          HELLO
-        </div>
-        <div className={styles.greetingSection}>
-          {greetingText}
-        </div>
-        <div className={styles.nameSection}>
-          {fullName}
-        </div>
+        <div className={styles.helloSection}>HELLO</div>
+        <div className={styles.greetingSection}>{greetingText}</div>
+        <div className={styles.nameSection}>{fullName}</div>
       </div>
       {isAdmin && (
-        <p className={styles.adminNote}>
-          ✏️ You can edit this in your Profile
-        </p>
+        <p className={styles.adminNote}>✏️ You can edit this in your Profile</p>
       )}
     </div>
   );
@@ -45,9 +37,9 @@ CatNameBanner.propTypes = {
     greeting_text: PropTypes.string,
     display_name: PropTypes.string,
     is_set: PropTypes.bool,
-    show_banner: PropTypes.bool
+    show_banner: PropTypes.bool,
   }),
-  isAdmin: PropTypes.bool
+  isAdmin: PropTypes.bool,
 };
 
 export default CatNameBanner;

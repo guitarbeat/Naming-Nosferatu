@@ -1,5 +1,5 @@
 /* Dark Theme Overrides */
-:root[data-theme='dark'] {
+:root[data-theme="dark"] {
   --primary-color: var(--primary-400);
   --primary-light: var(--primary-700);
   --primary-dark: var(--primary-200);
@@ -32,8 +32,8 @@
   --glass-border: rgb(255 255 255 / 12%);
   --glass-border-hover: rgb(255 255 255 / 22%);
   --glass-shadow: 0 30px 60px rgb(2 6 23 / 65%);
-  --glass-shadow-colored: 0 18px 40px rgb(47 243 224 / 18%),
-    0 14px 32px rgb(250 38 160 / 14%);
+  --glass-shadow-colored:
+    0 18px 40px rgb(47 243 224 / 18%), 0 14px 32px rgb(250 38 160 / 14%);
   --glass-blur: 22px;
   --glass-blur-strong: 32px;
   --shadow-subtle: 0 8px 24px rgb(2 6 23 / 45%);
@@ -74,8 +74,9 @@
   color-scheme: dark;
 }
 
-:root[data-theme='dark'] body {
-  background-image: radial-gradient(
+:root[data-theme="dark"] body {
+  background-image:
+    radial-gradient(
       circle at 15% -20%,
       rgb(var(--hot-pink-rgb), 0.24),
       transparent 55%

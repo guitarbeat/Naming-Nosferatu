@@ -4,9 +4,9 @@
  * Standardizes input styling and behavior across the app.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './Form.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./Form.module.css";
 
 /**
  * Input component with built-in error handling
@@ -27,7 +27,7 @@ import styles from './Form.module.css';
  * @returns {JSX.Element} Input component
  */
 const Input = ({
-  type = 'text',
+  type = "text",
   name,
   value,
   onChange,
@@ -35,26 +35,26 @@ const Input = ({
   placeholder,
   disabled = false,
   required = false,
-  error = '',
+  error = "",
   label,
-  className = '',
-  ariaDescribedBy = '',
+  className = "",
+  ariaDescribedBy = "",
   ...rest
 }) => {
   const inputClasses = [
     styles.input,
-    error && styles['input--error'],
-    disabled && styles['input--disabled'],
-    className
-  ].filter(Boolean).join(' ');
-
-  const inputId = `input-${name}`;
-  const describedBy = [
-    ariaDescribedBy,
-    error ? `${inputId}-error` : null
+    error && styles["input--error"],
+    disabled && styles["input--disabled"],
+    className,
   ]
     .filter(Boolean)
-    .join(' ') || undefined;
+    .join(" ");
+
+  const inputId = `input-${name}`;
+  const describedBy =
+    [ariaDescribedBy, error ? `${inputId}-error` : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
   return (
     <div className={styles.inputGroup}>
@@ -100,9 +100,9 @@ Input.propTypes = {
   error: PropTypes.string,
   label: PropTypes.string,
   className: PropTypes.string,
-  ariaDescribedBy: PropTypes.string
+  ariaDescribedBy: PropTypes.string,
 };
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 
 export default Input;

@@ -66,19 +66,19 @@
 }
 
 .shadow-medium {
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgb(0 0 0 / 15%),
     0 3px 10px rgb(0 0 0 / 8%);
 }
 
 .shadow-large {
-  box-shadow: 
+  box-shadow:
     0 15px 35px rgb(0 0 0 / 20%),
     0 5px 15px rgb(0 0 0 / 12%);
 }
 
 .shadow-xl {
-  box-shadow: 
+  box-shadow:
     0 25px 50px rgb(0 0 0 / 25%),
     0 10px 20px rgb(0 0 0 / 15%);
 }
@@ -108,44 +108,36 @@
 }
 
 /* Light theme overrides */
-:root[data-theme='light'] .default {
+:root[data-theme="light"] .default {
   background: #fff;
   border-color: #dbe3f0;
 }
 
-:root[data-theme='light'] .elevated {
+:root[data-theme="light"] .elevated {
   background: #fff;
   border-color: #dbe3f0;
 }
 
-:root[data-theme='light'] .outlined {
+:root[data-theme="light"] .outlined {
   border-color: #cbd5e1;
 }
 
-:root[data-theme='light'] .filled {
-  background: linear-gradient(
-    135deg,
-    #fff 0%,
-    #f8fafc 100%
-  );
+:root[data-theme="light"] .filled {
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
   border-color: #dbe3f0;
 }
 
-:root[data-theme='light'] .bordered {
+:root[data-theme="light"] .bordered {
   border-color: #cbd5e1;
 }
 
-:root[data-theme='light'] .background-glass {
+:root[data-theme="light"] .background-glass {
   background: rgb(255 255 255 / 90%);
   border-color: #dbe3f0;
 }
 
-:root[data-theme='light'] .background-gradient {
-  background: linear-gradient(
-    135deg,
-    #fff 0%,
-    #f8fafc 100%
-  );
+:root[data-theme="light"] .background-gradient {
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
 }
 
 /* Hover effects - only on devices that support hover */
@@ -155,19 +147,19 @@
   }
 
   .card:hover.shadow-medium {
-    box-shadow: 
+    box-shadow:
       0 12px 35px rgb(0 0 0 / 20%),
       0 5px 15px rgb(0 0 0 / 12%);
   }
 
   .card:hover.shadow-large {
-    box-shadow: 
+    box-shadow:
       0 20px 45px rgb(0 0 0 / 25%),
       0 8px 20px rgb(0 0 0 / 15%);
   }
 
   .card:hover.shadow-xl {
-    box-shadow: 
+    box-shadow:
       0 30px 60px rgb(0 0 0 / 30%),
       0 15px 30px rgb(0 0 0 / 20%);
   }
@@ -178,15 +170,15 @@
   .card {
     border-radius: 12px;
   }
-  
+
   .padding-medium {
     padding: 1.25rem;
   }
-  
+
   .padding-large {
     padding: 1.75rem;
   }
-  
+
   .padding-xl {
     padding: 2rem;
   }
@@ -196,55 +188,47 @@
   .card {
     border-radius: 10px;
   }
-  
+
   .padding-medium {
     padding: 1rem;
   }
-  
+
   .padding-large {
     padding: 1.5rem;
   }
-  
+
   .padding-xl {
     padding: 1.75rem;
   }
 }
 
 /* Dark theme support */
-:global(:root[data-theme='dark']) .default {
+:global(:root[data-theme="dark"]) .default {
   background: rgb(30 30 30 / 95%);
   border-color: rgb(255 255 255 / 10%);
 }
 
-:global(:root[data-theme='dark']) .elevated {
+:global(:root[data-theme="dark"]) .elevated {
   background: rgb(40 40 40 / 98%);
   border-color: rgb(255 255 255 / 20%);
 }
 
-:global(:root[data-theme='dark']) .outlined {
+:global(:root[data-theme="dark"]) .outlined {
   border-color: rgb(255 255 255 / 30%);
 }
 
-:global(:root[data-theme='dark']) .filled {
-  background: linear-gradient(
-    135deg,
-    rgb(30 30 30 / 90%),
-    rgb(40 40 40 / 90%)
-  );
+:global(:root[data-theme="dark"]) .filled {
+  background: linear-gradient(135deg, rgb(30 30 30 / 90%), rgb(40 40 40 / 90%));
   border-color: rgb(255 255 255 / 15%);
 }
 
-:global(:root[data-theme='dark']) .background-glass {
+:global(:root[data-theme="dark"]) .background-glass {
   background: rgb(30 30 30 / 80%);
   border-color: rgb(255 255 255 / 20%);
 }
 
-:global(:root[data-theme='dark']) .background-gradient {
-  background: linear-gradient(
-    135deg,
-    rgb(30 30 30 / 95%),
-    rgb(40 40 40 / 95%)
-  );
+:global(:root[data-theme="dark"]) .background-gradient {
+  background: linear-gradient(135deg, rgb(30 30 30 / 95%), rgb(40 40 40 / 95%));
 }
 
 /* Reduced motion support */
@@ -252,7 +236,7 @@
   .card {
     transition: none;
   }
-  
+
   .card:hover {
     transform: none;
   }

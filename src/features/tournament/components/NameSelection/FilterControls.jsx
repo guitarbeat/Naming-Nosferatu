@@ -67,7 +67,7 @@ FilterControls.propTypes = {
     PropTypes.shape({
       value: PropTypes.string,
       label: PropTypes.string,
-    })
+    }),
   ).isRequired,
   selectedCategory: PropTypes.string,
   onCategoryChange: PropTypes.func.isRequired,
@@ -78,4 +78,3 @@ FilterControls.propTypes = {
 };
 
 export default FilterControls;
-

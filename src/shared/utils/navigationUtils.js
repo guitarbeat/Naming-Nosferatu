@@ -2,18 +2,18 @@
  * Utility helpers for working with application routes.
  */
 export function normalizeRoutePath(routeValue) {
-  if (typeof routeValue !== 'string') {
-    return '/';
+  if (typeof routeValue !== "string") {
+    return "/";
   }
 
   const [path] = routeValue.split(/[?#]/);
 
   if (!path) {
-    return '/';
+    return "/";
   }
 
-  if (path.length > 1 && path.endsWith('/')) {
-    return path.replace(/\/+$/, '') || '/';
+  if (path.length > 1 && path.endsWith("/")) {
+    return path.replace(/\/+$/, "") || "/";
   }
 
   return path;

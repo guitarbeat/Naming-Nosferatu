@@ -17,17 +17,21 @@
 
 .btn-primary {
   color: var(--white-rgb);
-  border-color: transparent;
   background: linear-gradient(45deg, var(--neon-cyan), var(--hot-pink));
+  border-color: transparent;
+  box-shadow:
+    0 0 15px rgb(250 38 160 / 50%),
+    0 0 15px rgb(47 243 224 / 50%);
   transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
 }
 
 .btn-primary:hover {
-  border-color: transparent;
   background: linear-gradient(45deg, var(--hot-pink), var(--neon-cyan));
+  border-color: transparent;
+  box-shadow:
+    0 0 25px rgb(250 38 160 / 70%),
+    0 0 25px rgb(47 243 224 / 70%);
   transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 0 25px rgba(250, 38, 160, 0.7), 0 0 25px rgba(47, 243, 224, 0.7);
 }
 
 .btn-glow {
@@ -36,16 +40,24 @@
 
 @keyframes pulse {
   0% {
+    box-shadow:
+      0 0 15px rgb(250 38 160 / 50%),
+      0 0 15px rgb(47 243 224 / 50%);
     transform: scale(1);
-    box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
   }
+
   50% {
+    box-shadow:
+      0 0 25px rgb(250 38 160 / 70%),
+      0 0 25px rgb(47 243 224 / 70%);
     transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(250, 38, 160, 0.7), 0 0 25px rgba(47, 243, 224, 0.7);
   }
+
   100% {
+    box-shadow:
+      0 0 15px rgb(250 38 160 / 50%),
+      0 0 15px rgb(47 243 224 / 50%);
     transform: scale(1);
-    box-shadow: 0 0 15px rgba(250, 38, 160, 0.5), 0 0 15px rgba(47, 243, 224, 0.5);
   }
 }
 

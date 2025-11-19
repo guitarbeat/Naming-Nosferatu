@@ -21,7 +21,7 @@ function StartButton({ selectedNames, onStart, variant = "default" }) {
         console.warn(
           "Invalid name detected:",
           nameObj.name,
-          nameValidation.error
+          nameValidation.error,
         );
         return false;
       }
@@ -33,7 +33,7 @@ function StartButton({ selectedNames, onStart, variant = "default" }) {
   const handleStart = () => {
     console.log(
       "[DEV] 🎮 StartButton: handleStart called with selectedNames:",
-      selectedNames
+      selectedNames,
     );
 
     if (!validateNames(selectedNames)) {
@@ -43,7 +43,7 @@ function StartButton({ selectedNames, onStart, variant = "default" }) {
 
     console.log(
       "[DEV] 🎮 StartButton: Calling onStart with validated names:",
-      selectedNames
+      selectedNames,
     );
     onStart(selectedNames);
   };
@@ -80,4 +80,3 @@ StartButton.propTypes = {
 };
 
 export default StartButton;
-

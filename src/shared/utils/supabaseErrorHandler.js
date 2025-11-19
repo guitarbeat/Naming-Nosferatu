@@ -3,7 +3,7 @@
  * @description Centralized error handling for Supabase operations
  */
 
-import { parseSupabaseError, createErrorToast } from './supabaseRetry';
+import { parseSupabaseError, createErrorToast } from "./supabaseRetry";
 
 /**
  * Format error for display in UI components
@@ -15,8 +15,8 @@ export function formatSupabaseError(error) {
     title: parsed.title,
     message: parsed.message,
     suggestion: parsed.suggestion,
-    details: error?.message || 'No additional details available',
-    originalError: error
+    details: error?.message || "No additional details available",
+    originalError: error,
   };
 }
 
@@ -26,21 +26,21 @@ export function formatSupabaseError(error) {
 export function logSupabaseError(error, context = {}) {
   const formatted = formatSupabaseError(error);
 
-  console.group('🔴 Supabase Error');
-  console.error('Title:', formatted.title);
-  console.error('Message:', formatted.message);
-  console.error('Suggestion:', formatted.suggestion);
+  console.group("🔴 Supabase Error");
+  console.error("Title:", formatted.title);
+  console.error("Message:", formatted.message);
+  console.error("Suggestion:", formatted.suggestion);
   if (context.operation) {
-    console.error('Operation:', context.operation);
+    console.error("Operation:", context.operation);
   }
   if (context.table) {
-    console.error('Table:', context.table);
+    console.error("Table:", context.table);
   }
   if (formatted.details) {
-    console.error('Details:', formatted.details);
+    console.error("Details:", formatted.details);
   }
   if (formatted.originalError) {
-    console.error('Original Error:', formatted.originalError);
+    console.error("Original Error:", formatted.originalError);
   }
   console.groupEnd();
 
@@ -57,17 +57,14 @@ export function handleQueryError(error, context = {}) {
   return {
     success: false,
     error: formatted,
-    data: null
+    data: null,
   };
 }
 
 /**
  * Wrap Supabase query with error handling
  */
-export async function executeWithErrorHandling(
-  queryFn,
-  context = {}
-) {
+export async function executeWithErrorHandling(queryFn, context = {}) {
   try {
     const result = await queryFn();
 
@@ -79,7 +76,7 @@ export async function executeWithErrorHandling(
     return {
       success: true,
       data: result.data || result,
-      error: null
+      error: null,
     };
   } catch (error) {
     return handleQueryError(error, context);
@@ -91,7 +88,7 @@ export async function executeWithErrorHandling(
  */
 export function showErrorToast(error, showToastFn) {
   if (!showToastFn) {
-    console.warn('No toast function provided to showErrorToast');
+    console.warn("No toast function provided to showErrorToast");
     return;
   }
 
@@ -99,7 +96,7 @@ export function showErrorToast(error, showToastFn) {
   showToastFn({
     type: toast.type,
     message: `${toast.message}\n${toast.description}`,
-    duration: toast.duration
+    duration: toast.duration,
   });
 }
 
@@ -111,14 +108,14 @@ export function showErrorToast(error, showToastFn) {
  */
 export function showSuccessToast(message, showToastFn, duration = 3000) {
   if (!showToastFn) {
-    console.warn('No toast function provided to showSuccessToast');
+    console.warn("No toast function provided to showSuccessToast");
     return;
   }
 
   showToastFn({
-    type: 'success',
+    type: "success",
     message,
-    duration
+    duration,
   });
 }
 
@@ -127,35 +124,35 @@ export function showSuccessToast(message, showToastFn, duration = 3000) {
  */
 export const OPERATION_ERRORS = {
   FETCH_NAMES: {
-    title: '📋 Cannot Load Names',
-    message: 'Unable to load the cat name list.',
-    suggestion: 'Please refresh the page or try again later.'
+    title: "📋 Cannot Load Names",
+    message: "Unable to load the cat name list.",
+    suggestion: "Please refresh the page or try again later.",
   },
   SAVE_RATING: {
-    title: '💾 Cannot Save Rating',
-    message: 'Your rating could not be saved.',
-    suggestion: 'Your progress may not be saved. Please check your connection.'
+    title: "💾 Cannot Save Rating",
+    message: "Your rating could not be saved.",
+    suggestion: "Your progress may not be saved. Please check your connection.",
   },
   LOAD_PROFILE: {
-    title: '👤 Cannot Load Profile',
-    message: 'Unable to load your profile data.',
-    suggestion: 'Try logging out and back in, or refresh the page.'
+    title: "👤 Cannot Load Profile",
+    message: "Unable to load your profile data.",
+    suggestion: "Try logging out and back in, or refresh the page.",
   },
   SAVE_SELECTION: {
-    title: '✅ Cannot Save Selection',
-    message: 'Your name selection could not be saved.',
-    suggestion: 'Try selecting the name again or refresh the page.'
+    title: "✅ Cannot Save Selection",
+    message: "Your name selection could not be saved.",
+    suggestion: "Try selecting the name again or refresh the page.",
   },
   HIDE_NAME: {
-    title: '🙈 Cannot Hide Name',
-    message: 'Unable to hide this name.',
-    suggestion: 'Please try again or refresh the page.'
+    title: "🙈 Cannot Hide Name",
+    message: "Unable to hide this name.",
+    suggestion: "Please try again or refresh the page.",
   },
   LOAD_TOURNAMENT: {
-    title: '🏆 Cannot Load Tournament',
-    message: 'Tournament data could not be loaded.',
-    suggestion: 'Try starting a new tournament or refresh the page.'
-  }
+    title: "🏆 Cannot Load Tournament",
+    message: "Tournament data could not be loaded.",
+    suggestion: "Try starting a new tournament or refresh the page.",
+  },
 };
 
 /**
@@ -163,13 +160,13 @@ export const OPERATION_ERRORS = {
  */
 export function getOperationError(operationType, originalError = null) {
   const operationError = OPERATION_ERRORS[operationType] || {
-    title: '❌ Operation Failed',
-    message: 'The requested operation could not be completed.',
-    suggestion: 'Please try again or contact support if the issue persists.'
+    title: "❌ Operation Failed",
+    message: "The requested operation could not be completed.",
+    suggestion: "Please try again or contact support if the issue persists.",
   };
 
   return {
     ...operationError,
-    originalError
+    originalError,
   };
 }

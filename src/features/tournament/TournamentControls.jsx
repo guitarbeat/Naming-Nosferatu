@@ -2,8 +2,8 @@
  * @module TournamentControls
  * @description Provides sound and game controls during a tournament.
  */
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   /**
    * --- AUTO-GENERATED DOCSTRING ---
@@ -20,9 +20,9 @@ import {
   SpeakerWaveIcon,
   SpeakerXMarkIcon,
   MusicalNoteIcon,
-  ExclamationCircleIcon
-} from '@heroicons/react/24/outline';
-import styles from './Tournament.module.css';
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/outline";
+import styles from "./Tournament.module.css";
 
 const TournamentControls = ({
   onEndEarly,
@@ -37,7 +37,7 @@ const TournamentControls = ({
   onRetryAudio,
 
   volume,
-  onVolumeChange
+  onVolumeChange,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
@@ -56,13 +56,13 @@ const TournamentControls = ({
       <div className={styles.soundControls}>
         <button
           onClick={audioError ? onRetryAudio : onToggleMute}
-          className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ''} ${audioError ? styles.error : ''}`}
+          className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
           aria-label={
-            isMuted ? 'Unmute tournament sounds' : 'Mute tournament sounds'
+            isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"
           }
           aria-pressed={isMuted}
           disabled={isTransitioning}
-          title={isMuted ? 'Unmute' : 'Mute'}
+          title={isMuted ? "Unmute" : "Mute"}
         >
           {isMuted ? (
             <SpeakerXMarkIcon className={styles.icon} aria-hidden="true" />
@@ -78,7 +78,7 @@ const TournamentControls = ({
             onMouseLeave={() => setShowVolume(false)}
           >
             <div
-              className={`${styles.volumeControls} ${showVolume ? styles.show : ''}`}
+              className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}
             >
               <label className={styles.volumeLabel}>
                 🎵
@@ -89,7 +89,7 @@ const TournamentControls = ({
                   step="0.1"
                   value={volume.music}
                   onChange={(e) =>
-                    onVolumeChange('music', parseFloat(e.target.value))
+                    onVolumeChange("music", parseFloat(e.target.value))
                   }
                   className={styles.volumeSlider}
                 />
@@ -103,7 +103,7 @@ const TournamentControls = ({
                   step="0.1"
                   value={volume.effects}
                   onChange={(e) =>
-                    onVolumeChange('effects', parseFloat(e.target.value))
+                    onVolumeChange("effects", parseFloat(e.target.value))
                   }
                   className={styles.volumeSlider}
                 />
@@ -121,7 +121,7 @@ const TournamentControls = ({
             title={
               trackInfo
                 ? `Now Playing: ${trackInfo.name}\nClick for next track`
-                : 'Next track'
+                : "Next track"
             }
           >
             <MusicalNoteIcon className={styles.icon} aria-hidden="true" />
@@ -131,14 +131,14 @@ const TournamentControls = ({
         {!isMuted && (
           <button
             onClick={onToggleShuffle}
-            className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ''}`}
-            aria-label={isShuffle ? 'Disable shuffle' : 'Enable shuffle'}
+            className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
+            aria-label={isShuffle ? "Disable shuffle" : "Enable shuffle"}
             aria-pressed={isShuffle}
             disabled={isTransitioning}
             title={
               isShuffle
-                ? 'Shuffle: On (click to turn off)'
-                : 'Shuffle: Off (click to turn on)'
+                ? "Shuffle: On (click to turn off)"
+                : "Shuffle: Off (click to turn on)"
             }
           >
             <span className={styles.icon} aria-hidden="true">
@@ -215,7 +215,7 @@ const TournamentControls = ({
   );
 };
 
-TournamentControls.displayName = 'TournamentControls';
+TournamentControls.displayName = "TournamentControls";
 
 TournamentControls.propTypes = {
   onEndEarly: PropTypes.func.isRequired,
@@ -231,9 +231,9 @@ TournamentControls.propTypes = {
 
   volume: PropTypes.shape({
     music: PropTypes.number,
-    effects: PropTypes.number
+    effects: PropTypes.number,
   }).isRequired,
-  onVolumeChange: PropTypes.func.isRequired
+  onVolumeChange: PropTypes.func.isRequired,
 };
 
 export default TournamentControls;

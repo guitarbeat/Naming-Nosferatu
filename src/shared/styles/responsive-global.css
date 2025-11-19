@@ -76,15 +76,15 @@
 
   /* Ensure all interactive elements meet touch target requirements */
   button,
-  input[type='button'],
-  input[type='submit'],
-  input[type='reset'],
-  input[type='checkbox'],
-  input[type='radio'],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"],
   .btn,
-  a[role='button'],
+  a[role="button"],
   .nav-menu button,
-  [role='button'],
+  [role="button"],
   .clickable {
     min-width: var(--mobile-touch-target-min);
     min-height: var(--mobile-touch-target-min);
@@ -92,13 +92,13 @@
   }
 
   /* Form inputs should have minimum height for touch */
-  input[type='text'],
-  input[type='email'],
-  input[type='password'],
-  input[type='search'],
-  input[type='tel'],
-  input[type='url'],
-  input[type='number'],
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
   textarea,
   select {
     min-height: var(--mobile-input-height);

@@ -9,12 +9,12 @@
  */
 export function devLog(...args) {
   try {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[DEV]', ...args);
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[DEV]", ...args);
     }
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Logger error:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Logger error:", error);
     }
   }
 }
@@ -30,8 +30,12 @@ export const Logger = {
    * @param {Object} data - Additional data to log
    */
   info: (category, message, data = {}) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[INFO:${category}]`, message, Object.keys(data).length > 0 ? data : '');
+    if (process.env.NODE_ENV === "development") {
+      console.log(
+        `[INFO:${category}]`,
+        message,
+        Object.keys(data).length > 0 ? data : "",
+      );
     }
   },
 
@@ -42,8 +46,12 @@ export const Logger = {
    * @param {Object} data - Additional data
    */
   warn: (category, message, data = {}) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`[WARN:${category}]`, message, Object.keys(data).length > 0 ? data : '');
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `[WARN:${category}]`,
+        message,
+        Object.keys(data).length > 0 ? data : "",
+      );
     }
   },
 
@@ -54,7 +62,7 @@ export const Logger = {
    * @param {Error|Object} error - Error object or data
    */
   error: (category, message, error = {}) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.error(`[ERROR:${category}]`, message, error);
     }
   },
@@ -66,8 +74,15 @@ export const Logger = {
    * @param {Object} data - Additional data
    */
   debug: (category, message, data = {}) => {
-    if (process.env.NODE_ENV === 'development' && process.env.REACT_APP_DEBUG === 'true') {
-      console.debug(`[DEBUG:${category}]`, message, Object.keys(data).length > 0 ? data : '');
+    if (
+      process.env.NODE_ENV === "development" &&
+      process.env.REACT_APP_DEBUG === "true"
+    ) {
+      console.debug(
+        `[DEBUG:${category}]`,
+        message,
+        Object.keys(data).length > 0 ? data : "",
+      );
     }
   },
 
@@ -78,14 +93,15 @@ export const Logger = {
    * @param {Object} metadata - Additional metadata
    */
   performance: (operation, duration, metadata = {}) => {
-    if (process.env.NODE_ENV === 'development') {
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
+    if (process.env.NODE_ENV === "development") {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        );
       console.log(
-        `[PERF${isMobile ? ':MOBILE' : ''}]`,
+        `[PERF${isMobile ? ":MOBILE" : ""}]`,
         `${operation}: ${duration.toFixed(2)}ms`,
-        Object.keys(metadata).length > 0 ? metadata : ''
+        Object.keys(metadata).length > 0 ? metadata : "",
       );
     }
   },
@@ -96,7 +112,7 @@ export const Logger = {
    * @param {Function} fn - Function to execute within group
    */
   group: (label, fn) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.group(label);
       try {
         fn();
@@ -106,6 +122,5 @@ export const Logger = {
     } else {
       fn();
     }
-  }
+  },
 };
-

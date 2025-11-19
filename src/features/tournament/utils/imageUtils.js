@@ -98,4 +98,3 @@ export const handleImageResizeEnd = (openImages) => {
     resizeHandle: null,
   }));
 };
-

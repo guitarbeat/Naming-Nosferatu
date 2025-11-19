@@ -241,12 +241,14 @@ const ErrorList = ({
                 <div className={styles.listDetails}>
                   {error.errorType && (
                     <div className={styles.listDetailRow}>
-                      <strong>Error Type:</strong> <code>{error.errorType}</code>
+                      <strong>Error Type:</strong>{" "}
+                      <code>{error.errorType}</code>
                     </div>
                   )}
                   {error.severity && (
                     <div className={styles.listDetailRow}>
-                      <strong>Severity Level:</strong> <code>{error.severity}</code>
+                      <strong>Severity Level:</strong>{" "}
+                      <code>{error.severity}</code>
                     </div>
                   )}
                   {error.context && (
@@ -263,7 +265,7 @@ const ErrorList = ({
                     <div className={styles.listDetailRow}>
                       <strong>Technical Details:</strong>
                       <pre className={styles.listErrorStack}>
-                        {typeof error.originalError === 'object'
+                        {typeof error.originalError === "object"
                           ? JSON.stringify(error.originalError, null, 2)
                           : error.originalError.toString()}
                       </pre>

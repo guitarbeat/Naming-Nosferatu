@@ -127,7 +127,7 @@ const buildSelectionInsights = (insights) => {
       icon,
       title,
       content: insights[key] || fallback,
-    })
+    }),
   );
 };
 
@@ -170,7 +170,7 @@ const ProfileStats = ({
   const baseStatCards = buildStatCards(stats, STAT_CARD_SECTIONS.base);
   const selectionStatCards = buildStatCards(
     selectionStats,
-    STAT_CARD_SECTIONS.selection
+    STAT_CARD_SECTIONS.selection,
   );
   const selectionInsights = buildSelectionInsights(selectionStats?.insights);
 
@@ -245,21 +245,21 @@ ProfileStats.propTypes = {
         id: PropTypes.string,
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      })
+      }),
     ),
     mostWins: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      })
+      }),
     ),
     recent: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      })
+      }),
     ),
   }),
   isLoading: PropTypes.bool,

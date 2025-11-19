@@ -4,10 +4,10 @@
  * Handles randomized names, selected options, transitions, and UI visibility states.
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useTournament } from '../../../core/hooks/useTournament';
-import { shuffleArray } from '../../../shared/utils/coreUtils';
-import { TOURNAMENT_TIMING } from '../../../core/constants';
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useTournament } from "../../../core/hooks/useTournament";
+import { shuffleArray } from "../../../shared/utils/coreUtils";
+import { TOURNAMENT_TIMING } from "../../../core/constants";
 
 /**
  * Custom hook for tournament state management
@@ -17,7 +17,12 @@ import { TOURNAMENT_TIMING } from '../../../core/constants';
  * @param {Function} _onVote - Vote callback (unused but kept for API compatibility)
  * @returns {Object} Tournament state and handlers
  */
-export function useTournamentState(names, existingRatings, onComplete, _onVote) {
+export function useTournamentState(
+  names,
+  existingRatings,
+  onComplete,
+  _onVote,
+) {
   const [randomizedNames, setRandomizedNames] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -37,7 +42,7 @@ export function useTournamentState(names, existingRatings, onComplete, _onVote) 
   const namesIdentity = useMemo(
     () =>
       Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : "",
-    [names]
+    [names],
   );
   useEffect(() => {
     if (Array.isArray(names) && names.length > 0) {
@@ -119,4 +124,3 @@ export function useTournamentState(names, existingRatings, onComplete, _onVote) 
     tournament,
   };
 }
-

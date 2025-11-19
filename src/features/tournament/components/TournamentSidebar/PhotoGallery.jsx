@@ -89,7 +89,10 @@ function PhotoGallery({
               style={{ display: "none" }}
               onChange={handleFileUpload}
             />
-            <label htmlFor="gallery-upload" className={styles.photoUploadButton}>
+            <label
+              htmlFor="gallery-upload"
+              className={styles.photoUploadButton}
+            >
               Upload Photos
             </label>
           </div>
@@ -110,4 +113,3 @@ PhotoGallery.propTypes = {
 };
 
 export default PhotoGallery;
-

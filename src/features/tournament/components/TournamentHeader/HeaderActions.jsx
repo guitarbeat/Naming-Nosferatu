@@ -51,9 +51,7 @@ function HeaderActions({
           showCatPictures ? styles.headerActionButtonActive : ""
         }`}
         aria-label={
-          showCatPictures
-            ? "Hide cat pictures"
-            : "Show cat pictures on cards"
+          showCatPictures ? "Hide cat pictures" : "Show cat pictures on cards"
         }
         title="Add random cat pictures to make it more like Tinder! 🐱"
       >
@@ -84,4 +82,3 @@ HeaderActions.propTypes = {
 };
 
 export default HeaderActions;
-

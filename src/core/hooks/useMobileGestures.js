@@ -3,8 +3,8 @@
  * @description React hook for mobile gesture interactions
  */
 
-import { useEffect, useRef, useCallback } from 'react';
-import mobileGestures from '../../shared/utils/mobileGestures';
+import { useEffect, useRef, useCallback } from "react";
+import mobileGestures from "../../shared/utils/mobileGestures";
 
 /**
  * Custom hook for mobile gesture interactions
@@ -24,7 +24,7 @@ function useMobileGestures(options = {}) {
     onTap,
     onDoubleTap,
     hapticFeedback = true,
-    preventDefault = true
+    preventDefault = true,
   } = options;
 
   const gestureIds = useRef([]);
@@ -35,59 +35,79 @@ function useMobileGestures(options = {}) {
     const newGestureIds = [];
 
     if (enableSwipe && onSwipe) {
-      const swipeId = mobileGestures.register('swipe', (data) => {
-        if (hapticFeedback) {
-          mobileGestures.addHapticFeedback('light');
-        }
-        onSwipe(data);
-      }, { preventDefault });
+      const swipeId = mobileGestures.register(
+        "swipe",
+        (data) => {
+          if (hapticFeedback) {
+            mobileGestures.addHapticFeedback("light");
+          }
+          onSwipe(data);
+        },
+        { preventDefault },
+      );
       newGestureIds.push(swipeId);
     }
 
     if (enablePinch && onPinch) {
-      const pinchId = mobileGestures.register('pinch', (data) => {
-        if (hapticFeedback) {
-          mobileGestures.addHapticFeedback('medium');
-        }
-        onPinch(data);
-      }, { preventDefault });
+      const pinchId = mobileGestures.register(
+        "pinch",
+        (data) => {
+          if (hapticFeedback) {
+            mobileGestures.addHapticFeedback("medium");
+          }
+          onPinch(data);
+        },
+        { preventDefault },
+      );
       newGestureIds.push(pinchId);
     }
 
     if (enableLongPress && onLongPress) {
-      const longPressId = mobileGestures.register('longPress', (data) => {
-        if (hapticFeedback) {
-          mobileGestures.addHapticFeedback('heavy');
-        }
-        onLongPress(data);
-      }, { preventDefault });
+      const longPressId = mobileGestures.register(
+        "longPress",
+        (data) => {
+          if (hapticFeedback) {
+            mobileGestures.addHapticFeedback("heavy");
+          }
+          onLongPress(data);
+        },
+        { preventDefault },
+      );
       newGestureIds.push(longPressId);
     }
 
     if (enableTap && onTap) {
-      const tapId = mobileGestures.register('tap', (data) => {
-        if (hapticFeedback) {
-          mobileGestures.addHapticFeedback('light');
-        }
-        onTap(data);
-      }, { preventDefault });
+      const tapId = mobileGestures.register(
+        "tap",
+        (data) => {
+          if (hapticFeedback) {
+            mobileGestures.addHapticFeedback("light");
+          }
+          onTap(data);
+        },
+        { preventDefault },
+      );
       newGestureIds.push(tapId);
     }
 
     if (enableDoubleTap && onDoubleTap) {
-      const doubleTapId = mobileGestures.register('doubleTap', (data) => {
-        if (hapticFeedback) {
-          mobileGestures.addHapticFeedback('success');
-        }
-        onDoubleTap(data);
-      }, { preventDefault });
+      const doubleTapId = mobileGestures.register(
+        "doubleTap",
+        (data) => {
+          if (hapticFeedback) {
+            mobileGestures.addHapticFeedback("success");
+          }
+          onDoubleTap(data);
+        },
+        { preventDefault },
+      );
       newGestureIds.push(doubleTapId);
     }
 
     gestureIds.current = newGestureIds;
 
     return () => {
-      newGestureIds.forEach(id => mobileGestures.unregister(id));
+      newGestureIds.forEach((id) => mobileGestures.unregister(id));
     };
   }, [
     enableSwipe,
@@ -101,7 +121,7 @@ function useMobileGestures(options = {}) {
     onTap,
     onDoubleTap,
     hapticFeedback,
-    preventDefault
+    preventDefault,
   ]);
 
   // Attach event listeners to element
@@ -113,14 +133,16 @@ function useMobileGestures(options = {}) {
     const handleTouchMove = (e) => mobileGestures.handleTouchMove(e);
     const handleTouchEnd = (e) => mobileGestures.handleTouchEnd(e);
 
-    element.addEventListener('touchstart', handleTouchStart, { passive: false });
-    element.addEventListener('touchmove', handleTouchMove, { passive: false });
-    element.addEventListener('touchend', handleTouchEnd, { passive: false });
+    element.addEventListener("touchstart", handleTouchStart, {
+      passive: false,
+    });
+    element.addEventListener("touchmove", handleTouchMove, { passive: false });
+    element.addEventListener("touchend", handleTouchEnd, { passive: false });
 
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart);
-      element.removeEventListener('touchmove', handleTouchMove);
-      element.removeEventListener('touchend', handleTouchEnd);
+      element.removeEventListener("touchstart", handleTouchStart);
+      element.removeEventListener("touchmove", handleTouchMove);
+      element.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -146,7 +168,7 @@ function useMobileGestures(options = {}) {
     addHapticFeedback,
     getTouchDeviceInfo,
     enableGestures,
-    disableGestures
+    disableGestures,
   };
 }
 

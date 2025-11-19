@@ -46,7 +46,7 @@ const ProfileNameList = ({
   hideSelectAllButton = false,
   onSelectAllClick,
 }) => {
-  const currentUserName = ratings?.userName ?? '';
+  const currentUserName = ratings?.userName ?? "";
 
   // * Filter and sort names based on current filters
   const filteredAndSortedNames = useMemo(() => {
@@ -87,7 +87,7 @@ const ProfileNameList = ({
 
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, currentUserName)
+          nameMatchesOwner(name, currentUserName),
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
         filtered = filtered.filter((name) => {
@@ -95,7 +95,9 @@ const ProfileNameList = ({
           return nameOwner && nameOwner !== currentUserName;
         });
       } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
-        filtered = filtered.filter((name) => nameMatchesOwner(name, userFilter));
+        filtered = filtered.filter((name) =>
+          nameMatchesOwner(name, userFilter),
+        );
       }
     }
 
@@ -153,8 +155,8 @@ const ProfileNameList = ({
           bValue = b.user_rating || TOURNAMENT.DEFAULT_RATING;
           break;
         case FILTER_OPTIONS.SORT.NAME:
-          aValue = a.name.toLowerCase();
-          bValue = b.name.toLowerCase();
+          aValue = (a?.name || "").toLowerCase();
+          bValue = (b?.name || "").toLowerCase();
           break;
         case FILTER_OPTIONS.SORT.WINS:
           aValue = a.user_wins || 0;
@@ -362,84 +364,88 @@ const ProfileNameList = ({
           <div className={styles.filterSection}>
             <div className={styles.filterHeader}>
               <span className={styles.resultsCount}>
-                {filteredCount}{filteredCount !== totalCount ? `/${totalCount}` : ''} {filteredCount !== totalCount && <span className={styles.filteredIndicator}>filtered</span>}
+                {filteredCount}
+                {filteredCount !== totalCount ? `/${totalCount}` : ""}{" "}
+                {filteredCount !== totalCount && (
+                  <span className={styles.filteredIndicator}>filtered</span>
+                )}
               </span>
             </div>
             <div className={styles.filtersGrid}>
-        <div className={styles.filterGroup}>
-          <label>Status</label>
-          <Select
-            name="profile-status-filter"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            options={statusOptions}
-            className={styles.filterSelect}
-          />
-        </div>
+              <div className={styles.filterGroup}>
+                <label>Status</label>
+                <Select
+                  name="profile-status-filter"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  options={statusOptions}
+                  className={styles.filterSelect}
+                />
+              </div>
 
-        {showUserFilter && (
-          <div className={styles.filterGroup}>
-            <label>User</label>
-            <Select
-              name="profile-user-filter"
-              value={userFilter}
-              onChange={(e) => setUserFilter(e.target.value)}
-              options={userOptions}
-              className={styles.filterSelect}
-            />
-          </div>
-        )}
+              {showUserFilter && (
+                <div className={styles.filterGroup}>
+                  <label>User</label>
+                  <Select
+                    name="profile-user-filter"
+                    value={userFilter}
+                    onChange={(e) => setUserFilter(e.target.value)}
+                    options={userOptions}
+                    className={styles.filterSelect}
+                  />
+                </div>
+              )}
 
-        <div className={styles.filterGroup}>
-          <label>Sort</label>
-          <Select
-            name="profile-sort-filter"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            options={sortOptions}
-            className={styles.filterSelect}
-          />
-        </div>
+              <div className={styles.filterGroup}>
+                <label>Sort</label>
+                <Select
+                  name="profile-sort-filter"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  options={sortOptions}
+                  className={styles.filterSelect}
+                />
+              </div>
 
-        <div className={styles.filterGroup}>
-          <label>Order</label>
-          <button
-            type="button"
-            onClick={() =>
-              setSortOrder(
-                sortOrder === FILTER_OPTIONS.ORDER.ASC
-                  ? FILTER_OPTIONS.ORDER.DESC
-                  : FILTER_OPTIONS.ORDER.ASC
-              )
-            }
-            className={styles.sortOrderButton}
-          >
-            {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-          </button>
-        </div>
+              <div className={styles.filterGroup}>
+                <label>Order</label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSortOrder(
+                      sortOrder === FILTER_OPTIONS.ORDER.ASC
+                        ? FILTER_OPTIONS.ORDER.DESC
+                        : FILTER_OPTIONS.ORDER.ASC,
+                    )
+                  }
+                  className={styles.sortOrderButton}
+                >
+                  {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
+                </button>
+              </div>
 
-        {selectionStats && (
-          <div className={styles.filterGroup}>
-            <label>Selection</label>
-            <Select
-              name="profile-selection-filter"
-              value={selectionFilter}
-              onChange={(e) => setSelectionFilter(e.target.value)}
-              options={selectionFilterOptions}
-              className={styles.filterSelect}
-            />
-          </div>
-        )}
+              {selectionStats && (
+                <div className={styles.filterGroup}>
+                  <label>Selection</label>
+                  <Select
+                    name="profile-selection-filter"
+                    value={selectionFilter}
+                    onChange={(e) => setSelectionFilter(e.target.value)}
+                    options={selectionFilterOptions}
+                    className={styles.filterSelect}
+                  />
+                </div>
+              )}
 
-        <div className={styles.filterGroup}>
-          <button
-            type="button"
-            onClick={onApplyFilters}
-            className={styles.applyFiltersButton}
-          >
-            Apply
-          </button>
-        </div>
+              <div className={styles.filterGroup}>
+                <button
+                  type="button"
+                  onClick={onApplyFilters}
+                  className={styles.applyFiltersButton}
+                >
+                  Apply
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -454,38 +460,40 @@ const ProfileNameList = ({
                 selected
               </div>
             )}
-            {!hideSelectAllButton && isAdmin && filteredAndSortedNames.length > 0 && (
-              <div className={styles.bulkControls}>
-                <Button
-                  onClick={onSelectAllClick || handleSelectAll}
-                  variant="secondary"
-                  size="small"
-                  title={allVisibleSelected ? "Deselect All" : "Select All"}
-                >
-                  {allVisibleSelected ? "Deselect All" : "Select All"}
-                </Button>
-                {selectedNames.size > 0 && (
-                  <>
-                    <Button
-                      onClick={handleBulkHide}
-                      variant="danger"
-                      size="small"
-                      title="Hide Selected Names"
-                    >
-                      Hide Selected
-                    </Button>
-                    <Button
-                      onClick={handleBulkUnhide}
-                      variant="primary"
-                      size="small"
-                      title="Unhide Selected Names"
-                    >
-                      Unhide Selected
-                    </Button>
-                  </>
-                )}
-              </div>
-            )}
+            {!hideSelectAllButton &&
+              isAdmin &&
+              filteredAndSortedNames.length > 0 && (
+                <div className={styles.bulkControls}>
+                  <Button
+                    onClick={onSelectAllClick || handleSelectAll}
+                    variant="secondary"
+                    size="small"
+                    title={allVisibleSelected ? "Deselect All" : "Select All"}
+                  >
+                    {allVisibleSelected ? "Deselect All" : "Select All"}
+                  </Button>
+                  {selectedNames.size > 0 && (
+                    <>
+                      <Button
+                        onClick={handleBulkHide}
+                        variant="danger"
+                        size="small"
+                        title="Hide Selected Names"
+                      >
+                        Hide Selected
+                      </Button>
+                      <Button
+                        onClick={handleBulkUnhide}
+                        variant="primary"
+                        size="small"
+                        title="Unhide Selected Names"
+                      >
+                        Unhide Selected
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
           </>
         )}
       </div>
@@ -541,7 +549,7 @@ const ProfileNameList = ({
                       ? Math.round(
                           (name.user_wins /
                             (name.user_wins + name.user_losses)) *
-                            100
+                            100,
                         )
                       : 0,
                   totalMatches: (name.user_wins || 0) + (name.user_losses || 0),

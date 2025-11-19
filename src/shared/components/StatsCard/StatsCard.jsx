@@ -1,7 +1,7 @@
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import Card from '../Card';
-import styles from './StatsCard.module.css';
+import React, { memo } from "react";
+import PropTypes from "prop-types";
+import Card from "../Card";
+import styles from "./StatsCard.module.css";
 
 /**
  * Generic stats card component used across the app.
@@ -13,28 +13,28 @@ function StatsCard({
   label,
   value,
   emoji,
-  variant: tone = 'default',
-  className = '',
-  labelClassName = '',
-  valueClassName = '',
-  emojiClassName = '',
-  cardVariant = 'elevated',
-  cardPadding = 'medium',
-  cardShadow = 'medium',
-  cardBackground = 'glass',
+  variant: tone = "default",
+  className = "",
+  labelClassName = "",
+  valueClassName = "",
+  emojiClassName = "",
+  cardVariant = "elevated",
+  cardPadding = "medium",
+  cardShadow = "medium",
+  cardBackground = "glass",
   ...rest
 }) {
-  const labelText = title || label || 'Statistic';
+  const labelText = title || label || "Statistic";
   const valueText =
-    typeof value === 'string' || typeof value === 'number' ? value : '';
+    typeof value === "string" || typeof value === "number" ? value : "";
   const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
   const cardClasses = [
     styles.card,
-    tone !== 'default' && styles[tone],
-    className
+    tone !== "default" && styles[tone],
+    className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
     <Card
@@ -69,25 +69,33 @@ function StatsCard({
 StatsCard.propTypes = {
   title: PropTypes.string,
   label: PropTypes.string,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node])
-    .isRequired,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.node,
+  ]).isRequired,
   emoji: PropTypes.node,
   variant: PropTypes.oneOf([
-    'default',
-    'primary',
-    'success',
-    'warning',
-    'info',
-    'danger'
+    "default",
+    "primary",
+    "success",
+    "warning",
+    "info",
+    "danger",
   ]),
   className: PropTypes.string,
   labelClassName: PropTypes.string,
   valueClassName: PropTypes.string,
   emojiClassName: PropTypes.string,
-  cardVariant: PropTypes.oneOf(['default', 'elevated', 'outlined', 'filled']),
-  cardPadding: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'xl']),
-  cardShadow: PropTypes.oneOf(['none', 'small', 'medium', 'large', 'xl']),
-  cardBackground: PropTypes.oneOf(['solid', 'glass', 'gradient', 'transparent'])
+  cardVariant: PropTypes.oneOf(["default", "elevated", "outlined", "filled"]),
+  cardPadding: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
+  cardShadow: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
+  cardBackground: PropTypes.oneOf([
+    "solid",
+    "glass",
+    "gradient",
+    "transparent",
+  ]),
 };
 
 export default memo(StatsCard);

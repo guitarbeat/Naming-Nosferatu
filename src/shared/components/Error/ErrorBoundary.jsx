@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { ErrorManager } from '../../services/errorManager';
+import React from "react";
+import PropTypes from "prop-types";
+import { ErrorManager } from "../../services/errorManager";
 
 /**
  * Minimal React error boundary implementation that mirrors the key ergonomics
@@ -25,19 +25,19 @@ class ErrorBoundary extends React.Component {
     const { onError } = this.props;
 
     // * Use ErrorManager for consistent error handling
-    const context = errorInfo?.componentStack 
-      ? `React Component Error in ${errorInfo.componentStack.split('\n')[1]?.trim() || 'Unknown Component'}`
-      : 'React Component Error';
-    
+    const context = errorInfo?.componentStack
+      ? `React Component Error in ${errorInfo.componentStack.split("\n")[1]?.trim() || "Unknown Component"}`
+      : "React Component Error";
+
     ErrorManager.handleError(error, context, {
       isRetryable: true,
       affectsUserData: false,
       isCritical: false,
       componentStack: errorInfo?.componentStack,
-      errorBoundary: true
+      errorBoundary: true,
     });
 
-    if (typeof onError === 'function') {
+    if (typeof onError === "function") {
       onError(error, errorInfo);
     }
   }
@@ -53,7 +53,9 @@ class ErrorBoundary extends React.Component {
     if (Array.isArray(resetKeys) && Array.isArray(prevProps.resetKeys)) {
       const hasChanges =
         resetKeys.length !== prevProps.resetKeys.length ||
-        resetKeys.some((key, index) => !Object.is(key, prevProps.resetKeys[index]));
+        resetKeys.some(
+          (key, index) => !Object.is(key, prevProps.resetKeys[index]),
+        );
 
       if (hasChanges) {
         this.resetErrorBoundary();
@@ -66,7 +68,7 @@ class ErrorBoundary extends React.Component {
 
     this.setState({ error: null });
 
-    if (typeof onReset === 'function') {
+    if (typeof onReset === "function") {
       onReset();
     }
   }
@@ -74,8 +76,13 @@ class ErrorBoundary extends React.Component {
   renderFallback(error) {
     const { FallbackComponent } = this.props;
 
-    if (typeof FallbackComponent === 'function') {
-      return <FallbackComponent error={error} resetErrorBoundary={this.resetErrorBoundary} />;
+    if (typeof FallbackComponent === "function") {
+      return (
+        <FallbackComponent
+          error={error}
+          resetErrorBoundary={this.resetErrorBoundary}
+        />
+      );
     }
 
     if (React.isValidElement(FallbackComponent)) {

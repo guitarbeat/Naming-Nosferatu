@@ -35,7 +35,7 @@
 export class PreferenceSorter {
   constructor(items) {
     if (!Array.isArray(items)) {
-      throw new Error('PreferenceSorter requires an array of items');
+      throw new Error("PreferenceSorter requires an array of items");
     }
     this.items = items;
     this.preferences = new Map();
@@ -55,9 +55,9 @@ export class PreferenceSorter {
 
   getName(item) {
     if (item == null) {
-      return '';
+      return "";
     }
-    return typeof item === 'string' ? item : item.name || '';
+    return typeof item === "string" ? item : item.name || "";
   }
 
   addPreference(item1, item2, value) {
@@ -67,7 +67,7 @@ export class PreferenceSorter {
     this.history.push({
       a: this.getName(item1),
       b: this.getName(item2),
-      value
+      value,
     });
   }
 
@@ -118,8 +118,19 @@ export class PreferenceSorter {
 
   async mergeSubGroups(left, mid, right, compareCallback) {
     // Validate bounds
-    if (left < 0 || right >= this.items.length || left > right || mid < left || mid > right) {
-      console.error('Invalid merge bounds:', { left, mid, right, itemsLength: this.items.length });
+    if (
+      left < 0 ||
+      right >= this.items.length ||
+      left > right ||
+      mid < left ||
+      mid > right
+    ) {
+      console.error("Invalid merge bounds:", {
+        left,
+        mid,
+        right,
+        itemsLength: this.items.length,
+      });
       return;
     }
 
@@ -131,7 +142,11 @@ export class PreferenceSorter {
       try {
         // Bounds check before accessing
         if (i >= this.items.length || j >= this.items.length) {
-          console.error('Array index out of bounds during merge:', { i, j, itemsLength: this.items.length });
+          console.error("Array index out of bounds during merge:", {
+            i,
+            j,
+            itemsLength: this.items.length,
+          });
           break;
         }
         const result = await compareCallback(this.items[i], this.items[j]);
@@ -148,7 +163,7 @@ export class PreferenceSorter {
           merged.push(this.items[i++]);
         }
       } catch (error) {
-        console.error('Comparison failed:', error);
+        console.error("Comparison failed:", error);
         // Handle cancellation or fallback strategy
       }
     }

@@ -77,4 +77,3 @@ PhotoThumbnail.propTypes = {
 };
 
 export default PhotoThumbnail;
-

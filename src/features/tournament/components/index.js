@@ -15,7 +15,17 @@ export { NameSelection, FilterControls, ResultsInfo } from "./NameSelection";
 export { SwipeableNameCards, SwipeCard, SwipeControls } from "./SwipeMode";
 
 // TournamentHeader components
-export { TournamentHeader, HeaderActions, NameCounter, AdminStats } from "./TournamentHeader";
+export {
+  TournamentHeader,
+  HeaderActions,
+  NameCounter,
+  AdminStats,
+} from "./TournamentHeader";
 
 // TournamentSidebar components
-export { TournamentSidebar, TournamentInfo, PhotoGallery, PhotoThumbnail } from "./TournamentSidebar";
+export {
+  TournamentSidebar,
+  TournamentInfo,
+  PhotoGallery,
+  PhotoThumbnail,
+} from "./TournamentSidebar";

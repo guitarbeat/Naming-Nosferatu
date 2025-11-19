@@ -3,8 +3,8 @@
  * @description Error diagnostics and environment collection utilities.
  */
 
-import { ERROR_TYPES } from './constants';
-import { createHash, getGlobalScope } from './helpers';
+import { ERROR_TYPES } from "./constants";
+import { createHash, getGlobalScope } from "./helpers";
 
 /**
  * * Builds comprehensive diagnostics for an error
@@ -16,15 +16,25 @@ import { createHash, getGlobalScope } from './helpers';
 export function buildDiagnostics(errorInfo, context, metadata) {
   const environment = collectEnvironmentSnapshot();
   const stackFrames = extractStackFrames(errorInfo.stack);
-  const debugHints = deriveDebugHints(errorInfo, context, metadata, environment);
-  const fingerprint = generateFingerprint(errorInfo, context, metadata, environment);
+  const debugHints = deriveDebugHints(
+    errorInfo,
+    context,
+    metadata,
+    environment,
+  );
+  const fingerprint = generateFingerprint(
+    errorInfo,
+    context,
+    metadata,
+    environment,
+  );
 
   return {
     fingerprint,
     stackFrames,
     environment,
     debugHints,
-    relatedIdentifiers: collectRelatedIdentifiers(metadata)
+    relatedIdentifiers: collectRelatedIdentifiers(metadata),
   };
 }
 
@@ -34,26 +44,27 @@ export function buildDiagnostics(errorInfo, context, metadata) {
  * @returns {Array} Array of parsed stack frames
  */
 export function extractStackFrames(stack) {
-  if (!stack || typeof stack !== 'string') {
+  if (!stack || typeof stack !== "string") {
     return [];
   }
 
   return stack
-    .split('\n')
+    .split("\n")
     .slice(1)
-    .map(line => line.trim())
+    .map((line) => line.trim())
     .map((frame) => {
-      const stackRegex = /at (?:(?<functionName>[^\s]+)\s+)?\(?(?<file>[^:]+):(?<line>\d+):(?<column>\d+)\)?/;
+      const stackRegex =
+        /at (?:(?<functionName>[^\s]+)\s+)?\(?(?<file>[^:]+):(?<line>\d+):(?<column>\d+)\)?/;
       const match = frame.match(stackRegex);
       if (!match || !match.groups) {
         return { raw: frame };
       }
 
       return {
-        functionName: match.groups.functionName || 'anonymous',
+        functionName: match.groups.functionName || "anonymous",
         file: match.groups.file,
         line: Number.parseInt(match.groups.line, 10),
-        column: Number.parseInt(match.groups.column, 10)
+        column: Number.parseInt(match.groups.column, 10),
       };
     });
 }
@@ -64,14 +75,17 @@ export function extractStackFrames(stack) {
  */
 export function collectEnvironmentSnapshot() {
   const GLOBAL_SCOPE = getGlobalScope();
-  
+
   try {
     const { navigator = {}, location = {}, performance = {} } = GLOBAL_SCOPE;
     const memory = navigator.deviceMemory ?? navigator.hardwareConcurrency;
     const timing = performance?.timing || {};
     const timezone = (() => {
       try {
-        if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+        if (
+          typeof Intl !== "undefined" &&
+          typeof Intl.DateTimeFormat === "function"
+        ) {
           return new Intl.DateTimeFormat().resolvedOptions().timeZone;
         }
       } catch (_) {
@@ -89,18 +103,19 @@ export function collectEnvironmentSnapshot() {
       timezone,
       viewport: {
         width: GLOBAL_SCOPE.innerWidth,
-        height: GLOBAL_SCOPE.innerHeight
+        height: GLOBAL_SCOPE.innerHeight,
       },
       location: location.href,
       performance: {
         navigationStart: timing.navigationStart,
         domComplete: timing.domComplete,
-        firstPaint: performance?.getEntriesByName?.('first-paint')?.[0]?.startTime
-      }
+        firstPaint:
+          performance?.getEntriesByName?.("first-paint")?.[0]?.startTime,
+      },
     };
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to collect environment snapshot:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Failed to collect environment snapshot:", error);
     }
     return {};
   }
@@ -119,7 +134,7 @@ export function deriveDebugHints(errorInfo, context, metadata, environment) {
 
   if (errorInfo.cause) {
     let causeDetail;
-    if (typeof errorInfo.cause === 'string') {
+    if (typeof errorInfo.cause === "string") {
       causeDetail = errorInfo.cause;
     } else {
       try {
@@ -130,49 +145,52 @@ export function deriveDebugHints(errorInfo, context, metadata, environment) {
     }
 
     hints.push({
-      title: 'Root cause provided',
-      detail: causeDetail
+      title: "Root cause provided",
+      detail: causeDetail,
     });
   }
 
   if (metadata?.request) {
     hints.push({
-      title: 'Network request context',
-      detail: `Request to ${metadata.request?.url || 'unknown URL'} failed with status ${metadata.request?.status ?? 'unknown'}`
+      title: "Network request context",
+      detail: `Request to ${metadata.request?.url || "unknown URL"} failed with status ${metadata.request?.status ?? "unknown"}`,
     });
   }
 
   switch (errorInfo.type) {
     case ERROR_TYPES.NETWORK:
       hints.push({
-        title: 'Connectivity check',
-        detail: environment.online === false
-          ? 'Navigator reports the client is offline.'
-          : 'Verify the network request payload and server availability.'
+        title: "Connectivity check",
+        detail:
+          environment.online === false
+            ? "Navigator reports the client is offline."
+            : "Verify the network request payload and server availability.",
       });
       break;
     case ERROR_TYPES.AUTH:
       hints.push({
-        title: 'Authentication hint',
-        detail: 'Confirm that the session token is valid and has not expired.'
+        title: "Authentication hint",
+        detail: "Confirm that the session token is valid and has not expired.",
       });
       break;
     case ERROR_TYPES.DATABASE:
       hints.push({
-        title: 'Database hint',
-        detail: 'Check Supabase policies or stored procedures relevant to this operation.'
+        title: "Database hint",
+        detail:
+          "Check Supabase policies or stored procedures relevant to this operation.",
       });
       break;
     case ERROR_TYPES.VALIDATION:
       hints.push({
-        title: 'Validation hint',
-        detail: 'Compare the provided payload against the schema definition.'
+        title: "Validation hint",
+        detail: "Compare the provided payload against the schema definition.",
       });
       break;
     case ERROR_TYPES.RUNTIME:
       hints.push({
-        title: 'Runtime hint',
-        detail: 'Inspect recent code changes for undefined variables or null references.'
+        title: "Runtime hint",
+        detail:
+          "Inspect recent code changes for undefined variables or null references.",
       });
       break;
     default:
@@ -181,8 +199,8 @@ export function deriveDebugHints(errorInfo, context, metadata, environment) {
 
   if (errorInfo.stack && metadata?.componentStack) {
     hints.push({
-      title: 'React component stack',
-      detail: metadata.componentStack
+      title: "React component stack",
+      detail: metadata.componentStack,
     });
   }
 
@@ -204,7 +222,7 @@ export function generateFingerprint(errorInfo, context, metadata, environment) {
     message: errorInfo.message,
     context,
     metadata,
-    location: environment.location
+    location: environment.location,
   };
 
   return createHash(source);
@@ -232,4 +250,3 @@ export function collectRelatedIdentifiers(metadata) {
 
   return Array.from(identifiers);
 }
-

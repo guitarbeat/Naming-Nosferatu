@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 
 function ScrollToTopButton({ isLoggedIn }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -32,10 +32,10 @@ function ScrollToTopButton({ isLoggedIn }) {
 
     checkScroll();
 
-    window.addEventListener('scroll', throttledCheckScroll, { passive: true });
+    window.addEventListener("scroll", throttledCheckScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', throttledCheckScroll);
+      window.removeEventListener("scroll", throttledCheckScroll);
       if (scrollTimeout) {
         cancelAnimationFrame(scrollTimeout);
       }
@@ -49,8 +49,8 @@ function ScrollToTopButton({ isLoggedIn }) {
   return (
     <button
       type="button"
-      className={`scroll-to-top ${showScrollTop ? 'visible' : ''}`}
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className={`scroll-to-top ${showScrollTop ? "visible" : ""}`}
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       aria-label="Scroll to top"
       aria-hidden={!showScrollTop}
       tabIndex={showScrollTop ? 0 : -1}
@@ -61,7 +61,7 @@ function ScrollToTopButton({ isLoggedIn }) {
 }
 
 ScrollToTopButton.propTypes = {
-  isLoggedIn: PropTypes.bool.isRequired
+  isLoggedIn: PropTypes.bool.isRequired,
 };
 
 export default ScrollToTopButton;

@@ -21,10 +21,13 @@ export function throttle(func, delay) {
       lastExecTime = currentTime;
     } else {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        func.apply(this, args);
-        lastExecTime = Date.now();
-      }, delay - (currentTime - lastExecTime));
+      timeoutId = setTimeout(
+        () => {
+          func.apply(this, args);
+          lastExecTime = Date.now();
+        },
+        delay - (currentTime - lastExecTime),
+      );
     }
   };
 }
@@ -65,7 +68,7 @@ export function batchDOMUpdates(updateFunction) {
   requestAnimationFrame(() => {
     // * Temporarily disable layout calculations
     const originalStyle = document.body.style.display;
-    document.body.style.display = 'none';
+    document.body.style.display = "none";
 
     // * Perform updates
     updateFunction();
@@ -74,4 +77,3 @@ export function batchDOMUpdates(updateFunction) {
     document.body.style.display = originalStyle;
   });
 }
-

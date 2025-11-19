@@ -24,7 +24,7 @@
 
 .helloSection {
   padding: 14px;
-  font-family: 'Arial Black', sans-serif;
+  font-family: "Arial Black", sans-serif;
   font-size: 2rem;
   font-weight: 900;
   color: hsl(0deg 0% 100%);
@@ -35,7 +35,7 @@
 
 .greetingSection {
   padding: 16px 24px 8px;
-  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
+  font-family: Caveat, "Indie Flower", "Comic Sans MS", cursive;
   font-size: 1.3rem;
   color: hsl(0deg 0% 40%);
   text-align: center;
@@ -47,7 +47,7 @@
   justify-content: center;
   min-height: 60px;
   padding: 8px 24px 28px;
-  font-family: Caveat, 'Indie Flower', 'Comic Sans MS', cursive;
+  font-family: Caveat, "Indie Flower", "Comic Sans MS", cursive;
   font-size: 2.8rem;
   font-weight: 700;
   line-height: 1.2;

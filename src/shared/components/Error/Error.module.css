@@ -26,15 +26,21 @@
 .boundary::before {
   position: absolute;
   inset: 0;
-  content: '';
+  content: "";
   background: var(--gradient-vibrant);
   opacity: 0.1;
   animation: gradientShift 8s ease-in-out infinite;
 }
 
 @keyframes gradientShift {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.2; }
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
 }
 
 .boundaryContent {
@@ -53,7 +59,10 @@
 }
 
 .boundaryContent:hover {
-  box-shadow: var(--glass-shadow), var(--glow-vibrant), 0 25px 50px rgb(0 0 0 / 20%);
+  box-shadow:
+    var(--glass-shadow),
+    var(--glow-vibrant),
+    0 25px 50px rgb(0 0 0 / 20%);
   transform: translateY(-2px);
 }
 
@@ -65,7 +74,11 @@
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
 
@@ -177,7 +190,9 @@
 
 .boundaryRetryButton:hover {
   background: var(--neon-cyan-600);
-  box-shadow: var(--glow-cyan), 0 10px 25px rgb(47 243 224 / 30%);
+  box-shadow:
+    var(--glow-cyan),
+    0 10px 25px rgb(47 243 224 / 30%);
   transform: translateY(-2px) scale(1.05);
 }
 
@@ -189,7 +204,9 @@
 
 .boundaryRefreshButton:hover {
   background: var(--hot-pink-600);
-  box-shadow: var(--glow-pink), 0 10px 25px rgb(250 38 160 / 30%);
+  box-shadow:
+    var(--glow-pink),
+    0 10px 25px rgb(250 38 160 / 30%);
   transform: translateY(-2px) scale(1.05);
 }
 
@@ -201,7 +218,9 @@
 
 .boundaryHomeButton:hover {
   background: var(--fire-red-600);
-  box-shadow: var(--glow-red), 0 10px 25px rgb(245 23 32 / 30%);
+  box-shadow:
+    var(--glow-red),
+    0 10px 25px rgb(245 23 32 / 30%);
   transform: translateY(-2px) scale(1.05);
 }
 
@@ -217,7 +236,11 @@
   gap: 1rem;
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
-  background: linear-gradient(135deg, rgb(245 158 11 / 20%), rgb(251 191 36 / 15%));
+  background: linear-gradient(
+    135deg,
+    rgb(245 158 11 / 20%),
+    rgb(251 191 36 / 15%)
+  );
   border: 2px solid rgb(245 158 11 / 40%);
   border-radius: 12px;
   box-shadow: 0 4px 16px rgb(245 158 11 / 20%);
@@ -580,32 +603,32 @@
   .listDescription {
     color: #9ca3af;
   }
-  
+
   .listSuggestion {
     color: #6ee7b7;
     background: rgb(16 185 129 / 15%);
     border-left-color: #34d399;
   }
-  
+
   .listItem {
     background: rgb(31 41 55 / 50%);
   }
-  
+
   .listItem.critical {
     background: rgb(127 29 29 / 30%);
     border-left-color: #f87171;
   }
-  
+
   .listItem.high {
     background: rgb(154 52 18 / 30%);
     border-left-color: #fb923c;
   }
-  
+
   .listItem.medium {
     background: rgb(133 77 14 / 30%);
     border-left-color: #fbbf24;
   }
-  
+
   .listItem.low {
     background: rgb(30 58 138 / 30%);
     border-left-color: #60a5fa;
@@ -619,8 +642,8 @@
   }
 
   .boundaryContent {
-    padding: 2rem 1.5rem;
     max-width: 100%;
+    padding: 2rem 1.5rem;
   }
 
   .boundaryTitle {
@@ -662,21 +685,21 @@
   .list {
     padding: 1rem;
   }
-  
+
   .listItem {
     padding: 1rem;
   }
-  
+
   .listItemHeader {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .listItemActions {
     justify-content: flex-end;
     width: 100%;
   }
-  
+
   .listSuggestion {
     font-size: 0.8125rem;
   }
@@ -695,10 +718,11 @@
 
   .inlineRetryButton,
   .inlineDismissButton {
-    /* * Ensure minimum touch target size (48px) */
-    min-height: var(--mobile-touch-target-min, 48px);
     flex: 1;
     justify-content: center;
+
+    /* * Ensure minimum touch target size (48px) */
+    min-height: var(--mobile-touch-target-min, 48px);
     padding: 0.75rem 1rem;
     font-size: 0.9375rem;
   }
@@ -850,13 +874,13 @@
   --inline-accent-surface: rgb(241 245 249 / 70%);
 }
 
-:global(:root[data-theme='dark']) .inline {
+:global(:root[data-theme="dark"]) .inline {
   --inline-accent-border: rgb(255 255 255 / 18%);
   --inline-accent-surface: rgb(15 23 42 / 60%);
   --inline-text: var(--text-primary, #f8fafc);
 }
 
-:global(:root[data-theme='dark']) .inlineGeneral {
+:global(:root[data-theme="dark"]) .inlineGeneral {
   --inline-accent-border: rgb(148 163 184 / 35%);
   --inline-accent-surface: rgb(30 41 59 / 70%);
 }

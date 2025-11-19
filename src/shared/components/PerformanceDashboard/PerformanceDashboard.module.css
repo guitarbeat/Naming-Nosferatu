@@ -9,7 +9,8 @@
   z-index: 10000;
   display: flex;
   flex-direction: column;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--text-primary, #fff);
   background: rgb(0 0 0 / 80%);
   backdrop-filter: blur(10px);
@@ -128,7 +129,7 @@
 }
 
 .value {
-  font-family: Monaco, Menlo, 'Ubuntu Mono', monospace;
+  font-family: Monaco, Menlo, "Ubuntu Mono", monospace;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary, #fff);
@@ -209,15 +210,15 @@
     gap: 1rem;
     padding: 1rem;
   }
-  
+
   .section {
     padding: 1rem;
   }
-  
+
   .header {
     padding: 1rem;
   }
-  
+
   .header h2 {
     font-size: 1.3rem;
   }
@@ -227,14 +228,14 @@
   .metricsGrid {
     gap: 0.5rem;
   }
-  
+
   .metric {
     flex-direction: column;
     gap: 0.25rem;
     align-items: flex-start;
     padding: 0.5rem;
   }
-  
+
   .metric .value {
     font-size: 0.9rem;
   }
@@ -245,12 +246,12 @@
   .dashboard {
     background: rgb(0 0 0 / 90%);
   }
-  
+
   .section {
     background: rgb(255 255 255 / 3%);
     border-color: rgb(255 255 255 / 8%);
   }
-  
+
   .section:hover {
     background: rgb(255 255 255 / 6%);
     border-color: var(--mimosa, #e8bf76);

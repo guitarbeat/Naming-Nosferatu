@@ -7,25 +7,25 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useCallback, useEffect, useMemo } from "react";
+import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
-import CatBackground from '@components/CatBackground/CatBackground';
-import ViewRouter from '@components/ViewRouter/ViewRouter';
-import { Error, Loading, ScrollToTopButton } from '@components';
-import PerformanceDashboard from '@components/PerformanceDashboard';
-import { SidebarProvider, useSidebar } from './shared/components/ui/sidebar';
-import { AppSidebar } from './shared/components/AppSidebar/AppSidebar';
+import CatBackground from "@components/CatBackground/CatBackground";
+import ViewRouter from "@components/ViewRouter/ViewRouter";
+import { Error, Loading, ScrollToTopButton } from "@components";
+import PerformanceDashboard from "@components/PerformanceDashboard";
+import { SidebarProvider, useSidebar } from "./shared/components/ui/sidebar";
+import { AppSidebar } from "./shared/components/AppSidebar/AppSidebar";
 
 // * Lazy load heavy components for better code splitting
-import useUserSession from '@hooks/useUserSession';
-import { useRouting } from '@hooks/useRouting';
-import { useTournamentRoutingSync } from '@hooks/useTournamentRoutingSync';
-import { useThemeSync } from '@hooks/useThemeSync';
+import useUserSession from "@hooks/useUserSession";
+import { useRouting } from "@hooks/useRouting";
+import { useTournamentRoutingSync } from "@hooks/useTournamentRoutingSync";
+import { useThemeSync } from "@hooks/useThemeSync";
 import useAppStore, {
-  useAppStoreInitialization
-} from '@core/store/useAppStore';
-import { ErrorManager } from '@services/errorManager';
+  useAppStoreInitialization,
+} from "@core/store/useAppStore";
+import { ErrorManager } from "@services/errorManager";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -49,7 +49,7 @@ function App() {
     errors,
     tournamentActions,
     uiActions,
-    errorActions
+    errorActions,
   } = useAppStore();
 
   // * Simple URL routing helpers
@@ -61,7 +61,7 @@ function App() {
     isLoggedIn: user.isLoggedIn,
     currentView: tournament.currentView,
     onViewChange: tournamentActions.setView,
-    isTournamentComplete: tournament.isComplete
+    isTournamentComplete: tournament.isComplete,
   });
 
   // Get admin status from server-side validation
@@ -71,14 +71,14 @@ function App() {
   useEffect(() => {
     if (!isAdmin) return;
     const handleKeyDown = (event) => {
-      if (event.ctrlKey && event.shiftKey && event.key === 'P') {
+      if (event.ctrlKey && event.shiftKey && event.key === "P") {
         event.preventDefault();
         uiActions.togglePerformanceDashboard();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [uiActions, isAdmin]);
 
   // * Handle tournament completion
@@ -86,7 +86,7 @@ function App() {
     async (finalRatings) => {
       try {
         if (!user.name) {
-          throw new Error('No user name available');
+          throw new Error("No user name available");
         }
 
         // Direct tournament completion processing
@@ -96,14 +96,14 @@ function App() {
         tournamentActions.setRatings(updatedRatings);
         tournamentActions.setComplete(true);
       } catch (error) {
-        ErrorManager.handleError(error, 'Tournament Completion', {
+        ErrorManager.handleError(error, "Tournament Completion", {
           isRetryable: true,
           affectsUserData: true,
-          isCritical: false
+          isCritical: false,
         });
       }
     },
-    [user.name, tournamentActions]
+    [user.name, tournamentActions],
   );
 
   // * Handle start new tournament
@@ -123,14 +123,14 @@ function App() {
 
       tournamentActions.setNames(processedNames);
       // Ensure we are on the tournament view after starting
-      tournamentActions.setView('tournament');
+      tournamentActions.setView("tournament");
 
       // * Use setTimeout to ensure the loading state is visible and prevent flashing
       setTimeout(() => {
         tournamentActions.setLoading(false);
       }, 100);
     },
-    [tournamentActions]
+    [tournamentActions],
   );
 
   // * Handle ratings update
@@ -142,15 +142,15 @@ function App() {
         tournamentActions.setRatings(updatedRatings);
         return true;
       } catch (error) {
-        ErrorManager.handleError(error, 'Rating Update', {
+        ErrorManager.handleError(error, "Rating Update", {
           isRetryable: true,
           affectsUserData: true,
-          isCritical: false
+          isCritical: false,
         });
         throw error;
       }
     },
-    [tournamentActions]
+    [tournamentActions],
   );
 
   // * Handle logout
@@ -175,11 +175,11 @@ function App() {
         const success = await login(userName);
         return success;
       } catch (error) {
-        console.error('Login error:', error);
+        console.error("Login error:", error);
         throw error;
       }
     },
-    [login]
+    [login],
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -187,10 +187,10 @@ function App() {
   // * Memoize sidebar props to prevent unnecessary re-renders
   const sidebarProps = useMemo(
     () => ({
-      view: tournament.currentView || 'tournament',
+      view: tournament.currentView || "tournament",
       setView: (view) => {
         tournamentActions.setView(view);
-        if (view === 'profile') {
+        if (view === "profile") {
           tournamentActions.resetTournament();
         }
       },
@@ -199,12 +199,12 @@ function App() {
       isAdmin,
       onLogout: handleLogout,
       onStartNewTournament: handleStartNewTournament,
-      isLightTheme: ui.theme === 'light',
+      isLightTheme: ui.theme === "light",
       onThemeChange: handleThemeChange,
       onTogglePerformanceDashboard: () =>
         uiActions.togglePerformanceDashboard(),
       // * Pass breadcrumbs to navbar
-      currentView: tournament.currentView || 'tournament'
+      currentView: tournament.currentView || "tournament",
     }),
     [
       tournament.currentView,
@@ -216,14 +216,22 @@ function App() {
       handleStartNewTournament,
       ui.theme,
       handleThemeChange,
-      uiActions
-    ]
+      uiActions,
+    ],
   );
 
   // * Show loading screen while initializing user session from localStorage
   if (!isInitialized) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', width: '100vw' }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          width: "100vw",
+        }}
+      >
         <Loading variant="spinner" text="Loading..." />
       </div>
     );
@@ -267,43 +275,39 @@ function AppLayout({
   handleTournamentComplete,
   ui,
   uiActions,
-  isAdmin
+  isAdmin,
 }) {
   const { collapsed, collapsedWidth } = useSidebar();
-  const {isLoggedIn} = user;
+  const { isLoggedIn } = user;
   const { view: currentView, setView, onStartNewTournament } = sidebarProps;
 
   const appClassName = [
-    'app',
-    collapsed ? 'app--sidebar-collapsed' : '',
-    !isLoggedIn ? 'app--login' : ''
+    "app",
+    collapsed ? "app--sidebar-collapsed" : "",
+    !isLoggedIn ? "app--login" : "",
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   const layoutStyle = useMemo(
     () => ({
-      '--sidebar-expanded-width': 'clamp(208px, 24vw, 224px)',
-      '--sidebar-collapsed-width': `${collapsedWidth}px`
+      "--sidebar-expanded-width": "clamp(208px, 24vw, 224px)",
+      "--sidebar-collapsed-width": `${collapsedWidth}px`,
     }),
-    [collapsedWidth]
+    [collapsedWidth],
   );
 
   const mainWrapperClassName = useMemo(
     () =>
-      [
-        'app-main-wrapper',
-        !isLoggedIn ? 'app-main-wrapper--login' : ''
-      ]
+      ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
-        .join(' '),
-    [isLoggedIn]
+        .join(" "),
+    [isLoggedIn],
   );
 
-
   const handleBreadcrumbHome = useCallback(() => {
-    setView('tournament');
-    if (typeof onStartNewTournament === 'function') {
+    setView("tournament");
+    if (typeof onStartNewTournament === "function") {
       onStartNewTournament();
     }
   }, [onStartNewTournament, setView]);
@@ -314,15 +318,15 @@ function AppLayout({
     }
 
     const items = [
-      { id: 'home', label: 'Home', onClick: handleBreadcrumbHome }
+      { id: "home", label: "Home", onClick: handleBreadcrumbHome },
     ];
 
-    if (currentView === 'profile') {
-      items.push({ id: 'profile', label: 'Profile' });
+    if (currentView === "profile") {
+      items.push({ id: "profile", label: "Profile" });
     }
 
-    if (currentView === 'tournament') {
-      items.push({ id: 'tournament', label: 'Tournament' });
+    if (currentView === "tournament") {
+      items.push({ id: "tournament", label: "Tournament" });
     }
 
     return items;
@@ -342,26 +346,26 @@ function AppLayout({
       <AppSidebar {...sidebarProps} breadcrumbItems={breadcrumbItems} />
 
       <main id="main-content" className={mainWrapperClassName} tabIndex="-1">
-          {errors.current && isLoggedIn && (
-            <Error
-              variant="list"
-              error={errors.current}
-              onDismiss={() => errorActions.clearError()}
-              onRetry={() => window.location.reload()}
-            />
-          )}
-
-          <ViewRouter
-            isLoggedIn={isLoggedIn}
-            onLogin={handleLogin}
-            tournament={tournament}
-            userName={user.name}
-            onStartNewTournament={handleStartNewTournament}
-            onUpdateRatings={handleUpdateRatings}
-            onTournamentSetup={handleTournamentSetup}
-            onTournamentComplete={handleTournamentComplete}
-            onVote={(vote) => tournamentActions.addVote(vote)}
+        {errors.current && isLoggedIn && (
+          <Error
+            variant="list"
+            error={errors.current}
+            onDismiss={() => errorActions.clearError()}
+            onRetry={() => window.location.reload()}
           />
+        )}
+
+        <ViewRouter
+          isLoggedIn={isLoggedIn}
+          onLogin={handleLogin}
+          tournament={tournament}
+          userName={user.name}
+          onStartNewTournament={handleStartNewTournament}
+          onUpdateRatings={handleUpdateRatings}
+          onTournamentSetup={handleTournamentSetup}
+          onTournamentComplete={handleTournamentComplete}
+          onVote={(vote) => tournamentActions.addVote(vote)}
+        />
 
         {/* * Global loading overlay */}
         {tournament.isLoading && (
@@ -374,7 +378,6 @@ function AppLayout({
             <Loading variant="spinner" text="Initializing Tournament..." />
           </div>
         )}
-
 
         {/* * Performance Dashboard - Admin (Aaron) only */}
         <PerformanceDashboard
@@ -393,19 +396,19 @@ AppLayout.propTypes = {
   sidebarProps: PropTypes.shape({}).isRequired,
   user: PropTypes.shape({
     isLoggedIn: PropTypes.bool.isRequired,
-    name: PropTypes.string
+    name: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
-    current: PropTypes.any
+    current: PropTypes.any,
   }).isRequired,
   errorActions: PropTypes.shape({
-    clearError: PropTypes.func.isRequired
+    clearError: PropTypes.func.isRequired,
   }).isRequired,
   tournament: PropTypes.shape({
-    isLoading: PropTypes.bool.isRequired
+    isLoading: PropTypes.bool.isRequired,
   }).isRequired,
   tournamentActions: PropTypes.shape({
-    addVote: PropTypes.func.isRequired
+    addVote: PropTypes.func.isRequired,
   }).isRequired,
   handleLogin: PropTypes.func.isRequired,
   handleStartNewTournament: PropTypes.func.isRequired,
@@ -413,12 +416,12 @@ AppLayout.propTypes = {
   handleTournamentSetup: PropTypes.func.isRequired,
   handleTournamentComplete: PropTypes.func.isRequired,
   ui: PropTypes.shape({
-    showPerformanceDashboard: PropTypes.bool.isRequired
+    showPerformanceDashboard: PropTypes.bool.isRequired,
   }).isRequired,
   uiActions: PropTypes.shape({
-    setPerformanceDashboardVisible: PropTypes.func.isRequired
+    setPerformanceDashboardVisible: PropTypes.func.isRequired,
   }).isRequired,
-  isAdmin: PropTypes.bool.isRequired
+  isAdmin: PropTypes.bool.isRequired,
 };
 
 // Test auto-deployment - Wed Oct 22 21:26:25 CDT 2025

@@ -3,33 +3,33 @@
  * @description Utilities for authentication and authorization checks with role-based access control
  */
 
-import { resolveSupabaseClient } from '@/integrations/supabase/client';
+import { resolveSupabaseClient } from "@/integrations/supabase/client";
 
 /**
  * User roles hierarchy (higher number = more permissions)
  */
 export const USER_ROLES = {
-  USER: 'user',
-  MODERATOR: 'moderator',
-  ADMIN: 'admin'
+  USER: "user",
+  MODERATOR: "moderator",
+  ADMIN: "admin",
 };
 
 const ROLE_PRIORITY = {
   [USER_ROLES.USER]: 0,
   [USER_ROLES.MODERATOR]: 1,
-  [USER_ROLES.ADMIN]: 2
+  [USER_ROLES.ADMIN]: 2,
 };
 
-const ROLE_SOURCES = ['user_roles', 'cat_app_users'];
+const ROLE_SOURCES = ["user_roles", "cat_app_users"];
 
 const clientStateMap = new WeakMap();
 
 const getClientState = (client) => {
-  if (!client || (typeof client !== 'object' && typeof client !== 'function')) {
+  if (!client || (typeof client !== "object" && typeof client !== "function")) {
     return {
       canUseRoleRpc: false,
       preferredRoleSource: ROLE_SOURCES[0],
-      disabledSources: new Set()
+      disabledSources: new Set(),
     };
   }
 
@@ -39,7 +39,7 @@ const getClientState = (client) => {
     state = {
       canUseRoleRpc: true,
       preferredRoleSource: ROLE_SOURCES[0],
-      disabledSources: new Set()
+      disabledSources: new Set(),
     };
     clientStateMap.set(client, state);
   }
@@ -59,7 +59,8 @@ const markSourceUnavailable = (state, source) => {
 
   if (state.preferredRoleSource === source) {
     const fallback = ROLE_SOURCES.find(
-      (candidate) => candidate !== source && !state.disabledSources.has(candidate)
+      (candidate) =>
+        candidate !== source && !state.disabledSources.has(candidate),
     );
 
     if (fallback) {
@@ -74,7 +75,8 @@ const getRoleSourceOrder = (state) => {
   const orderedSources = new Set();
 
   const preferred =
-    state.preferredRoleSource && !state.disabledSources.has(state.preferredRoleSource)
+    state.preferredRoleSource &&
+    !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -98,11 +100,11 @@ const getRoleSourceOrder = (state) => {
 };
 
 const normalizeStatusCode = (value) => {
-  if (typeof value === 'number' && Number.isFinite(value)) {
+  if (typeof value === "number" && Number.isFinite(value)) {
     return value;
   }
 
-  if (typeof value === 'string') {
+  if (typeof value === "string") {
     const numericMatch = value.match(/\d{3}/);
     if (numericMatch) {
       return Number.parseInt(numericMatch[0], 10);
@@ -127,12 +129,12 @@ const extractErrorMetadata = (error) => {
       continue;
     }
 
-    if (typeof current === 'string') {
+    if (typeof current === "string") {
       messages.add(current);
       continue;
     }
 
-    if (typeof current !== 'object') {
+    if (typeof current !== "object") {
       continue;
     }
 
@@ -168,7 +170,7 @@ const extractErrorMetadata = (error) => {
       current.originalError?.status_code,
       current.data?.status,
       current.data?.statusCode,
-      current.data?.status_code
+      current.data?.status_code,
     ];
 
     for (const candidate of candidateStatuses) {
@@ -185,7 +187,7 @@ const extractErrorMetadata = (error) => {
       current.response?.code,
       current.response?.error?.code,
       current.data?.code,
-      current.originalError?.code
+      current.originalError?.code,
     ];
 
     for (const candidate of candidateCodes) {
@@ -197,31 +199,31 @@ const extractErrorMetadata = (error) => {
     }
 
     const messageKeys = [
-      'message',
-      'error',
-      'error_description',
-      'errorMessage',
-      'error_message',
-      'hint',
-      'details',
-      'detail',
-      'description',
-      'body',
-      'msg',
-      'responseText'
+      "message",
+      "error",
+      "error_description",
+      "errorMessage",
+      "error_message",
+      "hint",
+      "details",
+      "detail",
+      "description",
+      "body",
+      "msg",
+      "responseText",
     ];
 
     for (const key of messageKeys) {
       const value = current[key];
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         messages.add(value);
       }
     }
 
     for (const value of Object.values(current)) {
-      if (value && typeof value === 'object') {
+      if (value && typeof value === "object") {
         stack.push(value);
-      } else if (typeof value === 'string') {
+      } else if (typeof value === "string") {
         messages.add(value);
       }
     }
@@ -230,7 +232,7 @@ const extractErrorMetadata = (error) => {
   return {
     statuses: [...statuses],
     codes: [...codes],
-    messages: [...messages].map((message) => message.toLowerCase())
+    messages: [...messages].map((message) => message.toLowerCase()),
   };
 };
 
@@ -248,39 +250,43 @@ const isMissingResourceError = (error) => {
     .map((value) => String(value).trim().toUpperCase())
     .filter((value) => value.length > 0);
 
-  const statusIndicatesMissing = normalizedStatuses.some((value) =>
-    value === 404 || value === 410
+  const statusIndicatesMissing = normalizedStatuses.some(
+    (value) => value === 404 || value === 410,
   );
 
   const knownMissingCodes = new Set([
-    '404',
-    'PGRST301',
-    'PGRST303',
-    'PGRST304',
-    'PGRST404',
-    '42P01',
-    '42704',
-    '42883'
+    "404",
+    "PGRST301",
+    "PGRST303",
+    "PGRST304",
+    "PGRST404",
+    "42P01",
+    "42704",
+    "42883",
   ]);
 
-  const codeIndicatesMissing = normalizedCodes.some((value) => knownMissingCodes.has(value));
+  const codeIndicatesMissing = normalizedCodes.some((value) =>
+    knownMissingCodes.has(value),
+  );
 
   const missingMessagePatterns = [
-    'does not exist',
-    'not found',
-    'missing from the schema',
-    'undefined table',
-    'undefined function',
-    'unknown function',
-    'no function matches the given name and argument types',
-    'relation "'
+    "does not exist",
+    "not found",
+    "missing from the schema",
+    "undefined table",
+    "undefined function",
+    "unknown function",
+    "no function matches the given name and argument types",
+    'relation "',
   ];
 
   const messageIndicatesMissing = messages.some((message) =>
-    missingMessagePatterns.some((pattern) => message.includes(pattern))
+    missingMessagePatterns.some((pattern) => message.includes(pattern)),
   );
 
-  return statusIndicatesMissing || codeIndicatesMissing || messageIndicatesMissing;
+  return (
+    statusIndicatesMissing || codeIndicatesMissing || messageIndicatesMissing
+  );
 };
 
 const isRpcParameterMismatchError = (error) => {
@@ -288,34 +294,37 @@ const isRpcParameterMismatchError = (error) => {
 
   const { codes, messages } = extractErrorMetadata(error);
 
-  const mismatchCodes = new Set(['42883', '42703']);
+  const mismatchCodes = new Set(["42883", "42703"]);
 
   if (codes.some((value) => mismatchCodes.has(value))) {
     return true;
   }
 
   const parameterMismatchPatterns = [
-    'missing required input parameter',
-    'unexpected parameter',
-    'unexpected key',
-    'invalid parameter',
-    'invalid input syntax',
-    'required parameter',
-    'function has_role('
+    "missing required input parameter",
+    "unexpected parameter",
+    "unexpected key",
+    "invalid parameter",
+    "invalid input syntax",
+    "required parameter",
+    "function has_role(",
   ];
 
   return messages.some((message) =>
-    parameterMismatchPatterns.some((pattern) => message.includes(pattern))
+    parameterMismatchPatterns.some((pattern) => message.includes(pattern)),
   );
 };
 
 const isUuid = (value) =>
-  typeof value === 'string' &&
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+  typeof value === "string" &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
 
 const compareRoles = (currentRole, requiredRole) => {
   const current = ROLE_PRIORITY[normalizeRole(currentRole)] ?? -1;
-  const required = ROLE_PRIORITY[normalizeRole(requiredRole)] ?? Number.POSITIVE_INFINITY;
+  const required =
+    ROLE_PRIORITY[normalizeRole(requiredRole)] ?? Number.POSITIVE_INFINITY;
 
   return current >= required;
 };
@@ -325,12 +334,12 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
 
   const trimmedUserName = userName.trim?.() ?? userName;
 
-  if (source === 'user_roles') {
+  if (source === "user_roles") {
     const { data, error } = await activeSupabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_name', trimmedUserName)
-      .order('role', { ascending: false })
+      .from("user_roles")
+      .select("role")
+      .eq("user_name", trimmedUserName)
+      .order("role", { ascending: false })
       .limit(1)
       .maybeSingle();
 
@@ -348,9 +357,9 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
   }
 
   const { data, error } = await activeSupabase
-    .from('cat_app_users')
-    .select('user_role')
-    .eq('user_name', trimmedUserName)
+    .from("cat_app_users")
+    .select("user_role")
+    .eq("user_name", trimmedUserName)
     .maybeSingle();
 
   if (error) {
@@ -372,7 +381,12 @@ const fetchUserRole = async (activeSupabase, userName) => {
 
   for (const source of sources) {
     try {
-      const result = await fetchRoleFromSource(activeSupabase, userName, source, state);
+      const result = await fetchRoleFromSource(
+        activeSupabase,
+        userName,
+        source,
+        state,
+      );
       if (result?.handled) {
         continue;
       }
@@ -380,7 +394,10 @@ const fetchUserRole = async (activeSupabase, userName) => {
         return normalizeRole(result.role);
       }
     } catch (error) {
-      console.error(`Error fetching user role from Supabase source "${source}":`, error);
+      console.error(
+        `Error fetching user role from Supabase source "${source}":`,
+        error,
+      );
       continue;
     }
   }
@@ -409,7 +426,9 @@ export async function hasRole(userName, requiredRole) {
   const activeSupabase = await resolveSupabaseClient();
 
   if (!activeSupabase) {
-    console.warn('Supabase client is not configured. Role check will default to false.');
+    console.warn(
+      "Supabase client is not configured. Role check will default to false.",
+    );
     return false;
   }
 
@@ -424,17 +443,20 @@ export async function hasRole(userName, requiredRole) {
 
     if (state?.canUseRoleRpc) {
       const rpcPayloads = [
-        { _user_name: trimmedUserName, _role: normalizedRequiredRole }
+        { _user_name: trimmedUserName, _role: normalizedRequiredRole },
       ];
 
       if (isUuid(trimmedUserName)) {
-        rpcPayloads.push({ _user_id: trimmedUserName, _role: normalizedRequiredRole });
+        rpcPayloads.push({
+          _user_id: trimmedUserName,
+          _role: normalizedRequiredRole,
+        });
       }
 
       let lastRpcError = null;
 
       for (const payload of rpcPayloads) {
-        const { data, error } = await activeSupabase.rpc('has_role', payload);
+        const { data, error } = await activeSupabase.rpc("has_role", payload);
 
         if (!error) {
           return data === true;
@@ -466,7 +488,7 @@ export async function hasRole(userName, requiredRole) {
 
     return compareRoles(userRole, normalizedRequiredRole);
   } catch (error) {
-    console.error('Error checking user role:', error);
+    console.error("Error checking user role:", error);
     return false;
   }
 }
@@ -482,7 +504,7 @@ export async function getUserRole(userName) {
   const activeSupabase = await resolveSupabaseClient();
 
   if (!activeSupabase) {
-    console.warn('Supabase client is not configured. Using default user role.');
+    console.warn("Supabase client is not configured. Using default user role.");
     return USER_ROLES.USER;
   }
 
@@ -492,7 +514,7 @@ export async function getUserRole(userName) {
 
     return role ?? USER_ROLES.USER;
   } catch (error) {
-    console.error('Error getting user role:', error);
+    console.error("Error getting user role:", error);
     return USER_ROLES.USER;
   }
 }
@@ -505,8 +527,8 @@ export function getAuthConfig() {
   return {
     isRoleBased: true,
     supportedRoles: Object.values(USER_ROLES),
-    version: '3.0.0',
-    usesSupabaseAuth: true
+    version: "3.0.0",
+    usesSupabaseAuth: true,
   };
 }
 
@@ -514,5 +536,5 @@ export default {
   isUserAdmin,
   hasRole,
   getUserRole,
-  getAuthConfig
+  getAuthConfig,
 };

@@ -14,27 +14,30 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
   const isTransitioningRef = useRef(false);
   const [slideDirection, setSlideDirection] = useState(null);
 
-  const handleNavigate = useCallback((newIndex) => {
-    if (isTransitioningRef.current) return;
+  const handleNavigate = useCallback(
+    (newIndex) => {
+      if (isTransitioningRef.current) return;
 
-    isTransitioningRef.current = true;
+      isTransitioningRef.current = true;
 
-    if (newIndex > currentIndex) {
-      setSlideDirection("right");
-    } else if (newIndex < currentIndex) {
-      setSlideDirection("left");
-    }
+      if (newIndex > currentIndex) {
+        setSlideDirection("right");
+      } else if (newIndex < currentIndex) {
+        setSlideDirection("left");
+      }
 
-    onNavigate(newIndex);
+      onNavigate(newIndex);
 
-    if (transitionTimerRef.current) {
-      clearTimeout(transitionTimerRef.current);
-    }
+      if (transitionTimerRef.current) {
+        clearTimeout(transitionTimerRef.current);
+      }
 
-    transitionTimerRef.current = setTimeout(() => {
-      isTransitioningRef.current = false;
-    }, 300);
-  }, [currentIndex, onNavigate]);
+      transitionTimerRef.current = setTimeout(() => {
+        isTransitioningRef.current = false;
+      }, 300);
+    },
+    [currentIndex, onNavigate],
+  );
 
   const handlePrev = useCallback(() => {
     const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
@@ -60,11 +63,14 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
     closeBtnRef.current?.focus();
   }, []);
 
-  useEffect(() => () => {
-    if (transitionTimerRef.current) {
-      clearTimeout(transitionTimerRef.current);
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (transitionTimerRef.current) {
+        clearTimeout(transitionTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const current = images[currentIndex] || images[0];
   const base = current.replace(/\.[^.]+$/, "");
@@ -101,7 +107,11 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
         </button>
         <div
           className={`${styles.lightboxImageWrap} ${
-            slideDirection ? styles[`slide${slideDirection.charAt(0).toUpperCase() + slideDirection.slice(1)}`] : ""
+            slideDirection
+              ? styles[
+                  `slide${slideDirection.charAt(0).toUpperCase() + slideDirection.slice(1)}`
+                ]
+              : ""
           }`}
           key={currentIndex}
         >

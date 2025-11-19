@@ -54,4 +54,3 @@ export const SORT_OPTIONS = [
   { value: "rating", label: "Rating (High to Low)" },
   { value: "popularity", label: "Popularity" },
 ];
-

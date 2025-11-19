@@ -2,13 +2,23 @@
 
 /* Fade animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 /* Slide animations */
@@ -52,7 +62,8 @@
 
 /* Gradient animations */
 @keyframes gradient-shift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
 
@@ -65,7 +76,8 @@
 
 /* Cat-themed animations */
 @keyframes cat-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
 
@@ -83,8 +95,14 @@
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 @keyframes shimmer-sweep {
@@ -107,8 +125,13 @@
 
 /* Matrix mode animation */
 @keyframes matrix-scroll {
-  0% { background-position: 0 0; }
-  100% { background-position: 100% 100%; }
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 /* Animation utility classes - Removed unused classes */

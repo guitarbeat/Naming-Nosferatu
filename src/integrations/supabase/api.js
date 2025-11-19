@@ -21,8 +21,8 @@ export {
   addRatingHistory,
   updateRating,
   getRatingHistory,
-  ensureRatingHistoryTable
-} from '../../../backend/api/supabaseClient';
+  ensureRatingHistoryTable,
+} from "../../../backend/api/supabaseClient";
 
 // * Import imagesAPI separately to avoid circular dependency
-export { imagesAPI } from '../../../backend/api/supabaseClient';
+export { imagesAPI } from "../../../backend/api/supabaseClient";

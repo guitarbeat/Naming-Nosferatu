@@ -2,9 +2,9 @@
 @media (hover: none) and (pointer: coarse) {
   /* Enhanced touch feedback for all interactive elements */
   button:active,
-  input[type='button']:active,
-  input[type='submit']:active,
-  input[type='reset']:active,
+  input[type="button"]:active,
+  input[type="submit"]:active,
+  input[type="reset"]:active,
   .btn:active,
   .nav-menu button:active {
     transform: scale(0.95);
@@ -13,10 +13,10 @@
   /* Name card touch feedback */
   .name-card:active,
   .card:not(.disabled):active {
+    cursor: pointer;
     background: var(--mobile-card-hover, var(--card-hover));
     box-shadow: 0 1px 2px var(--shadow-color-light);
     transform: scale(0.98);
-    cursor: pointer;
   }
 
   /* * Button component handles touch feedback */

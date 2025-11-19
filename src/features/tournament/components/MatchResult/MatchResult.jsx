@@ -4,9 +4,9 @@
  * Shows which name won or if the match was skipped.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './MatchResult.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./MatchResult.module.css";
 
 /**
  * MatchResult component
@@ -47,7 +47,6 @@ MatchResult.propTypes = {
   totalMatches: PropTypes.number.isRequired,
 };
 
-MatchResult.displayName = 'MatchResult';
+MatchResult.displayName = "MatchResult";
 
 export default MatchResult;
-

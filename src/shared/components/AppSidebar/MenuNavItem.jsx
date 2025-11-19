@@ -3,12 +3,8 @@
  * @description Reusable navigation item component for sidebar menu
  */
 
-import PropTypes from 'prop-types';
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from '../ui/sidebar';
+import PropTypes from "prop-types";
+import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
 
 /**
  * * Reusable navigation item component
@@ -34,8 +30,8 @@ export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
         <a
           href="#"
           onClick={handleClick}
-          className={isActive ? 'active' : ''}
-          aria-current={isActive ? 'page' : undefined}
+          className={isActive ? "active" : ""}
+          aria-current={isActive ? "page" : undefined}
           title={collapsed ? label : undefined}
         >
           <Icon />
@@ -53,4 +49,3 @@ MenuNavItem.propTypes = {
   view: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };
-

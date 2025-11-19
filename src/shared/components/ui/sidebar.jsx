@@ -3,33 +3,46 @@
  * @description Shadcn-style sidebar component for collapsible navigation
  */
 
-import { cloneElement, createContext, forwardRef, isValidElement, useContext, useState } from 'react';
-import PropTypes from 'prop-types';
-import './sidebar.css';
+import {
+  cloneElement,
+  createContext,
+  forwardRef,
+  isValidElement,
+  useContext,
+  useState,
+} from "react";
+import PropTypes from "prop-types";
+import "./sidebar.css";
 
 // Sidebar Context
 const SidebarContext = createContext({
   collapsed: false,
   toggleCollapsed: () => {},
-  collapsedWidth: 56
+  collapsedWidth: 56,
 });
 
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
   if (!context) {
-    throw new Error('useSidebar must be used within a SidebarProvider');
+    throw new Error("useSidebar must be used within a SidebarProvider");
   }
   return context;
 };
 
 // SidebarProvider
-export function SidebarProvider({ children, collapsedWidth = 56, defaultCollapsed = false }) {
+export function SidebarProvider({
+  children,
+  collapsedWidth = 56,
+  defaultCollapsed = false,
+}) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
-  const toggleCollapsed = () => setCollapsed(prev => !prev);
+  const toggleCollapsed = () => setCollapsed((prev) => !prev);
 
   return (
-    <SidebarContext.Provider value={{ collapsed, toggleCollapsed, collapsedWidth }}>
+    <SidebarContext.Provider
+      value={{ collapsed, toggleCollapsed, collapsedWidth }}
+    >
       {children}
     </SidebarContext.Provider>
   );
@@ -38,16 +51,16 @@ export function SidebarProvider({ children, collapsedWidth = 56, defaultCollapse
 SidebarProvider.propTypes = {
   children: PropTypes.node.isRequired,
   collapsedWidth: PropTypes.number,
-  defaultCollapsed: PropTypes.bool
+  defaultCollapsed: PropTypes.bool,
 };
 
 // Sidebar
-export function Sidebar({ children, className = '', collapsible = true }) {
+export function Sidebar({ children, className = "", collapsible = true }) {
   const { collapsed } = useSidebar();
 
   return (
     <aside
-      className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''} ${className}`}
+      className={`sidebar ${collapsed ? "sidebar--collapsed" : ""} ${className}`}
       data-collapsible={collapsible}
     >
       {children}
@@ -58,11 +71,11 @@ export function Sidebar({ children, className = '', collapsible = true }) {
 Sidebar.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  collapsible: PropTypes.bool
+  collapsible: PropTypes.bool,
 };
 
 // SidebarTrigger
-export function SidebarTrigger({ className = '' }) {
+export function SidebarTrigger({ className = "" }) {
   const { toggleCollapsed } = useSidebar();
 
   return (
@@ -91,35 +104,36 @@ export function SidebarTrigger({ className = '' }) {
 }
 
 SidebarTrigger.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarContent
-export function SidebarContent({ children, className = '' }) {
-  return (
-    <div className={`sidebar-content ${className}`}>
-      {children}
-    </div>
-  );
+export function SidebarContent({ children, className = "" }) {
+  return <div className={`sidebar-content ${className}`}>{children}</div>;
 }
 
 SidebarContent.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarGroup
-export function SidebarGroup({ children, className = '', open = true, ...rest }) {
+export function SidebarGroup({
+  children,
+  className = "",
+  open = true,
+  ...rest
+}) {
   const classNames = [
-    'sidebar-group',
-    open ? 'sidebar-group--open' : '',
-    className
+    "sidebar-group",
+    open ? "sidebar-group--open" : "",
+    className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
   return (
-    <div className={classNames} data-state={open ? 'open' : 'closed'} {...rest}>
+    <div className={classNames} data-state={open ? "open" : "closed"} {...rest}>
       {children}
     </div>
   );
@@ -128,76 +142,60 @@ export function SidebarGroup({ children, className = '', open = true, ...rest })
 SidebarGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  open: PropTypes.bool
+  open: PropTypes.bool,
 };
 
 // SidebarGroupLabel
-export function SidebarGroupLabel({ children, className = '' }) {
-  return (
-    <div className={`sidebar-group-label ${className}`}>
-      {children}
-    </div>
-  );
+export function SidebarGroupLabel({ children, className = "" }) {
+  return <div className={`sidebar-group-label ${className}`}>{children}</div>;
 }
 
 SidebarGroupLabel.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarGroupContent
-export function SidebarGroupContent({ children, className = '' }) {
-  return (
-    <div className={`sidebar-group-content ${className}`}>
-      {children}
-    </div>
-  );
+export function SidebarGroupContent({ children, className = "" }) {
+  return <div className={`sidebar-group-content ${className}`}>{children}</div>;
 }
 
 SidebarGroupContent.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarMenu
-export function SidebarMenu({ children, className = '' }) {
-  return (
-    <ul className={`sidebar-menu ${className}`}>
-      {children}
-    </ul>
-  );
+export function SidebarMenu({ children, className = "" }) {
+  return <ul className={`sidebar-menu ${className}`}>{children}</ul>;
 }
 
 SidebarMenu.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarMenuItem
-export function SidebarMenuItem({ children, className = '' }) {
-  return (
-    <li className={`sidebar-menu-item ${className}`}>
-      {children}
-    </li>
-  );
+export function SidebarMenuItem({ children, className = "" }) {
+  return <li className={`sidebar-menu-item ${className}`}>{children}</li>;
 }
 
 SidebarMenuItem.propTypes = {
   children: PropTypes.node.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
 // SidebarMenuButton
 export const SidebarMenuButton = forwardRef(
-  ({ children, className = '', asChild = false, ...props }, ref) => {
+  ({ children, className = "", asChild = false, ...props }, ref) => {
     const { collapsed } = useSidebar();
 
     if (asChild && isValidElement(children)) {
       // eslint-disable-next-line react-hooks/refs
       return cloneElement(children, {
         ref,
-        className: `sidebar-menu-button ${collapsed ? 'sidebar-menu-button--collapsed' : ''} ${children.props.className || ''} ${className}`,
-        ...props
+        className: `sidebar-menu-button ${collapsed ? "sidebar-menu-button--collapsed" : ""} ${children.props.className || ""} ${className}`,
+        ...props,
       });
     }
 
@@ -205,19 +203,19 @@ export const SidebarMenuButton = forwardRef(
       <button
         ref={ref}
         type="button"
-        className={`sidebar-menu-button ${collapsed ? 'sidebar-menu-button--collapsed' : ''} ${className}`}
+        className={`sidebar-menu-button ${collapsed ? "sidebar-menu-button--collapsed" : ""} ${className}`}
         {...props}
       >
         {children}
       </button>
     );
-  }
+  },
 );
 
-SidebarMenuButton.displayName = 'SidebarMenuButton';
+SidebarMenuButton.displayName = "SidebarMenuButton";
 
 SidebarMenuButton.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  asChild: PropTypes.bool
+  asChild: PropTypes.bool,
 };

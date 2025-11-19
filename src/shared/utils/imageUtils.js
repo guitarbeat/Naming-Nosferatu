@@ -58,7 +58,7 @@ export async function preloadImage(src) {
  * @returns {string} Fallback image URL
  */
 export function getFallbackImageUrl(_originalSrc) {
-  return '/assets/images/IMG_0778.jpg';
+  return "/assets/images/IMG_0778.jpg";
 }
 
 /**
@@ -69,7 +69,7 @@ export function getFallbackImageUrl(_originalSrc) {
  */
 export async function compressImageFile(
   file,
-  { maxWidth = 1600, maxHeight = 1600, quality = 0.8 } = {}
+  { maxWidth = 1600, maxHeight = 1600, quality = 0.8 } = {},
 ) {
   try {
     const img = await loadImageFromFile(file);
@@ -82,27 +82,26 @@ export async function compressImageFile(
     targetW = Math.round(width * scale);
     targetH = Math.round(height * scale);
 
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = targetW;
     canvas.height = targetH;
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     ctx.drawImage(img, 0, 0, targetW, targetH);
 
     const blob = await new Promise((resolve) =>
       canvas.toBlob(
         resolve,
-        'image/webp',
-        Math.min(Math.max(quality, 0.1), 0.95)
-      )
+        "image/webp",
+        Math.min(Math.max(quality, 0.1), 0.95),
+      ),
     );
 
     if (!blob) return file; // fallback
 
-    const base = file.name.replace(/\.[^.]+$/, '') || 'image';
-    const compressed = new File([blob], `${base}.webp`, { type: 'image/webp' });
+    const base = file.name.replace(/\.[^.]+$/, "") || "image";
+    const compressed = new File([blob], `${base}.webp`, { type: "image/webp" });
     return compressed;
   } catch {
     return file; // fallback to original if anything fails
   }
 }
-

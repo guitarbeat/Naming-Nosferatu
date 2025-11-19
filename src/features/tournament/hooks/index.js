@@ -8,4 +8,3 @@ export { useImageGallery } from "./useImageGallery";
 export { useAdminStatus } from "./useAdminStatus";
 export { useCategoryFilters } from "./useCategoryFilters";
 export { useToast } from "./useToast";
-

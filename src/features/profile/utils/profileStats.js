@@ -3,8 +3,11 @@
  * @description Utility functions for calculating profile statistics and insights.
  */
 
-import { resolveSupabaseClient } from '../../../integrations/supabase/client';
-import { getUserStats, tournamentsAPI } from '../../../integrations/supabase/api';
+import { resolveSupabaseClient } from "../../../integrations/supabase/client";
+import {
+  getUserStats,
+  tournamentsAPI,
+} from "../../../integrations/supabase/api";
 
 /**
  * * Use database-optimized stats calculation
@@ -25,8 +28,8 @@ export async function fetchUserStatsFromDB(userName) {
     // Return database stats directly (no transformation needed)
     return dbStats;
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error fetching user stats from DB:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error fetching user stats from DB:", error);
     }
     return null;
   }
@@ -39,7 +42,7 @@ export async function fetchUserStatsFromDB(userName) {
  */
 export function generateSelectionPattern(selections) {
   if (!selections || selections.length === 0)
-    return 'No selection data available';
+    return "No selection data available";
 
   const totalSelections = selections.length;
   const uniqueTournaments = new Set(selections.map((s) => s.tournament_id))
@@ -48,11 +51,11 @@ export function generateSelectionPattern(selections) {
     Math.round((totalSelections / uniqueTournaments) * 10) / 10;
 
   if (avgSelectionsPerTournament > 8) {
-    return 'You prefer large tournaments with many names';
+    return "You prefer large tournaments with many names";
   } else if (avgSelectionsPerTournament > 4) {
-    return 'You enjoy medium-sized tournaments';
+    return "You enjoy medium-sized tournaments";
   } else {
-    return 'You prefer focused, smaller tournaments';
+    return "You prefer focused, smaller tournaments";
   }
 }
 
@@ -67,15 +70,15 @@ export async function generatePreferredCategories(selections) {
     const supabaseClient = await resolveSupabaseClient();
 
     if (!supabaseClient) {
-      return 'Analyzing your preferences...';
+      return "Analyzing your preferences...";
     }
 
     const { data: names, error } = await supabaseClient
-      .from('cat_name_options')
-      .select('categories')
-      .in('id', nameIds);
+      .from("cat_name_options")
+      .select("categories")
+      .in("id", nameIds);
 
-    if (error || !names) return 'Analyzing your preferences...';
+    if (error || !names) return "Analyzing your preferences...";
 
     const categoryCounts = {};
     names.forEach((name) => {
@@ -92,12 +95,12 @@ export async function generatePreferredCategories(selections) {
       .map(([cat]) => cat);
 
     if (topCategories.length > 0) {
-      return `You favor: ${topCategories.join(', ')}`;
+      return `You favor: ${topCategories.join(", ")}`;
     }
 
-    return 'Discovering your preferences...';
+    return "Discovering your preferences...";
   } catch {
-    return 'Analyzing your preferences...';
+    return "Analyzing your preferences...";
   }
 }
 
@@ -111,22 +114,22 @@ export async function generatePreferredCategories(selections) {
 export function generateImprovementTip(
   totalSelections,
   totalTournaments,
-  currentStreak
+  currentStreak,
 ) {
   if (totalSelections === 0) {
-    return 'Start selecting names to see your first tournament!';
+    return "Start selecting names to see your first tournament!";
   }
 
   if (totalTournaments < 3) {
-    return 'Try creating more tournaments to discover your preferences';
+    return "Try creating more tournaments to discover your preferences";
   }
 
   if (currentStreak < 3) {
-    return 'Build a selection streak by playing daily';
+    return "Build a selection streak by playing daily";
   }
 
   if (totalSelections / totalTournaments < 4) {
-    return 'Consider selecting more names per tournament for variety';
+    return "Consider selecting more names per tournament for variety";
   }
 
   return "Great job! You're an active tournament participant";
@@ -153,8 +156,8 @@ export async function calculateSelectionStats(userName) {
         name_id: n.id,
         name: n.name,
         tournament_id: t.id,
-        selected_at: t.created_at
-      }))
+        selected_at: t.created_at,
+      })),
     );
 
     // Calculate basic metrics
@@ -172,7 +175,7 @@ export async function calculateSelectionStats(userName) {
       nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
     });
     const mostSelectedName =
-      Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
+      Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || "N/A";
 
     // Calculate selection streak (consecutive days)
     const sortedSelections = selections
@@ -191,7 +194,7 @@ export async function calculateSelectionStats(userName) {
         const prevDate = new Date(sortedSelections[i - 1]);
         const currDate = new Date(sortedSelections[i]);
         const dayDiff = Math.floor(
-          (currDate - prevDate) / (1000 * 60 * 60 * 24)
+          (currDate - prevDate) / (1000 * 60 * 60 * 24),
         );
 
         if (dayDiff === 1) {
@@ -206,7 +209,7 @@ export async function calculateSelectionStats(userName) {
     currentStreak = tempStreak;
 
     // Cross-user ranking not supported without a view; omit
-    const userRank = 'N/A';
+    const userRank = "N/A";
 
     // Generate insights
     const insights = {
@@ -215,8 +218,8 @@ export async function calculateSelectionStats(userName) {
       improvementTip: generateImprovementTip(
         totalSelections,
         totalTournaments,
-        currentStreak
-      )
+        currentStreak,
+      ),
     };
 
     return {
@@ -226,14 +229,13 @@ export async function calculateSelectionStats(userName) {
       mostSelectedName,
       currentStreak,
       maxStreak,
-      userRank: userRank || 'N/A',
-      insights
+      userRank: userRank || "N/A",
+      insights,
     };
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Error calculating selection stats:', error);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Error calculating selection stats:", error);
     }
     return null;
   }
 }
-

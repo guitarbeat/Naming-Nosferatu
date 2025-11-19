@@ -56,4 +56,3 @@ TournamentHeader.propTypes = {
 };
 
 export default TournamentHeader;
-

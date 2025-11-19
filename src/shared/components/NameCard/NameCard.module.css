@@ -183,7 +183,11 @@
   cursor: pointer;
 
   /* Reset button defaults */
-  background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 50%)), var(--surface-muted, rgb(15 23 42 / 40%)));
+  background: linear-gradient(
+    135deg,
+    var(--card-background, rgb(31 41 55 / 50%)),
+    var(--surface-muted, rgb(15 23 42 / 40%))
+  );
   border: 1.5px solid var(--border-color, rgb(148 163 184 / 25%));
   border-radius: clamp(1rem, 3vw, 1.5rem);
   box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
@@ -330,7 +334,6 @@
   opacity: 1;
 }
 
-
 /* Dynamic mouse position variables */
 .card {
   --mouse-x: 50%;
@@ -339,10 +342,10 @@
 
 /* Enhanced depth on hover */
 .card:not(.disabled):hover {
-  border-color: var(--accent-color, #e8bf76);
   cursor: pointer;
-  transform: translateY(-2px);
+  border-color: var(--accent-color, #e8bf76);
   box-shadow: 0 8px 24px rgb(0 0 0 / 20%);
+  transform: translateY(-2px);
 }
 
 .card:not(.disabled):hover .name {
@@ -359,13 +362,20 @@
 
 /* Tilt effect only - no float animation */
 .card:not(.disabled) {
-  perspective: 1000px;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  perspective: 1000px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .selected {
-  background: linear-gradient(135deg, rgb(232 191 118 / 12%), rgb(241 164 56 / 10%));
+  background: linear-gradient(
+    135deg,
+    rgb(232 191 118 / 12%),
+    rgb(241 164 56 / 10%)
+  );
   border: 2px solid var(--accent-color, #e8bf76);
 }
 
@@ -460,13 +470,21 @@
   .card {
     min-height: auto;
     padding: clamp(1rem, 2.5vw, 1.5rem);
-    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 50%)), var(--surface-muted, rgb(15 23 42 / 40%)));
+    background: linear-gradient(
+      135deg,
+      var(--card-background, rgb(31 41 55 / 50%)),
+      var(--surface-muted, rgb(15 23 42 / 40%))
+    );
     border-color: var(--border-color, rgb(148 163 184 / 25%));
     box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
   }
 
   .card:hover {
-    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
+    background: linear-gradient(
+      135deg,
+      var(--card-background, rgb(31 41 55 / 60%)),
+      var(--surface-muted, rgb(15 23 42 / 50%))
+    );
     border-color: var(--accent-color, #e8bf76);
     box-shadow: 0 16px 40px rgb(0 0 0 / 20%);
     transform: translateY(-4px) scale(1.02);
@@ -485,7 +503,11 @@
   }
 
   .card:active {
-    background: linear-gradient(135deg, var(--card-background, rgb(31 41 55 / 60%)), var(--surface-muted, rgb(15 23 42 / 50%)));
+    background: linear-gradient(
+      135deg,
+      var(--card-background, rgb(31 41 55 / 60%)),
+      var(--surface-muted, rgb(15 23 42 / 50%))
+    );
     box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
     transform: scale(0.98);
   }
@@ -631,7 +653,8 @@
   height: 150px; /* Taller to showcase the image */
   margin-bottom: var(--space-3);
   overflow: hidden;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       circle at 30% 25%,
       rgb(var(--cat-image-accent-rgb, 100 116 139) / 55%) 0%,
       rgb(15 23 42 / 90%) 70%
@@ -640,7 +663,8 @@
 
   border-radius: var(--radius-md);
   box-shadow: 0 6px 20px rgb(15 23 42 / 35%);
-  transition: box-shadow var(--duration-normal) var(--ease-out),
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out),
     transform var(--duration-normal) var(--ease-out);
 }
 
@@ -680,7 +704,8 @@
   opacity: 0;
   filter: drop-shadow(0 16px 24px rgb(15 23 42 / 35%));
   transform: scale(1.03);
-  transition: transform var(--duration-normal) var(--ease-out),
+  transition:
+    transform var(--duration-normal) var(--ease-out),
     opacity 0.2s ease;
 }
 
@@ -691,25 +716,25 @@
   transform: translateY(-2px);
 }
 
-.cardImageContainer[data-loaded='true']::before,
-.cardImageContainer[data-loaded='true']::after {
+.cardImageContainer[data-loaded="true"]::before,
+.cardImageContainer[data-loaded="true"]::after {
   opacity: 1;
 }
 
-.cardImageContainer[data-loaded='true'] .cardImage {
+.cardImageContainer[data-loaded="true"] .cardImage {
   opacity: 1;
   transform: scale(1);
 }
 
-.cardImageContainer[data-orientation='portrait'] {
+.cardImageContainer[data-orientation="portrait"] {
   height: 240px;
 }
 
-.cardImageContainer[data-orientation='landscape'] {
+.cardImageContainer[data-orientation="landscape"] {
   height: 180px;
 }
 
-.cardImageContainer[data-orientation='square'] {
+.cardImageContainer[data-orientation="square"] {
   height: 210px;
 }
 
@@ -734,6 +759,7 @@
 .hasImage {
   /* * Increase card height for better image display */
   min-height: auto;
+  padding: clamp(1rem, 2vw, 1.5rem);
   overflow: hidden;
 
   /* * Enhanced Tinder-style appearance */
@@ -741,7 +767,6 @@
   border-radius: 24px;
   box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
   perspective: none;
-  padding: clamp(1rem, 2vw, 1.5rem);
 
   /* * Simplified transforms when images are present */
 }
@@ -946,8 +971,8 @@
   }
 
   .card:hover {
-    transform: none;
     box-shadow: 0 8px 28px rgb(0 0 0 / 15%);
+    transform: none;
   }
 
   .card:active {

@@ -109,20 +109,20 @@
   }
 }
 
-:root[data-theme='light'] .breadcrumb__link {
+:root[data-theme="light"] .breadcrumb__link {
   color: var(--text-secondary, rgb(107 114 128));
 }
 
-:root[data-theme='light'] .breadcrumb__link:hover {
+:root[data-theme="light"] .breadcrumb__link:hover {
   color: var(--text-primary, rgb(17 24 39));
   background: rgb(0 0 0 / 5%);
 }
 
-:root[data-theme='light'] .breadcrumb__current {
+:root[data-theme="light"] .breadcrumb__current {
   color: var(--text-primary, rgb(17 24 39));
 }
 
-:root[data-theme='light'] .breadcrumb__separator {
+:root[data-theme="light"] .breadcrumb__separator {
   color: var(--text-secondary, rgb(156 163 175));
 }
 

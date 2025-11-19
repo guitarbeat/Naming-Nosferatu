@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import styles from './FilterGroup.module.css';
+import PropTypes from "prop-types";
+import styles from "./FilterGroup.module.css";
 
 /**
  * FilterGroup Component
  * Reusable wrapper for filter controls with consistent styling
  */
-const FilterGroup = ({ label, children, className = '' }) => {
+const FilterGroup = ({ label, children, className = "" }) => {
   const classNames = `${styles.filterGroup} ${className}`.trim();
 
   return (
@@ -23,9 +23,8 @@ FilterGroup.propTypes = {
 };
 
 FilterGroup.defaultProps = {
-  label: '',
-  className: '',
+  label: "",
+  className: "",
 };
 
 export default FilterGroup;
-

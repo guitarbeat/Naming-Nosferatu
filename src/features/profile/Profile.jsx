@@ -3,21 +3,21 @@
  * @description Main profile component that orchestrates user statistics and name management.
  * Now includes comprehensive selection analytics and tournament insights.
  */
-import React, { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { FILTER_OPTIONS } from '../../core/constants';
+import React, { useState, useCallback } from "react";
+import PropTypes from "prop-types";
+import { FILTER_OPTIONS } from "../../core/constants";
 
-import ProfileNameList from './ProfileNameList';
-import CatNameEditor from '../admin/CatNameEditor';
-import { ProfileHeader } from './components/ProfileHeader';
-import { Error } from '../../shared/components';
-import { useProfileNotifications } from './hooks/useProfileNotifications';
-import { useProfileUser } from './hooks/useProfileUser';
-import { useProfileNames } from './hooks/useProfileNames';
-import { useProfileStats } from './hooks/useProfileStats';
-import { useProfileHighlights } from './hooks/useProfileHighlights';
-import { useProfileNameOperations } from './hooks/useProfileNameOperations';
-import styles from './Profile.module.css';
+import ProfileNameList from "./ProfileNameList";
+import CatNameEditor from "../admin/CatNameEditor";
+import { ProfileHeader } from "./components/ProfileHeader";
+import { Error } from "../../shared/components";
+import { useProfileNotifications } from "./hooks/useProfileNotifications";
+import { useProfileUser } from "./hooks/useProfileUser";
+import { useProfileNames } from "./hooks/useProfileNames";
+import { useProfileStats } from "./hooks/useProfileStats";
+import { useProfileHighlights } from "./hooks/useProfileHighlights";
+import { useProfileNameOperations } from "./hooks/useProfileNameOperations";
+import styles from "./Profile.module.css";
 
 // * Main Profile Component
 const Profile = ({ userName }) => {
@@ -26,11 +26,11 @@ const Profile = ({ userName }) => {
 
   // * Filter state
   const [filterStatus, setFilterStatus] = useState(
-    FILTER_OPTIONS.STATUS.ACTIVE
+    FILTER_OPTIONS.STATUS.ACTIVE,
   );
   const [sortBy, setSortBy] = useState(FILTER_OPTIONS.SORT.RATING);
   const [sortOrder, setSortOrder] = useState(FILTER_OPTIONS.ORDER.DESC);
-  const [selectionFilter, setSelectionFilter] = useState('all');
+  const [selectionFilter, setSelectionFilter] = useState("all");
   const [filteredCount, setFilteredCount] = useState(0);
 
   // * User management
@@ -41,9 +41,8 @@ const Profile = ({ userName }) => {
     setUserFilter,
     canManageActiveUser,
     userSelectOptions,
-    availableUsers,
     userListLoading,
-    userListError
+    userListError,
   } = useProfileUser(userName);
 
   // * Names management
@@ -55,17 +54,12 @@ const Profile = ({ userName }) => {
     hiddenNames,
     setHiddenNames,
     hasSupabaseClient,
-    setHasSupabaseClient,
-    fetchNames
+    fetchNames,
   } = useProfileNames(activeUser);
 
   // * Statistics
-  const {
-    stats,
-    statsLoading,
-    selectionStats,
-    fetchSelectionStats
-  } = useProfileStats(activeUser);
+  const { stats, statsLoading, selectionStats, fetchSelectionStats } =
+    useProfileStats(activeUser);
 
   // * Highlights
   const highlights = useProfileHighlights(allNames);
@@ -78,7 +72,7 @@ const Profile = ({ userName }) => {
     handleDelete,
     handleSelectionChange,
     handleBulkHide,
-    handleBulkUnhide
+    handleBulkUnhide,
   } = useProfileNameOperations(
     activeUser,
     canManageActiveUser,
@@ -89,7 +83,7 @@ const Profile = ({ userName }) => {
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   // * Reset selected names when active user changes
@@ -140,8 +134,8 @@ const Profile = ({ userName }) => {
           <h2>No Data Available</h2>
           <p>
             {!hasSupabaseClient
-              ? 'Database not configured. Please set up Supabase environment variables to view your profile data.'
-              : 'No names found in your profile.'}
+              ? "Database not configured. Please set up Supabase environment variables to view your profile data."
+              : "No names found in your profile."}
           </p>
         </div>
       </div>
@@ -151,7 +145,7 @@ const Profile = ({ userName }) => {
   return (
     <div className={styles.profileContainer}>
       {/* * Cat Name Editor for Admin */}
-      {canManageActiveUser && userName === 'aaron' && (
+      {canManageActiveUser && userName === "aaron" && (
         <CatNameEditor userName={userName} />
       )}
 
@@ -208,7 +202,7 @@ const Profile = ({ userName }) => {
 };
 
 Profile.propTypes = {
-  userName: PropTypes.string.isRequired
+  userName: PropTypes.string.isRequired,
 };
 
 // * Wrap Profile with error boundary

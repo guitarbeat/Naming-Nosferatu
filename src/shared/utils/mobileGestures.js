@@ -13,7 +13,7 @@ class MobileGestures {
       swipe: 50,
       longPress: 500,
       doubleTap: 300,
-      pinch: 0.1
+      pinch: 0.1,
     };
   }
 
@@ -32,8 +32,8 @@ class MobileGestures {
       options: {
         threshold: this.thresholds[gestureType] || 50,
         preventDefault: true,
-        ...options
-      }
+        ...options,
+      },
     });
 
     return gestureId;
@@ -81,7 +81,7 @@ class MobileGestures {
         lastY: touch.clientY,
         lastTime: Date.now(),
         velocity: { x: 0, y: 0 },
-        distance: 0
+        distance: 0,
       });
     });
 
@@ -125,7 +125,7 @@ class MobileGestures {
         // Calculate total distance
         activeTouch.distance = Math.sqrt(
           Math.pow(touch.clientX - activeTouch.startX, 2) +
-          Math.pow(touch.clientY - activeTouch.startY, 2)
+            Math.pow(touch.clientY - activeTouch.startY, 2),
         );
       }
     });
@@ -174,15 +174,16 @@ class MobileGestures {
   handleSingleTouchStart(touch, event) {
     // Start long press timer
     const longPressTimer = setTimeout(() => {
-      this.triggerGesture('longPress', {
+      this.triggerGesture("longPress", {
         touch,
         event,
-        duration: Date.now() - touch.startTime
+        duration: Date.now() - touch.startTime,
       });
     }, this.thresholds.longPress);
 
     // Store timer for cleanup
-    this.activeTouches.get(`${touch.identifier}_0`).longPressTimer = longPressTimer;
+    this.activeTouches.get(`${touch.identifier}_0`).longPressTimer =
+      longPressTimer;
   }
 
   /**
@@ -208,16 +209,16 @@ class MobileGestures {
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
     if (distance > this.thresholds.swipe) {
-      const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+      const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
       const direction = this.getSwipeDirection(angle);
 
-      this.triggerGesture('swipe', {
+      this.triggerGesture("swipe", {
         touch,
         event,
         direction,
         distance,
         velocity: activeTouch.velocity,
-        angle
+        angle,
       });
     }
   }
@@ -233,12 +234,14 @@ class MobileGestures {
 
       const initialDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-        Math.pow(touch2.clientY - touch1.clientY, 2)
+          Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       // Store initial pinch distance
-      this.activeTouches.get(`${touch1.identifier}_0`).initialPinchDistance = initialDistance;
-      this.activeTouches.get(`${touch2.identifier}_1`).initialPinchDistance = initialDistance;
+      this.activeTouches.get(`${touch1.identifier}_0`).initialPinchDistance =
+        initialDistance;
+      this.activeTouches.get(`${touch2.identifier}_1`).initialPinchDistance =
+        initialDistance;
     }
   }
 
@@ -253,24 +256,25 @@ class MobileGestures {
 
       const currentDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-        Math.pow(touch2.clientY - touch1.clientY, 2)
+          Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
       const activeTouch2 = this.activeTouches.get(`${touch2.identifier}_1`);
 
       if (activeTouch1 && activeTouch2) {
-        const initialDistance = activeTouch1.initialPinchDistance || currentDistance;
+        const initialDistance =
+          activeTouch1.initialPinchDistance || currentDistance;
         const scale = currentDistance / initialDistance;
         const scaleChange = scale - 1;
 
         if (Math.abs(scaleChange) > this.thresholds.pinch) {
-          this.triggerGesture('pinch', {
+          this.triggerGesture("pinch", {
             touches: [touch1, touch2],
             event,
             scale,
             scaleChange,
-            distance: currentDistance
+            distance: currentDistance,
           });
         }
       }
@@ -309,16 +313,16 @@ class MobileGestures {
 
     if (now - lastTap < this.thresholds.doubleTap) {
       // Double tap
-      this.triggerGesture('doubleTap', {
+      this.triggerGesture("doubleTap", {
         touch,
         event,
-        timeBetweenTaps: now - lastTap
+        timeBetweenTaps: now - lastTap,
       });
     } else {
       // Single tap
-      this.triggerGesture('tap', {
+      this.triggerGesture("tap", {
         touch,
-        event
+        event,
       });
     }
 
@@ -330,9 +334,9 @@ class MobileGestures {
    * @param {TouchEvent} _event - Touch event
    */
   handleAllTouchesEnded(_event) {
-    this.triggerGesture('allTouchesEnded', {
+    this.triggerGesture("allTouchesEnded", {
       event: _event,
-      touchCount: this.activeTouches.size
+      touchCount: this.activeTouches.size,
     });
   }
 
@@ -342,10 +346,10 @@ class MobileGestures {
    * @returns {string} Direction (left, right, up, down)
    */
   getSwipeDirection(angle) {
-    if (angle >= -45 && angle < 45) return 'right';
-    if (angle >= 45 && angle < 135) return 'down';
-    if (angle >= 135 || angle < -135) return 'left';
-    return 'up';
+    if (angle >= -45 && angle < 45) return "right";
+    if (angle >= 45 && angle < 135) return "down";
+    if (angle >= 135 || angle < -135) return "left";
+    return "up";
   }
 
   /**
@@ -372,15 +376,15 @@ class MobileGestures {
    * Add haptic feedback
    * @param {string} type - Type of haptic feedback (light, medium, heavy)
    */
-  addHapticFeedback(type = 'light') {
-    if ('vibrate' in navigator) {
+  addHapticFeedback(type = "light") {
+    if ("vibrate" in navigator) {
       const patterns = {
         light: [10],
         medium: [20],
         heavy: [50],
         success: [10, 10, 10],
         error: [100],
-        warning: [50, 50]
+        warning: [50, 50],
       };
 
       navigator.vibrate(patterns[type] || patterns.light);
@@ -393,10 +397,10 @@ class MobileGestures {
    */
   getTouchDeviceInfo() {
     return {
-      isTouchDevice: 'ontouchstart' in window,
+      isTouchDevice: "ontouchstart" in window,
       maxTouchPoints: navigator.maxTouchPoints || 0,
-      hasHapticFeedback: 'vibrate' in navigator,
-      userAgent: navigator.userAgent
+      hasHapticFeedback: "vibrate" in navigator,
+      userAgent: navigator.userAgent,
     };
   }
 }

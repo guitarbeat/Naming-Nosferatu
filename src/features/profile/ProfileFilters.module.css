@@ -120,7 +120,11 @@
   color: white;
   white-space: nowrap;
   cursor: pointer;
-  background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-700, #1a2324));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color, #2c3e40),
+    var(--primary-700, #1a2324)
+  );
   border: 1px solid var(--primary-color, #2c3e40);
   border-radius: var(--radius-md, 8px);
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
@@ -192,7 +196,11 @@
 }
 
 :global(.dark-theme) .applyButton {
-  background: linear-gradient(135deg, var(--primary-color, #2c3e40), var(--primary-600, #1a2324));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color, #2c3e40),
+    var(--primary-600, #1a2324)
+  );
 }
 
 /* Tablet */

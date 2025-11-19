@@ -3,9 +3,9 @@
  * @description Component that displays a transition animation between tournament rounds.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './RoundTransition.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./RoundTransition.module.css";
 
 /**
  * RoundTransition component
@@ -33,7 +33,6 @@ RoundTransition.propTypes = {
   nextRoundNumber: PropTypes.number,
 };
 
-RoundTransition.displayName = 'RoundTransition';
+RoundTransition.displayName = "RoundTransition";
 
 export default RoundTransition;
-

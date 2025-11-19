@@ -14,10 +14,10 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { memo } from 'react';
-import PropTypes from 'prop-types';
-import { useBongoCat } from '@hooks/useBongoCat';
-import styles from './BongoCat.module.css';
+import React, { memo } from "react";
+import PropTypes from "prop-types";
+import { useBongoCat } from "@hooks/useBongoCat";
+import styles from "./BongoCat.module.css";
 
 /**
  * Render the core cat body without paws.
@@ -61,9 +61,9 @@ const Paw = () => (
   </div>
 );
 
-const Paws = ({ position, className = '' }) => (
+const Paws = ({ position, className = "" }) => (
   <div className={`${styles.paws} ${styles[position]} ${className}`.trim()}>
-    {position === 'up' ? (
+    {position === "up" ? (
       <>
         <Paw />
         <Paw />
@@ -78,8 +78,8 @@ const Paws = ({ position, className = '' }) => (
 );
 
 Paws.propTypes = {
-  position: PropTypes.oneOf(['up', 'down']).isRequired,
-  className: PropTypes.string
+  position: PropTypes.oneOf(["up", "down"]).isRequired,
+  className: PropTypes.string,
 };
 
 const PawsContainer = ({
@@ -89,14 +89,14 @@ const PawsContainer = ({
   isVisible,
   display,
   styleVars,
-  pawsPosition
+  pawsPosition,
 }) => (
   <div
     className={`${styles.bongoContainer} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
     style={{
       top: `${containerTop + pawsOffsetY}px`,
       zIndex,
-      display
+      display,
     }}
   >
     <div className={styles.container} style={styleVars}>
@@ -112,19 +112,19 @@ PawsContainer.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   display: PropTypes.string.isRequired,
   styleVars: PropTypes.object.isRequired,
-  pawsPosition: PropTypes.string.isRequired
+  pawsPosition: PropTypes.string.isRequired,
 };
 
 const BongoCat = memo(
-  ({ size = 0.5, color = '#000', onBongo, containerRef }) => {
+  ({ size = 0.5, color = "#000", onBongo, containerRef }) => {
     const { isPawsDown, containerTop, catSize, isVisible, containerZIndex } =
       useBongoCat({ containerRef, size, onBongo });
 
     const styleVars = {
-      '--cat-bg': color,
-      '--cat-outline':
-        color === '#000' ? '#222' : color === '#fff' ? '#eee' : color,
-      '--cat-size': catSize
+      "--cat-bg": color,
+      "--cat-outline":
+        color === "#000" ? "#222" : color === "#fff" ? "#eee" : color,
+      "--cat-size": catSize,
     };
 
     // If no containerRef is provided, just render the cat without positioning
@@ -137,8 +137,8 @@ const BongoCat = memo(
           aria-label="Bongo cat animation"
         >
           <CatBody />
-          <Paws position="up" className={isPawsDown ? styles.hide : ''} />
-          <Paws position="down" className={isPawsDown ? '' : styles.hide} />
+          <Paws position="up" className={isPawsDown ? styles.hide : ""} />
+          <Paws position="down" className={isPawsDown ? "" : styles.hide} />
         </div>
       );
     }
@@ -154,7 +154,7 @@ const BongoCat = memo(
     const pawsOffsetY = isMobile ? -10 : -20; // Much smaller offset on mobile to bring paws forward
 
     // Adjust visibility management to ensure a clean cutoff
-    const pawsVisibility = isVisible ? 'visible' : 'hidden';
+    const pawsVisibility = isVisible ? "visible" : "hidden";
 
     // Render the positioned cat when containerRef is provided
     return (
@@ -164,7 +164,7 @@ const BongoCat = memo(
           className={`${styles.bongoContainerPositioned} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
           style={{
             top: `${containerTop}px`,
-            zIndex: catBodyZIndex
+            zIndex: catBodyZIndex,
           }}
         >
           <div
@@ -184,7 +184,7 @@ const BongoCat = memo(
           zIndex={upPawsZIndex}
           isVisible={isVisible}
           pawsVisibility={pawsVisibility}
-          display={isPawsDown ? 'none' : 'block'}
+          display={isPawsDown ? "none" : "block"}
           styleVars={styleVars}
           pawsPosition="up"
         />
@@ -196,22 +196,22 @@ const BongoCat = memo(
           zIndex={downPawsZIndex}
           isVisible={isVisible}
           pawsVisibility={pawsVisibility}
-          display={isPawsDown ? 'block' : 'none'}
+          display={isPawsDown ? "block" : "none"}
           styleVars={styleVars}
           pawsPosition="down"
         />
       </>
     );
-  }
+  },
 );
 
-BongoCat.displayName = 'BongoCat';
+BongoCat.displayName = "BongoCat";
 
 BongoCat.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,
   onBongo: PropTypes.func,
-  containerRef: PropTypes.object
+  containerRef: PropTypes.object,
 };
 
 export default BongoCat;

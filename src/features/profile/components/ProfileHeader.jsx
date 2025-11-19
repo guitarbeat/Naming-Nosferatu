@@ -3,10 +3,10 @@
  * @description Header component for the profile page.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Select, Button } from '../../../shared/components';
-import styles from '../Profile.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import { Select, Button } from "../../../shared/components";
+import styles from "../Profile.module.css";
 
 /**
  * * Profile header component
@@ -34,7 +34,7 @@ export function ProfileHeader({
   userListError,
   allNames,
   selectedNames,
-  handleSelectionChange
+  handleSelectionChange,
 }) {
   return (
     <div className={styles.header}>
@@ -74,7 +74,9 @@ export function ProfileHeader({
           {allNames.length > 0 && (
             <Button
               onClick={() => {
-                const allSelected = allNames.every((n) => selectedNames.has(n.id));
+                const allSelected = allNames.every((n) =>
+                  selectedNames.has(n.id),
+                );
                 if (allSelected) {
                   allNames.forEach((n) => handleSelectionChange(n.id, false));
                 } else {
@@ -83,9 +85,15 @@ export function ProfileHeader({
               }}
               variant="secondary"
               size="small"
-              title={allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+              title={
+                allNames.every((n) => selectedNames.has(n.id))
+                  ? "Deselect All"
+                  : "Select All"
+              }
             >
-              {allNames.every((n) => selectedNames.has(n.id)) ? "Deselect All" : "Select All"}
+              {allNames.every((n) => selectedNames.has(n.id))
+                ? "Deselect All"
+                : "Select All"}
             </Button>
           )}
         </div>
@@ -105,6 +113,5 @@ ProfileHeader.propTypes = {
   userListError: PropTypes.object,
   allNames: PropTypes.array.isRequired,
   selectedNames: PropTypes.instanceOf(Set).isRequired,
-  handleSelectionChange: PropTypes.func.isRequired
+  handleSelectionChange: PropTypes.func.isRequired,
 };
-

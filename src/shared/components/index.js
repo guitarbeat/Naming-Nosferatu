@@ -5,43 +5,43 @@
  */
 
 // * Core UI Components
-import Button from './Button/Button';
-import Card from './Card/Card';
-import Loading from './Loading/Loading';
-import Error from './Error/Error';
-import Toast from './Toast/Toast';
-import SkeletonLoader from './SkeletonLoader/SkeletonLoader';
+import Button from "./Button/Button";
+import Card from "./Card/Card";
+import Loading from "./Loading/Loading";
+import Error from "./Error/Error";
+import Toast from "./Toast/Toast";
+import SkeletonLoader from "./SkeletonLoader/SkeletonLoader";
 
 // * Form Components
-import Form from './Form/Form';
-import Input from './Form/Input';
-import Select from './Form/Select';
+import Form from "./Form/Form";
+import Input from "./Form/Input";
+import Select from "./Form/Select";
 
 // * Layout Components
-import { AppSidebar } from './AppSidebar/AppSidebar';
-import Breadcrumb from './Breadcrumb/Breadcrumb';
+import { AppSidebar } from "./AppSidebar/AppSidebar";
+import Breadcrumb from "./Breadcrumb/Breadcrumb";
 
 // * Feature Components
-import NameCard from './NameCard/NameCard';
-import StatsCard from './StatsCard/StatsCard';
-import Bracket from './Bracket/Bracket';
-import BongoCat from './BongoCat/BongoCat';
-import CatBackground from './CatBackground/CatBackground';
-import CatImage from './CatImage/CatImage';
-import FloatingGallery from './FloatingGallery/FloatingGallery';
-import PerformanceDashboard from './PerformanceDashboard/PerformanceDashboard';
-import StartTournamentButton from './StartTournamentButton/StartTournamentButton';
-import CalendarButton from './CalendarButton/CalendarButton';
-import ViewRouter from './ViewRouter/ViewRouter';
-import ScrollToTopButton from './ScrollToTopButton';
+import NameCard from "./NameCard/NameCard";
+import StatsCard from "./StatsCard/StatsCard";
+import Bracket from "./Bracket/Bracket";
+import BongoCat from "./BongoCat/BongoCat";
+import CatBackground from "./CatBackground/CatBackground";
+import CatImage from "./CatImage/CatImage";
+import FloatingGallery from "./FloatingGallery/FloatingGallery";
+import PerformanceDashboard from "./PerformanceDashboard/PerformanceDashboard";
+import StartTournamentButton from "./StartTournamentButton/StartTournamentButton";
+import CalendarButton from "./CalendarButton/CalendarButton";
+import ViewRouter from "./ViewRouter/ViewRouter";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 // * UI System Components
-import ErrorBoundary from './Error/ErrorBoundary';
-import ErrorBoundaryFallback from './Error/ErrorBoundaryFallback';
-export { SidebarProvider, useSidebar } from './ui/sidebar';
+import ErrorBoundary from "./Error/ErrorBoundary";
+import ErrorBoundaryFallback from "./Error/ErrorBoundaryFallback";
+export { SidebarProvider, useSidebar } from "./ui/sidebar";
 
 // * Component prop types for external use
-export { default as PropTypes } from 'prop-types';
+export { default as PropTypes } from "prop-types";
 
 // * Build component object once
 const components = {
@@ -78,7 +78,7 @@ const components = {
 
   // UI System
   ErrorBoundary,
-  ErrorBoundaryFallback
+  ErrorBoundaryFallback,
 };
 
 // * Named exports
@@ -107,7 +107,7 @@ export {
   ViewRouter,
   ScrollToTopButton,
   ErrorBoundary,
-  ErrorBoundaryFallback
+  ErrorBoundaryFallback,
 };
 
 // * Default export reuses the same object

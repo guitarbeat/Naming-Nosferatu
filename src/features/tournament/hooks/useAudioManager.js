@@ -4,9 +4,9 @@
  * Handles background music, sound effects, volume control, and audio error handling.
  */
 
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { ErrorManager } from '../../../shared/services/errorManager';
-import { AUDIO, MUSIC_TRACKS, SOUND_EFFECTS } from '../../../core/constants';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { ErrorManager } from "../../../shared/services/errorManager";
+import { AUDIO, MUSIC_TRACKS, SOUND_EFFECTS } from "../../../core/constants";
 
 /**
  * Custom hook for audio management
@@ -14,14 +14,14 @@ import { AUDIO, MUSIC_TRACKS, SOUND_EFFECTS } from '../../../core/constants';
  */
 export function useAudioManager() {
   const [isMuted, setIsMuted] = useState(false);
-  const [volume, setVolume] = useState({ 
-    music: AUDIO.DEFAULT_MUSIC_VOLUME, 
-    effects: AUDIO.DEFAULT_EFFECTS_VOLUME 
+  const [volume, setVolume] = useState({
+    music: AUDIO.DEFAULT_MUSIC_VOLUME,
+    effects: AUDIO.DEFAULT_EFFECTS_VOLUME,
   });
   const [audioError, setAudioError] = useState(null);
 
-  const [currentTrack, setCurrentTrack] = useState(
-    () => Math.floor(Math.random() * MUSIC_TRACKS.length)
+  const [currentTrack, setCurrentTrack] = useState(() =>
+    Math.floor(Math.random() * MUSIC_TRACKS.length),
   );
   const [isShuffle, setIsShuffle] = useState(false);
 
@@ -71,7 +71,7 @@ export function useAudioManager() {
   const getRandomSoundEffect = useCallback(() => {
     const totalWeight = SOUND_EFFECTS.reduce(
       (sum, effect) => sum + effect.weight,
-      0
+      0,
     );
     let random = Math.random() * totalWeight;
 
@@ -113,7 +113,9 @@ export function useAudioManager() {
       try {
         if (musicRef.current) {
           musicRef.current.pause();
-          await new Promise((resolve) => setTimeout(resolve, AUDIO.TRACK_CHANGE_DELAY));
+          await new Promise((resolve) =>
+            setTimeout(resolve, AUDIO.TRACK_CHANGE_DELAY),
+          );
 
           musicRef.current.src = MUSIC_TRACKS[currentTrack].path;
           musicRef.current.volume = volume.music;
@@ -216,15 +218,15 @@ export function useAudioManager() {
               // * Ignore abort errors (user-initiated stops)
               if (error.name !== "AbortError") {
                 // * Use ErrorManager for consistent error handling
-                ErrorManager.handleError(error, 'Audio Playback', {
+                ErrorManager.handleError(error, "Audio Playback", {
                   isRetryable: true,
                   affectsUserData: false,
-                  isCritical: false
+                  isCritical: false,
                 });
-                
+
                 // * Set user-friendly error message
                 setAudioError("Unable to play audio. Click to try again.");
-                
+
                 if (process.env.NODE_ENV === "development") {
                   console.warn("Audio playback error (non-critical):", error);
                 }
@@ -264,4 +266,3 @@ export function useAudioManager() {
     handleVolumeChange,
   };
 }
-

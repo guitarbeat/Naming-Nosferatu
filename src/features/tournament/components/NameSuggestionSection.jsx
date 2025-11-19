@@ -5,7 +5,10 @@
 
 import { useState } from "react";
 import { catNamesAPI } from "../../../integrations/supabase/api";
-import { validateCatName, validateDescription } from "../../../shared/utils/validationUtils";
+import {
+  validateCatName,
+  validateDescription,
+} from "../../../shared/utils/validationUtils";
 import styles from "../TournamentSetup.module.css";
 
 function NameSuggestionSection() {
@@ -36,7 +39,7 @@ function NameSuggestionSection() {
       setIsSubmitting(true);
       const res = await catNamesAPI.addName(
         nameValidation.value,
-        descriptionValidation.value
+        descriptionValidation.value,
       );
       if (res?.success === false) {
         throw new Error(res.error || "Failed to add name");
@@ -109,4 +112,3 @@ function NameSuggestionSection() {
 }
 
 export default NameSuggestionSection;
-

@@ -56,12 +56,14 @@ export function AppSidebar({
       icon: TournamentIcon,
     },
     // * Add Profile if logged in
-    ...(isLoggedIn ? [{ key: "profile", label: "Profile", icon: ProfileIcon }] : []),
+    ...(isLoggedIn
+      ? [{ key: "profile", label: "Profile", icon: ProfileIcon }]
+      : []),
   ];
 
   const handleLogoClick = () => {
     // * Toggle sidebar expansion/collapse
-    console.log('Sidebar clicked, current collapsed state:', collapsed);
+    console.log("Sidebar clicked, current collapsed state:", collapsed);
     toggleCollapsed();
 
     // * If expanding, also navigate to tournament
@@ -86,50 +88,50 @@ export function AppSidebar({
       <SidebarContent>
         {/* Left Section: Logo + Navigation */}
         <NavbarSection className="navbar-left">
-        {/* Logo Section */}
-        <div className="sidebar-logo">
-          <button
-            type="button"
-            onClick={handleLogoClick}
-            className="sidebar-logo-button"
-            aria-label={logoButtonLabel}
-            title={logoButtonLabel}
-          >
-            <video
-              className="sidebar-logo-video"
-              width="96"
-              height="96"
-              muted
-              loop
-              autoPlay
-              playsInline
-              preload="none"
-              aria-label="Cat animation"
-              onError={(e) => {
-                // * Fallback to image if video fails to load
-                e.target.style.display = "none";
-                const img = e.target.nextElementSibling;
-                if (img) img.style.display = "block";
-              }}
+          {/* Logo Section */}
+          <div className="sidebar-logo">
+            <button
+              type="button"
+              onClick={handleLogoClick}
+              className="sidebar-logo-button"
+              aria-label={logoButtonLabel}
+              title={logoButtonLabel}
             >
-              <source src="/assets/images/cat.webm" type="video/webm" />
-              <img
-                src="/assets/images/cat.gif"
-                alt="Cat animation"
+              <video
+                className="sidebar-logo-video"
                 width="96"
                 height="96"
-                loading="lazy"
-                decoding="async"
-                fetchPriority="low"
-                style={{ display: "none" }}
-              />
-            </video>
-          </button>
-        </div>
+                muted
+                loop
+                autoPlay
+                playsInline
+                preload="none"
+                aria-label="Cat animation"
+                onError={(e) => {
+                  // * Fallback to image if video fails to load
+                  e.target.style.display = "none";
+                  const img = e.target.nextElementSibling;
+                  if (img) img.style.display = "block";
+                }}
+              >
+                <source src="/assets/images/cat.webm" type="video/webm" />
+                <img
+                  src="/assets/images/cat.gif"
+                  alt="Cat animation"
+                  width="96"
+                  height="96"
+                  loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
+                  style={{ display: "none" }}
+                />
+              </video>
+            </button>
+          </div>
 
-        {/* Main Navigation */}
-        <SidebarGroup open={true}>
-          <SidebarGroupContent>
+          {/* Main Navigation */}
+          <SidebarGroup open={true}>
+            <SidebarGroupContent>
               {navItems.map((item) => (
                 <MenuNavItem
                   key={item.key}
@@ -140,63 +142,65 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-          </SidebarGroupContent>
-        </SidebarGroup>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        {!collapsed && breadcrumbItems.length > 0 && (
-          <div className="navbar-breadcrumb">
-            <Breadcrumb items={breadcrumbItems} />
-          </div>
-        )}
+          {!collapsed && breadcrumbItems.length > 0 && (
+            <div className="navbar-breadcrumb">
+              <Breadcrumb items={breadcrumbItems} />
+            </div>
+          )}
         </NavbarSection>
 
         {/* Right Section: User Info + Actions */}
         <NavbarSection className="navbar-right" alignRight>
-        {/* User Info Section */}
-        {isLoggedIn && userName && !collapsed && (
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-greeting">
+          {/* User Info Section */}
+          {isLoggedIn && userName && !collapsed && (
+            <div className="sidebar-user-info">
+              <div className="sidebar-user-greeting">
                 <UserIcon />
-              <span>Welcome, {userName}</span>
-            </div>
-            {/* * Admin Badge for Aaron */}
-            {isAdmin && userName && userName.toLowerCase() === "aaron" && (
-              <div className="sidebar-admin-badge">
+                <span>Welcome, {userName}</span>
+              </div>
+              {/* * Admin Badge for Aaron */}
+              {isAdmin && userName && userName.toLowerCase() === "aaron" && (
+                <div className="sidebar-admin-badge">
                   <AdminIcon />
                   <span>Admin</span>
-              </div>
-            )}
-          </div>
-        )}
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* Actions Section */}
-        <SidebarGroup open={true}>
-          <SidebarGroupContent>
-                {/* Performance Dashboard - Admin only */}
-                <MenuActionItem
-                  icon={DashboardIcon}
-                  label="Dashboard"
-                  onClick={onTogglePerformanceDashboard}
-                  ariaLabel="Open performance dashboard"
-                  condition={isLoggedIn && isAdmin && !!onTogglePerformanceDashboard}
-                />
+          {/* Actions Section */}
+          <SidebarGroup open={true}>
+            <SidebarGroupContent>
+              {/* Performance Dashboard - Admin only */}
+              <MenuActionItem
+                icon={DashboardIcon}
+                label="Dashboard"
+                onClick={onTogglePerformanceDashboard}
+                ariaLabel="Open performance dashboard"
+                condition={
+                  isLoggedIn && isAdmin && !!onTogglePerformanceDashboard
+                }
+              />
 
               {/* Theme Toggle */}
-                <ThemeToggleActionItem
-                    onClick={onThemeChange}
-                  isLightTheme={isLightTheme}
-                />
+              <ThemeToggleActionItem
+                onClick={onThemeChange}
+                isLightTheme={isLightTheme}
+              />
 
               {/* Logout */}
-                <MenuActionItem
-                  icon={LogoutIcon}
-                  label="Logout"
-                      onClick={onLogout}
-                      className="sidebar-logout-button"
-                  condition={isLoggedIn}
-                />
-          </SidebarGroupContent>
-        </SidebarGroup>
+              <MenuActionItem
+                icon={LogoutIcon}
+                label="Logout"
+                onClick={onLogout}
+                className="sidebar-logout-button"
+                condition={isLoggedIn}
+              />
+            </SidebarGroupContent>
+          </SidebarGroup>
         </NavbarSection>
       </SidebarContent>
     </Sidebar>
@@ -219,6 +223,6 @@ AppSidebar.propTypes = {
       id: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
       onClick: PropTypes.func,
-    })
+    }),
   ),
 };

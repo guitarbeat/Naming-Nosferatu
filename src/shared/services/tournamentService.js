@@ -1,4 +1,4 @@
-import { resolveSupabaseClient } from '@/integrations/supabase/client';
+import { resolveSupabaseClient } from "@/integrations/supabase/client";
 
 /**
  * @module TournamentService
@@ -18,7 +18,7 @@ export class TournamentService {
       id: n.id,
       name: n.name,
       description: n.description,
-      rating: existingRatings[n.name]?.rating || 1500
+      rating: existingRatings[n.name]?.rating || 1500,
     }));
   }
 
@@ -34,16 +34,16 @@ export class TournamentService {
     finalRatings,
     voteHistory,
     userName,
-    existingRatings = {}
+    existingRatings = {},
   ) {
     try {
       // * Convert finalRatings to array if it's an object
       const ratingsArray = Array.isArray(finalRatings)
         ? finalRatings
         : Object.entries(finalRatings).map(([name, rating]) => ({
-          name,
-          rating
-        }));
+            name,
+            rating,
+          }));
 
       // Build a quick lookup map for final ratings to avoid repeated .find calls
       const ratingMap = new Map(ratingsArray.map((r) => [r.name, r.rating]));
@@ -90,7 +90,7 @@ export class TournamentService {
           updatedRatings[name] = {
             rating: Math.round(finalRating),
             wins: (existing.wins || 0) + results.wins,
-            losses: (existing.losses || 0) + results.losses
+            losses: (existing.losses || 0) + results.losses,
           };
         });
         return updatedRatings;
@@ -98,9 +98,9 @@ export class TournamentService {
 
       // * Get name_ids from cat_name_options table
       const { data: nameOptions, error: nameError } = await supabaseClient
-        .from('cat_name_options')
-        .select('id, name')
-        .in('name', Object.keys(tournamentResults));
+        .from("cat_name_options")
+        .select("id, name")
+        .in("name", Object.keys(tournamentResults));
 
       if (nameError) {
         throw new Error(`Failed to fetch names: ${nameError.message}`);
@@ -127,7 +127,7 @@ export class TournamentService {
           // * Get existing rating data
           const existingRating = existingRatings[name] || {
             wins: 0,
-            losses: 0
+            losses: 0,
           };
 
           return {
@@ -137,7 +137,7 @@ export class TournamentService {
             // * Add new wins/losses to existing totals
             wins: (existingRating.wins || 0) + results.wins,
             losses: (existingRating.losses || 0) + results.losses,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           };
         })
         .filter(Boolean);
@@ -147,7 +147,7 @@ export class TournamentService {
       // * Return updated ratings for local state
       const updatedRatings = { ...existingRatings };
       const idToNameMap = new Map(
-        nameOptions.map(({ id, name }) => [id, name])
+        nameOptions.map(({ id, name }) => [id, name]),
       );
       recordsToUpsert.forEach((record) => {
         const name = idToNameMap.get(record.name_id);
@@ -155,14 +155,14 @@ export class TournamentService {
           updatedRatings[name] = {
             rating: record.rating,
             wins: record.wins,
-            losses: record.losses
+            losses: record.losses,
           };
         }
       });
 
       return updatedRatings;
     } catch (error) {
-      console.error('Error in tournament completion:', error);
+      console.error("Error in tournament completion:", error);
       throw error;
     }
   }
@@ -183,11 +183,11 @@ export class TournamentService {
             acc[name] = {
               rating: Math.round(rating),
               wins,
-              losses
+              losses,
             };
             return acc;
           },
-          {}
+          {},
         );
       }
 
@@ -197,18 +197,18 @@ export class TournamentService {
           acc[name] = {
             rating: Math.round(rating),
             wins,
-            losses
+            losses,
           };
           return acc;
         },
-        {}
+        {},
       );
 
       // * Get name_ids in a single query
       const { data: nameOptions, error: nameError } = await supabaseClient
-        .from('cat_name_options')
-        .select('id, name')
-        .in('name', Object.keys(updatedRatings));
+        .from("cat_name_options")
+        .select("id, name")
+        .in("name", Object.keys(updatedRatings));
 
       if (nameError) {
         throw nameError;
@@ -221,14 +221,14 @@ export class TournamentService {
         rating: updatedRatings[name].rating,
         wins: updatedRatings[name].wins,
         losses: updatedRatings[name].losses,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       }));
 
       await TournamentService.upsertRatingRecords(recordsToUpsert);
 
       return updatedRatings;
     } catch (error) {
-      console.error('Error updating ratings:', error);
+      console.error("Error updating ratings:", error);
       throw error;
     }
   }
@@ -240,20 +240,20 @@ export class TournamentService {
    */
   static async upsertRatingRecords(recordsToUpsert) {
     if (recordsToUpsert.length === 0) {
-      throw new Error('No valid records to update');
+      throw new Error("No valid records to update");
     }
 
     const supabaseClient = await resolveSupabaseClient();
 
     if (!supabaseClient) {
-      throw new Error('Supabase client is not configured');
+      throw new Error("Supabase client is not configured");
     }
 
     const { error: upsertError } = await supabaseClient
-      .from('cat_name_ratings')
+      .from("cat_name_ratings")
       .upsert(recordsToUpsert, {
-        onConflict: 'user_name,name_id',
-        returning: 'minimal'
+        onConflict: "user_name,name_id",
+        returning: "minimal",
       });
 
     if (upsertError) {
@@ -271,28 +271,28 @@ export class TournamentService {
 
       // If Supabase is not available, return a default name with Woods
       if (!supabaseClient) {
-        return 'Mystery Cat Woods';
+        return "Mystery Cat Woods";
       }
 
       // First get all names from cat_name_options
       const { data: allNames, error: namesError } = await supabaseClient
-        .from('cat_name_options')
-        .select('id, name')
-        .order('name');
+        .from("cat_name_options")
+        .select("id, name")
+        .order("name");
 
       if (namesError) {
         throw namesError;
       }
 
       if (!allNames || allNames.length === 0) {
-        return 'Mystery Cat';
+        return "Mystery Cat";
       }
 
       // Get hidden name IDs
       const { data: hiddenData, error: hiddenError } = await supabaseClient
-        .from('cat_name_ratings')
-        .select('name_id')
-        .eq('is_hidden', true);
+        .from("cat_name_ratings")
+        .select("name_id")
+        .eq("is_hidden", true);
 
       if (hiddenError) {
         throw hiddenError;
@@ -304,12 +304,12 @@ export class TournamentService {
       const visibleNames = allNames.filter((name) => !hiddenIds.has(name.id));
 
       if (visibleNames.length === 0) {
-        return 'Mystery Cat';
+        return "Mystery Cat";
       }
 
       // Get ratings for visible names
       const { data: ratingsData, error: ratingsError } = await supabaseClient
-        .from('cat_name_ratings')
+        .from("cat_name_ratings")
         .select(
           `
           name_id,
@@ -317,14 +317,14 @@ export class TournamentService {
           cat_name_options (
             name
           )
-        `
+        `,
         )
         .in(
-          'name_id',
-          visibleNames.map((n) => n.id)
+          "name_id",
+          visibleNames.map((n) => n.id),
         )
-        .or('is_hidden.is.null,is_hidden.eq.false')
-        .order('rating', { ascending: false });
+        .or("is_hidden.is.null,is_hidden.eq.false")
+        .order("rating", { ascending: false });
 
       if (ratingsError) {
         throw ratingsError;
@@ -332,23 +332,23 @@ export class TournamentService {
 
       // If no ratings data, use all visible names
       if (!ratingsData || ratingsData.length === 0) {
-        const fallbackName = visibleNames.map((n) => n.name).join(' ');
-        return fallbackName ? `${fallbackName} Woods` : 'Mystery Cat Woods';
+        const fallbackName = visibleNames.map((n) => n.name).join(" ");
+        return fallbackName ? `${fallbackName} Woods` : "Mystery Cat Woods";
       }
 
       // Sort by rating (highest to lowest) and extract names
       const sortedNames = ratingsData
         .map((item) => item.cat_name_options?.name)
         .filter((name) => name) // Remove any null/undefined names
-        .join(' ');
+        .join(" ");
 
       // Append "Woods" as the last name
       const finalName =
-        sortedNames || visibleNames.map((n) => n.name).join(' ');
-      return finalName ? `${finalName} Woods` : 'Mystery Cat Woods';
+        sortedNames || visibleNames.map((n) => n.name).join(" ");
+      return finalName ? `${finalName} Woods` : "Mystery Cat Woods";
     } catch (error) {
-      console.error('Error generating cat name:', error);
-      return 'Mystery Cat Woods';
+      console.error("Error generating cat name:", error);
+      return "Mystery Cat Woods";
     }
   }
 
@@ -366,9 +366,9 @@ export class TournamentService {
 
       // First get all names from cat_name_options
       const { data: allNames, error: namesError } = await supabaseClient
-        .from('cat_name_options')
-        .select('id, name, description, categories')
-        .order('name');
+        .from("cat_name_options")
+        .select("id, name, description, categories")
+        .order("name");
 
       if (namesError) {
         throw namesError;
@@ -380,9 +380,9 @@ export class TournamentService {
 
       // Get hidden name IDs
       const { data: hiddenData, error: hiddenError } = await supabaseClient
-        .from('cat_name_ratings')
-        .select('name_id')
-        .eq('is_hidden', true);
+        .from("cat_name_ratings")
+        .select("name_id")
+        .eq("is_hidden", true);
 
       if (hiddenError) {
         throw hiddenError;
@@ -399,10 +399,13 @@ export class TournamentService {
 
       // Get ratings for visible names (no JOIN to avoid duplicates)
       const { data: ratingsData, error: ratingsError } = await supabaseClient
-        .from('cat_name_ratings')
-        .select('name_id, rating, wins, losses')
-        .in('name_id', visibleNames.map((n) => n.id))
-        .or('is_hidden.is.null,is_hidden.eq.false');
+        .from("cat_name_ratings")
+        .select("name_id, rating, wins, losses")
+        .in(
+          "name_id",
+          visibleNames.map((n) => n.id),
+        )
+        .or("is_hidden.is.null,is_hidden.eq.false");
 
       if (ratingsError) {
         throw ratingsError;
@@ -410,12 +413,12 @@ export class TournamentService {
 
       // Create a map of name data for quick lookup
       const nameDataMap = new Map();
-      visibleNames.forEach(name => {
+      visibleNames.forEach((name) => {
         nameDataMap.set(name.id, {
           id: name.id,
           name: name.name,
           description: name.description,
-          categories: name.categories || []
+          categories: name.categories || [],
         });
       });
 
@@ -439,7 +442,7 @@ export class TournamentService {
               totalWins: 0,
               totalLosses: 0,
               userCount: 0,
-              ratings: []
+              ratings: [],
             });
           }
 
@@ -453,33 +456,37 @@ export class TournamentService {
       }
 
       // Convert aggregated data to final format
-      const processedNames = Array.from(aggregatedRatings.values()).map((entry, index) => {
-        const avgRating = entry.userCount > 0
-          ? entry.totalRating / entry.userCount
-          : 1500;
+      const processedNames = Array.from(aggregatedRatings.values()).map(
+        (entry, index) => {
+          const avgRating =
+            entry.userCount > 0 ? entry.totalRating / entry.userCount : 1500;
 
-        const totalMatches = entry.totalWins + entry.totalLosses;
-        const winRate = totalMatches > 0
-          ? Math.round((entry.totalWins / totalMatches) * 100)
-          : 0;
+          const totalMatches = entry.totalWins + entry.totalLosses;
+          const winRate =
+            totalMatches > 0
+              ? Math.round((entry.totalWins / totalMatches) * 100)
+              : 0;
 
-        return {
-          id: entry.id,
-          name: entry.name,
-          description: entry.description,
-          categories: entry.categories,
-          rating: Math.round(avgRating),
-          wins: entry.totalWins,
-          losses: entry.totalLosses,
-          totalMatches,
-          winRate,
-          rank: index + 1,
-          userCount: entry.userCount
-        };
-      });
+          return {
+            id: entry.id,
+            name: entry.name,
+            description: entry.description,
+            categories: entry.categories,
+            rating: Math.round(avgRating),
+            wins: entry.totalWins,
+            losses: entry.totalLosses,
+            totalMatches,
+            winRate,
+            rank: index + 1,
+            userCount: entry.userCount,
+          };
+        },
+      );
 
       // Sort alphabetically by name
-      processedNames.sort((a, b) => a.name.localeCompare(b.name));
+      processedNames.sort((a, b) =>
+        (a?.name || "").localeCompare(b?.name || ""),
+      );
 
       // Update ranks after sorting
       processedNames.forEach((name, index) => {
@@ -487,9 +494,9 @@ export class TournamentService {
       });
 
       // Handle names without any ratings data
-      const namesWithData = new Set(processedNames.map(n => n.id));
+      const namesWithData = new Set(processedNames.map((n) => n.id));
       const namesWithoutData = visibleNames
-        .filter(name => !namesWithData.has(name.id))
+        .filter((name) => !namesWithData.has(name.id))
         .map((name, index) => ({
           id: name.id,
           name: name.name,
@@ -501,11 +508,13 @@ export class TournamentService {
           totalMatches: 0,
           winRate: 0,
           rank: processedNames.length + index + 1,
-          userCount: 0
+          userCount: 0,
         }));
 
       // Sort names without data alphabetically as well
-      namesWithoutData.sort((a, b) => a.name.localeCompare(b.name));
+      namesWithoutData.sort((a, b) =>
+        (a?.name || "").localeCompare(b?.name || ""),
+      );
 
       // Update ranks for names without data
       namesWithoutData.forEach((name, index) => {
@@ -514,7 +523,7 @@ export class TournamentService {
 
       return [...processedNames, ...namesWithoutData];
     } catch (error) {
-      console.error('Error fetching cat name stats:', error);
+      console.error("Error fetching cat name stats:", error);
       return [];
     }
   }
@@ -533,7 +542,7 @@ export class TournamentService {
         winRate: 0,
         avgRating: 0,
         ratingSpread: 0,
-        totalMatches: 0
+        totalMatches: 0,
       };
     }
 
@@ -548,15 +557,15 @@ export class TournamentService {
     const avgRating =
       ratingsWithValues.length > 0
         ? Math.round(
-          ratingsWithValues.reduce((sum, r) => sum + (r.rating || 0), 0) /
-          ratingsWithValues.length
-        )
+            ratingsWithValues.reduce((sum, r) => sum + (r.rating || 0), 0) /
+              ratingsWithValues.length,
+          )
         : 0;
 
     const ratingSpread =
       ratingsWithValues.length > 0
         ? Math.max(...ratingsWithValues.map((r) => r.rating || 0)) -
-        Math.min(...ratingsWithValues.map((r) => r.rating || 0))
+          Math.min(...ratingsWithValues.map((r) => r.rating || 0))
         : 0;
 
     const totalMatches = wins + losses;
@@ -568,7 +577,7 @@ export class TournamentService {
       winRate,
       avgRating,
       ratingSpread,
-      totalMatches
+      totalMatches,
     };
   }
 }

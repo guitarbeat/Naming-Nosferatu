@@ -4,9 +4,9 @@
  * Standardizes form submission patterns across the app.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './Form.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./Form.module.css";
 
 /**
  * Form component with built-in error handling
@@ -17,24 +17,11 @@ import styles from './Form.module.css';
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} Form component
  */
-const Form = ({
-  children,
-  onSubmit,
-  className = '',
-  ...rest
-}) => {
-  const formClasses = [
-    styles.form,
-    className
-  ].filter(Boolean).join(' ');
+const Form = ({ children, onSubmit, className = "", ...rest }) => {
+  const formClasses = [styles.form, className].filter(Boolean).join(" ");
 
   return (
-    <form
-      className={formClasses}
-      onSubmit={onSubmit}
-      noValidate
-      {...rest}
-    >
+    <form className={formClasses} onSubmit={onSubmit} noValidate {...rest}>
       {children}
     </form>
   );
@@ -43,9 +30,9 @@ const Form = ({
 Form.propTypes = {
   children: PropTypes.node.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  className: PropTypes.string
+  className: PropTypes.string,
 };
 
-Form.displayName = 'Form';
+Form.displayName = "Form";
 
 export default Form;

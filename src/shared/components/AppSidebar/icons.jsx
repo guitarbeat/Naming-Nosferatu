@@ -3,7 +3,7 @@
  * @description Icon components for the AppSidebar
  */
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 /**
  * * Icon component with consistent sizing and styling
@@ -19,14 +19,10 @@ export function Icon({ name: _name, children, ...props }) {
     strokeWidth: "2",
     strokeLinecap: "round",
     strokeLinejoin: "round",
-    ...props
+    ...props,
   };
 
-  return (
-    <svg {...defaultProps}>
-      {children}
-    </svg>
-  );
+  return <svg {...defaultProps}>{children}</svg>;
 }
 
 Icon.propTypes = {
@@ -106,4 +102,3 @@ export const UserIcon = () => (
     <circle cx="12" cy="7" r="4" />
   </Icon>
 );
-

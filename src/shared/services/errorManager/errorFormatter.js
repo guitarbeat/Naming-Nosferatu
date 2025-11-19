@@ -3,11 +3,14 @@
  * @description Error formatting and severity determination logic.
  */
 
-import { ERROR_TYPES, ERROR_SEVERITY, USER_FRIENDLY_MESSAGES } from './constants';
-import { determineErrorType } from './errorParser';
-import { generateErrorId } from './errorId';
-import { buildDiagnostics } from './diagnostics';
-import { buildAIContext } from './aiContext';
+import {
+  ERROR_TYPES,
+  ERROR_SEVERITY,
+  USER_FRIENDLY_MESSAGES,
+} from "./constants";
+import { generateErrorId } from "./errorId";
+import { buildDiagnostics } from "./diagnostics";
+import { buildAIContext } from "./aiContext";
 
 /**
  * * Determines error severity based on type and metadata
@@ -48,35 +51,39 @@ export function determineSeverity(errorInfo, metadata) {
  */
 export function getUserFriendlyMessage(errorInfo, context) {
   const contextMap = {
-    'Tournament Completion': 'Failed to complete tournament',
-    'Tournament Setup': 'Failed to set up tournament',
-    'Rating Update': 'Failed to update ratings',
-    'Save Rankings': 'Failed to save ranking changes',
-    Login: 'Failed to log in',
-    'User Login': 'Unable to log in',
-    'Profile Load': 'Failed to load profile',
-    'Database Query': 'Failed to fetch data',
-    'Load Cat Name': 'Failed to load cat name',
-    'Fetch Cat Fact': 'Unable to load cat fact',
-    'Audio Playback': 'Unable to play audio',
-    'React Component Error': 'A component error occurred'
+    "Tournament Completion": "Failed to complete tournament",
+    "Tournament Setup": "Failed to set up tournament",
+    "Rating Update": "Failed to update ratings",
+    "Save Rankings": "Failed to save ranking changes",
+    Login: "Failed to log in",
+    "User Login": "Unable to log in",
+    "Profile Load": "Failed to load profile",
+    "Database Query": "Failed to fetch data",
+    "Load Cat Name": "Failed to load cat name",
+    "Fetch Cat Fact": "Unable to load cat fact",
+    "Audio Playback": "Unable to play audio",
+    "React Component Error": "A component error occurred",
   };
 
-  const contextMessage = contextMap[context] || 'An error occurred';
+  const contextMessage = contextMap[context] || "An error occurred";
   const severity = determineSeverity(errorInfo, {});
 
   // * Check for network connectivity
   if (errorInfo.type === ERROR_TYPES.NETWORK) {
-    const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+    const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
     if (isOffline) {
-      return 'You appear to be offline. Please check your internet connection and try again.';
+      return "You appear to be offline. Please check your internet connection and try again.";
     }
-    return USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
-           `${contextMessage}. Please check your connection and try again.`;
+    return (
+      USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
+      `${contextMessage}. Please check your connection and try again.`
+    );
   }
 
-  return USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
-         `${contextMessage}. Please try again.`;
+  return (
+    USER_FRIENDLY_MESSAGES[errorInfo.type]?.[severity] ||
+    `${contextMessage}. Please try again.`
+  );
 }
 
 /**
@@ -142,17 +149,16 @@ export function formatError(errorInfo, context, metadata) {
     metadata: {
       ...metadata,
       originalError: errorInfo,
-      stack: errorInfo.stack
+      stack: errorInfo.stack,
     },
     diagnostics,
-    aiContext: ''
+    aiContext: "",
   };
 
   formatted.aiContext = buildAIContext({
     formattedError: formatted,
-    diagnostics
+    diagnostics,
   });
 
   return formatted;
 }
-

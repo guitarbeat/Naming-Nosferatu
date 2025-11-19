@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import './Breadcrumb.css';
+import React from "react";
+import PropTypes from "prop-types";
+import "./Breadcrumb.css";
 
-function Breadcrumb({ items, separator = '›' }) {
+function Breadcrumb({ items, separator = "›" }) {
   if (!items || items.length === 0) {
     return null;
   }
@@ -16,7 +16,11 @@ function Breadcrumb({ items, separator = '›' }) {
 
           const content = (
             <>
-              {item.icon && <span className="breadcrumb__icon" aria-hidden="true">{item.icon}</span>}
+              {item.icon && (
+                <span className="breadcrumb__icon" aria-hidden="true">
+                  {item.icon}
+                </span>
+              )}
               <span>{item.label}</span>
             </>
           );
@@ -62,18 +66,20 @@ function Breadcrumb({ items, separator = '›' }) {
   );
 }
 
-Breadcrumb.displayName = 'Breadcrumb';
+Breadcrumb.displayName = "Breadcrumb";
 
 Breadcrumb.propTypes = {
-  items: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    label: PropTypes.string.isRequired,
-    href: PropTypes.string,
-    onClick: PropTypes.func,
-    icon: PropTypes.node,
-    ariaLabel: PropTypes.string
-  })).isRequired,
-  separator: PropTypes.string
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      label: PropTypes.string.isRequired,
+      href: PropTypes.string,
+      onClick: PropTypes.func,
+      icon: PropTypes.node,
+      ariaLabel: PropTypes.string,
+    }),
+  ).isRequired,
+  separator: PropTypes.string,
 };
 
 export default Breadcrumb;

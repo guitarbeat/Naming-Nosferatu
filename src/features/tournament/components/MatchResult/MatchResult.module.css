@@ -11,13 +11,17 @@
   width: 90%;
   max-width: 600px;
   padding: 2rem;
-  background: linear-gradient(135deg, var(--surface-elevated, rgb(31 41 55 / 95%)), var(--surface-muted, rgb(15 23 42 / 95%)));
+  background: linear-gradient(
+    135deg,
+    var(--surface-elevated, rgb(31 41 55 / 95%)),
+    var(--surface-muted, rgb(15 23 42 / 95%))
+  );
   border: 2px solid var(--accent-color, #e8bf76);
   border-radius: var(--radius-lg, 16px);
   box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
+  backdrop-filter: blur(12px);
   transform: translate(-50%, -50%);
   animation: matchResultSlideIn 0.3s ease-out;
-  backdrop-filter: blur(12px);
 }
 
 .resultContent {
@@ -67,4 +71,3 @@
     font-size: 0.875rem;
   }
 }
-

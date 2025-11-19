@@ -60,9 +60,7 @@ function SwipeCard({
         </div>
         <div
           className={`${styles.swipeOverlay} ${styles.swipeLeft} ${swipeDirection === "left" ? styles.active : ""}`}
-          style={
-            swipeDirection === "left" ? swipeOverlayStyle : { opacity: 0 }
-          }
+          style={swipeDirection === "left" ? swipeOverlayStyle : { opacity: 0 }}
         >
           <span className={styles.swipeText}>👎 SKIPPED</span>
         </div>
@@ -149,4 +147,3 @@ SwipeCard.propTypes = {
 };
 
 export default SwipeCard;
-

@@ -32,7 +32,7 @@ const ProfileFilters = ({
     setSortOrder(
       sortOrder === FILTER_OPTIONS.ORDER.ASC
         ? FILTER_OPTIONS.ORDER.DESC
-        : FILTER_OPTIONS.ORDER.ASC
+        : FILTER_OPTIONS.ORDER.ASC,
     );
   };
 
@@ -76,7 +76,7 @@ const ProfileFilters = ({
       { value: "selection_count", label: "Selection Count" },
       { value: "last_selected", label: "Last Selected" },
       { value: "selection_frequency", label: "Selection Frequency" },
-      { value: "tournament_appearances", label: "Tournament Appearances" }
+      { value: "tournament_appearances", label: "Tournament Appearances" },
     );
   }
 
@@ -127,7 +127,11 @@ const ProfileFilters = ({
             onClick={handleSortOrderToggle}
             className={styles.orderButton}
             aria-label={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "ascending" : "descending"}`}
-            title={sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Ascending" : "Descending"}
+            title={
+              sortOrder === FILTER_OPTIONS.ORDER.ASC
+                ? "Ascending"
+                : "Descending"
+            }
           >
             {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
           </button>

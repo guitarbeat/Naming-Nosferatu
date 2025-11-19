@@ -4,9 +4,9 @@
  * Standardizes select styling and behavior across the app.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './Form.module.css';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./Form.module.css";
 
 /**
  * Select component with built-in error handling
@@ -34,27 +34,27 @@ const Select = ({
   options = [],
   disabled = false,
   required = false,
-  error = '',
+  error = "",
   label,
-  placeholder = 'Select an option',
-  className = '',
-  ariaDescribedBy = '',
+  placeholder = "Select an option",
+  className = "",
+  ariaDescribedBy = "",
   ...rest
 }) => {
   const selectClasses = [
     styles.select,
-    error && styles['select--error'],
-    disabled && styles['select--disabled'],
-    className
-  ].filter(Boolean).join(' ');
-
-  const selectId = `select-${name}`;
-  const describedBy = [
-    ariaDescribedBy,
-    error ? `${selectId}-error` : null
+    error && styles["select--error"],
+    disabled && styles["select--disabled"],
+    className,
   ]
     .filter(Boolean)
-    .join(' ') || undefined;
+    .join(" ");
+
+  const selectId = `select-${name}`;
+  const describedBy =
+    [ariaDescribedBy, error ? `${selectId}-error` : null]
+      .filter(Boolean)
+      .join(" ") || undefined;
 
   return (
     <div className={styles.inputGroup}>
@@ -106,20 +106,23 @@ Select.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
   onBlur: PropTypes.func,
-  options: PropTypes.arrayOf(PropTypes.shape({
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool
-  })),
+  options: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      label: PropTypes.string.isRequired,
+      disabled: PropTypes.bool,
+    }),
+  ),
   disabled: PropTypes.bool,
   required: PropTypes.bool,
   error: PropTypes.string,
   label: PropTypes.string,
   placeholder: PropTypes.string,
   className: PropTypes.string,
-  ariaDescribedBy: PropTypes.string
+  ariaDescribedBy: PropTypes.string,
 };
 
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
 export default Select;

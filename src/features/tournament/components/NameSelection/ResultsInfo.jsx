@@ -30,4 +30,3 @@ ResultsInfo.propTypes = {
 };
 
 export default ResultsInfo;
-

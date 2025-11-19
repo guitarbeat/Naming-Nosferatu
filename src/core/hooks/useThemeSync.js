@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export function useThemeSync(theme) {
   useEffect(() => {
-    const rootElement = typeof document !== 'undefined' ? document.documentElement : null;
-    const bodyElement = typeof document !== 'undefined' ? document.body : null;
+    const rootElement =
+      typeof document !== "undefined" ? document.documentElement : null;
+    const bodyElement = typeof document !== "undefined" ? document.body : null;
 
     if (!rootElement) {
       return undefined;
@@ -15,9 +16,9 @@ export function useThemeSync(theme) {
     }
 
     return () => {
-      rootElement.removeAttribute('data-theme');
+      rootElement.removeAttribute("data-theme");
       if (bodyElement) {
-        bodyElement.removeAttribute('data-theme');
+        bodyElement.removeAttribute("data-theme");
       }
     };
   }, [theme]);

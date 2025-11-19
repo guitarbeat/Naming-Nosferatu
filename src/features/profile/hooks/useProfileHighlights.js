@@ -3,7 +3,7 @@
  * @description Custom hook for calculating profile highlights.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * * Hook for calculating profile highlights
@@ -14,18 +14,19 @@ export function useProfileHighlights(allNames) {
   const [highlights, setHighlights] = useState({
     topRated: [],
     mostWins: [],
-    recent: []
+    recent: [],
   });
 
   // * Compute highlights whenever names change
   useEffect(() => {
     if (!Array.isArray(allNames) || allNames.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHighlights({ topRated: [], mostWins: [], recent: [] });
       return;
     }
 
     const withRatings = allNames.filter(
-      (n) => typeof n.user_rating === 'number' && n.user_rating !== null
+      (n) => typeof n.user_rating === "number" && n.user_rating !== null,
     );
     const topRated = [...withRatings]
       .sort((a, b) => (b.user_rating || 0) - (a.user_rating || 0))
@@ -33,7 +34,7 @@ export function useProfileHighlights(allNames) {
       .map((n) => ({
         id: n.id,
         name: n.name,
-        value: Math.round(n.user_rating || 0)
+        value: Math.round(n.user_rating || 0),
       }));
 
     const mostWins = [...allNames]
@@ -48,7 +49,7 @@ export function useProfileHighlights(allNames) {
       .map((n) => ({
         id: n.id,
         name: n.name,
-        value: new Date(n.updated_at).toLocaleDateString()
+        value: new Date(n.updated_at).toLocaleDateString(),
       }));
 
     setHighlights({ topRated, mostWins, recent });
@@ -56,4 +57,3 @@ export function useProfileHighlights(allNames) {
 
   return highlights;
 }
-

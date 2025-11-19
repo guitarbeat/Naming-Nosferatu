@@ -12,7 +12,7 @@ export class PerformanceMonitor {
       bundleSize: {},
       loadTimes: {},
       runtimeMetrics: {},
-      memoryUsage: {}
+      memoryUsage: {},
     };
     this.observers = [];
   }
@@ -21,23 +21,26 @@ export class PerformanceMonitor {
    * * Track bundle size metrics (async)
    */
   async trackBundleSize() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // * In development mode, use Vite's module analysis
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       this.metrics.bundleSize = {
         javascript: this.estimateDevBundleSize(),
         css: this.estimateDevCSSSize(),
         total: this.estimateDevBundleSize() + this.estimateDevCSSSize(),
         timestamp: Date.now(),
-        mode: 'development-estimate'
+        mode: "development-estimate",
       };
-      console.log('📊 Bundle Size Metrics (Dev Estimate):', this.metrics.bundleSize);
+      console.log(
+        "📊 Bundle Size Metrics (Dev Estimate):",
+        this.metrics.bundleSize,
+      );
       return;
     }
 
     // * Use requestIdleCallback to avoid blocking the main thread
-    if ('requestIdleCallback' in window) {
+    if ("requestIdleCallback" in window) {
       requestIdleCallback(async () => {
         await this.calculateBundleSize();
       });
@@ -53,8 +56,10 @@ export class PerformanceMonitor {
    * * Calculate bundle size (separated for better performance)
    */
   async calculateBundleSize() {
-    const scripts = Array.from(document.querySelectorAll('script[src]'));
-    const stylesheets = Array.from(document.querySelectorAll('link[rel="stylesheet"]'));
+    const scripts = Array.from(document.querySelectorAll("script[src]"));
+    const stylesheets = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"]'),
+    );
 
     let totalJS = 0;
     let totalCSS = 0;
@@ -62,17 +67,17 @@ export class PerformanceMonitor {
     try {
       // * Process scripts asynchronously with batching to prevent blocking
       const scriptSizes = await Promise.all(
-        scripts.map(script => this.getResourceSize(script.src))
+        scripts.map((script) => this.getResourceSize(script.src)),
       );
       totalJS = scriptSizes.reduce((sum, size) => sum + (size || 0), 0);
 
       // * Process stylesheets asynchronously with batching
       const stylesheetSizes = await Promise.all(
-        stylesheets.map(link => this.getResourceSize(link.href))
+        stylesheets.map((link) => this.getResourceSize(link.href)),
       );
       totalCSS = stylesheetSizes.reduce((sum, size) => sum + (size || 0), 0);
     } catch (error) {
-      console.warn('⚠️ Error calculating bundle size:', error);
+      console.warn("⚠️ Error calculating bundle size:", error);
       // * Fallback to 0 if calculation fails
       totalJS = 0;
       totalCSS = 0;
@@ -83,38 +88,42 @@ export class PerformanceMonitor {
       css: totalCSS,
       total: totalJS + totalCSS,
       timestamp: Date.now(),
-      mode: 'production'
+      mode: "production",
     };
 
-    console.log('📊 Bundle Size Metrics:', this.metrics.bundleSize);
+    console.log("📊 Bundle Size Metrics:", this.metrics.bundleSize);
   }
 
   /**
    * * Track page load times
    */
   trackLoadTimes() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // * Use a more robust approach for load time tracking
     const trackLoadMetrics = () => {
       // * Use requestAnimationFrame to avoid forced reflows
       requestAnimationFrame(() => {
-        const [navigation] = performance.getEntriesByType('navigation');
+        const [navigation] = performance.getEntriesByType("navigation");
 
         if (!navigation) {
-          console.warn('⚠️ Navigation timing not available');
+          console.warn("⚠️ Navigation timing not available");
           return;
         }
 
         // * Calculate safe timing values with proper fallbacks
-        const domContentLoaded = Math.max(0,
-          navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart
+        const domContentLoaded = Math.max(
+          0,
+          navigation.domContentLoadedEventEnd -
+            navigation.domContentLoadedEventStart,
         );
-        const loadComplete = Math.max(0,
-          navigation.loadEventEnd - navigation.loadEventStart
+        const loadComplete = Math.max(
+          0,
+          navigation.loadEventEnd - navigation.loadEventStart,
         );
-        const totalLoadTime = Math.max(0,
-          navigation.loadEventEnd - navigation.fetchStart
+        const totalLoadTime = Math.max(
+          0,
+          navigation.loadEventEnd - navigation.fetchStart,
         );
 
         this.metrics.loadTimes = {
@@ -123,18 +132,18 @@ export class PerformanceMonitor {
           totalLoadTime,
           firstPaint: this.getFirstPaint(),
           firstContentfulPaint: this.getFirstContentfulPaint(),
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
-        console.log('⏱️ Load Time Metrics:', this.metrics.loadTimes);
+        console.log("⏱️ Load Time Metrics:", this.metrics.loadTimes);
       });
     };
 
     // * Track immediately if already loaded, otherwise wait for load event
-    if (document.readyState === 'complete') {
+    if (document.readyState === "complete") {
       trackLoadMetrics();
     } else {
-      window.addEventListener('load', trackLoadMetrics, { once: true });
+      window.addEventListener("load", trackLoadMetrics, { once: true });
     }
   }
 
@@ -142,7 +151,7 @@ export class PerformanceMonitor {
    * * Track runtime performance
    */
   trackRuntimePerformance() {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     // Track memory usage
     if (performance.memory) {
@@ -150,7 +159,7 @@ export class PerformanceMonitor {
         usedJSHeapSize: performance.memory.usedJSHeapSize,
         totalJSHeapSize: performance.memory.totalJSHeapSize,
         jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
 
@@ -200,19 +209,22 @@ export class PerformanceMonitor {
       failedCount,
       totalImages,
       successRate: Math.round(successRate * 100) / 100,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
-    console.log('🖼️ Image Loading Metrics:', {
+    console.log("🖼️ Image Loading Metrics:", {
       loaded: loadedCount,
       failed: failedCount,
       total: totalImages,
-      successRate: `${successRate.toFixed(1)}%`
+      successRate: `${successRate.toFixed(1)}%`,
     });
 
     // * Warn if success rate is low
     if (successRate < 80 && totalImages > 0) {
-      console.warn('⚠️ Low image loading success rate:', `${successRate.toFixed(1)}%`);
+      console.warn(
+        "⚠️ Low image loading success rate:",
+        `${successRate.toFixed(1)}%`,
+      );
     }
   }
 
@@ -223,9 +235,9 @@ export class PerformanceMonitor {
    */
   async getResourceSize(url) {
     try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentLength = response.headers.get('Content-Length');
-      return parseInt(contentLength || '0');
+      const response = await fetch(url, { method: "HEAD" });
+      const contentLength = response.headers.get("Content-Length");
+      return parseInt(contentLength || "0");
     } catch {
       return 0;
     }
@@ -236,8 +248,10 @@ export class PerformanceMonitor {
    * @returns {number} First paint time in milliseconds
    */
   getFirstPaint() {
-    const paintEntries = performance.getEntriesByType('paint');
-    const firstPaint = paintEntries.find(entry => entry.name === 'first-paint');
+    const paintEntries = performance.getEntriesByType("paint");
+    const firstPaint = paintEntries.find(
+      (entry) => entry.name === "first-paint",
+    );
     return firstPaint ? firstPaint.startTime : 0;
   }
 
@@ -246,8 +260,10 @@ export class PerformanceMonitor {
    * @returns {number} First contentful paint time in milliseconds
    */
   getFirstContentfulPaint() {
-    const paintEntries = performance.getEntriesByType('paint');
-    const firstContentfulPaint = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+    const paintEntries = performance.getEntriesByType("paint");
+    const firstContentfulPaint = paintEntries.find(
+      (entry) => entry.name === "first-contentful-paint",
+    );
     return firstContentfulPaint ? firstContentfulPaint.startTime : 0;
   }
 
@@ -286,11 +302,13 @@ export class PerformanceMonitor {
     return {
       ...this.metrics,
       userAgent: navigator.userAgent,
-      connection: navigator.connection ? {
-        effectiveType: navigator.connection.effectiveType,
-        downlink: navigator.connection.downlink,
-        rtt: navigator.connection.rtt
-      } : null
+      connection: navigator.connection
+        ? {
+            effectiveType: navigator.connection.effectiveType,
+            downlink: navigator.connection.downlink,
+            rtt: navigator.connection.rtt,
+          }
+        : null,
     };
   }
 
@@ -298,7 +316,7 @@ export class PerformanceMonitor {
    * * Clean up observers
    */
   cleanup() {
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers = [];
   }
 
@@ -307,7 +325,7 @@ export class PerformanceMonitor {
    */
   init() {
     // * Use requestIdleCallback to defer initialization and avoid blocking
-    if ('requestIdleCallback' in window) {
+    if ("requestIdleCallback" in window) {
       requestIdleCallback(() => {
         this.initializeMonitoring();
       });
@@ -324,15 +342,15 @@ export class PerformanceMonitor {
    */
   initializeMonitoring() {
     // * Run bundle size calculation in background to avoid blocking
-    this.trackBundleSize().catch(error => {
-      console.warn('Bundle size calculation failed:', error);
+    this.trackBundleSize().catch((error) => {
+      console.warn("Bundle size calculation failed:", error);
     });
     this.trackLoadTimes();
     this.trackRuntimePerformance();
 
     // * In development, reduce monitoring frequency to improve performance
-    if (process.env.NODE_ENV === 'development') {
-      console.log('🚀 Performance monitoring initialized (development mode)');
+    if (process.env.NODE_ENV === "development") {
+      console.log("🚀 Performance monitoring initialized (development mode)");
     }
   }
 }
@@ -341,9 +359,8 @@ export class PerformanceMonitor {
 const performanceMonitor = new PerformanceMonitor();
 
 // * Auto-initialize in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   performanceMonitor.init();
 }
 
 export { performanceMonitor };
-

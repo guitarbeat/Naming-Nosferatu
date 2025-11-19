@@ -74,7 +74,7 @@ textarea:disabled,
 /* * Help cursor for tooltips and help text */
 .help,
 [aria-describedby],
-[title]:not([title=""]):not(button):not(a) {
+[title]:not([title=""], button, a) {
   cursor: help;
 }
 
@@ -91,7 +91,9 @@ button:not(:disabled):hover,
 a:not([aria-disabled="true"]):hover,
 [role="button"]:not([aria-disabled="true"]):hover,
 .clickable:not(.disabled):hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 /* * Scale feedback for buttons */
@@ -140,8 +142,8 @@ textarea:focus-visible {
   a,
   [role="button"],
   .clickable {
-    min-height: 44px;
     min-width: 44px;
+    min-height: 44px;
   }
 }
 
@@ -169,9 +171,6 @@ button,
 .draggable,
 [draggable="true"] {
   user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 /* * Allow text selection in inputs and textareas */
@@ -179,15 +178,12 @@ input,
 textarea,
 [contenteditable="true"] {
   user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
 }
 
 /* ===== CONTEXT-SPECIFIC CURSORS ===== */
 
 /* * Link cursor */
-a[href]:not([href=""]):not([href="#"]):not([aria-disabled="true"]) {
+a[href]:not([href=""], [href="#"], [aria-disabled="true"]) {
   cursor: pointer;
 }
 
@@ -204,7 +200,7 @@ img.clickable {
 }
 
 /* * Card cursor */
-.card:not(.disabled):not(.static) {
+.card:not(.disabled, .static) {
   cursor: pointer;
 }
 
@@ -215,7 +211,9 @@ img.clickable {
 /* * Name card specific */
 .name-card:not(.disabled) {
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .name-card:not(.disabled):hover {
@@ -249,4 +247,3 @@ img.clickable {
     outline-offset: 4px;
   }
 }
-

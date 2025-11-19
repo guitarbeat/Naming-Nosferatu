@@ -96,18 +96,14 @@ export const deduplicateImages = (images) => {
  * @returns {Array} Filtered and sorted names
  */
 export const filterAndSortNames = (names, filters = {}) => {
-  const {
-    category,
-    searchTerm,
-    sortBy = "alphabetical",
-  } = filters;
+  const { category, searchTerm, sortBy = "alphabetical" } = filters;
 
   let filtered = [...names];
 
   // * Filter by category
   if (category) {
     filtered = filtered.filter(
-      (name) => name.categories && name.categories.includes(category)
+      (name) => name.categories && name.categories.includes(category),
     );
   }
 
@@ -116,8 +112,12 @@ export const filterAndSortNames = (names, filters = {}) => {
     const term = searchTerm.toLowerCase();
     filtered = filtered.filter(
       (name) =>
-        name.name.toLowerCase().includes(term) ||
-        (name.description && name.description.toLowerCase().includes(term))
+        (name?.name &&
+          typeof name.name === "string" &&
+          name.name.toLowerCase().includes(term)) ||
+        (name?.description &&
+          typeof name.description === "string" &&
+          name.description.toLowerCase().includes(term)),
     );
   }
 
@@ -129,7 +129,7 @@ export const filterAndSortNames = (names, filters = {}) => {
       case "popularity":
         return (b.popularity_score || 0) - (a.popularity_score || 0);
       case "alphabetical":
-        return a.name.localeCompare(b.name);
+        return (a?.name || "").localeCompare(b?.name || "");
       default:
         return 0;
     }
@@ -151,7 +151,7 @@ export const generateCategoryOptions = (categories, names) => {
 
   const categoryCounts = categories.map((category) => {
     const count = names.filter(
-      (name) => name.categories && name.categories.includes(category.name)
+      (name) => name.categories && name.categories.includes(category.name),
     ).length;
 
     return {
@@ -177,4 +177,3 @@ export const extractCategories = (names) => {
     .sort((a, b) => a.localeCompare(b))
     .map((name) => ({ id: name, name }));
 };
-
