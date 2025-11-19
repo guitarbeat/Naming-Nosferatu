@@ -205,3 +205,5 @@ TournamentSetup.propTypes = {
   onStart: PropTypes.func.isRequired,
   userName: PropTypes.string,
 };
+
+export default TournamentSetup;

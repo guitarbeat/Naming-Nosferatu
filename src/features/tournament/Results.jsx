@@ -383,3 +383,5 @@ Results.propTypes = {
   currentTournamentNames: PropTypes.array,
   voteHistory: PropTypes.array,
 };
+
+export default Results;

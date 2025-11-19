@@ -541,3 +541,5 @@ Tournament.propTypes = {
   userName: PropTypes.string,
   onVote: PropTypes.func,
 };
+
+export default Tournament;

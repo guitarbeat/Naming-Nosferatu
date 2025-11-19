@@ -30,15 +30,8 @@ jobs:
 
       - name: Build
         run: |
-          export BAG_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_URL }}"
-          export BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+          export SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          export SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
           npm run build
-
-      - name: Bundle analyze (optional)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          export BAG_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_URL }}"
-          export BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          vite build --mode analyze --config config/vite.config.ts
 
 

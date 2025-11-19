@@ -204,5 +204,7 @@ Profile.propTypes = {
   userName: PropTypes.string.isRequired,
 };
 
+export default Profile;
+
 // * Unused component removed
 // function ProfileWithErrorBoundary(props) { ... }
