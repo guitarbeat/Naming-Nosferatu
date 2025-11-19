@@ -128,6 +128,12 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     }
   }, []);
 
+  // Refs for timeout cleanup
+  const scrollTimeoutRef = useRef(null);
+  const resizeTimeoutRef = useRef(null);
+  const orientationTimeoutRef = useRef(null);
+  const mutationTimeoutRef = useRef(null);
+
   // Set up event listeners and observers with performance optimizations
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -142,22 +148,20 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       requestAnimationFrame(updatePosition);
 
       // Throttled scroll handler to prevent excessive reflows
-      let scrollTimeout;
       const handleScroll = () => {
-        if (scrollTimeout) return;
-        scrollTimeout = requestAnimationFrame(() => {
+        if (scrollTimeoutRef.current) return;
+        scrollTimeoutRef.current = requestAnimationFrame(() => {
           updatePosition();
-          scrollTimeout = null;
+          scrollTimeoutRef.current = null;
         });
       };
 
       // Throttled resize handler
-      let resizeTimeout;
       const handleResize = () => {
-        if (resizeTimeout) return;
-        resizeTimeout = requestAnimationFrame(() => {
+        if (resizeTimeoutRef.current) return;
+        resizeTimeoutRef.current = requestAnimationFrame(() => {
           updatePosition();
-          resizeTimeout = null;
+          resizeTimeoutRef.current = null;
         });
       };
 
@@ -166,24 +170,22 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       window.addEventListener('resize', handleResize, { passive: true });
 
       // Debounced orientation change handler
-      let orientationTimeout;
       const handleOrientationChange = () => {
-        if (orientationTimeout) return;
-        orientationTimeout = setTimeout(() => {
+        if (orientationTimeoutRef.current) return;
+        orientationTimeoutRef.current = setTimeout(() => {
           requestAnimationFrame(updatePosition);
-          orientationTimeout = null;
+          orientationTimeoutRef.current = null;
         }, 100);
       };
 
       window.addEventListener('orientationchange', handleOrientationChange);
 
       // Throttled MutationObserver to reduce DOM observation overhead
-      let mutationTimeout;
       const handleMutation = () => {
-        if (mutationTimeout) return;
-        mutationTimeout = requestAnimationFrame(() => {
+        if (mutationTimeoutRef.current) return;
+        mutationTimeoutRef.current = requestAnimationFrame(() => {
           updatePosition();
-          mutationTimeout = null;
+          mutationTimeoutRef.current = null;
         });
       };
 
@@ -205,10 +207,22 @@ export function useBongoCat({ containerRef, size, onBongo }) {
         mutationObserver.disconnect();
 
         // Clean up timeouts
-        if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
-        if (resizeTimeout) cancelAnimationFrame(resizeTimeout);
-        if (orientationTimeout) clearTimeout(orientationTimeout);
-        if (mutationTimeout) cancelAnimationFrame(mutationTimeout);
+        if (scrollTimeoutRef.current) {
+          cancelAnimationFrame(scrollTimeoutRef.current);
+          scrollTimeoutRef.current = null;
+        }
+        if (resizeTimeoutRef.current) {
+          cancelAnimationFrame(resizeTimeoutRef.current);
+          resizeTimeoutRef.current = null;
+        }
+        if (orientationTimeoutRef.current) {
+          clearTimeout(orientationTimeoutRef.current);
+          orientationTimeoutRef.current = null;
+        }
+        if (mutationTimeoutRef.current) {
+          cancelAnimationFrame(mutationTimeoutRef.current);
+          mutationTimeoutRef.current = null;
+        }
       };
     }
 

@@ -54,7 +54,10 @@ export class PreferenceSorter {
   }
 
   getName(item) {
-    return typeof item === 'string' ? item : item.name;
+    if (item == null) {
+      return '';
+    }
+    return typeof item === 'string' ? item : item.name || '';
   }
 
   addPreference(item1, item2, value) {
@@ -101,7 +104,7 @@ export class PreferenceSorter {
 
   async sortRecursive(left, right, compareCallback) {
     if (right - left < 1) {
-      if (left === right) {
+      if (left === right && left >= 0 && left < this.items.length) {
         this.ranks.push(this.items[left]);
       }
       return;
@@ -114,12 +117,23 @@ export class PreferenceSorter {
   }
 
   async mergeSubGroups(left, mid, right, compareCallback) {
+    // Validate bounds
+    if (left < 0 || right >= this.items.length || left > right || mid < left || mid > right) {
+      console.error('Invalid merge bounds:', { left, mid, right, itemsLength: this.items.length });
+      return;
+    }
+
     let i = left;
     let j = mid + 1;
     const merged = [];
 
     while (i <= mid && j <= right) {
       try {
+        // Bounds check before accessing
+        if (i >= this.items.length || j >= this.items.length) {
+          console.error('Array index out of bounds during merge:', { i, j, itemsLength: this.items.length });
+          break;
+        }
         const result = await compareCallback(this.items[i], this.items[j]);
 
         if (result <= -0.5) {

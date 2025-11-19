@@ -221,7 +221,9 @@ export function useTournament({
   const getCurrentRatings = useCallback(() => {
     const countPlayerVotes = (playerName, outcome) => {
       return persistentState.matchHistory.filter((vote) => {
+        if (!vote?.match) return false;
         const { left, right } = vote.match;
+        if (!left || !right) return false;
         if (outcome === 'win') {
           return (
             (left.name === playerName && vote.result === 'left') ||
@@ -261,7 +263,7 @@ export function useTournament({
         rating: finalRating,
         wins: existingData.wins + wins,
         losses: existingData.losses + losses,
-        confidence: currentMatchNumber / totalMatches
+        confidence: totalMatches > 0 ? currentMatchNumber / totalMatches : 0
       };
     });
   }, [

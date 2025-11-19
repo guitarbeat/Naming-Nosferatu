@@ -540,7 +540,8 @@ export class TournamentService {
     const total = ratings.length;
     const wins = ratings.reduce((sum, r) => sum + (r.wins || 0), 0);
     const losses = ratings.reduce((sum, r) => sum + (r.losses || 0), 0);
-    const winRate = total > 0 ? Math.round((wins / (wins + losses)) * 100) : 0;
+    const totalGames = wins + losses;
+    const winRate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
 
     // * Enhanced rating statistics
     const ratingsWithValues = ratings.filter((r) => r.rating !== null);

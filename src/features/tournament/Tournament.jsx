@@ -129,6 +129,17 @@ function TournamentContent({
     return () => clearInterval(id);
   }, [undoExpiresAt]);
 
+  // * Refs for timeout cleanup
+  const matchResultTimersRef = useRef([]);
+
+  // * Cleanup match result timers on unmount
+  useEffect(() => {
+    return () => {
+      matchResultTimersRef.current.forEach(timer => clearTimeout(timer));
+      matchResultTimersRef.current = [];
+    };
+  }, []);
+
   // * Update match result
   const updateMatchResult = useCallback(
     (option) => {
@@ -144,8 +155,9 @@ function TournamentContent({
       }
 
       setLastMatchResult(resultMessage);
-      setTimeout(() => setShowMatchResult(true), TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY);
-      setTimeout(() => setShowMatchResult(false), TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY);
+      const showTimer = setTimeout(() => setShowMatchResult(true), TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY);
+      const hideTimer = setTimeout(() => setShowMatchResult(false), TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY);
+      matchResultTimersRef.current.push(showTimer, hideTimer);
       showSuccess("Vote recorded successfully!", { duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION });
       // Start undo window
       setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
@@ -200,14 +212,14 @@ function TournamentContent({
             match: {
               left: {
                 name: leftName,
-                id: currentMatch.left.id,
-                description: currentMatch.left.description || "",
+                id: currentMatch.left?.id || null,
+                description: currentMatch.left?.description || "",
                 outcome: leftOutcome,
               },
               right: {
                 name: rightName,
-                id: currentMatch.right.id,
-                description: currentMatch.right.description || "",
+                id: currentMatch.right?.id || null,
+                description: currentMatch.right?.description || "",
                 outcome: rightOutcome,
               },
             },
@@ -232,6 +244,10 @@ function TournamentContent({
         await new Promise((resolve) => setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT));
         setIsTransitioning(false);
       } catch (error) {
+        // Reset state on error
+        setIsProcessing(false);
+        setIsTransitioning(false);
+        setSelectedOption(null);
         if (process.env.NODE_ENV === "development") {
           console.error("Error handling vote:", error);
         }
@@ -359,8 +375,8 @@ function TournamentContent({
       return {
         id: matchNumber,
         round,
-        name1: vote.match.left?.name || "Unknown",
-        name2: vote.match.right?.name || "Unknown",
+        name1: vote?.match?.left?.name || "Unknown",
+        name2: vote?.match?.right?.name || "Unknown",
         winner,
       };
     });

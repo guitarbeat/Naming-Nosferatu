@@ -359,7 +359,8 @@ export function useKeyboardHandler(keyHandlers, dependencies = []) {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [keyHandlers, dependencies]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyHandlers, ...dependencies]);
 }
 
 /**

@@ -3,7 +3,7 @@
  * @description Custom hook for managing profile statistics.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchUserStatsFromDB, calculateSelectionStats } from '../utils/profileStats';
 
 /**
@@ -15,9 +15,12 @@ export function useProfileStats(activeUser) {
   const [stats, setStats] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const [selectionStats, setSelectionStats] = useState(null);
+  const isMountedRef = useRef(true);
 
   // * Load statistics using database-optimized function
   useEffect(() => {
+    isMountedRef.current = true;
+
     const loadStats = async () => {
       if (!activeUser) return;
 
@@ -25,6 +28,9 @@ export function useProfileStats(activeUser) {
 
       // Try database-optimized stats first
       const dbStats = await fetchUserStatsFromDB(activeUser);
+      
+      if (!isMountedRef.current) return;
+      
       if (dbStats) {
         setStats(dbStats);
       } else {
@@ -36,6 +42,10 @@ export function useProfileStats(activeUser) {
     };
 
     void loadStats();
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [activeUser]);
 
   // * Fetch selection statistics
@@ -46,8 +56,12 @@ export function useProfileStats(activeUser) {
 
       try {
         const stats = await calculateSelectionStats(userToLoad);
+        
+        if (!isMountedRef.current) return;
+        
         setSelectionStats(stats);
       } catch (error) {
+        if (!isMountedRef.current) return;
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching selection stats:', error);
         }

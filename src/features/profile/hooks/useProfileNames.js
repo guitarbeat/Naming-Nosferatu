@@ -3,7 +3,7 @@
  * @description Custom hook for managing profile names data.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSupabaseClientSync, resolveSupabaseClient } from '../../../integrations/supabase/client';
 import { getNamesWithUserRatings } from '../../../integrations/supabase/api';
 
@@ -20,6 +20,7 @@ export function useProfileNames(activeUser) {
   const [hasSupabaseClient, setHasSupabaseClient] = useState(
     () => !!getSupabaseClientSync()
   );
+  const isMountedRef = useRef(true);
 
   const fetchNames = useCallback(
     async (targetUser = activeUser) => {
@@ -30,17 +31,23 @@ export function useProfileNames(activeUser) {
         setRatingsLoading(true);
         setRatingsError(null);
         const supabaseClient = await resolveSupabaseClient();
+        
+        if (!isMountedRef.current) return;
         setHasSupabaseClient(!!supabaseClient);
 
         if (!supabaseClient) {
           if (process.env.NODE_ENV === 'development') {
             console.warn('Supabase not configured, using empty data for Profile');
           }
+          if (!isMountedRef.current) return;
           setAllNames([]);
           setHiddenNames(new Set());
           return;
         }
         const names = await getNamesWithUserRatings(userToLoad);
+        
+        if (!isMountedRef.current) return;
+        
         const namesWithOwner = (names || []).map((name) => ({
           ...name,
           owner: userToLoad
@@ -70,23 +77,26 @@ export function useProfileNames(activeUser) {
           console.log('🔍 Hidden IDs set:', Array.from(hiddenIds));
         }
       } catch (err) {
+        if (!isMountedRef.current) return;
         if (process.env.NODE_ENV === 'development') {
           console.error('Error fetching names:', err);
         }
         setRatingsError(err);
       } finally {
-        setRatingsLoading(false);
+        if (isMountedRef.current) {
+          setRatingsLoading(false);
+        }
       }
     },
     [activeUser]
   );
 
   useEffect(() => {
-    let isMounted = true;
+    isMountedRef.current = true;
 
     const ensureClient = async () => {
       const client = await resolveSupabaseClient();
-      if (isMounted) {
+      if (isMountedRef.current) {
         setHasSupabaseClient(!!client);
       }
     };
@@ -94,7 +104,7 @@ export function useProfileNames(activeUser) {
     void ensureClient();
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
     };
   }, []);
 

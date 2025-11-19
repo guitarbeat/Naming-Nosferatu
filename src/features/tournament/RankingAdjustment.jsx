@@ -2,7 +2,7 @@
  * @module RankingAdjustment
  * @description Drag-and-drop interface for manually reordering name rankings.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card } from '../../shared/components';
@@ -43,9 +43,10 @@ import './RankingAdjustment.css';
  */
 
 function RankingAdjustment({ rankings, onSave, onCancel }) {
-  const [items, setItems] = useState(rankings);
+  const [items, setItems] = useState(rankings || []);
   const [saveStatus, setSaveStatus] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const isMountedRef = useRef(true);
 
   // Helper function to check if rankings have actually changed
   const haveRankingsChanged = (newItems, oldRankings) => {
@@ -92,16 +93,27 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
   }, [rankings]);
 
   useEffect(() => {
+    isMountedRef.current = true;
+    let saveTimer = null;
+    let successTimer = null;
+    let errorTimer = null;
+
     if (items && rankings && haveRankingsChanged(items, rankings)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSaveStatus('saving');
-      const saveTimer = setTimeout(() => {
+      saveTimer = setTimeout(() => {
         onSave(items)
           .then(() => {
+            if (!isMountedRef.current) return;
             setSaveStatus('success');
-            setTimeout(() => setSaveStatus(''), 2000);
+            successTimer = setTimeout(() => {
+              if (isMountedRef.current) {
+                setSaveStatus('');
+              }
+            }, 2000);
           })
           .catch((error) => {
+            if (!isMountedRef.current) return;
             // * Use ErrorManager for consistent error handling
             ErrorManager.handleError(error, 'Save Rankings', {
               isRetryable: true,
@@ -110,16 +122,25 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
             });
             
             setSaveStatus('error');
-            setTimeout(() => setSaveStatus(''), 3000);
+            errorTimer = setTimeout(() => {
+              if (isMountedRef.current) {
+                setSaveStatus('');
+              }
+            }, 3000);
             
             if (process.env.NODE_ENV === 'development') {
               console.error('Failed to save rankings:', error);
             }
           });
       }, 500);
-
-      return () => clearTimeout(saveTimer);
     }
+
+    return () => {
+      isMountedRef.current = false;
+      if (saveTimer) clearTimeout(saveTimer);
+      if (successTimer) clearTimeout(successTimer);
+      if (errorTimer) clearTimeout(errorTimer);
+    };
   }, [items, rankings, onSave]);
 
   const handleDragStart = () => {
@@ -128,7 +149,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 
   const handleDragEnd = (result) => {
     setIsDragging(false);
-    if (!result.destination) {
+    if (!result.destination || !items || !Array.isArray(items)) {
       return;
     }
 
