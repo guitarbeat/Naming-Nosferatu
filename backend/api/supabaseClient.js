@@ -427,14 +427,33 @@ export const catNamesAPI = {
 
   /**
    * Add a new name option
+   * @param {string} name - The name to add
+   * @param {string} description - The description for the name
+   * @param {string} [userName] - Optional user name to set context for RLS policies
    */
-  async addName(name, description = '') {
+  async addName(name, description = '', userName = null) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: 'Supabase not configured' };
       }
 
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+
+      // * Set user context for RLS policies if userName is provided
+      if (userName && userName.trim()) {
+        try {
+          await client.rpc('set_user_context', {
+            user_name_param: userName.trim(),
+          });
+        } catch (rpcError) {
+          // * Log but don't fail if RPC is unavailable (some environments may not support it)
+          if (isDev) {
+            console.warn('Failed to set user context for RLS:', rpcError);
+          }
+        }
+      }
+
+      const { data, error } = await client
         .from('cat_name_options')
         .insert([{ name: name.trim(), description: description.trim() }])
         .select()
@@ -1491,12 +1510,12 @@ export const tournamentsAPI = {
       tournaments.sort((a, b) => {
         const dateA = a.created_at ? new Date(a.created_at) : new Date(0);
         const dateB = b.created_at ? new Date(b.created_at) : new Date(0);
-        
+
         // * Ensure valid dates before sorting
         if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
           return 0; // * Treat invalid dates as equal
         }
-        
+
         return dateB - dateA;
       });
 

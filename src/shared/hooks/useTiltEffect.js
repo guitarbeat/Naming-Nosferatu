@@ -29,7 +29,11 @@ export function useTiltEffect(options = {}) {
   const animationFrameRef = useRef(null);
   const targetRotationRef = useRef({ ...INITIAL_TRANSFORM });
   const disableTiltRef = useRef(false);
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
 
+  // * Use ref for transform to avoid triggering re-renders on every animation frame
+  const transformRef = useRef(INITIAL_TRANSFORM);
   const [transform, setTransform] = useState(INITIAL_TRANSFORM);
   const [environment, setEnvironment] = useState({
     prefersReducedMotion: false,
@@ -53,6 +57,7 @@ export function useTiltEffect(options = {}) {
     }
 
     targetRotationRef.current = { ...INITIAL_TRANSFORM };
+    transformRef.current = INITIAL_TRANSFORM;
     setTransform(INITIAL_TRANSFORM);
 
     if (animationFrameRef.current) {
@@ -117,71 +122,101 @@ export function useTiltEffect(options = {}) {
         return;
       }
 
+      // * Disable tilt during scroll to prevent conflicts
+      if (isScrollingRef.current) {
+        // * Reset to center position during scroll
+        transformRef.current = INITIAL_TRANSFORM;
+        if (elementRef.current) {
+          elementRef.current.style.transform = `perspective(${validPerspective}px) rotateX(0deg) rotateY(0deg) scale(${validScale})`;
+        }
+        animationFrameRef.current = null;
+        return;
+      }
+
       // * Check if component is still mounted before updating state
       if (!elementRef.current) {
         animationFrameRef.current = null;
         return;
       }
 
-      setTransform((current) => {
-        // * Defensive checks: ensure current is an object with valid numeric properties
-        if (!current || typeof current !== "object") {
-          animationFrameRef.current = null;
-          return INITIAL_TRANSFORM;
+      // * Update ref first to track current transform
+      const current = transformRef.current || INITIAL_TRANSFORM;
+      const currentRotateX =
+        typeof current.rotateX === "number" && Number.isFinite(current.rotateX)
+          ? current.rotateX
+          : 0;
+      const currentRotateY =
+        typeof current.rotateY === "number" && Number.isFinite(current.rotateY)
+          ? current.rotateY
+          : 0;
+
+      const target = targetRotationRef.current || INITIAL_TRANSFORM;
+      const targetRotateX =
+        typeof target.rotateX === "number" && Number.isFinite(target.rotateX)
+          ? target.rotateX
+          : 0;
+      const targetRotateY =
+        typeof target.rotateY === "number" && Number.isFinite(target.rotateY)
+          ? target.rotateY
+          : 0;
+
+      const next = {
+        rotateX:
+          currentRotateX + (targetRotateX - currentRotateX) * validSmoothing,
+        rotateY:
+          currentRotateY + (targetRotateY - currentRotateY) * validSmoothing,
+      };
+
+      // * Ensure calculated values are valid numbers
+      if (!Number.isFinite(next.rotateX) || !Number.isFinite(next.rotateY)) {
+        animationFrameRef.current = null;
+        transformRef.current = INITIAL_TRANSFORM;
+        setTransform(INITIAL_TRANSFORM);
+        return;
+      }
+
+      const isCloseToTarget =
+        Math.abs(next.rotateX - targetRotateX) < 0.01 &&
+        Math.abs(next.rotateY - targetRotateY) < 0.01;
+
+      // * Update ref immediately
+      transformRef.current = isCloseToTarget
+        ? { rotateX: targetRotateX, rotateY: targetRotateY }
+        : next;
+
+      // * Only update React state if the change is significant to reduce re-renders
+      // * Increased threshold to reduce flashing
+      const changeThreshold = 1.0;
+      const hasSignificantChange =
+        Math.abs(next.rotateX - currentRotateX) > changeThreshold ||
+        Math.abs(next.rotateY - currentRotateY) > changeThreshold;
+
+      // * Update state less frequently to prevent flashing
+      if (hasSignificantChange || isCloseToTarget) {
+        setTransform(transformRef.current);
+      } else {
+        // * Update DOM directly without triggering React re-render
+        // * Calculate transform string directly instead of calling getTransformStyle
+        if (elementRef.current && !disableTiltRef.current) {
+          const element = elementRef.current;
+          const currentTransform = transformRef.current || INITIAL_TRANSFORM;
+          const rotateX = Number.isFinite(currentTransform?.rotateX) ? currentTransform.rotateX : 0;
+          const rotateY = Number.isFinite(currentTransform?.rotateY) ? currentTransform.rotateY : 0;
+          element.style.transform = `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`;
         }
+      }
 
-        const currentRotateX =
-          typeof current.rotateX === "number" &&
-            Number.isFinite(current.rotateX)
-            ? current.rotateX
-            : 0;
-        const currentRotateY =
-          typeof current.rotateY === "number" &&
-            Number.isFinite(current.rotateY)
-            ? current.rotateY
-            : 0;
+      if (isCloseToTarget) {
+        animationFrameRef.current = null;
+        return;
+      }
 
-        const target = targetRotationRef.current || INITIAL_TRANSFORM;
-        const targetRotateX =
-          typeof target.rotateX === "number" && Number.isFinite(target.rotateX)
-            ? target.rotateX
-            : 0;
-        const targetRotateY =
-          typeof target.rotateY === "number" && Number.isFinite(target.rotateY)
-            ? target.rotateY
-            : 0;
-
-        const next = {
-          rotateX:
-            currentRotateX + (targetRotateX - currentRotateX) * validSmoothing,
-          rotateY:
-            currentRotateY + (targetRotateY - currentRotateY) * validSmoothing,
-        };
-
-        // * Ensure calculated values are valid numbers
-        if (!Number.isFinite(next.rotateX) || !Number.isFinite(next.rotateY)) {
-          animationFrameRef.current = null;
-          return INITIAL_TRANSFORM;
-        }
-
-        const isCloseToTarget =
-          Math.abs(next.rotateX - targetRotateX) < 0.01 &&
-          Math.abs(next.rotateY - targetRotateY) < 0.01;
-
-        if (isCloseToTarget) {
-          animationFrameRef.current = null;
-          return { rotateX: targetRotateX, rotateY: targetRotateY };
-        }
-
-        // * Only schedule next frame if element still exists
-        if (elementRef.current) {
-          animationFrameRef.current = requestAnimationFrame(smoothTransform);
-        } else {
-          animationFrameRef.current = null;
-        }
-
-        return next;
-      });
+      // * Only schedule next frame if element still exists
+      if (elementRef.current) {
+        animationFrameRef.current = requestAnimationFrame(smoothTransform);
+      } else {
+        animationFrameRef.current = null;
+      }
     },
     [validSmoothing],
   );
@@ -200,7 +235,7 @@ export function useTiltEffect(options = {}) {
 
   const handleMouseMove = useCallback(
     (event) => {
-      if (!elementRef.current || disableTiltRef.current) {
+      if (!elementRef.current || disableTiltRef.current || isScrollingRef.current) {
         return;
       }
 
@@ -240,6 +275,8 @@ export function useTiltEffect(options = {}) {
     }
 
     targetRotationRef.current = { ...INITIAL_TRANSFORM };
+    transformRef.current = INITIAL_TRANSFORM;
+    setTransform(INITIAL_TRANSFORM);
     startAnimation();
   }, [startAnimation]);
 
@@ -249,23 +286,48 @@ export function useTiltEffect(options = {}) {
       return undefined;
     }
 
+    // * Detect scrolling to disable tilt during scroll
+    const handleScroll = () => {
+      isScrollingRef.current = true;
+      // * Reset tilt to center during scroll
+      targetRotationRef.current = { ...INITIAL_TRANSFORM };
+      startAnimation();
+
+      // * Clear existing timeout
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // * Re-enable tilt after scroll stops
+      scrollTimeoutRef.current = setTimeout(() => {
+        isScrollingRef.current = false;
+        scrollTimeoutRef.current = null;
+      }, 150);
+    };
+
     element.addEventListener("mousemove", handleMouseMove);
     element.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       element.removeEventListener("mousemove", handleMouseMove);
       element.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
     };
-  }, [handleMouseMove, handleMouseLeave, isTiltDisabled]);
+  }, [handleMouseMove, handleMouseLeave, isTiltDisabled, startAnimation]);
 
   const getTransformStyle = useCallback(() => {
     if (isTiltDisabled) {
       return {};
     }
 
-    // * Ensure transform values are valid numbers
-    const rotateX = Number.isFinite(transform?.rotateX) ? transform.rotateX : 0;
-    const rotateY = Number.isFinite(transform?.rotateY) ? transform.rotateY : 0;
+    // * Use ref value for current transform to avoid stale state
+    const currentTransform = transformRef.current || transform || INITIAL_TRANSFORM;
+    const rotateX = Number.isFinite(currentTransform?.rotateX) ? currentTransform.rotateX : 0;
+    const rotateY = Number.isFinite(currentTransform?.rotateY) ? currentTransform.rotateY : 0;
 
     return {
       transform: `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`,
@@ -275,7 +337,7 @@ export function useTiltEffect(options = {}) {
       transition: "none",
       willChange: "transform",
     };
-  }, [transform, validPerspective, validScale, isTiltDisabled]);
+  }, [transform, validPerspective, validScale, isTiltDisabled, transformRef]);
 
   return {
     elementRef,

@@ -10,6 +10,7 @@ import {
   validateDescription,
 } from "../../../shared/utils/validationUtils";
 import { ErrorManager } from "../../../shared/services/errorManager";
+import useAppStore from "../../../core/store/useAppStore";
 import styles from "../TournamentSetup.module.css";
 
 const NameSuggestionSection = memo(() => {
@@ -20,6 +21,9 @@ const NameSuggestionSection = memo(() => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const successTimeoutRef = useRef(null);
   const isMountedRef = useRef(true);
+
+  // * Get current user name from store for RLS context
+  const userName = useAppStore((state) => state.user.name);
 
   // * Track mount state and cleanup timeout on unmount
   useEffect(() => {
@@ -38,7 +42,7 @@ const NameSuggestionSection = memo(() => {
       setName(e.target.value);
       if (error) setError("");
     },
-    [error],
+    [error]
   );
 
   const handleDescriptionChange = useCallback(
@@ -46,7 +50,7 @@ const NameSuggestionSection = memo(() => {
       setDescription(e.target.value);
       if (error) setError("");
     },
-    [error],
+    [error]
   );
 
   const handleSubmit = useCallback(
@@ -76,18 +80,28 @@ const NameSuggestionSection = memo(() => {
         return;
       }
 
+      // * Check if user is logged in
+      if (!userName || !userName.trim()) {
+        setError("Please log in to suggest a name.");
+        return;
+      }
+
       try {
         setIsSubmitting(true);
+        // * Pass userName to set RLS context before inserting
         const res = await catNamesAPI.addName(
           nameValidation.value,
           descriptionValidation.value,
+          userName
         );
 
         // * Check if component is still mounted before updating state
         if (!isMountedRef.current) return;
 
         if (res?.success === false) {
-          throw new Error(res.error || "Failed to add name");
+          // * Preserve the actual error message from the API response
+          const apiError = res.error || "Failed to add name";
+          throw new Error(apiError);
         }
         setSuccess("Thank you for your suggestion!");
         setName("");
@@ -107,7 +121,10 @@ const NameSuggestionSection = memo(() => {
         // * Check if component is still mounted before updating state
         if (!isMountedRef.current) return;
 
-        setError("Failed to add name. It might already exist.");
+        // * Show the actual error message from the API
+        const errorMessage =
+          err?.message || err?.error || "Failed to add name. Please try again.";
+        setError(errorMessage);
         ErrorManager.handleError(err, "Add Name Suggestion", {
           isRetryable: true,
           affectsUserData: false,
@@ -120,7 +137,7 @@ const NameSuggestionSection = memo(() => {
         }
       }
     },
-    [name, description],
+    [name, description, userName]
   );
 
   const isFormValid = useMemo(() => {

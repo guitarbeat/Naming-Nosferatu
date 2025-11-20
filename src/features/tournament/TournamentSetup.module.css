@@ -1,19 +1,5 @@
 /* stylelint-disable value-keyword-case */
 
-/* Base Layout */
-.container {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: var(--space-6);
-  width: 100%;
-  max-width: min(1600px, 95vw);
-  height: 100%;
-  padding: var(--space-4);
-  padding-bottom: var(--space-8);
-  margin-inline: auto;
-  background: transparent; /* Let galaxy background show through */
-}
-
 /*
  * Tournament setup styles
  * -----------------------
@@ -213,16 +199,19 @@
 
 /* Layout ----------------------------------------------------------------- */
 
+/* * Base container - single source of truth */
 .container {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  grid-auto-rows: min-content;
   gap: var(--space-6);
   width: 100%;
-  max-width: min(1600px, 95vw);
-  height: 100%;
+  max-width: min(1800px, 98vw);
   padding: var(--space-4);
+  padding-bottom: var(--space-8);
   margin-inline: auto;
   background: transparent;
+  box-sizing: border-box;
 }
 
 @media (width <= 1024px) {
@@ -247,10 +236,11 @@
 .selectionPanel {
   composes: elevatedCard stack stackGapXl;
   min-width: 0;
-  height: 100%;
-  overflow: hidden;
   background: var(--card-background);
   border-radius: var(--radius-xl);
+  /* * Natural flow layout - no height constraints */
+  display: flex;
+  flex-direction: column;
 }
 
 .panelHeader {
@@ -402,15 +392,16 @@
   position: relative;
 }
 
+/* * Cards container - single source of truth */
 .cardsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--space-4);
   justify-content: center;
   width: 100%;
   max-width: 100%;
   margin-inline: auto;
+  min-height: min-content;
 }
 
 .nameCount {
@@ -458,6 +449,8 @@
     ),
     var(--surface-color);
   animation: slideDown 0.3s ease-out;
+  /* * Header stays at natural size */
+  flex-shrink: 0;
 }
 
 .tournamentHeaderTop {
@@ -534,6 +527,8 @@
   composes: surfaceCard stack stackGapSm;
   padding: var(--space-4);
   box-shadow: var(--shadow-sm);
+  /* * Footer stays at natural size */
+  flex-shrink: 0;
 }
 
 .photoThumbnail img {
@@ -1159,6 +1154,7 @@
   justify-content: center;
   width: 52px;
   height: 52px;
+  padding: 0;
   font-size: 1.75rem;
   line-height: 1;
   color: rgb(var(--white-rgb));
@@ -1168,6 +1164,8 @@
   border-radius: var(--radius-full);
   transform: translateY(-50%);
   transition: var(--transition-all);
+  text-align: center;
+  vertical-align: middle;
 }
 
 .lightboxNav:hover {
@@ -1341,11 +1339,10 @@
     font-size: var(--text-xs);
   }
 
+  /* * Responsive cards container adjustments */
   .cardsContainer {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: var(--space-3);
-    justify-content: center;
   }
 
   /* Better mobile card sizing and touch targets */
@@ -1373,6 +1370,7 @@
     justify-content: center;
   }
 
+  /* * Mobile optimizations */
   .photoGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-2);
@@ -1409,10 +1407,6 @@
     width: 100%;
   }
 
-  .photoGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .catPicturesToggleButton {
     width: 100%;
     min-height: 48px; /* * Ensure minimum touch target size */
@@ -1440,12 +1434,10 @@
 }
 
 @media (width <= 600px) {
-  .photoGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2);
-  }
+  /* * Extra small mobile - photo grid stays 2 columns */
+  /* * (No change needed - inherits from parent media query) */
 
-  /* Extra small mobile optimizations */
+  /* * Extra small mobile - single column layout */
   .cardsContainer {
     grid-template-columns: 1fr;
     gap: var(--space-2);
@@ -1844,10 +1836,12 @@
 
 /* Name selection grid ---------------------------------------------------- */
 
+/* * Name selection container - single source of truth */
 .nameSelection {
   composes: stack stackGapLg;
   align-items: center;
   padding: var(--space-2);
+  width: 100%;
 }
 
 .swipeModeInstructions {
@@ -1858,12 +1852,7 @@
   text-align: center;
 }
 
-.cardsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-4);
-  width: 100%;
-}
+/* * Duplicate .cardsContainer definition removed - using the one above */
 
 /* Swipe mode ------------------------------------------------------------- */
 
@@ -2203,6 +2192,7 @@
   composes: buttonSecondary;
 }
 
+/* * Photo grid - single source of truth */
 .photoGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -2453,10 +2443,15 @@
   position: absolute;
   width: 48px;
   height: 48px;
+  padding: 0;
   color: white;
   background: rgb(15 23 42 / 70%);
   border-color: rgb(148 163 184 / 40%);
   backdrop-filter: blur(6px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .lightboxNav {

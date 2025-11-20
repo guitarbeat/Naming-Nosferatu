@@ -33,7 +33,6 @@
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { useTiltEffect } from "../../hooks/useTiltEffect";
 import CatImage from "../CatImage";
 import styles from "./NameCard.module.css";
 
@@ -78,14 +77,6 @@ function NameCard({
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = React.useRef(null);
-
-  // * Tilt effect - same as photo thumbnails
-  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
-    maxRotation: 8,
-    perspective: 1000,
-    smoothing: 0.15, // * Increased for smoother animation
-    scale: 1.03,
-  });
 
   useEffect(() => {
     if (isRippling) {
@@ -209,28 +200,12 @@ function NameCard({
     .filter(Boolean)
     .join(" ");
 
-  // * Merge refs for both cardRef and tiltRef
-  const mergedRef = (node) => {
-    cardRef.current = node;
-    if (typeof tiltRef === "function") {
-      tiltRef(node);
-    } else if (tiltRef && typeof tiltRef === "object" && "current" in tiltRef) {
-      tiltRef.current = node;
-    }
-  };
-
-  // * Merge tilt style with any existing styles
-  const mergedStyle = {
-    ...tiltStyle,
-  };
-
   return (
     <div className={styles.cardContainer}>
       {/* Main card content */}
       <button
-        ref={mergedRef}
+        ref={cardRef}
         className={cardClasses}
-        style={mergedStyle}
         onClick={handleInteraction}
         onKeyDown={handleInteraction}
         disabled={disabled}

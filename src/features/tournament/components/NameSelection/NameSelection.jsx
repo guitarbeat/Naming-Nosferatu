@@ -2,7 +2,7 @@
  * @module TournamentSetup/components/NameSelection
  * @description Name selection component with admin filtering options
  */
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { NameCard } from "../../../../shared/components";
 import { DEFAULT_DESCRIPTION } from "../../constants";
@@ -47,6 +47,21 @@ function NameSelection({
     () => generateCategoryOptions(categories, availableNames),
     [categories, availableNames]
   );
+
+  // * Memoize metadata map to prevent re-renders from object recreation
+  const metadataMap = useMemo(() => {
+    if (!isAdmin) return new Map();
+    const map = new Map();
+    displayNames.forEach((nameObj) => {
+      map.set(nameObj.id, {
+        rating: nameObj.avg_rating || 0,
+        popularity: nameObj.popularity_score || 0,
+        tournaments: nameObj.total_tournaments || 0,
+        categories: nameObj.categories || [],
+      });
+    });
+    return map;
+  }, [isAdmin, displayNames]);
 
   return (
     <div className={styles.nameSelection}>
@@ -110,16 +125,7 @@ function NameSelection({
                     : undefined
                 }
                 // Admin-only metadata display
-                metadata={
-                  isAdmin
-                    ? {
-                        rating: nameObj.avg_rating || 0,
-                        popularity: nameObj.popularity_score || 0,
-                        tournaments: nameObj.total_tournaments || 0,
-                        categories: nameObj.categories || [],
-                      }
-                    : undefined
-                }
+                metadata={metadataMap.get(nameObj.id)}
               />
             ))
         )}
