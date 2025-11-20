@@ -143,23 +143,28 @@ function Results({
       });
   }, [voteHistory, tournamentNameSet, currentTournamentNames]);
 
-  // Memoized rankings processor
-  const processRankings = useCallback(
-    (ratingsData) => {
-      // Filter to only include names from the current tournament
-      const tournamentNameSet = new Set(
-        currentTournamentNames?.map((n) => n.name) || [],
-      );
-      const nameToIdMap = new Map(
+  // * Memoize name to ID map to prevent recreation on every render
+  const nameToIdMap = useMemo(
+    () =>
+      new Map(
         (currentTournamentNames || [])
           .filter((name) => name?.name)
           .map(({ id, name }) => [name, id]),
-      );
+      ),
+    [currentTournamentNames],
+  );
+
+  // Memoized rankings processor
+  const processRankings = useCallback(
+    (ratingsData) => {
+      // * Use memoized tournamentNameSet instead of creating a new one
+      const nameToIdMapRef = nameToIdMap;
+      const tournamentNameSetRef = tournamentNameSet;
 
       return Object.entries(ratingsData || {})
-        .filter(([name]) => tournamentNameSet.has(name))
+        .filter(([name]) => tournamentNameSetRef.has(name))
         .map(([name, rating]) => ({
-          id: nameToIdMap.get(name),
+          id: nameToIdMapRef.get(name),
           name,
           rating: Math.round(
             typeof rating === "number" ? rating : rating?.rating || 1500,
@@ -170,7 +175,7 @@ function Results({
         }))
         .sort((a, b) => b.rating - a.rating);
     },
-    [currentTournamentNames],
+    [tournamentNameSet, nameToIdMap],
   );
 
   // * Memoize processed rankings to avoid unnecessary recalculations
@@ -189,13 +194,17 @@ function Results({
   useEffect(() => {
     try {
       setCurrentRankings(processedRankings);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error setting rankings:", error);
-      showToastMessage("Error processing rankings data", "error");
-    } finally {
       setIsLoading(false);
+      // * Use showToast directly to avoid dependency on showToastMessage
+      showToast({
+        message: "Error processing rankings data",
+        type: "error",
+      });
     }
-  }, [processedRankings, showToastMessage]);
+  }, [processedRankings, showToast]);
 
   const handleSaveAdjustments = useCallback(
     async (adjustedRankings) => {
@@ -315,18 +324,18 @@ function Results({
 
         <div className={styles.actions}>
           <div className={styles.actionsButtons}>
-            <StartTournamentButton
-              onClick={onStartNew}
-              className={styles.startNewButton}
-              ariaLabel="Start new tournament"
-            >
-              Start New Tournament
-            </StartTournamentButton>
-            <CalendarButton
-              rankings={currentRankings}
-              userName={userName}
-              hiddenNames={hiddenNames}
-            />
+          <StartTournamentButton
+            onClick={onStartNew}
+            className={styles.startNewButton}
+            ariaLabel="Start new tournament"
+          >
+            Start New Tournament
+          </StartTournamentButton>
+          <CalendarButton
+            rankings={currentRankings}
+            userName={userName}
+            hiddenNames={hiddenNames}
+          />
           </div>
           <p className={styles.tip} role="note">
             Starting a new tournament will let you rate more names while keeping
