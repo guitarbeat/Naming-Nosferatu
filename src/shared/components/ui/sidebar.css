@@ -186,6 +186,7 @@
   color: #e2e8f0; /* Improved: fully opaque for better contrast (8.5:1 on dark) */
   text-align: center;
   white-space: nowrap;
+  text-overflow: ellipsis;
   text-decoration: none;
   cursor: pointer;
   background: transparent;
@@ -401,12 +402,14 @@
 /* Responsive */
 @media (width <= 768px) {
   .sidebar {
-    width: min(85vw, 300px);
+    /* * Horizontal navbar should always be full width */
+    width: 100%;
     transform: translateX(0);
   }
 
   .app--sidebar-collapsed .sidebar {
-    width: var(--sidebar-collapsed-width, 56px);
+    /* * Even when collapsed, horizontal navbar stays full width */
+    width: 100%;
   }
 
   /* * Improve touch targets on mobile */

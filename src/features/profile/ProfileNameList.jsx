@@ -45,6 +45,7 @@ const ProfileNameList = ({
   showUserFilter = true,
   hideSelectAllButton = false,
   onSelectAllClick,
+  userSelectOptions,
 }) => {
   const currentUserName = ratings?.userName ?? "";
 
@@ -87,7 +88,7 @@ const ProfileNameList = ({
 
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, currentUserName),
+          nameMatchesOwner(name, currentUserName)
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
         filtered = filtered.filter((name) => {
@@ -96,7 +97,7 @@ const ProfileNameList = ({
         });
       } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, userFilter),
+          nameMatchesOwner(name, userFilter)
         );
       }
     }
@@ -324,7 +325,8 @@ const ProfileNameList = ({
     { value: FILTER_OPTIONS.STATUS.HIDDEN, label: "Hidden Only" },
   ];
 
-  const userOptions = [
+  // * Use provided userSelectOptions if available, otherwise fall back to default options
+  const userOptions = userSelectOptions || [
     { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
     { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
     { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
@@ -429,12 +431,12 @@ const ProfileNameList = ({
                         setSortOrder(
                           sortOrder === FILTER_OPTIONS.ORDER.ASC
                             ? FILTER_OPTIONS.ORDER.DESC
-                            : FILTER_OPTIONS.ORDER.ASC,
+                            : FILTER_OPTIONS.ORDER.ASC
                         )
                       }
                       className={styles.sortOrderButton}
-                      title={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? 'Descending' : 'Ascending'}`}
-                      aria-label={`Toggle sort order to ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? 'descending' : 'ascending'}`}
+                      title={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Descending" : "Ascending"}`}
+                      aria-label={`Toggle sort order to ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "descending" : "ascending"}`}
                     >
                       {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
                     </button>
@@ -544,7 +546,7 @@ const ProfileNameList = ({
                       ? Math.round(
                           (name.user_wins /
                             (name.user_wins + name.user_losses)) *
-                            100,
+                            100
                         )
                       : 0,
                   totalMatches: (name.user_wins || 0) + (name.user_losses || 0),
@@ -602,6 +604,7 @@ ProfileNameList.propTypes = {
   filteredCount: PropTypes.number,
   totalCount: PropTypes.number,
   showUserFilter: PropTypes.bool,
+  userSelectOptions: PropTypes.array,
 };
 
 export default ProfileNameList;

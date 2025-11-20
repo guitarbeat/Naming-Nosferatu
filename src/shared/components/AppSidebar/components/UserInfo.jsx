@@ -12,28 +12,34 @@ import "../AppSidebar.css";
 export function UserInfo({ userName, onClick, isAdmin = false }) {
   const { collapsed } = useSidebar();
 
-  const displayText = collapsed 
-    ? "" 
-    : `Welcome, ${userName}`;
+  // * Truncate long usernames for display (max 20 chars)
+  const MAX_DISPLAY_LENGTH = 20;
+  const truncatedUserName =
+    userName && userName.length > MAX_DISPLAY_LENGTH
+      ? `${userName.substring(0, MAX_DISPLAY_LENGTH)}...`
+      : userName;
 
-  const ariaLabel = collapsed 
-    ? isAdmin 
-      ? `Admin User: ${userName}` 
+  const displayText = collapsed ? "" : `Welcome, ${truncatedUserName}`;
+
+  const ariaLabel = collapsed
+    ? isAdmin
+      ? `Admin User: ${userName}`
       : `User: ${userName}`
     : undefined;
 
-  const title = collapsed 
-    ? isAdmin 
-      ? `Welcome, ${userName} (Admin)` 
+  // * Always show full name in title for accessibility
+  const title = collapsed
+    ? isAdmin
+      ? `Welcome, ${userName} (Admin)`
       : `Welcome, ${userName}`
-    : undefined;
+    : `Welcome, ${userName}`;
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
         <button
           type="button"
-          className={`sidebar-user-menu-button ${isAdmin ? 'sidebar-user-menu-button--admin' : ''}`}
+          className={`sidebar-user-menu-button ${isAdmin ? "sidebar-user-menu-button--admin" : ""}`}
           onClick={onClick}
           aria-label={ariaLabel}
           title={title}
@@ -45,7 +51,9 @@ export function UserInfo({ userName, onClick, isAdmin = false }) {
           />
           {!collapsed && <span>{displayText}</span>}
           {isAdmin && collapsed && (
-            <span className="sidebar-admin-indicator" aria-label="Admin">👑</span>
+            <span className="sidebar-admin-indicator" aria-label="Admin">
+              👑
+            </span>
           )}
         </button>
       </SidebarMenuButton>

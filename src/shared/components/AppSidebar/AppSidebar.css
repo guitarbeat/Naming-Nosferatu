@@ -471,6 +471,19 @@
 /* User menu button - styled like other menu buttons */
 .sidebar-user-menu-button {
   width: 100%;
+  min-width: 0; /* Allow button to shrink */
+  max-width: 100%; /* Prevent overflow */
+  justify-content: flex-start; /* Align content to start for better truncation */
+}
+
+/* * Ensure text truncates properly in user menu button */
+.sidebar-user-menu-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0; /* Allow span to shrink */
+  flex: 1 1 auto; /* Allow flex shrinking */
+  max-width: 100%; /* Ensure it doesn't exceed container */
 }
 
 /* Admin variant of user menu button */
