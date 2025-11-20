@@ -219,23 +219,33 @@ export function useTournamentVoting({
         }
 
         // * Calculate round based on bracket structure
-        // * Round 1: Math.ceil(names.length / 2) matches
-        // * Round 2: Math.ceil(remaining / 2) matches, etc.
-        if (names.length > 2) {
-          // * Calculate which round we're in based on bracket structure
-          // * Round 1 has Math.ceil(names.length / 2) matches
-          // * Each subsequent round has half the matches of the previous round
-          let remainingNames = names.length;
-          let matchesInRound = Math.ceil(remainingNames / 2);
-          let matchesPlayed = 0;
+        // * For bracket: matches per round = Math.floor(remainingNames / 2)
+        // * Winners advancing = matchesInRound + (remainingNames % 2) [winners + byes]
+        // * Handle all cases: 2 names = 1 match (round 1), 3+ names = bracket structure
+        if (names.length >= 2) {
           let calculatedRound = 1;
           
-          // * Use newMatchNumber (the match we just completed) to calculate round
-          while (matchesPlayed + matchesInRound < newMatchNumber) {
-            matchesPlayed += matchesInRound;
-            remainingNames = matchesInRound; // Winners advance
-            matchesInRound = Math.ceil(remainingNames / 2);
-            calculatedRound++;
+          // * For 2 names, there's only 1 match in round 1
+          if (names.length === 2) {
+            calculatedRound = 1;
+          } else {
+            // * Calculate which round we're in based on bracket structure
+            // * Round 1: Math.floor(names.length / 2) matches
+            // * Each subsequent round: Math.floor(remainingNames / 2) matches
+            let remainingNames = names.length;
+            let matchesInRound = Math.floor(remainingNames / 2);
+            let matchesPlayed = 0;
+            
+            // * Use newMatchNumber (the match we just completed) to calculate round
+            while (matchesPlayed + matchesInRound < newMatchNumber) {
+              matchesPlayed += matchesInRound;
+              // * Winners advancing = matches (1 winner each) + byes (if odd number)
+              const winners = matchesInRound; // 1 winner per match
+              const byes = remainingNames % 2; // Odd names get a bye
+              remainingNames = winners + byes; // Total advancing to next round
+              matchesInRound = Math.floor(remainingNames / 2);
+              calculatedRound++;
+            }
           }
           
           if (calculatedRound !== roundNumber) {

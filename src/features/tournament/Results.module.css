@@ -2,43 +2,84 @@
   position: relative;
   z-index: var(--z-0);
   width: 100%;
-  max-width: 1024px;
+  max-width: 1200px;
   padding: var(--space-4);
   margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-4);
-  margin-bottom: var(--space-6);
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  margin-bottom: var(--space-8);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.header h1 {
+.header::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgb(255 255 255 / 5%) 0%,
+    transparent 50%
+  );
+  opacity: 0.6;
+}
+
+.title {
+  position: relative;
   margin: 0;
-  font-size: var(--text-3xl);
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+  z-index: 1;
 }
 
 .headerActions {
   display: flex;
   gap: var(--space-3);
+  justify-content: center;
 }
 
 /* * Button styles have been migrated to shared Button component */
 
 .welcome {
+  position: relative;
+  margin: 0;
   font-size: var(--text-lg);
-  line-height: 1.6;
+  line-height: 1.7;
   color: var(--text-secondary);
+  z-index: 1;
 }
 
 .userName {
   font-weight: 600;
   color: var(--primary-500);
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .content {
@@ -49,17 +90,30 @@
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem;
-  margin: 2rem 0;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
   background: linear-gradient(
     135deg,
-    rgb(255 255 255 / 5%) 0%,
-    rgb(255 255 255 / 2%) 100%
+    rgb(255 255 255 / 8%) 0%,
+    rgb(255 255 255 / 4%) 100%
   );
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgb(0 0 0 / 8%),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .statsGrid:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 36px rgb(0 0 0 / 10%),
+      inset 0 1px 0 rgb(255 255 255 / 12%);
+  }
 }
 
 .statCard {
@@ -83,11 +137,28 @@
 
 .actions {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  width: 100%;
+  padding: var(--space-6);
+  margin-top: var(--space-6);
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 4%) 0%,
+    rgb(255 255 255 / 2%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.actionsButtons {
+  display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
-  margin-top: var(--space-6);
 }
 
 /* * Action buttons handled by StartTournamentButton and CalendarButton components */
@@ -97,27 +168,29 @@
 }
 
 .tip {
-  max-width: 400px;
+  max-width: 500px;
+  margin: 0;
   font-size: var(--text-sm);
-  line-height: 1.6;
+  line-height: 1.7;
   color: var(--text-secondary);
   text-align: center;
+  opacity: 0.9;
 }
 
 .loading {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-5);
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 400px;
   color: var(--text-secondary);
 }
 
 .loadingSpinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--primary-100);
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--primary-100);
   border-top-color: var(--primary-500);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -128,11 +201,17 @@
   padding: var(--space-8);
   margin: var(--space-8) 0;
   overflow-x: auto;
-  background-image:
-    linear-gradient(var(--surface-color), var(--surface-color)),
-    radial-gradient(1200px 60px at 50% 0, rgb(0 0 0 / 6%), transparent),
-    radial-gradient(1200px 60px at 50% 100%, rgb(0 0 0 / 6%), transparent);
-  background-blend-mode: normal, multiply, multiply;
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 6%) 0%,
+    rgb(255 255 255 / 3%) 100%
+  );
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 8px 32px rgb(0 0 0 / 8%),
+    inset 0 1px 0 rgb(255 255 255 / 10%);
 }
 
 .tournamentBracket::before,
@@ -142,26 +221,28 @@
   bottom: 0;
   z-index: 1;
   display: block;
-  width: 28px;
+  width: 40px;
   pointer-events: none;
   content: "";
 }
 
 .tournamentBracket::before {
   left: 0;
-  background: linear-gradient(90deg, rgb(0 0 0 / 10%), rgb(0 0 0 / 0%));
+  background: linear-gradient(90deg, rgb(0 0 0 / 15%), rgb(0 0 0 / 0%));
 }
 
 .tournamentBracket::after {
   margin-left: auto;
-  background: linear-gradient(270deg, rgb(0 0 0 / 10%), rgb(0 0 0 / 0%));
+  background: linear-gradient(270deg, rgb(0 0 0 / 15%), rgb(0 0 0 / 0%));
 }
 
 .tournamentBracket h3 {
-  margin-bottom: var(--space-8);
-  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-8);
+  font-size: clamp(var(--text-xl), 3vw, var(--text-3xl));
+  font-weight: 700;
   color: var(--text-primary);
   text-align: center;
+  letter-spacing: -0.01em;
 }
 
 @keyframes spin {
@@ -191,11 +272,11 @@
   }
 
   .header {
-    padding: var(--space-4);
+    padding: var(--space-5);
     margin-bottom: var(--space-6);
   }
 
-  .header h2 {
+  .title {
     font-size: var(--text-3xl);
   }
 
@@ -208,8 +289,8 @@
   }
 
   .statsGrid {
-    gap: 1rem;
-    padding: 0.75rem;
+    gap: var(--space-3);
+    padding: var(--space-4);
   }
 
   .statCard {
@@ -217,14 +298,18 @@
     min-width: 150px;
   }
 
-  .tournamentBracket {
+  .actions {
     padding: var(--space-4);
-    margin: var(--space-4) 0;
+  }
+
+  .tournamentBracket {
+    padding: var(--space-5);
+    margin: var(--space-6) 0;
   }
 
   .tournamentBracket h3 {
-    margin-bottom: var(--space-4);
-    font-size: var(--text-xl);
+    margin-bottom: var(--space-6);
+    font-size: var(--text-2xl);
   }
 }
 
@@ -234,11 +319,11 @@
   }
 
   .header {
-    padding: var(--space-3);
-    margin-bottom: var(--space-4);
+    padding: var(--space-4);
+    margin-bottom: var(--space-5);
   }
 
-  .header h2 {
+  .title {
     font-size: var(--text-2xl);
   }
 
@@ -247,13 +332,13 @@
   }
 
   .content {
-    gap: var(--space-4);
+    gap: var(--space-5);
   }
 
   .statsGrid {
     grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 0.5rem;
+    gap: var(--space-3);
+    padding: var(--space-4);
   }
 
   .statCard {
@@ -263,8 +348,14 @@
 
   .actions {
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    padding: var(--space-4);
     margin-top: var(--space-4);
+  }
+
+  .actionsButtons {
+    flex-direction: column;
+    width: 100%;
   }
 
   /* * Action buttons handled by shared button components */
@@ -276,6 +367,16 @@
 
   .tip {
     font-size: var(--text-xs);
+  }
+
+  .tournamentBracket {
+    padding: var(--space-4);
+    margin: var(--space-5) 0;
+  }
+
+  .tournamentBracket h3 {
+    margin-bottom: var(--space-5);
+    font-size: var(--text-xl);
   }
 }
 
@@ -290,52 +391,4 @@
   }
 }
 
-/* Results Header */
-.resultsHeader {
-  padding: 2rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, var(--primary-100), var(--primary-50));
-  border: 1px solid var(--primary-200);
-  border-radius: 1rem;
-}
-
-/* Results Grid */
-.resultsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-}
-
-/* Tournament Bracket */
-.bracketContainer {
-  padding: var(--space-4);
-  margin-bottom: var(--space-6);
-  overflow-x: auto;
-}
-
-/* Actions Section */
-.actionsContainer {
-  display: flex;
-  gap: var(--space-4);
-  justify-content: center;
-  margin-bottom: var(--space-6);
-}
-
-/* * Button component handles sizing */
-
-@media (width <= 640px) {
-  .header {
-    flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-3);
-    text-align: center;
-  }
-
-  .headerActions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  /* * Button component handles responsive sizing */
-}
+/* * Removed duplicate/unused styles - functionality handled by main styles above */

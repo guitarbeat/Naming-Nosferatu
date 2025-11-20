@@ -68,6 +68,15 @@
   border-color: rgb(59 130 246 / 20%);
 }
 
+.card.primary:hover {
+  border-color: rgb(59 130 246 / 25%);
+  background: linear-gradient(
+    135deg,
+    rgb(59 130 246 / 12%) 0%,
+    rgb(59 130 246 / 6%) 100%
+  );
+}
+
 .card.primary::before {
   background: linear-gradient(90deg, #3b82f6, #60a5fa, #2563eb);
 }
@@ -179,7 +188,7 @@
   }
 
   .card:hover {
-    border-color: rgb(59 130 246 / 40%);
+    border-color: rgb(59 130 246 / 20%);
   }
 
   .label {

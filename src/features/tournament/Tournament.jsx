@@ -398,18 +398,27 @@ function TournamentContent({
       const matchNumber = vote?.matchNumber ?? index + 1;
       
       // * Calculate round based on bracket structure
-      // * Round 1: Math.ceil(names.length / 2) matches
-      // * Each subsequent round has half the matches of the previous round
-      let remainingNames = names.length;
-      let matchesInRound = Math.ceil(remainingNames / 2);
-      let matchesPlayed = 0;
+      // * For bracket: matches per round = Math.floor(remainingNames / 2)
+      // * Winners advancing = matchesInRound + (remainingNames % 2) [winners + byes]
       let calculatedRound = 1;
       
-      while (matchesPlayed + matchesInRound < matchNumber) {
-        matchesPlayed += matchesInRound;
-        remainingNames = matchesInRound; // Winners advance
-        matchesInRound = Math.ceil(remainingNames / 2);
-        calculatedRound++;
+      // * For 2 names, there's only 1 match in round 1
+      if (names.length === 2) {
+        calculatedRound = 1;
+      } else {
+        let remainingNames = names.length;
+        let matchesInRound = Math.floor(remainingNames / 2);
+        let matchesPlayed = 0;
+        
+        while (matchesPlayed + matchesInRound < matchNumber) {
+          matchesPlayed += matchesInRound;
+          // * Winners advancing = matches (1 winner each) + byes (if odd number)
+          const winners = matchesInRound; // 1 winner per match
+          const byes = remainingNames % 2; // Odd names get a bye
+          remainingNames = winners + byes; // Total advancing to next round
+          matchesInRound = Math.floor(remainingNames / 2);
+          calculatedRound++;
+        }
       }
 
       return {

@@ -38,7 +38,7 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 
 import PropTypes from "prop-types";
 
@@ -49,6 +49,7 @@ import StartTournamentButton from "../../shared/components/StartTournamentButton
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import { Card, Toast } from "@components";
 import { useToast } from "./hooks/useToast";
+import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
 import styles from "./Results.module.css";
 
 function Results({
@@ -61,7 +62,8 @@ function Results({
 }) {
   const [currentRankings, setCurrentRankings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [hiddenNames] = useState(new Set());
+  // * Memoize hiddenNames Set to prevent recreation on every render
+  const hiddenNames = useMemo(() => new Set(), []);
 
   const { toasts, showToast, removeToast } = useToast({
     maxToasts: 1,
@@ -78,16 +80,17 @@ function Results({
     [showToast],
   );
 
-  // Convert vote history to bracket matches
-  const getBracketMatches = useCallback(() => {
+  // * Memoize tournament name set to prevent recreation on every render
+  const tournamentNameSet = useMemo(
+    () => new Set(currentTournamentNames?.map((n) => n.name) || []),
+    [currentTournamentNames],
+  );
+
+  // * Memoize bracket matches calculation to prevent recalculation on every render
+  const bracketMatches = useMemo(() => {
     if (!voteHistory || !voteHistory.length) {
       return [];
     }
-
-    // Filter to only include matches from the current tournament
-    const tournamentNameSet = new Set(
-      currentTournamentNames?.map((n) => n.name) || [],
-    );
 
     const namesCount = currentTournamentNames?.length || 0;
     return voteHistory
@@ -127,30 +130,18 @@ function Results({
 
         const matchNumber = vote?.matchNumber ?? index + 1;
         
-        // * Calculate round based on bracket structure (same as Tournament.jsx)
-        let remainingNames = namesCount;
-        let matchesInRound = Math.ceil(remainingNames / 2);
-        let matchesPlayed = 0;
-        let calculatedRound = 1;
-        
-        while (matchesPlayed + matchesInRound < matchNumber) {
-          matchesPlayed += matchesInRound;
-          remainingNames = matchesInRound; // Winners advance
-          matchesInRound = Math.ceil(remainingNames / 2);
-          calculatedRound++;
-        }
-        
-        const round = calculatedRound;
+        // * Use the helper function for round calculation
+        const calculatedRound = calculateBracketRound(namesCount, matchNumber);
 
         return {
           id: matchNumber,
-          round,
+          round: calculatedRound,
           name1: vote?.match?.left?.name || "Unknown",
           name2: vote?.match?.right?.name || "Unknown",
           winner,
         };
       });
-  }, [voteHistory, currentTournamentNames]);
+  }, [voteHistory, tournamentNameSet, currentTournamentNames]);
 
   // Memoized rankings processor
   const processRankings = useCallback(
@@ -182,17 +173,29 @@ function Results({
     [currentTournamentNames],
   );
 
+  // * Memoize processed rankings to avoid unnecessary recalculations
+  const processedRankings = useMemo(
+    () => {
+      try {
+        return processRankings(ratings);
+      } catch (error) {
+        console.error("Error processing rankings:", error);
+        return [];
+      }
+    },
+    [ratings, processRankings],
+  );
+
   useEffect(() => {
     try {
-      const processedRankings = processRankings(ratings);
       setCurrentRankings(processedRankings);
     } catch (error) {
-      console.error("Error processing rankings:", error);
+      console.error("Error setting rankings:", error);
       showToastMessage("Error processing rankings data", "error");
     } finally {
       setIsLoading(false);
     }
-  }, [ratings, processRankings, showToastMessage]);
+  }, [processedRankings, showToastMessage]);
 
   const handleSaveAdjustments = useCallback(
     async (adjustedRankings) => {
@@ -236,47 +239,15 @@ function Results({
     [currentRankings, ratings, onUpdateRatings, showToastMessage],
   );
 
+  // * Single optimized vfx effect hook (removed duplicate)
   useEffect(() => {
-    // Add cool effects to the results header
-    const header = document.querySelector(".results-header");
-    if (header && window.vfx) {
-      window.vfx.add(header, { shader: "wave", frequency: 2, amplitude: 0.01 });
-    }
+    if (!window.vfx) return;
 
-    // Add glitch effect to stats cards
-    const statCards = document.querySelectorAll(".stat-card");
-    statCards.forEach((card) => {
-      if (window.vfx) {
-        window.vfx.add(card, { shader: "glitch", intensity: 0.2 });
-      }
-    });
-
-    // Add RGB shift to the tournament bracket
-    const bracket = document.querySelector(".tournament-bracket");
-    if (bracket && window.vfx) {
-      window.vfx.add(bracket, { shader: "rgbShift", intensity: 0.3 });
-    }
-
-    return () => {
-      if (window.vfx) {
-        if (header) {
-          window.vfx.remove(header);
-        }
-        statCards.forEach((card) => window.vfx.remove(card));
-        if (bracket) {
-          window.vfx.remove(bracket);
-        }
-      }
-    };
-  }, []);
-
-  // Optimize vfx.js usage
-  useEffect(() => {
     const vfxElements = [];
 
     const addVfx = (selector, config) => {
       const el = document.querySelector(selector);
-      if (el && window.vfx) {
+      if (el) {
         window.vfx.add(el, config);
         vfxElements.push(el);
       }
@@ -308,18 +279,16 @@ function Results({
     );
   }
 
-  const bracketMatches = getBracketMatches();
-
   return (
     <div className={styles.container}>
       <Card
         as="header"
         className={styles.header}
         background="glass"
-        padding="none"
+        padding="large"
         shadow="medium"
       >
-        <h2>Name Rankings</h2>
+        <h2 className={styles.title}>Tournament Results</h2>
         <p className={styles.welcome}>
           Welcome back, <span className={styles.userName}>{userName}</span>!
           Here are your latest name rankings.
@@ -345,18 +314,20 @@ function Results({
         />
 
         <div className={styles.actions}>
-          <StartTournamentButton
-            onClick={onStartNew}
-            className={styles.startNewButton}
-            ariaLabel="Start new tournament"
-          >
-            Start New Tournament
-          </StartTournamentButton>
-          <CalendarButton
-            rankings={currentRankings}
-            userName={userName}
-            hiddenNames={hiddenNames}
-          />
+          <div className={styles.actionsButtons}>
+            <StartTournamentButton
+              onClick={onStartNew}
+              className={styles.startNewButton}
+              ariaLabel="Start new tournament"
+            >
+              Start New Tournament
+            </StartTournamentButton>
+            <CalendarButton
+              rankings={currentRankings}
+              userName={userName}
+              hiddenNames={hiddenNames}
+            />
+          </div>
           <p className={styles.tip} role="note">
             Starting a new tournament will let you rate more names while keeping
             your current rankings.
@@ -393,4 +364,5 @@ Results.propTypes = {
   voteHistory: PropTypes.array,
 };
 
-export default Results;
+// * Memoize Results component to prevent unnecessary re-renders when parent re-renders
+export default React.memo(Results);
