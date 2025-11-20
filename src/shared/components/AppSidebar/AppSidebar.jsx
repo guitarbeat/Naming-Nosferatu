@@ -3,24 +3,11 @@
  * @description Application sidebar navigation component
  */
 
-import PropTypes from "prop-types";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  useSidebar,
-} from "../ui/sidebar";
-import { MenuNavItem } from "./MenuNavItem";
-import { MenuActionItem } from "./MenuActionItem";
-import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
-import { NavbarSection } from "./NavbarSection";
+import { UserInfo } from "./components/UserInfo";
 import {
   TournamentIcon,
-  ProfileIcon,
   DashboardIcon,
   LogoutIcon,
-  UserIcon,
   AdminIcon,
 } from "./icons";
 import "./AppSidebar.css";
@@ -46,10 +33,6 @@ export function AppSidebar({
       label: "Tournament",
       icon: TournamentIcon,
     },
-    // * Add Profile if logged in
-    ...(isLoggedIn
-      ? [{ key: "profile", label: "Profile", icon: ProfileIcon }]
-      : []),
   ];
 
   const handleLogoClick = () => {
@@ -143,19 +126,10 @@ export function AppSidebar({
         <NavbarSection className="navbar-right" alignRight>
           {/* User Info Section */}
           {isLoggedIn && userName && !collapsed && (
-            <div className="sidebar-user-info">
-              <div className="sidebar-user-greeting">
-                <UserIcon />
-                <span>Welcome, {userName}</span>
-              </div>
-              {/* * Admin Badge for Aaron */}
-              {isAdmin && userName && userName.toLowerCase() === "aaron" && (
-                <div className="sidebar-admin-badge">
-                  <AdminIcon />
-                  <span>Admin</span>
-                </div>
-              )}
-            </div>
+            <UserInfo
+              userName={userName}
+              onClick={() => setView("profile")}
+            />
           )}
 
           {/* Spacer to separate user info from actions */}

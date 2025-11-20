@@ -60,32 +60,45 @@ function Lightbox({
 
   // * Touch gesture handlers for mobile
   const onTouchStart = useCallback((e) => {
-    touchEndRef.current = null;
-    touchStartRef.current = e.targetTouches[0].clientX;
+    const touch = e.targetTouches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    touchEndRef.current = { x: 0, y: 0 };
   }, []);
 
   const onTouchMove = useCallback((e) => {
-    touchEndRef.current = e.targetTouches[0].clientX;
+    const touch = e.targetTouches[0];
+    touchEndRef.current = { x: touch.clientX, y: touch.clientY };
   }, []);
 
   const onTouchEnd = useCallback(() => {
-    if (!touchStartRef.current || !touchEndRef.current) return;
-    const distance = touchStartRef.current - touchEndRef.current;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+    if (!touchStartRef.current || !touchEndRef.current.x) return;
 
-    // * Swipe down to close (vertical swipe)
-    const verticalStart = touchStartRef.current;
-    const verticalEnd = touchEndRef.current;
-    // * For vertical swipes, we'd need to track Y coordinates separately
-    // * For now, prioritize horizontal navigation
+    const deltaX = touchStartRef.current.x - touchEndRef.current.x;
+    const deltaY = touchStartRef.current.y - touchEndRef.current.y;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
 
-    if (isLeftSwipe) {
-      handleNext();
-    } else if (isRightSwipe) {
-      handlePrev();
+    // * Determine if horizontal or vertical swipe
+    if (absDeltaX > absDeltaY && absDeltaX > minSwipeDistance) {
+      // * Horizontal swipe - navigate
+      if (deltaX > 0) {
+        handleNext(); // Swipe left = next
+      } else {
+        handlePrev(); // Swipe right = previous
+      }
+    } else if (
+      absDeltaY > absDeltaX &&
+      absDeltaY > minSwipeDistance &&
+      deltaY < 0
+    ) {
+      // * Swipe down to close
+      onClose();
     }
-  }, [handleNext, handlePrev]);
+
+    // * Reset
+    touchStartRef.current = { x: 0, y: 0 };
+    touchEndRef.current = { x: 0, y: 0 };
+  }, [handleNext, handlePrev, onClose]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -159,9 +172,6 @@ function Lightbox({
     <div
       className={styles.lightboxOverlay}
       onClick={onClose}
-      onTouchStart={onTouchStart}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label="Image gallery"
@@ -169,12 +179,6 @@ function Lightbox({
       <div
         className={styles.lightboxContent}
         onClick={(e) => e.stopPropagation()}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-        onTouchEnd={(e) => {
-          e.stopPropagation();
-          onTouchEnd();
-        }}
       >
         <button
           type="button"
@@ -203,6 +207,18 @@ function Lightbox({
               : ""
           }`}
           key={currentIndex}
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            onTouchStart(e);
+          }}
+          onTouchMove={(e) => {
+            e.stopPropagation();
+            onTouchMove(e);
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onTouchEnd();
+          }}
         >
           <picture>
             <source

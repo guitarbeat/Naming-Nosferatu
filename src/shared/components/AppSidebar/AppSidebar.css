@@ -414,6 +414,13 @@
   flex-shrink: 0;
 }
 
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+}
 /* * Admin Badge for Aaron */
 .sidebar-admin-badge {
   position: relative;

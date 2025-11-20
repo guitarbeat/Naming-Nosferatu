@@ -518,6 +518,14 @@
     rgb(0 0 0 / 55%) 100%
   );
   opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.photoThumbnail:hover .photoOverlay {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .photoIcon {
@@ -532,6 +540,8 @@
   appearance: none;
   background: transparent;
   border: none;
+  position: relative;
+  cursor: pointer;
 }
 
 .photoThumbButton:focus-visible {
@@ -1702,93 +1712,7 @@
 }
 
 /* Swipe Card Wrapper */
-.swipeCardWrapper {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  height: 300px;
-  perspective: 1000px;
-}
-
-/* Swipe Card */
-.swipeCard {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  padding: 2rem;
-  overflow: hidden;
-  touch-action: none;
-  cursor: grab;
-  user-select: none;
-  background: var(--card-background, #0f1225);
-  border: 2px solid var(--border-color, #263056);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Tinder-style card when cat pictures are enabled */
-.swipeCard.withCatPictures {
-  padding: 0;
-  overflow: hidden;
-  background: var(--card-background, #0f1225);
-  border: 2px solid var(--border-color, #263056);
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
-}
-
-.swipeCard:active {
-  cursor: grabbing;
-}
-
-/* Long Press State */
-.swipeCard.longPressing {
-  border: 2px solid var(--mimosa, #e8bf76);
-  box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
-  transform: scale(1.05);
-  animation: longPressPulse 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes longPressPulse {
-  0% {
-    box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
-  }
-
-  100% {
-    box-shadow: 0 12px 40px rgb(232 191 118 / 40%);
-  }
-}
-
-/* Basic selected state - will be enhanced below */
-
-/* Swipe Card Content */
-.swipeCardContent {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-
-/* Cat Picture Container */
-.swipeCardImageContainer {
-  position: relative;
-  padding: var(--space-6);
-  overflow: hidden;
-  text-align: center;
-  background: linear-gradient(
-    135deg,
-    var(--start-section-bg-start, rgb(var(--primary-rgb) / 6%)) 0%,
-    var(--start-section-bg-end, rgb(var(--primary-rgb) / 12%)) 100%
-  );
-  border-top: 1px solid var(--start-section-border, var(--primary-200));
-  box-shadow:
-    inset 0 1px 0 var(--start-section-border, var(--primary-200)),
-    0 4px 20px rgb(0 0 0 / 6%);
-}
+/* Old SwipeCard styles removed - using updated version below */
 
 .startSection::before {
   position: absolute;
@@ -1961,36 +1885,93 @@
 .swipeCardWrapper {
   position: relative;
   width: min(100%, 420px);
+  height: 600px;
   perspective: 1200px;
 }
 
 .swipeCard {
-  composes: elevatedCard stack stackGapMd;
-  position: relative;
-  padding: var(--space-5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1.5rem, 4vw, 2rem);
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  background: linear-gradient(
+    135deg,
+    var(--card-background, rgb(31 41 55 / 50%)),
+    var(--surface-muted, rgb(15 23 42 / 40%))
+  );
+  border: 1.5px solid var(--border-color, rgb(148 163 184 / 25%));
+  border-radius: clamp(1rem, 3vw, 1.5rem);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 18%);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
   transition:
     transform 0.3s ease,
-    box-shadow 0.3s ease;
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.swipeCard:active {
+  cursor: grabbing;
 }
 
 .swipeCard.withCatPictures {
-  padding-top: var(--space-6);
+  padding: 0;
+  padding-top: 0;
+}
+
+.swipeCard.withCatPictures .swipeCardContent {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  padding-top: var(--space-4);
 }
 
 .swipeCard.selected {
-  border-color: var(--primary-300);
+  background: linear-gradient(
+    135deg,
+    var(--card-background, rgb(31 41 55 / 60%)),
+    var(--surface-muted, rgb(15 23 42 / 50%))
+  );
+  border-color: var(--accent-color, #e8bf76);
+  border-width: 2px;
   box-shadow:
-    var(--shadow-lg),
+    0 12px 40px rgb(0 0 0 / 25%),
     0 0 0 4px rgb(var(--primary-rgb) / 10%);
 }
 
 .swipeCard.longPressing {
   transform: scale(1.02);
+  border: 2px solid var(--mimosa, #e8bf76);
+  box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
+  animation: longPressPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes longPressPulse {
+  0% {
+    box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
+  }
+
+  100% {
+    box-shadow: 0 12px 40px rgb(232 191 118 / 40%);
+  }
 }
 
 .swipeCardContent {
-  composes: stack stackGapMd;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .swipeCardImageContainer {
@@ -1999,6 +1980,7 @@
   overflow: hidden;
   background: var(--card-background);
   border-radius: var(--radius-lg);
+  flex-shrink: 0;
 }
 
 .swipeCardImage {
@@ -2049,23 +2031,38 @@
 
 .swipeCardName {
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.2;
   color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  flex-shrink: 0;
 }
 
 .swipeCardDescription {
   margin: 0;
-  font-size: var(--text-sm);
-  line-height: 1.6;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 500;
+  line-height: 1.7;
   color: var(--text-secondary);
+  opacity: 0.95;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  transition: opacity var(--duration-normal) var(--ease-out);
 }
 
 .swipeCardMetadata {
-  composes: clusterWrap;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   justify-content: flex-start;
   font-size: var(--text-xs);
   color: var(--text-tertiary);
+  margin-top: auto;
+  padding-top: var(--space-3);
 }
 
 .metadataItem {
@@ -2249,8 +2246,14 @@
   transform: translateY(-4px);
 }
 
+.photoThumbnail:hover .photoOverlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .photoThumbButton {
-  display: contents;
+  position: relative;
+  cursor: pointer;
 }
 
 .photoOverlay {
@@ -2260,7 +2263,9 @@
   place-items: center;
   background: linear-gradient(135deg, transparent, rgb(0 0 0 / 65%));
   opacity: 0;
+  pointer-events: none;
   transition: opacity var(--duration-normal) var(--ease-out);
+  z-index: 1;
 }
 
 .photoIcon {
