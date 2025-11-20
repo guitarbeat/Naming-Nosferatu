@@ -102,10 +102,18 @@ export default defineConfig(({ mode }) => {
         compress: {
           drop_console: mode === 'production', // * Remove console.log in production
           drop_debugger: true,
-          pure_funcs: mode === 'production' ? ['console.log', 'console.info'] : [],
+          pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
+          passes: 2, // * Multiple passes for better compression
+          unsafe: true, // * Enable unsafe optimizations
+          unsafe_comps: true,
+          unsafe_math: true,
+          unsafe_methods: true,
         },
         format: {
           comments: false, // * Remove comments
+        },
+        mangle: {
+          safari10: true, // * Fix Safari 10 issues
         },
       },
       // * Chunk size warnings threshold (500kb)
@@ -114,6 +122,12 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
       // * Optimize asset inlining threshold (4kb - smaller assets will be inlined)
       assetsInlineLimit: 4096,
+      // * Enable gzip compression reporting
+      reportCompressedSize: true,
+      // * Target modern browsers for smaller bundles
+      target: 'esnext',
+      // * Enable source maps only in development
+      sourcemap: mode === 'development',
     },
     // * Optimize dependency pre-bundling
     optimizeDeps: {

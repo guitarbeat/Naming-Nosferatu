@@ -7,10 +7,11 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
-import CatBackground from "@components/CatBackground/CatBackground";
+// * Lazy load CatBackground since it's not critical for initial render
+const CatBackground = lazy(() => import("@components/CatBackground/CatBackground"));
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
 import PerformanceDashboard from "@components/PerformanceDashboard";
@@ -333,8 +334,10 @@ function AppLayout({
         Skip to main content
       </a>
 
-      {/* * Static cat-themed background */}
-      <CatBackground />
+      {/* * Static cat-themed background - lazy loaded */}
+      <Suspense fallback={null}>
+        <CatBackground />
+      </Suspense>
 
       {/* * Primary navigation lives in the sidebar */}
       <AppSidebar {...sidebarProps} />

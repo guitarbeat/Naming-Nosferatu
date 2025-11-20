@@ -9,39 +9,45 @@ const CAT_GIFS = [
 ];
 
 /**
- * * Creates a floating cat video element with assigned gif
+ * * Creates a floating cat element with assigned gif
+ * Uses video for cat.gif (has webm version), img for others
  * @param {number} index - The cat index (1-4)
  * @param {string} gifSrc - The gif source to use
- * @returns {JSX.Element} Cat video element
+ * @returns {JSX.Element} Cat video or img element
  */
 function createCatVideo(index, gifSrc) {
-  return (
-    <video
-      className={`cat-background__cat cat-background__cat--${index}`}
-      muted
-      loop
-      autoPlay
-      playsInline
-      preload="none"
-    >
-      <source src="/assets/images/cat.webm" type="video/webm" />
-      <img
-        src={gifSrc}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        fetchPriority="low"
-      />
-    </video>
-  );
-}
+  const className = `cat-background__cat cat-background__cat--${index}`;
+  const isCatGif = gifSrc === "/assets/images/cat.gif";
 
-function BbyCat() {
+  // * Only use video for cat.gif (has webm version), use img directly for others
+  if (isCatGif) {
+    return (
+      <video
+        className={className}
+        muted
+        loop
+        autoPlay
+        playsInline
+        preload="none"
+      >
+        <source src="/assets/images/cat.webm" type="video/webm" />
+        <img
+          src={gifSrc}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+        />
+      </video>
+    );
+  }
+
+  // * Use img directly for bby-cat.GIF (no video version)
   return (
     <img
-      className="bby-cat"
-      src="/assets/images/bby-cat.GIF"
-      alt="A cat licking its tongue"
+      className={className}
+      src={gifSrc}
+      alt=""
       loading="lazy"
       decoding="async"
       fetchPriority="low"
@@ -188,7 +194,6 @@ export default function CatBackground() {
             {createCatVideo(2, catGifs[1])}
             {createCatVideo(3, catGifs[2])}
             {createCatVideo(4, catGifs[3])}
-            <BbyCat />
           </>
         ) : null}
       </div>
