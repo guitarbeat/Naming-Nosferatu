@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import { Card, Error, Button } from "../../shared/components";
+import { Card, Error } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import { siteSettingsAPI } from "../../integrations/supabase/api";
 import { ErrorManager } from "../../shared/services/errorManager";
@@ -116,8 +116,6 @@ function Login({ onLogin }) {
     return generatedName || "Cat Judge";
   };
 
-  const exampleRandomName = generateFunName();
-
   const handleRandomNameClick = () => {
     if (isLoading) {
       return;
@@ -150,8 +148,6 @@ function Login({ onLogin }) {
 
   // Fetch cat fact on component mount
   useEffect(() => {
-    let isMounted = true;
-
     const fetchCatFact = async () => {
       // * Create abort controller for timeout
       const controller = new AbortController();
@@ -171,9 +167,9 @@ function Login({ onLogin }) {
         const data = await response.json();
 
         // * Validate response structure
-        if (data && typeof data.fact === "string" && isMounted) {
+        if (data && typeof data.fact === "string") {
           setCatFact(data.fact);
-        } else if (isMounted) {
+        } else {
           throw new Error("Invalid response format from cat fact API");
         }
       } catch (error) {
@@ -191,17 +187,14 @@ function Login({ onLogin }) {
           });
         }
 
-        // * Set fallback message if component is still mounted
-        if (isMounted) {
+        // * Set fallback message
           setCatFact("Cats are amazing creatures with unique personalities!");
-        }
       }
     };
 
     fetchCatFact();
 
     return () => {
-      isMounted = false;
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
         typingTimeoutRef.current = null;
@@ -345,13 +338,10 @@ function Login({ onLogin }) {
               onSubmit={handleSubmit}
               className={styles.loginForm}
               role="form"
-              aria-label="Judge name login form"
+              aria-label="Login form"
               autoComplete="off"
             >
               <div className={styles.inputWrapper}>
-                <label htmlFor="loginName" className={styles.inputLabel}>
-                  Your Judge Name
-                </label>
                 <div className={styles.inputContainer}>
                   <input
                     id="loginName"
@@ -359,7 +349,7 @@ function Login({ onLogin }) {
                     type="text"
                     value={name}
                     onChange={handleNameChange}
-                    placeholder="Enter your judge name"
+                    placeholder="Enter your name"
                     className={`${styles.loginInput} ${error ? styles.error : ""}`}
                     autoFocus
                     autoComplete="off"
@@ -374,10 +364,10 @@ function Login({ onLogin }) {
                   {!name.trim() && (
                     <div
                       className={styles.randomNameIndicator}
-                      title="Generate a random judge name"
+                      title="Generate a random name"
                       role="button"
                       tabIndex={isLoading ? -1 : 0}
-                      aria-label="Generate a random judge name"
+                      aria-label="Generate a random name"
                       aria-disabled={isLoading}
                       onClick={handleRandomNameClick}
                       onKeyDown={handleRandomNameKeyDown}
@@ -402,8 +392,8 @@ function Login({ onLogin }) {
                   />
                 )}
                 <p id="loginHelp" className={styles.explainerText}>
-                  Type your judge name to sign in. We&apos;ll create an account
-                  automatically if it&apos;s your first time.
+                  We&apos;ll create an account automatically if it&apos;s your
+                  first time.
                 </p>
                 {name.trim() && (
                   <div className={styles.characterCounter}>
@@ -420,48 +410,72 @@ function Login({ onLogin }) {
                 )}
               </div>
 
-              <Button
+              <button
                 type="submit"
-                loading={isLoading}
                 disabled={isLoading}
-                size="large"
-                endIcon={
-                  name.trim() ? null : (
-                    <span aria-hidden="true" style={{ fontSize: "1.2em" }}>
-                      🏆
-                    </span>
-                  )
+                className={styles.submitButton}
+                aria-label={
+                  name.trim()
+                    ? "Continue to tournament"
+                    : "Get random name and start tournament"
                 }
-                className={`${name.trim() ? styles.hasName : styles.randomNameButton}`}
               >
-                {name.trim() ? "Continue" : "Get Random Name & Start"}
-              </Button>
+                {isLoading && (
+                  <span className={styles.buttonSpinner} aria-hidden="true">
+                    <svg
+                      className={styles.spinnerIcon}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        className={styles.spinnerCircle}
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        strokeDasharray="32"
+                        strokeDashoffset="32"
+                      >
+                        <animate
+                          attributeName="stroke-dasharray"
+                          dur="2s"
+                          values="0 32;16 16;0 32;0 32"
+                          repeatCount="indefinite"
+                        />
+                        <animate
+                          attributeName="stroke-dashoffset"
+                          dur="2s"
+                          values="0;-16;-32;-32"
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    </svg>
+                  </span>
+                )}
+                <span className={styles.buttonText}>
+                  {name.trim() ? "Continue" : "Get Random Name & Start"}
+                </span>
+                {!name.trim() && !isLoading && (
+                  <span className={styles.buttonIcon} aria-hidden="true">
+                    🏆
+                  </span>
+                )}
+              </button>
             </form>
 
-            <div className={styles.namePreview}>
-              {name ? (
+            {name && (
+              <div className={styles.namePreview}>
                 <p className={styles.helperText}>
-                  You&apos;ll log in or create an account as{" "}
+                  Logging in as{" "}
                   <span className={styles.nameHighlight}>
                     &quot;{name}&quot;
                   </span>
                 </p>
-              ) : (
-                <div className={styles.randomPreview}>
-                  <p
-                    className={`${styles.helperText} ${styles.randomNameText}`}
-                  >
-                    We&apos;ll generate a fun name automatically!
-                  </p>
-                  <p className={styles.randomNameExample}>
-                    <span className={styles.exampleLabel}>Example: </span>
-                    <span className={styles.exampleValue}>
-                      {exampleRandomName}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </Card>
       </div>

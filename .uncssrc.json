@@ -1,0 +1,14 @@
+{
+  "ignore": [
+    ".boundary",
+    ".list",
+    ".inline",
+    ".sr-only",
+    "/\\.boundary/",
+    "/\\.list/",
+    "/\\.inline/",
+    "/\\.sr-only/"
+  ],
+  "timeout": 10000,
+  "htmlroot": "dist"
+}

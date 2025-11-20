@@ -35,14 +35,10 @@
     "build": "vite build --config config/vite.config.ts && node scripts/postbuild-fix-react.js",
     "preview": "vite preview --config config/vite.config.ts",
     "test": "vitest run --coverage --config config/vitest.config.mjs",
-    "lint": "eslint --config config/eslint.config.js \"src/**/*.{js,jsx,ts,tsx}\" --fix && stylelint --config config/.stylelintrc.json \"src/**/*.css\" --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\"",
-    "check": "npm run lint && prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && tsc --noEmit",
-    "ci": "npm run check && npm test && npm run build",
-    "clean": "rm -rf build dist node_modules/.vite",
-    "knip": "knip",
-    "knip:fix": "knip --fix",
-    "knip:production": "knip --production"
+    "all": "npm run lint && npm run test && npm run build && npm run check",
+    "lint": "eslint --config config/eslint.config.js \"src/**/*.{js,jsx,ts,tsx}\" --fix && stylelint --config config/.stylelintrc.json \"src/**/*.css\" --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && tsc --noEmit",
+    "check": "knip && echo 'Fixing deps...' && knip --fix && node scripts/audit-contrast.mjs && echo 'CSS analysis:' && uncss http://localhost:4173 -u .uncssrc.json -o uncss-report.css || echo 'UnCSS needs preview server' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\n').length,'→',r.css.split('\\n').length));\"",
+    "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -84,8 +80,10 @@
     "knip": "^5.70.1",
     "npm-check-updates": "^19.1.2",
     "postcss": "^8.5.6",
+    "postcss-discard-unused": "^7.0.4",
     "postcss-preset-env": "^10.4.0",
     "prettier": "^3.6.2",
+    "purgecss": "^7.0.2",
     "sharp": "^0.34.5",
     "stylelint": "^16.25.0",
     "stylelint-config-recess-order": "^7.4.0",
@@ -96,6 +94,7 @@
     "tailwindcss": "^4.1.17",
     "terser": "^5.44.1",
     "typescript": "^5.9.3",
+    "uncss": "^0.17.3",
     "vite": "^7.2.2",
     "vite-bundle-analyzer": "^1.2.3",
     "vitest": "^4.0.10"

@@ -15,6 +15,7 @@ const variantMapping = {
   secondary: "secondary",
   danger: "destructive",
   ghost: "ghost",
+  login: "login",
 };
 
 const sizeMapping = {
@@ -73,7 +74,13 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(["primary", "secondary", "danger", "ghost"]),
+  variant: PropTypes.oneOf([
+    "primary",
+    "secondary",
+    "danger",
+    "ghost",
+    "login",
+  ]),
   size: PropTypes.oneOf(["small", "medium", "large"]),
   disabled: PropTypes.bool,
   loading: PropTypes.bool,

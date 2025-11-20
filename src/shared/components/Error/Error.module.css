@@ -1,5 +1,18 @@
 /* Unified Error Component Styles */
 
+/* * Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-width: 0;
+  clip-path: inset(0);
+}
+
 /* ===== BOUNDARY ERROR (Full-page error) ===== */
 .boundary {
   position: fixed;
@@ -8,10 +21,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
   min-height: 100dvh;
-  padding: 2rem;
-  overflow: hidden;
+  padding: clamp(1rem, 4vw, 2rem);
+  padding: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
+  overflow: hidden auto;
   font-family: var(
     --font-sans,
     -apple-system,
@@ -21,6 +37,7 @@
     sans-serif
   );
   background: var(--gradient-mesh);
+  -webkit-overflow-scrolling: touch;
 }
 
 .boundary::before {
@@ -48,14 +65,20 @@
   z-index: 1;
   width: 100%;
   max-width: 600px;
-  padding: 3rem;
+  padding: clamp(1.5rem, 5vw, 3rem);
   text-align: center;
+  outline: none;
   background: var(--glass-bg-strong);
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
+  border-radius: clamp(12px, 3vw, 20px);
   box-shadow: var(--glass-shadow), var(--glow-vibrant);
   backdrop-filter: blur(var(--glass-blur-strong)) saturate(180%);
   transition: all 0.3s ease;
+}
+
+.boundaryContent:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 4px;
 }
 
 .boundaryContent:hover {
@@ -66,9 +89,34 @@
   transform: translateY(-2px);
 }
 
+/* * Reduced motion variant */
+.boundaryContentNoMotion {
+  transition: none;
+}
+
+.boundaryContentNoMotion:hover {
+  transform: none;
+}
+
+/* * Device-specific variants */
+.boundaryContentSmallMobile {
+  max-width: 100%;
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.boundaryContentMobile {
+  padding: clamp(1.25rem, 4.5vw, 2rem);
+}
+
+.boundaryContentTablet {
+  max-width: 700px;
+  padding: clamp(2rem, 5vw, 2.5rem);
+}
+
 .boundaryIcon {
-  margin-bottom: 1.5rem;
-  font-size: 4rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(3rem, 10vw, 4rem);
+  line-height: 1;
   filter: drop-shadow(0 0 10px rgb(47 243 224 / 50%));
   animation: bounce 2s infinite;
 }
@@ -91,11 +139,20 @@
   }
 }
 
+/* * Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .boundaryIcon {
+    animation: none;
+  }
+}
+
 .boundaryTitle {
-  margin-bottom: 1rem;
-  font-size: 2rem;
+  margin-bottom: clamp(0.75rem, 2vw, 1rem);
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 700;
+  line-height: 1.2;
   color: var(--text-primary);
+  overflow-wrap: break-word;
   text-shadow: var(--text-shadow-sm);
   background: var(--gradient-primary);
   background-clip: text;
@@ -103,10 +160,12 @@
 }
 
 .boundaryMessage {
-  margin-bottom: 1.5rem;
-  font-size: 1.125rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1rem, 3vw, 1.125rem);
   line-height: 1.6;
   color: var(--text-secondary);
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 .boundaryRetryInfo {
@@ -116,17 +175,17 @@
 }
 
 .boundarySuggestions {
-  padding: 1.5rem;
-  margin-bottom: 2rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin-bottom: clamp(1.5rem, 4vw, 2rem);
   background: rgb(255 255 255 / 5%);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: clamp(8px, 2vw, 12px);
   backdrop-filter: blur(5px);
 }
 
 .boundarySuggestionsTitle {
-  margin: 0 0 1rem;
-  font-size: 1rem;
+  margin: 0 0 clamp(0.75rem, 2vw, 1rem);
+  font-size: clamp(0.9375rem, 2.5vw, 1rem);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -138,10 +197,12 @@
 }
 
 .boundarySuggestionsList li {
-  padding: 0.5rem 0;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
+  padding: clamp(0.375rem, 1.5vw, 0.5rem) 0;
+  margin-bottom: clamp(0.375rem, 1.5vw, 0.5rem);
+  font-size: clamp(0.8125rem, 2.2vw, 0.875rem);
+  line-height: 1.5;
   color: var(--text-secondary);
+  text-align: left;
   border-bottom: 1px solid rgb(255 255 255 / 10%);
   transition: all 0.2s ease;
 }
@@ -156,12 +217,71 @@
   transform: translateX(5px);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .boundarySuggestionsList li {
+    transition: none;
+  }
+
+  .boundarySuggestionsList li:hover {
+    transform: none;
+  }
+}
+
 .boundaryActions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1rem;
+  gap: clamp(0.75rem, 2vw, 1rem);
   max-width: 700px;
   margin: 0 auto;
+}
+
+/* * Improved button layout for different screen sizes */
+@media (width <= 640px) {
+  .boundarySuggestionsList li {
+    text-align: center;
+  }
+
+  .boundarySuggestionsList li:hover {
+    transform: none;
+  }
+
+  .boundaryActions {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+
+  .boundaryBackendWarning {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .boundaryErrorStack {
+    max-height: 300px;
+    font-size: 0.6875rem;
+  }
+
+  .boundaryErrorList {
+    padding-left: 1.25rem;
+  }
+}
+
+@media (width > 640px) and (width <= 1024px) {
+  .boundaryActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* * Make retry button span full width on tablet */
+  .boundaryActions > .boundaryRetryButton:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (width > 1024px) {
+  .boundaryActions {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
 }
 
 .boundaryRetryButton,
@@ -172,14 +292,49 @@
   display: inline-flex;
   gap: 0.5rem;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  justify-content: center;
+  min-height: var(--mobile-touch-target-min, 48px);
+  padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.5rem);
   overflow: hidden;
-  font-size: 0.875rem;
+  font-size: clamp(0.875rem, 2.5vw, 0.9375rem);
   font-weight: 500;
+  touch-action: manipulation;
   cursor: pointer;
   border: none;
-  border-radius: 8px;
+  border-radius: clamp(6px, 1.5vw, 8px);
   transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.boundaryRetryButton:focus-visible,
+.boundaryRefreshButton:focus-visible,
+.boundaryHomeButton:focus-visible,
+.boundaryCopyButton:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.boundaryRetryButton:active,
+.boundaryRefreshButton:active,
+.boundaryHomeButton:active,
+.boundaryCopyButton:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryRetryButton,
+  .boundaryRefreshButton,
+  .boundaryHomeButton,
+  .boundaryCopyButton {
+    transition: none;
+  }
+
+  .boundaryRetryButton:hover,
+  .boundaryRefreshButton:hover,
+  .boundaryHomeButton:hover,
+  .boundaryCopyButton:hover {
+    transform: none;
+  }
 }
 
 .boundaryRetryButton {
@@ -188,12 +343,18 @@
   box-shadow: var(--glow-cyan);
 }
 
-.boundaryRetryButton:hover {
+.boundaryRetryButton:hover:not(:active) {
   background: var(--neon-cyan-600);
   box-shadow:
     var(--glow-cyan),
     0 10px 25px rgb(47 243 224 / 30%);
   transform: translateY(-2px) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryRetryButton:hover {
+    transform: none;
+  }
 }
 
 .boundaryRefreshButton {
@@ -202,12 +363,18 @@
   box-shadow: var(--glow-pink);
 }
 
-.boundaryRefreshButton:hover {
+.boundaryRefreshButton:hover:not(:active) {
   background: var(--hot-pink-600);
   box-shadow:
     var(--glow-pink),
     0 10px 25px rgb(250 38 160 / 30%);
   transform: translateY(-2px) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryRefreshButton:hover {
+    transform: none;
+  }
 }
 
 .boundaryHomeButton {
@@ -216,12 +383,18 @@
   box-shadow: var(--glow-red);
 }
 
-.boundaryHomeButton:hover {
+.boundaryHomeButton:hover:not(:active) {
   background: var(--fire-red-600);
   box-shadow:
     var(--glow-red),
     0 10px 25px rgb(245 23 32 / 30%);
   transform: translateY(-2px) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryHomeButton:hover {
+    transform: none;
+  }
 }
 
 .boundaryRetryIcon,
@@ -233,23 +406,30 @@
 /* Backend Warning Banner */
 .boundaryBackendWarning {
   display: flex;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  margin: 1.5rem 0;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  padding: clamp(0.875rem, 2.5vw, 1rem) clamp(1rem, 3vw, 1.5rem);
+  margin: clamp(1rem, 3vw, 1.5rem) 0;
   background: linear-gradient(
     135deg,
     rgb(245 158 11 / 20%),
     rgb(251 191 36 / 15%)
   );
   border: 2px solid rgb(245 158 11 / 40%);
-  border-radius: 12px;
+  border-radius: clamp(8px, 2vw, 12px);
   box-shadow: 0 4px 16px rgb(245 158 11 / 20%);
   backdrop-filter: blur(10px);
 }
 
 .boundaryWarningIcon {
-  font-size: 2rem;
+  flex-shrink: 0;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   animation: pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryWarningIcon {
+    animation: none;
+  }
 }
 
 @keyframes pulse {
@@ -271,14 +451,14 @@
 
 .boundaryBackendWarning strong {
   display: block;
-  margin-bottom: 0.25rem;
-  font-size: 1rem;
+  margin-bottom: clamp(0.25rem, 1vw, 0.5rem);
+  font-size: clamp(0.9375rem, 2.5vw, 1rem);
   color: var(--text-primary);
 }
 
 .boundaryBackendWarning p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: clamp(0.8125rem, 2.2vw, 0.875rem);
   line-height: 1.5;
   color: var(--text-secondary);
 }
@@ -301,7 +481,7 @@
   transition: all 0.3s ease;
 }
 
-.boundaryCopyButton:hover {
+.boundaryCopyButton:hover:not(:active) {
   background: rgb(47 243 224 / 25%);
   border-color: rgb(47 243 224 / 50%);
   box-shadow: 0 6px 18px rgb(47 243 224 / 25%);
@@ -309,7 +489,13 @@
 }
 
 .boundaryCopyButton:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryCopyButton:hover {
+    transform: none;
+  }
 }
 
 .boundaryCopyIcon {
@@ -322,53 +508,98 @@
 }
 
 .boundaryDetails {
-  padding: 1.5rem;
-  margin-top: 2rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin-top: clamp(1.5rem, 4vw, 2rem);
   text-align: left;
   background: rgb(0 0 0 / 20%);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: clamp(8px, 2vw, 12px);
   backdrop-filter: blur(5px);
 }
 
 .boundaryDetails summary {
+  padding: 0.5rem;
+  font-size: clamp(0.9375rem, 2.5vw, 1rem);
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
+  user-select: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.boundaryDetails summary:hover {
+  background: rgb(255 255 255 / 5%);
+}
+
+.boundaryDetails summary:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boundaryDetails summary {
+    transition: none;
+  }
 }
 
 .boundaryErrorContent {
-  margin-top: 1rem;
+  margin-top: clamp(0.75rem, 2vw, 1rem);
 }
 
 .boundaryErrorContent h4 {
-  margin-bottom: 0.5rem;
+  margin-bottom: clamp(0.375rem, 1.5vw, 0.5rem);
+  font-size: clamp(0.9375rem, 2.5vw, 1rem);
   color: var(--fire-red);
 }
 
-.boundaryErrorContent pre {
-  padding: 0.5rem;
-  overflow-x: auto;
-  font-size: 0.75rem;
+.boundaryErrorStack {
+  max-height: 400px;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem);
+  margin-top: 0.5rem;
+  overflow: auto;
+  font-size: clamp(0.6875rem, 2vw, 0.75rem);
+  line-height: 1.5;
   color: var(--text-secondary);
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
   background: rgb(0 0 0 / 30%);
   border-radius: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.boundaryErrorList {
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+  list-style: disc;
+}
+
+.boundaryErrorList li {
+  margin-bottom: 0.5rem;
+  font-size: clamp(0.8125rem, 2.2vw, 0.875rem);
+  line-height: 1.6;
+}
+
+.boundaryErrorList li:last-child {
+  margin-bottom: 0;
 }
 
 .boundarySupport {
-  padding: 1.5rem;
-  margin-top: 2rem;
-  font-size: 0.875rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  margin-top: clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(0.8125rem, 2.2vw, 0.875rem);
   color: var(--text-secondary);
   background: rgb(47 243 224 / 10%);
   border: 1px solid rgb(47 243 224 / 20%);
-  border-radius: 12px;
+  border-radius: clamp(8px, 2vw, 12px);
   backdrop-filter: blur(5px);
 }
 
 .boundarySupportText {
-  margin: 0;
+  margin: 0 0 clamp(0.5rem, 1.5vw, 0.75rem);
   line-height: 1.6;
+  overflow-wrap: break-word;
 }
 
 .boundarySupportText strong {
@@ -376,9 +607,12 @@
 }
 
 .boundaryErrorId {
-  margin-top: 0.5rem;
+  margin-top: clamp(0.375rem, 1.5vw, 0.5rem);
   font-family: monospace;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
   font-weight: 600;
+  word-break: break-all;
+  user-select: all;
 }
 
 /* ===== ERROR LIST (Multiple errors) ===== */
@@ -635,28 +869,101 @@
   }
 }
 
-/* Responsive adjustments */
+/* * Landscape orientation optimizations */
+@media (orientation: landscape) and (height <= 600px) {
+  .boundary {
+    align-items: flex-start;
+    padding: 0.75rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+  }
+
+  .boundaryContent {
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .boundaryIcon {
+    margin-bottom: 0.75rem;
+    font-size: 2.5rem;
+  }
+
+  .boundaryTitle {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .boundaryMessage {
+    margin-bottom: 1rem;
+    font-size: 0.9375rem;
+  }
+
+  .boundarySuggestions {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .boundaryActions {
+    gap: 0.5rem;
+  }
+}
+
+/* * Small mobile devices (iPhone SE, etc.) */
+@media (width <= 430px) {
+  .boundary {
+    padding: 0.75rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .boundaryContent {
+    padding: 1rem;
+  }
+
+  .boundaryIcon {
+    margin-bottom: 0.75rem;
+    font-size: 2.5rem;
+  }
+
+  .boundaryTitle {
+    font-size: 1.25rem;
+  }
+
+  .boundaryMessage {
+    font-size: 0.9375rem;
+  }
+
+  .boundaryActions {
+    gap: 0.625rem;
+  }
+
+  .boundaryRetryButton,
+  .boundaryRefreshButton,
+  .boundaryHomeButton,
+  .boundaryCopyButton {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .boundarySuggestions {
+    padding: 0.75rem;
+  }
+
+  .boundaryBackendWarning {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* * Responsive adjustments for mobile */
 @media (width <= 768px) {
   .boundary {
     padding: 1rem;
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
   .boundaryContent {
     max-width: 100%;
-    padding: 2rem 1.5rem;
-  }
-
-  .boundaryTitle {
-    font-size: 1.5rem;
-  }
-
-  .boundaryMessage {
-    font-size: 1rem;
-  }
-
-  .boundaryActions {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
   }
 
   .boundaryRetryButton,
@@ -665,21 +972,7 @@
   .boundaryCopyButton {
     /* * Ensure minimum touch target size (48px) */
     min-height: var(--mobile-touch-target-min, 48px);
-    padding: 0.875rem 1.25rem;
-    font-size: 1rem;
     font-weight: 600;
-  }
-
-  .boundarySuggestions {
-    padding: 1rem;
-  }
-
-  .boundarySuggestionsTitle {
-    font-size: 0.9375rem;
-  }
-
-  .boundarySuggestionsList li {
-    font-size: 0.8125rem;
   }
 
   .list {
@@ -926,10 +1219,31 @@
   color: #1e3a8a;
 }
 
+/* Unknown severity fallback - uses medium styling */
+.inline.unknown {
+  color: #78350f;
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+.inline.unknown .inlineMessage {
+  color: #78350f;
+}
+
 /* Size variants */
 .inlineSmall .inlineContent {
   padding: 0.5rem 0.75rem;
   font-size: 0.75rem;
+}
+
+/* * Medium is the default size - no special styling needed */
+
+/* * This class exists for API consistency when using getSizeClass() */
+/* stylelint-disable-next-line block-no-empty */
+.inlineMedium {
+  /* Medium size uses default .inlineContent styles - no overrides needed */
+
+  /* This empty rule is intentional for API consistency */
 }
 
 .inlineLarge .inlineContent {
@@ -978,40 +1292,38 @@
   border-radius: 4px;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-@media (width <= 640px) {
+/* * Tablet optimizations */
+@media (width > 768px) and (width <= 1024px) {
   .boundaryContent {
-    padding: 2rem 1.5rem;
+    max-width: 700px;
   }
 
   .boundaryActions {
-    flex-direction: column;
-    align-items: stretch;
+    max-width: 100%;
+  }
+}
+
+/* * Desktop optimizations */
+@media (width > 1024px) {
+  .boundaryContent {
+    max-width: 750px;
+  }
+
+  .boundaryContent:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* * High contrast mode support */
+@media (prefers-contrast: high) {
+  .boundaryContent {
+    border-width: 2px;
   }
 
   .boundaryRetryButton,
   .boundaryRefreshButton,
-  .boundaryHomeButton {
-    justify-content: center;
-  }
-
-  .listItemHeader {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: flex-start;
-  }
-
-  .listItemActions {
-    align-self: flex-end;
-  }
-
-  .inlineContent {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .inlineActions {
-    align-self: flex-end;
+  .boundaryHomeButton,
+  .boundaryCopyButton {
+    border: 2px solid currentcolor;
   }
 }

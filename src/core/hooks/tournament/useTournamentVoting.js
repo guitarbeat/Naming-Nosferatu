@@ -100,7 +100,15 @@ export function useTournamentVoting({
         const { voteValue, eloOutcome } = convertVoteToOutcome(result);
 
         if (!currentMatch?.left?.name || !currentMatch?.right?.name) {
-          console.error("Invalid currentMatch in handleVote:", currentMatch);
+          ErrorManager.handleError(
+            new Error("Invalid currentMatch in handleVote"),
+            "Tournament Vote",
+            {
+              isRetryable: false,
+              affectsUserData: false,
+              isCritical: true,
+            }
+          );
           return;
         }
         const leftName = currentMatch.left.name;
@@ -148,13 +156,8 @@ export function useTournamentVoting({
           userName,
         });
 
-        updatePersistentState((prev) => ({
-          ...prev,
-          matchHistory: [...prev.matchHistory, voteData],
-          currentMatch: currentMatchNumber + 1,
-        }));
-
-        tournamentActions.setRatings({
+        // * Batch state updates to prevent race conditions
+        const newRatings = {
           ...currentRatings,
           [leftName]: {
             ...(currentRatings[leftName] || {}),
@@ -168,8 +171,15 @@ export function useTournamentVoting({
             wins: newRightWins,
             losses: newRightLosses,
           },
-        });
+        };
 
+        updatePersistentState((prev) => ({
+          ...prev,
+          matchHistory: [...prev.matchHistory, voteData],
+          currentMatch: currentMatchNumber + 1,
+        }));
+
+        tournamentActions.setRatings(newRatings);
         tournamentActions.addVote(voteData);
 
         if (currentMatchNumber >= totalMatches) {
@@ -224,9 +234,11 @@ export function useTournamentVoting({
           clearTimeout(transitionTimeoutRef.current);
           transitionTimeoutRef.current = null;
         }
-        if (process.env.NODE_ENV === "development") {
-          console.error("Vote handling error:", error);
-        }
+        ErrorManager.handleError(error, "Tournament Vote Handling", {
+          isRetryable: false,
+          affectsUserData: false,
+          isCritical: true,
+        });
         updateTournamentState({
           isError: true,
           isTransitioning: false,

@@ -74,7 +74,7 @@
     bottom: var(--mobile-safe-spacing);
   }
 
-  /* Ensure all interactive elements meet touch target requirements */
+  /* Ensure all interactive elements meet touch target requirements and have proper cursors */
   button,
   input[type="button"],
   input[type="submit"],
@@ -85,10 +85,18 @@
   a[role="button"],
   .nav-menu button,
   [role="button"],
-  .clickable {
+  .clickable,
+  .name-card,
+  .card[role="button"],
+  .actionButton,
+  .photoThumbButton {
     min-width: var(--mobile-touch-target-min);
     min-height: var(--mobile-touch-target-min);
+    touch-action: manipulation;
     cursor: pointer;
+
+    /* Improve touch feedback */
+    -webkit-tap-highlight-color: rgb(0 0 0 / 10%);
   }
 
   /* Form inputs should have minimum height for touch */

@@ -1,4 +1,4 @@
-/* Button utilities */
+/* ===== BUTTON UTILITIES ===== */
 .btn-base {
   display: inline-flex;
   gap: var(--space-2);
@@ -70,4 +70,80 @@
 .btn-secondary:hover {
   color: var(--text-primary);
   background: var(--surface-color);
+}
+
+/* ===== CARD UTILITIES ===== */
+.card-base {
+  padding: var(--space-6);
+  background: var(--card-background);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  transition: var(--transition-all);
+}
+
+.card-hover {
+  transition: var(--transition-all);
+}
+
+.card-hover:hover {
+  border-color: var(--card-hover);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  transform: translateY(-2px);
+}
+
+/* ===== FORM UTILITIES ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  min-height: 40px;
+  padding: var(--space-3);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: var(--transition-all);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgb(232 191 118 / 20%);
+}
+
+/* ===== FEEDBACK UTILITIES ===== */
+
+/* Loading utilities */
+.loading-spinner {
+  display: inline-block;
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error utilities */
+.error-text {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--error-500);
 }

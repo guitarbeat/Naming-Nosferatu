@@ -11,7 +11,6 @@ import {
   SidebarGroupContent,
   useSidebar,
 } from "../ui/sidebar";
-import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
@@ -37,16 +36,8 @@ export function AppSidebar({
   isLightTheme,
   onThemeChange,
   onTogglePerformanceDashboard,
-  breadcrumbItems = [],
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
-
-  // * Allow sidebar to expand/collapse freely regardless of login state
-  // useEffect(() => {
-  //   if (!isLoggedIn && !collapsed) {
-  //     toggleCollapsed();
-  //   }
-  // }, [collapsed, isLoggedIn, toggleCollapsed]);
 
   // * Define navigation items - data-driven approach
   const navItems = [
@@ -146,12 +137,6 @@ export function AppSidebar({
               ))}
             </SidebarGroupContent>
           </SidebarGroup>
-
-          {!collapsed && breadcrumbItems.length > 0 && (
-            <div className="navbar-breadcrumb">
-              <Breadcrumb items={breadcrumbItems} />
-            </div>
-          )}
         </NavbarSection>
 
         {/* Right Section: User Info + Actions */}
@@ -225,11 +210,4 @@ AppSidebar.propTypes = {
   isLightTheme: PropTypes.bool.isRequired,
   onThemeChange: PropTypes.func.isRequired,
   onTogglePerformanceDashboard: PropTypes.func,
-  breadcrumbItems: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-      onClick: PropTypes.func,
-    }),
-  ),
 };

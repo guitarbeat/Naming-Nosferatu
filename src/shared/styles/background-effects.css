@@ -290,7 +290,7 @@
   .nebula-cloud,
   .gradient-mesh,
   .radial-spotlight {
-    transition: none !important;
-    animation: none !important;
+    transition: none;
+    animation: none;
   }
 }

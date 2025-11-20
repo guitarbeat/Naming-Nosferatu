@@ -307,32 +307,6 @@ function AppLayout({
     [isLoggedIn],
   );
 
-  const handleBreadcrumbHome = useCallback(() => {
-    setView("tournament");
-    if (typeof onStartNewTournament === "function") {
-      onStartNewTournament();
-    }
-  }, [onStartNewTournament, setView]);
-
-  const breadcrumbItems = useMemo(() => {
-    if (!isLoggedIn) {
-      return [];
-    }
-
-    const items = [
-      { id: "home", label: "Home", onClick: handleBreadcrumbHome },
-    ];
-
-    if (currentView === "profile") {
-      items.push({ id: "profile", label: "Profile" });
-    }
-
-    if (currentView === "tournament") {
-      items.push({ id: "tournament", label: "Tournament" });
-    }
-
-    return items;
-  }, [currentView, handleBreadcrumbHome, isLoggedIn]);
 
   return (
     <div className={appClassName} style={layoutStyle}>
@@ -345,7 +319,7 @@ function AppLayout({
       <CatBackground />
 
       {/* * Primary navigation lives in the sidebar */}
-      <AppSidebar {...sidebarProps} breadcrumbItems={breadcrumbItems} />
+      <AppSidebar {...sidebarProps} />
 
       <main id="main-content" className={mainWrapperClassName} tabIndex="-1">
         {errors.current && isLoggedIn && (

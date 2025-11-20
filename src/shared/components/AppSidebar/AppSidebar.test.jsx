@@ -5,19 +5,7 @@ import { SidebarProvider } from "../ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 
 describe("AppSidebar", () => {
-  it("renders breadcrumb items without throwing", () => {
-    const breadcrumbItems = [
-      {
-        id: "home",
-        label: "Home",
-        onClick: vi.fn(),
-      },
-      {
-        id: "dashboard",
-        label: "Dashboard",
-      },
-    ];
-
+  it("renders navigation items without throwing", () => {
     expect(() =>
       render(
         <SidebarProvider>
@@ -32,13 +20,14 @@ describe("AppSidebar", () => {
             isLightTheme
             onThemeChange={vi.fn()}
             onTogglePerformanceDashboard={vi.fn()}
-            breadcrumbItems={breadcrumbItems}
           />
         </SidebarProvider>,
       ),
     ).not.toThrow();
 
-    expect(screen.getByText("Home")).toBeInTheDocument();
-    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    // Test that main navigation elements are present
+    expect(screen.getByText("Tournament")).toBeInTheDocument();
+    expect(screen.getByText("Profile")).toBeInTheDocument();
+    expect(screen.getByText("Welcome, Test User")).toBeInTheDocument();
   });
 });

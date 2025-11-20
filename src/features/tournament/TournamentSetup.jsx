@@ -3,7 +3,7 @@
  * @description Tournament setup wizard for selecting cat names and starting a tournament.
  * Refactored for better maintainability with extracted components and hooks.
  */
-import { useState } from "react";
+import { useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import { Loading, Error } from "../../shared/components";
 import {
@@ -40,7 +40,12 @@ function TournamentSetupContent({ onStart, userName }) {
     handleSelectAll,
   } = useTournamentSetup(userName);
 
-  const { galleryImages, setGalleryImages } = useImageGallery();
+  const {
+    galleryImages,
+    addImages,
+    isLoading: _imagesLoading,
+    imageMap,
+  } = useImageGallery();
   const isAdmin = useAdminStatus(userName);
   const categories = useCategoryFilters(availableNames);
 
@@ -54,16 +59,44 @@ function TournamentSetupContent({ onStart, userName }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  // * Lightbox handlers
-  const handleImageOpen = (image) => {
-    const idx = galleryImages.indexOf(image);
-    setLightboxIndex(idx >= 0 ? idx : 0);
-    setLightboxOpen(true);
-  };
+  // * Lightbox handlers - optimized with useCallback and imageMap
+  const handleImageOpen = useCallback(
+    (image) => {
+      const idx = imageMap.get(image) ?? 0;
+      setLightboxIndex(idx);
+      setLightboxOpen(true);
+    },
+    [imageMap],
+  );
 
-  const handleImagesUploaded = (uploaded) => {
-    setGalleryImages((prev) => [...uploaded, ...prev]);
-  };
+  const handleImagesUploaded = useCallback(
+    (uploaded) => {
+      addImages(uploaded);
+    },
+    [addImages],
+  );
+
+  // Memoize lightbox navigation to prevent unnecessary re-renders
+  const handleLightboxNavigate = useCallback((newIndex) => {
+    setLightboxIndex(newIndex);
+  }, []);
+
+  const handleLightboxClose = useCallback(() => {
+    setLightboxOpen(false);
+  }, []);
+
+  // Preload adjacent images for smoother lightbox navigation
+  const preloadImages = useMemo(() => {
+    if (!lightboxOpen || galleryImages.length === 0) return [];
+    const preload = [];
+    const prevIndex =
+      lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
+    const nextIndex =
+      lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
+    if (galleryImages[prevIndex]) preload.push(galleryImages[prevIndex]);
+    if (galleryImages[nextIndex]) preload.push(galleryImages[nextIndex]);
+    return preload;
+  }, [lightboxOpen, lightboxIndex, galleryImages]);
 
   // * Loading state
   if (isLoading) {
@@ -178,8 +211,9 @@ function TournamentSetupContent({ onStart, userName }) {
         <Lightbox
           images={galleryImages}
           currentIndex={lightboxIndex}
-          onClose={() => setLightboxOpen(false)}
-          onNavigate={setLightboxIndex}
+          onClose={handleLightboxClose}
+          onNavigate={handleLightboxNavigate}
+          preloadImages={preloadImages}
         />
       )}
     </div>

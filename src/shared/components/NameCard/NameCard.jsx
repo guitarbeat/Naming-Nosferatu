@@ -71,6 +71,7 @@ function NameCard({
   onSelectionChange,
   image,
 }) {
+  // Component logic here
   const [rippleStyle, setRippleStyle] = useState({});
   const [isRippling, setIsRippling] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);

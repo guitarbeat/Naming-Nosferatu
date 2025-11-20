@@ -5,10 +5,74 @@ import Error from "../Error/Error";
 import Login from "@features/auth/Login";
 import { useRouting } from "@hooks/useRouting";
 
+/**
+ * * Safely wraps a dynamic import to prevent React's lazy initializer from
+ * encountering non-stringifiable error objects or missing default exports
+ * @param {Function} importFn - Function that returns a dynamic import promise
+ * @param {Function} fallbackComponent - Function that returns a fallback component
+ * @returns {Promise} Promise that resolves to a module or fallback component
+ */
+function safeLazyImport(importFn, fallbackComponent) {
+  return importFn()
+    .then((module) => {
+      // * Check if module has a default export
+      if (!module || typeof module.default === "undefined") {
+        const errorMessage =
+          module && Object.keys(module).length > 0
+            ? "Module loaded but missing default export"
+            : "Module loaded but is empty";
+
+        if (process.env.NODE_ENV === "development") {
+          console.error("Lazy import error:", errorMessage, {
+            moduleKeys: module ? Object.keys(module) : [],
+            module,
+          });
+        }
+
+        // * Return fallback component module
+        return {
+          default: fallbackComponent,
+        };
+      }
+
+      // * Module has valid default export
+      return module;
+    })
+    .catch((error) => {
+      // * Ensure error is stringifiable before React tries to log it
+      // * This prevents "Cannot convert object to primitive value" errors
+      try {
+        // * Try to stringify the error to ensure it's safe
+        String(error);
+        JSON.stringify(error);
+      } catch {
+        // * If error can't be stringified, create a safe replacement
+        const safeError = new Error(
+          error?.message || String(error) || "Module load failed",
+        );
+        safeError.name = error?.name || "LoadError";
+        safeError.stack = error?.stack || "";
+        // * Log the original error safely if possible
+        if (process.env.NODE_ENV === "development") {
+          try {
+            console.warn("Lazy import failed:", safeError.message);
+          } catch {
+            // Ignore logging errors
+          }
+        }
+      }
+      // * Return fallback component module
+      return {
+        default: fallbackComponent,
+      };
+    });
+}
+
 // * Dynamic imports with better error handling and loading states
 const Tournament = lazy(() =>
-  import("@features/tournament/Tournament").catch(() => ({
-    default: () => (
+  safeLazyImport(
+    () => import("@features/tournament/Tournament"),
+    () => (
       <Error
         variant="list"
         error={{
@@ -20,11 +84,12 @@ const Tournament = lazy(() =>
         }}
       />
     ),
-  })),
+  ),
 );
 const TournamentSetup = lazy(() =>
-  import("@features/tournament/TournamentSetup").catch(() => ({
-    default: () => (
+  safeLazyImport(
+    () => import("@features/tournament/TournamentSetup"),
+    () => (
       <Error
         variant="list"
         error={{
@@ -36,11 +101,12 @@ const TournamentSetup = lazy(() =>
         }}
       />
     ),
-  })),
+  ),
 );
 const Results = lazy(() =>
-  import("@features/tournament/Results").catch(() => ({
-    default: () => (
+  safeLazyImport(
+    () => import("@features/tournament/Results"),
+    () => (
       <Error
         variant="list"
         error={{
@@ -52,11 +118,12 @@ const Results = lazy(() =>
         }}
       />
     ),
-  })),
+  ),
 );
 const Profile = lazy(() =>
-  import("@features/profile/Profile").catch(() => ({
-    default: () => (
+  safeLazyImport(
+    () => import("@features/profile/Profile"),
+    () => (
       <Error
         variant="list"
         error={{
@@ -68,14 +135,15 @@ const Profile = lazy(() =>
         }}
       />
     ),
-  })),
+  ),
 );
 const BongoPage = lazy(() =>
-  import("@features/bongo/BongoPage").catch(() => ({
-    default: () => (
+  safeLazyImport(
+    () => import("@features/bongo/BongoPage"),
+    () => (
       <Error variant="list" error={{ message: "Failed to load Bongo Page" }} />
     ),
-  })),
+  ),
 );
 
 export default function ViewRouter({

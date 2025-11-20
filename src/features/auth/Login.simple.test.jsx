@@ -53,7 +53,7 @@ describe("Login Component - Simple Tests", () => {
   it("renders login form title", async () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
-    expect(screen.getByText("Your Judge Name")).toBeInTheDocument();
+    expect(screen.getByText("Ready to Judge the Names?")).toBeInTheDocument();
   });
 
   it("renders login subtitle", async () => {
@@ -68,7 +68,9 @@ describe("Login Component - Simple Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
     expect(
-      screen.getByText("We'll generate a fun name automatically!"),
+      screen.getByText(
+        "We'll create an account automatically if it's your first time.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -82,7 +84,9 @@ describe("Login Component - Simple Tests", () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(
+      screen.getByRole("button", { name: "Continue to tournament" }),
+    );
 
     await waitFor(() => {
       expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
@@ -102,7 +106,9 @@ describe("Login Component - Simple Tests", () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText("Your name"), "Invalid Name");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(
+      screen.getByRole("button", { name: "Continue to tournament" }),
+    );
 
     await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();

@@ -8,7 +8,13 @@ import PropTypes from "prop-types";
 import { LIGHTBOX_IMAGE_SIZES } from "../constants";
 import styles from "../TournamentSetup.module.css";
 
-function Lightbox({ images, currentIndex, onClose, onNavigate }) {
+function Lightbox({
+  images,
+  currentIndex,
+  onClose,
+  onNavigate,
+  preloadImages = [],
+}) {
   const closeBtnRef = useRef(null);
   const transitionTimerRef = useRef(null);
   const isTransitioningRef = useRef(false);
@@ -73,7 +79,29 @@ function Lightbox({ images, currentIndex, onClose, onNavigate }) {
   );
 
   const current = images[currentIndex] || images[0];
-  const base = current.replace(/\.[^.]+$/, "");
+  const base = current?.replace(/\.[^.]+$/, "") || "";
+
+  // Preload adjacent images for smoother navigation
+  useEffect(() => {
+    const links = [];
+    preloadImages.forEach((imgUrl) => {
+      if (imgUrl) {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = imgUrl;
+        document.head.appendChild(link);
+        links.push(link);
+      }
+    });
+    return () => {
+      links.forEach((link) => {
+        if (document.head.contains(link)) {
+          document.head.removeChild(link);
+        }
+      });
+    };
+  }, [preloadImages]);
 
   return (
     <div
@@ -157,6 +185,7 @@ Lightbox.propTypes = {
   currentIndex: PropTypes.number.isRequired,
   onClose: PropTypes.func.isRequired,
   onNavigate: PropTypes.func.isRequired,
+  preloadImages: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default Lightbox;

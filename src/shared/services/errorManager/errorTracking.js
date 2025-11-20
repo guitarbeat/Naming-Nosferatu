@@ -7,6 +7,50 @@ import { getGlobalScope } from "./helpers";
 import { ERROR_SEVERITY } from "./constants";
 
 /**
+ * * Safely converts a value to a string, handling objects, circular references, and primitives
+ * @param {*} value - Value to convert to string
+ * @returns {string} String representation of the value
+ */
+function safeStringify(value) {
+  if (value === null || value === undefined) {
+    return String(value);
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+
+  if (typeof value === "object") {
+    try {
+      // Try JSON.stringify first (handles most cases)
+      return JSON.stringify(value, null, 2);
+    } catch (_err) {
+      // Handle circular references or other JSON errors
+      try {
+        // Try to get a basic representation
+        if (value.constructor && value.constructor.name) {
+          return `[${value.constructor.name}]`;
+        }
+        return "[Object]";
+      } catch {
+        return "[Unable to stringify object]";
+      }
+    }
+  }
+
+  // Fallback for other types (symbols, functions, etc.)
+  try {
+    return String(value);
+  } catch {
+    return "[Unable to convert to string]";
+  }
+}
+
+/**
  * * Logs error information for debugging
  * @param {Object} formattedError - Formatted error object
  * @param {string} context - Error context
@@ -28,27 +72,49 @@ export function logError(formattedError, context, metadata) {
         navigator.userAgent,
       );
 
-    console.group(
-      `🔴 Error [${formattedError.type}]${isMobile ? " (Mobile)" : ""}`,
-    );
-    console.error("Context:", context);
-    console.error(
-      "Message:",
-      formattedError.userMessage || formattedError.message,
-    );
-    console.error("Severity:", formattedError.severity);
-    console.error("Retryable:", formattedError.isRetryable);
-    if (formattedError.metadata?.stack) {
-      console.error("Stack:", formattedError.metadata.stack);
-    }
-    if (logData.diagnostics?.debugHints?.length) {
-      console.group("Debug Hints");
-      logData.diagnostics.debugHints.forEach((hint, i) => {
-        console.log(`${i + 1}. ${hint.title}:`, hint.detail);
-      });
+    try {
+      const errorType = safeStringify(formattedError?.type || "Unknown");
+      console.group(`🔴 Error [${errorType}]${isMobile ? " (Mobile)" : ""}`);
+      console.error("Context:", safeStringify(context));
+      console.error(
+        "Message:",
+        safeStringify(
+          formattedError?.userMessage ||
+            formattedError?.message ||
+            "No message",
+        ),
+      );
+      console.error(
+        "Severity:",
+        safeStringify(formattedError?.severity || "Unknown"),
+      );
+      console.error(
+        "Retryable:",
+        safeStringify(formattedError?.isRetryable ?? false),
+      );
+      if (formattedError?.metadata?.stack) {
+        console.error("Stack:", safeStringify(formattedError.metadata.stack));
+      }
+      if (logData.diagnostics?.debugHints?.length) {
+        console.group("Debug Hints");
+        logData.diagnostics.debugHints.forEach((hint, i) => {
+          console.log(
+            `${i + 1}. ${safeStringify(hint?.title || "Untitled")}:`,
+            safeStringify(hint?.detail || ""),
+          );
+        });
+        console.groupEnd();
+      }
       console.groupEnd();
+    } catch (err) {
+      // * Fallback if even the logging fails
+      console.error("Failed to log error:", err);
+      console.error("Original error data:", {
+        hasFormattedError: !!formattedError,
+        hasContext: !!context,
+        contextType: typeof context,
+      });
     }
-    console.groupEnd();
   }
 
   // * Send to error tracking service in production
@@ -68,13 +134,13 @@ function sendToErrorService(logData) {
     const { navigator = {}, location = {} } = GLOBAL_SCOPE;
 
     const errorData = {
-      message: logData.error.message,
-      level: logData.error.severity,
-      timestamp: logData.timestamp,
-      context: logData.context,
-      metadata: logData.metadata,
-      userAgent: navigator.userAgent,
-      url: location.href,
+      message: logData?.error?.message || "Unknown error",
+      level: logData?.error?.severity || ERROR_SEVERITY.MEDIUM,
+      timestamp: logData?.timestamp || new Date().toISOString(),
+      context: logData?.context || "Unknown",
+      metadata: logData?.metadata || {},
+      userAgent: navigator?.userAgent || "Unknown",
+      url: location?.href || "Unknown",
       userId: getUserId(),
       sessionId: getSessionId(),
       buildVersion: process.env.REACT_APP_VERSION || "1.0.0",

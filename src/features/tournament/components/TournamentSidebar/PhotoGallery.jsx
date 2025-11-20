@@ -2,6 +2,7 @@
  * @module TournamentSetup/components/PhotoGallery
  * @description Photo gallery with upload functionality for admin users
  */
+import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { compressImageFile } from "../../../../shared/utils/coreUtils";
 import { imagesAPI } from "../../../../integrations/supabase/api";
@@ -17,34 +18,48 @@ function PhotoGallery({
   userName,
   onImagesUploaded,
 }) {
-  const displayImages = showAllPhotos
-    ? galleryImages
-    : galleryImages.slice(0, 8);
+  const displayImages = useMemo(
+    () => (showAllPhotos ? galleryImages : galleryImages.slice(0, 8)),
+    [galleryImages, showAllPhotos],
+  );
 
-  const handleFileUpload = async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    try {
-      const uploaded = [];
-      for (const f of files) {
-        const compressed = await compressImageFile(f, {
-          maxWidth: 1600,
-          maxHeight: 1600,
-          quality: 0.82,
+  const handleFileUpload = useCallback(
+    async (e) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+
+      try {
+        const uploaded = [];
+        const uploadPromises = files.map(async (f) => {
+          try {
+            const compressed = await compressImageFile(f, {
+              maxWidth: 1600,
+              maxHeight: 1600,
+              quality: 0.82,
+            });
+            const url = await imagesAPI.upload(compressed, userName || "aaron");
+            if (url) uploaded.push(url);
+          } catch (fileError) {
+            console.error(`Failed to upload ${f.name}:`, fileError);
+          }
         });
-        const url = await imagesAPI.upload(compressed, userName || "aaron");
-        if (url) uploaded.push(url);
+
+        await Promise.all(uploadPromises);
+
+        if (uploaded.length) {
+          onImagesUploaded(uploaded);
+        } else {
+          alert("No images were uploaded. Please try again.");
+        }
+      } catch (err) {
+        console.error("Upload failed", err);
+        alert("Upload failed. Please try again.");
+      } finally {
+        e.target.value = "";
       }
-      if (uploaded.length) {
-        onImagesUploaded(uploaded);
-      }
-    } catch (err) {
-      console.error("Upload failed", err);
-      alert("Upload failed. Please try again.");
-    } finally {
-      e.target.value = "";
-    }
-  };
+    },
+    [userName, onImagesUploaded],
+  );
 
   return (
     <div className={styles.starsSection}>

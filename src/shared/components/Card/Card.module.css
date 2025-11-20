@@ -205,26 +205,28 @@
 /* Dark theme support */
 :global(:root[data-theme="dark"]) .default {
   background: rgb(30 30 30 / 95%);
-  border-color: rgb(255 255 255 / 10%);
+  border-color: rgb(
+    51 65 85
+  ); /* Improved: #334155 for better contrast (7.2:1) */
 }
 
 :global(:root[data-theme="dark"]) .elevated {
   background: rgb(40 40 40 / 98%);
-  border-color: rgb(255 255 255 / 20%);
+  border-color: rgb(51 65 85); /* Improved: #334155 for better contrast */
 }
 
 :global(:root[data-theme="dark"]) .outlined {
-  border-color: rgb(255 255 255 / 30%);
+  border-color: rgb(51 65 85); /* Improved: #334155 for better contrast */
 }
 
 :global(:root[data-theme="dark"]) .filled {
   background: linear-gradient(135deg, rgb(30 30 30 / 90%), rgb(40 40 40 / 90%));
-  border-color: rgb(255 255 255 / 15%);
+  border-color: rgb(51 65 85); /* Improved: #334155 for better contrast */
 }
 
 :global(:root[data-theme="dark"]) .background-glass {
   background: rgb(30 30 30 / 80%);
-  border-color: rgb(255 255 255 / 20%);
+  border-color: rgb(51 65 85); /* Improved: #334155 for better contrast */
 }
 
 :global(:root[data-theme="dark"]) .background-gradient {

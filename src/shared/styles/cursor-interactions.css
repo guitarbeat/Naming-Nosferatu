@@ -28,20 +28,28 @@ textarea {
   cursor: text;
 }
 
-/* * Disabled state cursor */
+/* * Disabled state cursor - Higher specificity to override general button cursor */
 button:disabled,
+button:disabled:hover,
 input:disabled,
+input:disabled:hover,
 select:disabled,
+select:disabled:hover,
 textarea:disabled,
+textarea:disabled:hover,
 .disabled,
-[aria-disabled="true"] {
-  cursor: not-allowed !important;
+.disabled:hover,
+[aria-disabled="true"],
+[aria-disabled="true"]:hover {
+  cursor: not-allowed;
 }
 
-/* * Loading state cursor */
+/* * Loading state cursor - Higher specificity */
 .loading,
-[aria-busy="true"] {
-  cursor: wait !important;
+.loading:hover,
+[aria-busy="true"],
+[aria-busy="true"]:hover {
+  cursor: wait;
 }
 
 /* * Grab/grabbing cursors for draggable elements */
@@ -54,8 +62,9 @@ textarea:disabled,
 .draggable:active,
 [draggable="true"]:active,
 .swipeCard:active,
-.dragging {
-  cursor: grabbing !important;
+.dragging,
+.dragging:hover {
+  cursor: grabbing;
 }
 
 /* * Resize cursors */
@@ -200,11 +209,26 @@ img.clickable {
 }
 
 /* * Card cursor */
-.card:not(.disabled, .static) {
+.card:not(.disabled, .static),
+.name-card:not(.disabled),
+.swipeCard:not(.disabled),
+.photoThumbnail:not(.disabled),
+.actionButton:not(.disabled),
+.selectAllButton:not(.disabled),
+.swipeButton:not(.disabled),
+.submitButton:not(.disabled),
+.suggestionButton:not(.disabled),
+.headerActionButton:not(.disabled),
+.photoUploadButton:not(.disabled),
+.photoMoreButton:not(.disabled) {
   cursor: pointer;
 }
 
-.card.static {
+.card.static,
+.card.disabled,
+.name-card.disabled,
+.swipeCard.disabled,
+.photoThumbnail.disabled {
   cursor: default;
 }
 
@@ -213,15 +237,43 @@ img.clickable {
   cursor: pointer;
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .name-card:not(.disabled):hover {
+  box-shadow: 0 8px 25px rgb(0 0 0 / 15%);
   transform: translateY(-2px);
 }
 
 .name-card:not(.disabled):active {
   transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+/* * Tournament action buttons */
+.actionButton:not(.disabled):hover,
+.selectAllButton:not(.disabled):hover,
+.swipeButton:not(.disabled):hover,
+.submitButton:not(.disabled):hover,
+.suggestionButton:not(.disabled):hover,
+.headerActionButton:not(.disabled):hover,
+.photoUploadButton:not(.disabled):hover,
+.photoMoreButton:not(.disabled):hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  transform: translateY(-1px);
+}
+
+.actionButton:not(.disabled):active,
+.selectAllButton:not(.disabled):active,
+.swipeButton:not(.disabled):active,
+.submitButton:not(.disabled):active,
+.suggestionButton:not(.disabled):active,
+.headerActionButton:not(.disabled):active,
+.photoUploadButton:not(.disabled):active,
+.photoMoreButton:not(.disabled):active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
 }
 
 /* ===== REDUCED MOTION SUPPORT ===== */

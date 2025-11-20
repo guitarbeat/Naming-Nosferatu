@@ -6,4 +6,7 @@
   --mobile-card-padding: 1rem;
   --mobile-button-height: 44px; /* Touch-friendly button height */
   --mobile-input-height: 48px; /* Touch-friendly input height */
+  --mobile-touch-target: 44px; /* Minimum touch target size */
+  --mobile-text-scale: 1.1; /* Slightly larger text on mobile */
+  --mobile-spacing-scale: 1.2; /* More generous spacing on mobile */
 }

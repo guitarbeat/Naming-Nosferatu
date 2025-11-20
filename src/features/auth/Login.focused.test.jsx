@@ -40,7 +40,9 @@ describe("Login Component - Focused Tests", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Your name")).toBeInTheDocument();
     expect(
-      screen.getByText("We'll generate a fun name automatically!"),
+      screen.getByText(
+        "We'll create an account automatically if it's your first time.",
+      ),
     ).toBeInTheDocument();
 
     await waitFor(() => {
@@ -59,7 +61,7 @@ describe("Login Component - Focused Tests", () => {
     await screen.findByText("Cats sleep 12-16 hours per day!");
 
     const randomButton = screen.getByRole("button", {
-      name: "Generate a random judge name",
+      name: "Generate a random name",
     });
 
     await user.click(randomButton);
@@ -87,7 +89,9 @@ describe("Login Component - Focused Tests", () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(
+      screen.getByRole("button", { name: "Continue to tournament" }),
+    );
 
     await waitFor(() => {
       expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
@@ -105,7 +109,9 @@ describe("Login Component - Focused Tests", () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText("Your name"), "Bad Name");
-    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(
+      screen.getByRole("button", { name: "Continue to tournament" }),
+    );
 
     await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();
@@ -131,7 +137,7 @@ describe("Login Component - Focused Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
 
     return screen.findByText("Cats sleep 12-16 hours per day!").then(() => {
-      const form = screen.getByRole("form", { name: "Judge name login form" });
+      const form = screen.getByRole("form", { name: "Login form" });
       const input = screen.getByLabelText("Your name");
 
       expect(form).toHaveAttribute("autocomplete", "off");

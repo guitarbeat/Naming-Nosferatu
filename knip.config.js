@@ -3,7 +3,6 @@ export default {
   entry: [
     'src/index.jsx',
     'src/App.jsx',
-    'vite.config.ts',
     'config/vite.config.ts',
     'config/vitest.config.mjs',
     'config/eslint.config.js',

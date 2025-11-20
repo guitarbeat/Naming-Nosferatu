@@ -22,27 +22,19 @@
 
 /* Buttons & interactive elements */
 @import url("./buttons.css");
-@import url("./utilities-button.css");
-@import url("./utilities-form.css");
 
 /* Component-level styles */
 @import url("./components-global.css");
 @import url("./app-layout.css");
-@import url("./utilities-card.css");
-@import url("./utilities-feedback.css");
-@import url("./utilities-scroll-to-top.css");
 
 /* Utility layers */
 @import url("./utilities-layout.css");
-@import url("./utilities-spacing.css");
+@import url("./utilities-components.css");
 @import url("./utilities-typography.css");
 @import url("./utilities-misc.css");
-@import url("./utilities-responsive.css");
 
 /* Theme variants */
-@import url("./theme-light.css");
-@import url("./theme-dark.css");
-@import url("./theme-high-contrast.css");
+@import url("./themes.css");
 
 /* Responsive & device-specific tweaks */
 @import url("./mobile.css");

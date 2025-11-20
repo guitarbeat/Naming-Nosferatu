@@ -2,36 +2,33 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 jobs:
-  build-test:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+    - name: Install dependencies
+      run: npm ci
 
-      - name: Lint (JS & CSS)
-        run: npm run lint
+    - name: Run all checks
+      run: npm run all
 
-      - name: Run unit tests
-        run: npm test
-
-      - name: Build
-        run: |
-          export SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
-          export SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
-          npm run build
-
-
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/coverage-final.json
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
