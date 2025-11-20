@@ -62,18 +62,36 @@ function TournamentSetupContent({ onStart, userName }) {
   // * Lightbox handlers - optimized with useCallback and imageMap
   const handleImageOpen = useCallback(
     (image) => {
-      const idx = imageMap.get(image) ?? 0;
+      // * Validate image parameter before opening lightbox
+      if (!image || typeof image !== "string") {
+        console.warn("handleImageOpen called with invalid image:", image);
+        return;
+      }
+
+      // * Ensure image exists in galleryImages
+      if (!galleryImages || galleryImages.length === 0) {
+        console.warn("Cannot open lightbox: no gallery images available");
+        return;
+      }
+
+      // * Find index in galleryImages array (more reliable than imageMap)
+      const idx = galleryImages.indexOf(image);
+      if (idx === -1) {
+        console.warn("Image not found in gallery:", image);
+        return;
+      }
+
       setLightboxIndex(idx);
       setLightboxOpen(true);
     },
-    [imageMap],
+    [imageMap, galleryImages]
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages],
+    [addImages]
   );
 
   // Memoize lightbox navigation to prevent unnecessary re-renders

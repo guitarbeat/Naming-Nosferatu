@@ -42,18 +42,22 @@ function Lightbox({
         isTransitioningRef.current = false;
       }, 300);
     },
-    [currentIndex, onNavigate],
+    [currentIndex, onNavigate]
   );
 
   const handlePrev = useCallback(() => {
-    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    if (!images || images.length === 0) return;
+    const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
+    const newIndex = safeIndex === 0 ? images.length - 1 : safeIndex - 1;
     handleNavigate(newIndex);
-  }, [currentIndex, handleNavigate, images.length]);
+  }, [currentIndex, handleNavigate, images]);
 
   const handleNext = useCallback(() => {
-    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    if (!images || images.length === 0) return;
+    const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
+    const newIndex = safeIndex === images.length - 1 ? 0 : safeIndex + 1;
     handleNavigate(newIndex);
-  }, [currentIndex, handleNavigate, images.length]);
+  }, [currentIndex, handleNavigate, images]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -75,11 +79,45 @@ function Lightbox({
         clearTimeout(transitionTimerRef.current);
       }
     },
-    [],
+    []
   );
 
-  const current = images[currentIndex] || images[0];
-  const base = current?.replace(/\.[^.]+$/, "") || "";
+  // * Validate images array and close lightbox if invalid
+  useEffect(() => {
+    if (!images || images.length === 0) {
+      onClose();
+    }
+  }, [images, onClose]);
+
+  // * Validate currentIndex and close lightbox if out of bounds
+  useEffect(() => {
+    if (images && images.length > 0) {
+      const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
+      const current = images[safeIndex];
+      if (!current || typeof current !== "string") {
+        onClose();
+      }
+    }
+  }, [images, currentIndex, onClose]);
+
+  // * Early return if no valid images
+  if (!images || images.length === 0) {
+    return null;
+  }
+
+  // * Ensure currentIndex is within bounds
+  const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
+  const current = images[safeIndex];
+
+  // * Early return if current image is invalid
+  if (!current || typeof current !== "string") {
+    return null;
+  }
+
+  // * Extract base path for alternative formats (handle URLs with query params)
+  // * Remove query string and hash first, then remove extension
+  const urlWithoutQuery = current.split("?")[0].split("#")[0];
+  const base = urlWithoutQuery.replace(/\.[^.]+$/, "") || urlWithoutQuery;
 
   // Preload adjacent images for smoother navigation
   useEffect(() => {
@@ -151,26 +189,35 @@ function Lightbox({
                 ]
               : ""
           }`}
-          key={currentIndex}
+          key={safeIndex}
         >
           <picture>
-            <source
-              type="image/avif"
-              srcSet={`${base}.avif`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
-            <source
-              type="image/webp"
-              srcSet={`${base}.webp`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
+            {base && base !== urlWithoutQuery && (
+              <>
+                <source
+                  type="image/avif"
+                  srcSet={`${base}.avif`}
+                  sizes={LIGHTBOX_IMAGE_SIZES}
+                />
+                <source
+                  type="image/webp"
+                  srcSet={`${base}.webp`}
+                  sizes={LIGHTBOX_IMAGE_SIZES}
+                />
+              </>
+            )}
             <img
               src={current}
-              alt={`Cat photo ${currentIndex + 1} of ${images.length}`}
+              alt={`Cat photo ${safeIndex + 1} of ${images.length}`}
               className={styles.lightboxImage}
               loading="eager"
               decoding="async"
               sizes={LIGHTBOX_IMAGE_SIZES}
+              onError={() => {
+                // * If image fails to load, close lightbox to prevent broken image display
+                console.error("Failed to load image:", current);
+                onClose();
+              }}
             />
           </picture>
         </div>
@@ -183,7 +230,7 @@ function Lightbox({
           ›
         </button>
         <div className={styles.lightboxCounter} aria-live="polite">
-          {currentIndex + 1} / {images.length}
+          {safeIndex + 1} / {images.length}
         </div>
       </div>
     </div>

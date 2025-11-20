@@ -29,9 +29,27 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
     setImageLoading(false);
   }, []);
 
-  const handleClick = useCallback(() => {
-    onImageOpen(image);
-  }, [image, onImageOpen]);
+  const handleClick = useCallback(
+    (e) => {
+      // * Prevent event propagation to avoid triggering parent handlers
+      e.preventDefault();
+      e.stopPropagation();
+
+      // * Validate image before opening
+      if (!image || typeof image !== "string") {
+        console.warn("PhotoThumbnail: Invalid image provided:", image);
+        return;
+      }
+
+      onImageOpen(image);
+    },
+    [image, onImageOpen]
+  );
+
+  // * Validate image prop
+  if (!image || typeof image !== "string") {
+    return null;
+  }
 
   const isLocalAsset = image.startsWith("/assets/images/");
   const base = isLocalAsset ? image.substring(0, image.lastIndexOf(".")) : null;
