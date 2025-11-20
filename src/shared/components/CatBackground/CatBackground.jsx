@@ -24,6 +24,19 @@ function createCatVideo(index) {
   );
 }
 
+function BbyCat() {
+  return (
+    <img
+      className="bby-cat"
+      src="/assets/images/bby-cat.GIF"
+      alt="A cat licking its tongue"
+      loading="lazy"
+      decoding="async"
+      fetchPriority="low"
+    />
+  );
+}
+
 export default function CatBackground() {
   const containerRef = useRef(null);
 
@@ -152,6 +165,7 @@ export default function CatBackground() {
             {createCatVideo(2)}
             {createCatVideo(3)}
             {createCatVideo(4)}
+            <BbyCat />
           </>
         ) : null}
       </div>

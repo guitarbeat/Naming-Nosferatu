@@ -298,3 +298,12 @@
     opacity: 0.6;
   }
 }
+
+.bby-cat {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 100px;
+  height: 100px;
+  z-index: 10;
+}

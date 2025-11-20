@@ -19,6 +19,9 @@ function Lightbox({
   const transitionTimerRef = useRef(null);
   const isTransitioningRef = useRef(false);
   const [slideDirection, setSlideDirection] = useState(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
+  const touchEndRef = useRef({ x: 0, y: 0 });
+  const minSwipeDistance = 50;
 
   const handleNavigate = useCallback(
     (newIndex) => {
@@ -55,6 +58,35 @@ function Lightbox({
     handleNavigate(newIndex);
   }, [currentIndex, handleNavigate, images.length]);
 
+  // * Touch gesture handlers for mobile
+  const onTouchStart = useCallback((e) => {
+    touchEndRef.current = null;
+    touchStartRef.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const onTouchMove = useCallback((e) => {
+    touchEndRef.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (!touchStartRef.current || !touchEndRef.current) return;
+    const distance = touchStartRef.current - touchEndRef.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    // * Swipe down to close (vertical swipe)
+    const verticalStart = touchStartRef.current;
+    const verticalEnd = touchEndRef.current;
+    // * For vertical swipes, we'd need to track Y coordinates separately
+    // * For now, prioritize horizontal navigation
+
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+  }, [handleNext, handlePrev]);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -64,6 +96,15 @@ function Lightbox({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [handleNext, handlePrev, onClose]);
+
+  // * Lock body scroll when lightbox is open
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   useEffect(() => {
     closeBtnRef.current?.focus();
@@ -118,6 +159,9 @@ function Lightbox({
     <div
       className={styles.lightboxOverlay}
       onClick={onClose}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
       role="dialog"
       aria-modal="true"
       aria-label="Image gallery"
@@ -125,6 +169,12 @@ function Lightbox({
       <div
         className={styles.lightboxContent}
         onClick={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEnd();
+        }}
       >
         <button
           type="button"
