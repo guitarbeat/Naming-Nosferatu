@@ -3,6 +3,7 @@
  * @description Individual swipeable card with cat name and optional image
  */
 import PropTypes from "prop-types";
+import { useTiltEffect } from "../../../../shared/hooks/useTiltEffect";
 import { CatImage } from "../../../../shared/components";
 import { DEFAULT_DESCRIPTION } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
@@ -23,10 +24,25 @@ function SwipeCard({
   onDragMove,
   onDragEnd,
 }) {
-  const cardStyle = {
-    transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
-    opacity: isDragging ? 0.9 : 1,
-  };
+  // * Tilt effect - same as photo thumbnails (only when not dragging)
+  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
+    maxRotation: 8,
+    perspective: 1000,
+    smoothing: 0.15, // * Increased for smoother animation
+    scale: 1.03,
+  });
+
+  // * Combine drag transform with tilt effect
+  // * When dragging, use drag transform; when not dragging, use tilt
+  const cardStyle = isDragging
+    ? {
+        transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
+        opacity: 0.9,
+      }
+    : {
+        ...tiltStyle,
+        opacity: 1,
+      };
 
   const swipeOverlayStyle = {
     opacity: swipeProgress,
@@ -38,7 +54,27 @@ function SwipeCard({
       className={`${styles.swipeCardWrapper} ${showCatPictures ? styles.withCatPictures : ""}`}
     >
       <div
-        ref={gestureRef}
+        ref={(node) => {
+          // * Merge gestureRef and tiltRef
+          if (typeof gestureRef === "function") {
+            gestureRef(node);
+          } else if (
+            gestureRef &&
+            typeof gestureRef === "object" &&
+            "current" in gestureRef
+          ) {
+            gestureRef.current = node;
+          }
+          if (typeof tiltRef === "function") {
+            tiltRef(node);
+          } else if (
+            tiltRef &&
+            typeof tiltRef === "object" &&
+            "current" in tiltRef
+          ) {
+            tiltRef.current = node;
+          }
+        }}
         className={`${styles.swipeCard} ${isSelected ? styles.selected : ""} ${showCatPictures ? styles.withCatPictures : ""} ${isLongPressing ? styles.longPressing : ""}`}
         style={cardStyle}
         onMouseDown={onDragStart}

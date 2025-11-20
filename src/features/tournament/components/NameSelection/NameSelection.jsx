@@ -45,7 +45,7 @@ function NameSelection({
 
   const categoryOptions = useMemo(
     () => generateCategoryOptions(categories, availableNames),
-    [categories, availableNames],
+    [categories, availableNames]
   );
 
   return (
@@ -93,33 +93,35 @@ function NameSelection({
             imageList={imageList}
           />
         ) : (
-          displayNames.map((nameObj) => (
-            <NameCard
-              key={nameObj.id}
-              name={nameObj.name}
-              description={nameObj.description || DEFAULT_DESCRIPTION}
-              isSelected={selectedNames.some((n) => n.id === nameObj.id)}
-              onClick={() => onToggleName(nameObj)}
-              size="small"
-              // Cat picture when enabled
-              image={
-                showCatPictures
-                  ? getRandomCatImage(nameObj.id, imageList)
-                  : undefined
-              }
-              // Admin-only metadata display
-              metadata={
-                isAdmin
-                  ? {
-                      rating: nameObj.avg_rating || 0,
-                      popularity: nameObj.popularity_score || 0,
-                      tournaments: nameObj.total_tournaments || 0,
-                      categories: nameObj.categories || [],
-                    }
-                  : undefined
-              }
-            />
-          ))
+          displayNames
+            .filter((nameObj) => nameObj && nameObj.id && nameObj.name)
+            .map((nameObj) => (
+              <NameCard
+                key={nameObj.id}
+                name={nameObj.name}
+                description={nameObj.description || DEFAULT_DESCRIPTION}
+                isSelected={selectedNames.some((n) => n.id === nameObj.id)}
+                onClick={() => onToggleName(nameObj)}
+                size="small"
+                // Cat picture when enabled
+                image={
+                  showCatPictures
+                    ? getRandomCatImage(nameObj.id, imageList)
+                    : undefined
+                }
+                // Admin-only metadata display
+                metadata={
+                  isAdmin
+                    ? {
+                        rating: nameObj.avg_rating || 0,
+                        popularity: nameObj.popularity_score || 0,
+                        tournaments: nameObj.total_tournaments || 0,
+                        categories: nameObj.categories || [],
+                      }
+                    : undefined
+                }
+              />
+            ))
         )}
       </div>
 

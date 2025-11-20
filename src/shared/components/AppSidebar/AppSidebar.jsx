@@ -3,13 +3,20 @@
  * @description Application sidebar navigation component
  */
 
-import { UserInfo } from "./components/UserInfo";
+import PropTypes from "prop-types";
 import {
-  TournamentIcon,
-  DashboardIcon,
-  LogoutIcon,
-  AdminIcon,
-} from "./icons";
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  useSidebar,
+} from "../ui/sidebar";
+import { UserInfo } from "./components/UserInfo";
+import { MenuNavItem } from "./MenuNavItem";
+import { MenuActionItem } from "./MenuActionItem";
+import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
+import { NavbarSection } from "./NavbarSection";
+import { TournamentIcon, DashboardIcon, LogoutIcon, AdminIcon } from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -118,24 +125,16 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
+              {/* User Info - styled like menu item */}
+              {isLoggedIn && userName && (
+                <UserInfo userName={userName} onClick={() => setView("profile")} />
+              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>
 
-        {/* Right Section: User Info + Actions */}
+        {/* Right Section: Actions */}
         <NavbarSection className="navbar-right" alignRight>
-          {/* User Info Section */}
-          {isLoggedIn && userName && !collapsed && (
-            <UserInfo
-              userName={userName}
-              onClick={() => setView("profile")}
-            />
-          )}
-
-          {/* Spacer to separate user info from actions */}
-          {isLoggedIn && userName && !collapsed && (
-            <div style={{ width: "0.5rem", flexShrink: 0 }} />
-          )}
 
           {/* Actions Section */}
           <SidebarGroup open={true}>

@@ -140,24 +140,67 @@ function TournamentSetupContent({ onStart, userName }) {
     <div className={styles.container}>
       {/* Selection Panel */}
       <div className={styles.selectionPanel}>
-        <TournamentHeader
-          selectedNames={selectedNames}
-          availableNames={availableNames}
-          onSelectAll={handleSelectAll}
-          isSwipeMode={isSwipeMode}
-          onSwipeModeToggle={() => setIsSwipeMode(!isSwipeMode)}
-          showCatPictures={showCatPictures}
-          onCatPicturesToggle={() => setShowCatPictures(!showCatPictures)}
-          onStart={onStart}
-          isAdmin={isAdmin}
-        />
-
-        {/* Tournament Info - Integrated */}
+        {/* Combined Tournament Header with Info */}
         <div className={styles.tournamentInfoIntegrated}>
-          <h1 className={styles.tournamentTitle}>🏆 Cat Name Tournament</h1>
-          <p className={styles.tournamentSubtitle}>
-            Pick the perfect name for your cat through fun head-to-head battles!
-          </p>
+          <div className={styles.tournamentHeaderTop}>
+            <div className={styles.tournamentTitleSection}>
+              <h1 className={styles.tournamentTitle}>🏆 Cat Name Tournament</h1>
+              <p className={styles.tournamentSubtitle}>
+                Pick the perfect name for your cat through fun head-to-head battles!
+              </p>
+            </div>
+            <div className={styles.headerActions}>
+              {isAdmin && (
+                <button
+                  className={styles.selectAllButton}
+                  onClick={handleSelectAll}
+                  type="button"
+                  aria-label={
+                    selectedNames.length === availableNames.length
+                      ? "Clear all selections"
+                      : "Select all names"
+                  }
+                >
+                  {selectedNames.length === availableNames.length
+                    ? "✨ Start Fresh"
+                    : "🎲 Select All"}
+                </button>
+              )}
+
+              <button
+                onClick={() => setIsSwipeMode(!isSwipeMode)}
+                className={`${styles.headerActionButton} ${styles.swipeModeToggleButton} ${
+                  isSwipeMode ? styles.headerActionButtonActive : ""
+                }`}
+                type="button"
+                aria-label={
+                  isSwipeMode ? "Switch to card mode" : "Switch to swipe mode"
+                }
+              >
+                {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
+              </button>
+
+              <button
+                onClick={() => setShowCatPictures(!showCatPictures)}
+                className={`${styles.headerActionButton} ${styles.catPicturesToggleButton} ${
+                  showCatPictures ? styles.headerActionButtonActive : ""
+                }`}
+                type="button"
+                aria-label={
+                  showCatPictures
+                    ? "Hide cat pictures"
+                    : "Show cat pictures on cards"
+                }
+                title="Add random cat pictures to make it more like Tinder! 🐱"
+              >
+                {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+              </button>
+
+              {selectedNames.length >= 2 && (
+                <StartButton selectedNames={selectedNames} onStart={onStart} variant="header" />
+              )}
+            </div>
+          </div>
           <div className={styles.progressSection}>
             <div className={styles.progressBar}>
               <div

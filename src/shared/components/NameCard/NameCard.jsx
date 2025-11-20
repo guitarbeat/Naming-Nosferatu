@@ -33,6 +33,7 @@
 
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import { useTiltEffect } from "../../hooks/useTiltEffect";
 import CatImage from "../CatImage";
 import styles from "./NameCard.module.css";
 
@@ -78,6 +79,14 @@ function NameCard({
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = React.useRef(null);
 
+  // * Tilt effect - same as photo thumbnails
+  const { elementRef: tiltRef, style: tiltStyle } = useTiltEffect({
+    maxRotation: 8,
+    perspective: 1000,
+    smoothing: 0.15, // * Increased for smoother animation
+    scale: 1.03,
+  });
+
   useEffect(() => {
     if (isRippling) {
       const timer = setTimeout(() => setIsRippling(false), 600);
@@ -90,22 +99,23 @@ function NameCard({
     const card = cardRef.current;
     if (!card || disabled) return;
 
+    // * Check if metadata has any relevant data
+    const hasMetadata =
+      metadata &&
+      (metadata.rating ||
+        metadata.wins !== undefined ||
+        metadata.losses !== undefined ||
+        metadata.popularity ||
+        metadata.tournaments ||
+        (metadata.categories && metadata.categories.length > 0));
+
+    if (!hasMetadata) return;
+
     const handleMouseMove = (e) => {
-      // Show tooltip if metadata is available and has relevant data
-      if (
-        metadata &&
-        (metadata.rating ||
-          metadata.wins !== undefined ||
-          metadata.losses !== undefined ||
-          metadata.popularity ||
-          metadata.tournaments ||
-          (metadata.categories && metadata.categories.length > 0))
-      ) {
-        // * Safety check for clientX/clientY
-        if (typeof e.clientX === "number" && typeof e.clientY === "number") {
-          setTooltipPosition({ x: e.clientX, y: e.clientY });
-          setShowTooltip(true);
-        }
+      // * Safety check for clientX/clientY
+      if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+        setTooltipPosition({ x: e.clientX, y: e.clientY });
+        setShowTooltip(true);
       }
     };
 
@@ -120,7 +130,9 @@ function NameCard({
       card.removeEventListener("mousemove", handleMouseMove);
       card.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [disabled, metadata, cardRef]);
+    // * Use metadata object directly - React will handle object reference changes
+    // * This ensures the dependency array size stays constant
+  }, [disabled, metadata]);
 
   const handleInteraction = (event) => {
     if (disabled) {
@@ -197,12 +209,28 @@ function NameCard({
     .filter(Boolean)
     .join(" ");
 
+  // * Merge refs for both cardRef and tiltRef
+  const mergedRef = (node) => {
+    cardRef.current = node;
+    if (typeof tiltRef === "function") {
+      tiltRef(node);
+    } else if (tiltRef && typeof tiltRef === "object" && "current" in tiltRef) {
+      tiltRef.current = node;
+    }
+  };
+
+  // * Merge tilt style with any existing styles
+  const mergedStyle = {
+    ...tiltStyle,
+  };
+
   return (
     <div className={styles.cardContainer}>
       {/* Main card content */}
       <button
-        ref={cardRef}
+        ref={mergedRef}
         className={cardClasses}
+        style={mergedStyle}
         onClick={handleInteraction}
         onKeyDown={handleInteraction}
         disabled={disabled}
@@ -325,7 +353,7 @@ function NameCard({
                 tooltipPosition.x + 10,
                 typeof window !== "undefined"
                   ? window.innerWidth - 320
-                  : tooltipPosition.x + 10,
+                  : tooltipPosition.x + 10
               ),
               top: Math.max(tooltipPosition.y - 10, 10),
               zIndex: 1000,

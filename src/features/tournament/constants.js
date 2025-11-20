@@ -5,6 +5,8 @@
 
 // * Absolute paths for better image loading compatibility
 export const CAT_IMAGES = [
+  "/assets/images/bby-cat.GIF",
+  "/assets/images/cat.gif",
   "/assets/images/IMG_4844.jpg",
   "/assets/images/IMG_4845.jpg",
   "/assets/images/IMG_4846.jpg",

@@ -163,14 +163,44 @@
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  /* Dark mode gradient (default) */
   .tournamentTitle {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    background: linear-gradient(
+      135deg,
+      rgb(var(--neon-cyan-rgb), 0.9) 0%,
+      rgb(var(--hot-pink-rgb), 0.8) 50%,
+      #f8fafc 100%
+    );
     background-clip: text;
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgb(var(--neon-cyan-rgb), 0.3));
+  }
+}
+
+/* Light mode gradient */
+:global(:root[data-theme="light"]) .tournamentTitle {
+  background: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #1e293b 40%,
+    #334155 100%
+  ) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none;
+  color: #0f172a;
+}
+
+/* Fallback for browsers that don't support background-clip */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .tournamentTitle {
+    color: var(--text-primary);
   }
 
   :global(:root[data-theme="light"]) .tournamentTitle {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #0f172a;
   }
 }
 
@@ -430,6 +460,20 @@
   animation: slideDown 0.3s ease-out;
 }
 
+.tournamentHeaderTop {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.tournamentTitleSection {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -449,14 +493,7 @@
   border-bottom: 2px solid var(--border-color);
 }
 
-.tournamentTitle {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-2xl);
-  font-weight: 700;
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+/* Duplicate tournamentTitle definition removed - using the one above with theme support */
 
 .tournamentSubtitle {
   margin: 0;
@@ -1913,10 +1950,11 @@
   touch-action: none;
   cursor: grab;
   user-select: none;
+  /* * Only transition non-transform properties to avoid conflicts with tilt/drag effects */
   transition:
-    transform 0.3s ease,
     box-shadow 0.3s ease,
     border-color 0.3s ease;
+  /* * Transform transitions are handled by tilt effect (when not dragging) or drag handlers */
 }
 
 .swipeCard:active {

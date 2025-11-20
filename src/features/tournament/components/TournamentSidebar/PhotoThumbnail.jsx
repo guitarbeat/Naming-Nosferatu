@@ -12,7 +12,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
   const { elementRef, style } = useTiltEffect({
     maxRotation: 8,
     perspective: 1000,
-    smoothing: 0.1,
+    smoothing: 0.15, // * Increased for smoother animation
     scale: 1.03,
   });
 

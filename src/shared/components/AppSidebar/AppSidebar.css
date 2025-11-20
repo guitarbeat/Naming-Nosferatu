@@ -347,7 +347,22 @@
   padding-left: 0.75rem;
   margin: 0;
   margin-right: 0.5rem;
+  overflow: visible;
+  cursor: pointer;
+  background: transparent;
+  border: none;
   border-left: 1px solid rgb(255 255 255 / 8%);
+  transition: all 0.3s ease;
+}
+
+.sidebar-user-info:hover {
+  border-left-color: rgb(var(--neon-cyan-rgb), 0.3);
+}
+
+.sidebar-user-info:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .sidebar-user-info::before {
@@ -368,26 +383,25 @@
 }
 
 .sidebar-user-greeting {
-  /* * Enhanced visual effects */
+  /* * Enhanced visual effects - similar to sidebar-menu-button */
   position: relative;
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  justify-content: center;
+  min-height: 36px;
   height: fit-content;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.75rem;
   overflow: hidden;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  color: rgb(255 255 255 / 90%);
+  color: #e2e8f0;
+  text-align: center;
   white-space: nowrap;
-  background: linear-gradient(
-    135deg,
-    rgb(var(--neon-cyan-rgb), 0.08),
-    rgb(var(--hot-pink-rgb), 0.08)
-  );
-  border: 1px solid rgb(var(--neon-cyan-rgb), 0.2);
+  background: transparent;
+  border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgb(var(--neon-cyan-rgb), 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-user-greeting::before {
@@ -406,20 +420,91 @@
   transition: left 0.6s ease;
 }
 
-.sidebar-user-greeting:hover::before {
+.sidebar-user-info:hover .sidebar-user-greeting {
+  color: #fff;
+  background: rgb(var(--neon-cyan-rgb), 0.08);
+  box-shadow: 0 4px 12px rgb(var(--neon-cyan-rgb), 0.15);
+  transform: translateY(-2px);
+}
+
+.sidebar-user-info:hover .sidebar-user-greeting::before {
   left: 100%;
 }
+
 
 .sidebar-user-greeting svg {
   flex-shrink: 0;
 }
 
-.avatar {
-  width: 32px;
-  height: 32px;
+.sidebar-user-greeting span {
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+/* Collapsed state for user info */
+.sidebar--collapsed .sidebar-user-info {
+  padding: 0;
+  padding-left: 0;
+  margin-right: 0;
+  border-left: none;
+  justify-content: center;
+}
+
+.sidebar--collapsed .sidebar-user-info::before {
+  display: none;
+}
+
+.sidebar--collapsed .sidebar-user-greeting {
+  justify-content: center;
+  padding: 0.5rem;
+  min-width: 48px;
+  min-height: 48px;
+}
+
+.sidebar--collapsed .sidebar-user-greeting span {
+  visibility: hidden;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* User menu button - styled like other menu buttons */
+.sidebar-user-menu-button {
+  width: 100%;
+}
+
+.sidebar-user-avatar {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 8px;
+  border: 1px solid rgb(var(--neon-cyan-rgb), 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-user-menu-button:hover .sidebar-user-avatar,
+.sidebar-menu-button:hover .sidebar-user-avatar {
+  border-color: rgb(var(--neon-cyan-rgb), 0.4);
+  filter: drop-shadow(0 0 4px rgb(var(--neon-cyan-rgb), 0.3));
+  transform: scale(1.1);
+}
+
+.sidebar--collapsed .sidebar-user-avatar {
+  width: 20px;
+  height: 20px;
+}
+
+/* Legacy avatar class for backwards compatibility */
+.avatar {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgb(var(--neon-cyan-rgb), 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* * Admin Badge for Aaron */
 .sidebar-admin-badge {

@@ -132,12 +132,12 @@ export function useTiltEffect(options = {}) {
 
         const currentRotateX =
           typeof current.rotateX === "number" &&
-          Number.isFinite(current.rotateX)
+            Number.isFinite(current.rotateX)
             ? current.rotateX
             : 0;
         const currentRotateY =
           typeof current.rotateY === "number" &&
-          Number.isFinite(current.rotateY)
+            Number.isFinite(current.rotateY)
             ? current.rotateY
             : 0;
 
@@ -269,9 +269,10 @@ export function useTiltEffect(options = {}) {
 
     return {
       transform: `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`,
-      transition: animationFrameRef.current
-        ? "none"
-        : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      // * Always use "none" for transition to avoid conflicts with CSS transitions
+      // * The smoothing is handled by the animation frame loop
+      // * Inline styles have higher specificity than CSS classes, so this should override
+      transition: "none",
       willChange: "transform",
     };
   }, [transform, validPerspective, validScale, isTiltDisabled]);
