@@ -129,6 +129,11 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
       const nameList = names.map((n) => n?.name || "").filter(Boolean);
       initializeSorterPairs(sorter, nameList);
 
+      // * Ensure _pairs is initialized before accessing
+      if (!Array.isArray(sorter._pairs) || sorter._pairs.length === 0) {
+        return null;
+      }
+
       const prefs = getPreferencesMap(sorter);
       const ratings = options.currentRatings || {};
       const history = options.history || [];
@@ -136,7 +141,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
 
       let bestPair = null;
       let bestScore = Infinity;
-      for (let idx = sorter._pairIndex; idx < sorter._pairs.length; idx++) {
+      const pairIndex = typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
+      for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
         const [a, b] = sorter._pairs[idx];
         const key = `${a}-${b}`;
         const reverseKey = `${b}-${a}`;
@@ -199,6 +205,11 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     const nameList = names.map((n) => n?.name || "").filter(Boolean);
     initializeSorterPairs(sorter, nameList);
 
+    // * Ensure _pairs is initialized before accessing
+    if (!Array.isArray(sorter._pairs) || sorter._pairs.length === 0) {
+      return null;
+    }
+
     const prefs = getPreferencesMap(sorter);
     const ratings = options.currentRatings || {};
     const history = options.history || [];
@@ -207,7 +218,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     let bestPair = null;
     let bestScore = Infinity;
 
-    for (let idx = sorter._pairIndex; idx < sorter._pairs.length; idx++) {
+    const pairIndex = typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
+    for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
       const [a, b] = sorter._pairs[idx];
       const key = `${a}-${b}`;
       const reverseKey = `${b}-${a}`;

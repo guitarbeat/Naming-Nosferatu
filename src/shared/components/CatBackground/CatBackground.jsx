@@ -2,7 +2,19 @@ import { useEffect, useMemo, useRef } from "react";
 import { getMediaQueryMatches } from "../../utils/mediaQueries";
 import "./CatBackground.css";
 
-function createCatVideo(index) {
+// * Array of available cat gifs to randomly choose from
+const CAT_GIFS = [
+  "/assets/images/cat.gif",
+  "/assets/images/bby-cat.GIF",
+];
+
+/**
+ * * Creates a floating cat video element with assigned gif
+ * @param {number} index - The cat index (1-4)
+ * @param {string} gifSrc - The gif source to use
+ * @returns {JSX.Element} Cat video element
+ */
+function createCatVideo(index, gifSrc) {
   return (
     <video
       className={`cat-background__cat cat-background__cat--${index}`}
@@ -14,7 +26,7 @@ function createCatVideo(index) {
     >
       <source src="/assets/images/cat.webm" type="video/webm" />
       <img
-        src="/assets/images/cat.gif"
+        src={gifSrc}
         alt=""
         loading="lazy"
         decoding="async"
@@ -154,6 +166,17 @@ export default function CatBackground() {
     return !(prefersReducedMotion || saveData);
   }, []);
 
+  // * Randomly assign gifs to each cat position (consistent per render)
+  const catGifs = useMemo(() => {
+    const assignments = [];
+    for (let i = 0; i < 4; i++) {
+      // * Randomly select a gif for each cat
+      const randomIndex = Math.floor(Math.random() * CAT_GIFS.length);
+      assignments.push(CAT_GIFS[randomIndex]);
+    }
+    return assignments;
+  }, []);
+
   return (
     <div className="cat-background" ref={containerRef}>
       <div className="cat-background__stars"></div>
@@ -161,10 +184,10 @@ export default function CatBackground() {
       <div className="cat-background__floating-cats">
         {showCats ? (
           <>
-            {createCatVideo(1)}
-            {createCatVideo(2)}
-            {createCatVideo(3)}
-            {createCatVideo(4)}
+            {createCatVideo(1, catGifs[0])}
+            {createCatVideo(2, catGifs[1])}
+            {createCatVideo(3, catGifs[2])}
+            {createCatVideo(4, catGifs[3])}
             <BbyCat />
           </>
         ) : null}

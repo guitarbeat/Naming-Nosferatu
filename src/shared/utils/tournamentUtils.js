@@ -11,8 +11,13 @@ import { generatePairs } from "./arrayUtils";
  * @param {Array} nameList - Array of name strings
  */
 export function initializeSorterPairs(sorter, nameList) {
+  if (!sorter) {
+    return;
+  }
   if (!Array.isArray(sorter._pairs)) {
-    sorter._pairs = generatePairs(nameList);
+    // * Ensure nameList is an array before generating pairs
+    const validNameList = Array.isArray(nameList) ? nameList : [];
+    sorter._pairs = generatePairs(validNameList);
     sorter._pairIndex = 0;
   }
 }

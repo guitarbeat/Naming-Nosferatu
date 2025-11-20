@@ -21,9 +21,15 @@ export function useTournamentPersistence({ names = [], userName }) {
     return `tournament-${prefix}-${sortedNames}`;
   }, [names, userName]);
 
+  // * Create default state once
+  const defaultState = useMemo(
+    () => createDefaultPersistentState(userName),
+    [userName],
+  );
+
   const [persistentState, setPersistentState] = useLocalStorage(
     tournamentId,
-    () => createDefaultPersistentState(userName),
+    defaultState,
   );
 
   const updatePersistentState = useCallback(
@@ -43,7 +49,11 @@ export function useTournamentPersistence({ names = [], userName }) {
   );
 
   useEffect(() => {
-    if (persistentState.userName !== (userName || "anonymous")) {
+    // * Only update if persistentState exists and userName has changed
+    if (
+      persistentState &&
+      persistentState.userName !== (userName || "anonymous")
+    ) {
       updatePersistentState({
         matchHistory: [],
         currentRound: 1,
@@ -53,14 +63,35 @@ export function useTournamentPersistence({ names = [], userName }) {
         namesKey: "",
       });
     }
-  }, [persistentState.userName, updatePersistentState, userName]);
+  }, [persistentState, updatePersistentState, userName]);
+
+  // * Ensure persistentState has all required properties
+  const safePersistentState = useMemo(() => {
+    // * Handle cases where persistentState might be undefined, null, or not an object
+    if (
+      !persistentState ||
+      typeof persistentState !== "object" ||
+      Array.isArray(persistentState)
+    ) {
+      return createDefaultPersistentState(userName);
+    }
+    return {
+      ...createDefaultPersistentState(userName),
+      ...persistentState,
+      matchHistory: Array.isArray(persistentState.matchHistory)
+        ? persistentState.matchHistory
+        : [],
+    };
+  }, [persistentState, userName]);
 
   return {
-    persistentState,
+    persistentState: safePersistentState,
     updatePersistentState,
-    roundNumber: persistentState.currentRound,
-    currentMatchNumber: persistentState.currentMatch,
-    totalMatches: persistentState.totalMatches,
-    canUndo: persistentState.matchHistory.length > 1,
+    roundNumber: safePersistentState.currentRound || 1,
+    currentMatchNumber: safePersistentState.currentMatch || 1,
+    totalMatches: safePersistentState.totalMatches || 0,
+    canUndo: Array.isArray(safePersistentState.matchHistory)
+      ? safePersistentState.matchHistory.length > 1
+      : false,
   };
 }
