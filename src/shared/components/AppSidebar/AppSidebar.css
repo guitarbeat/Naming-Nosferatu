@@ -6,7 +6,7 @@
   /* * Enhanced app-specific styling */
   position: relative;
   height: auto;
-  min-height: 80px;
+  min-height: 96px;
 }
 
 /* * Navbar sections for better layout control */
@@ -431,7 +431,6 @@
   left: 100%;
 }
 
-
 .sidebar-user-greeting svg {
   flex-shrink: 0;
 }
@@ -489,13 +488,9 @@
   bottom: 0;
   width: 3px;
   z-index: 20;
-  background: linear-gradient(
-    180deg,
-    #fa26a0,
-    #2ff3e0
-  );
+  background: linear-gradient(180deg, #fa26a0, #2ff3e0);
   border-radius: 0 2px 2px 0;
-  box-shadow: 
+  box-shadow:
     0 0 6px rgba(250, 38, 160, 0.8),
     0 0 12px rgba(47, 243, 224, 0.6);
   animation: adminGlow 2s ease-in-out infinite alternate;
@@ -744,7 +739,7 @@
 /* Responsive improvements for mobile */
 @media (width <= 768px) {
   .app-sidebar {
-    min-height: 60px;
+    min-height: 72px;
     padding: 0 var(--mobile-padding);
   }
 
