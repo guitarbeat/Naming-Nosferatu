@@ -136,6 +136,12 @@ function Lightbox({
   const current = images[currentIndex] || images[0];
   const base = current?.replace(/\.[^.]+$/, "") || "";
 
+  // * Check if this is a local asset that might have alternative formats
+  // * GIF files typically don't have .avif/.webp versions, so skip picture element
+  const isLocalAsset = current?.startsWith("/assets/images/");
+  const isGif = current?.toLowerCase().endsWith(".gif");
+  const shouldUsePicture = isLocalAsset && !isGif;
+
   // Preload adjacent images for smoother navigation
   useEffect(() => {
     // * Only preload if lightbox is open and images are available
@@ -220,26 +226,37 @@ function Lightbox({
             onTouchEnd();
           }}
         >
-          <picture>
-            <source
-              type="image/avif"
-              srcSet={`${base}.avif`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
-            <source
-              type="image/webp"
-              srcSet={`${base}.webp`}
-              sizes={LIGHTBOX_IMAGE_SIZES}
-            />
+          {shouldUsePicture ? (
+            <picture>
+              <source
+                type="image/avif"
+                srcSet={`${base}.avif`}
+                sizes={LIGHTBOX_IMAGE_SIZES}
+              />
+              <source
+                type="image/webp"
+                srcSet={`${base}.webp`}
+                sizes={LIGHTBOX_IMAGE_SIZES}
+              />
+              <img
+                src={current}
+                alt=""
+                className={styles.lightboxImage}
+                loading="eager"
+                decoding="async"
+                sizes={LIGHTBOX_IMAGE_SIZES}
+              />
+            </picture>
+          ) : (
             <img
               src={current}
-              alt={`Cat photo ${currentIndex + 1} of ${images.length}`}
+              alt=""
               className={styles.lightboxImage}
               loading="eager"
               decoding="async"
               sizes={LIGHTBOX_IMAGE_SIZES}
             />
-          </picture>
+          )}
         </div>
         <button
           type="button"

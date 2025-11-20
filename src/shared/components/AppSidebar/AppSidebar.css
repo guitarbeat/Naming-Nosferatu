@@ -477,22 +477,29 @@
 /* Admin variant of user menu button */
 .sidebar-user-menu-button--admin {
   position: relative;
+  overflow: visible !important; /* Override parent overflow: hidden to show indicator */
 }
 
+/* Admin indicator line - positioned on the right edge */
 .sidebar-user-menu-button--admin::after {
   content: "";
   position: absolute;
   top: 0;
   right: 0;
-  width: 4px;
-  height: 100%;
+  bottom: 0;
+  width: 3px;
+  z-index: 20;
   background: linear-gradient(
     180deg,
-    rgb(var(--hot-pink-rgb), 0.8),
-    rgb(var(--neon-cyan-rgb), 0.8)
+    #fa26a0,
+    #2ff3e0
   );
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 
+    0 0 6px rgba(250, 38, 160, 0.8),
+    0 0 12px rgba(47, 243, 224, 0.6);
   animation: adminGlow 2s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
 .sidebar-admin-indicator {

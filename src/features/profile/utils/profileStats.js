@@ -169,11 +169,34 @@ export async function calculateSelectionStats(userName) {
         ? Math.round((totalSelections / uniqueNames) * 10) / 10
         : 0;
 
-    // Find most selected name
+    // Find most selected name and build per-name selection data
     const nameCounts = {};
+    const nameSelectionCounts = {}; // Per name_id selection counts
+    const nameLastSelected = {}; // Per name_id last selected date
+    const nameSelectionFrequency = {}; // Per name_id selection frequency
+    
     selections.forEach((s) => {
+      // Count by name (for most selected)
       nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
+      
+      // Count by name_id (for filtering)
+      nameSelectionCounts[s.name_id] = (nameSelectionCounts[s.name_id] || 0) + 1;
+      
+      // Track last selected date per name_id
+      const selectedDate = s.selected_at ? new Date(s.selected_at) : null;
+      if (selectedDate && (!nameLastSelected[s.name_id] || selectedDate > new Date(nameLastSelected[s.name_id]))) {
+        nameLastSelected[s.name_id] = s.selected_at;
+      }
     });
+    
+    // Calculate selection frequency (selections per tournament for each name)
+    Object.keys(nameSelectionCounts).forEach((nameId) => {
+      const count = nameSelectionCounts[nameId];
+      nameSelectionFrequency[nameId] = totalTournaments > 0 
+        ? Math.round((count / totalTournaments) * 100) / 100 
+        : 0;
+    });
+    
     const mostSelectedName =
       Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || "N/A";
 
@@ -231,6 +254,10 @@ export async function calculateSelectionStats(userName) {
       maxStreak,
       userRank: userRank || "N/A",
       insights,
+      // * Per-name selection data for filtering
+      nameSelectionCounts, // Map of name_id -> selection count
+      nameLastSelected, // Map of name_id -> last selected timestamp
+      nameSelectionFrequency, // Map of name_id -> selection frequency (selections per tournament)
     };
   } catch (error) {
     if (process.env.NODE_ENV === "development") {

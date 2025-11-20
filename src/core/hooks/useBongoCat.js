@@ -61,8 +61,22 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       const viewportWidth = window.innerWidth;
       const containerWidth = rect.width;
 
-      // Position cat slightly down from the top of the container
-      let optimalTop = 19;
+      // Try to find a form element within the container to position relative to it
+      const formElement = containerRef.current.querySelector('form');
+      let optimalTop = 19; // Default position near top
+
+      if (formElement) {
+        // Position cat relative to the form - slightly above it
+        const formRect = formElement.getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+        // Calculate position relative to container
+        optimalTop = (formRect.top - containerRect.top) - 60; // 60px above the form
+        // Ensure it's not too high (minimum 19px from top)
+        optimalTop = Math.max(19, optimalTop);
+      } else {
+        // Fallback: Position cat slightly down from the top of the container
+        optimalTop = 19;
+      }
 
       // Apply an additional offset for narrow screens to position the cat better
       if (viewportWidth <= 768) {

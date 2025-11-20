@@ -85,9 +85,11 @@ const Profile = ({ userName }) => {
     showToast,
   );
 
-  // * Reset selected names when active user changes
+  // * Reset selected names and filters when active user changes
   React.useEffect(() => {
     setSelectedNames(new Set());
+    setSelectionFilter("all"); // Reset selection filter when switching users
+    setFilterStatus(FILTER_OPTIONS.STATUS.ACTIVE); // Reset to active filter
   }, [activeUser, setSelectedNames]);
 
   // * Handle filtered count change from ProfileNameList

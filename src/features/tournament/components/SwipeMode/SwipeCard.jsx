@@ -65,21 +65,23 @@ function SwipeCard({
         onTouchMove={onDragMove}
         onTouchEnd={onDragEnd}
       >
-        {/* Swipe direction overlays */}
-        <div
-          className={`${styles.swipeOverlay} ${styles.swipeRight} ${swipeDirection === "right" ? styles.active : ""}`}
-          style={
-            swipeDirection === "right" ? swipeOverlayStyle : { opacity: 0 }
-          }
-        >
-          <span className={styles.swipeText}>👍 SELECTED</span>
-        </div>
-        <div
-          className={`${styles.swipeOverlay} ${styles.swipeLeft} ${swipeDirection === "left" ? styles.active : ""}`}
-          style={swipeDirection === "left" ? swipeOverlayStyle : { opacity: 0 }}
-        >
-          <span className={styles.swipeText}>👎 SKIPPED</span>
-        </div>
+        {/* Swipe direction overlays - positioned absolutely over the card */}
+        {swipeDirection === "right" && (
+          <div
+            className={`${styles.swipeOverlay} ${styles.swipeRight} ${styles.active}`}
+            style={swipeOverlayStyle}
+          >
+            <span className={styles.swipeText}>👍 SELECTED</span>
+          </div>
+        )}
+        {swipeDirection === "left" && (
+          <div
+            className={`${styles.swipeOverlay} ${styles.swipeLeft} ${styles.active}`}
+            style={swipeOverlayStyle}
+          >
+            <span className={styles.swipeText}>👎 SKIPPED</span>
+          </div>
+        )}
 
         {/* Card content */}
         <div className={styles.swipeCardContent}>

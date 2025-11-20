@@ -10,6 +10,7 @@ import { validateUsername } from "../../shared/utils/validationUtils";
 import { siteSettingsAPI } from "../../integrations/supabase/api";
 import { ErrorManager } from "../../shared/services/errorManager";
 import CatNameBanner from "../home/CatNameBanner";
+import BongoCat from "../../shared/components/BongoCat/BongoCat";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
@@ -22,6 +23,7 @@ function Login({ onLogin }) {
   const [loadingCatName, setLoadingCatName] = useState(true);
 
   const containerRef = useRef(null);
+  const formRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
   // Add login-page class to body and html when component mounts
@@ -247,7 +249,7 @@ function Login({ onLogin }) {
       setError(
         formattedError.userMessage ||
           err.message ||
-          "Unable to log in. Please check your connection and try again.",
+          "Unable to log in. Please check your connection and try again."
       );
     } finally {
       setIsLoading(false);
@@ -334,7 +336,11 @@ function Login({ onLogin }) {
               </div>
             ) : null}
 
+            {/* Bongo Cat - Interactive cat that responds to typing */}
+            <BongoCat size={0.5} color="#ff6b9d" containerRef={containerRef} />
+
             <form
+              ref={formRef}
               onSubmit={handleSubmit}
               className={styles.loginForm}
               role="form"

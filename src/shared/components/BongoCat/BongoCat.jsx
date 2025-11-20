@@ -150,7 +150,7 @@ const BongoCat = memo(
 
     // Further adjust the paws position for the most natural cutoff effect
     // Make pawsOffsetY responsive to screen width
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
     const pawsOffsetY = isMobile ? -10 : -20; // Much smaller offset on mobile to bring paws forward
 
     // Adjust visibility management to ensure a clean cutoff
@@ -202,7 +202,7 @@ const BongoCat = memo(
         />
       </>
     );
-  },
+  }
 );
 
 BongoCat.displayName = "BongoCat";

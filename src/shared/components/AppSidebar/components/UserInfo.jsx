@@ -43,12 +43,7 @@ export function UserInfo({ userName, onClick, isAdmin = false }) {
             src="/assets/images/bby-cat.GIF"
             alt="User avatar"
           />
-          {!collapsed && (
-            <span>
-              {displayText}
-              {isAdmin && <span className="sidebar-admin-indicator" aria-label="Admin"> (Admin)</span>}
-            </span>
-          )}
+          {!collapsed && <span>{displayText}</span>}
           {isAdmin && collapsed && (
             <span className="sidebar-admin-indicator" aria-label="Admin">👑</span>
           )}
