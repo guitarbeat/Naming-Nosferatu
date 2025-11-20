@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
 import { SkeletonLoader, Select, Button } from "../../shared/components";
@@ -607,4 +607,4 @@ ProfileNameList.propTypes = {
   userSelectOptions: PropTypes.array,
 };
 
-export default ProfileNameList;
+export default memo(ProfileNameList);

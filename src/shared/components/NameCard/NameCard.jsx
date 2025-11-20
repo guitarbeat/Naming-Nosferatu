@@ -31,7 +31,7 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import CatImage from "../CatImage";
 import styles from "./NameCard.module.css";
@@ -442,4 +442,4 @@ NameCard.propTypes = {
   onSelectionChange: PropTypes.func,
 };
 
-export default NameCard;
+export default memo(NameCard);

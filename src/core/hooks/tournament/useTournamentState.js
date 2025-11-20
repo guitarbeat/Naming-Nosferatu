@@ -100,18 +100,7 @@ export function useTournamentState({
     }
   }, [isError]);
 
-  useEffect(() => {
-    return () => {
-      // * Cleanup on unmount - setState in cleanup is acceptable
-      setTournamentState((prev) => ({
-        ...prev,
-        currentMatch: null,
-        isTransitioning: false,
-        currentMatchNumber: 1,
-        roundNumber: 1,
-      }));
-    };
-  }, []);
+  // * No cleanup needed - component unmounting will clear state naturally
 
   return {
     tournamentState: { ...tournamentState, isError },

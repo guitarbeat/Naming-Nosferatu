@@ -2,7 +2,7 @@
  * @module TournamentSetup/components/NameSelection
  * @description Name selection component with admin filtering options
  */
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, memo } from "react";
 import PropTypes from "prop-types";
 import { NameCard } from "../../../../shared/components";
 import { DEFAULT_DESCRIPTION } from "../../constants";
@@ -63,6 +63,14 @@ function NameSelection({
     return map;
   }, [isAdmin, displayNames]);
 
+  // * Memoize click handler to prevent re-renders
+  const handleToggleName = useCallback(
+    (nameObj) => {
+      onToggleName(nameObj);
+    },
+    [onToggleName],
+  );
+
   return (
     <div className={styles.nameSelection}>
       {/* Swipe Mode Instructions */}
@@ -116,7 +124,7 @@ function NameSelection({
                 name={nameObj.name}
                 description={nameObj.description || DEFAULT_DESCRIPTION}
                 isSelected={selectedNames.some((n) => n.id === nameObj.id)}
-                onClick={() => onToggleName(nameObj)}
+                onClick={() => handleToggleName(nameObj)}
                 size="small"
                 // Cat picture when enabled
                 image={
@@ -159,4 +167,4 @@ NameSelection.propTypes = {
   SwipeableCards: PropTypes.elementType,
 };
 
-export default NameSelection;
+export default memo(NameSelection);

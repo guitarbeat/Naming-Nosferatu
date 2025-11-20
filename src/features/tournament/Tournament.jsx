@@ -79,7 +79,9 @@ function TournamentContent({
       });
       currentGlobalEventListeners.clear();
     };
-  }, [globalEventListeners]);
+    // * Empty deps - refs don't need to be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     currentMatch,
@@ -116,20 +118,31 @@ function TournamentContent({
 
   // * Undo window
   const [undoExpiresAt, setUndoExpiresAt] = useState(null);
-  const undoRemainingMs = undoExpiresAt
-    ? Math.max(0, undoExpiresAt - Date.now())
-    : 0;
+  const [undoRemainingMs, setUndoRemainingMs] = useState(0);
   const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
+  
   useEffect(() => {
-    if (!undoExpiresAt) return;
+    if (!undoExpiresAt) {
+      setUndoRemainingMs(0);
+      return;
+    }
+    
+    // * Update immediately
+    const updateRemaining = () => {
+      const remaining = Math.max(0, undoExpiresAt - Date.now());
+      setUndoRemainingMs(remaining);
+      return remaining;
+    };
+    
+    updateRemaining();
+    
     const id = setInterval(() => {
-      if (Date.now() >= undoExpiresAt) {
+      const remaining = updateRemaining();
+      if (remaining <= 0) {
         setUndoExpiresAt(null);
-      } else {
-        // trigger re-render
-        setUndoExpiresAt((ts) => ts);
       }
     }, TOURNAMENT_TIMING.UNDO_UPDATE_INTERVAL);
+    
     return () => clearInterval(id);
   }, [undoExpiresAt]);
 
@@ -174,7 +187,8 @@ function TournamentContent({
       // Start undo window
       setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
     },
-    [currentMatch, showSuccess, setLastMatchResult, setShowMatchResult],
+    // * setState functions are stable and don't need to be in dependencies
+    [currentMatch, showSuccess],
   );
 
   // * Handle vote with animation
@@ -292,10 +306,7 @@ function TournamentContent({
       onVote,
       currentMatch,
       showError,
-      setIsProcessing,
-      setIsTransitioning,
-      setSelectedOption,
-      setVotingError,
+      // * setState functions are stable and don't need to be in dependencies
     ],
   );
 
@@ -306,7 +317,7 @@ function TournamentContent({
       setSelectedOption(option);
       handleVoteWithAnimation(option);
     },
-    [isProcessing, isTransitioning, handleVoteWithAnimation, setSelectedOption],
+    [isProcessing, isTransitioning, handleVoteWithAnimation],
   );
 
   // * Handle end early
@@ -328,12 +339,12 @@ function TournamentContent({
     } finally {
       setIsProcessing(false);
     }
-  }, [getCurrentRatings, existingRatings, onComplete, setIsProcessing]);
+  }, [getCurrentRatings, existingRatings, onComplete]);
 
   // * Handle vote retry
   const handleVoteRetry = useCallback(() => {
     setVotingError(null);
-  }, [setVotingError]);
+  }, []);
 
   // * Keyboard controls
   useKeyboardControls(
@@ -462,7 +473,7 @@ function TournamentContent({
           <span>
             Vote recorded.
             <span className={styles.undoTimer} aria-hidden="true">
-              {` ${Math.max(0, (undoRemainingMs / 1000).toFixed(1))}s`}
+              {` ${(undoRemainingMs / 1000).toFixed(1)}s`}
             </span>
           </span>
           <button
