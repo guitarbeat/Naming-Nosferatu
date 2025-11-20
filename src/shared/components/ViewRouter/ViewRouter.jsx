@@ -210,20 +210,11 @@ export default function ViewRouter({
     );
   }
 
-  const shouldShowResults = tournament.isComplete || isRoute("/results");
+  // * Only show results if tournament is complete AND we have names (completed tournament)
+  // * This prevents showing results when tournament is reset but route is still /results
+  const shouldShowResults = tournament.isComplete && tournament.names !== null && isRoute("/results");
 
   if (shouldShowResults) {
-    if (!tournament.isComplete) {
-      return (
-        <Error
-          variant="list"
-          error={{
-            message:
-              "Results are only available after completing a tournament.",
-          }}
-        />
-      );
-    }
 
     return (
       <Suspense

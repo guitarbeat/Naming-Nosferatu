@@ -258,6 +258,7 @@ const useAppStore = create(
               isComplete: false,
               voteHistory: [],
               isLoading: false, // * Explicitly set loading to false to prevent flashing
+              currentView: "tournament", // * Reset view to allow starting new tournament
             },
           })),
 
