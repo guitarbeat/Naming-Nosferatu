@@ -90,8 +90,6 @@ function Results({
     );
 
     const namesCount = currentTournamentNames?.length || 0;
-    const matchesPerRound = Math.ceil(Math.max(2, namesCount) / 2);
-
     return voteHistory
       .filter(
         (vote) =>
@@ -128,10 +126,21 @@ function Results({
         }
 
         const matchNumber = vote?.matchNumber ?? index + 1;
-        const round = Math.max(
-          1,
-          Math.ceil(matchNumber / Math.max(1, matchesPerRound)),
-        );
+        
+        // * Calculate round based on bracket structure (same as Tournament.jsx)
+        let remainingNames = namesCount;
+        let matchesInRound = Math.ceil(remainingNames / 2);
+        let matchesPlayed = 0;
+        let calculatedRound = 1;
+        
+        while (matchesPlayed + matchesInRound < matchNumber) {
+          matchesPlayed += matchesInRound;
+          remainingNames = matchesInRound; // Winners advance
+          matchesInRound = Math.ceil(remainingNames / 2);
+          calculatedRound++;
+        }
+        
+        const round = calculatedRound;
 
         return {
           id: matchNumber,

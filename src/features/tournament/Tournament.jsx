@@ -369,7 +369,8 @@ function TournamentContent({
 
   // * Transform match history for bracket
   const transformedMatches = useMemo(() => {
-    const matchesPerRound = Math.ceil((names?.length || 2) / 2);
+    if (!names || names.length === 0) return [];
+    
     return matchHistory.map((vote, index) => {
       // Prefer explicit win flags if available
       const leftWon = vote?.match?.left?.won === true;
@@ -395,14 +396,25 @@ function TournamentContent({
       }
 
       const matchNumber = vote?.matchNumber ?? index + 1;
-      const round = Math.max(
-        1,
-        Math.ceil(matchNumber / Math.max(1, matchesPerRound)),
-      );
+      
+      // * Calculate round based on bracket structure
+      // * Round 1: Math.ceil(names.length / 2) matches
+      // * Each subsequent round has half the matches of the previous round
+      let remainingNames = names.length;
+      let matchesInRound = Math.ceil(remainingNames / 2);
+      let matchesPlayed = 0;
+      let calculatedRound = 1;
+      
+      while (matchesPlayed + matchesInRound < matchNumber) {
+        matchesPlayed += matchesInRound;
+        remainingNames = matchesInRound; // Winners advance
+        matchesInRound = Math.ceil(remainingNames / 2);
+        calculatedRound++;
+      }
 
       return {
         id: matchNumber,
-        round,
+        round: calculatedRound,
         name1: vote?.match?.left?.name || "Unknown",
         name2: vote?.match?.right?.name || "Unknown",
         winner,

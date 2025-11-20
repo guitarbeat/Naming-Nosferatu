@@ -154,6 +154,8 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     document.addEventListener("keyup", handleKeyUp);
 
     // Set up ResizeObserver for container positioning
+    let cleanupContainerListeners = null;
+    
     if (containerRef && containerRef.current) {
       resizeObserverRef.current = new ResizeObserver(updatePosition);
       resizeObserverRef.current.observe(containerRef.current);
@@ -210,7 +212,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
         attributes: false, // Disable attribute observation to reduce reflows
       });
 
-      return () => {
+      cleanupContainerListeners = () => {
         if (resizeObserverRef.current) {
           resizeObserverRef.current.disconnect();
         }
@@ -244,8 +246,14 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     }
 
     return () => {
+      // * Always clean up keydown/keyup listeners
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
+      
+      // * Clean up container listeners if they were set up
+      if (cleanupContainerListeners) {
+        cleanupContainerListeners();
+      }
     };
   }, [handleKeyDown, handleKeyUp, containerRef, updatePosition]);
 

@@ -66,8 +66,36 @@ export function useTournamentProgress({
       }
     }
 
-    if (currentMatchNumber % Math.ceil(namesLength / 2) === 1) {
-      updateTournamentState({ roundNumber: roundNumber - 1 });
+    // * Calculate round based on bracket structure for undo
+    // * Need to recalculate which round the previous match was in
+    // * After undo, we're back to the match before the one we undid
+    if (namesLength > 2 && persistentState.matchHistory.length > 0) {
+      // * Get the match number of the last remaining vote (after undo)
+      const remainingHistory = persistentState.matchHistory.slice(0, -1);
+      const previousMatchNumber = remainingHistory.length > 0 
+        ? (remainingHistory[remainingHistory.length - 1]?.matchNumber || currentMatchNumber)
+        : currentMatchNumber;
+      
+      let remainingNames = namesLength;
+      let matchesInRound = Math.ceil(remainingNames / 2);
+      let matchesPlayed = 0;
+      let calculatedRound = 1;
+      
+      while (matchesPlayed + matchesInRound < previousMatchNumber) {
+        matchesPlayed += matchesInRound;
+        remainingNames = matchesInRound;
+        matchesInRound = Math.ceil(remainingNames / 2);
+        calculatedRound++;
+      }
+      
+      if (calculatedRound !== roundNumber) {
+        updateTournamentState({ roundNumber: calculatedRound });
+        updatePersistentState({ currentRound: calculatedRound });
+      }
+    } else if (persistentState.matchHistory.length === 0) {
+      // * If no history left, we're back to round 1
+      updateTournamentState({ roundNumber: 1 });
+      updatePersistentState({ currentRound: 1 });
     }
 
     updateTournamentState({

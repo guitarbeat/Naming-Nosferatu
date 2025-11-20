@@ -25,23 +25,39 @@ export function useProfileStats(activeUser) {
     isMountedRef.current = true;
 
     const loadStats = async () => {
-      if (!activeUser) return;
+      if (!activeUser) {
+        setStatsLoading(false);
+        return;
+      }
 
       setStatsLoading(true);
 
-      // Try database-optimized stats first
-      const dbStats = await fetchUserStatsFromDB(activeUser);
+      try {
+        // Try database-optimized stats first
+        const dbStats = await fetchUserStatsFromDB(activeUser);
 
-      if (!isMountedRef.current) return;
+        if (!isMountedRef.current) return;
 
-      if (dbStats) {
-        setStats(dbStats);
-      } else {
-        // Fallback to empty stats if database unavailable
+        if (dbStats) {
+          setStats(dbStats);
+        } else {
+          // Fallback to empty stats if database unavailable
+          setStats(null);
+        }
+      } catch (error) {
+        if (!isMountedRef.current) return;
+        
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error loading profile stats:", error);
+        }
+        
+        // Set to null on error to show empty state
         setStats(null);
+      } finally {
+        if (isMountedRef.current) {
+          setStatsLoading(false);
+        }
       }
-
-      setStatsLoading(false);
     };
 
     void loadStats();

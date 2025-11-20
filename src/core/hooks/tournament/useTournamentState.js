@@ -51,12 +51,9 @@ export function useTournamentState({
     const nameStrings = names.map((n) => n?.name || "").filter(Boolean);
     const newSorter = new PreferenceSorter(nameStrings);
 
-    const estimatedMatches =
-      names.length === 2
-        ? 1
-        : names.length > 0
-          ? Math.ceil(names.length * Math.log2(Math.max(1, names.length)))
-          : 0;
+    // * Bracket tournament: names.length - 1 matches total
+    // * For 4 names: 3 matches (2 in round 1, 1 in round 2, 1 in round 3)
+    const estimatedMatches = names.length > 1 ? names.length - 1 : 0;
 
     setTournamentState((prev) => ({
       ...prev,

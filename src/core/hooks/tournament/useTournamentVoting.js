@@ -33,60 +33,71 @@ export function useTournamentVoting({
     };
   }, []);
 
-  const getCurrentRatings = useCallback(() => {
-    const countPlayerVotes = (playerName, outcome) => {
-      return persistentState.matchHistory.filter((vote) => {
-        if (!vote?.match) return false;
-        const { left, right } = vote.match;
-        if (!left || !right) return false;
-        if (outcome === "win") {
-          return (
-            (left.name === playerName && vote.result === "left") ||
-            (right.name === playerName && vote.result === "right")
-          );
-        }
-        if (outcome === "loss") {
-          return (
-            (left.name === playerName && vote.result === "right") ||
-            (right.name === playerName && vote.result === "left")
-          );
-        }
-        return false;
-      }).length;
-    };
-
-    return names.map((name) => {
-      const existingData =
-        typeof currentRatings[name.name] === "object"
-          ? currentRatings[name.name]
-          : { rating: currentRatings[name.name] || 1500, wins: 0, losses: 0 };
-
-      const wins = countPlayerVotes(name.name, "win");
-      const losses = countPlayerVotes(name.name, "loss");
-      const position = wins;
-
-      const finalRating = computeRating(
-        existingData.rating,
-        position,
-        names.length,
-        currentMatchNumber,
-        totalMatches,
-      );
-
-      return {
-        name: name.name,
-        rating: finalRating,
-        wins: existingData.wins + wins,
-        losses: existingData.losses + losses,
-        confidence: totalMatches > 0 ? currentMatchNumber / totalMatches : 0,
+  // * Helper function to calculate ratings from history and ratings data
+  const calculateRatingsFromData = useCallback(
+    (historyData, ratingsData, matchNum) => {
+      const countPlayerVotes = (playerName, outcome) => {
+        return historyData.filter((vote) => {
+          if (!vote?.match) return false;
+          const { left, right } = vote.match;
+          if (!left || !right) return false;
+          if (outcome === "win") {
+            return (
+              (left.name === playerName && vote.result === "left") ||
+              (right.name === playerName && vote.result === "right")
+            );
+          }
+          if (outcome === "loss") {
+            return (
+              (left.name === playerName && vote.result === "right") ||
+              (right.name === playerName && vote.result === "left")
+            );
+          }
+          return false;
+        }).length;
       };
-    });
+
+      return names.map((name) => {
+        const existingData =
+          typeof ratingsData[name.name] === "object"
+            ? ratingsData[name.name]
+            : { rating: ratingsData[name.name] || 1500, wins: 0, losses: 0 };
+
+        const wins = countPlayerVotes(name.name, "win");
+        const losses = countPlayerVotes(name.name, "loss");
+        const position = wins;
+
+        const finalRating = computeRating(
+          existingData.rating,
+          position,
+          names.length,
+          matchNum,
+          totalMatches,
+        );
+
+        return {
+          name: name.name,
+          rating: finalRating,
+          wins: existingData.wins + wins,
+          losses: existingData.losses + losses,
+          confidence: totalMatches > 0 ? matchNum / totalMatches : 0,
+        };
+      });
+    },
+    [names, totalMatches],
+  );
+
+  const getCurrentRatings = useCallback(() => {
+    return calculateRatingsFromData(
+      persistentState.matchHistory,
+      currentRatings,
+      currentMatchNumber,
+    );
   }, [
-    names,
-    currentRatings,
+    calculateRatingsFromData,
     persistentState.matchHistory,
+    currentRatings,
     currentMatchNumber,
-    totalMatches,
   ]);
 
   const handleVote = useCallback(
@@ -177,48 +188,94 @@ export function useTournamentVoting({
         updatePersistentState((prev) => ({
           ...prev,
           matchHistory: [...prev.matchHistory, voteData],
-          currentMatch: currentMatchNumber + 1,
+          currentMatch: currentMatchNumber + 1, // Will be updated to newMatchNumber below
         }));
 
         tournamentActions.setRatings(newRatings);
         tournamentActions.addVote(voteData);
 
-        if (currentMatchNumber >= totalMatches) {
-          const finalRatings = getCurrentRatings();
+        // * Prepare updated data including current vote
+        const updatedHistory = [...persistentState.matchHistory, voteData];
+        
+        // * Calculate new match number (the match we just completed)
+        const newMatchNumber = currentMatchNumber + 1;
+        updateTournamentState({
+          currentMatchNumber: newMatchNumber,
+        });
+
+        // * Check if tournament is complete (we've played all expected matches)
+        // * newMatchNumber is the match we just completed
+        // * For bracket: totalMatches = names.length - 1
+        // * If we've completed all matches, finish the tournament
+        if (newMatchNumber >= totalMatches) {
+          // * Calculate final ratings with updated data (including current vote)
+          const finalRatings = calculateRatingsFromData(
+            updatedHistory,
+            newRatings,
+            newMatchNumber, // Use the match number we just completed
+          );
           onComplete(finalRatings);
           return;
         }
 
-        updateTournamentState({
-          currentMatchNumber: currentMatchNumber + 1,
-        });
-
+        // * Calculate round based on bracket structure
+        // * Round 1: Math.ceil(names.length / 2) matches
+        // * Round 2: Math.ceil(remaining / 2) matches, etc.
         if (names.length > 2) {
-          const matchesPerRound = Math.ceil(names.length / 2);
-          if (currentMatchNumber % matchesPerRound === 0) {
-            const newRound = roundNumber + 1;
-            updateTournamentState({ roundNumber: newRound });
-            updatePersistentState({ currentRound: newRound });
+          // * Calculate which round we're in based on bracket structure
+          // * Round 1 has Math.ceil(names.length / 2) matches
+          // * Each subsequent round has half the matches of the previous round
+          let remainingNames = names.length;
+          let matchesInRound = Math.ceil(remainingNames / 2);
+          let matchesPlayed = 0;
+          let calculatedRound = 1;
+          
+          // * Use newMatchNumber (the match we just completed) to calculate round
+          while (matchesPlayed + matchesInRound < newMatchNumber) {
+            matchesPlayed += matchesInRound;
+            remainingNames = matchesInRound; // Winners advance
+            matchesInRound = Math.ceil(remainingNames / 2);
+            calculatedRound++;
+          }
+          
+          if (calculatedRound !== roundNumber) {
+            updateTournamentState({ roundNumber: calculatedRound });
+            updatePersistentState({ currentRound: calculatedRound });
           }
         }
 
-        const nextMatch = getNextMatch(names, sorter, currentMatchNumber + 1, {
-          currentRatings: {
-            ...currentRatings,
-            [leftName]: {
-              ...(currentRatings[leftName] || {}),
-              rating: updatedLeftRating,
-            },
-            [rightName]: {
-              ...(currentRatings[rightName] || {}),
-              rating: updatedRightRating,
-            },
+        // * Use updated history and ratings including current vote
+        const updatedRatings = {
+          ...currentRatings,
+          [leftName]: {
+            ...(currentRatings[leftName] || {}),
+            rating: updatedLeftRating,
           },
-          history: persistentState.matchHistory || [],
+          [rightName]: {
+            ...(currentRatings[rightName] || {}),
+            rating: updatedRightRating,
+          },
+        };
+
+        const nextMatch = getNextMatch(names, sorter, newMatchNumber, {
+          currentRatings: updatedRatings,
+          history: updatedHistory,
         });
-        if (nextMatch) {
-          updateTournamentState({ currentMatch: nextMatch });
+        
+        // * If no more matches available, complete the tournament
+        // * This can happen if getNextMatch returns null (no more pairs to compare)
+        if (!nextMatch) {
+          // * Calculate final ratings with updated data (including current vote)
+          const finalRatings = calculateRatingsFromData(
+            updatedHistory,
+            updatedRatings,
+            newMatchNumber, // Use the match number we just completed
+          );
+          onComplete(finalRatings);
+          return;
         }
+        
+        updateTournamentState({ currentMatch: nextMatch });
 
         // * Clear any existing timeout before setting a new one
         if (transitionTimeoutRef.current) {
@@ -257,7 +314,7 @@ export function useTournamentVoting({
       currentRatings,
       sorter,
       onComplete,
-      getCurrentRatings,
+      calculateRatingsFromData,
       updateTournamentState,
       updatePersistentState,
       userName,
