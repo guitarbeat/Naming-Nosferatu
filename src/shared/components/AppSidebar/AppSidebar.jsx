@@ -127,7 +127,11 @@ export function AppSidebar({
               ))}
               {/* User Info - styled like menu item */}
               {isLoggedIn && userName && (
-                <UserInfo userName={userName} onClick={() => setView("profile")} />
+                <UserInfo 
+                  userName={userName} 
+                  onClick={() => setView("profile")}
+                  isAdmin={isAdmin}
+                />
               )}
             </SidebarGroupContent>
           </SidebarGroup>

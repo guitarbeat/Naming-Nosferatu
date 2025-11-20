@@ -161,24 +161,60 @@
 }
 
 .filtersGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.5rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
 }
 
 .filterGroup {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  flex: 1;
+  min-width: 120px;
 }
 
-.filterGroup label {
+.filterLabel {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary, #6b7280);
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  margin-bottom: 0.25rem;
+}
+
+.sortGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.sortControls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.sortControls .filterSelect {
+  flex: 1;
+}
+
+.sortControls .sortOrderButton {
+  flex-shrink: 0;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filterSelect {
@@ -450,8 +486,14 @@
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   }
 
-  .filtersGrid {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  .filterRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterGroup,
+  .sortGroup {
+    min-width: 100%;
   }
 
   .namesGrid {
@@ -497,8 +539,21 @@
   }
 
   .filtersGrid {
-    grid-template-columns: 1fr;
     gap: 0.5rem;
+  }
+
+  .filterRow {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filterGroup,
+  .sortGroup {
+    min-width: 100%;
+  }
+
+  .sortControls {
+    flex-direction: row;
   }
 
   .header {

@@ -177,6 +177,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: clamp(1rem, 2.5vw, 1.75rem);
   height: auto;
   min-height: auto;
@@ -184,7 +186,7 @@
   padding: clamp(1.5rem, 4vw, 2rem);
   overflow: visible;
   font-family: inherit;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 
   /* Reset button defaults */
@@ -235,6 +237,7 @@
   font-size: clamp(1.5rem, 5vw, 2.25rem);
   font-weight: 800;
   line-height: 1.2;
+  text-align: center;
   color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
@@ -248,6 +251,7 @@
   margin: 0;
   overflow: visible;
   font-size: clamp(1rem, 3vw, 1.25rem);
+  text-align: center;
   font-weight: 500;
   line-height: 1.7;
   color: var(--text-secondary);

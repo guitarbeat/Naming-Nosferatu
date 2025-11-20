@@ -360,7 +360,6 @@ const ProfileNameList = ({
       {/* Unified Dashboard: Filters */}
       {stats && (
         <div className={styles.unifiedDashboard}>
-          {/* Filters */}
           <div className={styles.filterSection}>
             <div className={styles.filterHeader}>
               <span className={styles.resultsCount}>
@@ -372,79 +371,75 @@ const ProfileNameList = ({
               </span>
             </div>
             <div className={styles.filtersGrid}>
-              <div className={styles.filterGroup}>
-                <label>Status</label>
-                <Select
-                  name="profile-status-filter"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  options={statusOptions}
-                  className={styles.filterSelect}
-                />
-              </div>
-
-              {showUserFilter && (
+              {/* Primary Filters Row */}
+              <div className={styles.filterRow}>
                 <div className={styles.filterGroup}>
-                  <label>User</label>
+                  <label className={styles.filterLabel}>Status</label>
                   <Select
-                    name="profile-user-filter"
-                    value={userFilter}
-                    onChange={(e) => setUserFilter(e.target.value)}
-                    options={userOptions}
+                    name="profile-status-filter"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    options={statusOptions}
                     className={styles.filterSelect}
                   />
                 </div>
-              )}
 
-              <div className={styles.filterGroup}>
-                <label>Sort</label>
-                <Select
-                  name="profile-sort-filter"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  options={sortOptions}
-                  className={styles.filterSelect}
-                />
+                {showUserFilter && (
+                  <div className={styles.filterGroup}>
+                    <label className={styles.filterLabel}>User</label>
+                    <Select
+                      name="profile-user-filter"
+                      value={userFilter}
+                      onChange={(e) => setUserFilter(e.target.value)}
+                      options={userOptions}
+                      className={styles.filterSelect}
+                    />
+                  </div>
+                )}
+
+                {selectionStats && (
+                  <div className={styles.filterGroup}>
+                    <label className={styles.filterLabel}>Selection</label>
+                    <Select
+                      name="profile-selection-filter"
+                      value={selectionFilter}
+                      onChange={(e) => setSelectionFilter(e.target.value)}
+                      options={selectionFilterOptions}
+                      className={styles.filterSelect}
+                    />
+                  </div>
+                )}
               </div>
 
-              <div className={styles.filterGroup}>
-                <label>Order</label>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSortOrder(
-                      sortOrder === FILTER_OPTIONS.ORDER.ASC
-                        ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC,
-                    )
-                  }
-                  className={styles.sortOrderButton}
-                >
-                  {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-                </button>
-              </div>
-
-              {selectionStats && (
-                <div className={styles.filterGroup}>
-                  <label>Selection</label>
-                  <Select
-                    name="profile-selection-filter"
-                    value={selectionFilter}
-                    onChange={(e) => setSelectionFilter(e.target.value)}
-                    options={selectionFilterOptions}
-                    className={styles.filterSelect}
-                  />
+              {/* Sort Controls Row - Combined */}
+              <div className={styles.filterRow}>
+                <div className={styles.sortGroup}>
+                  <label className={styles.filterLabel}>Sort By</label>
+                  <div className={styles.sortControls}>
+                    <Select
+                      name="profile-sort-filter"
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      options={sortOptions}
+                      className={styles.filterSelect}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSortOrder(
+                          sortOrder === FILTER_OPTIONS.ORDER.ASC
+                            ? FILTER_OPTIONS.ORDER.DESC
+                            : FILTER_OPTIONS.ORDER.ASC,
+                        )
+                      }
+                      className={styles.sortOrderButton}
+                      title={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? 'Descending' : 'Ascending'}`}
+                      aria-label={`Toggle sort order to ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? 'descending' : 'ascending'}`}
+                    >
+                      {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
+                    </button>
+                  </div>
                 </div>
-              )}
-
-              <div className={styles.filterGroup}>
-                <button
-                  type="button"
-                  onClick={onApplyFilters}
-                  className={styles.applyFiltersButton}
-                >
-                  Apply
-                </button>
               </div>
             </div>
           </div>

@@ -202,11 +202,11 @@
 /* * Base container - single source of truth */
 .container {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
   grid-auto-rows: min-content;
   gap: var(--space-6);
   width: 100%;
-  max-width: min(1800px, 98vw);
+  max-width: min(2000px, 100vw);
   padding: var(--space-4);
   padding-bottom: var(--space-8);
   margin-inline: auto;
@@ -238,6 +238,7 @@
   min-width: 0;
   background: var(--card-background);
   border-radius: var(--radius-xl);
+  padding: var(--space-5);
   /* * Natural flow layout - no height constraints */
   display: flex;
   flex-direction: column;
@@ -392,16 +393,19 @@
   position: relative;
 }
 
-/* * Cards container - single source of truth */
+/* * Cards container - mosaic layout with dense packing to fill empty spaces */
 .cardsContainer {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-auto-rows: min-content;
+  grid-auto-flow: row dense;
+  gap: var(--space-3);
   justify-content: center;
   width: 100%;
   max-width: 100%;
   margin-inline: auto;
   min-height: min-content;
+  align-items: start;
 }
 
 .nameCount {
@@ -438,21 +442,7 @@
   color: var(--text-secondary);
 }
 
-.tournamentInfoIntegrated {
-  composes: surfaceCard stack stackGapMd;
-  padding: var(--space-5);
-  background:
-    linear-gradient(
-      135deg,
-      rgb(148 163 184 / 8%) 0%,
-      rgb(100 116 139 / 8%) 100%
-    ),
-    var(--surface-color);
-  animation: slideDown 0.3s ease-out;
-  /* * Header stays at natural size */
-  flex-shrink: 0;
-}
-
+/* * Tournament header - now directly in selection panel */
 .tournamentHeaderTop {
   display: flex;
   flex-direction: row;
@@ -460,6 +450,10 @@
   align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+  animation: slideDown 0.3s ease-out;
+  flex-shrink: 0;
 }
 
 .tournamentTitleSection {
@@ -497,8 +491,9 @@
 
 .progressSection {
   composes: stack stackGapSm;
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-2);
+  flex-shrink: 0;
 }
 
 .progressBar {
@@ -650,20 +645,7 @@
 }
 
 /* Suggestion Section */
-.suggestionSection {
-  padding: var(--space-4);
-  cursor: pointer;
-  background: var(--card-background);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  transition: var(--transition-all);
-}
-
-.suggestionSection:hover {
-  background: var(--card-hover);
-  border-color: var(--border-color);
-  box-shadow: var(--shadow-md);
-}
+/* * Duplicate .suggestionSection definition removed - using the one below */
 
 .suggestionCard {
   text-align: center;
@@ -1341,7 +1323,7 @@
 
   /* * Responsive cards container adjustments */
   .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--space-3);
   }
 
@@ -1995,6 +1977,8 @@
   z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: clamp(1rem, 2.5vw, 1.75rem);
   min-height: 0;
   flex: 1;
@@ -2065,6 +2049,7 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   text-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  text-align: center;
   flex-shrink: 0;
 }
 
@@ -2075,6 +2060,7 @@
   line-height: 1.7;
   color: var(--text-secondary);
   opacity: 0.95;
+  text-align: center;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -2304,32 +2290,58 @@
 
 /* Suggestion form -------------------------------------------------------- */
 
+/* * Name suggestion wrapper - at bottom of selection panel for wider layout */
+.nameSuggestionWrapper {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+/* * Name suggestion section - improved styling */
 .suggestionSection {
   composes: surfaceCard stack stackGapLg;
-  padding: var(--space-5);
+  padding: var(--space-6);
+  background:
+    linear-gradient(
+      135deg,
+      rgb(148 163 184 / 6%) 0%,
+      rgb(100 116 139 / 4%) 100%
+    ),
+    var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
   transition: var(--transition-all);
+  position: relative;
+  z-index: 1;
 }
 
 .suggestionSection:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgb(var(--primary-rgb) / 20%);
+  /* * No transform to prevent overlaps */
 }
 
 .suggestionTitle {
   margin: 0;
-  font-size: var(--text-lg);
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: 700;
   color: var(--text-primary);
+  text-align: center;
 }
 
 .suggestionDescription {
   margin: 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   color: var(--text-secondary);
+  text-align: center;
 }
 
 .suggestionForm {
   composes: stack stackGapLg;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
 }
 
 .formGroup {
@@ -2346,6 +2358,8 @@
   composes: inputBase;
   padding: var(--space-3);
   font-size: var(--text-base);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .formTextarea {
@@ -2353,16 +2367,31 @@
   min-height: 120px;
   padding: var(--space-3);
   resize: vertical;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
 }
 
 .formError {
+  padding: var(--space-3);
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--error-500);
+  background: rgb(var(--error-rgb, 239 68 68) / 10%);
+  border: 1px solid rgb(var(--error-rgb, 239 68 68) / 20%);
+  border-radius: var(--radius-md);
+  text-align: center;
 }
 
 .formSuccess {
+  padding: var(--space-3);
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--success-500);
+  background: rgb(var(--success-rgb, 34 197 94) / 10%);
+  border: 1px solid rgb(var(--success-rgb, 34 197 94) / 20%);
+  border-radius: var(--radius-md);
+  text-align: center;
 }
 
 .suggestionButton {
@@ -2481,7 +2510,6 @@
     padding: var(--space-3);
   }
 
-  .sidebarCard,
   .suggestionSection {
     padding: var(--space-4);
   }
@@ -2513,7 +2541,6 @@
     padding: var(--space-4);
   }
 
-  .sidebarCard,
   .suggestionSection {
     padding: var(--space-3);
   }

@@ -474,6 +474,42 @@
   width: 100%;
 }
 
+/* Admin variant of user menu button */
+.sidebar-user-menu-button--admin {
+  position: relative;
+}
+
+.sidebar-user-menu-button--admin::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--hot-pink-rgb), 0.8),
+    rgb(var(--neon-cyan-rgb), 0.8)
+  );
+  border-radius: 0 4px 4px 0;
+  animation: adminGlow 2s ease-in-out infinite alternate;
+}
+
+.sidebar-admin-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--hot-pink-rgb));
+  opacity: 0.9;
+}
+
+.sidebar--collapsed .sidebar-admin-indicator {
+  font-size: 0.875rem;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
+}
+
 .sidebar-user-avatar {
   flex-shrink: 0;
   width: 20px;

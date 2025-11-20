@@ -1080,9 +1080,11 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase client unavailable' };
       }
 
+      // * Pass username to RPC for proper admin check (case-insensitive)
       const { error } = await client.rpc('toggle_name_visibility', {
         p_name_id: nameId,
-        p_hide: true
+        p_hide: true,
+        p_user_name: userName
       });
 
       if (error) {
@@ -1122,9 +1124,11 @@ export const hiddenNamesAPI = {
         return { success: false, error: 'Supabase client unavailable' };
       }
 
+      // * Pass username to RPC for proper admin check (case-insensitive)
       const { error } = await client.rpc('toggle_name_visibility', {
         p_name_id: nameId,
-        p_hide: false
+        p_hide: false,
+        p_user_name: userName
       });
 
       if (error) {

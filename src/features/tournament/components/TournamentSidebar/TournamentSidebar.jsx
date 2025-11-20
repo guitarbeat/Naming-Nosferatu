@@ -3,8 +3,6 @@
  * @description Sidebar with photo gallery and name suggestions
  */
 import PropTypes from "prop-types";
-import { Card } from "../../../../shared/components";
-import { NameSuggestionSection } from "../index";
 import PhotoGallery from "./PhotoGallery";
 import styles from "../../TournamentSetup.module.css";
 
@@ -28,16 +26,6 @@ function TournamentSidebar({
         userName={userName}
         onImagesUploaded={onImagesUploaded}
       />
-
-      <Card
-        className={styles.sidebarCard}
-        padding="large"
-        shadow="large"
-        as="section"
-        aria-label="Name suggestions"
-      >
-        <NameSuggestionSection />
-      </Card>
     </aside>
   );
 }
