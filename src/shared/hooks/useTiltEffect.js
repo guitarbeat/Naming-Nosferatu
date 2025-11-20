@@ -14,6 +14,17 @@ export function useTiltEffect(options = {}) {
     scale = 1.02,
   } = options;
 
+  // * Validate options to ensure they're valid numbers
+  const validSmoothing =
+    Number.isFinite(smoothing) && smoothing > 0 && smoothing <= 1
+      ? smoothing
+      : 0.1;
+  const validMaxRotation =
+    Number.isFinite(maxRotation) && maxRotation > 0 ? maxRotation : 10;
+  const validPerspective =
+    Number.isFinite(perspective) && perspective > 0 ? perspective : 1000;
+  const validScale = Number.isFinite(scale) && scale > 0 ? scale : 1.02;
+
   const elementRef = useRef(null);
   const animationFrameRef = useRef(null);
   const targetRotationRef = useRef({ ...INITIAL_TRANSFORM });
@@ -106,30 +117,73 @@ export function useTiltEffect(options = {}) {
         return;
       }
 
+      // * Check if component is still mounted before updating state
+      if (!elementRef.current) {
+        animationFrameRef.current = null;
+        return;
+      }
+
       setTransform((current) => {
+        // * Defensive checks: ensure current is an object with valid numeric properties
+        if (!current || typeof current !== "object") {
+          animationFrameRef.current = null;
+          return INITIAL_TRANSFORM;
+        }
+
+        const currentRotateX =
+          typeof current.rotateX === "number" &&
+          Number.isFinite(current.rotateX)
+            ? current.rotateX
+            : 0;
+        const currentRotateY =
+          typeof current.rotateY === "number" &&
+          Number.isFinite(current.rotateY)
+            ? current.rotateY
+            : 0;
+
+        const target = targetRotationRef.current || INITIAL_TRANSFORM;
+        const targetRotateX =
+          typeof target.rotateX === "number" && Number.isFinite(target.rotateX)
+            ? target.rotateX
+            : 0;
+        const targetRotateY =
+          typeof target.rotateY === "number" && Number.isFinite(target.rotateY)
+            ? target.rotateY
+            : 0;
+
         const next = {
           rotateX:
-            current.rotateX +
-            (targetRotationRef.current.rotateX - current.rotateX) * smoothing,
+            currentRotateX + (targetRotateX - currentRotateX) * validSmoothing,
           rotateY:
-            current.rotateY +
-            (targetRotationRef.current.rotateY - current.rotateY) * smoothing,
+            currentRotateY + (targetRotateY - currentRotateY) * validSmoothing,
         };
 
+        // * Ensure calculated values are valid numbers
+        if (!Number.isFinite(next.rotateX) || !Number.isFinite(next.rotateY)) {
+          animationFrameRef.current = null;
+          return INITIAL_TRANSFORM;
+        }
+
         const isCloseToTarget =
-          Math.abs(next.rotateX - targetRotationRef.current.rotateX) < 0.01 &&
-          Math.abs(next.rotateY - targetRotationRef.current.rotateY) < 0.01;
+          Math.abs(next.rotateX - targetRotateX) < 0.01 &&
+          Math.abs(next.rotateY - targetRotateY) < 0.01;
 
         if (isCloseToTarget) {
           animationFrameRef.current = null;
-          return { ...targetRotationRef.current };
+          return { rotateX: targetRotateX, rotateY: targetRotateY };
         }
 
-        animationFrameRef.current = requestAnimationFrame(smoothTransform);
+        // * Only schedule next frame if element still exists
+        if (elementRef.current) {
+          animationFrameRef.current = requestAnimationFrame(smoothTransform);
+        } else {
+          animationFrameRef.current = null;
+        }
+
         return next;
       });
     },
-    [smoothing],
+    [validSmoothing],
   );
 
   const startAnimation = useCallback(() => {
@@ -158,17 +212,26 @@ export function useTiltEffect(options = {}) {
       const y = event.clientY - centerY;
 
       const maxDistance = Math.max(rect.width, rect.height) / 2;
-      const rotateXValue = (y / maxDistance) * maxRotation;
-      const rotateYValue = -(x / maxDistance) * maxRotation;
 
-      targetRotationRef.current = {
-        rotateX: rotateXValue,
-        rotateY: rotateYValue,
-      };
+      // * Defensive check: ensure maxDistance is valid
+      if (!Number.isFinite(maxDistance) || maxDistance === 0) {
+        return;
+      }
 
-      startAnimation();
+      const rotateXValue = (y / maxDistance) * validMaxRotation;
+      const rotateYValue = -(x / maxDistance) * validMaxRotation;
+
+      // * Ensure calculated values are valid numbers
+      if (Number.isFinite(rotateXValue) && Number.isFinite(rotateYValue)) {
+        targetRotationRef.current = {
+          rotateX: rotateXValue,
+          rotateY: rotateYValue,
+        };
+
+        startAnimation();
+      }
     },
-    [maxRotation, startAnimation],
+    [validMaxRotation, startAnimation],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -200,14 +263,18 @@ export function useTiltEffect(options = {}) {
       return {};
     }
 
+    // * Ensure transform values are valid numbers
+    const rotateX = Number.isFinite(transform?.rotateX) ? transform.rotateX : 0;
+    const rotateY = Number.isFinite(transform?.rotateY) ? transform.rotateY : 0;
+
     return {
-      transform: `perspective(${perspective}px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(${scale})`,
+      transform: `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`,
       transition: animationFrameRef.current
         ? "none"
         : "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
       willChange: "transform",
     };
-  }, [transform, perspective, scale, isTiltDisabled]);
+  }, [transform, validPerspective, validScale, isTiltDisabled]);
 
   return {
     elementRef,

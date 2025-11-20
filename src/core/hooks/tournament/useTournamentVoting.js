@@ -1,6 +1,7 @@
 import { useCallback, useRef, useEffect } from "react";
 import { getNextMatch } from "./useTournamentState";
 import { computeRating } from "../../../shared/utils/coreUtils";
+import { ErrorManager } from "../../../shared/services/errorManager";
 
 export function useTournamentVoting({
   names,
@@ -107,7 +108,7 @@ export function useTournamentVoting({
               isRetryable: false,
               affectsUserData: false,
               isCritical: true,
-            }
+            },
           );
           return;
         }

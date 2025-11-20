@@ -307,7 +307,6 @@
   position: absolute;
   inset: 0;
   content: "";
-  pointer-events: none;
   background: linear-gradient(
     120deg,
     transparent,

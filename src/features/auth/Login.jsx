@@ -188,7 +188,7 @@ function Login({ onLogin }) {
         }
 
         // * Set fallback message
-          setCatFact("Cats are amazing creatures with unique personalities!");
+        setCatFact("Cats are amazing creatures with unique personalities!");
       }
     };
 

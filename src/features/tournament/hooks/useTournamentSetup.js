@@ -65,7 +65,7 @@ export function useTournamentSetup(userName) {
           }
         } catch (timeoutError) {
           // * Timeout or error getting client - use fallback
-          timeoutIds.forEach(id => clearTimeout(id));
+          timeoutIds.forEach((id) => clearTimeout(id));
           setAvailableNames(FALLBACK_NAMES);
           setIsLoading(false);
           ErrorManager.handleError(
@@ -75,13 +75,13 @@ export function useTournamentSetup(userName) {
               isRetryable: true,
               affectsUserData: false,
               isCritical: false,
-            }
+            },
           );
           return;
         }
 
         if (!supabaseClient) {
-          timeoutIds.forEach(id => clearTimeout(id));
+          timeoutIds.forEach((id) => clearTimeout(id));
           setAvailableNames(FALLBACK_NAMES);
           setIsLoading(false);
           return;
@@ -103,10 +103,7 @@ export function useTournamentSetup(userName) {
           const { promise: fetchTimeout, timeoutId: fetchTimeoutId } =
             createTimeout(15000, "Data fetch timeout after 15 seconds");
 
-          const result = await Promise.race([
-            fetchPromise,
-            fetchTimeout,
-          ]);
+          const result = await Promise.race([fetchPromise, fetchTimeout]);
 
           // * Clear timeout on successful resolution to prevent memory leaks
           if (fetchTimeoutId) {
@@ -118,7 +115,7 @@ export function useTournamentSetup(userName) {
           [namesData, { data: hiddenData, error: hiddenError }] = result;
         } catch (timeoutError) {
           // * Timeout fetching data - use fallback
-          timeoutIds.forEach(id => clearTimeout(id));
+          timeoutIds.forEach((id) => clearTimeout(id));
           setAvailableNames(FALLBACK_NAMES);
           setIsLoading(false);
           ErrorManager.handleError(
@@ -128,7 +125,7 @@ export function useTournamentSetup(userName) {
               isRetryable: true,
               affectsUserData: false,
               isCritical: false,
-            }
+            },
           );
           return;
         }
@@ -171,7 +168,7 @@ export function useTournamentSetup(userName) {
         );
       } catch (err) {
         // Provide a clear offline fallback list when backend fails
-        timeoutIds.forEach(id => clearTimeout(id));
+        timeoutIds.forEach((id) => clearTimeout(id));
         setAvailableNames(FALLBACK_NAMES);
         errorActions.logError(err, "TournamentSetup - Fetch Names", {
           isRetryable: true,
@@ -179,7 +176,7 @@ export function useTournamentSetup(userName) {
           isCritical: false,
         });
       } finally {
-        timeoutIds.forEach(id => clearTimeout(id));
+        timeoutIds.forEach((id) => clearTimeout(id));
         setIsLoading(false);
       }
     };
@@ -215,7 +212,7 @@ export function useTournamentSetup(userName) {
         // Don't block the UI if saving fails
       }
     },
-    [userName, devLog], // Added devLog dependency
+    [userName], // devLog is a stable utility function, doesn't need to be in deps
   );
 
   const scheduleSave = useCallback(

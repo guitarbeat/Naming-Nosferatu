@@ -281,7 +281,8 @@ function AppLayout({
 }) {
   const { collapsed, collapsedWidth } = useSidebar();
   const { isLoggedIn } = user;
-  const { view: currentView, setView, onStartNewTournament } = sidebarProps;
+  // * sidebarProps destructured but not all properties are used
+  // const { view: currentView, setView, onStartNewTournament } = sidebarProps;
 
   const appClassName = [
     "app",
@@ -306,7 +307,6 @@ function AppLayout({
         .join(" "),
     [isLoggedIn],
   );
-
 
   return (
     <div className={appClassName} style={layoutStyle}>

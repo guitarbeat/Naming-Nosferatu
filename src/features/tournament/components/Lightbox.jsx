@@ -83,9 +83,18 @@ function Lightbox({
 
   // Preload adjacent images for smoother navigation
   useEffect(() => {
+    // * Only preload if lightbox is open and images are available
+    if (!images || images.length === 0 || preloadImages.length === 0) {
+      return;
+    }
+
     const links = [];
     preloadImages.forEach((imgUrl) => {
       if (imgUrl) {
+        // * Use Image object for more reliable preloading
+        const img = new Image();
+        img.src = imgUrl;
+        // * Also add link preload for better browser optimization
         const link = document.createElement("link");
         link.rel = "preload";
         link.as = "image";
@@ -94,6 +103,7 @@ function Lightbox({
         links.push(link);
       }
     });
+
     return () => {
       links.forEach((link) => {
         if (document.head.contains(link)) {
@@ -101,7 +111,7 @@ function Lightbox({
         }
       });
     };
-  }, [preloadImages]);
+  }, [preloadImages, images]);
 
   return (
     <div
