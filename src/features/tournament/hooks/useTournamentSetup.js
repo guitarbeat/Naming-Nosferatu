@@ -31,7 +31,7 @@ export function useTournamentSetup(userName) {
   useEffect(() => {
     const fetchNames = async () => {
       const timeoutIds = [];
-      
+
       // * Helper to create timeout with cleanup tracking
       const createTimeout = (ms, errorMsg) => {
         let timeoutId = null;
@@ -44,19 +44,19 @@ export function useTournamentSetup(userName) {
 
       try {
         setIsLoading(true);
-        
+
         // * Add timeout to prevent infinite loading (10 seconds)
         let supabaseClient;
-        
+
         try {
-          const { promise: clientTimeout, timeoutId: clientTimeoutId } = 
+          const { promise: clientTimeout, timeoutId: clientTimeoutId } =
             createTimeout(10000, "Supabase client timeout after 10 seconds");
-          
+
           supabaseClient = await Promise.race([
             resolveSupabaseClient(),
             clientTimeout,
           ]);
-          
+
           // * Clear timeout on successful resolution to prevent memory leaks
           if (clientTimeoutId) {
             clearTimeout(clientTimeoutId);
@@ -98,23 +98,23 @@ export function useTournamentSetup(userName) {
         ]);
 
         let namesData, hiddenData, hiddenError;
-        
+
         try {
-          const { promise: fetchTimeout, timeoutId: fetchTimeoutId } = 
+          const { promise: fetchTimeout, timeoutId: fetchTimeoutId } =
             createTimeout(15000, "Data fetch timeout after 15 seconds");
-          
+
           const result = await Promise.race([
             fetchPromise,
             fetchTimeout,
           ]);
-          
+
           // * Clear timeout on successful resolution to prevent memory leaks
           if (fetchTimeoutId) {
             clearTimeout(fetchTimeoutId);
             const index = timeoutIds.indexOf(fetchTimeoutId);
             if (index > -1) timeoutIds.splice(index, 1);
           }
-          
+
           [namesData, { data: hiddenData, error: hiddenError }] = result;
         } catch (timeoutError) {
           // * Timeout fetching data - use fallback

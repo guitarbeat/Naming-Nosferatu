@@ -5,7 +5,9 @@
 
 import PropTypes from "prop-types";
 import { Card } from "../../../../shared/components";
+import { StartButton } from "../index";
 import styles from "../../Tournament.module.css";
+import setupStyles from "../../TournamentSetup.module.css";
 
 function TournamentHeader({
   // Tournament phase props
@@ -17,11 +19,11 @@ function TournamentHeader({
   selectedNames,
   availableNames,
   onSelectAll,
-  isSwipeMode: _isSwipeMode,
-  onSwipeModeToggle: _onSwipeModeToggle,
-  showCatPictures: _showCatPictures,
-  onCatPicturesToggle: _onCatPicturesToggle,
-  onStart: _onStart,
+  isSwipeMode,
+  onSwipeModeToggle,
+  showCatPictures,
+  onCatPicturesToggle,
+  onStart,
   isAdmin,
 }) {
   // Determine if we're in setup mode (has selectedNames) or tournament mode (has roundNumber)
@@ -29,28 +31,68 @@ function TournamentHeader({
 
   if (isSetupMode) {
     // Setup mode: show progress and controls
-    const progressPercent =
-      availableNames && availableNames.length > 0
-        ? Math.max((selectedNames.length / availableNames.length) * 100, 5)
-        : 0;
-
     return (
-      <div className={styles.panelHeader}>
-        <div className={styles.headerRow}>
-          <div className={styles.headerActions}>
+      <div className={setupStyles.panelHeader}>
+        <div className={setupStyles.headerRow}>
+          <div className={setupStyles.headerActions}>
             {isAdmin && (
               <button
-                className={styles.selectAllButton}
+                className={setupStyles.selectAllButton}
                 onClick={onSelectAll}
                 type="button"
+                aria-label={
+                  selectedNames.length === availableNames.length
+                    ? "Clear all selections"
+                    : "Select all names"
+                }
               >
                 {selectedNames.length === availableNames.length
-                  ? "Deselect All"
-                  : "Select All"}
+                  ? "✨ Start Fresh"
+                  : "🎲 Select All"}
               </button>
             )}
-          </div>
 
+            {onSwipeModeToggle && (
+              <button
+                onClick={onSwipeModeToggle}
+                className={`${setupStyles.headerActionButton} ${setupStyles.swipeModeToggleButton} ${
+                  isSwipeMode ? setupStyles.headerActionButtonActive : ""
+                }`}
+                type="button"
+                aria-label={
+                  isSwipeMode ? "Switch to card mode" : "Switch to swipe mode"
+                }
+              >
+                {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
+              </button>
+            )}
+
+            {onCatPicturesToggle && (
+              <button
+                onClick={onCatPicturesToggle}
+                className={`${setupStyles.headerActionButton} ${setupStyles.catPicturesToggleButton} ${
+                  showCatPictures ? setupStyles.headerActionButtonActive : ""
+                }`}
+                type="button"
+                aria-label={
+                  showCatPictures
+                    ? "Hide cat pictures"
+                    : "Show cat pictures on cards"
+                }
+                title="Add random cat pictures to make it more like Tinder! 🐱"
+              >
+                {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+              </button>
+            )}
+
+            {selectedNames.length >= 2 && (
+              <StartButton
+                selectedNames={selectedNames}
+                onStart={onStart}
+                variant="header"
+              />
+            )}
+          </div>
         </div>
       </div>
     );

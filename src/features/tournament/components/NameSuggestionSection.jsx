@@ -82,10 +82,10 @@ const NameSuggestionSection = memo(() => {
           nameValidation.value,
           descriptionValidation.value,
         );
-        
+
         // * Check if component is still mounted before updating state
         if (!isMountedRef.current) return;
-        
+
         if (res?.success === false) {
           throw new Error(res.error || "Failed to add name");
         }
@@ -106,7 +106,7 @@ const NameSuggestionSection = memo(() => {
       } catch (err) {
         // * Check if component is still mounted before updating state
         if (!isMountedRef.current) return;
-        
+
         setError("Failed to add name. It might already exist.");
         ErrorManager.handleError(err, "Add Name Suggestion", {
           isRetryable: true,
