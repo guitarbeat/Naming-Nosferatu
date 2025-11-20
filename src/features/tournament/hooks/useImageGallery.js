@@ -12,7 +12,7 @@ import { CAT_IMAGES } from "../constants";
  * Custom hook for loading gallery images from multiple sources
  * @returns {Object} Gallery images and management functions
  */
-export function useImageGallery() {
+export function useImageGallery({ isLightboxOpen }) {
   const [galleryImages, setGalleryImages] = useState(CAT_IMAGES);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,6 +50,7 @@ export function useImageGallery() {
     };
 
     (async () => {
+      if (isLightboxOpen) return;
       setIsLoading(true);
       setError(null);
 
@@ -85,7 +86,7 @@ export function useImageGallery() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isLightboxOpen]);
 
   const addImages = useCallback((newImages) => {
     setGalleryImages((prev) => {

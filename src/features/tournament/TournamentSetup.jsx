@@ -40,15 +40,6 @@ function TournamentSetupContent({ onStart, userName }) {
     handleSelectAll,
   } = useTournamentSetup(userName);
 
-  const {
-    galleryImages,
-    addImages,
-    isLoading: _imagesLoading,
-    imageMap,
-  } = useImageGallery();
-  const isAdmin = useAdminStatus(userName);
-  const categories = useCategoryFilters(availableNames);
-
   // * UI state
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,32 +50,26 @@ function TournamentSetupContent({ onStart, userName }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
+  const {
+    galleryImages,
+    addImages,
+    isLoading: _imagesLoading,
+    imageMap,
+  } = useImageGallery({ isLightboxOpen: lightboxOpen });
+  const isAdmin = useAdminStatus(userName);
+  const categories = useCategoryFilters(availableNames);
+
   // * Lightbox handlers - optimized with useCallback and imageMap
+  // * Original working approach: use imageMap with graceful fallback
   const handleImageOpen = useCallback(
     (image) => {
-      // * Validate image parameter before opening lightbox
-      if (!image || typeof image !== "string") {
-        console.warn("handleImageOpen called with invalid image:", image);
-        return;
-      }
-
-      // * Ensure image exists in galleryImages
-      if (!galleryImages || galleryImages.length === 0) {
-        console.warn("Cannot open lightbox: no gallery images available");
-        return;
-      }
-
-      // * Find index in galleryImages array (more reliable than imageMap)
       const idx = galleryImages.indexOf(image);
-      if (idx === -1) {
-        console.warn("Image not found in gallery:", image);
-        return;
+      if (idx !== -1) {
+        setLightboxIndex(idx);
+        setLightboxOpen(true);
       }
-
-      setLightboxIndex(idx);
-      setLightboxOpen(true);
     },
-    [imageMap, galleryImages]
+    [galleryImages]
   );
 
   const handleImagesUploaded = useCallback(
