@@ -67,13 +67,21 @@ function App() {
   // Get admin status from server-side validation
   const { isAdmin } = user;
 
-  // * Keyboard shortcut for performance dashboard (Ctrl+Shift+P)
+  // * Keyboard shortcuts
   useEffect(() => {
-    if (!isAdmin) return;
     const handleKeyDown = (event) => {
-      if (event.ctrlKey && event.shiftKey && event.key === "P") {
+      // * Performance dashboard toggle (Ctrl+Shift+P) - Admin only
+      if (isAdmin && event.ctrlKey && event.shiftKey && event.key === "P") {
         event.preventDefault();
         uiActions.togglePerformanceDashboard();
+      }
+      
+      // * Sidebar toggle (Ctrl+B or Cmd+B)
+      if ((event.ctrlKey || event.metaKey) && event.key === "b") {
+        event.preventDefault();
+        // * Toggle sidebar - will be handled in AppLayout
+        const sidebarToggleEvent = new CustomEvent("toggleSidebar");
+        window.dispatchEvent(sidebarToggleEvent);
       }
     };
 
@@ -279,8 +287,18 @@ function AppLayout({
   uiActions,
   isAdmin,
 }) {
-  const { collapsed, collapsedWidth } = useSidebar();
+  const { collapsed, collapsedWidth, toggleCollapsed } = useSidebar();
   const { isLoggedIn } = user;
+
+  // * Listen for keyboard shortcut to toggle sidebar
+  useEffect(() => {
+    const handleToggleSidebar = () => {
+      toggleCollapsed();
+    };
+
+    window.addEventListener("toggleSidebar", handleToggleSidebar);
+    return () => window.removeEventListener("toggleSidebar", handleToggleSidebar);
+  }, [toggleCollapsed]);
   // * sidebarProps destructured but not all properties are used
   // const { view: currentView, setView, onStartNewTournament } = sidebarProps;
 
