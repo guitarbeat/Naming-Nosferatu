@@ -611,12 +611,6 @@ export const useAppStoreInitialization = () => {
   }, [userActions, uiActions]);
 };
 
-// * Store selectors for granular subscriptions (unused - kept for potential future use)
-// const useTournamentData = () => useAppStore((state) => state.tournament);
-// const useUserData = () => useAppStore((state) => state.user);
-// const useUIState = () => useAppStore((state) => state.ui);
-// const useErrorState = () => useAppStore((state) => state.errors);
-
 // * Computed selectors for derived state
 export const selectTournamentStats = (state) => {
   const totalNames = state.tournament.names?.length || 0;
@@ -633,28 +627,5 @@ export const selectTournamentStats = (state) => {
       totalPossibleMatches > 0 ? (totalVotes / totalPossibleMatches) * 100 : 0,
   };
 };
-
-// * Unused selectors (kept for potential future use)
-// const useTournamentStats = () => useAppStore(selectTournamentStats);
-// const useCurrentView = () =>
-//   useAppStore((state) => state.tournament.currentView);
-// const useTournamentProgress = () =>
-//   useAppStore((state) => {
-//     const totalNames = state.tournament.names?.length || 0;
-//     const totalVotes = state.tournament.voteHistory.length;
-//     const totalPossibleVotes =
-//       totalNames > 0 ? (totalNames * (totalNames - 1)) / 2 : 0;
-//     return {
-//       current: totalVotes,
-//       total: totalPossibleVotes,
-//       percentage:
-//         totalPossibleVotes > 0 ? (totalVotes / totalPossibleVotes) * 100 : 0,
-//     };
-//   });
-// const useTournamentActions = () =>
-//   useAppStore((state) => state.tournamentActions);
-// const useUserActions = () => useAppStore((state) => state.userActions);
-// const useUIActions = () => useAppStore((state) => state.uiActions);
-// const useErrorActions = () => useAppStore((state) => state.errorActions);
 
 export default useAppStore;

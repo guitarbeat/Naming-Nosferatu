@@ -208,6 +208,3 @@ Profile.propTypes = {
 };
 
 export default Profile;
-
-// * Unused component removed
-// function ProfileWithErrorBoundary(props) { ... }

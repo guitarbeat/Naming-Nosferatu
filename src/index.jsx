@@ -17,7 +17,6 @@ import "@styles/index.css";
 import App from "./App.jsx";
 import ErrorBoundary from "./shared/components/Error/ErrorBoundary.jsx";
 import ErrorBoundaryFallback from "./shared/components/Error/ErrorBoundaryFallback.jsx";
-// import { Analytics } from '@vercel/analytics/react';
 
 /**
  * * Safely converts a value to a string for logging
@@ -108,7 +107,6 @@ root.render(
   <StrictMode>
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <App />
-      {/* <Analytics /> */}
     </ErrorBoundary>
-  </StrictMode>,
+  </StrictMode>
 );

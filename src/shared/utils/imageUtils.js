@@ -25,46 +25,6 @@ async function loadImageFromFile(file) {
 }
 
 /**
- * * Validate if an image URL is accessible (unused - kept for potential future use)
- * @param {string} url - Image URL to validate
- * @returns {Promise<boolean>} True if image is accessible
- */
-// export async function validateImageUrl(url) {
-async function _validateImageUrl(url) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = url;
-  });
-}
-
-/**
- * * Preload an image with error handling (unused - kept for potential future use)
- * @param {string} src - Image source URL
- * @returns {Promise<HTMLImageElement>} Loaded image element
- */
-// export async function preloadImage(src) {
-async function _preloadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = (_error) => reject(new Error(`Failed to load image: ${src}`));
-    img.src = src;
-  });
-}
-
-/**
- * * Get fallback image URL when primary image fails (unused - kept for potential future use)
- * @param {string} originalSrc - Original image source
- * @returns {string} Fallback image URL
- */
-// export function getFallbackImageUrl(_originalSrc) {
-function _getFallbackImageUrl(_originalSrc) {
-  return "/assets/images/IMG_0778.jpg";
-}
-
-/**
  * * Compress an image file to WebP using a canvas
  * @param {File} file - Original image file
  * @param {Object} options - { maxWidth, maxHeight, quality }

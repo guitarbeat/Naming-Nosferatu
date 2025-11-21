@@ -66,7 +66,7 @@ const getRoleSourceOrder = (state) => {
 
   const preferred =
     state.preferredRoleSource &&
-    !state.disabledSources.has(state.preferredRoleSource)
+      !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -260,35 +260,3 @@ export async function isUserAdmin(userIdOrName) {
   return _hasRole(userIdOrName, USER_ROLES.ADMIN);
 }
 
-/**
- * Gets the current user's role (unused - kept for potential future use)
- * @param {string} userName - The username to check
- * @returns {Promise<string|null>} The user's role or null if not found
- */
-// export async function getUserRole(userName) {
-async function _getUserRole(userName) {
-  if (!userName) return null;
-
-  const activeSupabase = await resolveSupabaseClient();
-
-  if (!activeSupabase) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "Supabase client is not configured. Using default user role.",
-      );
-    }
-    return USER_ROLES.USER;
-  }
-
-  try {
-    const trimmedUserName = userName.trim?.() ?? userName;
-    const role = await fetchUserRole(activeSupabase, trimmedUserName);
-
-    return role ?? USER_ROLES.USER;
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error getting user role:", error);
-    }
-    return USER_ROLES.USER;
-  }
-}
