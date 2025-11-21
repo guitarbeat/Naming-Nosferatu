@@ -29,9 +29,6 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 // * Component prop types for external use
 
-// * Unused variable removed
-// const components = { ... }
-
 // * Named exports
 export {
   Button,

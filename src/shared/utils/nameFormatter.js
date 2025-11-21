@@ -50,6 +50,3 @@ export const validateNameData = (nameData) => {
 
   return { valid: true, error: null };
 };
-
-// * Unused function removed
-// const formatMiddleNames = (middleNames) => { ... }

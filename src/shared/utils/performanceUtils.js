@@ -31,8 +31,3 @@ export function throttle(func, delay) {
     }
   };
 }
-
-// * Unused functions removed
-// function debounce(func, delay) { ... }
-// function safeRequestAnimationFrame(callback) { ... }
-// function batchDOMUpdates(updateFunction) { ... }

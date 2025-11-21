@@ -101,11 +101,3 @@ export const validateDescription = (description) => {
 
   return { success: true, value: trimmed };
 };
-
-// * Unused validation functions removed
-// const validateTournamentSize = (size) => { ... }
-// const validateRating = (rating) => { ... }
-// const validateEmail = (email) => { ... }
-// const validateForm = (validations, values) => { ... }
-// const validateName = (name) => { ... }
-// const validateGeneralDescription = (description) => { ... }

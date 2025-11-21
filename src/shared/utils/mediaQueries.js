@@ -38,16 +38,3 @@ export const attachMediaQueryListener = (mediaQueryList, listener) => {
 
   return () => {};
 };
-
-// * Unused function removed
-// const subscribeToMediaQuery = (query, listener) => {
-//   const mediaQueryList =
-//     typeof query === "string" ? getMediaQueryList(query) : query;
-//   if (!mediaQueryList) {
-//     return () => {};
-//   }
-//   const cleanup = attachMediaQueryListener(mediaQueryList, listener);
-//   return () => {
-//     cleanup();
-//   };
-// };
