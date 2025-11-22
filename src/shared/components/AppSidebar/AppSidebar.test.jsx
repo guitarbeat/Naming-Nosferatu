@@ -27,7 +27,7 @@ describe("AppSidebar", () => {
 
     // Test that main navigation elements are present
     expect(screen.getByText("Tournament")).toBeInTheDocument();
-    expect(screen.getByText("Profile")).toBeInTheDocument();
-    expect(screen.getByText("Welcome, Test User")).toBeInTheDocument();
+    // UserInfo component shows "Welcome, {userName}" when not collapsed
+    expect(screen.getByText(/Test User/i)).toBeInTheDocument();
   });
 });

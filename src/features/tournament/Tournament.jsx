@@ -103,12 +103,14 @@ function TournamentContent({
       now - lastRenderLogRef.current >
       TOURNAMENT_TIMING.RENDER_LOG_THROTTLE
     ) {
-      console.debug("[DEV] 🎮 Tournament: render", {
-        namesCount: names?.length || 0,
-        randomizedCount: randomizedNames?.length || 0,
-        hasMatch: !!currentMatch,
-      });
-      lastRenderLogRef.current = now;
+      if (process.env.NODE_ENV === "development") {
+        console.debug("[DEV] 🎮 Tournament: render", {
+          namesCount: names?.length || 0,
+          randomizedCount: randomizedNames?.length || 0,
+          hasMatch: !!currentMatch,
+        });
+        lastRenderLogRef.current = now;
+      }
     }
   }
 
