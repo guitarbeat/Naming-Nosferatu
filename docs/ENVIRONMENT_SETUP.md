@@ -1,24 +1,6 @@
 # Environment Setup
 
-## Backend Offline Issue Fix ✅ RESOLVED
-
-The "backend offline" error has been fixed! The Supabase environment variables have been successfully configured.
-
-## How It Was Fixed
-
-1. **Identified the Issue**: The backend was showing "temporary fallback — backend offline" because Supabase environment variables were missing
-2. **Used Vercel CLI**: Retrieved the production environment variables from the deployed Vercel project
-3. **Fixed Backend Configuration**: Updated the backend API client to properly handle Supabase connections
-4. **Environment Variables**: Successfully loaded SUPABASE_URL and SUPABASE_ANON_KEY from the production deployment
-
-## Current Status
-
-✅ Backend connection: WORKING  
-✅ Supabase client: CONFIGURED  
-✅ Environment variables: LOADED  
-✅ Application: RUNNING  
-
-The application should now be fully functional without the "backend offline" error.
+This guide will help you set up the development environment for Name Nosferatu.
 
 ---
 
@@ -26,17 +8,26 @@ The application should now be fully functional without the "backend offline" err
 
 ### 1. Create Environment File
 
-Create a `.env.local` file in the project root with the following content:
+Copy the example environment file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your actual Supabase credentials:
 
 ```bash
 # Supabase Configuration
-VITE_SUPABASE_URL=https://glgmoelyqnbyavabjgyw.supabase.co
+# Get these from: https://supabase.com/dashboard > Your Project > Settings > API
+VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 
-# Alternative environment variable names (for compatibility)
-SUPABASE_URL=https://glgmoelyqnbyavabjgyw.supabase.co
+# Alternative environment variable names (for Node.js/Vercel compatibility)
+SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 ```
+
+**Note:** The application supports both `VITE_` prefixed variables (for Vite) and direct variable names (for Node.js/Vercel). Environment variables take priority over hardcoded fallbacks.
 
 ### 2. Get Your Supabase Anon Key
 

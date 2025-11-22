@@ -202,14 +202,25 @@ npm run test:watch
 
 ### **Environment Variables**
 
+Create a `.env.local` file in the project root (see `.env.example` for template):
+
 ```bash
-# Required for Supabase integration (supports both prefixes)
+# Supabase Configuration (supports both VITE_ prefix and direct names)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# Alternative names (for Node.js/Vercel compatibility)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
-# Legacy Vite-prefixed variables are still supported for local development:
-# VITE_SUPABASE_URL=...
-# VITE_SUPABASE_ANON_KEY=...
 ```
+
+**Getting Your Supabase Credentials:**
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Navigate to Settings > API
+4. Copy the Project URL and anon public key
+
+**Note:** The application automatically uses environment variables if available, with hardcoded fallbacks for development only. For production, always use environment variables.
 
 ### **Build Commands**
 

@@ -8,10 +8,30 @@ declare global {
   }
 }
 
-// Hardcoded Supabase credentials for reliability
-const SUPABASE_URL = "https://ocghxwwwuubgmwsxgyoy.supabase.co";
+// * Read from environment variables (prioritize env vars over hardcoded values)
+// * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
+const getEnvVar = (key: string): string | undefined => {
+  // Try Vite env first (browser)
+  if (typeof import.meta !== 'undefined' && import.meta.env) {
+    const viteKey = `VITE_${key}`;
+    if (import.meta.env[viteKey]) return import.meta.env[viteKey];
+    if (import.meta.env[key]) return import.meta.env[key];
+  }
+  // Try Node process env
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env[key]) return process.env[key];
+    if (process.env[`VITE_${key}`]) return process.env[`VITE_${key}`];
+  }
+  return undefined;
+};
+
+const SUPABASE_URL =
+  getEnvVar('SUPABASE_URL') ||
+  "https://ocghxwwwuubgmwsxgyoy.supabase.co"; // Fallback for development
+
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0";
+  getEnvVar('SUPABASE_ANON_KEY') ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0"; // Fallback for development
 
 let supabase: SupabaseClient<Database> | null =
   typeof window !== "undefined" ? (window.__supabaseClient ?? null) : null;
@@ -35,7 +55,9 @@ const createSupabaseClient =
     }
 
     try {
-      console.log("🔌 Initializing Supabase connection...");
+      if (process.env.NODE_ENV === "development") {
+        console.log("🔌 Initializing Supabase connection...");
+      }
 
       const { createClient } = await import("@supabase/supabase-js");
 
@@ -79,16 +101,22 @@ const createSupabaseClient =
           .limit(1);
 
         if (testError) {
-          console.error(
-            "⚠️ Database connection test failed:",
-            testError.message,
-          );
+          if (process.env.NODE_ENV === "development") {
+            console.error(
+              "⚠️ Database connection test failed:",
+              testError.message,
+            );
+          }
           // Don't fail initialization, just warn
         } else {
-          console.log("✅ Supabase connection established successfully");
+          if (process.env.NODE_ENV === "development") {
+            console.log("✅ Supabase connection established successfully");
+          }
         }
       } catch (testErr) {
-        console.warn("⚠️ Could not verify database connection:", testErr);
+        if (process.env.NODE_ENV === "development") {
+          console.warn("⚠️ Could not verify database connection:", testErr);
+        }
         // Continue anyway - connection might work for actual queries
       }
 
@@ -144,7 +172,9 @@ const getSupabaseClient = async (
 
           if (shouldRetry) {
             const delay = RETRY_DELAY * Math.pow(2, retryCount);
-            console.log(`⏳ Retrying connection in ${delay}ms...`);
+            if (process.env.NODE_ENV === "development") {
+              console.log(`⏳ Retrying connection in ${delay}ms...`);
+            }
             await new Promise((resolve) => setTimeout(resolve, delay));
             return getSupabaseClient(retryCount + 1);
           }

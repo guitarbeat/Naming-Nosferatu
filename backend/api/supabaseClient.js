@@ -7,8 +7,8 @@
 // * Import Supabase client directly to avoid TypeScript/JavaScript compatibility issues
 import { createClient } from '@supabase/supabase-js';
 
-// Development mode check (browser-compatible)
-const isDev = true; // Always log in prototype mode
+// * Development mode check (browser-compatible)
+const isDev = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
 
 // * Supabase configuration (isomorphic: works in browser and Node)
 const readFromViteEnv = (key) => {
@@ -22,9 +22,19 @@ const readFromViteEnv = (key) => {
   }
 };
 
-// Hardcoded Supabase credentials for reliability in browser
-const SUPABASE_URL = 'https://ocghxwwwuubgmwsxgyoy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0';
+// * Read from environment variables (prioritize env vars over hardcoded values)
+// * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
+const SUPABASE_URL = 
+  readFromViteEnv('VITE_SUPABASE_URL') || 
+  readFromViteEnv('SUPABASE_URL') ||
+  (typeof process !== 'undefined' && process.env?.SUPABASE_URL) ||
+  'https://ocghxwwwuubgmwsxgyoy.supabase.co'; // Fallback for development
+
+const SUPABASE_ANON_KEY = 
+  readFromViteEnv('VITE_SUPABASE_ANON_KEY') || 
+  readFromViteEnv('SUPABASE_ANON_KEY') ||
+  (typeof process !== 'undefined' && process.env?.SUPABASE_ANON_KEY) ||
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0'; // Fallback for development
 
 let supabase = null;
 
@@ -33,19 +43,27 @@ const resolveSupabaseClient = async () => {
     return supabase;
   }
 
-  console.log('🔧 Backend: Resolving Supabase client...');
-  console.log('   SUPABASE_URL:', SUPABASE_URL ? 'SET' : 'NOT SET');
-  console.log('   SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  if (isDev) {
+    console.log('🔧 Backend: Resolving Supabase client...');
+    console.log('   SUPABASE_URL:', SUPABASE_URL ? 'SET' : 'NOT SET');
+    console.log('   SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.warn('Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.');
+    if (isDev) {
+      console.warn('Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.');
+    }
     return null;
   }
 
   try {
-    console.log('   Creating Supabase client...');
+    if (isDev) {
+      console.log('   Creating Supabase client...');
+    }
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('   ✅ Supabase client created successfully');
+    if (isDev) {
+      console.log('   ✅ Supabase client created successfully');
+    }
     return supabase;
   } catch (error) {
     console.error('Failed to initialize Supabase client:', error);

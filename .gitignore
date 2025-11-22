@@ -250,3 +250,6 @@ verification/*.png
 verification/*.jpg
 verification/*.jpeg
 !verification/verify_button_style.py
+
+# Internal documentation (development/debugging notes)
+.internal-docs/
