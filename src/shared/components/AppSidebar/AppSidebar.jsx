@@ -16,7 +16,7 @@ import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
-import { TournamentIcon, DashboardIcon, LogoutIcon, AdminIcon } from "./icons";
+import { TournamentIcon, DashboardIcon, LogoutIcon } from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -127,8 +127,8 @@ export function AppSidebar({
               ))}
               {/* User Info - styled like menu item */}
               {isLoggedIn && userName && (
-                <UserInfo 
-                  userName={userName} 
+                <UserInfo
+                  userName={userName}
                   onClick={() => setView("profile")}
                   isAdmin={isAdmin}
                 />

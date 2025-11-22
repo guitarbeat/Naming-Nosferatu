@@ -196,7 +196,7 @@ export function useTournamentVoting({
 
         // * Prepare updated data including current vote
         const updatedHistory = [...persistentState.matchHistory, voteData];
-        
+
         // * Calculate new match number (the match we just completed)
         const newMatchNumber = currentMatchNumber + 1;
         updateTournamentState({
@@ -224,7 +224,7 @@ export function useTournamentVoting({
         // * Handle all cases: 2 names = 1 match (round 1), 3+ names = bracket structure
         if (names.length >= 2) {
           let calculatedRound = 1;
-          
+
           // * For 2 names, there's only 1 match in round 1
           if (names.length === 2) {
             calculatedRound = 1;
@@ -235,7 +235,7 @@ export function useTournamentVoting({
             let remainingNames = names.length;
             let matchesInRound = Math.floor(remainingNames / 2);
             let matchesPlayed = 0;
-            
+
             // * Use newMatchNumber (the match we just completed) to calculate round
             while (matchesPlayed + matchesInRound < newMatchNumber) {
               matchesPlayed += matchesInRound;
@@ -247,7 +247,7 @@ export function useTournamentVoting({
               calculatedRound++;
             }
           }
-          
+
           if (calculatedRound !== roundNumber) {
             updateTournamentState({ roundNumber: calculatedRound });
             updatePersistentState({ currentRound: calculatedRound });
@@ -271,7 +271,7 @@ export function useTournamentVoting({
           currentRatings: updatedRatings,
           history: updatedHistory,
         });
-        
+
         // * If no more matches available, complete the tournament
         // * This can happen if getNextMatch returns null (no more pairs to compare)
         if (!nextMatch) {
@@ -284,7 +284,7 @@ export function useTournamentVoting({
           onComplete(finalRatings);
           return;
         }
-        
+
         updateTournamentState({ currentMatch: nextMatch });
 
         // * Clear any existing timeout before setting a new one

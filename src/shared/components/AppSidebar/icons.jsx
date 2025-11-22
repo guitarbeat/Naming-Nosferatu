@@ -45,13 +45,6 @@ export const TournamentIcon = () => (
   </Icon>
 );
 
-export const ProfileIcon = () => (
-  <Icon name="profile">
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </Icon>
-);
-
 export const SunIcon = () => (
   <Icon name="sun">
     <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
@@ -88,17 +81,3 @@ export const LogoutIcon = () => (
   </Icon>
 );
 
-export const AdminIcon = () => (
-  <Icon name="admin" width="14" height="14">
-    <path d="M12 2L2 7l10 5 10-5-10-5z" />
-    <path d="M2 17l10 5 10-5" />
-    <path d="M2 12l10 5 10-5" />
-  </Icon>
-);
-
-export const UserIcon = () => (
-  <Icon name="user" width="16" height="16">
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </Icon>
-);

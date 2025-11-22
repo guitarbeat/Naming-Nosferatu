@@ -80,7 +80,7 @@ function TournamentContent({
       currentGlobalEventListeners.clear();
     };
     // * Empty deps - refs don't need to be in dependencies
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   const {
@@ -120,29 +120,29 @@ function TournamentContent({
   const [undoExpiresAt, setUndoExpiresAt] = useState(null);
   const [undoRemainingMs, setUndoRemainingMs] = useState(0);
   const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
-  
+
   useEffect(() => {
     if (!undoExpiresAt) {
       setUndoRemainingMs(0);
       return;
     }
-    
+
     // * Update immediately
     const updateRemaining = () => {
       const remaining = Math.max(0, undoExpiresAt - Date.now());
       setUndoRemainingMs(remaining);
       return remaining;
     };
-    
+
     updateRemaining();
-    
+
     const id = setInterval(() => {
       const remaining = updateRemaining();
       if (remaining <= 0) {
         setUndoExpiresAt(null);
       }
     }, TOURNAMENT_TIMING.UNDO_UPDATE_INTERVAL);
-    
+
     return () => clearInterval(id);
   }, [undoExpiresAt]);
 
@@ -370,7 +370,7 @@ function TournamentContent({
   // * Transform match history for bracket
   const transformedMatches = useMemo(() => {
     if (!names || names.length === 0) return [];
-    
+
     return matchHistory.map((vote, index) => {
       // Prefer explicit win flags if available
       const leftWon = vote?.match?.left?.won === true;
@@ -396,12 +396,12 @@ function TournamentContent({
       }
 
       const matchNumber = vote?.matchNumber ?? index + 1;
-      
+
       // * Calculate round based on bracket structure
       // * For bracket: matches per round = Math.floor(remainingNames / 2)
       // * Winners advancing = matchesInRound + (remainingNames % 2) [winners + byes]
       let calculatedRound = 1;
-      
+
       // * For 2 names, there's only 1 match in round 1
       if (names.length === 2) {
         calculatedRound = 1;
@@ -409,7 +409,7 @@ function TournamentContent({
         let remainingNames = names.length;
         let matchesInRound = Math.floor(remainingNames / 2);
         let matchesPlayed = 0;
-        
+
         while (matchesPlayed + matchesInRound < matchNumber) {
           matchesPlayed += matchesInRound;
           // * Winners advancing = matches (1 winner each) + byes (if odd number)

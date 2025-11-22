@@ -129,7 +129,7 @@ function Results({
         }
 
         const matchNumber = vote?.matchNumber ?? index + 1;
-        
+
         // * Use the helper function for round calculation
         const calculatedRound = calculateBracketRound(namesCount, matchNumber);
 

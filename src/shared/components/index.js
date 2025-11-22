@@ -16,18 +16,12 @@ import SkeletonLoader from "./SkeletonLoader/SkeletonLoader";
 import Input from "./Form/Input";
 import Select from "./Form/Select";
 
-// * Layout Components
-
 // * Feature Components
 import NameCard from "./NameCard/NameCard";
 import Bracket from "./Bracket/Bracket";
 import CatImage from "./CatImage/CatImage";
 import StartTournamentButton from "./StartTournamentButton/StartTournamentButton";
 import ScrollToTopButton from "./ScrollToTopButton";
-
-// * UI System Components
-
-// * Component prop types for external use
 
 // * Named exports
 export {
@@ -45,5 +39,3 @@ export {
   StartTournamentButton,
   ScrollToTopButton,
 };
-
-// * Default export reuses the same object

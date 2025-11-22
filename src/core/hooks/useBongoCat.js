@@ -155,7 +155,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
 
     // Set up ResizeObserver for container positioning
     let cleanupContainerListeners = null;
-    
+
     if (containerRef && containerRef.current) {
       resizeObserverRef.current = new ResizeObserver(updatePosition);
       resizeObserverRef.current.observe(containerRef.current);
@@ -249,7 +249,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       // * Always clean up keydown/keyup listeners
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("keyup", handleKeyUp);
-      
+
       // * Clean up container listeners if they were set up
       if (cleanupContainerListeners) {
         cleanupContainerListeners();

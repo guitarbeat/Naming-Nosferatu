@@ -46,11 +46,11 @@ export function useProfileStats(activeUser) {
         }
       } catch (error) {
         if (!isMountedRef.current) return;
-        
+
         if (process.env.NODE_ENV === "development") {
           console.error("Error loading profile stats:", error);
         }
-        
+
         // Set to null on error to show empty state
         setStats(null);
       } finally {
@@ -92,7 +92,7 @@ export function useProfileStats(activeUser) {
 
   useEffect(() => {
     if (activeUser) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+
       fetchSelectionStats(activeUser);
     }
   }, [activeUser, fetchSelectionStats]);

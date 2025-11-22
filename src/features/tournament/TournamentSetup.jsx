@@ -15,7 +15,6 @@ import {
 import {
   NameSelection,
   SwipeableNameCards,
-  TournamentHeader,
   TournamentSidebar,
   StartButton,
   Lightbox,
@@ -55,13 +54,12 @@ function TournamentSetupContent({ onStart, userName }) {
     galleryImages,
     addImages,
     isLoading: _imagesLoading,
-    imageMap,
+    imageMap: _imageMap,
   } = useImageGallery({ isLightboxOpen: lightboxOpen });
   const isAdmin = useAdminStatus(userName);
   const categories = useCategoryFilters(availableNames);
 
-  // * Lightbox handlers - optimized with useCallback and imageMap
-  // * Original working approach: use imageMap with graceful fallback
+  // * Lightbox handlers - optimized with useCallback
   const handleImageOpen = useCallback(
     (image) => {
       const idx = galleryImages.indexOf(image);

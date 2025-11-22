@@ -37,7 +37,7 @@ const ProfileNameList = ({
   onBulkHide,
   onBulkUnhide,
   onFilteredCountChange,
-  onApplyFilters,
+  onApplyFilters: _onApplyFilters,
   stats,
   highlights,
   filteredCount,

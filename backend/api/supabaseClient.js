@@ -2058,17 +2058,6 @@ export const categoriesAPI = {
 // ===== UTILITY FUNCTIONS =====
 
 /**
- * Note: Rating history is now stored in cat_name_ratings.rating_history as JSONB
- * This function is kept for backward compatibility but no longer creates tables
- */
-export const ensureRatingHistoryTable = async () => {
-  console.log(
-    'Rating history is now stored in cat_name_ratings.rating_history as JSONB'
-  );
-  return { success: true };
-};
-
-/**
  * Delete a name with cascade (only if hidden)
  */
 export const deleteName = async (nameId) => {

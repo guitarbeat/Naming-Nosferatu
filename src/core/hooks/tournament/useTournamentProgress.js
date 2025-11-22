@@ -72,12 +72,12 @@ export function useTournamentProgress({
     if (namesLength >= 2 && persistentState.matchHistory.length > 0) {
       // * Get the match number of the last remaining vote (after undo)
       const remainingHistory = persistentState.matchHistory.slice(0, -1);
-      const previousMatchNumber = remainingHistory.length > 0 
+      const previousMatchNumber = remainingHistory.length > 0
         ? (remainingHistory[remainingHistory.length - 1]?.matchNumber || currentMatchNumber)
         : currentMatchNumber;
-      
+
       let calculatedRound = 1;
-      
+
       // * For 2 names, there's only 1 match in round 1
       if (namesLength === 2) {
         calculatedRound = 1;
@@ -87,7 +87,7 @@ export function useTournamentProgress({
         let remainingNames = namesLength;
         let matchesInRound = Math.floor(remainingNames / 2);
         let matchesPlayed = 0;
-        
+
         while (matchesPlayed + matchesInRound < previousMatchNumber) {
           matchesPlayed += matchesInRound;
           // * Winners advancing = matches (1 winner each) + byes (if odd number)
@@ -98,7 +98,7 @@ export function useTournamentProgress({
           calculatedRound++;
         }
       }
-      
+
       if (calculatedRound !== roundNumber) {
         updateTournamentState({ roundNumber: calculatedRound });
         updatePersistentState({ currentRound: calculatedRound });

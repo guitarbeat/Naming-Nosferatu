@@ -24,7 +24,6 @@
 @import url("./buttons.css");
 
 /* Component-level styles */
-@import url("./components-global.css");
 @import url("./app-layout.css");
 
 /* Utility layers */

@@ -76,7 +76,7 @@ function App() {
         event.preventDefault();
         uiActions.togglePerformanceDashboard();
       }
-      
+
       // * Sidebar toggle (Ctrl+B or Cmd+B)
       if ((event.ctrlKey || event.metaKey) && event.key === "b") {
         event.preventDefault();
@@ -300,8 +300,6 @@ function AppLayout({
     window.addEventListener("toggleSidebar", handleToggleSidebar);
     return () => window.removeEventListener("toggleSidebar", handleToggleSidebar);
   }, [toggleCollapsed]);
-  // * sidebarProps destructured but not all properties are used
-  // const { view: currentView, setView, onStartNewTournament } = sidebarProps;
 
   const appClassName = [
     "app",

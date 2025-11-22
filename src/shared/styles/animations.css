@@ -58,8 +58,6 @@
   }
 }
 
-/* Scale animations - Removed unused keyframes */
-
 /* Gradient animations */
 @keyframes gradient-shift {
   0%,
@@ -71,8 +69,6 @@
     background-position: 100% 50%;
   }
 }
-
-/* Bounce animations - Removed unused keyframes */
 
 /* Cat-themed animations */
 @keyframes cat-bounce {
@@ -121,8 +117,6 @@
   }
 }
 
-/* Float and breathe animations - Removed unused keyframes */
-
 /* Matrix mode animation */
 @keyframes matrix-scroll {
   0% {
@@ -133,8 +127,6 @@
     background-position: 100% 100%;
   }
 }
-
-/* Animation utility classes - Removed unused classes */
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {

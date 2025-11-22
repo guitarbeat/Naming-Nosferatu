@@ -19,5 +19,3 @@ export function devLog(...args) {
   }
 }
 
-// * Unused logger removed
-// const Logger = { ... }
