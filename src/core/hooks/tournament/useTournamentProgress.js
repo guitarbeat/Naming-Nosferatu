@@ -72,9 +72,11 @@ export function useTournamentProgress({
     if (namesLength >= 2 && persistentState.matchHistory.length > 0) {
       // * Get the match number of the last remaining vote (after undo)
       const remainingHistory = persistentState.matchHistory.slice(0, -1);
-      const previousMatchNumber = remainingHistory.length > 0
-        ? (remainingHistory[remainingHistory.length - 1]?.matchNumber || currentMatchNumber)
-        : currentMatchNumber;
+      const previousMatchNumber =
+        remainingHistory.length > 0
+          ? remainingHistory[remainingHistory.length - 1]?.matchNumber ||
+            currentMatchNumber
+          : currentMatchNumber;
 
       let calculatedRound = 1;
 

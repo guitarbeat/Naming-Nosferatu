@@ -49,7 +49,6 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: resolveFromRoot('dist'),
       emptyOutDir: true,
-      sourcemap: mode !== 'production',
       // * Optimize chunk splitting for better caching and parallel loading
       rollupOptions: {
         output: {
@@ -81,6 +80,9 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: (assetInfo) => {
+            if (!assetInfo.name) {
+              return 'assets/[name]-[hash][extname]';
+            }
             const info = assetInfo.name.split('.');
             const ext = info[info.length - 1];
             if (/png|jpe?g|svg|gif|tiff|bmp|ico|avif|webp/i.test(ext)) {

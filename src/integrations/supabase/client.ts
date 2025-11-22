@@ -12,13 +12,13 @@ declare global {
 // * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
 const getEnvVar = (key: string): string | undefined => {
   // Try Vite env first (browser)
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
+  if (typeof import.meta !== "undefined" && import.meta.env) {
     const viteKey = `VITE_${key}`;
     if (import.meta.env[viteKey]) return import.meta.env[viteKey];
     if (import.meta.env[key]) return import.meta.env[key];
   }
   // Try Node process env
-  if (typeof process !== 'undefined' && process.env) {
+  if (typeof process !== "undefined" && process.env) {
     if (process.env[key]) return process.env[key];
     if (process.env[`VITE_${key}`]) return process.env[`VITE_${key}`];
   }
@@ -26,11 +26,10 @@ const getEnvVar = (key: string): string | undefined => {
 };
 
 const SUPABASE_URL =
-  getEnvVar('SUPABASE_URL') ||
-  "https://ocghxwwwuubgmwsxgyoy.supabase.co"; // Fallback for development
+  getEnvVar("SUPABASE_URL") || "https://ocghxwwwuubgmwsxgyoy.supabase.co"; // Fallback for development
 
 const SUPABASE_ANON_KEY =
-  getEnvVar('SUPABASE_ANON_KEY') ||
+  getEnvVar("SUPABASE_ANON_KEY") ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0"; // Fallback for development
 
 let supabase: SupabaseClient<Database> | null =

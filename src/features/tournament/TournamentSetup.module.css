@@ -162,7 +162,6 @@
       #f8fafc 100%
     );
     background-clip: text;
-    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 4px rgb(var(--neon-cyan-rgb), 0.3));
   }
@@ -177,7 +176,6 @@
     #334155 100%
   ) !important;
   background-clip: text !important;
-  -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
   filter: none;
   color: #0f172a;
@@ -457,11 +455,10 @@
 /* * Tournament header - now directly in selection panel */
 .tournamentHeaderTop {
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   gap: var(--space-4);
   align-items: flex-start;
   justify-content: space-between;
-  flex-wrap: wrap;
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--border-color);
   animation: slideDown 0.3s ease-out;
@@ -1052,7 +1049,6 @@
   animation: contentEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   /* Prevent text selection and ensure clean rendering */
   user-select: none;
-  -webkit-user-select: none;
   overflow: hidden;
 }
 
@@ -2042,10 +2038,7 @@
 
 .swipeOverlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 100;
   display: flex;
   align-items: center;

@@ -25,7 +25,7 @@ const Profile = ({ userName }) => {
 
   // * Filter state
   const [filterStatus, setFilterStatus] = useState(
-    FILTER_OPTIONS.STATUS.ACTIVE
+    FILTER_OPTIONS.STATUS.ACTIVE,
   );
   const [sortBy, setSortBy] = useState(FILTER_OPTIONS.SORT.RATING);
   const [sortOrder, setSortOrder] = useState(FILTER_OPTIONS.ORDER.DESC);
@@ -82,7 +82,7 @@ const Profile = ({ userName }) => {
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   // * Reset selected names and filters when active user changes

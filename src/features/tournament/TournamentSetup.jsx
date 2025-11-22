@@ -68,14 +68,14 @@ function TournamentSetupContent({ onStart, userName }) {
         setLightboxOpen(true);
       }
     },
-    [galleryImages]
+    [galleryImages],
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages]
+    [addImages],
   );
 
   // Memoize lightbox navigation to prevent unnecessary re-renders

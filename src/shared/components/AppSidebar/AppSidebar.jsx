@@ -139,7 +139,6 @@ export function AppSidebar({
 
         {/* Right Section: Actions */}
         <NavbarSection className="navbar-right" alignRight>
-
           {/* Actions Section */}
           <SidebarGroup open={true}>
             <SidebarGroupContent>

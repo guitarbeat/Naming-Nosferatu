@@ -23,7 +23,7 @@ export const getMediaQueryMatches = (query) =>
 
 export const attachMediaQueryListener = (mediaQueryList, listener) => {
   if (!mediaQueryList || typeof listener !== "function") {
-    return () => { };
+    return () => {};
   }
 
   if (typeof mediaQueryList.addEventListener === "function") {
@@ -36,5 +36,5 @@ export const attachMediaQueryListener = (mediaQueryList, listener) => {
     return () => mediaQueryList.removeListener(listener);
   }
 
-  return () => { };
+  return () => {};
 };

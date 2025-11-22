@@ -80,7 +80,6 @@ function TournamentContent({
       currentGlobalEventListeners.clear();
     };
     // * Empty deps - refs don't need to be in dependencies
-
   }, []);
 
   const {
@@ -188,6 +187,7 @@ function TournamentContent({
       setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
     },
     // * setState functions are stable and don't need to be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentMatch, showSuccess],
   );
 
@@ -296,6 +296,7 @@ function TournamentContent({
         setIsTransitioning(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       isProcessing,
       isTransitioning,
@@ -317,6 +318,7 @@ function TournamentContent({
       setSelectedOption(option);
       handleVoteWithAnimation(option);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [isProcessing, isTransitioning, handleVoteWithAnimation],
   );
 
@@ -339,11 +341,13 @@ function TournamentContent({
     } finally {
       setIsProcessing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCurrentRatings, existingRatings, onComplete]);
 
   // * Handle vote retry
   const handleVoteRetry = useCallback(() => {
     setVotingError(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // * Keyboard controls

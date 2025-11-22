@@ -180,11 +180,16 @@ export async function calculateSelectionStats(userName) {
       nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
 
       // Count by name_id (for filtering)
-      nameSelectionCounts[s.name_id] = (nameSelectionCounts[s.name_id] || 0) + 1;
+      nameSelectionCounts[s.name_id] =
+        (nameSelectionCounts[s.name_id] || 0) + 1;
 
       // Track last selected date per name_id
       const selectedDate = s.selected_at ? new Date(s.selected_at) : null;
-      if (selectedDate && (!nameLastSelected[s.name_id] || selectedDate > new Date(nameLastSelected[s.name_id]))) {
+      if (
+        selectedDate &&
+        (!nameLastSelected[s.name_id] ||
+          selectedDate > new Date(nameLastSelected[s.name_id]))
+      ) {
         nameLastSelected[s.name_id] = s.selected_at;
       }
     });
@@ -192,9 +197,10 @@ export async function calculateSelectionStats(userName) {
     // Calculate selection frequency (selections per tournament for each name)
     Object.keys(nameSelectionCounts).forEach((nameId) => {
       const count = nameSelectionCounts[nameId];
-      nameSelectionFrequency[nameId] = totalTournaments > 0
-        ? Math.round((count / totalTournaments) * 100) / 100
-        : 0;
+      nameSelectionFrequency[nameId] =
+        totalTournaments > 0
+          ? Math.round((count / totalTournaments) * 100) / 100
+          : 0;
     });
 
     const mostSelectedName =

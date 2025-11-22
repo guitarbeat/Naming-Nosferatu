@@ -100,7 +100,6 @@
   font-weight: 700;
   background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
   background-clip: text;
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -274,9 +273,10 @@
     rgb(59 130 246 / 40%),
     rgb(96 165 250 / 40%)
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box,
+  mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
+  mask-composite: xor;
   mask-composite: exclude;
   content: "";
   opacity: 0;

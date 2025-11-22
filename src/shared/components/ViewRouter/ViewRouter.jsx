@@ -212,10 +212,10 @@ export default function ViewRouter({
 
   // * Only show results if tournament is complete AND we have names (completed tournament)
   // * This prevents showing results when tournament is reset but route is still /results
-  const shouldShowResults = tournament.isComplete && tournament.names !== null && isRoute("/results");
+  const shouldShowResults =
+    tournament.isComplete && tournament.names !== null && isRoute("/results");
 
   if (shouldShowResults) {
-
     return (
       <Suspense
         fallback={<Loading variant="spinner" text="Loading Results..." />}

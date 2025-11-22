@@ -200,8 +200,12 @@ export function useTiltEffect(options = {}) {
         if (elementRef.current && !disableTiltRef.current) {
           const element = elementRef.current;
           const currentTransform = transformRef.current || INITIAL_TRANSFORM;
-          const rotateX = Number.isFinite(currentTransform?.rotateX) ? currentTransform.rotateX : 0;
-          const rotateY = Number.isFinite(currentTransform?.rotateY) ? currentTransform.rotateY : 0;
+          const rotateX = Number.isFinite(currentTransform?.rotateX)
+            ? currentTransform.rotateX
+            : 0;
+          const rotateY = Number.isFinite(currentTransform?.rotateY)
+            ? currentTransform.rotateY
+            : 0;
           element.style.transform = `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`;
         }
       }
@@ -218,7 +222,7 @@ export function useTiltEffect(options = {}) {
         animationFrameRef.current = null;
       }
     },
-    [validSmoothing],
+    [validSmoothing, validPerspective, validScale],
   );
 
   const startAnimation = useCallback(() => {
@@ -235,7 +239,11 @@ export function useTiltEffect(options = {}) {
 
   const handleMouseMove = useCallback(
     (event) => {
-      if (!elementRef.current || disableTiltRef.current || isScrollingRef.current) {
+      if (
+        !elementRef.current ||
+        disableTiltRef.current ||
+        isScrollingRef.current
+      ) {
         return;
       }
 
@@ -325,9 +333,14 @@ export function useTiltEffect(options = {}) {
     }
 
     // * Use ref value for current transform to avoid stale state
-    const currentTransform = transformRef.current || transform || INITIAL_TRANSFORM;
-    const rotateX = Number.isFinite(currentTransform?.rotateX) ? currentTransform.rotateX : 0;
-    const rotateY = Number.isFinite(currentTransform?.rotateY) ? currentTransform.rotateY : 0;
+    const currentTransform =
+      transformRef.current || transform || INITIAL_TRANSFORM;
+    const rotateX = Number.isFinite(currentTransform?.rotateX)
+      ? currentTransform.rotateX
+      : 0;
+    const rotateY = Number.isFinite(currentTransform?.rotateY)
+      ? currentTransform.rotateY
+      : 0;
 
     return {
       transform: `perspective(${validPerspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${validScale})`,

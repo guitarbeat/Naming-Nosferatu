@@ -11,7 +11,9 @@ import { useCallback, useEffect, useMemo, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Lazy load CatBackground since it's not critical for initial render
-const CatBackground = lazy(() => import("@components/CatBackground/CatBackground"));
+const CatBackground = lazy(
+  () => import("@components/CatBackground/CatBackground"),
+);
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
 import PerformanceDashboard from "@components/PerformanceDashboard";
@@ -298,7 +300,8 @@ function AppLayout({
     };
 
     window.addEventListener("toggleSidebar", handleToggleSidebar);
-    return () => window.removeEventListener("toggleSidebar", handleToggleSidebar);
+    return () =>
+      window.removeEventListener("toggleSidebar", handleToggleSidebar);
   }, [toggleCollapsed]);
 
   const appClassName = [

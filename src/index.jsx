@@ -108,5 +108,5 @@ root.render(
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <App />
     </ErrorBoundary>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getMediaQueryMatches } from "../../utils/mediaQueries";
 import "./CatBackground.css";
 
 // * Array of available cat gifs to randomly choose from
-const CAT_GIFS = [
-  "/assets/images/cat.gif",
-  "/assets/images/bby-cat.GIF",
-];
+const CAT_GIFS = ["/assets/images/cat.gif", "/assets/images/bby-cat.GIF"];
 
 /**
  * * Creates a floating cat element with assigned gif
@@ -173,7 +170,8 @@ export default function CatBackground() {
   }, []);
 
   // * Randomly assign gifs to each cat position (consistent per render)
-  const catGifs = useMemo(() => {
+  // * Use useState + useEffect to avoid calling Math.random during render
+  const [catGifs] = useState(() => {
     const assignments = [];
     for (let i = 0; i < 4; i++) {
       // * Randomly select a gif for each cat
@@ -181,7 +179,7 @@ export default function CatBackground() {
       assignments.push(CAT_GIFS[randomIndex]);
     }
     return assignments;
-  }, []);
+  });
 
   return (
     <div className="cat-background" ref={containerRef}>

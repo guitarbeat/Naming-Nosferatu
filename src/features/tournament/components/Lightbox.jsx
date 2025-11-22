@@ -45,7 +45,7 @@ function Lightbox({
         isTransitioningRef.current = false;
       }, 300);
     },
-    [currentIndex, onNavigate]
+    [currentIndex, onNavigate],
   );
 
   const handlePrev = useCallback(() => {
@@ -60,14 +60,18 @@ function Lightbox({
 
   // * Touch gesture handlers for mobile
   const onTouchStart = useCallback((e) => {
-    const touch = e.targetTouches[0];
-    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
-    touchEndRef.current = { x: 0, y: 0 };
+    const [touch] = e.targetTouches;
+    if (touch) {
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      touchEndRef.current = { x: 0, y: 0 };
+    }
   }, []);
 
   const onTouchMove = useCallback((e) => {
-    const touch = e.targetTouches[0];
-    touchEndRef.current = { x: touch.clientX, y: touch.clientY };
+    const [touch] = e.targetTouches;
+    if (touch) {
+      touchEndRef.current = { x: touch.clientX, y: touch.clientY };
+    }
   }, []);
 
   const onTouchEnd = useCallback(() => {
@@ -129,7 +133,7 @@ function Lightbox({
         clearTimeout(transitionTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   // * Simple fallback pattern - original working approach

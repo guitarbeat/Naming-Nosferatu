@@ -92,7 +92,6 @@ export function useProfileStats(activeUser) {
 
   useEffect(() => {
     if (activeUser) {
-
       fetchSelectionStats(activeUser);
     }
   }, [activeUser, fetchSelectionStats]);

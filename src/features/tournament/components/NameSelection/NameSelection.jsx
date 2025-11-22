@@ -45,7 +45,7 @@ function NameSelection({
 
   const categoryOptions = useMemo(
     () => generateCategoryOptions(categories, availableNames),
-    [categories, availableNames]
+    [categories, availableNames],
   );
 
   // * Memoize metadata map to prevent re-renders from object recreation

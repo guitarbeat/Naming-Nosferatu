@@ -179,17 +179,14 @@ function Results({
   );
 
   // * Memoize processed rankings to avoid unnecessary recalculations
-  const processedRankings = useMemo(
-    () => {
-      try {
-        return processRankings(ratings);
-      } catch (error) {
-        console.error("Error processing rankings:", error);
-        return [];
-      }
-    },
-    [ratings, processRankings],
-  );
+  const processedRankings = useMemo(() => {
+    try {
+      return processRankings(ratings);
+    } catch (error) {
+      console.error("Error processing rankings:", error);
+      return [];
+    }
+  }, [ratings, processRankings]);
 
   useEffect(() => {
     try {
@@ -324,18 +321,18 @@ function Results({
 
         <div className={styles.actions}>
           <div className={styles.actionsButtons}>
-          <StartTournamentButton
-            onClick={onStartNew}
-            className={styles.startNewButton}
-            ariaLabel="Start new tournament"
-          >
-            Start New Tournament
-          </StartTournamentButton>
-          <CalendarButton
-            rankings={currentRankings}
-            userName={userName}
-            hiddenNames={hiddenNames}
-          />
+            <StartTournamentButton
+              onClick={onStartNew}
+              className={styles.startNewButton}
+              ariaLabel="Start new tournament"
+            >
+              Start New Tournament
+            </StartTournamentButton>
+            <CalendarButton
+              rankings={currentRankings}
+              userName={userName}
+              hiddenNames={hiddenNames}
+            />
           </div>
           <p className={styles.tip} role="note">
             Starting a new tournament will let you rate more names while keeping

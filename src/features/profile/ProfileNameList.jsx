@@ -88,7 +88,7 @@ const ProfileNameList = ({
 
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, currentUserName)
+          nameMatchesOwner(name, currentUserName),
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
         filtered = filtered.filter((name) => {
@@ -97,7 +97,7 @@ const ProfileNameList = ({
         });
       } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, userFilter)
+          nameMatchesOwner(name, userFilter),
         );
       }
     }
@@ -431,7 +431,7 @@ const ProfileNameList = ({
                         setSortOrder(
                           sortOrder === FILTER_OPTIONS.ORDER.ASC
                             ? FILTER_OPTIONS.ORDER.DESC
-                            : FILTER_OPTIONS.ORDER.ASC
+                            : FILTER_OPTIONS.ORDER.ASC,
                         )
                       }
                       className={styles.sortOrderButton}
@@ -546,7 +546,7 @@ const ProfileNameList = ({
                       ? Math.round(
                           (name.user_wins /
                             (name.user_wins + name.user_losses)) *
-                            100
+                            100,
                         )
                       : 0,
                   totalMatches: (name.user_wins || 0) + (name.user_losses || 0),

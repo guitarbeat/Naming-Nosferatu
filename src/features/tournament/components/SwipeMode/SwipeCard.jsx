@@ -44,7 +44,7 @@ function SwipeCard({
     >
       <div
         ref={(node) => {
-          // * Set gestureRef
+          // * Set gestureRef - use callback pattern to avoid mutating props
           if (typeof gestureRef === "function") {
             gestureRef(node);
           } else if (
@@ -52,6 +52,7 @@ function SwipeCard({
             typeof gestureRef === "object" &&
             "current" in gestureRef
           ) {
+            // eslint-disable-next-line react-hooks/immutability
             gestureRef.current = node;
           }
         }}

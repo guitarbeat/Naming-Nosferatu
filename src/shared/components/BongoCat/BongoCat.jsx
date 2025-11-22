@@ -202,7 +202,7 @@ const BongoCat = memo(
         />
       </>
     );
-  }
+  },
 );
 
 BongoCat.displayName = "BongoCat";

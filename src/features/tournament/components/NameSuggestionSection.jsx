@@ -42,7 +42,7 @@ const NameSuggestionSection = memo(() => {
       setName(e.target.value);
       if (error) setError("");
     },
-    [error]
+    [error],
   );
 
   const handleDescriptionChange = useCallback(
@@ -50,7 +50,7 @@ const NameSuggestionSection = memo(() => {
       setDescription(e.target.value);
       if (error) setError("");
     },
-    [error]
+    [error],
   );
 
   const handleSubmit = useCallback(
@@ -92,7 +92,7 @@ const NameSuggestionSection = memo(() => {
         const res = await catNamesAPI.addName(
           nameValidation.value,
           descriptionValidation.value,
-          userName
+          userName,
         );
 
         // * Check if component is still mounted before updating state
@@ -137,7 +137,7 @@ const NameSuggestionSection = memo(() => {
         }
       }
     },
-    [name, description, userName]
+    [name, description, userName],
   );
 
   const isFormValid = useMemo(() => {

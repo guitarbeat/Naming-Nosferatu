@@ -328,7 +328,7 @@ function NameCard({
                 tooltipPosition.x + 10,
                 typeof window !== "undefined"
                   ? window.innerWidth - 320
-                  : tooltipPosition.x + 10
+                  : tooltipPosition.x + 10,
               ),
               top: Math.max(tooltipPosition.y - 10, 10),
               zIndex: 1000,

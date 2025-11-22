@@ -66,7 +66,7 @@ const getRoleSourceOrder = (state) => {
 
   const preferred =
     state.preferredRoleSource &&
-      !state.disabledSources.has(state.preferredRoleSource)
+    !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -259,4 +259,3 @@ async function _hasRole(userName, requiredRole) {
 export async function isUserAdmin(userIdOrName) {
   return _hasRole(userIdOrName, USER_ROLES.ADMIN);
 }
-

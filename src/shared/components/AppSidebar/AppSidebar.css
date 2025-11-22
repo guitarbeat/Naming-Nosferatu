@@ -504,8 +504,8 @@
   background: linear-gradient(180deg, #fa26a0, #2ff3e0);
   border-radius: 0 2px 2px 0;
   box-shadow:
-    0 0 6px rgba(250, 38, 160, 0.8),
-    0 0 12px rgba(47, 243, 224, 0.6);
+    0 0 6px rgb(250 38 160 / 80%),
+    0 0 12px rgb(47 243 224 / 60%);
   animation: adminGlow 2s ease-in-out infinite alternate;
   pointer-events: none;
 }

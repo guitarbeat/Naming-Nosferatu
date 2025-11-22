@@ -128,7 +128,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
 
       let bestPair = null;
       let bestScore = Infinity;
-      const pairIndex = typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
+      const pairIndex =
+        typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
       for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
         const [a, b] = sorter._pairs[idx];
         const key = `${a}-${b}`;
@@ -205,7 +206,8 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     let bestPair = null;
     let bestScore = Infinity;
 
-    const pairIndex = typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
+    const pairIndex =
+      typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
     for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
       const [a, b] = sorter._pairs[idx];
       const key = `${a}-${b}`;

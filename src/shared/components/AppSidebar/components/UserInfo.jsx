@@ -5,8 +5,11 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { useSidebar } from "../../ui/sidebar";
-import { SidebarMenuButton, SidebarMenuItem } from "../../ui/sidebar";
+import {
+  useSidebar,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "../../ui/sidebar";
 import "../AppSidebar.css";
 
 export function UserInfo({ userName, onClick, isAdmin = false }) {

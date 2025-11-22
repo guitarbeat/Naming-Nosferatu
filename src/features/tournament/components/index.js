@@ -14,6 +14,5 @@ export { NameSelection } from "./NameSelection";
 // SwipeMode components
 export { SwipeableNameCards } from "./SwipeMode";
 
-
 // TournamentSidebar components
 export { TournamentSidebar } from "./TournamentSidebar";
