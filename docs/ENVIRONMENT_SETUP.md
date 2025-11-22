@@ -32,8 +32,8 @@ SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 ### 2. Get Your Supabase Anon Key
 
 1. Go to your Supabase project dashboard: https://supabase.com/dashboard
-2. Select your project (ID: glgmoelyqnbyavabjgyw)
-3. Go to Settings > API
+2. Select your project
+3. Navigate to Settings > API
 4. Copy the "anon public" key
 5. Replace `your_actual_supabase_anon_key_here` with the actual key
 
@@ -45,9 +45,9 @@ After creating the `.env.local` file:
 npm run dev
 ```
 
-### 4. Verify the Fix
+### 4. Verify the Setup
 
-The application should now connect to Supabase successfully and the "backend offline" error should be resolved.
+The application should now connect to Supabase successfully. Start the development server and check the browser console to confirm the connection.
 
 ## Alternative: Use Local Supabase
 

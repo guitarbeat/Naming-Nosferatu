@@ -75,7 +75,7 @@ npm run dev
 
 ## 🛠️ **Technical Stack**
 
-- **Frontend**: React 18.x + Vite + CSS Modules
+- **Frontend**: React 19.x + Vite + CSS Modules
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **State**: Zustand
 - **Testing**: Vitest + React Testing Library
@@ -111,50 +111,53 @@ src/
 |-------|---------|------------|
 | `cat_app_users` | User accounts | `user_name`, `preferences` |
 | `cat_name_options` | Available names | `name`, `category`, `popularity_score` |
-| `cat_name_ratings` | User ratings | `user_name`, `name`, `rating_value` |
-| `cat_users` | Extended profiles | `user_name`, `total_tournaments`, `stats` |
+| `cat_name_ratings` | User ratings | `user_name`, `name_id`, `rating`, `wins`, `losses` |
 
 ---
 
 ## 🔌 **API Reference**
 
-### **Tournament Service**
+### **Supabase API Functions**
 
 ```javascript
-// Generate random cat name
-const name = await TournamentService.generateCatName();
+import { 
+  catNamesAPI, 
+  tournamentsAPI, 
+  adminAPI,
+  siteSettingsAPI,
+  imagesAPI 
+} from '@/integrations/supabase/api';
+
+// Get all cat names with descriptions
+const names = await catNamesAPI.getNamesWithDescriptions();
+
+// Get user statistics
+const stats = await catNamesAPI.getUserStats(userName);
 
 // Create tournament
-const tournament = await TournamentService.createTournament(names, ratings);
+const tournament = await tournamentsAPI.createTournament(names, ratings);
 
-// Process tournament completion
-const results = await TournamentService.processTournamentCompletion(
-  tournamentResults,
-  voteHistory,
-  userName,
-  existingRatings
-);
+// Get tournament history
+const history = await tournamentsAPI.getTournamentHistory(userName);
 ```
 
 ### **Custom Hooks**
 
 ```javascript
-// Tournament state management
-const {
-  names, currentPair, voteHistory, isComplete,
-  addVote, resetTournament
-} = useTournament();
+import { useTournament } from '@/core/hooks/useTournament';
+import { useUserSession } from '@/core/hooks/useUserSession';
+import useAppStore from '@/core/store/useAppStore';
 
-// Theme management
-const { isLightTheme, toggleTheme } = useTheme();
+// Tournament state management
+const tournament = useTournament({
+  names,
+  existingRatings,
+  onComplete: handleComplete
+});
 
 // User authentication
 const { isLoggedIn, user, login, logout } = useUserSession();
-```
 
-### **State Management**
-
-```javascript
 // Global store access
 const {
   user, tournament, ui,
@@ -173,11 +176,8 @@ npm run test
 # Run a specific test file (Jest-compatible flag supported)
 npm run test -- --runTestsByPath src/App.test.jsx
 
-# Run tests with coverage
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
+# Run tests with coverage (coverage is included by default)
+npm run test
 ```
 
 ### **Coverage Goals**
@@ -418,8 +418,7 @@ npm run test -- --clearCache
 1. Update documentation for new features
 2. Add tests for new functionality
 3. Ensure all tests pass
-4. Update CHANGELOG.md if needed
-5. Request review from maintainers
+4. Request review from maintainers
 
 ---
 
@@ -433,7 +432,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/guitarbeat/name-nosferatu/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/guitarbeat/name-nosferatu/discussions)
-- **Email**: [support@example.com](mailto:support@example.com)
+- **Email**: Contact via GitHub Issues or Discussions
 
 ---
 
@@ -458,4 +457,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for cat lovers everywhere** | _Last updated: October 2025_
+**Built with ❤️ for cat lovers everywhere** | _Last updated: November 2025_
