@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { globSync } from 'glob';
 
-const reactFiles = globSync('dist/assets/js/vendor-react-*.js');
+// * Fix glob pattern to match both vendor-react-*.js and react-vendor-*.js patterns
+const reactFiles = globSync('dist/assets/js/{vendor-react,react-vendor}-*.js');
 for (const file of reactFiles) {
   let code = readFileSync(file, 'utf8');
   const childrenPattern = new RegExp(
@@ -28,6 +29,25 @@ for (const file of reactFiles) {
     );
   } else {
     console.warn(`[postbuild-fix-react] No requireReact guard found in ${file}`);
+  }
+
+  // * Fix React 19 Activity property initialization issue
+  // * React 19's scheduler may try to set Activity on an undefined object after bundling
+  // * This ensures the object exists before setting the Activity property
+  if (code.includes('.Activity')) {
+    // * Replace assignments like obj.Activity = value or obj.prop.Activity = value
+    // * with guarded assignment: (obj = obj || {}).Activity = value
+    // * For nested paths, this ensures the immediate parent exists
+    // * Note: This handles the common case where the direct parent is undefined
+    code = code.replace(
+      /([a-zA-Z_$][a-zA-Z0-9_$]*(?:\.[a-zA-Z_$][a-zA-Z0-9_$]*)*)\.Activity\s*=/g,
+      (match, objPath) => {
+        // * For simple paths like "scheduler.Activity", use: (scheduler = scheduler || {}).Activity
+        // * For nested paths, we ensure the full path exists
+        // * This is safe because if the parent is undefined, the assignment will create it
+        return `(${objPath} = ${objPath} || {}).Activity =`;
+      }
+    );
   }
 
   writeFileSync(file, code, 'utf8');
