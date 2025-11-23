@@ -33,31 +33,45 @@ Object.defineProperty(window, "matchMedia", {
 });
 
 // * Mock ResizeObserver
-globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+globalThis.ResizeObserver = class ResizeObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+};
 
 // * Mock IntersectionObserver
-globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+globalThis.IntersectionObserver = class IntersectionObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+};
 
-// * Mock Supabase
-vi.mock("../integrations/supabase/client", () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
+// * Mock Supabase (both the integration client and the package)
+const mockSupabase = {
+  from: vi.fn(() => ({
+    select: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        single: vi.fn(() => Promise.resolve({ data: null, error: null })),
+        maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+      })),
+      maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    })),
+    insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    update: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        select: vi.fn(() => ({
           single: vi.fn(() => Promise.resolve({ data: null, error: null })),
         })),
       })),
-      insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      update: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      delete: vi.fn(() => Promise.resolve({ data: null, error: null })),
     })),
-  },
+    delete: vi.fn(() => Promise.resolve({ data: null, error: null })),
+  })),
+};
+
+vi.mock("../integrations/supabase/client", () => ({
+  supabase: mockSupabase,
+}));
+
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: vi.fn(() => mockSupabase),
 }));

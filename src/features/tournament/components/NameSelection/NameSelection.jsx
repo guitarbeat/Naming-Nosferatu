@@ -33,15 +33,21 @@ function NameSelection({
   imageList,
   // Swipeable cards component passed as prop
   SwipeableCards,
+  showSelectedOnly,
 }) {
-  // * For non-admin users, just show all names. For admins, filter and sort
-  const displayNames = isAdmin
-    ? filterAndSortNames(availableNames, {
-        category: selectedCategory,
-        searchTerm,
-        sortBy,
-      })
-    : availableNames;
+  // * Filter and sort names for everyone
+  const filteredNames = filterAndSortNames(availableNames, {
+    category: selectedCategory,
+    searchTerm,
+    sortBy,
+  });
+
+  // * Apply "Show Selected Only" filter if enabled
+  const displayNames = showSelectedOnly
+    ? filteredNames.filter((name) =>
+        selectedNames.some((selected) => selected.id === name.id),
+      )
+    : filteredNames;
 
   const categoryOptions = useMemo(
     () => generateCategoryOptions(categories, availableNames),
@@ -82,28 +88,13 @@ function NameSelection({
         </div>
       )}
 
-      {/* Admin-only filtering and sorting controls */}
-      {isAdmin && (
-        <FilterControls
-          categoryOptions={categoryOptions}
-          selectedCategory={selectedCategory}
-          onCategoryChange={onCategoryChange}
-          searchTerm={searchTerm}
-          onSearchChange={onSearchChange}
-          sortBy={sortBy}
-          onSortChange={onSortChange}
-        />
-      )}
-
-      {/* Admin-only results count */}
-      {isAdmin && (
-        <ResultsInfo
-          displayCount={displayNames.length}
-          totalCount={availableNames.length}
-          selectedCategory={selectedCategory}
-          searchTerm={searchTerm}
-        />
-      )}
+      {/* Results count */}
+      <ResultsInfo
+        displayCount={displayNames.length}
+        totalCount={availableNames.length}
+        selectedCategory={selectedCategory}
+        searchTerm={searchTerm}
+      />
 
       <div className={styles.cardsContainer}>
         {isSwipeMode ? (
@@ -165,6 +156,7 @@ NameSelection.propTypes = {
   showCatPictures: PropTypes.bool,
   imageList: PropTypes.arrayOf(PropTypes.string),
   SwipeableCards: PropTypes.elementType,
+  showSelectedOnly: PropTypes.bool,
 };
 
 export default memo(NameSelection);

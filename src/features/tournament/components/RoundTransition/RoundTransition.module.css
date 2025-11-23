@@ -10,47 +10,55 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  background: rgb(0 0 0 / 80%);
-  backdrop-filter: blur(8px);
-  animation: roundTransitionFadeIn 0.3s ease-out;
+  background: rgb(0 0 0 / 85%);
+  backdrop-filter: blur(12px);
+  animation: roundTransitionFadeIn 0.2s ease-out;
 }
 
 .transitionContent {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: center;
-  padding: 3rem;
+  padding: 2.5rem 3rem;
   text-align: center;
   background: linear-gradient(
     135deg,
-    var(--surface-elevated, rgb(31 41 55 / 95%)),
-    var(--surface-muted, rgb(15 23 42 / 95%))
+    var(--primary-500, #3b82f6) 0%,
+    var(--primary-600, #2563eb) 100%
   );
-  border: 2px solid var(--accent-color, #e8bf76);
-  border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 20px 60px rgb(0 0 0 / 50%);
+  border: 3px solid var(--accent-color, #e8bf76);
+  border-radius: var(--radius-xl, 20px);
+  box-shadow: 
+    0 25px 70px rgb(0 0 0 / 60%),
+    0 0 0 1px rgb(255 255 255 / 10%) inset;
   backdrop-filter: blur(12px);
-  animation: roundTransitionScaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: roundTransitionZoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .roundIcon {
-  font-size: clamp(3rem, 8vw, 5rem);
-  animation: roundTransitionPulse 1s ease-in-out infinite;
+  font-size: clamp(3.5rem, 10vw, 6rem);
+  filter: drop-shadow(0 4px 12px rgb(0 0 0 / 40%));
+  animation: roundTransitionBounce 0.6s ease-in-out;
 }
 
 .roundTitle {
   margin: 0;
-  font-size: clamp(2rem, 6vw, 3rem);
-  font-weight: 700;
-  color: var(--accent-color, #e8bf76);
-  text-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 
+    0 2px 4px rgb(0 0 0 / 30%),
+    0 4px 12px rgb(0 0 0 / 20%);
+  letter-spacing: 0.02em;
 }
 
 .roundSubtitle {
   margin: 0;
-  font-size: clamp(1rem, 3vw, 1.25rem);
-  color: var(--text-secondary, #94a3b8);
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  font-weight: 500;
+  color: rgb(255 255 255 / 90%);
+  text-shadow: 0 1px 3px rgb(0 0 0 / 30%);
 }
 
 @keyframes roundTransitionFadeIn {
@@ -63,26 +71,37 @@
   }
 }
 
-@keyframes roundTransitionScaleIn {
-  from {
+@keyframes roundTransitionZoomIn {
+  0% {
     opacity: 0;
-    transform: scale(0.8);
+    transform: scale(0.5) rotate(-5deg);
+  }
+  
+  60% {
+    transform: scale(1.05) rotate(2deg);
   }
 
-  to {
+  100% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) rotate(0deg);
   }
 }
 
-@keyframes roundTransitionPulse {
-  0%,
-  100% {
-    transform: scale(1);
+@keyframes roundTransitionBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
   }
-
+  
+  25% {
+    transform: translateY(-20px) scale(1.1);
+  }
+  
   50% {
-    transform: scale(1.1);
+    transform: translateY(0) scale(1);
+  }
+  
+  75% {
+    transform: translateY(-10px) scale(1.05);
   }
 }
 
@@ -93,14 +112,14 @@
   }
 
   .roundIcon {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
 
   .roundTitle {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 
   .roundSubtitle {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
 }

@@ -98,7 +98,7 @@ function TournamentHeader({
     );
   }
 
-  // Tournament mode: show round and match info
+  // Tournament mode: show round and match info inline
   return (
     <Card
       className={styles.progressInfo}
@@ -114,12 +114,12 @@ function TournamentHeader({
         <span className={styles.matchCount}>
           Match {currentMatchNumber} of {totalMatches}
         </span>
-      </div>
-      <div
-        className={styles.percentageInfo}
-        aria-label={`Tournament is ${progress}% complete`}
-      >
-        {progress}% Complete
+        <div
+          className={styles.percentageInfo}
+          aria-label={`Tournament is ${progress}% complete`}
+        >
+          {progress}% Complete
+        </div>
       </div>
     </Card>
   );

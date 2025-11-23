@@ -96,17 +96,47 @@ function App() {
   const handleTournamentComplete = useCallback(
     async (finalRatings) => {
       try {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[App] handleTournamentComplete called with:", finalRatings);
+        }
+        
         if (!user.name) {
           throw new Error("No user name available");
         }
 
-        // Direct tournament completion processing
-        const updatedRatings = finalRatings;
+        // Convert finalRatings array to object format if needed
+        let updatedRatings;
+        if (Array.isArray(finalRatings)) {
+          // Convert array [{name, rating, wins, losses}, ...] to object {name: {rating, wins, losses}, ...}
+          updatedRatings = finalRatings.reduce((acc, item) => {
+            acc[item.name] = {
+              rating: item.rating,
+              wins: item.wins || 0,
+              losses: item.losses || 0,
+            };
+            return acc;
+          }, {});
+          
+          if (process.env.NODE_ENV === "development") {
+            console.log("[App] Converted array to object format:", updatedRatings);
+          }
+        } else {
+          // Already in object format
+          updatedRatings = finalRatings;
+        }
 
         // * Update store with new ratings
         tournamentActions.setRatings(updatedRatings);
         tournamentActions.setComplete(true);
+        
+        if (process.env.NODE_ENV === "development") {
+          console.log("[App] Tournament marked as complete, navigating to /results");
+        }
+        
+        // * Navigate to results page
+        navigateTo("/results");
       } catch (error) {
+        console.error("[App] Error in handleTournamentComplete:", error);
         ErrorManager.handleError(error, "Tournament Completion", {
           isRetryable: true,
           affectsUserData: true,
@@ -114,7 +144,7 @@ function App() {
         });
       }
     },
-    [user.name, tournamentActions],
+    [user.name, tournamentActions, navigateTo],
   );
 
   // * Handle start new tournament

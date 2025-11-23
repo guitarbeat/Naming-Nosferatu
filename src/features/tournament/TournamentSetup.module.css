@@ -17,19 +17,19 @@
 }
 
 .stackGapSm {
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .stackGapMd {
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .stackGapLg {
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .stackGapXl {
-  gap: var(--space-6);
+  gap: var(--space-4);
 }
 
 .stackGapXs {
@@ -60,9 +60,9 @@
 
 .inputBase {
   width: 100%;
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--text-primary);
   background: var(--card-background);
   border: 1px solid var(--border-color);
@@ -80,10 +80,10 @@
 
 .buttonBase {
   display: inline-flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   align-items: center;
   justify-content: center;
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
   font-weight: 600;
   line-height: 1.2;
@@ -91,6 +91,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   transition: var(--transition-all);
+  min-height: 44px; /* Touch-friendly minimum */
 }
 
 .buttonPrimary {
@@ -206,11 +207,11 @@
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
   grid-auto-rows: min-content;
-  gap: var(--space-6);
+  gap: var(--space-3);
   width: 100%;
   max-width: min(2000px, 100vw);
-  padding: var(--space-4);
-  padding-bottom: var(--space-8);
+  padding: var(--space-2);
+  padding-bottom: var(--space-6);
   margin-inline: auto;
   background: transparent;
   box-sizing: border-box;
@@ -228,6 +229,22 @@
   margin-bottom: var(--space-4);
 }
 
+.stickyControls {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--card-background);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--space-2) var(--space-3);
+  margin: 0 calc(var(--space-3) * -1) var(--space-2);
+  transition: box-shadow 0.3s ease;
+}
+
+.stickyControls.isStuck {
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
 .errorMessage {
   margin-top: var(--space-3);
   font-size: var(--text-base);
@@ -239,8 +256,8 @@
   composes: elevatedCard stack stackGapXl;
   min-width: 0;
   background: var(--card-background);
-  border-radius: var(--radius-xl);
-  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
   /* * Natural flow layout - no height constraints */
   display: flex;
   flex-direction: column;
@@ -470,6 +487,66 @@
   min-width: 0;
 }
 
+.headerSearchBar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.headerSearchInput {
+  flex: 1 1 300px;
+  min-width: 200px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-base);
+  line-height: 1.4;
+  color: var(--text-primary);
+  background: var(--card-background);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.headerSearchInput:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-alpha);
+}
+
+.headerSearchInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.headerFilters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.headerFilterSelect {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 120px;
+}
+
+.headerFilterSelect:hover {
+  border-color: var(--accent-color);
+}
+
+.headerFilterSelect:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-color-alpha);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -533,6 +610,25 @@
   box-shadow: var(--shadow-sm);
   /* * Footer stays at natural size */
   flex-shrink: 0;
+}
+
+.floatingStartButton {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: 1000;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .photoThumbnail img {
@@ -1778,12 +1874,11 @@
 /* Controls & results ----------------------------------------------------- */
 
 .controlsSection {
-  composes: surfaceCard stack;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  /* * Remove hover effect */
-  transition: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: transparent;
 }
 
 .controlsSection:hover {
@@ -1794,10 +1889,23 @@
 }
 
 .filterGroup {
-  composes: stack;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-1);
-  flex: 1 1 160px;
+  flex: 1;
   min-width: 0;
+}
+
+.compactFilters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.compactFilters > * {
+  flex: 1 1 auto;
+  min-width: 140px;
+  max-width: 200px;
 }
 
 .filterGroup label {
@@ -1809,10 +1917,12 @@
 
 .filterSelect {
   composes: inputBase;
+  font-size: var(--text-sm);
 }
 
 .searchInput {
   composes: inputBase;
+  font-size: var(--text-sm);
 }
 
 .searchInput::placeholder {

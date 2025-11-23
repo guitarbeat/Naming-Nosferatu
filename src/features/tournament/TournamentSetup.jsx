@@ -41,6 +41,7 @@ function TournamentSetupContent({ onStart, userName }) {
   } = useTournamentSetup(userName);
 
   // * UI state
+  const [showSelectedOnly, setShowSelectedOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("alphabetical");
@@ -139,16 +140,68 @@ function TournamentSetupContent({ onStart, userName }) {
     <div className={styles.container}>
       {/* Selection Panel */}
       <div className={styles.selectionPanel}>
-        {/* Tournament Header */}
+        {/* Tournament Header with Search */}
         <div className={styles.tournamentHeaderTop}>
           <div className={styles.tournamentTitleSection}>
-            <h1 className={styles.tournamentTitle}>🏆 Cat Name Tournament</h1>
-            <p className={styles.tournamentSubtitle}>
-              Pick the perfect name for your cat through fun head-to-head
-              battles!
-            </p>
+            {/* Search bar replaces title */}
+            <div className={styles.headerSearchBar}>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="🔍 Search cat names..."
+                className={styles.headerSearchInput}
+                aria-label="Search cat names"
+              />
+              {/* Compact filters next to search */}
+              <div className={styles.headerFilters}>
+                {categories.length > 0 && (
+                  <select
+                    value={selectedCategory ?? ""}
+                    onChange={(e) => setSelectedCategory(e.target.value || null)}
+                    className={styles.headerFilterSelect}
+                    aria-label="Filter by category"
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className={styles.headerFilterSelect}
+                  aria-label="Sort names"
+                >
+                  <option value="alphabetical">A-Z</option>
+                  <option value="rating">Rating</option>
+                  <option value="recent">Recent</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div className={styles.headerActions}>
+            {/* Show Selected Only Toggle */}
+            {selectedNames.length > 0 && (
+              <button
+                className={`${styles.headerActionButton} ${
+                  showSelectedOnly ? styles.headerActionButtonActive : ""
+                }`}
+                onClick={() => setShowSelectedOnly(!showSelectedOnly)}
+                type="button"
+                aria-label={
+                  showSelectedOnly
+                    ? "Show all names"
+                    : "Show selected names only"
+                }
+              >
+                {showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
+              </button>
+            )}
+
             {isAdmin && (
               <button
                 className={styles.selectAllButton}
@@ -218,26 +271,30 @@ function TournamentSetupContent({ onStart, userName }) {
           </span>
         </div>
 
-        <NameSelection
-          selectedNames={selectedNames}
-          availableNames={availableNames}
-          onToggleName={toggleName}
-          isAdmin={isAdmin}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          isSwipeMode={isSwipeMode}
-          showCatPictures={showCatPictures}
-          imageList={galleryImages}
-          SwipeableCards={SwipeableNameCards}
-        />
+        <div className={styles.stickyControls}>
+          <NameSelection
+            selectedNames={selectedNames}
+            availableNames={availableNames}
+            onToggleName={toggleName}
+            isAdmin={isAdmin}
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            isSwipeMode={isSwipeMode}
+            showCatPictures={showCatPictures}
+            imageList={galleryImages}
+            SwipeableCards={SwipeableNameCards}
+            showSelectedOnly={showSelectedOnly}
+          />
+        </div>
 
+        {/* Floating Start Button for better mobile/scroll experience */}
         {selectedNames.length >= 2 && (
-          <div className={styles.startSection}>
+          <div className={styles.floatingStartButton}>
             <StartButton selectedNames={selectedNames} onStart={onStart} />
           </div>
         )}

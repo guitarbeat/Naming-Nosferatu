@@ -18,44 +18,40 @@ function FilterControls({
 }) {
   return (
     <div className={styles.controlsSection}>
-      {/* Category filter */}
-      {categoryOptions.length > 0 && (
-        <div className={styles.filterGroup}>
-          <Select
-            name="category"
-            label="Category"
-            value={selectedCategory ?? ""}
-            onChange={(e) => onCategoryChange(e.target.value || null)}
-            options={categoryOptions}
-            className={styles.filterSelect}
-            placeholder=""
-          />
-        </div>
-      )}
-
-      {/* Search filter */}
+      {/* Search filter - primary action */}
       <div className={styles.filterGroup}>
         <Input
           name="search-filter"
-          label="Search"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search names or descriptions..."
+          placeholder="🔍 Search names..."
           className={styles.searchInput}
           type="text"
         />
       </div>
 
-      {/* Sort options */}
-      <div className={styles.filterGroup}>
+      {/* Compact filters row */}
+      <div className={styles.compactFilters}>
+        {/* Category filter */}
+        {categoryOptions.length > 0 && (
+          <Select
+            name="category"
+            value={selectedCategory ?? ""}
+            onChange={(e) => onCategoryChange(e.target.value || null)}
+            options={categoryOptions}
+            className={styles.filterSelect}
+            placeholder="All Categories"
+          />
+        )}
+
+        {/* Sort options */}
         <Select
           name="sort-filter"
-          label="Sort by"
           value={sortBy}
           onChange={(e) => onSortChange(e.target.value)}
           options={SORT_OPTIONS}
           className={styles.filterSelect}
-          placeholder=""
+          placeholder="Sort"
         />
       </div>
     </div>
