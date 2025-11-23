@@ -208,12 +208,16 @@ export function useTournamentVoting({
         // * For bracket: totalMatches = names.length - 1
         // * If we've completed all matches, finish the tournament
         if (process.env.NODE_ENV === "development") {
-          console.log(`[Tournament] Match ${newMatchNumber} of ${totalMatches} completed`);
+          console.log(
+            `[Tournament] Match ${newMatchNumber} of ${totalMatches} completed`,
+          );
         }
 
         if (newMatchNumber >= totalMatches) {
           if (process.env.NODE_ENV === "development") {
-            console.log(`[Tournament] ✅ Tournament complete! Calculating final ratings...`);
+            console.log(
+              `[Tournament] ✅ Tournament complete! Calculating final ratings...`,
+            );
           }
 
           // * Calculate final ratings with updated data (including current vote)

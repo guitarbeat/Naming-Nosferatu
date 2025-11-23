@@ -50,9 +50,3 @@ export const FALLBACK_NAMES = [
     description: "temporary fallback — backend offline",
   },
 ];
-
-export const SORT_OPTIONS = [
-  { value: "alphabetical", label: "Alphabetical" },
-  { value: "rating", label: "Rating (High to Low)" },
-  { value: "popularity", label: "Popularity" },
-];

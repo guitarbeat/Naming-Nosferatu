@@ -90,10 +90,9 @@
 .roundInfo {
   position: relative;
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   align-items: center;
   gap: var(--space-3);
-  flex-wrap: wrap;
   z-index: 1;
 }
 

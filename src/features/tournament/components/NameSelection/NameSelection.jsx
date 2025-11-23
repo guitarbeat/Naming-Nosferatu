@@ -11,7 +11,6 @@ import {
   generateCategoryOptions,
   getRandomCatImage,
 } from "../../utils";
-import FilterControls from "./FilterControls";
 import ResultsInfo from "./ResultsInfo";
 import styles from "../../TournamentSetup.module.css";
 
@@ -23,11 +22,11 @@ function NameSelection({
   // Admin-only props
   categories,
   selectedCategory,
-  onCategoryChange,
+  onCategoryChange: _onCategoryChange,
   searchTerm,
-  onSearchChange,
+  onSearchChange: _onSearchChange,
   sortBy,
-  onSortChange,
+  onSortChange: _onSortChange,
   isSwipeMode,
   showCatPictures,
   imageList,
@@ -49,7 +48,9 @@ function NameSelection({
       )
     : filteredNames;
 
-  const categoryOptions = useMemo(
+  // * categoryOptions is generated but not used - kept for potential future use
+
+  const _categoryOptions = useMemo(
     () => generateCategoryOptions(categories, availableNames),
     [categories, availableNames],
   );

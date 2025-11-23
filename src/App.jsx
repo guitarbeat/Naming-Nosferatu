@@ -97,9 +97,12 @@ function App() {
     async (finalRatings) => {
       try {
         if (process.env.NODE_ENV === "development") {
-          console.log("[App] handleTournamentComplete called with:", finalRatings);
+          console.log(
+            "[App] handleTournamentComplete called with:",
+            finalRatings,
+          );
         }
-        
+
         if (!user.name) {
           throw new Error("No user name available");
         }
@@ -116,9 +119,12 @@ function App() {
             };
             return acc;
           }, {});
-          
+
           if (process.env.NODE_ENV === "development") {
-            console.log("[App] Converted array to object format:", updatedRatings);
+            console.log(
+              "[App] Converted array to object format:",
+              updatedRatings,
+            );
           }
         } else {
           // Already in object format
@@ -128,11 +134,13 @@ function App() {
         // * Update store with new ratings
         tournamentActions.setRatings(updatedRatings);
         tournamentActions.setComplete(true);
-        
+
         if (process.env.NODE_ENV === "development") {
-          console.log("[App] Tournament marked as complete, navigating to /results");
+          console.log(
+            "[App] Tournament marked as complete, navigating to /results",
+          );
         }
-        
+
         // * Navigate to results page
         navigateTo("/results");
       } catch (error) {

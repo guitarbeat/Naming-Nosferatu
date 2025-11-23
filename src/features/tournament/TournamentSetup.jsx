@@ -158,7 +158,9 @@ function TournamentSetupContent({ onStart, userName }) {
                 {categories.length > 0 && (
                   <select
                     value={selectedCategory ?? ""}
-                    onChange={(e) => setSelectedCategory(e.target.value || null)}
+                    onChange={(e) =>
+                      setSelectedCategory(e.target.value || null)
+                    }
                     className={styles.headerFilterSelect}
                     aria-label="Filter by category"
                   >

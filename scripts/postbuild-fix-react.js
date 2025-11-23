@@ -35,18 +35,13 @@ for (const file of reactFiles) {
   // * React 19's scheduler may try to set Activity on an undefined object after bundling
   // * This ensures the object exists before setting the Activity property
   if (code.includes('.Activity')) {
-    // * Replace assignments like obj.Activity = value or obj.prop.Activity = value
+    // * Replace assignments like obj.Activity = value
     // * with guarded assignment: (obj = obj || {}).Activity = value
-    // * For nested paths, this ensures the immediate parent exists
-    // * Note: This handles the common case where the direct parent is undefined
+    // * Only handle simple identifier paths (not nested) to avoid issues with undefined parents
+    // * In minified code, Activity is typically set on simple variables, not nested objects
     code = code.replace(
-      /([a-zA-Z_$][a-zA-Z0-9_$]*(?:\.[a-zA-Z_$][a-zA-Z0-9_$]*)*)\.Activity\s*=/g,
-      (match, objPath) => {
-        // * For simple paths like "scheduler.Activity", use: (scheduler = scheduler || {}).Activity
-        // * For nested paths, we ensure the full path exists
-        // * This is safe because if the parent is undefined, the assignment will create it
-        return `(${objPath} = ${objPath} || {}).Activity =`;
-      }
+      /([a-zA-Z_$][a-zA-Z0-9_$]*)\.Activity\s*=/g,
+      '($1 = $1 || {}).Activity ='
     );
   }
 

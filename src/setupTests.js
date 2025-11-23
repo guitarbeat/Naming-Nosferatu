@@ -34,16 +34,20 @@ Object.defineProperty(window, "matchMedia", {
 
 // * Mock ResizeObserver
 globalThis.ResizeObserver = class ResizeObserver {
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
+  constructor() {
+    this.observe = vi.fn();
+    this.unobserve = vi.fn();
+    this.disconnect = vi.fn();
+  }
 };
 
 // * Mock IntersectionObserver
 globalThis.IntersectionObserver = class IntersectionObserver {
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
+  constructor() {
+    this.observe = vi.fn();
+    this.unobserve = vi.fn();
+    this.disconnect = vi.fn();
+  }
 };
 
 // * Mock Supabase (both the integration client and the package)
