@@ -2,8 +2,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 import { defineConfig, loadEnv } from 'vite';
-import react from '@vitejs/plugin-react-swc';
-import { componentTagger } from 'lovable-tagger';
+import react from '@vitejs/plugin-react';
+// import { componentTagger } from 'lovable-tagger';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +52,8 @@ export default defineConfig(({ mode }) => {
       // * Optimize chunk splitting for better caching and parallel loading
       rollupOptions: {
         output: {
-          // * Manual chunk splitting strategy
+          // * Manual chunk splitting strategy - DISABLED for debugging React 19 issues
+          /*
           manualChunks: (id) => {
             // * Vendor chunks - separate large dependencies
             if (id.includes('node_modules')) {
@@ -76,6 +77,7 @@ export default defineConfig(({ mode }) => {
               return 'vendor';
             }
           },
+          */
           // * Optimize chunk file names for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
