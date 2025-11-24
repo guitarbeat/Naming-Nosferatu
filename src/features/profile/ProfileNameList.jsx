@@ -1,7 +1,6 @@
 import React, { useMemo, useEffect, memo } from "react";
 import PropTypes from "prop-types";
-import NameCard from "../../shared/components/NameCard/NameCard";
-import { SkeletonLoader } from "../../shared/components";
+import { SkeletonLoader, NameGrid } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
 import ProfileDashboard from "../../shared/components/ProfileDashboard/ProfileDashboard";
 import { ProfileFilters } from "./components/ProfileFilters";
@@ -362,81 +361,26 @@ const ProfileNameList = ({
         />
       )}
 
-      <div className={styles.namesGrid}>
-        {filteredAndSortedNames.map((name) => {
-          const isHidden = Boolean(name.isHidden) || hiddenIds.has(name.id);
-          const isSelected = selectedNames.has(name.id);
-
-          return (
-            <div
-              key={name.id}
-              className={`${styles.nameWrapper} ${isHidden ? styles.hiddenName : ""}`}
-            >
-              {isHidden && (
-                <button
-                  type="button"
-                  className={styles.hiddenBadge}
-                  title="Click to unhide"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (!isAdmin) {
-                      return;
-                    }
-                    onToggleVisibility?.(name.id);
-                  }}
-                  disabled={!isAdmin}
-                  aria-disabled={!isAdmin}
-                >
-                  Hidden
-                </button>
-              )}
-              <NameCard
-                name={name.name}
-                description={
-                  name.description ||
-                  `Rating: ${name.user_rating || TOURNAMENT.DEFAULT_RATING}`
-                }
-                isSelected={isSelected}
-                onClick={undefined} // * Not interactive in profile view
-                disabled={false}
-                size="medium"
-                metadata={{
-                  rating:
-                    name.user_rating ||
-                    name.avg_rating ||
-                    TOURNAMENT.DEFAULT_RATING,
-                  popularity: name.popularity_score,
-                  tournaments: name.total_tournaments,
-                  categories: name.categories,
-                  winRate:
-                    name.user_wins && name.user_losses
-                      ? Math.round(
-                          (name.user_wins /
-                            (name.user_wins + name.user_losses)) *
-                            100,
-                        )
-                      : 0,
-                  totalMatches: (name.user_wins || 0) + (name.user_losses || 0),
-                  created: name.created_at,
-                }}
-                className={isHidden ? styles.hiddenNameCard : ""}
-                isAdmin={isAdmin}
-                isHidden={isHidden}
-                onToggleVisibility={
-                  isAdmin ? () => onToggleVisibility(name.id) : undefined
-                }
-                onDelete={isAdmin ? () => onDelete(name) : undefined}
-                onSelectionChange={
-                  isAdmin
-                    ? (selected) => onSelectionChange(name.id, selected)
-                    : undefined
-                }
-                showAdminControls={isAdmin}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {/* Names Grid - Using Unified Component */}
+      <NameGrid
+        names={filteredAndSortedNames}
+        selectedNames={selectedNames}
+        onToggleName={onSelectionChange}
+        filters={{
+          // Pass empty filters since filtering is already done
+          category: null,
+          searchTerm: "",
+          sortBy: "",
+        }}
+        mode="profile"
+        isLoading={false}
+        isAdmin={isAdmin}
+        showSelectedOnly={false}
+        hiddenIds={hiddenIds}
+        onToggleVisibility={onToggleVisibility}
+        onDelete={onDelete}
+        className={styles.namesGrid}
+      />
     </div>
   );
 };

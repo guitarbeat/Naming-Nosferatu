@@ -23,6 +23,9 @@ import CatImage from "./CatImage/CatImage";
 import StartTournamentButton from "./StartTournamentButton/StartTournamentButton";
 import ScrollToTopButton from "./ScrollToTopButton";
 
+// * Direct named exports (not default exports)
+export { NameGrid } from "./NameGrid/NameGrid";
+
 // * Named exports
 export {
   Button,

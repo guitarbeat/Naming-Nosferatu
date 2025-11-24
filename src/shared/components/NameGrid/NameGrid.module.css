@@ -1,0 +1,98 @@
+/* NameGrid - Unified Component */
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.cardWrapper {
+  position: relative;
+}
+
+/* Hidden Name Badge */
+.hiddenBadge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  z-index: 10;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: var(--warning-600);
+  border: none;
+  border-radius: 4px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.hiddenBadge:hover:not(:disabled) {
+  background: var(--warning-700);
+  transform: scale(1.05);
+}
+
+.hiddenBadge:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.hiddenCard {
+  opacity: 0.7;
+  border: 2px solid var(--warning-300);
+  background: linear-gradient(
+    135deg,
+    var(--warning-50),
+    var(--warning-100)
+  );
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.emptyMessage {
+  max-width: 500px;
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .emptyState {
+    padding: var(--space-6);
+  }
+
+  .emptyTitle {
+    font-size: 1.25rem;
+  }
+}
