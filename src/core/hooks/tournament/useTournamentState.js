@@ -111,7 +111,7 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     return null;
   }
 
-  if (options && (options.currentRatings || options.history)) {
+  const findBestMatch = () => {
     try {
       const nameList = names.map((n) => n?.name || "").filter(Boolean);
       initializeSorterPairs(sorter, nameList);
@@ -168,6 +168,12 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
         console.warn("Adaptive next-match selection failed:", e);
       }
     }
+    return null;
+  };
+
+  if (options && (options.currentRatings || options.history)) {
+    const match = findBestMatch();
+    if (match) return match;
   }
 
   if (typeof sorter.getNextMatch === "function") {
@@ -189,65 +195,6 @@ export function getNextMatch(names, sorter, _matchNumber, options = {}) {
     }
   }
 
-  try {
-    const nameList = names.map((n) => n?.name || "").filter(Boolean);
-    initializeSorterPairs(sorter, nameList);
-
-    // * Ensure _pairs is initialized before accessing
-    if (!Array.isArray(sorter._pairs) || sorter._pairs.length === 0) {
-      return null;
-    }
-
-    const prefs = getPreferencesMap(sorter);
-    const ratings = options.currentRatings || {};
-    const history = options.history || [];
-    const comparisons = buildComparisonsMap(history);
-
-    let bestPair = null;
-    let bestScore = Infinity;
-
-    const pairIndex =
-      typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
-    for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
-      const [a, b] = sorter._pairs[idx];
-      const key = `${a}-${b}`;
-      const reverseKey = `${b}-${a}`;
-      if (prefs.has(key) || prefs.has(reverseKey)) continue;
-
-      const ra =
-        ratings[a]?.rating ??
-        (typeof ratings[a] === "number" ? ratings[a] : 1500);
-      const rb =
-        ratings[b]?.rating ??
-        (typeof ratings[b] === "number" ? ratings[b] : 1500);
-      const diff = Math.abs(ra - rb);
-
-      const ca = comparisons.get(a) || 0;
-      const cb = comparisons.get(b) || 0;
-      const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
-
-      const score = diff - 50 * uncScore;
-
-      if (score < bestScore) {
-        bestScore = score;
-        bestPair = [a, b];
-      }
-    }
-
-    if (bestPair) {
-      const [a, b] = bestPair;
-      sorter._pairIndex = Math.max(
-        0,
-        sorter._pairs.findIndex((p) => p[0] === a && p[1] === b),
-      );
-      return {
-        left: names.find((n) => n.name === a) || { name: a },
-        right: names.find((n) => n.name === b) || { name: b },
-      };
-    }
-  } catch (e) {
-    console.warn("Fallback next-match generation failed:", e);
-  }
-
-  return null;
+  // Fallback to finding best match if sorter failed or wasn't used initially
+  return findBestMatch();
 }

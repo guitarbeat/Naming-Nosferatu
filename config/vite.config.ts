@@ -52,13 +52,12 @@ export default defineConfig(({ mode }) => {
       // * Optimize chunk splitting for better caching and parallel loading
       rollupOptions: {
         output: {
-          // * Manual chunk splitting strategy - DISABLED for debugging React 19 issues
-          /*
+          // * Manual chunk splitting strategy
           manualChunks: (id) => {
             // * Vendor chunks - separate large dependencies
             if (id.includes('node_modules')) {
               // * React and React DOM in separate chunk (most critical)
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react/jsx-runtime')) {
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react/jsx-runtime') || id.includes('scheduler')) {
                 return 'react-vendor';
               }
               // * Supabase client in separate chunk
@@ -77,7 +76,6 @@ export default defineConfig(({ mode }) => {
               return 'vendor';
             }
           },
-          */
           // * Optimize chunk file names for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',

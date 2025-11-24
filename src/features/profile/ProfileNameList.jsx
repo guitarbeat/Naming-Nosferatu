@@ -530,7 +530,7 @@ const ProfileNameList = ({
                   `Rating: ${name.user_rating || TOURNAMENT.DEFAULT_RATING}`
                 }
                 isSelected={isSelected}
-                onClick={() => {}} // * No click action needed in profile view
+                onClick={undefined} // * Not interactive in profile view
                 disabled={false}
                 size="medium"
                 metadata={{

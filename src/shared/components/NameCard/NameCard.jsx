@@ -200,22 +200,26 @@ function NameCard({
     .filter(Boolean)
     .join(" ");
 
+  const isInteractive = !disabled && (onClick || (isAdmin && onSelectionChange));
+  const Component = isInteractive ? "button" : "div";
+
   return (
     <div className={styles.cardContainer}>
       {/* Main card content */}
-      <button
+      <Component
         ref={cardRef}
-        className={cardClasses}
-        onClick={handleInteraction}
-        onKeyDown={handleInteraction}
-        disabled={disabled}
-        aria-pressed={isSelected}
+        className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
+        onClick={isInteractive ? handleInteraction : undefined}
+        onKeyDown={isInteractive ? handleInteraction : undefined}
+        disabled={isInteractive ? disabled : undefined}
+        aria-pressed={isInteractive ? isSelected : undefined}
         aria-label={getAriaLabel()}
         aria-describedby={
           description ? `${getSafeId(name)}-description` : undefined
         }
         aria-labelledby={`${getSafeId(name)}-title`}
-        type="button"
+        type={isInteractive ? "button" : undefined}
+        role={!isInteractive ? "article" : undefined}
       >
         {/* Cat image when provided */}
         {image && (
@@ -283,14 +287,14 @@ function NameCard({
             ✓
           </span>
         )}
-        {isRippling && (
+        {isRippling && isInteractive && (
           <span
             className={styles.rippleEffect}
             style={rippleStyle}
             aria-hidden="true"
           />
         )}
-      </button>
+      </Component>
 
       {/* Admin actions overlay */}
       {isAdmin && (

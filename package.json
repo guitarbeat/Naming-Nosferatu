@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": "20.x",
+    "node": ">=20.x",
     "npm": ">=10.0.0"
   },
   "scripts": {
@@ -45,9 +45,7 @@
     "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@supabase/supabase-js": "^2.83.0",
-    "@vitejs/plugin-react-swc": "^4.2.2",
     "class-variance-authority": "^0.7.1",
-    "lovable-tagger": "^1.1.11",
     "lucide-react": "^0.554.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
