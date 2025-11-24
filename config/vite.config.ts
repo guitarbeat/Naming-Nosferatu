@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      mode === 'development' && componentTagger(),
+      // mode === 'development' && componentTagger(),
     ].filter(Boolean),
     envPrefix: ['VITE_', 'SUPABASE_'],
     resolve: {
