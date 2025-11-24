@@ -353,47 +353,23 @@ function NameCard({
               )}
 
               <div className={styles.tooltipStats}>
-                {metadata.rating && (
-                  <div className={styles.tooltipStat}>
-                    <span className={styles.tooltipLabel}>Rating</span>
-                    <span className={styles.tooltipValue}>
-                      {metadata.rating}
-                    </span>
-                  </div>
-                )}
-
-                {metadata.wins !== undefined && (
-                  <div className={styles.tooltipStat}>
-                    <span className={styles.tooltipLabel}>Wins</span>
-                    <span className={styles.tooltipValue}>{metadata.wins}</span>
-                  </div>
-                )}
-
-                {metadata.losses !== undefined && (
-                  <div className={styles.tooltipStat}>
-                    <span className={styles.tooltipLabel}>Losses</span>
-                    <span className={styles.tooltipValue}>
-                      {metadata.losses}
-                    </span>
-                  </div>
-                )}
-
-                {metadata.totalMatches && (
-                  <div className={styles.tooltipStat}>
-                    <span className={styles.tooltipLabel}>Total Matches</span>
-                    <span className={styles.tooltipValue}>
-                      {metadata.totalMatches}
-                    </span>
-                  </div>
-                )}
-
-                {metadata.winRate && (
-                  <div className={styles.tooltipStat}>
-                    <span className={styles.tooltipLabel}>Win Rate</span>
-                    <span className={styles.tooltipValue}>
-                      {metadata.winRate}%
-                    </span>
-                  </div>
+                {[
+                  { key: "rating", label: "Rating" },
+                  { key: "wins", label: "Wins" },
+                  { key: "losses", label: "Losses" },
+                  { key: "totalMatches", label: "Total Matches" },
+                  { key: "winRate", label: "Win Rate", suffix: "%" },
+                ].map(
+                  ({ key, label, suffix }) =>
+                    metadata[key] !== undefined && (
+                      <div key={key} className={styles.tooltipStat}>
+                        <span className={styles.tooltipLabel}>{label}</span>
+                        <span className={styles.tooltipValue}>
+                          {metadata[key]}
+                          {suffix}
+                        </span>
+                      </div>
+                    ),
                 )}
               </div>
 

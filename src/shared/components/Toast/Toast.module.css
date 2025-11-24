@@ -176,6 +176,36 @@
     min-width: auto;
     max-width: none;
     transform: translateY(-100%);
+    gap: 8px;
+    max-height: calc(100vh - 20px);
+  }
+
+  .topLeft,
+  .topRight {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+  }
+
+  .topCenter {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    transform: none;
+  }
+
+  .bottomLeft,
+  .bottomRight {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .bottomCenter {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    transform: none;
   }
 
   .container.exiting {
@@ -341,81 +371,7 @@
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Mobile responsiveness */
-@media (width <= 768px) {
-  .container {
-    gap: 8px;
-    max-height: calc(100vh - 20px);
-  }
-
-  .topLeft,
-  .topRight {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-  }
-
-  .topCenter {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    transform: none;
-  }
-
-  .bottomLeft,
-  .bottomRight {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-  }
-
-  .bottomCenter {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-    transform: none;
-  }
-
-  .item {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    min-width: auto;
-    max-width: none;
-    transform: translateY(-100%);
-  }
-
-  .item.exiting {
-    transform: translateY(-100%);
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-100%) scale(0.95);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  .content {
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .message {
-    font-size: 0.9rem;
-  }
-
-  .dismissButton {
-    width: 20px;
-    height: 20px;
-    font-size: 1em;
-  }
-}
+/* Merged into the main mobile media query block above */
 
 @media (width <= 480px) {
   .container {

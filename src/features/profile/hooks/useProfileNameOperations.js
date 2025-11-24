@@ -84,8 +84,8 @@ export function useProfileNameOperations(
         setAllNames((prev) =>
           Array.isArray(prev)
             ? prev.map((n) =>
-                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
-              )
+              n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
+            )
             : prev,
         );
 
@@ -177,37 +177,41 @@ export function useProfileNameOperations(
     });
   }, []);
 
-  // * Handle bulk hide operation
-  const handleBulkHide = useCallback(
-    async (nameIds) => {
+  // * Helper for bulk operations
+  const performBulkOperation = useCallback(
+    async (nameIds, operation, successMessage, isHide) => {
       try {
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
           if (process.env.NODE_ENV === "development") {
-            console.warn("Supabase not configured, cannot hide names");
+            console.warn("Supabase not configured, cannot perform bulk operation");
           }
           showError("Database not available");
           return;
         }
 
         if (!canManageActiveUser) {
-          showError("Only admins can hide names");
-          showToast("Only admins can hide names", "error");
+          const action = isHide ? "hide" : "unhide";
+          showError(`Only admins can ${action} names`);
+          showToast(`Only admins can ${action} names`, "error");
           return;
         }
 
-        const result = await hiddenNamesAPI.hideNames(activeUser, nameIds);
+        const result = await operation(activeUser, nameIds);
 
         if (result.success) {
           showSuccess(
-            `Hidden ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
+            `${successMessage} ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
           );
 
           // Update local state optimistically
           setHiddenNames((prev) => {
             const newSet = new Set(prev);
-            nameIds.forEach((id) => newSet.add(id));
+            nameIds.forEach((id) => {
+              if (isHide) newSet.add(id);
+              else newSet.delete(id);
+            });
             return newSet;
           });
 
@@ -217,82 +221,47 @@ export function useProfileNameOperations(
           // Refresh data
           fetchNames(activeUser);
         } else {
-          showError("Failed to hide names");
+          showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
         }
       } catch (error) {
-        console.error("Profile - Bulk Hide error:", error);
-        showToast("Failed to hide names", "error");
-        showError("Failed to hide names");
+        console.error(`Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`, error);
+        showToast(`Failed to ${isHide ? "hide" : "unhide"} names`, "error");
+        showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
       }
     },
     [
       activeUser,
-      fetchNames,
-      showSuccess,
-      showError,
-      showToast,
       canManageActiveUser,
+      fetchNames,
       setHiddenNames,
+      showError,
+      showSuccess,
+      showToast,
     ],
+  );
+
+  // * Handle bulk hide operation
+  const handleBulkHide = useCallback(
+    (nameIds) =>
+      performBulkOperation(
+        nameIds,
+        hiddenNamesAPI.hideNames,
+        "Hidden",
+        true
+      ),
+    [performBulkOperation],
   );
 
   // * Handle bulk unhide operation
   const handleBulkUnhide = useCallback(
-    async (nameIds) => {
-      try {
-        const supabaseClient = await resolveSupabaseClient();
-
-        if (!supabaseClient) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("Supabase not configured, cannot unhide names");
-          }
-          showError("Database not available");
-          return;
-        }
-
-        if (!canManageActiveUser) {
-          showError("Only admins can unhide names");
-          showToast("Only admins can unhide names", "error");
-          return;
-        }
-
-        const result = await hiddenNamesAPI.unhideNames(activeUser, nameIds);
-
-        if (result.success) {
-          showSuccess(
-            `Unhidden ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
-          );
-
-          // Update local state optimistically
-          setHiddenNames((prev) => {
-            const newSet = new Set(prev);
-            nameIds.forEach((id) => newSet.delete(id));
-            return newSet;
-          });
-
-          // Clear selection
-          setSelectedNames(new Set());
-
-          // Refresh data
-          fetchNames(activeUser);
-        } else {
-          showError("Failed to unhide names");
-        }
-      } catch (error) {
-        console.error("Profile - Bulk Unhide error:", error);
-        showToast("Failed to unhide names", "error");
-        showError("Failed to unhide names");
-      }
-    },
-    [
-      activeUser,
-      fetchNames,
-      showSuccess,
-      showError,
-      showToast,
-      canManageActiveUser,
-      setHiddenNames,
-    ],
+    (nameIds) =>
+      performBulkOperation(
+        nameIds,
+        hiddenNamesAPI.unhideNames,
+        "Unhidden",
+        false
+      ),
+    [performBulkOperation],
   );
 
   return {

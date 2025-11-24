@@ -66,7 +66,7 @@ const getRoleSourceOrder = (state) => {
 
   const preferred =
     state.preferredRoleSource &&
-    !state.disabledSources.has(state.preferredRoleSource)
+      !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -89,6 +89,19 @@ const getRoleSourceOrder = (state) => {
   return [...orderedSources];
 };
 
+const handleRoleResponse = (data, error, source, state, roleKey) => {
+  if (error) {
+    if (isMissingResourceError(error)) {
+      markSourceUnavailable(state, source);
+      return { role: null, handled: true };
+    }
+    throw error;
+  }
+
+  markSourceSuccessful(state, source);
+  return { role: data?.[roleKey] ?? null, handled: false };
+};
+
 const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
   if (!activeSupabase) return { role: null, handled: true };
 
@@ -103,17 +116,7 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
       .limit(1)
       .maybeSingle();
 
-    if (error) {
-      if (isMissingResourceError(error)) {
-        markSourceUnavailable(state, source);
-        return { role: null, handled: true };
-      }
-      throw error;
-    }
-
-    markSourceSuccessful(state, source);
-
-    return { role: data?.role ?? null, handled: false };
+    return handleRoleResponse(data, error, source, state, "role");
   }
 
   const { data, error } = await activeSupabase
@@ -122,17 +125,7 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
     .eq("user_name", trimmedUserName)
     .maybeSingle();
 
-  if (error) {
-    if (isMissingResourceError(error)) {
-      markSourceUnavailable(state, source);
-      return { role: null, handled: true };
-    }
-    throw error;
-  }
-
-  markSourceSuccessful(state, source);
-
-  return { role: data?.user_role ?? null, handled: false };
+  return handleRoleResponse(data, error, source, state, "user_role");
 };
 
 const fetchUserRole = async (activeSupabase, userName) => {

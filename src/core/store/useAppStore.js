@@ -6,6 +6,7 @@ import {
   getMediaQueryList,
   getMediaQueryMatches,
 } from "../../shared/utils/mediaQueries";
+import { siteSettingsAPI } from "../../integrations/supabase/api";
 
 const THEME_STORAGE_KEY = "theme";
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
@@ -541,9 +542,6 @@ const useAppStore = create(
       // * Site Settings Actions
       siteSettingsActions: {
         loadCatChosenName: async () => {
-          const { siteSettingsAPI } = await import(
-            "../../integrations/supabase/api"
-          );
           try {
             const data = await siteSettingsAPI.getCatChosenName();
             set((state) => ({
