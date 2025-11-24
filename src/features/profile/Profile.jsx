@@ -1,7 +1,7 @@
 /**
  * @module Profile
- * @description Main profile component that orchestrates user statistics and name management.
- * Now includes comprehensive selection analytics and tournament insights.
+ * @description Main profile component with unified, minimal design.
+ * Reuses shared components and follows design system tokens.
  */
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
@@ -16,7 +16,9 @@ import { useProfileNames } from "./hooks/useProfileNames";
 import { useProfileStats } from "./hooks/useProfileStats";
 import { useProfileHighlights } from "./hooks/useProfileHighlights";
 import { useProfileNameOperations } from "./hooks/useProfileNameOperations";
-import styles from "./Profile.module.css";
+import styles from "./Profile.refactored.module.css";
+import { Button } from "../../shared/components";
+
 
 // * Main Profile Component
 const Profile = ({ userName }) => {
@@ -109,7 +111,9 @@ const Profile = ({ userName }) => {
       <div className={styles.errorContainer}>
         <h2>Error Loading Profile</h2>
         <p>{ratingsError.message}</p>
-        <button onClick={() => fetchNames(activeUser)}>Retry</button>
+        <Button onClick={() => fetchNames(activeUser)} variant="primary">
+          Retry
+        </Button>
       </div>
     );
   }

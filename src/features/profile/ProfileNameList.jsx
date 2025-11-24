@@ -1,10 +1,12 @@
 import React, { useMemo, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../../shared/components/NameCard/NameCard";
-import { SkeletonLoader, Select, Button } from "../../shared/components";
+import { SkeletonLoader } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
 import ProfileDashboard from "../../shared/components/ProfileDashboard/ProfileDashboard";
-import styles from "./ProfileNameList.module.css";
+import { ProfileFilters } from "./components/ProfileFilters";
+import { ProfileBulkActions } from "./components/ProfileBulkActions";
+import styles from "./ProfileNameList.refactored.module.css";
 
 /**
  * @module ProfileNameList
@@ -316,38 +318,7 @@ const ProfileNameList = ({
     filteredAndSortedNames.length > 0 &&
     filteredAndSortedNames.every((name) => selectedNames.has(name.id));
 
-  // * Core metrics - only most relevant for profile view
-
-  // * Filter options
-  const statusOptions = [
-    { value: FILTER_OPTIONS.STATUS.ALL, label: "All Names" },
-    { value: FILTER_OPTIONS.STATUS.ACTIVE, label: "Active Only" },
-    { value: FILTER_OPTIONS.STATUS.HIDDEN, label: "Hidden Only" },
-  ];
-
-  // * Use provided userSelectOptions if available, otherwise fall back to default options
-  const userOptions = userSelectOptions || [
-    { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
-    { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
-    { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
-  ];
-
-  const sortOptions = [
-    { value: FILTER_OPTIONS.SORT.RATING, label: "Rating" },
-    { value: FILTER_OPTIONS.SORT.NAME, label: "Name" },
-    { value: FILTER_OPTIONS.SORT.WINS, label: "Wins" },
-    { value: FILTER_OPTIONS.SORT.LOSSES, label: "Losses" },
-    { value: FILTER_OPTIONS.SORT.WIN_RATE, label: "Win Rate" },
-    { value: FILTER_OPTIONS.SORT.CREATED, label: "Created" },
-  ];
-
-  const selectionFilterOptions = [
-    { value: "all", label: "All Names" },
-    { value: "selected", label: "Selected Names" },
-    { value: "never_selected", label: "Never Selected" },
-    { value: "frequently_selected", label: "Frequently Selected" },
-    { value: "recently_selected", label: "Recently Selected" },
-  ];
+  // * Filter options - removed, now in ProfileFilters component
 
   return (
     <div className={`${styles.container} ${className}`}>
@@ -359,141 +330,37 @@ const ProfileNameList = ({
         />
       )}
 
-      {/* Unified Dashboard: Filters */}
-      {stats && (
-        <div className={styles.unifiedDashboard}>
-          <div className={styles.filterSection}>
-            <div className={styles.filterHeader}>
-              <span className={styles.resultsCount}>
-                {filteredCount}
-                {filteredCount !== totalCount ? `/${totalCount}` : ""}{" "}
-                {filteredCount !== totalCount && (
-                  <span className={styles.filteredIndicator}>filtered</span>
-                )}
-              </span>
-            </div>
-            <div className={styles.filtersGrid}>
-              {/* Primary Filters Row */}
-              <div className={styles.filterRow}>
-                <div className={styles.filterGroup}>
-                  <label className={styles.filterLabel}>Status</label>
-                  <Select
-                    name="profile-status-filter"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    options={statusOptions}
-                    className={styles.filterSelect}
-                  />
-                </div>
+      {/* Filters */}
+      <ProfileFilters
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        userFilter={userFilter}
+        setUserFilter={setUserFilter}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        selectionFilter={selectionFilter}
+        setSelectionFilter={setSelectionFilter}
+        showUserFilter={showUserFilter}
+        showSelectionFilter={!!selectionStats}
+        userSelectOptions={userSelectOptions}
+        filteredCount={filteredCount}
+        totalCount={totalCount}
+      />
 
-                {showUserFilter && (
-                  <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>User</label>
-                    <Select
-                      name="profile-user-filter"
-                      value={userFilter}
-                      onChange={(e) => setUserFilter(e.target.value)}
-                      options={userOptions}
-                      className={styles.filterSelect}
-                    />
-                  </div>
-                )}
-
-                {selectionStats && (
-                  <div className={styles.filterGroup}>
-                    <label className={styles.filterLabel}>Selection</label>
-                    <Select
-                      name="profile-selection-filter"
-                      value={selectionFilter}
-                      onChange={(e) => setSelectionFilter(e.target.value)}
-                      options={selectionFilterOptions}
-                      className={styles.filterSelect}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Sort Controls Row - Combined */}
-              <div className={styles.filterRow}>
-                <div className={styles.sortGroup}>
-                  <label className={styles.filterLabel}>Sort By</label>
-                  <div className={styles.sortControls}>
-                    <Select
-                      name="profile-sort-filter"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      options={sortOptions}
-                      className={styles.filterSelect}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setSortOrder(
-                          sortOrder === FILTER_OPTIONS.ORDER.ASC
-                            ? FILTER_OPTIONS.ORDER.DESC
-                            : FILTER_OPTIONS.ORDER.ASC,
-                        )
-                      }
-                      className={styles.sortOrderButton}
-                      title={`Sort ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Descending" : "Ascending"}`}
-                      aria-label={`Toggle sort order to ${sortOrder === FILTER_OPTIONS.ORDER.ASC ? "descending" : "ascending"}`}
-                    >
-                      {sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Bulk Actions */}
+      {isAdmin && filteredAndSortedNames.length > 0 && (
+        <ProfileBulkActions
+          selectedCount={selectedNames.size}
+          onSelectAll={onSelectAllClick || handleSelectAll}
+          onDeselectAll={onSelectAllClick || handleSelectAll}
+          onBulkHide={handleBulkHide}
+          onBulkUnhide={handleBulkUnhide}
+          isAllSelected={allVisibleSelected}
+          showActions={!hideSelectAllButton}
+        />
       )}
-
-      <div className={styles.headerControls}>
-        {isAdmin && (
-          <>
-            {selectedNames.size > 0 && (
-              <div className={styles.selectionInfo}>
-                {selectedNames.size} name{selectedNames.size !== 1 ? "s" : ""}{" "}
-                selected
-              </div>
-            )}
-            {!hideSelectAllButton &&
-              isAdmin &&
-              filteredAndSortedNames.length > 0 && (
-                <div className={styles.bulkControls}>
-                  <Button
-                    onClick={onSelectAllClick || handleSelectAll}
-                    variant="secondary"
-                    size="small"
-                    title={allVisibleSelected ? "Deselect All" : "Select All"}
-                  >
-                    {allVisibleSelected ? "Deselect All" : "Select All"}
-                  </Button>
-                  {selectedNames.size > 0 && (
-                    <>
-                      <Button
-                        onClick={handleBulkHide}
-                        variant="danger"
-                        size="small"
-                        title="Hide Selected Names"
-                      >
-                        Hide Selected
-                      </Button>
-                      <Button
-                        onClick={handleBulkUnhide}
-                        variant="primary"
-                        size="small"
-                        title="Unhide Selected Names"
-                      >
-                        Unhide Selected
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
-          </>
-        )}
-      </div>
 
       <div className={styles.namesGrid}>
         {filteredAndSortedNames.map((name) => {

@@ -35,6 +35,8 @@ export function useTournamentRoutingSync({
       return;
     }
 
+    // * Store previous view before updating the ref
+    const previousView = lastViewRef.current;
     lastViewRef.current = currentView;
 
     if (currentView === "profile") {

@@ -1,27 +1,16 @@
 /**
  * @module ProfileHeader
- * @description Header component for the profile page.
+ * @description Minimal, cohesive header component for the profile page.
+ * Uses shared design system components and standardized spacing/typography.
  */
 
 import React from "react";
 import PropTypes from "prop-types";
-import { Select, Button } from "../../../shared/components";
-import styles from "../Profile.module.css";
+import { Select, Button, Card } from "../../../shared/components";
+import styles from "../Profile.refactored.module.css";
 
 /**
- * * Profile header component
- * @param {Object} props - Component props
- * @param {string} props.activeUser - Active user name
- * @param {string} props.userName - Current user name
- * @param {boolean} props.isAdmin - Whether user is admin
- * @param {string} props.userFilter - Current user filter value
- * @param {Function} props.setUserFilter - Function to set user filter
- * @param {Array} props.userSelectOptions - Options for user select dropdown
- * @param {boolean} props.userListLoading - Whether user list is loading
- * @param {Object} props.userListError - User list error
- * @param {Array} props.allNames - All names array
- * @param {Set} props.selectedNames - Set of selected name IDs
- * @param {Function} props.handleSelectionChange - Handler for selection changes
+ * Profile header component - displays user info and admin controls
  */
 export function ProfileHeader({
   activeUser,
@@ -36,9 +25,14 @@ export function ProfileHeader({
   selectedNames,
   handleSelectionChange,
 }) {
+  const allSelected = allNames.every((n) => selectedNames.has(n.id));
+
   return (
-    <div className={styles.header}>
-      <h1 className={styles.title}>Profile: {activeUser || userName}</h1>
+    <header className={styles.header}>
+      <h1 className={styles.title}>
+        {activeUser || userName}
+      </h1>
+      
       {isAdmin && (
         <div className={styles.headerActions}>
           <div className={styles.userSwitcher}>
@@ -46,7 +40,7 @@ export function ProfileHeader({
               htmlFor="profile-user-select"
               className={styles.userSwitcherLabel}
             >
-              View user
+              View User
             </label>
             <Select
               id="profile-user-select"
@@ -56,27 +50,26 @@ export function ProfileHeader({
               options={userSelectOptions}
               disabled={userListLoading}
               className={styles.userSwitcherSelect}
+              aria-label="Select user to view"
             />
             {userListLoading && (
               <span className={styles.userSwitcherHelper}>Loading users…</span>
             )}
             {userListError && (
-              <span className={styles.userSwitcherError}>
+              <span className={styles.userSwitcherError} role="alert">
                 Unable to load users
               </span>
             )}
             {activeUser && activeUser !== userName && (
               <span className={styles.viewingNote}>
-                Viewing data for {activeUser}
+                Viewing {activeUser}&apos;s data
               </span>
             )}
           </div>
+          
           {allNames.length > 0 && (
             <Button
               onClick={() => {
-                const allSelected = allNames.every((n) =>
-                  selectedNames.has(n.id),
-                );
                 if (allSelected) {
                   allNames.forEach((n) => handleSelectionChange(n.id, false));
                 } else {
@@ -85,20 +78,14 @@ export function ProfileHeader({
               }}
               variant="secondary"
               size="small"
-              title={
-                allNames.every((n) => selectedNames.has(n.id))
-                  ? "Deselect All"
-                  : "Select All"
-              }
+              aria-label={allSelected ? "Deselect all names" : "Select all names"}
             >
-              {allNames.every((n) => selectedNames.has(n.id))
-                ? "Deselect All"
-                : "Select All"}
+              {allSelected ? "Deselect All" : "Select All"}
             </Button>
           )}
         </div>
       )}
-    </div>
+    </header>
   );
 }
 

@@ -263,6 +263,7 @@ const useAppStore = create(
             },
           })),
 
+
         setView: (view) =>
           set((state) => ({
             tournament: {

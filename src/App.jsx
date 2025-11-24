@@ -55,6 +55,9 @@ function App() {
     errorActions,
   } = useAppStore();
 
+  // * Explicitly select currentView to ensure re-renders when it changes
+  const currentView = useAppStore((state) => state.tournament.currentView);
+
   // * Simple URL routing helpers
   const { currentRoute, navigateTo } = useRouting();
 
@@ -62,7 +65,7 @@ function App() {
     currentRoute,
     navigateTo,
     isLoggedIn: user.isLoggedIn,
-    currentView: tournament.currentView,
+    currentView, // * Use the explicitly selected value
     onViewChange: tournamentActions.setView,
     isTournamentComplete: tournament.isComplete,
   });
@@ -238,11 +241,16 @@ function App() {
   // * Memoize sidebar props to prevent unnecessary re-renders
   const sidebarProps = useMemo(
     () => ({
-      view: tournament.currentView || "tournament",
+      view: currentView || "tournament",
       setView: (view) => {
         tournamentActions.setView(view);
+        
+        // * Direct navigation for each view
         if (view === "profile") {
           tournamentActions.resetTournament();
+          navigateTo("/profile");
+        } else if (view === "tournament") {
+          navigateTo("/");
         }
       },
       isLoggedIn: user.isLoggedIn,
@@ -255,10 +263,10 @@ function App() {
       onTogglePerformanceDashboard: () =>
         uiActions.togglePerformanceDashboard(),
       // * Pass breadcrumbs to navbar
-      currentView: tournament.currentView || "tournament",
+      currentView: currentView || "tournament",
     }),
     [
-      tournament.currentView,
+      currentView,
       tournamentActions,
       user.isLoggedIn,
       user.name,
@@ -268,6 +276,7 @@ function App() {
       ui.theme,
       handleThemeChange,
       uiActions,
+      navigateTo,
     ],
   );
 

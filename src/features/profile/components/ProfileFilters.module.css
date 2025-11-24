@@ -1,0 +1,155 @@
+/* ProfileFilters - Unified Design System */
+
+.filtersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.resultsCount {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.separator {
+  color: var(--text-tertiary);
+}
+
+.total {
+  color: var(--text-secondary);
+}
+
+.badge {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgb(var(--primary-rgb) / 10%);
+  border-radius: 4px;
+}
+
+.filtersGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.filterGroup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 160px;
+}
+
+.sortGroup {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 200px;
+}
+
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.filterSelect {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+.sortControls {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+
+.sortControls .filterSelect {
+  flex: 1;
+}
+
+.sortOrderButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding: var(--space-2);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.sortOrderButton:hover {
+  background: var(--card-hover);
+  border-color: var(--primary-400);
+  transform: translateY(-1px);
+}
+
+.sortOrderButton:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filterRow {
+    flex-direction: column;
+  }
+
+  .filterGroup,
+  .sortGroup {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filtersContainer {
+    padding: var(--space-3);
+  }
+
+  .resultsCount {
+    flex-wrap: wrap;
+  }
+}

@@ -44,9 +44,6 @@ export function AppSidebar({
 
   const handleLogoClick = () => {
     // * Toggle sidebar expansion/collapse
-    if (process.env.NODE_ENV === "development") {
-      console.log("Sidebar clicked, current collapsed state:", collapsed);
-    }
     toggleCollapsed();
 
     // * If expanding, also navigate to tournament
