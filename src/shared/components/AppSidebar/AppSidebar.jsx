@@ -16,12 +16,8 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import {
-  TournamentIcon,
-  DashboardIcon,
-  LogoutIcon,
-  ProfileIcon,
-} from "./icons";
+import { TournamentIcon, DashboardIcon, LogoutIcon } from "./icons";
+import { AnalysisToggle } from "../AnalysisPanel";
 import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
 
@@ -134,17 +130,11 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-              {/* Analysis Mode Toggle - replaces Profile Navigation */}
+              {/* Analysis Mode Toggle - uses intentional AnalysisToggle component */}
               {isLoggedIn && userName && (
-                <MenuActionItem
-                  icon={ProfileIcon}
-                  label={
-                    collapsed
-                      ? ""
-                      : isAnalysisMode
-                        ? "Exit Analysis"
-                        : "Analysis"
-                  }
+                <AnalysisToggle
+                  active={isAnalysisMode}
+                  collapsed={collapsed}
                   onClick={() => {
                     // * Toggle analysis mode via URL parameter
                     const currentPath = window.location.pathname;
@@ -165,12 +155,6 @@ export function AppSidebar({
 
                     navigateTo(newUrl);
                   }}
-                  ariaLabel={
-                    isAnalysisMode
-                      ? "Exit Analysis Mode"
-                      : "Enter Analysis Mode"
-                  }
-                  condition={isLoggedIn && userName}
                 />
               )}
             </SidebarGroupContent>

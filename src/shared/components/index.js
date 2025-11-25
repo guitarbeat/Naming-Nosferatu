@@ -31,6 +31,22 @@ export {
   useNameManagementContext,
 } from "./NameManagementView/NameManagementView";
 
+// * Analysis Mode Components
+export {
+  AnalysisPanel,
+  AnalysisStats,
+  AnalysisToolbar,
+  AnalysisButton,
+  AnalysisFilters,
+  AnalysisFilter,
+  AnalysisSearch,
+  AnalysisHighlights,
+  AnalysisProgress,
+  AnalysisToggle,
+} from "./AnalysisPanel";
+export { AnalysisDashboard } from "./AnalysisDashboard";
+export { AnalysisBulkActions } from "./AnalysisBulkActions";
+
 // * Named exports
 export {
   Button,

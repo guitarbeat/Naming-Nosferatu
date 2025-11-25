@@ -15,6 +15,10 @@ import {
   NameManagementView,
   useNameManagementContext,
   Error,
+  AnalysisDashboard,
+  AnalysisBulkActions,
+  AnalysisPanel,
+  AnalysisProgress,
 } from "../../shared/components";
 import { useRouting } from "@hooks/useRouting";
 import { useImageGallery, useAdminStatus, useCategoryFilters } from "./hooks";
@@ -30,8 +34,6 @@ import { useProfileHighlights } from "../profile/hooks/useProfileHighlights";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications";
 import { useProfileUser } from "../profile/hooks/useProfileUser";
-import ProfileDashboard from "../../shared/components/ProfileDashboard/ProfileDashboard";
-import { ProfileBulkActions } from "../profile/components/ProfileBulkActions";
 import styles from "./TournamentSetup.module.css";
 
 // * Error boundary component
@@ -135,7 +137,7 @@ function TournamentSetupContent({
   }
 
   // * Analysis Mode components that use NameManagementView context
-  function AnalysisDashboard() {
+  function AnalysisDashboardWrapper() {
     const context = useNameManagementContext();
 
     // * Only show dashboard when analysis mode is active
@@ -146,7 +148,7 @@ function TournamentSetupContent({
     if (!stats) return null;
 
     return (
-      <ProfileDashboard
+      <AnalysisDashboard
         stats={stats}
         selectionStats={selectionStats}
         highlights={highlights}
@@ -154,7 +156,7 @@ function TournamentSetupContent({
     );
   }
 
-  function AnalysisBulkActions() {
+  function AnalysisBulkActionsWrapper() {
     const context = useNameManagementContext();
 
     // * Only show bulk actions when analysis mode is active
@@ -237,7 +239,7 @@ function TournamentSetupContent({
     }
 
     return (
-      <ProfileBulkActions
+      <AnalysisBulkActions
         selectedCount={selectedCount}
         onSelectAll={handleSelectAll}
         onDeselectAll={handleSelectAll}
@@ -366,8 +368,8 @@ function TournamentSetupContent({
             hiddenIds: undefined, // Will come from context
           }}
           extensions={{
-            dashboard: <AnalysisDashboard />,
-            bulkActions: <AnalysisBulkActions />,
+            dashboard: <AnalysisDashboardWrapper />,
+            bulkActions: <AnalysisBulkActionsWrapper />,
             nameGrid: (
               <>
                 <AnalysisHandlersProvider />

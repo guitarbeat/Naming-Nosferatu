@@ -418,7 +418,8 @@ export function NameManagementView({
               {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
             </button>
 
-            {selectedCount >= 2 && onStartTournament && (
+            {/* * Start Tournament button - hidden when Analysis Mode is active */}
+            {selectedCount >= 2 && onStartTournament && !analysisMode && (
               <button
                 className={styles.startButton}
                 onClick={() => onStartTournament(selectedNames)}
@@ -524,18 +525,21 @@ export function NameManagementView({
           )}
         </div>
 
-        {/* Tournament Mode: Floating Start Button */}
-        {mode === "tournament" && selectedCount >= 2 && onStartTournament && (
-          <div className={styles.floatingStartButton}>
-            <button
-              className={styles.startButton}
-              onClick={() => onStartTournament(selectedNames)}
-              type="button"
-            >
-              Start Tournament ({selectedCount})
-            </button>
-          </div>
-        )}
+        {/* Tournament Mode: Floating Start Button - hidden when Analysis Mode is active */}
+        {mode === "tournament" &&
+          selectedCount >= 2 &&
+          onStartTournament &&
+          !analysisMode && (
+            <div className={styles.floatingStartButton}>
+              <button
+                className={styles.startButton}
+                onClick={() => onStartTournament(selectedNames)}
+                type="button"
+              >
+                Start Tournament ({selectedCount})
+              </button>
+            </div>
+          )}
 
         {/* Mode-specific Extensions */}
         {extensions.sidebar && (
