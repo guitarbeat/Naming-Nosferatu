@@ -52,9 +52,7 @@ export function NameGrid({
   const selectedSet = useMemo(() => {
     if (Array.isArray(selectedNames)) {
       return new Set(
-        selectedNames.map((item) =>
-          typeof item === "object" ? item.id : item,
-        ),
+        selectedNames.map((item) => (typeof item === "object" ? item.id : item))
       );
     }
     return selectedNames instanceof Set ? selectedNames : new Set();
@@ -81,15 +79,18 @@ export function NameGrid({
   const getRandomCatImage = (nameId) => {
     if (!showCatPictures || imageList.length === 0) return undefined;
     const index = Math.abs(
-      nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
+      nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
     );
     return imageList[index % imageList.length];
   };
 
+  // * Use custom className if provided, otherwise use default grid styles
+  const gridClassName = className || styles.grid;
+
   // Loading state
   if (isLoading) {
     return (
-      <div className={`${styles.grid} ${className}`}>
+      <div className={gridClassName}>
         {Array.from({ length: 6 }).map((_, index) => (
           <SkeletonLoader key={index} height={120} />
         ))}
@@ -114,7 +115,7 @@ export function NameGrid({
   }
 
   return (
-    <div className={`${styles.grid} ${className}`}>
+    <div className={gridClassName}>
       {processedNames.map((nameObj) => {
         const isSelected = selectedSet.has(nameObj.id);
         const isHidden = hiddenIds.has(nameObj.id);
@@ -141,9 +142,7 @@ export function NameGrid({
                   : undefined
               }
               image={
-                showCatPictures
-                  ? getRandomCatImage(nameObj.id)
-                  : undefined
+                showCatPictures ? getRandomCatImage(nameObj.id) : undefined
               }
               metadata={
                 mode === "profile"
@@ -157,7 +156,7 @@ export function NameGrid({
                           ? Math.round(
                               (nameObj.user_wins /
                                 (nameObj.user_wins + nameObj.user_losses)) *
-                                100,
+                                100
                             )
                           : 0,
                       totalMatches:
@@ -170,10 +169,12 @@ export function NameGrid({
                       }
                     : undefined
               }
-              className={isHidden ? styles.hiddenCard : ""}
-              // Profile-specific props
-              isAdmin={isAdmin}
-              isHidden={isHidden}
+              className={
+                mode === "profile" && isHidden ? styles.hiddenCard : ""
+              }
+              // Profile-specific props - only show admin controls in profile mode
+              isAdmin={mode === "profile" && isAdmin}
+              isHidden={mode === "profile" ? isHidden : false}
               onToggleVisibility={
                 mode === "profile" && isAdmin
                   ? () => onToggleVisibility?.(nameObj.id)

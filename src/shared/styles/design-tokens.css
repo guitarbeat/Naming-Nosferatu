@@ -1,0 +1,245 @@
+/**
+ * @file design-tokens.css
+ * @description Unified design tokens system - single source of truth for spacing, typography, colors, and interactions
+ * 
+ * Design Principles:
+ * - Consistency: All components use these tokens
+ * - Clarity: Clear visual hierarchy through systematic spacing and typography
+ * - Minimalism: Restrained use of color and effects
+ * - Cohesion: Unified interaction patterns
+ */
+
+/* ==========================================================================
+   SPACING SYSTEM
+   ========================================================================== */
+:root {
+  /* * Base spacing scale - 4px base unit for consistent rhythm */
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+
+  /* * Component spacing - semantic spacing for common patterns */
+  --spacing-component-padding: var(--space-4);
+  --spacing-component-gap: var(--space-3);
+  --spacing-section-gap: var(--space-6);
+  --spacing-page-padding: var(--space-4);
+  --spacing-card-padding: var(--space-4);
+  --spacing-card-gap: var(--space-4);
+  --spacing-button-padding-x: var(--space-4);
+  --spacing-button-padding-y: var(--space-2);
+  --spacing-input-padding-x: var(--space-3);
+  --spacing-input-padding-y: var(--space-2);
+  --spacing-icon-gap: var(--space-2);
+}
+
+/* ==========================================================================
+   TYPOGRAPHY SYSTEM
+   ========================================================================== */
+:root {
+  /* * Font families */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-serif: "Playfair Display", georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* * Font sizes - consistent scale */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+  --text-5xl: 3rem; /* 48px */
+
+  /* * Font weights - restrained scale */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* * Line heights - consistent rhythm */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* * Letter spacing */
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+}
+
+/* ==========================================================================
+   COLOR SYSTEM
+   ========================================================================== */
+:root {
+  /* * Brand colors - use sparingly for emphasis */
+  --color-neon-cyan: #2ff3e0;
+  --color-hot-pink: #fa26a0;
+  --color-fire-red: #f51720;
+
+  /* * Semantic colors - consistent usage */
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+
+  /* * Neutral colors - primary palette */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
+}
+
+/* ==========================================================================
+   BORDER RADIUS SYSTEM
+   ========================================================================== */
+:root {
+  --radius-none: 0;
+  --radius-sm: 0.375rem; /* 6px */
+  --radius-md: 0.5rem; /* 8px */
+  --radius-lg: 0.75rem; /* 12px */
+  --radius-xl: 1rem; /* 16px */
+  --radius-2xl: 1.5rem; /* 24px */
+  --radius-full: 9999px;
+
+  /* * Component-specific radius */
+  --radius-button: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-input: var(--radius-md);
+  --radius-badge: var(--radius-full);
+}
+
+/* ==========================================================================
+   TRANSITION SYSTEM
+   ========================================================================== */
+:root {
+  /* * Timing functions - consistent easing */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* * Durations - consistent timing */
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-slower: 500ms;
+
+  /* * Standard transitions */
+  --transition-base: all var(--duration-normal) var(--ease-standard);
+  --transition-color: color var(--duration-fast) var(--ease-standard);
+  --transition-transform: transform var(--duration-normal) var(--ease-standard);
+  --transition-opacity: opacity var(--duration-fast) var(--ease-standard);
+}
+
+/* ==========================================================================
+   SHADOW SYSTEM
+   ========================================================================== */
+:root {
+  /* * Elevation shadows - consistent depth */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-sm: 0 2px 4px rgb(0 0 0 / 8%);
+  --shadow-md: 0 4px 8px rgb(0 0 0 / 10%);
+  --shadow-lg: 0 8px 16px rgb(0 0 0 / 12%);
+  --shadow-xl: 0 16px 32px rgb(0 0 0 / 15%);
+
+  /* * Colored shadows - use sparingly */
+  --shadow-cyan: 0 4px 16px rgb(47 243 224 / 15%);
+  --shadow-pink: 0 4px 16px rgb(250 38 160 / 15%);
+  --shadow-gradient:
+    0 8px 24px rgb(47 243 224 / 12%), 0 4px 12px rgb(250 38 160 / 10%);
+}
+
+/* ==========================================================================
+   INTERACTION SYSTEM
+   ========================================================================== */
+:root {
+  /* * Hover transforms - subtle and consistent */
+  --transform-hover-lift: translateY(-2px);
+  --transform-hover-scale: scale(1.02);
+  --transform-active-press: translateY(0) scale(0.98);
+
+  /* * Focus states - clear and accessible */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--color-neon-cyan);
+  --focus-ring:
+    0 0 0 var(--focus-ring-width) var(--focus-ring-color),
+    0 0 0 calc(var(--focus-ring-width) + var(--focus-ring-offset))
+      rgb(var(--focus-ring-color) / 20%);
+}
+
+/* ==========================================================================
+   Z-INDEX SYSTEM
+   ========================================================================== */
+:root {
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+:root {
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* ==========================================================================
+   COMPONENT-SPECIFIC TOKENS
+   ========================================================================== */
+:root {
+  /* * Button tokens */
+  --button-height-sm: 32px;
+  --button-height-md: 40px;
+  --button-height-lg: 48px;
+  --button-padding-x-sm: var(--space-3);
+  --button-padding-x-md: var(--space-4);
+  --button-padding-x-lg: var(--space-6);
+  --button-font-weight: var(--font-weight-semibold);
+  --button-border-radius: var(--radius-button);
+
+  /* * Card tokens */
+  --card-padding-sm: var(--space-3);
+  --card-padding-md: var(--space-4);
+  --card-padding-lg: var(--space-6);
+  --card-border-radius: var(--radius-card);
+  --card-border-width: 1px;
+
+  /* * Input tokens */
+  --input-height-sm: 36px;
+  --input-height-md: 40px;
+  --input-height-lg: 48px;
+  --input-padding-x: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-border-radius: var(--radius-input);
+  --input-border-width: 1px;
+}

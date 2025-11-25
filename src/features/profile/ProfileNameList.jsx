@@ -2,10 +2,7 @@ import React, { useMemo, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import { SkeletonLoader, NameGrid } from "../../shared/components";
 import { FILTER_OPTIONS, TOURNAMENT } from "../../core/constants";
-import ProfileDashboard from "../../shared/components/ProfileDashboard/ProfileDashboard";
-import { ProfileFilters } from "./components/ProfileFilters";
-import { ProfileBulkActions } from "./components/ProfileBulkActions";
-import styles from "./ProfileNameList.refactored.module.css";
+import styles from "./ProfileNameList.module.css";
 
 /**
  * @module ProfileNameList
@@ -35,17 +32,11 @@ const ProfileNameList = ({
   selectionFilter,
   setSelectionFilter,
   selectionStats,
-  onBulkHide,
-  onBulkUnhide,
   onFilteredCountChange,
   onApplyFilters: _onApplyFilters,
-  stats,
-  highlights,
   filteredCount,
   totalCount,
   showUserFilter = true,
-  hideSelectAllButton = false,
-  onSelectAllClick,
   userSelectOptions,
 }) => {
   const currentUserName = ratings?.userName ?? "";
@@ -89,7 +80,7 @@ const ProfileNameList = ({
 
       if (userFilter === FILTER_OPTIONS.USER.CURRENT) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, currentUserName),
+          nameMatchesOwner(name, currentUserName)
         );
       } else if (userFilter === FILTER_OPTIONS.USER.OTHER) {
         filtered = filtered.filter((name) => {
@@ -98,7 +89,7 @@ const ProfileNameList = ({
         });
       } else if (userFilter !== FILTER_OPTIONS.USER.ALL) {
         filtered = filtered.filter((name) =>
-          nameMatchesOwner(name, userFilter),
+          nameMatchesOwner(name, userFilter)
         );
       }
     }
@@ -301,67 +292,14 @@ const ProfileNameList = ({
     }
   };
 
-  // * Handle bulk hide/unhide
-  const handleBulkHide = () => {
-    const selectedIds = Array.from(selectedNames);
-    onBulkHide?.(selectedIds);
-  };
-
-  const handleBulkUnhide = () => {
-    const selectedIds = Array.from(selectedNames);
-    onBulkUnhide?.(selectedIds);
-  };
-
-  // * Check if all visible names are selected
-  const allVisibleSelected =
-    filteredAndSortedNames.length > 0 &&
-    filteredAndSortedNames.every((name) => selectedNames.has(name.id));
-
-  // * Filter options - removed, now in ProfileFilters component
+  // * Note: Bulk actions (hide/unhide) are now handled by ProfileBulkActionsWithContext extension
+  // * Selection management is handled by NameManagementView context
+  // * Filters are now handled by UnifiedFilters component
 
   return (
     <div className={`${styles.container} ${className}`}>
-      {stats && (
-        <ProfileDashboard
-          stats={stats}
-          selectionStats={selectionStats}
-          highlights={highlights}
-        />
-      )}
-
-      {/* Filters */}
-      <ProfileFilters
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
-        userFilter={userFilter}
-        setUserFilter={setUserFilter}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        selectionFilter={selectionFilter}
-        setSelectionFilter={setSelectionFilter}
-        showUserFilter={showUserFilter}
-        showSelectionFilter={!!selectionStats}
-        userSelectOptions={userSelectOptions}
-        filteredCount={filteredCount}
-        totalCount={totalCount}
-      />
-
-      {/* Bulk Actions */}
-      {isAdmin && filteredAndSortedNames.length > 0 && (
-        <ProfileBulkActions
-          selectedCount={selectedNames.size}
-          onSelectAll={onSelectAllClick || handleSelectAll}
-          onDeselectAll={onSelectAllClick || handleSelectAll}
-          onBulkHide={handleBulkHide}
-          onBulkUnhide={handleBulkUnhide}
-          isAllSelected={allVisibleSelected}
-          showActions={!hideSelectAllButton}
-        />
-      )}
-
       {/* Names Grid - Using Unified Component */}
+      {/* * Note: Filters are rendered by NameManagementView, not here */}
       <NameGrid
         names={filteredAndSortedNames}
         selectedNames={selectedNames}
@@ -406,12 +344,8 @@ ProfileNameList.propTypes = {
   selectionFilter: PropTypes.string,
   setSelectionFilter: PropTypes.func,
   selectionStats: PropTypes.object,
-  onBulkHide: PropTypes.func,
-  onBulkUnhide: PropTypes.func,
   onFilteredCountChange: PropTypes.func,
   onApplyFilters: PropTypes.func,
-  stats: PropTypes.object,
-  highlights: PropTypes.object,
   filteredCount: PropTypes.number,
   totalCount: PropTypes.number,
   showUserFilter: PropTypes.bool,

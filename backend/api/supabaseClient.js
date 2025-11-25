@@ -24,14 +24,14 @@ const readFromViteEnv = (key) => {
 
 // * Read from environment variables (prioritize env vars over hardcoded values)
 // * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
-const SUPABASE_URL = 
-  readFromViteEnv('VITE_SUPABASE_URL') || 
+const SUPABASE_URL =
+  readFromViteEnv('VITE_SUPABASE_URL') ||
   readFromViteEnv('SUPABASE_URL') ||
   (typeof process !== 'undefined' && process.env?.SUPABASE_URL) ||
   'https://ocghxwwwuubgmwsxgyoy.supabase.co'; // Fallback for development
 
-const SUPABASE_ANON_KEY = 
-  readFromViteEnv('VITE_SUPABASE_ANON_KEY') || 
+const SUPABASE_ANON_KEY =
+  readFromViteEnv('VITE_SUPABASE_ANON_KEY') ||
   readFromViteEnv('SUPABASE_ANON_KEY') ||
   (typeof process !== 'undefined' && process.env?.SUPABASE_ANON_KEY) ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0'; // Fallback for development
@@ -39,6 +39,15 @@ const SUPABASE_ANON_KEY =
 let supabase = null;
 
 const resolveSupabaseClient = async () => {
+  // * Check for existing client instance from main client (prevents multiple GoTrueClient instances)
+  if (typeof window !== 'undefined' && window.__supabaseClient) {
+    if (isDev) {
+      console.log('🔧 Backend: Reusing existing Supabase client from window.__supabaseClient');
+    }
+    supabase = window.__supabaseClient;
+    return supabase;
+  }
+
   if (supabase) {
     return supabase;
   }
@@ -61,6 +70,12 @@ const resolveSupabaseClient = async () => {
       console.log('   Creating Supabase client...');
     }
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // * Store in window for reuse by other modules
+    if (typeof window !== 'undefined') {
+      window.__supabaseClient = supabase;
+    }
+
     if (isDev) {
       console.log('   ✅ Supabase client created successfully');
     }
@@ -81,6 +96,17 @@ export const getSupabaseServiceClient = resolveSupabaseClient;
  * @returns {boolean} True if Supabase is available
  */
 const isSupabaseAvailable = async () => {
+  // * Check for existing client first (prevents creating new instances)
+  if (typeof window !== 'undefined' && window.__supabaseClient) {
+    return true;
+  }
+
+  // * Check local cached client
+  if (supabase) {
+    return true;
+  }
+
+  // * Try to resolve client
   const client = await resolveSupabaseClient();
   if (!client) {
     if (isDev) {
@@ -102,8 +128,13 @@ export const catNamesAPI = {
    */
   async getNamesWithDescriptions() {
     try {
-      if (!(await isSupabaseAvailable())) {
-        console.warn('Supabase not available, using fallback names');
+      // * Get the Supabase client (reuses existing instance)
+      const client = await resolveSupabaseClient();
+
+      if (!client) {
+        if (isDev) {
+          console.warn('Supabase not available, using fallback names');
+        }
         return [
           {
             id: 'aaron',
@@ -238,7 +269,7 @@ export const catNamesAPI = {
 
       // Get ALL hidden name IDs globally (not user-specific)
       let hiddenIds = [];
-      const { data: hiddenData, error: hiddenError } = await supabase
+      const { data: hiddenData, error: hiddenError } = await client
         .from('cat_name_ratings')
         .select('name_id')
         .eq('is_hidden', true);
@@ -251,7 +282,7 @@ export const catNamesAPI = {
       }
 
       // Build query - leverages idx_cat_name_options_active partial index
-      let query = supabase.from('cat_name_options').select(`
+      let query = client.from('cat_name_options').select(`
         id,
         name,
         description,

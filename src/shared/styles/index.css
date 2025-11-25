@@ -4,6 +4,7 @@
 
 /* Base reset and primitives */
 @import url("./reset.css");
+@import url("./design-tokens.css");
 @import url("./colors.css");
 @import url("./typography.css");
 @import url("./spacing.css");

@@ -17,20 +17,20 @@
   right: var(--space-2);
   z-index: 10;
   padding: var(--space-1) var(--space-2);
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
   color: white;
   cursor: pointer;
   background: var(--warning-600);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .hiddenBadge:hover:not(:disabled) {
   background: var(--warning-700);
-  transform: scale(1.05);
+  transform: var(--transform-hover-scale);
 }
 
 .hiddenBadge:disabled {
@@ -41,11 +41,7 @@
 .hiddenCard {
   opacity: 0.7;
   border: 2px solid var(--warning-300);
-  background: linear-gradient(
-    135deg,
-    var(--warning-50),
-    var(--warning-100)
-  );
+  background: linear-gradient(135deg, var(--warning-50), var(--warning-100));
 }
 
 /* Empty State */
@@ -62,17 +58,18 @@
 
 .emptyTitle {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
 
 .emptyMessage {
   max-width: 500px;
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: var(--leading-normal);
 }
 
 /* Responsive Design */
@@ -93,6 +90,6 @@
   }
 
   .emptyTitle {
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
   }
 }

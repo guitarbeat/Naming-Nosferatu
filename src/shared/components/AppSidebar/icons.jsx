@@ -80,3 +80,10 @@ export const LogoutIcon = () => (
     <line x1="21" x2="9" y1="12" y2="12" />
   </Icon>
 );
+
+export const ProfileIcon = () => (
+  <Icon name="profile">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </Icon>
+);

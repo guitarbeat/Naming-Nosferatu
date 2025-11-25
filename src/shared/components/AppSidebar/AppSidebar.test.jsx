@@ -21,13 +21,13 @@ describe("AppSidebar", () => {
             onThemeChange={vi.fn()}
             onTogglePerformanceDashboard={vi.fn()}
           />
-        </SidebarProvider>,
-      ),
+        </SidebarProvider>
+      )
     ).not.toThrow();
 
     // Test that main navigation elements are present
     expect(screen.getByText("Tournament")).toBeInTheDocument();
-    // UserInfo component shows "Welcome, {userName}" when not collapsed
+    // UserInfo component shows username when not collapsed
     expect(screen.getByText(/Test User/i)).toBeInTheDocument();
   });
 });

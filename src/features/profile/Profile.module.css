@@ -1,61 +1,62 @@
-/* Profile Component Styles - Enhanced UI/UX Design */
+/* Profile Component - Unified Design System */
 
-/* Profile Container - Main Layout */
+/* Container */
 .profileContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
   min-height: 100vh;
-  padding: 0;
+  padding: var(--space-6);
   font-family: var(--font-sans);
-  background: transparent; /* let galaxy show */
 }
 
-/* Title - Integrated into container */
-.title {
-  margin: 0 0 1.5rem;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
-  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
+/* Header Section */
 .header {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
+  gap: var(--space-4);
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .headerActions {
   display: flex;
-  flex: 1;
   flex-wrap: wrap;
-  gap: 1rem;
-  align-items: flex-start;
-  justify-content: flex-end;
+  gap: var(--space-3);
+  align-items: center;
 }
 
+/* User Switcher */
 .userSwitcher {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-2);
   min-width: 220px;
 }
 
 .userSwitcherLabel {
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--text-secondary);
 }
 
 .userSwitcherSelect {
-  padding: 0.5rem 0.75rem;
+  padding: var(--space-2) var(--space-3);
   font-size: 0.9rem;
   color: var(--text-primary);
-  background: rgb(255 255 255 / 20%);
-  border: 1px solid rgb(255 255 255 / 25%);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
@@ -64,969 +65,169 @@
 .userSwitcherSelect:focus {
   outline: none;
   border-color: var(--primary-400);
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 20%);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+.userSwitcherHelper,
+.userSwitcherError,
+.viewingNote {
+  font-size: 0.75rem;
 }
 
 .userSwitcherHelper {
-  font-size: 0.75rem;
   color: var(--text-tertiary);
 }
 
 .userSwitcherError {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--error-400);
+  color: var(--error-500);
 }
 
 .viewingNote {
-  font-size: 0.75rem;
   color: var(--text-secondary);
 }
 
-.newTournamentButton {
-  min-width: 200px;
-  white-space: nowrap;
-}
-
-.noDataButton {
-  margin-top: 1.5rem;
-}
-
-/* Main Content - Single Column Layout */
-.profileContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-height: calc(100vh - 80px);
-  padding: 1rem;
-}
-
-/* Left Sidebar - Admin Controls (removed) */
-.adminSidebar {
-  display: none;
-}
-
-.sidebarHeader {
-  padding-bottom: 1rem;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid var(--primary-400);
-}
-
-.sidebarHeader h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.sidebarSection {
-  margin-bottom: 2rem;
-}
-
-.sidebarSection h4 {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-/* Quick Stats */
-.quickStats {
+/* Content Grid */
+.contentGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: var(--space-6);
+  grid-template-columns: 1fr;
 }
 
-.quickStat {
-  text-align: center;
-}
-
-.quickStatValue {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-400);
-}
-
-.quickStatLabel {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-tertiary);
-}
-
-/* Sidebar Actions */
-.sidebarActions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/* * Sidebar button styles removed - not used in current Profile component */
-
-/* Bulk Actions Compact */
-.bulkActionsCompact {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Quick Bulk Actions for All Names */
-.quickBulkActions {
-  padding-top: 1rem;
-  margin-top: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.quickBulkActions h5 {
-  margin: 0 0 0.75rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.quickBulkButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* * Quick bulk button styles removed - use shared Button component */
-
-/* Debug Info Styles */
-.debugInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.debugItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  background: var(--background-color);
-  border-radius: 8px;
-}
-
-.debugValue {
-  padding: 0.25rem 0.5rem;
-  font-weight: 600;
-  color: var(--primary-600);
-  background: var(--primary-100);
-  border-radius: 4px;
-}
-
-/* Admin Note Styles */
-.adminNote {
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  background: var(--warning-900);
-  border: 1px solid var(--warning-700);
-  border-radius: 8px;
-}
-
-.adminNote p {
-  margin: 0;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--warning-100);
-}
-
-/* Hidden Name Styling */
-.hiddenName {
-  position: relative;
-  background: linear-gradient(135deg, var(--warning-50), var(--warning-100));
-  border: 2px solid var(--warning-300);
-  opacity: 0.7;
-}
-
-.hiddenName::before {
-  position: absolute;
-  top: -8px;
-  left: 12px;
-  z-index: 10;
-  padding: 2px 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  content: "🔒 HIDDEN";
-  background: var(--warning-600);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-}
-
-.hiddenName:hover {
-  box-shadow: var(--shadow-lg);
-  opacity: 1;
-  transform: translateY(-2px);
-}
-
-/* Hidden Name Grid Layout */
-.hiddenNamesGrid {
+/* Stats Section */
+.statsSection {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
-.hiddenNamesSection {
-  padding: 1.5rem;
-  margin-top: 2rem;
-  background: var(--warning-50);
-  border: 1px solid var(--warning-200);
-  border-radius: 12px;
-}
-
-.hiddenNamesSection h3 {
+/* Filters Section */
+.filtersSection {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  margin: 0 0 1rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--warning-700);
-}
-
-/* Content Area - Now the main area (removed - using profileContainer directly) */
-.contentArea {
-  display: none;
-}
-
-/* Enhanced Stats Overview - Compact */
-.statsOverview {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-/* Controls - Compact */
-.controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.75rem;
-  align-items: start;
-  margin-bottom: 1rem;
-  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: flex-end;
 }
 
 .filterGroup {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-start;
-  min-width: 140px;
+  gap: var(--space-2);
+  min-width: 160px;
 }
 
-.filterGroup label {
-  margin-bottom: 0.25rem;
-  font-size: 0.9rem;
+.filterLabel {
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .filterSelect {
-  min-width: 140px;
-  padding: 0.75rem 1rem;
+  padding: var(--space-2) var(--space-3);
   font-size: 0.9rem;
   color: var(--text-primary);
   background: var(--card-background);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .filterSelect:focus {
   outline: none;
   border-color: var(--primary-400);
-  box-shadow: 0 0 0 3px var(--primary-100);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
 }
 
-.sortButton {
-  min-width: 60px;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.sortButton:hover {
-  background: var(--card-hover);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.sortButton:active {
-  transform: translateY(0);
-}
-
-/* User Filter Styles */
-.userFilterActions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-bottom: 0.75rem;
-}
-
-.userFilterButton {
-  font-size: 0.85rem;
-}
-
-.userFilterButton:hover {
-  transform: translateY(-1px);
-}
-
-.userFilterButton:active {
-  transform: translateY(0);
-}
-
-.userFilterSummary {
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-  text-align: center;
-  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
-  border: 1px solid var(--primary-200);
-  border-radius: 8px;
-  box-shadow: var(--shadow-sm);
-}
-
-.userFilterCount {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--primary-700);
-}
-
-.userCheckboxes {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.5rem;
-  padding: 1rem;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-left: 4px solid var(--primary-400);
-  border-radius: 10px;
-  box-shadow: var(--shadow-sm);
-}
-
-.userCheckbox {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  cursor: pointer;
-  background: var(--background-color);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.userCheckbox:hover {
-  background: var(--card-hover);
-  border-color: var(--border-color);
-  transform: translateY(-1px);
-}
-
-.userCheckbox input[type="checkbox"] {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary-500);
-  cursor: pointer;
-}
-
-.userCheckbox span {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-/* Names Grid - Compact */
+/* Names Grid */
 .namesGrid {
   display: grid;
+  gap: var(--space-4);
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
 }
 
-/* Analytics Panels - Collapsible */
-.analyticsPanels {
-  margin-bottom: 2rem;
-}
-
-.analyticsPanel {
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(10px);
-}
-
-.analyticsPanel h3 {
-  padding-bottom: 0.5rem;
-  margin: 0 0 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  border-bottom: 2px solid var(--primary-400);
-}
-
-/* Analytics Sections */
-.analyticsSection {
-  margin-bottom: 2rem;
-}
-
-.analyticsSection h4 {
-  margin: 0 0 1rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.analyticsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.analyticsCard {
-  padding: 1.5rem;
-  text-align: center;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-}
-
-.analyticsCard h5 {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.analyticsValue {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--primary-400);
-}
-
-/* Popular Names Grid */
-.popularNamesGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.popularNameCard {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 1rem;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-}
-
-.rank {
-  min-width: 30px;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: white;
-  text-align: center;
-  background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
-  border-radius: 6px;
-}
-
-.name {
-  flex: 1;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.popularity {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: white;
-  background: var(--success-500);
-  border-radius: 6px;
-}
-
-/* User Comparison */
-.topUsersGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.userCard {
-  position: relative;
-  padding: 1.5rem;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-}
-
-.userRank {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  padding: 0.5rem 0.75rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: white;
-  background: linear-gradient(135deg, var(--warning-400), var(--warning-600));
-  border-radius: 50%;
-  box-shadow: var(--shadow-md);
-}
-
-.userName {
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  text-align: center;
-}
-
-.userStats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-}
-
-.userStat {
-  text-align: center;
-}
-
-.statLabel {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 0.8rem;
-  color: var(--text-tertiary);
-}
-
-.statValue {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--primary-400);
-}
-
-/* User Selection Compact */
-.userSelectionCompact {
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(10px);
-}
-
-.userSelectionCompact h4 {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.userSelectionGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.75rem;
-}
-
-.userSelectionButton {
-  font-size: 0.9rem;
-}
-
-.userSelectionButton:hover {
-  background: var(--card-hover);
-  border-color: var(--primary-300);
-}
-
-.selectedUser {
-  /* Use in combination with .userSelectionButton; overrides defined below */
-}
-
-/* Selected state overrides for user selection buttons */
-.userSelectionButton.selectedUser {
-  color: #fff;
-  background: var(--primary-600, var(--primary-color));
-  border-color: var(--primary-500, var(--primary-color));
-}
-
-.userSelectionButton.selectedUser:hover {
-  background: var(--primary-500);
-}
-
-/* User Analysis */
-.userAnalysisContent {
-  margin-bottom: 1.5rem;
-}
-
-.userStatsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.userStatCard {
-  text-align: center;
-}
-
-.userStatCard h4 {
-  margin: 0 0 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.userPreferences,
-.userRatings,
-.userTournaments {
-  margin-bottom: 2rem;
-}
-
-.userPreferences h4,
-.userRatings h4,
-.userTournaments h4 {
-  margin: 0 0 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.preferencesText {
-  padding: 1rem;
-  overflow-x: auto;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-}
-
-.ratingsTable,
-.tournamentsTable {
-  overflow: hidden;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-}
-
-.tableHeader {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--card-background);
-}
-
-.tableRow {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.tableRow:last-child {
-  border-bottom: none;
-}
-
-.closeButton {
-  padding: 0.75rem 1.5rem;
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  background: var(--error-500);
-  border: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.closeButton:hover {
-  background: var(--error-600);
-  transform: translateY(-1px);
-}
-
-/* Enhanced Charts Section */
-.chartsSection {
-  margin-bottom: 2rem;
-}
-
-.chartWrapper {
-  height: 400px;
-  margin: 1rem 0;
-}
-
-.fullWidthChart {
-  grid-column: 1 / -1;
-}
-
-/* Tournament Stats */
-.tournamentStats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.tournamentMetric {
-  padding: 1rem;
-  text-align: center;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-}
-
-.tournamentMetric h5 {
-  margin: 0 0 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-tertiary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.metricValue {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-400);
-}
-
-/* Empty State */
-.emptyState {
-  padding: 3rem;
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-/* No Data Container */
+/* Error States */
+.errorContainer,
 .noDataContainer {
   display: flex;
   flex-direction: column;
+  gap: var(--space-4);
   align-items: center;
   justify-content: center;
-  min-height: 400px;
-  padding: 3rem 2rem;
+  min-height: 40vh;
+  padding: var(--space-8);
   text-align: center;
-  background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(10px);
 }
 
+.errorContainer h2,
 .noDataContainer h2 {
-  margin: 0 0 1rem;
-  font-size: 2rem;
+  margin: 0;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
+.errorContainer p,
 .noDataContainer p {
-  margin: 0 0 2rem;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  max-width: 600px;
+  margin: 0;
+  font-size: 1rem;
   color: var(--text-secondary);
-}
-
-/* Error Container */
-.errorContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  padding: 3rem 2rem;
-  text-align: center;
-  background: var(--error-50);
-  border: 1px solid var(--error-200);
-  border-radius: 16px;
-  box-shadow: var(--shadow-lg);
-}
-
-.errorContainer h2 {
-  margin: 0 0 1rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--error-700);
-}
-
-.errorContainer p {
-  margin: 0 0 2rem;
-  font-size: 1.1rem;
   line-height: 1.6;
-  color: var(--error-600);
-}
-
-.errorContainer button {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--error-700);
-  cursor: pointer;
-  background: var(--error-100);
-  border: 1px solid var(--error-300);
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  transition: all 0.3s ease;
-}
-
-.errorContainer button:hover {
-  background: var(--error-200);
-  border-color: var(--error-400);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
 }
 
 /* Responsive Design */
-@media (width <= 1200px) {
-  .adminSidebar {
-    width: 280px;
-  }
-
-  .statsOverview {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  }
-
-  .namesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  }
-}
-
-@media (width <= 1024px) {
+@media (max-width: 768px) {
   .profileContainer {
-    gap: 1.25rem;
-    padding: 1.25rem;
+    padding: var(--space-4);
+    gap: var(--space-4);
   }
 
-  .statsOverview {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
-
-  .namesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-}
-
-@media (width <= 768px) {
   .header {
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-    text-align: center;
+    align-items: flex-start;
+  }
+
+  .headerActions {
+    width: 100%;
   }
 
   .title {
     font-size: 1.5rem;
   }
 
-  .profileContainer {
-    gap: 1rem;
-    padding: 1rem;
+  .statsSection {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
   }
 
-  .statsOverview {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+  .userSwitcher {
+    width: 100%;
   }
 
-  .namesGrid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .controls {
+  .filtersSection {
     flex-direction: column;
-    gap: 1rem;
     align-items: stretch;
   }
 
   .filterGroup {
-    justify-content: space-between;
+    width: 100%;
   }
 
-  .analyticsPanel {
-    padding: 1rem;
-  }
-
-  .analyticsGrid {
+  .namesGrid {
     grid-template-columns: 1fr;
-  }
-
-  .popularNamesGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .topUsersGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .userSelectionGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .tableHeader,
-  .tableRow {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-
-  .tableHeader {
-    display: none;
-  }
-
-  .tableRow {
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-  }
-
-  .tableRow::before {
-    margin-bottom: 0.25rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    content: attr(data-label);
   }
 }
 
-@media (width <= 480px) {
-  .statsOverview {
-    grid-template-columns: 1fr;
+@media (max-width: 480px) {
+  .profileContainer {
+    padding: var(--space-3);
   }
 
-  .quickStats {
-    grid-template-columns: 1fr;
+  .title {
+    font-size: 1.25rem;
   }
 
-  .userStatsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .tournamentStats {
+  .statsSection {
     grid-template-columns: 1fr;
   }
 }

@@ -5,8 +5,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-radius: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--card-border-radius);
+  transition: var(--transition-base);
 }
 
 /* Variants */
@@ -35,25 +35,25 @@
   border: 1px solid rgb(255 255 255 / 20%);
 }
 
-/* Padding variants */
+/* Padding variants - using design tokens */
 .padding-none {
   padding: 0;
 }
 
 .padding-small {
-  padding: 0.75rem;
+  padding: var(--card-padding-sm);
 }
 
 .padding-medium {
-  padding: 1.5rem;
+  padding: var(--card-padding-md);
 }
 
 .padding-large {
-  padding: 2rem;
+  padding: var(--card-padding-lg);
 }
 
 .padding-xl {
-  padding: 2.5rem;
+  padding: var(--space-8);
 }
 
 /* Shadow variants */
@@ -62,25 +62,19 @@
 }
 
 .shadow-small {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  box-shadow: var(--shadow-sm);
 }
 
 .shadow-medium {
-  box-shadow:
-    0 8px 25px rgb(0 0 0 / 15%),
-    0 3px 10px rgb(0 0 0 / 8%);
+  box-shadow: var(--shadow-md);
 }
 
 .shadow-large {
-  box-shadow:
-    0 15px 35px rgb(0 0 0 / 20%),
-    0 5px 15px rgb(0 0 0 / 12%);
+  box-shadow: var(--shadow-lg);
 }
 
 .shadow-xl {
-  box-shadow:
-    0 25px 50px rgb(0 0 0 / 25%),
-    0 10px 20px rgb(0 0 0 / 15%);
+  box-shadow: var(--shadow-xl);
 }
 
 /* Border variants */
@@ -143,62 +137,56 @@
 /* Hover effects - only on devices that support hover */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
-    transform: translateY(-2px);
+    transform: var(--transform-hover-lift);
   }
 
   .card:hover.shadow-medium {
-    box-shadow:
-      0 12px 35px rgb(0 0 0 / 20%),
-      0 5px 15px rgb(0 0 0 / 12%);
+    box-shadow: var(--shadow-lg);
   }
 
   .card:hover.shadow-large {
-    box-shadow:
-      0 20px 45px rgb(0 0 0 / 25%),
-      0 8px 20px rgb(0 0 0 / 15%);
+    box-shadow: var(--shadow-xl);
   }
 
   .card:hover.shadow-xl {
-    box-shadow:
-      0 30px 60px rgb(0 0 0 / 30%),
-      0 15px 30px rgb(0 0 0 / 20%);
+    box-shadow: var(--shadow-xl);
   }
 }
 
 /* Mobile optimizations */
 @media (width <= 768px) {
   .card {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .padding-medium {
-    padding: 1.25rem;
+    padding: var(--space-5);
   }
 
   .padding-large {
-    padding: 1.75rem;
+    padding: var(--space-6);
   }
 
   .padding-xl {
-    padding: 2rem;
+    padding: var(--space-8);
   }
 }
 
 @media (width <= 480px) {
   .card {
-    border-radius: 10px;
+    border-radius: var(--radius-md);
   }
 
   .padding-medium {
-    padding: 1rem;
+    padding: var(--card-padding-md);
   }
 
   .padding-large {
-    padding: 1.5rem;
+    padding: var(--card-padding-lg);
   }
 
   .padding-xl {
-    padding: 1.75rem;
+    padding: var(--space-6);
   }
 }
 

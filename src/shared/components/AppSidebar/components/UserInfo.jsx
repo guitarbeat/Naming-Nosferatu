@@ -1,64 +1,66 @@
 /**
  * @module UserInfo
- * @description User info component for the sidebar - styled like a menu item
+ * @description User profile navigation item for the sidebar - follows MenuNavItem pattern
  */
 
-import React from "react";
 import PropTypes from "prop-types";
 import {
-  useSidebar,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "../../ui/sidebar";
-import "../AppSidebar.css";
+import { ProfileIcon } from "../icons";
 
-export function UserInfo({ userName, onClick, isAdmin = false }) {
+export function UserInfo({ userName, onClick, isAdmin = false, view }) {
   const { collapsed } = useSidebar();
+  const isActive = view === "profile";
 
-  // * Truncate long usernames for display (max 20 chars)
-  const MAX_DISPLAY_LENGTH = 20;
+  const handleClick = (e) => {
+    e.preventDefault();
+    onClick();
+  };
+
+  // * Truncate long usernames for display (max 15 chars when expanded)
+  const MAX_DISPLAY_LENGTH = 15;
   const truncatedUserName =
     userName && userName.length > MAX_DISPLAY_LENGTH
       ? `${userName.substring(0, MAX_DISPLAY_LENGTH)}...`
       : userName;
 
-  const displayText = collapsed ? "" : `Welcome, ${truncatedUserName}`;
+  const label = collapsed ? "" : truncatedUserName || "Profile";
 
   const ariaLabel = collapsed
     ? isAdmin
-      ? `Admin User: ${userName}`
-      : `User: ${userName}`
+      ? `Profile: ${userName} (Admin)`
+      : `Profile: ${userName}`
     : undefined;
 
-  // * Always show full name in title for accessibility
   const title = collapsed
     ? isAdmin
-      ? `Welcome, ${userName} (Admin)`
-      : `Welcome, ${userName}`
-    : `Welcome, ${userName}`;
+      ? `${userName} (Admin)`
+      : userName
+    : undefined;
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild>
-        <button
-          type="button"
-          className={`sidebar-user-menu-button ${isAdmin ? "sidebar-user-menu-button--admin" : ""}`}
-          onClick={onClick}
+        <a
+          href="#"
+          onClick={handleClick}
+          className={isActive ? "active" : ""}
+          aria-current={isActive ? "page" : undefined}
           aria-label={ariaLabel}
           title={title}
+          data-admin={isAdmin ? "true" : undefined}
         >
-          <img
-            className="sidebar-user-avatar"
-            src="/assets/images/bby-cat.GIF"
-            alt="User avatar"
-          />
-          {!collapsed && <span>{displayText}</span>}
+          <ProfileIcon />
+          <span>{label}</span>
           {isAdmin && collapsed && (
             <span className="sidebar-admin-indicator" aria-label="Admin">
               👑
             </span>
           )}
-        </button>
+        </a>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
@@ -68,4 +70,5 @@ UserInfo.propTypes = {
   userName: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   isAdmin: PropTypes.bool,
+  view: PropTypes.string,
 };

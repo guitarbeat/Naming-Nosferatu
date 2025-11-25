@@ -2,15 +2,10 @@
  * @module TournamentSetup/components/NameSelection
  * @description Name selection component with admin filtering options
  */
-import { useMemo, useCallback, memo } from "react";
+import { useMemo, memo } from "react";
 import PropTypes from "prop-types";
-import { NameCard } from "../../../../shared/components";
-import { DEFAULT_DESCRIPTION } from "../../constants";
-import {
-  filterAndSortNames,
-  generateCategoryOptions,
-  getRandomCatImage,
-} from "../../utils";
+import { NameGrid } from "../../../../shared/components";
+import { filterAndSortNames } from "../../utils";
 import ResultsInfo from "./ResultsInfo";
 import styles from "../../TournamentSetup.module.css";
 
@@ -34,49 +29,29 @@ function NameSelection({
   SwipeableCards,
   showSelectedOnly,
 }) {
-  // * Filter and sort names for everyone
-  const filteredNames = filterAndSortNames(availableNames, {
-    category: selectedCategory,
+  // * Calculate filtered names for SwipeMode (SwipeableCards needs pre-filtered names)
+  const filteredNamesForSwipe = useMemo(() => {
+    const filtered = filterAndSortNames(availableNames, {
+      category: selectedCategory,
+      searchTerm,
+      sortBy,
+    });
+    return showSelectedOnly
+      ? filtered.filter((name) =>
+          selectedNames.some((selected) => selected.id === name.id)
+        )
+      : filtered;
+  }, [
+    availableNames,
+    selectedCategory,
     searchTerm,
     sortBy,
-  });
+    showSelectedOnly,
+    selectedNames,
+  ]);
 
-  // * Apply "Show Selected Only" filter if enabled
-  const displayNames = showSelectedOnly
-    ? filteredNames.filter((name) =>
-        selectedNames.some((selected) => selected.id === name.id),
-      )
-    : filteredNames;
-
-  // * categoryOptions is generated but not used - kept for potential future use
-
-  const _categoryOptions = useMemo(
-    () => generateCategoryOptions(categories, availableNames),
-    [categories, availableNames],
-  );
-
-  // * Memoize metadata map to prevent re-renders from object recreation
-  const metadataMap = useMemo(() => {
-    if (!isAdmin) return new Map();
-    const map = new Map();
-    displayNames.forEach((nameObj) => {
-      map.set(nameObj.id, {
-        rating: nameObj.avg_rating || 0,
-        popularity: nameObj.popularity_score || 0,
-        tournaments: nameObj.total_tournaments || 0,
-        categories: nameObj.categories || [],
-      });
-    });
-    return map;
-  }, [isAdmin, displayNames]);
-
-  // * Memoize click handler to prevent re-renders
-  const handleToggleName = useCallback(
-    (nameObj) => {
-      onToggleName(nameObj);
-    },
-    [onToggleName],
-  );
+  // * Calculate filtered count for ResultsInfo display
+  const filteredCount = filteredNamesForSwipe.length;
 
   return (
     <div className={styles.nameSelection}>
@@ -91,51 +66,38 @@ function NameSelection({
 
       {/* Results count */}
       <ResultsInfo
-        displayCount={displayNames.length}
+        displayCount={filteredCount}
         totalCount={availableNames.length}
         selectedCategory={selectedCategory}
         searchTerm={searchTerm}
       />
 
-      <div className={styles.cardsContainer}>
-        {isSwipeMode ? (
-          <SwipeableCards
-            names={displayNames}
-            selectedNames={selectedNames}
-            onToggleName={onToggleName}
-            isAdmin={isAdmin}
-            showCatPictures={showCatPictures}
-            imageList={imageList}
-          />
-        ) : (
-          displayNames
-            .filter((nameObj) => nameObj && nameObj.id && nameObj.name)
-            .map((nameObj) => (
-              <NameCard
-                key={nameObj.id}
-                name={nameObj.name}
-                description={nameObj.description || DEFAULT_DESCRIPTION}
-                isSelected={selectedNames.some((n) => n.id === nameObj.id)}
-                onClick={() => handleToggleName(nameObj)}
-                size="small"
-                // Cat picture when enabled
-                image={
-                  showCatPictures
-                    ? getRandomCatImage(nameObj.id, imageList)
-                    : undefined
-                }
-                // Admin-only metadata display
-                metadata={metadataMap.get(nameObj.id)}
-              />
-            ))
-        )}
-      </div>
-
-      {isAdmin && displayNames.length === 0 && (
-        <div className={styles.noResults}>
-          <p>😿 No names found matching your criteria</p>
-          <p>Try adjusting your filters or search terms</p>
-        </div>
+      {isSwipeMode ? (
+        <SwipeableCards
+          names={filteredNamesForSwipe}
+          selectedNames={selectedNames}
+          onToggleName={onToggleName}
+          isAdmin={isAdmin}
+          showCatPictures={showCatPictures}
+          imageList={imageList}
+        />
+      ) : (
+        <NameGrid
+          names={availableNames}
+          selectedNames={selectedNames}
+          onToggleName={onToggleName}
+          filters={{
+            category: selectedCategory,
+            searchTerm,
+            sortBy,
+          }}
+          mode="tournament"
+          isAdmin={isAdmin}
+          showSelectedOnly={showSelectedOnly}
+          showCatPictures={showCatPictures}
+          imageList={imageList}
+          className={styles.cardsContainer}
+        />
       )}
     </div>
   );

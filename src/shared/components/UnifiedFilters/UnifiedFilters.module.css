@@ -1,5 +1,62 @@
-/* ProfileFilters - Unified Design System */
+/* UnifiedFilters - Unified Design System */
 
+/* Tournament Mode Styles */
+.tournamentFilters {
+  width: 100%;
+}
+
+.searchBar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+}
+
+.searchInput {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+.searchInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.compactFilters {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.compactSelect {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.compactSelect:focus {
+  outline: none;
+  border-color: var(--primary-400);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+/* Profile Mode Styles */
 .filtersContainer {
   display: flex;
   flex-direction: column;
@@ -134,6 +191,18 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .searchBar {
+    flex-direction: column;
+  }
+
+  .compactFilters {
+    width: 100%;
+  }
+
+  .compactSelect {
+    flex: 1;
+  }
+
   .filterRow {
     flex-direction: column;
   }

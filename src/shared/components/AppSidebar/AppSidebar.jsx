@@ -122,12 +122,13 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-              {/* User Info - styled like menu item */}
+              {/* Profile Navigation */}
               {isLoggedIn && userName && (
                 <UserInfo
                   userName={userName}
                   onClick={() => setView("profile")}
                   isAdmin={isAdmin}
+                  view={view}
                 />
               )}
             </SidebarGroupContent>

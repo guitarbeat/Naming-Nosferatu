@@ -335,50 +335,7 @@
   min-width: clamp(2.5rem, 6vw, 3rem);
 }
 
-/* User info styles removed as they were unused. Using sidebar-user-menu-button instead. */
-
-/* User menu button - styled like other menu buttons */
-.sidebar-user-menu-button {
-  width: 100%;
-  min-width: 0; /* Allow button to shrink */
-  max-width: 100%; /* Prevent overflow */
-  justify-content: flex-start; /* Align content to start for better truncation */
-}
-
-/* * Ensure text truncates properly in user menu button */
-.sidebar-user-menu-button span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0; /* Allow span to shrink */
-  flex: 1 1 auto; /* Allow flex shrinking */
-  max-width: 100%; /* Ensure it doesn't exceed container */
-}
-
-/* Admin variant of user menu button */
-.sidebar-user-menu-button--admin {
-  position: relative;
-  overflow: visible !important; /* Override parent overflow: hidden to show indicator */
-}
-
-/* Admin indicator line - positioned on the right edge */
-.sidebar-user-menu-button--admin::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 3px;
-  z-index: 20;
-  background: linear-gradient(180deg, #fa26a0, #2ff3e0);
-  border-radius: 0 2px 2px 0;
-  box-shadow:
-    0 0 6px rgb(250 38 160 / 80%),
-    0 0 12px rgb(47 243 224 / 60%);
-  animation: adminGlow 2s ease-in-out infinite alternate;
-  pointer-events: none;
-}
-
+/* * Admin indicator for profile button (collapsed state only) */
 .sidebar-admin-indicator {
   display: inline-flex;
   align-items: center;
@@ -387,44 +344,40 @@
   font-weight: 600;
   color: rgb(var(--hot-pink-rgb));
   opacity: 0.9;
-}
-
-.sidebar--collapsed .sidebar-admin-indicator {
-  font-size: 0.875rem;
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
 }
 
-.sidebar-user-avatar {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgb(var(--neon-cyan-rgb), 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* * Admin indicator styling in collapsed state */
+.sidebar--collapsed .sidebar-admin-indicator {
+  font-size: 0.875rem;
+  margin-left: 0;
 }
 
-.sidebar-user-menu-button:hover .sidebar-user-avatar,
-.sidebar-menu-button:hover .sidebar-user-avatar {
-  border-color: rgb(var(--neon-cyan-rgb), 0.4);
-  filter: drop-shadow(0 0 4px rgb(var(--neon-cyan-rgb), 0.3));
-  transform: scale(1.1);
+/* * Admin profile button - subtle right edge indicator */
+.sidebar-menu-button[data-admin="true"] {
+  position: relative;
 }
 
-.sidebar--collapsed .sidebar-user-avatar {
-  width: 20px;
-  height: 20px;
+.sidebar-menu-button[data-admin="true"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 3px;
+  z-index: 20;
+  background: linear-gradient(180deg, #fa26a0, #2ff3e0);
+  border-radius: 0 8px 8px 0;
+  box-shadow:
+    0 0 6px rgb(250 38 160 / 80%),
+    0 0 12px rgb(47 243 224 / 60%);
+  animation: adminGlow 2s ease-in-out infinite alternate;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
-/* Legacy avatar class for backwards compatibility */
-.avatar {
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgb(var(--neon-cyan-rgb), 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.sidebar-menu-button[data-admin="true"]:hover::after {
+  opacity: 0.9;
 }
 /* * Admin Badge for Aaron */
 .sidebar-admin-badge {
@@ -662,8 +615,7 @@
   }
 
   /* * Hide text labels on mobile for a cleaner icon-only bar */
-  .sidebar-menu-button span,
-  .sidebar-user-menu-button span {
+  .sidebar-menu-button span {
     display: none;
   }
 
@@ -674,17 +626,5 @@
 
   .navbar-section--right {
     gap: 0.25rem;
-  }
-
-  /* * Ensure avatars and icons are visible and sized correctly */
-  .sidebar-user-avatar {
-    width: 24px;
-    height: 24px;
-    margin: 0;
-  }
-
-  .sidebar-user-menu-button {
-    justify-content: center;
-    padding: 0.5rem;
   }
 }

@@ -25,6 +25,11 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 // * Direct named exports (not default exports)
 export { NameGrid } from "./NameGrid/NameGrid";
+export { UnifiedFilters } from "./UnifiedFilters/UnifiedFilters";
+export {
+  NameManagementView,
+  useNameManagementContext,
+} from "./NameManagementView/NameManagementView";
 
 // * Named exports
 export {

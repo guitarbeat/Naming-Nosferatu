@@ -7,7 +7,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Select, Button, Card } from "../../../shared/components";
-import styles from "../Profile.refactored.module.css";
+import styles from "../Profile.module.css";
 
 /**
  * Profile header component - displays user info and admin controls
@@ -29,10 +29,8 @@ export function ProfileHeader({
 
   return (
     <header className={styles.header}>
-      <h1 className={styles.title}>
-        {activeUser || userName}
-      </h1>
-      
+      <h1 className={styles.title}>{activeUser || userName}</h1>
+
       {isAdmin && (
         <div className={styles.headerActions}>
           <div className={styles.userSwitcher}>
@@ -66,7 +64,7 @@ export function ProfileHeader({
               </span>
             )}
           </div>
-          
+
           {allNames.length > 0 && (
             <Button
               onClick={() => {
@@ -78,7 +76,9 @@ export function ProfileHeader({
               }}
               variant="secondary"
               size="small"
-              aria-label={allSelected ? "Deselect all names" : "Select all names"}
+              aria-label={
+                allSelected ? "Deselect all names" : "Select all names"
+              }
             >
               {allSelected ? "Deselect All" : "Select All"}
             </Button>
