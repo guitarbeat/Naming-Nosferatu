@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Lazy load CatBackground since it's not critical for initial render
 const CatBackground = lazy(
-  () => import("@components/CatBackground/CatBackground"),
+  () => import("@components/CatBackground/CatBackground")
 );
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
@@ -102,7 +102,7 @@ function App() {
         if (process.env.NODE_ENV === "development") {
           console.log(
             "[App] handleTournamentComplete called with:",
-            finalRatings,
+            finalRatings
           );
         }
 
@@ -126,7 +126,7 @@ function App() {
           if (process.env.NODE_ENV === "development") {
             console.log(
               "[App] Converted array to object format:",
-              updatedRatings,
+              updatedRatings
             );
           }
         } else {
@@ -140,7 +140,7 @@ function App() {
 
         if (process.env.NODE_ENV === "development") {
           console.log(
-            "[App] Tournament marked as complete, navigating to /results",
+            "[App] Tournament marked as complete, navigating to /results"
           );
         }
 
@@ -155,7 +155,7 @@ function App() {
         });
       }
     },
-    [user.name, tournamentActions, navigateTo],
+    [user.name, tournamentActions, navigateTo]
   );
 
   // * Handle start new tournament
@@ -182,7 +182,7 @@ function App() {
         tournamentActions.setLoading(false);
       }, 100);
     },
-    [tournamentActions],
+    [tournamentActions]
   );
 
   // * Handle ratings update
@@ -202,7 +202,7 @@ function App() {
         throw error;
       }
     },
-    [tournamentActions],
+    [tournamentActions]
   );
 
   // * Handle logout
@@ -233,7 +233,7 @@ function App() {
         throw error;
       }
     },
-    [login],
+    [login]
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -244,12 +244,9 @@ function App() {
       view: currentView || "tournament",
       setView: (view) => {
         tournamentActions.setView(view);
-        
+
         // * Direct navigation for each view
-        if (view === "profile") {
-          tournamentActions.resetTournament();
-          navigateTo("/profile");
-        } else if (view === "tournament") {
+        if (view === "tournament") {
           navigateTo("/");
         }
       },
@@ -277,7 +274,7 @@ function App() {
       handleThemeChange,
       uiActions,
       navigateTo,
-    ],
+    ]
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -364,7 +361,7 @@ function AppLayout({
       "--sidebar-expanded-width": "clamp(208px, 24vw, 224px)",
       "--sidebar-collapsed-width": `${collapsedWidth}px`,
     }),
-    [collapsedWidth],
+    [collapsedWidth]
   );
 
   const mainWrapperClassName = useMemo(
@@ -372,7 +369,7 @@ function AppLayout({
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn],
+    [isLoggedIn]
   );
 
   return (

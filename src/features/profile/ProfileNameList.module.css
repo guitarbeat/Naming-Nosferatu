@@ -3,13 +3,13 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--spacing-section-gap);
 }
 
 /* Loading State */
 .loadingGrid {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--spacing-card-gap);
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
@@ -27,17 +27,18 @@
 
 .emptyTitle {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
 
 .emptyMessage {
   max-width: 500px;
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-base);
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: var(--leading-relaxed);
 }
 
 /* Responsive Design */
@@ -53,6 +54,6 @@
   }
 
   .emptyTitle {
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
   }
 }

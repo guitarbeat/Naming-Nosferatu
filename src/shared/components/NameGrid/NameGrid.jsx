@@ -31,6 +31,7 @@ import styles from "./NameGrid.module.css";
  * @param {Set} props.hiddenIds - Set of hidden name IDs (profile mode)
  * @param {Function} props.onToggleVisibility - Handler for visibility toggle (profile mode)
  * @param {Function} props.onDelete - Handler for name deletion (profile mode)
+ * @param {boolean} props.showAdminControls - Show admin controls on cards
  */
 export function NameGrid({
   names = [],
@@ -46,6 +47,7 @@ export function NameGrid({
   hiddenIds = new Set(),
   onToggleVisibility,
   onDelete,
+  showAdminControls = false,
   className = "",
 }) {
   // Convert selectedNames to a Set for efficient lookup
@@ -84,6 +86,9 @@ export function NameGrid({
     return imageList[index % imageList.length];
   };
 
+  // * Admin features (hide/delete) should only be active when showAdminControls is true
+  // * This ensures they're only available in profile mode or analysis mode
+
   // * Use custom className if provided, otherwise use default grid styles
   const gridClassName = className || styles.grid;
 
@@ -118,11 +123,16 @@ export function NameGrid({
     <div className={gridClassName}>
       {processedNames.map((nameObj) => {
         const isSelected = selectedSet.has(nameObj.id);
-        const isHidden = hiddenIds.has(nameObj.id);
+        // * Only check hidden status if admin controls are enabled
+        const isHidden =
+          showAdminControls &&
+          hiddenIds instanceof Set &&
+          hiddenIds.has(nameObj.id);
 
         return (
           <div key={nameObj.id} className={styles.cardWrapper}>
-            {isHidden && mode === "profile" && (
+            {/* Hidden badge - only show in profile mode or analysis mode */}
+            {isHidden && showAdminControls && (
               <button
                 type="button"
                 className={styles.hiddenBadge}
@@ -172,25 +182,26 @@ export function NameGrid({
               className={
                 mode === "profile" && isHidden ? styles.hiddenCard : ""
               }
-              // Profile-specific props - only show admin controls in profile mode
-              isAdmin={mode === "profile" && isAdmin}
-              isHidden={mode === "profile" ? isHidden : false}
+              // * Admin controls - only show when showAdminControls is true (analysis mode or profile mode)
+              // * This ensures hide/delete features are only available when explicitly enabled
+              isAdmin={showAdminControls && isAdmin}
+              isHidden={showAdminControls ? isHidden : false}
               onToggleVisibility={
-                mode === "profile" && isAdmin
+                showAdminControls && isAdmin
                   ? () => onToggleVisibility?.(nameObj.id)
                   : undefined
               }
               onDelete={
-                mode === "profile" && isAdmin
+                showAdminControls && isAdmin
                   ? () => onDelete?.(nameObj)
                   : undefined
               }
               onSelectionChange={
-                mode === "profile" && isAdmin
+                showAdminControls && isAdmin
                   ? (selected) => onToggleName?.(nameObj.id, selected)
                   : undefined
               }
-              showAdminControls={mode === "profile" && isAdmin}
+              showAdminControls={showAdminControls && isAdmin}
             />
           </div>
         );
@@ -221,5 +232,6 @@ NameGrid.propTypes = {
   hiddenIds: PropTypes.instanceOf(Set),
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
+  showAdminControls: PropTypes.bool,
   className: PropTypes.string,
 };

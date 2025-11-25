@@ -17,8 +17,8 @@
 .label {
   display: block;
   font-size: var(--text-sm);
-  font-weight: 500;
-  line-height: 1.5;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-normal);
   color: var(--text-secondary);
 }
 
@@ -30,20 +30,20 @@
 /* Input Styles */
 .input {
   width: 100%;
-  min-height: 40px;
-  padding: var(--space-3);
+  min-height: var(--input-height-md);
+  padding: var(--input-padding-y) var(--input-padding-x);
   font-size: var(--text-base);
   color: var(--text-primary);
   background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-smooth);
+  border: var(--input-border-width) solid var(--border-color);
+  border-radius: var(--input-border-radius);
+  transition: var(--transition-base);
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgb(232 191 118 / 20%);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 .input:disabled {
@@ -57,15 +57,16 @@
 }
 
 .input--error:focus {
-  box-shadow: 0 0 0 3px rgb(var(--error-rgb) / 20%);
+  border-color: var(--color-error);
+  box-shadow: var(--focus-ring);
 }
 
 /* Select Styles */
 .select {
   width: 100%;
-  min-height: 40px;
-  padding: var(--space-3);
-  padding-right: calc(var(--space-3) + 20px);
+  min-height: var(--input-height-md);
+  padding: var(--input-padding-y) var(--input-padding-x);
+  padding-right: calc(var(--input-padding-x) + 20px);
   font-size: var(--text-base);
   color: var(--text-primary);
   appearance: none;
@@ -73,17 +74,17 @@
   background: var(--surface-color);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right var(--space-3) center;
+  background-position: right var(--input-padding-x) center;
   background-size: 16px;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-smooth);
+  border: var(--input-border-width) solid var(--border-color);
+  border-radius: var(--input-border-radius);
+  transition: var(--transition-base);
 }
 
 .select:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 3px rgb(232 191 118 / 20%);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 .select:disabled {
@@ -97,14 +98,16 @@
 }
 
 .select--error:focus {
-  box-shadow: 0 0 0 3px rgb(var(--error-rgb) / 20%);
+  border-color: var(--color-error);
+  box-shadow: var(--focus-ring);
 }
 
 /* Error Text */
 .errorText {
   font-size: var(--text-sm);
-  line-height: 1.5;
-  color: var(--error-500);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-error);
 }
 
 /* Form Actions */
@@ -146,17 +149,18 @@
 .fieldset {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  gap: var(--spacing-component-gap);
+  padding: var(--spacing-component-padding);
+  border: var(--card-border-width) solid var(--border-color);
+  border-radius: var(--card-border-radius);
 }
 
 .legend {
   padding: 0 var(--space-2);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
+  line-height: var(--leading-normal);
 }
 
 /* Checkbox and Radio */
@@ -195,8 +199,8 @@
 @media (width <= 768px) {
   .input,
   .select {
-    min-height: 48px;
-    padding: var(--space-3) var(--space-4);
+    min-height: var(--input-height-lg);
+    padding: var(--input-padding-y) var(--input-padding-x);
     font-size: var(--text-base);
   }
 
@@ -220,8 +224,8 @@
 @media (width <= 480px) {
   .input,
   .select {
-    min-height: 44px;
-    padding: var(--space-2) var(--space-3);
+    min-height: var(--input-height-md);
+    padding: var(--input-padding-y) var(--input-padding-x);
     font-size: var(--text-sm);
   }
 
@@ -238,14 +242,14 @@
 @media (hover: none) and (pointer: coarse) {
   .input:active,
   .select:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
+    transform: var(--transform-active-press);
+    transition: var(--transition-transform);
   }
 
   .checkboxItem:active,
   .radioItem:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
+    transform: var(--transform-active-press);
+    transition: var(--transition-transform);
   }
 }
 

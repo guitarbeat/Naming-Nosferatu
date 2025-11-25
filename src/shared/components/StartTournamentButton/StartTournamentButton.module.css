@@ -1,6 +1,6 @@
 .startTournamentButton {
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: var(--button-font-weight);
+  letter-spacing: var(--tracking-normal);
 }
 
 .iconWrapper {
@@ -10,6 +10,6 @@
 }
 
 .iconSvg {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--button-icon-size);
+  height: var(--button-icon-size);
 }

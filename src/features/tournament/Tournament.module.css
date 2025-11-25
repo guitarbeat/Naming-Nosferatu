@@ -20,13 +20,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1.25rem);
+  gap: clamp(var(--space-3), 2vw, var(--space-5));
   align-items: center;
   justify-content: flex-start;
   width: 100%;
   max-width: 100%;
-  min-height: calc(100vh - clamp(1rem, 3vw, 2rem));
-  padding: clamp(0.5rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.5rem);
+  min-height: calc(100vh - clamp(var(--space-4), 3vw, var(--space-8)));
+  padding: clamp(var(--space-2), 2vw, var(--space-4))
+    clamp(var(--space-3), 3vw, var(--space-6));
   margin: 0 auto;
 
   /* Prevent content shift during voting */
@@ -45,22 +46,18 @@
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  padding: clamp(0.5rem, 1.5vw, 0.75rem);
-  margin-bottom: clamp(0.5rem, 1.5vw, 1rem);
+  padding: clamp(var(--space-2), 1.5vw, var(--space-3));
+  margin-bottom: clamp(var(--space-2), 1.5vw, var(--space-4));
   background: linear-gradient(
     135deg,
     rgb(255 255 255 / 8%) 0%,
     rgb(255 255 255 / 4%) 100%
   );
-  border: 1px solid rgb(255 255 255 / 15%);
-  border-radius: 12px;
-  box-shadow:
-    0 8px 32px rgb(0 0 0 / 12%),
-    inset 0 1px 0 rgb(255 255 255 / 10%);
+  border: var(--card-border-width) solid rgb(255 255 255 / 15%);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(20px);
-  transition:
-    transform var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
+  transition: var(--transition-base);
   will-change: transform, box-shadow;
   overflow: hidden;
 }
@@ -80,10 +77,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .progressInfo:hover {
-    box-shadow:
-      0 12px 40px rgb(0 0 0 / 15%),
-      inset 0 1px 0 rgb(255 255 255 / 15%);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-xl);
+    transform: var(--transform-hover-lift);
   }
 }
 
@@ -97,42 +92,42 @@
 }
 
 .roundNumber {
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 700;
+  font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
+  font-weight: var(--font-weight-bold);
   background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
+  letter-spacing: var(--tracking-wider);
+  line-height: var(--leading-tight);
 }
 
 .matchCount {
   display: flex;
   align-items: center;
-  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
-  font-weight: 500;
+  font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
+  font-weight: var(--font-weight-medium);
   color: var(--text-secondary);
   opacity: 0.85;
+  line-height: var(--leading-normal);
 }
 
 .percentageInfo {
   position: relative;
-  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 2.5vw, 1.25rem);
-  font-size: clamp(0.85rem, 2.5vw, 1rem);
-  font-weight: 700;
+  padding: clamp(var(--space-2), 1.5vw, var(--space-3))
+    clamp(var(--space-4), 2.5vw, var(--space-5));
+  font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
+  font-weight: var(--font-weight-bold);
   color: var(--primary-600);
   background: linear-gradient(
     135deg,
     rgb(59 130 246 / 12%) 0%,
     rgb(59 130 246 / 8%) 100%
   );
-  border: 1px solid rgb(59 130 246 / 25%);
-  border-radius: var(--radius-full, 999px);
-  box-shadow:
-    0 4px 16px rgb(59 130 246 / 15%),
-    inset 0 1px 0 rgb(255 255 255 / 10%);
-  transition: all var(--duration-normal) var(--ease-out);
+  border: var(--card-border-width) solid rgb(59 130 246 / 25%);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
   z-index: 1;
 }
 
@@ -144,10 +139,8 @@
       rgb(59 130 246 / 10%) 100%
     );
     border-color: rgb(59 130 246 / 30%);
-    box-shadow:
-      0 6px 20px rgb(59 130 246 / 20%),
-      inset 0 1px 0 rgb(255 255 255 / 15%);
-    transform: scale(1.02);
+    box-shadow: var(--shadow-lg);
+    transform: var(--transform-hover-scale);
   }
 }
 
@@ -155,35 +148,33 @@
    ========================================================================== */
 .tournamentLayout {
   display: grid;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
+  gap: clamp(var(--space-3), 2vw, var(--space-6));
   width: 100%;
   max-width: 1600px;
-  margin-top: clamp(0.5rem, 1.5vw, 1rem);
+  margin-top: clamp(var(--space-2), 1.5vw, var(--space-4));
 }
 
 .matchup {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: clamp(0.5rem, 1.5vw, 1rem);
+  gap: clamp(var(--space-2), 1.5vw, var(--space-4));
   align-items: center;
   justify-content: center;
   width: 100%;
   max-width: 100%;
   min-height: auto;
-  padding: clamp(0.75rem, 1.5vw, 1.25rem);
+  padding: clamp(var(--space-3), 1.5vw, var(--space-5));
   background: linear-gradient(
     135deg,
     rgb(255 255 255 / 6%) 0%,
     rgb(255 255 255 / 3%) 100%
   );
-  border: 1px solid rgb(255 255 255 / 12%);
-  border-radius: clamp(0.75rem, 1.5vw, 1.25rem);
-  box-shadow:
-    0 8px 32px rgb(0 0 0 / 10%),
-    inset 0 1px 0 rgb(255 255 255 / 10%);
+  border: var(--card-border-width) solid rgb(255 255 255 / 12%);
+  border-radius: clamp(var(--radius-lg), 1.5vw, var(--radius-xl));
+  box-shadow: var(--shadow-lg);
   backdrop-filter: blur(20px);
-  transition: all var(--duration-normal) var(--ease-out);
+  transition: var(--transition-base);
   will-change: transform, box-shadow;
   overflow: hidden;
 }
@@ -203,17 +194,15 @@
 
 @media (hover: hover) and (pointer: fine) {
   .matchup:hover {
-    box-shadow:
-      0 12px 40px rgb(0 0 0 / 12%),
-      inset 0 1px 0 rgb(255 255 255 / 15%);
-    transform: translateY(-1px);
+    box-shadow: var(--shadow-xl);
+    transform: var(--transform-hover-lift);
   }
 }
 
 .namesRow {
   display: flex;
   flex-wrap: nowrap;
-  gap: clamp(0.5rem, 2vw, 1rem);
+  gap: clamp(var(--space-2), 2vw, var(--space-4));
   align-items: stretch;
   justify-content: center;
   width: 100%;
@@ -255,12 +244,10 @@
     var(--primary-500, #3b82f6),
     var(--primary-400, #60a5fa)
   );
-  border: 2px solid rgb(59 130 246 / 30%);
-  border-radius: var(--radius-full, 999px);
-  box-shadow:
-    0 4px 12px rgb(59 130 246 / 25%),
-    inset 0 1px 0 rgb(255 255 255 / 20%);
-  transition: all var(--duration-normal) var(--ease-out);
+  border: var(--card-border-width) solid rgb(59 130 246 / 30%);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
   z-index: 1;
   flex-shrink: 0;
 }
@@ -287,10 +274,8 @@
 
 @media (hover: hover) and (pointer: fine) {
   .vsSection:hover {
-    box-shadow:
-      0 12px 36px rgb(59 130 246 / 35%),
-      inset 0 1px 0 rgb(255 255 255 / 25%);
-    transform: scale(1.08);
+    box-shadow: var(--shadow-lg);
+    transform: var(--transform-hover-scale);
   }
 
   .vsSection:hover::before {
@@ -300,52 +285,52 @@
 
 .vsText {
   position: relative;
-  font-size: clamp(0.75rem, 2vw, 1rem);
-  font-weight: 800;
+  font-size: clamp(var(--text-sm), 2vw, var(--text-base));
+  font-weight: var(--font-weight-bold);
   color: #fff;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+  letter-spacing: var(--tracking-wider);
+  text-shadow: var(--shadow-sm);
   z-index: 1;
+  line-height: var(--leading-tight);
 }
 
 .extraOptions {
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(0.5rem, 1.5vw, 0.75rem);
+  gap: clamp(var(--space-2), 1.5vw, var(--space-3));
   align-items: center;
   justify-content: center;
   width: 100%;
   max-width: 800px;
-  margin-top: clamp(0.5rem, 1.5vw, 1rem);
+  margin-top: clamp(var(--space-2), 1.5vw, var(--space-4));
 }
 
 .extraOptionsButton {
   position: relative;
   display: inline-flex;
-  gap: var(--space-2);
+  gap: var(--spacing-icon-gap);
   align-items: center;
   justify-content: center;
   min-width: clamp(140px, 30vw, 240px);
-  min-height: clamp(48px, 10vw, 56px);
-  padding: clamp(0.75rem, 2vw, 1rem) clamp(1.25rem, 3vw, 2rem);
-  font-size: clamp(0.95rem, 3vw, 1.1rem);
-  font-weight: 700;
+  min-height: var(--button-height-lg);
+  padding: clamp(var(--space-3), 2vw, var(--space-4))
+    clamp(var(--space-5), 3vw, var(--space-8));
+  font-size: clamp(var(--text-base), 3vw, var(--text-lg));
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
-  letter-spacing: 0.02em;
+  letter-spacing: var(--tracking-normal);
   cursor: pointer;
   background: linear-gradient(
     135deg,
     rgb(255 255 255 / 8%) 0%,
     rgb(255 255 255 / 4%) 100%
   );
-  border: 1.5px solid rgb(255 255 255 / 15%);
-  border-radius: var(--radius-full, 999px);
-  box-shadow:
-    0 4px 16px rgb(0 0 0 / 8%),
-    inset 0 1px 0 rgb(255 255 255 / 10%);
+  border: var(--card-border-width) solid rgb(255 255 255 / 15%);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(16px);
-  transition: all var(--duration-normal) var(--ease-out);
+  transition: var(--transition-base);
   overflow: hidden;
 }
 

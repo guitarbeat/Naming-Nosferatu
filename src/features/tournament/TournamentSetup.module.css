@@ -60,38 +60,36 @@
 
 .inputBase {
   width: 100%;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--input-padding-y) var(--input-padding-x);
   font-size: var(--text-sm);
-  line-height: 1.4;
+  line-height: var(--leading-normal);
   color: var(--text-primary);
   background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  border: var(--input-border-width) solid var(--border-color);
+  border-radius: var(--input-border-radius);
+  transition: var(--transition-base);
 }
 
 .inputBase:focus {
   outline: none;
-  border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px var(--accent-color-alpha);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 .buttonBase {
   display: inline-flex;
-  gap: var(--space-1);
+  gap: var(--spacing-icon-gap);
   align-items: center;
   justify-content: center;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--button-padding-y-md) var(--button-padding-x-md);
   font-size: var(--text-sm);
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: var(--button-font-weight);
+  line-height: var(--leading-tight);
   cursor: pointer;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  transition: var(--transition-all);
-  min-height: 44px; /* Touch-friendly minimum */
+  border: var(--card-border-width) solid transparent;
+  border-radius: var(--button-border-radius);
+  transition: var(--transition-base);
+  min-height: var(--button-height-md);
 }
 
 .buttonPrimary {
@@ -103,6 +101,7 @@
 .buttonPrimary:hover:not(:disabled) {
   background: var(--button-primary-hover, var(--primary-dark));
   box-shadow: var(--shadow-md);
+  transform: var(--transform-hover-lift);
 }
 
 .buttonSecondary {
@@ -115,6 +114,7 @@
 .buttonSecondary:hover:not(:disabled) {
   background: var(--card-hover);
   box-shadow: var(--shadow-sm);
+  transform: var(--transform-hover-lift);
 }
 
 .buttonInverted {
@@ -128,6 +128,7 @@
   background: var(--button-secondary-hover, #333);
   border-color: var(--border-color);
   box-shadow: var(--shadow-md);
+  transform: var(--transform-hover-lift);
 }
 
 .buttonWide {
@@ -149,8 +150,9 @@
 .tournamentTitle {
   margin: 0 0 var(--space-3) 0;
   font-size: var(--text-2xl);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {

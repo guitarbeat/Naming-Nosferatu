@@ -11,12 +11,18 @@ import {
   SidebarGroupContent,
   useSidebar,
 } from "../ui/sidebar";
-import { UserInfo } from "./components/UserInfo";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
-import { TournamentIcon, DashboardIcon, LogoutIcon } from "./icons";
+import { UserDisplay } from "./components/UserDisplay";
+import {
+  TournamentIcon,
+  DashboardIcon,
+  LogoutIcon,
+  ProfileIcon,
+} from "./icons";
+import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -32,6 +38,12 @@ export function AppSidebar({
   onTogglePerformanceDashboard,
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
+  const { navigateTo } = useRouting();
+
+  // * Check if analysis mode is currently active
+  const isAnalysisMode =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("analysis") === "true";
 
   // * Define navigation items - data-driven approach
   const navItems = [
@@ -122,13 +134,43 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-              {/* Profile Navigation */}
+              {/* Analysis Mode Toggle - replaces Profile Navigation */}
               {isLoggedIn && userName && (
-                <UserInfo
-                  userName={userName}
-                  onClick={() => setView("profile")}
-                  isAdmin={isAdmin}
-                  view={view}
+                <MenuActionItem
+                  icon={ProfileIcon}
+                  label={
+                    collapsed
+                      ? ""
+                      : isAnalysisMode
+                        ? "Exit Analysis"
+                        : "Analysis"
+                  }
+                  onClick={() => {
+                    // * Toggle analysis mode via URL parameter
+                    const currentPath = window.location.pathname;
+                    const currentSearch = new URLSearchParams(
+                      window.location.search
+                    );
+
+                    if (isAnalysisMode) {
+                      currentSearch.delete("analysis");
+                    } else {
+                      currentSearch.set("analysis", "true");
+                    }
+
+                    const newSearch = currentSearch.toString();
+                    const newUrl = newSearch
+                      ? `${currentPath}?${newSearch}`
+                      : currentPath;
+
+                    navigateTo(newUrl);
+                  }}
+                  ariaLabel={
+                    isAnalysisMode
+                      ? "Exit Analysis Mode"
+                      : "Enter Analysis Mode"
+                  }
+                  condition={isLoggedIn && userName}
                 />
               )}
             </SidebarGroupContent>
@@ -167,6 +209,11 @@ export function AppSidebar({
               />
             </SidebarGroupContent>
           </SidebarGroup>
+
+          {/* User Display - After actions */}
+          {isLoggedIn && userName && (
+            <UserDisplay userName={userName} isAdmin={isAdmin} />
+          )}
         </NavbarSection>
       </SidebarContent>
     </Sidebar>

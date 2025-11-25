@@ -20,17 +20,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: var(--spacing-component-padding) var(--space-6);
   background: var(--charcoal, #2c3e40);
-  border-bottom: 1px solid var(--blue-gray, #809fb0);
-  box-shadow: 0 2px 10px rgb(0 0 0 / 30%);
+  border-bottom: var(--card-border-width) solid var(--blue-gray, #809fb0);
+  box-shadow: var(--shadow-md);
 }
 
 .header h2 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--mimosa, #e8bf76);
+  line-height: var(--leading-tight);
 }
 
 .controls {
@@ -43,16 +44,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  padding: 0.5rem;
-  font-size: 1rem;
+  min-width: var(--button-height-md);
+  height: var(--button-height-md);
+  padding: var(--button-padding-y-sm);
+  font-size: var(--text-base);
   color: white;
   cursor: pointer;
   background: var(--blue-gray, #809fb0);
   border: none;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  border-radius: var(--button-border-radius);
+  transition: var(--transition-base);
 }
 
 .refreshBtn:hover {
@@ -69,35 +70,36 @@
   display: grid;
   flex: 1;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: var(--spacing-card-gap);
   align-content: start;
-  padding: 1.5rem;
+  padding: var(--spacing-card-gap);
   overflow-y: auto;
 }
 
 .section {
   background: rgb(255 255 255 / 5%);
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 12px;
+  border: var(--card-border-width) solid rgb(255 255 255 / 10%);
+  border-radius: var(--card-border-radius);
   backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
+  transition: var(--transition-base);
 }
 
 .section:hover {
   background: rgb(255 255 255 / 8%);
   border-color: var(--mimosa, #e8bf76);
-  box-shadow: 0 8px 25px rgb(0 0 0 / 30%);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  transform: var(--transform-hover-lift);
 }
 
 .section h3 {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-icon-gap);
   align-items: center;
-  margin: 0 0 1rem;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--mimosa, #e8bf76);
+  line-height: var(--leading-normal);
 }
 
 .metricsGrid {
@@ -110,11 +112,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem;
+  padding: var(--space-3);
   background: rgb(255 255 255 / 3%);
-  border: 1px solid rgb(255 255 255 / 5%);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border: var(--card-border-width) solid rgb(255 255 255 / 5%);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
 }
 
 .metric:hover {

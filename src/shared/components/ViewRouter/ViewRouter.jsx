@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import Error from "../Error/Error";
@@ -48,7 +48,7 @@ function safeLazyImport(importFn, fallbackComponent) {
       } catch {
         // * If error can't be stringified, create a safe replacement
         const safeError = new Error(
-          error?.message || String(error) || "Module load failed",
+          error?.message || String(error) || "Module load failed"
         );
         safeError.name = error?.name || "LoadError";
         safeError.stack = error?.stack || "";
@@ -83,8 +83,8 @@ const Tournament = lazy(() =>
             "Try refreshing the page or returning to the setup screen to start a new tournament.",
         }}
       />
-    ),
-  ),
+    )
+  )
 );
 const TournamentSetup = lazy(() =>
   safeLazyImport(
@@ -100,8 +100,8 @@ const TournamentSetup = lazy(() =>
             "Please try refreshing the page. If the problem persists, check your internet connection or contact support.",
         }}
       />
-    ),
-  ),
+    )
+  )
 );
 const Results = lazy(() =>
   safeLazyImport(
@@ -117,33 +117,16 @@ const Results = lazy(() =>
             "Try refreshing the page. If you just completed a tournament, you can check your profile to see your saved results.",
         }}
       />
-    ),
-  ),
-);
-const Profile = lazy(() =>
-  safeLazyImport(
-    () => import("@features/profile/Profile"),
-    () => (
-      <Error
-        variant="list"
-        error={{
-          message: "Failed to load Profile",
-          details:
-            "Your profile page could not be loaded. This might be due to a network issue or a problem accessing your data.",
-          suggestion:
-            "Please try refreshing the page. If the problem continues, log out and log back in.",
-        }}
-      />
-    ),
-  ),
+    )
+  )
 );
 const BongoPage = lazy(() =>
   safeLazyImport(
     () => import("@features/bongo/BongoPage"),
     () => (
       <Error variant="list" error={{ message: "Failed to load Bongo Page" }} />
-    ),
-  ),
+    )
+  )
 );
 
 export default function ViewRouter({
@@ -157,7 +140,7 @@ export default function ViewRouter({
   onTournamentComplete,
   onVote,
 }) {
-  const { isRoute } = useRouting();
+  const { isRoute, navigateTo, currentRoute } = useRouting();
 
   // Handle special routes first
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
@@ -176,23 +159,13 @@ export default function ViewRouter({
     return <Login onLogin={onLogin} />;
   }
 
-  const shouldShowProfile =
-    isRoute("/profile") || tournament.currentView === "profile";
-
-  if (shouldShowProfile) {
-    return (
-      <Suspense
-        fallback={<Loading variant="spinner" text="Loading Profile..." />}
-      >
-        <Profile
-          userName={userName}
-          onStartNewTournament={onStartNewTournament}
-          ratings={tournament.ratings}
-          onUpdateRatings={onUpdateRatings}
-        />
-      </Suspense>
-    );
-  }
+  // * Redirect /profile to /tournament?analysis=true (deprecated route)
+  // * Must be called unconditionally (Rules of Hooks)
+  useEffect(() => {
+    if (isRoute("/profile")) {
+      navigateTo("/tournament?analysis=true", { replace: true });
+    }
+  }, [isRoute, navigateTo]);
 
   if (tournament.names === null) {
     return (

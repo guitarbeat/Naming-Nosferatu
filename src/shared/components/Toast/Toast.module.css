@@ -6,12 +6,13 @@
   max-width: 400px;
   pointer-events: auto;
   background: var(--card-background, #fff);
-  border-left: 4px solid;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  border-left: var(--card-border-width) solid;
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--shadow-md);
   transform: translateX(100%);
-  transition: all 0.15s ease-out;
-  animation: slideIn 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  transition: var(--transition-base);
+  animation: slideIn var(--duration-fast) cubic-bezier(0.68, -0.55, 0.265, 1.55)
+    forwards;
 }
 
 /* * Tournament mode visual: higher contrast glass/blur so it stands out over game UI */
@@ -87,9 +88,9 @@
 
 .message {
   flex: 1;
-  font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.4;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-normal);
 }
 
 .dismissButton {

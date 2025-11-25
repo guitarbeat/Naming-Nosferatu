@@ -116,6 +116,9 @@ export function NameManagementView({
   const [selectionFilter, setSelectionFilter] = useState("all");
   const [filteredCount, setFilteredCount] = useState(0);
 
+  // * Analysis mode: toggle for showing profile features in tournament mode
+  const [analysisMode, setAnalysisMode] = useState(false);
+
   // * Tournament mode: categories
   const categories = tournamentProps.categories || [];
 
@@ -124,7 +127,18 @@ export function NameManagementView({
 
   // * Filter configuration for UnifiedFilters
   const filterConfig = useMemo(() => {
-    if (mode === "tournament") {
+    // * In tournament mode with analysis mode, show hybrid filters
+    if (mode === "tournament" && analysisMode) {
+      return {
+        searchTerm,
+        category: selectedCategory,
+        sortBy,
+        filterStatus,
+        userFilter,
+        selectionFilter,
+        sortOrder,
+      };
+    } else if (mode === "tournament") {
       return {
         searchTerm,
         category: selectedCategory,
@@ -141,6 +155,7 @@ export function NameManagementView({
     }
   }, [
     mode,
+    analysisMode,
     searchTerm,
     selectedCategory,
     sortBy,
@@ -153,7 +168,30 @@ export function NameManagementView({
   // * Handle filter changes
   const handleFilterChange = useCallback(
     (newFilters) => {
-      if (mode === "tournament") {
+      // * Tournament mode with analysis mode: handle both filter sets
+      if (mode === "tournament" && analysisMode) {
+        if (newFilters.searchTerm !== undefined) {
+          setSearchTerm(newFilters.searchTerm || "");
+        }
+        if (newFilters.category !== undefined) {
+          setSelectedCategory(newFilters.category || null);
+        }
+        if (newFilters.sortBy !== undefined) {
+          setSortBy(newFilters.sortBy || "alphabetical");
+        }
+        if (newFilters.filterStatus !== undefined) {
+          setFilterStatus(newFilters.filterStatus);
+        }
+        if (newFilters.userFilter !== undefined) {
+          setUserFilter(newFilters.userFilter);
+        }
+        if (newFilters.selectionFilter !== undefined) {
+          setSelectionFilter(newFilters.selectionFilter);
+        }
+        if (newFilters.sortOrder !== undefined) {
+          setSortOrder(newFilters.sortOrder);
+        }
+      } else if (mode === "tournament") {
         setSearchTerm(newFilters.searchTerm || "");
         setSelectedCategory(newFilters.category || null);
         setSortBy(newFilters.sortBy || "alphabetical");
@@ -175,7 +213,7 @@ export function NameManagementView({
         }
       }
     },
-    [mode]
+    [mode, analysisMode]
   );
 
   // * Context value for extensions
@@ -213,6 +251,9 @@ export function NameManagementView({
       setSortOrder,
       selectionFilter,
       setSelectionFilter,
+      // Analysis mode
+      analysisMode,
+      setAnalysisMode,
     }),
     [
       names,
@@ -235,6 +276,7 @@ export function NameManagementView({
       userFilter,
       sortOrder,
       selectionFilter,
+      analysisMode,
     ]
   );
 
@@ -289,27 +331,40 @@ export function NameManagementView({
           </div>
         )}
 
-        {/* Profile Dashboard (profile mode only) */}
-        {mode === "profile" && extensions.dashboard && (
-          <div className={styles.dashboardSection}>
-            {typeof extensions.dashboard === "function"
-              ? extensions.dashboard()
-              : extensions.dashboard}
-          </div>
-        )}
+        {/* Profile Dashboard (profile mode or analysis mode) */}
+        {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
+          extensions.dashboard && (
+            <div className={styles.dashboardSection}>
+              {typeof extensions.dashboard === "function"
+                ? extensions.dashboard()
+                : extensions.dashboard}
+            </div>
+          )}
 
         {/* Unified Filters */}
         <div className={styles.filtersSection}>
           <UnifiedFilters
-            mode={mode}
+            mode={mode === "tournament" && analysisMode ? "hybrid" : mode}
             filters={filterConfig}
             onFilterChange={handleFilterChange}
             categories={categories}
-            showUserFilter={profileProps.showUserFilter}
-            showSelectionFilter={!!profileProps.selectionStats}
+            showUserFilter={
+              profileProps.showUserFilter ||
+              (mode === "tournament" &&
+                analysisMode &&
+                profileProps.showUserFilter)
+            }
+            showSelectionFilter={
+              !!profileProps.selectionStats ||
+              (mode === "tournament" &&
+                analysisMode &&
+                !!profileProps.selectionStats)
+            }
             userSelectOptions={profileProps.userSelectOptions}
             filteredCount={
-              mode === "profile" ? filteredCount : displayNames.length
+              mode === "profile" || (mode === "tournament" && analysisMode)
+                ? filteredCount
+                : displayNames.length
             }
             totalCount={names.length}
           />
@@ -330,7 +385,8 @@ export function NameManagementView({
               </button>
             )}
 
-            {tournamentProps.isAdmin && (
+            {/* Select All button - only show in analysis mode for admins */}
+            {tournamentProps.isAdmin && analysisMode && (
               <button
                 className={styles.actionButton}
                 onClick={selectAll}
@@ -390,18 +446,22 @@ export function NameManagementView({
             </div>
             <span className={styles.progressText}>
               {selectedCount} of {names.length} names selected
+              {analysisMode &&
+                profileProps.hiddenIds &&
+                ` • ${profileProps.hiddenIds.size} hidden`}
             </span>
           </div>
         )}
 
-        {/* Profile Mode: Bulk Actions */}
-        {mode === "profile" && extensions.bulkActions && (
-          <div className={styles.bulkActionsSection}>
-            {typeof extensions.bulkActions === "function"
-              ? extensions.bulkActions()
-              : extensions.bulkActions}
-          </div>
-        )}
+        {/* Profile Mode: Bulk Actions (profile mode or analysis mode) */}
+        {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
+          extensions.bulkActions && (
+            <div className={styles.bulkActionsSection}>
+              {typeof extensions.bulkActions === "function"
+                ? extensions.bulkActions()
+                : extensions.bulkActions}
+            </div>
+          )}
 
         {/* Name Grid - Use extension if provided, otherwise use NameGrid */}
         <div className={styles.gridSection}>
@@ -424,15 +484,39 @@ export function NameManagementView({
                   : tournamentProps.isAdmin
               }
               showSelectedOnly={
-                mode === "tournament" ? showSelectedOnly : false
+                mode === "tournament" && !analysisMode
+                  ? showSelectedOnly
+                  : false
               }
               showCatPictures={showCatPictures}
               imageList={tournamentProps.imageList || []}
               hiddenIds={
-                mode === "profile" ? profileProps.hiddenIds : new Set()
+                mode === "profile" || (mode === "tournament" && analysisMode)
+                  ? profileProps.hiddenIds || new Set()
+                  : new Set()
               }
-              onToggleVisibility={profileProps.onToggleVisibility}
-              onDelete={profileProps.onDelete}
+              onToggleVisibility={
+                // * Admin features only in profile mode or tournament with analysis mode active
+                (mode === "profile" ||
+                  (mode === "tournament" && analysisMode)) &&
+                profileProps.onToggleVisibility
+                  ? profileProps.onToggleVisibility
+                  : undefined
+              }
+              onDelete={
+                // * Admin features only in profile mode or tournament with analysis mode active
+                (mode === "profile" ||
+                  (mode === "tournament" && analysisMode)) &&
+                profileProps.onDelete
+                  ? profileProps.onDelete
+                  : undefined
+              }
+              showAdminControls={
+                // * Admin controls only shown in profile mode or tournament with analysis mode active
+                (mode === "profile" ||
+                  (mode === "tournament" && analysisMode)) &&
+                profileProps.isAdmin
+              }
               className={
                 mode === "tournament" ? tournamentProps.gridClassName : ""
               }

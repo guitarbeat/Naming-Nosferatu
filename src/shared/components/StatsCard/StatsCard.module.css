@@ -2,7 +2,7 @@
   position: relative;
   align-items: center;
   min-height: 120px;
-  padding: 1.5rem 1rem;
+  padding: var(--card-padding-lg) var(--card-padding-md);
   overflow: hidden;
   text-align: center;
 }
@@ -20,28 +20,28 @@
     var(--primary-400, #60a5fa) 50%,
     var(--primary-600, #2563eb) 100%
   );
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .card:hover {
-  transform: translateY(-2px) scale(1.01);
+  transform: var(--transform-hover-lift) var(--transform-hover-scale);
 }
 
 .label {
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.2;
+  margin-bottom: var(--spacing-icon-gap);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
   color: var(--text-secondary, #6b7280);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--tracking-wider);
 }
 
 .value {
-  margin-bottom: 0.25rem;
-  font-size: 2.25rem;
-  font-weight: 700;
-  line-height: 1;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
   color: var(--text-primary, #111827);
   background: linear-gradient(
     135deg,
@@ -53,9 +53,9 @@
 }
 
 .emoji {
-  margin-top: 0.5rem;
-  font-size: 1.5rem;
-  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 10%));
+  margin-top: var(--spacing-icon-gap);
+  font-size: var(--text-2xl);
+  filter: drop-shadow(var(--shadow-xs));
 }
 
 /* Variant styles */
@@ -204,30 +204,30 @@
 @media (width <= 768px) {
   .card {
     min-height: 100px;
-    padding: 1.25rem 0.75rem;
+    padding: var(--space-5) var(--space-3);
   }
 
   .value {
-    font-size: 1.875rem;
+    font-size: var(--text-3xl);
   }
 
   .label {
-    font-size: 0.75rem;
+    font-size: var(--text-xs);
   }
 
   .emoji {
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
   }
 }
 
 @media (width <= 480px) {
   .card {
     min-height: 90px;
-    padding: 1rem 0.5rem;
+    padding: var(--card-padding-md) var(--space-2);
   }
 
   .value {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 }
 

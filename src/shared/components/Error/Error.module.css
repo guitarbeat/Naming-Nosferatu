@@ -65,15 +65,15 @@
   z-index: 1;
   width: 100%;
   max-width: 600px;
-  padding: clamp(1.5rem, 5vw, 3rem);
+  padding: clamp(var(--space-6), 5vw, var(--space-12));
   text-align: center;
   outline: none;
   background: var(--glass-bg-strong);
-  border: 1px solid var(--glass-border);
-  border-radius: clamp(12px, 3vw, 20px);
+  border: var(--card-border-width) solid var(--glass-border);
+  border-radius: clamp(var(--radius-lg), 3vw, var(--radius-xl));
   box-shadow: var(--glass-shadow), var(--glow-vibrant);
   backdrop-filter: blur(var(--glass-blur-strong)) saturate(180%);
-  transition: all 0.3s ease;
+  transition: var(--transition-base);
 }
 
 .boundaryContent:focus-visible {
@@ -82,11 +82,8 @@
 }
 
 .boundaryContent:hover {
-  box-shadow:
-    var(--glass-shadow),
-    var(--glow-vibrant),
-    0 25px 50px rgb(0 0 0 / 20%);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  transform: var(--transform-hover-lift);
 }
 
 /* * Reduced motion variant */
@@ -147,10 +144,10 @@
 }
 
 .boundaryTitle {
-  margin-bottom: clamp(0.75rem, 2vw, 1rem);
-  font-size: clamp(1.5rem, 5vw, 2rem);
-  font-weight: 700;
-  line-height: 1.2;
+  margin-bottom: clamp(var(--space-3), 2vw, var(--space-4));
+  font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
   color: var(--text-primary);
   overflow-wrap: break-word;
   text-shadow: var(--text-shadow-sm);
@@ -160,9 +157,9 @@
 }
 
 .boundaryMessage {
-  margin-bottom: clamp(1rem, 3vw, 1.5rem);
-  font-size: clamp(1rem, 3vw, 1.125rem);
-  line-height: 1.6;
+  margin-bottom: clamp(var(--space-4), 3vw, var(--space-6));
+  font-size: clamp(var(--text-base), 3vw, var(--text-lg));
+  line-height: var(--leading-relaxed);
   color: var(--text-secondary);
   hyphens: auto;
   overflow-wrap: break-word;
@@ -345,10 +342,8 @@
 
 .boundaryRetryButton:hover:not(:active) {
   background: var(--neon-cyan-600);
-  box-shadow:
-    var(--glow-cyan),
-    0 10px 25px rgb(47 243 224 / 30%);
-  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-lg);
+  transform: var(--transform-hover-lift) var(--transform-hover-scale);
 }
 
 @media (prefers-reduced-motion: reduce) {

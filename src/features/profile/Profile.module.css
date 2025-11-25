@@ -4,9 +4,9 @@
 .profileContainer {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--spacing-section-gap);
   min-height: 100vh;
-  padding: var(--space-6);
+  padding: var(--spacing-page-padding);
   font-family: var(--font-sans);
 }
 
@@ -21,13 +21,14 @@
 
 .title {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   background: var(--gradient-primary);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  line-height: var(--leading-tight);
 }
 
 .headerActions {
@@ -46,32 +47,34 @@
 }
 
 .userSwitcherLabel {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
+  line-height: var(--leading-normal);
 }
 
 .userSwitcherSelect {
-  padding: var(--space-2) var(--space-3);
-  font-size: 0.9rem;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--text-sm);
   color: var(--text-primary);
   background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border: var(--input-border-width) solid var(--border-color);
+  border-radius: var(--input-border-radius);
   backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .userSwitcherSelect:focus {
   outline: none;
-  border-color: var(--primary-400);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 .userSwitcherHelper,
 .userSwitcherError,
 .viewingNote {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
 }
 
 .userSwitcherHelper {
@@ -89,14 +92,14 @@
 /* Content Grid */
 .contentGrid {
   display: grid;
-  gap: var(--space-6);
+  gap: var(--spacing-section-gap);
   grid-template-columns: 1fr;
 }
 
 /* Stats Section */
 .statsSection {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--spacing-card-gap);
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
@@ -117,31 +120,32 @@
 }
 
 .filterLabel {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-secondary);
+  line-height: var(--leading-normal);
 }
 
 .filterSelect {
-  padding: var(--space-2) var(--space-3);
-  font-size: 0.9rem;
+  padding: var(--input-padding-y) var(--input-padding-x);
+  font-size: var(--text-sm);
   color: var(--text-primary);
   background: var(--card-background);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border: var(--input-border-width) solid var(--border-color);
+  border-radius: var(--input-border-radius);
+  transition: var(--transition-base);
 }
 
 .filterSelect:focus {
   outline: none;
-  border-color: var(--primary-400);
-  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 /* Names Grid */
 .namesGrid {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--spacing-card-gap);
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
@@ -161,9 +165,10 @@
 .errorContainer h2,
 .noDataContainer h2 {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-bold);
   color: var(--text-primary);
+  line-height: var(--leading-tight);
 }
 
 .errorContainer p,
@@ -192,7 +197,7 @@
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .statsSection {
@@ -224,7 +229,7 @@
   }
 
   .title {
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
   }
 
   .statsSection {
