@@ -43,6 +43,7 @@ export {
   AnalysisHighlights,
   AnalysisProgress,
   AnalysisToggle,
+  AnalysisModeBanner,
 } from "./AnalysisPanel";
 export { AnalysisDashboard } from "./AnalysisDashboard";
 export { AnalysisBulkActions } from "./AnalysisBulkActions";

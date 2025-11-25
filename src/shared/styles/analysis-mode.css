@@ -24,7 +24,7 @@
   --analysis-accent-subtle: rgb(var(--analysis-accent-rgb) / 8%);
   --analysis-accent-glow: 0 0 24px rgb(var(--analysis-accent-rgb) / 25%);
 
-  /* * Surface hierarchy - layered depth */
+  /* * Surface hierarchy - layered depth (references main design tokens) */
   --analysis-surface-0: var(--background-color);
   --analysis-surface-1: var(--card-background);
   --analysis-surface-2: var(--surface-elevated, var(--surface-color));
@@ -35,34 +35,39 @@
   --analysis-border-accent: rgb(var(--analysis-accent-rgb) / 30%);
   --analysis-border-hover: rgb(var(--analysis-accent-rgb) / 50%);
 
-  /* * Typography - restrained scale */
+  /* * Typography - restrained scale (references main design tokens) */
   --analysis-text-headline: var(--text-2xl);
   --analysis-text-title: var(--text-lg);
   --analysis-text-body: var(--text-sm);
   --analysis-text-caption: var(--text-xs);
   --analysis-text-mono: var(--font-mono);
 
-  /* * Spacing - tight, rhythmic */
+  /* * Spacing - tight, rhythmic (references main design tokens) */
   --analysis-gap-xs: var(--space-1);
   --analysis-gap-sm: var(--space-2);
   --analysis-gap-md: var(--space-3);
   --analysis-gap-lg: var(--space-4);
   --analysis-gap-xl: var(--space-6);
 
-  /* * Motion - purposeful, quick */
+  /* * Motion - purposeful, quick (references main design tokens) */
   --analysis-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --analysis-duration-fast: 150ms;
-  --analysis-duration-normal: 250ms;
-  --analysis-duration-slow: 400ms;
+  --analysis-duration-fast: var(--duration-fast);
+  --analysis-duration-normal: var(--duration-normal);
+  --analysis-duration-slow: var(--duration-slow);
 
-  /* * Shadows - depth without heaviness */
-  --analysis-shadow-sm: 0 2px 8px rgb(0 0 0 / 12%);
-  --analysis-shadow-md: 0 4px 16px rgb(0 0 0 / 15%);
-  --analysis-shadow-lg:
-    0 8px 32px rgb(0 0 0 / 18%), 0 0 0 1px var(--analysis-border);
+  /* * Shadows - depth without heaviness (references main design tokens) */
+  --analysis-shadow-sm: var(--shadow-sm);
+  --analysis-shadow-md: var(--shadow-md);
+  --analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
   --analysis-shadow-glow:
-    0 8px 32px rgb(var(--analysis-accent-rgb) / 12%),
-    0 0 0 1px var(--analysis-border-accent);
+    var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
+
+  /* * Border radius (references main design tokens) */
+  --analysis-radius-sm: var(--radius-sm);
+  --analysis-radius-md: var(--radius-md);
+  --analysis-radius-lg: var(--radius-lg);
+  --analysis-radius-xl: var(--radius-xl);
+  --analysis-radius-full: var(--radius-full);
 }
 
 /* * Light theme adjustments */
@@ -89,7 +94,7 @@
   padding: var(--analysis-gap-lg);
   background: var(--analysis-surface-1);
   border: 1px solid var(--analysis-border-accent);
-  border-radius: var(--radius-xl);
+  border-radius: var(--analysis-radius-xl);
   box-shadow: var(--analysis-shadow-lg);
   backdrop-filter: blur(16px);
   transition:
@@ -127,6 +132,18 @@
   border-bottom: 1px solid var(--analysis-border);
 }
 
+.analysis-header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs);
+}
+
 .analysis-badge {
   display: inline-flex;
   align-items: center;
@@ -140,7 +157,7 @@
   letter-spacing: 0.1em;
   background: var(--analysis-accent-muted);
   border: 1px solid var(--analysis-border-accent);
-  border-radius: var(--radius-full);
+  border-radius: var(--analysis-radius-full);
 }
 
 .analysis-badge::before {
@@ -188,7 +205,7 @@
   padding: var(--analysis-gap-md);
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--analysis-radius-lg);
   transition:
     transform var(--analysis-duration-fast) var(--analysis-ease),
     border-color var(--analysis-duration-fast) var(--analysis-ease);
@@ -232,7 +249,7 @@
   padding: var(--analysis-gap-sm);
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--analysis-radius-lg);
 }
 
 .analysis-toolbar-group {
@@ -282,7 +299,7 @@
   color: var(--text-primary);
   background: transparent;
   border: 1px solid var(--analysis-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--analysis-radius-md);
   cursor: pointer;
   transition:
     background var(--analysis-duration-fast) var(--analysis-ease),
@@ -371,7 +388,7 @@
   color: var(--text-primary);
   background: var(--analysis-surface-1);
   border: 1px solid var(--analysis-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--analysis-radius-md);
   transition:
     border-color var(--analysis-duration-fast) var(--analysis-ease),
     box-shadow var(--analysis-duration-fast) var(--analysis-ease);
@@ -407,6 +424,9 @@
   transform: translateY(-50%);
   color: var(--text-tertiary);
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ==========================================================================
@@ -426,7 +446,7 @@
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
   border-left: 3px solid var(--analysis-accent);
-  border-radius: var(--radius-md);
+  border-radius: var(--analysis-radius-md);
 }
 
 .analysis-highlight-title {
@@ -479,14 +499,14 @@
   flex: 1;
   height: 4px;
   background: var(--analysis-border);
-  border-radius: var(--radius-full);
+  border-radius: var(--analysis-radius-full);
   overflow: hidden;
 }
 
 .analysis-progress-fill {
   height: 100%;
   background: var(--analysis-accent);
-  border-radius: var(--radius-full);
+  border-radius: var(--analysis-radius-full);
   transition: width var(--analysis-duration-slow) var(--analysis-ease);
 }
 
@@ -511,7 +531,7 @@
   color: var(--text-primary);
   background: transparent;
   border: 1px solid var(--analysis-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--analysis-radius-lg);
   cursor: pointer;
   transition: all var(--analysis-duration-normal) var(--analysis-ease);
 }
@@ -545,7 +565,7 @@
   width: 8px;
   height: 8px;
   background: currentColor;
-  border-radius: var(--radius-full);
+  border-radius: var(--analysis-radius-full);
   opacity: 0.5;
   transition:
     opacity var(--analysis-duration-fast) var(--analysis-ease),
@@ -558,12 +578,78 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE ADJUSTMENTS
+   ANALYSIS MODE INDICATOR BANNER
    ========================================================================== */
+.analysis-mode-banner {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--analysis-gap-md);
+  padding: var(--analysis-gap-sm) var(--analysis-gap-lg);
+  background: linear-gradient(
+    135deg,
+    rgb(var(--analysis-accent-rgb) / 12%) 0%,
+    rgb(var(--analysis-accent-rgb) / 6%) 100%
+  );
+  border-bottom: 1px solid var(--analysis-border-accent);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--analysis-shadow-sm);
+}
+
+.analysis-mode-banner-content {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-mode-banner-text {
+  font-size: var(--analysis-text-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.analysis-mode-banner-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs);
+  padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
+  font-family: var(--analysis-text-mono);
+  font-size: var(--analysis-text-caption);
+  color: var(--analysis-accent);
+  background: var(--analysis-accent-muted);
+  border: 1px solid var(--analysis-border-accent);
+  border-radius: var(--analysis-radius-md);
+}
+
+.analysis-mode-banner-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--analysis-radius-md);
+  cursor: pointer;
+  transition:
+    color var(--analysis-duration-fast) var(--analysis-ease),
+    background var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-mode-banner-close:hover {
+  color: var(--text-primary);
+  background: var(--analysis-surface-elevated);
+}
+
 @media (max-width: 768px) {
   .analysis-panel {
     padding: var(--analysis-gap-md);
-    border-radius: var(--radius-lg);
+    border-radius: var(--analysis-radius-lg);
   }
 
   .analysis-stats {

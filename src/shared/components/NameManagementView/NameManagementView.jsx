@@ -8,6 +8,7 @@ import React, {
   useState,
   useMemo,
   useCallback,
+  useEffect,
   createContext,
   useContext,
 } from "react";
@@ -17,10 +18,12 @@ import {
   Error as ErrorComponent,
   UnifiedFilters,
   NameGrid,
+  AnalysisModeBanner,
 } from "../index";
 import { useNameData } from "../../../core/hooks/useNameData";
 import { useNameSelection } from "../../../core/hooks/useNameSelection";
 import useAppStore from "../../../core/store/useAppStore";
+import { useRouting } from "@hooks/useRouting";
 import styles from "./NameManagementView.module.css";
 
 // * Context for providing data to extensions
@@ -116,8 +119,54 @@ export function NameManagementView({
   const [selectionFilter, setSelectionFilter] = useState("all");
   const [filteredCount, setFilteredCount] = useState(0);
 
+  // * Routing hook for URL updates
+  const { navigateTo } = useRouting();
+
   // * Analysis mode: toggle for showing profile features in tournament mode
-  const [analysisMode, setAnalysisMode] = useState(false);
+  // * Initialize from URL parameter
+  const urlParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  const [analysisMode, setAnalysisMode] = useState(
+    urlParams.get("analysis") === "true"
+  );
+
+  // * Sync analysis mode with URL
+  const handleAnalysisModeToggle = useCallback(
+    (newValue) => {
+      setAnalysisMode(newValue);
+      const currentPath = window.location.pathname;
+      const currentSearch = new URLSearchParams(window.location.search);
+
+      if (newValue) {
+        currentSearch.set("analysis", "true");
+      } else {
+        currentSearch.delete("analysis");
+      }
+
+      const newSearch = currentSearch.toString();
+      const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
+
+      navigateTo(newUrl);
+    },
+    [navigateTo]
+  );
+
+  // * Sync analysis mode state when URL changes (e.g., from keyboard shortcut)
+  useEffect(() => {
+    const checkUrl = () => {
+      const params = new URLSearchParams(window.location.search);
+      const urlAnalysisMode = params.get("analysis") === "true";
+      if (urlAnalysisMode !== analysisMode) {
+        setAnalysisMode(urlAnalysisMode);
+      }
+    };
+
+    // * Check on mount and when URL changes
+    checkUrl();
+    window.addEventListener("popstate", checkUrl);
+    return () => window.removeEventListener("popstate", checkUrl);
+  }, [analysisMode]);
 
   // * Tournament mode: categories
   const categories = tournamentProps.categories || [];
@@ -253,7 +302,7 @@ export function NameManagementView({
       setSelectionFilter,
       // Analysis mode
       analysisMode,
-      setAnalysisMode,
+      setAnalysisMode: handleAnalysisModeToggle,
     }),
     [
       names,
@@ -322,6 +371,14 @@ export function NameManagementView({
   return (
     <NameManagementContext.Provider value={contextValue}>
       <div className={`${styles.container} ${className}`}>
+        {/* Analysis Mode Banner - Visual indicator when active */}
+        {analysisMode && mode === "tournament" && (
+          <AnalysisModeBanner
+            onClose={() => handleAnalysisModeToggle(false)}
+            showShortcut={true}
+          />
+        )}
+
         {/* Mode-specific Header */}
         {extensions.header && (
           <div className={styles.headerSection}>

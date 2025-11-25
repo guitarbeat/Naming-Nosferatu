@@ -9,6 +9,7 @@ export {
   AnalysisHighlights,
   AnalysisProgress,
   AnalysisToggle,
+  AnalysisModeBanner,
 } from "./AnalysisPanel";
 
 export { default } from "./AnalysisPanel";

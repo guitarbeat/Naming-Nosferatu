@@ -25,17 +25,11 @@ function AnalysisBadge() {
 function AnalysisHeader({ title, actions }) {
   return (
     <header className="analysis-header">
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "var(--analysis-gap-sm)",
-        }}
-      >
+      <div className="analysis-header-content">
         <AnalysisBadge />
         {title && <h2 className="analysis-title">{title}</h2>}
       </div>
-      {actions && <div className="analysis-toolbar-group">{actions}</div>}
+      {actions && <div className="analysis-header-actions">{actions}</div>}
     </header>
   );
 }
@@ -224,6 +218,28 @@ AnalysisFilter.propTypes = {
 };
 
 /**
+ * Search icon SVG component
+ */
+function SearchIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
+    </svg>
+  );
+}
+
+/**
  * Search input with icon
  * @param {Object} props
  * @param {string} props.value - Input value
@@ -234,7 +250,7 @@ export function AnalysisSearch({ value, onChange, placeholder = "Search..." }) {
   return (
     <div className="analysis-search analysis-filter">
       <span className="analysis-search-icon" aria-hidden="true">
-        🔍
+        <SearchIcon />
       </span>
       <input
         type="text"
@@ -361,6 +377,64 @@ AnalysisToggle.propTypes = {
   active: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   collapsed: PropTypes.bool,
+};
+
+/**
+ * Analysis Mode Banner - Visual indicator when Analysis Mode is active
+ * @param {Object} props
+ * @param {Function} props.onClose - Close handler (optional)
+ * @param {boolean} props.showShortcut - Whether to show keyboard shortcut hint
+ */
+export function AnalysisModeBanner({ onClose, showShortcut = true }) {
+  const isMac =
+    typeof navigator !== "undefined" &&
+    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+  const shortcutKey = isMac ? "⌘" : "Ctrl";
+
+  return (
+    <div
+      className="analysis-mode-banner"
+      role="banner"
+      aria-label="Analysis Mode Active"
+    >
+      <div className="analysis-mode-banner-content">
+        <AnalysisBadge />
+        <span className="analysis-mode-banner-text">Analysis Mode Active</span>
+        {showShortcut && (
+          <span className="analysis-mode-banner-shortcut">
+            {shortcutKey} + Shift + A
+          </span>
+        )}
+      </div>
+      {onClose && (
+        <button
+          type="button"
+          className="analysis-mode-banner-close"
+          onClick={onClose}
+          aria-label="Dismiss Analysis Mode banner"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+AnalysisModeBanner.propTypes = {
+  onClose: PropTypes.func,
+  showShortcut: PropTypes.bool,
 };
 
 export default AnalysisPanel;

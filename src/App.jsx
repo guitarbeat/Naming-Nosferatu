@@ -89,11 +89,35 @@ function App() {
         const sidebarToggleEvent = new CustomEvent("toggleSidebar");
         window.dispatchEvent(sidebarToggleEvent);
       }
+
+      // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.shiftKey &&
+        event.key === "A"
+      ) {
+        event.preventDefault();
+        // * Toggle Analysis Mode via URL parameter
+        const currentPath = window.location.pathname;
+        const currentSearch = new URLSearchParams(window.location.search);
+        const isAnalysisMode = currentSearch.get("analysis") === "true";
+
+        if (isAnalysisMode) {
+          currentSearch.delete("analysis");
+        } else {
+          currentSearch.set("analysis", "true");
+        }
+
+        const newSearch = currentSearch.toString();
+        const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
+
+        navigateTo(newUrl);
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [uiActions, isAdmin]);
+  }, [uiActions, isAdmin, navigateTo]);
 
   // * Handle tournament completion
   const handleTournamentComplete = useCallback(
