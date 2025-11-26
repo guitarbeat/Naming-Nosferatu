@@ -222,6 +222,57 @@ SUPABASE_ANON_KEY=your-anon-key
 
 **Note:** The application automatically uses environment variables if available, with hardcoded fallbacks for development only. For production, always use environment variables.
 
+### **Manual Setup (if needed)**
+
+#### **1. Create Environment File**
+
+Copy the example environment file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your actual Supabase credentials:
+
+```bash
+# Supabase Configuration
+# Get these from: https://supabase.com/dashboard > Your Project > Settings > API
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
+
+# Alternative environment variable names (for Node.js/Vercel compatibility)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
+```
+
+#### **2. Get Your Supabase Anon Key**
+
+1. Go to your Supabase project dashboard: https://supabase.com/dashboard
+2. Select your project
+3. Navigate to Settings > API
+4. Copy the "anon public" key
+5. Replace `your_actual_supabase_anon_key_here` with the actual key
+
+#### **3. Restart the Development Server**
+
+After creating the `.env.local` file:
+
+```bash
+npm run dev
+```
+
+#### **4. Verify the Setup**
+
+The application should now connect to Supabase successfully. Start the development server and check the browser console to confirm the connection.
+
+### **Alternative: Use Local Supabase**
+
+If you prefer to run Supabase locally:
+
+1. Install Supabase CLI: `npm install -g supabase`
+2. Start local Supabase: `supabase start`
+3. Use the local URLs provided by the CLI
+
 ### **Build Commands**
 
 ```bash
@@ -365,6 +416,12 @@ npm run knip:production
 1. **Check Supabase Dashboard** for service status
 2. **Verify API Keys** are correctly configured
 3. **Check Network Connectivity** and firewall settings
+
+#### **Environment Issues**
+
+1. **Make sure the `.env.local` file is in the project root directory**
+2. **Ensure there are no extra spaces or quotes around the environment variable values**
+3. **Verify your Supabase project is active and accessible**
 
 #### **Performance Issues**
 

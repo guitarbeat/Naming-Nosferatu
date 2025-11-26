@@ -15,7 +15,7 @@ const readFromViteEnv = (key) => {
   try {
     // Vite replaces import.meta.env at build time in the browser
     // Guard access so Node does not error
-    // eslint-disable-next-line no-undef
+
     return typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env[key] : undefined;
   } catch {
     return undefined;
@@ -567,7 +567,7 @@ export const catNamesAPI = {
       }
 
       // Use materialized view for 5x performance improvement
-      let query = supabase
+      const query = supabase
         .from('leaderboard_stats')
         .select('*')
         .gte('total_ratings', minTournaments);
@@ -707,7 +707,7 @@ export const catNamesAPI = {
           user_rating: userRating?.rating || null,
           user_wins: userRating?.wins || 0,
           user_losses: userRating?.losses || 0,
-          isHidden: isHidden,
+          isHidden,
           updated_at: userRating?.updated_at || null,
           has_user_rating: !!userRating?.rating
         };
@@ -1479,7 +1479,7 @@ export const tournamentsAPI = {
           const updatedTournaments = [...user.tournament_data];
           updatedTournaments[tournamentIndex] = {
             ...updatedTournaments[tournamentIndex],
-            status: status,
+            status,
             updated_at: new Date().toISOString()
           };
 
@@ -2302,9 +2302,9 @@ export { siteSettingsAPI } from './siteSettingsAPI.js';
 // ===== LEGACY EXPORTS (for backward compatibility) =====
 
 // Keep these for existing code that might still use them
-export const getNamesWithDescriptions = catNamesAPI.getNamesWithDescriptions;
-export const getNamesWithUserRatings = catNamesAPI.getNamesWithUserRatings;
-export const getUserStats = catNamesAPI.getUserStats;
-export const addRatingHistory = ratingsAPI.addRatingHistory;
-export const updateRating = ratingsAPI.updateRating;
-export const getRatingHistory = ratingsAPI.getRatingHistory;
+export const {getNamesWithDescriptions} = catNamesAPI;
+export const {getNamesWithUserRatings} = catNamesAPI;
+export const {getUserStats} = catNamesAPI;
+export const {addRatingHistory} = ratingsAPI;
+export const {updateRating} = ratingsAPI;
+export const {getRatingHistory} = ratingsAPI;

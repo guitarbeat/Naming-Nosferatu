@@ -15,7 +15,7 @@ export {
   getNamesWithDescriptions,
   getNamesWithUserRatings,
   getUserStats,
-} from "../../../backend/api/supabaseClient";
+} from "./legacy/supabaseClient";
 
 // * Import imagesAPI separately to avoid circular dependency
-export { imagesAPI } from "../../../backend/api/supabaseClient";
+export { imagesAPI } from "./legacy/supabaseClient";

@@ -7,7 +7,6 @@ import React, {
   useState,
   useCallback,
   useMemo,
-  useRef,
   useEffect,
 } from "react";
 import PropTypes from "prop-types";
@@ -17,8 +16,6 @@ import {
   Error,
   AnalysisDashboard,
   AnalysisBulkActions,
-  AnalysisPanel,
-  AnalysisProgress,
 } from "../../shared/components";
 import { useRouting } from "@hooks/useRouting";
 import { useImageGallery, useAdminStatus, useCategoryFilters } from "./hooks";
@@ -162,7 +159,7 @@ function TournamentSetupContent({
     // * Only show bulk actions when analysis mode is active
     if (!context.analysisMode) return null;
 
-    const selectedCount = context.selectedCount;
+    const {selectedCount} = context;
     // * Ensure selectedNames is a Set (handle case where it might be an array or undefined)
     const selectedNames =
       context.selectedNames instanceof Set

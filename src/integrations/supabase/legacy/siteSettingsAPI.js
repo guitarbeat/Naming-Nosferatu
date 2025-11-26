@@ -75,7 +75,7 @@ export const siteSettingsAPI = {
         ...middleNames,
         nameData.last_name ? nameData.last_name.trim() : ''
       ].filter(Boolean);
-      
+
       const displayName = nameParts.join(' ');
 
       // Prepare value object
@@ -92,8 +92,8 @@ export const siteSettingsAPI = {
       // Update the setting (RLS will enforce admin-only)
       const { data, error } = await supabase
         .from('site_settings')
-        .update({ 
-          value: value,
+        .update({
+          value,
           updated_by: userName
         })
         .eq('key', 'cat_chosen_name')
@@ -102,18 +102,18 @@ export const siteSettingsAPI = {
 
       if (error) {
         console.error('Error updating cat chosen name:', error);
-        return { 
-          success: false, 
-          error: error.message || 'Failed to update cat name' 
+        return {
+          success: false,
+          error: error.message || 'Failed to update cat name'
         };
       }
 
       return { success: true, data: data.value };
     } catch (error) {
       console.error('Error in updateCatChosenName:', error);
-      return { 
-        success: false, 
-        error: error.message || 'Unknown error occurred' 
+      return {
+        success: false,
+        error: error.message || 'Unknown error occurred'
       };
     }
   }
