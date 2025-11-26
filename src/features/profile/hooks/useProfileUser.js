@@ -6,7 +6,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { isUserAdmin } from "../../../shared/utils/authUtils";
-import { adminAPI } from "../../../integrations/supabase/api";
+import { adminAPI } from "../../../shared/services/supabase/api";
 
 /**
  * * Hook for managing user state and admin functionality

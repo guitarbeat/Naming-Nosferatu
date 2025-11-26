@@ -3,7 +3,7 @@
  * @description API functions for authentication and role management
  */
 
-import { resolveSupabaseClient } from "@/integrations/supabase/client";
+import { resolveSupabaseClient } from "@/shared/services/supabase/client";
 import { USER_ROLES, ROLE_SOURCES } from "./authConstants";
 import { normalizeRole, compareRoles } from "./authValidation";
 import {
@@ -66,7 +66,7 @@ const getRoleSourceOrder = (state) => {
 
   const preferred =
     state.preferredRoleSource &&
-      !state.disabledSources.has(state.preferredRoleSource)
+    !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 

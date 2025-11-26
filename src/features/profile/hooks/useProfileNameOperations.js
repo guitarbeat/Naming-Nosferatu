@@ -4,8 +4,11 @@
  */
 
 import { useState, useCallback } from "react";
-import { resolveSupabaseClient } from "../../../integrations/supabase/client";
-import { deleteName, hiddenNamesAPI } from "../../../integrations/supabase/api";
+import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
+import {
+  deleteName,
+  hiddenNamesAPI,
+} from "../../../shared/services/supabase/api";
 
 /**
  * * Hook for managing name operations
@@ -84,8 +87,8 @@ export function useProfileNameOperations(
         setAllNames((prev) =>
           Array.isArray(prev)
             ? prev.map((n) =>
-              n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
-            )
+                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
+              )
             : prev,
         );
 
@@ -185,7 +188,9 @@ export function useProfileNameOperations(
 
         if (!supabaseClient) {
           if (process.env.NODE_ENV === "development") {
-            console.warn("Supabase not configured, cannot perform bulk operation");
+            console.warn(
+              "Supabase not configured, cannot perform bulk operation",
+            );
           }
           showError("Database not available");
           return;
@@ -224,7 +229,10 @@ export function useProfileNameOperations(
           showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
         }
       } catch (error) {
-        console.error(`Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`, error);
+        console.error(
+          `Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`,
+          error,
+        );
         showToast(`Failed to ${isHide ? "hide" : "unhide"} names`, "error");
         showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
       }
@@ -243,12 +251,7 @@ export function useProfileNameOperations(
   // * Handle bulk hide operation
   const handleBulkHide = useCallback(
     (nameIds) =>
-      performBulkOperation(
-        nameIds,
-        hiddenNamesAPI.hideNames,
-        "Hidden",
-        true
-      ),
+      performBulkOperation(nameIds, hiddenNamesAPI.hideNames, "Hidden", true),
     [performBulkOperation],
   );
 
@@ -259,7 +262,7 @@ export function useProfileNameOperations(
         nameIds,
         hiddenNamesAPI.unhideNames,
         "Unhidden",
-        false
+        false,
       ),
     [performBulkOperation],
   );

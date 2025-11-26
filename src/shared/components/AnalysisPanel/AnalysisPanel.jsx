@@ -101,7 +101,7 @@ AnalysisStats.propTypes = {
         .isRequired,
       label: PropTypes.string.isRequired,
       accent: PropTypes.bool,
-    })
+    }),
   ).isRequired,
 };
 
@@ -308,9 +308,9 @@ AnalysisHighlights.propTypes = {
           name: PropTypes.string.isRequired,
           value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
             .isRequired,
-        })
+        }),
       ).isRequired,
-    })
+    }),
   ),
 };
 

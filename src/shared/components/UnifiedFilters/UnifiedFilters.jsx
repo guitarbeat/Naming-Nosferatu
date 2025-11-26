@@ -211,7 +211,7 @@ export function UnifiedFilters({
                       "sortOrder",
                       filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
                         ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC
+                        : FILTER_OPTIONS.ORDER.ASC,
                     )
                   }
                   className={styles.sortOrderButton}
@@ -369,7 +369,7 @@ export function UnifiedFilters({
                     "sortOrder",
                     filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
                       ? FILTER_OPTIONS.ORDER.DESC
-                      : FILTER_OPTIONS.ORDER.ASC
+                      : FILTER_OPTIONS.ORDER.ASC,
                   )
                 }
                 className={styles.sortOrderButton}
@@ -409,7 +409,7 @@ UnifiedFilters.propTypes = {
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ),
   className: PropTypes.string,
 };

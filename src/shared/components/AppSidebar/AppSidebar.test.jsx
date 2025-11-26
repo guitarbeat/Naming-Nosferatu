@@ -21,8 +21,8 @@ describe("AppSidebar", () => {
             onThemeChange={vi.fn()}
             onTogglePerformanceDashboard={vi.fn()}
           />
-        </SidebarProvider>
-      )
+        </SidebarProvider>,
+      ),
     ).not.toThrow();
 
     // Test that main navigation elements are present

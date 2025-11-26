@@ -193,7 +193,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .searchBar {
     flex-direction: column;
   }
@@ -216,7 +216,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .filtersContainer {
     padding: var(--space-3);
   }

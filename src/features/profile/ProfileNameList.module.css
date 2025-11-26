@@ -42,13 +42,13 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .container {
     gap: var(--space-4);
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .emptyState {
     padding: var(--space-6);
   }

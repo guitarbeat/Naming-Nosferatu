@@ -5,11 +5,11 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { resolveSupabaseClient } from "../../integrations/supabase/client";
+import { resolveSupabaseClient } from "../../shared/services/supabase/client";
 import {
   getNamesWithDescriptions,
   getNamesWithUserRatings,
-} from "../../integrations/supabase/api";
+} from "../../shared/services/supabase/api";
 import { devLog } from "../../shared/utils/coreUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { FALLBACK_NAMES } from "../../features/tournament/constants";
@@ -22,7 +22,11 @@ import { FALLBACK_NAMES } from "../../features/tournament/constants";
  * @param {boolean} options.enableErrorHandling - Whether to use ErrorManager (default: true)
  * @returns {Object} Name data state and handlers
  */
-export function useNameData({ userName, mode = "tournament", enableErrorHandling = true }) {
+export function useNameData({
+  userName,
+  mode = "tournament",
+  enableErrorHandling = true,
+}) {
   const [names, setNames] = useState([]);
   const [hiddenIds, setHiddenIds] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
@@ -219,9 +223,7 @@ export function useNameData({ userName, mode = "tournament", enableErrorHandling
       // * Filter out hidden names (tournament mode only - profile shows all)
       let filteredNames = namesData;
       if (mode === "tournament") {
-        filteredNames = namesData.filter(
-          (name) => !hiddenIdsSet.has(name.id),
-        );
+        filteredNames = namesData.filter((name) => !hiddenIdsSet.has(name.id));
       }
 
       // * Sort names alphabetically for better UX
@@ -230,11 +232,14 @@ export function useNameData({ userName, mode = "tournament", enableErrorHandling
       );
 
       if (process.env.NODE_ENV === "development") {
-        devLog(`🎮 ${mode === "tournament" ? "TournamentSetup" : "Profile"}: Data loaded`, {
-          availableNames: sortedNames.length,
-          hiddenNames: hiddenIdsSet.size,
-          mode,
-        });
+        devLog(
+          `🎮 ${mode === "tournament" ? "TournamentSetup" : "Profile"}: Data loaded`,
+          {
+            availableNames: sortedNames.length,
+            hiddenNames: hiddenIdsSet.size,
+            mode,
+          },
+        );
       }
 
       setNames(sortedNames);

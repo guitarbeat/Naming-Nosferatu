@@ -72,7 +72,7 @@ const mockSupabase = {
   })),
 };
 
-vi.mock("../integrations/supabase/client", () => ({
+vi.mock("../shared/services/supabase/client", () => ({
   supabase: mockSupabase,
 }));
 

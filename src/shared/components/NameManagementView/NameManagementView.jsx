@@ -33,7 +33,7 @@ export function useNameManagementContext() {
   const context = useContext(NameManagementContext);
   if (!context) {
     throw new Error(
-      "useNameManagementContext must be used within NameManagementView"
+      "useNameManagementContext must be used within NameManagementView",
     );
   }
   return context;
@@ -90,7 +90,6 @@ export function NameManagementView({
     toggleName,
     toggleNameById,
     selectAll,
-    clearSelection,
     selectedCount,
   } = useNameSelection({
     names,
@@ -117,7 +116,7 @@ export function NameManagementView({
   const [userFilter, setUserFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectionFilter, setSelectionFilter] = useState("all");
-  const [filteredCount, setFilteredCount] = useState(0);
+  const [filteredCount] = useState(0);
 
   // * Routing hook for URL updates
   const { navigateTo } = useRouting();
@@ -125,10 +124,10 @@ export function NameManagementView({
   // * Analysis mode: toggle for showing profile features in tournament mode
   // * Initialize from URL parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const [analysisMode, setAnalysisMode] = useState(
-    urlParams.get("analysis") === "true"
+    urlParams.get("analysis") === "true",
   );
 
   // * Sync analysis mode with URL
@@ -149,7 +148,7 @@ export function NameManagementView({
 
       navigateTo(newUrl);
     },
-    [navigateTo]
+    [navigateTo],
   );
 
   // * Sync analysis mode state when URL changes (e.g., from keyboard shortcut)
@@ -262,7 +261,7 @@ export function NameManagementView({
         }
       }
     },
-    [mode, analysisMode]
+    [mode, analysisMode],
   );
 
   // * Context value for extensions
@@ -326,7 +325,8 @@ export function NameManagementView({
       sortOrder,
       selectionFilter,
       analysisMode,
-    ]
+      handleAnalysisModeToggle,
+    ],
   );
 
   // * Loading state - check after all hooks
@@ -497,7 +497,7 @@ export function NameManagementView({
                 style={{
                   width: `${Math.max(
                     (selectedCount / Math.max(names.length, 1)) * 100,
-                    5
+                    5,
                   )}%`,
                 }}
               />

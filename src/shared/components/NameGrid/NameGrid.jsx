@@ -54,7 +54,9 @@ export function NameGrid({
   const selectedSet = useMemo(() => {
     if (Array.isArray(selectedNames)) {
       return new Set(
-        selectedNames.map((item) => (typeof item === "object" ? item.id : item))
+        selectedNames.map((item) =>
+          typeof item === "object" ? item.id : item,
+        ),
       );
     }
     return selectedNames instanceof Set ? selectedNames : new Set();
@@ -81,7 +83,7 @@ export function NameGrid({
   const getRandomCatImage = (nameId) => {
     if (!showCatPictures || imageList.length === 0) return undefined;
     const index = Math.abs(
-      nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
     );
     return imageList[index % imageList.length];
   };
@@ -166,7 +168,7 @@ export function NameGrid({
                           ? Math.round(
                               (nameObj.user_wins /
                                 (nameObj.user_wins + nameObj.user_losses)) *
-                                100
+                                100,
                             )
                           : 0,
                       totalMatches:

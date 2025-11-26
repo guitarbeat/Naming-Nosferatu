@@ -41,7 +41,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .bulkActionsContainer {
     flex-direction: column;
     align-items: stretch;
@@ -56,7 +56,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .bulkActionsContainer {
     padding: var(--space-3);
   }

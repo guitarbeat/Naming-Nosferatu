@@ -48,7 +48,7 @@ function safeLazyImport(importFn, fallbackComponent) {
       } catch {
         // * If error can't be stringified, create a safe replacement
         const safeError = new Error(
-          error?.message || String(error) || "Module load failed"
+          error?.message || String(error) || "Module load failed",
         );
         safeError.name = error?.name || "LoadError";
         safeError.stack = error?.stack || "";
@@ -83,8 +83,8 @@ const Tournament = lazy(() =>
             "Try refreshing the page or returning to the setup screen to start a new tournament.",
         }}
       />
-    )
-  )
+    ),
+  ),
 );
 const TournamentSetup = lazy(() =>
   safeLazyImport(
@@ -100,8 +100,8 @@ const TournamentSetup = lazy(() =>
             "Please try refreshing the page. If the problem persists, check your internet connection or contact support.",
         }}
       />
-    )
-  )
+    ),
+  ),
 );
 const Results = lazy(() =>
   safeLazyImport(
@@ -117,16 +117,16 @@ const Results = lazy(() =>
             "Try refreshing the page. If you just completed a tournament, you can check your profile to see your saved results.",
         }}
       />
-    )
-  )
+    ),
+  ),
 );
 const BongoPage = lazy(() =>
   safeLazyImport(
     () => import("@features/bongo/BongoPage"),
     () => (
       <Error variant="list" error={{ message: "Failed to load Bongo Page" }} />
-    )
-  )
+    ),
+  ),
 );
 
 export default function ViewRouter({
@@ -140,7 +140,15 @@ export default function ViewRouter({
   onTournamentComplete,
   onVote,
 }) {
-  const { isRoute, navigateTo, currentRoute } = useRouting();
+  const { isRoute, navigateTo } = useRouting();
+
+  // * Redirect /profile to /tournament?analysis=true (deprecated route)
+  // * Must be called unconditionally (Rules of Hooks)
+  useEffect(() => {
+    if (isRoute("/profile")) {
+      navigateTo("/tournament?analysis=true", { replace: true });
+    }
+  }, [isRoute, navigateTo]);
 
   // Handle special routes first
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
@@ -158,14 +166,6 @@ export default function ViewRouter({
   if (!isLoggedIn) {
     return <Login onLogin={onLogin} />;
   }
-
-  // * Redirect /profile to /tournament?analysis=true (deprecated route)
-  // * Must be called unconditionally (Rules of Hooks)
-  useEffect(() => {
-    if (isRoute("/profile")) {
-      navigateTo("/tournament?analysis=true", { replace: true });
-    }
-  }, [isRoute, navigateTo]);
 
   if (tournament.names === null) {
     return (

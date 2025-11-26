@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, memo, useMemo, useRef, useEffect } from "react";
-import { catNamesAPI } from "../../../integrations/supabase/api";
+import { catNamesAPI } from "../../../shared/services/supabase/api";
 import {
   validateCatName,
   validateDescription,

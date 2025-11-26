@@ -26,7 +26,7 @@
   color: var(--text-primary);
   background: var(--gradient-primary);
   background-clip: text;
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: var(--leading-tight);
 }
@@ -181,7 +181,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .profileContainer {
     padding: var(--space-4);
     gap: var(--space-4);
@@ -223,7 +223,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .profileContainer {
     padding: var(--space-3);
   }

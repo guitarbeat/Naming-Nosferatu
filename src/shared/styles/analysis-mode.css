@@ -175,6 +175,7 @@
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.5;
     transform: scale(0.8);
@@ -564,7 +565,7 @@
 .analysis-toggle-indicator {
   width: 8px;
   height: 8px;
-  background: currentColor;
+  background: currentcolor;
   border-radius: var(--analysis-radius-full);
   opacity: 0.5;
   transition:
@@ -646,7 +647,7 @@
   background: var(--analysis-surface-elevated);
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .analysis-panel {
     padding: var(--analysis-gap-md);
     border-radius: var(--analysis-radius-lg);
@@ -680,7 +681,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .analysis-stats {
     grid-template-columns: 1fr;
   }

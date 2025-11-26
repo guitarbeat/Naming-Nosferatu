@@ -6,7 +6,7 @@ import {
   getMediaQueryList,
   getMediaQueryMatches,
 } from "../../shared/utils/mediaQueries";
-import { siteSettingsAPI } from "../../integrations/supabase/api";
+import { siteSettingsAPI } from "../../shared/services/supabase/api";
 
 const THEME_STORAGE_KEY = "theme";
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
@@ -262,7 +262,6 @@ const useAppStore = create(
               currentView: "tournament", // * Reset view to allow starting new tournament
             },
           })),
-
 
         setView: (view) =>
           set((state) => ({

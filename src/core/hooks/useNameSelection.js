@@ -5,8 +5,8 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { resolveSupabaseClient } from "../../integrations/supabase/client";
-import { tournamentsAPI } from "../../integrations/supabase/api";
+import { resolveSupabaseClient } from "../../shared/services/supabase/client";
+import { tournamentsAPI } from "../../shared/services/supabase/api";
 import { devLog } from "../../shared/utils/coreUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 
@@ -102,6 +102,8 @@ export function useNameSelection({
     [mode, userName, enableAutoSave, saveTournamentSelections],
   );
 
+  const lastLogTsRef = useRef(0);
+
   // * Tournament mode: toggle name object
   // * Profile mode: toggle name ID
   const toggleName = useCallback(
@@ -114,14 +116,14 @@ export function useNameSelection({
             : [...prev, nameOrId];
 
           // Log the updated selected names (throttled)
-          if (
-            !toggleName.lastLogTs ||
-            Date.now() - toggleName.lastLogTs > 1000
-          ) {
+          if (Date.now() - lastLogTsRef.current > 1000) {
             if (process.env.NODE_ENV === "development") {
-              devLog("🎮 TournamentSetup: Selected names updated", newSelectedNames);
+              devLog(
+                "🎮 TournamentSetup: Selected names updated",
+                newSelectedNames,
+              );
             }
-            toggleName.lastLogTs = Date.now();
+            lastLogTsRef.current = Date.now();
           }
 
           // Debounce save of selections to database

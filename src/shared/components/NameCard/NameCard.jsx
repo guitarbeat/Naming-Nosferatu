@@ -200,7 +200,8 @@ function NameCard({
     .filter(Boolean)
     .join(" ");
 
-  const isInteractive = !disabled && (onClick || (isAdmin && onSelectionChange));
+  const isInteractive =
+    !disabled && (onClick || (isAdmin && onSelectionChange));
   const Component = isInteractive ? "button" : "div";
 
   return (

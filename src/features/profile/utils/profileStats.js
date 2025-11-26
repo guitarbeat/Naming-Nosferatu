@@ -3,11 +3,11 @@
  * @description Utility functions for calculating profile statistics and insights.
  */
 
-import { resolveSupabaseClient } from "../../../integrations/supabase/client";
+import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
 import {
   getUserStats,
   tournamentsAPI,
-} from "../../../integrations/supabase/api";
+} from "../../../shared/services/supabase/api";
 
 /**
  * * Use database-optimized stats calculation

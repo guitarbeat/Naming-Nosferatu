@@ -3,7 +3,7 @@
  * @description Cat Names Management API functions
  */
 
-import { supabase } from './supabaseClientIsolated.js';
+import { supabase } from "./supabaseClientIsolated.js";
 
 /**
  * Check if Supabase is configured and available
@@ -11,8 +11,8 @@ import { supabase } from './supabaseClientIsolated.js';
  */
 const isSupabaseAvailable = () => {
   if (!supabase) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Supabase not configured. Some features may not work.');
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Supabase not configured. Some features may not work.");
     }
     return false;
   }
@@ -32,45 +32,52 @@ export const catNamesAPI = {
       // Get ALL hidden name IDs globally (not user-specific)
       let hiddenIds = [];
       const { data: hiddenData, error: hiddenError } = await supabase
-        .from('cat_name_ratings')
-        .select('name_id')
-        .eq('is_hidden', true);
+        .from("cat_name_ratings")
+        .select("name_id")
+        .eq("is_hidden", true);
 
       if (hiddenError) {
-        console.error('Error fetching hidden names:', hiddenError);
+        console.error("Error fetching hidden names:", hiddenError);
       } else if (hiddenData) {
-        hiddenIds = hiddenData.map(item => item.name_id);
+        hiddenIds = hiddenData.map((item) => item.name_id);
       }
 
       // Get all names with their descriptions, excluding hidden ones when present
-      let namesQuery = supabase.from('cat_names').select('*');
+      let namesQuery = supabase.from("cat_names").select("*");
 
       if (hiddenIds.length > 0) {
-        const quotedHiddenIds = hiddenIds.map(id => {
+        const quotedHiddenIds = hiddenIds.map((id) => {
           const stringId = String(id);
           const escapedId = stringId.replace(/'/g, "''");
           return `'${escapedId}'`;
         });
 
-        namesQuery = namesQuery.not('id', 'in', `(${quotedHiddenIds.join(',')})`);
+        namesQuery = namesQuery.not(
+          "id",
+          "in",
+          `(${quotedHiddenIds.join(",")})`,
+        );
       }
 
-      const { data: namesData, error: namesError } = await namesQuery.order('name', {
-        ascending: true,
-      });
+      const { data: namesData, error: namesError } = await namesQuery.order(
+        "name",
+        {
+          ascending: true,
+        },
+      );
 
       if (namesError) {
-        console.error('Error fetching names from cat_names:', namesError);
-        console.error('Error details:', {
+        console.error("Error fetching names from cat_names:", namesError);
+        console.error("Error details:", {
           message: namesError.message,
           code: namesError.code,
-          details: namesError.details
+          details: namesError.details,
         });
       }
 
       return namesData || [];
     } catch (error) {
-      console.error('Error in getNamesWithDescriptions:', error);
+      console.error("Error in getNamesWithDescriptions:", error);
       return [];
     }
   },
@@ -85,12 +92,12 @@ export const catNamesAPI = {
       }
 
       const { data, error } = await supabase
-        .from('cat_name_ratings')
-        .select('*')
-        .eq('user_name', userName);
+        .from("cat_name_ratings")
+        .select("*")
+        .eq("user_name", userName);
 
       if (error) {
-        console.error('Error fetching user stats:', error);
+        console.error("Error fetching user stats:", error);
         return null;
       }
 
@@ -101,16 +108,17 @@ export const catNamesAPI = {
           total_losses: 0,
           win_rate: 0,
           avg_rating: 0,
-          hidden_count: 0
+          hidden_count: 0,
         };
       }
 
       const totalRatings = data.length;
-      const wins = data.filter(r => r.is_winner).length;
-      const losses = data.filter(r => !r.is_winner).length;
-      const hiddenCount = data.filter(r => r.is_hidden).length;
+      const wins = data.filter((r) => r.is_winner).length;
+      const losses = data.filter((r) => !r.is_winner).length;
+      const hiddenCount = data.filter((r) => r.is_hidden).length;
       const winRate = totalRatings > 0 ? (wins / totalRatings) * 100 : 0;
-      const avgRating = data.reduce((sum, r) => sum + (r.rating || 0), 0) / totalRatings;
+      const avgRating =
+        data.reduce((sum, r) => sum + (r.rating || 0), 0) / totalRatings;
 
       return {
         total_ratings: totalRatings,
@@ -118,11 +126,11 @@ export const catNamesAPI = {
         total_losses: losses,
         win_rate: winRate,
         avg_rating: avgRating,
-        hidden_count: hiddenCount
+        hidden_count: hiddenCount,
       };
     } catch (error) {
-      console.error('Error in getUserStats:', error);
+      console.error("Error in getUserStats:", error);
       return null;
     }
-  }
+  },
 };

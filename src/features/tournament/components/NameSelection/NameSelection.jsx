@@ -15,7 +15,6 @@ function NameSelection({
   onToggleName,
   isAdmin,
   // Admin-only props
-  categories,
   selectedCategory,
   onCategoryChange: _onCategoryChange,
   searchTerm,
@@ -38,7 +37,7 @@ function NameSelection({
     });
     return showSelectedOnly
       ? filtered.filter((name) =>
-          selectedNames.some((selected) => selected.id === name.id)
+          selectedNames.some((selected) => selected.id === name.id),
         )
       : filtered;
   }, [

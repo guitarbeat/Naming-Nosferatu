@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 
 import { Card, Error } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
-import { siteSettingsAPI } from "../../integrations/supabase/api";
+import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { ErrorManager } from "../../shared/services/errorManager";
 import CatNameBanner from "../home/CatNameBanner";
 import BongoCat from "../../shared/components/BongoCat/BongoCat";

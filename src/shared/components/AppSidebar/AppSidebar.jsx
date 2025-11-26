@@ -139,7 +139,7 @@ export function AppSidebar({
                     // * Toggle analysis mode via URL parameter
                     const currentPath = window.location.pathname;
                     const currentSearch = new URLSearchParams(
-                      window.location.search
+                      window.location.search,
                     );
 
                     if (isAnalysisMode) {
