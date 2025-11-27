@@ -4,7 +4,7 @@
  */
 import { useState, useCallback, memo } from "react";
 import PropTypes from "prop-types";
-import useTiltEffect from "@/core/hooks/useTiltEffect";
+import { useTiltEffect } from "@/core/hooks/useTiltEffect";
 import { GALLERY_IMAGE_SIZES } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
 

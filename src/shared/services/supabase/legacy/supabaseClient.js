@@ -820,21 +820,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-              a[1] > b[1] ? a : b,
-            )[0]
+            a[1] > b[1] ? a : b,
+          )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
 
       return {
@@ -927,209 +927,7 @@ export const catNamesAPI = {
   },
 };
 
-/**
- * User Ratings Management
- */
-export const ratingsAPI = {
-  /**
-   * Update user rating for a name
-   */
-  async updateRating(
-    userName,
-    nameId,
-    newRating,
-    outcome = null,
-    context = "tournament",
-  ) {
-    const now = new Date().toISOString();
 
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return { success: false, error: "Supabase not configured" };
-      }
-
-      // Get existing rating data
-      const { data: existingData, error: fetchError } = await supabase
-        .from("cat_name_ratings")
-        .select("rating, wins, losses, updated_at")
-        .eq("user_name", userName)
-        .eq("name_id", nameId)
-        .single();
-
-      if (fetchError && fetchError.code !== "PGRST116") {
-        throw fetchError;
-      }
-
-      // Calculate new values
-      const currentRating = existingData?.rating || 1500;
-      let wins = existingData?.wins || 0;
-      let losses = existingData?.losses || 0;
-
-      if (outcome === "win") wins += 1;
-      else if (outcome === "loss") losses += 1;
-
-      // Record to rating history
-      await this.addRatingHistory(
-        userName,
-        nameId,
-        currentRating,
-        newRating,
-        context,
-      );
-
-      // Update rating
-      const { error } = await supabase.from("cat_name_ratings").upsert(
-        {
-          user_name: userName,
-          name_id: nameId,
-          rating: newRating,
-          wins,
-          losses,
-          updated_at: now,
-        },
-        { onConflict: "user_name,name_id", returning: "minimal" },
-      );
-
-      if (error) {
-        console.error("Error updating rating:", error);
-        return {
-          success: false,
-          error: error.message || "Failed to update rating",
-        };
-      }
-
-      return {
-        success: true,
-        rating: newRating,
-        previous_rating: currentRating,
-        change: newRating - currentRating,
-        wins,
-        losses,
-        updated_at: now,
-      };
-    } catch (error) {
-      if (isDev) {
-        console.error("Error updating rating:", error);
-      }
-      return {
-        success: false,
-        error: error.message || "Unknown error occurred",
-      };
-    }
-  },
-
-  /**
-   * Get rating history for a user from the consolidated cat_name_ratings table
-   */
-  async getRatingHistory(userName, nameId = null, limit = 20) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      let query = supabase
-        .from("cat_name_ratings")
-        .select("rating_history")
-        .eq("user_name", userName)
-        .not("rating_history", "is", null);
-
-      if (nameId) {
-        query = query.eq("name_id", nameId);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        console.error("Error fetching rating history:", error);
-        return [];
-      }
-
-      // Extract and flatten rating history from JSONB
-      const allHistory =
-        data
-          ?.map((item) => item.rating_history || [])
-          .flat()
-          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-          .slice(0, limit) || [];
-
-      return allHistory;
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching rating history:", error);
-      }
-      return [];
-    }
-  },
-
-  /**
-   * Add rating history entry
-   */
-  async addRatingHistory(
-    userName,
-    nameId,
-    oldRating,
-    newRating,
-    context = "manual",
-  ) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return { success: false, error: "Supabase not configured" };
-      }
-
-      // Get name from name_id
-      const { data: nameData } = await supabase
-        .from("cat_name_options")
-        .select("name")
-        .eq("id", nameId)
-        .single();
-
-      // Get existing rating data to update the rating_history JSONB column
-      const { data: existingRating, error: fetchError } = await supabase
-        .from("cat_name_ratings")
-        .select("rating_history")
-        .eq("user_name", userName)
-        .eq("name_id", nameId)
-        .single();
-
-      if (fetchError && fetchError.code !== "PGRST116") {
-        throw fetchError;
-      }
-
-      // Prepare new history entry
-      const newHistoryEntry = {
-        user_name: userName,
-        name_id: nameId,
-        name: nameData?.name || "Unknown",
-        old_rating: oldRating,
-        new_rating: newRating,
-        change: newRating - (oldRating || 0),
-        context,
-        timestamp: new Date().toISOString(),
-      };
-
-      // Update or insert the rating_history in cat_name_ratings
-      const { error } = await supabase.from("cat_name_ratings").upsert(
-        {
-          user_name: userName,
-          name_id: nameId,
-          rating_history: existingRating?.rating_history
-            ? [...existingRating.rating_history, newHistoryEntry]
-            : [newHistoryEntry],
-        },
-        {
-          onConflict: "user_name,name_id",
-        },
-      );
-
-      if (error) throw error;
-      return { success: true };
-    } catch (error) {
-      if (isDev) {
-        console.error("Error saving rating history:", error);
-      }
-      throw error;
-    }
-  },
-};
 
 /**
  * Hidden Names Management
@@ -1961,178 +1759,9 @@ export const tournamentsAPI = {
   },
 };
 
-/**
- * User Preferences Management
- */
-export const userPreferencesAPI = {
-  /**
-   * Get user preferences (updated for consolidated schema)
-   */
-  async getPreferences(userName) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return {
-          user_name: userName,
-          preferred_categories: [],
-          tournament_size_preference: 8,
-          rating_display_preference: "elo",
-          sound_enabled: true,
-          theme_preference: "dark",
-        };
-      }
 
-      // First try to get preferences from the preferences column
-      const { data, error } = await supabase
-        .from("cat_app_users")
-        .select("preferences")
-        .eq("user_name", userName)
-        .single();
 
-      if (error && error.code !== "PGRST116") {
-        // If it's a column doesn't exist error, return defaults
-        if (error.code === "42703") {
-          console.warn(
-            "Preferences column not found, returning defaults. Run the migration to add the column.",
-          );
-          return {
-            user_name: userName,
-            preferred_categories: [],
-            tournament_size_preference: 8,
-            rating_display_preference: "elo",
-            sound_enabled: true,
-            theme_preference: "dark",
-          };
-        }
-        throw error;
-      }
 
-      // Return preferences if they exist, otherwise return defaults
-      return (
-        data?.preferences || {
-          user_name: userName,
-          preferred_categories: [],
-          tournament_size_preference: 8,
-          rating_display_preference: "elo",
-          sound_enabled: true,
-          theme_preference: "dark",
-        }
-      );
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching preferences:", error);
-      }
-      // Return defaults on any error to prevent app crashes
-      return {
-        user_name: userName,
-        preferred_categories: [],
-        tournament_size_preference: 8,
-        rating_display_preference: "elo",
-        sound_enabled: true,
-        theme_preference: "dark",
-      };
-    }
-  },
-
-  /**
-   * Update user preferences (updated for consolidated schema)
-   */
-  async updatePreferences(userName, preferences) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return preferences;
-      }
-
-      // Update preferences in the consolidated cat_app_users table
-      const { data, error } = await supabase
-        .from("cat_app_users")
-        .upsert(
-          {
-            user_name: userName,
-            preferences: {
-              ...preferences,
-              updated_at: new Date().toISOString(),
-            },
-          },
-          { onConflict: "user_name" },
-        )
-        .select()
-        .single();
-
-      if (error) {
-        // If it's a column doesn't exist error, log warning and return preferences
-        if (error.code === "42703") {
-          console.warn(
-            "Preferences column not found, cannot save preferences. Run the migration to add the column.",
-          );
-          return preferences;
-        }
-        throw error;
-      }
-      return data?.preferences;
-    } catch (error) {
-      if (isDev) {
-        console.error("Error updating preferences:", error);
-      }
-      // Return the preferences object on error to prevent app crashes
-      return preferences;
-    }
-  },
-};
-
-/**
- * Categories Management
- */
-export const categoriesAPI = {
-  /**
-   * Get all categories
-   */
-  async getCategories() {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      // Get categories from the consolidated cat_name_options table
-      const { data, error } = await supabase
-        .from("cat_name_options")
-        .select("categories")
-        .not("categories", "is", null);
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching categories:", error);
-      }
-      return [];
-    }
-  },
-
-  /**
-   * Get names by category using optimized function with partial index
-   */
-  async getNamesByCategory(categoryId, limit = 100) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      // Use optimized function with partial index
-      const { data, error } = await supabase.rpc("get_top_names_by_category", {
-        p_category: categoryId,
-        p_limit: limit,
-      });
-
-      if (error) throw error;
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching names by category:", error);
-      }
-      return [];
-    }
-  },
-};
 
 // ===== UTILITY FUNCTIONS =====
 
@@ -2365,6 +1994,4 @@ export { siteSettingsAPI } from "./siteSettingsAPI.js";
 export const { getNamesWithDescriptions } = catNamesAPI;
 export const { getNamesWithUserRatings } = catNamesAPI;
 export const { getUserStats } = catNamesAPI;
-export const { addRatingHistory } = ratingsAPI;
-export const { updateRating } = ratingsAPI;
-export const { getRatingHistory } = ratingsAPI;
+

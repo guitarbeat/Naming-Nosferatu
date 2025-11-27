@@ -31,20 +31,11 @@ function StartButton({ selectedNames, onStart, variant = "default" }) {
   };
 
   const handleStart = () => {
-    console.log(
-      "[DEV] 🎮 StartButton: handleStart called with selectedNames:",
-      selectedNames,
-    );
-
     if (!validateNames(selectedNames)) {
       console.error("Invalid name objects detected:", selectedNames);
       return;
     }
 
-    console.log(
-      "[DEV] 🎮 StartButton: Calling onStart with validated names:",
-      selectedNames,
-    );
     onStart(selectedNames);
   };
 

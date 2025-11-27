@@ -48,6 +48,14 @@ lerna-debug.log*
 .enforcer/Enforcer_last_check.log
 .enforcer/Enforcer_stats.log
 
+# Temporary reports
+reports/
+
+# CSS analysis reports
+purgecss-report/
+uncss-report.css
+*.uncss.css
+
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 

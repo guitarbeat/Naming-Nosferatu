@@ -1,8 +1,9 @@
+
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   attachMediaQueryListener,
   getMediaQueryList,
-} from "../utils/mediaQueries";
+} from "../../shared/utils/mediaQueries";
 
 const INITIAL_TRANSFORM = { rotateX: 0, rotateY: 0 };
 

@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 
-const fromMock = vi.fn();
+const { fromMock } = vi.hoisted(() => {
+  return { fromMock: vi.fn() };
+});
 
 vi.mock("./supabaseClientIsolated.js", () => ({
   supabase: {
