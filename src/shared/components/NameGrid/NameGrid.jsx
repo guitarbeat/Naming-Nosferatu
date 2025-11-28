@@ -8,7 +8,7 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../NameCard/NameCard";
-import { SkeletonLoader } from "../index";
+import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
 import { filterAndSortNames } from "../../../features/tournament/utils";
 import styles from "./NameGrid.module.css";
 

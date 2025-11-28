@@ -13,13 +13,11 @@ import React, {
   useContext,
 } from "react";
 import PropTypes from "prop-types";
-import {
-  Loading,
-  Error as ErrorComponent,
-  UnifiedFilters,
-  NameGrid,
-  AnalysisModeBanner,
-} from "../index";
+import Loading from "../Loading/Loading";
+import ErrorComponent from "../Error/Error";
+import { UnifiedFilters } from "../UnifiedFilters/UnifiedFilters";
+import { NameGrid } from "../NameGrid/NameGrid";
+import { AnalysisModeBanner } from "../AnalysisPanel";
 import { useNameData } from "../../../core/hooks/useNameData";
 import { useNameSelection } from "../../../core/hooks/useNameSelection";
 import useAppStore from "../../../core/store/useAppStore";
