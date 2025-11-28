@@ -4,13 +4,6 @@
  * 
  * A unified visual language for the Analysis Mode interface.
  * Intentional, confident, minimal with presence.
- * 
- * Design Principles:
- * - Monochromatic base with strategic accent
- * - Elevated glassmorphism for depth
- * - Tight vertical rhythm
- * - Bold typography for hierarchy
- * - Subtle motion that rewards interaction
  */
 
 /* ==========================================================================
@@ -81,6 +74,31 @@
   --analysis-border: rgb(0 0 0 / 8%);
   --analysis-border-accent: rgb(var(--analysis-accent-rgb) / 25%);
   --analysis-border-hover: rgb(var(--analysis-accent-rgb) / 40%);
+}
+
+/* ==========================================================================
+   GLOBAL ANALYSIS MODE EFFECTS
+   ========================================================================== */
+/* * Subtle grid background when analysis mode is active */
+body:has(.analysis-mode-banner) {
+  background-image: 
+    linear-gradient(to right, var(--analysis-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--analysis-border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-attachment: fixed;
+}
+
+body:has(.analysis-mode-banner)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 0%, 
+    rgb(var(--analysis-accent-rgb) / 5%), 
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* ==========================================================================
@@ -237,6 +255,78 @@
 /* * Accent variant for primary metric */
 .analysis-stat--accent .analysis-stat-value {
   color: var(--analysis-accent);
+}
+
+/* ==========================================================================
+   ANALYSIS CHARTS - Visualizations
+   ========================================================================== */
+.analysis-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--analysis-gap-md);
+  margin-top: var(--analysis-gap-md);
+}
+
+.analysis-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-md);
+  padding: var(--analysis-gap-md);
+  background: var(--analysis-surface-elevated);
+  border: 1px solid var(--analysis-border);
+  border-radius: var(--analysis-radius-lg);
+}
+
+.analysis-chart-title {
+  font-size: var(--analysis-text-caption);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin: 0;
+}
+
+.analysis-chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-chart-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 40px;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-chart-label {
+  font-size: var(--analysis-text-caption);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.analysis-chart-bar-container {
+  height: 8px;
+  background: var(--analysis-surface-2);
+  border-radius: var(--analysis-radius-full);
+  overflow: hidden;
+}
+
+.analysis-chart-bar {
+  height: 100%;
+  background: var(--analysis-accent);
+  border-radius: var(--analysis-radius-full);
+  transition: width var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+.analysis-chart-value {
+  font-family: var(--analysis-text-mono);
+  font-size: var(--analysis-text-caption);
+  color: var(--text-primary);
+  text-align: right;
 }
 
 /* ==========================================================================
@@ -689,6 +779,10 @@
   .analysis-highlights {
     grid-template-columns: 1fr;
   }
+  
+  .analysis-charts-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ==========================================================================
@@ -706,7 +800,8 @@
   .analysis-input,
   .analysis-select,
   .analysis-toggle,
-  .analysis-progress-fill {
+  .analysis-progress-fill,
+  .analysis-chart-bar {
     transition: none;
   }
 }

@@ -27,6 +27,7 @@ export function AnalysisBulkActions({
   onDeselectAll,
   onBulkHide,
   onBulkUnhide,
+  onExport,
   isAllSelected,
   showActions = true,
 }) {
@@ -36,24 +37,38 @@ export function AnalysisBulkActions({
     <AnalysisToolbar
       selectedCount={selectedCount}
       actions={
-        selectedCount > 0 && (
-          <>
-            <AnalysisButton
-              variant="danger"
-              onClick={onBulkHide}
-              ariaLabel={`Hide ${selectedCount} selected names`}
-            >
-              Hide
-            </AnalysisButton>
-            <AnalysisButton
-              variant="primary"
-              onClick={onBulkUnhide}
-              ariaLabel={`Unhide ${selectedCount} selected names`}
-            >
-              Unhide
-            </AnalysisButton>
-          </>
-        )
+        <>
+          {selectedCount > 0 && (
+            <>
+              <AnalysisButton
+                variant="danger"
+                onClick={onBulkHide}
+                ariaLabel={`Hide ${selectedCount} selected names`}
+              >
+                Hide
+              </AnalysisButton>
+              <AnalysisButton
+                variant="primary"
+                onClick={onBulkUnhide}
+                ariaLabel={`Unhide ${selectedCount} selected names`}
+              >
+                Unhide
+              </AnalysisButton>
+            </>
+          )}
+          {onExport && (
+            <>
+              <div className="analysis-toolbar-divider" />
+              <AnalysisButton
+                variant="default"
+                onClick={onExport}
+                ariaLabel="Export visible names to CSV"
+              >
+                Export CSV
+              </AnalysisButton>
+            </>
+          )}
+        </>
       }
     >
       <div className="analysis-toolbar-group">
@@ -75,6 +90,7 @@ AnalysisBulkActions.propTypes = {
   onDeselectAll: PropTypes.func.isRequired,
   onBulkHide: PropTypes.func.isRequired,
   onBulkUnhide: PropTypes.func.isRequired,
+  onExport: PropTypes.func,
   isAllSelected: PropTypes.bool.isRequired,
   showActions: PropTypes.bool,
 };

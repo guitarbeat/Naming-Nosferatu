@@ -13,6 +13,44 @@ import {
 } from "../AnalysisPanel";
 
 /**
+ * Simple CSS-based bar chart
+ */
+function SimpleBarChart({ title, items, valueKey = "value", labelKey = "name" }) {
+  if (!items || items.length === 0) return null;
+
+  const maxValue = Math.max(...items.map((item) => item[valueKey]));
+
+  return (
+    <div className="analysis-chart">
+      <h3 className="analysis-chart-title">{title}</h3>
+      <div className="analysis-chart-bars">
+        {items.slice(0, 5).map((item) => (
+          <div key={item.id} className="analysis-chart-row">
+            <div className="analysis-chart-label">{item[labelKey]}</div>
+            <div className="analysis-chart-bar-container">
+              <div
+                className="analysis-chart-bar"
+                style={{
+                  width: `${(item[valueKey] / maxValue) * 100}%`,
+                }}
+              />
+            </div>
+            <div className="analysis-chart-value">{item[valueKey]}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+SimpleBarChart.propTypes = {
+  title: PropTypes.string.isRequired,
+  items: PropTypes.array.isRequired,
+  valueKey: PropTypes.string,
+  labelKey: PropTypes.string,
+};
+
+/**
  * Analysis Dashboard Component
  * Unified stats and highlights display for Analysis Mode
  *
@@ -60,42 +98,30 @@ export function AnalysisDashboard({ stats, selectionStats, highlights }) {
     });
   }
 
-  // * Build highlights array
-  const highlightGroups = [];
-
-  if (highlights?.topRated?.length > 0) {
-    highlightGroups.push({
-      title: "Top Rated",
-      items: highlights.topRated.map((item) => ({
-        id: item.id,
-        name: item.name,
-        value: item.value,
-      })),
-    });
-  }
-
-  if (highlights?.mostWins?.length > 0) {
-    highlightGroups.push({
-      title: "Most Wins",
-      items: highlights.mostWins.map((item) => ({
-        id: item.id,
-        name: item.name,
-        value: item.value,
-      })),
-    });
-  }
-
   // * Don't render if no data
-  if (statItems.length === 0 && highlightGroups.length === 0) {
+  if (statItems.length === 0 && !highlights) {
     return null;
   }
 
   return (
     <AnalysisPanel showHeader={false}>
       {statItems.length > 0 && <AnalysisStats stats={statItems} />}
-      {highlightGroups.length > 0 && (
-        <AnalysisHighlights highlights={highlightGroups} />
-      )}
+      
+      <div className="analysis-charts-grid">
+        {highlights?.topRated?.length > 0 && (
+          <SimpleBarChart 
+            title="Top Rated" 
+            items={highlights.topRated} 
+          />
+        )}
+        
+        {highlights?.mostWins?.length > 0 && (
+          <SimpleBarChart 
+            title="Most Wins" 
+            items={highlights.mostWins} 
+          />
+        )}
+      </div>
     </AnalysisPanel>
   );
 }

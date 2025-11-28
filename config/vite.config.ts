@@ -53,29 +53,29 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           // * Manual chunk splitting strategy
-          manualChunks: (id) => {
-            // * Vendor chunks - separate large dependencies
-            if (id.includes('node_modules')) {
-              // * React and React DOM in separate chunk (most critical)
-              if (id.includes('react') || id.includes('react-dom') || id.includes('react/jsx-runtime') || id.includes('scheduler')) {
-                return 'react-vendor';
-              }
-              // * Supabase client in separate chunk
-              if (id.includes('@supabase')) {
-                return 'supabase-vendor';
-              }
-              // * UI libraries
-              if (id.includes('@radix-ui') || id.includes('@heroicons') || id.includes('lucide-react')) {
-                return 'ui-vendor';
-              }
-              // * Other large dependencies
-              if (id.includes('@hello-pangea') || id.includes('zustand')) {
-                return 'utils-vendor';
-              }
-              // * All other node_modules
-              return 'vendor';
-            }
-          },
+          // manualChunks: (id) => {
+          //   // * Vendor chunks - separate large dependencies
+          //   if (id.includes('node_modules')) {
+          //     // * React and React DOM in separate chunk (most critical)
+          //     if (id.includes('react') || id.includes('react-dom') || id.includes('react/jsx-runtime') || id.includes('scheduler')) {
+          //       return 'react-vendor';
+          //     }
+          //     // * Supabase client in separate chunk
+          //     if (id.includes('@supabase')) {
+          //       return 'supabase-vendor';
+          //     }
+          //     // * UI libraries
+          //     if (id.includes('@radix-ui') || id.includes('@heroicons') || id.includes('lucide-react')) {
+          //       return 'ui-vendor';
+          //     }
+          //     // * Other large dependencies
+          //     // if (id.includes('@hello-pangea') || id.includes('zustand')) {
+          //     //   return 'utils-vendor';
+          //     // }
+          //     // * All other node_modules
+          //     return 'vendor';
+          //   }
+          // },
           // * Optimize chunk file names for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
