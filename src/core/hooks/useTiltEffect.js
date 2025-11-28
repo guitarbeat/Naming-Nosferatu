@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import {
   attachMediaQueryListener,

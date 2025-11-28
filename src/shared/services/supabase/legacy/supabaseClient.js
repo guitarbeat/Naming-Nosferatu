@@ -820,21 +820,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-            a[1] > b[1] ? a : b,
-          )[0]
+              a[1] > b[1] ? a : b,
+            )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
 
       return {
@@ -926,8 +926,6 @@ export const catNamesAPI = {
     }
   },
 };
-
-
 
 /**
  * Hidden Names Management
@@ -1759,10 +1757,6 @@ export const tournamentsAPI = {
   },
 };
 
-
-
-
-
 // ===== UTILITY FUNCTIONS =====
 
 /**
@@ -1994,4 +1988,3 @@ export { siteSettingsAPI } from "./siteSettingsAPI.js";
 export const { getNamesWithDescriptions } = catNamesAPI;
 export const { getNamesWithUserRatings } = catNamesAPI;
 export const { getUserStats } = catNamesAPI;
-

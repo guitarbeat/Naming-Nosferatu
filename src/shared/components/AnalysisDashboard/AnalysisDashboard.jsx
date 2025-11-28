@@ -6,16 +6,17 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  AnalysisPanel,
-  AnalysisStats,
-  AnalysisHighlights,
-} from "../AnalysisPanel";
+import { AnalysisPanel, AnalysisStats } from "../AnalysisPanel";
 
 /**
  * Simple CSS-based bar chart
  */
-function SimpleBarChart({ title, items, valueKey = "value", labelKey = "name" }) {
+function SimpleBarChart({
+  title,
+  items,
+  valueKey = "value",
+  labelKey = "name",
+}) {
   if (!items || items.length === 0) return null;
 
   const maxValue = Math.max(...items.map((item) => item[valueKey]));
@@ -106,20 +107,14 @@ export function AnalysisDashboard({ stats, selectionStats, highlights }) {
   return (
     <AnalysisPanel showHeader={false}>
       {statItems.length > 0 && <AnalysisStats stats={statItems} />}
-      
+
       <div className="analysis-charts-grid">
         {highlights?.topRated?.length > 0 && (
-          <SimpleBarChart 
-            title="Top Rated" 
-            items={highlights.topRated} 
-          />
+          <SimpleBarChart title="Top Rated" items={highlights.topRated} />
         )}
-        
+
         {highlights?.mostWins?.length > 0 && (
-          <SimpleBarChart 
-            title="Most Wins" 
-            items={highlights.mostWins} 
-          />
+          <SimpleBarChart title="Most Wins" items={highlights.mostWins} />
         )}
       </div>
     </AnalysisPanel>

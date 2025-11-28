@@ -516,7 +516,13 @@ export function NameManagementView({
               {typeof extensions.bulkActions === "function"
                 ? extensions.bulkActions({
                     onExport: () => {
-                      const headers = ["Name", "Rating", "Wins", "Losses", "Matches"];
+                      const headers = [
+                        "Name",
+                        "Rating",
+                        "Wins",
+                        "Losses",
+                        "Matches",
+                      ];
                       const csvContent = [
                         headers.join(","),
                         ...displayNames.map((name) =>

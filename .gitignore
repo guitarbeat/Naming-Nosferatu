@@ -261,3 +261,7 @@ verification/*.jpeg
 
 # Internal documentation (development/debugging notes)
 .internal-docs/
+
+# Migration data
+scripts/data
+

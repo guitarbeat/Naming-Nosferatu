@@ -26,7 +26,6 @@
   color: var(--text-primary);
   background: var(--gradient-primary);
   background-clip: text;
-  background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: var(--leading-tight);
 }

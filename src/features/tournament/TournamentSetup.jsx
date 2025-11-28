@@ -101,7 +101,11 @@ AnalysisHandlersProvider.propTypes = {
 };
 
 // * Analysis Mode components that use NameManagementView context
-function AnalysisDashboardWrapper({ stats, selectionStats, highlights: propsHighlights }) {
+function AnalysisDashboardWrapper({
+  stats,
+  selectionStats,
+  highlights: propsHighlights,
+}) {
   const context = useNameManagementContext();
 
   const hookHighlights = useProfileHighlights(context.names);

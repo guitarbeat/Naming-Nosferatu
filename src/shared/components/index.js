@@ -32,10 +32,7 @@ export {
 } from "./NameManagementView/NameManagementView";
 
 // * Analysis Mode Components
-export {
-  AnalysisToggle,
-  AnalysisModeBanner,
-} from "./AnalysisPanel";
+export { AnalysisToggle, AnalysisModeBanner } from "./AnalysisPanel";
 export { AnalysisDashboard } from "./AnalysisDashboard";
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
 
