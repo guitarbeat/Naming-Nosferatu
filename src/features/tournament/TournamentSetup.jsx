@@ -215,6 +215,39 @@ function AnalysisBulkActionsWrapper({
     return null;
   }
 
+  const handleExport = useCallback(() => {
+    const headers = ["Name", "Rating", "Wins", "Losses", "Matches"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredAndSortedNames.map((name) =>
+        [
+          `"${name.name}"`,
+          name.rating || 0,
+          name.wins || 0,
+          name.losses || 0,
+          name.matches || 0,
+        ].join(","),
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `naming_nosferatu_export_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [filteredAndSortedNames]);
+
   return (
     <AnalysisBulkActions
       selectedCount={selectedCount}
@@ -222,7 +255,7 @@ function AnalysisBulkActionsWrapper({
       onDeselectAll={handleSelectAll}
       onBulkHide={() => handleBulkHide(Array.from(selectedNames))}
       onBulkUnhide={() => handleBulkUnhide(Array.from(selectedNames))}
-      onExport={onExport}
+      onExport={handleExport}
       isAllSelected={allVisibleSelected}
       showActions={true}
     />
