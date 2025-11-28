@@ -103,29 +103,48 @@
   overflow: hidden;
   background: linear-gradient(135deg, var(--warning-50), var(--warning-100));
   border-color: var(--warning-400);
-  opacity: 0.7;
+  opacity: 0.85;
   filter: grayscale(40%) sepia(20%);
+  animation: hidePulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Diagonal stripe pattern for hidden cards */
+.hidden::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgb(var(--warning-500-rgb, 245 158 11) / 5%) 10px,
+    rgb(var(--warning-500-rgb, 245 158 11) / 5%) 20px
+  );
+  opacity: 0.5;
 }
 
 .hidden::before {
   position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
+  top: var(--space-2);
+  left: 50%;
   z-index: 10;
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   color: white;
   text-align: center;
   letter-spacing: var(--tracking-wide);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
   content: "🔒 HIDDEN";
-  background: linear-gradient(135deg, var(--warning-400), var(--warning-600));
+  background: var(--warning-500);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(-50%);
+  animation: slideDown 0.3s ease-out forwards;
 }
 
 .hidden .name {
-  margin-top: var(--space-4);
+  margin-top: var(--space-6); /* Make room for the badge */
   color: var(--warning-700);
 }
 
@@ -135,7 +154,13 @@
 }
 
 .hidden .metadata {
-  opacity: 0.8;
+  opacity: 0.6;
+  filter: blur(0.5px);
+  transition: filter 0.2s ease;
+}
+
+.hidden:hover .metadata {
+  filter: blur(0);
 }
 
 .hidden .metaItem {
@@ -159,13 +184,43 @@
 /* Enhanced hover effect for hidden cards */
 .hidden:hover {
   box-shadow: var(--shadow-lg);
-  opacity: 0.9;
+  opacity: 0.95;
   filter: grayscale(20%) sepia(10%);
   transform: var(--transform-hover-lift);
 }
 
 .hidden:hover::before {
-  background: linear-gradient(135deg, var(--warning-500), var(--warning-700));
+  background: var(--warning-600);
+  transform: translateX(-50%) scale(1.05);
+}
+
+@keyframes hidePulse {
+  0% {
+    transform: scale(1);
+    filter: grayscale(0);
+  }
+
+  50% {
+    transform: scale(0.96);
+    filter: grayscale(80%);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: grayscale(40%) sepia(20%);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* Ensure card takes remaining space - Premium Design */

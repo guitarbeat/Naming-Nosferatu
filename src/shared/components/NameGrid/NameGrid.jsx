@@ -134,16 +134,7 @@ export function NameGrid({
         return (
           <div key={nameObj.id} className={styles.cardWrapper}>
             {/* Hidden badge - only show in profile mode or analysis mode */}
-            {isHidden && showAdminControls && (
-              <button
-                type="button"
-                className={styles.hiddenBadge}
-                onClick={() => onToggleVisibility?.(nameObj.id)}
-                disabled={!isAdmin}
-              >
-                Hidden
-              </button>
-            )}
+            {/* Hidden badge removed in favor of NameCard's internal styling */}
             <NameCard
               name={nameObj.name}
               description={nameObj.description}

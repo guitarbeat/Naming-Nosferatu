@@ -95,7 +95,7 @@ function NameSelection({
           showSelectedOnly={showSelectedOnly}
           showCatPictures={showCatPictures}
           imageList={imageList}
-          showAdminControls={false}
+          showAdminControls={isAdmin}
           className={styles.cardsContainer}
         />
       )}
