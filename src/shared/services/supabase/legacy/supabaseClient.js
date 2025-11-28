@@ -1216,23 +1216,14 @@ export const tournamentsAPI = {
           const tournaments = [newTournament];
 
           // Try to create the column and insert the tournament
-          // * Set user context for RLS
-          await supabase.rpc("set_user_context", { user_name_param: userName });
-
-          const { error: upsertError } = await supabase
-            .from("cat_app_users")
-            .upsert(
-              {
-                user_name: userName,
-                tournament_data: tournaments,
-              },
-              {
-                onConflict: "user_name",
-                ignoreDuplicates: false,
-              },
-            )
-            .select()
-            .single();
+          // * Use RPC to bypass RLS issues
+          const { error: upsertError } = await supabase.rpc(
+            "update_user_tournament_data",
+            {
+              p_user_name: userName,
+              p_tournament_data: tournaments,
+            },
+          );
 
           if (upsertError) {
             console.error(
@@ -1252,23 +1243,11 @@ export const tournamentsAPI = {
       tournaments.push(newTournament);
 
       // Update user's tournament data
-      // * Set user context for RLS
-      await supabase.rpc("set_user_context", { user_name_param: userName });
-
-      const { error } = await supabase
-        .from("cat_app_users")
-        .upsert(
-          {
-            user_name: userName,
-            tournament_data: tournaments,
-          },
-          {
-            onConflict: "user_name",
-            ignoreDuplicates: false,
-          },
-        )
-        .select()
-        .single();
+      // * Use RPC to bypass RLS issues
+      const { error } = await supabase.rpc("update_user_tournament_data", {
+        p_user_name: userName,
+        p_tournament_data: tournaments,
+      });
 
       if (error) {
         // If it's a column doesn't exist error, log warning and return tournament
@@ -1511,18 +1490,14 @@ export const tournamentsAPI = {
 
         tournaments.push(newTournament);
 
-        // * Set user context for RLS
-        await supabase.rpc("set_user_context", { user_name_param: userName });
-
-        const { error: userUpsertError } = await supabase
-          .from("cat_app_users")
-          .upsert(
-            {
-              user_name: userName,
-              tournament_data: tournaments,
-            },
-            { onConflict: "user_name" },
-          );
+        // * Use RPC to bypass RLS issues
+        const { error: userUpsertError } = await supabase.rpc(
+          "update_user_tournament_data",
+          {
+            p_user_name: userName,
+            p_tournament_data: tournaments,
+          },
+        );
 
         if (userUpsertError) {
           console.error(
