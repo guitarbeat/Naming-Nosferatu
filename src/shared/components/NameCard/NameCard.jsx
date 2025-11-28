@@ -297,29 +297,7 @@ function NameCard({
         )}
       </Component>
 
-      {/* Admin actions overlay */}
-      {isAdmin && (
-        <div className={styles.adminActionsOverlay}>
-          <button
-            onClick={(e) => handleAdminAction(e, () => onToggleVisibility?.())}
-            className={styles.actionButton}
-            aria-label={`${isHidden ? "Show" : "Hide"} ${name}`}
-            title={`${isHidden ? "Show" : "Hide"} ${name}`}
-          >
-            {isHidden ? "🔒" : "🔓"}
-          </button>
-          {isHidden && onDelete && (
-            <button
-              onClick={(e) => handleAdminAction(e, () => onDelete?.())}
-              className={`${styles.actionButton} ${styles.deleteButton}`}
-              aria-label={`Delete ${name}`}
-              title={`Delete ${name}`}
-            >
-              🗑️
-            </button>
-          )}
-        </div>
-      )}
+      {/* Admin actions overlay removed - use bulk actions instead */}
 
       {/* Enhanced tooltip with detailed stats */}
       {showTooltip &&
