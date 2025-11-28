@@ -101,10 +101,11 @@ AnalysisHandlersProvider.propTypes = {
 };
 
 // * Analysis Mode components that use NameManagementView context
-function AnalysisDashboardWrapper({ stats, selectionStats }) {
+function AnalysisDashboardWrapper({ stats, selectionStats, highlights: propsHighlights }) {
   const context = useNameManagementContext();
 
-  const highlights = useProfileHighlights(context.names);
+  const hookHighlights = useProfileHighlights(context.names);
+  const highlights = propsHighlights || hookHighlights;
 
   if (!context.analysisMode || !stats) return null;
 
@@ -120,6 +121,7 @@ function AnalysisDashboardWrapper({ stats, selectionStats }) {
 AnalysisDashboardWrapper.propTypes = {
   stats: PropTypes.object,
   selectionStats: PropTypes.object,
+  highlights: PropTypes.object,
 };
 
 function AnalysisBulkActionsWrapper({
@@ -129,6 +131,7 @@ function AnalysisBulkActionsWrapper({
   showSuccess,
   showError,
   showToast,
+  onExport,
 }) {
   const context = useNameManagementContext();
 
@@ -215,6 +218,7 @@ function AnalysisBulkActionsWrapper({
       onDeselectAll={handleSelectAll}
       onBulkHide={() => handleBulkHide(Array.from(selectedNames))}
       onBulkUnhide={() => handleBulkUnhide(Array.from(selectedNames))}
+      onExport={onExport}
       isAllSelected={allVisibleSelected}
       showActions={true}
     />
@@ -228,6 +232,7 @@ AnalysisBulkActionsWrapper.propTypes = {
   showSuccess: PropTypes.func,
   showError: PropTypes.func,
   showToast: PropTypes.func,
+  onExport: PropTypes.func,
 };
 
 // * Tournament-specific component that uses NameManagementView context
@@ -381,13 +386,14 @@ function TournamentSetupContent({
             hiddenIds: undefined, // Will come from context
           }}
           extensions={{
-            dashboard: (
+            dashboard: (props) => (
               <AnalysisDashboardWrapper
                 stats={stats}
                 selectionStats={selectionStats}
+                {...props}
               />
             ),
-            bulkActions: (
+            bulkActions: (props) => (
               <AnalysisBulkActionsWrapper
                 activeUser={activeUser}
                 canManageActiveUser={canManageActiveUser}
@@ -395,6 +401,7 @@ function TournamentSetupContent({
                 showSuccess={showSuccess}
                 showError={showError}
                 showToast={showToast}
+                {...props}
               />
             ),
             nameGrid: (
