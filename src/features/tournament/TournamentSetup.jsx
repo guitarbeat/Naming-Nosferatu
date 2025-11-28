@@ -273,17 +273,17 @@ AnalysisBulkActionsWrapper.propTypes = {
 };
 
 // * Tournament-specific component that uses NameManagementView context
-function TournamentNameGrid({ isAdmin, galleryImages, canManageActiveUser }) {
+function TournamentNameGrid({
+  isAdmin,
+  galleryImages,
+  canManageActiveUser,
+  onToggleVisibility,
+  onDelete,
+}) {
   const context = useNameManagementContext();
-  const categories = useCategoryFilters(context.names);
 
   // * Admin features only available in analysis mode
   const showAdminFeatures = context.analysisMode && canManageActiveUser;
-
-  // Helper to check if user can manage (needs context access)
-  // We can't access canManageActiveUser directly here easily without passing it down
-  // But we know isAdmin is passed as prop.
-  // Let's rely on the prop passed in.
 
   return (
     <div className={styles.stickyControls}>
@@ -292,18 +292,17 @@ function TournamentNameGrid({ isAdmin, galleryImages, canManageActiveUser }) {
         availableNames={context.names}
         onToggleName={context.toggleName}
         isAdmin={showAdminFeatures ? isAdmin : false}
-        categories={categories}
         selectedCategory={context.selectedCategory}
-        onCategoryChange={context.setSelectedCategory}
         searchTerm={context.searchTerm}
-        onSearchChange={context.setSearchTerm}
         sortBy={context.sortBy}
-        onSortChange={context.setSortBy}
         isSwipeMode={context.isSwipeMode}
         showCatPictures={context.showCatPictures}
         imageList={galleryImages}
         SwipeableCards={SwipeableNameCards}
         showSelectedOnly={context.showSelectedOnly}
+        hiddenIds={showAdminFeatures ? context.hiddenIds : new Set()}
+        onToggleVisibility={showAdminFeatures ? onToggleVisibility : undefined}
+        onDelete={showAdminFeatures ? onDelete : undefined}
       />
     </div>
   );
@@ -313,6 +312,8 @@ TournamentNameGrid.propTypes = {
   isAdmin: PropTypes.bool,
   galleryImages: PropTypes.array,
   canManageActiveUser: PropTypes.bool,
+  onToggleVisibility: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 function TournamentSetupContent({
@@ -457,6 +458,10 @@ function TournamentSetupContent({
                   isAdmin={isAdmin}
                   galleryImages={galleryImages}
                   canManageActiveUser={canManageActiveUser}
+                  onToggleVisibility={(nameId) =>
+                    handlersRef.current.handleToggleVisibility?.(nameId)
+                  }
+                  onDelete={(name) => handlersRef.current.handleDelete?.(name)}
                 />
               </>
             ),
