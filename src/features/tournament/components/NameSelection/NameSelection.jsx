@@ -14,19 +14,20 @@ function NameSelection({
   availableNames,
   onToggleName,
   isAdmin,
-  // Admin-only props
+  // Filter props
   selectedCategory,
-  onCategoryChange: _onCategoryChange,
   searchTerm,
-  onSearchChange: _onSearchChange,
   sortBy,
-  onSortChange: _onSortChange,
   isSwipeMode,
   showCatPictures,
   imageList,
   // Swipeable cards component passed as prop
   SwipeableCards,
   showSelectedOnly,
+  // Admin control props for name hiding
+  hiddenIds,
+  onToggleVisibility,
+  onDelete,
 }) {
   // * Calculate filtered names for SwipeMode (SwipeableCards needs pre-filtered names)
   const filteredNamesForSwipe = useMemo(() => {
@@ -96,6 +97,9 @@ function NameSelection({
           showCatPictures={showCatPictures}
           imageList={imageList}
           showAdminControls={isAdmin}
+          hiddenIds={hiddenIds}
+          onToggleVisibility={onToggleVisibility}
+          onDelete={onDelete}
           className={styles.cardsContainer}
         />
       )}
@@ -108,18 +112,18 @@ NameSelection.propTypes = {
   availableNames: PropTypes.arrayOf(PropTypes.object).isRequired,
   onToggleName: PropTypes.func.isRequired,
   isAdmin: PropTypes.bool.isRequired,
-  categories: PropTypes.arrayOf(PropTypes.object),
   selectedCategory: PropTypes.string,
-  onCategoryChange: PropTypes.func,
   searchTerm: PropTypes.string,
-  onSearchChange: PropTypes.func,
   sortBy: PropTypes.string,
-  onSortChange: PropTypes.func,
   isSwipeMode: PropTypes.bool,
   showCatPictures: PropTypes.bool,
   imageList: PropTypes.arrayOf(PropTypes.string),
   SwipeableCards: PropTypes.elementType,
   showSelectedOnly: PropTypes.bool,
+  // Admin control props
+  hiddenIds: PropTypes.instanceOf(Set),
+  onToggleVisibility: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 export default memo(NameSelection);
