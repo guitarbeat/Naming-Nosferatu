@@ -18,6 +18,7 @@ function NameSelection({
   selectedCategory,
   searchTerm,
   sortBy,
+  filterStatus,
   isSwipeMode,
   showCatPictures,
   imageList,
@@ -31,11 +32,25 @@ function NameSelection({
 }) {
   // * Calculate filtered names for SwipeMode (SwipeableCards needs pre-filtered names)
   const filteredNamesForSwipe = useMemo(() => {
-    const filtered = filterAndSortNames(availableNames, {
+    let filtered = filterAndSortNames(availableNames, {
       category: selectedCategory,
       searchTerm,
       sortBy,
     });
+
+    // * Apply filterStatus filter for hidden names
+    if (filterStatus === "active") {
+      filtered = filtered.filter((name) => {
+        const isHidden = (hiddenIds && hiddenIds.has(name.id)) || name.isHidden === true;
+        return !isHidden;
+      });
+    } else if (filterStatus === "hidden") {
+      filtered = filtered.filter((name) => {
+        const isHidden = (hiddenIds && hiddenIds.has(name.id)) || name.isHidden === true;
+        return isHidden;
+      });
+    }
+
     return showSelectedOnly
       ? filtered.filter((name) =>
           selectedNames.some((selected) => selected.id === name.id),
@@ -46,6 +61,8 @@ function NameSelection({
     selectedCategory,
     searchTerm,
     sortBy,
+    filterStatus,
+    hiddenIds,
     showSelectedOnly,
     selectedNames,
   ]);
@@ -90,6 +107,7 @@ function NameSelection({
             category: selectedCategory,
             searchTerm,
             sortBy,
+            filterStatus,
           }}
           mode="tournament"
           isAdmin={isAdmin}
@@ -115,6 +133,7 @@ NameSelection.propTypes = {
   selectedCategory: PropTypes.string,
   searchTerm: PropTypes.string,
   sortBy: PropTypes.string,
+  filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
   isSwipeMode: PropTypes.bool,
   showCatPictures: PropTypes.bool,
   imageList: PropTypes.arrayOf(PropTypes.string),

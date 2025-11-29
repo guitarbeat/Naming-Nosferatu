@@ -71,13 +71,28 @@ export function NameGrid({
       filtered = filtered.filter((name) => selectedSet.has(name.id));
     }
 
-    // In profile mode, filter out hidden names by default (unless explicitly showing them)
-    if (mode === "profile" && !filters.showHidden) {
-      filtered = filtered.filter((name) => !hiddenIds.has(name.id));
+    // * Apply filterStatus filter for hidden names
+    // * "active" = show only non-hidden names
+    // * "hidden" = show only hidden names
+    // * "all" or undefined = show all names
+    const filterStatus = filters.filterStatus;
+    if (filterStatus === "active") {
+      // Filter out hidden names (check both hiddenIds Set and name.isHidden property)
+      filtered = filtered.filter((name) => {
+        const isHidden = hiddenIds.has(name.id) || name.isHidden === true;
+        return !isHidden;
+      });
+    } else if (filterStatus === "hidden") {
+      // Show only hidden names
+      filtered = filtered.filter((name) => {
+        const isHidden = hiddenIds.has(name.id) || name.isHidden === true;
+        return isHidden;
+      });
     }
+    // For "all" or undefined, show all names (no filtering)
 
     return filtered;
-  }, [names, filters, showSelectedOnly, selectedSet, mode, hiddenIds]);
+  }, [names, filters, showSelectedOnly, selectedSet, hiddenIds]);
 
   // Get random cat image for a name
   const getRandomCatImage = (nameId) => {
@@ -214,6 +229,7 @@ NameGrid.propTypes = {
     category: PropTypes.string,
     searchTerm: PropTypes.string,
     sortBy: PropTypes.string,
+    filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
     showHidden: PropTypes.bool,
   }),
   mode: PropTypes.oneOf(["tournament", "profile"]),

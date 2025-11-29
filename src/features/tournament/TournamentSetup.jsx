@@ -270,6 +270,7 @@ function TournamentNameGrid({
         selectedCategory={context.selectedCategory}
         searchTerm={context.searchTerm}
         sortBy={context.sortBy}
+        filterStatus={showAdminFeatures ? context.filterStatus : undefined}
         isSwipeMode={context.isSwipeMode}
         showCatPictures={context.showCatPictures}
         imageList={galleryImages}
