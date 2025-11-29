@@ -26,7 +26,8 @@ BEGIN
   RAISE NOTICE '  - cat_name_options.user_name';
   RAISE NOTICE '  - cat_name_options.popularity_score';
   RAISE NOTICE '  - cat_name_options.total_tournaments';
-  RAISE NOTICE '  - cat_name_options.is_hidden';
+  RAISE NOTICE '';
+  RAISE NOTICE 'NOTE: is_hidden is KEPT - used for global admin hiding';
   RAISE NOTICE '';
   RAISE NOTICE 'Ensure you have a backup before proceeding!';
   RAISE NOTICE '';
@@ -91,9 +92,9 @@ SELECT user_name, user_role, updated_at
 FROM cat_app_users
 WHERE user_role IS NOT NULL;
 
--- Backup cat_name_options columns
+-- Backup cat_name_options columns (excluding is_hidden which is kept)
 CREATE TABLE IF NOT EXISTS _backup_cat_name_options_columns AS
-SELECT id, user_name, popularity_score, total_tournaments, is_hidden
+SELECT id, user_name, popularity_score, total_tournaments
 FROM cat_name_options;
 
 DO $
@@ -190,11 +191,8 @@ DROP COLUMN IF EXISTS total_tournaments;
 
 RAISE NOTICE '✓ Dropped cat_name_options.total_tournaments';
 
--- Drop is_hidden column (use is_active instead)
-ALTER TABLE cat_name_options 
-DROP COLUMN IF EXISTS is_hidden;
-
-RAISE NOTICE '✓ Dropped cat_name_options.is_hidden';
+-- NOTE: is_hidden is KEPT - it's used for global admin hiding of names
+RAISE NOTICE '✓ Kept cat_name_options.is_hidden (used for global admin hiding)';
 
 -- ===== VERIFY COLUMNS DROPPED =====
 
@@ -220,17 +218,29 @@ BEGIN
     RAISE WARNING '❌ cat_app_users: Columns still exist: %', remaining_columns;
   END IF;
 
-  -- Check cat_name_options
+  -- Check cat_name_options (is_hidden should still exist)
   SELECT array_agg(column_name) INTO remaining_columns
   FROM information_schema.columns
   WHERE table_schema = 'public'
     AND table_name = 'cat_name_options'
-    AND column_name IN ('user_name', 'popularity_score', 'total_tournaments', 'is_hidden');
+    AND column_name IN ('user_name', 'popularity_score', 'total_tournaments');
 
   IF remaining_columns IS NULL OR array_length(remaining_columns, 1) IS NULL THEN
     RAISE NOTICE '✓ cat_name_options: All target columns dropped';
   ELSE
     RAISE WARNING '❌ cat_name_options: Columns still exist: %', remaining_columns;
+  END IF;
+  
+  -- Verify is_hidden still exists (it should!)
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'cat_name_options'
+      AND column_name = 'is_hidden'
+  ) THEN
+    RAISE NOTICE '✓ cat_name_options.is_hidden preserved (used for global hiding)';
+  ELSE
+    RAISE WARNING '❌ cat_name_options.is_hidden was dropped - this breaks global hiding!';
   END IF;
 END $;
 
@@ -297,7 +307,9 @@ BEGIN
   RAISE NOTICE '  ✓ user_name (VARCHAR)';
   RAISE NOTICE '  ✓ popularity_score (INTEGER)';
   RAISE NOTICE '  ✓ total_tournaments (INTEGER)';
-  RAISE NOTICE '  ✓ is_hidden (BOOLEAN)';
+  RAISE NOTICE '';
+  RAISE NOTICE 'Preserved in cat_name_options:';
+  RAISE NOTICE '  ✓ is_hidden (BOOLEAN) - used for global admin hiding';
   RAISE NOTICE '';
   RAISE NOTICE 'Backup tables created for rollback:';
   RAISE NOTICE '  - _backup_tournament_data';

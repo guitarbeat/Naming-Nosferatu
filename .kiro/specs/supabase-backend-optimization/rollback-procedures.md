@@ -261,8 +261,8 @@ ADD COLUMN IF NOT EXISTS popularity_score INTEGER DEFAULT 0;
 ALTER TABLE cat_name_options 
 ADD COLUMN IF NOT EXISTS total_tournaments INTEGER DEFAULT 0;
 
-ALTER TABLE cat_name_options 
-ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN DEFAULT false;
+-- NOTE: is_hidden is NOT dropped - it's used for global admin hiding
+-- No rollback needed for is_hidden column
 
 -- Restore data from backup
 -- This MUST be done from backup files

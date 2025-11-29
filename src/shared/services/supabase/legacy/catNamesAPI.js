@@ -29,45 +29,16 @@ export const catNamesAPI = {
         return [];
       }
 
-      // Get ALL hidden name IDs globally (not user-specific)
-      let hiddenIds = [];
-      const { data: hiddenData, error: hiddenError } = await supabase
-        .from("cat_name_ratings")
-        .select("name_id")
-        .eq("is_hidden", true);
-
-      if (hiddenError) {
-        console.error("Error fetching hidden names:", hiddenError);
-      } else if (hiddenData) {
-        hiddenIds = hiddenData.map((item) => item.name_id);
-      }
-
-      // Get all names with their descriptions, excluding hidden ones when present
-      let namesQuery = supabase.from("cat_names").select("*");
-
-      if (hiddenIds.length > 0) {
-        const quotedHiddenIds = hiddenIds.map((id) => {
-          const stringId = String(id);
-          const escapedId = stringId.replace(/'/g, "''");
-          return `'${escapedId}'`;
-        });
-
-        namesQuery = namesQuery.not(
-          "id",
-          "in",
-          `(${quotedHiddenIds.join(",")})`,
-        );
-      }
-
-      const { data: namesData, error: namesError } = await namesQuery.order(
-        "name",
-        {
-          ascending: true,
-        },
-      );
+      // Global hidden names are stored directly on cat_name_options.is_hidden
+      // Filter them out directly in the query instead of a separate lookup
+      const { data: namesData, error: namesError } = await supabase
+        .from("cat_name_options")
+        .select("*")
+        .eq("is_hidden", false)
+        .order("name", { ascending: true });
 
       if (namesError) {
-        console.error("Error fetching names from cat_names:", namesError);
+        console.error("Error fetching names from cat_name_options:", namesError);
         console.error("Error details:", {
           message: namesError.message,
           code: namesError.code,

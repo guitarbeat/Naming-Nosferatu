@@ -66,8 +66,8 @@ function NameCard({
   metadata,
   isAdmin = false,
   isHidden = false,
-  onToggleVisibility,
-  onDelete,
+  _onToggleVisibility,
+  _onDelete,
   onSelectionChange,
   image,
 }) {
@@ -159,7 +159,7 @@ function NameCard({
   };
 
   // Handle admin action clicks (prevent card click when clicking admin buttons)
-  const handleAdminAction = (e, action) => {
+  const _handleAdminAction = (e, action) => {
     e.stopPropagation();
     e.preventDefault();
     action();

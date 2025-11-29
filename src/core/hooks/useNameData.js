@@ -113,16 +113,18 @@ export function useNameData({
       let hiddenData;
 
       if (mode === "tournament") {
-        // Tournament mode: fetch all names and global hidden names
+        // Tournament mode: fetch all names (global hidden names are already filtered by getNamesWithDescriptions)
         try {
           const { promise: fetchTimeout, timeoutId: fetchTimeoutId } =
             createTimeout(15000, "Data fetch timeout after 15 seconds");
 
+          // getNamesWithDescriptions already filters out globally hidden names (cat_name_options.is_hidden)
+          // Also fetch the hidden count for logging purposes
           const fetchPromise = Promise.all([
             getNamesWithDescriptions(),
             supabaseClient
-              .from("cat_name_ratings")
-              .select("name_id")
+              .from("cat_name_options")
+              .select("id")
               .eq("is_hidden", true),
           ]);
 

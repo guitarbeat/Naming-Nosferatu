@@ -93,14 +93,15 @@ export function useProfileNameOperations(
         );
 
         // Reload hidden names from database to ensure persistence
-        const { data: hiddenData, error: hiddenError } = await supabaseClient
-          .from("cat_name_ratings")
-          .select("name_id")
-          .eq("user_name", activeUser)
-          .eq("is_hidden", true);
+        // Global hidden names are stored in cat_name_options.is_hidden (admin-only)
+        const { data: globalHiddenData, error: globalHiddenError } =
+          await supabaseClient
+            .from("cat_name_options")
+            .select("id")
+            .eq("is_hidden", true);
 
-        if (!hiddenError && hiddenData) {
-          const hiddenIds = new Set(hiddenData.map((r) => r.name_id));
+        if (!globalHiddenError && globalHiddenData) {
+          const hiddenIds = new Set(globalHiddenData.map((r) => r.id));
           setHiddenNames(hiddenIds);
         }
       } catch (error) {

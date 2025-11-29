@@ -90,7 +90,7 @@
 - [x] Drop `cat_name_options.user_name` column
 - [x] Drop `cat_name_options.popularity_score` column
 - [x] Drop `cat_name_options.total_tournaments` column
-- [x] Drop `cat_name_options.is_hidden` column (use is_active)
+- [ ] ~~Drop `cat_name_options.is_hidden` column~~ - KEPT: used for global admin hiding
 
 ### Task 5.2: Remove Unused Database Objects
 - [x] Drop `leaderboard_stats` materialized view
@@ -121,49 +121,49 @@
 
 ### Task 6.3: Remove Dead Code
 - [x] Remove `increment_selection` RPC calls
-- [ ] Remove materialized view refresh code
-- [ ] Remove unused API functions
-- [ ] Clean up imports
+- [x] Remove materialized view refresh code
+- [x] Remove unused API functions
+- [x] Clean up imports
 
 ## Phase 7: Optimization (2-3 hours)
 
 ### Task 7.1: Database Maintenance
-- [ ] Run VACUUM ANALYZE on all tables
-- [ ] Update table statistics
-- [ ] Rebuild indexes
-- [ ] Check for bloat
+- [x] Run VACUUM ANALYZE on all tables
+- [x] Update table statistics
+- [x] Rebuild indexes
+- [x] Check for bloat
 
 ### Task 7.2: Performance Testing
-- [ ] Benchmark tournament queries (target: <100ms)
-- [ ] Benchmark leaderboard queries (target: <150ms)
-- [ ] Benchmark user stats queries (target: <50ms)
-- [ ] Compare with baseline metrics
+- [x] Benchmark tournament queries (target: <100ms)
+- [x] Benchmark leaderboard queries (target: <150ms)
+- [x] Benchmark user stats queries (target: <50ms)
+- [x] Compare with baseline metrics
 
 ### Task 7.3: Monitor & Tune
-- [ ] Enable slow query logging
-- [ ] Monitor index usage
-- [ ] Identify missing indexes
-- [ ] Adjust as needed
+- [x] Enable slow query logging
+- [x] Monitor index usage
+- [x] Identify missing indexes
+- [x] Adjust as needed
 
 ## Phase 8: Documentation & Cleanup (2-3 hours)
 
 ### Task 8.1: Update Documentation
-- [ ] Update README with new schema
-- [ ] Update MIGRATION_GUIDE.md
-- [ ] Document new RLS policies
-- [ ] Add performance tuning guide
+- [x] Update README with new schema
+- [x] Update MIGRATION_GUIDE.md
+- [x] Document new RLS policies
+- [x] Add performance tuning guide
 
 ### Task 8.2: Create Migration Scripts
-- [ ] Package all migrations into single script
-- [ ] Create rollback script
-- [ ] Test on fresh database
-- [ ] Document migration procedure
+- [x] Package all migrations into single script
+- [x] Create rollback script
+- [x] Test on fresh database
+- [x] Document migration procedure
 
 ### Task 8.3: Final Testing
-- [ ] Run full test suite
-- [ ] Test all user flows
-- [ ] Verify data integrity
-- [ ] Load test with realistic data
+- [x] Run full test suite
+- [x] Test all user flows
+- [x] Verify data integrity
+- [x] Load test with realistic data
 
 ## Estimated Timeline
 - **Total**: 20-29 hours

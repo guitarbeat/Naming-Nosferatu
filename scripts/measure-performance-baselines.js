@@ -222,26 +222,15 @@ async function runBaselines() {
   results.push(await measureQuery(
     '4.1 Get Names with Descriptions',
     async () => {
-      // First get hidden names
-      const { data: hiddenData } = await supabase
-        .from('cat_name_ratings')
-        .select('name_id')
-        .eq('is_hidden', true);
-
-      const hiddenIds = hiddenData?.map(item => item.name_id) || [];
-
-      // Then get active names
-      let query = supabase
+      // Global hidden names are stored directly on cat_name_options.is_hidden
+      // Filter them out directly in the query (more efficient than separate lookup)
+      const { data, error } = await supabase
         .from('cat_name_options')
         .select('*')
         .eq('is_active', true)
+        .eq('is_hidden', false)
         .order('avg_rating', { ascending: false });
 
-      if (hiddenIds.length > 0) {
-        query = query.not('id', 'in', `(${hiddenIds.join(',')})`);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
       return data;
     }

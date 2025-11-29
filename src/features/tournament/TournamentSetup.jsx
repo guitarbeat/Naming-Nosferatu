@@ -12,7 +12,7 @@ import {
   AnalysisDashboard,
   AnalysisBulkActions,
 } from "../../shared/components";
-import { useImageGallery, useAdminStatus, useCategoryFilters } from "./hooks";
+import { useImageGallery, useAdminStatus } from "./hooks";
 import {
   NameSelection,
   SwipeableNameCards,
@@ -135,7 +135,6 @@ function AnalysisBulkActionsWrapper({
   showSuccess,
   showError,
   showToast,
-  onExport,
 }) {
   const context = useNameManagementContext();
 
@@ -211,10 +210,6 @@ function AnalysisBulkActionsWrapper({
     }
   }, [allVisibleSelected, filteredAndSortedNames, context]);
 
-  if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
-    return null;
-  }
-
   const handleExport = useCallback(() => {
     const headers = ["Name", "Rating", "Wins", "Losses", "Matches"];
     const csvContent = [
@@ -247,6 +242,10 @@ function AnalysisBulkActionsWrapper({
       document.body.removeChild(link);
     }
   }, [filteredAndSortedNames]);
+
+  if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
+    return null;
+  }
 
   return (
     <AnalysisBulkActions

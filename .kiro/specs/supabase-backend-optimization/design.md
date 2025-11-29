@@ -46,7 +46,7 @@ From `cat_name_options`:
 - `user_name` (not used, names are global)
 - `popularity_score` (calculated, not stored)
 - `total_tournaments` (calculated, not stored)
-- `is_hidden` (use `is_active` instead)
+- ~~`is_hidden`~~ - KEPT: used for global admin hiding (different from `is_active`)
 
 **5. Materialized View Strategy**
 - Option A: Remove `leaderboard_stats` and use regular view

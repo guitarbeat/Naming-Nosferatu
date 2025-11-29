@@ -274,22 +274,9 @@ export const catNamesAPI = {
         ];
       }
 
-      // Get ALL hidden name IDs globally (not user-specific)
-      let hiddenIds = [];
-      const { data: hiddenData, error: hiddenError } = await client
-        .from("cat_name_ratings")
-        .select("name_id")
-        .eq("is_hidden", true);
-
-      if (hiddenError) {
-        console.error("Error fetching hidden names:", hiddenError);
-        hiddenIds = [];
-      } else {
-        hiddenIds = hiddenData?.map((item) => item.name_id) || [];
-      }
-
-      // Build query - leverages idx_cat_name_options_active partial index
-      let query = client
+      // Build query - filter out globally hidden names directly from cat_name_options.is_hidden
+      // This is more efficient than a separate query to cat_name_ratings
+      const { data, error } = await client
         .from("cat_name_options")
         .select(
           `
@@ -300,24 +287,24 @@ export const catNamesAPI = {
         avg_rating,
         popularity_score,
         total_tournaments,
-        is_active
+        is_active,
+        is_hidden
       `,
         )
-        .eq("is_active", true) // Add this to use partial index
-        .order("avg_rating", { ascending: false }); // Order uses index
+        .eq("is_active", true)
+        .eq("is_hidden", false) // Filter out globally hidden names
+        .order("avg_rating", { ascending: false });
 
-      // Filter out ALL hidden names globally
-      if (hiddenIds.length > 0) {
-        query = query.not("id", "in", `(${hiddenIds.join(",")})`);
-      }
-
-      const { data, error } = await query;
+      // Count hidden names for logging
+      const { count: hiddenCount } = await client
+        .from("cat_name_options")
+        .select("id", { count: "exact", head: true })
+        .eq("is_hidden", true);
       if (error) {
         console.error("Error fetching names with descriptions:", error);
         console.error("Query details:", {
           table: "cat_name_options",
-          filter: "is_active = true",
-          hiddenIds: hiddenIds.length,
+          filter: "is_active = true, is_hidden = false",
           errorCode: error.code,
           errorMessage: error.message,
         });
@@ -326,7 +313,7 @@ export const catNamesAPI = {
 
       console.log("Names query result:", {
         totalNames: data?.length || 0,
-        hiddenNames: hiddenIds.length,
+        hiddenNames: hiddenCount || 0,
         hasActiveNames: data?.some((name) => name.is_active) || false,
       });
 
@@ -691,6 +678,7 @@ export const catNamesAPI = {
       }
 
       // Get all names with user-specific ratings
+      // Global hidden status is on cat_name_options.is_hidden
       const { data, error } = await supabase
         .from("cat_name_options")
         .select(
@@ -703,12 +691,12 @@ export const catNamesAPI = {
           popularity_score,
           total_tournaments,
           is_active,
+          is_hidden,
           cat_name_ratings!left (
             user_name,
             rating,
             wins,
             losses,
-            is_hidden,
             updated_at
           )
         `,
@@ -724,23 +712,19 @@ export const catNamesAPI = {
       // Process data to include user-specific ratings
       return (
         data?.map((item) => {
-          // * Find user-specific rating data (including hidden status)
+          // * Find user-specific rating data
           const userRating = item.cat_name_ratings?.find(
             (r) => r.user_name === userName,
           );
 
-          // * Check if name is hidden for this user (even without a rating)
-          const isHidden = userRating?.is_hidden === true;
+          // * Global hidden status from cat_name_options.is_hidden
+          const isHidden = item.is_hidden === true;
 
           // * Debug logging for hidden names
           if (isDev && isHidden) {
             console.log(
-              `🔍 Found hidden name: ${item.name} (${item.id}) for user: ${userName}`,
-              {
-                userRating,
-                isHidden,
-                allRatings: item.cat_name_ratings,
-              },
+              `🔍 Found globally hidden name: ${item.name} (${item.id})`,
+              { isHidden },
             );
           }
 
@@ -842,21 +826,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-            a[1] > b[1] ? a : b,
-          )[0]
+              a[1] > b[1] ? a : b,
+            )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
 
       return {
@@ -1144,32 +1128,32 @@ export const hiddenNamesAPI = {
   },
 
   /**
-   * Get hidden names for a user
+   * Get globally hidden names (admin-set)
    */
-  async getHiddenNames(userName) {
+  async getHiddenNames() {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
       }
 
+      // Global hidden names are stored directly on cat_name_options
       const { data, error } = await supabase
-        .from("cat_name_ratings")
-        .select(
-          `
-          name_id,
-          updated_at,
-          cat_name_options (
-            id,
-            name,
-            description
-          )
-        `,
-        )
-        .eq("user_name", userName)
+        .from("cat_name_options")
+        .select("id, name, description, updated_at")
         .eq("is_hidden", true);
 
       if (error) throw error;
-      return data || [];
+
+      // Transform to match expected format
+      return (data || []).map((item) => ({
+        name_id: item.id,
+        updated_at: item.updated_at,
+        cat_name_options: {
+          id: item.id,
+          name: item.name,
+          description: item.description,
+        },
+      }));
     } catch (error) {
       if (isDev) {
         console.error("Error fetching hidden names:", error);
@@ -1191,7 +1175,7 @@ export const tournamentsAPI = {
     userName,
     tournamentName,
     participantNames,
-    tournamentData = {},
+    _tournamentData = {},
   ) {
     try {
       if (!(await isSupabaseAvailable())) {
@@ -1217,7 +1201,7 @@ export const tournamentsAPI = {
       // This is a per-selection table, not a per-tournament table.
       // So we just return a tournament object that can be used for tracking.
       // The actual selections will be inserted via saveTournamentSelections()
-      
+
       const newTournament = {
         id: crypto.randomUUID(), // Generate unique ID
         user_name: userName,
@@ -1255,10 +1239,7 @@ export const tournamentsAPI = {
         .limit(1);
 
       if (fetchError) {
-        console.error(
-          "Error fetching tournament selections:",
-          fetchError,
-        );
+        console.error("Error fetching tournament selections:", fetchError);
         return { success: false, error: "Failed to fetch tournament data" };
       }
 
@@ -1271,7 +1252,7 @@ export const tournamentsAPI = {
       // Note: The tournament_selections table doesn't have a status field.
       // Status tracking would need to be added to the schema or handled in memory.
       // For now, we just return success to maintain backward compatibility.
-      
+
       return {
         success: true,
         tournamentId,
@@ -1395,217 +1376,6 @@ export const tournamentsAPI = {
         console.error("Error saving tournament selections:", error);
       }
       throw error;
-    }
-  },
-
-  /**
-   * Create the tournament_selections table if it doesn't exist
-   */
-  async createTournamentSelectionsTable() {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return { success: false, error: "Supabase not configured" };
-      }
-
-      const { error } = await supabase.rpc(
-        "create_tournament_selections_table",
-      );
-      if (error) {
-        if (isDev) {
-          console.warn(
-            "Could not create table via RPC, table may already exist:",
-            error,
-          );
-        }
-      }
-    } catch (error) {
-      if (isDev) {
-        console.warn(
-          "Table creation RPC not available, table may already exist:",
-          error,
-        );
-      }
-    }
-  },
-
-  /**
-   * Get tournament selection history for a user
-   * @param {string} userName - The username
-   * @param {number} limit - Maximum number of records to return
-   * @returns {Array} Array of tournament selection records
-   */
-  async getTournamentSelectionHistory(userName, limit = 50) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      const { data, error } = await supabase
-        .from("tournament_selections")
-        .select(
-          `
-          *,
-          cat_name_options (
-            name,
-            description
-          )
-        `,
-        )
-        .eq("user_name", userName)
-        .order("selected_at", { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        // If table doesn't exist, return empty array
-        if (error.code === "42P01") {
-          return [];
-        }
-        throw error;
-      }
-
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching tournament selection history:", error);
-      }
-      return [];
-    }
-  },
-
-  /**
-   * Get popular names based on tournament selections
-   * @param {number} limit - Maximum number of names to return
-   * @returns {Array} Array of popular names with selection counts
-   */
-  async getPopularTournamentNames(limit = 20) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      const { data, error } = await supabase
-        .from("tournament_selections")
-        .select(
-          `
-          name_id,
-          cat_name_options (
-            name,
-            description
-          ),
-          selection_count:count
-        `,
-        )
-        .group("name_id, cat_name_options.name, cat_name_options.description")
-        .order("selection_count", { ascending: false })
-        .limit(limit);
-
-      if (error) {
-        // If table doesn't exist, return empty array
-        if (error.code === "42P01") {
-          return [];
-        }
-        throw error;
-      }
-
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error fetching popular tournament names:", error);
-      }
-      return [];
-    }
-  },
-
-  /**
-   * Get personalized name recommendations for a user
-   * @param {string} userName - The username
-   * @param {number} limit - Maximum number of recommendations to return
-   * @returns {Array} Array of recommended names with scores and reasoning
-   */
-  async getPersonalizedRecommendations(userName, limit = 10) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      const { data, error } = await supabase.rpc(
-        "get_personalized_recommendations",
-        {
-          p_user_name: userName,
-          p_limit: limit,
-        },
-      );
-
-      if (error) {
-        console.error("Error getting personalized recommendations:", error);
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error getting personalized recommendations:", error);
-      }
-      return [];
-    }
-  },
-
-  /**
-   * Get selection analytics dashboard data
-   * @returns {Object} Dashboard statistics and metrics
-   */
-  async getSelectionDashboard() {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return null;
-      }
-
-      const { data, error } = await supabase
-        .from("selection_summary")
-        .select("*")
-        .single();
-
-      if (error) {
-        console.error("Error getting selection dashboard:", error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      if (isDev) {
-        console.error("Error getting selection dashboard:", error);
-      }
-      return null;
-    }
-  },
-
-  /**
-   * Get popular names based on selections
-   * @param {number} limit - Maximum number of names to return
-   * @returns {Array} Array of popular names with selection metrics
-   */
-  async getPopularNamesBySelections(limit = 20) {
-    try {
-      if (!(await isSupabaseAvailable())) {
-        return [];
-      }
-
-      const { data, error } = await supabase
-        .from("popular_names_by_selections")
-        .select("*")
-        .limit(limit);
-
-      if (error) {
-        console.error("Error getting popular names:", error);
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      if (isDev) {
-        console.error("Error getting popular names:", error);
-      }
-      return [];
     }
   },
 };
@@ -1784,12 +1554,14 @@ export const adminAPI = {
 
       let query = supabase
         .from("cat_app_users")
-        .select(`
+        .select(
+          `
           user_name, 
           created_at, 
           updated_at,
           user_roles!inner(role)
-        `)
+        `,
+        )
         .order("user_name", { ascending: true });
 
       if (searchTerm) {
