@@ -12,6 +12,7 @@ import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { formatRelativeTime } from "../../utils/timeUtils";
 import { getRankDisplay } from "../../utils/displayUtils";
+import { devError } from "../../utils/logger";
 import { STORAGE_KEYS } from "../../../core/constants";
 import "./AdminAnalytics.css";
 
@@ -85,9 +86,7 @@ export function AdminAnalytics({ isAdmin = false }) {
       setSiteStats(stats);
       setLastRefresh(new Date());
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("Failed to fetch admin analytics:", error);
-      }
+      devError("Failed to fetch admin analytics:", error);
     } finally {
       setIsLoading(false);
     }

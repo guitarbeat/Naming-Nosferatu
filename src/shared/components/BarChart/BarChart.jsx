@@ -69,11 +69,7 @@ export function BarChart({
 
 BarChart.propTypes = {
   title: PropTypes.string,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    })
-  ).isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
   valueKey: PropTypes.string,
   labelKey: PropTypes.string,
   maxItems: PropTypes.number,

@@ -13,6 +13,10 @@ import { BarChart } from "../BarChart";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { STORAGE_KEYS } from "../../../core/constants";
+import { devError } from "../../utils/logger";
+import { calculateWinRate } from "../../utils/displayUtils";
+import { topN } from "../../utils/arrayUtils";
+import { nameItemShape } from "../../propTypes";
 
 /**
  * Analysis Dashboard Component
@@ -57,9 +61,7 @@ export function AnalysisDashboard({
         setLeaderboardData(leaderboard);
         setSelectionPopularity(popularity);
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch analytics:", error);
-        }
+        devError("Failed to fetch analytics:", error);
       } finally {
         setIsLoading(false);
       }
@@ -71,36 +73,31 @@ export function AnalysisDashboard({
   // Transform leaderboard data into chart format
   const globalTopRated = useMemo(() => {
     if (!leaderboardData?.length) return null;
-    return leaderboardData
-      .filter((item) => item.avg_rating > 1500)
-      .slice(0, 5)
-      .map((item) => ({
-        id: item.name_id,
-        name: item.name,
-        value: item.avg_rating,
-        avg_rating: item.avg_rating,
-        total_ratings: item.total_ratings,
-      }));
+    const filtered = leaderboardData.filter((item) => item.avg_rating > 1500);
+    return topN(filtered, "avg_rating", 5).map((item) => ({
+      id: item.name_id,
+      name: item.name,
+      value: item.avg_rating,
+      avg_rating: item.avg_rating,
+      total_ratings: item.total_ratings,
+    }));
   }, [leaderboardData]);
 
   const globalMostWins = useMemo(() => {
     if (!leaderboardData?.length) return null;
-    return [...leaderboardData]
-      .filter((item) => item.wins > 0)
-      .sort((a, b) => b.wins - a.wins)
-      .slice(0, 5)
-      .map((item) => ({
-        id: item.name_id,
-        name: item.name,
-        value: item.wins,
-        avg_rating: item.avg_rating,
-      }));
+    const filtered = leaderboardData.filter((item) => item.wins > 0);
+    return topN(filtered, "wins", 5).map((item) => ({
+      id: item.name_id,
+      name: item.name,
+      value: item.wins,
+      avg_rating: item.avg_rating,
+    }));
   }, [leaderboardData]);
 
   // Transform selection popularity into chart format
   const mostSelected = useMemo(() => {
     if (!selectionPopularity?.length) return null;
-    return selectionPopularity.slice(0, 5).map((item) => ({
+    return topN(selectionPopularity, "times_selected", 5).map((item) => ({
       id: item.name_id,
       name: item.name,
       value: item.times_selected,
@@ -147,12 +144,8 @@ export function AnalysisDashboard({
     const totalWins = stats?.total_wins || 0;
     const totalLosses = stats?.total_losses || 0;
     if (totalWins > 0 || totalLosses > 0) {
-      const winRate =
-        totalWins + totalLosses > 0
-          ? Math.round((totalWins / (totalWins + totalLosses)) * 100)
-          : 0;
       items.push({
-        value: `${winRate}%`,
+        value: `${calculateWinRate(totalWins, totalLosses)}%`,
         label: "Win Rate",
       });
     }
@@ -261,20 +254,8 @@ AnalysisDashboard.propTypes = {
     totalSelections: PropTypes.number,
   }),
   highlights: PropTypes.shape({
-    topRated: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        name: PropTypes.string,
-        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      }),
-    ),
-    mostWins: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        name: PropTypes.string,
-        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      }),
-    ),
+    topRated: PropTypes.arrayOf(nameItemShape),
+    mostWins: PropTypes.arrayOf(nameItemShape),
   }),
   userName: PropTypes.string,
   showGlobalLeaderboard: PropTypes.bool,
