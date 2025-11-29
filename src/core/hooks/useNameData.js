@@ -218,8 +218,10 @@ export function useNameData({
       }
 
       // * Create Set of hidden IDs for O(1) lookup
+      // For tournament mode, hiddenData comes from cat_name_options query (has 'id')
+      // For profile mode, hiddenData is mapped from names (has 'name_id')
       const hiddenIdsSet = new Set(
-        hiddenData?.map((item) => item.name_id) || [],
+        hiddenData?.map((item) => item.id || item.name_id) || [],
       );
 
       // * Filter out hidden names (tournament mode only - profile shows all)

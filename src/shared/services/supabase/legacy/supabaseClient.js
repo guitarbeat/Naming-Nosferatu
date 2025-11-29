@@ -276,6 +276,7 @@ export const catNamesAPI = {
 
       // Build query - filter out globally hidden names directly from cat_name_options.is_hidden
       // This is more efficient than a separate query to cat_name_ratings
+      // Only select columns that exist in the schema
       const { data, error } = await client
         .from("cat_name_options")
         .select(
@@ -285,8 +286,6 @@ export const catNamesAPI = {
         description,
         created_at,
         avg_rating,
-        popularity_score,
-        total_tournaments,
         is_active,
         is_hidden
       `,
@@ -579,23 +578,16 @@ export const catNamesAPI = {
         return topNames || [];
       }
 
-      // Use direct query with aggregations - optimized with idx_ratings_leaderboard covering index
+      // Query cat_name_options with avg_rating (which exists on that table)
+      // cat_name_ratings has: name_id, user_name, rating, wins, losses, is_hidden, updated_at
+      // cat_name_options has: id, name, description, avg_rating, is_active, is_hidden, category, etc.
       const { data, error } = await supabase
-        .from("cat_name_ratings")
-        .select(
-          `
-          name_id,
-          cat_name_options!inner (
-            id,
-            name,
-            description,
-            category
-          )
-        `,
-        )
-        .gte("total_ratings", minTournaments)
+        .from("cat_name_options")
+        .select("id, name, description, avg_rating, category")
+        .eq("is_active", true)
+        .eq("is_hidden", false)
+        .gte("avg_rating", 1500) // Only names with meaningful ratings
         .order("avg_rating", { ascending: false })
-        .order("total_ratings", { ascending: false })
         .limit(limit);
 
       if (error) {
@@ -606,14 +598,14 @@ export const catNamesAPI = {
       // Transform data to match expected format
       return (
         data?.map((row) => ({
-          name_id: row.name_id,
-          name: row.cat_name_options?.name,
-          description: row.cat_name_options?.description,
-          category: row.cat_name_options?.category,
-          avg_rating: row.avg_rating,
-          total_ratings: row.total_ratings,
-          wins: row.wins,
-          losses: row.losses,
+          name_id: row.id,
+          name: row.name,
+          description: row.description,
+          category: row.category,
+          avg_rating: row.avg_rating || 1500,
+          total_ratings: 0, // Not tracked per-name anymore
+          wins: 0,
+          losses: 0,
         })) || []
       );
     } catch (error) {
@@ -688,8 +680,6 @@ export const catNamesAPI = {
           description,
           created_at,
           avg_rating,
-          popularity_score,
-          total_tournaments,
           is_active,
           is_hidden,
           cat_name_ratings!left (
@@ -730,6 +720,8 @@ export const catNamesAPI = {
 
           return {
             ...item,
+            popularity_score: 0, // Not tracked anymore
+            total_tournaments: 0, // Not tracked anymore
             user_rating: userRating?.rating || null,
             user_wins: userRating?.wins || 0,
             user_losses: userRating?.losses || 0,
@@ -881,6 +873,7 @@ export const catNamesAPI = {
       }
 
       // Get names with Aaron's ratings, ordered by his rating (highest first)
+      // Only select columns that exist in the schema
       const { data, error } = await supabase
         .from("cat_name_options")
         .select(
@@ -890,9 +883,8 @@ export const catNamesAPI = {
           description,
           created_at,
           avg_rating,
-          popularity_score,
-          total_tournaments,
           is_active,
+          is_hidden,
           cat_name_ratings!inner (
             user_name,
             rating,
@@ -916,11 +908,13 @@ export const catNamesAPI = {
       return (
         data?.map((item) => ({
           ...item,
+          popularity_score: 0, // Not tracked anymore
+          total_tournaments: 0, // Not tracked anymore
           user_rating: item.cat_name_ratings[0]?.rating || 0,
           user_wins: item.cat_name_ratings[0]?.wins || 0,
           user_losses: item.cat_name_ratings[0]?.losses || 0,
           updated_at: item.cat_name_ratings[0]?.updated_at || null,
-          isHidden: false,
+          isHidden: item.is_hidden || false,
           has_user_rating: true,
         })) || []
       );
@@ -1273,26 +1267,20 @@ export const tournamentsAPI = {
 
   /**
    * Get user tournaments from tournament_selections table
+   * Groups selections by tournament_id to reconstruct tournament data
    */
-  async getUserTournaments(userName, status = null) {
+  async getUserTournaments(userName, _status = null) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
       }
 
-      // Build query for tournament_selections table
-      let query = supabase
+      // Query tournament_selections - actual columns: id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at
+      const { data, error } = await supabase
         .from("tournament_selections")
-        .select("*")
+        .select("id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at")
         .eq("user_name", userName)
         .order("created_at", { ascending: false });
-
-      // Filter by status if specified
-      if (status) {
-        query = query.eq("status", status);
-      }
-
-      const { data, error } = await query;
 
       if (error) {
         // If table doesn't exist, return empty array
@@ -1305,19 +1293,27 @@ export const tournamentsAPI = {
         throw error;
       }
 
-      // Transform data to match expected format
-      const tournaments = (data || []).map((row) => ({
-        id: row.id,
-        user_name: row.user_name,
-        tournament_name: row.tournament_name || `Tournament ${row.id}`,
-        selected_names: row.selected_names || [],
-        participant_names: row.participant_names || [],
-        status: row.status || "completed",
-        created_at: row.created_at,
-        completed_at: row.completed_at,
-      }));
+      // Group selections by tournament_id to reconstruct tournaments
+      const tournamentMap = new Map();
+      (data || []).forEach((row) => {
+        if (!tournamentMap.has(row.tournament_id)) {
+          tournamentMap.set(row.tournament_id, {
+            id: row.tournament_id,
+            user_name: row.user_name,
+            tournament_name: `Tournament ${row.tournament_id.slice(0, 8)}`,
+            selected_names: [],
+            participant_names: [],
+            status: "completed", // Default status since table doesn't track it
+            created_at: row.created_at,
+            completed_at: row.selected_at,
+          });
+        }
+        const tournament = tournamentMap.get(row.tournament_id);
+        tournament.selected_names.push(row.name);
+        tournament.participant_names.push({ id: row.name_id, name: row.name });
+      });
 
-      return tournaments;
+      return Array.from(tournamentMap.values());
     } catch (error) {
       if (isDev) {
         console.error("Error fetching tournaments:", error);
@@ -1337,6 +1333,16 @@ export const tournamentsAPI = {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
+      }
+
+      // Set user context for RLS policies
+      const { error: contextError } = await supabase.rpc("set_user_context", {
+        user_name_param: userName,
+      });
+
+      if (contextError) {
+        console.warn("Failed to set user context:", contextError);
+        // Continue anyway - some operations may still work
       }
 
       const now = new Date().toISOString();
@@ -1408,15 +1414,15 @@ export const deleteName = async (nameId) => {
       throw new Error("Name does not exist in database");
     }
 
-    // Check if name is hidden
-    const { data: hiddenData, error: hiddenError } = await supabase
-      .from("cat_name_ratings")
-      .select("*")
-      .eq("name_id", nameId)
-      .eq("is_hidden", true);
+    // Check if name is globally hidden (cat_name_options.is_hidden)
+    const { data: nameWithHidden, error: hiddenError } = await supabase
+      .from("cat_name_options")
+      .select("is_hidden")
+      .eq("id", nameId)
+      .single();
 
     if (hiddenError) throw hiddenError;
-    if (!hiddenData || hiddenData.length === 0) {
+    if (!nameWithHidden?.is_hidden) {
       throw new Error("Cannot delete name that is not hidden");
     }
 
@@ -1552,34 +1558,58 @@ export const adminAPI = {
         return [];
       }
 
-      let query = supabase
+      // Fetch users and roles separately (no FK relationship exists)
+      let usersQuery = supabase
         .from("cat_app_users")
-        .select(
-          `
-          user_name, 
-          created_at, 
-          updated_at,
-          user_roles!inner(role)
-        `,
-        )
+        .select("user_name, created_at, updated_at")
         .order("user_name", { ascending: true });
 
       if (searchTerm) {
-        query = query.ilike("user_name", `%${searchTerm}%`);
+        usersQuery = usersQuery.ilike("user_name", `%${searchTerm}%`);
       }
 
       if (Number.isFinite(limit) && limit > 0) {
-        query = query.limit(limit);
+        usersQuery = usersQuery.limit(limit);
       }
 
-      const { data, error } = await query;
+      const { data: users, error: usersError } = await usersQuery;
 
-      if (error) {
-        console.error("Error fetching user list for admin:", error);
+      if (usersError) {
+        console.error("Error fetching user list for admin:", usersError);
         return [];
       }
 
-      return Array.isArray(data) ? data : [];
+      if (!Array.isArray(users) || users.length === 0) {
+        return [];
+      }
+
+      // Fetch roles for these users
+      const userNames = users.map((u) => u.user_name);
+      const { data: roles, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_name, role")
+        .in("user_name", userNames);
+
+      if (rolesError) {
+        console.error("Error fetching user roles:", rolesError);
+        // Return users without roles rather than failing completely
+        return users.map((u) => ({ ...u, user_roles: [] }));
+      }
+
+      // Create a map of user_name -> roles
+      const roleMap = new Map();
+      (roles || []).forEach((r) => {
+        if (!roleMap.has(r.user_name)) {
+          roleMap.set(r.user_name, []);
+        }
+        roleMap.get(r.user_name).push({ role: r.role });
+      });
+
+      // Merge users with their roles
+      return users.map((u) => ({
+        ...u,
+        user_roles: roleMap.get(u.user_name) || [],
+      }));
     } catch (error) {
       console.error("Unexpected error fetching user list for admin:", error);
       return [];
