@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 
-const { fromMock } = vi.hoisted(() => {
-  return { fromMock: vi.fn() };
+const { fromMock, supabaseMock } = vi.hoisted(() => {
+  const fromMock = vi.fn();
+  return { 
+    fromMock,
+    supabaseMock: { from: fromMock }
+  };
 });
 
 vi.mock("./supabaseClientIsolated.js", () => ({
-  supabase: {
-    from: fromMock,
-  },
+  supabase: supabaseMock,
 }));
 
 import { catNamesAPI } from "./catNamesAPI.js";
@@ -27,137 +29,53 @@ describe("catNamesAPI.getNamesWithDescriptions", () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it("returns all names when no hidden ids exist", async () => {
-    const hiddenQuery = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
-
-    const visibleNames = [{ id: 1, name: "Mittens" }];
-
-    const namesQuery = {
-      select: vi.fn().mockReturnThis(),
-      not: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: visibleNames, error: null }),
-    };
-
-    fromMock.mockImplementation((table) => {
-      if (table === "cat_name_ratings") {
-        return hiddenQuery;
-      }
-      if (table === "cat_names") {
-        return namesQuery;
-      }
-      throw new Error(`Unexpected table: ${table}`);
-    });
-
-    const result = await catNamesAPI.getNamesWithDescriptions();
-
-    expect(result).toEqual(visibleNames);
-    expect(namesQuery.not).not.toHaveBeenCalled();
-    expect(namesQuery.order).toHaveBeenCalledWith("name", { ascending: true });
-  });
-
-  it("excludes hidden ids and quotes string values safely", async () => {
-    const hiddenIds = [42, "alpha", "550e8400-e29b-41d4-a716-446655440000"];
-
-    const hiddenQuery = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({
-        data: hiddenIds.map((id) => ({ name_id: id })),
-        error: null,
-      }),
-    };
-
+  it("returns visible names when includeHidden is false (default)", async () => {
     const visibleNames = [
-      { id: 7, name: "Visible Cat" },
-      { id: 9, name: "Another Cat" },
+      { id: 1, name: "Mittens", is_hidden: false },
+      { id: 2, name: "Whiskers", is_hidden: false },
     ];
 
-    const namesQuery = {
-      select: vi.fn().mockReturnThis(),
-      not: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: visibleNames, error: null }),
-    };
+    // Create a chainable mock that tracks calls
+    const eqMock = vi.fn().mockResolvedValue({ data: visibleNames, error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
 
-    fromMock.mockImplementation((table) => {
-      if (table === "cat_name_ratings") {
-        return hiddenQuery;
-      }
-      if (table === "cat_names") {
-        return namesQuery;
-      }
-      throw new Error(`Unexpected table: ${table}`);
-    });
+    fromMock.mockReturnValue({ select: selectMock });
 
     const result = await catNamesAPI.getNamesWithDescriptions();
 
     expect(result).toEqual(visibleNames);
-    expect(namesQuery.not).toHaveBeenCalledWith(
-      "id",
-      "in",
-      "('42','alpha','550e8400-e29b-41d4-a716-446655440000')",
-    );
-    expect(namesQuery.order).toHaveBeenCalledWith("name", { ascending: true });
+    expect(fromMock).toHaveBeenCalledWith("cat_name_options");
+    expect(selectMock).toHaveBeenCalledWith("*");
+    expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
+    expect(eqMock).toHaveBeenCalledWith("is_hidden", false);
   });
 
-  it("escapes single quotes in hidden ids when building the filter", async () => {
-    const hiddenQuery = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({
-        data: [{ name_id: "O'Malley" }, { name_id: 5 }],
-        error: null,
-      }),
-    };
+  it("returns all names including hidden when includeHidden is true", async () => {
+    const allNames = [
+      { id: 1, name: "Mittens", is_hidden: false },
+      { id: 2, name: "Shadow", is_hidden: true },
+    ];
 
-    const namesQuery = {
-      select: vi.fn().mockReturnThis(),
-      not: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
+    // When includeHidden is true, eq is not called, so order resolves directly
+    const orderMock = vi.fn().mockResolvedValue({ data: allNames, error: null });
+    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
 
-    fromMock.mockImplementation((table) => {
-      if (table === "cat_name_ratings") {
-        return hiddenQuery;
-      }
-      if (table === "cat_names") {
-        return namesQuery;
-      }
-      throw new Error(`Unexpected table: ${table}`);
-    });
+    fromMock.mockReturnValue({ select: selectMock });
 
-    await catNamesAPI.getNamesWithDescriptions();
+    const result = await catNamesAPI.getNamesWithDescriptions(true);
 
-    expect(namesQuery.not).toHaveBeenCalledWith(
-      "id",
-      "in",
-      "('O''Malley','5')",
-    );
+    expect(result).toEqual(allNames);
+    expect(fromMock).toHaveBeenCalledWith("cat_name_options");
+    expect(orderMock).toHaveBeenCalledWith("name", { ascending: true });
   });
 
-  it("returns an empty array and logs when the names query fails", async () => {
-    const hiddenQuery = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
+  it("returns an empty array and logs when the query fails", async () => {
+    const eqMock = vi.fn().mockResolvedValue({ data: null, error: new Error("Database error") });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
 
-    const namesQuery = {
-      select: vi.fn().mockReturnThis(),
-      not: vi.fn().mockReturnThis(),
-      order: vi
-        .fn()
-        .mockResolvedValue({ data: null, error: new Error("boom") }),
-    };
-
-    fromMock.mockImplementation((table) => {
-      if (table === "cat_name_ratings") {
-        return hiddenQuery;
-      }
-      if (table === "cat_names") {
-        return namesQuery;
-      }
-      throw new Error(`Unexpected table: ${table}`);
-    });
+    fromMock.mockReturnValue({ select: selectMock });
 
     const result = await catNamesAPI.getNamesWithDescriptions();
 
@@ -165,36 +83,15 @@ describe("catNamesAPI.getNamesWithDescriptions", () => {
     expect(consoleErrorSpy).toHaveBeenCalled();
   });
 
-  it('queries the correct "cat_names" table', async () => {
-    const hiddenQuery = {
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ data: [], error: null }),
-    };
-    const namesQuery = {
-      select: vi.fn().mockReturnThis(),
-      order: vi.fn().mockResolvedValue({ data: [], error: null }),
-      not: vi.fn().mockReturnThis(),
-    };
+  it("queries the cat_name_options table", async () => {
+    const eqMock = vi.fn().mockResolvedValue({ data: [], error: null });
+    const orderMock = vi.fn().mockReturnValue({ eq: eqMock });
+    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
 
-    fromMock.mockImplementation((table) => {
-      if (table === "cat_name_ratings") {
-        return hiddenQuery;
-      }
-      if (table === "cat_names") {
-        return namesQuery;
-      }
-      // Return a dummy mock for any other table to avoid errors in the test
-      return {
-        select: vi.fn().mockReturnThis(),
-        not: vi.fn().mockReturnThis(),
-        order: vi.fn().mockResolvedValue({ data: [], error: null }),
-      };
-    });
+    fromMock.mockReturnValue({ select: selectMock });
 
     await catNamesAPI.getNamesWithDescriptions();
 
-    const fromMockCalls = fromMock.mock.calls;
-    const calledTables = fromMockCalls.map((call) => call[0]);
-    expect(calledTables).toContain("cat_names");
+    expect(fromMock).toHaveBeenCalledWith("cat_name_options");
   });
 });

@@ -113,22 +113,16 @@ export function useNameData({
       let hiddenData;
 
       if (mode === "tournament") {
-        // Tournament mode: fetch all names (global hidden names are already filtered by getNamesWithDescriptions)
+        // Tournament mode: fetch ALL names including hidden (UI will filter based on admin status)
         try {
           const { promise: fetchTimeout, timeoutId: fetchTimeoutId } =
             createTimeout(15000, "Data fetch timeout after 15 seconds");
 
-          // getNamesWithDescriptions already filters out globally hidden names (cat_name_options.is_hidden)
-          // Also fetch the hidden count for logging purposes
-          const fetchPromise = Promise.all([
-            getNamesWithDescriptions(),
-            supabaseClient
-              .from("cat_name_options")
-              .select("id")
-              .eq("is_hidden", true),
-          ]);
+          // Fetch all names including hidden - UI will handle visibility filtering
+          // This allows admins to see and manage hidden names
+          const fetchPromise = getNamesWithDescriptions(true); // includeHidden = true
 
-          const result = await Promise.race([fetchPromise, fetchTimeout]);
+          namesData = await Promise.race([fetchPromise, fetchTimeout]);
 
           // * Clear timeout on successful resolution
           if (fetchTimeoutId) {
@@ -136,13 +130,6 @@ export function useNameData({
             const index = timeoutIdsRef.current.indexOf(fetchTimeoutId);
             if (index > -1) timeoutIdsRef.current.splice(index, 1);
           }
-
-          // * Destructure result safely
-          const [namesResult, hiddenResult] = result;
-          namesData = namesResult;
-          const hiddenDataResult = hiddenResult || {};
-          hiddenData = hiddenDataResult.data;
-          const hiddenError = hiddenDataResult.error;
 
           // * Check if we got fallback names (indicates backend issue)
           if (
@@ -160,13 +147,8 @@ export function useNameData({
             // Continue with fallback names - they're already in the correct format
           }
 
-          if (hiddenError) {
-            // Hidden names query error is non-critical, just log it
-            if (process.env.NODE_ENV === "development") {
-              console.warn("⚠️ Error fetching hidden names:", hiddenError);
-            }
-            hiddenData = [];
-          }
+          // Hidden data is now included in namesData via is_hidden property
+          hiddenData = [];
         } catch (timeoutError) {
           clearAllTimeouts();
           // Only use fallback if we truly timed out
@@ -217,21 +199,13 @@ export function useNameData({
         throw new Error("Invalid response: namesData is not an array");
       }
 
-      // * Create Set of hidden IDs for O(1) lookup
-      // For tournament mode, hiddenData comes from cat_name_options query (has 'id')
-      // For profile mode, hiddenData is mapped from names (has 'name_id')
+      // * Create Set of hidden IDs for O(1) lookup (from is_hidden property)
       const hiddenIdsSet = new Set(
-        hiddenData?.map((item) => item.id || item.name_id) || [],
+        namesData.filter((name) => name.is_hidden === true).map((name) => name.id),
       );
 
-      // * Filter out hidden names (tournament mode only - profile shows all)
-      let filteredNames = namesData;
-      if (mode === "tournament") {
-        filteredNames = namesData.filter((name) => !hiddenIdsSet.has(name.id));
-      }
-
       // * Sort names alphabetically for better UX
-      const sortedNames = filteredNames.sort((a, b) =>
+      const sortedNames = [...namesData].sort((a, b) =>
         (a?.name || "").localeCompare(b?.name || ""),
       );
 

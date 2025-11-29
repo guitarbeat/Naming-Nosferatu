@@ -22,20 +22,26 @@ const isSupabaseAvailable = () => {
 export const catNamesAPI = {
   /**
    * Get all names with descriptions and ratings (hidden names are filtered out globally)
+   * @param {boolean} includeHidden - If true, include hidden names (for admin views)
    */
-  async getNamesWithDescriptions() {
+  async getNamesWithDescriptions(includeHidden = false) {
     try {
       if (!isSupabaseAvailable()) {
         return [];
       }
 
-      // Global hidden names are stored directly on cat_name_options.is_hidden
-      // Filter them out directly in the query instead of a separate lookup
-      const { data: namesData, error: namesError } = await supabase
+      // Build query - optionally include hidden names for admin views
+      let query = supabase
         .from("cat_name_options")
         .select("*")
-        .eq("is_hidden", false)
         .order("name", { ascending: true });
+
+      // Only filter out hidden names if not requesting them
+      if (!includeHidden) {
+        query = query.eq("is_hidden", false);
+      }
+
+      const { data: namesData, error: namesError } = await query;
 
       if (namesError) {
         console.error("Error fetching names from cat_name_options:", namesError);

@@ -131,9 +131,10 @@ const isSupabaseAvailable = async () => {
  */
 export const catNamesAPI = {
   /**
-   * Get all names with descriptions and ratings (hidden names are filtered out globally)
+   * Get all names with descriptions and ratings
+   * @param {boolean} includeHidden - If true, include hidden names (for admin views)
    */
-  async getNamesWithDescriptions() {
+  async getNamesWithDescriptions(includeHidden = false) {
     try {
       // * Get the Supabase client (reuses existing instance)
       const client = await resolveSupabaseClient();
@@ -277,7 +278,8 @@ export const catNamesAPI = {
       // Build query - filter out globally hidden names directly from cat_name_options.is_hidden
       // This is more efficient than a separate query to cat_name_ratings
       // Only select columns that exist in the schema
-      const { data, error } = await client
+      // Build query - optionally include hidden names for admin views
+      let query = client
         .from("cat_name_options")
         .select(
           `
@@ -291,8 +293,14 @@ export const catNamesAPI = {
       `,
         )
         .eq("is_active", true)
-        .eq("is_hidden", false) // Filter out globally hidden names
         .order("avg_rating", { ascending: false });
+
+      // Only filter out hidden names if not requesting them
+      if (!includeHidden) {
+        query = query.eq("is_hidden", false);
+      }
+
+      const { data, error } = await query;
 
       // Count hidden names for logging
       const { count: hiddenCount } = await client

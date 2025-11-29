@@ -17,16 +17,14 @@ describe("CalendarButton", () => {
 
   it("excludes hidden names from the calendar payload", () => {
     const rankings = [
-      { id: 1, name: "Whiskers", rating: 1600 },
-      { id: 2, name: "Shadow", rating: 1500 },
+      { id: 1, name: "Whiskers", rating: 1600, is_hidden: false },
+      { id: 2, name: "Shadow", rating: 1500, is_hidden: true },
     ];
-    const hiddenNames = new Set([2]);
 
     const { getByRole } = render(
       <CalendarButton
         rankings={rankings}
         userName="Test User"
-        hiddenNames={hiddenNames}
       />,
     );
 
@@ -44,18 +42,16 @@ describe("CalendarButton", () => {
 
   it("lists visible names by descending rating and aligns winner with details", () => {
     const rankings = [
-      { id: 1, name: "Luna", rating: 1675.4 },
-      { id: 2, name: "Milo", rating: 1801.2 },
-      { id: 3, name: "Bella", rating: 1720.6 },
-      { id: 4, name: "Oliver", rating: 1500 },
+      { id: 1, name: "Luna", rating: 1675.4, is_hidden: false },
+      { id: 2, name: "Milo", rating: 1801.2, is_hidden: false },
+      { id: 3, name: "Bella", rating: 1720.6, is_hidden: false },
+      { id: 4, name: "Oliver", rating: 1500, is_hidden: true },
     ];
-    const hiddenNames = new Set([4]);
 
     const { getByRole } = render(
       <CalendarButton
         rankings={rankings}
         userName="Test User"
-        hiddenNames={hiddenNames}
       />,
     );
 
@@ -69,7 +65,7 @@ describe("CalendarButton", () => {
     const text = params.get("text");
 
     const visibleRankings = rankings
-      .filter((name) => !hiddenNames.has(name.id))
+      .filter((name) => !name.is_hidden)
       .sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
     const expectedLines = visibleRankings.map(
       (name, index) =>
@@ -87,5 +83,50 @@ describe("CalendarButton", () => {
 
     expect(detailLines[0]).toBe(expectedWinnerLine);
     expect(text).toBe(`🐈‍⬛ ${visibleRankings[0].name}`);
+  });
+
+  it("filters out hidden names from calendar export", () => {
+    const rankings = [
+      { id: 1, name: "Whiskers", rating: 1600 },
+      { id: 2, name: "Shadow", rating: 1500, is_hidden: true },
+    ];
+
+    const { getByRole } = render(
+      <CalendarButton
+        rankings={rankings}
+        userName="Test User"
+      />,
+    );
+
+    const button = getByRole("button");
+    expect(button).toBeInTheDocument();
+  });
+
+  it("handles empty rankings gracefully", () => {
+    const rankings = [
+      { id: 3, name: "Mittens", rating: 1400 },
+      { id: 4, name: "Oliver", rating: 1500, is_hidden: true },
+    ];
+
+    const { getByRole } = render(
+      <CalendarButton
+        rankings={rankings}
+        userName="Test User"
+      />,
+    );
+
+    const button = getByRole("button");
+    expect(button).toBeInTheDocument();
+
+    // Verify that only visible names are included
+    const visibleRankings = rankings
+      .filter((name) => !name.is_hidden)
+      .sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
+    const expectedLines = visibleRankings.map(
+      (name, index) =>
+        `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+    );
+
+    expect(expectedLines).toEqual(["1. Mittens (Rating: 1400)"]);
   });
 });
