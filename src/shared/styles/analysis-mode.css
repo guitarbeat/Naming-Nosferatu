@@ -213,7 +213,7 @@ body:has(.analysis-mode-banner)::after {
    ========================================================================== */
 .analysis-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--analysis-gap-sm);
 }
 
@@ -744,7 +744,7 @@ body:has(.analysis-mode-banner)::after {
   }
 
   .analysis-stats {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .analysis-toolbar {
@@ -773,7 +773,7 @@ body:has(.analysis-mode-banner)::after {
 
 @media (width <= 480px) {
   .analysis-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .analysis-highlights {
