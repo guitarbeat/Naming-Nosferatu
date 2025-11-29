@@ -12,8 +12,7 @@ import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { BarChart } from "../BarChart";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
-
-const STORAGE_KEY = "analysis-dashboard-collapsed";
+import { STORAGE_KEYS } from "../../../core/constants";
 
 /**
  * Analysis Dashboard Component
@@ -39,7 +38,10 @@ export function AnalysisDashboard({
   const [isLoading, setIsLoading] = useState(false);
   
   // Collapsed state with localStorage persistence
-  const { isCollapsed, toggleCollapsed } = useCollapsible(STORAGE_KEY, defaultCollapsed);
+  const { isCollapsed, toggleCollapsed } = useCollapsible(
+    STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
+    defaultCollapsed
+  );
 
   // Fetch global leaderboard and selection popularity data on mount
   useEffect(() => {

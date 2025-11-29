@@ -23,6 +23,7 @@ import { useNameData } from "../../../core/hooks/useNameData";
 import { useNameSelection } from "../../../core/hooks/useNameSelection";
 import useAppStore from "../../../core/store/useAppStore";
 import { useRouting } from "@hooks/useRouting";
+import { exportTournamentResultsToCSV } from "../../utils/exportUtils";
 import styles from "./NameManagementView.module.css";
 
 // * Context for providing data to extensions
@@ -524,42 +525,7 @@ export function NameManagementView({
               {typeof extensions.bulkActions === "function"
                 ? extensions.bulkActions({
                     onExport: () => {
-                      const headers = [
-                        "Name",
-                        "Rating",
-                        "Wins",
-                        "Losses",
-                        "Matches",
-                      ];
-                      const csvContent = [
-                        headers.join(","),
-                        ...displayNames.map((name) =>
-                          [
-                            `"${name.name}"`,
-                            name.rating || 0,
-                            name.wins || 0,
-                            name.losses || 0,
-                            name.matches || 0,
-                          ].join(","),
-                        ),
-                      ].join("\n");
-
-                      const blob = new Blob([csvContent], {
-                        type: "text/csv;charset=utf-8;",
-                      });
-                      const link = document.createElement("a");
-                      if (link.download !== undefined) {
-                        const url = URL.createObjectURL(blob);
-                        link.setAttribute("href", url);
-                        link.setAttribute(
-                          "download",
-                          `naming_nosferatu_export_${new Date().toISOString().split("T")[0]}.csv`,
-                        );
-                        link.style.visibility = "hidden";
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                      }
+                      exportTournamentResultsToCSV(displayNames, "naming_nosferatu_export");
                     },
                   })
                 : extensions.bulkActions}

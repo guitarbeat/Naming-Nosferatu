@@ -53,7 +53,46 @@ export function formatDuration(ms) {
   return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
 }
 
+/**
+ * Format a date to locale date string
+ * @param {Date|string|number} date - Date to format
+ * @param {Object} options - Intl.DateTimeFormat options
+ * @returns {string} Formatted date string
+ */
+export function formatDate(date, options = {}) {
+  if (!date) return "";
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleDateString(undefined, options);
+}
+
+/**
+ * Format a date to locale time string
+ * @param {Date|string|number} date - Date to format
+ * @param {Object} options - Intl.DateTimeFormat options
+ * @returns {string} Formatted time string
+ */
+export function formatTime(date, options = {}) {
+  if (!date) return "";
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleTimeString(undefined, options);
+}
+
+/**
+ * Format a date to locale date and time string
+ * @param {Date|string|number} date - Date to format
+ * @param {Object} options - Intl.DateTimeFormat options
+ * @returns {string} Formatted date and time string
+ */
+export function formatDateTime(date, options = {}) {
+  if (!date) return "";
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleString(undefined, options);
+}
+
 export default {
   formatRelativeTime,
   formatDuration,
+  formatDate,
+  formatTime,
+  formatDateTime,
 };

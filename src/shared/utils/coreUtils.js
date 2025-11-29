@@ -22,4 +22,20 @@ export * from "./logger";
 // * Re-export performance monitor
 export { performanceMonitor } from "./performanceMonitor";
 
-// * Default export with all utilities for backward compatibility
+// * Re-export display utilities
+export * from "./displayUtils";
+
+// * Re-export time utilities
+export * from "./timeUtils";
+
+// * Re-export platform utilities
+export * from "./platformUtils";
+
+// * Re-export export utilities
+export * from "./exportUtils";
+
+// * Re-export function utilities
+export * from "./functionUtils";
+
+// * Re-export className utilities
+export * from "./classNameUtils";

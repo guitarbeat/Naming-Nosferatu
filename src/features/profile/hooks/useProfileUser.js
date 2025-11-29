@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
-import { isUserAdmin } from "../../../shared/utils/authUtils";
+import { useAdminStatus } from "../../../shared/hooks";
 import { adminAPI } from "../../../shared/services/supabase/api";
 
 /**
@@ -14,7 +14,9 @@ import { adminAPI } from "../../../shared/services/supabase/api";
  * @returns {Object} User state and handlers
  */
 export function useProfileUser(userName) {
-  const [isAdmin, setIsAdmin] = useState(false);
+  // * Use shared admin status hook
+  const { isAdmin } = useAdminStatus(userName);
+  
   const [activeUser, setActiveUser] = useState(userName);
   const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
   const [availableUsers, setAvailableUsers] = useState([]);
@@ -82,31 +84,10 @@ export function useProfileUser(userName) {
     return [...options, ...sorted];
   }, [isAdmin, availableUsers, userName, activeUser]);
 
-  // Check if the current user is an admin
+  // * Reset active user and filter when userName changes
   useEffect(() => {
-    let isMounted = true;
-
-    const checkAdmin = async () => {
-      if (!userName) {
-        if (isMounted) {
-          setIsAdmin(false);
-        }
-        return;
-      }
-
-      const adminStatus = await isUserAdmin(userName);
-      if (isMounted) {
-        setIsAdmin(adminStatus);
-      }
-    };
-
     setActiveUser(userName || "");
     setUserFilter(FILTER_OPTIONS.USER.CURRENT);
-    void checkAdmin();
-
-    return () => {
-      isMounted = false;
-    };
   }, [userName]);
 
   // Update active user based on filter

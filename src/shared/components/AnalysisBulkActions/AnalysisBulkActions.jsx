@@ -7,42 +7,7 @@
 import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
-
-/**
- * Export names data to CSV file
- * @param {Array} names - Array of name objects to export
- * @param {string} fileName - Name of the exported file
- */
-const exportToCSV = (names, fileName = "cat-names-export") => {
-  if (!names || names.length === 0) return;
-
-  // CSV headers
-  const headers = ["Name", "Description", "Rating", "Wins", "Losses", "Hidden"];
-
-  // Convert names to CSV rows
-  const rows = names.map((name) => [
-    `"${(name.name || "").replace(/"/g, '""')}"`,
-    `"${(name.description || "").replace(/"/g, '""')}"`,
-    name.user_rating || name.avg_rating || 1500,
-    name.user_wins || name.wins || 0,
-    name.user_losses || name.losses || 0,
-    name.isHidden ? "Yes" : "No",
-  ]);
-
-  // Build CSV content
-  const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
-
-  // Create and trigger download
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${fileName}-${new Date().toISOString().split("T")[0]}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
+import { exportNamesToCSV } from "../../utils/exportUtils";
 
 /**
  * Analysis Bulk Actions Component
@@ -83,9 +48,9 @@ export function AnalysisBulkActions({
     }
 
     // Export selected names if any, otherwise export all visible names
-    const dataToExport =
-      selectedNames?.length > 0 ? selectedNames : names || [];
-    exportToCSV(dataToExport, selectedNames?.length > 0 ? "selected-names" : "all-names");
+    const dataToExport = selectedNames?.length > 0 ? selectedNames : names || [];
+    const fileName = selectedNames?.length > 0 ? "selected-names" : "all-names";
+    exportNamesToCSV(dataToExport, fileName);
   }, [onExport, names, selectedNames]);
 
   // Confirmation for bulk hide (destructive action)

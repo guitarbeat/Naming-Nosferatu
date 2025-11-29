@@ -1,15 +1,18 @@
 /**
  * @module CollapsibleSection
  * @description Reusable collapsible section component with consistent styling.
- * Used by AnalysisDashboard, AdminAnalytics, and other collapsible panels.
+ * Combines CollapsibleHeader and CollapsibleContent with built-in state management.
  */
 
 import PropTypes from "prop-types";
+import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { useCollapsible } from "../../hooks/useCollapsible";
-import "./CollapsibleSection.css";
 
 /**
  * Collapsible Section Component
+ * A convenience wrapper that combines CollapsibleHeader, CollapsibleContent,
+ * and useCollapsible hook into a single component.
+ *
  * @param {Object} props
  * @param {string} props.title - Section title
  * @param {string} props.icon - Emoji icon for the title
@@ -19,6 +22,7 @@ import "./CollapsibleSection.css";
  * @param {string} props.storageKey - localStorage key for persistence
  * @param {boolean} props.defaultCollapsed - Default collapsed state
  * @param {string} props.className - Additional CSS classes
+ * @param {string} props.variant - Style variant: 'default' | 'compact'
  */
 export function CollapsibleSection({
   title,
@@ -29,47 +33,30 @@ export function CollapsibleSection({
   storageKey = null,
   defaultCollapsed = false,
   className = "",
+  variant = "default",
 }) {
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     storageKey,
     defaultCollapsed
   );
 
-  const sectionId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}`;
+  const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;
 
   return (
-    <div className={`collapsible-section ${className}`}>
-      <div className="collapsible-section-header">
-        <button
-          type="button"
-          className="collapsible-section-toggle"
-          onClick={toggleCollapsed}
-          aria-expanded={!isCollapsed}
-          aria-controls={sectionId}
-        >
-          <span
-            className={`collapsible-section-chevron ${isCollapsed ? "collapsed" : ""}`}
-            aria-hidden="true"
-          >
-            ▼
-          </span>
-          {icon && <span aria-hidden="true">{icon}</span>}
-          <span className="collapsible-section-title">{title}</span>
-          {isCollapsed && summary && (
-            <span className="collapsible-section-summary">{summary}</span>
-          )}
-        </button>
-        {actions && (
-          <div className="collapsible-section-actions">{actions}</div>
-        )}
-      </div>
-
-      <div
-        id={sectionId}
-        className={`collapsible-section-content ${isCollapsed ? "collapsed" : ""}`}
-      >
+    <div className={className}>
+      <CollapsibleHeader
+        title={title}
+        icon={icon}
+        isCollapsed={isCollapsed}
+        onToggle={toggleCollapsed}
+        summary={summary}
+        actions={actions}
+        contentId={contentId}
+        variant={variant}
+      />
+      <CollapsibleContent id={contentId} isCollapsed={isCollapsed}>
         {children}
-      </div>
+      </CollapsibleContent>
     </div>
   );
 }
@@ -83,6 +70,7 @@ CollapsibleSection.propTypes = {
   storageKey: PropTypes.string,
   defaultCollapsed: PropTypes.bool,
   className: PropTypes.string,
+  variant: PropTypes.oneOf(["default", "compact"]),
 };
 
 export default CollapsibleSection;

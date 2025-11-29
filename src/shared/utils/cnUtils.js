@@ -1,3 +1,4 @@
-export function cn(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+/**
+ * @deprecated Import from './classNameUtils' instead
+ */
+export { cn } from "./classNameUtils";

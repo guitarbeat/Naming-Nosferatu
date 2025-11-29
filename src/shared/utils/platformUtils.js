@@ -58,10 +58,55 @@ export function getShortcutString(action) {
   return formatShortcut(shortcut.key, shortcut);
 }
 
+/**
+ * Check if a keyboard event is an activation key (Enter or Space)
+ * @param {KeyboardEvent} event - The keyboard event
+ * @returns {boolean} True if the key is Enter or Space
+ */
+export function isActivationKey(event) {
+  return event.key === "Enter" || event.key === " ";
+}
+
+/**
+ * Check if a keyboard event matches a shortcut
+ * @param {KeyboardEvent} event - The keyboard event
+ * @param {string} key - The key to match
+ * @param {Object} modifiers - Modifier keys { ctrl, shift, alt }
+ * @returns {boolean} True if the event matches the shortcut
+ */
+export function matchesShortcut(event, key, { ctrl = false, shift = false, alt = false } = {}) {
+  const isMac = isMacPlatform();
+  const ctrlKey = isMac ? event.metaKey : event.ctrlKey;
+  
+  return (
+    event.key.toLowerCase() === key.toLowerCase() &&
+    ctrlKey === ctrl &&
+    event.shiftKey === shift &&
+    event.altKey === alt
+  );
+}
+
+/**
+ * Create a keyboard event handler for activation keys
+ * @param {Function} callback - Function to call when activation key is pressed
+ * @returns {Function} Event handler function
+ */
+export function createActivationHandler(callback) {
+  return (event) => {
+    if (isActivationKey(event)) {
+      event.preventDefault();
+      callback(event);
+    }
+  };
+}
+
 export default {
   isMacPlatform,
   getModifierKey,
   formatShortcut,
   getShortcutString,
+  isActivationKey,
+  matchesShortcut,
+  createActivationHandler,
   SHORTCUTS,
 };

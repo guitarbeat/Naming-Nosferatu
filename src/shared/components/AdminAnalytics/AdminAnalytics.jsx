@@ -11,24 +11,17 @@ import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { formatRelativeTime } from "../../utils/timeUtils";
+import { getRankDisplay } from "../../utils/displayUtils";
+import { STORAGE_KEYS } from "../../../core/constants";
 import "./AdminAnalytics.css";
-
-const STORAGE_KEY = "admin-analytics-collapsed";
 
 /**
  * Popularity table row component
  */
 function PopularityRow({ item, rank }) {
-  const getRankEmoji = (r) => {
-    if (r === 1) return "🥇";
-    if (r === 2) return "🥈";
-    if (r === 3) return "🥉";
-    return r;
-  };
-
   return (
     <tr className="admin-analytics-row">
-      <td className="admin-analytics-rank">{getRankEmoji(rank)}</td>
+      <td className="admin-analytics-rank">{getRankDisplay(rank)}</td>
       <td className="admin-analytics-name" title={item.description}>
         {item.name}
       </td>
@@ -73,7 +66,10 @@ export function AdminAnalytics({ isAdmin = false }) {
   const [lastRefresh, setLastRefresh] = useState(null);
   
   // Collapsed state with localStorage persistence
-  const { isCollapsed, toggleCollapsed } = useCollapsible(STORAGE_KEY, false);
+  const { isCollapsed, toggleCollapsed } = useCollapsible(
+    STORAGE_KEYS.ADMIN_ANALYTICS_COLLAPSED,
+    false
+  );
 
   // Fetch analytics data
   const fetchAnalytics = useCallback(async () => {

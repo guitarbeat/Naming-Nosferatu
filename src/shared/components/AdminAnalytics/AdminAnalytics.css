@@ -184,103 +184,19 @@
 
 
 /* ==========================================================================
-   ADMIN ANALYTICS - Collapsible Header
+   ADMIN ANALYTICS - Header Actions (extends CollapsibleHeader)
    ========================================================================== */
-.admin-analytics-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--analysis-gap-md);
-  margin: calc(-1 * var(--analysis-gap-lg));
-  margin-bottom: 0;
-  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
-  background: var(--analysis-surface-elevated);
-  border-bottom: 1px solid var(--analysis-border);
-  border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
-}
-
-.admin-analytics-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm);
-  padding: var(--analysis-gap-xs) 0;
-  font-size: var(--analysis-text-body);
-  font-weight: var(--font-weight-semibold);
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.admin-analytics-toggle:hover {
-  color: var(--analysis-accent);
-}
-
-.admin-analytics-chevron {
-  display: inline-flex;
-  font-size: 0.75em;
-  transition: transform var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.admin-analytics-chevron.collapsed {
-  transform: rotate(-90deg);
-}
-
-.admin-analytics-summary {
-  margin-left: var(--analysis-gap-md);
-  padding-left: var(--analysis-gap-md);
-  border-left: 1px solid var(--analysis-border);
-  font-size: var(--analysis-text-caption);
-  font-weight: var(--font-weight-normal);
-  color: var(--text-secondary);
-}
-
-.admin-analytics-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm);
-}
-
 .admin-analytics-refresh-time {
   font-size: var(--analysis-text-caption);
   color: var(--text-tertiary);
 }
 
-.admin-analytics-content {
-  display: grid;
-  grid-template-rows: 1fr;
-  overflow: hidden;
-  transition: grid-template-rows var(--analysis-duration-normal) var(--analysis-ease);
-}
-
-.admin-analytics-content.collapsed {
-  grid-template-rows: 0fr;
-}
-
-.admin-analytics-content > * {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.admin-analytics-content:not(.collapsed) {
-  padding-top: var(--analysis-gap-md);
-}
-
-/* Adjust panel padding when header is present */
-.analysis-panel:has(.admin-analytics-header) {
+/* Adjust panel padding when collapsible header is present */
+.analysis-panel:has(.collapsible-header) {
   padding-top: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .admin-analytics-chevron,
-  .admin-analytics-content {
-    transition: none;
-  }
-}
-
 @media (max-width: 600px) {
-  .admin-analytics-summary,
   .admin-analytics-refresh-time {
     display: none;
   }

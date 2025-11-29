@@ -4,6 +4,24 @@
  */
 
 import { useState, useEffect } from "react";
+import { isEmptyOrNotArray, topN, sortByDate } from "../../../shared/utils/arrayUtils";
+import { formatDate } from "../../../shared/utils/timeUtils";
+
+/**
+ * Helper to transform items to chart format
+ * @param {Array} items - Items to transform
+ * @param {string|Function} valueKey - Key or getter for the value
+ * @param {Function} valueTransform - Optional transform for the value
+ * @returns {Array} Transformed items
+ */
+const toChartFormat = (items, valueKey, valueTransform = (v) => v) => {
+  const getValue = typeof valueKey === "function" ? valueKey : (n) => n[valueKey] || 0;
+  return items.map((n) => ({
+    id: n.id,
+    name: n.name,
+    value: valueTransform(getValue(n)),
+  }));
+};
 
 /**
  * * Hook for calculating profile highlights
@@ -20,45 +38,38 @@ export function useProfileHighlights(allNames) {
 
   // * Compute highlights whenever names change
   useEffect(() => {
-    if (!Array.isArray(allNames) || allNames.length === 0) {
+    if (isEmptyOrNotArray(allNames)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setHighlights({ topRated: [], mostWins: [], mostSelected: [], recent: [] });
       return;
     }
 
+    // Top rated names
     const withRatings = allNames.filter(
       (n) => typeof n.user_rating === "number" && n.user_rating !== null,
     );
-    const topRated = [...withRatings]
-      .sort((a, b) => (b.user_rating || 0) - (a.user_rating || 0))
-      .slice(0, 5)
-      .map((n) => ({
-        id: n.id,
-        name: n.name,
-        value: Math.round(n.user_rating || 0),
-      }));
+    const topRated = toChartFormat(
+      topN(withRatings, "user_rating", 5),
+      "user_rating",
+      Math.round
+    );
 
-    const mostWins = [...allNames]
-      .filter((n) => (n.user_wins || 0) > 0)
-      .sort((a, b) => (b.user_wins || 0) - (a.user_wins || 0))
-      .slice(0, 5)
-      .map((n) => ({ id: n.id, name: n.name, value: n.user_wins || 0 }));
+    // Most wins
+    const withWins = allNames.filter((n) => (n.user_wins || 0) > 0);
+    const mostWins = toChartFormat(topN(withWins, "user_wins", 5), "user_wins");
 
     // Most selected for tournaments (global popularity)
-    const mostSelected = [...allNames]
-      .filter((n) => (n.times_selected || 0) > 0)
-      .sort((a, b) => (b.times_selected || 0) - (a.times_selected || 0))
-      .slice(0, 5)
-      .map((n) => ({ id: n.id, name: n.name, value: n.times_selected || 0 }));
+    const withSelections = allNames.filter((n) => (n.times_selected || 0) > 0);
+    const mostSelected = toChartFormat(topN(withSelections, "times_selected", 5), "times_selected");
 
-    const recent = [...allNames]
-      .filter((n) => n.updated_at)
-      .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+    // Recently updated
+    const withDates = allNames.filter((n) => n.updated_at);
+    const recent = sortByDate(withDates, "updated_at", "desc")
       .slice(0, 5)
       .map((n) => ({
         id: n.id,
         name: n.name,
-        value: new Date(n.updated_at).toLocaleDateString(),
+        value: formatDate(n.updated_at),
       }));
 
     setHighlights({ topRated, mostWins, mostSelected, recent });

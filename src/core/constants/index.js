@@ -107,3 +107,15 @@ export const SOUND_EFFECTS = [
   { path: "/assets/sounds/surprise.mp3", weight: 0.1 },
   { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
 ];
+
+// * Local Storage Keys
+export const STORAGE_KEYS = {
+  USER: "catNamesUser",
+  THEME: "catNamesTheme",
+  ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
+  ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
+  SIDEBAR_COLLAPSED: "sidebar-collapsed",
+  SOUND_ENABLED: "soundEnabled",
+  MUSIC_VOLUME: "musicVolume",
+  EFFECTS_VOLUME: "effectsVolume",
+};
