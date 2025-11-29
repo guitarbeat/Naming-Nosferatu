@@ -555,7 +555,7 @@ export const catNamesAPI = {
   /**
    * Get leaderboard data using optimized direct queries with covering indexes
    */
-  async getLeaderboard(limit = 50, categoryId = null, minTournaments = 3) {
+  async getLeaderboard(limit = 50, categoryId = null, _minTournaments = 3) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -578,41 +578,305 @@ export const catNamesAPI = {
         return topNames || [];
       }
 
-      // Query cat_name_options with avg_rating (which exists on that table)
-      // cat_name_ratings has: name_id, user_name, rating, wins, losses, is_hidden, updated_at
-      // cat_name_options has: id, name, description, avg_rating, is_active, is_hidden, category, etc.
+      // Get names with their aggregated rating stats from cat_name_ratings
+      // This gives us actual user-submitted ratings, not just defaults
+      const { data: ratingStats, error: ratingError } = await supabase
+        .from("cat_name_ratings")
+        .select("name_id, rating, wins, losses");
+
+      if (ratingError) {
+        console.error("Error fetching rating stats:", ratingError);
+      }
+
+      // Aggregate ratings by name_id
+      const nameStats = new Map();
+      (ratingStats || []).forEach((r) => {
+        if (!nameStats.has(r.name_id)) {
+          nameStats.set(r.name_id, {
+            totalRating: 0,
+            count: 0,
+            totalWins: 0,
+            totalLosses: 0,
+          });
+        }
+        const stats = nameStats.get(r.name_id);
+        stats.totalRating += Number(r.rating) || 1500;
+        stats.count += 1;
+        stats.totalWins += r.wins || 0;
+        stats.totalLosses += r.losses || 0;
+      });
+
+      // Get name details from cat_name_options
       const { data, error } = await supabase
         .from("cat_name_options")
-        .select("id, name, description, avg_rating, category")
+        .select("id, name, description, avg_rating, categories")
         .eq("is_active", true)
         .eq("is_hidden", false)
-        .gte("avg_rating", 1500) // Only names with meaningful ratings
         .order("avg_rating", { ascending: false })
-        .limit(limit);
+        .limit(limit * 2); // Get more to filter
 
       if (error) {
         console.error("Error fetching leaderboard:", error);
         return [];
       }
 
-      // Transform data to match expected format
-      return (
-        data?.map((row) => ({
-          name_id: row.id,
-          name: row.name,
-          description: row.description,
-          category: row.category,
-          avg_rating: row.avg_rating || 1500,
-          total_ratings: 0, // Not tracked per-name anymore
-          wins: 0,
-          losses: 0,
-        })) || []
-      );
+      // Combine and sort by actual average rating
+      const leaderboard = (data || [])
+        .map((row) => {
+          const stats = nameStats.get(row.id);
+          const avgRating = stats
+            ? Math.round(stats.totalRating / stats.count)
+            : row.avg_rating || 1500;
+          return {
+            name_id: row.id,
+            name: row.name,
+            description: row.description,
+            category: row.categories?.[0] || null,
+            avg_rating: avgRating,
+            total_ratings: stats?.count || 0,
+            wins: stats?.totalWins || 0,
+            losses: stats?.totalLosses || 0,
+          };
+        })
+        .filter((row) => row.total_ratings > 0 || row.avg_rating > 1500) // Only names with actual ratings
+        .sort((a, b) => b.avg_rating - a.avg_rating)
+        .slice(0, limit);
+
+      return leaderboard;
     } catch (error) {
       if (isDev) {
         console.error("Error fetching leaderboard:", error);
       }
       return [];
+    }
+  },
+
+  /**
+   * Get selection popularity - which names are most frequently chosen for tournaments
+   * @param {number} limit - Maximum number of results
+   * @returns {Array} Names sorted by selection count
+   */
+  async getSelectionPopularity(limit = 20) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return [];
+      }
+
+      // Query tournament_selections to get selection counts per name
+      const { data, error } = await supabase
+        .from("tournament_selections")
+        .select("name_id, name");
+
+      if (error) {
+        console.error("Error fetching selection popularity:", error);
+        return [];
+      }
+
+      // Aggregate selections by name
+      const selectionCounts = new Map();
+      const userCounts = new Map();
+
+      (data || []).forEach((row) => {
+        const key = row.name_id;
+        if (!selectionCounts.has(key)) {
+          selectionCounts.set(key, { name_id: key, name: row.name, count: 0 });
+        }
+        selectionCounts.get(key).count += 1;
+      });
+
+      // Convert to array and sort by count
+      const results = Array.from(selectionCounts.values())
+        .sort((a, b) => b.count - a.count)
+        .slice(0, limit)
+        .map((item) => ({
+          name_id: item.name_id,
+          name: item.name,
+          times_selected: item.count,
+        }));
+
+      return results;
+    } catch (error) {
+      if (isDev) {
+        console.error("Error fetching selection popularity:", error);
+      }
+      return [];
+    }
+  },
+
+  /**
+   * Get comprehensive popularity analytics for admin dashboard
+   * Combines selection frequency, ratings, wins, and user engagement
+   * @param {number} limit - Maximum number of results
+   * @returns {Array} Names with full popularity metrics
+   */
+  async getPopularityAnalytics(limit = 20) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return [];
+      }
+
+      // Fetch all data in parallel for efficiency
+      const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
+        supabase.from("tournament_selections").select("name_id, name, user_name"),
+        supabase.from("cat_name_ratings").select("name_id, rating, wins, losses, user_name"),
+        supabase
+          .from("cat_name_options")
+          .select("id, name, description, avg_rating, categories")
+          .eq("is_active", true)
+          .eq("is_hidden", false),
+      ]);
+
+      const selections = selectionsResult.data || [];
+      const ratings = ratingsResult.data || [];
+      const names = namesResult.data || [];
+
+      // Build selection stats
+      const selectionStats = new Map();
+      selections.forEach((s) => {
+        if (!selectionStats.has(s.name_id)) {
+          selectionStats.set(s.name_id, { count: 0, users: new Set() });
+        }
+        const stat = selectionStats.get(s.name_id);
+        stat.count += 1;
+        stat.users.add(s.user_name);
+      });
+
+      // Build rating stats
+      const ratingStats = new Map();
+      ratings.forEach((r) => {
+        if (!ratingStats.has(r.name_id)) {
+          ratingStats.set(r.name_id, {
+            totalRating: 0,
+            count: 0,
+            wins: 0,
+            losses: 0,
+            users: new Set(),
+          });
+        }
+        const stat = ratingStats.get(r.name_id);
+        stat.totalRating += Number(r.rating) || 1500;
+        stat.count += 1;
+        stat.wins += r.wins || 0;
+        stat.losses += r.losses || 0;
+        stat.users.add(r.user_name);
+      });
+
+      // Combine into popularity analytics
+      const analytics = names.map((name) => {
+        const selStat = selectionStats.get(name.id) || { count: 0, users: new Set() };
+        const ratStat = ratingStats.get(name.id) || {
+          totalRating: 0,
+          count: 0,
+          wins: 0,
+          losses: 0,
+          users: new Set(),
+        };
+
+        const avgRating = ratStat.count > 0
+          ? Math.round(ratStat.totalRating / ratStat.count)
+          : 1500;
+
+        const winRate = ratStat.wins + ratStat.losses > 0
+          ? Math.round((ratStat.wins / (ratStat.wins + ratStat.losses)) * 100)
+          : 0;
+
+        // Popularity score: weighted combination
+        const popularityScore = Math.round(
+          (selStat.count * 2) +
+          (ratStat.wins * 1.5) +
+          ((avgRating - 1500) * 0.5)
+        );
+
+        return {
+          name_id: name.id,
+          name: name.name,
+          description: name.description,
+          category: name.categories?.[0] || null,
+          times_selected: selStat.count,
+          unique_selectors: selStat.users.size,
+          avg_rating: avgRating,
+          total_wins: ratStat.wins,
+          total_losses: ratStat.losses,
+          win_rate: winRate,
+          users_rated: ratStat.users.size,
+          popularity_score: popularityScore,
+        };
+      });
+
+      // Sort by popularity score and return top results
+      return analytics
+        .sort((a, b) => b.popularity_score - a.popularity_score)
+        .slice(0, limit);
+    } catch (error) {
+      if (isDev) {
+        console.error("Error fetching popularity analytics:", error);
+      }
+      return [];
+    }
+  },
+
+  /**
+   * Get global site statistics for admin dashboard
+   * @returns {Object} Site-wide metrics
+   */
+  async getSiteStats() {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return null;
+      }
+
+      // Fetch all counts in parallel
+      const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
+        await Promise.all([
+          supabase.from("cat_name_options").select("id", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("cat_name_options").select("id", { count: "exact", head: true }).eq("is_hidden", true),
+          supabase.from("cat_app_users").select("user_name", { count: "exact", head: true }),
+          supabase.from("cat_name_ratings").select("rating"),
+          supabase.from("tournament_selections").select("id", { count: "exact", head: true }),
+        ]);
+
+      const totalNames = namesResult.count || 0;
+      const hiddenNames = hiddenResult.count || 0;
+      const totalUsers = usersResult.count || 0;
+      const totalSelections = selectionsResult.count || 0;
+
+      // Calculate rating stats
+      const ratings = ratingsResult.data || [];
+      const totalRatings = ratings.length;
+      const avgRating = totalRatings > 0
+        ? Math.round(ratings.reduce((sum, r) => sum + Number(r.rating), 0) / totalRatings)
+        : 1500;
+
+      // Find names never selected
+      const { data: neverSelected } = await supabase
+        .from("cat_name_options")
+        .select("id, name")
+        .eq("is_active", true)
+        .eq("is_hidden", false);
+
+      const { data: selectedIds } = await supabase
+        .from("tournament_selections")
+        .select("name_id");
+
+      const selectedSet = new Set((selectedIds || []).map((s) => s.name_id));
+      const neverSelectedNames = (neverSelected || []).filter((n) => !selectedSet.has(n.id));
+
+      return {
+        totalNames,
+        hiddenNames,
+        activeNames: totalNames - hiddenNames,
+        totalUsers,
+        totalRatings,
+        totalSelections,
+        avgRating,
+        neverSelectedCount: neverSelectedNames.length,
+        neverSelectedNames: neverSelectedNames.slice(0, 10).map((n) => n.name),
+      };
+    } catch (error) {
+      if (isDev) {
+        console.error("Error fetching site stats:", error);
+      }
+      return null;
     }
   },
 
@@ -643,7 +907,7 @@ export const catNamesAPI = {
   },
 
   /**
-   * Get all names with user-specific ratings and statistics
+   * Get all names with user-specific ratings, statistics, and selection counts
    */
   async getNamesWithUserRatings(userName) {
     try {
@@ -657,6 +921,7 @@ export const catNamesAPI = {
             avg_rating: 1500,
             popularity_score: 0,
             total_tournaments: 0,
+            times_selected: 0,
             is_active: true,
             created_at: new Date().toISOString(),
             updated_at: null,
@@ -699,7 +964,19 @@ export const catNamesAPI = {
         return [];
       }
 
-      // Process data to include user-specific ratings
+      // Fetch selection counts for all names
+      const { data: selectionData } = await supabase
+        .from("tournament_selections")
+        .select("name_id");
+
+      // Build selection count map
+      const selectionCounts = new Map();
+      (selectionData || []).forEach((row) => {
+        const count = selectionCounts.get(row.name_id) || 0;
+        selectionCounts.set(row.name_id, count + 1);
+      });
+
+      // Process data to include user-specific ratings and selection counts
       return (
         data?.map((item) => {
           // * Find user-specific rating data
@@ -722,6 +999,7 @@ export const catNamesAPI = {
             ...item,
             popularity_score: 0, // Not tracked anymore
             total_tournaments: 0, // Not tracked anymore
+            times_selected: selectionCounts.get(item.id) || 0,
             user_rating: userRating?.rating || null,
             user_wins: userRating?.wins || 0,
             user_losses: userRating?.losses || 0,
@@ -1382,6 +1660,134 @@ export const tournamentsAPI = {
         console.error("Error saving tournament selections:", error);
       }
       throw error;
+    }
+  },
+
+  /**
+   * Save tournament ratings to the database
+   * @param {string} userName - The username
+   * @param {Array} ratings - Array of rating objects with name, rating, wins, losses
+   * @returns {Object} Success status and count of saved ratings
+   */
+  async saveTournamentRatings(userName, ratings) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return { success: false, error: "Supabase not configured" };
+      }
+
+      if (!userName || !ratings || ratings.length === 0) {
+        return { success: false, error: "Missing userName or ratings" };
+      }
+
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase client unavailable" };
+      }
+
+      // Ensure user account exists (required for FK constraint)
+      try {
+        await client.rpc("create_user_account", {
+          p_user_name: userName,
+        });
+      } catch (rpcError) {
+        // Ignore error if user already exists
+        if (isDev) {
+          console.log("User account check:", rpcError?.message || "exists");
+        }
+      }
+
+      // Set user context for RLS policies
+      try {
+        await client.rpc("set_user_context", {
+          user_name_param: userName,
+        });
+      } catch (rpcError) {
+        if (isDev) {
+          console.warn("Failed to set user context for RLS:", rpcError);
+        }
+      }
+
+      // First, get name IDs for all the names
+      const nameStrings = ratings.map((r) => r.name);
+      const { data: nameData, error: nameError } = await client
+        .from("cat_name_options")
+        .select("id, name")
+        .in("name", nameStrings);
+
+      if (nameError) {
+        console.error("Error fetching name IDs:", nameError);
+        return { success: false, error: "Failed to fetch name IDs" };
+      }
+
+      // Create a map of name -> id
+      const nameToId = new Map(nameData.map((n) => [n.name, n.id]));
+
+      // Prepare upsert records
+      const now = new Date().toISOString();
+      const ratingRecords = ratings
+        .filter((r) => nameToId.has(r.name))
+        .map((r) => ({
+          user_name: userName,
+          name_id: nameToId.get(r.name),
+          rating: Math.min(2400, Math.max(800, Math.round(r.rating))), // Clamp to valid Elo range
+          wins: r.wins || 0,
+          losses: r.losses || 0,
+          updated_at: now,
+        }));
+
+      if (ratingRecords.length === 0) {
+        return { success: false, error: "No valid ratings to save" };
+      }
+
+      // Upsert ratings (insert or update on conflict)
+      const { error: upsertError } = await client
+        .from("cat_name_ratings")
+        .upsert(ratingRecords, {
+          onConflict: "user_name,name_id",
+          ignoreDuplicates: false,
+        });
+
+      if (upsertError) {
+        console.error("Error upserting ratings:", upsertError);
+        return { success: false, error: upsertError.message };
+      }
+
+      // Also update the global avg_rating on cat_name_options
+      // Calculate new averages for each name
+      for (const record of ratingRecords) {
+        const { data: avgData } = await client
+          .from("cat_name_ratings")
+          .select("rating")
+          .eq("name_id", record.name_id);
+
+        if (avgData && avgData.length > 0) {
+          const avgRating =
+            avgData.reduce((sum, r) => sum + Number(r.rating), 0) /
+            avgData.length;
+
+          await client
+            .from("cat_name_options")
+            .update({ avg_rating: Math.round(avgRating) })
+            .eq("id", record.name_id);
+        }
+      }
+
+      if (isDev) {
+        console.log(
+          `✅ Saved ${ratingRecords.length} ratings for user ${userName}`,
+        );
+      }
+
+      return {
+        success: true,
+        savedCount: ratingRecords.length,
+        ratings: ratingRecords,
+      };
+    } catch (error) {
+      if (isDev) {
+        console.error("Error saving tournament ratings:", error);
+      }
+      return { success: false, error: error.message };
     }
   },
 };

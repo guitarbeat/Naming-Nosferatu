@@ -29,6 +29,7 @@ import useAppStore, {
   useAppStoreInitialization,
 } from "@core/store/useAppStore";
 import { ErrorManager } from "@services/errorManager";
+import { tournamentsAPI } from "@services/supabase/api";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -134,28 +135,49 @@ function App() {
           throw new Error("No user name available");
         }
 
-        // Convert finalRatings array to object format if needed
-        let updatedRatings;
+        // Convert finalRatings to array format for database save
+        let ratingsArray;
         if (Array.isArray(finalRatings)) {
-          // Convert array [{name, rating, wins, losses}, ...] to object {name: {rating, wins, losses}, ...}
-          updatedRatings = finalRatings.reduce((acc, item) => {
-            acc[item.name] = {
-              rating: item.rating,
-              wins: item.wins || 0,
-              losses: item.losses || 0,
-            };
-            return acc;
-          }, {});
-
-          if (process.env.NODE_ENV === "development") {
-            console.log(
-              "[App] Converted array to object format:",
-              updatedRatings,
-            );
-          }
+          ratingsArray = finalRatings;
         } else {
-          // Already in object format
-          updatedRatings = finalRatings;
+          // Convert object {name: {rating, wins, losses}, ...} to array
+          ratingsArray = Object.entries(finalRatings).map(([name, data]) => ({
+            name,
+            rating: data.rating || 1500,
+            wins: data.wins || 0,
+            losses: data.losses || 0,
+          }));
+        }
+
+        // Convert to object format for store
+        const updatedRatings = ratingsArray.reduce((acc, item) => {
+          acc[item.name] = {
+            rating: item.rating,
+            wins: item.wins || 0,
+            losses: item.losses || 0,
+          };
+          return acc;
+        }, {});
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("[App] Ratings to save:", ratingsArray);
+        }
+
+        // * Save ratings to database
+        const saveResult = await tournamentsAPI.saveTournamentRatings(
+          user.name,
+          ratingsArray,
+        );
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("[App] Save ratings result:", saveResult);
+        }
+
+        if (!saveResult.success) {
+          console.warn(
+            "[App] Failed to save ratings to database:",
+            saveResult.error,
+          );
         }
 
         // * Update store with new ratings
@@ -213,8 +235,41 @@ function App() {
   const handleUpdateRatings = useCallback(
     async (adjustedRatings) => {
       try {
-        // Direct rating update
-        const updatedRatings = adjustedRatings;
+        // Convert to array format for database save
+        let ratingsArray;
+        if (Array.isArray(adjustedRatings)) {
+          ratingsArray = adjustedRatings;
+        } else {
+          ratingsArray = Object.entries(adjustedRatings).map(([name, data]) => ({
+            name,
+            rating: data.rating || 1500,
+            wins: data.wins || 0,
+            losses: data.losses || 0,
+          }));
+        }
+
+        // * Save ratings to database
+        if (user.name) {
+          const saveResult = await tournamentsAPI.saveTournamentRatings(
+            user.name,
+            ratingsArray,
+          );
+
+          if (process.env.NODE_ENV === "development") {
+            console.log("[App] Update ratings result:", saveResult);
+          }
+        }
+
+        // Convert to object format for store
+        const updatedRatings = ratingsArray.reduce((acc, item) => {
+          acc[item.name] = {
+            rating: item.rating,
+            wins: item.wins || 0,
+            losses: item.losses || 0,
+          };
+          return acc;
+        }, {});
+
         tournamentActions.setRatings(updatedRatings);
         return true;
       } catch (error) {
@@ -226,7 +281,7 @@ function App() {
         throw error;
       }
     },
-    [tournamentActions],
+    [tournamentActions, user.name],
   );
 
   // * Handle logout

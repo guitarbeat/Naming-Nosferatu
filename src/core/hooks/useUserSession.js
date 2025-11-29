@@ -103,6 +103,20 @@ function useUserSession({ showToast } = {}) {
   }, [userActions]);
 
   /**
+   * Normalize username to prevent duplicate accounts with different casing
+   * Capitalizes first letter, lowercases the rest
+   * @param {string} name - Raw username input
+   * @returns {string} Normalized username
+   */
+  const normalizeUsername = (name) => {
+    if (!name || typeof name !== "string") return "";
+    const trimmed = name.trim();
+    if (!trimmed) return "";
+    // Capitalize first letter, lowercase the rest
+    return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+  };
+
+  /**
    * Login with username only (no password required)
    * Creates user in database if doesn't exist
    * @param {string} userName - The user's chosen username
@@ -116,7 +130,7 @@ function useUserSession({ showToast } = {}) {
 
       try {
         setError(null);
-        const trimmedName = userName.trim();
+        const trimmedName = normalizeUsername(userName);
 
         const activeSupabase = await resolveSupabaseClient();
 

@@ -18,6 +18,7 @@ import ErrorComponent from "../Error/Error";
 import { UnifiedFilters } from "../UnifiedFilters/UnifiedFilters";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AnalysisModeBanner } from "../AnalysisPanel";
+import { AdminAnalytics } from "../AdminAnalytics";
 import { useNameData } from "../../../core/hooks/useNameData";
 import { useNameSelection } from "../../../core/hooks/useNameSelection";
 import useAppStore from "../../../core/store/useAppStore";
@@ -395,6 +396,13 @@ export function NameManagementView({
                 : extensions.dashboard}
             </div>
           )}
+
+        {/* Admin Analytics - Only shown in analysis mode for admins */}
+        {analysisMode && tournamentProps.isAdmin && (
+          <div className={styles.dashboardSection}>
+            <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
+          </div>
+        )}
 
         {/* Unified Filters */}
         <div className={styles.filtersSection}>

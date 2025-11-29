@@ -8,12 +8,13 @@ import { useState, useEffect } from "react";
 /**
  * * Hook for calculating profile highlights
  * @param {Array} allNames - Array of all names
- * @returns {Object} Highlights state
+ * @returns {Object} Highlights state including topRated, mostWins, mostSelected, recent
  */
 export function useProfileHighlights(allNames) {
   const [highlights, setHighlights] = useState({
     topRated: [],
     mostWins: [],
+    mostSelected: [],
     recent: [],
   });
 
@@ -21,7 +22,7 @@ export function useProfileHighlights(allNames) {
   useEffect(() => {
     if (!Array.isArray(allNames) || allNames.length === 0) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHighlights({ topRated: [], mostWins: [], recent: [] });
+      setHighlights({ topRated: [], mostWins: [], mostSelected: [], recent: [] });
       return;
     }
 
@@ -38,9 +39,17 @@ export function useProfileHighlights(allNames) {
       }));
 
     const mostWins = [...allNames]
+      .filter((n) => (n.user_wins || 0) > 0)
       .sort((a, b) => (b.user_wins || 0) - (a.user_wins || 0))
       .slice(0, 5)
       .map((n) => ({ id: n.id, name: n.name, value: n.user_wins || 0 }));
+
+    // Most selected for tournaments (global popularity)
+    const mostSelected = [...allNames]
+      .filter((n) => (n.times_selected || 0) > 0)
+      .sort((a, b) => (b.times_selected || 0) - (a.times_selected || 0))
+      .slice(0, 5)
+      .map((n) => ({ id: n.id, name: n.name, value: n.times_selected || 0 }));
 
     const recent = [...allNames]
       .filter((n) => n.updated_at)
@@ -52,7 +61,7 @@ export function useProfileHighlights(allNames) {
         value: new Date(n.updated_at).toLocaleDateString(),
       }));
 
-    setHighlights({ topRated, mostWins, recent });
+    setHighlights({ topRated, mostWins, mostSelected, recent });
   }, [allNames]);
 
   return highlights;

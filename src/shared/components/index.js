@@ -35,6 +35,7 @@ export {
 export { AnalysisToggle, AnalysisModeBanner } from "./AnalysisPanel";
 export { AnalysisDashboard } from "./AnalysisDashboard";
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
+export { AdminAnalytics } from "./AdminAnalytics";
 
 // * Named exports
 export {

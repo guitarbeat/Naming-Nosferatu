@@ -1,12 +1,48 @@
 /**
  * @module AnalysisBulkActions
  * @description Unified bulk actions component for Analysis Mode.
- * Minimal toolbar with intentional actions.
+ * Minimal toolbar with intentional actions and CSV export.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
+
+/**
+ * Export names data to CSV file
+ * @param {Array} names - Array of name objects to export
+ * @param {string} fileName - Name of the exported file
+ */
+const exportToCSV = (names, fileName = "cat-names-export") => {
+  if (!names || names.length === 0) return;
+
+  // CSV headers
+  const headers = ["Name", "Description", "Rating", "Wins", "Losses", "Hidden"];
+
+  // Convert names to CSV rows
+  const rows = names.map((name) => [
+    `"${(name.name || "").replace(/"/g, '""')}"`,
+    `"${(name.description || "").replace(/"/g, '""')}"`,
+    name.user_rating || name.avg_rating || 1500,
+    name.user_wins || name.wins || 0,
+    name.user_losses || name.losses || 0,
+    name.isHidden ? "Yes" : "No",
+  ]);
+
+  // Build CSV content
+  const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+
+  // Create and trigger download
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${fileName}-${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
 
 /**
  * Analysis Bulk Actions Component
@@ -18,8 +54,12 @@ import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
  * @param {Function} props.onDeselectAll - Deselect all handler
  * @param {Function} props.onBulkHide - Bulk hide handler
  * @param {Function} props.onBulkUnhide - Bulk unhide handler
+ * @param {Function} props.onExport - Custom export handler (optional)
+ * @param {Array} props.names - Names data for built-in export
+ * @param {Array} props.selectedNames - Selected names for export
  * @param {boolean} props.isAllSelected - Whether all items are selected
  * @param {boolean} props.showActions - Whether to show the actions
+ * @param {boolean} props.isAdmin - Whether user is admin (shows hide/unhide)
  */
 export function AnalysisBulkActions({
   selectedCount,
@@ -28,43 +68,67 @@ export function AnalysisBulkActions({
   onBulkHide,
   onBulkUnhide,
   onExport,
+  names,
+  selectedNames,
   isAllSelected,
   showActions = true,
+  isAdmin = false,
 }) {
+  // Built-in export handler
+  const handleExport = useCallback(() => {
+    if (onExport) {
+      onExport();
+      return;
+    }
+
+    // Export selected names if any, otherwise export all visible names
+    const dataToExport =
+      selectedNames?.length > 0 ? selectedNames : names || [];
+    exportToCSV(dataToExport, selectedNames?.length > 0 ? "selected-names" : "all-names");
+  }, [onExport, names, selectedNames]);
+
   if (!showActions) return null;
+
+  const hasExportData = onExport || names?.length > 0 || selectedNames?.length > 0;
 
   return (
     <AnalysisToolbar
       selectedCount={selectedCount}
       actions={
         <>
-          {selectedCount > 0 && (
+          {selectedCount > 0 && isAdmin && (
             <>
               <AnalysisButton
                 variant="danger"
                 onClick={onBulkHide}
                 ariaLabel={`Hide ${selectedCount} selected names`}
               >
-                Hide
+                Hide ({selectedCount})
               </AnalysisButton>
               <AnalysisButton
                 variant="primary"
                 onClick={onBulkUnhide}
                 ariaLabel={`Unhide ${selectedCount} selected names`}
               >
-                Unhide
+                Unhide ({selectedCount})
               </AnalysisButton>
             </>
           )}
-          {onExport && (
+          {hasExportData && (
             <>
-              <div className="analysis-toolbar-divider" />
+              {selectedCount > 0 && isAdmin && (
+                <div className="analysis-toolbar-divider" />
+              )}
               <AnalysisButton
                 variant="default"
-                onClick={onExport}
-                ariaLabel="Export visible names to CSV"
+                onClick={handleExport}
+                ariaLabel={
+                  selectedCount > 0
+                    ? `Export ${selectedCount} selected names to CSV`
+                    : "Export all visible names to CSV"
+                }
               >
-                Export CSV
+                Export {selectedCount > 0 ? `(${selectedCount})` : "All"}
               </AnalysisButton>
             </>
           )}
@@ -88,11 +152,14 @@ AnalysisBulkActions.propTypes = {
   selectedCount: PropTypes.number.isRequired,
   onSelectAll: PropTypes.func.isRequired,
   onDeselectAll: PropTypes.func.isRequired,
-  onBulkHide: PropTypes.func.isRequired,
-  onBulkUnhide: PropTypes.func.isRequired,
+  onBulkHide: PropTypes.func,
+  onBulkUnhide: PropTypes.func,
   onExport: PropTypes.func,
+  names: PropTypes.array,
+  selectedNames: PropTypes.array,
   isAllSelected: PropTypes.bool.isRequired,
   showActions: PropTypes.bool,
+  isAdmin: PropTypes.bool,
 };
 
 export default AnalysisBulkActions;
