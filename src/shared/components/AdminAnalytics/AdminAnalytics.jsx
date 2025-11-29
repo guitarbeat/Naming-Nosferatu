@@ -4,11 +4,15 @@
  * Displays selection frequency, ratings, wins, and engagement data.
  */
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { AnalysisPanel, AnalysisStats } from "../AnalysisPanel";
+import { AnalysisPanel, AnalysisStats, AnalysisButton } from "../AnalysisPanel";
 import { catNamesAPI } from "../../services/supabase/api";
+import { useCollapsible } from "../../hooks/useCollapsible";
+import { formatRelativeTime } from "../../utils/timeUtils";
 import "./AdminAnalytics.css";
+
+const STORAGE_KEY = "admin-analytics-collapsed";
 
 /**
  * Popularity table row component
@@ -65,31 +69,37 @@ export function AdminAnalytics({ isAdmin = false }) {
   const [isLoading, setIsLoading] = useState(false);
   const [sortField, setSortField] = useState("popularity_score");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [lastRefresh, setLastRefresh] = useState(null);
+  
+  // Collapsed state with localStorage persistence
+  const { isCollapsed, toggleCollapsed } = useCollapsible(STORAGE_KEY, false);
 
-  // Fetch analytics data on mount
-  useEffect(() => {
+  // Fetch analytics data
+  const fetchAnalytics = useCallback(async () => {
     if (!isAdmin) return;
-
-    const fetchAnalytics = async () => {
-      setIsLoading(true);
-      try {
-        const [popularityData, stats] = await Promise.all([
-          catNamesAPI.getPopularityAnalytics(50),
-          catNamesAPI.getSiteStats(),
-        ]);
-        setAnalyticsData(popularityData);
-        setSiteStats(stats);
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch admin analytics:", error);
-        }
-      } finally {
-        setIsLoading(false);
+    
+    setIsLoading(true);
+    try {
+      const [popularityData, stats] = await Promise.all([
+        catNamesAPI.getPopularityAnalytics(50),
+        catNamesAPI.getSiteStats(),
+      ]);
+      setAnalyticsData(popularityData);
+      setSiteStats(stats);
+      setLastRefresh(new Date());
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to fetch admin analytics:", error);
       }
-    };
-
-    fetchAnalytics();
+    } finally {
+      setIsLoading(false);
+    }
   }, [isAdmin]);
+
+  // Fetch on mount
+  useEffect(() => {
+    fetchAnalytics();
+  }, [fetchAnalytics]);
 
   // Sort data based on current sort field
   const sortedData = useMemo(() => {
@@ -136,102 +146,144 @@ export function AdminAnalytics({ isAdmin = false }) {
   }
 
   return (
-    <AnalysisPanel title="Popularity Analytics" showHeader>
-      {summaryStats.length > 0 && <AnalysisStats stats={summaryStats} />}
-
-      {isLoading ? (
-        <div className="analysis-loading">Loading popularity analytics...</div>
-      ) : (
-        <div className="admin-analytics-table-container">
-          <table className="admin-analytics-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("times_selected")}
-                >
-                  Selected {renderSortIndicator("times_selected")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("unique_selectors")}
-                >
-                  Users {renderSortIndicator("unique_selectors")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("avg_rating")}
-                >
-                  Rating {renderSortIndicator("avg_rating")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("total_wins")}
-                >
-                  Wins {renderSortIndicator("total_wins")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("win_rate")}
-                >
-                  Win% {renderSortIndicator("win_rate")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("users_rated")}
-                >
-                  Raters {renderSortIndicator("users_rated")}
-                </th>
-                <th
-                  className="sortable"
-                  onClick={() => handleSort("popularity_score")}
-                >
-                  Score {renderSortIndicator("popularity_score")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedData.map((item, index) => (
-                <PopularityRow
-                  key={item.name_id}
-                  item={item}
-                  rank={index + 1}
-                />
-              ))}
-            </tbody>
-          </table>
+    <AnalysisPanel showHeader={false}>
+      {/* Collapsible header */}
+      <div className="admin-analytics-header">
+        <button
+          type="button"
+          className="admin-analytics-toggle"
+          onClick={toggleCollapsed}
+          aria-expanded={!isCollapsed}
+        >
+          <span
+            className={`admin-analytics-chevron ${isCollapsed ? "collapsed" : ""}`}
+            aria-hidden="true"
+          >
+            ▼
+          </span>
+          <span aria-hidden="true">📈</span> Popularity Analytics
+          {isCollapsed && summaryStats.length > 0 && (
+            <span className="admin-analytics-summary">
+              {summaryStats[0].value} {summaryStats[0].label}
+            </span>
+          )}
+        </button>
+        <div className="admin-analytics-actions">
+          {lastRefresh && (
+            <span className="admin-analytics-refresh-time">
+              Updated {formatRelativeTime(lastRefresh)}
+            </span>
+          )}
+          <AnalysisButton
+            variant="ghost"
+            onClick={fetchAnalytics}
+            disabled={isLoading}
+            ariaLabel="Refresh analytics data"
+            title="Refresh data"
+          >
+            <span aria-hidden="true">{isLoading ? "⏳" : "🔄"}</span>
+          </AnalysisButton>
         </div>
-      )}
-
-      <div className="admin-analytics-legend">
-        <p>
-          <strong>Score</strong> = (Selections × 2) + (Wins × 1.5) + ((Rating - 1500) × 0.5)
-        </p>
       </div>
 
-      {/* Names needing attention */}
-      {siteStats?.neverSelectedNames?.length > 0 && (
-        <div className="admin-analytics-attention">
-          <h4>⚠️ Never Selected ({siteStats.neverSelectedCount} names)</h4>
-          <p className="attention-description">
-            These names have never been chosen for a tournament:
-          </p>
-          <div className="attention-names">
-            {siteStats.neverSelectedNames.map((name) => (
-              <span key={name} className="attention-name-tag">
-                {name}
-              </span>
-            ))}
-            {siteStats.neverSelectedCount > 10 && (
-              <span className="attention-more">
-                +{siteStats.neverSelectedCount - 10} more
-              </span>
-            )}
+      {/* Collapsible content */}
+      <div className={`admin-analytics-content ${isCollapsed ? "collapsed" : ""}`}>
+        {summaryStats.length > 0 && <AnalysisStats stats={summaryStats} />}
+
+        {isLoading ? (
+          <div className="analysis-loading">Loading popularity analytics...</div>
+        ) : (
+          <div className="admin-analytics-table-container">
+            <table className="admin-analytics-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("times_selected")}
+                  >
+                    Selected {renderSortIndicator("times_selected")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("unique_selectors")}
+                  >
+                    Users {renderSortIndicator("unique_selectors")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("avg_rating")}
+                  >
+                    Rating {renderSortIndicator("avg_rating")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("total_wins")}
+                  >
+                    Wins {renderSortIndicator("total_wins")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("win_rate")}
+                  >
+                    Win% {renderSortIndicator("win_rate")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("users_rated")}
+                  >
+                    Raters {renderSortIndicator("users_rated")}
+                  </th>
+                  <th
+                    className="sortable"
+                    onClick={() => handleSort("popularity_score")}
+                  >
+                    Score {renderSortIndicator("popularity_score")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedData.map((item, index) => (
+                  <PopularityRow
+                    key={item.name_id}
+                    item={item}
+                    rank={index + 1}
+                  />
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
+
+        <div className="admin-analytics-legend">
+          <p>
+            <strong>Score</strong> = (Selections × 2) + (Wins × 1.5) + ((Rating - 1500) × 0.5)
+          </p>
         </div>
-      )}
+
+        {/* Names needing attention */}
+        {siteStats?.neverSelectedNames?.length > 0 && (
+          <div className="admin-analytics-attention">
+            <h4>⚠️ Never Selected ({siteStats.neverSelectedCount} names)</h4>
+            <p className="attention-description">
+              These names have never been chosen for a tournament:
+            </p>
+            <div className="attention-names">
+              {siteStats.neverSelectedNames.map((name) => (
+                <span key={name} className="attention-name-tag">
+                  {name}
+                </span>
+              ))}
+              {siteStats.neverSelectedCount > 10 && (
+                <span className="attention-more">
+                  +{siteStats.neverSelectedCount - 10} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </AnalysisPanel>
   );
 }

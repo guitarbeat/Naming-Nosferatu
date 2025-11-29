@@ -37,6 +37,9 @@ export { AnalysisDashboard } from "./AnalysisDashboard";
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
 export { AdminAnalytics } from "./AdminAnalytics";
 
+// * Utility Components
+export { CollapsibleSection } from "./CollapsibleSection";
+
 // * Named exports
 export {
   Button,

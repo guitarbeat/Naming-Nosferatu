@@ -131,6 +131,7 @@ AnalysisDashboardWrapper.propTypes = {
 function AnalysisBulkActionsWrapper({
   activeUser,
   canManageActiveUser,
+  isAdmin,
   fetchSelectionStats,
   showSuccess,
   showError,
@@ -257,6 +258,8 @@ function AnalysisBulkActionsWrapper({
       onExport={handleExport}
       isAllSelected={allVisibleSelected}
       showActions={true}
+      isAdmin={isAdmin}
+      totalCount={filteredAndSortedNames.length}
     />
   );
 }
@@ -264,6 +267,7 @@ function AnalysisBulkActionsWrapper({
 AnalysisBulkActionsWrapper.propTypes = {
   activeUser: PropTypes.string,
   canManageActiveUser: PropTypes.bool,
+  isAdmin: PropTypes.bool,
   fetchSelectionStats: PropTypes.func,
   showSuccess: PropTypes.func,
   showError: PropTypes.func,
@@ -434,6 +438,7 @@ function TournamentSetupContent({
               <AnalysisBulkActionsWrapper
                 activeUser={activeUser}
                 canManageActiveUser={canManageActiveUser}
+                isAdmin={isAdmin}
                 fetchSelectionStats={fetchSelectionStats}
                 showSuccess={showSuccess}
                 showError={showError}

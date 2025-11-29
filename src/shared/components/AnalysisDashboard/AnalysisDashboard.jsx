@@ -2,12 +2,16 @@
  * @module AnalysisDashboard
  * @description Redesigned dashboard for Analysis Mode.
  * Fetches real data from the database for accurate analytics.
+ * Supports collapsible sections for better UX.
  */
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel, AnalysisStats } from "../AnalysisPanel";
 import { catNamesAPI } from "../../services/supabase/api";
+import { useCollapsible } from "../../hooks/useCollapsible";
+
+const STORAGE_KEY = "analysis-dashboard-collapsed";
 
 /**
  * Simple CSS-based bar chart with rating display
@@ -81,10 +85,14 @@ export function AnalysisDashboard({
   highlights,
   userName,
   showGlobalLeaderboard = true,
+  defaultCollapsed = false,
 }) {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Collapsed state with localStorage persistence
+  const { isCollapsed, toggleCollapsed } = useCollapsible(STORAGE_KEY, defaultCollapsed);
 
   // Fetch global leaderboard and selection popularity data on mount
   useEffect(() => {
@@ -219,46 +227,86 @@ export function AnalysisDashboard({
     : globalMostWins;
 
   // Don't render if no data at all
-  if (
-    statItems.length === 0 &&
-    !effectiveTopRated?.length &&
-    !effectiveMostWins?.length &&
-    !isLoading
-  ) {
+  const hasData =
+    statItems.length > 0 ||
+    effectiveTopRated?.length > 0 ||
+    effectiveMostWins?.length > 0 ||
+    isLoading;
+
+  if (!hasData) {
     return null;
   }
 
   return (
     <AnalysisPanel showHeader={false}>
-      {statItems.length > 0 && <AnalysisStats stats={statItems} />}
-
-      {isLoading ? (
-        <div className="analysis-loading">Loading analytics...</div>
-      ) : (
-        <div className="analysis-charts-grid">
-          {effectiveTopRated?.length > 0 && (
-            <SimpleBarChart
-              title={userName ? "Your Top Rated" : "Global Top Rated"}
-              items={effectiveTopRated}
-            />
+      {/* Collapsible header */}
+      <button
+        type="button"
+        className="analysis-dashboard-header"
+        onClick={toggleCollapsed}
+        aria-expanded={!isCollapsed}
+        aria-controls="analysis-dashboard-content"
+      >
+        <span className="analysis-dashboard-title">
+          <span
+            className={`analysis-dashboard-chevron ${isCollapsed ? "collapsed" : ""}`}
+            aria-hidden="true"
+          >
+            ▼
+          </span>
+          <span aria-hidden="true">📊</span> Analytics
+          {/* Show quick summary when collapsed */}
+          {isCollapsed && statItems.length > 0 && (
+            <span className="analysis-dashboard-summary">
+              {statItems.slice(0, 3).map((stat, i) => (
+                <span key={stat.label} className="analysis-dashboard-summary-item">
+                  {i > 0 && " · "}
+                  <strong>{stat.value}</strong> {stat.label}
+                </span>
+              ))}
+            </span>
           )}
+        </span>
+        <span className="analysis-dashboard-hint">
+          {isCollapsed ? "▸ Expand" : "▾ Minimize"}
+        </span>
+      </button>
 
-          {effectiveMostWins?.length > 0 && (
-            <SimpleBarChart
-              title={userName ? "Your Most Wins" : "Global Most Wins"}
-              items={effectiveMostWins}
-              showRating
-            />
-          )}
+      {/* Collapsible content */}
+      <div
+        id="analysis-dashboard-content"
+        className={`analysis-dashboard-content ${isCollapsed ? "collapsed" : ""}`}
+      >
+        {statItems.length > 0 && <AnalysisStats stats={statItems} />}
 
-          {mostSelected?.length > 0 && (
-            <SimpleBarChart
-              title="Most Selected for Tournaments"
-              items={mostSelected}
-            />
-          )}
-        </div>
-      )}
+        {isLoading ? (
+          <div className="analysis-loading">Loading analytics...</div>
+        ) : (
+          <div className="analysis-charts-grid">
+            {effectiveTopRated?.length > 0 && (
+              <SimpleBarChart
+                title={userName ? "Your Top Rated" : "Global Top Rated"}
+                items={effectiveTopRated}
+              />
+            )}
+
+            {effectiveMostWins?.length > 0 && (
+              <SimpleBarChart
+                title={userName ? "Your Most Wins" : "Global Most Wins"}
+                items={effectiveMostWins}
+                showRating
+              />
+            )}
+
+            {mostSelected?.length > 0 && (
+              <SimpleBarChart
+                title="Most Selected for Tournaments"
+                items={mostSelected}
+              />
+            )}
+          </div>
+        )}
+      </div>
     </AnalysisPanel>
   );
 }
@@ -296,6 +344,7 @@ AnalysisDashboard.propTypes = {
   }),
   userName: PropTypes.string,
   showGlobalLeaderboard: PropTypes.bool,
+  defaultCollapsed: PropTypes.bool,
 };
 
 export default AnalysisDashboard;

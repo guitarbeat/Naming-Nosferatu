@@ -853,3 +853,256 @@ body:has(.analysis-mode-banner)::after {
   color: var(--text-tertiary);
   margin-left: var(--analysis-gap-xs);
 }
+
+
+/* ==========================================================================
+   ANALYSIS DASHBOARD - Collapsible Header
+   ========================================================================== */
+.analysis-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
+  margin: calc(-1 * var(--analysis-gap-lg));
+  margin-bottom: 0;
+  font-size: var(--analysis-text-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  background: var(--analysis-surface-elevated);
+  border: none;
+  border-bottom: 1px solid var(--analysis-border);
+  border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
+  cursor: pointer;
+  transition:
+    background var(--analysis-duration-fast) var(--analysis-ease),
+    color var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-dashboard-header:hover {
+  background: var(--analysis-accent-subtle);
+}
+
+.analysis-dashboard-header:focus-visible {
+  outline: 2px solid var(--analysis-accent);
+  outline-offset: -2px;
+}
+
+.analysis-dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-dashboard-chevron {
+  display: inline-flex;
+  font-size: 0.75em;
+  transition: transform var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-dashboard-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.analysis-dashboard-hint {
+  font-size: var(--analysis-text-caption);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-tertiary);
+}
+
+.analysis-dashboard-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+.analysis-dashboard-content.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.analysis-dashboard-content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Adjust panel padding when header is present */
+.analysis-panel:has(.analysis-dashboard-header) {
+  padding-top: 0;
+}
+
+.analysis-dashboard-content:not(.collapsed) {
+  padding-top: var(--analysis-gap-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .analysis-dashboard-chevron,
+  .analysis-dashboard-content {
+    transition: none;
+  }
+}
+
+
+/* ==========================================================================
+   ANALYSIS BULK ACTIONS - Enhanced Usability
+   ========================================================================== */
+
+/* Button with icon styling */
+.analysis-btn span[aria-hidden="true"] {
+  font-size: 1em;
+  line-height: 1;
+}
+
+/* Count badge in buttons */
+.analysis-btn-count {
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-left: var(--analysis-gap-xs);
+}
+
+/* Sticky toolbar for better access */
+.analysis-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--analysis-surface-1);
+  backdrop-filter: blur(12px);
+}
+
+/* Better visual feedback on selection */
+.analysis-selection {
+  background: var(--analysis-accent-muted);
+  padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
+  border-radius: var(--analysis-radius-md);
+  animation: analysis-selection-pulse 0.3s var(--analysis-ease);
+}
+
+@keyframes analysis-selection-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Tooltip-like title styling */
+.analysis-btn[title] {
+  position: relative;
+}
+
+/* Better hover states for action buttons */
+.analysis-btn--danger:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.analysis-btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Quick action hint */
+.analysis-toolbar::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--analysis-border-accent),
+    transparent
+  );
+}
+
+
+/* ==========================================================================
+   ANALYSIS DASHBOARD - Summary in Collapsed State
+   ========================================================================== */
+.analysis-dashboard-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs);
+  margin-left: var(--analysis-gap-md);
+  padding-left: var(--analysis-gap-md);
+  border-left: 1px solid var(--analysis-border);
+  font-size: var(--analysis-text-caption);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-secondary);
+}
+
+.analysis-dashboard-summary-item {
+  white-space: nowrap;
+}
+
+.analysis-dashboard-summary-item strong {
+  color: var(--analysis-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Better header styling */
+.analysis-dashboard-header {
+  gap: var(--analysis-gap-sm);
+}
+
+.analysis-dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Responsive summary */
+@media (max-width: 600px) {
+  .analysis-dashboard-summary {
+    display: none;
+  }
+}
+
+
+/* ==========================================================================
+   ANALYSIS TOGGLE - Enhanced with Shortcut
+   ========================================================================== */
+.analysis-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.analysis-toggle-label {
+  flex: 1;
+  text-align: left;
+}
+
+.analysis-toggle-shortcut {
+  font-family: var(--analysis-text-mono);
+  font-size: 0.7em;
+  padding: 2px 6px;
+  background: var(--analysis-surface-elevated);
+  border: 1px solid var(--analysis-border);
+  border-radius: var(--analysis-radius-sm);
+  opacity: 0.6;
+  transition: opacity var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-toggle:hover .analysis-toggle-shortcut {
+  opacity: 1;
+}
+
+.analysis-toggle--active .analysis-toggle-shortcut {
+  background: rgb(var(--analysis-accent-rgb) / 20%);
+  border-color: var(--analysis-border-accent);
+  color: var(--analysis-accent);
+}
+
+/* Hide shortcut on very small screens */
+@media (max-width: 400px) {
+  .analysis-toggle-shortcut {
+    display: none;
+  }
+}

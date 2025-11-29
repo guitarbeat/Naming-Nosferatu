@@ -358,6 +358,11 @@ AnalysisProgress.propTypes = {
  * @param {boolean} props.collapsed - Whether sidebar is collapsed
  */
 export function AnalysisToggle({ active, onClick, collapsed = false }) {
+  const isMac =
+    typeof navigator !== "undefined" &&
+    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
+  const shortcutKey = isMac ? "⌘⇧A" : "Ctrl+Shift+A";
+
   return (
     <button
       type="button"
@@ -365,10 +370,19 @@ export function AnalysisToggle({ active, onClick, collapsed = false }) {
       onClick={onClick}
       aria-label={active ? "Exit Analysis Mode" : "Enter Analysis Mode"}
       aria-pressed={active}
-      title={active ? "Exit Analysis Mode" : "Enter Analysis Mode"}
+      title={`${active ? "Exit" : "Enter"} Analysis Mode (${shortcutKey})`}
     >
       <span className="analysis-toggle-indicator" />
-      {!collapsed && (active ? "Analysis" : "Analyze")}
+      {!collapsed && (
+        <>
+          <span className="analysis-toggle-label">
+            {active ? "Analysis" : "Analyze"}
+          </span>
+          <span className="analysis-toggle-shortcut" aria-hidden="true">
+            {shortcutKey}
+          </span>
+        </>
+      )}
     </button>
   );
 }

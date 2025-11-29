@@ -4,7 +4,7 @@
  * Minimal toolbar with intentional actions and CSV export.
  */
 
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
 
@@ -73,6 +73,7 @@ export function AnalysisBulkActions({
   isAllSelected,
   showActions = true,
   isAdmin = false,
+  totalCount = 0,
 }) {
   // Built-in export handler
   const handleExport = useCallback(() => {
@@ -87,9 +88,21 @@ export function AnalysisBulkActions({
     exportToCSV(dataToExport, selectedNames?.length > 0 ? "selected-names" : "all-names");
   }, [onExport, names, selectedNames]);
 
+  // Confirmation for bulk hide (destructive action)
+  const handleBulkHide = useCallback(() => {
+    if (selectedCount > 5) {
+      const confirmed = window.confirm(
+        `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`
+      );
+      if (!confirmed) return;
+    }
+    onBulkHide?.();
+  }, [selectedCount, onBulkHide]);
+
   if (!showActions) return null;
 
   const hasExportData = onExport || names?.length > 0 || selectedNames?.length > 0;
+  const effectiveTotal = totalCount || names?.length || 0;
 
   return (
     <AnalysisToolbar
@@ -100,17 +113,19 @@ export function AnalysisBulkActions({
             <>
               <AnalysisButton
                 variant="danger"
-                onClick={onBulkHide}
+                onClick={handleBulkHide}
                 ariaLabel={`Hide ${selectedCount} selected names`}
+                title="Hide selected names from tournaments"
               >
-                Hide ({selectedCount})
+                <span aria-hidden="true">🙈</span> Hide ({selectedCount})
               </AnalysisButton>
               <AnalysisButton
                 variant="primary"
                 onClick={onBulkUnhide}
                 ariaLabel={`Unhide ${selectedCount} selected names`}
+                title="Make selected names visible in tournaments"
               >
-                Unhide ({selectedCount})
+                <span aria-hidden="true">👁️</span> Unhide ({selectedCount})
               </AnalysisButton>
             </>
           )}
@@ -127,8 +142,9 @@ export function AnalysisBulkActions({
                     ? `Export ${selectedCount} selected names to CSV`
                     : "Export all visible names to CSV"
                 }
+                title="Download as CSV file"
               >
-                Export {selectedCount > 0 ? `(${selectedCount})` : "All"}
+                <span aria-hidden="true">📥</span> Export {selectedCount > 0 ? `(${selectedCount})` : "All"}
               </AnalysisButton>
             </>
           )}
@@ -141,7 +157,11 @@ export function AnalysisBulkActions({
           onClick={isAllSelected ? onDeselectAll : onSelectAll}
           ariaLabel={isAllSelected ? "Deselect all names" : "Select all names"}
         >
+          <span aria-hidden="true">{isAllSelected ? "☐" : "☑"}</span>{" "}
           {isAllSelected ? "Deselect All" : "Select All"}
+          {effectiveTotal > 0 && !isAllSelected && (
+            <span className="analysis-btn-count">({effectiveTotal})</span>
+          )}
         </AnalysisButton>
       </div>
     </AnalysisToolbar>
@@ -160,6 +180,7 @@ AnalysisBulkActions.propTypes = {
   isAllSelected: PropTypes.bool.isRequired,
   showActions: PropTypes.bool,
   isAdmin: PropTypes.bool,
+  totalCount: PropTypes.number,
 };
 
 export default AnalysisBulkActions;

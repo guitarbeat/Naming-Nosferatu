@@ -1,0 +1,113 @@
+/**
+ * CollapsibleSection Styles
+ * Reusable collapsible section styling
+ */
+
+.collapsible-section {
+  position: relative;
+}
+
+.collapsible-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--analysis-gap-md, 12px);
+  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+  background: var(--analysis-surface-elevated, rgba(255, 255, 255, 0.03));
+  border-bottom: 1px solid var(--analysis-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px) 0 0;
+}
+
+.collapsible-section-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm, 8px);
+  flex: 1;
+  padding: var(--analysis-gap-xs, 4px) 0;
+  font-size: var(--analysis-text-body, 0.875rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #fff);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-section-toggle:hover {
+  color: var(--analysis-accent, #2ff3e0);
+}
+
+.collapsible-section-toggle:focus-visible {
+  outline: 2px solid var(--analysis-accent, #2ff3e0);
+  outline-offset: 2px;
+  border-radius: var(--analysis-radius-sm, 4px);
+}
+
+.collapsible-section-chevron {
+  display: inline-flex;
+  font-size: 0.75em;
+  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-section-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.collapsible-section-title {
+  flex-shrink: 0;
+}
+
+.collapsible-section-summary {
+  margin-left: var(--analysis-gap-md, 12px);
+  padding-left: var(--analysis-gap-md, 12px);
+  border-left: 1px solid var(--analysis-border, rgba(255, 255, 255, 0.08));
+  font-size: var(--analysis-text-caption, 0.75rem);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapsible-section-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm, 8px);
+  flex-shrink: 0;
+}
+
+.collapsible-section-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-section-content.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.collapsible-section-content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.collapsible-section-content:not(.collapsed) {
+  padding-top: var(--analysis-gap-md, 12px);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .collapsible-section-chevron,
+  .collapsible-section-content {
+    transition: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .collapsible-section-summary {
+    display: none;
+  }
+}
