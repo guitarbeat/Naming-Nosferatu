@@ -13,6 +13,7 @@ import {
   AnalysisBulkActions,
 } from "../../shared/components";
 import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
+import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import { useImageGallery, useAdminStatus } from "./hooks";
 import {
   NameSelection,
@@ -183,10 +184,8 @@ function AnalysisBulkActionsWrapper({
   const filteredAndSortedNames = useMemo(() => {
     if (!context.names || context.names.length === 0) return [];
     let filtered = [...context.names];
-    const isNameHidden = (n) =>
-      Boolean(n.isHidden) ||
-      (context.hiddenIds instanceof Set && context.hiddenIds.has(n.id));
 
+    // Use shared isNameHidden utility for consistent visibility check
     if (context.filterStatus === "active") {
       filtered = filtered.filter((name) => !isNameHidden(name));
     } else if (context.filterStatus === "hidden") {
@@ -194,7 +193,7 @@ function AnalysisBulkActionsWrapper({
     }
 
     return filtered;
-  }, [context.names, context.hiddenIds, context.filterStatus]);
+  }, [context.names, context.filterStatus]);
 
   const allVisibleSelected =
     filteredAndSortedNames.length > 0 &&
@@ -396,7 +395,6 @@ function TournamentSetupContent({
             onToggleVisibility: (nameId) =>
               handlersRef.current.handleToggleVisibility?.(nameId),
             onDelete: (name) => handlersRef.current.handleDelete?.(name),
-            hiddenIds: undefined, // Will come from context
           }}
           extensions={{
             dashboard: (props) => (

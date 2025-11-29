@@ -546,49 +546,17 @@ export function NameManagementView({
               selectedNames={selectedNames}
               onToggleName={toggleName}
               filters={filterConfig}
-              mode={mode}
               isAdmin={
-                mode === "profile"
+                (mode === "profile" || (mode === "tournament" && analysisMode))
                   ? profileProps.isAdmin
-                  : tournamentProps.isAdmin
-              }
-              showSelectedOnly={
-                mode === "tournament" && !analysisMode
-                  ? showSelectedOnly
                   : false
               }
+              showSelectedOnly={mode === "tournament" && !analysisMode ? showSelectedOnly : false}
               showCatPictures={showCatPictures}
               imageList={tournamentProps.imageList || []}
-              hiddenIds={
-                mode === "profile" || (mode === "tournament" && analysisMode)
-                  ? profileProps.hiddenIds || new Set()
-                  : new Set()
-              }
-              onToggleVisibility={
-                // * Admin features only in profile mode or tournament with analysis mode active
-                (mode === "profile" ||
-                  (mode === "tournament" && analysisMode)) &&
-                profileProps.onToggleVisibility
-                  ? profileProps.onToggleVisibility
-                  : undefined
-              }
-              onDelete={
-                // * Admin features only in profile mode or tournament with analysis mode active
-                (mode === "profile" ||
-                  (mode === "tournament" && analysisMode)) &&
-                profileProps.onDelete
-                  ? profileProps.onDelete
-                  : undefined
-              }
-              showAdminControls={
-                // * Admin controls only shown in profile mode or tournament with analysis mode active
-                (mode === "profile" ||
-                  (mode === "tournament" && analysisMode)) &&
-                profileProps.isAdmin
-              }
-              className={
-                mode === "tournament" ? tournamentProps.gridClassName : ""
-              }
+              onToggleVisibility={profileProps.onToggleVisibility}
+              onDelete={profileProps.onDelete}
+              className={mode === "tournament" ? tournamentProps.gridClassName : ""}
             />
           )}
         </div>
@@ -661,7 +629,6 @@ NameManagementView.propTypes = {
   profileProps: PropTypes.shape({
     onToggleVisibility: PropTypes.func,
     onDelete: PropTypes.func,
-    hiddenIds: PropTypes.instanceOf(Set),
     stats: PropTypes.object,
     selectionStats: PropTypes.object,
     highlights: PropTypes.object,

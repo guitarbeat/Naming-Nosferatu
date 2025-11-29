@@ -62,8 +62,6 @@ function Results({
 }) {
   const [currentRankings, setCurrentRankings] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  // * Memoize hiddenNames Set to prevent recreation on every render
-  const hiddenNames = useMemo(() => new Set(), []);
 
   const { toasts, showToast, removeToast } = useToast({
     maxToasts: 1,
@@ -351,7 +349,6 @@ function Results({
             <CalendarButton
               rankings={currentRankings}
               userName={userName}
-              hiddenNames={hiddenNames}
             />
           </div>
           <p className={styles.tip} role="note">
