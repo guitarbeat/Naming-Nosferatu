@@ -1,135 +1,112 @@
 /**
  * @module NameGrid
  * @description Unified component for displaying a grid of name cards.
- * Used by both Tournament Setup and Profile views.
- * Supports filtering, sorting, selection, and different display modes.
+ * Simplified: names are either visible or hidden. That's it.
  */
 
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import NameCard from "../NameCard/NameCard";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
-import { filterAndSortNames } from "../../../features/tournament/utils";
+import { applyNameFilters, isNameHidden } from "../../utils/nameFilterUtils";
 import styles from "./NameGrid.module.css";
 
 /**
  * Unified name grid component
  * @param {Object} props - Component props
- * @param {Array} props.names - Array of name objects to display
- * @param {Array} props.selectedNames - Array of selected name IDs or objects
- * @param {Function} props.onToggleName - Handler for name selection
- * @param {Object} props.filters - Filter configuration
- * @param {string} props.filters.category - Selected category filter
- * @param {string} props.filters.searchTerm - Search term
- * @param {string} props.filters.sortBy - Sort method
- * @param {string} props.mode - Display mode: 'tournament' or 'profile'
- * @param {boolean} props.isLoading - Loading state
- * @param {boolean} props.isAdmin - Admin status
+ * @param {Array} props.names - Array of name objects
+ * @param {Array|Set} props.selectedNames - Selected name IDs
+ * @param {Function} props.onToggleName - Selection handler
+ * @param {Object} props.filters - Filter config (searchTerm, category, sortBy, visibility)
+ * @param {boolean} props.isAdmin - Admin status (can see/manage hidden names)
  * @param {boolean} props.showSelectedOnly - Only show selected names
- * @param {boolean} props.showCatPictures - Show cat images on cards
- * @param {Array} props.imageList - List of cat images
- * @param {Set} props.hiddenIds - Set of hidden name IDs (profile mode)
- * @param {Function} props.onToggleVisibility - Handler for visibility toggle (profile mode)
- * @param {Function} props.onDelete - Handler for name deletion (profile mode)
- * @param {boolean} props.showAdminControls - Show admin controls on cards
+ * @param {boolean} props.showCatPictures - Show cat images
+ * @param {Array} props.imageList - Cat images
+ * @param {Function} props.onToggleVisibility - Hide/unhide handler (admin only)
+ * @param {Function} props.onDelete - Delete handler (admin only)
  */
 export function NameGrid({
   names = [],
   selectedNames = [],
   onToggleName,
   filters = {},
-  mode = "tournament",
-  isLoading = false,
   isAdmin = false,
   showSelectedOnly = false,
   showCatPictures = false,
   imageList = [],
-  hiddenIds = new Set(),
   onToggleVisibility,
   onDelete,
-  showAdminControls = false,
+  isLoading = false,
   className = "",
+  // Backward compatibility props
+  hiddenIds,        // eslint-disable-line no-unused-vars -- visibility now from name.is_hidden
+  showAdminControls, // If provided, use this; otherwise fall back to isAdmin
+  mode,             // eslint-disable-line no-unused-vars -- no longer needed
 }) {
-  // Convert selectedNames to a Set for efficient lookup
+  // Use showAdminControls if explicitly provided, otherwise use isAdmin
+  const shouldShowAdminControls = showAdminControls !== undefined ? showAdminControls : isAdmin;
+  // Convert selectedNames to Set for O(1) lookup
   const selectedSet = useMemo(() => {
+    if (selectedNames instanceof Set) return selectedNames;
     if (Array.isArray(selectedNames)) {
-      return new Set(
-        selectedNames.map((item) =>
-          typeof item === "object" ? item.id : item,
-        ),
-      );
+      return new Set(selectedNames.map(item => 
+        typeof item === "object" ? item.id : item
+      ));
     }
-    return selectedNames instanceof Set ? selectedNames : new Set();
+    return new Set();
   }, [selectedNames]);
 
-  // Filter and sort names
+  // Apply all filters using simplified utility
   const processedNames = useMemo(() => {
-    let filtered = filterAndSortNames(names, filters);
+    // Map filterStatus to visibility for backward compatibility
+    const visibility = filters.filterStatus === "hidden" ? "hidden" 
+      : filters.filterStatus === "all" ? "all" 
+      : "visible";
 
-    // Apply show selected only filter
+    let result = applyNameFilters(names, {
+      searchTerm: filters.searchTerm,
+      category: filters.category,
+      sortBy: filters.sortBy,
+      visibility,
+      isAdmin,
+    });
+
+    // Apply "show selected only" filter
     if (showSelectedOnly && selectedSet.size > 0) {
-      filtered = filtered.filter((name) => selectedSet.has(name.id));
+      result = result.filter(name => selectedSet.has(name.id));
     }
 
-    // * Apply filterStatus filter for hidden names
-    // * "active" = show only non-hidden names
-    // * "hidden" = show only hidden names
-    // * "all" or undefined = show all names
-    const filterStatus = filters.filterStatus;
-    if (filterStatus === "active") {
-      // Filter out hidden names (check both hiddenIds Set and name.isHidden property)
-      filtered = filtered.filter((name) => {
-        const isHidden = hiddenIds.has(name.id) || name.isHidden === true;
-        return !isHidden;
-      });
-    } else if (filterStatus === "hidden") {
-      // Show only hidden names
-      filtered = filtered.filter((name) => {
-        const isHidden = hiddenIds.has(name.id) || name.isHidden === true;
-        return isHidden;
-      });
-    }
-    // For "all" or undefined, show all names (no filtering)
+    return result;
+  }, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
-    return filtered;
-  }, [names, filters, showSelectedOnly, selectedSet, hiddenIds]);
-
-  // Get random cat image for a name
-  const getRandomCatImage = (nameId) => {
-    if (!showCatPictures || imageList.length === 0) return undefined;
-    const index = Math.abs(
-      nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0),
-    );
-    return imageList[index % imageList.length];
+  // Get consistent cat image for a name
+  const getCatImage = (nameId) => {
+    if (!showCatPictures || !imageList.length) return undefined;
+    const hash = nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return imageList[Math.abs(hash) % imageList.length];
   };
 
-  // * Admin features (hide/delete) should only be active when showAdminControls is true
-  // * This ensures they're only available in profile mode or analysis mode
-
-  // * Use custom className if provided, otherwise use default grid styles
   const gridClassName = className || styles.grid;
 
-  // Loading state
   if (isLoading) {
     return (
       <div className={gridClassName}>
-        {Array.from({ length: 6 }).map((_, index) => (
-          <SkeletonLoader key={index} height={120} />
+        {Array.from({ length: 6 }).map((_, i) => (
+          <SkeletonLoader key={i} height={120} />
         ))}
       </div>
     );
   }
 
-  // Empty state
   if (processedNames.length === 0) {
     return (
       <div className={styles.emptyState}>
         <h3 className={styles.emptyTitle}>No names found</h3>
         <p className={styles.emptyMessage}>
           {showSelectedOnly
-            ? "No names selected yet. Select some names to see them here."
+            ? "No names selected yet."
             : filters.searchTerm || filters.category
-              ? "Try adjusting your filters to see more names."
+              ? "Try adjusting your filters."
               : "No names available."}
         </p>
       </div>
@@ -140,76 +117,26 @@ export function NameGrid({
     <div className={gridClassName}>
       {processedNames.map((nameObj) => {
         const isSelected = selectedSet.has(nameObj.id);
-        // * Only check hidden status if admin controls are enabled
-        const isHidden =
-          showAdminControls &&
-          hiddenIds instanceof Set &&
-          hiddenIds.has(nameObj.id);
+        const hidden = isNameHidden(nameObj);
 
         return (
           <div key={nameObj.id} className={styles.cardWrapper}>
-            {/* Hidden badge - only show in profile mode or analysis mode */}
-            {/* Hidden badge removed in favor of NameCard's internal styling */}
             <NameCard
               name={nameObj.name}
               description={nameObj.description}
               isSelected={isSelected}
-              onClick={
-                mode === "tournament"
-                  ? () => onToggleName?.(nameObj)
-                  : undefined
-              }
-              image={
-                showCatPictures ? getRandomCatImage(nameObj.id) : undefined
-              }
-              metadata={
-                mode === "profile"
-                  ? {
-                      rating: nameObj.user_rating || nameObj.avg_rating || 1500,
-                      popularity: nameObj.popularity_score,
-                      tournaments: nameObj.total_tournaments,
-                      categories: nameObj.categories,
-                      winRate:
-                        nameObj.user_wins && nameObj.user_losses
-                          ? Math.round(
-                              (nameObj.user_wins /
-                                (nameObj.user_wins + nameObj.user_losses)) *
-                                100,
-                            )
-                          : 0,
-                      totalMatches:
-                        (nameObj.user_wins || 0) + (nameObj.user_losses || 0),
-                    }
-                  : isAdmin
-                    ? {
-                        rating: nameObj.avg_rating || 1500,
-                        popularity: nameObj.popularity_score,
-                      }
-                    : undefined
-              }
-              className={
-                mode === "profile" && isHidden ? styles.hiddenCard : ""
-              }
-              // * Admin controls - only show when showAdminControls is true (analysis mode or profile mode)
-              // * This ensures hide/delete features are only available when explicitly enabled
-              isAdmin={showAdminControls && isAdmin}
-              isHidden={showAdminControls ? isHidden : false}
-              onToggleVisibility={
-                showAdminControls && isAdmin
-                  ? () => onToggleVisibility?.(nameObj.id)
-                  : undefined
-              }
-              onDelete={
-                showAdminControls && isAdmin
-                  ? () => onDelete?.(nameObj)
-                  : undefined
-              }
-              onSelectionChange={
-                showAdminControls && isAdmin
-                  ? (selected) => onToggleName?.(nameObj.id, selected)
-                  : undefined
-              }
-              showAdminControls={showAdminControls && isAdmin}
+              onClick={() => onToggleName?.(nameObj)}
+              image={getCatImage(nameObj.id)}
+              metadata={shouldShowAdminControls ? {
+                rating: nameObj.avg_rating || 1500,
+                popularity: nameObj.popularity_score,
+              } : undefined}
+              className={hidden ? styles.hiddenCard : ""}
+              isAdmin={shouldShowAdminControls}
+              isHidden={hidden}
+              onToggleVisibility={shouldShowAdminControls ? () => onToggleVisibility?.(nameObj.id) : undefined}
+              onDelete={shouldShowAdminControls ? () => onDelete?.(nameObj) : undefined}
+              showAdminControls={shouldShowAdminControls}
             />
           </div>
         );
@@ -220,27 +147,24 @@ export function NameGrid({
 
 NameGrid.propTypes = {
   names: PropTypes.array.isRequired,
-  selectedNames: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.instanceOf(Set),
-  ]),
+  selectedNames: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
   onToggleName: PropTypes.func,
   filters: PropTypes.shape({
-    category: PropTypes.string,
     searchTerm: PropTypes.string,
+    category: PropTypes.string,
     sortBy: PropTypes.string,
     filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
-    showHidden: PropTypes.bool,
   }),
-  mode: PropTypes.oneOf(["tournament", "profile"]),
-  isLoading: PropTypes.bool,
   isAdmin: PropTypes.bool,
   showSelectedOnly: PropTypes.bool,
   showCatPictures: PropTypes.bool,
   imageList: PropTypes.array,
-  hiddenIds: PropTypes.instanceOf(Set),
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
-  showAdminControls: PropTypes.bool,
+  isLoading: PropTypes.bool,
   className: PropTypes.string,
+  // Backward compatibility (deprecated)
+  hiddenIds: PropTypes.instanceOf(Set),
+  showAdminControls: PropTypes.bool,
+  mode: PropTypes.string,
 };

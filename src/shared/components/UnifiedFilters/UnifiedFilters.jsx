@@ -42,11 +42,11 @@ export function UnifiedFilters({
     { value: "recent", label: "Recent" },
   ];
 
-  // * Profile mode filter options
-  const statusOptions = [
-    { value: FILTER_OPTIONS.STATUS.ALL, label: "All Names" },
-    { value: FILTER_OPTIONS.STATUS.ACTIVE, label: "Active Only" },
-    { value: FILTER_OPTIONS.STATUS.HIDDEN, label: "Hidden Only" },
+  // * Visibility filter options (simplified: visible or hidden)
+  const visibilityOptions = [
+    { value: "all", label: "All Names" },
+    { value: "active", label: "Visible Only" },
+    { value: "hidden", label: "Hidden Only" },
   ];
 
   const defaultUserOptions = [
@@ -144,9 +144,9 @@ export function UnifiedFilters({
               <Select
                 id="filter-status"
                 name="filter-status"
-                value={filters.filterStatus || FILTER_OPTIONS.STATUS.ALL}
+                value={filters.filterStatus || "all"}
                 onChange={(e) => handleChange("filterStatus", e.target.value)}
-                options={statusOptions}
+                options={visibilityOptions}
                 className={styles.filterSelect}
               />
             </div>
@@ -305,9 +305,9 @@ export function UnifiedFilters({
             <Select
               id="filter-status"
               name="filter-status"
-              value={filters.filterStatus || FILTER_OPTIONS.STATUS.ALL}
+              value={filters.filterStatus || "all"}
               onChange={(e) => handleChange("filterStatus", e.target.value)}
-              options={statusOptions}
+              options={visibilityOptions}
               className={styles.filterSelect}
             />
           </div>

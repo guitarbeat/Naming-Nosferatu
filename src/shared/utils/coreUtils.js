@@ -39,3 +39,6 @@ export * from "./functionUtils";
 
 // * Re-export className utilities
 export * from "./classNameUtils";
+
+// * Re-export name filter utilities (simplified visibility filtering)
+export * from "./nameFilterUtils";

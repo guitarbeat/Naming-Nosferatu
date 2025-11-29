@@ -266,17 +266,16 @@ function TournamentNameGrid({
         selectedNames={context.selectedNames}
         availableNames={context.names}
         onToggleName={context.toggleName}
-        isAdmin={showAdminFeatures ? isAdmin : false}
+        isAdmin={showAdminFeatures && isAdmin}
         selectedCategory={context.selectedCategory}
         searchTerm={context.searchTerm}
         sortBy={context.sortBy}
-        filterStatus={showAdminFeatures ? context.filterStatus : undefined}
+        filterStatus={showAdminFeatures ? context.filterStatus : "active"}
         isSwipeMode={context.isSwipeMode}
         showCatPictures={context.showCatPictures}
         imageList={galleryImages}
         SwipeableCards={SwipeableNameCards}
         showSelectedOnly={context.showSelectedOnly}
-        hiddenIds={showAdminFeatures ? context.hiddenIds : new Set()}
         onToggleVisibility={showAdminFeatures ? onToggleVisibility : undefined}
         onDelete={showAdminFeatures ? onDelete : undefined}
       />
