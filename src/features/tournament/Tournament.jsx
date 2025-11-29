@@ -12,7 +12,7 @@ import React, {
   useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import { Loading, Error } from "../../shared/components";
+import { Loading, Error, Button } from "../../shared/components";
 import TournamentControls from "./TournamentControls";
 import TournamentHeader from "./components/TournamentHeader";
 import TournamentMatch from "./components/TournamentMatch";
@@ -503,16 +503,18 @@ function TournamentContent({
               {` ${(undoRemainingMs / 1000).toFixed(1)}s`}
             </span>
           </span>
-          <button
-            className={styles.undoButton}
+          <Button
+            variant="primary"
+            size="small"
             onClick={() => {
               handleUndo();
               setUndoExpiresAt(null);
             }}
+            className={styles.undoButton}
             aria-label="Undo last vote (Esc)"
           >
             Undo (Esc)
-          </button>
+          </Button>
         </div>
       )}
 

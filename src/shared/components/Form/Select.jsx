@@ -6,6 +6,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
+import FormField from "./FormField";
 import styles from "./Form.module.css";
 
 /**
@@ -51,21 +52,17 @@ const Select = ({
     .join(" ");
 
   const selectId = `select-${name}`;
-  const describedBy =
-    [ariaDescribedBy, error ? `${selectId}-error` : null]
-      .filter(Boolean)
-      .join(" ") || undefined;
 
   return (
-    <div className={styles.inputGroup}>
-      {label && (
-        <label htmlFor={selectId} className={styles.label}>
-          {label}
-          {required && <span className={styles.required}>*</span>}
-        </label>
-      )}
+    <FormField
+      id={selectId}
+      name={name}
+      label={label}
+      error={error}
+      required={required}
+      ariaDescribedBy={ariaDescribedBy}
+    >
       <select
-        id={selectId}
         name={name}
         value={value}
         onChange={onChange}
@@ -73,8 +70,6 @@ const Select = ({
         disabled={disabled}
         required={required}
         className={selectClasses}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
         {...rest}
       >
         {placeholder && (
@@ -92,12 +87,7 @@ const Select = ({
           </option>
         ))}
       </select>
-      {error && (
-        <div id={`${selectId}-error`} className={styles.errorText} role="alert">
-          {error}
-        </div>
-      )}
-    </div>
+    </FormField>
   );
 };
 

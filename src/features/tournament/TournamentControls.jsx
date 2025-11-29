@@ -22,6 +22,7 @@ import {
   MusicalNoteIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
+import { Button, IconButton } from "@components";
 import styles from "./Tournament.module.css";
 
 const TournamentControls = ({
@@ -54,22 +55,24 @@ const TournamentControls = ({
       aria-label="Tournament controls"
     >
       <div className={styles.soundControls}>
-        <button
+        <IconButton
           onClick={audioError ? onRetryAudio : onToggleMute}
-          className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
-          aria-label={
+          icon={
+            isMuted ? (
+              <SpeakerXMarkIcon className={styles.icon} aria-hidden="true" />
+            ) : (
+              <SpeakerWaveIcon className={styles.icon} aria-hidden="true" />
+            )
+          }
+          variant={audioError ? "danger" : "ghost"}
+          ariaLabel={
             isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"
           }
           aria-pressed={isMuted}
           disabled={isTransitioning}
           title={isMuted ? "Unmute" : "Mute"}
-        >
-          {isMuted ? (
-            <SpeakerXMarkIcon className={styles.icon} aria-hidden="true" />
-          ) : (
-            <SpeakerWaveIcon className={styles.icon} aria-hidden="true" />
-          )}
-        </button>
+          className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
+        />
 
         {!isMuted && (
           <div
@@ -113,26 +116,27 @@ const TournamentControls = ({
         )}
 
         {!isMuted && (
-          <button
+          <IconButton
             onClick={onNextTrack}
-            className={styles.soundToggleButton}
-            aria-label="Next track"
+            icon={<MusicalNoteIcon className={styles.icon} aria-hidden="true" />}
+            variant="ghost"
+            ariaLabel="Next track"
             disabled={isTransitioning}
             title={
               trackInfo
                 ? `Now Playing: ${trackInfo.name}\nClick for next track`
                 : "Next track"
             }
-          >
-            <MusicalNoteIcon className={styles.icon} aria-hidden="true" />
-          </button>
+            className={styles.soundToggleButton}
+          />
         )}
 
         {!isMuted && (
-          <button
+          <IconButton
             onClick={onToggleShuffle}
-            className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
-            aria-label={isShuffle ? "Disable shuffle" : "Enable shuffle"}
+            icon={<span className={styles.icon} aria-hidden="true">🔀</span>}
+            variant="ghost"
+            ariaLabel={isShuffle ? "Disable shuffle" : "Enable shuffle"}
             aria-pressed={isShuffle}
             disabled={isTransitioning}
             title={
@@ -140,22 +144,19 @@ const TournamentControls = ({
                 ? "Shuffle: On (click to turn off)"
                 : "Shuffle: Off (click to turn on)"
             }
-          >
-            <span className={styles.icon} aria-hidden="true">
-              🔀
-            </span>
-          </button>
+            className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
+          />
         )}
 
         {audioError && (
-          <button
+          <IconButton
             onClick={onRetryAudio}
-            className={`${styles.soundToggleButton} ${styles.error}`}
-            aria-label="Retry playing audio"
+            icon={<ExclamationCircleIcon className={styles.icon} aria-hidden="true" />}
+            variant="danger"
+            ariaLabel="Retry playing audio"
             title={audioError}
-          >
-            <ExclamationCircleIcon className={styles.icon} aria-hidden="true" />
-          </button>
+            className={`${styles.soundToggleButton} ${styles.error}`}
+          />
         )}
 
         {!isMuted && trackInfo && trackInfo.name && (
@@ -165,14 +166,16 @@ const TournamentControls = ({
         )}
       </div>
 
-      <button
+      <Button
         onClick={() => setShowConfirmation(true)}
-        className={styles.controlButton}
+        variant="danger"
+        size="large"
         disabled={isTransitioning}
+        className={styles.controlButton}
         aria-label="End tournament early"
       >
         End Tournament Early
-      </button>
+      </Button>
 
       {showConfirmation && (
         <>
@@ -194,19 +197,21 @@ const TournamentControls = ({
               Are you sure you want to end the tournament early?
             </p>
             <div className={styles.modalActions}>
-              <button
+              <Button
                 onClick={handleEndConfirm}
-                className={styles.confirmButton}
+                variant="danger"
                 autoFocus
+                className={styles.confirmButton}
               >
                 Yes, End Tournament
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowConfirmation(false)}
+                variant="secondary"
                 className={styles.cancelButton}
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </>

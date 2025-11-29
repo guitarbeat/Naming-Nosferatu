@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { Card, Error } from "../../../../shared/components";
+import { Card, Error, Button } from "../../../../shared/components";
 import NameCard from "../../../../shared/components/NameCard/NameCard";
 import styles from "../../Tournament.module.css";
 
@@ -73,33 +73,33 @@ function TournamentMatch({
         role="group"
         aria-label="Additional voting options"
       >
-        <button
-          className={`${styles.extraOptionsButton} ${selectedOption === "both" ? styles.selected : ""}`}
+        <Button
           onClick={() => onVoteWithAnimation("both")}
           disabled={isProcessing || isTransitioning}
+          variant={selectedOption === "both" ? "primary" : "secondary"}
+          className={`${styles.extraOptionsButton} ${selectedOption === "both" ? styles.selected : ""}`}
           aria-pressed={selectedOption === "both"}
           aria-label="Vote for both names (Press Up arrow key)"
-          type="button"
         >
           I Like Both!{" "}
           <span className={styles.shortcutHint} aria-hidden="true">
             (↑ Up)
           </span>
-        </button>
+        </Button>
 
-        <button
-          className={`${styles.extraOptionsButton} ${selectedOption === "neither" ? styles.selected : ""}`}
+        <Button
           onClick={() => onVoteWithAnimation("neither")}
           disabled={isProcessing || isTransitioning}
+          variant={selectedOption === "neither" ? "primary" : "secondary"}
+          className={`${styles.extraOptionsButton} ${selectedOption === "neither" ? styles.selected : ""}`}
           aria-pressed={selectedOption === "neither"}
           aria-label="Skip this match (Press Down arrow key)"
-          type="button"
         >
           Skip{" "}
           <span className={styles.shortcutHint} aria-hidden="true">
             (↓ Down)
           </span>
-        </button>
+        </Button>
       </div>
 
       {/* Voting Error Display */}
