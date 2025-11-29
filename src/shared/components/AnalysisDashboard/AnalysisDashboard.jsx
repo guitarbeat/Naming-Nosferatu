@@ -7,8 +7,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { AnalysisPanel, AnalysisStats } from "../AnalysisPanel";
-import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
+import { AnalysisPanel, AnalysisStats, AnalysisHeader } from "../AnalysisPanel";
+import { CollapsibleContent } from "../CollapsibleHeader";
 import { BarChart } from "../BarChart";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
@@ -193,13 +193,15 @@ export function AnalysisDashboard({
 
   return (
     <AnalysisPanel showHeader={false}>
-      <CollapsibleHeader
+      <AnalysisHeader
         title="Analytics"
         icon="📊"
+        collapsible
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
         summary={collapsedSummary}
         contentId="analysis-dashboard-content"
+        showBadge={false}
       />
 
       <CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>

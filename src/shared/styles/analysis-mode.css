@@ -208,6 +208,16 @@ body:has(.analysis-mode-banner)::after {
   letter-spacing: var(--tracking-tight);
 }
 
+/* * Collapsible header variant - styles shared with CollapsibleHeader */
+.analysis-header--collapsible {
+  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
+  background: var(--analysis-surface-elevated);
+  border-bottom: 1px solid var(--analysis-border);
+  border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
+}
+
+/* Shared toggle, chevron, and summary styles are in CollapsibleHeader.css */
+
 /* ==========================================================================
    ANALYSIS STATS - Dashboard Metrics
    ========================================================================== */
@@ -910,36 +920,11 @@ body:has(.analysis-mode-banner)::after {
   color: var(--text-tertiary);
 }
 
-.analysis-dashboard-content {
-  display: grid;
-  grid-template-rows: 1fr;
-  overflow: hidden;
-  transition: grid-template-rows var(--analysis-duration-normal) var(--analysis-ease);
-}
-
-.analysis-dashboard-content.collapsed {
-  grid-template-rows: 0fr;
-}
-
-.analysis-dashboard-content > * {
-  min-height: 0;
-  overflow: hidden;
-}
+/* Shared collapsible content styles are in CollapsibleHeader.css */
 
 /* Adjust panel padding when header is present */
 .analysis-panel:has(.analysis-dashboard-header) {
   padding-top: 0;
-}
-
-.analysis-dashboard-content:not(.collapsed) {
-  padding-top: var(--analysis-gap-md);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .analysis-dashboard-chevron,
-  .analysis-dashboard-content {
-    transition: none;
-  }
 }
 
 

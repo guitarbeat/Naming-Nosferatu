@@ -1,8 +1,9 @@
 /**
  * CollapsibleHeader Styles
- * Reusable collapsible header styling
+ * Reuses analysis-mode styles via shared class names to reduce duplication
  */
 
+/* Use shared analysis-header styles when in analysis context */
 .collapsible-header {
   display: flex;
   align-items: center;
@@ -13,18 +14,18 @@
   border-bottom: 1px solid var(--analysis-border, rgba(255, 255, 255, 0.08));
 }
 
-/* Variant: default - rounded top corners for panels */
 .collapsible-header--default {
   border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px) 0 0;
 }
 
-/* Variant: compact - no border radius */
 .collapsible-header--compact {
   border-radius: 0;
   padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
 }
 
-.collapsible-header-toggle {
+/* Share toggle styles with analysis-header-toggle */
+.collapsible-header-toggle,
+.analysis-header-toggle {
   display: flex;
   align-items: center;
   gap: var(--analysis-gap-sm, 8px);
@@ -40,23 +41,28 @@
   transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
 }
 
-.collapsible-header-toggle:hover {
+.collapsible-header-toggle:hover,
+.analysis-header-toggle:hover {
   color: var(--analysis-accent, #2ff3e0);
 }
 
-.collapsible-header-toggle:focus-visible {
+.collapsible-header-toggle:focus-visible,
+.analysis-header-toggle:focus-visible {
   outline: 2px solid var(--analysis-accent, #2ff3e0);
   outline-offset: 2px;
   border-radius: var(--analysis-radius-sm, 4px);
 }
 
-.collapsible-header-chevron {
+/* Share chevron styles */
+.collapsible-header-chevron,
+.analysis-header-chevron {
   display: inline-flex;
   font-size: 0.75em;
   transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
 }
 
-.collapsible-header-chevron.collapsed {
+.collapsible-header-chevron.collapsed,
+.analysis-header-chevron.collapsed {
   transform: rotate(-90deg);
 }
 
@@ -64,7 +70,9 @@
   flex-shrink: 0;
 }
 
-.collapsible-header-summary {
+/* Share summary styles */
+.collapsible-header-summary,
+.analysis-header-summary {
   margin-left: var(--analysis-gap-md, 12px);
   padding-left: var(--analysis-gap-md, 12px);
   border-left: 1px solid var(--analysis-border, rgba(255, 255, 255, 0.08));
@@ -83,38 +91,43 @@
   flex-shrink: 0;
 }
 
-/* Collapsible Content */
-.collapsible-content {
+/* Share collapsible content styles */
+.collapsible-content,
+.analysis-dashboard-content {
   display: grid;
   grid-template-rows: 1fr;
   overflow: hidden;
   transition: grid-template-rows var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
 }
 
-.collapsible-content.collapsed {
+.collapsible-content.collapsed,
+.analysis-dashboard-content.collapsed {
   grid-template-rows: 0fr;
 }
 
-.collapsible-content > * {
+.collapsible-content > *,
+.analysis-dashboard-content > * {
   min-height: 0;
   overflow: hidden;
 }
 
-.collapsible-content:not(.collapsed) {
+.collapsible-content:not(.collapsed),
+.analysis-dashboard-content:not(.collapsed) {
   padding-top: var(--analysis-gap-md, 12px);
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .collapsible-header-chevron,
-  .collapsible-content {
+  .analysis-header-chevron,
+  .collapsible-content,
+  .analysis-dashboard-content {
     transition: none;
   }
 }
 
-/* Responsive */
 @media (max-width: 600px) {
-  .collapsible-header-summary {
+  .collapsible-header-summary,
+  .analysis-header-summary {
     display: none;
   }
 }
