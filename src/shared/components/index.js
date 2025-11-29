@@ -39,6 +39,8 @@ export { AdminAnalytics } from "./AdminAnalytics";
 
 // * Utility Components
 export { CollapsibleSection } from "./CollapsibleSection";
+export { CollapsibleHeader, CollapsibleContent } from "./CollapsibleHeader";
+export { BarChart } from "./BarChart";
 
 // * Named exports
 export {

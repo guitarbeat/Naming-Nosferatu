@@ -4,8 +4,8 @@
  * Provides a cohesive visual wrapper with consistent styling and layout.
  */
 
-import React from "react";
 import PropTypes from "prop-types";
+import { formatShortcut, getModifierKey } from "../../utils/platformUtils";
 import "../../styles/analysis-mode.css";
 
 /**
@@ -358,10 +358,7 @@ AnalysisProgress.propTypes = {
  * @param {boolean} props.collapsed - Whether sidebar is collapsed
  */
 export function AnalysisToggle({ active, onClick, collapsed = false }) {
-  const isMac =
-    typeof navigator !== "undefined" &&
-    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
-  const shortcutKey = isMac ? "⌘⇧A" : "Ctrl+Shift+A";
+  const shortcutKey = formatShortcut("A", { ctrl: true, shift: true });
 
   return (
     <button
@@ -400,10 +397,7 @@ AnalysisToggle.propTypes = {
  * @param {boolean} props.showShortcut - Whether to show keyboard shortcut hint
  */
 export function AnalysisModeBanner({ onClose, showShortcut = true }) {
-  const isMac =
-    typeof navigator !== "undefined" &&
-    /Mac|iPhone|iPod|iPad/i.test(navigator.platform);
-  const shortcutKey = isMac ? "⌘" : "Ctrl";
+  const shortcutDisplay = `${getModifierKey()} + Shift + A`;
 
   return (
     <div
@@ -416,7 +410,7 @@ export function AnalysisModeBanner({ onClose, showShortcut = true }) {
         <span className="analysis-mode-banner-text">Analysis Mode Active</span>
         {showShortcut && (
           <span className="analysis-mode-banner-shortcut">
-            {shortcutKey} + Shift + A
+            {shortcutDisplay}
           </span>
         )}
       </div>

@@ -8,65 +8,12 @@
 import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel, AnalysisStats } from "../AnalysisPanel";
+import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
+import { BarChart } from "../BarChart";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 
 const STORAGE_KEY = "analysis-dashboard-collapsed";
-
-/**
- * Simple CSS-based bar chart with rating display
- */
-function SimpleBarChart({
-  title,
-  items,
-  valueKey = "value",
-  labelKey = "name",
-  showRating = false,
-}) {
-  if (!items || items.length === 0) return null;
-
-  const maxValue = Math.max(...items.map((item) => item[valueKey]), 1);
-
-  return (
-    <div className="analysis-chart">
-      <h3 className="analysis-chart-title">{title}</h3>
-      <div className="analysis-chart-bars">
-        {items.slice(0, 5).map((item, index) => (
-          <div key={item.id || index} className="analysis-chart-row">
-            <div className="analysis-chart-label" title={item[labelKey]}>
-              {item[labelKey]}
-            </div>
-            <div className="analysis-chart-bar-container">
-              <div
-                className="analysis-chart-bar"
-                style={{
-                  width: `${(item[valueKey] / maxValue) * 100}%`,
-                }}
-              />
-            </div>
-            <div className="analysis-chart-value">
-              {showRating && item.avg_rating ? (
-                <span title={`Rating: ${item.avg_rating}`}>
-                  {item[valueKey]} <small>({item.avg_rating})</small>
-                </span>
-              ) : (
-                item[valueKey]
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-SimpleBarChart.propTypes = {
-  title: PropTypes.string.isRequired,
-  items: PropTypes.array.isRequired,
-  valueKey: PropTypes.string,
-  labelKey: PropTypes.string,
-  showRating: PropTypes.bool,
-};
 
 /**
  * Analysis Dashboard Component
@@ -237,46 +184,30 @@ export function AnalysisDashboard({
     return null;
   }
 
+  // Build summary for collapsed state
+  const collapsedSummary = statItems.length > 0 ? (
+    <>
+      {statItems.slice(0, 3).map((stat, i) => (
+        <span key={stat.label}>
+          {i > 0 && " · "}
+          <strong>{stat.value}</strong> {stat.label}
+        </span>
+      ))}
+    </>
+  ) : null;
+
   return (
     <AnalysisPanel showHeader={false}>
-      {/* Collapsible header */}
-      <button
-        type="button"
-        className="analysis-dashboard-header"
-        onClick={toggleCollapsed}
-        aria-expanded={!isCollapsed}
-        aria-controls="analysis-dashboard-content"
-      >
-        <span className="analysis-dashboard-title">
-          <span
-            className={`analysis-dashboard-chevron ${isCollapsed ? "collapsed" : ""}`}
-            aria-hidden="true"
-          >
-            ▼
-          </span>
-          <span aria-hidden="true">📊</span> Analytics
-          {/* Show quick summary when collapsed */}
-          {isCollapsed && statItems.length > 0 && (
-            <span className="analysis-dashboard-summary">
-              {statItems.slice(0, 3).map((stat, i) => (
-                <span key={stat.label} className="analysis-dashboard-summary-item">
-                  {i > 0 && " · "}
-                  <strong>{stat.value}</strong> {stat.label}
-                </span>
-              ))}
-            </span>
-          )}
-        </span>
-        <span className="analysis-dashboard-hint">
-          {isCollapsed ? "▸ Expand" : "▾ Minimize"}
-        </span>
-      </button>
+      <CollapsibleHeader
+        title="Analytics"
+        icon="📊"
+        isCollapsed={isCollapsed}
+        onToggle={toggleCollapsed}
+        summary={collapsedSummary}
+        contentId="analysis-dashboard-content"
+      />
 
-      {/* Collapsible content */}
-      <div
-        id="analysis-dashboard-content"
-        className={`analysis-dashboard-content ${isCollapsed ? "collapsed" : ""}`}
-      >
+      <CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
         {statItems.length > 0 && <AnalysisStats stats={statItems} />}
 
         {isLoading ? (
@@ -284,29 +215,30 @@ export function AnalysisDashboard({
         ) : (
           <div className="analysis-charts-grid">
             {effectiveTopRated?.length > 0 && (
-              <SimpleBarChart
+              <BarChart
                 title={userName ? "Your Top Rated" : "Global Top Rated"}
                 items={effectiveTopRated}
               />
             )}
 
             {effectiveMostWins?.length > 0 && (
-              <SimpleBarChart
+              <BarChart
                 title={userName ? "Your Most Wins" : "Global Most Wins"}
                 items={effectiveMostWins}
-                showRating
+                showSecondaryValue
+                secondaryValueKey="avg_rating"
               />
             )}
 
             {mostSelected?.length > 0 && (
-              <SimpleBarChart
+              <BarChart
                 title="Most Selected for Tournaments"
                 items={mostSelected}
               />
             )}
           </div>
         )}
-      </div>
+      </CollapsibleContent>
     </AnalysisPanel>
   );
 }

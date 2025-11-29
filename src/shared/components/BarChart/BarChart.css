@@ -1,0 +1,83 @@
+/**
+ * BarChart Styles
+ * Simple horizontal bar chart styling
+ */
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-md, 12px);
+  padding: var(--analysis-gap-md, 12px);
+  background: var(--analysis-surface-elevated, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--analysis-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--analysis-radius-lg, 12px);
+}
+
+.bar-chart-title {
+  font-size: var(--analysis-text-caption, 0.75rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide, 0.05em);
+  margin: 0;
+}
+
+.bar-chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-sm, 8px);
+}
+
+.bar-chart-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px;
+  align-items: center;
+  gap: var(--analysis-gap-sm, 8px);
+}
+
+.bar-chart-label {
+  font-size: var(--analysis-text-caption, 0.75rem);
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.bar-chart-bar-container {
+  height: 8px;
+  background: var(--analysis-surface-2, rgba(255, 255, 255, 0.05));
+  border-radius: var(--analysis-radius-full, 9999px);
+  overflow: hidden;
+}
+
+.bar-chart-bar {
+  height: 100%;
+  background: var(--analysis-accent, #2ff3e0);
+  border-radius: var(--analysis-radius-full, 9999px);
+  transition: width var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
+}
+
+.bar-chart-value {
+  font-family: var(--analysis-text-mono, monospace);
+  font-size: var(--analysis-text-caption, 0.75rem);
+  color: var(--text-primary, #fff);
+  text-align: right;
+}
+
+.bar-chart-value small {
+  font-size: 0.85em;
+  color: var(--text-tertiary, rgba(255, 255, 255, 0.5));
+  margin-left: 2px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .bar-chart-row {
+    grid-template-columns: 80px 1fr 40px;
+  }
+  
+  .bar-chart-label {
+    font-size: 0.65rem;
+  }
+}

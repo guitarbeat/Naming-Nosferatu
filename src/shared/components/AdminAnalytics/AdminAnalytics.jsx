@@ -7,6 +7,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel, AnalysisStats, AnalysisButton } from "../AnalysisPanel";
+import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { formatRelativeTime } from "../../utils/timeUtils";
@@ -145,49 +146,44 @@ export function AdminAnalytics({ isAdmin = false }) {
     return null;
   }
 
+  // Build summary for collapsed state
+  const collapsedSummary = summaryStats.length > 0 
+    ? `${summaryStats[0].value} ${summaryStats[0].label}`
+    : null;
+
+  // Build refresh actions
+  const headerActions = (
+    <>
+      {lastRefresh && (
+        <span className="admin-analytics-refresh-time">
+          Updated {formatRelativeTime(lastRefresh)}
+        </span>
+      )}
+      <AnalysisButton
+        variant="ghost"
+        onClick={fetchAnalytics}
+        disabled={isLoading}
+        ariaLabel="Refresh analytics data"
+        title="Refresh data"
+      >
+        <span aria-hidden="true">{isLoading ? "⏳" : "🔄"}</span>
+      </AnalysisButton>
+    </>
+  );
+
   return (
     <AnalysisPanel showHeader={false}>
-      {/* Collapsible header */}
-      <div className="admin-analytics-header">
-        <button
-          type="button"
-          className="admin-analytics-toggle"
-          onClick={toggleCollapsed}
-          aria-expanded={!isCollapsed}
-        >
-          <span
-            className={`admin-analytics-chevron ${isCollapsed ? "collapsed" : ""}`}
-            aria-hidden="true"
-          >
-            ▼
-          </span>
-          <span aria-hidden="true">📈</span> Popularity Analytics
-          {isCollapsed && summaryStats.length > 0 && (
-            <span className="admin-analytics-summary">
-              {summaryStats[0].value} {summaryStats[0].label}
-            </span>
-          )}
-        </button>
-        <div className="admin-analytics-actions">
-          {lastRefresh && (
-            <span className="admin-analytics-refresh-time">
-              Updated {formatRelativeTime(lastRefresh)}
-            </span>
-          )}
-          <AnalysisButton
-            variant="ghost"
-            onClick={fetchAnalytics}
-            disabled={isLoading}
-            ariaLabel="Refresh analytics data"
-            title="Refresh data"
-          >
-            <span aria-hidden="true">{isLoading ? "⏳" : "🔄"}</span>
-          </AnalysisButton>
-        </div>
-      </div>
+      <CollapsibleHeader
+        title="Popularity Analytics"
+        icon="📈"
+        isCollapsed={isCollapsed}
+        onToggle={toggleCollapsed}
+        summary={collapsedSummary}
+        actions={headerActions}
+        contentId="admin-analytics-content"
+      />
 
-      {/* Collapsible content */}
-      <div className={`admin-analytics-content ${isCollapsed ? "collapsed" : ""}`}>
+      <CollapsibleContent id="admin-analytics-content" isCollapsed={isCollapsed}>
         {summaryStats.length > 0 && <AnalysisStats stats={summaryStats} />}
 
         {isLoading ? (
@@ -283,7 +279,7 @@ export function AdminAnalytics({ isAdmin = false }) {
             </div>
           </div>
         )}
-      </div>
+      </CollapsibleContent>
     </AnalysisPanel>
   );
 }
