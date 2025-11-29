@@ -107,6 +107,7 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
 
   const trimmedUserName = userName.trim?.() ?? userName;
 
+  // Only query user_roles table (single source of truth)
   if (source === "user_roles") {
     const { data, error } = await activeSupabase
       .from("user_roles")
@@ -119,13 +120,8 @@ const fetchRoleFromSource = async (activeSupabase, userName, source, state) => {
     return handleRoleResponse(data, error, source, state, "role");
   }
 
-  const { data, error } = await activeSupabase
-    .from("cat_app_users")
-    .select("user_role")
-    .eq("user_name", trimmedUserName)
-    .maybeSingle();
-
-  return handleRoleResponse(data, error, source, state, "user_role");
+  // No other sources supported
+  return { role: null, handled: true };
 };
 
 const fetchUserRole = async (activeSupabase, userName) => {

@@ -4,10 +4,7 @@
  */
 
 import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
-import {
-  getUserStats,
-  tournamentsAPI,
-} from "../../../shared/services/supabase/api";
+import { getUserStats } from "../../../shared/services/supabase/api";
 
 /**
  * * Use database-optimized stats calculation
@@ -66,10 +63,10 @@ function generateSelectionPattern(selections) {
  */
 async function generatePreferredCategories(selections) {
   try {
-    const nameIds = selections.map((s) => s.name_id);
+    const nameIds = selections.map((s) => s.name_id).filter(Boolean);
     const supabaseClient = await resolveSupabaseClient();
 
-    if (!supabaseClient) {
+    if (!supabaseClient || nameIds.length === 0) {
       return "Analyzing your preferences...";
     }
 
@@ -136,33 +133,37 @@ function generateImprovementTip(
 }
 
 /**
- * * Calculate selection analytics using consolidated tournament_data in cat_app_users
+ * * Calculate selection analytics using tournament_selections table
  * @param {string} userName - User name to calculate stats for
  * @returns {Promise<Object|null>} Selection statistics or null
  */
 export async function calculateSelectionStats(userName) {
   try {
-    if (!(await resolveSupabaseClient())) return null;
+    const supabaseClient = await resolveSupabaseClient();
+    if (!supabaseClient) return null;
 
-    // Pull tournaments from cat_app_users.tournament_data via API
-    const tournaments = await tournamentsAPI.getUserTournaments(userName);
-    if (!tournaments || tournaments.length === 0) {
+    // Query tournament_selections table directly
+    const { data: selections, error } = await supabaseClient
+      .from("tournament_selections")
+      .select("name_id, name, tournament_id, selected_at")
+      .eq("user_name", userName)
+      .order("selected_at", { ascending: false });
+
+    if (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error fetching tournament selections:", error);
+      }
       return null;
     }
 
-    // Flatten selections from tournament_data
-    const selections = tournaments.flatMap((t) =>
-      (t.selected_names || []).map((n) => ({
-        name_id: n.id,
-        name: n.name,
-        tournament_id: t.id,
-        selected_at: t.created_at,
-      })),
-    );
+    if (!selections || selections.length === 0) {
+      return null;
+    }
 
     // Calculate basic metrics
     const totalSelections = selections.length;
-    const totalTournaments = tournaments.length;
+    const uniqueTournaments = new Set(selections.map((s) => s.tournament_id))
+      .size;
     const uniqueNames = new Set(selections.map((s) => s.name_id)).size;
     const avgSelectionsPerName =
       uniqueNames > 0
@@ -198,8 +199,8 @@ export async function calculateSelectionStats(userName) {
     Object.keys(nameSelectionCounts).forEach((nameId) => {
       const count = nameSelectionCounts[nameId];
       nameSelectionFrequency[nameId] =
-        totalTournaments > 0
-          ? Math.round((count / totalTournaments) * 100) / 100
+        uniqueTournaments > 0
+          ? Math.round((count / uniqueTournaments) * 100) / 100
           : 0;
     });
 
@@ -246,14 +247,14 @@ export async function calculateSelectionStats(userName) {
       preferredCategories: await generatePreferredCategories(selections),
       improvementTip: generateImprovementTip(
         totalSelections,
-        totalTournaments,
+        uniqueTournaments,
         currentStreak,
       ),
     };
 
     return {
       totalSelections,
-      totalTournaments,
+      totalTournaments: uniqueTournaments,
       avgSelectionsPerName,
       mostSelectedName,
       currentStreak,

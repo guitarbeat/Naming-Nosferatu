@@ -44,8 +44,10 @@ export function useProfileUser(userName) {
       if (!user?.user_name) return;
 
       const badges = [];
-      if (user.user_role && user.user_role !== "user") {
-        badges.push(user.user_role);
+      // Get role from joined user_roles table
+      const userRole = user.user_roles?.role;
+      if (userRole && userRole !== "user") {
+        badges.push(userRole);
       }
       if (user.user_name === userName) {
         badges.push("you");
@@ -154,7 +156,7 @@ export function useProfileUser(userName) {
         const existing = uniqueUsers.get(userName);
         uniqueUsers.set(userName, {
           user_name: userName,
-          user_role: existing?.user_role ?? null,
+          user_roles: existing?.user_roles ?? null,
           created_at: existing?.created_at ?? null,
           updated_at: existing?.updated_at ?? null,
         });

@@ -136,7 +136,7 @@ function useUserSession({ showToast } = {}) {
         // Check if user exists in database
         const { data: existingUser, error: fetchError } = await activeSupabase
           .from("cat_app_users")
-          .select("user_name, preferences, user_role")
+          .select("user_name, preferences")
           .eq("user_name", trimmedName)
           .maybeSingle();
 
@@ -159,7 +159,6 @@ function useUserSession({ showToast } = {}) {
                 sound_enabled: true,
                 theme_preference: "dark",
               },
-              p_user_role: "user",
             },
           );
 
