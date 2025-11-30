@@ -1,12 +1,12 @@
 /**
  * @module AdminAnalytics
- * @description Admin-only analytics dashboard showing comprehensive popularity metrics.
- * Displays selection frequency, ratings, wins, and engagement data.
+ * @description Admin view of all names with key metrics for choosing a name.
+ * Shows Selected count, Rating, and Wins - the metrics that matter for naming a cat.
  */
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { AnalysisPanel, AnalysisStats, AnalysisButton } from "../AnalysisPanel";
+import { AnalysisPanel, AnalysisButton } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
@@ -27,14 +27,10 @@ function PopularityRow({ item, rank }) {
         {item.name}
       </td>
       <td className="admin-analytics-value">{item.times_selected}</td>
-      <td className="admin-analytics-value">{item.unique_selectors}</td>
       <td className="admin-analytics-value admin-analytics-rating">
         {item.avg_rating}
       </td>
       <td className="admin-analytics-value">{item.total_wins}</td>
-      <td className="admin-analytics-value">{item.win_rate}%</td>
-      <td className="admin-analytics-value">{item.users_rated}</td>
-      <td className="admin-analytics-score">{item.popularity_score}</td>
     </tr>
   );
 }
@@ -44,12 +40,8 @@ PopularityRow.propTypes = {
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
     times_selected: PropTypes.number,
-    unique_selectors: PropTypes.number,
     avg_rating: PropTypes.number,
     total_wins: PropTypes.number,
-    win_rate: PropTypes.number,
-    users_rated: PropTypes.number,
-    popularity_score: PropTypes.number,
   }).isRequired,
   rank: PropTypes.number.isRequired,
 };
@@ -62,7 +54,7 @@ export function AdminAnalytics({ isAdmin = false }) {
   const [analyticsData, setAnalyticsData] = useState(null);
   const [siteStats, setSiteStats] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [sortField, setSortField] = useState("popularity_score");
+  const [sortField, setSortField] = useState("avg_rating");
   const [sortDirection, setSortDirection] = useState("desc");
   const [lastRefresh, setLastRefresh] = useState(null);
   
@@ -98,6 +90,7 @@ export function AdminAnalytics({ isAdmin = false }) {
   }, [fetchAnalytics]);
 
   // Sort data based on current sort field
+  // * Default to rating (most useful for choosing a name)
   const sortedData = useMemo(() => {
     if (!analyticsData) return [];
     return [...analyticsData].sort((a, b) => {
@@ -107,19 +100,7 @@ export function AdminAnalytics({ isAdmin = false }) {
     });
   }, [analyticsData, sortField, sortDirection]);
 
-  // Calculate summary stats from site stats
-  const summaryStats = useMemo(() => {
-    if (!siteStats) return [];
-
-    return [
-      { value: siteStats.activeNames, label: "Active Names", accent: true },
-      { value: siteStats.totalUsers, label: "Users" },
-      { value: siteStats.totalRatings, label: "Ratings" },
-      { value: siteStats.totalSelections, label: "Selections" },
-      { value: siteStats.avgRating, label: "Avg Rating" },
-      { value: siteStats.hiddenNames, label: "Hidden" },
-    ];
-  }, [siteStats]);
+  // * Summary stats removed - not useful for choosing a name
 
   // Handle column header click for sorting
   const handleSort = (field) => {
@@ -141,10 +122,7 @@ export function AdminAnalytics({ isAdmin = false }) {
     return null;
   }
 
-  // Build summary for collapsed state
-  const collapsedSummary = summaryStats.length > 0 
-    ? `${summaryStats[0].value} ${summaryStats[0].label}`
-    : null;
+  // * No summary needed - table shows what matters
 
   // Build refresh actions
   const headerActions = (
@@ -169,18 +147,15 @@ export function AdminAnalytics({ isAdmin = false }) {
   return (
     <AnalysisPanel showHeader={false}>
       <CollapsibleHeader
-        title="Popularity Analytics"
+        title="All Names"
         icon="📈"
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
-        summary={collapsedSummary}
         actions={headerActions}
         contentId="admin-analytics-content"
       />
 
       <CollapsibleContent id="admin-analytics-content" isCollapsed={isCollapsed}>
-        {summaryStats.length > 0 && <AnalysisStats stats={summaryStats} />}
-
         {isLoading ? (
           <div className="analysis-loading">Loading popularity analytics...</div>
         ) : (
@@ -198,12 +173,6 @@ export function AdminAnalytics({ isAdmin = false }) {
                   </th>
                   <th
                     className="sortable"
-                    onClick={() => handleSort("unique_selectors")}
-                  >
-                    Users {renderSortIndicator("unique_selectors")}
-                  </th>
-                  <th
-                    className="sortable"
                     onClick={() => handleSort("avg_rating")}
                   >
                     Rating {renderSortIndicator("avg_rating")}
@@ -213,24 +182,6 @@ export function AdminAnalytics({ isAdmin = false }) {
                     onClick={() => handleSort("total_wins")}
                   >
                     Wins {renderSortIndicator("total_wins")}
-                  </th>
-                  <th
-                    className="sortable"
-                    onClick={() => handleSort("win_rate")}
-                  >
-                    Win% {renderSortIndicator("win_rate")}
-                  </th>
-                  <th
-                    className="sortable"
-                    onClick={() => handleSort("users_rated")}
-                  >
-                    Raters {renderSortIndicator("users_rated")}
-                  </th>
-                  <th
-                    className="sortable"
-                    onClick={() => handleSort("popularity_score")}
-                  >
-                    Score {renderSortIndicator("popularity_score")}
                   </th>
                 </tr>
               </thead>
@@ -247,33 +198,7 @@ export function AdminAnalytics({ isAdmin = false }) {
           </div>
         )}
 
-        <div className="admin-analytics-legend">
-          <p>
-            <strong>Score</strong> = (Selections × 2) + (Wins × 1.5) + ((Rating - 1500) × 0.5)
-          </p>
-        </div>
-
-        {/* Names needing attention */}
-        {siteStats?.neverSelectedNames?.length > 0 && (
-          <div className="admin-analytics-attention">
-            <h4>⚠️ Never Selected ({siteStats.neverSelectedCount} names)</h4>
-            <p className="attention-description">
-              These names have never been chosen for a tournament:
-            </p>
-            <div className="attention-names">
-              {siteStats.neverSelectedNames.map((name) => (
-                <span key={name} className="attention-name-tag">
-                  {name}
-                </span>
-              ))}
-              {siteStats.neverSelectedCount > 10 && (
-                <span className="attention-more">
-                  +{siteStats.neverSelectedCount - 10} more
-                </span>
-              )}
-            </div>
-          </div>
-        )}
+        {/* * Score formula and "Never Selected" section removed - not useful for choosing a name */}
       </CollapsibleContent>
     </AnalysisPanel>
   );

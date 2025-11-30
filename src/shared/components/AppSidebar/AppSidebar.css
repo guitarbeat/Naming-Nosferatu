@@ -14,22 +14,25 @@
   display: flex;
   flex-shrink: 0;
   flex-direction: row;
-  gap: 0.75rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
   align-items: center;
   height: 100%;
+  min-width: 0;
 }
 
 .navbar-section--left {
   flex: 1 1 auto;
   align-items: center;
   min-width: 0;
+  overflow: hidden;
 }
 
 .navbar-section--right {
   flex: 0 0 auto;
-  gap: 1rem;
+  gap: clamp(0.5rem, 1.5vw, 1rem);
   align-items: center;
   margin-left: auto;
+  flex-wrap: nowrap;
 }
 
 /* * Breadcrumb in navbar */
@@ -622,9 +625,43 @@
   /* * Adjust spacing for icon-only mode */
   .navbar-section {
     gap: 0.25rem;
+    min-width: 0;
+    overflow: visible;
+  }
+
+  .navbar-section--left {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .navbar-section--right {
     gap: 0.25rem;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
+  /* * Prevent overlap on mobile */
+  .sidebar-content {
+    gap: 0.5rem;
+    padding: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .sidebar-group {
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-group-content {
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar-menu-button {
+    flex-shrink: 0;
+    min-width: 44px;
+    padding: 0.5rem;
   }
 }

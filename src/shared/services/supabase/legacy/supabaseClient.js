@@ -42,7 +42,8 @@ const SUPABASE_ANON_KEY =
 let supabase = null;
 
 const resolveSupabaseClient = async () => {
-  // * Check for existing client instance from main client (prevents multiple GoTrueClient instances)
+  // * Priority 1: Check for existing client instance from main client (prevents multiple GoTrueClient instances)
+  // * This is checked first to avoid race conditions during module initialization
   if (typeof window !== "undefined" && window.__supabaseClient) {
     if (isDev) {
       console.log(
@@ -53,12 +54,40 @@ const resolveSupabaseClient = async () => {
     return supabase;
   }
 
+  // * Priority 2: Try to use the centralized client from client.ts to prevent multiple GoTrueClient instances
+  // * Import dynamically to avoid circular dependencies
+  try {
+    const { resolveSupabaseClient: getMainClient } = await import("../client");
+    const mainClient = await getMainClient();
+    
+    if (mainClient) {
+      if (isDev) {
+        console.log(
+          "🔧 Backend: Using centralized Supabase client from client.ts",
+        );
+      }
+      supabase = mainClient;
+      // * Ensure it's stored in window for future lookups
+      if (typeof window !== "undefined") {
+        window.__supabaseClient = mainClient;
+      }
+      return supabase;
+    }
+  } catch (error) {
+    if (isDev) {
+      console.warn(
+        "⚠️ Could not import centralized client, falling back to legacy creation:",
+        error,
+      );
+    }
+  }
+
   if (supabase) {
     return supabase;
   }
 
   if (isDev) {
-    console.log("🔧 Backend: Resolving Supabase client...");
+    console.log("🔧 Backend: Resolving Supabase client (fallback)...");
     console.log("   SUPABASE_URL:", SUPABASE_URL ? "SET" : "NOT SET");
     console.log("   SUPABASE_ANON_KEY:", SUPABASE_ANON_KEY ? "SET" : "NOT SET");
   }
@@ -74,7 +103,7 @@ const resolveSupabaseClient = async () => {
 
   try {
     if (isDev) {
-      console.log("   Creating Supabase client...");
+      console.log("   Creating Supabase client (fallback)...");
     }
     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1339,30 +1368,75 @@ export const hiddenNamesAPI = {
       }
 
       if (!nameIds || nameIds.length === 0) {
-        return { success: true, processed: 0 };
+        return { success: false, error: "No names provided", processed: 0 };
+      }
+
+      if (isDev) {
+        console.log("[hiddenNamesAPI.hideNames] Starting bulk hide", {
+          userName,
+          nameIdsCount: nameIds.length,
+          nameIds,
+        });
       }
 
       const results = [];
       let processed = 0;
+      const errors = [];
 
       for (const nameId of nameIds) {
         try {
+          if (isDev) {
+            console.log("[hiddenNamesAPI.hideNames] Hiding name:", nameId);
+          }
+          
           const result = await this.hideName(userName, nameId);
           results.push({
             nameId,
             success: result.success,
             scope: result.scope || null,
           });
-          if (result.success) processed++;
+          if (result.success) {
+            processed++;
+          } else {
+            errors.push(`Failed to hide ${nameId}: ${result.error || "Unknown error"}`);
+          }
         } catch (error) {
-          results.push({ nameId, success: false, error: error.message });
+          const errorMsg = error.message || String(error);
+          if (isDev) {
+            console.error(`[hiddenNamesAPI.hideNames] Error hiding ${nameId}:`, error);
+          }
+          results.push({ nameId, success: false, error: errorMsg });
+          errors.push(`Failed to hide ${nameId}: ${errorMsg}`);
         }
       }
 
-      return { success: true, processed, results };
+      if (isDev) {
+        console.log("[hiddenNamesAPI.hideNames] Bulk hide complete", {
+          processed,
+          total: nameIds.length,
+          errors: errors.length,
+        });
+      }
+
+      // * Return success only if at least one name was processed
+      if (processed === 0) {
+        return {
+          success: false,
+          error: errors.length > 0 ? errors.join("; ") : "Failed to hide any names",
+          processed: 0,
+          results,
+        };
+      }
+
+      return {
+        success: true,
+        processed,
+        results,
+        errors: errors.length > 0 ? errors : undefined,
+      };
     } catch (error) {
       if (isDev) {
-        console.error("Error hiding names:", error);
+        console.error("[hiddenNamesAPI.hideNames] Error hiding names:", error);
       }
       throw error;
     }

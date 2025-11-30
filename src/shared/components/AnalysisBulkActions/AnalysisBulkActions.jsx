@@ -55,13 +55,35 @@ export function AnalysisBulkActions({
 
   // Confirmation for bulk hide (destructive action)
   const handleBulkHide = useCallback(() => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[AnalysisBulkActions] Hide button clicked", {
+        selectedCount,
+        hasOnBulkHide: !!onBulkHide,
+      });
+    }
+    
     if (selectedCount > 5) {
       const confirmed = window.confirm(
         `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`
       );
-      if (!confirmed) return;
+      if (!confirmed) {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[AnalysisBulkActions] User cancelled hide operation");
+        }
+        return;
+      }
     }
-    onBulkHide?.();
+    
+    if (!onBulkHide) {
+      console.error("[AnalysisBulkActions] onBulkHide handler is not provided");
+      return;
+    }
+    
+    try {
+      onBulkHide();
+    } catch (error) {
+      console.error("[AnalysisBulkActions] Error in onBulkHide handler:", error);
+    }
   }, [selectedCount, onBulkHide]);
 
   if (!showActions) return null;
@@ -78,11 +100,22 @@ export function AnalysisBulkActions({
             <>
               <AnalysisButton
                 variant="danger"
-                onClick={handleBulkHide}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (process.env.NODE_ENV === "development") {
+                    console.log("[AnalysisBulkActions] Hide button onClick fired", {
+                      selectedCount,
+                      event: e,
+                    });
+                  }
+                  handleBulkHide();
+                }}
                 ariaLabel={`Hide ${selectedCount} selected names`}
                 title="Hide selected names from tournaments"
+                disabled={selectedCount === 0}
               >
-                <span aria-hidden="true">🙈</span> Hide ({selectedCount})
+                <span aria-hidden="true">🙈</span> Hide
               </AnalysisButton>
               <AnalysisButton
                 variant="primary"
@@ -90,7 +123,7 @@ export function AnalysisBulkActions({
                 ariaLabel={`Unhide ${selectedCount} selected names`}
                 title="Make selected names visible in tournaments"
               >
-                <span aria-hidden="true">👁️</span> Unhide ({selectedCount})
+                <span aria-hidden="true">👁️</span> Unhide
               </AnalysisButton>
             </>
           )}
@@ -109,7 +142,7 @@ export function AnalysisBulkActions({
                 }
                 title="Download as CSV file"
               >
-                <span aria-hidden="true">📥</span> Export {selectedCount > 0 ? `(${selectedCount})` : "All"}
+                <span aria-hidden="true">📥</span> Export {selectedCount > 0 ? "" : "All"}
               </AnalysisButton>
             </>
           )}

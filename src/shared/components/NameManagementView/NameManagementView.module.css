@@ -191,15 +191,63 @@
 @media (width <= 768px) {
   .container {
     padding: var(--space-2);
+    gap: var(--space-3);
   }
 
   .tournamentActions {
     flex-direction: column;
     align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-3);
   }
 
   .actionButton {
     width: 100%;
+    min-height: var(--mobile-touch-target-min, 48px);
     text-align: center;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+  }
+
+  .startButton {
+    width: 100%;
+    min-height: var(--mobile-touch-target-min, 48px);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+  }
+
+  .progressSection {
+    padding: var(--space-3);
+  }
+
+  .progressText {
+    font-size: var(--text-sm);
+  }
+
+  .bulkActionsSection {
+    margin-bottom: var(--space-3);
+  }
+}
+
+@media (width <= 480px) {
+  .container {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .tournamentActions {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .actionButton,
+  .startButton {
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+  }
+
+  .progressText {
+    font-size: var(--text-xs);
   }
 }

@@ -300,36 +300,26 @@ function Results({
       </Card>
 
       <div className={styles.content}>
-        <div className={styles.statsGrid}>
-          <StatsCard
-            title="Names Rated"
-            value={currentRankings.length}
-            emoji="📊"
-            variant="primary"
-            className={styles.statCard}
-            valueClassName={styles.statValue}
-          />
-          {currentRankings.length > 0 && (
-            <>
-              <StatsCard
-                title="Top Rated"
-                value={currentRankings[0]?.name || "-"}
-                emoji="🏆"
-                variant="secondary"
-                className={styles.statCard}
-                valueClassName={styles.statValue}
-              />
-              <StatsCard
-                title="Highest Rating"
-                value={currentRankings[0]?.rating || 1500}
-                emoji="⭐"
-                variant="secondary"
-                className={styles.statCard}
-                valueClassName={styles.statValue}
-              />
-            </>
-          )}
-        </div>
+        {currentRankings.length > 0 && (
+          <div className={styles.statsGrid}>
+            <StatsCard
+              title="Winner"
+              value={currentRankings[0]?.name || "-"}
+              emoji="🏆"
+              variant="primary"
+              className={styles.statCard}
+              valueClassName={styles.statValue}
+            />
+            <StatsCard
+              title="Rating"
+              value={currentRankings[0]?.rating || 1500}
+              emoji="⭐"
+              variant="secondary"
+              className={styles.statCard}
+              valueClassName={styles.statValue}
+            />
+          </div>
+        )}
 
         <RankingAdjustment
           rankings={currentRankings}

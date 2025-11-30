@@ -23,7 +23,6 @@ import {
   NameSuggestionSection,
 } from "./components";
 import { useProfileStats } from "../profile/hooks/useProfileStats";
-import { useProfileHighlights } from "../profile/hooks/useProfileHighlights";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications";
 import { useProfileUser } from "../profile/hooks/useProfileUser";
@@ -102,32 +101,38 @@ AnalysisHandlersProvider.propTypes = {
   showToast: PropTypes.func,
 };
 
-// * Analysis Mode components that use NameManagementView context
+// * Analysis Dashboard wrapper - no longer needs context
+// * AnalysisDashboard fetches its own data and doesn't need highlights from context
 function AnalysisDashboardWrapper({
   stats,
   selectionStats,
   highlights: propsHighlights,
 }) {
-  const context = useNameManagementContext();
-
-  const hookHighlights = useProfileHighlights(context.names);
-  const highlights = propsHighlights || hookHighlights;
-
-  if (!context.analysisMode || !stats) return null;
+  // * Only render if stats are available
+  if (!stats) return null;
 
   return (
     <AnalysisDashboard
       stats={stats}
       selectionStats={selectionStats}
-      highlights={highlights}
+      highlights={propsHighlights}
     />
   );
 }
+
 
 AnalysisDashboardWrapper.propTypes = {
   stats: PropTypes.object,
   selectionStats: PropTypes.object,
   highlights: PropTypes.object,
+};
+
+// * Wrapper component factory to pass props to AnalysisDashboardWrapper
+// * This creates a component function that can use hooks properly
+const createAnalysisDashboardWrapper = (stats, selectionStats) => {
+  return function AnalysisDashboardWrapperWithProps() {
+    return <AnalysisDashboardWrapper stats={stats} selectionStats={selectionStats} />;
+  };
 };
 
 function AnalysisBulkActionsWrapper({
@@ -142,13 +147,45 @@ function AnalysisBulkActionsWrapper({
   const context = useNameManagementContext();
 
   const { selectedCount } = context;
-  // * Ensure selectedNames is a Set (handle case where it might be an array or undefined)
-  const selectedNames =
+  // * Keep both Set format for selection logic and original array for bulk operations
+  const selectedNamesSet = useMemo(() =>
     context.selectedNames instanceof Set
       ? context.selectedNames
       : new Set(
-          Array.isArray(context.selectedNames) ? context.selectedNames : [],
-        );
+          Array.isArray(context.selectedNames)
+            ? context.selectedNames.map(name => typeof name === 'object' ? name.id : name)
+            : [],
+        ), [context.selectedNames]);
+
+  // * Extract name IDs from selectedNames, handling different formats
+  const selectedNamesArray = useMemo(() => {
+    if (!context.selectedNames) return [];
+    
+    // * If it's a Set (profile mode), convert to array of IDs
+    if (context.selectedNames instanceof Set) {
+      return Array.from(context.selectedNames).filter(id => id != null);
+    }
+    
+    // * If it's an array, extract IDs properly
+    if (Array.isArray(context.selectedNames)) {
+      return context.selectedNames
+        .map(name => {
+          // * If it's an object with an id property, extract it
+          if (typeof name === 'object' && name !== null && name.id) {
+            return name.id;
+          }
+          // * If it's already a string (ID), use it directly
+          if (typeof name === 'string') {
+            return name;
+          }
+          // * Otherwise, return null to filter out
+          return null;
+        })
+        .filter(id => id != null); // * Filter out null/undefined values
+    }
+    
+    return [];
+  }, [context.selectedNames]);
 
   const setHiddenNames = useCallback(
     (updater) => {
@@ -197,7 +234,7 @@ function AnalysisBulkActionsWrapper({
 
   const allVisibleSelected =
     filteredAndSortedNames.length > 0 &&
-    filteredAndSortedNames.every((name) => selectedNames.has(name.id));
+    filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id));
 
   const handleSelectAll = useCallback(() => {
     if (allVisibleSelected) {
@@ -224,8 +261,36 @@ function AnalysisBulkActionsWrapper({
       selectedCount={selectedCount}
       onSelectAll={handleSelectAll}
       onDeselectAll={handleSelectAll}
-      onBulkHide={() => handleBulkHide(Array.from(selectedNames))}
-      onBulkUnhide={() => handleBulkUnhide(Array.from(selectedNames))}
+      onBulkHide={() => {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[TournamentSetup] onBulkHide called", {
+            selectedCount,
+            selectedNamesArrayLength: selectedNamesArray.length,
+            selectedNamesArray,
+            contextSelectedNames: context.selectedNames,
+          });
+        }
+        
+        if (selectedNamesArray.length === 0) {
+          console.warn("[TournamentSetup] No names in selectedNamesArray despite selectedCount:", selectedCount);
+          showError("No names selected");
+          return;
+        }
+        
+        try {
+          handleBulkHide(selectedNamesArray);
+        } catch (error) {
+          console.error("[TournamentSetup] Error calling handleBulkHide:", error);
+          showError(`Failed to hide names: ${error.message || "Unknown error"}`);
+        }
+      }}
+      onBulkUnhide={() => {
+        if (selectedNamesArray.length === 0) {
+          showError("No names selected");
+          return;
+        }
+        handleBulkUnhide(selectedNamesArray);
+      }}
       onExport={handleExport}
       isAllSelected={allVisibleSelected}
       showActions={true}
@@ -309,7 +374,7 @@ function TournamentSetupContent({
   const isAdmin = useAdminStatus(userName);
 
   // * Profile hooks for analysis mode
-  const { showSuccess, showError, showToast } = useProfileNotifications();
+  const { showSuccess, showError, showToast, ToastContainer } = useProfileNotifications();
   const {
     isAdmin: profileIsAdmin,
     activeUser,
@@ -373,7 +438,9 @@ function TournamentSetupContent({
   }, [lightboxOpen, lightboxIndex, galleryImages]);
 
   return (
-    <div className={styles.container}>
+    <>
+      <ToastContainer />
+      <div className={styles.container}>
       {/* Selection Panel - Contains NameManagementView */}
       <div className={styles.selectionPanel}>
         <NameManagementView
@@ -397,13 +464,7 @@ function TournamentSetupContent({
             onDelete: (name) => handlersRef.current.handleDelete?.(name),
           }}
           extensions={{
-            dashboard: (props) => (
-              <AnalysisDashboardWrapper
-                stats={stats}
-                selectionStats={selectionStats}
-                {...props}
-              />
-            ),
+            dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper
                 activeUser={activeUser}
@@ -469,6 +530,7 @@ function TournamentSetupContent({
           preloadImages={preloadImages}
         />
       )}
+      <ToastContainer />
     </div>
   );
 }

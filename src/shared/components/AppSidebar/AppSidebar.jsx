@@ -16,7 +16,7 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, DashboardIcon, LogoutIcon } from "./icons";
+import { TournamentIcon, LogoutIcon } from "./icons";
 import { AnalysisToggle } from "../AnalysisPanel";
 import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
@@ -31,7 +31,6 @@ export function AppSidebar({
   onStartNewTournament,
   isLightTheme,
   onThemeChange,
-  onTogglePerformanceDashboard,
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
   const { navigateTo } = useRouting();
@@ -166,17 +165,6 @@ export function AppSidebar({
           {/* Actions Section */}
           <SidebarGroup open={true}>
             <SidebarGroupContent>
-              {/* Performance Dashboard - Admin only */}
-              <MenuActionItem
-                icon={DashboardIcon}
-                label="Dashboard"
-                onClick={onTogglePerformanceDashboard}
-                ariaLabel="Open performance dashboard"
-                condition={
-                  isLoggedIn && isAdmin && !!onTogglePerformanceDashboard
-                }
-              />
-
               {/* Theme Toggle */}
               <ThemeToggleActionItem
                 onClick={onThemeChange}
@@ -214,5 +202,4 @@ AppSidebar.propTypes = {
   onStartNewTournament: PropTypes.func,
   isLightTheme: PropTypes.bool.isRequired,
   onThemeChange: PropTypes.func.isRequired,
-  onTogglePerformanceDashboard: PropTypes.func,
 };

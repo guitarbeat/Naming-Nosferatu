@@ -1,45 +1,42 @@
 /**
  * @module AnalysisDashboard
- * @description Redesigned dashboard for Analysis Mode.
- * Fetches real data from the database for accurate analytics.
- * Supports collapsible sections for better UX.
+ * @description Shows top performing names to help users choose a name for their cat.
+ * Displays a consolidated table with Rating, Wins, and Selected counts.
  */
 
 import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { AnalysisPanel, AnalysisStats, AnalysisHeader } from "../AnalysisPanel";
-import { CollapsibleContent } from "../CollapsibleHeader";
-import { BarChart } from "../BarChart";
+import { AnalysisPanel } from "../AnalysisPanel";
+import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { catNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError } from "../../utils/logger";
-import { calculateWinRate } from "../../utils/displayUtils";
-import { topN } from "../../utils/arrayUtils";
 import { nameItemShape } from "../../propTypes";
+import "./AnalysisDashboard.css";
 
 /**
  * Analysis Dashboard Component
- * Fetches and displays real analytics from the database
+ * Shows top performing names to help users choose a name for their cat
  *
  * @param {Object} props
- * @param {Object} props.stats - General statistics (from props or fetched)
- * @param {Object} props.selectionStats - Selection-specific statistics
  * @param {Object} props.highlights - Highlight groups (topRated, mostWins)
- * @param {string} props.userName - Current user for personalized stats
- * @param {boolean} props.showGlobalLeaderboard - Whether to show global top names
+ * @param {string} props.userName - Current user (unused, kept for compatibility)
+ * @param {boolean} props.showGlobalLeaderboard - Whether to fetch global top names
+ * @param {boolean} props.defaultCollapsed - Default collapsed state
  */
 export function AnalysisDashboard({
-  stats,
-  selectionStats,
+  stats, // * Unused - kept for compatibility
+  selectionStats, // * Unused - kept for compatibility
   highlights,
-  userName,
+  userName, // * Unused - kept for compatibility
   showGlobalLeaderboard = true,
   defaultCollapsed = false,
 }) {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
@@ -53,6 +50,7 @@ export function AnalysisDashboard({
 
     const fetchData = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const [leaderboard, popularity] = await Promise.all([
           catNamesAPI.getLeaderboard(10),
@@ -60,8 +58,9 @@ export function AnalysisDashboard({
         ]);
         setLeaderboardData(leaderboard);
         setSelectionPopularity(popularity);
-      } catch (error) {
-        devError("Failed to fetch analytics:", error);
+      } catch (err) {
+        devError("Failed to fetch analytics:", err);
+        setError("Failed to load top names. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -70,169 +69,144 @@ export function AnalysisDashboard({
     fetchData();
   }, [showGlobalLeaderboard]);
 
-  // Transform leaderboard data into chart format
-  const globalTopRated = useMemo(() => {
-    if (!leaderboardData?.length) return null;
-    const filtered = leaderboardData.filter((item) => item.avg_rating > 1500);
-    return topN(filtered, "avg_rating", 5).map((item) => ({
-      id: item.name_id,
-      name: item.name,
-      value: item.avg_rating,
-      avg_rating: item.avg_rating,
-      total_ratings: item.total_ratings,
-    }));
-  }, [leaderboardData]);
-
-  const globalMostWins = useMemo(() => {
-    if (!leaderboardData?.length) return null;
-    const filtered = leaderboardData.filter((item) => item.wins > 0);
-    return topN(filtered, "wins", 5).map((item) => ({
-      id: item.name_id,
-      name: item.name,
-      value: item.wins,
-      avg_rating: item.avg_rating,
-    }));
-  }, [leaderboardData]);
-
-  // Transform selection popularity into chart format
-  const mostSelected = useMemo(() => {
-    if (!selectionPopularity?.length) return null;
-    return topN(selectionPopularity, "times_selected", 5).map((item) => ({
-      id: item.name_id,
-      name: item.name,
-      value: item.times_selected,
-    }));
-  }, [selectionPopularity]);
-
-  // Build stats array from props
-  const statItems = useMemo(() => {
-    const items = [];
-
-    if (stats?.names_rated != null) {
-      items.push({
-        value: stats.names_rated,
-        label: "Rated",
-        accent: true,
+  // * Consolidate all data into a single unified list
+  // * Combine leaderboard and selection data to show top names with all metrics
+  const consolidatedNames = useMemo(() => {
+    const nameMap = new Map();
+    
+    // Add leaderboard data
+    if (leaderboardData?.length) {
+      leaderboardData.forEach((item) => {
+        if (item.avg_rating > 1500 || item.wins > 0) {
+          nameMap.set(item.name_id, {
+            id: item.name_id,
+            name: item.name,
+            rating: item.avg_rating || 1500,
+            wins: item.wins || 0,
+            selected: 0,
+          });
+        }
       });
     }
-
-    const tournaments =
-      selectionStats?.totalTournaments ||
-      selectionStats?.tournaments_participated ||
-      stats?.tournaments_participated ||
-      0;
-    if (tournaments > 0) {
-      items.push({
-        value: tournaments,
-        label: "Tournaments",
+    
+    // Add selection data
+    if (selectionPopularity?.length) {
+      selectionPopularity.forEach((item) => {
+        const existing = nameMap.get(item.name_id);
+        if (existing) {
+          existing.selected = item.times_selected || 0;
+        } else {
+          nameMap.set(item.name_id, {
+            id: item.name_id,
+            name: item.name,
+            rating: 1500,
+            wins: 0,
+            selected: item.times_selected || 0,
+          });
+        }
       });
     }
+    
+    // Sort by rating (most important for choosing a name), then by wins
+    return Array.from(nameMap.values())
+      .sort((a, b) => {
+        if (b.rating !== a.rating) return b.rating - a.rating;
+        return b.wins - a.wins;
+      })
+      .slice(0, 10); // Top 10 names
+  }, [leaderboardData, selectionPopularity]);
 
-    const selections =
-      selectionStats?.totalSelections ||
-      selectionStats?.total_selections ||
-      stats?.total_selections ||
-      0;
-    if (selections > 0) {
-      items.push({
-        value: selections,
-        label: "Selections",
+  // Use highlights if provided, otherwise use consolidated data
+  const displayNames = useMemo(() => {
+    if (highlights?.topRated?.length) {
+      // If highlights provided, combine them with consolidated data
+      const highlightMap = new Map();
+      highlights.topRated.forEach((item) => {
+        highlightMap.set(item.id, {
+          id: item.id,
+          name: item.name,
+          rating: item.avg_rating || item.value || 1500,
+          wins: 0,
+          selected: 0,
+        });
       });
+      if (highlights.mostWins?.length) {
+        highlights.mostWins.forEach((item) => {
+          const existing = highlightMap.get(item.id);
+          if (existing) {
+            existing.wins = item.value || 0;
+          }
+        });
+      }
+      return Array.from(highlightMap.values())
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 10);
     }
+    return consolidatedNames;
+  }, [highlights, consolidatedNames]);
 
-    // Show win rate if available
-    const totalWins = stats?.total_wins || 0;
-    const totalLosses = stats?.total_losses || 0;
-    if (totalWins > 0 || totalLosses > 0) {
-      items.push({
-        value: `${calculateWinRate(totalWins, totalLosses)}%`,
-        label: "Win Rate",
-      });
-    }
-
-    if (stats?.high_ratings != null && stats.high_ratings > 0) {
-      items.push({
-        value: stats.high_ratings,
-        label: "High Rated",
-      });
-    }
-
-    return items;
-  }, [stats, selectionStats]);
-
-  // Use global data if no highlights provided
-  const effectiveTopRated = highlights?.topRated?.length
-    ? highlights.topRated
-    : globalTopRated;
-  const effectiveMostWins = highlights?.mostWins?.length
-    ? highlights.mostWins
-    : globalMostWins;
-
-  // Don't render if no data at all
-  const hasData =
-    statItems.length > 0 ||
-    effectiveTopRated?.length > 0 ||
-    effectiveMostWins?.length > 0 ||
-    isLoading;
+  // Don't render if no data and not loading/error
+  const hasData = displayNames.length > 0 || isLoading || error;
 
   if (!hasData) {
     return null;
   }
 
-  // Build summary for collapsed state
-  const collapsedSummary = statItems.length > 0 ? (
-    <>
-      {statItems.slice(0, 3).map((stat, i) => (
-        <span key={stat.label}>
-          {i > 0 && " · "}
-          <strong>{stat.value}</strong> {stat.label}
-        </span>
-      ))}
-    </>
-  ) : null;
-
   return (
     <AnalysisPanel showHeader={false}>
-      <AnalysisHeader
-        title="Analytics"
+      <CollapsibleHeader
+        title="Top Names"
         icon="📊"
-        collapsible
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
-        summary={collapsedSummary}
         contentId="analysis-dashboard-content"
-        showBadge={false}
       />
 
       <CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
-        {statItems.length > 0 && <AnalysisStats stats={statItems} />}
-
         {isLoading ? (
-          <div className="analysis-loading">Loading analytics...</div>
+          <div className="analysis-loading" role="status" aria-live="polite">
+            Loading top names...
+          </div>
+        ) : error ? (
+          <div className="analysis-error" role="alert">
+            {error}
+          </div>
+        ) : displayNames.length === 0 ? (
+          <div className="analysis-empty" role="status">
+            No names available yet.
+          </div>
         ) : (
-          <div className="analysis-charts-grid">
-            {effectiveTopRated?.length > 0 && (
-              <BarChart
-                title={userName ? "Your Top Rated" : "Global Top Rated"}
-                items={effectiveTopRated}
-              />
-            )}
-
-            {effectiveMostWins?.length > 0 && (
-              <BarChart
-                title={userName ? "Your Most Wins" : "Global Most Wins"}
-                items={effectiveMostWins}
-                showSecondaryValue
-                secondaryValueKey="avg_rating"
-              />
-            )}
-
-            {mostSelected?.length > 0 && (
-              <BarChart
-                title="Most Selected for Tournaments"
-                items={mostSelected}
-              />
-            )}
+          <div className="top-names-list">
+            <table 
+              className="top-names-table"
+              role="table"
+              aria-label="Top performing cat names ranked by rating, wins, and selection count"
+            >
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Rating</th>
+                  <th scope="col">Wins</th>
+                  <th scope="col">Selected</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayNames.map((item, index) => (
+                  <tr key={item.id || index}>
+                    <td className="top-names-name" scope="row">{item.name}</td>
+                    <td className="top-names-rating" aria-label={`Rating: ${item.rating}`}>
+                      {item.rating}
+                    </td>
+                    <td className="top-names-wins" aria-label={`Wins: ${item.wins}`}>
+                      {item.wins}
+                    </td>
+                    <td className="top-names-selected" aria-label={`Selected ${item.selected} times`}>
+                      {item.selected}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </CollapsibleContent>
@@ -241,20 +215,6 @@ export function AnalysisDashboard({
 }
 
 AnalysisDashboard.propTypes = {
-  stats: PropTypes.shape({
-    names_rated: PropTypes.number,
-    tournaments_participated: PropTypes.number,
-    total_selections: PropTypes.number,
-    high_ratings: PropTypes.number,
-    total_wins: PropTypes.number,
-    total_losses: PropTypes.number,
-  }),
-  selectionStats: PropTypes.shape({
-    tournaments_participated: PropTypes.number,
-    totalTournaments: PropTypes.number,
-    total_selections: PropTypes.number,
-    totalSelections: PropTypes.number,
-  }),
   highlights: PropTypes.shape({
     topRated: PropTypes.arrayOf(nameItemShape),
     mostWins: PropTypes.arrayOf(nameItemShape),

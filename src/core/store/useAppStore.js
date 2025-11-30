@@ -186,7 +186,6 @@ const useAppStore = create(
       // * UI State
       ui: {
         ...getInitialThemeState(),
-        showPerformanceDashboard: false,
         showGlobalAnalytics: false,
         showUserComparison: false,
         matrixMode: false,
@@ -456,21 +455,6 @@ const useAppStore = create(
           }));
         },
 
-        setPerformanceDashboardVisible: (show) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showPerformanceDashboard: !!show,
-            },
-          })),
-
-        togglePerformanceDashboard: () =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showPerformanceDashboard: !state.ui.showPerformanceDashboard,
-            },
-          })),
 
         setMatrixMode: (enabled) =>
           set((state) => ({
@@ -585,7 +569,6 @@ const useAppStore = create(
         getIsLoggedIn: () => get().user.isLoggedIn,
         getIsAdmin: () => get().user.isAdmin,
         getTheme: () => get().ui.theme,
-        getShowPerformanceDashboard: () => get().ui.showPerformanceDashboard,
 
         getCurrentError: () => get().errors.current,
       },

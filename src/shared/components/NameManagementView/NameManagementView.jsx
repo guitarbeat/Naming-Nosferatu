@@ -15,6 +15,7 @@ import React, {
 import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import ErrorComponent from "../Error/Error";
+import Button from "../Button/Button";
 import { UnifiedFilters } from "../UnifiedFilters/UnifiedFilters";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AnalysisModeBanner } from "../AnalysisPanel";
@@ -393,7 +394,9 @@ export function NameManagementView({
           extensions.dashboard && (
             <div className={styles.dashboardSection}>
               {typeof extensions.dashboard === "function"
-                ? extensions.dashboard()
+                ? React.isValidElement(extensions.dashboard())
+                  ? extensions.dashboard()
+                  : React.createElement(extensions.dashboard, {})
                 : extensions.dashboard}
             </div>
           )}
@@ -437,66 +440,56 @@ export function NameManagementView({
         {/* Tournament Mode: Header Actions */}
         {mode === "tournament" && (
           <div className={styles.tournamentActions}>
-            {selectedCount > 0 && (
-              <button
-                className={`${styles.actionButton} ${
-                  showSelectedOnly ? styles.actionButtonActive : ""
-                }`}
+            {selectedCount > 0 && !analysisMode && (
+              <Button
+                variant={showSelectedOnly ? "primary" : "secondary"}
+                size="small"
                 onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-                type="button"
+                className={styles.actionButton}
               >
                 {showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
-              </button>
+              </Button>
             )}
 
-            {/* Select All button - only show in analysis mode for admins */}
-            {tournamentProps.isAdmin && analysisMode && (
-              <button
-                className={styles.actionButton}
-                onClick={selectAll}
-                type="button"
-              >
-                {selectedCount === names.length
-                  ? "✨ Start Fresh"
-                  : "🎲 Select All"}
-              </button>
+            {/* View mode toggles - only show when not in analysis mode */}
+            {!analysisMode && (
+              <>
+                <Button
+                  variant={isSwipeMode ? "primary" : "secondary"}
+                  size="small"
+                  onClick={() => setIsSwipeMode(!isSwipeMode)}
+                  className={styles.actionButton}
+                >
+                  {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
+                </Button>
+
+                <Button
+                  variant={showCatPictures ? "primary" : "secondary"}
+                  size="small"
+                  onClick={() => setShowCatPictures(!showCatPictures)}
+                  className={styles.actionButton}
+                >
+                  {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+                </Button>
+              </>
             )}
-
-            <button
-              onClick={() => setIsSwipeMode(!isSwipeMode)}
-              className={`${styles.actionButton} ${
-                isSwipeMode ? styles.actionButtonActive : ""
-              }`}
-              type="button"
-            >
-              {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
-            </button>
-
-            <button
-              onClick={() => setShowCatPictures(!showCatPictures)}
-              className={`${styles.actionButton} ${
-                showCatPictures ? styles.actionButtonActive : ""
-              }`}
-              type="button"
-            >
-              {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
-            </button>
 
             {/* * Start Tournament button - hidden when Analysis Mode is active */}
             {selectedCount >= 2 && onStartTournament && !analysisMode && (
-              <button
-                className={styles.startButton}
+              <Button
+                variant="primary"
+                size="large"
                 onClick={() => onStartTournament(selectedNames)}
-                type="button"
+                className={styles.startButton}
               >
-                Start Tournament ({selectedCount})
-              </button>
+                Start Tournament
+              </Button>
             )}
           </div>
         )}
 
-        {/* Tournament Mode: Progress Bar */}
-        {mode === "tournament" && (
+        {/* Tournament Mode: Progress Bar - hidden in analysis mode (count shown in toolbar) */}
+        {mode === "tournament" && !analysisMode && (
           <div className={styles.progressSection}>
             <div className={styles.progressBar}>
               <div
@@ -511,9 +504,6 @@ export function NameManagementView({
             </div>
             <span className={styles.progressText}>
               {selectedCount} of {names.length} names selected
-              {analysisMode &&
-                profileProps.hiddenIds &&
-                ` • ${profileProps.hiddenIds.size} hidden`}
             </span>
           </div>
         )}
@@ -523,7 +513,7 @@ export function NameManagementView({
           extensions.bulkActions && (
             <div className={styles.bulkActionsSection}>
               {typeof extensions.bulkActions === "function"
-                ? extensions.bulkActions({
+                ? React.createElement(extensions.bulkActions, {
                     onExport: () => {
                       exportTournamentResultsToCSV(displayNames, "naming_nosferatu_export");
                     },

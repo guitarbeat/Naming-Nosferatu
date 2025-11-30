@@ -16,7 +16,6 @@ const CatBackground = lazy(
 );
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
-import PerformanceDashboard from "@components/PerformanceDashboard";
 import { SidebarProvider, useSidebar } from "./shared/components/ui/sidebar";
 import { AppSidebar } from "./shared/components/AppSidebar/AppSidebar";
 
@@ -77,12 +76,6 @@ function App() {
   // * Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // * Performance dashboard toggle (Ctrl+Shift+P) - Admin only
-      if (isAdmin && event.ctrlKey && event.shiftKey && event.key === "P") {
-        event.preventDefault();
-        uiActions.togglePerformanceDashboard();
-      }
-
       // * Sidebar toggle (Ctrl+B or Cmd+B)
       if ((event.ctrlKey || event.metaKey) && event.key === "b") {
         event.preventDefault();
@@ -336,8 +329,6 @@ function App() {
       onStartNewTournament: handleStartNewTournament,
       isLightTheme: ui.theme === "light",
       onThemeChange: handleThemeChange,
-      onTogglePerformanceDashboard: () =>
-        uiActions.togglePerformanceDashboard(),
       // * Pass breadcrumbs to navbar
       currentView: currentView || "tournament",
     }),
@@ -500,12 +491,6 @@ function AppLayout({
           </div>
         )}
 
-        {/* * Performance Dashboard - Admin (Aaron) only */}
-        <PerformanceDashboard
-          userName={user.name}
-          isVisible={isAdmin && ui.showPerformanceDashboard}
-          onClose={() => uiActions.setPerformanceDashboardVisible(false)}
-        />
 
         <ScrollToTopButton isLoggedIn={isLoggedIn} />
       </main>
@@ -536,12 +521,8 @@ AppLayout.propTypes = {
   handleUpdateRatings: PropTypes.func.isRequired,
   handleTournamentSetup: PropTypes.func.isRequired,
   handleTournamentComplete: PropTypes.func.isRequired,
-  ui: PropTypes.shape({
-    showPerformanceDashboard: PropTypes.bool.isRequired,
-  }).isRequired,
-  uiActions: PropTypes.shape({
-    setPerformanceDashboardVisible: PropTypes.func.isRequired,
-  }).isRequired,
+  ui: PropTypes.shape({}).isRequired,
+  uiActions: PropTypes.shape({}).isRequired,
   isAdmin: PropTypes.bool.isRequired,
 };
 

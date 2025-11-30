@@ -90,7 +90,9 @@ export function CollapsibleContent({
       id={id}
       className={`collapsible-content ${isCollapsed ? "collapsed" : ""} ${className}`}
     >
-      {children}
+      <div className="collapsible-content-inner">
+        {children}
+      </div>
     </div>
   );
 }

@@ -96,13 +96,13 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  gap: 1rem;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
   align-items: center;
   justify-content: space-between;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem clamp(0.75rem, 2vw, 1.5rem);
   overflow: auto hidden;
 
   /* * Hide scrollbar but keep scrolling functionality */
@@ -120,9 +120,10 @@
   display: flex;
   flex-shrink: 0;
   flex-direction: row;
-  gap: 0.75rem;
+  gap: clamp(0.5rem, 1.5vw, 0.75rem);
   align-items: center;
   height: 100%;
+  min-width: 0;
 }
 
 .sidebar-group-label {
@@ -151,9 +152,11 @@
 .sidebar-group-content {
   display: flex;
   flex-direction: row;
-  gap: 0.5rem;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
   align-items: center;
   height: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .sidebar-menu {
@@ -173,15 +176,15 @@
 .sidebar-menu-button {
   position: relative;
   display: flex;
-  gap: 0.5rem;
+  gap: clamp(0.375rem, 1vw, 0.5rem);
   align-items: center;
   justify-content: center;
   min-height: 36px;
-  padding: 0.4rem 0.75rem;
+  padding: 0.4rem clamp(0.5rem, 1.5vw, 0.75rem);
 
   /* * Enhanced hover effects */
   overflow: hidden;
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 2vw, 0.9rem);
   font-weight: 500;
   color: #e2e8f0; /* Improved: fully opaque for better contrast (8.5:1 on dark) */
   text-align: center;
@@ -193,6 +196,7 @@
   border: none;
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .sidebar-menu-button::before {
@@ -405,6 +409,7 @@
     /* * Horizontal navbar should always be full width */
     width: 100%;
     transform: translateX(0);
+    min-height: 64px;
   }
 
   .app--sidebar-collapsed .sidebar {
@@ -415,11 +420,59 @@
   /* * Improve touch targets on mobile */
   .sidebar-menu-button {
     min-height: 44px;
-    padding: 0.75rem 1rem;
+    min-width: 44px;
+    padding: 0.5rem 0.75rem;
+    flex-shrink: 0;
   }
 
   .sidebar-collapse-toggle {
     width: 40px;
     height: 40px;
+    min-width: 40px;
+    flex-shrink: 0;
+  }
+
+  /* * Prevent content overflow and ensure proper spacing */
+  .sidebar-content {
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar-group {
+    flex-shrink: 0;
+    gap: 0.375rem;
+  }
+
+  .sidebar-group-content {
+    flex-shrink: 0;
+    gap: 0.375rem;
+  }
+}
+
+@media (width <= 480px) {
+  .sidebar-content {
+    gap: 0.375rem;
+    padding: 0.5rem;
+  }
+
+  .sidebar-menu-button {
+    min-width: 40px;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .navbar-section {
+    gap: 0.25rem;
+  }
+
+  .sidebar-group {
+    gap: 0.25rem;
+  }
+
+  .sidebar-group-content {
+    gap: 0.25rem;
   }
 }

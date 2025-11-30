@@ -1,32 +1,51 @@
 /**
  * @module useProfileNotifications
- * @description Custom hook for profile notification functions.
+ * @description Custom hook for profile notification functions with visible toast notifications.
  */
 
 import { useCallback } from "react";
+import { useToast } from "../../../shared/hooks/useToast";
+import Toast from "../../../shared/components/Toast/Toast";
 
 /**
- * * Hook for profile notification functions
- * @returns {Object} Notification functions
+ * * Hook for profile notification functions with toast UI
+ * @returns {Object} Notification functions and Toast component
  */
 export function useProfileNotifications() {
+  const { toasts, showSuccess: showSuccessToast, showError: showErrorToast, showToast: showToastMessage, removeToast } = useToast();
+
   const showSuccess = useCallback((message) => {
     if (process.env.NODE_ENV === "development") {
       console.log("✅", message);
     }
-  }, []);
+    showSuccessToast(message, { duration: 5000 });
+  }, [showSuccessToast]);
 
   const showError = useCallback((message) => {
     if (process.env.NODE_ENV === "development") {
       console.error("❌", message);
     }
-  }, []);
+    showErrorToast(message, { duration: 7000 }); // Longer duration for errors
+  }, [showErrorToast]);
 
   const showToast = useCallback((message, type = "info") => {
     if (process.env.NODE_ENV === "development") {
       console.log(`📢 [${type}]`, message);
     }
-  }, []);
+    showToastMessage({ message, type, duration: type === "error" ? 7000 : 5000 });
+  }, [showToastMessage]);
 
-  return { showSuccess, showError, showToast };
+  const ToastContainer = useCallback(() => {
+    return (
+      <Toast
+        variant="container"
+        toasts={toasts}
+        removeToast={removeToast}
+        position="top-right"
+        maxToasts={5}
+      />
+    );
+  }, [toasts, removeToast]);
+
+  return { showSuccess, showError, showToast, ToastContainer };
 }

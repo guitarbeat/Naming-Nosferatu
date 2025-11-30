@@ -184,7 +184,23 @@ export function useProfileNameOperations(
   // * Helper for bulk operations
   const performBulkOperation = useCallback(
     async (nameIds, operation, successMessage, isHide) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[useProfileNameOperations] performBulkOperation called", {
+          nameIds,
+          nameIdsLength: nameIds?.length,
+          isHide,
+          activeUser,
+          canManageActiveUser,
+        });
+      }
+      
       try {
+        if (!nameIds || nameIds.length === 0) {
+          console.warn("[useProfileNameOperations] No nameIds provided");
+          showError("No names to process");
+          return;
+        }
+        
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
@@ -199,17 +215,35 @@ export function useProfileNameOperations(
 
         if (!canManageActiveUser) {
           const action = isHide ? "hide" : "unhide";
-          showError(`Only admins can ${action} names`);
-          showToast(`Only admins can ${action} names`, "error");
+          const errorMsg = `Only admins can ${action} names`;
+          console.warn("[useProfileNameOperations]", errorMsg);
+          showError(errorMsg);
+          showToast(errorMsg, "error");
           return;
         }
 
+        if (process.env.NODE_ENV === "development") {
+          console.log("[useProfileNameOperations] Calling operation with:", {
+            activeUser,
+            nameIdsCount: nameIds.length,
+            nameIds,
+          });
+        }
+        
         const result = await operation(activeUser, nameIds);
+        
+        if (process.env.NODE_ENV === "development") {
+          console.log("[useProfileNameOperations] Operation result:", result);
+        }
 
-        if (result.success) {
-          showSuccess(
-            `${successMessage} ${result.processed} name${result.processed !== 1 ? "s" : ""}`,
-          );
+        if (result.success && result.processed > 0) {
+          const action = isHide ? "hidden" : "unhidden";
+          const count = result.processed;
+          const message = `✅ Successfully ${action} ${count} name${count !== 1 ? "s" : ""}`;
+          
+          // Show clear success feedback
+          showSuccess(message);
+          showToast(message, "success");
 
           // Update local state optimistically
           setHiddenNames((prev) => {
@@ -227,15 +261,32 @@ export function useProfileNameOperations(
           // Refresh data
           fetchNames(activeUser);
         } else {
-          showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
+          const action = isHide ? "hide" : "unhide";
+          const processed = result.processed || 0;
+          const errorMsg = result.error || (processed === 0 ? "No names were processed" : "Unknown error");
+          const errorMessage = `❌ Failed to ${action} names${errorMsg ? `: ${errorMsg}` : ""}`;
+          
+          if (process.env.NODE_ENV === "development") {
+            console.error("[useProfileNameOperations] Operation failed:", {
+              result,
+              errorMessage,
+            });
+          }
+          
+          showError(errorMessage);
+          showToast(errorMessage, "error");
         }
       } catch (error) {
         console.error(
           `Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`,
           error,
         );
-        showToast(`Failed to ${isHide ? "hide" : "unhide"} names`, "error");
-        showError(`Failed to ${isHide ? "hide" : "unhide"} names`);
+        const action = isHide ? "hide" : "unhide";
+        const errorMessage = error instanceof Error 
+          ? `❌ Failed to ${action} names: ${error.message}`
+          : `❌ Failed to ${action} names. Please try again.`;
+        showToast(errorMessage, "error");
+        showError(errorMessage);
       }
     },
     [
