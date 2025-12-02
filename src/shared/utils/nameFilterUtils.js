@@ -23,12 +23,12 @@ export function isNameHidden(name) {
  */
 export function filterByVisibility(names, { visibility = "visible", isAdmin = false } = {}) {
   if (!Array.isArray(names)) return [];
-  
+
   // Non-admins always see only visible names
   if (!isAdmin) {
     return names.filter(name => !isNameHidden(name));
   }
-  
+
   // Admins can filter by visibility
   switch (visibility) {
     case "hidden":
@@ -105,7 +105,7 @@ export function applyNameFilters(names, filters = {}) {
  */
 export function getVisibilityStats(names) {
   if (!Array.isArray(names)) return { total: 0, visible: 0, hidden: 0 };
-  
+
   const hidden = names.filter(isNameHidden).length;
   return {
     total: names.length,

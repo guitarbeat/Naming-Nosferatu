@@ -45,6 +45,14 @@ export function useTournamentRoutingSync({
       return;
     }
 
+    // * Allow "photos" view to stay on tournament paths
+    if (currentView === "photos") {
+      if (!TOURNAMENT_PATHS.has(normalizedPath)) {
+        navigateTo("/");
+      }
+      return;
+    }
+
     if (isTournamentComplete && currentView === "tournament") {
       if (normalizedPath !== "/results") {
         navigateTo("/results");
@@ -88,10 +96,13 @@ export function useTournamentRoutingSync({
     const pathChanged =
       previousRouteRef.current === null || previousPath !== normalizedPath;
 
+    // * Allow "photos" view on tournament paths - don't reset it to "tournament"
+    const allowedTournamentViews = new Set(["tournament", "photos"]);
+
     if (
       pathChanged &&
       TOURNAMENT_PATHS.has(normalizedPath) &&
-      currentView !== "tournament"
+      !allowedTournamentViews.has(currentView)
     ) {
       lastViewRef.current = "tournament";
       onViewChange("tournament");

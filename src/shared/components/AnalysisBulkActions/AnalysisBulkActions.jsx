@@ -8,6 +8,7 @@ import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
 import { exportNamesToCSV } from "../../utils/exportUtils";
+import { devLog, devError } from "../../utils/logger";
 
 /**
  * Analysis Bulk Actions Component
@@ -55,34 +56,30 @@ export function AnalysisBulkActions({
 
   // Confirmation for bulk hide (destructive action)
   const handleBulkHide = useCallback(() => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("[AnalysisBulkActions] Hide button clicked", {
-        selectedCount,
-        hasOnBulkHide: !!onBulkHide,
-      });
-    }
-    
+    devLog("[AnalysisBulkActions] Hide button clicked", {
+      selectedCount,
+      hasOnBulkHide: !!onBulkHide,
+    });
+
     if (selectedCount > 5) {
       const confirmed = window.confirm(
         `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`
       );
       if (!confirmed) {
-        if (process.env.NODE_ENV === "development") {
-          console.log("[AnalysisBulkActions] User cancelled hide operation");
-        }
+        devLog("[AnalysisBulkActions] User cancelled hide operation");
         return;
       }
     }
-    
+
     if (!onBulkHide) {
-      console.error("[AnalysisBulkActions] onBulkHide handler is not provided");
+      devError("[AnalysisBulkActions] onBulkHide handler is not provided");
       return;
     }
-    
+
     try {
       onBulkHide();
     } catch (error) {
-      console.error("[AnalysisBulkActions] Error in onBulkHide handler:", error);
+      devError("[AnalysisBulkActions] Error in onBulkHide handler:", error);
     }
   }, [selectedCount, onBulkHide]);
 
@@ -103,12 +100,10 @@ export function AnalysisBulkActions({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (process.env.NODE_ENV === "development") {
-                    console.log("[AnalysisBulkActions] Hide button onClick fired", {
-                      selectedCount,
-                      event: e,
-                    });
-                  }
+                  devLog("[AnalysisBulkActions] Hide button onClick fired", {
+                    selectedCount,
+                    event: e,
+                  });
                   handleBulkHide();
                 }}
                 ariaLabel={`Hide ${selectedCount} selected names`}

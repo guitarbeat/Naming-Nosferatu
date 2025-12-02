@@ -92,6 +92,7 @@
   outline-offset: 2px;
 }
 
+.navbar-content,
 .sidebar-content {
   display: flex;
   flex: 1;
@@ -111,6 +112,7 @@
 }
 
 /* * Hide scrollbar for webkit browsers */
+.navbar-content::-webkit-scrollbar,
 .sidebar-content::-webkit-scrollbar {
   display: none;
 }
@@ -433,6 +435,7 @@
   }
 
   /* * Prevent content overflow and ensure proper spacing */
+  .navbar-content,
   .sidebar-content {
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
@@ -453,6 +456,7 @@
 }
 
 @media (width <= 480px) {
+  .navbar-content,
   .sidebar-content {
     gap: 0.375rem;
     padding: 0.5rem;

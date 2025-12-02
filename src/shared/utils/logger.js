@@ -73,7 +73,7 @@ export function devOnly(callback) {
  */
 export function createLogger(namespace) {
   const prefix = `[${namespace}]`;
-  
+
   return {
     log: (...args) => isDev && console.log(prefix, ...args),
     warn: (...args) => isDev && console.warn(prefix, ...args),

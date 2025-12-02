@@ -14,7 +14,8 @@ import {
 } from "../../shared/components";
 import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
-import { useImageGallery, useAdminStatus } from "./hooks";
+import { useImageGallery } from "./hooks";
+import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
 import {
   NameSelection,
   SwipeableNameCards,
@@ -22,10 +23,13 @@ import {
   Lightbox,
   NameSuggestionSection,
 } from "./components";
+import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
 import { useProfileStats } from "../profile/hooks/useProfileStats";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
-import { useProfileNotifications } from "../profile/hooks/useProfileNotifications";
+import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
 import { useProfileUser } from "../profile/hooks/useProfileUser";
+import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
 
 // * Error boundary component
@@ -160,12 +164,12 @@ function AnalysisBulkActionsWrapper({
   // * Extract name IDs from selectedNames, handling different formats
   const selectedNamesArray = useMemo(() => {
     if (!context.selectedNames) return [];
-    
+
     // * If it's a Set (profile mode), convert to array of IDs
     if (context.selectedNames instanceof Set) {
       return Array.from(context.selectedNames).filter(id => id != null);
     }
-    
+
     // * If it's an array, extract IDs properly
     if (Array.isArray(context.selectedNames)) {
       return context.selectedNames
@@ -183,7 +187,7 @@ function AnalysisBulkActionsWrapper({
         })
         .filter(id => id != null); // * Filter out null/undefined values
     }
-    
+
     return [];
   }, [context.selectedNames]);
 
@@ -262,25 +266,23 @@ function AnalysisBulkActionsWrapper({
       onSelectAll={handleSelectAll}
       onDeselectAll={handleSelectAll}
       onBulkHide={() => {
-        if (process.env.NODE_ENV === "development") {
-          console.log("[TournamentSetup] onBulkHide called", {
-            selectedCount,
-            selectedNamesArrayLength: selectedNamesArray.length,
-            selectedNamesArray,
-            contextSelectedNames: context.selectedNames,
-          });
-        }
-        
+        devLog("[TournamentSetup] onBulkHide called", {
+          selectedCount,
+          selectedNamesArrayLength: selectedNamesArray.length,
+          selectedNamesArray,
+          contextSelectedNames: context.selectedNames,
+        });
+
         if (selectedNamesArray.length === 0) {
-          console.warn("[TournamentSetup] No names in selectedNamesArray despite selectedCount:", selectedCount);
+          devWarn("[TournamentSetup] No names in selectedNamesArray despite selectedCount:", selectedCount);
           showError("No names selected");
           return;
         }
-        
+
         try {
           handleBulkHide(selectedNamesArray);
         } catch (error) {
-          console.error("[TournamentSetup] Error calling handleBulkHide:", error);
+          devError("[TournamentSetup] Error calling handleBulkHide:", error);
           showError(`Failed to hide names: ${error.message || "Unknown error"}`);
         }
       }}
@@ -318,6 +320,7 @@ function TournamentNameGrid({
   canManageActiveUser,
   onToggleVisibility,
   onDelete,
+  analysisHandlersProps,
 }) {
   const context = useNameManagementContext();
 
@@ -326,6 +329,10 @@ function TournamentNameGrid({
 
   return (
     <div className={styles.stickyControls}>
+      {/* * Render AnalysisHandlersProvider inside context */}
+      {analysisHandlersProps && (
+        <AnalysisHandlersProvider {...analysisHandlersProps} />
+      )}
       <NameSelection
         selectedNames={context.selectedNames}
         availableNames={context.names}
@@ -336,10 +343,14 @@ function TournamentNameGrid({
         sortBy={context.sortBy}
         filterStatus={showAdminFeatures ? context.filterStatus : "active"}
         isSwipeMode={context.isSwipeMode}
+        onToggleSwipeMode={() => context.setIsSwipeMode(!context.isSwipeMode)}
         showCatPictures={context.showCatPictures}
+        onToggleCatPictures={() => context.setShowCatPictures(!context.showCatPictures)}
         imageList={galleryImages}
         SwipeableCards={SwipeableNameCards}
         showSelectedOnly={context.showSelectedOnly}
+        onToggleShowSelected={() => context.setShowSelectedOnly(!context.showSelectedOnly)}
+        analysisMode={context.analysisMode}
         onToggleVisibility={showAdminFeatures ? onToggleVisibility : undefined}
         onDelete={showAdminFeatures ? onDelete : undefined}
       />
@@ -353,6 +364,7 @@ TournamentNameGrid.propTypes = {
   canManageActiveUser: PropTypes.bool,
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
+  analysisHandlersProps: PropTypes.object,
 };
 
 function TournamentSetupContent({
@@ -360,6 +372,9 @@ function TournamentSetupContent({
   userName,
   enableAnalysisMode = false,
 }) {
+  // * Get current view from store
+  const currentView = useAppStore((state) => state.tournament.currentView);
+
   // * Tournament-specific UI state (not managed by NameManagementView)
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -437,58 +452,90 @@ function TournamentSetupContent({
     return preload;
   }, [lightboxOpen, lightboxIndex, galleryImages]);
 
+  const photoGalleryProps = useMemo(
+    () => ({
+      galleryImages,
+      showAllPhotos,
+      onShowAllPhotosToggle: () => setShowAllPhotos((v) => !v),
+      onImageOpen: handleImageOpen,
+      isAdmin,
+      userName,
+      onImagesUploaded: handleImagesUploaded,
+    }),
+    [
+      galleryImages,
+      showAllPhotos,
+      handleImageOpen,
+      isAdmin,
+      userName,
+      handleImagesUploaded,
+    ],
+  );
+
+  const lightboxElement = lightboxOpen && (
+    <Lightbox
+      images={galleryImages}
+      currentIndex={lightboxIndex}
+      onClose={handleLightboxClose}
+      onNavigate={handleLightboxNavigate}
+      preloadImages={preloadImages}
+    />
+  );
+
+  if (currentView === "photos") {
+    return (
+      <>
+        <ToastContainer />
+        <div className={`${styles.container} ${styles.photosViewContainer}`}>
+          <div className={styles.photosViewContent}>
+            <PhotoGallery {...photoGalleryProps} />
+          </div>
+        </div>
+        {lightboxElement}
+      </>
+    );
+  }
+
   return (
     <>
       <ToastContainer />
       <div className={styles.container}>
-      {/* Selection Panel - Contains NameManagementView */}
-      <div className={styles.selectionPanel}>
-        <NameManagementView
-          mode="tournament"
-          userName={userName}
-          onStartTournament={onStart}
-          tournamentProps={{
-            SwipeableCards: SwipeableNameCards,
-            isAdmin,
-            imageList: galleryImages,
-            gridClassName: styles.cardsContainer,
-          }}
-          profileProps={{
-            isAdmin: canManageActiveUser,
-            showUserFilter: profileIsAdmin,
-            userSelectOptions,
-            stats,
-            selectionStats,
-            onToggleVisibility: (nameId) =>
-              handlersRef.current.handleToggleVisibility?.(nameId),
-            onDelete: (name) => handlersRef.current.handleDelete?.(name),
-          }}
-          extensions={{
-            dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
-            bulkActions: (props) => (
-              <AnalysisBulkActionsWrapper
-                activeUser={activeUser}
-                canManageActiveUser={canManageActiveUser}
-                isAdmin={isAdmin}
-                fetchSelectionStats={fetchSelectionStats}
-                showSuccess={showSuccess}
-                showError={showError}
-                showToast={showToast}
-                {...props}
-              />
-            ),
-            nameGrid: (
-              <>
-                <AnalysisHandlersProvider
-                  shouldEnableAnalysisMode={shouldEnableAnalysisMode}
+        <div className={styles.selectionPanel}>
+          <NameManagementView
+            mode="tournament"
+            userName={userName}
+            onStartTournament={onStart}
+            tournamentProps={{
+              SwipeableCards: SwipeableNameCards,
+              isAdmin,
+              imageList: galleryImages,
+              gridClassName: styles.cardsContainer,
+            }}
+            profileProps={{
+              isAdmin: canManageActiveUser,
+              showUserFilter: profileIsAdmin,
+              userSelectOptions,
+              stats,
+              selectionStats,
+              onToggleVisibility: (nameId) =>
+                handlersRef.current.handleToggleVisibility?.(nameId),
+              onDelete: (name) => handlersRef.current.handleDelete?.(name),
+            }}
+            extensions={{
+              dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
+              bulkActions: (props) => (
+                <AnalysisBulkActionsWrapper
                   activeUser={activeUser}
                   canManageActiveUser={canManageActiveUser}
-                  handlersRef={handlersRef}
+                  isAdmin={isAdmin}
                   fetchSelectionStats={fetchSelectionStats}
                   showSuccess={showSuccess}
                   showError={showError}
                   showToast={showToast}
+                  {...props}
                 />
+              ),
+              nameGrid: (
                 <TournamentNameGrid
                   isAdmin={isAdmin}
                   galleryImages={galleryImages}
@@ -497,41 +544,32 @@ function TournamentSetupContent({
                     handlersRef.current.handleToggleVisibility?.(nameId)
                   }
                   onDelete={(name) => handlersRef.current.handleDelete?.(name)}
+                  analysisHandlersProps={{
+                    shouldEnableAnalysisMode,
+                    activeUser,
+                    canManageActiveUser,
+                    handlersRef,
+                    fetchSelectionStats,
+                    showSuccess,
+                    showError,
+                    showToast,
+                  }}
                 />
-              </>
-            ),
-            nameSuggestion: (
-              <div className={styles.nameSuggestionWrapper}>
-                <NameSuggestionSection />
-              </div>
-            ),
-          }}
-        />
+              ),
+              nameSuggestion: (
+                <div className={styles.nameSuggestionWrapper}>
+                  <NameSuggestionSection />
+                </div>
+              ),
+            }}
+          />
+        </div>
+        {currentView !== "photos" && (
+          <TournamentSidebar {...photoGalleryProps} />
+        )}
+        {lightboxElement}
       </div>
-
-      {/* Sidebar */}
-      <TournamentSidebar
-        galleryImages={galleryImages}
-        showAllPhotos={showAllPhotos}
-        onShowAllPhotosToggle={() => setShowAllPhotos((v) => !v)}
-        onImageOpen={handleImageOpen}
-        isAdmin={isAdmin}
-        userName={userName}
-        onImagesUploaded={handleImagesUploaded}
-      />
-
-      {/* Lightbox */}
-      {lightboxOpen && (
-        <Lightbox
-          images={galleryImages}
-          currentIndex={lightboxIndex}
-          onClose={handleLightboxClose}
-          onNavigate={handleLightboxNavigate}
-          preloadImages={preloadImages}
-        />
-      )}
-      <ToastContainer />
-    </div>
+    </>
   );
 }
 

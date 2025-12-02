@@ -11,18 +11,28 @@
   box-sizing: border-box;
 }
 
-/* * Section containers */
+/* * Section containers - using unified section utilities */
 .headerSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-bottom: var(--spacing-component-gap);
 }
 
 .dashboardSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
   margin-bottom: var(--spacing-component-gap);
 }
 
 .filtersSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
   margin-bottom: var(--space-2);
 }
 
@@ -40,6 +50,9 @@
 
 .progressSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
   padding: var(--space-2) var(--spacing-component-padding);
   background: var(--card-background);
   border-radius: var(--radius-md);
@@ -72,11 +85,16 @@
 
 .bulkActionsSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
   margin-bottom: var(--space-2);
 }
 
 .gridSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   gap: var(--spacing-card-gap);
@@ -98,37 +116,49 @@
 
 .sidebarSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
 }
 
 .lightboxSection {
-  /* Lightbox is typically rendered as a portal */
+  /* * Lightbox is typically rendered as a portal */
 }
 
 .nameSuggestionSection {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
   margin-top: var(--space-4);
 }
 
-/* * Tournament action buttons */
+/* * Tournament action buttons - using unified button tokens */
 .actionButton {
-  padding: var(--space-2) var(--space-3);
+  padding: var(--button-padding-y-sm) var(--button-padding-x-sm);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--button-font-weight);
   color: var(--text-primary);
   background: var(--surface-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: var(--button-border-width) solid var(--border-color);
+  border-radius: var(--button-border-radius);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--button-transition);
 }
 
 .actionButton:hover {
   background: var(--surface-tertiary);
   border-color: var(--primary-400);
+  transform: var(--button-hover-transform);
 }
 
 .actionButton:active {
-  transform: scale(0.98);
+  transform: var(--button-active-transform);
+}
+
+.actionButton:disabled {
+  opacity: var(--button-disabled-opacity);
+  cursor: not-allowed;
 }
 
 .actionButtonActive {
@@ -140,23 +170,25 @@
 .actionButtonActive:hover {
   background: var(--primary-600);
   border-color: var(--primary-600);
+  transform: var(--button-hover-transform);
 }
 
 .startButton {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--button-padding-y-md) var(--button-padding-x-lg);
   font-size: var(--text-base);
-  font-weight: 600;
+  font-weight: var(--button-font-weight);
+  letter-spacing: var(--button-letter-spacing);
   color: var(--text-on-primary);
   background: var(--gradient-primary);
   border: none;
   border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--button-transition);
   box-shadow: var(--shadow-md);
 }
 
 .startButton:hover {
-  transform: translateY(-2px);
+  transform: var(--button-hover-transform);
   box-shadow: var(--shadow-lg);
 }
 

@@ -22,7 +22,7 @@ import RoundTransition from "./components/RoundTransition/RoundTransition";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
-import { useToast } from "./hooks/useToast";
+import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import styles from "./Tournament.module.css";
 
@@ -188,7 +188,7 @@ function TournamentContent({
       // Start undo window
       setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
     },
-    // * setState functions are stable and don't need to be in dependencies
+    // * setState functions (setUndoExpiresAt, setSelectedOption) are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentMatch, showSuccess],
   );
@@ -298,6 +298,7 @@ function TournamentContent({
         setIsTransitioning(false);
       }
     },
+    // * setState functions (setIsProcessing, setIsTransitioning, setSelectedOption, setVotingError) are stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       isProcessing,
@@ -309,7 +310,6 @@ function TournamentContent({
       onVote,
       currentMatch,
       showError,
-      // * setState functions are stable and don't need to be in dependencies
     ],
   );
 
@@ -320,6 +320,7 @@ function TournamentContent({
       setSelectedOption(option);
       handleVoteWithAnimation(option);
     },
+    // * setState function (setSelectedOption) is stable and doesn't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isProcessing, isTransitioning, handleVoteWithAnimation],
   );
@@ -343,12 +344,14 @@ function TournamentContent({
     } finally {
       setIsProcessing(false);
     }
+    // * setState function (setIsProcessing) is stable and doesn't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getCurrentRatings, existingRatings, onComplete]);
 
   // * Handle vote retry
   const handleVoteRetry = useCallback(() => {
     setVotingError(null);
+    // * setState function (setVotingError) is stable and doesn't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

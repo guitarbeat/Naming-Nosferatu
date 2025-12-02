@@ -48,7 +48,8 @@ import CalendarButton from "../../shared/components/CalendarButton/CalendarButto
 import StartTournamentButton from "../../shared/components/StartTournamentButton/StartTournamentButton";
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import { Card, Toast } from "@components";
-import { useToast } from "./hooks/useToast";
+import { devError } from "../../shared/utils/logger";
+import { useToast } from "../../shared/hooks/useToast";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
 import styles from "./Results.module.css";
 
@@ -181,7 +182,7 @@ function Results({
     try {
       return processRankings(ratings);
     } catch (error) {
-      console.error("Error processing rankings:", error);
+      devError("Error processing rankings:", error);
       return [];
     }
   }, [ratings, processRankings]);
@@ -191,7 +192,7 @@ function Results({
       setCurrentRankings(processedRankings);
       setIsLoading(false);
     } catch (error) {
-      console.error("Error setting rankings:", error);
+      devError("Error setting rankings:", error);
       setIsLoading(false);
       // * Use showToast directly to avoid dependency on showToastMessage
       showToast({
@@ -231,7 +232,7 @@ function Results({
 
         showToastMessage("Rankings updated successfully!", "success");
       } catch (error) {
-        console.error("Failed to update rankings:", error);
+        devError("Failed to update rankings:", error);
         showToastMessage(
           "Failed to update rankings. Please try again.",
           "error",

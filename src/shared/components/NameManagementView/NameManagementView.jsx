@@ -437,8 +437,8 @@ export function NameManagementView({
           />
         </div>
 
-        {/* Tournament Mode: Header Actions */}
-        {mode === "tournament" && (
+        {/* Tournament Mode: Header Actions - hidden when custom nameGrid is used (actions are in ResultsInfo) */}
+        {mode === "tournament" && !extensions.nameGrid && (
           <div className={styles.tournamentActions}>
             {selectedCount > 0 && !analysisMode && (
               <Button
@@ -488,8 +488,8 @@ export function NameManagementView({
           </div>
         )}
 
-        {/* Tournament Mode: Progress Bar - hidden in analysis mode (count shown in toolbar) */}
-        {mode === "tournament" && !analysisMode && (
+        {/* Tournament Mode: Progress Bar - hidden when custom nameGrid is used (it includes ResultsInfo) */}
+        {mode === "tournament" && !analysisMode && !extensions.nameGrid && (
           <div className={styles.progressSection}>
             <div className={styles.progressBar}>
               <div

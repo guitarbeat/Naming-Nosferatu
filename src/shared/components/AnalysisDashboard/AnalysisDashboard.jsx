@@ -37,7 +37,7 @@ export function AnalysisDashboard({
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
@@ -73,7 +73,7 @@ export function AnalysisDashboard({
   // * Combine leaderboard and selection data to show top names with all metrics
   const consolidatedNames = useMemo(() => {
     const nameMap = new Map();
-    
+
     // Add leaderboard data
     if (leaderboardData?.length) {
       leaderboardData.forEach((item) => {
@@ -88,7 +88,7 @@ export function AnalysisDashboard({
         }
       });
     }
-    
+
     // Add selection data
     if (selectionPopularity?.length) {
       selectionPopularity.forEach((item) => {
@@ -106,7 +106,7 @@ export function AnalysisDashboard({
         }
       });
     }
-    
+
     // Sort by rating (most important for choosing a name), then by wins
     return Array.from(nameMap.values())
       .sort((a, b) => {
@@ -177,7 +177,7 @@ export function AnalysisDashboard({
           </div>
         ) : (
           <div className="top-names-list">
-            <table 
+            <table
               className="top-names-table"
               role="table"
               aria-label="Top performing cat names ranked by rating, wins, and selection count"

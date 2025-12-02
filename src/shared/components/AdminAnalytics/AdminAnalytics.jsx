@@ -57,7 +57,7 @@ export function AdminAnalytics({ isAdmin = false }) {
   const [sortField, setSortField] = useState("avg_rating");
   const [sortDirection, setSortDirection] = useState("desc");
   const [lastRefresh, setLastRefresh] = useState(null);
-  
+
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ADMIN_ANALYTICS_COLLAPSED,
@@ -67,7 +67,7 @@ export function AdminAnalytics({ isAdmin = false }) {
   // Fetch analytics data
   const fetchAnalytics = useCallback(async () => {
     if (!isAdmin) return;
-    
+
     setIsLoading(true);
     try {
       const [popularityData, stats] = await Promise.all([

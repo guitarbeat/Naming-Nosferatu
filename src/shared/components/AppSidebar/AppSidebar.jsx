@@ -1,12 +1,11 @@
 /**
  * @module AppSidebar
- * @description Application sidebar navigation component
+ * @description Application navbar navigation component (rendered as horizontal navbar, not sidebar)
  */
 
 import PropTypes from "prop-types";
 import {
   Sidebar,
-  SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   useSidebar,
@@ -16,7 +15,7 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, LogoutIcon } from "./icons";
+import { TournamentIcon, LogoutIcon, PhotosIcon } from "./icons";
 import { AnalysisToggle } from "../AnalysisPanel";
 import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
@@ -47,19 +46,16 @@ export function AppSidebar({
       label: "Tournament",
       icon: TournamentIcon,
     },
+    {
+      key: "photos",
+      label: "Photos",
+      icon: PhotosIcon,
+    },
   ];
 
   const handleLogoClick = () => {
-    // * Toggle sidebar expansion/collapse
+    // * Toggle navbar collapse/expand on logo/avatar click
     toggleCollapsed();
-
-    // * If expanding, also navigate to tournament
-    if (collapsed) {
-      setView("tournament");
-      if (typeof onStartNewTournament === "function") {
-        onStartNewTournament();
-      }
-    }
   };
 
   const logoButtonLabel = collapsed
@@ -72,7 +68,7 @@ export function AppSidebar({
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {collapsed ? "Navbar collapsed" : "Navbar expanded"}
       </div>
-      <SidebarContent>
+      <div className="navbar-content">
         {/* Left Section: Logo + Navigation */}
         <NavbarSection className="navbar-left">
           {/* Logo Section */}
@@ -187,7 +183,7 @@ export function AppSidebar({
             <UserDisplay userName={userName} isAdmin={isAdmin} />
           )}
         </NavbarSection>
-      </SidebarContent>
+      </div>
     </Sidebar>
   );
 }

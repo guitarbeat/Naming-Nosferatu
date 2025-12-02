@@ -89,6 +89,8 @@ export function useTournamentState({
         }));
       }
     }
+    // * updatePersistentState is a callback prop that should be stable
+    // * getNextMatch is an imported utility function (stable reference)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [names, existingRatings]);
 

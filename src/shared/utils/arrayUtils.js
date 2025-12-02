@@ -95,10 +95,10 @@ export function safeArrayLength(value) {
  */
 export function uniqueBy(array, key) {
   if (!Array.isArray(array)) return [];
-  
+
   const seen = new Set();
   const getKey = typeof key === "function" ? key : (item) => item[key];
-  
+
   return array.filter((item) => {
     const k = getKey(item);
     if (seen.has(k)) return false;
@@ -115,9 +115,9 @@ export function uniqueBy(array, key) {
  */
 export function groupBy(array, key) {
   if (!Array.isArray(array)) return {};
-  
+
   const getKey = typeof key === "function" ? key : (item) => item[key];
-  
+
   return array.reduce((groups, item) => {
     const k = getKey(item);
     if (!groups[k]) groups[k] = [];
@@ -135,10 +135,10 @@ export function groupBy(array, key) {
  */
 export function sortByNumber(array, key, order = "desc") {
   if (!Array.isArray(array)) return [];
-  
+
   const getKey = typeof key === "function" ? key : (item) => item[key] ?? 0;
   const multiplier = order === "asc" ? 1 : -1;
-  
+
   return [...array].sort((a, b) => multiplier * (getKey(b) - getKey(a)));
 }
 
@@ -151,10 +151,10 @@ export function sortByNumber(array, key, order = "desc") {
  */
 export function sortByString(array, key, order = "asc") {
   if (!Array.isArray(array)) return [];
-  
+
   const getKey = typeof key === "function" ? key : (item) => item[key] ?? "";
   const multiplier = order === "asc" ? 1 : -1;
-  
+
   return [...array].sort((a, b) => multiplier * getKey(a).localeCompare(getKey(b)));
 }
 
@@ -167,10 +167,10 @@ export function sortByString(array, key, order = "asc") {
  */
 export function sortByDate(array, key, order = "desc") {
   if (!Array.isArray(array)) return [];
-  
+
   const getKey = typeof key === "function" ? key : (item) => item[key];
   const multiplier = order === "asc" ? 1 : -1;
-  
+
   return [...array].sort((a, b) => {
     const dateA = new Date(getKey(a));
     const dateB = new Date(getKey(b));

@@ -7,7 +7,6 @@
 @import url("./design-tokens.css");
 @import url("./colors.css");
 @import url("./typography.css");
-@import url("./spacing.css");
 @import url("./layout.css");
 @import url("./borders.css");
 @import url("./z-index.css");
@@ -22,7 +21,7 @@
 @import url("./cursor-interactions.css");
 
 /* Buttons & interactive elements */
-@import url("./buttons.css");
+/* * Button tokens consolidated into design-tokens.css */
 
 /* Component-level styles */
 @import url("./app-layout.css");

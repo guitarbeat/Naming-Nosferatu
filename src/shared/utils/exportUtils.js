@@ -52,9 +52,9 @@ function escapeCSVValue(value) {
  */
 export function arrayToCSV(data, headers, fields) {
   if (!data || data.length === 0) return "";
-  
+
   const headerRow = headers.map(escapeCSVValue).join(",");
-  
+
   const dataRows = data.map((item) =>
     fields
       .map((field) => {
@@ -63,7 +63,7 @@ export function arrayToCSV(data, headers, fields) {
       })
       .join(",")
   );
-  
+
   return [headerRow, ...dataRows].join("\n");
 }
 
@@ -95,11 +95,11 @@ export function exportToCSV(data, options = {}) {
 
   const csvContent = arrayToCSV(data, effectiveHeaders, effectiveFields);
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  
+
   const fullFileName = includeDate
     ? `${fileName}_${getDateString()}.csv`
     : `${fileName}.csv`;
-  
+
   downloadBlob(blob, fullFileName);
   return true;
 }

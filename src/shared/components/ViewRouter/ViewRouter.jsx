@@ -226,7 +226,7 @@ ViewRouter.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
   onLogin: PropTypes.func.isRequired,
   tournament: PropTypes.shape({
-    names: PropTypes.any,
+    names: PropTypes.arrayOf(PropTypes.object),
     ratings: PropTypes.object.isRequired,
     isComplete: PropTypes.bool.isRequired,
     voteHistory: PropTypes.array.isRequired,

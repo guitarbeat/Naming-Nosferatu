@@ -27,17 +27,17 @@ export function cn(...classes) {
  */
 export function cnStyles(styles, baseClass, conditionals = {}, extraClasses = "") {
   const classes = [styles[baseClass]];
-  
+
   Object.entries(conditionals).forEach(([className, condition]) => {
     if (condition && styles[className]) {
       classes.push(styles[className]);
     }
   });
-  
+
   if (extraClasses) {
     classes.push(extraClasses);
   }
-  
+
   return classes.filter(Boolean).join(" ");
 }
 

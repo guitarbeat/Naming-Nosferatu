@@ -44,15 +44,15 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(8px);
-  /* * Only transition non-transform properties */
-  transition: var(--transition-base);
+  /* * Using unified button transition tokens */
+  transition: var(--button-transition);
 }
 
 .actionButton:hover {
   background: var(--card-hover);
   border-color: var(--primary-300);
   box-shadow: var(--shadow-lg);
-  transform: var(--transform-hover-scale);
+  transform: var(--button-hover-transform);
 }
 
 .actionButton:hover::after {
@@ -248,7 +248,7 @@
   );
   border: var(--card-border-width) solid
     var(--border-color, rgb(148 163 184 / 25%));
-  border-radius: clamp(var(--radius-lg), 3vw, var(--radius-xl));
+  border-radius: var(--card-border-radius-mosaic); /* * Use design token */
   box-shadow: var(--shadow-lg);
 
   /* Enhanced visual hierarchy */
@@ -267,7 +267,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  border-radius: var(--radius-xl);
+  border-radius: var(--card-border-radius-mosaic); /* * Match card sharp edges */
   mix-blend-mode: soft-light;
   transition: var(--transition-color);
 }
@@ -585,7 +585,7 @@
   .card {
     min-height: 120px;
     padding: var(--space-2);
-    border-radius: 20px;
+    border-radius: var(--card-border-radius-mosaic); /* * Use design token */
   }
 
   .name {
@@ -831,7 +831,7 @@
 
   /* * Enhanced Tinder-style appearance */
   border: 2px solid var(--border-color);
-  border-radius: 24px;
+  border-radius: var(--card-border-radius-mosaic); /* * Use design token */
   box-shadow: 0 10px 40px rgb(0 0 0 / 20%);
   perspective: none;
 

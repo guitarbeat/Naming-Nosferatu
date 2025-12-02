@@ -116,7 +116,14 @@ ErrorBoundary.propTypes = {
   children: PropTypes.node,
   onError: PropTypes.func,
   onReset: PropTypes.func,
-  resetKeys: PropTypes.arrayOf(PropTypes.any),
+  resetKeys: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.bool,
+      PropTypes.object,
+    ])
+  ),
 };
 
 ErrorBoundary.defaultProps = {

@@ -6,6 +6,7 @@ import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { compressImageFile } from "../../../../shared/utils/coreUtils";
 import { imagesAPI } from "../../../../shared/services/supabase/api";
+import { devError } from "../../../../shared/utils/logger";
 import PhotoThumbnail from "./PhotoThumbnail";
 import styles from "../../TournamentSetup.module.css";
 
@@ -40,7 +41,7 @@ function PhotoGallery({
             const url = await imagesAPI.upload(compressed, userName || "aaron");
             if (url) uploaded.push(url);
           } catch (fileError) {
-            console.error(`Failed to upload ${f.name}:`, fileError);
+            devError(`Failed to upload ${f.name}:`, fileError);
           }
         });
 
@@ -52,7 +53,7 @@ function PhotoGallery({
           alert("No images were uploaded. Please try again.");
         }
       } catch (err) {
-        console.error("Upload failed", err);
+        devError("Upload failed", err);
         alert("Upload failed. Please try again.");
       } finally {
         e.target.value = "";
@@ -63,19 +64,41 @@ function PhotoGallery({
 
   return (
     <div className={styles.starsSection}>
-      <h3 className={styles.starsTitle}>Cat Photos 📸</h3>
-      <p className={styles.starsDescription}>
-        Click any photo to get a closer look
-      </p>
       <div className={styles.photoGrid}>
-        {displayImages.map((image, index) => (
-          <PhotoThumbnail
-            key={image}
-            image={image}
-            index={index}
-            onImageOpen={onImageOpen}
-          />
-        ))}
+        {displayImages.map((image, index) => {
+          // * Calculate size for mosaic effect - vary based on index
+          const imageHash = image.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          const hashMod = Math.abs(imageHash) % 100;
+
+          // * Row span: vary from 4-10 rows (80-200px) for visual interest
+          const rowSpan = 4 + (hashMod % 7); // * 4-10 rows
+
+          // * Column span: create variety (1-2 columns)
+          let colSpan = 1;
+          // * 30% of photos get 2 columns for featured effect
+          if (hashMod < 30) {
+            colSpan = 2;
+          }
+
+          return (
+            <div
+              key={image}
+              className={styles.photoWrapper}
+              style={{
+                gridRow: `span ${rowSpan}`,
+                gridColumn: colSpan > 1 ? `span ${colSpan}` : 'auto',
+              }}
+              data-col-span={colSpan}
+              data-row-span={rowSpan}
+            >
+              <PhotoThumbnail
+                image={image}
+                index={index}
+                onImageOpen={onImageOpen}
+              />
+            </div>
+          );
+        })}
       </div>
 
       <div className={styles.photoToolbar}>

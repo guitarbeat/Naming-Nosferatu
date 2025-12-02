@@ -1,10 +1,10 @@
 /**
  * @module AnalysisPanel/components/AnalysisStats
  * @description Stats display for Analysis Mode
- * 
+ *
  * Displays statistics in a grid layout using analysis-mode design tokens.
  * For individual stat cards outside analysis mode, use StatsCard component.
- * 
+ *
  * @see StatsCard - For individual stat cards in general UI contexts
  */
 

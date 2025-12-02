@@ -19,9 +19,6 @@ export * from "./performanceUtils";
 // * Re-export logger utilities
 export * from "./logger";
 
-// * Re-export performance monitor
-export { performanceMonitor } from "./performanceMonitor";
-
 // * Re-export display utilities
 export * from "./displayUtils";
 

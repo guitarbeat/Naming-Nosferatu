@@ -446,7 +446,7 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
 }
 
 ErrorBoundaryFallback.propTypes = {
-  error: PropTypes.any.isRequired,
+  error: PropTypes.instanceOf(Error).isRequired,
   resetErrorBoundary: PropTypes.func.isRequired,
   onRetry: PropTypes.func,
 };

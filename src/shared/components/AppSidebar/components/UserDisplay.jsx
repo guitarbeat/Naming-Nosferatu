@@ -14,7 +14,7 @@ import "./UserDisplay.css";
  * @param {boolean} props.isAdmin - Whether user is admin
  */
 export function UserDisplay({ userName, isAdmin = false }) {
-  const { collapsed } = useSidebar();
+  const { collapsed, toggleCollapsed } = useSidebar();
 
   if (!userName) {
     return null;
@@ -27,8 +27,13 @@ export function UserDisplay({ userName, isAdmin = false }) {
       ? `${userName.substring(0, MAX_DISPLAY_LENGTH)}...`
       : userName;
 
+  const handleClick = () => {
+    // * Toggle navbar collapse on avatar/user display click
+    toggleCollapsed();
+  };
+
   return (
-    <div className="sidebar-user-display">
+    <div className="sidebar-user-display" onClick={handleClick} style={{ cursor: "pointer" }}>
       <div className="sidebar-user-display__content">
         {collapsed ? (
           <div className="sidebar-user-display__icon" aria-label={userName}>

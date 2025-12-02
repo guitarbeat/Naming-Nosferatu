@@ -27,6 +27,9 @@
   --space-16: 4rem; /* 64px */
   --space-20: 5rem; /* 80px */
   --space-24: 6rem; /* 96px */
+  --space-32: 8rem; /* 128px */
+  --space-40: 10rem; /* 160px */
+  --space-48: 12rem; /* 192px */
 
   /* * Component spacing - semantic spacing for common patterns */
   --spacing-component-padding: var(--space-4);
@@ -113,6 +116,7 @@
    ========================================================================== */
 :root {
   --radius-none: 0;
+  --radius-xs: 0.125rem; /* 2px - for mosaic/sharp edges */
   --radius-sm: 0.375rem; /* 6px */
   --radius-md: 0.5rem; /* 8px */
   --radius-lg: 0.75rem; /* 12px */
@@ -123,6 +127,7 @@
   /* * Component-specific radius */
   --radius-button: var(--radius-md);
   --radius-card: var(--radius-lg);
+  --radius-card-mosaic: var(--radius-xs); /* * Sharp edges for mosaic layouts */
   --radius-input: var(--radius-md);
   --radius-badge: var(--radius-full);
 }
@@ -217,22 +222,54 @@
    COMPONENT-SPECIFIC TOKENS
    ========================================================================== */
 :root {
-  /* * Button tokens */
+  /* * Button tokens - Consolidated from buttons.css */
+  --button-base-height: 48px;
   --button-height-sm: 32px;
   --button-height-md: 40px;
   --button-height-lg: 48px;
   --button-padding-x-sm: var(--space-3);
   --button-padding-x-md: var(--space-4);
   --button-padding-x-lg: var(--space-6);
-  --button-font-weight: var(--font-weight-semibold);
+  --button-padding-y-sm: var(--space-2);
+  --button-padding-y-md: var(--space-3);
+  --button-padding-y-lg: var(--space-4);
+  --button-font-weight: 600;
+  --button-letter-spacing: 0.025em;
   --button-border-radius: var(--radius-button);
+  --button-border-width: 2px;
+  --button-gap: var(--space-2);
+  --button-icon-size: 1.1em;
+  --button-spinner-size: 16px;
+  --button-disabled-opacity: 0.7;
+  --button-loading-opacity: 0.7;
+  --button-hover-transform: translateY(-2px) scale(1.02);
+  --button-active-transform: translateY(-1px) scale(1.01);
+  --button-hover-shadow: 0 8px 25px rgb(0 0 0 / 20%), 0 4px 12px rgb(0 0 0 / 15%);
+  --button-transition: all var(--duration-normal) var(--ease-out);
+  --button-transition-fast: transform var(--duration-fast) var(--ease-out);
+  /* * Specialized button patterns */
+  --control-button-height: 44px;
+  --control-button-min-width: 180px;
+  --control-button-font-weight: 700;
+  --control-button-letter-spacing: 0.02em;
+  --control-button-border-radius: var(--radius-full);
+  --icon-button-small: 32px;
+  --icon-button-medium: 40px;
+  --icon-button-large: 48px;
+  --swipe-button-shadow: 0 6px 18px rgb(220 38 38 / 25%);
+  --swipe-button-hover-shadow: 0 10px 24px rgb(220 38 38 / 35%);
+  --sound-toggle-size: 40px;
+  --sound-toggle-active-transform: scale(1.1);
 
   /* * Card tokens */
   --card-padding-sm: var(--space-3);
   --card-padding-md: var(--space-4);
   --card-padding-lg: var(--space-6);
   --card-border-radius: var(--radius-card);
+  --card-border-radius-mosaic: var(--radius-card-mosaic); /* * 2px for mosaic */
   --card-border-width: 1px;
+  --card-gap: var(--space-1); /* * Tighter gaps for mosaic layouts */
+  --card-gap-normal: var(--space-4); /* * Normal gaps for standard layouts */
 
   /* * Input tokens */
   --input-height-sm: 36px;
@@ -242,4 +279,10 @@
   --input-padding-y: var(--space-2);
   --input-border-radius: var(--radius-input);
   --input-border-width: 1px;
+
+  /* * Grid/Mosaic tokens */
+  --grid-gap-mosaic: var(--card-gap); /* * Tight gaps for mosaic */
+  --grid-gap-normal: var(--card-gap-normal); /* * Normal gaps */
+  --grid-row-unit: 20px; /* * Base row unit for flexible grid sizing */
+  --grid-min-column-width: 200px; /* * Minimum column width for responsive grids */
 }

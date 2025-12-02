@@ -52,7 +52,10 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
   }
 
   const isLocalAsset = image.startsWith("/assets/images/");
-  const base = isLocalAsset ? image.substring(0, image.lastIndexOf(".")) : null;
+  const isGif = image.toLowerCase().endsWith(".gif");
+  // * GIF files typically don't have .avif/.webp versions, so skip picture element
+  const shouldUsePicture = isLocalAsset && !isGif;
+  const base = shouldUsePicture ? image.substring(0, image.lastIndexOf(".")) : null;
 
   return (
     <button
@@ -71,7 +74,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
         </div>
       ) : (
         <>
-          {isLocalAsset && base ? (
+          {shouldUsePicture && base ? (
             <picture>
               <source
                 type="image/avif"

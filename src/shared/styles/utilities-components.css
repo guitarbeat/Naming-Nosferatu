@@ -1,4 +1,7 @@
 /* ===== BUTTON UTILITIES ===== */
+/* * Consolidated button utilities - use Button component for most cases */
+/* * These utilities are for legacy support and utility classes */
+
 .btn-base {
   display: inline-flex;
   gap: var(--spacing-icon-gap);
@@ -8,11 +11,12 @@
   padding: var(--button-padding-y-md) var(--button-padding-x-md);
   font-size: var(--text-sm);
   font-weight: var(--button-font-weight);
+  letter-spacing: var(--button-letter-spacing);
   text-decoration: none;
   cursor: pointer;
-  border: 1px solid transparent;
+  border: var(--button-border-width) solid transparent;
   border-radius: var(--button-border-radius);
-  transition: var(--transition-base);
+  transition: var(--button-transition);
 }
 
 .btn-primary {
@@ -20,14 +24,21 @@
   background: linear-gradient(45deg, var(--neon-cyan), var(--hot-pink));
   border-color: transparent;
   box-shadow: var(--shadow-gradient);
-  transition: var(--transition-base);
 }
 
 .btn-primary:hover {
   background: linear-gradient(45deg, var(--hot-pink), var(--neon-cyan));
-  border-color: transparent;
-  box-shadow: var(--shadow-gradient);
-  transform: var(--transform-hover-lift) var(--transform-hover-scale);
+  transform: var(--button-hover-transform);
+  box-shadow: var(--button-hover-shadow);
+}
+
+.btn-primary:active {
+  transform: var(--button-active-transform);
+}
+
+.btn-primary:disabled {
+  opacity: var(--button-disabled-opacity);
+  cursor: not-allowed;
 }
 
 .btn-glow {
@@ -66,15 +77,30 @@
 .btn-secondary:hover {
   color: var(--text-primary);
   background: var(--surface-color);
+  transform: var(--button-hover-transform);
+}
+
+.btn-secondary:active {
+  transform: var(--button-active-transform);
+}
+
+.btn-secondary:disabled {
+  opacity: var(--button-disabled-opacity);
+  cursor: not-allowed;
 }
 
 /* ===== CARD UTILITIES ===== */
+/* * Use Card component for most cases - these utilities are for legacy support */
 .card-base {
-  padding: var(--space-6);
+  padding: var(--card-padding-md);
   background: var(--card-background);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  transition: var(--transition-all);
+  border: var(--card-border-width) solid var(--card-border);
+  border-radius: var(--card-border-radius);
+  transition: var(--transition-base);
+}
+
+.card-mosaic {
+  border-radius: var(--card-border-radius-mosaic); /* * Sharp edges for mosaic */
 }
 
 .card-hover {
@@ -85,6 +111,31 @@
   border-color: var(--card-hover);
   box-shadow: var(--shadow-md);
   transform: var(--transform-hover-lift);
+}
+
+/* ===== SECTION UTILITIES ===== */
+/* * Unified section patterns for consistent spacing and layout */
+.section-base {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+}
+
+.section-header {
+  width: 100%;
+  margin-bottom: var(--spacing-component-gap);
+}
+
+.section-content {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.section-footer {
+  width: 100%;
+  margin-top: var(--spacing-component-gap);
 }
 
 /* ===== FORM UTILITIES ===== */

@@ -16,7 +16,7 @@ import { adminAPI } from "../../../shared/services/supabase/api";
 export function useProfileUser(userName) {
   // * Use shared admin status hook
   const { isAdmin } = useAdminStatus(userName);
-  
+
   const [activeUser, setActiveUser] = useState(userName);
   const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
   const [availableUsers, setAvailableUsers] = useState([]);

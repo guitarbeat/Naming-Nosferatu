@@ -9,6 +9,7 @@ import {
   deleteName,
   hiddenNamesAPI,
 } from "../../../shared/services/supabase/api";
+import { devLog, devWarn, devError } from "../../../shared/utils/logger";
 
 /**
  * * Hook for managing name operations
@@ -47,9 +48,7 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("Supabase not configured, cannot toggle visibility");
-          }
+          devWarn("Supabase not configured, cannot toggle visibility");
           showError("Database not available");
           return;
         }
@@ -69,11 +68,9 @@ export function useProfileNameOperations(
         }
 
         // * Debug logging for visibility toggle
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? "unhidden" : "hidden"} for user: ${activeUser}`,
-          );
-        }
+        devLog(
+          `🔍 Toggled visibility for name ${nameId}: ${currentlyHidden ? "unhidden" : "hidden"} for user: ${activeUser}`,
+        );
 
         // Optimistic local update for instant UI feedback
         setHiddenNames((prev) => {
@@ -107,7 +104,7 @@ export function useProfileNameOperations(
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
-        console.error("Profile - Toggle Visibility error:", errorMessage);
+        devError("Profile - Toggle Visibility error:", errorMessage);
         showToast(`Failed to toggle name visibility: ${errorMessage}`, "error");
         showError("Failed to update visibility");
       }
@@ -131,9 +128,7 @@ export function useProfileNameOperations(
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("Supabase not configured, cannot delete name");
-          }
+          devWarn("Supabase not configured, cannot delete name");
           showError("Database not available");
           return;
         }
@@ -153,7 +148,7 @@ export function useProfileNameOperations(
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
-        console.error("Profile - Delete Name error:", errorMessage);
+        devError("Profile - Delete Name error:", errorMessage);
         showToast(`Failed to delete name: ${errorMessage}`, "error");
         showError("Failed to delete name");
       }
@@ -184,31 +179,25 @@ export function useProfileNameOperations(
   // * Helper for bulk operations
   const performBulkOperation = useCallback(
     async (nameIds, operation, successMessage, isHide) => {
-      if (process.env.NODE_ENV === "development") {
-        console.log("[useProfileNameOperations] performBulkOperation called", {
-          nameIds,
-          nameIdsLength: nameIds?.length,
-          isHide,
-          activeUser,
-          canManageActiveUser,
-        });
-      }
-      
+      devLog("[useProfileNameOperations] performBulkOperation called", {
+        nameIds,
+        nameIdsLength: nameIds?.length,
+        isHide,
+        activeUser,
+        canManageActiveUser,
+      });
+
       try {
         if (!nameIds || nameIds.length === 0) {
-          console.warn("[useProfileNameOperations] No nameIds provided");
+          devWarn("[useProfileNameOperations] No nameIds provided");
           showError("No names to process");
           return;
         }
-        
+
         const supabaseClient = await resolveSupabaseClient();
 
         if (!supabaseClient) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn(
-              "Supabase not configured, cannot perform bulk operation",
-            );
-          }
+          devWarn("Supabase not configured, cannot perform bulk operation");
           showError("Database not available");
           return;
         }
@@ -216,31 +205,27 @@ export function useProfileNameOperations(
         if (!canManageActiveUser) {
           const action = isHide ? "hide" : "unhide";
           const errorMsg = `Only admins can ${action} names`;
-          console.warn("[useProfileNameOperations]", errorMsg);
+          devWarn("[useProfileNameOperations]", errorMsg);
           showError(errorMsg);
           showToast(errorMsg, "error");
           return;
         }
 
-        if (process.env.NODE_ENV === "development") {
-          console.log("[useProfileNameOperations] Calling operation with:", {
-            activeUser,
-            nameIdsCount: nameIds.length,
-            nameIds,
-          });
-        }
-        
+        devLog("[useProfileNameOperations] Calling operation with:", {
+          activeUser,
+          nameIdsCount: nameIds.length,
+          nameIds,
+        });
+
         const result = await operation(activeUser, nameIds);
-        
-        if (process.env.NODE_ENV === "development") {
-          console.log("[useProfileNameOperations] Operation result:", result);
-        }
+
+        devLog("[useProfileNameOperations] Operation result:", result);
 
         if (result.success && result.processed > 0) {
           const action = isHide ? "hidden" : "unhidden";
           const count = result.processed;
           const message = `✅ Successfully ${action} ${count} name${count !== 1 ? "s" : ""}`;
-          
+
           // Show clear success feedback
           showSuccess(message);
           showToast(message, "success");
@@ -265,24 +250,22 @@ export function useProfileNameOperations(
           const processed = result.processed || 0;
           const errorMsg = result.error || (processed === 0 ? "No names were processed" : "Unknown error");
           const errorMessage = `❌ Failed to ${action} names${errorMsg ? `: ${errorMsg}` : ""}`;
-          
-          if (process.env.NODE_ENV === "development") {
-            console.error("[useProfileNameOperations] Operation failed:", {
-              result,
-              errorMessage,
-            });
-          }
-          
+
+          devError("[useProfileNameOperations] Operation failed:", {
+            result,
+            errorMessage,
+          });
+
           showError(errorMessage);
           showToast(errorMessage, "error");
         }
       } catch (error) {
-        console.error(
+        devError(
           `Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`,
           error,
         );
         const action = isHide ? "hide" : "unhide";
-        const errorMessage = error instanceof Error 
+        const errorMessage = error instanceof Error
           ? `❌ Failed to ${action} names: ${error.message}`
           : `❌ Failed to ${action} names. Please try again.`;
         showToast(errorMessage, "error");

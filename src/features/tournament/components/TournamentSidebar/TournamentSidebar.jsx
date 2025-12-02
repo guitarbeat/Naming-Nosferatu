@@ -1,6 +1,6 @@
 /**
  * @module TournamentSetup/components/TournamentSidebar
- * @description Sidebar with photo gallery and name suggestions
+ * @description Sidebar with photo gallery
  */
 import PropTypes from "prop-types";
 import PhotoGallery from "./PhotoGallery";

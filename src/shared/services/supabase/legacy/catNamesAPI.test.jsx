@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 
 const { fromMock, supabaseMock } = vi.hoisted(() => {
   const fromMock = vi.fn();
-  return { 
+  return {
     fromMock,
     supabaseMock: { from: fromMock }
   };

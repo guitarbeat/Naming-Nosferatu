@@ -22,10 +22,14 @@ function NameSelection({
   filterStatus,
   // Display options
   isSwipeMode,
+  onToggleSwipeMode,
   showCatPictures,
+  onToggleCatPictures,
   imageList,
   SwipeableCards,
   showSelectedOnly,
+  onToggleShowSelected,
+  analysisMode,
   // Admin handlers
   onToggleVisibility,
   onDelete,
@@ -40,8 +44,8 @@ function NameSelection({
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
-    const visibility = filterStatus === "hidden" ? "hidden" 
-      : filterStatus === "all" ? "all" 
+    const visibility = filterStatus === "hidden" ? "hidden"
+      : filterStatus === "all" ? "all"
       : "visible";
 
     let result = applyNameFilters(availableNames, {
@@ -72,8 +76,16 @@ function NameSelection({
       <ResultsInfo
         displayCount={filteredNames.length}
         totalCount={availableNames.length}
+        selectedCount={selectedNames.length}
         selectedCategory={selectedCategory}
         searchTerm={searchTerm}
+        showSelectedOnly={showSelectedOnly}
+        onToggleShowSelected={onToggleShowSelected}
+        isSwipeMode={isSwipeMode}
+        onToggleSwipeMode={onToggleSwipeMode}
+        showCatPictures={showCatPictures}
+        onToggleCatPictures={onToggleCatPictures}
+        analysisMode={analysisMode}
       />
 
       {isSwipeMode ? (
@@ -114,10 +126,14 @@ NameSelection.propTypes = {
   sortBy: PropTypes.string,
   filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
   isSwipeMode: PropTypes.bool,
+  onToggleSwipeMode: PropTypes.func,
   showCatPictures: PropTypes.bool,
+  onToggleCatPictures: PropTypes.func,
   imageList: PropTypes.arrayOf(PropTypes.string),
   SwipeableCards: PropTypes.elementType,
   showSelectedOnly: PropTypes.bool,
+  onToggleShowSelected: PropTypes.func,
+  analysisMode: PropTypes.bool,
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
 };

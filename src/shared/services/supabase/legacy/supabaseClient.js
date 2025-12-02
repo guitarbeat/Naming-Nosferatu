@@ -59,7 +59,7 @@ const resolveSupabaseClient = async () => {
   try {
     const { resolveSupabaseClient: getMainClient } = await import("../client");
     const mainClient = await getMainClient();
-    
+
     if (mainClient) {
       if (isDev) {
         console.log(
@@ -1388,7 +1388,7 @@ export const hiddenNamesAPI = {
           if (isDev) {
             console.log("[hiddenNamesAPI.hideNames] Hiding name:", nameId);
           }
-          
+
           const result = await this.hideName(userName, nameId);
           results.push({
             nameId,

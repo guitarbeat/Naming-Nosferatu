@@ -29,12 +29,12 @@ export function getModifierKey() {
 export function formatShortcut(key, { ctrl = false, shift = false, alt = false } = {}) {
   const isMac = isMacPlatform();
   const parts = [];
-  
+
   if (ctrl) parts.push(isMac ? "⌘" : "Ctrl");
   if (shift) parts.push(isMac ? "⇧" : "Shift");
   if (alt) parts.push(isMac ? "⌥" : "Alt");
   parts.push(key);
-  
+
   return isMac ? parts.join("") : parts.join("+");
 }
 
@@ -77,7 +77,7 @@ export function isActivationKey(event) {
 export function matchesShortcut(event, key, { ctrl = false, shift = false, alt = false } = {}) {
   const isMac = isMacPlatform();
   const ctrlKey = isMac ? event.metaKey : event.ctrlKey;
-  
+
   return (
     event.key.toLowerCase() === key.toLowerCase() &&
     ctrlKey === ctrl &&

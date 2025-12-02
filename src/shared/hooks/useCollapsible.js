@@ -19,9 +19,9 @@ export function useCollapsible(storageKey = null, defaultValue = false) {
     storageKey || "__unused__",
     defaultValue
   );
-  
+
   const [localValue, setLocalValue] = useState(defaultValue);
-  
+
   // Use persisted value if storageKey is provided
   const isCollapsed = storageKey ? persistedValue : localValue;
   const setCollapsed = storageKey ? setPersistedValue : setLocalValue;

@@ -29,6 +29,7 @@ import useAppStore, {
 } from "@core/store/useAppStore";
 import { ErrorManager } from "@services/errorManager";
 import { tournamentsAPI } from "@services/supabase/api";
+import { devLog, devWarn, devError } from "./shared/utils/logger";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -117,12 +118,10 @@ function App() {
   const handleTournamentComplete = useCallback(
     async (finalRatings) => {
       try {
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "[App] handleTournamentComplete called with:",
-            finalRatings,
-          );
-        }
+        devLog(
+          "[App] handleTournamentComplete called with:",
+          finalRatings,
+        );
 
         if (!user.name) {
           throw new Error("No user name available");
@@ -152,9 +151,7 @@ function App() {
           return acc;
         }, {});
 
-        if (process.env.NODE_ENV === "development") {
-          console.log("[App] Ratings to save:", ratingsArray);
-        }
+        devLog("[App] Ratings to save:", ratingsArray);
 
         // * Save ratings to database
         const saveResult = await tournamentsAPI.saveTournamentRatings(
@@ -162,12 +159,10 @@ function App() {
           ratingsArray,
         );
 
-        if (process.env.NODE_ENV === "development") {
-          console.log("[App] Save ratings result:", saveResult);
-        }
+        devLog("[App] Save ratings result:", saveResult);
 
         if (!saveResult.success) {
-          console.warn(
+          devWarn(
             "[App] Failed to save ratings to database:",
             saveResult.error,
           );
@@ -177,16 +172,14 @@ function App() {
         tournamentActions.setRatings(updatedRatings);
         tournamentActions.setComplete(true);
 
-        if (process.env.NODE_ENV === "development") {
-          console.log(
-            "[App] Tournament marked as complete, navigating to /results",
-          );
-        }
+        devLog(
+          "[App] Tournament marked as complete, navigating to /results",
+        );
 
         // * Navigate to results page
         navigateTo("/results");
       } catch (error) {
-        console.error("[App] Error in handleTournamentComplete:", error);
+        devError("[App] Error in handleTournamentComplete:", error);
         ErrorManager.handleError(error, "Tournament Completion", {
           isRetryable: true,
           affectsUserData: true,
@@ -248,9 +241,7 @@ function App() {
             ratingsArray,
           );
 
-          if (process.env.NODE_ENV === "development") {
-            console.log("[App] Update ratings result:", saveResult);
-          }
+          devLog("[App] Update ratings result:", saveResult);
         }
 
         // Convert to object format for store
@@ -299,9 +290,7 @@ function App() {
         const success = await login(userName);
         return success;
       } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Login error:", error);
-        }
+        devError("Login error:", error);
         throw error;
       }
     },
@@ -315,11 +304,21 @@ function App() {
     () => ({
       view: currentView || "tournament",
       setView: (view) => {
-        tournamentActions.setView(view);
-
-        // * Direct navigation for each view
-        if (view === "tournament") {
+        // * Toggle photos view: if clicking photos and already on photos, go back to tournament
+        if (view === "photos" && currentView === "photos") {
+          tournamentActions.setView("tournament");
           navigateTo("/");
+        } else {
+          tournamentActions.setView(view);
+
+          // * Direct navigation for each view
+          if (view === "tournament") {
+            navigateTo("/");
+          } else if (view === "photos") {
+            // * Stay on same route, just change view state
+            // * ViewRouter will show TournamentSetup which handles photos view
+            navigateTo("/");
+          }
         }
       },
       isLoggedIn: user.isLoggedIn,
@@ -505,7 +504,7 @@ AppLayout.propTypes = {
     name: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
-    current: PropTypes.any,
+    current: PropTypes.instanceOf(Error),
   }).isRequired,
   errorActions: PropTypes.shape({
     clearError: PropTypes.func.isRequired,
