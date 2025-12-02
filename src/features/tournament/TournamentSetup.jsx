@@ -19,11 +19,11 @@ import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
 import {
   NameSelection,
   SwipeableNameCards,
-  TournamentSidebar,
   Lightbox,
   NameSuggestionSection,
 } from "./components";
 import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
+import PhotoPreviewStrip from "./components/PhotoPreviewStrip";
 import { useProfileStats } from "../profile/hooks/useProfileStats";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
@@ -482,13 +482,17 @@ function TournamentSetupContent({
     />
   );
 
-  if (currentView === "photos") {
+if (currentView === "photos") {
     return (
       <>
         <ToastContainer />
         <div className={`${styles.container} ${styles.photosViewContainer}`}>
           <div className={styles.photosViewContent}>
-            <PhotoGallery {...photoGalleryProps} />
+            <h2 className={styles.photosViewTitle}>Photo Gallery</h2>
+            <p className={styles.photosViewSubtitle}>Click any photo to view full size</p>
+            <div className={styles.masonryGrid}>
+              <PhotoGallery {...photoGalleryProps} />
+            </div>
           </div>
         </div>
         {lightboxElement}
@@ -563,10 +567,13 @@ function TournamentSetupContent({
               ),
             }}
           />
+          {/* Photo Preview Strip - below name grid */}
+          <PhotoPreviewStrip 
+            images={galleryImages} 
+            onImageClick={handleImageOpen}
+            maxThumbnails={5}
+          />
         </div>
-        {currentView !== "photos" && (
-          <TournamentSidebar {...photoGalleryProps} />
-        )}
         {lightboxElement}
       </div>
     </>
