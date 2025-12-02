@@ -2,19 +2,13 @@
  * @module TournamentSetup/components/PhotoThumbnail
  * @description Photo thumbnail with responsive image sources and 3D tilt effect
  */
-import { useState, useCallback, memo } from "react";
+import { useState, useCallback, memo, useRef } from "react";
 import PropTypes from "prop-types";
-import { useTiltEffect } from "@/core/hooks/useTiltEffect";
 import { GALLERY_IMAGE_SIZES } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
 
 const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
-  const { elementRef, style } = useTiltEffect({
-    maxRotation: 8,
-    perspective: 1000,
-    smoothing: 0.15, // * Increased for smoother animation
-    scale: 1.03,
-  });
+  const elementRef = useRef(null);
 
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -63,7 +57,6 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
       type="button"
       className={`${styles.photoThumbnail} ${styles.photoThumbButton} ${imageLoading ? styles.imageLoading : ""} ${imageError ? styles.imageError : ""}`}
       onClick={handleClick}
-      style={style}
       aria-label={`Open cat photo ${index + 1}`}
       disabled={imageError}
     >

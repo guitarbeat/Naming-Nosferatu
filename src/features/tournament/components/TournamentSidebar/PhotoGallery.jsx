@@ -64,6 +64,10 @@ function PhotoGallery({
 
   return (
     <div className={styles.starsSection}>
+      <div className={styles.galleryHeader}>
+        <h3 className={styles.galleryTitle}>Photos</h3>
+        <span className={styles.photoCount}>{galleryImages.length}</span>
+      </div>
       <div className={styles.photoGrid}>
         {displayImages.map((image, index) => {
           // * Calculate size for mosaic effect - vary based on index

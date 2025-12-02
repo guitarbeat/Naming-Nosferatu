@@ -684,7 +684,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--duration-normal) var(--ease-out);
 }
 
 .photoOverlay {
@@ -730,6 +729,37 @@
   outline-offset: 2px;
 }
 
+/* Gallery header with title and count */
+.galleryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.galleryTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.photoCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--space-2);
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
 /* Actions row below grid */
 .photoActionsRow {
   display: flex;
@@ -759,17 +789,24 @@
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--button-text-light, white);
+  color: white;
   cursor: pointer;
-  background: var(--button-primary-bg, var(--primary-color));
+  background: var(--primary-color);
   border: none;
   border-radius: var(--radius-md);
-  transition: var(--transition-all);
+  transition: all var(--duration-normal) var(--ease-out);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
 }
 
 .photoUploadButton:hover {
-  background: var(--button-primary-hover, var(--primary-dark));
-  box-shadow: var(--shadow-sm);
+  background: color-mix(in srgb, var(--primary-color) 85%, black);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+  transform: translateY(-1px);
+}
+
+.photoUploadButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
 }
 
 .photoMoreButton {
@@ -781,15 +818,22 @@
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary);
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
+  background: var(--card-background);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  transition: var(--transition-all);
+  transition: all var(--duration-normal) var(--ease-out);
+  cursor: pointer;
 }
 
 .photoMoreButton:hover {
-  background: var(--card-hover);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-color);
+  background: color-mix(in srgb, var(--primary-color) 8%, transparent);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+  transform: translateY(-1px);
+}
+
+.photoMoreButton:active {
+  transform: translateY(0);
 }
 
 @media (width <= 768px) {
