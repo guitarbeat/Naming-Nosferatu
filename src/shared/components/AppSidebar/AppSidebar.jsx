@@ -31,12 +31,6 @@ export function AppSidebar({
   onThemeChange,
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
-  const { navigateTo } = useRouting();
-
-  // * Check if analysis mode is currently active
-  const isAnalysisMode =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("analysis") === "true";
 
   // * Define navigation items - data-driven approach
   const navItems = [
