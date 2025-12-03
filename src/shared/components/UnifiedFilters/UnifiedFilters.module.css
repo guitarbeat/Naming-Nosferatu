@@ -8,14 +8,15 @@
 .unifiedContainer {
   display: flex;
   align-items: center;
-  gap: 0;
+  justify-content: center;
+  gap: var(--space-1);
   width: 100%;
   padding: var(--space-1) var(--space-2);
-  background: var(--surface-color);
-  border: var(--input-border-width) solid var(--border-color);
+  background: transparent;
+  border: none;
   border-radius: var(--input-border-radius);
-  backdrop-filter: blur(10px);
-  min-height: var(--input-height-sm);
+  backdrop-filter: none;
+  min-height: auto;
   box-sizing: border-box;
   position: relative;
   isolation: isolate;
