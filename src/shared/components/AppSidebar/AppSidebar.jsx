@@ -16,7 +16,6 @@ import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
 import { TournamentIcon, LogoutIcon } from "./icons";
-import { AnalysisToggle } from "../AnalysisPanel";
 import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
 
