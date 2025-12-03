@@ -124,6 +124,9 @@ function TournamentContent({
   const [undoRemainingMs, setUndoRemainingMs] = useState(0);
   const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
 
+  // * Show cat pictures toggle
+  const [showCatPictures, setShowCatPictures] = useState(true);
+
   useEffect(() => {
     if (!undoExpiresAt) {
       setUndoRemainingMs(0);
