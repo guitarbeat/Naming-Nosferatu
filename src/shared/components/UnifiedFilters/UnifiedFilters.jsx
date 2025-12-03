@@ -203,16 +203,13 @@ function UnifiedFilters({
     if (actionButtons.length === 0) return null;
 
     return (
-      <>
-        <div className={styles.divider} />
-        <div className={styles.unifiedActions}>
-          {actionButtons.map((btn) => (
-            <React.Fragment key={btn.key}>
-              {renderActionButton(btn)}
-            </React.Fragment>
-          ))}
-        </div>
-      </>
+      <div className={styles.unifiedActions}>
+        {actionButtons.map((btn) => (
+          <React.Fragment key={btn.key}>
+            {renderActionButton(btn)}
+          </React.Fragment>
+        ))}
+      </div>
     );
   }, [actionButtons, renderActionButton]);
 
