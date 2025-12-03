@@ -2206,7 +2206,27 @@ export const adminAPI = {
         query = query.limit(limit);
       }
 
-      const { data, error } = await query;
+      let { data, error } = await query;
+
+      // If user_role column doesn't exist, retry without it
+      if (error && error.message && error.message.includes('user_role')) {
+        let fallbackQuery = supabase
+          .from('cat_app_users')
+          .select('user_name, created_at, updated_at')
+          .order('user_name', { ascending: true });
+
+        if (searchTerm) {
+          fallbackQuery = fallbackQuery.ilike('user_name', `%${searchTerm}%`);
+        }
+
+        if (Number.isFinite(limit) && limit > 0) {
+          fallbackQuery = fallbackQuery.limit(limit);
+        }
+
+        const fallbackResult = await fallbackQuery;
+        data = fallbackResult.data;
+        error = fallbackResult.error;
+      }
 
       if (error) {
         console.error('Error fetching user list for admin:', error);
