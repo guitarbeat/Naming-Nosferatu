@@ -128,7 +128,7 @@
 }
 
 .unifiedButtonActive {
-  composes: unifiedbutton;
+  composes: unifiedButton;
   color: var(--text-primary);
   background: var(--accent-color);
   font-weight: var(--font-weight-semibold);
