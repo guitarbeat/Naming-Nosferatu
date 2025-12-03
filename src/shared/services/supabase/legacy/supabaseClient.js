@@ -347,11 +347,13 @@ export const catNamesAPI = {
         return [];
       }
 
-      console.log("Names query result:", {
-        totalNames: data?.length || 0,
-        hiddenNames: hiddenCount || 0,
-        hasActiveNames: data?.some((name) => name.is_active) || false,
-      });
+      if (isDev) {
+        console.log("Names query result:", {
+          totalNames: data?.length || 0,
+          hiddenNames: hiddenCount || 0,
+          hasActiveNames: data?.some((name) => name.is_active) || false,
+        });
+      }
 
       // * If no active names found, return fallback names
       if (!data || data.length === 0) {

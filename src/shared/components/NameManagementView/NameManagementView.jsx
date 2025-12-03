@@ -382,7 +382,13 @@ export function NameManagementView({
 
   return (
     <NameManagementContext.Provider value={contextValue}>
-      <div className={`${styles.container} ${className}`}>
+      <div
+        className={`${styles.container} ${className}`}
+        data-component="name-management-view"
+        data-mode={mode}
+        role="main"
+        aria-label={`${mode === "tournament" ? "Tournament" : "Profile"} name management`}
+      >
         {/* Analysis Mode Banner - Visual indicator when active */}
         {analysisMode && mode === "tournament" && (
           <AnalysisModeBanner
@@ -403,24 +409,36 @@ export function NameManagementView({
         {/* Profile Dashboard (profile mode or analysis mode) */}
         {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
           extensions.dashboard && (
-            <div className={styles.dashboardSection}>
+            <section
+              className={styles.dashboardSection}
+              aria-label="Dashboard and statistics"
+              data-section="dashboard"
+            >
               {typeof extensions.dashboard === "function"
                 ? React.isValidElement(extensions.dashboard())
                   ? extensions.dashboard()
                   : React.createElement(extensions.dashboard, {})
                 : extensions.dashboard}
-            </div>
+            </section>
           )}
 
         {/* Admin Analytics - Only shown in analysis mode for admins */}
         {analysisMode && tournamentProps.isAdmin && (
-          <div className={styles.dashboardSection}>
+          <section
+            className={styles.dashboardSection}
+            aria-label="Admin analytics"
+            data-section="admin-analytics"
+          >
             <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
-          </div>
+          </section>
         )}
 
         {/* Unified Filters */}
-        <div className={styles.filtersSection}>
+        <section
+          className={styles.filtersSection}
+          aria-label="Filter and search controls"
+          data-section="filters"
+        >
           <UnifiedFilters
             mode={mode === "tournament" && analysisMode ? "hybrid" : mode}
             filters={filterConfig}
@@ -442,15 +460,40 @@ export function NameManagementView({
             filteredCount={
               mode === "profile" || (mode === "tournament" && analysisMode)
                 ? filteredCount
-                : displayNames.length
+                : names.length // * Use total names for tournament mode (filtering handled by NameGrid)
             }
             totalCount={names.length}
+            // Tournament mode results info props
+            selectedCount={mode === "tournament" ? selectedCount : undefined}
+            showSelectedOnly={mode === "tournament" ? showSelectedOnly : false}
+            onToggleShowSelected={
+              mode === "tournament"
+                ? () => setShowSelectedOnly(!showSelectedOnly)
+                : undefined
+            }
+            isSwipeMode={mode === "tournament" ? isSwipeMode : false}
+            onToggleSwipeMode={
+              mode === "tournament"
+                ? () => setIsSwipeMode(!isSwipeMode)
+                : undefined
+            }
+            showCatPictures={mode === "tournament" ? showCatPictures : false}
+            onToggleCatPictures={
+              mode === "tournament"
+                ? () => setShowCatPictures(!showCatPictures)
+                : undefined
+            }
+            analysisMode={mode === "tournament" ? analysisMode : false}
           />
-        </div>
+        </section>
 
         {/* Tournament Mode: Header Actions - hidden when custom nameGrid is used (actions are in ResultsInfo) */}
         {mode === "tournament" && !extensions.nameGrid && (
-          <div className={styles.tournamentActions}>
+          <nav
+            className={styles.tournamentActions}
+            aria-label="Tournament action buttons"
+            data-section="tournament-actions"
+          >
             {selectedCount > 0 && !analysisMode && (
               <Button
                 variant={showSelectedOnly ? "primary" : "secondary"}
@@ -496,7 +539,7 @@ export function NameManagementView({
                 Start Tournament
               </Button>
             )}
-          </div>
+          </nav>
         )}
 
         {/* Tournament Mode: Progress Bar - hidden when custom nameGrid is used (it includes ResultsInfo) */}
@@ -522,7 +565,11 @@ export function NameManagementView({
         {/* Profile Mode: Bulk Actions (profile mode or analysis mode) */}
         {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
           extensions.bulkActions && (
-            <div className={styles.bulkActionsSection}>
+            <section
+              className={styles.bulkActionsSection}
+              aria-label="Bulk actions"
+              data-section="bulk-actions"
+            >
               {typeof extensions.bulkActions === "function"
                 ? React.createElement(extensions.bulkActions, {
                     onExport: () => {
@@ -533,14 +580,21 @@ export function NameManagementView({
                     },
                   })
                 : extensions.bulkActions}
-            </div>
+            </section>
           )}
 
         {/* Name Grid - Use extension if provided, otherwise use NameGrid */}
-        <div className={styles.gridSection}>
+        <section
+          className={styles.gridSection}
+          aria-label="Name selection grid"
+          data-section="name-grid"
+        >
           {extensions.nameGrid ? (
             typeof extensions.nameGrid === "function" ? (
               extensions.nameGrid()
+            ) : React.isValidElement(extensions.nameGrid) ? (
+              // * Clone element to ensure it has access to context
+              React.cloneElement(extensions.nameGrid)
             ) : (
               extensions.nameGrid
             )
@@ -569,7 +623,7 @@ export function NameManagementView({
               }
             />
           )}
-        </div>
+        </section>
 
         {/* Tournament Mode: Floating Start Button - hidden when Analysis Mode is active */}
         {mode === "tournament" &&

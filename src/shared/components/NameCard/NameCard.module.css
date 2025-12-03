@@ -227,10 +227,10 @@
 .card {
   position: relative;
   display: flex;
-  flex: 1;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  width: 100%; /* Required for masonry layout */
   height: auto;
   min-height: auto;
   max-height: none;

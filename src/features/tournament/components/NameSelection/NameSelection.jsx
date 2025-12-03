@@ -7,7 +7,6 @@ import { useMemo, memo } from "react";
 import PropTypes from "prop-types";
 import { NameGrid } from "../../../../shared/components";
 import { applyNameFilters } from "../../../../shared/utils/nameFilterUtils";
-import ResultsInfo from "./ResultsInfo";
 import styles from "../../TournamentSetup.module.css";
 
 function NameSelection({
@@ -22,14 +21,14 @@ function NameSelection({
   filterStatus,
   // Display options
   isSwipeMode,
-  onToggleSwipeMode,
+  onToggleSwipeMode: _onToggleSwipeMode, // * Handled by UnifiedFilters in NameManagementView
   showCatPictures,
-  onToggleCatPictures,
+  onToggleCatPictures: _onToggleCatPictures, // * Handled by UnifiedFilters in NameManagementView
   imageList,
   SwipeableCards,
   showSelectedOnly,
-  onToggleShowSelected,
-  analysisMode,
+  onToggleShowSelected: _onToggleShowSelected, // * Handled by UnifiedFilters in NameManagementView
+  analysisMode: _analysisMode, // * Handled by UnifiedFilters in NameManagementView
   // Admin handlers
   onToggleVisibility,
   onDelete,
@@ -87,21 +86,6 @@ function NameSelection({
           <span>👈 Swipe left to remove • 👉 Swipe right to select</span>
         </div>
       )}
-
-      <ResultsInfo
-        displayCount={filteredNames.length}
-        totalCount={availableNames.length}
-        selectedCount={selectedNames.length}
-        selectedCategory={selectedCategory}
-        searchTerm={searchTerm}
-        showSelectedOnly={showSelectedOnly}
-        onToggleShowSelected={onToggleShowSelected}
-        isSwipeMode={isSwipeMode}
-        onToggleSwipeMode={onToggleSwipeMode}
-        showCatPictures={showCatPictures}
-        onToggleCatPictures={onToggleCatPictures}
-        analysisMode={analysisMode}
-      />
 
       {isSwipeMode ? (
         <SwipeableCards

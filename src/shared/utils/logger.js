@@ -12,6 +12,8 @@ const isProd = process.env.NODE_ENV === "production";
  */
 export function devLog(...args) {
   if (isDev) {
+    // * Log with [DEV] prefix - browser console will handle objects properly
+    // * Objects are passed as-is so they can be inspected in console
     console.log("[DEV]", ...args);
   }
 }

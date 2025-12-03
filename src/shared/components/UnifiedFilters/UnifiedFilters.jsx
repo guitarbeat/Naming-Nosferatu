@@ -4,16 +4,52 @@
  * Supports different filter sets based on mode.
  */
 
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import Select from "../Form/Select";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./UnifiedFilters.module.css";
 
+// * Filter option constants
+const TOURNAMENT_SORT_OPTIONS = [
+  { value: "alphabetical", label: "A-Z" },
+  { value: "rating", label: "Rating" },
+  { value: "recent", label: "Recent" },
+];
+
+const VISIBILITY_OPTIONS = [
+  { value: "all", label: "All Names" },
+  { value: "active", label: "Visible Only" },
+  { value: "hidden", label: "Hidden Only" },
+];
+
+const DEFAULT_USER_OPTIONS = [
+  { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
+  { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
+  { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
+];
+
+const PROFILE_SORT_OPTIONS = [
+  { value: FILTER_OPTIONS.SORT.RATING, label: "Rating" },
+  { value: FILTER_OPTIONS.SORT.NAME, label: "Name" },
+  { value: FILTER_OPTIONS.SORT.WINS, label: "Wins" },
+  { value: FILTER_OPTIONS.SORT.LOSSES, label: "Losses" },
+  { value: FILTER_OPTIONS.SORT.WIN_RATE, label: "Win Rate" },
+  { value: FILTER_OPTIONS.SORT.CREATED, label: "Created" },
+];
+
+const SELECTION_FILTER_OPTIONS = [
+  { value: "all", label: "All Names" },
+  { value: "selected", label: "Ever Selected" },
+  { value: "never_selected", label: "Never Selected" },
+  { value: "frequently_selected", label: "Frequently Selected" },
+  { value: "recently_selected", label: "Recently Selected" },
+];
+
 /**
  * UnifiedFilters Component
  * @param {Object} props
- * @param {string} props.mode - Display mode: 'tournament' or 'profile'
+ * @param {string} props.mode - Display mode: 'tournament', 'profile', or 'hybrid'
  * @param {Object} props.filters - Current filter values
  * @param {Function} props.onFilterChange - Handler for filter changes
  * @param {number} props.filteredCount - Number of filtered results
@@ -22,8 +58,17 @@ import styles from "./UnifiedFilters.module.css";
  * @param {boolean} props.showUserFilter - Show user filter (profile mode, admin only)
  * @param {boolean} props.showSelectionFilter - Show selection filter (profile mode)
  * @param {Array} props.userSelectOptions - Custom user filter options (profile mode)
+ * @param {number} props.selectedCount - Number of selected items (tournament mode)
+ * @param {boolean} props.showSelectedOnly - Show selected only toggle state
+ * @param {Function} props.onToggleShowSelected - Toggle show selected only
+ * @param {boolean} props.isSwipeMode - Swipe mode state
+ * @param {Function} props.onToggleSwipeMode - Toggle swipe mode
+ * @param {boolean} props.showCatPictures - Show cat pictures state
+ * @param {Function} props.onToggleCatPictures - Toggle cat pictures
+ * @param {boolean} props.analysisMode - Analysis mode state
+ * @param {string} props.className - Additional CSS classes
  */
-export function UnifiedFilters({
+function UnifiedFilters({
   mode = "tournament",
   filters = {},
   onFilterChange,
@@ -33,259 +78,223 @@ export function UnifiedFilters({
   showUserFilter = false,
   showSelectionFilter = false,
   userSelectOptions,
+  selectedCount,
+  showSelectedOnly,
+  onToggleShowSelected,
+  isSwipeMode,
+  onToggleSwipeMode,
+  showCatPictures,
+  onToggleCatPictures,
+  analysisMode = false,
   className = "",
 }) {
-  // * Tournament mode filter options
-  const tournamentSortOptions = [
-    { value: "alphabetical", label: "A-Z" },
-    { value: "rating", label: "Rating" },
-    { value: "recent", label: "Recent" },
-  ];
+  // * Memoized user options
+  const userOptions = useMemo(
+    () => userSelectOptions || DEFAULT_USER_OPTIONS,
+    [userSelectOptions],
+  );
 
-  // * Visibility filter options (simplified: visible or hidden)
-  const visibilityOptions = [
-    { value: "all", label: "All Names" },
-    { value: "active", label: "Visible Only" },
-    { value: "hidden", label: "Hidden Only" },
-  ];
-
-  const defaultUserOptions = [
-    { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
-    { value: FILTER_OPTIONS.USER.CURRENT, label: "Current User" },
-    { value: FILTER_OPTIONS.USER.OTHER, label: "Other Users" },
-  ];
-
-  const profileSortOptions = [
-    { value: FILTER_OPTIONS.SORT.RATING, label: "Rating" },
-    { value: FILTER_OPTIONS.SORT.NAME, label: "Name" },
-    { value: FILTER_OPTIONS.SORT.WINS, label: "Wins" },
-    { value: FILTER_OPTIONS.SORT.LOSSES, label: "Losses" },
-    { value: FILTER_OPTIONS.SORT.WIN_RATE, label: "Win Rate" },
-    { value: FILTER_OPTIONS.SORT.CREATED, label: "Created" },
-  ];
-
-  const selectionFilterOptions = [
-    { value: "all", label: "All Names" },
-    { value: "selected", label: "Ever Selected" },
-    { value: "never_selected", label: "Never Selected" },
-    { value: "frequently_selected", label: "Frequently Selected" },
-    { value: "recently_selected", label: "Recently Selected" },
-  ];
-
-  const userOptions = userSelectOptions || defaultUserOptions;
+  // * Check if categories are available
+  const hasCategories = useMemo(
+    () => Array.isArray(categories) && categories.length > 0,
+    [categories],
+  );
 
   // * Handle filter changes
-  const handleChange = (filterName, value) => {
-    if (onFilterChange) {
-      onFilterChange({ ...filters, [filterName]: value });
+  const handleChange = useCallback(
+    (filterName, value) => {
+      if (onFilterChange && typeof onFilterChange === "function") {
+        onFilterChange({ ...filters, [filterName]: value });
+      }
+    },
+    [onFilterChange, filters],
+  );
+
+  // * Render count display
+  const renderCount = useCallback(() => {
+    const hasSelection = selectedCount !== undefined && selectedCount !== null;
+    const hasFilters = filters.category || filters.searchTerm;
+
+    if (hasSelection) {
+      return (
+        <>
+          <span className={styles.selectionCount}>
+            {selectedCount}/{totalCount}
+          </span>
+          {hasFilters && (
+            <span className={styles.filterInfo}>
+              {" • "}
+              {filteredCount}
+              {filters.category && ` • ${filters.category}`}
+              {filters.searchTerm && ` • "${filters.searchTerm}"`}
+            </span>
+          )}
+        </>
+      );
     }
-  };
 
-  // * Hybrid mode: tournament + profile filters (analysis mode)
-  if (mode === "hybrid") {
     return (
-      <div className={`${styles.filtersContainer} ${className}`}>
-        {/* Results Count */}
-        <div className={styles.resultsCount}>
-          <span className={styles.count}>{filteredCount}</span>
-          {filteredCount !== totalCount && (
-            <>
-              <span className={styles.separator}>/</span>
-              <span className={styles.total}>{totalCount}</span>
-              <span className={styles.badge}>filtered</span>
-            </>
-          )}
-          {filteredCount === totalCount && (
-            <span className={styles.badge}>total</span>
-          )}
+      <>
+        {filteredCount}/{totalCount}
+        {filters.category && ` • ${filters.category}`}
+        {filters.searchTerm && ` • "${filters.searchTerm}"`}
+      </>
+    );
+  }, [
+    selectedCount,
+    totalCount,
+    filteredCount,
+    filters.category,
+    filters.searchTerm,
+  ]);
+
+  // * Render action button
+  const renderActionButton = useCallback((config) => {
+    const { onClick, isActive, activeLabel, inactiveLabel, ariaLabel } = config;
+    if (!onClick) return null;
+
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={isActive ? styles.unifiedButtonActive : styles.unifiedButton}
+        aria-label={ariaLabel}
+      >
+        {isActive ? activeLabel : inactiveLabel}
+      </button>
+    );
+  }, []);
+
+  // * Action buttons configuration
+  const actionButtons = useMemo(() => {
+    if (
+      analysisMode ||
+      (!onToggleShowSelected && !onToggleSwipeMode && !onToggleCatPictures)
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        onClick: onToggleShowSelected,
+        isActive: showSelectedOnly,
+        activeLabel: "All",
+        inactiveLabel: "Selected",
+        ariaLabel: showSelectedOnly ? "Show all names" : "Show selected only",
+        condition: selectedCount > 0,
+        key: "selected",
+      },
+      {
+        onClick: onToggleSwipeMode,
+        isActive: isSwipeMode,
+        activeLabel: "Cards",
+        inactiveLabel: "Swipe",
+        ariaLabel: isSwipeMode ? "Switch to card mode" : "Switch to swipe mode",
+        condition: true,
+        key: "swipe",
+      },
+      {
+        onClick: onToggleCatPictures,
+        isActive: showCatPictures,
+        activeLabel: "Hide",
+        inactiveLabel: "Cats",
+        ariaLabel: showCatPictures ? "Hide cat pictures" : "Show cat pictures",
+        condition: true,
+        key: "cats",
+      },
+    ].filter((btn) => btn.onClick && btn.condition);
+  }, [
+    analysisMode,
+    onToggleShowSelected,
+    onToggleSwipeMode,
+    onToggleCatPictures,
+    showSelectedOnly,
+    isSwipeMode,
+    showCatPictures,
+    selectedCount,
+  ]);
+
+  // * Render action buttons group
+  const renderActions = useCallback(() => {
+    if (actionButtons.length === 0) return null;
+
+    return (
+      <>
+        <div className={styles.divider} />
+        <div className={styles.unifiedActions}>
+          {actionButtons.map((btn) => (
+            <React.Fragment key={btn.key}>
+              {renderActionButton(btn)}
+            </React.Fragment>
+          ))}
         </div>
+      </>
+    );
+  }, [actionButtons, renderActionButton]);
 
-        {/* Tournament filters row */}
-        <div className={styles.filterRow}>
-          <div className={styles.searchBar}>
-            <input
-              type="text"
-              value={filters.searchTerm || ""}
-              onChange={(e) => handleChange("searchTerm", e.target.value)}
-              placeholder="🔍 Search cat names..."
-              className={styles.searchInput}
-              aria-label="Search cat names"
-            />
-          </div>
-          {categories.length > 0 && (
-            <div className={styles.filterGroup}>
-              <label htmlFor="filter-category" className={styles.filterLabel}>
-                Category
-              </label>
-              <select
-                id="filter-category"
-                value={filters.category || ""}
-                onChange={(e) =>
-                  handleChange("category", e.target.value || null)
-                }
-                className={styles.filterSelect}
-                aria-label="Filter by category"
-              >
-                <option value="">All Categories</option>
-                {categories.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
+  // * Render select dropdown
+  const renderSelect = useCallback((config) => {
+    const {
+      value,
+      onChange,
+      options,
+      className: selectClassName,
+      ariaLabel,
+      placeholder = "All",
+    } = config;
 
-        {/* Profile filters row */}
-        <div className={styles.filtersGrid}>
-          <div className={styles.filterRow}>
-            <div className={styles.filterGroup}>
-              <label htmlFor="filter-status" className={styles.filterLabel}>
-                Status
-              </label>
-              <Select
-                id="filter-status"
-                name="filter-status"
-                value={filters.filterStatus || "all"}
-                onChange={(e) => handleChange("filterStatus", e.target.value)}
-                options={visibilityOptions}
-                className={styles.filterSelect}
-              />
-            </div>
+    return (
+      <select
+        value={value || ""}
+        onChange={(e) => {
+          const newValue = e.target.value || null;
+          onChange(newValue);
+        }}
+        className={selectClassName}
+        aria-label={ariaLabel}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value || option} value={option.value || option}>
+            {option.label || option}
+          </option>
+        ))}
+      </select>
+    );
+  }, []);
 
-            {showUserFilter && (
-              <div className={styles.filterGroup}>
-                <label htmlFor="filter-user" className={styles.filterLabel}>
-                  User
-                </label>
-                <Select
-                  id="filter-user"
-                  name="filter-user"
-                  value={filters.userFilter || FILTER_OPTIONS.USER.ALL}
-                  onChange={(e) => handleChange("userFilter", e.target.value)}
-                  options={userOptions}
-                  className={styles.filterSelect}
-                />
-              </div>
-            )}
+  // * Render filter group (profile/hybrid mode)
+  const renderFilterGroup = useCallback((config) => {
+    const {
+      id,
+      label,
+      value,
+      onChange,
+      options,
+      className: groupClassName,
+    } = config;
+    if (!options || options.length === 0) return null;
 
-            {showSelectionFilter && (
-              <div className={styles.filterGroup}>
-                <label
-                  htmlFor="filter-selection"
-                  className={styles.filterLabel}
-                >
-                  Selection
-                </label>
-                <Select
-                  id="filter-selection"
-                  name="filter-selection"
-                  value={filters.selectionFilter || "all"}
-                  onChange={(e) =>
-                    handleChange("selectionFilter", e.target.value)
-                  }
-                  options={selectionFilterOptions}
-                  className={styles.filterSelect}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Sort Controls */}
-          <div className={styles.filterRow}>
-            <div className={styles.sortGroup}>
-              <label htmlFor="filter-sort" className={styles.filterLabel}>
-                Sort By
-              </label>
-              <div className={styles.sortControls}>
-                <Select
-                  id="filter-sort"
-                  name="filter-sort"
-                  value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
-                  onChange={(e) => handleChange("sortBy", e.target.value)}
-                  options={profileSortOptions}
-                  className={styles.filterSelect}
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleChange(
-                      "sortOrder",
-                      filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
-                        ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC,
-                    )
-                  }
-                  className={styles.sortOrderButton}
-                  title={`Sort ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Descending" : "Ascending"}`}
-                  aria-label={`Toggle sort order to ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "descending" : "ascending"}`}
-                >
-                  {filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+    return (
+      <div className={styles.filterGroup}>
+        <label htmlFor={id} className={styles.filterLabel}>
+          {label}
+        </label>
+        <Select
+          id={id}
+          name={id}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          options={options}
+          className={groupClassName || styles.filterSelect}
+        />
       </div>
     );
-  }
+  }, []);
 
-  // * Tournament mode: compact inline filters
-  if (mode === "tournament") {
-    return (
-      <div className={`${styles.tournamentFilters} ${className}`}>
-        {/* Search bar */}
-        <div className={styles.searchBar}>
-          <input
-            type="text"
-            value={filters.searchTerm || ""}
-            onChange={(e) => handleChange("searchTerm", e.target.value)}
-            placeholder="🔍 Search cat names..."
-            className={styles.searchInput}
-            aria-label="Search cat names"
-          />
-          {/* Compact filters next to search */}
-          <div className={styles.compactFilters}>
-            {categories.length > 0 && (
-              <select
-                value={filters.category || ""}
-                onChange={(e) =>
-                  handleChange("category", e.target.value || null)
-                }
-                className={styles.compactSelect}
-                aria-label="Filter by category"
-              >
-                <option value="">All Categories</option>
-                {categories.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )}
-            <select
-              value={filters.sortBy || "alphabetical"}
-              onChange={(e) => handleChange("sortBy", e.target.value)}
-              className={styles.compactSelect}
-              aria-label="Sort names"
-            >
-              {tournamentSortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // * Profile mode: full filter panel
-  return (
-    <div className={`${styles.filtersContainer} ${className}`}>
-      {/* Results Count */}
+  // * Render results count (profile/hybrid mode)
+  const renderResultsCount = useCallback(
+    () => (
       <div className={styles.resultsCount}>
         <span className={styles.count}>{filteredCount}</span>
         {filteredCount !== totalCount && (
@@ -296,99 +305,197 @@ export function UnifiedFilters({
           </>
         )}
         {filteredCount === totalCount && (
-          <span className={styles.badge} style={{ marginLeft: "0.25rem" }}>
-            total
-          </span>
+          <span className={`${styles.badge} ${styles.badgeTotal}`}>total</span>
         )}
       </div>
+    ),
+    [filteredCount, totalCount],
+  );
 
-      {/* Filter Controls */}
-      <div className={styles.filtersGrid}>
-        {/* Primary Filters */}
-        <div className={styles.filterRow}>
-          <div className={styles.filterGroup}>
-            <label htmlFor="filter-status" className={styles.filterLabel}>
-              Status
-            </label>
+  // * Render sort controls (profile/hybrid mode)
+  const renderSortControls = useCallback(
+    () => (
+      <div className={styles.filterRow}>
+        <div className={styles.sortGroup}>
+          <label htmlFor="filter-sort" className={styles.filterLabel}>
+            Sort By
+          </label>
+          <div className={styles.sortControls}>
             <Select
-              id="filter-status"
-              name="filter-status"
-              value={filters.filterStatus || "all"}
-              onChange={(e) => handleChange("filterStatus", e.target.value)}
-              options={visibilityOptions}
+              id="filter-sort"
+              name="filter-sort"
+              value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
+              onChange={(e) => handleChange("sortBy", e.target.value)}
+              options={PROFILE_SORT_OPTIONS}
               className={styles.filterSelect}
             />
+            <button
+              type="button"
+              onClick={() =>
+                handleChange(
+                  "sortOrder",
+                  filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
+                    ? FILTER_OPTIONS.ORDER.DESC
+                    : FILTER_OPTIONS.ORDER.ASC,
+                )
+              }
+              className={styles.sortOrderButton}
+              title={`Sort ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Descending" : "Ascending"}`}
+              aria-label={`Toggle sort order to ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "descending" : "ascending"}`}
+            >
+              {filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
+            </button>
           </div>
-
-          {showUserFilter && (
-            <div className={styles.filterGroup}>
-              <label htmlFor="filter-user" className={styles.filterLabel}>
-                User
-              </label>
-              <Select
-                id="filter-user"
-                name="filter-user"
-                value={filters.userFilter || FILTER_OPTIONS.USER.ALL}
-                onChange={(e) => handleChange("userFilter", e.target.value)}
-                options={userOptions}
-                className={styles.filterSelect}
-              />
-            </div>
-          )}
-
-          {showSelectionFilter && (
-            <div className={styles.filterGroup}>
-              <label htmlFor="filter-selection" className={styles.filterLabel}>
-                Selection
-              </label>
-              <Select
-                id="filter-selection"
-                name="filter-selection"
-                value={filters.selectionFilter || "all"}
-                onChange={(e) =>
-                  handleChange("selectionFilter", e.target.value)
-                }
-                options={selectionFilterOptions}
-                className={styles.filterSelect}
-              />
-            </div>
-          )}
         </div>
+      </div>
+    ),
+    [filters.sortBy, filters.sortOrder, handleChange],
+  );
 
-        {/* Sort Controls */}
+  // * Render profile filter groups (shared between profile and hybrid modes)
+  const renderProfileFilters = useCallback(
+    () => (
+      <div className={styles.filterRow}>
+        {renderFilterGroup({
+          id: "filter-status",
+          label: "Status",
+          value: filters.filterStatus || "all",
+          onChange: (value) => handleChange("filterStatus", value),
+          options: VISIBILITY_OPTIONS,
+        })}
+
+        {showUserFilter &&
+          renderFilterGroup({
+            id: "filter-user",
+            label: "User",
+            value: filters.userFilter || FILTER_OPTIONS.USER.ALL,
+            onChange: (value) => handleChange("userFilter", value),
+            options: userOptions,
+          })}
+
+        {showSelectionFilter &&
+          renderFilterGroup({
+            id: "filter-selection",
+            label: "Selection",
+            value: filters.selectionFilter || "all",
+            onChange: (value) => handleChange("selectionFilter", value),
+            options: SELECTION_FILTER_OPTIONS,
+          })}
+      </div>
+    ),
+    [
+      filters.filterStatus,
+      filters.userFilter,
+      filters.selectionFilter,
+      showUserFilter,
+      showSelectionFilter,
+      userOptions,
+      handleChange,
+      renderFilterGroup,
+    ],
+  );
+
+  // * Tournament mode: compact inline filters
+  if (mode === "tournament") {
+    return (
+      <div
+        className={`${styles.unifiedBar} ${className}`}
+        data-component="unified-filters"
+        data-mode="tournament"
+        role="search"
+        aria-label="Filter and search names"
+      >
+        <div
+          className={styles.unifiedContainer}
+          data-element="filter-container"
+        >
+          {/* Search input */}
+          <input
+            type="text"
+            value={filters.searchTerm || ""}
+            onChange={(e) => handleChange("searchTerm", e.target.value)}
+            placeholder="Search..."
+            className={styles.unifiedInput}
+            aria-label="Search cat names"
+          />
+
+          {/* Category filter */}
+          {hasCategories &&
+            renderSelect({
+              value: filters.category,
+              onChange: (value) => handleChange("category", value),
+              options: categories,
+              className: styles.unifiedSelect,
+              ariaLabel: "Filter by category",
+            })}
+
+          {/* Sort dropdown */}
+          {renderSelect({
+            value: filters.sortBy || "alphabetical",
+            onChange: (value) => handleChange("sortBy", value),
+            options: TOURNAMENT_SORT_OPTIONS,
+            className: styles.unifiedSelect,
+            ariaLabel: "Sort names",
+          })}
+
+          {/* Divider */}
+          <div className={styles.divider} />
+
+          {/* Count display */}
+          <div className={styles.unifiedCount}>{renderCount()}</div>
+
+          {/* Action buttons */}
+          {renderActions()}
+        </div>
+      </div>
+    );
+  }
+
+  // * Hybrid mode: tournament + profile filters
+  if (mode === "hybrid") {
+    return (
+      <div className={`${styles.filtersContainer} ${className}`}>
+        {renderResultsCount()}
+
+        {/* Tournament filters */}
         <div className={styles.filterRow}>
-          <div className={styles.sortGroup}>
-            <label htmlFor="filter-sort" className={styles.filterLabel}>
-              Sort By
-            </label>
-            <div className={styles.sortControls}>
-              <Select
-                id="filter-sort"
-                name="filter-sort"
-                value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
-                onChange={(e) => handleChange("sortBy", e.target.value)}
-                options={profileSortOptions}
-                className={styles.filterSelect}
-              />
-              <button
-                type="button"
-                onClick={() =>
-                  handleChange(
-                    "sortOrder",
-                    filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
-                      ? FILTER_OPTIONS.ORDER.DESC
-                      : FILTER_OPTIONS.ORDER.ASC,
-                  )
-                }
-                className={styles.sortOrderButton}
-                title={`Sort ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "Descending" : "Ascending"}`}
-                aria-label={`Toggle sort order to ${filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "descending" : "ascending"}`}
-              >
-                {filters.sortOrder === FILTER_OPTIONS.ORDER.ASC ? "↑" : "↓"}
-              </button>
-            </div>
+          <div className={styles.searchBar}>
+            <input
+              type="text"
+              value={filters.searchTerm || ""}
+              onChange={(e) => handleChange("searchTerm", e.target.value)}
+              placeholder="Search..."
+              className={styles.searchInput}
+              aria-label="Search cat names"
+            />
           </div>
+          {hasCategories &&
+            renderFilterGroup({
+              id: "filter-category",
+              label: "Category",
+              value: filters.category || "",
+              onChange: (value) => handleChange("category", value || null),
+              options: categories.map((cat) => ({ value: cat, label: cat })),
+            })}
         </div>
+
+        {/* Profile filters */}
+        <div className={styles.filtersGrid}>
+          {renderProfileFilters()}
+          {renderSortControls()}
+        </div>
+      </div>
+    );
+  }
+
+  // * Profile mode: full filter panel
+  return (
+    <div className={`${styles.filtersContainer} ${className}`}>
+      {renderResultsCount()}
+
+      <div className={styles.filtersGrid}>
+        {renderProfileFilters()}
+        {renderSortControls()}
       </div>
     </div>
   );
@@ -397,11 +504,9 @@ export function UnifiedFilters({
 UnifiedFilters.propTypes = {
   mode: PropTypes.oneOf(["tournament", "profile", "hybrid"]),
   filters: PropTypes.shape({
-    // Tournament filters
     searchTerm: PropTypes.string,
     category: PropTypes.string,
     sortBy: PropTypes.string,
-    // Profile filters
     filterStatus: PropTypes.string,
     userFilter: PropTypes.string,
     selectionFilter: PropTypes.string,
@@ -419,5 +524,17 @@ UnifiedFilters.propTypes = {
       label: PropTypes.string.isRequired,
     }),
   ),
+  selectedCount: PropTypes.number,
+  showSelectedOnly: PropTypes.bool,
+  onToggleShowSelected: PropTypes.func,
+  isSwipeMode: PropTypes.bool,
+  onToggleSwipeMode: PropTypes.func,
+  showCatPictures: PropTypes.bool,
+  onToggleCatPictures: PropTypes.func,
+  analysisMode: PropTypes.bool,
   className: PropTypes.string,
 };
+
+// * Memoize component to prevent unnecessary re-renders
+const MemoizedUnifiedFilters = React.memo(UnifiedFilters);
+export { MemoizedUnifiedFilters as UnifiedFilters };

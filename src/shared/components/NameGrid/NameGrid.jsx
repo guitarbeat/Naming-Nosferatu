@@ -6,6 +6,7 @@
 
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import NameCard from "../NameCard/NameCard";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
 import { applyNameFilters, isNameHidden } from "../../utils/nameFilterUtils";
@@ -25,6 +26,28 @@ export function NameGrid({
   isLoading = false,
   className = "",
 }) {
+  // * Responsive breakpoints for masonry layout
+  const columnsCountBreakPoints = {
+    350: 1,
+    480: 2,
+    600: 2,
+    768: 3,
+    1024: 4,
+    1440: 5,
+    1920: 6,
+  };
+
+  // * Responsive gutter sizes for different breakpoints
+  const gutterBreakpoints = {
+    350: "8px",
+    480: "10px",
+    600: "12px",
+    768: "12px",
+    1024: "12px",
+    1440: "16px",
+    1920: "16px",
+  };
+
   const selectedSet = useMemo(() => {
     if (selectedNames instanceof Set) return selectedNames;
     if (Array.isArray(selectedNames)) {
@@ -72,10 +95,20 @@ export function NameGrid({
 
   if (isLoading) {
     return (
-      <div className={className || styles.grid}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonLoader key={i} height={120} />
-        ))}
+      <div className={`${styles.gridContainer} ${className}`}>
+        <ResponsiveMasonry
+          columnsCountBreakPoints={columnsCountBreakPoints}
+          gutterBreakpoints={gutterBreakpoints}
+          className={styles.masonryGrid}
+        >
+          <Masonry className={styles.masonry}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className={styles.cardWrapper}>
+                <SkeletonLoader height={120} />
+              </div>
+            ))}
+          </Masonry>
+        </ResponsiveMasonry>
       </div>
     );
   }
@@ -94,38 +127,46 @@ export function NameGrid({
   }
 
   return (
-    <div className={className || styles.grid}>
-      {processedNames.map((nameObj) => {
-        const cardImage = getCatImage(nameObj.id);
+    <div className={`${styles.gridContainer} ${className}`}>
+      <ResponsiveMasonry
+        columnsCountBreakPoints={columnsCountBreakPoints}
+        gutterBreakpoints={gutterBreakpoints}
+        className={styles.masonryGrid}
+      >
+        <Masonry className={styles.masonry}>
+          {processedNames.map((nameObj) => {
+            const cardImage = getCatImage(nameObj.id);
 
-        return (
-          <div key={nameObj.id} className={styles.cardWrapper}>
-            <NameCard
-              name={nameObj.name}
-              description={nameObj.description}
-              isSelected={selectedSet.has(nameObj.id)}
-              onClick={() => onToggleName?.(nameObj)}
-              image={cardImage}
-              metadata={
-                isAdmin
-                  ? {
-                      rating: nameObj.avg_rating || 1500,
-                      popularity: nameObj.popularity_score,
-                    }
-                  : undefined
-              }
-              className={isNameHidden(nameObj) ? styles.hiddenCard : ""}
-              isAdmin={isAdmin}
-              isHidden={isNameHidden(nameObj)}
-              onToggleVisibility={
-                isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined
-              }
-              onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
-              showAdminControls={isAdmin}
-            />
-          </div>
-        );
-      })}
+            return (
+              <div key={nameObj.id} className={styles.cardWrapper}>
+                <NameCard
+                  name={nameObj.name}
+                  description={nameObj.description}
+                  isSelected={selectedSet.has(nameObj.id)}
+                  onClick={() => onToggleName?.(nameObj)}
+                  image={cardImage}
+                  metadata={
+                    isAdmin
+                      ? {
+                          rating: nameObj.avg_rating || 1500,
+                          popularity: nameObj.popularity_score,
+                        }
+                      : undefined
+                  }
+                  className={isNameHidden(nameObj) ? styles.hiddenCard : ""}
+                  isAdmin={isAdmin}
+                  isHidden={isNameHidden(nameObj)}
+                  onToggleVisibility={
+                    isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined
+                  }
+                  onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
+                  showAdminControls={isAdmin}
+                />
+              </div>
+            );
+          })}
+        </Masonry>
+      </ResponsiveMasonry>
     </div>
   );
 }

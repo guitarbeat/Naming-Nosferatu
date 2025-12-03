@@ -342,7 +342,13 @@ function TournamentNameGrid({
   const showAdminFeatures = context.analysisMode && canManageActiveUser;
 
   return (
-    <div className={styles.stickyControls}>
+    <div
+      className={styles.stickyControls}
+      data-component="tournament-name-grid"
+      data-testid="tournament-name-grid-container"
+      role="region"
+      aria-label="Tournament name selection controls"
+    >
       {/* * Render AnalysisHandlersProvider inside context */}
       {analysisHandlersProps && (
         <AnalysisHandlersProvider {...analysisHandlersProps} />
@@ -560,7 +566,7 @@ function TournamentSetupContent({
                   {...props}
                 />
               ),
-              nameGrid: (
+              nameGrid: () => (
                 <TournamentNameGrid
                   isAdmin={isAdmin}
                   galleryImages={galleryImages}
