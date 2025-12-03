@@ -213,6 +213,7 @@ function CatImage({
       decoding,
       onLoad: handleLoad,
       onError: handleError,
+      crossOrigin: "anonymous",
     };
 
     if (String(src).startsWith("/assets/images/")) {
