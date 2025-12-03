@@ -161,9 +161,11 @@ select:not(:focus):hover {
   0% {
     transform: scale(0.8);
   }
+
   50% {
     transform: scale(1.15);
   }
+
   100% {
     transform: scale(1);
   }
@@ -341,6 +343,7 @@ textarea:disabled,
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
