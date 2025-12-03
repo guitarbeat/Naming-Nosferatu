@@ -177,33 +177,56 @@ function useUserSession({ showToast } = {}) {
           );
 
           if (rpcError) {
-            // * Handle errors - if user was created in a race condition, continue
-            if (process.env.NODE_ENV === "development") {
-              console.warn(
-                "RPC create_user_account error (may be race condition):",
-                rpcError,
-              );
-            }
+            // * Check if this is a duplicate key error (race condition)
+            // * PostgreSQL error code 23505 = unique_violation
+            // * Supabase may also return code "PGRST116" for unique constraint violations
+            const isDuplicateKeyError =
+              rpcError.code === "23505" ||
+              rpcError.code === "PGRST116" ||
+              rpcError.message?.includes("duplicate key") ||
+              rpcError.message?.includes("unique constraint") ||
+              rpcError.message?.includes("already exists");
 
-            // * Try to verify if user was actually created (race condition)
-            const { data: verifyUser } = await activeSupabase
-              .from("cat_app_users")
-              .select("user_name")
-              .eq("user_name", trimmedName)
-              .maybeSingle();
+            if (isDuplicateKeyError) {
+              // * This is likely a race condition - verify if user was actually created
+              if (process.env.NODE_ENV === "development") {
+                console.warn(
+                  "RPC create_user_account duplicate key error (race condition):",
+                  rpcError,
+                );
+              }
 
-            if (!verifyUser) {
-              // * User was not created, throw error
+              const { data: verifyUser } = await activeSupabase
+                .from("cat_app_users")
+                .select("user_name")
+                .eq("user_name", trimmedName)
+                .maybeSingle();
+
+              if (verifyUser) {
+                // * User was created (race condition), continue
+                showToast?.({ message: "Logging in...", type: "info" });
+              } else {
+                // * Unexpected: duplicate key error but user doesn't exist
+                const errorMessage =
+                  rpcError.message || "Failed to create user account";
+                if (process.env.NODE_ENV === "development") {
+                  console.error(
+                    "Duplicate key error but user not found:",
+                    errorMessage,
+                  );
+                }
+                showToast?.({ message: errorMessage, type: "error" });
+                throw rpcError;
+              }
+            } else {
+              // * Not a duplicate key error - this is a real error
               const errorMessage =
                 rpcError.message || "Failed to create user account";
               if (process.env.NODE_ENV === "development") {
-                console.error("Error creating user:", errorMessage);
+                console.error("Error creating user:", errorMessage, rpcError);
               }
               showToast?.({ message: errorMessage, type: "error" });
               throw rpcError;
-            } else {
-              // * User was created (race condition), continue
-              showToast?.({ message: "Logging in...", type: "info" });
             }
           } else {
             showToast?.({

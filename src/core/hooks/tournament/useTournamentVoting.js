@@ -149,11 +149,26 @@ export function useTournamentVoting({
           leftStats,
         );
 
-        if (sorter && typeof sorter.addPreference === "function") {
-          sorter.addPreference(leftName, rightName, voteValue);
-        } else if (sorter && sorter.preferences instanceof Map) {
-          const key = `${leftName}-${rightName}`;
-          sorter.preferences.set(key, voteValue);
+        // * Add preference to sorter (wrapped in try-catch for safety)
+        try {
+          if (sorter && typeof sorter.addPreference === "function") {
+            sorter.addPreference(leftName, rightName, voteValue);
+          } else if (sorter && sorter.preferences instanceof Map) {
+            const key = `${leftName}-${rightName}`;
+            sorter.preferences.set(key, voteValue);
+          }
+        } catch (sorterError) {
+          // * Log but don't fail the vote if sorter has an issue
+          ErrorManager.handleError(
+            sorterError,
+            "Tournament Vote - Sorter Preference",
+            {
+              isRetryable: false,
+              affectsUserData: false,
+              isCritical: false,
+            },
+          );
+          // * Continue with vote processing even if sorter fails
         }
 
         const voteData = createVoteData({
