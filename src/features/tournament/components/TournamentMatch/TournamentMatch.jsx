@@ -6,6 +6,7 @@
 import PropTypes from "prop-types";
 import { Card, Error, Button } from "../../../../shared/components";
 import NameCard from "../../../../shared/components/NameCard/NameCard";
+import { getRandomCatImage } from "../../utils";
 import styles from "../../Tournament.module.css";
 
 function TournamentMatch({
@@ -18,6 +19,8 @@ function TournamentMatch({
   onVoteWithAnimation,
   onVoteRetry,
   onDismissError,
+  showCatPictures = false,
+  imageList = [],
 }) {
   return (
     <Card
@@ -43,6 +46,11 @@ function TournamentMatch({
             disabled={isProcessing || isTransitioning}
             shortcutHint="Press ← arrow key"
             size="medium"
+            image={
+              showCatPictures && currentMatch.left?.id
+                ? getRandomCatImage(currentMatch.left.id, imageList)
+                : undefined
+            }
           />
         </div>
 
@@ -63,6 +71,11 @@ function TournamentMatch({
             disabled={isProcessing || isTransitioning}
             shortcutHint="Press → arrow key"
             size="medium"
+            image={
+              showCatPictures && currentMatch.right?.id
+                ? getRandomCatImage(currentMatch.right.id, imageList)
+                : undefined
+            }
           />
         </div>
       </div>

@@ -24,6 +24,8 @@ import { useTournamentState } from "./hooks/useTournamentState";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
+import { CAT_IMAGES } from "./constants";
+import { getRandomCatImage } from "./utils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
@@ -121,6 +123,9 @@ function TournamentContent({
   const [undoExpiresAt, setUndoExpiresAt] = useState(null);
   const [undoRemainingMs, setUndoRemainingMs] = useState(0);
   const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
+
+  // * Show cat pictures toggle
+  const [showCatPictures, setShowCatPictures] = useState(true);
 
   useEffect(() => {
     if (!undoExpiresAt) {
@@ -495,6 +500,8 @@ function TournamentContent({
         onRetryAudio={audioManager.retryAudio}
         volume={audioManager.volume}
         onVolumeChange={audioManager.handleVolumeChange}
+        showCatPictures={showCatPictures}
+        onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
       />
 
       {/* Undo banner */}
@@ -538,6 +545,8 @@ function TournamentContent({
           onVoteWithAnimation={handleVoteWithAnimation}
           onVoteRetry={handleVoteRetry}
           onDismissError={() => setVotingError(null)}
+          showCatPictures={showCatPictures}
+          imageList={CAT_IMAGES}
         />
 
         {/* Tournament Footer with Controls, Keyboard Help, and Bracket */}

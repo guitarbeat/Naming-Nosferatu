@@ -15,8 +15,7 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, LogoutIcon, PhotosIcon } from "./icons";
-import { AnalysisToggle } from "../AnalysisPanel";
+import { TournamentIcon, LogoutIcon } from "./icons";
 import { useRouting } from "@hooks/useRouting";
 import "./AppSidebar.css";
 
@@ -32,12 +31,6 @@ export function AppSidebar({
   onThemeChange,
 }) {
   const { collapsed, toggleCollapsed } = useSidebar();
-  const { navigateTo } = useRouting();
-
-  // * Check if analysis mode is currently active
-  const isAnalysisMode =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).get("analysis") === "true";
 
   // * Define navigation items - data-driven approach
   const navItems = [
@@ -45,11 +38,6 @@ export function AppSidebar({
       key: "tournament",
       label: "Tournament",
       icon: TournamentIcon,
-    },
-    {
-      key: "photos",
-      label: "Photos",
-      icon: PhotosIcon,
     },
   ];
 
@@ -125,33 +113,6 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-              {/* Analysis Mode Toggle - uses intentional AnalysisToggle component */}
-              {isLoggedIn && userName && (
-                <AnalysisToggle
-                  active={isAnalysisMode}
-                  collapsed={collapsed}
-                  onClick={() => {
-                    // * Toggle analysis mode via URL parameter
-                    const currentPath = window.location.pathname;
-                    const currentSearch = new URLSearchParams(
-                      window.location.search,
-                    );
-
-                    if (isAnalysisMode) {
-                      currentSearch.delete("analysis");
-                    } else {
-                      currentSearch.set("analysis", "true");
-                    }
-
-                    const newSearch = currentSearch.toString();
-                    const newUrl = newSearch
-                      ? `${currentPath}?${newSearch}`
-                      : currentPath;
-
-                    navigateTo(newUrl);
-                  }}
-                />
-              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>

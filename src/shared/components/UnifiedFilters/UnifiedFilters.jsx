@@ -167,23 +167,11 @@ function UnifiedFilters({
 
   // * Action buttons configuration
   const actionButtons = useMemo(() => {
-    if (
-      analysisMode ||
-      (!onToggleShowSelected && !onToggleSwipeMode && !onToggleCatPictures)
-    ) {
+    if (!onToggleSwipeMode && !onToggleCatPictures) {
       return [];
     }
 
     return [
-      {
-        onClick: onToggleShowSelected,
-        isActive: showSelectedOnly,
-        activeLabel: "All",
-        inactiveLabel: "Selected",
-        ariaLabel: showSelectedOnly ? "Show all names" : "Show selected only",
-        condition: selectedCount > 0,
-        key: "selected",
-      },
       {
         onClick: onToggleSwipeMode,
         isActive: isSwipeMode,
@@ -204,14 +192,10 @@ function UnifiedFilters({
       },
     ].filter((btn) => btn.onClick && btn.condition);
   }, [
-    analysisMode,
-    onToggleShowSelected,
     onToggleSwipeMode,
     onToggleCatPictures,
-    showSelectedOnly,
     isSwipeMode,
     showCatPictures,
-    selectedCount,
   ]);
 
   // * Render action buttons group
@@ -219,16 +203,13 @@ function UnifiedFilters({
     if (actionButtons.length === 0) return null;
 
     return (
-      <>
-        <div className={styles.divider} />
-        <div className={styles.unifiedActions}>
-          {actionButtons.map((btn) => (
-            <React.Fragment key={btn.key}>
-              {renderActionButton(btn)}
-            </React.Fragment>
-          ))}
-        </div>
-      </>
+      <div className={styles.unifiedActions}>
+        {actionButtons.map((btn) => (
+          <React.Fragment key={btn.key}>
+            {renderActionButton(btn)}
+          </React.Fragment>
+        ))}
+      </div>
     );
   }, [actionButtons, renderActionButton]);
 
@@ -395,56 +376,20 @@ function UnifiedFilters({
     ],
   );
 
-  // * Tournament mode: compact inline filters
+  // * Tournament mode: minimal - only swipe and cats buttons
   if (mode === "tournament") {
     return (
       <div
         className={`${styles.unifiedBar} ${className}`}
         data-component="unified-filters"
         data-mode="tournament"
-        role="search"
-        aria-label="Filter and search names"
+        aria-label="Display options"
       >
         <div
           className={styles.unifiedContainer}
           data-element="filter-container"
         >
-          {/* Search input */}
-          <input
-            type="text"
-            value={filters.searchTerm || ""}
-            onChange={(e) => handleChange("searchTerm", e.target.value)}
-            placeholder="Search..."
-            className={styles.unifiedInput}
-            aria-label="Search cat names"
-          />
-
-          {/* Category filter */}
-          {hasCategories &&
-            renderSelect({
-              value: filters.category,
-              onChange: (value) => handleChange("category", value),
-              options: categories,
-              className: styles.unifiedSelect,
-              ariaLabel: "Filter by category",
-            })}
-
-          {/* Sort dropdown */}
-          {renderSelect({
-            value: filters.sortBy || "alphabetical",
-            onChange: (value) => handleChange("sortBy", value),
-            options: TOURNAMENT_SORT_OPTIONS,
-            className: styles.unifiedSelect,
-            ariaLabel: "Sort names",
-          })}
-
-          {/* Divider */}
-          <div className={styles.divider} />
-
-          {/* Count display */}
-          <div className={styles.unifiedCount}>{renderCount()}</div>
-
-          {/* Action buttons */}
+          {/* Action buttons only */}
           {renderActions()}
         </div>
       </div>
