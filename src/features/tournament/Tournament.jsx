@@ -500,6 +500,8 @@ function TournamentContent({
         onRetryAudio={audioManager.retryAudio}
         volume={audioManager.volume}
         onVolumeChange={audioManager.handleVolumeChange}
+        showCatPictures={showCatPictures}
+        onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
       />
 
       {/* Undo banner */}
