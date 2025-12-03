@@ -120,33 +120,6 @@ export function AppSidebar({
                   onClick={setView}
                 />
               ))}
-              {/* Analysis Mode Toggle - uses intentional AnalysisToggle component */}
-              {isLoggedIn && userName && (
-                <AnalysisToggle
-                  active={isAnalysisMode}
-                  collapsed={collapsed}
-                  onClick={() => {
-                    // * Toggle analysis mode via URL parameter
-                    const currentPath = window.location.pathname;
-                    const currentSearch = new URLSearchParams(
-                      window.location.search,
-                    );
-
-                    if (isAnalysisMode) {
-                      currentSearch.delete("analysis");
-                    } else {
-                      currentSearch.set("analysis", "true");
-                    }
-
-                    const newSearch = currentSearch.toString();
-                    const newUrl = newSearch
-                      ? `${currentPath}?${newSearch}`
-                      : currentPath;
-
-                    navigateTo(newUrl);
-                  }}
-                />
-              )}
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>
