@@ -53,11 +53,12 @@ export function useAsyncOperation({
 
       try {
         // Create timeout promise
+        let timeoutId;
         const timeoutPromise = new Promise((_, reject) => {
-          const id = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             reject(new Error(`Operation timed out after ${timeout}ms`));
           }, timeout);
-          signal.addEventListener("abort", () => clearTimeout(id));
+          signal.addEventListener("abort", () => clearTimeout(timeoutId));
         });
 
         // Race operation against timeout
@@ -65,6 +66,11 @@ export function useAsyncOperation({
           operation(...args, { signal }),
           timeoutPromise,
         ]);
+
+        // Clear timeout if operation completed successfully
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
 
         if (!isMountedRef.current) return;
 

@@ -38,7 +38,7 @@
     "test": "vitest run --coverage --config config/vitest.config.mjs",
     "all": "npm run lint && npm run test && npm run build && npm run check",
     "lint": "eslint --config config/eslint.config.js \"src/**/*.{js,jsx,ts,tsx}\" --fix && stylelint --config config/.stylelintrc.json \"src/**/*.css\" --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && tsc --noEmit",
-    "check": "knip && echo 'Fixing deps...' && knip --fix && node scripts/audit-contrast.mjs && echo 'CSS analysis:' && uncss http://localhost:4173 -u .uncssrc.json -o uncss-report.css || echo 'UnCSS needs preview server' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\n').length,'→',r.css.split('\\n').length));\"",
+    "check": "knip && echo 'Fixing deps...' && knip --fix && node scripts/audit-contrast.mjs && echo 'CSS analysis:' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\n').length,'→',r.css.split('\\n').length));\"",
     "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {
@@ -96,7 +96,6 @@
     "tailwindcss": "^4.1.17",
     "terser": "^5.44.1",
     "typescript": "^5.9.3",
-    "uncss": "^0.17.3",
     "vite": "^7.2.2",
     "vite-bundle-analyzer": "^1.2.3",
     "vitest": "^4.0.10"
@@ -118,7 +117,9 @@
   "overrides": {
     "nth-check": "^2.1.1",
     "webpack-dev-server": "^4.15.2",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16"
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16",
+    "form-data": "^2.5.4",
+    "tough-cookie": "^4.1.3"
   },
   "funding": {
     "type": "individual",
