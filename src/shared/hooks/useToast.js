@@ -32,7 +32,7 @@ export function useToast(options = {}) {
 
       return id;
     },
-    [maxToasts, defaultDuration]
+    [maxToasts, defaultDuration],
   );
 
   const removeToast = useCallback((id) => {
@@ -47,28 +47,28 @@ export function useToast(options = {}) {
     (message, options = {}) => {
       return showToast({ message, type: "success", ...options });
     },
-    [showToast]
+    [showToast],
   );
 
   const showError = useCallback(
     (message, options = {}) => {
       return showToast({ message, type: "error", ...options });
     },
-    [showToast]
+    [showToast],
   );
 
   const showInfo = useCallback(
     (message, options = {}) => {
       return showToast({ message, type: "info", ...options });
     },
-    [showToast]
+    [showToast],
   );
 
   const showWarning = useCallback(
     (message, options = {}) => {
       return showToast({ message, type: "warning", ...options });
     },
-    [showToast]
+    [showToast],
   );
 
   return {

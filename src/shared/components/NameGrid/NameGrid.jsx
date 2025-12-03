@@ -28,17 +28,22 @@ export function NameGrid({
   const selectedSet = useMemo(() => {
     if (selectedNames instanceof Set) return selectedNames;
     if (Array.isArray(selectedNames)) {
-      return new Set(selectedNames.map(item =>
-        typeof item === "object" ? item.id : item
-      ));
+      return new Set(
+        selectedNames.map((item) =>
+          typeof item === "object" ? item.id : item,
+        ),
+      );
     }
     return new Set();
   }, [selectedNames]);
 
   const processedNames = useMemo(() => {
-    const visibility = filters.filterStatus === "hidden" ? "hidden"
-      : filters.filterStatus === "all" ? "all"
-      : "visible";
+    const visibility =
+      filters.filterStatus === "hidden"
+        ? "hidden"
+        : filters.filterStatus === "all"
+          ? "all"
+          : "visible";
 
     let result = applyNameFilters(names, {
       searchTerm: filters.searchTerm,
@@ -49,7 +54,7 @@ export function NameGrid({
     });
 
     if (showSelectedOnly && selectedSet.size > 0) {
-      result = result.filter(name => selectedSet.has(name.id));
+      result = result.filter((name) => selectedSet.has(name.id));
     }
 
     return result;
@@ -57,7 +62,9 @@ export function NameGrid({
 
   const getCatImage = (nameId) => {
     if (!showCatPictures || !imageList.length) return undefined;
-    const hash = nameId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = nameId
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return imageList[Math.abs(hash) % imageList.length];
   };
 
@@ -78,7 +85,9 @@ export function NameGrid({
       <div className={styles.emptyState}>
         <h3 className={styles.emptyTitle}>No names found</h3>
         <p className={styles.emptyMessage}>
-          {showSelectedOnly ? "No names selected." : "Try adjusting your filters."}
+          {showSelectedOnly
+            ? "No names selected."
+            : "Try adjusting your filters."}
         </p>
       </div>
     );
@@ -97,14 +106,20 @@ export function NameGrid({
               isSelected={selectedSet.has(nameObj.id)}
               onClick={() => onToggleName?.(nameObj)}
               image={cardImage}
-              metadata={isAdmin ? {
-                rating: nameObj.avg_rating || 1500,
-                popularity: nameObj.popularity_score,
-              } : undefined}
+              metadata={
+                isAdmin
+                  ? {
+                      rating: nameObj.avg_rating || 1500,
+                      popularity: nameObj.popularity_score,
+                    }
+                  : undefined
+              }
               className={isNameHidden(nameObj) ? styles.hiddenCard : ""}
               isAdmin={isAdmin}
               isHidden={isNameHidden(nameObj)}
-              onToggleVisibility={isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined}
+              onToggleVisibility={
+                isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined
+              }
               onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
               showAdminControls={isAdmin}
             />
@@ -117,7 +132,10 @@ export function NameGrid({
 
 NameGrid.propTypes = {
   names: PropTypes.array.isRequired,
-  selectedNames: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
+  selectedNames: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.instanceOf(Set),
+  ]),
   onToggleName: PropTypes.func,
   filters: PropTypes.shape({
     searchTerm: PropTypes.string,

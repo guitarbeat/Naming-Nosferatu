@@ -35,18 +35,24 @@ function NameSelection({
   onDelete,
 }) {
   // Build filter config
-  const filters = useMemo(() => ({
-    searchTerm,
-    category: selectedCategory,
-    sortBy,
-    filterStatus,
-  }), [searchTerm, selectedCategory, sortBy, filterStatus]);
+  const filters = useMemo(
+    () => ({
+      searchTerm,
+      category: selectedCategory,
+      sortBy,
+      filterStatus,
+    }),
+    [searchTerm, selectedCategory, sortBy, filterStatus],
+  );
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
-    const visibility = filterStatus === "hidden" ? "hidden"
-      : filterStatus === "all" ? "all"
-      : "visible";
+    const visibility =
+      filterStatus === "hidden"
+        ? "hidden"
+        : filterStatus === "all"
+          ? "all"
+          : "visible";
 
     let result = applyNameFilters(availableNames, {
       searchTerm,
@@ -57,13 +63,22 @@ function NameSelection({
     });
 
     if (showSelectedOnly) {
-      result = result.filter(name =>
-        selectedNames.some(selected => selected.id === name.id)
+      result = result.filter((name) =>
+        selectedNames.some((selected) => selected.id === name.id),
       );
     }
 
     return result;
-  }, [availableNames, searchTerm, selectedCategory, sortBy, filterStatus, isAdmin, showSelectedOnly, selectedNames]);
+  }, [
+    availableNames,
+    searchTerm,
+    selectedCategory,
+    sortBy,
+    filterStatus,
+    isAdmin,
+    showSelectedOnly,
+    selectedNames,
+  ]);
 
   return (
     <div className={styles.nameSelection}>

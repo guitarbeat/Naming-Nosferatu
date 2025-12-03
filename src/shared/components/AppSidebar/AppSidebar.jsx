@@ -27,7 +27,7 @@ export function AppSidebar({
   userName,
   isAdmin,
   onLogout,
-  onStartNewTournament,
+  onStartNewTournament: _onStartNewTournament,
   isLightTheme,
   onThemeChange,
 }) {

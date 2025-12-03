@@ -48,4 +48,3 @@ AnalysisStats.propTypes = {
 };
 
 export default AnalysisStats;
-

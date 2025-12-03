@@ -32,7 +32,10 @@ export function BarChart({
   if (!items || items.length === 0) return null;
 
   const displayItems = items.slice(0, maxItems);
-  const maxValue = Math.max(...displayItems.map((item) => item[valueKey] || 0), 1);
+  const maxValue = Math.max(
+    ...displayItems.map((item) => item[valueKey] || 0),
+    1,
+  );
 
   return (
     <div className={`bar-chart ${className}`}>
@@ -53,7 +56,9 @@ export function BarChart({
             </div>
             <div className="bar-chart-value">
               {showSecondaryValue && item[secondaryValueKey] ? (
-                <span title={`${secondaryValueKey}: ${item[secondaryValueKey]}`}>
+                <span
+                  title={`${secondaryValueKey}: ${item[secondaryValueKey]}`}
+                >
                   {item[valueKey]} <small>({item[secondaryValueKey]})</small>
                 </span>
               ) : (

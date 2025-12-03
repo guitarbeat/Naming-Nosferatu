@@ -29,4 +29,3 @@ AnalysisBadge.propTypes = {
 };
 
 export default AnalysisBadge;
-

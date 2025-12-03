@@ -90,7 +90,7 @@ export function NameManagementView({
     selectedNames,
     toggleName,
     toggleNameById,
-    selectAll,
+    selectAll: _selectAll,
     selectedCount,
   } = useNameSelection({
     names,
@@ -515,7 +515,10 @@ export function NameManagementView({
               {typeof extensions.bulkActions === "function"
                 ? React.createElement(extensions.bulkActions, {
                     onExport: () => {
-                      exportTournamentResultsToCSV(displayNames, "naming_nosferatu_export");
+                      exportTournamentResultsToCSV(
+                        displayNames,
+                        "naming_nosferatu_export",
+                      );
                     },
                   })
                 : extensions.bulkActions}
@@ -537,16 +540,22 @@ export function NameManagementView({
               onToggleName={toggleName}
               filters={filterConfig}
               isAdmin={
-                (mode === "profile" || (mode === "tournament" && analysisMode))
+                mode === "profile" || (mode === "tournament" && analysisMode)
                   ? profileProps.isAdmin
                   : false
               }
-              showSelectedOnly={mode === "tournament" && !analysisMode ? showSelectedOnly : false}
+              showSelectedOnly={
+                mode === "tournament" && !analysisMode
+                  ? showSelectedOnly
+                  : false
+              }
               showCatPictures={showCatPictures}
               imageList={tournamentProps.imageList || []}
               onToggleVisibility={profileProps.onToggleVisibility}
               onDelete={profileProps.onDelete}
-              className={mode === "tournament" ? tournamentProps.gridClassName : ""}
+              className={
+                mode === "tournament" ? tournamentProps.gridClassName : ""
+              }
             />
           )}
         </div>

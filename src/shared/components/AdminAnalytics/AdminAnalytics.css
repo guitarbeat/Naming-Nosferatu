@@ -119,7 +119,7 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .admin-analytics-table {
     font-size: var(--analysis-text-caption);
   }
@@ -133,7 +133,6 @@
     max-width: 100px;
   }
 }
-
 
 /* Attention section for names needing review */
 .admin-analytics-attention {
@@ -182,7 +181,6 @@
   color: var(--text-tertiary);
 }
 
-
 /* ==========================================================================
    ADMIN ANALYTICS - Header Actions (extends CollapsibleHeader)
    ========================================================================== */
@@ -196,7 +194,7 @@
   padding-top: 0;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .admin-analytics-refresh-time {
     display: none;
   }

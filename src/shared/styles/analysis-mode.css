@@ -826,7 +826,8 @@ body:has(.analysis-mode-banner)::after {
   padding: var(--analysis-gap-xl);
   font-size: var(--analysis-text-body);
   color: var(--text-secondary);
-  animation: analysis-fade-in var(--analysis-duration-normal) var(--analysis-ease);
+  animation: analysis-fade-in var(--analysis-duration-normal)
+    var(--analysis-ease);
 }
 
 .analysis-loading::before {
@@ -850,6 +851,7 @@ body:has(.analysis-mode-banner)::after {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -863,7 +865,6 @@ body:has(.analysis-mode-banner)::after {
   color: var(--text-tertiary);
   margin-left: var(--analysis-gap-xs);
 }
-
 
 /* ==========================================================================
    ANALYSIS DASHBOARD - Collapsible Header
@@ -927,7 +928,6 @@ body:has(.analysis-mode-banner)::after {
   padding-top: 0;
 }
 
-
 /* ==========================================================================
    ANALYSIS BULK ACTIONS - Enhanced Usability
    ========================================================================== */
@@ -967,6 +967,7 @@ body:has(.analysis-mode-banner)::after {
     transform: scale(0.95);
     opacity: 0.7;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -1002,7 +1003,6 @@ body:has(.analysis-mode-banner)::after {
     transparent
   );
 }
-
 
 /* ==========================================================================
    ANALYSIS DASHBOARD - Summary in Collapsed State
@@ -1042,12 +1042,11 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* Responsive summary */
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .analysis-dashboard-summary {
     display: none;
   }
 }
-
 
 /* ==========================================================================
    ANALYSIS TOGGLE - Enhanced with Shortcut
@@ -1086,7 +1085,7 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* Hide shortcut on very small screens */
-@media (max-width: 400px) {
+@media (width <= 400px) {
   .analysis-toggle-shortcut {
     display: none;
   }

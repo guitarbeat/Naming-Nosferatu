@@ -32,7 +32,9 @@ export function CollapsibleHeader({
   variant = "default",
 }) {
   return (
-    <div className={`collapsible-header collapsible-header--${variant} ${className}`}>
+    <div
+      className={`collapsible-header collapsible-header--${variant} ${className}`}
+    >
       <button
         type="button"
         className="collapsible-header-toggle"
@@ -52,9 +54,7 @@ export function CollapsibleHeader({
           <span className="collapsible-header-summary">{summary}</span>
         )}
       </button>
-      {actions && (
-        <div className="collapsible-header-actions">{actions}</div>
-      )}
+      {actions && <div className="collapsible-header-actions">{actions}</div>}
     </div>
   );
 }
@@ -90,9 +90,7 @@ export function CollapsibleContent({
       id={id}
       className={`collapsible-content ${isCollapsed ? "collapsed" : ""} ${className}`}
     >
-      <div className="collapsible-content-inner">
-        {children}
-      </div>
+      <div className="collapsible-content-inner">{children}</div>
     </div>
   );
 }

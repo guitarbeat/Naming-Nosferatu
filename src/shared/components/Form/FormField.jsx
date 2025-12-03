@@ -4,7 +4,7 @@
  * label, error handling, and accessibility patterns. Used by Input and Select components.
  */
 
-import React from "react";
+import React, { useId } from "react";
 import PropTypes from "prop-types";
 import styles from "./Form.module.css";
 
@@ -31,11 +31,11 @@ const FormField = ({
   children,
   className = "",
 }) => {
-  const fieldId = id || `${name ? `${name}-field` : `field-${Math.random().toString(36).substr(2, 9)}`}`;
+  const generatedId = useId();
+  const fieldId = id || `${name ? `${name}-field` : `field-${generatedId}`}`;
   const errorId = error ? `${fieldId}-error` : null;
-  const describedBy = [ariaDescribedBy, errorId]
-    .filter(Boolean)
-    .join(" ") || undefined;
+  const describedBy =
+    [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
 
   return (
     <div className={`${styles.inputGroup} ${className}`.trim()}>
@@ -73,4 +73,3 @@ FormField.propTypes = {
 FormField.displayName = "FormField";
 
 export default FormField;
-

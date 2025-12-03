@@ -11,7 +11,9 @@
 .cardWrapper {
   position: relative;
   height: auto; /* Let content determine height */
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .cardWrapper:hover {

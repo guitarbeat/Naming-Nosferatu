@@ -22,9 +22,9 @@ function ResultsInfo({
 }) {
   const hasFilters = selectedCategory || searchTerm;
   const hasSelection = selectedCount !== undefined && selectedCount !== null;
-  const showActions = !analysisMode && (
-    onToggleShowSelected || onToggleSwipeMode || onToggleCatPictures
-  );
+  const showActions =
+    !analysisMode &&
+    (onToggleShowSelected || onToggleSwipeMode || onToggleCatPictures);
 
   return (
     <div className={styles.resultsInfo}>
@@ -59,9 +59,13 @@ function ResultsInfo({
                 type="button"
                 onClick={onToggleShowSelected}
                 className={
-                  showSelectedOnly ? styles.resultsActionButtonActive : styles.resultsActionButton
+                  showSelectedOnly
+                    ? styles.resultsActionButtonActive
+                    : styles.resultsActionButton
                 }
-                aria-label={showSelectedOnly ? "Show all names" : "Show selected only"}
+                aria-label={
+                  showSelectedOnly ? "Show all names" : "Show selected only"
+                }
               >
                 {showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
               </button>
@@ -72,9 +76,13 @@ function ResultsInfo({
                 type="button"
                 onClick={onToggleSwipeMode}
                 className={
-                  isSwipeMode ? styles.resultsActionButtonActive : styles.resultsActionButton
+                  isSwipeMode
+                    ? styles.resultsActionButtonActive
+                    : styles.resultsActionButton
                 }
-                aria-label={isSwipeMode ? "Switch to card mode" : "Switch to swipe mode"}
+                aria-label={
+                  isSwipeMode ? "Switch to card mode" : "Switch to swipe mode"
+                }
               >
                 {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
               </button>
@@ -85,7 +93,9 @@ function ResultsInfo({
                 type="button"
                 onClick={onToggleCatPictures}
                 className={
-                  showCatPictures ? styles.resultsActionButtonActive : styles.resultsActionButton
+                  showCatPictures
+                    ? styles.resultsActionButtonActive
+                    : styles.resultsActionButton
                 }
                 aria-label={
                   showCatPictures ? "Hide cat pictures" : "Show cat pictures"

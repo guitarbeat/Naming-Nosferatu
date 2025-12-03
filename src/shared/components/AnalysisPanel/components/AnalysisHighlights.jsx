@@ -50,4 +50,3 @@ AnalysisHighlights.propTypes = {
 };
 
 export default AnalysisHighlights;
-

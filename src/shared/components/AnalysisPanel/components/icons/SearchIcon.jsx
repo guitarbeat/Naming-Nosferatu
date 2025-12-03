@@ -39,4 +39,3 @@ SearchIcon.propTypes = {
 };
 
 export default SearchIcon;
-

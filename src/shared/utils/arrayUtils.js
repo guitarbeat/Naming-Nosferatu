@@ -155,7 +155,9 @@ export function sortByString(array, key, order = "asc") {
   const getKey = typeof key === "function" ? key : (item) => item[key] ?? "";
   const multiplier = order === "asc" ? 1 : -1;
 
-  return [...array].sort((a, b) => multiplier * getKey(a).localeCompare(getKey(b)));
+  return [...array].sort(
+    (a, b) => multiplier * getKey(a).localeCompare(getKey(b)),
+  );
 }
 
 /**

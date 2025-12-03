@@ -42,4 +42,3 @@ AnalysisProgress.propTypes = {
 };
 
 export default AnalysisProgress;
-

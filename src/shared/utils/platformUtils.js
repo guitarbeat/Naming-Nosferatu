@@ -9,7 +9,9 @@
  */
 export function isMacPlatform() {
   if (typeof navigator === "undefined") return false;
-  return /Mac|iPhone|iPod|iPad/i.test(navigator.platform || navigator.userAgent);
+  return /Mac|iPhone|iPod|iPad/i.test(
+    navigator.platform || navigator.userAgent,
+  );
 }
 
 /**
@@ -26,7 +28,10 @@ export function getModifierKey() {
  * @param {Object} modifiers - Modifier keys { ctrl, shift, alt }
  * @returns {string} Formatted shortcut string
  */
-export function formatShortcut(key, { ctrl = false, shift = false, alt = false } = {}) {
+export function formatShortcut(
+  key,
+  { ctrl = false, shift = false, alt = false } = {},
+) {
   const isMac = isMacPlatform();
   const parts = [];
 
@@ -74,7 +79,11 @@ export function isActivationKey(event) {
  * @param {Object} modifiers - Modifier keys { ctrl, shift, alt }
  * @returns {boolean} True if the event matches the shortcut
  */
-export function matchesShortcut(event, key, { ctrl = false, shift = false, alt = false } = {}) {
+export function matchesShortcut(
+  event,
+  key,
+  { ctrl = false, shift = false, alt = false } = {},
+) {
   const isMac = isMacPlatform();
   const ctrlKey = isMac ? event.metaKey : event.ctrlKey;
 

@@ -37,7 +37,7 @@ export function CollapsibleSection({
 }) {
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     storageKey,
-    defaultCollapsed
+    defaultCollapsed,
   );
 
   const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;

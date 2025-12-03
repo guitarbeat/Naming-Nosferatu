@@ -124,7 +124,6 @@ function AnalysisDashboardWrapper({
   );
 }
 
-
 AnalysisDashboardWrapper.propTypes = {
   stats: PropTypes.object,
   selectionStats: PropTypes.object,
@@ -135,7 +134,9 @@ AnalysisDashboardWrapper.propTypes = {
 // * This creates a component function that can use hooks properly
 const createAnalysisDashboardWrapper = (stats, selectionStats) => {
   return function AnalysisDashboardWrapperWithProps() {
-    return <AnalysisDashboardWrapper stats={stats} selectionStats={selectionStats} />;
+    return (
+      <AnalysisDashboardWrapper stats={stats} selectionStats={selectionStats} />
+    );
   };
 };
 
@@ -152,14 +153,19 @@ function AnalysisBulkActionsWrapper({
 
   const { selectedCount } = context;
   // * Keep both Set format for selection logic and original array for bulk operations
-  const selectedNamesSet = useMemo(() =>
-    context.selectedNames instanceof Set
-      ? context.selectedNames
-      : new Set(
-          Array.isArray(context.selectedNames)
-            ? context.selectedNames.map(name => typeof name === 'object' ? name.id : name)
-            : [],
-        ), [context.selectedNames]);
+  const selectedNamesSet = useMemo(
+    () =>
+      context.selectedNames instanceof Set
+        ? context.selectedNames
+        : new Set(
+            Array.isArray(context.selectedNames)
+              ? context.selectedNames.map((name) =>
+                  typeof name === "object" ? name.id : name,
+                )
+              : [],
+          ),
+    [context.selectedNames],
+  );
 
   // * Extract name IDs from selectedNames, handling different formats
   const selectedNamesArray = useMemo(() => {
@@ -167,25 +173,25 @@ function AnalysisBulkActionsWrapper({
 
     // * If it's a Set (profile mode), convert to array of IDs
     if (context.selectedNames instanceof Set) {
-      return Array.from(context.selectedNames).filter(id => id != null);
+      return Array.from(context.selectedNames).filter((id) => id != null);
     }
 
     // * If it's an array, extract IDs properly
     if (Array.isArray(context.selectedNames)) {
       return context.selectedNames
-        .map(name => {
+        .map((name) => {
           // * If it's an object with an id property, extract it
-          if (typeof name === 'object' && name !== null && name.id) {
+          if (typeof name === "object" && name !== null && name.id) {
             return name.id;
           }
           // * If it's already a string (ID), use it directly
-          if (typeof name === 'string') {
+          if (typeof name === "string") {
             return name;
           }
           // * Otherwise, return null to filter out
           return null;
         })
-        .filter(id => id != null); // * Filter out null/undefined values
+        .filter((id) => id != null); // * Filter out null/undefined values
     }
 
     return [];
@@ -253,7 +259,10 @@ function AnalysisBulkActionsWrapper({
   }, [allVisibleSelected, filteredAndSortedNames, context]);
 
   const handleExport = useCallback(() => {
-    exportTournamentResultsToCSV(filteredAndSortedNames, "naming_nosferatu_export");
+    exportTournamentResultsToCSV(
+      filteredAndSortedNames,
+      "naming_nosferatu_export",
+    );
   }, [filteredAndSortedNames]);
 
   if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
@@ -274,7 +283,10 @@ function AnalysisBulkActionsWrapper({
         });
 
         if (selectedNamesArray.length === 0) {
-          devWarn("[TournamentSetup] No names in selectedNamesArray despite selectedCount:", selectedCount);
+          devWarn(
+            "[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
+            selectedCount,
+          );
           showError("No names selected");
           return;
         }
@@ -283,7 +295,9 @@ function AnalysisBulkActionsWrapper({
           handleBulkHide(selectedNamesArray);
         } catch (error) {
           devError("[TournamentSetup] Error calling handleBulkHide:", error);
-          showError(`Failed to hide names: ${error.message || "Unknown error"}`);
+          showError(
+            `Failed to hide names: ${error.message || "Unknown error"}`,
+          );
         }
       }}
       onBulkUnhide={() => {
@@ -345,11 +359,15 @@ function TournamentNameGrid({
         isSwipeMode={context.isSwipeMode}
         onToggleSwipeMode={() => context.setIsSwipeMode(!context.isSwipeMode)}
         showCatPictures={context.showCatPictures}
-        onToggleCatPictures={() => context.setShowCatPictures(!context.showCatPictures)}
+        onToggleCatPictures={() =>
+          context.setShowCatPictures(!context.showCatPictures)
+        }
         imageList={galleryImages}
         SwipeableCards={SwipeableNameCards}
         showSelectedOnly={context.showSelectedOnly}
-        onToggleShowSelected={() => context.setShowSelectedOnly(!context.showSelectedOnly)}
+        onToggleShowSelected={() =>
+          context.setShowSelectedOnly(!context.showSelectedOnly)
+        }
         analysisMode={context.analysisMode}
         onToggleVisibility={showAdminFeatures ? onToggleVisibility : undefined}
         onDelete={showAdminFeatures ? onDelete : undefined}
@@ -389,7 +407,8 @@ function TournamentSetupContent({
   const isAdmin = useAdminStatus(userName);
 
   // * Profile hooks for analysis mode
-  const { showSuccess, showError, showToast, ToastContainer } = useProfileNotifications();
+  const { showSuccess, showError, showToast, ToastContainer } =
+    useProfileNotifications();
   const {
     isAdmin: profileIsAdmin,
     activeUser,
@@ -482,14 +501,16 @@ function TournamentSetupContent({
     />
   );
 
-if (currentView === "photos") {
+  if (currentView === "photos") {
     return (
       <>
         <ToastContainer />
         <div className={`${styles.container} ${styles.photosViewContainer}`}>
           <div className={styles.photosViewContent}>
             <h2 className={styles.photosViewTitle}>Photo Gallery</h2>
-            <p className={styles.photosViewSubtitle}>Click any photo to view full size</p>
+            <p className={styles.photosViewSubtitle}>
+              Click any photo to view full size
+            </p>
             <div className={styles.masonryGrid}>
               <PhotoGallery {...photoGalleryProps} />
             </div>
@@ -568,8 +589,8 @@ if (currentView === "photos") {
             }}
           />
           {/* Photo Preview Strip - below name grid */}
-          <PhotoPreviewStrip 
-            images={galleryImages} 
+          <PhotoPreviewStrip
+            images={galleryImages}
             onImageClick={handleImageOpen}
             maxThumbnails={5}
           />

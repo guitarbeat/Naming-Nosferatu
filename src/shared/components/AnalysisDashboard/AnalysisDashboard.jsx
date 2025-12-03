@@ -26,10 +26,10 @@ import "./AnalysisDashboard.css";
  * @param {boolean} props.defaultCollapsed - Default collapsed state
  */
 export function AnalysisDashboard({
-  stats, // * Unused - kept for compatibility
-  selectionStats, // * Unused - kept for compatibility
+  stats: _stats, // * Unused - kept for compatibility
+  selectionStats: _selectionStats, // * Unused - kept for compatibility
   highlights,
-  userName, // * Unused - kept for compatibility
+  userName: _userName, // * Unused - kept for compatibility
   showGlobalLeaderboard = true,
   defaultCollapsed = false,
 }) {
@@ -41,7 +41,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed
+    defaultCollapsed,
   );
 
   // Fetch global leaderboard and selection popularity data on mount
@@ -162,7 +162,10 @@ export function AnalysisDashboard({
         contentId="analysis-dashboard-content"
       />
 
-      <CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
+      <CollapsibleContent
+        id="analysis-dashboard-content"
+        isCollapsed={isCollapsed}
+      >
         {isLoading ? (
           <div className="analysis-loading" role="status" aria-live="polite">
             Loading top names...
@@ -193,14 +196,25 @@ export function AnalysisDashboard({
               <tbody>
                 {displayNames.map((item, index) => (
                   <tr key={item.id || index}>
-                    <td className="top-names-name" scope="row">{item.name}</td>
-                    <td className="top-names-rating" aria-label={`Rating: ${item.rating}`}>
+                    <td className="top-names-name" scope="row">
+                      {item.name}
+                    </td>
+                    <td
+                      className="top-names-rating"
+                      aria-label={`Rating: ${item.rating}`}
+                    >
                       {item.rating}
                     </td>
-                    <td className="top-names-wins" aria-label={`Wins: ${item.wins}`}>
+                    <td
+                      className="top-names-wins"
+                      aria-label={`Wins: ${item.wins}`}
+                    >
                       {item.wins}
                     </td>
-                    <td className="top-names-selected" aria-label={`Selected ${item.selected} times`}>
+                    <td
+                      className="top-names-selected"
+                      aria-label={`Selected ${item.selected} times`}
+                    >
                       {item.selected}
                     </td>
                   </tr>

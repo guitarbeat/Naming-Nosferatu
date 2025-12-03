@@ -122,7 +122,7 @@ ErrorBoundary.propTypes = {
       PropTypes.number,
       PropTypes.bool,
       PropTypes.object,
-    ])
+    ]),
   ),
 };
 

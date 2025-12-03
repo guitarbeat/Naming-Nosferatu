@@ -42,4 +42,3 @@ AnalysisToolbar.propTypes = {
 };
 
 export default AnalysisToolbar;
-

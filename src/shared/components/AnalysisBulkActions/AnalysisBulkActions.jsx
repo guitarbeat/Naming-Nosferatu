@@ -49,7 +49,8 @@ export function AnalysisBulkActions({
     }
 
     // Export selected names if any, otherwise export all visible names
-    const dataToExport = selectedNames?.length > 0 ? selectedNames : names || [];
+    const dataToExport =
+      selectedNames?.length > 0 ? selectedNames : names || [];
     const fileName = selectedNames?.length > 0 ? "selected-names" : "all-names";
     exportNamesToCSV(dataToExport, fileName);
   }, [onExport, names, selectedNames]);
@@ -63,7 +64,7 @@ export function AnalysisBulkActions({
 
     if (selectedCount > 5) {
       const confirmed = window.confirm(
-        `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`
+        `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`,
       );
       if (!confirmed) {
         devLog("[AnalysisBulkActions] User cancelled hide operation");
@@ -85,7 +86,8 @@ export function AnalysisBulkActions({
 
   if (!showActions) return null;
 
-  const hasExportData = onExport || names?.length > 0 || selectedNames?.length > 0;
+  const hasExportData =
+    onExport || names?.length > 0 || selectedNames?.length > 0;
   const effectiveTotal = totalCount || names?.length || 0;
 
   return (
@@ -137,7 +139,8 @@ export function AnalysisBulkActions({
                 }
                 title="Download as CSV file"
               >
-                <span aria-hidden="true">📥</span> Export {selectedCount > 0 ? "" : "All"}
+                <span aria-hidden="true">📥</span> Export{" "}
+                {selectedCount > 0 ? "" : "All"}
               </AnalysisButton>
             </>
           )}

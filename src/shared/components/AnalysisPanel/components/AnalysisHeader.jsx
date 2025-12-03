@@ -89,4 +89,3 @@ AnalysisHeader.propTypes = {
 };
 
 export default AnalysisHeader;
-

@@ -25,7 +25,12 @@ export function cn(...classes) {
  * @example
  * cnStyles(styles, 'button', { active: isActive, disabled: isDisabled }, className)
  */
-export function cnStyles(styles, baseClass, conditionals = {}, extraClasses = "") {
+export function cnStyles(
+  styles,
+  baseClass,
+  conditionals = {},
+  extraClasses = "",
+) {
   const classes = [styles[baseClass]];
 
   Object.entries(conditionals).forEach(([className, condition]) => {
@@ -51,11 +56,16 @@ export function cnStyles(styles, baseClass, conditionals = {}, extraClasses = ""
  * @example
  * conditionalClass(styles, isActive, 'active', 'inactive')
  */
-export function conditionalClass(styles, condition, trueClass, falseClass = "") {
+export function conditionalClass(
+  styles,
+  condition,
+  trueClass,
+  falseClass = "",
+) {
   if (condition) {
     return styles[trueClass] || "";
   }
-  return falseClass ? (styles[falseClass] || "") : "";
+  return falseClass ? styles[falseClass] || "" : "";
 }
 
 /**

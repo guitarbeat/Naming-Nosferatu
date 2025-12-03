@@ -39,4 +39,3 @@ CloseIcon.propTypes = {
 };
 
 export default CloseIcon;
-

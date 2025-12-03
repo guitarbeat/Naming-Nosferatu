@@ -49,7 +49,9 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
   const isGif = image.toLowerCase().endsWith(".gif");
   // * GIF files typically don't have .avif/.webp versions, so skip picture element
   const shouldUsePicture = isLocalAsset && !isGif;
-  const base = shouldUsePicture ? image.substring(0, image.lastIndexOf(".")) : null;
+  const base = shouldUsePicture
+    ? image.substring(0, image.lastIndexOf("."))
+    : null;
 
   return (
     <button

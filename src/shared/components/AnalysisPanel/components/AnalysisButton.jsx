@@ -48,4 +48,3 @@ AnalysisButton.propTypes = {
 };
 
 export default AnalysisButton;
-

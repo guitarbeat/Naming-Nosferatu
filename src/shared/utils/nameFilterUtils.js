@@ -21,23 +21,26 @@ export function isNameHidden(name) {
  * @param {boolean} options.isAdmin - Whether user is admin (admins can see hidden)
  * @returns {Array} Filtered names
  */
-export function filterByVisibility(names, { visibility = "visible", isAdmin = false } = {}) {
+export function filterByVisibility(
+  names,
+  { visibility = "visible", isAdmin = false } = {},
+) {
   if (!Array.isArray(names)) return [];
 
   // Non-admins always see only visible names
   if (!isAdmin) {
-    return names.filter(name => !isNameHidden(name));
+    return names.filter((name) => !isNameHidden(name));
   }
 
   // Admins can filter by visibility
   switch (visibility) {
     case "hidden":
-      return names.filter(name => isNameHidden(name));
+      return names.filter((name) => isNameHidden(name));
     case "all":
       return names;
     case "visible":
     default:
-      return names.filter(name => !isNameHidden(name));
+      return names.filter((name) => !isNameHidden(name));
   }
 }
 
@@ -69,16 +72,17 @@ export function applyNameFilters(names, filters = {}) {
   // 2. Filter by category
   if (category) {
     result = result.filter(
-      name => name.categories && name.categories.includes(category)
+      (name) => name.categories && name.categories.includes(category),
     );
   }
 
   // 3. Filter by search term
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
-    result = result.filter(name =>
-      (name.name && name.name.toLowerCase().includes(term)) ||
-      (name.description && name.description.toLowerCase().includes(term))
+    result = result.filter(
+      (name) =>
+        (name.name && name.name.toLowerCase().includes(term)) ||
+        (name.description && name.description.toLowerCase().includes(term)),
     );
   }
 

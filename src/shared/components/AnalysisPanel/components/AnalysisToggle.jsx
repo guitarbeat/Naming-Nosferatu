@@ -47,4 +47,3 @@ AnalysisToggle.propTypes = {
 };
 
 export default AnalysisToggle;
-

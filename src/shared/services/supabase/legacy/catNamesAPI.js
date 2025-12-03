@@ -44,7 +44,10 @@ export const catNamesAPI = {
       const { data: namesData, error: namesError } = await query;
 
       if (namesError) {
-        console.error("Error fetching names from cat_name_options:", namesError);
+        console.error(
+          "Error fetching names from cat_name_options:",
+          namesError,
+        );
         console.error("Error details:", {
           message: namesError.message,
           code: namesError.code,

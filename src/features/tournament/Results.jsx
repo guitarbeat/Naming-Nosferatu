@@ -337,10 +337,7 @@ function Results({
             >
               Start New Tournament
             </StartTournamentButton>
-            <CalendarButton
-              rankings={currentRankings}
-              userName={userName}
-            />
+            <CalendarButton rankings={currentRankings} userName={userName} />
           </div>
           <p className={styles.tip} role="note">
             Starting a new tournament will let you rate more names while keeping

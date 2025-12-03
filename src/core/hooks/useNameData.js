@@ -110,7 +110,6 @@ export function useNameData({
 
       // * Fetch data based on mode
       let namesData;
-      let hiddenData;
 
       if (mode === "tournament") {
         // Tournament mode: fetch ALL names including hidden (UI will filter based on admin status)
@@ -148,7 +147,6 @@ export function useNameData({
           }
 
           // Hidden data is now included in namesData via is_hidden property
-          hiddenData = [];
         } catch (timeoutError) {
           clearAllTimeouts();
           // Only use fallback if we truly timed out
@@ -180,11 +178,6 @@ export function useNameData({
 
         namesData = await getNamesWithUserRatings(userName);
 
-        // Extract hidden IDs from the names data (user-specific)
-        hiddenData = namesData
-          .filter((name) => name.isHidden)
-          .map((name) => ({ name_id: name.id }));
-
         // Add owner info to names
         namesData = namesData.map((name) => ({
           ...name,
@@ -201,7 +194,9 @@ export function useNameData({
 
       // * Create Set of hidden IDs for O(1) lookup (from is_hidden property)
       const hiddenIdsSet = new Set(
-        namesData.filter((name) => name.is_hidden === true).map((name) => name.id),
+        namesData
+          .filter((name) => name.is_hidden === true)
+          .map((name) => name.id),
       );
 
       // * Sort names alphabetically for better UX

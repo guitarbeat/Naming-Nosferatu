@@ -52,7 +52,7 @@ PopularityRow.propTypes = {
  */
 export function AdminAnalytics({ isAdmin = false }) {
   const [analyticsData, setAnalyticsData] = useState(null);
-  const [siteStats, setSiteStats] = useState(null);
+  const [_siteStats, setSiteStats] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sortField, setSortField] = useState("avg_rating");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -61,7 +61,7 @@ export function AdminAnalytics({ isAdmin = false }) {
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ADMIN_ANALYTICS_COLLAPSED,
-    false
+    false,
   );
 
   // Fetch analytics data
@@ -115,7 +115,11 @@ export function AdminAnalytics({ isAdmin = false }) {
   // Render sort indicator
   const renderSortIndicator = (field) => {
     if (sortField !== field) return null;
-    return <span className="sort-indicator">{sortDirection === "desc" ? "↓" : "↑"}</span>;
+    return (
+      <span className="sort-indicator">
+        {sortDirection === "desc" ? "↓" : "↑"}
+      </span>
+    );
   };
 
   if (!isAdmin) {
@@ -155,9 +159,14 @@ export function AdminAnalytics({ isAdmin = false }) {
         contentId="admin-analytics-content"
       />
 
-      <CollapsibleContent id="admin-analytics-content" isCollapsed={isCollapsed}>
+      <CollapsibleContent
+        id="admin-analytics-content"
+        isCollapsed={isCollapsed}
+      >
         {isLoading ? (
-          <div className="analysis-loading">Loading popularity analytics...</div>
+          <div className="analysis-loading">
+            Loading popularity analytics...
+          </div>
         ) : (
           <div className="admin-analytics-table-container">
             <table className="admin-analytics-table">

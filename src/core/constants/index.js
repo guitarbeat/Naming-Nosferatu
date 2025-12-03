@@ -17,13 +17,13 @@ export const TOURNAMENT = {
 export const FILTER_OPTIONS = {
   VISIBILITY: {
     ALL: "all",
-    VISIBLE: "visible",  // Default - show non-hidden names
-    HIDDEN: "hidden",    // Show only hidden names
+    VISIBLE: "visible", // Default - show non-hidden names
+    HIDDEN: "hidden", // Show only hidden names
   },
   // Legacy aliases for backward compatibility
   STATUS: {
     ALL: "all",
-    ACTIVE: "active",  // Maps to VISIBLE
+    ACTIVE: "active", // Maps to VISIBLE
     HIDDEN: "hidden",
   },
   USER: {

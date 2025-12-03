@@ -711,7 +711,6 @@ export const catNamesAPI = {
 
       // Aggregate selections by name
       const selectionCounts = new Map();
-      const userCounts = new Map();
 
       (data || []).forEach((row) => {
         const key = row.name_id;
@@ -754,8 +753,12 @@ export const catNamesAPI = {
 
       // Fetch all data in parallel for efficiency
       const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
-        supabase.from("tournament_selections").select("name_id, name, user_name"),
-        supabase.from("cat_name_ratings").select("name_id, rating, wins, losses, user_name"),
+        supabase
+          .from("tournament_selections")
+          .select("name_id, name, user_name"),
+        supabase
+          .from("cat_name_ratings")
+          .select("name_id, rating, wins, losses, user_name"),
         supabase
           .from("cat_name_options")
           .select("id, name, description, avg_rating, categories")
@@ -800,7 +803,10 @@ export const catNamesAPI = {
 
       // Combine into popularity analytics
       const analytics = names.map((name) => {
-        const selStat = selectionStats.get(name.id) || { count: 0, users: new Set() };
+        const selStat = selectionStats.get(name.id) || {
+          count: 0,
+          users: new Set(),
+        };
         const ratStat = ratingStats.get(name.id) || {
           totalRating: 0,
           count: 0,
@@ -809,19 +815,19 @@ export const catNamesAPI = {
           users: new Set(),
         };
 
-        const avgRating = ratStat.count > 0
-          ? Math.round(ratStat.totalRating / ratStat.count)
-          : 1500;
+        const avgRating =
+          ratStat.count > 0
+            ? Math.round(ratStat.totalRating / ratStat.count)
+            : 1500;
 
-        const winRate = ratStat.wins + ratStat.losses > 0
-          ? Math.round((ratStat.wins / (ratStat.wins + ratStat.losses)) * 100)
-          : 0;
+        const winRate =
+          ratStat.wins + ratStat.losses > 0
+            ? Math.round((ratStat.wins / (ratStat.wins + ratStat.losses)) * 100)
+            : 0;
 
         // Popularity score: weighted combination
         const popularityScore = Math.round(
-          (selStat.count * 2) +
-          (ratStat.wins * 1.5) +
-          ((avgRating - 1500) * 0.5)
+          selStat.count * 2 + ratStat.wins * 1.5 + (avgRating - 1500) * 0.5,
         );
 
         return {
@@ -863,14 +869,29 @@ export const catNamesAPI = {
       }
 
       // Fetch all counts in parallel
-      const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
-        await Promise.all([
-          supabase.from("cat_name_options").select("id", { count: "exact", head: true }).eq("is_active", true),
-          supabase.from("cat_name_options").select("id", { count: "exact", head: true }).eq("is_hidden", true),
-          supabase.from("cat_app_users").select("user_name", { count: "exact", head: true }),
-          supabase.from("cat_name_ratings").select("rating"),
-          supabase.from("tournament_selections").select("id", { count: "exact", head: true }),
-        ]);
+      const [
+        namesResult,
+        hiddenResult,
+        usersResult,
+        ratingsResult,
+        selectionsResult,
+      ] = await Promise.all([
+        supabase
+          .from("cat_name_options")
+          .select("id", { count: "exact", head: true })
+          .eq("is_active", true),
+        supabase
+          .from("cat_name_options")
+          .select("id", { count: "exact", head: true })
+          .eq("is_hidden", true),
+        supabase
+          .from("cat_app_users")
+          .select("user_name", { count: "exact", head: true }),
+        supabase.from("cat_name_ratings").select("rating"),
+        supabase
+          .from("tournament_selections")
+          .select("id", { count: "exact", head: true }),
+      ]);
 
       const totalNames = namesResult.count || 0;
       const hiddenNames = hiddenResult.count || 0;
@@ -880,9 +901,13 @@ export const catNamesAPI = {
       // Calculate rating stats
       const ratings = ratingsResult.data || [];
       const totalRatings = ratings.length;
-      const avgRating = totalRatings > 0
-        ? Math.round(ratings.reduce((sum, r) => sum + Number(r.rating), 0) / totalRatings)
-        : 1500;
+      const avgRating =
+        totalRatings > 0
+          ? Math.round(
+              ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
+                totalRatings,
+            )
+          : 1500;
 
       // Find names never selected
       const { data: neverSelected } = await supabase
@@ -896,7 +921,9 @@ export const catNamesAPI = {
         .select("name_id");
 
       const selectedSet = new Set((selectedIds || []).map((s) => s.name_id));
-      const neverSelectedNames = (neverSelected || []).filter((n) => !selectedSet.has(n.id));
+      const neverSelectedNames = (neverSelected || []).filter(
+        (n) => !selectedSet.has(n.id),
+      );
 
       return {
         totalNames,
@@ -1398,12 +1425,17 @@ export const hiddenNamesAPI = {
           if (result.success) {
             processed++;
           } else {
-            errors.push(`Failed to hide ${nameId}: ${result.error || "Unknown error"}`);
+            errors.push(
+              `Failed to hide ${nameId}: ${result.error || "Unknown error"}`,
+            );
           }
         } catch (error) {
           const errorMsg = error.message || String(error);
           if (isDev) {
-            console.error(`[hiddenNamesAPI.hideNames] Error hiding ${nameId}:`, error);
+            console.error(
+              `[hiddenNamesAPI.hideNames] Error hiding ${nameId}:`,
+              error,
+            );
           }
           results.push({ nameId, success: false, error: errorMsg });
           errors.push(`Failed to hide ${nameId}: ${errorMsg}`);
@@ -1422,7 +1454,8 @@ export const hiddenNamesAPI = {
       if (processed === 0) {
         return {
           success: false,
-          error: errors.length > 0 ? errors.join("; ") : "Failed to hide any names",
+          error:
+            errors.length > 0 ? errors.join("; ") : "Failed to hide any names",
           processed: 0,
           results,
         };
@@ -1638,7 +1671,9 @@ export const tournamentsAPI = {
       // Query tournament_selections - actual columns: id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at
       const { data, error } = await supabase
         .from("tournament_selections")
-        .select("id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at")
+        .select(
+          "id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at",
+        )
         .eq("user_name", userName)
         .order("created_at", { ascending: false });
 

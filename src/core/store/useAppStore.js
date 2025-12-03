@@ -455,7 +455,6 @@ const useAppStore = create(
           }));
         },
 
-
         setMatrixMode: (enabled) =>
           set((state) => ({
             ui: {

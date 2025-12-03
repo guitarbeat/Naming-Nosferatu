@@ -61,7 +61,7 @@ export function arrayToCSV(data, headers, fields) {
         const value = typeof field === "function" ? field(item) : item[field];
         return escapeCSVValue(value);
       })
-      .join(",")
+      .join(","),
   );
 
   return [headerRow, ...dataRows].join("\n");
@@ -129,7 +129,10 @@ export function exportNamesToCSV(names, fileName = "cat-names-export") {
  * @param {Array} names - Array of name objects with ratings
  * @param {string} fileName - Base file name
  */
-export function exportTournamentResultsToCSV(names, fileName = "tournament-results") {
+export function exportTournamentResultsToCSV(
+  names,
+  fileName = "tournament-results",
+) {
   return exportToCSV(names, {
     fileName,
     headers: ["Name", "Rating", "Wins", "Losses", "Matches"],

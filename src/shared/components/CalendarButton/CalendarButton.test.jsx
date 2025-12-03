@@ -22,10 +22,7 @@ describe("CalendarButton", () => {
     ];
 
     const { getByRole } = render(
-      <CalendarButton
-        rankings={rankings}
-        userName="Test User"
-      />,
+      <CalendarButton rankings={rankings} userName="Test User" />,
     );
 
     fireEvent.click(getByRole("button", { name: /add to google calendar/i }));
@@ -49,10 +46,7 @@ describe("CalendarButton", () => {
     ];
 
     const { getByRole } = render(
-      <CalendarButton
-        rankings={rankings}
-        userName="Test User"
-      />,
+      <CalendarButton rankings={rankings} userName="Test User" />,
     );
 
     fireEvent.click(getByRole("button", { name: /add to google calendar/i }));
@@ -92,10 +86,7 @@ describe("CalendarButton", () => {
     ];
 
     const { getByRole } = render(
-      <CalendarButton
-        rankings={rankings}
-        userName="Test User"
-      />,
+      <CalendarButton rankings={rankings} userName="Test User" />,
     );
 
     const button = getByRole("button");
@@ -109,10 +100,7 @@ describe("CalendarButton", () => {
     ];
 
     const { getByRole } = render(
-      <CalendarButton
-        rankings={rankings}
-        userName="Test User"
-      />,
+      <CalendarButton rankings={rankings} userName="Test User" />,
     );
 
     const button = getByRole("button");

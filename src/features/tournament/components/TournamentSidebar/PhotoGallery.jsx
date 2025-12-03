@@ -71,7 +71,9 @@ function PhotoGallery({
       <div className={styles.photoGrid}>
         {displayImages.map((image, index) => {
           // * Calculate size for mosaic effect - vary based on index
-          const imageHash = image.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+          const imageHash = image
+            .split("")
+            .reduce((acc, char) => acc + char.charCodeAt(0), 0);
           const hashMod = Math.abs(imageHash) % 100;
 
           // * Row span: vary from 4-10 rows (80-200px) for visual interest
@@ -90,7 +92,7 @@ function PhotoGallery({
               className={styles.photoWrapper}
               style={{
                 gridRow: `span ${rowSpan}`,
-                gridColumn: colSpan > 1 ? `span ${colSpan}` : 'auto',
+                gridColumn: colSpan > 1 ? `span ${colSpan}` : "auto",
               }}
               data-col-span={colSpan}
               data-row-span={rowSpan}

@@ -38,4 +38,3 @@ AnalysisSearch.propTypes = {
 };
 
 export default AnalysisSearch;
-

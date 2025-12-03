@@ -100,7 +100,9 @@
 }
 
 .card-mosaic {
-  border-radius: var(--card-border-radius-mosaic); /* * Sharp edges for mosaic */
+  border-radius: var(
+    --card-border-radius-mosaic
+  ); /* * Sharp edges for mosaic */
 }
 
 .card-hover {

@@ -39,50 +39,53 @@ export function useAsyncOperation({
     };
   }, []);
 
-  const execute = useCallback(async (...args) => {
-    if (!operation) return;
+  const execute = useCallback(
+    async (...args) => {
+      if (!operation) return;
 
-    // Abort any previous operation
-    abortControllerRef.current?.abort();
-    abortControllerRef.current = new AbortController();
-    const { signal } = abortControllerRef.current;
+      // Abort any previous operation
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
+      const { signal } = abortControllerRef.current;
 
-    setIsLoading(true);
-    setError(null);
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      // Create timeout promise
-      const timeoutPromise = new Promise((_, reject) => {
-        const id = setTimeout(() => {
-          reject(new Error(`Operation timed out after ${timeout}ms`));
-        }, timeout);
-        signal.addEventListener("abort", () => clearTimeout(id));
-      });
+      try {
+        // Create timeout promise
+        const timeoutPromise = new Promise((_, reject) => {
+          const id = setTimeout(() => {
+            reject(new Error(`Operation timed out after ${timeout}ms`));
+          }, timeout);
+          signal.addEventListener("abort", () => clearTimeout(id));
+        });
 
-      // Race operation against timeout
-      const result = await Promise.race([
-        operation(...args, { signal }),
-        timeoutPromise,
-      ]);
+        // Race operation against timeout
+        const result = await Promise.race([
+          operation(...args, { signal }),
+          timeoutPromise,
+        ]);
 
-      if (!isMountedRef.current) return;
+        if (!isMountedRef.current) return;
 
-      setData(result);
-      onSuccess?.(result);
-      return result;
-    } catch (err) {
-      if (!isMountedRef.current) return;
-      if (err.name === "AbortError") return;
+        setData(result);
+        onSuccess?.(result);
+        return result;
+      } catch (err) {
+        if (!isMountedRef.current) return;
+        if (err.name === "AbortError") return;
 
-      setError(err);
-      onError?.(err);
-      throw err;
-    } finally {
-      if (isMountedRef.current) {
-        setIsLoading(false);
+        setError(err);
+        onError?.(err);
+        throw err;
+      } finally {
+        if (isMountedRef.current) {
+          setIsLoading(false);
+        }
       }
-    }
-  }, [operation, timeout, onSuccess, onError]);
+    },
+    [operation, timeout, onSuccess, onError],
+  );
 
   const reset = useCallback(() => {
     setData(null);

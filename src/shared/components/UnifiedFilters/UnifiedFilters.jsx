@@ -296,7 +296,9 @@ export function UnifiedFilters({
           </>
         )}
         {filteredCount === totalCount && (
-          <span className={styles.badge} style={{ marginLeft: '0.25rem' }}>total</span>
+          <span className={styles.badge} style={{ marginLeft: "0.25rem" }}>
+            total
+          </span>
         )}
       </div>
 

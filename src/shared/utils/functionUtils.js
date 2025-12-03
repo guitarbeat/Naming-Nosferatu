@@ -117,12 +117,15 @@ export function throttle(func, wait, options = {}) {
 
     if (!timeoutId && trailing) {
       const remaining = wait - timeSinceLastCall;
-      timeoutId = setTimeout(() => {
-        timeoutId = null;
-        if (trailing && lastArgs) {
-          invokeFunc();
-        }
-      }, remaining > 0 ? remaining : wait);
+      timeoutId = setTimeout(
+        () => {
+          timeoutId = null;
+          if (trailing && lastArgs) {
+            invokeFunc();
+          }
+        },
+        remaining > 0 ? remaining : wait,
+      );
     }
   }
 

@@ -52,4 +52,3 @@ AnalysisModeBanner.propTypes = {
 };
 
 export default AnalysisModeBanner;
-

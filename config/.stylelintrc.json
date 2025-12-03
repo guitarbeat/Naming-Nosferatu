@@ -38,10 +38,13 @@
           "layer",
           "variants",
           "responsive",
-          "screen"
+          "screen",
+          "theme",
+          "custom-variant"
         ]
       }
     ],
+    "custom-property-pattern": null,
     "media-feature-name-value-no-unknown": null,
     "no-duplicate-selectors": null,
     "no-descending-specificity": null,

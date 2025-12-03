@@ -118,10 +118,7 @@ function App() {
   const handleTournamentComplete = useCallback(
     async (finalRatings) => {
       try {
-        devLog(
-          "[App] handleTournamentComplete called with:",
-          finalRatings,
-        );
+        devLog("[App] handleTournamentComplete called with:", finalRatings);
 
         if (!user.name) {
           throw new Error("No user name available");
@@ -172,9 +169,7 @@ function App() {
         tournamentActions.setRatings(updatedRatings);
         tournamentActions.setComplete(true);
 
-        devLog(
-          "[App] Tournament marked as complete, navigating to /results",
-        );
+        devLog("[App] Tournament marked as complete, navigating to /results");
 
         // * Navigate to results page
         navigateTo("/results");
@@ -226,12 +221,14 @@ function App() {
         if (Array.isArray(adjustedRatings)) {
           ratingsArray = adjustedRatings;
         } else {
-          ratingsArray = Object.entries(adjustedRatings).map(([name, data]) => ({
-            name,
-            rating: data.rating || 1500,
-            wins: data.wins || 0,
-            losses: data.losses || 0,
-          }));
+          ratingsArray = Object.entries(adjustedRatings).map(
+            ([name, data]) => ({
+              name,
+              rating: data.rating || 1500,
+              wins: data.wins || 0,
+              losses: data.losses || 0,
+            }),
+          );
         }
 
         // * Save ratings to database
@@ -341,7 +338,6 @@ function App() {
       handleStartNewTournament,
       ui.theme,
       handleThemeChange,
-      uiActions,
       navigateTo,
     ],
   );
@@ -399,9 +395,6 @@ function AppLayout({
   handleUpdateRatings,
   handleTournamentSetup,
   handleTournamentComplete,
-  ui,
-  uiActions,
-  isAdmin,
 }) {
   const { collapsed, collapsedWidth, toggleCollapsed } = useSidebar();
   const { isLoggedIn } = user;
@@ -489,7 +482,6 @@ function AppLayout({
             <Loading variant="spinner" text="Initializing Tournament..." />
           </div>
         )}
-
 
         <ScrollToTopButton isLoggedIn={isLoggedIn} />
       </main>

@@ -118,7 +118,9 @@ const TournamentControls = ({
         {!isMuted && (
           <IconButton
             onClick={onNextTrack}
-            icon={<MusicalNoteIcon className={styles.icon} aria-hidden="true" />}
+            icon={
+              <MusicalNoteIcon className={styles.icon} aria-hidden="true" />
+            }
             variant="ghost"
             ariaLabel="Next track"
             disabled={isTransitioning}
@@ -134,7 +136,11 @@ const TournamentControls = ({
         {!isMuted && (
           <IconButton
             onClick={onToggleShuffle}
-            icon={<span className={styles.icon} aria-hidden="true">🔀</span>}
+            icon={
+              <span className={styles.icon} aria-hidden="true">
+                🔀
+              </span>
+            }
             variant="ghost"
             ariaLabel={isShuffle ? "Disable shuffle" : "Enable shuffle"}
             aria-pressed={isShuffle}
@@ -151,7 +157,12 @@ const TournamentControls = ({
         {audioError && (
           <IconButton
             onClick={onRetryAudio}
-            icon={<ExclamationCircleIcon className={styles.icon} aria-hidden="true" />}
+            icon={
+              <ExclamationCircleIcon
+                className={styles.icon}
+                aria-hidden="true"
+              />
+            }
             variant="danger"
             ariaLabel="Retry playing audio"
             title={audioError}

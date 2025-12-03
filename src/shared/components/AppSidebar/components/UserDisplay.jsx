@@ -33,7 +33,11 @@ export function UserDisplay({ userName, isAdmin = false }) {
   };
 
   return (
-    <div className="sidebar-user-display" onClick={handleClick} style={{ cursor: "pointer" }}>
+    <div
+      className="sidebar-user-display"
+      onClick={handleClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="sidebar-user-display__content">
         {collapsed ? (
           <div className="sidebar-user-display__icon" aria-label={userName}>

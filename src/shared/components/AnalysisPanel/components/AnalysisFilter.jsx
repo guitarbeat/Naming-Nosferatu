@@ -26,4 +26,3 @@ AnalysisFilter.propTypes = {
 };
 
 export default AnalysisFilter;
-

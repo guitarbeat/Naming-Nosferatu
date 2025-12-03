@@ -17,7 +17,7 @@ export function useCollapsible(storageKey = null, defaultValue = false) {
   // Use localStorage hook if storageKey provided, otherwise use local state
   const [persistedValue, setPersistedValue] = useLocalStorage(
     storageKey || "__unused__",
-    defaultValue
+    defaultValue,
   );
 
   const [localValue, setLocalValue] = useState(defaultValue);

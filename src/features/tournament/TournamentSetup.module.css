@@ -1573,7 +1573,7 @@
     grid-auto-rows: 20px;
     grid-auto-flow: row dense;
   }
-  
+
   .photoWrapper {
     grid-column: span 1 !important; /* * Limit to 1 column on tablets */
   }
@@ -1668,7 +1668,7 @@
     grid-auto-rows: 20px;
     grid-auto-flow: row dense;
   }
-  
+
   .photoWrapper {
     grid-column: span 1 !important; /* * Single column on mobile */
   }
@@ -2511,7 +2511,7 @@
   height: 100%;
   min-height: 80px;
   break-inside: avoid;
-  page-break-inside: avoid;
+  break-inside: avoid;
   transition: transform 0.2s ease;
 }
 

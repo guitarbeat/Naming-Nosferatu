@@ -248,7 +248,9 @@ export function useProfileNameOperations(
         } else {
           const action = isHide ? "hide" : "unhide";
           const processed = result.processed || 0;
-          const errorMsg = result.error || (processed === 0 ? "No names were processed" : "Unknown error");
+          const errorMsg =
+            result.error ||
+            (processed === 0 ? "No names were processed" : "Unknown error");
           const errorMessage = `❌ Failed to ${action} names${errorMsg ? `: ${errorMsg}` : ""}`;
 
           devError("[useProfileNameOperations] Operation failed:", {
@@ -260,14 +262,12 @@ export function useProfileNameOperations(
           showToast(errorMessage, "error");
         }
       } catch (error) {
-        devError(
-          `Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`,
-          error,
-        );
+        devError(`Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`, error);
         const action = isHide ? "hide" : "unhide";
-        const errorMessage = error instanceof Error
-          ? `❌ Failed to ${action} names: ${error.message}`
-          : `❌ Failed to ${action} names. Please try again.`;
+        const errorMessage =
+          error instanceof Error
+            ? `❌ Failed to ${action} names: ${error.message}`
+            : `❌ Failed to ${action} names. Please try again.`;
         showToast(errorMessage, "error");
         showError(errorMessage);
       }

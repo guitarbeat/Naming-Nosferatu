@@ -41,7 +41,10 @@ function CalendarButton({
 
     const text = `🐈‍⬛ ${winnerName}`;
     const details = `Cat name rankings for ${userName}:\n\n${activeNames
-      .map((name, index) => `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`)
+      .map(
+        (name, index) =>
+          `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+      )
       .join("\n")}`;
 
     const baseUrl = "https://calendar.google.com/calendar/render";

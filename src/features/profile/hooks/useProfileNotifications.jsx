@@ -13,22 +13,41 @@ import { devLog, devError } from "../../../shared/utils/logger";
  * @returns {Object} Notification functions and Toast component
  */
 export function useProfileNotifications() {
-  const { toasts, showSuccess: showSuccessToast, showError: showErrorToast, showToast: showToastMessage, removeToast } = useToast();
+  const {
+    toasts,
+    showSuccess: showSuccessToast,
+    showError: showErrorToast,
+    showToast: showToastMessage,
+    removeToast,
+  } = useToast();
 
-  const showSuccess = useCallback((message) => {
-    devLog("✅", message);
-    showSuccessToast(message, { duration: 5000 });
-  }, [showSuccessToast]);
+  const showSuccess = useCallback(
+    (message) => {
+      devLog("✅", message);
+      showSuccessToast(message, { duration: 5000 });
+    },
+    [showSuccessToast],
+  );
 
-  const showError = useCallback((message) => {
-    devError("❌", message);
-    showErrorToast(message, { duration: 7000 }); // Longer duration for errors
-  }, [showErrorToast]);
+  const showError = useCallback(
+    (message) => {
+      devError("❌", message);
+      showErrorToast(message, { duration: 7000 }); // Longer duration for errors
+    },
+    [showErrorToast],
+  );
 
-  const showToast = useCallback((message, type = "info") => {
-    devLog(`📢 [${type}]`, message);
-    showToastMessage({ message, type, duration: type === "error" ? 7000 : 5000 });
-  }, [showToastMessage]);
+  const showToast = useCallback(
+    (message, type = "info") => {
+      devLog(`📢 [${type}]`, message);
+      showToastMessage({
+        message,
+        type,
+        duration: type === "error" ? 7000 : 5000,
+      });
+    },
+    [showToastMessage],
+  );
 
   const ToastContainer = useCallback(() => {
     return (
