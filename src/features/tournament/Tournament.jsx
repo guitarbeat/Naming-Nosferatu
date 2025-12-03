@@ -24,6 +24,8 @@ import { useTournamentState } from "./hooks/useTournamentState";
 import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
+import { CAT_IMAGES } from "./constants";
+import { getRandomCatImage } from "./utils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
