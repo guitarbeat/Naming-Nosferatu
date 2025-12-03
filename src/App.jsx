@@ -112,7 +112,7 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [uiActions, isAdmin, navigateTo]);
+  }, [navigateTo]);
 
   // * Handle tournament completion
   const handleTournamentComplete = useCallback(

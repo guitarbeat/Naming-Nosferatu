@@ -106,7 +106,7 @@ export function useAsyncOperation({
     error,
     execute,
     reset,
-    isMounted: isMountedRef.current,
+    isMounted: () => isMountedRef.current,
   };
 }
 

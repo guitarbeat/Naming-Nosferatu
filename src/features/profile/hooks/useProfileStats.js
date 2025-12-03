@@ -94,7 +94,8 @@ export function useProfileStats(activeUser) {
     if (activeUser) {
       fetchSelectionStats(activeUser);
     }
-  }, [activeUser, fetchSelectionStats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeUser]);
 
   return {
     stats,
