@@ -1,0 +1,376 @@
+/**
+ * @file interactions.css
+ * @description Unified interaction system - cohesive visual feedback across all interactive elements
+ * 
+ * Design Principles:
+ * - Consistency: All interactions share timing curves and easing
+ * - Subtlety: Effects reinforce without distracting
+ * - Cohesion: Components feel connected to the larger interface
+ */
+
+/* ==========================================================================
+   INTERACTION TOKENS - Single source of truth for motion
+   ========================================================================== */
+:root {
+  /* Timing curves - shared across all interactions */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Durations - consistent timing scale */
+  --duration-micro: 80ms;
+  --duration-quick: 120ms;
+  --duration-base: 180ms;
+  --duration-moderate: 250ms;
+  --duration-gentle: 350ms;
+  
+  /* Transform scales */
+  --scale-press: 0.97;
+  --scale-hover: 1.02;
+  --scale-subtle: 1.005;
+  
+  /* Lift distances */
+  --lift-micro: -1px;
+  --lift-small: -2px;
+  --lift-medium: -3px;
+  
+  /* Focus ring */
+  --focus-ring-color: hsl(var(--primary) / 0.4);
+  --focus-ring-spread: 3px;
+  --focus-ring-offset: 2px;
+  
+  /* Glow intensities */
+  --glow-subtle: 0 0 12px hsl(var(--primary) / 0.15);
+  --glow-medium: 0 0 20px hsl(var(--primary) / 0.25);
+  --glow-strong: 0 0 30px hsl(var(--primary) / 0.35);
+}
+
+/* ==========================================================================
+   BASE INTERACTIVE ELEMENT STYLES
+   ========================================================================== */
+
+/* Universal interactive transition */
+.interactive,
+button,
+[role="button"],
+a,
+input,
+select,
+textarea,
+[type="checkbox"],
+[type="radio"],
+.clickable {
+  transition: 
+    transform var(--duration-base) var(--ease-out-expo),
+    box-shadow var(--duration-base) var(--ease-out-expo),
+    background-color var(--duration-quick) var(--ease-in-out-smooth),
+    border-color var(--duration-quick) var(--ease-in-out-smooth),
+    opacity var(--duration-quick) var(--ease-in-out-smooth);
+  will-change: transform, box-shadow;
+}
+
+/* ==========================================================================
+   BUTTON INTERACTIONS
+   ========================================================================== */
+
+/* Primary button hover - gentle lift with glow */
+button:not(:disabled):hover,
+[role="button"]:not([aria-disabled="true"]):hover,
+.btn:not(:disabled):hover {
+  transform: translateY(var(--lift-small)) scale(var(--scale-subtle));
+  box-shadow: 
+    0 4px 12px hsl(var(--foreground) / 0.08),
+    var(--glow-subtle);
+}
+
+/* Primary button active - press down */
+button:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active,
+.btn:not(:disabled):active {
+  transform: translateY(0) scale(var(--scale-press));
+  box-shadow: 0 1px 4px hsl(var(--foreground) / 0.1);
+  transition-duration: var(--duration-micro);
+}
+
+/* Icon buttons - circular feedback */
+.icon-btn:not(:disabled):hover,
+button[aria-label]:not(:disabled):hover {
+  background-color: hsl(var(--muted) / 0.8);
+  transform: scale(var(--scale-hover));
+}
+
+.icon-btn:not(:disabled):active,
+button[aria-label]:not(:disabled):active {
+  transform: scale(var(--scale-press));
+  transition-duration: var(--duration-micro);
+}
+
+/* ==========================================================================
+   INPUT INTERACTIONS
+   ========================================================================== */
+
+/* Input focus - subtle expansion with glow ring */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: hsl(var(--primary));
+  box-shadow: 
+    0 0 0 var(--focus-ring-spread) var(--focus-ring-color),
+    inset 0 1px 2px hsl(var(--foreground) / 0.05);
+  transform: scale(1.005);
+}
+
+/* Input hover - subtle border highlight */
+input:not(:focus):hover,
+textarea:not(:focus):hover,
+select:not(:focus):hover {
+  border-color: hsl(var(--foreground) / 0.3);
+}
+
+/* ==========================================================================
+   CHECKBOX & RADIO INTERACTIONS
+   ========================================================================== */
+
+[type="checkbox"],
+[type="radio"] {
+  cursor: pointer;
+  transition: 
+    transform var(--duration-base) var(--ease-spring),
+    box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+[type="checkbox"]:hover,
+[type="radio"]:hover {
+  transform: scale(1.1);
+  box-shadow: var(--glow-subtle);
+}
+
+[type="checkbox"]:active,
+[type="radio"]:active {
+  transform: scale(0.95);
+}
+
+[type="checkbox"]:checked,
+[type="radio"]:checked {
+  animation: check-pop var(--duration-moderate) var(--ease-out-back);
+}
+
+@keyframes check-pop {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   TOGGLE/SWITCH INTERACTIONS
+   ========================================================================== */
+
+.toggle,
+[role="switch"] {
+  cursor: pointer;
+  transition: 
+    background-color var(--duration-base) var(--ease-in-out-smooth),
+    box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+.toggle:hover,
+[role="switch"]:hover {
+  box-shadow: var(--glow-medium);
+}
+
+.toggle:active,
+[role="switch"]:active {
+  transform: scale(0.98);
+}
+
+/* Toggle thumb animation */
+.toggle-thumb,
+[role="switch"]::before {
+  transition: 
+    transform var(--duration-moderate) var(--ease-out-back),
+    background-color var(--duration-quick) var(--ease-in-out-smooth);
+}
+
+/* ==========================================================================
+   CARD INTERACTIONS
+   ========================================================================== */
+
+.card-interactive:hover {
+  transform: translateY(var(--lift-small));
+  box-shadow: 
+    0 8px 24px hsl(var(--foreground) / 0.1),
+    0 2px 8px hsl(var(--foreground) / 0.05);
+}
+
+.card-interactive:active {
+  transform: translateY(var(--lift-micro)) scale(0.995);
+  transition-duration: var(--duration-micro);
+}
+
+/* ==========================================================================
+   LINK INTERACTIONS
+   ========================================================================== */
+
+a:not(.btn):hover {
+  opacity: 0.85;
+}
+
+/* Underline animation for text links */
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--duration-moderate) var(--ease-out-expo);
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+/* ==========================================================================
+   SLIDER/RANGE INTERACTIONS
+   ========================================================================== */
+
+input[type="range"] {
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  transition: 
+    transform var(--duration-base) var(--ease-spring),
+    box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow: var(--glow-medium);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.05);
+  box-shadow: var(--glow-strong);
+}
+
+input[type="range"]::-moz-range-thumb {
+  transition: 
+    transform var(--duration-base) var(--ease-spring),
+    box-shadow var(--duration-base) var(--ease-out-expo);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.15);
+  box-shadow: var(--glow-medium);
+}
+
+/* ==========================================================================
+   FOCUS VISIBLE STATES - Keyboard navigation
+   ========================================================================== */
+
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm, 4px);
+}
+
+button:focus-visible,
+[role="button"]:focus-visible {
+  box-shadow: 
+    0 0 0 var(--focus-ring-spread) var(--focus-ring-color),
+    var(--glow-medium);
+}
+
+/* ==========================================================================
+   DISABLED STATES
+   ========================================================================== */
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled,
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================================
+   LOADING STATES
+   ========================================================================== */
+
+.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsl(var(--background) / 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer-loading 1.5s infinite;
+}
+
+@keyframes shimmer-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ==========================================================================
+   RIPPLE EFFECT - Touch/click feedback
+   ========================================================================== */
+
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: hsl(var(--foreground) / 0.15);
+  transform: scale(0);
+  animation: ripple-expand var(--duration-gentle) var(--ease-out-expo) forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-expand {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   REDUCED MOTION - Accessibility
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

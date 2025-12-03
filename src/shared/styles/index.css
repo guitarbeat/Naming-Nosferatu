@@ -19,6 +19,7 @@
 @import url("./shimmer.css");
 @import url("./glass.css");
 @import url("./cursor-interactions.css");
+@import url("./interactions.css");
 
 /* Buttons & interactive elements */
 /* * Button tokens consolidated into design-tokens.css */
