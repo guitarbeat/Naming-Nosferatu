@@ -119,11 +119,30 @@ function useUserSession({ showToast } = {}) {
       await setSupabaseUserContext(activeSupabase, trimmedName);
 
       // Check if user exists in database
-      const { data: existingUser, error: fetchError } = await activeSupabase
-        .from('cat_app_users')
-        .select('user_name, preferences, user_role')
-        .eq('user_name', trimmedName)
-        .maybeSingle();
+      let existingUser;
+      let fetchError;
+
+      try {
+        // Try selecting user_role if the column exists
+        const result = await activeSupabase
+          .from('cat_app_users')
+          .select('user_name, preferences, user_role')
+          .eq('user_name', trimmedName)
+          .maybeSingle();
+
+        existingUser = result.data;
+        fetchError = result.error;
+      } catch (err) {
+        // If user_role column doesn't exist, query without it
+        const result = await activeSupabase
+          .from('cat_app_users')
+          .select('user_name, preferences')
+          .eq('user_name', trimmedName)
+          .maybeSingle();
+
+        existingUser = result.data;
+        fetchError = result.error;
+      }
 
       if (fetchError) {
         console.error('Error fetching user:', fetchError);
