@@ -1,60 +1,25 @@
 /* NameGrid - Mosaic Layout Component */
 
+/* Simple auto-fit grid - cards size to content */
 .grid {
   display: grid;
-  gap: var(--card-gap); /* * Use design token for mosaic gaps */
-  /* * Mosaic layout: variable column widths, dense packing to fill gaps */
-  /* * Use auto-fit with fixed min column width for better span visibility */
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  grid-auto-rows: 20px; /* * Small row unit for flexible sizing */
-  grid-auto-flow: row dense; /* * Fill empty spaces, flow by rows */
-  align-items: start; /* * Align items to start of grid cell */
-}
-
-/* * Alternative: Use CSS columns for true masonry effect (fallback) */
-@supports not (grid-auto-flow: dense) {
-  .grid {
-    display: block;
-    column-count: auto;
-    column-width: 200px;
-    column-gap: var(--space-1);
-  }
-  
-  .cardWrapper {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    margin-bottom: var(--space-1);
-  }
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-2);
+  align-items: start;
 }
 
 .cardWrapper {
   position: relative;
-  /* * Allow natural height for mosaic effect */
-  height: 100%;
-  min-height: 80px; /* * Minimum card height */
-  /* * Break inside to prevent awkward splits */
-  break-inside: avoid;
-  page-break-inside: avoid;
-  /* * Smooth transitions for better visual flow */
-  transition: transform 0.2s ease, opacity 0.2s ease;
-  /* * Ensure grid column spans work */
-  grid-column: auto;
-}
-
-/* * Cards spanning multiple columns */
-.cardWrapper[data-col-span="2"] {
-  grid-column: span 2;
-}
-
-.cardWrapper[data-col-span="3"] {
-  grid-column: span 3;
+  height: auto; /* Let content determine height */
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .cardWrapper:hover {
-  /* * Subtle lift on hover for interactivity */
   transform: translateY(-2px);
   z-index: 1;
 }
+
+/* Removed column span rules - uniform grid */
 
 /* Hidden Name Badge */
 .hiddenBadge {
@@ -121,25 +86,15 @@
 /* Responsive Design */
 @media (width <= 768px) {
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: var(--space-1);
-  }
-  
-  /* * On tablets, limit column span to 2 max for better fit */
-  .cardWrapper {
-    grid-column: span 2 !important;
   }
 }
 
 @media (width <= 480px) {
   .grid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 8px; /* * Smaller row unit on mobile */
-  }
-  
-  /* * On mobile, all cards span 1 column */
-  .cardWrapper {
-    grid-column: span 1 !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-1);
   }
 
   .emptyState {
