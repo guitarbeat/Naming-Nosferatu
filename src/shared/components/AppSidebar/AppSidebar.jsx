@@ -46,11 +46,6 @@ export function AppSidebar({
       label: "Tournament",
       icon: TournamentIcon,
     },
-    {
-      key: "photos",
-      label: "Photos",
-      icon: PhotosIcon,
-    },
   ];
 
   const handleLogoClick = () => {
