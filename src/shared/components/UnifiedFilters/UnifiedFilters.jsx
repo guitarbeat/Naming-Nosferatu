@@ -167,23 +167,11 @@ function UnifiedFilters({
 
   // * Action buttons configuration
   const actionButtons = useMemo(() => {
-    if (
-      analysisMode ||
-      (!onToggleShowSelected && !onToggleSwipeMode && !onToggleCatPictures)
-    ) {
+    if (!onToggleSwipeMode && !onToggleCatPictures) {
       return [];
     }
 
     return [
-      {
-        onClick: onToggleShowSelected,
-        isActive: showSelectedOnly,
-        activeLabel: "All",
-        inactiveLabel: "Selected",
-        ariaLabel: showSelectedOnly ? "Show all names" : "Show selected only",
-        condition: selectedCount > 0,
-        key: "selected",
-      },
       {
         onClick: onToggleSwipeMode,
         isActive: isSwipeMode,
@@ -204,14 +192,10 @@ function UnifiedFilters({
       },
     ].filter((btn) => btn.onClick && btn.condition);
   }, [
-    analysisMode,
-    onToggleShowSelected,
     onToggleSwipeMode,
     onToggleCatPictures,
-    showSelectedOnly,
     isSwipeMode,
     showCatPictures,
-    selectedCount,
   ]);
 
   // * Render action buttons group
