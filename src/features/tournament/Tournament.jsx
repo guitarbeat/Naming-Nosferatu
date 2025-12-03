@@ -543,6 +543,8 @@ function TournamentContent({
           onVoteWithAnimation={handleVoteWithAnimation}
           onVoteRetry={handleVoteRetry}
           onDismissError={() => setVotingError(null)}
+          showCatPictures={showCatPictures}
+          imageList={CAT_IMAGES}
         />
 
         {/* Tournament Footer with Controls, Keyboard Help, and Bracket */}
