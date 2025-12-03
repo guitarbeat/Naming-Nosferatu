@@ -425,7 +425,6 @@ function TournamentSetupContent({
     useProfileStats(activeUser);
 
   // * Check URL for analysis mode parameter
-  // const { currentRoute } = useRouting(); // Unused
   const urlParams = new URLSearchParams(
     typeof window !== "undefined" ? window.location.search : "",
   );
