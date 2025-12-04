@@ -133,11 +133,11 @@ function TournamentToolbar({
   return (
     <div className={`${styles.filtersContainer} ${className}`}>
       <div className={styles.resultsCount}>
-        <span className={styles.count}>{filteredCount}</span>
+        <span className={styles.count}>{filteredCount.toLocaleString()}</span>
         {filteredCount !== totalCount && (
           <>
             <span className={styles.separator}>/</span>
-            <span className={styles.total}>{totalCount}</span>
+            <span className={styles.total}>{totalCount.toLocaleString()}</span>
             <span className={styles.badge}>filtered</span>
           </>
         )}
@@ -149,14 +149,56 @@ function TournamentToolbar({
       {isHybrid && (
         <div className={styles.filterRow}>
           <div className={styles.searchBar}>
+            <svg
+              className={styles.searchIcon}
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 12A5 5 0 1 0 7 2a5 5 0 0 0 0 10zM13 13l-3-3"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
             <input
               type="text"
               value={filters.searchTerm || ""}
               onChange={(e) => update("searchTerm", e.target.value)}
-              placeholder="Search..."
+              placeholder="Search names..."
               className={styles.searchInput}
               aria-label="Search cat names"
             />
+            {filters.searchTerm && (
+              <button
+                type="button"
+                onClick={() => update("searchTerm", "")}
+                className={styles.searchClear}
+                aria-label="Clear search"
+                title="Clear search"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M10.5 3.5L3.5 10.5M3.5 3.5L10.5 10.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
           {categories.length > 0 && (
             <FilterSelect
@@ -269,5 +311,9 @@ TournamentToolbar.propTypes = {
   className: PropTypes.string,
 };
 
+TournamentToolbar.displayName = "TournamentToolbar";
+
 const MemoizedTournamentToolbar = React.memo(TournamentToolbar);
+MemoizedTournamentToolbar.displayName = "TournamentToolbar";
+
 export { MemoizedTournamentToolbar as TournamentToolbar };

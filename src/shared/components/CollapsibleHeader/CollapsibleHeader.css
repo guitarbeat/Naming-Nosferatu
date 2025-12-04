@@ -1,31 +1,251 @@
 /**
  * CollapsibleHeader Styles
- * Reuses analysis-mode styles via shared class names to reduce duplication
+ * KISS: Simple, focused styles with clear naming
  */
 
-/* Use shared analysis-header styles when in analysis context */
 .collapsible-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--analysis-gap-md, 12px);
-  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+  transition: 
+    background var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    padding var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-header:hover {
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
 }
 
 .collapsible-header--default {
-  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
-    0 0;
+  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px) 0 0;
 }
 
 .collapsible-header--compact {
+  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
   border-radius: 0;
-  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
 }
 
-/* Share toggle styles with analysis-header-toggle */
-.collapsible-header-toggle,
+/* Minimized collapsed state - truly minimal design */
+.collapsible-header--collapsed {
+  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  opacity: 0.4;
+  min-height: 24px;
+  margin-bottom: var(--analysis-gap-xs, 4px);
+}
+
+.collapsible-header--collapsed:hover {
+  opacity: 0.85;
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 4%));
+  border-bottom-color: var(--analysis-border, rgb(255 255 255 / 10%));
+  border-radius: var(--analysis-radius-sm, 4px);
+}
+
+.collapsible-header--collapsed .collapsible-toggle {
+  gap: var(--analysis-gap-xs, 4px);
+  padding: var(--analysis-gap-xs, 4px) 0;
+  justify-content: flex-start;
+}
+
+.collapsible-header--collapsed .collapsible-chevron {
+  width: 10px;
+  height: 10px;
+  opacity: 0.6;
+}
+
+.collapsible-header--collapsed:hover .collapsible-chevron {
+  opacity: 1;
+}
+
+/* Toggle button - simple and accessible */
+.collapsible-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm, 8px);
+  flex: 1;
+  padding: 0;
+  font-size: var(--analysis-text-body, 0.9375rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--text-primary, #fff);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-toggle:hover {
+  color: var(--analysis-accent, #2ff3e0);
+}
+
+.collapsible-toggle:focus-visible {
+  outline: 2px solid var(--analysis-accent, #2ff3e0);
+  outline-offset: 2px;
+  border-radius: var(--analysis-radius-sm, 4px);
+}
+
+/* Chevron icon - clean SVG animation */
+.collapsible-chevron {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+  color: var(--text-secondary, rgb(255 255 255 / 70%));
+  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
+.collapsible-toggle:hover .collapsible-chevron {
+  color: var(--analysis-accent, #2ff3e0);
+}
+
+/* Icon and title */
+.collapsible-icon {
+  flex-shrink: 0;
+  font-size: 1.1em;
+  line-height: 1;
+  transition: opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+/* Collapsed icon - smaller and more subtle */
+.collapsible-icon-collapsed {
+  flex-shrink: 0;
+  font-size: 0.9em;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-header--collapsed:hover .collapsible-icon-collapsed {
+  opacity: 1;
+}
+
+.collapsible-title {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-semibold, 600);
+  transition: 
+    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    max-width var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+/* Ensure title is completely hidden when collapsed */
+.collapsible-header--collapsed .collapsible-title {
+  display: none;
+}
+
+/* Summary text when collapsed - hidden by default for minimal design */
+.collapsible-summary {
+  display: none;
+}
+
+/* Only show summary if explicitly needed (can be enabled per use case) */
+.collapsible-header--show-summary .collapsible-summary {
+  display: inline-block;
+  margin-left: auto;
+  padding-left: var(--analysis-gap-md, 12px);
+  border-left: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+  font-size: var(--analysis-text-caption, 0.75rem);
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--text-secondary, rgb(255 255 255 / 70%));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40%;
+}
+
+/* Header controls container */
+.collapsible-header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs, 4px);
+  flex-shrink: 0;
+}
+
+/* Actions container */
+.collapsible-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm, 8px);
+  flex-shrink: 0;
+}
+
+/* Minimize button - clean and subtle */
+.collapsible-minimize {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+  border-radius: var(--analysis-radius-sm, 4px);
+  color: var(--text-secondary, rgb(255 255 255 / 70%));
+  cursor: pointer;
+  transition: 
+    background var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    border-color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  flex-shrink: 0;
+}
+
+.collapsible-minimize:hover {
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
+  border-color: var(--analysis-border-accent, rgb(255 255 255 / 15%));
+  color: var(--text-primary, #fff);
+  transform: scale(1.05);
+}
+
+.collapsible-minimize:active {
+  transform: scale(0.95);
+}
+
+.collapsible-minimize-icon {
+  width: 14px;
+  height: 14px;
+  color: currentColor;
+}
+
+/* Collapsible content - simple grid animation */
+.collapsible-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  transition: grid-template-rows var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
+}
+
+.collapsible-content.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.collapsible-content > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.collapsible-content:not(.collapsed) {
+  padding-top: var(--analysis-gap-md, 12px);
+}
+
+/* Backward compatibility - share chevron styles with AnalysisHeader */
+.analysis-header-chevron {
+  display: inline-flex;
+  font-size: 0.75em;
+  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+}
+
+.analysis-header-chevron.collapsed {
+  transform: rotate(-90deg);
+}
+
 .analysis-header-toggle {
   display: flex;
   align-items: center;
@@ -39,42 +259,13 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: color var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+  transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
 }
 
-.collapsible-header-toggle:hover,
 .analysis-header-toggle:hover {
   color: var(--analysis-accent, #2ff3e0);
 }
 
-.collapsible-header-toggle:focus-visible,
-.analysis-header-toggle:focus-visible {
-  outline: 2px solid var(--analysis-accent, #2ff3e0);
-  outline-offset: 2px;
-  border-radius: var(--analysis-radius-sm, 4px);
-}
-
-/* Share chevron styles */
-.collapsible-header-chevron,
-.analysis-header-chevron {
-  display: inline-flex;
-  font-size: 0.75em;
-  transition: transform var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
-}
-
-.collapsible-header-chevron.collapsed,
-.analysis-header-chevron.collapsed {
-  transform: rotate(-90deg);
-}
-
-.collapsible-header-title {
-  flex-shrink: 0;
-}
-
-/* Share summary styles */
-.collapsible-header-summary,
 .analysis-header-summary {
   margin-left: var(--analysis-gap-md, 12px);
   padding-left: var(--analysis-gap-md, 12px);
@@ -87,51 +278,22 @@
   text-overflow: ellipsis;
 }
 
-.collapsible-header-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm, 8px);
-  flex-shrink: 0;
-}
-
-/* Share collapsible content styles */
-.collapsible-content,
-.analysis-dashboard-content {
-  display: grid;
-  grid-template-rows: 1fr;
-  overflow: hidden;
-  transition: grid-template-rows var(--analysis-duration-normal, 200ms)
-    var(--analysis-ease, ease-out);
-}
-
-.collapsible-content.collapsed,
-.analysis-dashboard-content.collapsed {
-  grid-template-rows: 0fr;
-}
-
-.collapsible-content > *,
-.analysis-dashboard-content > * {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.collapsible-content:not(.collapsed),
-.analysis-dashboard-content:not(.collapsed) {
-  padding-top: var(--analysis-gap-md, 12px);
-}
-
+/* Responsive and accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .collapsible-header-chevron,
-  .analysis-header-chevron,
+  .collapsible-chevron,
   .collapsible-content,
-  .analysis-dashboard-content {
+  .analysis-header-chevron {
     transition: none;
   }
 }
 
 @media (width <= 600px) {
-  .collapsible-header-summary,
+  .collapsible-summary,
   .analysis-header-summary {
     display: none;
+  }
+  
+  .collapsible-header {
+    padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
   }
 }

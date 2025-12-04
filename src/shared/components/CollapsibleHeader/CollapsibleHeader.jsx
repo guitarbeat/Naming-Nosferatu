@@ -1,16 +1,65 @@
 /**
  * @module CollapsibleHeader
- * @description Reusable collapsible header component for panels and sections.
- * Provides consistent styling and accessibility for collapsible UI patterns.
+ * @description Simple, reusable collapsible header component.
+ * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
 import PropTypes from "prop-types";
 import "./CollapsibleHeader.css";
 
 /**
+ * Chevron icon component - simple SVG for better control
+ */
+const ChevronIcon = ({ isCollapsed }) => (
+  <svg
+    className={`collapsible-chevron ${isCollapsed ? "collapsed" : ""}`}
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M3 4.5L6 7.5L9 4.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+ChevronIcon.propTypes = {
+  isCollapsed: PropTypes.bool.isRequired,
+};
+
+/**
+ * Minimize icon component
+ */
+const MinimizeIcon = () => (
+  <svg
+    className="collapsible-minimize-icon"
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M3.5 7H10.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+/**
  * Collapsible Header Component
  * @param {Object} props
- * @param {string} props.title - Header title
+ * @param {string} props.title - Header title (required)
  * @param {string} props.icon - Emoji icon (optional)
  * @param {boolean} props.isCollapsed - Current collapsed state
  * @param {Function} props.onToggle - Toggle handler
@@ -19,6 +68,7 @@ import "./CollapsibleHeader.css";
  * @param {string} props.contentId - ID of the controlled content for a11y
  * @param {string} props.className - Additional CSS classes
  * @param {string} props.variant - Style variant: 'default' | 'compact'
+ * @param {boolean} props.showMinimize - Show minimize button (default: true)
  */
 export function CollapsibleHeader({
   title,
@@ -30,32 +80,60 @@ export function CollapsibleHeader({
   contentId,
   className = "",
   variant = "default",
+  showMinimize = true,
 }) {
+  const handleMinimize = (e) => {
+    e.stopPropagation();
+    if (!isCollapsed) {
+      onToggle();
+    }
+  };
+
   return (
-    <div
-      className={`collapsible-header collapsible-header--${variant} ${className}`}
+    <header
+      className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
     >
       <button
         type="button"
-        className="collapsible-header-toggle"
+        className="collapsible-toggle"
         onClick={onToggle}
         aria-expanded={!isCollapsed}
         aria-controls={contentId}
+        aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+        title={isCollapsed ? title : undefined}
       >
-        <span
-          className={`collapsible-header-chevron ${isCollapsed ? "collapsed" : ""}`}
-          aria-hidden="true"
-        >
-          ▼
-        </span>
-        {icon && <span aria-hidden="true">{icon}</span>}
-        <span className="collapsible-header-title">{title}</span>
+        <ChevronIcon isCollapsed={isCollapsed} />
+        {isCollapsed ? (
+          /* Minimal collapsed state - just icon if available */
+          icon && <span className="collapsible-icon-collapsed" aria-hidden="true">{icon}</span>
+        ) : (
+          /* Expanded state - show icon and title */
+          <>
+            {icon && <span className="collapsible-icon" aria-hidden="true">{icon}</span>}
+            <span className="collapsible-title">{title}</span>
+          </>
+        )}
         {isCollapsed && summary && (
-          <span className="collapsible-header-summary">{summary}</span>
+          <span className="collapsible-summary">{summary}</span>
         )}
       </button>
-      {actions && <div className="collapsible-header-actions">{actions}</div>}
-    </div>
+      {!isCollapsed && (
+        <div className="collapsible-header-controls">
+          {actions && <div className="collapsible-actions">{actions}</div>}
+          {showMinimize && (
+            <button
+              type="button"
+              className="collapsible-minimize"
+              onClick={handleMinimize}
+              aria-label={`Minimize ${title}`}
+              title="Minimize"
+            >
+              <MinimizeIcon />
+            </button>
+          )}
+        </div>
+      )}
+    </header>
   );
 }
 
@@ -69,6 +147,7 @@ CollapsibleHeader.propTypes = {
   contentId: PropTypes.string,
   className: PropTypes.string,
   variant: PropTypes.oneOf(["default", "compact"]),
+  showMinimize: PropTypes.bool,
 };
 
 /**

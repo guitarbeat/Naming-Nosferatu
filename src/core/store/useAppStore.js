@@ -8,6 +8,58 @@ import {
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 
+// * Helper to safely apply devtools middleware
+// * Prevents errors when React DevTools extension is installed but API isn't ready
+// * This fixes "Cannot set properties of undefined (setting 'Activity')" errors
+const applyDevtools = (storeImpl, config) => {
+  // * Only apply devtools in development
+  if (process.env.NODE_ENV !== "development") {
+    return storeImpl;
+  }
+
+  // * Check if React DevTools is available before applying devtools
+  // * This prevents errors when the extension is installed but API isn't ready
+  const isReactDevToolsAvailable = () => {
+    try {
+      return (
+        typeof window !== "undefined" &&
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ &&
+        typeof window.__REACT_DEVTOOLS_GLOBAL_HOOK__ === "object"
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  // * Only apply devtools if React DevTools is available
+  // * If not available, use plain store to prevent runtime errors
+  if (!isReactDevToolsAvailable()) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[Zustand] React DevTools not available, using plain store (devtools disabled)",
+      );
+    }
+    return storeImpl;
+  }
+
+  // * Try to apply devtools, but fallback to plain store if it fails
+  try {
+    return devtools(storeImpl, {
+      ...config,
+      enabled: true,
+    });
+  } catch (error) {
+    // * If devtools fails to initialize, fallback to plain store implementation
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[Zustand] DevTools initialization failed, using plain store:",
+        error,
+      );
+    }
+    return storeImpl;
+  }
+};
+
 const THEME_STORAGE_KEY = "theme";
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
 
@@ -167,9 +219,8 @@ const getInitialUserState = () => {
  * Consolidates tournament state, user state, UI state, and actions into a single store.
  */
 
-const useAppStore = create(
-  devtools(
-    (set, get) => ({
+// * Store implementation
+const storeImpl = (set, get) => ({
       // * Tournament State
       tournament: {
         names: null,
@@ -571,12 +622,15 @@ const useAppStore = create(
 
         getCurrentError: () => get().errors.current,
       },
-    }),
-    {
-      name: "name-nosferatu-store",
-      enabled: process.env.NODE_ENV === "development",
-    },
-  ),
+    });
+
+// * Safely apply devtools middleware with error handling
+// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+// * that occur when React DevTools extension is installed but API isn't ready
+const useAppStore = create(
+  applyDevtools(storeImpl, {
+    name: "name-nosferatu-store",
+  }),
 );
 
 // * Hook to initialize store from localStorage

@@ -111,7 +111,7 @@ export function AnalysisBulkActions({
           )}
           {hasExportData && (
             <>
-              {selectedCount > 0 && isAdmin && (
+              {selectedCount > 0 && isAdmin && hasExportData && (
                 <div className="analysis-toolbar-divider" />
               )}
               <AnalysisButton

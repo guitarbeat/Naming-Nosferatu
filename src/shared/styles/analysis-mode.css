@@ -370,17 +370,31 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* ==========================================================================
-   ANALYSIS TOOLBAR - Unified Controls
+   ANALYSIS TOOLBAR - Unified Controls (Improved UX)
    ========================================================================== */
 .analysis-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--analysis-gap-sm);
-  padding: var(--analysis-gap-sm);
+  gap: var(--analysis-gap-md);
+  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
   border-radius: var(--analysis-radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: box-shadow var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-toolbar:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.analysis-toolbar-content {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+  flex: 1;
+  min-width: 0;
 }
 
 .analysis-toolbar-group {
@@ -389,14 +403,36 @@ body:has(.analysis-mode-banner)::after {
   gap: var(--analysis-gap-xs);
 }
 
-.analysis-toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--analysis-border);
-  margin: 0 var(--analysis-gap-xs);
+.analysis-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
-/* * Toolbar selection info */
+.analysis-toolbar-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--analysis-border);
+  margin: 0 var(--analysis-gap-sm);
+  opacity: 0.5;
+}
+
+/* * Toolbar selection badge - improved visual prominence */
+.analysis-selection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs);
+  padding: var(--analysis-gap-xs) var(--analysis-gap-md);
+  background: var(--analysis-accent-subtle);
+  border: 1px solid var(--analysis-border-accent);
+  border-radius: var(--analysis-radius-md);
+  font-size: var(--analysis-text-body);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .analysis-selection {
   display: flex;
   align-items: baseline;
@@ -410,21 +446,25 @@ body:has(.analysis-mode-banner)::after {
   font-size: var(--analysis-text-title);
   font-weight: var(--font-weight-bold);
   color: var(--analysis-accent);
+  line-height: 1;
 }
 
 .analysis-selection-label {
   color: var(--text-secondary);
+  font-size: var(--analysis-text-caption);
+  text-transform: lowercase;
+  font-weight: var(--font-weight-medium);
 }
 
 /* ==========================================================================
-   ANALYSIS BUTTONS - Intentional Actions
+   ANALYSIS BUTTONS - Intentional Actions (Enhanced UX)
    ========================================================================== */
 .analysis-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--analysis-gap-xs);
-  padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
+  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
   font-size: var(--analysis-text-body);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
@@ -435,21 +475,34 @@ body:has(.analysis-mode-banner)::after {
   transition:
     background var(--analysis-duration-fast) var(--analysis-ease),
     border-color var(--analysis-duration-fast) var(--analysis-ease),
-    transform var(--analysis-duration-fast) var(--analysis-ease);
+    transform var(--analysis-duration-fast) var(--analysis-ease),
+    box-shadow var(--analysis-duration-fast) var(--analysis-ease);
+  white-space: nowrap;
+  min-height: 36px;
 }
 
 .analysis-btn:hover:not(:disabled) {
   background: var(--analysis-accent-subtle);
   border-color: var(--analysis-border-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
+}
+
+.analysis-btn-count {
+  font-size: var(--analysis-text-caption);
+  opacity: 0.7;
+  margin-left: 2px;
 }
 
 /* * Primary action button */
