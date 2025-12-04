@@ -174,6 +174,12 @@ These are flagged as unused by knip but ARE actually used via `@components` or `
 26. ✅ Updated documentation (README.md, MIGRATION_GUIDE.md) to reflect current codebase structure and API paths
 27. ✅ Fixed `getPopularityAnalytics()` - migrated 3 direct `supabase` references to use `resolveSupabaseClient()`
 28. ✅ Fixed `/profile` route handling - updated `useTournamentRoutingSync` to redirect to `/tournament?analysis=true` instead of dead route
+29. ✅ Fixed React Hook dependency array bug - added `currentRoute` to dependency array in first `useEffect` to prevent stale closures when query parameters change
+30. ✅ Modernized codebase with React Query (TanStack Query) for modern data fetching patterns
+31. ✅ Added React Query provider and configuration with optimized defaults
+32. ✅ Created modern query hooks (`useSupabaseQuery`, `useSupabaseMutation`) for type-safe data fetching
+33. ✅ Added example modern hook (`useNamesQuery`) demonstrating React Query patterns
+34. ✅ Created modernization guide documenting new patterns and migration path
 
 ### Remaining Unused Exports (144)
 Many of these are false positives (used via barrel imports) or kept for future use:

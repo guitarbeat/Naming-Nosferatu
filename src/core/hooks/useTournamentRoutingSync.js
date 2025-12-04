@@ -66,6 +66,7 @@ export function useTournamentRoutingSync({
       navigateTo("/tournament");
     }
   }, [
+    currentRoute,
     currentView,
     isLoggedIn,
     isTournamentComplete,
