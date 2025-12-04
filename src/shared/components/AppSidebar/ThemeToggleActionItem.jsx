@@ -4,18 +4,15 @@
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { SunIcon, MoonIcon } from "./icons";
 
 /**
  * * Theme toggle action item with conditional icon
  */
 export function ThemeToggleActionItem({ onClick, isLightTheme }) {
-  const { collapsed } = useSidebar();
-
-  const label = isLightTheme ? "Dark Mode" : "Light Mode";
+  const label = isLightTheme ? "Light" : "Dark";
   const ariaLabel = `Switch to ${isLightTheme ? "dark" : "light"} theme`;
-  const title = collapsed ? label : undefined;
 
   return (
     <SidebarMenuItem>
@@ -24,7 +21,10 @@ export function ThemeToggleActionItem({ onClick, isLightTheme }) {
           type="button"
           onClick={onClick}
           aria-label={ariaLabel}
-          title={title}
+          aria-pressed={isLightTheme}
+          className={
+            isLightTheme ? "theme-toggle--light" : "theme-toggle--dark"
+          }
         >
           {isLightTheme ? <SunIcon /> : <MoonIcon />}
           <span>{label}</span>

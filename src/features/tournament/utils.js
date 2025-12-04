@@ -30,9 +30,6 @@ export const getRandomCatImage = (nameId, imageList = CAT_IMAGES) => {
   return list[index];
 };
 
-// * Unused function removed
-// const validateNameObjects = (names) => { ... }
-
 /**
  * Deduplicate images by base name
  * @param {Array<string>} images - Array of image URLs

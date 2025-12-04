@@ -11,7 +11,8 @@ import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./UnifiedFilters.module.css";
 
 // * Filter option constants
-const TOURNAMENT_SORT_OPTIONS = [
+// * TOURNAMENT_SORT_OPTIONS - reserved for future use
+const _TOURNAMENT_SORT_OPTIONS = [
   { value: "alphabetical", label: "A-Z" },
   { value: "rating", label: "Rating" },
   { value: "recent", label: "Recent" },
@@ -79,13 +80,13 @@ function UnifiedFilters({
   showSelectionFilter = false,
   userSelectOptions,
   selectedCount,
-  showSelectedOnly,
-  onToggleShowSelected,
+  showSelectedOnly: _showSelectedOnly,
+  onToggleShowSelected: _onToggleShowSelected,
   isSwipeMode,
   onToggleSwipeMode,
   showCatPictures,
   onToggleCatPictures,
-  analysisMode = false,
+  analysisMode: _analysisMode = false,
   className = "",
 }) {
   // * Memoized user options
@@ -110,8 +111,8 @@ function UnifiedFilters({
     [onFilterChange, filters],
   );
 
-  // * Render count display
-  const renderCount = useCallback(() => {
+  // * Render count display (unused - using renderResultsCount instead)
+  const _renderCount = useCallback(() => {
     const hasSelection = selectedCount !== undefined && selectedCount !== null;
     const hasFilters = filters.category || filters.searchTerm;
 
@@ -184,19 +185,14 @@ function UnifiedFilters({
       {
         onClick: onToggleCatPictures,
         isActive: showCatPictures,
-        activeLabel: "Hide",
-        inactiveLabel: "Cats",
+        activeLabel: "🐱 Hide Cats",
+        inactiveLabel: "🐱 Show Cats",
         ariaLabel: showCatPictures ? "Hide cat pictures" : "Show cat pictures",
         condition: true,
         key: "cats",
       },
     ].filter((btn) => btn.onClick && btn.condition);
-  }, [
-    onToggleSwipeMode,
-    onToggleCatPictures,
-    isSwipeMode,
-    showCatPictures,
-  ]);
+  }, [onToggleSwipeMode, onToggleCatPictures, isSwipeMode, showCatPictures]);
 
   // * Render action buttons group
   const renderActions = useCallback(() => {
@@ -213,8 +209,8 @@ function UnifiedFilters({
     );
   }, [actionButtons, renderActionButton]);
 
-  // * Render select dropdown
-  const renderSelect = useCallback((config) => {
+  // * Render select dropdown (unused - using Select component instead)
+  const _renderSelect = useCallback((config) => {
     const {
       value,
       onChange,

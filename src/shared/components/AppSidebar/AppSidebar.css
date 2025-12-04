@@ -59,6 +59,14 @@
   align-items: center;
   margin-left: auto;
   flex-wrap: nowrap;
+  flex-direction: row; /* * Keep horizontal layout for main actions */
+}
+
+/* * User section - stacked vertically */
+.navbar-section--right .sidebar-group:has(.sidebar-user-display) {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
 }
 
 /* * Breadcrumb in navbar */
@@ -134,219 +142,53 @@
   border-bottom: 1px solid hsl(var(--border) / 30%);
 }
 
-.sidebar-collapse-toggle {
-  position: relative;
+/* * Combined Home/Tournament button */
+.sidebar-home-button {
   display: flex;
-  gap: var(--space-2);
   align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
+  gap: var(--space-2);
+  width: 100%;
   padding: var(--space-2);
-  overflow: visible;
-  color: hsl(var(--muted-foreground));
+  font-weight: 600;
+  color: hsl(var(--foreground));
   background: transparent;
   border: none;
   border-radius: var(--radius-md);
   transition: var(--transition-base);
 }
 
-.sidebar-collapse-toggle:hover {
-  color: hsl(var(--foreground));
-  background: hsl(var(--accent) / 15%);
-  transform: scale(1.05);
+.sidebar-home-button:hover {
+  background: hsl(var(--accent) / 10%);
 }
 
-.sidebar-collapse-toggle:active {
-  transform: scale(0.95);
-}
-
-.sidebar-collapse-toggle:focus-visible {
+.sidebar-home-button:focus-visible {
   outline: 2px solid hsl(var(--neon-cyan));
   outline-offset: 2px;
 }
 
-.sidebar-collapse-toggle svg {
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  transition: transform var(--duration-fast) var(--ease-standard);
-}
-
-.sidebar-collapse-toggle:hover svg {
-  transform: scale(1.1);
-}
-
-/* * Hide text in collapsed state with smooth transition */
-.sidebar--collapsed .sidebar-collapse-toggle span {
-  visibility: hidden;
-  width: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: var(--transition-base);
-}
-
-/* * Ensure text is not truncated when visible */
-.sidebar-collapse-toggle span {
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.sidebar-logo {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  height: 100%;
-  padding: 0 var(--space-3) 0 0;
-  margin-right: var(--space-2);
-  overflow: visible;
-  text-align: center;
-  border-right: 1px solid hsl(var(--border) / 20%);
-}
-
-.sidebar-logo::after {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  width: 1px;
-  height: 50%;
-  content: "";
-  background: linear-gradient(
-    180deg,
-    transparent,
-    hsl(var(--neon-cyan) / 40%),
-    hsl(var(--hot-pink) / 40%),
-    transparent
-  );
-  transform: translateY(-50%);
-}
-
-.sidebar-logo-button {
-  position: relative;
+.sidebar-logo-icon {
   display: flex;
   flex-shrink: 0;
-  flex-direction: row;
-  gap: var(--space-3);
   align-items: center;
   justify-content: center;
-  min-width: 0;
-  padding: var(--space-2);
-  overflow: visible;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-lg);
-  transition: var(--transition-base);
-}
-
-.sidebar-logo-button::before {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  content: "";
-  background: linear-gradient(
-    90deg,
-    transparent,
-    hsl(var(--neon-cyan) / 10%),
-    transparent
-  );
-  transition: left 0.5s ease;
-}
-
-.sidebar-logo-button:hover {
-  background: hsl(var(--accent) / 10%);
-  box-shadow: var(--shadow-cyan);
-}
-
-.sidebar-logo-button:hover::before {
-  left: 100%;
-}
-
-.sidebar-logo-button:focus-visible {
-  outline: 2px solid hsl(var(--neon-cyan));
-  outline-offset: 2px;
+  width: 24px;
+  height: 24px;
 }
 
 .sidebar-logo-video {
-  flex-shrink: 0;
-  width: 44px;
-  height: 44px;
-  border: 2px solid hsl(var(--neon-cyan) / 30%);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 0 0 1px hsl(var(--foreground) / 5%),
-    var(--shadow-cyan);
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid hsl(var(--neon-cyan) / 30%);
+  border-radius: var(--radius-md);
   transition: var(--transition-base);
 }
 
-.sidebar-logo-button:hover .sidebar-logo-video {
+.sidebar-home-button:hover .sidebar-logo-video {
   border-color: hsl(var(--neon-cyan) / 60%);
-  box-shadow:
-    0 0 0 1px hsl(var(--foreground) / 10%),
-    0 8px 24px hsl(var(--neon-cyan) / 25%);
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
-.sidebar-logo-text {
-  display: block;
-  flex-shrink: 0;
-  min-width: max-content;
-  overflow: visible;
-  text-overflow: unset;
-  font-size: var(--text-lg);
-  font-weight: 800;
-  color: hsl(var(--foreground));
-  white-space: nowrap;
-  background: linear-gradient(
-    135deg,
-    hsl(var(--foreground)),
-    hsl(var(--neon-cyan) / 80%)
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: var(--transition-base);
-}
-
-.sidebar-logo-button:hover .sidebar-logo-text {
-  filter: drop-shadow(0 0 12px hsl(var(--neon-cyan) / 40%));
-  transform: translateX(2px);
-}
-
-.sidebar--collapsed .sidebar-logo-button {
-  justify-content: center;
-}
-
-/* Collapsed layout centering fixes */
-.sidebar--collapsed .sidebar-top-controls {
-  justify-content: center;
-  padding: var(--space-2);
-}
-
-.sidebar--collapsed .sidebar-logo {
-  padding: 0 var(--space-2);
-  margin-right: var(--space-2);
-  text-align: center;
-}
-
-.sidebar--collapsed .sidebar-logo-button {
-  gap: var(--space-2);
-  justify-content: center;
-  padding: var(--space-2);
-}
-
-.sidebar--collapsed .sidebar-menu {
-  align-items: center;
-}
-
-.sidebar--collapsed .sidebar-menu-button {
-  width: auto;
-  min-width: 44px;
-}
-
-/* * Admin indicator for profile button (collapsed state only) */
+/* * Admin indicator for profile button */
 .sidebar-admin-indicator {
   display: inline-flex;
   align-items: center;
@@ -356,12 +198,6 @@
   color: hsl(var(--hot-pink));
   opacity: 0.9;
   filter: drop-shadow(0 1px 2px hsl(var(--background) / 30%));
-}
-
-/* * Admin indicator styling in collapsed state */
-.sidebar--collapsed .sidebar-admin-indicator {
-  font-size: var(--text-sm);
-  margin-left: 0;
 }
 
 /* * Admin profile button - subtle right edge indicator */
@@ -498,47 +334,16 @@
   background: hsl(var(--accent) / 10%);
 }
 
-:root[data-theme="light"] .sidebar-logo {
-  border-bottom-color: hsl(var(--border) / 30%);
-}
-
-:root[data-theme="light"] .sidebar-logo::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    hsl(var(--neon-cyan) / 25%),
-    hsl(var(--hot-pink) / 25%),
-    transparent
-  );
-}
-
-:root[data-theme="light"] .sidebar-logo-button:hover {
+:root[data-theme="light"] .sidebar-home-button:hover {
   background: hsl(var(--accent) / 8%);
 }
 
 :root[data-theme="light"] .sidebar-logo-video {
   border-color: hsl(var(--neon-cyan) / 20%);
-  box-shadow:
-    0 0 0 1px hsl(var(--foreground) / 5%),
-    0 4px 12px hsl(var(--neon-cyan) / 10%);
 }
 
-:root[data-theme="light"] .sidebar-logo-button:hover .sidebar-logo-video {
+:root[data-theme="light"] .sidebar-home-button:hover .sidebar-logo-video {
   border-color: hsl(var(--neon-cyan) / 40%);
-  box-shadow:
-    0 0 0 1px hsl(var(--foreground) / 10%),
-    0 6px 20px hsl(var(--neon-cyan) / 20%);
-}
-
-:root[data-theme="light"] .sidebar-logo-text {
-  text-shadow: none;
-  background: linear-gradient(
-    135deg,
-    hsl(var(--foreground)),
-    hsl(var(--neon-cyan) / 70%)
-  );
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 :root[data-theme="light"] .sidebar-user-info {
@@ -588,32 +393,15 @@
     padding: 0 var(--space-2);
   }
 
-  .sidebar-logo {
-    padding: 0;
-    margin-right: var(--space-2);
-    border-right: none;
-  }
-
-  .sidebar-logo::after {
-    display: none;
-  }
-
-  .sidebar-logo-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .sidebar-home-button {
     min-width: 44px;
     min-height: 44px;
     padding: var(--space-1);
   }
 
   .sidebar-logo-video {
-    width: 32px;
-    height: 32px;
-  }
-
-  .sidebar-logo-text {
-    display: none;
+    width: 20px;
+    height: 20px;
   }
 
   .navbar-breadcrumb,

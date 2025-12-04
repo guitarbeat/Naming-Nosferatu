@@ -530,6 +530,8 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
   transition: all var(--duration-normal) var(--ease-out);
+  /* * Smooth scale animation for better feedback */
+  will-change: transform, box-shadow;
 }
 
 .soundToggleButton:hover:not(:disabled) {
@@ -540,7 +542,8 @@
 }
 
 .soundToggleButton:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.95);
+  transition: transform 0.1s ease-out;
 }
 
 .soundToggleButton.muted {
@@ -553,6 +556,21 @@
   color: var(--error-600);
   background: rgb(var(--error-rgb) / 15%);
   border-color: var(--error-400);
+}
+
+/* * Enhanced visual feedback for active toggle states (cats toggle, shuffle) */
+.soundToggleButton.muted:not(.error) {
+  /* * Subtle glow effect for active toggles */
+  box-shadow:
+    0 0 0 2px var(--primary-300),
+    0 2px 8px rgb(var(--primary-rgb) / 20%);
+}
+
+.soundToggleButton.muted:not(.error):hover {
+  box-shadow:
+    0 0 0 2px var(--primary-400),
+    0 4px 12px rgb(var(--primary-rgb) / 30%);
+  transform: translateY(-2px) scale(1.05);
 }
 
 .soundToggleButton.error {

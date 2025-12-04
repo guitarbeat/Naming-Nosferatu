@@ -1,17 +1,19 @@
 /* UserDisplay Component - Minimal, Intentional Design */
 
 .sidebar-user-display {
-  /* * Positioned in horizontal navbar */
+  /* * Stacked vertically with logout */
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0 clamp(0.5rem, 1.5vw, 0.75rem);
-  margin-left: clamp(0.5rem, 1.5vw, 0.75rem);
-  border-left: 1px solid rgb(255 255 255 / 8%);
+  padding: var(--space-2) clamp(0.5rem, 1.5vw, 0.75rem);
+  margin: 0;
+  border-left: none;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   min-width: 0;
+  width: 100%;
 }
 
 .sidebar-user-display::before {
@@ -37,7 +39,6 @@
   min-height: 2rem;
 }
 
-/* * Collapsed state: show initial in circle */
 .sidebar-user-display__icon {
   position: relative;
   display: flex;
@@ -187,14 +188,6 @@
 }
 
 /* * Collapsed sidebar adjustments */
-.sidebar--collapsed .sidebar-user-display {
-  padding: 0 0.5rem;
-  margin-left: 0.5rem;
-}
-
-.sidebar--collapsed .sidebar-user-display__text {
-  display: none;
-}
 
 /* * Mobile responsive */
 @media (width <= 768px) {

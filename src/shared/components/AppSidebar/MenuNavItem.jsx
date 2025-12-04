@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 /**
  * * Reusable navigation item component
@@ -16,7 +16,6 @@ import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
  * @param {Function} props.onClick - Click handler that receives the item key
  */
 export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
-  const { collapsed } = useSidebar();
   const isActive = view === itemKey.toLowerCase();
 
   const handleClick = (e) => {
@@ -32,7 +31,6 @@ export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
           onClick={handleClick}
           className={isActive ? "active" : ""}
           aria-current={isActive ? "page" : undefined}
-          title={collapsed ? label : undefined}
         >
           <Icon />
           <span>{label}</span>

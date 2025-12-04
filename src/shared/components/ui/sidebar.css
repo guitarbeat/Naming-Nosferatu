@@ -44,13 +44,6 @@
   z-index: 2;
 }
 
-.sidebar--collapsed {
-  min-height: 50px;
-
-  /* * Enhanced collapsed state animation */
-  transform: translateY(0);
-}
-
 /* * Smooth expand/collapse animation */
 .sidebar {
   animation: sidebarSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -144,11 +137,6 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   white-space: nowrap;
-}
-
-.sidebar--collapsed .sidebar-group-label {
-  visibility: hidden;
-  opacity: 0;
 }
 
 .sidebar-group-content {
@@ -297,55 +285,6 @@
   filter: drop-shadow(0 0 6px rgb(var(--neon-cyan-rgb), 0.4));
 }
 
-/* Collapsed state */
-.sidebar-menu-button--collapsed {
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-}
-
-.sidebar--collapsed .sidebar-menu-button {
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  min-width: 48px;
-  height: 48px;
-  padding: 0.5rem 0.75rem;
-}
-
-.sidebar--collapsed .sidebar-menu-button svg {
-  width: 20px;
-  height: 20px;
-}
-
-.sidebar--collapsed .sidebar-menu-button span {
-  visibility: hidden;
-  width: 0;
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-
-/* Ensure items are visually centered in collapsed mode */
-.sidebar--collapsed .sidebar-group-content {
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar--collapsed .sidebar-menu {
-  justify-content: center;
-}
-
-.sidebar--collapsed .sidebar-group-label {
-  display: none;
-}
-
-/* * Enhanced collapsed state with tooltip-like glow */
-.sidebar--collapsed .sidebar-menu-button:hover {
-  box-shadow: 0 8px 24px rgb(var(--neon-cyan-rgb), 0.25);
-  transform: scale(1.05);
-}
-
 /* Light theme */
 :root[data-theme="light"] .sidebar {
   background: rgb(255 255 255 / 90%);
@@ -413,23 +352,11 @@
     min-height: 64px;
   }
 
-  .app--sidebar-collapsed .sidebar {
-    /* * Even when collapsed, horizontal navbar stays full width */
-    width: 100%;
-  }
-
   /* * Improve touch targets on mobile */
   .sidebar-menu-button {
     min-height: 44px;
     min-width: 44px;
     padding: 0.5rem 0.75rem;
-    flex-shrink: 0;
-  }
-
-  .sidebar-collapse-toggle {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
     flex-shrink: 0;
   }
 

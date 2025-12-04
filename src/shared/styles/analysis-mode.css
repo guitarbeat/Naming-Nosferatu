@@ -706,10 +706,23 @@ body:has(.analysis-mode-banner)::after {
   gap: var(--analysis-gap-sm);
 }
 
+.analysis-mode-banner-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-xs);
+  flex: 1;
+}
+
 .analysis-mode-banner-text {
   font-size: var(--analysis-text-body);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+}
+
+.analysis-mode-banner-description {
+  font-size: var(--analysis-text-caption);
+  color: var(--text-secondary);
+  opacity: 0.85;
 }
 
 .analysis-mode-banner-shortcut {

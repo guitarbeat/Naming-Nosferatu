@@ -16,7 +16,6 @@ import { withRetry, createResilientFunction, CircuitBreaker } from "./retry";
 import { getGlobalScope } from "./helpers";
 import { ERROR_SEVERITY } from "./constants";
 
-// * Re-export constants for convenience
 export { ERROR_SEVERITY } from "./constants";
 
 /**
@@ -228,10 +227,6 @@ export class ErrorManager {
     };
   }
 }
-
-// * Unused convenience function removed (use ErrorManager.handleError directly)
-// const handleError = (error, context, metadata) =>
-//   ErrorManager.handleError(error, context, metadata);
 
 export const setupGlobalErrorHandling = () =>
   ErrorManager.setupGlobalErrorHandling();

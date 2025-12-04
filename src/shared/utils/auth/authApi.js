@@ -66,7 +66,7 @@ const getRoleSourceOrder = (state) => {
 
   const preferred =
     state.preferredRoleSource &&
-    !state.disabledSources.has(state.preferredRoleSource)
+      !state.disabledSources.has(state.preferredRoleSource)
       ? state.preferredRoleSource
       : ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -162,7 +162,6 @@ const fetchUserRole = async (activeSupabase, userName) => {
  * @param {string} requiredRole - The minimum role required
  * @returns {Promise<boolean>} True if user has the required role or higher
  */
-// export async function hasRole(userName, requiredRole) {
 async function _hasRole(userName, requiredRole) {
   if (!userName || !requiredRole) return false;
 

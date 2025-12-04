@@ -17,5 +17,4 @@ export {
   getUserStats,
 } from "./legacy/supabaseClient";
 
-// * Import imagesAPI separately to avoid circular dependency
 export { imagesAPI } from "./legacy/supabaseClient";

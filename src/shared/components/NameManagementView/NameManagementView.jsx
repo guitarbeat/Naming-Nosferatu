@@ -591,7 +591,9 @@ export function NameManagementView({
         >
           {extensions.nameGrid ? (
             typeof extensions.nameGrid === "function" ? (
-              extensions.nameGrid()
+              // * Use React.createElement to create component inside Provider
+              // * This ensures the component renders with access to context
+              React.createElement(() => extensions.nameGrid())
             ) : React.isValidElement(extensions.nameGrid) ? (
               // * Clone element to ensure it has access to context
               React.cloneElement(extensions.nameGrid)

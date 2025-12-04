@@ -8,15 +8,15 @@ import {
   Sidebar,
   SidebarGroup,
   SidebarGroupContent,
-  useSidebar,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "../ui/sidebar";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, LogoutIcon } from "./icons";
-import { useRouting } from "@hooks/useRouting";
+import { TournamentIcon, LogoutIcon, PhotosIcon, SuggestIcon } from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -29,8 +29,9 @@ export function AppSidebar({
   onStartNewTournament: _onStartNewTournament,
   isLightTheme,
   onThemeChange,
+  onOpenSuggestName,
+  onOpenPhotos,
 }) {
-  const { collapsed, toggleCollapsed } = useSidebar();
 
   // * Define navigation items - data-driven approach
   const navItems = [
@@ -41,78 +42,60 @@ export function AppSidebar({
     },
   ];
 
-  const handleLogoClick = () => {
-    // * Toggle navbar collapse/expand on logo/avatar click
-    toggleCollapsed();
-  };
-
-  const logoButtonLabel = collapsed
-    ? "Expand sidebar and go to home page"
-    : "Collapse sidebar and go to home page";
-
   return (
-    <Sidebar className="app-sidebar" collapsible>
-      {/* * Screen reader announcements */}
-      <div aria-live="polite" aria-atomic="true" className="sr-only">
-        {collapsed ? "Navbar collapsed" : "Navbar expanded"}
-      </div>
+    <Sidebar className="app-sidebar">
       <div className="navbar-content">
-        {/* Left Section: Logo + Navigation */}
+        {/* Left Section: Combined Logo/Home Button */}
         <NavbarSection className="navbar-left">
-          {/* Logo Section */}
-          <div className="sidebar-logo">
-            <button
-              type="button"
-              onClick={handleLogoClick}
-              className="sidebar-logo-button"
-              aria-label={logoButtonLabel}
-              title={logoButtonLabel}
-            >
-              <video
-                className="sidebar-logo-video"
-                width="96"
-                height="96"
-                muted
-                loop
-                autoPlay
-                playsInline
-                preload="none"
-                aria-label="Cat animation"
-                onError={(e) => {
-                  // * Fallback to image if video fails to load
-                  e.target.style.display = "none";
-                  const img = e.target.nextElementSibling;
-                  if (img) img.style.display = "block";
-                }}
-              >
-                <source src="/assets/images/cat.webm" type="video/webm" />
-                <img
-                  src="/assets/images/cat.gif"
-                  alt="Cat animation"
-                  width="96"
-                  height="96"
-                  loading="lazy"
-                  decoding="async"
-                  fetchPriority="low"
-                  style={{ display: "none" }}
-                />
-              </video>
-            </button>
-          </div>
-
-          {/* Main Navigation */}
           <SidebarGroup open={true}>
             <SidebarGroupContent>
-              {navItems.map((item) => (
-                <MenuNavItem
-                  key={item.key}
-                  itemKey={item.key}
-                  icon={item.icon}
-                  label={item.label}
-                  view={view}
-                  onClick={setView}
-                />
-              ))}
+              {/* Combined Logo + Tournament Home Button */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <button
+                    type="button"
+                    onClick={() => setView("tournament")}
+                    className="sidebar-home-button"
+                    aria-label="Go to Tournament home"
+                  >
+                    <div className="sidebar-logo-icon">
+                      <video
+                        className="sidebar-logo-video"
+                        width="24"
+                        height="24"
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        preload="none"
+                        aria-label="Cat animation"
+                        onError={(e) => {
+                          // * Fallback to image if video fails to load
+                          e.target.style.display = "none";
+                          const img = e.target.nextElementSibling;
+                          if (img) img.style.display = "block";
+                        }}
+                      >
+                        <source
+                          src="/assets/images/cat.webm"
+                          type="video/webm"
+                        />
+                        <img
+                          src="/assets/images/cat.gif"
+                          alt="Cat animation"
+                          width="24"
+                          height="24"
+                          loading="lazy"
+                          decoding="async"
+                          fetchPriority="low"
+                          style={{ display: "none" }}
+                        />
+                      </video>
+                    </div>
+                    <span>Tournament</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>
@@ -122,26 +105,48 @@ export function AppSidebar({
           {/* Actions Section */}
           <SidebarGroup open={true}>
             <SidebarGroupContent>
+              {/* Suggest a Name */}
+              <MenuActionItem
+                icon={SuggestIcon}
+                label="Suggest Name"
+                onClick={onOpenSuggestName}
+                className="sidebar-suggest-button"
+                ariaLabel="Suggest a new cat name"
+                condition={true}
+              />
+
+              {/* Cat Gallery */}
+              <MenuActionItem
+                icon={PhotosIcon}
+                label="Gallery"
+                onClick={onOpenPhotos}
+                className="sidebar-gallery-button"
+                ariaLabel="View cat photo gallery"
+                condition={true}
+              />
+
               {/* Theme Toggle */}
               <ThemeToggleActionItem
                 onClick={onThemeChange}
                 isLightTheme={isLightTheme}
               />
-
-              {/* Logout */}
-              <MenuActionItem
-                icon={LogoutIcon}
-                label="Logout"
-                onClick={onLogout}
-                className="sidebar-logout-button"
-                condition={isLoggedIn}
-              />
             </SidebarGroupContent>
           </SidebarGroup>
 
-          {/* User Display - After actions */}
+          {/* User Display and Logout - Stacked vertically */}
           {isLoggedIn && userName && (
-            <UserDisplay userName={userName} isAdmin={isAdmin} />
+            <SidebarGroup open={true}>
+              <SidebarGroupContent>
+                <UserDisplay userName={userName} isAdmin={isAdmin} />
+                <MenuActionItem
+                  icon={LogoutIcon}
+                  label="Logout"
+                  onClick={onLogout}
+                  className="sidebar-logout-button"
+                  condition={isLoggedIn}
+                />
+              </SidebarGroupContent>
+            </SidebarGroup>
           )}
         </NavbarSection>
       </div>
@@ -159,4 +164,6 @@ AppSidebar.propTypes = {
   onStartNewTournament: PropTypes.func,
   isLightTheme: PropTypes.bool.isRequired,
   onThemeChange: PropTypes.func.isRequired,
+  onOpenSuggestName: PropTypes.func,
+  onOpenPhotos: PropTypes.func,
 };

@@ -87,3 +87,10 @@ export const PhotosIcon = () => (
     <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
   </Icon>
 );
+
+export const SuggestIcon = () => (
+  <Icon name="suggest">
+    <path d="M12 2v20M2 12h20" />
+    <circle cx="12" cy="12" r="3" />
+  </Icon>
+);

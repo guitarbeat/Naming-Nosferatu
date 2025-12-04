@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 /**
  * * Reusable action item component
@@ -24,8 +24,6 @@ export function MenuActionItem({
   ariaLabel,
   condition = true,
 }) {
-  const { collapsed } = useSidebar();
-
   if (!condition) {
     return null;
   }
@@ -40,7 +38,6 @@ export function MenuActionItem({
           onClick={onClick}
           className={className}
           aria-label={buttonAriaLabel}
-          title={collapsed ? label : undefined}
         >
           <Icon />
           <span>{label}</span>
