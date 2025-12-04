@@ -4,18 +4,11 @@
  * All components are re-exported from AnalysisPanel.jsx for backward compatibility
  */
 
+// * Main exports - only export what's actually used externally
 export {
   AnalysisPanel,
-  AnalysisBadge,
-  AnalysisHeader,
-  AnalysisStats,
   AnalysisToolbar,
   AnalysisButton,
-  AnalysisFilters,
-  AnalysisFilter,
-  AnalysisSearch,
-  AnalysisHighlights,
-  AnalysisProgress,
   AnalysisToggle,
   AnalysisModeBanner,
 } from "./AnalysisPanel";

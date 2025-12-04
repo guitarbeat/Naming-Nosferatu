@@ -40,18 +40,10 @@ AnalysisPanel.propTypes = {
   className: PropTypes.string,
 };
 
-// Re-export all sub-components for backward compatibility
+// Re-export only components used externally
 export {
-  AnalysisBadge,
-  AnalysisHeader,
-  AnalysisStats,
   AnalysisToolbar,
   AnalysisButton,
-  AnalysisFilters,
-  AnalysisFilter,
-  AnalysisSearch,
-  AnalysisHighlights,
-  AnalysisProgress,
   AnalysisToggle,
   AnalysisModeBanner,
 } from "./components";
