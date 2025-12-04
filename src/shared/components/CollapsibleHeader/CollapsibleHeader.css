@@ -442,7 +442,7 @@
 .collapsible-minimize-icon {
   width: 14px;
   height: 14px;
-  color: currentColor;
+  color: currentcolor;
   stroke-width: 2;
 }
 
@@ -486,7 +486,7 @@
 .collapsible-restore-icon {
   width: 12px;
   height: 12px;
-  color: currentColor;
+  color: currentcolor;
 }
 
 /* Integrated toolbar below header */

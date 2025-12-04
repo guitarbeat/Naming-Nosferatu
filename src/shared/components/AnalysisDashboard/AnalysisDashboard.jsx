@@ -170,7 +170,7 @@ export function AnalysisDashboard({
   );
 
   const handleHideName = useCallback(
-    async (nameId, name) => {
+    async (nameId, _name) => {
       if (!isAdmin || !userName) {
         devError("[AnalysisDashboard] Cannot hide: not admin or no userName");
         return;
@@ -243,9 +243,9 @@ export function AnalysisDashboard({
 
   // * Get context for filtering (optional - only if available)
   const toolbarContext = useNameManagementContextSafe();
-  const filters = toolbarContext?.filterConfig || {};
 
   const displayNames = useMemo(() => {
+    const filters = toolbarContext?.filterConfig || {};
     let names = [];
 
     if (isAdmin && consolidatedNames.length > 0) {
@@ -369,7 +369,6 @@ export function AnalysisDashboard({
     sortField,
     sortDirection,
     toolbarContext,
-    filters,
   ]);
 
   const summaryStats = useMemo(() => {

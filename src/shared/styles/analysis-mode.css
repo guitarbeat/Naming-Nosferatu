@@ -212,7 +212,7 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* Direct children that need padding (excluding headers and content wrappers) */
-.analysis-panel > *:not(.collapsible-header):not(.analysis-header):not(.collapsible-content):not(.analysis-dashboard-content):not(.top-names-list):not(.admin-analytics-table-container):not(.collapsible-content-inner) {
+.analysis-panel > *:not(.collapsible-header, .analysis-header, .collapsible-content, .analysis-dashboard-content, .top-names-list, .admin-analytics-table-container, .collapsible-content-inner) {
   padding: var(--analysis-gap-lg, 16px);
   padding-top: var(--analysis-gap-md, 12px);
   margin: 0;
@@ -467,12 +467,12 @@ body:has(.analysis-mode-banner)::after {
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
   border-radius: var(--analysis-radius-lg);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
   transition: box-shadow var(--analysis-duration-fast) var(--analysis-ease);
 }
 
 .analysis-toolbar:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
 }
 
 .analysis-toolbar-content {
@@ -571,12 +571,12 @@ body:has(.analysis-mode-banner)::after {
   background: var(--analysis-accent-subtle);
   border-color: var(--analysis-border-accent);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .analysis-btn:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
 }
 
 .analysis-btn:disabled {

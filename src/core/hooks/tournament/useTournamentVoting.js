@@ -12,7 +12,7 @@ import {
  */
 export function useTournamentVoting({
   names = [],
-  userName,
+  userName: _userName,
   currentMatch,
   currentMatchNumber,
   roundNumber,

@@ -21,6 +21,7 @@
   justify-content: flex-start;
   min-width: 0;
 }
+
 .sidebar-user-display__text {
   display: flex;
   flex-direction: row;

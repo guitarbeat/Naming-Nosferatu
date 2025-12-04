@@ -31,6 +31,7 @@ export { default as FormField } from "./Form/FormField";
 export {
   NameManagementView,
   useNameManagementContext,
+  useNameManagementContextSafe,
 } from "./NameManagementView/NameManagementView";
 
 // * Analysis Mode Components

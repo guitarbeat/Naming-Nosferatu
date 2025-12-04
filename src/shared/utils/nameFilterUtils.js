@@ -109,7 +109,7 @@ export function applyNameFilters(names, filters = {}) {
       case "losses":
         comparison = (a.losses || 0) - (b.losses || 0);
         break;
-      case "winRate":
+      case "winRate": {
         const aWinRate = a.wins && (a.wins + a.losses) > 0
           ? a.wins / (a.wins + a.losses)
           : 0;
@@ -118,11 +118,13 @@ export function applyNameFilters(names, filters = {}) {
           : 0;
         comparison = aWinRate - bWinRate;
         break;
-      case "created":
+      }
+      case "created": {
         const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
         const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
         comparison = aDate - bDate;
         break;
+      }
       case "popularity":
         comparison = (a.popularity_score || 0) - (b.popularity_score || 0);
         break;
