@@ -74,6 +74,7 @@ export function NameGrid({
       searchTerm: filters.searchTerm,
       category: filters.category,
       sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder || "desc",
       visibility,
       isAdmin,
     });
@@ -184,7 +185,8 @@ NameGrid.propTypes = {
     searchTerm: PropTypes.string,
     category: PropTypes.string,
     sortBy: PropTypes.string,
-    filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
+    sortOrder: PropTypes.oneOf(["asc", "desc"]),
+    filterStatus: PropTypes.oneOf(["active", "visible", "hidden", "all"]),
   }),
   isAdmin: PropTypes.bool,
   showSelectedOnly: PropTypes.bool,

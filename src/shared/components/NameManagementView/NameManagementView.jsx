@@ -194,6 +194,7 @@ export function NameManagementView({
         searchTerm,
         category: selectedCategory,
         sortBy,
+        sortOrder,
       };
     } else {
       return {
@@ -349,8 +350,9 @@ export function NameManagementView({
       searchTerm,
       category: selectedCategory,
       sortBy,
+      sortOrder,
     }),
-    [searchTerm, selectedCategory, sortBy]
+    [searchTerm, selectedCategory, sortBy, sortOrder]
   );
 
   // * Loading state - check after all hooks
