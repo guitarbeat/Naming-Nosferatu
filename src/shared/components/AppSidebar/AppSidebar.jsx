@@ -34,7 +34,7 @@ export function AppSidebar({
   onOpenPhotos,
 }) {
   const navRef = useRef(null);
-  const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
+  const [indicator, setIndicator] = useState({ left: 0, width: 12, opacity: 0, translateY: 0 });
 
   // * Check if analysis mode is active
   const isAnalysisMode =
@@ -42,26 +42,66 @@ export function AppSidebar({
       ? new URLSearchParams(window.location.search).get("analysis") === "true"
       : false;
 
-  // * Update sliding indicator position
-  const updateIndicator = useCallback(() => {
+  // * Update sliding indicator position with bounce animation
+  const updateIndicator = useCallback((animate = false) => {
     if (!navRef.current) return;
     const activeItem = navRef.current.querySelector('[data-active="true"]');
     if (activeItem) {
       const navRect = navRef.current.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
-      setIndicator({
-        left: itemRect.left - navRect.left,
-        width: itemRect.width,
-        opacity: 1,
-      });
+      const centerX = itemRect.left - navRect.left + itemRect.width / 2 - 6;
+      
+      if (animate) {
+        // Bounce animation
+        const start = indicator.left;
+        const end = centerX;
+        const startTime = Date.now();
+        const duration = 500;
+        
+        const animateStep = () => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+          const currentX = start + (end - start) * eased;
+          const bounceY = -40 * (4 * eased * (1 - eased)); // Parabolic bounce
+          
+          setIndicator({
+            left: currentX,
+            width: 12,
+            opacity: 1,
+            translateY: bounceY,
+          });
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateStep);
+          } else {
+            setIndicator({ left: end, width: 12, opacity: 1, translateY: 0 });
+          }
+        };
+        
+        requestAnimationFrame(animateStep);
+      } else {
+        setIndicator({
+          left: centerX,
+          width: 12,
+          opacity: 1,
+          translateY: 0,
+        });
+      }
     }
-  }, []);
+  }, [indicator.left]);
 
   useEffect(() => {
-    updateIndicator();
-    window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
-  }, [updateIndicator, view, isAnalysisMode]);
+    // Initial position without animation
+    setTimeout(() => updateIndicator(false), 100);
+    window.addEventListener("resize", () => updateIndicator(false));
+    return () => window.removeEventListener("resize", () => updateIndicator(false));
+  }, [updateIndicator]);
+
+  useEffect(() => {
+    // Animate on view/mode change
+    updateIndicator(true);
+  }, [view, isAnalysisMode, updateIndicator]);
 
   // * Toggle analysis mode
   const handleAnalysisToggle = () => {
@@ -162,12 +202,13 @@ export function AppSidebar({
                 />
               ))}
 
-              {/* Sliding indicator */}
+              {/* Sliding indicator with bounce */}
               <div
                 className="navbar-indicator"
                 style={{
-                  transform: `translateX(${indicator.left}px)`,
+                  transform: `translateX(${indicator.left}px) translateY(${indicator.translateY}px)`,
                   width: `${indicator.width}px`,
+                  height: `${indicator.width}px`,
                   opacity: indicator.opacity,
                 }}
               />
