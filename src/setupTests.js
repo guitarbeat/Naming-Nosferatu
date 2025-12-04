@@ -1,5 +1,6 @@
 // * Test setup file for vitest
 import { vi } from "vitest";
+import React from "react";
 import "@testing-library/jest-dom";
 
 // * Mock localStorage
@@ -79,3 +80,26 @@ vi.mock("../shared/services/supabase/client", () => ({
 vi.mock("@supabase/supabase-js", () => ({
   createClient: vi.fn(() => mockSupabase),
 }));
+
+// * Mock react-responsive-masonry for test environment
+// * This library has issues with property setters in test environments
+vi.mock("react-responsive-masonry", () => {
+  const MockMasonry = ({ children, className }) =>
+    React.createElement(
+      "div",
+      { className, "data-testid": "masonry" },
+      children,
+    );
+
+  const MockResponsiveMasonry = ({ children, className }) =>
+    React.createElement(
+      "div",
+      { className, "data-testid": "responsive-masonry" },
+      children,
+    );
+
+  return {
+    default: MockMasonry,
+    ResponsiveMasonry: MockResponsiveMasonry,
+  };
+});

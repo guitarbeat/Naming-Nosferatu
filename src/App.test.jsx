@@ -1,5 +1,5 @@
 import React, { useSyncExternalStore } from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 function isPlainObject(value) {
@@ -159,12 +159,13 @@ vi.mock("@components/ViewRouter/ViewRouter", () => ({
   default: () => <div data-testid="view-router" />,
 }));
 
-vi.mock("@components/PerformanceDashboard", () => ({
-  default: ({ isVisible }) =>
-    isVisible ? (
-      <div data-testid="performance-dashboard">Performance Dashboard</div>
-    ) : null,
-}));
+// * PerformanceDashboard mock removed - feature no longer exists
+// vi.mock("@components/PerformanceDashboard", () => ({
+//   default: ({ isVisible }) =>
+//     isVisible ? (
+//       <div data-testid="performance-dashboard">Performance Dashboard</div>
+//     ) : null,
+// }));
 
 vi.mock("./shared/components/AppSidebar/AppSidebar", () => ({
   AppSidebar: () => (
@@ -177,7 +178,7 @@ vi.mock("./shared/components/AppSidebar/AppSidebar", () => ({
 }));
 
 import App from "./App";
-import { __resetMockState, __setMockState } from "@core/store/useAppStore";
+import { __resetMockState } from "@core/store/useAppStore";
 
 describe("App", () => {
   beforeEach(() => {
@@ -210,26 +211,27 @@ describe("App", () => {
     expect(overlayMessage.closest(".global-loading-overlay")).not.toBeNull();
   });
 
-  it("renders the admin performance dashboard when toggled on", async () => {
-    __resetMockState({
-      user: { isLoggedIn: true, isAdmin: true },
-      ui: { showPerformanceDashboard: false },
-    });
-
-    render(<App />);
-
-    expect(
-      screen.queryByTestId("performance-dashboard"),
-    ).not.toBeInTheDocument();
-
-    await act(async () => {
-      __setMockState({
-        ui: { showPerformanceDashboard: true },
-      });
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId("performance-dashboard")).toBeVisible();
-    });
-  });
+  // * PerformanceDashboard feature removed - test disabled
+  // it("renders the admin performance dashboard when toggled on", async () => {
+  //   __resetMockState({
+  //     user: { isLoggedIn: true, isAdmin: true },
+  //     ui: { showPerformanceDashboard: false },
+  //   });
+  //
+  //   render(<App />);
+  //
+  //   expect(
+  //     screen.queryByTestId("performance-dashboard"),
+  //   ).not.toBeInTheDocument();
+  //
+  //   await act(async () => {
+  //     __setMockState({
+  //       ui: { showPerformanceDashboard: true },
+  //     });
+  //   });
+  //
+  //   await waitFor(() => {
+  //     expect(screen.getByTestId("performance-dashboard")).toBeVisible();
+  //   });
+  // });
 });

@@ -43,261 +43,41 @@
   border-radius: 0;
 }
 
-/* Minimized collapsed state - circular design */
+/* Minimized collapsed state - simple compact design */
 .collapsible-header--collapsed {
-  padding: 0;
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 4%));
-  border: 1px solid var(--analysis-border, rgb(255 255 255 / 10%));
-  border-radius: 50%; /* Perfect circle */
-  opacity: 0.7;
-  width: 44px; /* Circular - equal width and height */
-  height: 44px; /* Better touch target - accessible size */
-  min-width: 44px;
-  min-height: 44px;
-  max-width: 44px;
-  max-height: 44px;
-  margin-bottom: var(--analysis-gap-sm, 8px);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+  opacity: 0.8;
   transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
     background var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    box-shadow var(--analysis-duration-fast, 150ms)
       var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover {
   opacity: 1;
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 8%));
-  border-color: var(--analysis-border-accent, rgb(255 255 255 / 20%));
-  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
-  transform: translateY(-1px) scale(1.05);
-}
-
-.collapsible-header--collapsed:active {
-  transform: translateY(0) scale(0.95);
-}
-
-/* FAB Menu Wrapper - contains both header and action bar */
-.collapsible-fab-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-bottom: var(--analysis-gap-sm, 8px);
-}
-
-.collapsible-fab-wrapper--active {
-  position: relative;
-}
-
-/* FAB Action Bar - horizontal expansion */
-.collapsible-fab-action-bar {
-  position: absolute;
-  top: 50%;
-  left: 60px; /* Position to the right of the circular button */
-  transform: translateY(-50%) scaleX(0);
-  transform-origin: left center;
-  width: 320px;
-  height: 60px;
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 8%));
-  border: 1px solid var(--analysis-border, rgb(255 255 255 / 15%));
-  border-radius: 60px;
-  box-shadow: 0 5px 20px rgb(0 0 0 / 30%);
-  z-index: 100;
-  transition: transform 0.3s ease-in-out;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  pointer-events: none;
-}
-
-.collapsible-fab-action-bar--expanded {
-  pointer-events: auto;
-}
-
-.collapsible-fab-action-bar--expanded {
-  transform: translateY(-50%) scaleX(1);
-}
-
-.collapsible-fab-actions {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 0 var(--analysis-gap-md, 12px);
-}
-
-.collapsible-fab-action-item {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: var(--text-primary, #fff);
-  cursor: pointer;
-  opacity: 0;
-  transition:
-    opacity 0.2s ease-in-out,
-    background 0.2s ease-in-out,
-    transform 0.2s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2em;
-  z-index: 20;
-}
-
-.collapsible-fab-action-item:hover {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 15%));
-  transform: translateY(-50%) scale(1.1);
-}
-
-.collapsible-fab-action-item:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-/* Position action items */
-.collapsible-fab-action-1 {
-  left: 8%;
-  transition-delay: 0.45s;
-}
-
-.collapsible-fab-action-2 {
-  left: 30%;
-  transition-delay: 0.4s;
-}
-
-.collapsible-fab-action-3 {
-  left: 60%;
-  transition-delay: 0.4s;
-}
-
-.collapsible-fab-action-4 {
-  left: 82%;
-  transition-delay: 0.45s;
-}
-
-.collapsible-fab-action-bar--expanded .collapsible-fab-action-item {
-  opacity: 1;
-}
-
-/* Hamburger dots animation */
-.collapsible-hamburger-dots {
-  position: relative;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.collapsible-dot {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-primary, #fff);
-  transition: all 0.3s ease-in-out;
-  opacity: 0.9;
-}
-
-.collapsible-dot-first {
-  left: 0;
-  transform: translateX(0);
-}
-
-.collapsible-dot-second {
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.collapsible-dot-third {
-  right: 0;
-  transform: translateX(0);
-}
-
-/* Transform dots to X when expanded */
-.collapsible-header--fab-expanded .collapsible-dot-first {
-  top: 9px;
-  left: 50%;
-  width: 2px;
-  height: 18px;
-  border-radius: 2px;
-  transform: translateX(-50%) rotate(-45deg);
-  transform-origin: center;
-}
-
-.collapsible-header--fab-expanded .collapsible-dot-second {
-  opacity: 0;
-  transform: scale(0);
-}
-
-.collapsible-header--fab-expanded .collapsible-dot-third {
-  top: 9px;
-  right: 50%;
-  width: 2px;
-  height: 18px;
-  border-radius: 2px;
-  transform: translateX(50%) rotate(45deg);
-  transform-origin: center;
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
 }
 
 .collapsible-header--collapsed .collapsible-toggle {
-  gap: 0; /* No gap needed in circle - elements centered */
-  padding: 0;
-  min-height: 44px;
-  width: 44px;
-  height: 44px;
-  justify-content: center; /* Center content in circle */
-  align-items: center;
-  font-size: var(--analysis-text-sm, 0.875rem);
-  line-height: 1;
-  flex-direction: column; /* Stack chevron and icon vertically */
+  gap: var(--analysis-gap-xs, 4px);
 }
 
 .collapsible-header--collapsed .collapsible-chevron {
-  width: 10px;
-  height: 10px;
   opacity: 0.8;
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
-  margin-bottom: 2px; /* Small gap between chevron and icon */
 }
 
 .collapsible-header--collapsed:hover .collapsible-chevron {
   opacity: 1;
   color: var(--analysis-accent, #2ff3e0);
-  transform: scale(1.1);
 }
 
 .collapsible-header--collapsed .collapsible-icon-collapsed {
-  font-size: 1.1em;
   opacity: 0.8;
-  line-height: 1;
-  transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover .collapsible-icon-collapsed {
   opacity: 1;
-  transform: scale(1.15);
 }
 
 /* Toggle button - simple and accessible */
@@ -421,95 +201,6 @@
   align-items: center;
   gap: var(--analysis-gap-sm, 8px);
   flex-shrink: 0;
-}
-
-/* Minimize button - clean and visible */
-.collapsible-minimize {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  background: transparent;
-  border: 1px solid var(--analysis-border, rgb(255 255 255 / 12%));
-  border-radius: var(--analysis-radius-sm, 4px);
-  color: var(--text-secondary, rgb(255 255 255 / 70%));
-  cursor: pointer;
-  transition:
-    background var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.collapsible-minimize:hover {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 8%));
-  border-color: var(--analysis-border-accent, rgb(255 255 255 / 20%));
-  color: var(--text-primary, #fff);
-  opacity: 1;
-  transform: translateY(-1px);
-}
-
-.collapsible-minimize:active {
-  transform: translateY(0) scale(0.95);
-}
-
-.collapsible-minimize-icon {
-  width: 14px;
-  height: 14px;
-  color: currentcolor;
-  stroke-width: 2;
-}
-
-/* Restore button - appears when minimized */
-.collapsible-restore {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  background: transparent;
-  border: none;
-  border-radius: var(--analysis-radius-sm, 4px);
-  color: var(--text-secondary, rgb(255 255 255 / 60%));
-  cursor: pointer;
-  opacity: 0;
-  transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    background var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out),
-    color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-.collapsible-header--collapsed:hover .collapsible-restore {
-  opacity: 1;
-}
-
-.collapsible-restore:hover {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 8%));
-  color: var(--text-primary, #fff);
-  transform: scale(1.1);
-}
-
-.collapsible-restore:active {
-  transform: scale(0.95);
-}
-
-.collapsible-restore-icon {
-  width: 12px;
-  height: 12px;
-  color: currentcolor;
 }
 
 /* Integrated toolbar below header */
