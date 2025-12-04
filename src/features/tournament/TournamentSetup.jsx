@@ -41,7 +41,7 @@ function AnalysisHandlersProvider({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Initialize analysis mode from URL or prop
   useEffect(() => {
@@ -173,7 +173,7 @@ function AnalysisBulkActionsWrapper({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   const { selectedCount } = context;
   // * Keep both Set format for selection logic and original array for bulk operations
@@ -365,7 +365,7 @@ function TournamentNameGrid({
   onDelete,
   analysisHandlersProps,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Admin features only available in analysis mode
   const showAdminFeatures = context.analysisMode && canManageActiveUser;

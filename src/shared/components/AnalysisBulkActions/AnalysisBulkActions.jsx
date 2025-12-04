@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "../AnalysisPanel";
 import { exportNamesToCSV } from "../../utils/exportUtils";
-import { devLog, devError } from "../../utils/logger";
+import { devError } from "../../utils/logger";
 
 /**
  * Analysis Bulk Actions Component

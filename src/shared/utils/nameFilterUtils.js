@@ -94,7 +94,7 @@ export function applyNameFilters(names, filters = {}) {
 
   result.sort((a, b) => {
     let comparison = 0;
-    
+
     switch (sortBy) {
       case "rating":
         comparison = (a.avg_rating || 1500) - (b.avg_rating || 1500);
@@ -110,11 +110,11 @@ export function applyNameFilters(names, filters = {}) {
         comparison = (a.losses || 0) - (b.losses || 0);
         break;
       case "winRate":
-        const aWinRate = a.wins && (a.wins + a.losses) > 0 
-          ? a.wins / (a.wins + a.losses) 
+        const aWinRate = a.wins && (a.wins + a.losses) > 0
+          ? a.wins / (a.wins + a.losses)
           : 0;
-        const bWinRate = b.wins && (b.wins + b.losses) > 0 
-          ? b.wins / (b.wins + b.losses) 
+        const bWinRate = b.wins && (b.wins + b.losses) > 0
+          ? b.wins / (b.wins + b.losses)
           : 0;
         comparison = aWinRate - bWinRate;
         break;
@@ -129,7 +129,7 @@ export function applyNameFilters(names, filters = {}) {
       default:
         comparison = (a.avg_rating || 1500) - (b.avg_rating || 1500);
     }
-    
+
     return comparison * multiplier;
   });
 

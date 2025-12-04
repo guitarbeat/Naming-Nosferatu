@@ -284,7 +284,8 @@
 /* * Metric Cells with Progress Bars */
 .top-names-rating-cell,
 .top-names-wins-cell,
-.top-names-selected-cell {
+.top-names-selected-cell,
+.top-names-date-cell {
   min-width: 100px;
 }
 
@@ -347,12 +348,20 @@
   font-size: var(--analysis-text-body, 0.875rem);
 }
 
+.top-names-rating,
 .top-names-wins,
-.top-names-selected {
+.top-names-selected,
+.top-names-date {
   font-family: var(--analysis-text-mono, monospace);
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  font-size: var(--analysis-text-body, 0.875rem);
+  font-size: var(--analysis-text-body, 0.8125rem);
   font-weight: var(--font-weight-medium, 500);
+  white-space: nowrap;
+}
+
+.top-names-date--unknown {
+  color: var(--text-tertiary, rgb(255 255 255 / 40%));
+  font-style: italic;
 }
 
 @media (width <= 600px) {

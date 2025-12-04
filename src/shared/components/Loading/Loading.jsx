@@ -6,7 +6,6 @@
 
 import React, { Suspense } from "react";
 import PropTypes from "prop-types";
-import BongoCat from "../BongoCat/BongoCat";
 import styles from "./Loading.module.css";
 
 /**
@@ -35,7 +34,11 @@ const Loading = ({
       <div
         className={`${styles.container} ${overlay ? styles.overlay : ""} ${className}`}
       >
-        <BongoCat />
+        <img
+          src="/assets/images/bby-cat.GIF"
+          alt="Loading..."
+          className={styles.loadingGif}
+        />
         {text && <p className={styles.text}>{text}</p>}
         <span className={styles.srOnly}>Loading...</span>
       </div>
@@ -64,7 +67,11 @@ const Loading = ({
 
   return (
     <div className={containerClasses} role="status" aria-label="Loading">
-      <BongoCat />
+      <img
+        src="/assets/images/bby-cat.GIF"
+        alt="Loading..."
+        className={styles.loadingGif}
+      />
       {text && <p className={styles.text}>{text}</p>}
       <span className={styles.srOnly}>Loading...</span>
     </div>

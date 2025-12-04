@@ -67,7 +67,7 @@ export function useTournamentVoting({
 
       // * Determine winner and loser based on vote type
       let winnerName, loserName;
-      
+
       if (voteType === "both") {
         winnerName = null;
         loserName = null;
@@ -81,11 +81,11 @@ export function useTournamentVoting({
 
       // * Update Elo ratings
       const newRatings = { ...currentRatings };
-      
+
       if (winnerName && loserName && elo) {
         const winnerRating = newRatings[winnerName]?.rating || 1500;
         const loserRating = newRatings[loserName]?.rating || 1500;
-        
+
         const { winner: newWinnerRating, loser: newLoserRating } = elo.calculateNewRatings(
           winnerRating,
           loserRating
@@ -96,7 +96,7 @@ export function useTournamentVoting({
           rating: newWinnerRating,
           wins: (newRatings[winnerName]?.wins || 0) + 1,
         };
-        
+
         newRatings[loserName] = {
           ...(newRatings[loserName] || {}),
           rating: newLoserRating,
@@ -142,7 +142,7 @@ export function useTournamentVoting({
 
       // * Check if tournament is complete
       const nextMatchNumber = currentMatchNumber + 1;
-      
+
       if (nextMatchNumber > totalMatches) {
         setTimeout(() => {
           updateTournamentState({ isTransitioning: false });
@@ -239,13 +239,13 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
       let bestScore = Infinity;
       const pairIndex =
         typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
-        
+
       for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
         const [a, b] = sorter._pairs[idx];
         const key = `${a}-${b}`;
         const reverseKey = `${b}-${a}`;
         if (prefs.has(key) || prefs.has(reverseKey)) continue;
-        
+
         const ra =
           ratings[a]?.rating ??
           (typeof ratings[a] === "number" ? ratings[a] : 1500);
@@ -257,7 +257,7 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
         const cb = comparisons.get(b) || 0;
         const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
         const score = diff - 50 * uncScore;
-        
+
         if (score < bestScore) {
           bestScore = score;
           bestPair = [a, b];

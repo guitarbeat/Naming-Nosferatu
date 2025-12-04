@@ -162,11 +162,11 @@ export function CollapsibleHeader({
   useEffect(() => {
     if (fabExpanded) {
       const handleOutsideClick = (e) => {
-        const target = e.target;
+        const {target} = e;
         const fabWrapper = target.closest('.collapsible-fab-wrapper');
         const header = target.closest('.collapsible-header--collapsed');
         const actionBar = target.closest('.collapsible-fab-action-bar');
-        
+
         if (!fabWrapper && !header && !actionBar) {
           setFabExpanded(false);
         }

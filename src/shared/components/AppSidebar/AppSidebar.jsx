@@ -50,35 +50,35 @@ export function AppSidebar({
       const navRect = navRef.current.getBoundingClientRect();
       const itemRect = activeItem.getBoundingClientRect();
       const centerX = itemRect.left - navRect.left + itemRect.width / 2 - 6;
-      
+
       if (animate) {
         // Bounce animation
         const start = indicator.left;
         const end = centerX;
         const startTime = Date.now();
         const duration = 500;
-        
+
         const animateStep = () => {
           const elapsed = Date.now() - startTime;
           const progress = Math.min(elapsed / duration, 1);
           const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
           const currentX = start + (end - start) * eased;
           const bounceY = -40 * (4 * eased * (1 - eased)); // Parabolic bounce
-          
+
           setIndicator({
             left: currentX,
             width: 12,
             opacity: 1,
             translateY: bounceY,
           });
-          
+
           if (progress < 1) {
             requestAnimationFrame(animateStep);
           } else {
             setIndicator({ left: end, width: 12, opacity: 1, translateY: 0 });
           }
         };
-        
+
         requestAnimationFrame(animateStep);
       } else {
         setIndicator({
