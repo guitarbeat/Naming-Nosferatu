@@ -101,8 +101,6 @@ function TournamentToolbar({
     [onFilterChange, filters]
   );
 
-
-
   // * Render toggle switch
   const renderToggleSwitch = useCallback(
     ({ onClick, isActive, activeLabel, inactiveLabel, ariaLabel, key }) => {
@@ -171,8 +169,6 @@ function TournamentToolbar({
       ),
     [actionButtons, renderToggleSwitch]
   );
-
-
 
   // * Render search input
   const renderSearchInput = useCallback(

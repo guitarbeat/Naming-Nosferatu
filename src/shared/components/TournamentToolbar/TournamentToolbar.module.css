@@ -160,7 +160,7 @@
 
 .unifiedActions {
   display: flex;
-  gap: var(--space-5);
+  gap: var(--space-3);
   align-items: center;
   flex-shrink: 0;
   padding: 0;
@@ -257,19 +257,19 @@
 .toggleWrapper {
   display: flex;
   flex: 0 1 auto;
-  min-width: 160px;
-  max-width: 200px;
+  min-width: 140px;
+  max-width: 180px;
   position: relative;
 }
 
 .toggleSwitch {
   position: relative;
   width: 100%;
-  height: 44px;
+  height: 40px;
   padding: 0;
   background: transparent;
   border: none;
-  border-radius: 22px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: visible;
@@ -283,17 +283,17 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  background: hsl(var(--muted) / 40%);
+  background: hsl(var(--muted) / 35%);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid hsl(var(--border) / 50%);
-  border-radius: 22px;
+  border: 1px solid hsl(var(--border) / 45%);
+  border-radius: 20px;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
     inset 0 1px 2px hsl(var(--foreground) / 5%),
     inset 0 -1px 1px hsl(var(--background) / 10%),
-    0 3px 12px hsl(var(--background) / 22%),
-    0 2px 6px hsl(var(--background) / 18%);
-  opacity: 0.9;
+    0 2px 8px hsl(var(--background) / 20%),
+    0 1px 4px hsl(var(--background) / 15%);
+  opacity: 0.95;
 }
 
 .toggleSwitch:hover .toggleTrack {
@@ -381,17 +381,17 @@
 /* * Modern thumb with glassmorphic glow - labels inside (oval/rounded rectangle) */
 .toggleThumb {
   position: absolute;
-  left: 3px;
+  left: 2px;
   top: 50%;
   transform: translateY(-50%);
-  width: 70px;
-  height: 38px;
+  width: 64px;
+  height: 34px;
   background: hsl(var(--background) / 98%);
-  border-radius: 19px;
+  border-radius: 17px;
   transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 6px 18px hsl(var(--background) / 40%),
-    0 3px 9px hsl(var(--background) / 30%),
+    0 4px 14px hsl(var(--background) / 35%),
+    0 2px 7px hsl(var(--background) / 25%),
     inset 0 1px 2px hsl(var(--foreground) / 12%),
     inset 0 -1px 1px hsl(var(--background) / 25%);
   z-index: 3;
@@ -414,7 +414,7 @@
 }
 
 .toggleSwitchActive .toggleThumb {
-  left: calc(100% - 73px);
+  left: calc(100% - 66px);
   background: linear-gradient(
     135deg,
     hsl(var(--neon-cyan)),
@@ -422,12 +422,12 @@
   );
   border-color: hsl(var(--neon-cyan) / 60%);
   box-shadow:
-    0 10px 28px hsl(var(--neon-cyan) / 65%),
-    0 5px 14px hsl(var(--hot-pink) / 55%),
-    0 0 0 4px hsl(var(--neon-cyan) / 35%),
+    0 8px 24px hsl(var(--neon-cyan) / 60%),
+    0 4px 12px hsl(var(--hot-pink) / 50%),
+    0 0 0 3px hsl(var(--neon-cyan) / 35%),
     inset 0 1px 2px hsl(var(--foreground) / 25%),
     inset 0 -1px 1px hsl(var(--background) / 35%);
-  transform: translateY(-50%) scale(1.08);
+  transform: translateY(-50%) scale(1.06);
   opacity: 1;
 }
 
@@ -461,9 +461,9 @@
 
 /* * Label inside the thumb (oval shape provides more space) */
 .toggleLabelInside {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: hsl(var(--foreground) / 90%);
   text-shadow: 0 1px 2px hsl(var(--background) / 50%);
   white-space: nowrap;
@@ -473,7 +473,7 @@
   text-transform: uppercase;
   line-height: 1.2;
   opacity: 0.95;
-  padding: 0 4px;
+  padding: 0 3px;
 }
 
 .toggleSwitchActive .toggleLabelInside {
@@ -733,25 +733,25 @@
   }
 
   .toggleWrapper {
-    min-width: 150px;
-    max-width: 180px;
+    min-width: 130px;
+    max-width: 160px;
   }
 
   .toggleSwitch {
-    height: 42px;
+    height: 38px;
   }
 
   .toggleThumb {
-    width: 66px;
-    height: 36px;
+    width: 60px;
+    height: 32px;
   }
 
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 69px);
+    left: calc(100% - 62px);
   }
 
   .toggleLabelInside {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
   }
 
   .startTournamentButton {
@@ -794,20 +794,20 @@
   }
 
   .toggleSwitch {
-    height: 44px;
-  }
-
-  .toggleThumb {
-    width: 75px;
     height: 40px;
   }
 
+  .toggleThumb {
+    width: 68px;
+    height: 36px;
+  }
+
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 78px);
+    left: calc(100% - 70px);
   }
 
   .toggleLabelInside {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
 
   .unifiedInput {
