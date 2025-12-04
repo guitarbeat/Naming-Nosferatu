@@ -13,14 +13,20 @@ import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
  * @param {React.Component} props.icon - Icon component to render
  * @param {string} props.label - Button label
  * @param {string} props.view - Current active view
- * @param {Function} props.onClick - Click handler that receives the item key
+ * @param {Function} props.onClick - Click handler that receives the item key or custom handler
+ * @param {boolean} props.isActive - Whether the item is active (for custom handlers)
  */
-export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
-  const isActive = view === itemKey.toLowerCase();
+export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick, isActive: customIsActive }) {
+  const isActive = customIsActive !== undefined ? customIsActive : view === itemKey.toLowerCase();
 
   const handleClick = (e) => {
     e.preventDefault();
-    onClick(itemKey.toLowerCase());
+    // * If onClick is provided directly, use it; otherwise use default behavior
+    if (onClick && typeof onClick === "function") {
+      onClick();
+    } else {
+      onClick(itemKey.toLowerCase());
+    }
   };
 
   return (
@@ -46,4 +52,5 @@ MenuNavItem.propTypes = {
   label: PropTypes.string.isRequired,
   view: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  isActive: PropTypes.bool,
 };

@@ -16,7 +16,7 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, LogoutIcon, PhotosIcon, SuggestIcon } from "./icons";
+import { TournamentIcon, LogoutIcon, PhotosIcon, SuggestIcon, AnalysisIcon } from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -32,6 +32,27 @@ export function AppSidebar({
   onOpenSuggestName,
   onOpenPhotos,
 }) {
+  // * Check if analysis mode is active
+  const isAnalysisMode = typeof window !== "undefined" 
+    ? new URLSearchParams(window.location.search).get("analysis") === "true"
+    : false;
+
+  // * Toggle analysis mode
+  const handleAnalysisToggle = () => {
+    const currentPath = window.location.pathname;
+    const currentSearch = new URLSearchParams(window.location.search);
+
+    if (isAnalysisMode) {
+      currentSearch.delete("analysis");
+    } else {
+      currentSearch.set("analysis", "true");
+    }
+
+    const newSearch = currentSearch.toString();
+    const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
+    window.history.pushState({}, "", newUrl);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
 
   // * Define navigation items - data-driven approach
   const navItems = [
@@ -40,12 +61,19 @@ export function AppSidebar({
       label: "Tournament",
       icon: TournamentIcon,
     },
+    {
+      key: "analysis",
+      label: "Analysis",
+      icon: AnalysisIcon,
+      onClick: handleAnalysisToggle,
+      isActive: isAnalysisMode,
+    },
   ];
 
   return (
     <Sidebar className="app-sidebar">
       <div className="navbar-content">
-        {/* Left Section: Combined Logo/Home Button */}
+        {/* Left Section: Navigation Items */}
         <NavbarSection className="navbar-left">
           <SidebarGroup open={true}>
             <SidebarGroupContent>
@@ -96,6 +124,19 @@ export function AppSidebar({
                   </button>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {/* Main Navigation */}
+              {navItems.map((item) => (
+                <MenuNavItem
+                  key={item.key}
+                  itemKey={item.key}
+                  icon={item.icon}
+                  label={item.label}
+                  view={view}
+                  onClick={item.onClick || setView}
+                  isActive={item.isActive}
+                />
+              ))}
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>

@@ -94,3 +94,15 @@ export const SuggestIcon = () => (
     <circle cx="12" cy="12" r="3" />
   </Icon>
 );
+
+export const AnalysisIcon = () => (
+  <Icon name="analysis">
+    <path d="M3 3v18h18" />
+    <circle cx="7" cy="7" r="2.5" fill="currentColor" opacity="0.2" />
+    <circle cx="17" cy="7" r="2.5" fill="currentColor" opacity="0.2" />
+    <circle cx="7" cy="17" r="2.5" fill="currentColor" opacity="0.2" />
+    <circle cx="17" cy="17" r="2.5" fill="currentColor" opacity="0.2" />
+    <path d="M9 7h6M9 17h6M7 9v6M17 9v6" strokeWidth="1.5" />
+    <path d="M7 7l10 10M17 7l-10 10" strokeWidth="1.5" opacity="0.6" />
+  </Icon>
+);

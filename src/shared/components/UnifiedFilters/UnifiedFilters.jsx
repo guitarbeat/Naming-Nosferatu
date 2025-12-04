@@ -92,13 +92,13 @@ function UnifiedFilters({
   // * Memoized user options
   const userOptions = useMemo(
     () => userSelectOptions || DEFAULT_USER_OPTIONS,
-    [userSelectOptions],
+    [userSelectOptions]
   );
 
   // * Check if categories are available
   const hasCategories = useMemo(
     () => Array.isArray(categories) && categories.length > 0,
-    [categories],
+    [categories]
   );
 
   // * Handle filter changes
@@ -108,7 +108,7 @@ function UnifiedFilters({
         onFilterChange({ ...filters, [filterName]: value });
       }
     },
-    [onFilterChange, filters],
+    [onFilterChange, filters]
   );
 
   // * Render count display (unused - using renderResultsCount instead)
@@ -149,52 +149,88 @@ function UnifiedFilters({
     filters.searchTerm,
   ]);
 
-  // * Render action button
-  const renderActionButton = useCallback((config) => {
-    const { onClick, isActive, activeLabel, inactiveLabel, ariaLabel } = config;
+  // * Render toggle switch
+  const renderToggleSwitch = useCallback((config) => {
+    const {
+      onClick,
+      isActive,
+      activeLabel,
+      inactiveLabel,
+      ariaLabel,
+      description,
+      key,
+    } = config;
     if (!onClick) return null;
 
+    const toggleId = `toggle-${key}`;
+
     return (
-      <button
-        type="button"
-        onClick={onClick}
-        className={isActive ? styles.unifiedButtonActive : styles.unifiedButton}
-        aria-label={ariaLabel}
-      >
-        {isActive ? activeLabel : inactiveLabel}
-      </button>
+      <div className={styles.toggleWrapper}>
+        <button
+          type="button"
+          id={toggleId}
+          onClick={onClick}
+          className={`${styles.toggleSwitch} ${isActive ? styles.toggleSwitchActive : ""}`}
+          aria-label={ariaLabel}
+          aria-pressed={isActive}
+          role="switch"
+        >
+          <span className={styles.toggleTrack}>
+            <span className={styles.toggleThumb} />
+            <span className={styles.toggleLabelLeft}>{inactiveLabel}</span>
+            <span className={styles.toggleLabelRight}>{activeLabel}</span>
+          </span>
+        </button>
+        {description && (
+          <label className={styles.toggleDescription} htmlFor={toggleId}>
+            {description}
+          </label>
+        )}
+      </div>
     );
   }, []);
 
-  // * Action buttons configuration
+  // * Toggle configurations with computed values
   const actionButtons = useMemo(() => {
-    if (!onToggleSwipeMode && !onToggleCatPictures) {
-      return [];
-    }
-
-    return [
+    const configs = [
       {
         onClick: onToggleSwipeMode,
         isActive: isSwipeMode,
-        activeLabel: "Cards",
+        activeLabel: "Tap",
         inactiveLabel: "Swipe",
-        ariaLabel: isSwipeMode ? "Switch to card mode" : "Switch to swipe mode",
-        condition: true,
+        getAriaLabel: (active) =>
+          active ? "Switch to swipe mode" : "Switch to tap mode",
+        getDescription: (active) =>
+          active ? "Tap names you like" : "Swipe through names",
         key: "swipe",
       },
       {
         onClick: onToggleCatPictures,
         isActive: showCatPictures,
-        activeLabel: "🐱 Hide Cats",
-        inactiveLabel: "🐱 Show Cats",
-        ariaLabel: showCatPictures ? "Hide cat pictures" : "Show cat pictures",
-        condition: true,
+        activeLabel: "Cats",
+        inactiveLabel: "Names",
+        getAriaLabel: (active) =>
+          active ? "Hide cat pictures" : "Show cat pictures",
+        getDescription: (active) =>
+          active ? "Show cat pictures" : "Names only",
         key: "cats",
       },
-    ].filter((btn) => btn.onClick && btn.condition);
+    ];
+
+    return configs
+      .filter((config) => config.onClick)
+      .map((config) => ({
+        onClick: config.onClick,
+        isActive: config.isActive,
+        activeLabel: config.activeLabel,
+        inactiveLabel: config.inactiveLabel,
+        key: config.key,
+        ariaLabel: config.getAriaLabel(config.isActive),
+        description: config.getDescription(config.isActive),
+      }));
   }, [onToggleSwipeMode, onToggleCatPictures, isSwipeMode, showCatPictures]);
 
-  // * Render action buttons group
+  // * Render toggle switches group
   const renderActions = useCallback(() => {
     if (actionButtons.length === 0) return null;
 
@@ -202,12 +238,12 @@ function UnifiedFilters({
       <div className={styles.unifiedActions}>
         {actionButtons.map((btn) => (
           <React.Fragment key={btn.key}>
-            {renderActionButton(btn)}
+            {renderToggleSwitch(btn)}
           </React.Fragment>
         ))}
       </div>
     );
-  }, [actionButtons, renderActionButton]);
+  }, [actionButtons, renderToggleSwitch]);
 
   // * Render select dropdown (unused - using Select component instead)
   const _renderSelect = useCallback((config) => {
@@ -286,7 +322,7 @@ function UnifiedFilters({
         )}
       </div>
     ),
-    [filteredCount, totalCount],
+    [filteredCount, totalCount]
   );
 
   // * Render sort controls (profile/hybrid mode)
@@ -313,7 +349,7 @@ function UnifiedFilters({
                   "sortOrder",
                   filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
                     ? FILTER_OPTIONS.ORDER.DESC
-                    : FILTER_OPTIONS.ORDER.ASC,
+                    : FILTER_OPTIONS.ORDER.ASC
                 )
               }
               className={styles.sortOrderButton}
@@ -326,7 +362,7 @@ function UnifiedFilters({
         </div>
       </div>
     ),
-    [filters.sortBy, filters.sortOrder, handleChange],
+    [filters.sortBy, filters.sortOrder, handleChange]
   );
 
   // * Render profile filter groups (shared between profile and hybrid modes)
@@ -369,7 +405,7 @@ function UnifiedFilters({
       userOptions,
       handleChange,
       renderFilterGroup,
-    ],
+    ]
   );
 
   // * Tournament mode: minimal - only swipe and cats buttons
@@ -385,7 +421,7 @@ function UnifiedFilters({
           className={styles.unifiedContainer}
           data-element="filter-container"
         >
-          {/* Action buttons only */}
+          {/* Toggle switches */}
           {renderActions()}
         </div>
       </div>
@@ -463,7 +499,7 @@ UnifiedFilters.propTypes = {
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    }),
+    })
   ),
   selectedCount: PropTypes.number,
   showSelectedOnly: PropTypes.bool,
