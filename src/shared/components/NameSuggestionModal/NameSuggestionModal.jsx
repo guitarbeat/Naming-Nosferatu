@@ -73,7 +73,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
       setName(e.target.value);
       if (error) setError("");
     },
-    [error]
+    [error],
   );
 
   const handleDescriptionChange = useCallback(
@@ -81,7 +81,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
       setDescription(e.target.value);
       if (error) setError("");
     },
-    [error]
+    [error],
   );
 
   const handleSubmit = useCallback(
@@ -123,7 +123,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         const res = await catNamesAPI.addName(
           nameValidation.value,
           descriptionValidation.value,
-          userName
+          userName,
         );
 
         // * Check if component is still mounted before updating state
@@ -169,7 +169,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         }
       }
     },
-    [name, description, userName, onClose]
+    [name, description, userName, onClose],
   );
 
   const handleClose = useCallback(() => {

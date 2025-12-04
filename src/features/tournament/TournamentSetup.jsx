@@ -53,14 +53,14 @@ function AnalysisHandlersProvider({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
@@ -77,7 +77,7 @@ function AnalysisHandlersProvider({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   React.useEffect(() => {
@@ -154,11 +154,11 @@ function AnalysisBulkActionsWrapper({
         : new Set(
             Array.isArray(context.selectedNames)
               ? context.selectedNames.map((name) =>
-                  typeof name === "object" ? name.id : name
+                  typeof name === "object" ? name.id : name,
                 )
-              : []
+              : [],
           ),
-    [context.selectedNames]
+    [context.selectedNames],
   );
 
   // * Extract name IDs from selectedNames, handling different formats
@@ -195,14 +195,14 @@ function AnalysisBulkActionsWrapper({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
@@ -219,7 +219,7 @@ function AnalysisBulkActionsWrapper({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   const filteredAndSortedNames = useMemo(() => {
@@ -255,7 +255,7 @@ function AnalysisBulkActionsWrapper({
   const handleExport = useCallback(() => {
     exportTournamentResultsToCSV(
       filteredAndSortedNames,
-      "naming_nosferatu_export"
+      "naming_nosferatu_export",
     );
   }, [filteredAndSortedNames]);
 
@@ -279,7 +279,7 @@ function AnalysisBulkActionsWrapper({
         if (selectedNamesArray.length === 0) {
           devWarn(
             "[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-            selectedCount
+            selectedCount,
           );
           showError("No names selected");
           return;
@@ -290,7 +290,7 @@ function AnalysisBulkActionsWrapper({
         } catch (error) {
           devError("[TournamentSetup] Error calling handleBulkHide:", error);
           showError(
-            `Failed to hide names: ${error.message || "Unknown error"}`
+            `Failed to hide names: ${error.message || "Unknown error"}`,
           );
         }
       }}
@@ -420,7 +420,7 @@ function TournamentSetupContent({
 
   // * Check URL for analysis mode parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const shouldEnableAnalysisMode =
     enableAnalysisMode || urlParams.get("analysis") === "true";
@@ -440,14 +440,14 @@ function TournamentSetupContent({
         setLightboxOpen(true);
       }
     },
-    [galleryImages]
+    [galleryImages],
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages]
+    [addImages],
   );
 
   const handleLightboxNavigate = useCallback((newIndex) => {
@@ -487,7 +487,7 @@ function TournamentSetupContent({
       isAdmin,
       userName,
       handleImagesUploaded,
-    ]
+    ],
   );
 
   const lightboxElement = lightboxOpen && (

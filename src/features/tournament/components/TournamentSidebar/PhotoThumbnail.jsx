@@ -77,7 +77,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
 
       onImageOpen(image);
     },
-    [image, onImageOpen]
+    [image, onImageOpen],
   );
 
   // * Validate image prop

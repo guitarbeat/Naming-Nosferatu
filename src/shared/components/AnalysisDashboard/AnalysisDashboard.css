@@ -149,7 +149,7 @@
 }
 
 .top-names-row:hover {
-  background: var(--analysis-surface-2, rgb(255 255 255 / 5%);
+  background: var(--analysis-surface-2, rgb(255 255 255 / 5%));
 }
 
 /* * Rank Badge */

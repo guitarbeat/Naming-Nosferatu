@@ -92,13 +92,13 @@ function UnifiedFilters({
   // * Memoized user options
   const userOptions = useMemo(
     () => userSelectOptions || DEFAULT_USER_OPTIONS,
-    [userSelectOptions]
+    [userSelectOptions],
   );
 
   // * Check if categories are available
   const hasCategories = useMemo(
     () => Array.isArray(categories) && categories.length > 0,
-    [categories]
+    [categories],
   );
 
   // * Handle filter changes
@@ -108,7 +108,7 @@ function UnifiedFilters({
         onFilterChange({ ...filters, [filterName]: value });
       }
     },
-    [onFilterChange, filters]
+    [onFilterChange, filters],
   );
 
   // * Render count display (unused - using renderResultsCount instead)
@@ -307,7 +307,7 @@ function UnifiedFilters({
         )}
       </div>
     ),
-    [filteredCount, totalCount]
+    [filteredCount, totalCount],
   );
 
   // * Render sort controls (profile/hybrid mode)
@@ -334,7 +334,7 @@ function UnifiedFilters({
                   "sortOrder",
                   filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
                     ? FILTER_OPTIONS.ORDER.DESC
-                    : FILTER_OPTIONS.ORDER.ASC
+                    : FILTER_OPTIONS.ORDER.ASC,
                 )
               }
               className={styles.sortOrderButton}
@@ -347,7 +347,7 @@ function UnifiedFilters({
         </div>
       </div>
     ),
-    [filters.sortBy, filters.sortOrder, handleChange]
+    [filters.sortBy, filters.sortOrder, handleChange],
   );
 
   // * Render profile filter groups (shared between profile and hybrid modes)
@@ -390,7 +390,7 @@ function UnifiedFilters({
       userOptions,
       handleChange,
       renderFilterGroup,
-    ]
+    ],
   );
 
   // * Tournament mode: minimal - only swipe and cats buttons
@@ -484,7 +484,7 @@ UnifiedFilters.propTypes = {
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ),
   selectedCount: PropTypes.number,
   showSelectedOnly: PropTypes.bool,

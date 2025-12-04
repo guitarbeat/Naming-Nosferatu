@@ -109,9 +109,9 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
           isCritical: false,
         },
         // eslint-disable-next-line react-hooks/purity
-        Date.now()
+        Date.now(),
       ),
-    [error]
+    [error],
   );
 
   const canRetry = retryCount < DEFAULT_MAX_RETRIES;
@@ -168,7 +168,7 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
         : diagnosticInfo.errorStack
             .split("\n")
             .filter(
-              (line) => line.includes("http://") || line.includes("file://")
+              (line) => line.includes("http://") || line.includes("file://"),
             )
             .map((line) => {
               const match = line.match(/([^:]+):(\d+):(\d+)/);
@@ -292,7 +292,7 @@ ${
     ? parsedFrames
         .map(
           (frame, idx) =>
-            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``
+            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``,
         )
         .join("\n")
     : "Unable to parse stack frames"
@@ -341,7 +341,7 @@ ${JSON.stringify(
     ...diagnosticInfo.additionalInfo,
   },
   null,
-  2
+  2,
 )}
 \`\`\`
 

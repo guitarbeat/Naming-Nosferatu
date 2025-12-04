@@ -193,6 +193,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -203,6 +204,7 @@
     opacity: 0;
     transform: translate(-50%, -45%);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, -50%);

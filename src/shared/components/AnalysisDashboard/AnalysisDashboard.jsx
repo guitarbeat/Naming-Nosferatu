@@ -41,7 +41,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed
+    defaultCollapsed,
   );
 
   // Fetch global leaderboard and selection popularity data on mount
@@ -185,7 +185,7 @@ export function AnalysisDashboard({
 
     if (summaryStats.maxSelected > 0) {
       const mostSelected = displayNames.find(
-        (n) => n.selected === summaryStats.maxSelected
+        (n) => n.selected === summaryStats.maxSelected,
       );
       if (mostSelected) {
         result.push({
@@ -319,21 +319,21 @@ export function AnalysisDashboard({
                       summaryStats && summaryStats.maxRating > 0
                         ? Math.min(
                             (item.rating / summaryStats.maxRating) * 100,
-                            100
+                            100,
                           )
                         : 0;
                     const winsPercent =
                       summaryStats && summaryStats.maxWins > 0
                         ? Math.min(
                             (item.wins / summaryStats.maxWins) * 100,
-                            100
+                            100,
                           )
                         : 0;
                     const selectedPercent =
                       summaryStats && summaryStats.maxSelected > 0
                         ? Math.min(
                             (item.selected / summaryStats.maxSelected) * 100,
-                            100
+                            100,
                           )
                         : 0;
 

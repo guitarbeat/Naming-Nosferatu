@@ -58,8 +58,7 @@
   gap: var(--space-3);
   align-items: center;
   margin-left: auto;
-  flex-wrap: nowrap;
-  flex-direction: row; /* * Keep horizontal layout for main actions */
+  flex-flow: row nowrap; /* * Keep horizontal layout for main actions */
 }
 
 /* * User section - stacked vertically */

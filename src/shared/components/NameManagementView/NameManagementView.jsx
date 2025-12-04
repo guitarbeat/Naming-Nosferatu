@@ -341,6 +341,16 @@ export function NameManagementView({
     ]
   );
 
+  // * Memoize UnifiedFilters props for tournament mode (must be before all early returns)
+  const tournamentFilterConfig = useMemo(
+    () => ({
+      searchTerm,
+      category: selectedCategory,
+      sortBy,
+    }),
+    [searchTerm, selectedCategory, sortBy]
+  );
+
   // * Loading state - check after all hooks
   if (isLoading) {
     return <Loading variant="spinner" />;
@@ -363,16 +373,6 @@ export function NameManagementView({
       </div>
     );
   }
-
-  // * Memoize UnifiedFilters props for tournament mode (before early returns)
-  const tournamentFilterConfig = useMemo(
-    () => ({
-      searchTerm,
-      category: selectedCategory,
-      sortBy,
-    }),
-    [searchTerm, selectedCategory, sortBy]
-  );
 
   // * Empty state - check after all hooks
   if (names.length === 0) {
@@ -401,7 +401,9 @@ export function NameManagementView({
           categories={categories}
           showUserFilter={
             profileProps.showUserFilter ||
-            (mode === "tournament" && analysisMode && profileProps.showUserFilter)
+            (mode === "tournament" &&
+              analysisMode &&
+              profileProps.showUserFilter)
           }
           showSelectionFilter={
             !!profileProps.selectionStats ||
@@ -425,7 +427,9 @@ export function NameManagementView({
           }
           isSwipeMode={mode === "tournament" ? isSwipeMode : false}
           onToggleSwipeMode={
-            mode === "tournament" ? () => setIsSwipeMode(!isSwipeMode) : undefined
+            mode === "tournament"
+              ? () => setIsSwipeMode(!isSwipeMode)
+              : undefined
           }
           showCatPictures={mode === "tournament" ? showCatPictures : false}
           onToggleCatPictures={

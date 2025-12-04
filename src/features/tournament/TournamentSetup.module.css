@@ -2326,7 +2326,6 @@
     0 12px 40px rgb(0 0 0 / 20%),
     0 0 0 1px rgb(255 255 255 / 5%) inset;
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
   touch-action: none;
   cursor: grab;
@@ -2343,7 +2342,7 @@
 
 /* * Enhanced hover state for desktop */
 @media (hover: hover) and (pointer: fine) {
-  .swipeCard:not(.selected):not(:active):hover {
+  .swipeCard:not(.selected, :active):hover {
     border-color: var(--border-color-hover, rgb(148 163 184 / 40%));
     box-shadow:
       0 16px 48px rgb(0 0 0 / 25%),
@@ -2570,7 +2569,6 @@
 }
 
 .metadataItem:hover {
-  background: var(--surface-elevated, rgb(255 255 255 / 8%));
   border-color: var(--border-color-hover, rgb(148 163 184 / 30%));
   transform: translateY(-1px);
   padding: var(--space-1) var(--space-2);

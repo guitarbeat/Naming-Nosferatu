@@ -268,7 +268,6 @@
   z-index: 0;
   pointer-events: none;
   border-radius: 0; /* * Match card sharp edges */
-
   mix-blend-mode: soft-light;
   transition: var(--transition-color);
 }

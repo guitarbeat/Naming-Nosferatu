@@ -16,12 +16,7 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import {
-  LogoutIcon,
-  PhotosIcon,
-  SuggestIcon,
-  AnalysisIcon,
-} from "./icons";
+import { LogoutIcon, PhotosIcon, SuggestIcon, AnalysisIcon } from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
