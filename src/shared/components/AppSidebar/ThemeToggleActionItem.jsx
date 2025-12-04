@@ -11,7 +11,6 @@ import { SunIcon, MoonIcon } from "./icons";
  * * Theme toggle action item with conditional icon
  */
 export function ThemeToggleActionItem({ onClick, isLightTheme }) {
-  const label = isLightTheme ? "Light" : "Dark";
   const ariaLabel = `Switch to ${isLightTheme ? "dark" : "light"} theme`;
 
   return (
@@ -25,9 +24,9 @@ export function ThemeToggleActionItem({ onClick, isLightTheme }) {
           className={
             isLightTheme ? "theme-toggle--light" : "theme-toggle--dark"
           }
+          title={isLightTheme ? "Switch to dark mode" : "Switch to light mode"}
         >
           {isLightTheme ? <SunIcon /> : <MoonIcon />}
-          <span>{label}</span>
         </button>
       </SidebarMenuButton>
     </SidebarMenuItem>
