@@ -110,132 +110,172 @@
   flex-wrap: wrap;
 }
 
-/* * Toggle Switch Component - Improved Design */
+/* * Toggle Switch Component - Modern Design 2024 */
 .toggleWrapper {
   display: flex;
   flex: 1;
-  min-width: 140px;
-  max-width: 200px;
+  min-width: 160px;
+  max-width: 220px;
 }
 
 .toggleSwitch {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: 44px;
   padding: 0;
   background: transparent;
   border: none;
-  border-radius: 20px;
+  border-radius: 22px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: visible;
+  isolation: isolate;
 }
 
+/* * Glassmorphism track with neumorphic depth */
 .toggleTrack {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
   height: 100%;
-  background: var(--surface-color);
-  border: 2px solid var(--border-color);
-  border-radius: 20px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 8%),
+    rgb(255 255 255 / 4%)
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgb(255 255 255 / 12%);
+  border-radius: 22px;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 255 / 10%),
+    0 2px 8px rgb(0 0 0 / 15%),
+    0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .toggleSwitch:hover .toggleTrack {
-  border-color: hsl(var(--neon-cyan) / 60%);
-  box-shadow: 0 2px 8px hsl(var(--neon-cyan) / 20%);
+  border-color: rgb(255 255 255 / 20%);
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 255 / 15%),
+    0 4px 16px rgb(0 0 0 / 20%),
+    0 2px 4px rgb(0 0 0 / 15%),
+    0 0 0 1px hsl(var(--neon-cyan) / 15%);
+  transform: translateY(-1px);
 }
 
 .toggleSwitch:active .toggleTrack {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 20%),
+    0 1px 2px rgb(0 0 0 / 10%);
 }
 
 .toggleSwitchActive .toggleTrack {
   background: linear-gradient(
     135deg,
-    hsl(var(--neon-cyan) / 20%),
+    hsl(var(--neon-cyan) / 25%),
     hsl(var(--hot-pink) / 20%)
   );
-  border-color: hsl(var(--neon-cyan) / 70%);
-  box-shadow: 0 0 0 1px hsl(var(--neon-cyan) / 30%);
+  border-color: hsl(var(--neon-cyan) / 50%);
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 255 / 20%),
+    0 4px 20px hsl(var(--neon-cyan) / 25%),
+    0 2px 8px hsl(var(--hot-pink) / 20%),
+    0 0 0 1px hsl(var(--neon-cyan) / 30%);
 }
 
+.toggleSwitchActive:hover .toggleTrack {
+  border-color: hsl(var(--neon-cyan) / 65%);
+  box-shadow:
+    inset 0 1px 2px rgb(255 255 255 / 25%),
+    0 6px 24px hsl(var(--neon-cyan) / 35%),
+    0 3px 12px hsl(var(--hot-pink) / 25%),
+    0 0 0 2px hsl(var(--neon-cyan) / 40%);
+  transform: translateY(-1px);
+}
+
+/* * Modern thumb with glassmorphic glow - labels inside */
 .toggleThumb {
   position: absolute;
-  left: 2px;
+  left: 3px;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  background: var(--text-secondary);
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 95%),
+    rgb(255 255 255 / 85%)
+  );
   border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 2px 4px rgb(0 0 0 / 20%),
-    0 1px 2px rgb(0 0 0 / 10%);
+    0 4px 12px rgb(0 0 0 / 25%),
+    0 2px 6px rgb(0 0 0 / 15%),
+    inset 0 1px 2px rgb(255 255 255 / 50%),
+    inset 0 -1px 2px rgb(0 0 0 / 10%);
   z-index: 3;
+  border: 1px solid rgb(255 255 255 / 20%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .toggleSwitch:hover .toggleThumb {
   box-shadow:
-    0 3px 6px rgb(0 0 0 / 25%),
-    0 2px 4px rgb(0 0 0 / 15%);
-}
-
-.toggleSwitchActive .toggleThumb {
-  left: calc(100% - 34px);
-  background: linear-gradient(135deg, var(--neon-cyan), var(--hot-pink));
-  box-shadow:
-    0 4px 12px hsl(var(--neon-cyan) / 40%),
-    0 2px 6px hsl(var(--hot-pink) / 30%),
-    0 0 0 2px hsl(var(--neon-cyan) / 25%);
+    0 6px 16px rgb(0 0 0 / 30%),
+    0 3px 8px rgb(0 0 0 / 20%),
+    inset 0 1px 2px rgb(255 255 255 / 60%),
+    inset 0 -1px 2px rgb(0 0 0 / 15%);
   transform: translateY(-50%) scale(1.05);
 }
 
-.toggleSwitchActive:hover .toggleThumb {
-  transform: translateY(-50%) scale(1.08);
+.toggleSwitchActive .toggleThumb {
+  left: calc(100% - 41px);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan)),
+    hsl(var(--hot-pink))
+  );
+  border-color: hsl(var(--neon-cyan) / 40%);
   box-shadow:
-    0 6px 16px hsl(var(--neon-cyan) / 50%),
-    0 3px 8px hsl(var(--hot-pink) / 40%),
-    0 0 0 3px hsl(var(--neon-cyan) / 30%);
+    0 6px 20px hsl(var(--neon-cyan) / 50%),
+    0 3px 10px hsl(var(--hot-pink) / 40%),
+    0 0 0 2px hsl(var(--neon-cyan) / 30%),
+    inset 0 1px 2px rgb(255 255 255 / 30%),
+    inset 0 -1px 2px rgb(0 0 0 / 20%);
+  transform: translateY(-50%) scale(1.08);
 }
 
-.toggleLabelLeft,
-.toggleLabelRight {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-semibold);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1;
-  pointer-events: none;
+/* * Label inside the thumb */
+.toggleLabelInside {
+  font-size: 0.65rem;
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 0.03em;
+  color: var(--text-primary, #fff);
+  text-shadow: 0 1px 2px rgb(0 0 0 / 40%);
   white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 4;
+  pointer-events: none;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
-.toggleLabelLeft {
-  left: 40px;
-  color: var(--text-primary);
-  opacity: 1;
+.toggleSwitchActive:hover .toggleThumb {
+  transform: translateY(-50%) scale(1.12);
+  box-shadow:
+    0 8px 24px hsl(var(--neon-cyan) / 60%),
+    0 4px 12px hsl(var(--hot-pink) / 50%),
+    0 0 0 3px hsl(var(--neon-cyan) / 40%),
+    inset 0 1px 2px rgb(255 255 255 / 40%),
+    inset 0 -1px 2px rgb(0 0 0 / 25%);
 }
 
-.toggleLabelRight {
-  right: 40px;
-  color: var(--text-secondary);
-  opacity: 0.4;
-}
-
-.toggleSwitchActive .toggleLabelLeft {
-  opacity: 0.4;
-  color: var(--text-secondary);
-}
-
-.toggleSwitchActive .toggleLabelRight {
-  opacity: 1;
-  color: var(--text-primary);
-}
+/* * Removed side labels - labels are now inside the thumb */
 
 /* Shared utility styles */
 .selectionCount {
@@ -447,31 +487,25 @@
   }
 
   .toggleWrapper {
-    min-width: 140px;
-    max-width: 180px;
+    min-width: 150px;
+    max-width: 200px;
   }
 
   .toggleSwitch {
-    height: 40px;
+    height: 42px;
   }
 
   .toggleThumb {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
   }
 
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 37px);
+    left: calc(100% - 39px);
   }
 
-  .toggleLabelLeft {
-    left: 42px;
-    font-size: var(--text-xs);
-  }
-
-  .toggleLabelRight {
-    right: 42px;
-    font-size: var(--text-xs);
+  .toggleLabelInside {
+    font-size: 0.6rem;
   }
 }
 
@@ -509,7 +543,20 @@
   }
 
   .toggleSwitch {
-    height: 48px;
+    height: 50px;
+  }
+
+  .toggleThumb {
+    width: 42px;
+    height: 42px;
+  }
+
+  .toggleSwitchActive .toggleThumb {
+    left: calc(100% - 45px);
+  }
+
+  .toggleLabelInside {
+    font-size: 0.7rem;
   }
 
   .unifiedInput {

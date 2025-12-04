@@ -169,9 +169,11 @@ function UnifiedFilters({
           role="switch"
         >
           <span className={styles.toggleTrack}>
-            <span className={styles.toggleThumb} />
-            <span className={styles.toggleLabelLeft}>{inactiveLabel}</span>
-            <span className={styles.toggleLabelRight}>{activeLabel}</span>
+            <span className={styles.toggleThumb}>
+              <span className={styles.toggleLabelInside}>
+                {isActive ? activeLabel : inactiveLabel}
+              </span>
+            </span>
           </span>
         </button>
       </div>

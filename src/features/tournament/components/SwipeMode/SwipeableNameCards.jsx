@@ -75,19 +75,33 @@ function SwipeableNameCards({
   });
 
   const handleDragStart = (e) => {
+    // * Prevent default to avoid text selection and scrolling
+    e.preventDefault();
+    e.stopPropagation();
+
     const touch = e.touches ? e.touches[0] : e;
-    setDragStart({ x: touch.clientX, y: touch.clientY });
+    const startX = touch.clientX || touch.pageX;
+    const startY = touch.clientY || touch.pageY;
+
+    setDragStart({ x: startX, y: startY });
     setIsDragging(true);
     setSwipeDirection(null);
     setSwipeProgress(0);
+    setDragOffset({ x: 0, y: 0 });
   };
 
   const handleDragMove = (e) => {
     if (!isDragging) return;
 
+    // * Prevent default to avoid scrolling
+    e.preventDefault();
+    e.stopPropagation();
+
     const touch = e.touches ? e.touches[0] : e;
-    const deltaX = touch.clientX - dragStart.x;
-    const deltaY = touch.clientY - dragStart.y;
+    const currentX = touch.clientX || touch.pageX;
+    const currentY = touch.clientY || touch.pageY;
+    const deltaX = currentX - dragStart.x;
+    const deltaY = currentY - dragStart.y;
 
     setDragOffset({ x: deltaX, y: deltaY });
 
@@ -96,20 +110,28 @@ function SwipeableNameCards({
     setSwipeProgress(progress);
 
     // Determine swipe direction
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
       setSwipeDirection(deltaX > 0 ? "right" : "left");
+    } else {
+      setSwipeDirection(null);
     }
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e) => {
     if (!isDragging) {
       return;
+    }
+
+    // * Prevent default
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
 
     setIsDragging(false);
 
     // If swiped far enough, process the swipe
-    if (swipeProgress > 0.5) {
+    if (swipeProgress > 0.5 && swipeDirection) {
       if (swipeDirection === "right") {
         // Swipe right = select/like (add to tournament)
         if (!isSelected) {
@@ -124,13 +146,15 @@ function SwipeableNameCards({
 
       // Move to next card
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % names.length);
+        if (currentIndex < names.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        }
         setDragOffset({ x: 0, y: 0 });
         setSwipeDirection(null);
         setSwipeProgress(0);
       }, 300);
     } else {
-      // Reset card position
+      // Reset card position with animation
       setDragOffset({ x: 0, y: 0 });
       setSwipeDirection(null);
       setSwipeProgress(0);

@@ -58,13 +58,46 @@ function SwipeCard({
         }}
         className={`${styles.swipeCard} ${isSelected ? styles.selected : ""} ${showCatPictures ? styles.withCatPictures : ""} ${isLongPressing ? styles.longPressing : ""}`}
         style={cardStyle}
-        onMouseDown={onDragStart}
-        onMouseMove={onDragMove}
-        onMouseUp={onDragEnd}
-        onMouseLeave={onDragEnd}
-        onTouchStart={onDragStart}
-        onTouchMove={onDragMove}
-        onTouchEnd={onDragEnd}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onDragStart(e);
+        }}
+        onMouseMove={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+            onDragMove(e);
+          }
+        }}
+        onMouseUp={(e) => {
+          e.preventDefault();
+          onDragEnd(e);
+        }}
+        onMouseLeave={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+            onDragEnd(e);
+          }
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          onDragStart(e);
+        }}
+        onTouchMove={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+            onDragMove(e);
+          }
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          onDragEnd(e);
+        }}
+        onTouchCancel={(e) => {
+          if (isDragging) {
+            e.preventDefault();
+            onDragEnd(e);
+          }
+        }}
       >
         {/* Swipe direction overlays - positioned absolutely over the card */}
         {swipeDirection === "right" && (

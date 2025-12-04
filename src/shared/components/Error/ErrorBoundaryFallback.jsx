@@ -80,9 +80,6 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   const mainContentRef = useRef(null);
   const retryButtonRef = useRef(null);
 
-  // Fallback timestamp for when error doesn't have one
-  const [fallbackTimestamp] = useState(() => Date.now());
-
   // * Focus management: Focus main content on mount for screen readers
   useEffect(() => {
     if (mainContentRef.current) {
@@ -141,7 +138,8 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
     timestamp: new Date().toISOString(),
     userAgent: navigator.userAgent,
     url: window.location.href,
-    errorType: standardizedError?.type || standardizedError?.errorType || "Unknown",
+    errorType:
+      standardizedError?.type || standardizedError?.errorType || "Unknown",
     errorMessage: error?.message || error?.toString() || "Unknown error",
     errorStack: error?.stack || "No stack trace available",
     retryCount,
@@ -169,7 +167,9 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
           }))
         : diagnosticInfo.errorStack
             .split("\n")
-            .filter((line) => line.includes("http://") || line.includes("file://"))
+            .filter(
+              (line) => line.includes("http://") || line.includes("file://")
+            )
             .map((line) => {
               const match = line.match(/([^:]+):(\d+):(\d+)/);
               if (match) {
@@ -190,9 +190,8 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
             .slice(0, 5);
 
     // * Extract component/function names from stack
-    const componentMatches = diagnosticInfo.errorStack.match(
-      /at\s+(\w+)\s*\(/g,
-    );
+    const componentMatches =
+      diagnosticInfo.errorStack.match(/at\s+(\w+)\s*\(/g);
     const components = componentMatches
       ? componentMatches.map((m) => m.replace(/at\s+(\w+)\s*\(/, "$1"))
       : [];
@@ -216,7 +215,10 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
         "Check if backend service is running and environment variables are set",
         "Review network request payload and headers",
       ];
-    } else if (errorMsg.includes("is not defined") || errorMsg.includes("cannot find")) {
+    } else if (
+      errorMsg.includes("is not defined") ||
+      errorMsg.includes("cannot find")
+    ) {
       fixCategory = "REFERENCE_ERROR";
       suggestedFixes = [
         "Check if variable/function is imported correctly",
@@ -285,21 +287,27 @@ ${diagnosticInfo.errorStack}
 \`\`\`
 
 ## Code Locations (Top ${parsedFrames.length} frames)
-${parsedFrames.length > 0
-  ? parsedFrames
-      .map(
-        (frame, idx) =>
-          `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``,
-      )
-      .join("\n")
-  : "Unable to parse stack frames"}
+${
+  parsedFrames.length > 0
+    ? parsedFrames
+        .map(
+          (frame, idx) =>
+            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``
+        )
+        .join("\n")
+    : "Unable to parse stack frames"
+}
 
 ## Affected Components/Functions
-${components.length > 0
-  ? components.map((c) => `- \`${c}\``).join("\n")
-  : parsedFrames.length > 0
-    ? parsedFrames.map((f) => `- \`${f.function}\` (${f.file}:${f.line})`).join("\n")
-    : "- Unable to extract"}
+${
+  components.length > 0
+    ? components.map((c) => `- \`${c}\``).join("\n")
+    : parsedFrames.length > 0
+      ? parsedFrames
+          .map((f) => `- \`${f.function}\` (${f.file}:${f.line})`)
+          .join("\n")
+      : "- Unable to extract"
+}
 
 ## Debug Hints
 ${
@@ -328,12 +336,12 @@ ${JSON.stringify(
     isRetryable: diagnosticInfo.isRetryable,
     message: diagnosticInfo.errorMessage,
     stackFrames: parsedFrames,
-    components: components,
+    components,
     fixCategory,
     ...diagnosticInfo.additionalInfo,
   },
   null,
-  2,
+  2
 )}
 \`\`\`
 

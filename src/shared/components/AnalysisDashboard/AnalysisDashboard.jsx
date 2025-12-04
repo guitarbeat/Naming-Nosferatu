@@ -41,7 +41,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed,
+    defaultCollapsed
   );
 
   // Fetch global leaderboard and selection popularity data on mount
@@ -145,6 +145,68 @@ export function AnalysisDashboard({
     return consolidatedNames;
   }, [highlights, consolidatedNames]);
 
+  // * Calculate summary stats for quick overview
+  const summaryStats = useMemo(() => {
+    if (displayNames.length === 0) return null;
+
+    const maxRating = Math.max(...displayNames.map((n) => n.rating));
+    const maxWins = Math.max(...displayNames.map((n) => n.wins));
+    const maxSelected = Math.max(...displayNames.map((n) => n.selected));
+    const avgRating =
+      displayNames.reduce((sum, n) => sum + n.rating, 0) / displayNames.length;
+    const avgWins =
+      displayNames.reduce((sum, n) => sum + n.wins, 0) / displayNames.length;
+    const totalSelected = displayNames.reduce((sum, n) => sum + n.selected, 0);
+
+    return {
+      maxRating,
+      maxWins,
+      maxSelected,
+      avgRating: Math.round(avgRating),
+      avgWins: Math.round(avgWins * 10) / 10,
+      totalSelected,
+      topName: displayNames[0],
+    };
+  }, [displayNames]);
+
+  // * Generate insights based on data
+  const insights = useMemo(() => {
+    if (!summaryStats || displayNames.length === 0) return [];
+
+    const result = [];
+
+    if (summaryStats.topName) {
+      result.push({
+        type: "top",
+        message: `${summaryStats.topName.name} leads with a rating of ${summaryStats.topName.rating}`,
+        icon: "🏆",
+      });
+    }
+
+    if (summaryStats.maxSelected > 0) {
+      const mostSelected = displayNames.find(
+        (n) => n.selected === summaryStats.maxSelected
+      );
+      if (mostSelected) {
+        result.push({
+          type: "popular",
+          message: `${mostSelected.name} is the most selected (${summaryStats.maxSelected}x)`,
+          icon: "⭐",
+        });
+      }
+    }
+
+    if (summaryStats.avgRating > 1600) {
+      result.push({
+        type: "quality",
+        message: `High average rating of ${summaryStats.avgRating} indicates strong contenders`,
+        icon: "✨",
+      });
+    }
+
+    return result;
+  }, [summaryStats, displayNames]);
+
   // Don't render if no data and not loading/error
   const hasData = displayNames.length > 0 || isLoading || error;
 
@@ -179,49 +241,168 @@ export function AnalysisDashboard({
             No names available yet.
           </div>
         ) : (
-          <div className="top-names-list">
-            <table
-              className="top-names-table"
-              role="table"
-              aria-label="Top performing cat names ranked by rating, wins, and selection count"
-            >
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Rating</th>
-                  <th scope="col">Wins</th>
-                  <th scope="col">Selected</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayNames.map((item, index) => (
-                  <tr key={item.id || index}>
-                    <td className="top-names-name" scope="row">
-                      {item.name}
-                    </td>
-                    <td
-                      className="top-names-rating"
-                      aria-label={`Rating: ${item.rating}`}
-                    >
-                      {item.rating}
-                    </td>
-                    <td
-                      className="top-names-wins"
-                      aria-label={`Wins: ${item.wins}`}
-                    >
-                      {item.wins}
-                    </td>
-                    <td
-                      className="top-names-selected"
-                      aria-label={`Selected ${item.selected} times`}
-                    >
-                      {item.selected}
-                    </td>
-                  </tr>
+          <>
+            {/* Quick Stats Summary */}
+            {summaryStats && (
+              <div className="analysis-stats-summary">
+                <div className="analysis-stat-card">
+                  <div className="analysis-stat-label">Top Rating</div>
+                  <div className="analysis-stat-value">
+                    {summaryStats.maxRating}
+                  </div>
+                  <div className="analysis-stat-name">
+                    {summaryStats.topName?.name}
+                  </div>
+                </div>
+                <div className="analysis-stat-card">
+                  <div className="analysis-stat-label">Avg Rating</div>
+                  <div className="analysis-stat-value">
+                    {summaryStats.avgRating}
+                  </div>
+                  <div className="analysis-stat-subtext">
+                    Across {displayNames.length} names
+                  </div>
+                </div>
+                <div className="analysis-stat-card">
+                  <div className="analysis-stat-label">Total Selected</div>
+                  <div className="analysis-stat-value">
+                    {summaryStats.totalSelected}
+                  </div>
+                  <div className="analysis-stat-subtext">
+                    {summaryStats.maxSelected > 0
+                      ? `Most: ${summaryStats.maxSelected}x`
+                      : "No selections yet"}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Insights */}
+            {insights.length > 0 && (
+              <div className="analysis-insights">
+                {insights.map((insight, idx) => (
+                  <div
+                    key={idx}
+                    className={`analysis-insight analysis-insight--${insight.type}`}
+                  >
+                    <span className="analysis-insight-icon" aria-hidden="true">
+                      {insight.icon}
+                    </span>
+                    <span className="analysis-insight-text">
+                      {insight.message}
+                    </span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            )}
+
+            {/* Enhanced Table */}
+            <div className="top-names-list">
+              <table
+                className="top-names-table"
+                role="table"
+                aria-label="Top performing cat names ranked by rating, wins, and selection count"
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Rating</th>
+                    <th scope="col">Wins</th>
+                    <th scope="col">Selected</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayNames.map((item, index) => {
+                    const rank = index + 1;
+                    const ratingPercent =
+                      summaryStats && summaryStats.maxRating > 0
+                        ? Math.min(
+                            (item.rating / summaryStats.maxRating) * 100,
+                            100
+                          )
+                        : 0;
+                    const winsPercent =
+                      summaryStats && summaryStats.maxWins > 0
+                        ? Math.min(
+                            (item.wins / summaryStats.maxWins) * 100,
+                            100
+                          )
+                        : 0;
+                    const selectedPercent =
+                      summaryStats && summaryStats.maxSelected > 0
+                        ? Math.min(
+                            (item.selected / summaryStats.maxSelected) * 100,
+                            100
+                          )
+                        : 0;
+
+                    return (
+                      <tr key={item.id || index} className="top-names-row">
+                        <td className="top-names-rank" scope="row">
+                          <span className="rank-badge rank-badge--top">
+                            {rank}
+                          </span>
+                        </td>
+                        <td className="top-names-name">{item.name}</td>
+                        <td className="top-names-rating-cell">
+                          <div className="metric-with-bar">
+                            <span
+                              className="top-names-rating"
+                              aria-label={`Rating: ${item.rating}`}
+                            >
+                              {item.rating}
+                            </span>
+                            <div className="metric-bar">
+                              <div
+                                className="metric-bar-fill metric-bar-fill--rating"
+                                style={{ width: `${ratingPercent}%` }}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="top-names-wins-cell">
+                          <div className="metric-with-bar">
+                            <span
+                              className="top-names-wins"
+                              aria-label={`Wins: ${item.wins}`}
+                            >
+                              {item.wins}
+                            </span>
+                            <div className="metric-bar">
+                              <div
+                                className="metric-bar-fill metric-bar-fill--wins"
+                                style={{ width: `${winsPercent}%` }}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="top-names-selected-cell">
+                          <div className="metric-with-bar">
+                            <span
+                              className="top-names-selected"
+                              aria-label={`Selected ${item.selected} times`}
+                            >
+                              {item.selected}
+                            </span>
+                            <div className="metric-bar">
+                              <div
+                                className="metric-bar-fill metric-bar-fill--selected"
+                                style={{ width: `${selectedPercent}%` }}
+                                aria-hidden="true"
+                              />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </CollapsibleContent>
     </AnalysisPanel>

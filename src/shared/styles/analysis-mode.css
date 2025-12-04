@@ -86,6 +86,8 @@ body:has(.analysis-mode-banner) {
     linear-gradient(to bottom, var(--analysis-border) 1px, transparent 1px);
   background-size: 40px 40px;
   background-attachment: fixed;
+  /* * Smooth background transition */
+  transition: background-image 0.5s ease;
 }
 
 body:has(.analysis-mode-banner)::after {
@@ -99,6 +101,17 @@ body:has(.analysis-mode-banner)::after {
   );
   pointer-events: none;
   z-index: -1;
+  /* * Smooth fade-in */
+  animation: analysis-bg-fade-in 0.6s ease;
+}
+
+@keyframes analysis-bg-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================
@@ -117,7 +130,22 @@ body:has(.analysis-mode-banner)::after {
   backdrop-filter: blur(16px);
   transition:
     border-color var(--analysis-duration-normal) var(--analysis-ease),
-    box-shadow var(--analysis-duration-normal) var(--analysis-ease);
+    box-shadow var(--analysis-duration-normal) var(--analysis-ease),
+    opacity var(--analysis-duration-normal) var(--analysis-ease),
+    transform var(--analysis-duration-normal) var(--analysis-ease);
+  /* * Smooth entrance when analysis mode activates */
+  animation: analysis-panel-fade-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes analysis-panel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .analysis-panel::before {
@@ -698,6 +726,20 @@ body:has(.analysis-mode-banner)::after {
   border-bottom: 1px solid var(--analysis-border-accent);
   backdrop-filter: blur(16px);
   box-shadow: var(--analysis-shadow-sm);
+  /* * Smooth entrance animation */
+  animation: analysis-banner-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: top;
+}
+
+@keyframes analysis-banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .analysis-mode-banner-content {

@@ -17,7 +17,6 @@ import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
 import {
-  TournamentIcon,
   LogoutIcon,
   PhotosIcon,
   SuggestIcon,

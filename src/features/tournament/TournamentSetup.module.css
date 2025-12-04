@@ -532,7 +532,7 @@
 }
 
 .cardsContainer > *:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: scale(1.02);
   z-index: 10;
 }
 
@@ -2314,17 +2314,19 @@
   display: flex;
   flex-direction: column;
   gap: clamp(1rem, 2.5vw, 1.75rem);
+  /* * Ensure background is always visible */
   background: linear-gradient(
     135deg,
     var(--card-background, rgb(31 41 55 / 60%)),
     var(--surface-muted, rgb(15 23 42 / 50%))
-  );
+  ) !important;
   border: 2px solid var(--border-color, rgb(148 163 184 / 30%));
   border-radius: 0; /* * Sharp edges to match NameCard */
   box-shadow:
     0 12px 40px rgb(0 0 0 / 20%),
     0 0 0 1px rgb(255 255 255 / 5%) inset;
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   overflow: hidden;
   touch-action: none;
   cursor: grab;
@@ -2368,7 +2370,7 @@
     135deg,
     var(--card-background, rgb(31 41 55 / 70%)),
     var(--surface-muted, rgb(15 23 42 / 60%))
-  );
+  ) !important;
   border-color: var(--accent-color, #e8bf76);
   border-width: 2.5px;
   box-shadow:
