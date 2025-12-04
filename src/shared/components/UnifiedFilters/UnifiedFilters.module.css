@@ -113,21 +113,9 @@
 /* * Toggle Switch Component */
 .toggleWrapper {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
   flex: 1;
   min-width: 160px;
   max-width: 220px;
-}
-
-.toggleDescription {
-  font-size: var(--text-xs);
-  font-weight: var(--font-weight-normal);
-  color: var(--text-tertiary);
-  line-height: var(--leading-normal);
-  text-align: center;
-  margin-top: var(--space-1);
-  cursor: pointer;
 }
 
 .toggleSwitch {

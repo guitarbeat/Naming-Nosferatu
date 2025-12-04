@@ -16,7 +16,13 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { TournamentIcon, LogoutIcon, PhotosIcon, SuggestIcon, AnalysisIcon } from "./icons";
+import {
+  TournamentIcon,
+  LogoutIcon,
+  PhotosIcon,
+  SuggestIcon,
+  AnalysisIcon,
+} from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -33,9 +39,10 @@ export function AppSidebar({
   onOpenPhotos,
 }) {
   // * Check if analysis mode is active
-  const isAnalysisMode = typeof window !== "undefined" 
-    ? new URLSearchParams(window.location.search).get("analysis") === "true"
-    : false;
+  const isAnalysisMode =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("analysis") === "true"
+      : false;
 
   // * Toggle analysis mode
   const handleAnalysisToggle = () => {
@@ -55,12 +62,8 @@ export function AppSidebar({
   };
 
   // * Define navigation items - data-driven approach
+  // * Note: Tournament is handled separately as the home button
   const navItems = [
-    {
-      key: "tournament",
-      label: "Tournament",
-      icon: TournamentIcon,
-    },
     {
       key: "analysis",
       label: "Analysis",

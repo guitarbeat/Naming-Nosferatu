@@ -67,6 +67,9 @@
   flex-direction: column;
   align-items: stretch;
   gap: var(--space-2);
+  min-width: auto;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 /* * Breadcrumb in navbar */
@@ -144,6 +147,7 @@
 
 /* * Combined Home/Tournament button */
 .sidebar-home-button {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -164,6 +168,56 @@
 .sidebar-home-button:focus-visible {
   outline: 2px solid hsl(var(--neon-cyan));
   outline-offset: 2px;
+}
+
+/* * Hide home button text on smaller screens, show on hover */
+@media (width <= 1200px) {
+  .sidebar-home-button span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #fff;
+    white-space: nowrap;
+    background: hsl(var(--background) / 95%);
+    border: 1px solid hsl(var(--border) / 50%);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 30%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+  }
+
+  .sidebar-home-button span::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid hsl(var(--background) / 95%);
+  }
+
+  .sidebar-home-button:hover span,
+  .sidebar-home-button:focus-visible span {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+    pointer-events: auto;
+  }
+
+  .sidebar-home-button {
+    justify-content: center;
+  }
 }
 
 .sidebar-logo-icon {
@@ -410,7 +464,27 @@
   }
 
   /* * Hide text labels on mobile for a cleaner icon-only bar */
-  .sidebar-menu-button span {
+  .sidebar-menu-button span:not(.nav-item-label) {
+    display: none;
+  }
+
+  /* * Ensure logout button is always visible and accessible on mobile */
+  .navbar-section--right
+    .sidebar-group:has(.sidebar-user-display)
+    .sidebar-menu-button.sidebar-logout-button {
+    min-width: 44px;
+    min-height: 44px;
+    padding: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .navbar-section--right
+    .sidebar-group:has(.sidebar-user-display)
+    .sidebar-menu-button.sidebar-logout-button
+    span {
     display: none;
   }
 
@@ -455,5 +529,24 @@
     flex-shrink: 0;
     min-width: 44px;
     padding: var(--space-2);
+  }
+
+  /* * Ensure user section is visible and accessible on mobile */
+  .navbar-section--right .sidebar-group:has(.sidebar-user-display) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+    min-width: auto;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .navbar-section--right
+    .sidebar-group:has(.sidebar-user-display)
+    .sidebar-user-display {
+    min-height: 44px;
+    padding: var(--space-2);
+    flex-shrink: 0;
   }
 }

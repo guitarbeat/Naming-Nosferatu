@@ -2722,7 +2722,7 @@
 }
 
 .photoWrapper:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   z-index: 1;
 }
 
@@ -2742,6 +2742,8 @@
   border-radius: var(--card-border-radius-mosaic); /* * Use design token */
   box-shadow: var(--shadow-sm);
   transition: transform var(--duration-normal) var(--ease-out);
+  transform-style: preserve-3d;
+  perspective: 1000px;
 }
 
 .photoThumbnail.imageLoading {
@@ -2805,7 +2807,7 @@
 }
 
 .photoThumbnail:hover {
-  transform: translateY(-4px);
+  transform: translateY(-1px);
 }
 
 .photoThumbnail:hover .photoOverlay {

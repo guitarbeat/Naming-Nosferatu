@@ -157,7 +157,6 @@ function UnifiedFilters({
       activeLabel,
       inactiveLabel,
       ariaLabel,
-      description,
       key,
     } = config;
     if (!onClick) return null;
@@ -181,11 +180,6 @@ function UnifiedFilters({
             <span className={styles.toggleLabelRight}>{activeLabel}</span>
           </span>
         </button>
-        {description && (
-          <label className={styles.toggleDescription} htmlFor={toggleId}>
-            {description}
-          </label>
-        )}
       </div>
     );
   }, []);
@@ -200,8 +194,6 @@ function UnifiedFilters({
         inactiveLabel: "Swipe",
         getAriaLabel: (active) =>
           active ? "Switch to swipe mode" : "Switch to tap mode",
-        getDescription: (active) =>
-          active ? "Tap names you like" : "Swipe through names",
         key: "swipe",
       },
       {
@@ -211,8 +203,6 @@ function UnifiedFilters({
         inactiveLabel: "Names",
         getAriaLabel: (active) =>
           active ? "Hide cat pictures" : "Show cat pictures",
-        getDescription: (active) =>
-          active ? "Show cat pictures" : "Names only",
         key: "cats",
       },
     ];
@@ -226,7 +216,6 @@ function UnifiedFilters({
         inactiveLabel: config.inactiveLabel,
         key: config.key,
         ariaLabel: config.getAriaLabel(config.isActive),
-        description: config.getDescription(config.isActive),
       }));
   }, [onToggleSwipeMode, onToggleCatPictures, isSwipeMode, showCatPictures]);
 

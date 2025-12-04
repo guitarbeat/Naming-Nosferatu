@@ -12,6 +12,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
 
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [tiltStyle, setTiltStyle] = useState({});
 
   const handleImageLoad = useCallback(() => {
     setImageLoading(false);

@@ -16,8 +16,18 @@ import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
  * @param {Function} props.onClick - Click handler that receives the item key or custom handler
  * @param {boolean} props.isActive - Whether the item is active (for custom handlers)
  */
-export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick, isActive: customIsActive }) {
-  const isActive = customIsActive !== undefined ? customIsActive : view === itemKey.toLowerCase();
+export function MenuNavItem({
+  itemKey,
+  icon: Icon,
+  label,
+  view,
+  onClick,
+  isActive: customIsActive,
+}) {
+  const isActive =
+    customIsActive !== undefined
+      ? customIsActive
+      : view === itemKey.toLowerCase();
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -37,9 +47,10 @@ export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick, isActiv
           onClick={handleClick}
           className={isActive ? "active" : ""}
           aria-current={isActive ? "page" : undefined}
+          title={label}
         >
           <Icon />
-          <span>{label}</span>
+          <span className="nav-item-label">{label}</span>
         </a>
       </SidebarMenuButton>
     </SidebarMenuItem>
