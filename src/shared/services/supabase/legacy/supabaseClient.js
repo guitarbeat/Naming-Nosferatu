@@ -906,9 +906,9 @@ export const catNamesAPI = {
       const avgRating =
         totalRatings > 0
           ? Math.round(
-              ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
-                totalRatings,
-            )
+            ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
+            totalRatings,
+          )
           : 1500;
 
       // Find names never selected
@@ -1162,21 +1162,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-              a[1] > b[1] ? a : b,
-            )[0]
+            a[1] > b[1] ? a : b,
+          )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
 
       return {
@@ -1418,7 +1418,7 @@ export const hiddenNamesAPI = {
             console.log("[hiddenNamesAPI.hideNames] Hiding name:", nameId);
           }
 
-          const result = await this.hideName(userName, nameId);
+          const result = await hiddenNamesAPI.hideName(userName, nameId);
           results.push({
             nameId,
             success: result.success,
@@ -1495,7 +1495,7 @@ export const hiddenNamesAPI = {
 
       for (const nameId of nameIds) {
         try {
-          const result = await this.unhideName(userName, nameId);
+          const result = await hiddenNamesAPI.unhideName(userName, nameId);
           results.push({
             nameId,
             success: result.success,
