@@ -34,7 +34,12 @@ export function AppSidebar({
   onOpenPhotos,
 }) {
   const navRef = useRef(null);
-  const [indicator, setIndicator] = useState({ left: 0, width: 12, opacity: 0, translateY: 0 });
+  const [indicator, setIndicator] = useState({
+    left: 0,
+    width: 12,
+    opacity: 0,
+    translateY: 0,
+  });
 
   // * Check if analysis mode is active
   const isAnalysisMode =
@@ -43,59 +48,63 @@ export function AppSidebar({
       : false;
 
   // * Update sliding indicator position with bounce animation
-  const updateIndicator = useCallback((animate = false) => {
-    if (!navRef.current) return;
-    const activeItem = navRef.current.querySelector('[data-active="true"]');
-    if (activeItem) {
-      const navRect = navRef.current.getBoundingClientRect();
-      const itemRect = activeItem.getBoundingClientRect();
-      const centerX = itemRect.left - navRect.left + itemRect.width / 2 - 6;
+  const updateIndicator = useCallback(
+    (animate = false) => {
+      if (!navRef.current) return;
+      const activeItem = navRef.current.querySelector('[data-active="true"]');
+      if (activeItem) {
+        const navRect = navRef.current.getBoundingClientRect();
+        const itemRect = activeItem.getBoundingClientRect();
+        const centerX = itemRect.left - navRect.left + itemRect.width / 2 - 6;
 
-      if (animate) {
-        // Bounce animation
-        const start = indicator.left;
-        const end = centerX;
-        const startTime = Date.now();
-        const duration = 500;
+        if (animate) {
+          // Bounce animation
+          const start = indicator.left;
+          const end = centerX;
+          const startTime = Date.now();
+          const duration = 500;
 
-        const animateStep = () => {
-          const elapsed = Date.now() - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-          const currentX = start + (end - start) * eased;
-          const bounceY = -40 * (4 * eased * (1 - eased)); // Parabolic bounce
+          const animateStep = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+            const currentX = start + (end - start) * eased;
+            const bounceY = -40 * (4 * eased * (1 - eased)); // Parabolic bounce
 
+            setIndicator({
+              left: currentX,
+              width: 12,
+              opacity: 1,
+              translateY: bounceY,
+            });
+
+            if (progress < 1) {
+              requestAnimationFrame(animateStep);
+            } else {
+              setIndicator({ left: end, width: 12, opacity: 1, translateY: 0 });
+            }
+          };
+
+          requestAnimationFrame(animateStep);
+        } else {
           setIndicator({
-            left: currentX,
+            left: centerX,
             width: 12,
             opacity: 1,
-            translateY: bounceY,
+            translateY: 0,
           });
-
-          if (progress < 1) {
-            requestAnimationFrame(animateStep);
-          } else {
-            setIndicator({ left: end, width: 12, opacity: 1, translateY: 0 });
-          }
-        };
-
-        requestAnimationFrame(animateStep);
-      } else {
-        setIndicator({
-          left: centerX,
-          width: 12,
-          opacity: 1,
-          translateY: 0,
-        });
+        }
       }
-    }
-  }, [indicator.left]);
+    },
+    [indicator.left],
+  );
 
   useEffect(() => {
     // Initial position without animation
     setTimeout(() => updateIndicator(false), 100);
     window.addEventListener("resize", () => updateIndicator(false));
-    return () => window.removeEventListener("resize", () => updateIndicator(false));
+    return () =>
+      window.removeEventListener("resize", () => updateIndicator(false));
   }, [updateIndicator]);
 
   useEffect(() => {
@@ -140,7 +149,9 @@ export function AppSidebar({
           <SidebarGroup open={true}>
             <SidebarGroupContent ref={navRef} className="nav-items-container">
               {/* Combined Logo + Tournament Home Button */}
-              <SidebarMenuItem data-active={view === "tournament" && !isAnalysisMode}>
+              <SidebarMenuItem
+                data-active={view === "tournament" && !isAnalysisMode}
+              >
                 <SidebarMenuButton asChild>
                   <button
                     type="button"

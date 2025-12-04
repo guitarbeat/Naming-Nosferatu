@@ -110,12 +110,10 @@ export function applyNameFilters(names, filters = {}) {
         comparison = (a.losses || 0) - (b.losses || 0);
         break;
       case "winRate": {
-        const aWinRate = a.wins && (a.wins + a.losses) > 0
-          ? a.wins / (a.wins + a.losses)
-          : 0;
-        const bWinRate = b.wins && (b.wins + b.losses) > 0
-          ? b.wins / (b.wins + b.losses)
-          : 0;
+        const aWinRate =
+          a.wins && a.wins + a.losses > 0 ? a.wins / (a.wins + a.losses) : 0;
+        const bWinRate =
+          b.wins && b.wins + b.losses > 0 ? b.wins / (b.wins + b.losses) : 0;
         comparison = aWinRate - bWinRate;
         break;
       }

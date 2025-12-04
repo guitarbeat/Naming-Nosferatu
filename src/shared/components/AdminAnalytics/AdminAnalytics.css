@@ -59,8 +59,9 @@
 }
 
 .admin-analytics-row {
-  transition: background var(--analysis-duration-fast) var(--analysis-ease),
-              transform var(--analysis-duration-fast) var(--analysis-ease);
+  transition:
+    background var(--analysis-duration-fast) var(--analysis-ease),
+    transform var(--analysis-duration-fast) var(--analysis-ease);
 }
 
 .admin-analytics-row:hover {

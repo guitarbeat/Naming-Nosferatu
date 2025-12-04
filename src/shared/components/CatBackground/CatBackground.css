@@ -23,8 +23,13 @@
 }
 
 @keyframes twinkle {
-  0% { opacity: 0.4; }
-  100% { opacity: 0.8; }
+  0% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 0.8;
+  }
 }
 
 /* Nebula - simplified */
@@ -40,8 +45,16 @@
 }
 
 @keyframes nebula-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.02); }
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
 }
 
 /* Floating cats container */
@@ -59,7 +72,9 @@
   cursor: pointer;
   opacity: 0.7;
   filter: drop-shadow(0 2px 8px rgb(0 0 0 / 15%));
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
   animation: float 8s ease-in-out infinite;
   will-change: transform;
 }
@@ -83,8 +98,14 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 /* Cat media styling */
@@ -102,9 +123,16 @@
     width: 35px;
     height: 35px;
   }
-  
-  .cat-background__cat--1 { top: 10%; left: 5%; }
-  .cat-background__cat--2 { top: 70%; right: 8%; }
+
+  .cat-background__cat--1 {
+    top: 10%;
+    left: 5%;
+  }
+
+  .cat-background__cat--2 {
+    top: 70%;
+    right: 8%;
+  }
 }
 
 /* Reduced motion */
@@ -114,5 +142,8 @@
   .cat-background__cat {
     animation: none;
   }
-  .cat-background__cat { opacity: 0.5; }
+
+  .cat-background__cat {
+    opacity: 0.5;
+  }
 }

@@ -86,10 +86,8 @@ export function useTournamentVoting({
         const winnerRating = newRatings[winnerName]?.rating || 1500;
         const loserRating = newRatings[loserName]?.rating || 1500;
 
-        const { winner: newWinnerRating, loser: newLoserRating } = elo.calculateNewRatings(
-          winnerRating,
-          loserRating
-        );
+        const { winner: newWinnerRating, loser: newLoserRating } =
+          elo.calculateNewRatings(winnerRating, loserRating);
 
         newRatings[winnerName] = {
           ...(newRatings[winnerName] || {}),
@@ -206,7 +204,7 @@ export function useTournamentVoting({
       updateTournamentState,
       updatePersistentState,
       getCurrentRatings,
-    ]
+    ],
   );
 
   return {
@@ -268,7 +266,7 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
         const [a, b] = bestPair;
         sorter._pairIndex = Math.max(
           0,
-          sorter._pairs.findIndex((p) => p[0] === a && p[1] === b)
+          sorter._pairs.findIndex((p) => p[0] === a && p[1] === b),
         );
         return {
           left: names.find((n) => n?.name === a) || { name: a },

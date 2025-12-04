@@ -41,7 +41,7 @@ function NameSelection({
       sortBy,
       filterStatus,
     }),
-    [searchTerm, selectedCategory, sortBy, filterStatus]
+    [searchTerm, selectedCategory, sortBy, filterStatus],
   );
 
   // Calculate filtered names for display count and swipe mode
@@ -66,7 +66,7 @@ function NameSelection({
 
     if (showSelectedOnly) {
       result = result.filter((name) =>
-        selectedNames.some((selected) => selected.id === name.id)
+        selectedNames.some((selected) => selected.id === name.id),
       );
     }
 

@@ -30,11 +30,7 @@ export function AnalysisPanel({
   return (
     <div className={`analysis-panel ${className}`}>
       {showHeader && <AnalysisHeader title={title} actions={actions} />}
-      {toolbar && (
-        <div className="analysis-panel-toolbar">
-          {toolbar}
-        </div>
-      )}
+      {toolbar && <div className="analysis-panel-toolbar">{toolbar}</div>}
       {children}
     </div>
   );

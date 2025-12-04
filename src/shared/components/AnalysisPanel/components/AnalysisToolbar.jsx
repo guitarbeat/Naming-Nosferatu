@@ -21,16 +21,8 @@ export function AnalysisToolbar({ children, selectedCount = 0, actions }) {
           <span className="analysis-selection-label">selected</span>
         </div>
       )}
-      {children && (
-        <div className="analysis-toolbar-content">
-          {children}
-        </div>
-      )}
-      {actions && (
-        <div className="analysis-toolbar-actions">
-          {actions}
-        </div>
-      )}
+      {children && <div className="analysis-toolbar-content">{children}</div>}
+      {actions && <div className="analysis-toolbar-actions">{actions}</div>}
     </div>
   );
 }

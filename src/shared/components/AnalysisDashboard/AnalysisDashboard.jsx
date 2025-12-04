@@ -279,9 +279,7 @@ export function AnalysisDashboard({
       // Search filter
       if (filters.searchTerm) {
         const searchLower = filters.searchTerm.toLowerCase();
-        names = names.filter((n) =>
-          n.name.toLowerCase().includes(searchLower)
-        );
+        names = names.filter((n) => n.name.toLowerCase().includes(searchLower));
       }
 
       // Status filter (visibility)
@@ -310,7 +308,11 @@ export function AnalysisDashboard({
 
         switch (filters.dateFilter) {
           case "today":
-            filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            filterDate = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+            );
             break;
           case "week":
             filterDate = new Date(now);
@@ -436,50 +438,54 @@ export function AnalysisDashboard({
   // * Note: toolbarContext is now used above in displayNames useMemo
 
   // * Build toolbar if context is available and in analysis mode
-  const toolbar = toolbarContext && toolbarContext.analysisMode ? (
-    <TournamentToolbar
-      mode="hybrid"
-      filters={toolbarContext.filterConfig}
-      onFilterChange={toolbarContext.handleFilterChange || ((newFilters) => {
-        // * Update context filters
-        if (newFilters.searchTerm !== undefined) {
-          toolbarContext.setSearchTerm(newFilters.searchTerm || "");
+  const toolbar =
+    toolbarContext && toolbarContext.analysisMode ? (
+      <TournamentToolbar
+        mode="hybrid"
+        filters={toolbarContext.filterConfig}
+        onFilterChange={
+          toolbarContext.handleFilterChange ||
+          ((newFilters) => {
+            // * Update context filters
+            if (newFilters.searchTerm !== undefined) {
+              toolbarContext.setSearchTerm(newFilters.searchTerm || "");
+            }
+            if (newFilters.category !== undefined) {
+              toolbarContext.setSelectedCategory(newFilters.category || null);
+            }
+            if (newFilters.sortBy !== undefined) {
+              toolbarContext.setSortBy(newFilters.sortBy || "alphabetical");
+            }
+            if (newFilters.filterStatus !== undefined) {
+              toolbarContext.setFilterStatus(newFilters.filterStatus);
+            }
+            if (newFilters.userFilter !== undefined) {
+              toolbarContext.setUserFilter(newFilters.userFilter);
+            }
+            if (newFilters.selectionFilter !== undefined) {
+              toolbarContext.setSelectionFilter(newFilters.selectionFilter);
+            }
+            if (newFilters.sortOrder !== undefined) {
+              toolbarContext.setSortOrder(newFilters.sortOrder);
+            }
+          })
         }
-        if (newFilters.category !== undefined) {
-          toolbarContext.setSelectedCategory(newFilters.category || null);
-        }
-        if (newFilters.sortBy !== undefined) {
-          toolbarContext.setSortBy(newFilters.sortBy || "alphabetical");
-        }
-        if (newFilters.filterStatus !== undefined) {
-          toolbarContext.setFilterStatus(newFilters.filterStatus);
-        }
-        if (newFilters.userFilter !== undefined) {
-          toolbarContext.setUserFilter(newFilters.userFilter);
-        }
-        if (newFilters.selectionFilter !== undefined) {
-          toolbarContext.setSelectionFilter(newFilters.selectionFilter);
-        }
-        if (newFilters.sortOrder !== undefined) {
-          toolbarContext.setSortOrder(newFilters.sortOrder);
-        }
-      })}
-      categories={toolbarContext.categories || []}
-      showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
-      showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
-      userSelectOptions={toolbarContext.profileProps?.userSelectOptions || []}
-      filteredCount={displayNames.length}
-      totalCount={consolidatedNames.length}
-      selectedCount={toolbarContext.selectedCount || 0}
-      showSelectedOnly={toolbarContext.showSelectedOnly || false}
-      onToggleShowSelected={toolbarContext.setShowSelectedOnly}
-      isSwipeMode={toolbarContext.isSwipeMode || false}
-      onToggleSwipeMode={toolbarContext.setIsSwipeMode}
-      showCatPictures={toolbarContext.showCatPictures || false}
-      onToggleCatPictures={toolbarContext.setShowCatPictures}
-      analysisMode={true}
-    />
-  ) : null;
+        categories={toolbarContext.categories || []}
+        showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
+        showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
+        userSelectOptions={toolbarContext.profileProps?.userSelectOptions || []}
+        filteredCount={displayNames.length}
+        totalCount={consolidatedNames.length}
+        selectedCount={toolbarContext.selectedCount || 0}
+        showSelectedOnly={toolbarContext.showSelectedOnly || false}
+        onToggleShowSelected={toolbarContext.setShowSelectedOnly}
+        isSwipeMode={toolbarContext.isSwipeMode || false}
+        onToggleSwipeMode={toolbarContext.setIsSwipeMode}
+        showCatPictures={toolbarContext.showCatPictures || false}
+        onToggleCatPictures={toolbarContext.setShowCatPictures}
+        analysisMode={true}
+      />
+    ) : null;
 
   // Don't render if no data and not loading/error
   const hasData = displayNames.length > 0 || isLoading || error;
@@ -747,7 +753,10 @@ export function AnalysisDashboard({
                               })}
                             </span>
                           ) : (
-                            <span className="top-names-date top-names-date--unknown" aria-label="Date unknown">
+                            <span
+                              className="top-names-date top-names-date--unknown"
+                              aria-label="Date unknown"
+                            >
                               —
                             </span>
                           )}

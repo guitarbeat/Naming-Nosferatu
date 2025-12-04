@@ -39,7 +39,13 @@ const FILTER_CONFIGS = {
   ],
 };
 
-const Toggle = ({ isActive, onClick, activeLabel, inactiveLabel, ariaLabel }) => (
+const Toggle = ({
+  isActive,
+  onClick,
+  activeLabel,
+  inactiveLabel,
+  ariaLabel,
+}) => (
   <div className={styles.toggleWrapper}>
     <button
       type="button"
@@ -62,7 +68,9 @@ const Toggle = ({ isActive, onClick, activeLabel, inactiveLabel, ariaLabel }) =>
 
 const FilterSelect = ({ id, label, value, options, onChange }) => (
   <div className={styles.filterGroup}>
-    <label htmlFor={id} className={styles.filterLabel}>{label}</label>
+    <label htmlFor={id} className={styles.filterLabel}>
+      {label}
+    </label>
     <Select
       id={id}
       name={id}
@@ -92,7 +100,8 @@ function TournamentToolbar({
   analysisMode = false,
   className = "",
 }) {
-  const update = (name, value) => onFilterChange?.({ ...filters, [name]: value });
+  const update = (name, value) =>
+    onFilterChange?.({ ...filters, [name]: value });
   const isTournament = mode === "tournament";
   const isHybrid = mode === "hybrid";
   const showFilters = isHybrid || mode === "profile";
@@ -110,7 +119,9 @@ function TournamentToolbar({
                   onClick={onToggleSwipeMode}
                   activeLabel="Tap"
                   inactiveLabel="Swipe"
-                  ariaLabel={isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"}
+                  ariaLabel={
+                    isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"
+                  }
                 />
               )}
               {onToggleCatPictures && (
@@ -119,7 +130,9 @@ function TournamentToolbar({
                   onClick={onToggleCatPictures}
                   activeLabel="Cats"
                   inactiveLabel="Names"
-                  ariaLabel={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
+                  ariaLabel={
+                    showCatPictures ? "Hide cat pictures" : "Show cat pictures"
+                  }
                 />
               )}
             </div>
@@ -228,7 +241,14 @@ function TournamentToolbar({
               label="Status"
               value={filters.filterStatus || FILTER_OPTIONS.VISIBILITY.VISIBLE}
               options={FILTER_CONFIGS.visibility}
-              onChange={(value) => update("filterStatus", value === "active" ? FILTER_OPTIONS.VISIBILITY.VISIBLE : value || FILTER_OPTIONS.VISIBILITY.VISIBLE)}
+              onChange={(value) =>
+                update(
+                  "filterStatus",
+                  value === "active"
+                    ? FILTER_OPTIONS.VISIBILITY.VISIBLE
+                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE,
+                )
+              }
             />
             {showUserFilter && (
               <FilterSelect
@@ -260,7 +280,9 @@ function TournamentToolbar({
           </div>
           <div className={styles.filterRow}>
             <div className={styles.sortGroup}>
-              <label htmlFor="filter-sort" className={styles.filterLabel}>Sort By</label>
+              <label htmlFor="filter-sort" className={styles.filterLabel}>
+                Sort By
+              </label>
               <div className={styles.sortControls}>
                 <Select
                   id="filter-sort"
@@ -272,7 +294,14 @@ function TournamentToolbar({
                 />
                 <button
                   type="button"
-                  onClick={() => update("sortOrder", isAsc ? FILTER_OPTIONS.ORDER.DESC : FILTER_OPTIONS.ORDER.ASC)}
+                  onClick={() =>
+                    update(
+                      "sortOrder",
+                      isAsc
+                        ? FILTER_OPTIONS.ORDER.DESC
+                        : FILTER_OPTIONS.ORDER.ASC,
+                    )
+                  }
                   className={styles.sortOrderButton}
                   title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
                   aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}

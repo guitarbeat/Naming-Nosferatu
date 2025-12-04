@@ -379,7 +379,8 @@
 
 .searchInput {
   flex: 1;
-  padding: calc(var(--input-padding-y) * 0.75) var(--input-padding-x) calc(var(--input-padding-y) * 0.75) calc(var(--input-padding-x) + 20px);
+  padding: calc(var(--input-padding-y) * 0.75) var(--input-padding-x)
+    calc(var(--input-padding-y) * 0.75) calc(var(--input-padding-x) + 20px);
   font-size: var(--text-sm);
   color: var(--text-primary);
   background: var(--surface-color);

@@ -11,13 +11,19 @@
   padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  transition: 
-    background var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out),
-    padding var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out),
-    min-height var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out),
-    max-height var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out),
-    opacity var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
+  transition:
+    background var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    padding var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    min-height var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    max-height var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    opacity var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    border-color var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out);
   min-height: auto;
   max-height: none;
   overflow: visible;
@@ -28,7 +34,8 @@
 }
 
 .collapsible-header--default {
-  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px) 0 0;
+  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
+    0 0;
 }
 
 .collapsible-header--compact {
@@ -54,12 +61,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    background var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    box-shadow var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    background var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
+    border-color var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
+    box-shadow var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover {
@@ -136,7 +147,7 @@
   color: var(--text-primary, #fff);
   cursor: pointer;
   opacity: 0;
-  transition: 
+  transition:
     opacity 0.2s ease-in-out,
     background 0.2s ease-in-out,
     transform 0.2s ease-in-out;
@@ -260,10 +271,11 @@
   height: 10px;
   opacity: 0.8;
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
     color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
   margin-bottom: 2px; /* Small gap between chevron and icon */
 }
 
@@ -277,9 +289,10 @@
   font-size: 1.1em;
   opacity: 0.8;
   line-height: 1;
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover .collapsible-icon-collapsed {
@@ -301,7 +314,8 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  transition: color var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, ease-out);
 }
 
 .collapsible-toggle:hover {
@@ -320,7 +334,8 @@
   width: 12px;
   height: 12px;
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  transition: transform var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, ease-out);
 }
 
 .collapsible-chevron.collapsed {
@@ -336,7 +351,8 @@
   flex-shrink: 0;
   font-size: 1.1em;
   line-height: 1;
-  transition: opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  transition: opacity var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, ease-out);
 }
 
 /* Collapsed icon - visible and interactive */
@@ -345,9 +361,10 @@
   font-size: 1em;
   line-height: 1;
   opacity: 0.8;
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover .collapsible-icon-collapsed {
@@ -358,9 +375,10 @@
 .collapsible-title {
   flex-shrink: 0;
   font-weight: var(--font-weight-semibold, 600);
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    max-width var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    max-width var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
 }
 
 /* Title in collapsed state - hidden in circle design */
@@ -418,11 +436,14 @@
   border-radius: var(--analysis-radius-sm, 4px);
   color: var(--text-secondary, rgb(255 255 255 / 70%));
   cursor: pointer;
-  transition: 
-    background var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+  transition:
+    background var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
+    border-color var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
     color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
   flex-shrink: 0;
   opacity: 0.7;
 }
@@ -460,11 +481,13 @@
   color: var(--text-secondary, rgb(255 255 255 / 60%));
   cursor: pointer;
   opacity: 0;
-  transition: 
+  transition:
     opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    background var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    background var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out),
     color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+    transform var(--analysis-duration-fast, 150ms)
+      var(--analysis-ease, ease-out);
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -513,7 +536,8 @@
 /* When toolbar is present, header should have no bottom border */
 .collapsible-header:has(+ .collapsible-header-toolbar) {
   border-bottom: none;
-  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px) 0 0;
+  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
+    0 0;
 }
 
 /* When inside analysis-panel, ensure proper integration */
@@ -530,7 +554,8 @@
   display: grid;
   grid-template-rows: 1fr;
   overflow: hidden;
-  transition: grid-template-rows var(--analysis-duration-normal, 200ms) var(--analysis-ease, ease-out);
+  transition: grid-template-rows var(--analysis-duration-normal, 200ms)
+    var(--analysis-ease, ease-out);
   margin: 0;
   padding: 0;
 }
@@ -548,7 +573,9 @@
 }
 
 /* When inside analysis-panel with collapsible header, adjust padding */
-.analysis-panel:has(.collapsible-header) .collapsible-content:not(.collapsed) .collapsible-content-inner {
+.analysis-panel:has(.collapsible-header)
+  .collapsible-content:not(.collapsed)
+  .collapsible-content-inner {
   padding-top: var(--analysis-gap-md, 12px);
 }
 
@@ -561,7 +588,8 @@
 .analysis-header-chevron {
   display: inline-flex;
   font-size: 0.75em;
-  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  transition: transform var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, ease-out);
 }
 
 .analysis-header-chevron.collapsed {
@@ -581,7 +609,8 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: color var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out);
+  transition: color var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, ease-out);
 }
 
 .analysis-header-toggle:hover {
@@ -614,7 +643,7 @@
   .analysis-header-summary {
     display: none;
   }
-  
+
   .collapsible-header {
     padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
   }

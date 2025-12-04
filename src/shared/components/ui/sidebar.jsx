@@ -97,11 +97,15 @@ SidebarGroupLabel.propTypes = {
 export const SidebarGroupContent = forwardRef(
   ({ children, className = "", ...props }, ref) => {
     return (
-      <div ref={ref} className={`sidebar-group-content ${className}`} {...props}>
+      <div
+        ref={ref}
+        className={`sidebar-group-content ${className}`}
+        {...props}
+      >
         {children}
       </div>
     );
-  }
+  },
 );
 
 SidebarGroupContent.displayName = "SidebarGroupContent";
@@ -123,7 +127,11 @@ SidebarMenu.propTypes = {
 
 // SidebarMenuItem
 export function SidebarMenuItem({ children, className = "", ...props }) {
-  return <li className={`sidebar-menu-item ${className}`} {...props}>{children}</li>;
+  return (
+    <li className={`sidebar-menu-item ${className}`} {...props}>
+      {children}
+    </li>
+  );
 }
 
 SidebarMenuItem.propTypes = {
