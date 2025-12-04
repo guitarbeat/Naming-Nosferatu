@@ -47,7 +47,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed
+    defaultCollapsed,
   );
 
   // Fetch global leaderboard and selection popularity data on mount
@@ -158,7 +158,7 @@ export function AnalysisDashboard({
         setSortDirection("desc");
       }
     },
-    [sortField]
+    [sortField],
   );
 
   // * Render sort indicator
@@ -171,10 +171,10 @@ export function AnalysisDashboard({
         </span>
       );
     },
-    [sortField, sortDirection]
+    [sortField, sortDirection],
   );
 
-  // * Handle hiding a name
+  // * Handle hiding a name with optimistic updates to prevent jumpy rerenders
   const handleHideName = useCallback(
     async (nameId, name) => {
       if (!isAdmin || !userName) {
@@ -184,13 +184,37 @@ export function AnalysisDashboard({
 
       try {
         devLog("[AnalysisDashboard] Hiding name", { nameId, name, userName });
+
+        // * Optimistic update: immediately remove from local state (no loading state)
+        // * This prevents UI jumpiness by updating instantly
+        if (isAdmin && analyticsData) {
+          setAnalyticsData((prev) =>
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+          );
+        }
+        if (leaderboardData) {
+          setLeaderboardData((prev) =>
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+          );
+        }
+        if (selectionPopularity) {
+          setSelectionPopularity((prev) =>
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+          );
+        }
+
+        // * Call API in background
         await hiddenNamesAPI.hideName(userName, nameId);
+
+        // * Update context's hiddenIds without triggering full refetch
+        // * This prevents the double refetch that causes jumpiness
         if (onNameHidden) {
           onNameHidden(nameId);
         }
-        // * Refresh data after hiding
-        const fetchData = async () => {
-          setIsLoading(true);
+
+        // * Silently refresh analytics in background after a delay
+        // * This ensures data consistency without blocking UI
+        const refreshTimeout = setTimeout(async () => {
           try {
             if (isAdmin) {
               const analytics = await catNamesAPI.getPopularityAnalytics(50);
@@ -205,17 +229,36 @@ export function AnalysisDashboard({
             }
           } catch (err) {
             devError("Failed to refresh after hide:", err);
-          } finally {
-            setIsLoading(false);
           }
-        };
-        fetchData();
+        }, 500); // * Delay to batch multiple rapid hides
+
+        // * Store timeout for cleanup if component unmounts
+        return () => clearTimeout(refreshTimeout);
       } catch (error) {
         devError("[AnalysisDashboard] Error hiding name:", error);
+        // * Revert optimistic update on error by refreshing
+        if (isAdmin) {
+          const analytics = await catNamesAPI.getPopularityAnalytics(50);
+          setAnalyticsData(analytics);
+        } else {
+          const [leaderboard, popularity] = await Promise.all([
+            catNamesAPI.getLeaderboard(10),
+            catNamesAPI.getSelectionPopularity(10),
+          ]);
+          setLeaderboardData(leaderboard);
+          setSelectionPopularity(popularity);
+        }
         throw error;
       }
     },
-    [isAdmin, userName, onNameHidden]
+    [
+      isAdmin,
+      userName,
+      onNameHidden,
+      analyticsData,
+      leaderboardData,
+      selectionPopularity,
+    ],
   );
 
   // Use highlights if provided, otherwise use consolidated data
@@ -298,7 +341,7 @@ export function AnalysisDashboard({
 
     if (summaryStats.maxSelected > 0) {
       const mostSelected = displayNames.find(
-        (n) => n.selected === summaryStats.maxSelected
+        (n) => n.selected === summaryStats.maxSelected,
       );
       if (mostSelected) {
         result.push({
@@ -456,21 +499,21 @@ export function AnalysisDashboard({
                       summaryStats && summaryStats.maxRating > 0
                         ? Math.min(
                             (item.rating / summaryStats.maxRating) * 100,
-                            100
+                            100,
                           )
                         : 0;
                     const winsPercent =
                       summaryStats && summaryStats.maxWins > 0
                         ? Math.min(
                             (item.wins / summaryStats.maxWins) * 100,
-                            100
+                            100,
                           )
                         : 0;
                     const selectedPercent =
                       summaryStats && summaryStats.maxSelected > 0
                         ? Math.min(
                             (item.selected / summaryStats.maxSelected) * 100,
-                            100
+                            100,
                           )
                         : 0;
 
@@ -573,9 +616,8 @@ export function AnalysisDashboard({
                                 } catch (error) {
                                   devError(
                                     "[AnalysisDashboard] Failed to hide name:",
-                                    error
+                                    error,
                                   );
-                                  // * Error will be handled by handleHideName
                                 }
                               }}
                               aria-label={`Hide ${item.name}`}

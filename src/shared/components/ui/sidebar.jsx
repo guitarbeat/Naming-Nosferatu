@@ -145,7 +145,7 @@ export const SidebarMenuButton = forwardRef(
         {children}
       </button>
     );
-  }
+  },
 );
 
 SidebarMenuButton.displayName = "SidebarMenuButton";

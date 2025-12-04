@@ -41,17 +41,20 @@ function NameSelection({
       sortBy,
       filterStatus,
     }),
-    [searchTerm, selectedCategory, sortBy, filterStatus],
+    [searchTerm, selectedCategory, sortBy, filterStatus]
   );
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
+    // * Map filterStatus to visibility, handling both "active" (legacy) and "visible"
     const visibility =
       filterStatus === "hidden"
         ? "hidden"
         : filterStatus === "all"
           ? "all"
-          : "visible";
+          : filterStatus === "active" || filterStatus === "visible"
+            ? "visible"
+            : "visible"; // * Default to visible
 
     let result = applyNameFilters(availableNames, {
       searchTerm,
@@ -63,7 +66,7 @@ function NameSelection({
 
     if (showSelectedOnly) {
       result = result.filter((name) =>
-        selectedNames.some((selected) => selected.id === name.id),
+        selectedNames.some((selected) => selected.id === name.id)
       );
     }
 

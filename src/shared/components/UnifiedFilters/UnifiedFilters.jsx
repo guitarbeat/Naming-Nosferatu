@@ -20,9 +20,10 @@ const _TOURNAMENT_SORT_OPTIONS = [
 
 const VISIBILITY_OPTIONS = [
   { value: "all", label: "All Names" },
-  { value: "active", label: "Visible Only" },
+  { value: "visible", label: "Visible Only" },
   { value: "hidden", label: "Hidden Only" },
 ];
+// * Note: "active" is a legacy alias for "visible" - both work
 
 const DEFAULT_USER_OPTIONS = [
   { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
@@ -94,13 +95,13 @@ function UnifiedFilters({
   // * Memoized user options
   const userOptions = useMemo(
     () => userSelectOptions || DEFAULT_USER_OPTIONS,
-    [userSelectOptions],
+    [userSelectOptions]
   );
 
   // * Check if categories are available
   const hasCategories = useMemo(
     () => Array.isArray(categories) && categories.length > 0,
-    [categories],
+    [categories]
   );
 
   // * Handle filter changes
@@ -110,7 +111,7 @@ function UnifiedFilters({
         onFilterChange({ ...filters, [filterName]: value });
       }
     },
-    [onFilterChange, filters],
+    [onFilterChange, filters]
   );
 
   // * Render count display (unused - using renderResultsCount instead)
@@ -283,8 +284,11 @@ function UnifiedFilters({
         <Select
           id={id}
           name={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
+          value={value || ""}
+          onChange={(e) => {
+            const newValue = e.target.value || null;
+            onChange(newValue);
+          }}
           options={options}
           className={groupClassName || styles.filterSelect}
         />
@@ -309,7 +313,7 @@ function UnifiedFilters({
         )}
       </div>
     ),
-    [filteredCount, totalCount],
+    [filteredCount, totalCount]
   );
 
   // * Render sort controls (profile/hybrid mode)
@@ -336,7 +340,7 @@ function UnifiedFilters({
                   "sortOrder",
                   filters.sortOrder === FILTER_OPTIONS.ORDER.ASC
                     ? FILTER_OPTIONS.ORDER.DESC
-                    : FILTER_OPTIONS.ORDER.ASC,
+                    : FILTER_OPTIONS.ORDER.ASC
                 )
               }
               className={styles.sortOrderButton}
@@ -349,7 +353,7 @@ function UnifiedFilters({
         </div>
       </div>
     ),
-    [filters.sortBy, filters.sortOrder, handleChange],
+    [filters.sortBy, filters.sortOrder, handleChange]
   );
 
   // * Render profile filter groups (shared between profile and hybrid modes)
@@ -359,8 +363,15 @@ function UnifiedFilters({
         {renderFilterGroup({
           id: "filter-status",
           label: "Status",
-          value: filters.filterStatus || "all",
-          onChange: (value) => handleChange("filterStatus", value),
+          value: filters.filterStatus || FILTER_OPTIONS.VISIBILITY.VISIBLE,
+          onChange: (value) => {
+            // * Map "active" (legacy) to "visible" for consistency
+            const normalizedValue =
+              value === "active"
+                ? FILTER_OPTIONS.VISIBILITY.VISIBLE
+                : value || FILTER_OPTIONS.VISIBILITY.VISIBLE;
+            handleChange("filterStatus", normalizedValue);
+          },
           options: VISIBILITY_OPTIONS,
         })}
 
@@ -392,7 +403,7 @@ function UnifiedFilters({
       userOptions,
       handleChange,
       renderFilterGroup,
-    ],
+    ]
   );
 
   // * Tournament mode: minimal - only swipe and cats buttons
@@ -496,7 +507,7 @@ UnifiedFilters.propTypes = {
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    }),
+    })
   ),
   selectedCount: PropTypes.number,
   showSelectedOnly: PropTypes.bool,

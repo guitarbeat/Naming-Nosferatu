@@ -4,4 +4,5 @@
  */
 
 export { useImageGallery } from "./useImageGallery";
-export { useCategoryFilters } from "./useCategoryFilters";
+// * useCategoryFilters - Not exported (unused)
+// export { useCategoryFilters } from "./useCategoryFilters";

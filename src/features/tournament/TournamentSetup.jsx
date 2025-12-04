@@ -23,6 +23,7 @@ import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperati
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
 import { useProfileUser } from "../profile/hooks/useProfileUser";
 import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import { FILTER_OPTIONS } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
 
@@ -53,14 +54,14 @@ function AnalysisHandlersProvider({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
@@ -77,7 +78,7 @@ function AnalysisHandlersProvider({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   React.useEffect(() => {
@@ -140,18 +141,24 @@ const createAnalysisDashboardWrapper = (
   selectionStats,
   isAdmin,
   activeUser,
-  onNameHidden
+  onNameHidden,
 ) => {
   return function AnalysisDashboardWrapperWithProps() {
-    // * Don't use context here - it's not available yet when this component is created
-    // * The onNameHidden callback should be provided from the parent that has context access
+    // * Get context inside the component - it's available here because this component
+    // * is rendered inside NameManagementView's context provider
+    const context = useNameManagementContext();
+    const handleNameHidden =
+      onNameHidden ||
+      (() => {
+        context.refetch();
+      });
     return (
       <AnalysisDashboardWrapper
         stats={stats}
         selectionStats={selectionStats}
         isAdmin={isAdmin}
         activeUser={activeUser}
-        onNameHidden={onNameHidden}
+        onNameHidden={handleNameHidden}
       />
     );
   };
@@ -177,11 +184,11 @@ function AnalysisBulkActionsWrapper({
         : new Set(
             Array.isArray(context.selectedNames)
               ? context.selectedNames.map((name) =>
-                  typeof name === "object" ? name.id : name
+                  typeof name === "object" ? name.id : name,
                 )
-              : []
+              : [],
           ),
-    [context.selectedNames]
+    [context.selectedNames],
   );
 
   // * Extract name IDs from selectedNames, handling different formats
@@ -218,14 +225,14 @@ function AnalysisBulkActionsWrapper({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
@@ -242,7 +249,7 @@ function AnalysisBulkActionsWrapper({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   const filteredAndSortedNames = useMemo(() => {
@@ -250,11 +257,16 @@ function AnalysisBulkActionsWrapper({
     let filtered = [...context.names];
 
     // Use shared isNameHidden utility for consistent visibility check
-    if (context.filterStatus === "active") {
+    if (
+      context.filterStatus === "visible" ||
+      context.filterStatus === "active"
+    ) {
+      // * "active" is legacy alias for "visible"
       filtered = filtered.filter((name) => !isNameHidden(name));
     } else if (context.filterStatus === "hidden") {
       filtered = filtered.filter((name) => isNameHidden(name));
     }
+    // * "all" shows everything (no filtering)
 
     return filtered;
   }, [context.names, context.filterStatus]);
@@ -278,7 +290,7 @@ function AnalysisBulkActionsWrapper({
   const handleExport = useCallback(() => {
     exportTournamentResultsToCSV(
       filteredAndSortedNames,
-      "naming_nosferatu_export"
+      "naming_nosferatu_export",
     );
   }, [filteredAndSortedNames]);
 
@@ -302,7 +314,7 @@ function AnalysisBulkActionsWrapper({
         if (selectedNamesArray.length === 0) {
           devWarn(
             "[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-            selectedCount
+            selectedCount,
           );
           showError("No names selected");
           return;
@@ -313,7 +325,7 @@ function AnalysisBulkActionsWrapper({
         } catch (error) {
           devError("[TournamentSetup] Error calling handleBulkHide:", error);
           showError(
-            `Failed to hide names: ${error.message || "Unknown error"}`
+            `Failed to hide names: ${error.message || "Unknown error"}`,
           );
         }
       }}
@@ -378,7 +390,11 @@ function TournamentNameGrid({
         selectedCategory={context.selectedCategory}
         searchTerm={context.searchTerm}
         sortBy={context.sortBy}
-        filterStatus={showAdminFeatures ? context.filterStatus : "active"}
+        filterStatus={
+          showAdminFeatures
+            ? context.filterStatus
+            : FILTER_OPTIONS.VISIBILITY.VISIBLE
+        }
         isSwipeMode={context.isSwipeMode}
         onToggleSwipeMode={() => context.setIsSwipeMode(!context.isSwipeMode)}
         showCatPictures={context.showCatPictures}
@@ -443,7 +459,7 @@ function TournamentSetupContent({
 
   // * Check URL for analysis mode parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const shouldEnableAnalysisMode =
     enableAnalysisMode || urlParams.get("analysis") === "true";
@@ -463,14 +479,14 @@ function TournamentSetupContent({
         setLightboxOpen(true);
       }
     },
-    [galleryImages]
+    [galleryImages],
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages]
+    [addImages],
   );
 
   const handleLightboxNavigate = useCallback((newIndex) => {
@@ -510,7 +526,7 @@ function TournamentSetupContent({
       isAdmin,
       userName,
       handleImagesUploaded,
-    ]
+    ],
   );
 
   const lightboxElement = lightboxOpen && (
@@ -573,7 +589,7 @@ function TournamentSetupContent({
               selectionStats,
               isAdmin,
               activeUser,
-              fetchNames // * Use fetchNames callback which has access to context
+              undefined, // * Will use context.refetch() inside the wrapper component
             ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper

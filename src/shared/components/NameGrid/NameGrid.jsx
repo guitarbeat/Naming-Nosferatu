@@ -52,21 +52,23 @@ export function NameGrid({
     if (selectedNames instanceof Set) return selectedNames;
     if (Array.isArray(selectedNames)) {
       return new Set(
-        selectedNames.map((item) =>
-          typeof item === "object" ? item.id : item,
-        ),
+        selectedNames.map((item) => (typeof item === "object" ? item.id : item))
       );
     }
     return new Set();
   }, [selectedNames]);
 
   const processedNames = useMemo(() => {
+    // * Map filterStatus to visibility, handling both "active" (legacy) and "visible"
     const visibility =
       filters.filterStatus === "hidden"
         ? "hidden"
         : filters.filterStatus === "all"
           ? "all"
-          : "visible";
+          : filters.filterStatus === "active" ||
+              filters.filterStatus === "visible"
+            ? "visible"
+            : "visible"; // * Default to visible
 
     let result = applyNameFilters(names, {
       searchTerm: filters.searchTerm,
