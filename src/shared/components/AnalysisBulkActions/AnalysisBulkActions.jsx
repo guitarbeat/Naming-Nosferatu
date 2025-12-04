@@ -41,35 +41,24 @@ export function AnalysisBulkActions({
   isAdmin = false,
   totalCount = 0,
 }) {
-  // Built-in export handler
   const handleExport = useCallback(() => {
     if (onExport) {
       onExport();
       return;
     }
 
-    // Export selected names if any, otherwise export all visible names
     const dataToExport =
       selectedNames?.length > 0 ? selectedNames : names || [];
     const fileName = selectedNames?.length > 0 ? "selected-names" : "all-names";
     exportNamesToCSV(dataToExport, fileName);
   }, [onExport, names, selectedNames]);
 
-  // Confirmation for bulk hide (destructive action)
   const handleBulkHide = useCallback(() => {
-    devLog("[AnalysisBulkActions] Hide button clicked", {
-      selectedCount,
-      hasOnBulkHide: !!onBulkHide,
-    });
-
     if (selectedCount > 5) {
       const confirmed = window.confirm(
         `Are you sure you want to hide ${selectedCount} names? This will remove them from tournaments.`,
       );
-      if (!confirmed) {
-        devLog("[AnalysisBulkActions] User cancelled hide operation");
-        return;
-      }
+      if (!confirmed) return;
     }
 
     if (!onBulkHide) {
@@ -102,10 +91,6 @@ export function AnalysisBulkActions({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  devLog("[AnalysisBulkActions] Hide button onClick fired", {
-                    selectedCount,
-                    event: e,
-                  });
                   handleBulkHide();
                 }}
                 ariaLabel={`Hide ${selectedCount} selected names`}

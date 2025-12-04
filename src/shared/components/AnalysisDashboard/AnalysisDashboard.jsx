@@ -27,14 +27,12 @@ import "./AnalysisDashboard.css";
  * @param {boolean} props.defaultCollapsed - Default collapsed state
  */
 export function AnalysisDashboard({
-  stats: _stats, // * Unused - kept for compatibility
-  selectionStats: _selectionStats, // * Unused - kept for compatibility
   highlights,
   userName,
   showGlobalLeaderboard = true,
   defaultCollapsed = false,
-  isAdmin = false, // * Add admin prop to enable full analytics
-  onNameHidden, // * Callback when a name is hidden
+  isAdmin = false,
+  onNameHidden,
 }) {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
@@ -89,10 +87,7 @@ export function AnalysisDashboard({
     fetchData();
   }, [showGlobalLeaderboard, isAdmin]);
 
-  // * Consolidate all data into a single unified list
-  // * For admin: use full analytics data, for regular users: combine leaderboard and selection
   const consolidatedNames = useMemo(() => {
-    // * Admin mode: use full analytics data (all names with complete metrics)
     if (isAdmin && analyticsData?.length) {
       return analyticsData.map((item) => ({
         id: item.name_id,
@@ -103,10 +98,8 @@ export function AnalysisDashboard({
       }));
     }
 
-    // * Regular mode: combine leaderboard and selection data
     const nameMap = new Map();
 
-    // Add leaderboard data
     if (leaderboardData?.length) {
       leaderboardData.forEach((item) => {
         if (item.avg_rating > 1500 || item.wins > 0) {
@@ -121,7 +114,6 @@ export function AnalysisDashboard({
       });
     }
 
-    // Add selection data
     if (selectionPopularity?.length) {
       selectionPopularity.forEach((item) => {
         const existing = nameMap.get(item.name_id);
@@ -139,16 +131,14 @@ export function AnalysisDashboard({
       });
     }
 
-    // Sort by rating (most important for choosing a name), then by wins
     return Array.from(nameMap.values())
       .sort((a, b) => {
         if (b.rating !== a.rating) return b.rating - a.rating;
         return b.wins - a.wins;
       })
-      .slice(0, 10); // Top 10 names
+      .slice(0, 10);
   }, [leaderboardData, selectionPopularity, analyticsData, isAdmin]);
 
-  // * Handle sorting for admin mode
   const handleSort = useCallback(
     (field) => {
       if (sortField === field) {
@@ -161,7 +151,6 @@ export function AnalysisDashboard({
     [sortField],
   );
 
-  // * Render sort indicator
   const renderSortIndicator = useCallback(
     (field) => {
       if (sortField !== field) return null;
@@ -174,7 +163,6 @@ export function AnalysisDashboard({
     [sortField, sortDirection],
   );
 
-  // * Handle hiding a name with optimistic updates to prevent jumpy rerenders
   const handleHideName = useCallback(
     async (nameId, name) => {
       if (!isAdmin || !userName) {
@@ -183,11 +171,7 @@ export function AnalysisDashboard({
       }
 
       try {
-        devLog("[AnalysisDashboard] Hiding name", { nameId, name, userName });
-
-        // * Optimistic update: immediately remove from local state (no loading state)
-        // * This prevents UI jumpiness by updating instantly
-        if (isAdmin && analyticsData) {
+        if (analyticsData) {
           setAnalyticsData((prev) =>
             prev ? prev.filter((item) => item.name_id !== nameId) : prev,
           );
@@ -203,18 +187,13 @@ export function AnalysisDashboard({
           );
         }
 
-        // * Call API in background
         await hiddenNamesAPI.hideName(userName, nameId);
 
-        // * Update context's hiddenIds without triggering full refetch
-        // * This prevents the double refetch that causes jumpiness
         if (onNameHidden) {
           onNameHidden(nameId);
         }
 
-        // * Silently refresh analytics in background after a delay
-        // * This ensures data consistency without blocking UI
-        const refreshTimeout = setTimeout(async () => {
+        setTimeout(async () => {
           try {
             if (isAdmin) {
               const analytics = await catNamesAPI.getPopularityAnalytics(50);
@@ -230,13 +209,9 @@ export function AnalysisDashboard({
           } catch (err) {
             devError("Failed to refresh after hide:", err);
           }
-        }, 500); // * Delay to batch multiple rapid hides
-
-        // * Store timeout for cleanup if component unmounts
-        return () => clearTimeout(refreshTimeout);
+        }, 500);
       } catch (error) {
         devError("[AnalysisDashboard] Error hiding name:", error);
-        // * Revert optimistic update on error by refreshing
         if (isAdmin) {
           const analytics = await catNamesAPI.getPopularityAnalytics(50);
           setAnalyticsData(analytics);
@@ -248,7 +223,6 @@ export function AnalysisDashboard({
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
         }
-        throw error;
       }
     },
     [
@@ -261,21 +235,16 @@ export function AnalysisDashboard({
     ],
   );
 
-  // Use highlights if provided, otherwise use consolidated data
   const displayNames = useMemo(() => {
-    // * Admin mode: apply sorting to consolidated data
     if (isAdmin && consolidatedNames.length > 0) {
-      const sorted = [...consolidatedNames].sort((a, b) => {
+      return [...consolidatedNames].sort((a, b) => {
         const aVal = a[sortField] ?? 0;
         const bVal = b[sortField] ?? 0;
         return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
       });
-      return sorted;
     }
 
-    // * Regular mode: use highlights if provided
     if (highlights?.topRated?.length) {
-      // If highlights provided, combine them with consolidated data
       const highlightMap = new Map();
       highlights.topRated.forEach((item) => {
         highlightMap.set(item.id, {
@@ -301,7 +270,6 @@ export function AnalysisDashboard({
     return consolidatedNames;
   }, [highlights, consolidatedNames, isAdmin, sortField, sortDirection]);
 
-  // * Calculate summary stats for quick overview
   const summaryStats = useMemo(() => {
     if (displayNames.length === 0) return null;
 
@@ -325,7 +293,6 @@ export function AnalysisDashboard({
     };
   }, [displayNames]);
 
-  // * Generate insights based on data
   const insights = useMemo(() => {
     if (!summaryStats || displayNames.length === 0) return [];
 
@@ -398,7 +365,6 @@ export function AnalysisDashboard({
           </div>
         ) : (
           <>
-            {/* Quick Stats Summary - hide for admin (table shows all data) */}
             {summaryStats && !isAdmin && (
               <div className="analysis-stats-summary">
                 <div className="analysis-stat-card">
@@ -433,7 +399,6 @@ export function AnalysisDashboard({
               </div>
             )}
 
-            {/* Insights - hide for admin (table shows all data) */}
             {insights.length > 0 && !isAdmin && (
               <div className="analysis-insights">
                 {insights.map((insight, idx) => (
@@ -452,7 +417,6 @@ export function AnalysisDashboard({
               </div>
             )}
 
-            {/* Enhanced Table */}
             <div className="top-names-list">
               <table
                 className="top-names-table"
@@ -650,6 +614,8 @@ AnalysisDashboard.propTypes = {
   }),
   showGlobalLeaderboard: PropTypes.bool,
   defaultCollapsed: PropTypes.bool,
+  stats: PropTypes.object,
+  selectionStats: PropTypes.object,
 };
 
 export default AnalysisDashboard;
