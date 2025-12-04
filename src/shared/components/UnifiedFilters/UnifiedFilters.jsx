@@ -67,6 +67,7 @@ const SELECTION_FILTER_OPTIONS = [
  * @param {boolean} props.showCatPictures - Show cat pictures state
  * @param {Function} props.onToggleCatPictures - Toggle cat pictures
  * @param {boolean} props.analysisMode - Analysis mode state
+ * @param {Object} props.startTournamentButton - Start tournament button config {onClick, selectedCount}
  * @param {string} props.className - Additional CSS classes
  */
 function UnifiedFilters({
@@ -87,6 +88,7 @@ function UnifiedFilters({
   showCatPictures,
   onToggleCatPictures,
   analysisMode: _analysisMode = false,
+  startTournamentButton,
   className = "",
 }) {
   // * Memoized user options
@@ -408,6 +410,16 @@ function UnifiedFilters({
         >
           {/* Toggle switches */}
           {renderActions()}
+          {/* Start Tournament button - inside same container */}
+          {startTournamentButton && (
+            <button
+              className={styles.startTournamentButton}
+              onClick={startTournamentButton.onClick}
+              type="button"
+            >
+              Start Tournament ({startTournamentButton.selectedCount})
+            </button>
+          )}
         </div>
       </div>
     );
@@ -494,6 +506,10 @@ UnifiedFilters.propTypes = {
   showCatPictures: PropTypes.bool,
   onToggleCatPictures: PropTypes.func,
   analysisMode: PropTypes.bool,
+  startTournamentButton: PropTypes.shape({
+    onClick: PropTypes.func.isRequired,
+    selectedCount: PropTypes.number.isRequired,
+  }),
   className: PropTypes.string,
 };
 

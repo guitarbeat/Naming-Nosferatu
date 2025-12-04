@@ -53,14 +53,14 @@ function AnalysisHandlersProvider({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context],
+    [context]
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context],
+    [context]
   );
 
   const fetchNames = useCallback(() => {
@@ -77,7 +77,7 @@ function AnalysisHandlersProvider({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast,
+    showToast
   );
 
   React.useEffect(() => {
@@ -105,6 +105,7 @@ function AnalysisDashboardWrapper({
   stats,
   selectionStats,
   highlights: propsHighlights,
+  isAdmin = false,
 }) {
   // * Only render if stats are available
   if (!stats) return null;
@@ -114,6 +115,7 @@ function AnalysisDashboardWrapper({
       stats={stats}
       selectionStats={selectionStats}
       highlights={propsHighlights}
+      isAdmin={isAdmin}
     />
   );
 }
@@ -126,10 +128,14 @@ AnalysisDashboardWrapper.propTypes = {
 
 // * Wrapper component factory to pass props to AnalysisDashboardWrapper
 // * This creates a component function that can use hooks properly
-const createAnalysisDashboardWrapper = (stats, selectionStats) => {
+const createAnalysisDashboardWrapper = (stats, selectionStats, isAdmin) => {
   return function AnalysisDashboardWrapperWithProps() {
     return (
-      <AnalysisDashboardWrapper stats={stats} selectionStats={selectionStats} />
+      <AnalysisDashboardWrapper
+        stats={stats}
+        selectionStats={selectionStats}
+        isAdmin={isAdmin}
+      />
     );
   };
 };
@@ -154,11 +160,11 @@ function AnalysisBulkActionsWrapper({
         : new Set(
             Array.isArray(context.selectedNames)
               ? context.selectedNames.map((name) =>
-                  typeof name === "object" ? name.id : name,
+                  typeof name === "object" ? name.id : name
                 )
-              : [],
+              : []
           ),
-    [context.selectedNames],
+    [context.selectedNames]
   );
 
   // * Extract name IDs from selectedNames, handling different formats
@@ -195,14 +201,14 @@ function AnalysisBulkActionsWrapper({
     (updater) => {
       context.setHiddenIds(updater);
     },
-    [context],
+    [context]
   );
 
   const setAllNames = useCallback(
     (updater) => {
       context.setNames(updater);
     },
-    [context],
+    [context]
   );
 
   const fetchNames = useCallback(() => {
@@ -219,7 +225,7 @@ function AnalysisBulkActionsWrapper({
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast,
+    showToast
   );
 
   const filteredAndSortedNames = useMemo(() => {
@@ -255,7 +261,7 @@ function AnalysisBulkActionsWrapper({
   const handleExport = useCallback(() => {
     exportTournamentResultsToCSV(
       filteredAndSortedNames,
-      "naming_nosferatu_export",
+      "naming_nosferatu_export"
     );
   }, [filteredAndSortedNames]);
 
@@ -279,7 +285,7 @@ function AnalysisBulkActionsWrapper({
         if (selectedNamesArray.length === 0) {
           devWarn(
             "[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-            selectedCount,
+            selectedCount
           );
           showError("No names selected");
           return;
@@ -290,7 +296,7 @@ function AnalysisBulkActionsWrapper({
         } catch (error) {
           devError("[TournamentSetup] Error calling handleBulkHide:", error);
           showError(
-            `Failed to hide names: ${error.message || "Unknown error"}`,
+            `Failed to hide names: ${error.message || "Unknown error"}`
           );
         }
       }}
@@ -420,7 +426,7 @@ function TournamentSetupContent({
 
   // * Check URL for analysis mode parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : "",
+    typeof window !== "undefined" ? window.location.search : ""
   );
   const shouldEnableAnalysisMode =
     enableAnalysisMode || urlParams.get("analysis") === "true";
@@ -440,14 +446,14 @@ function TournamentSetupContent({
         setLightboxOpen(true);
       }
     },
-    [galleryImages],
+    [galleryImages]
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages],
+    [addImages]
   );
 
   const handleLightboxNavigate = useCallback((newIndex) => {
@@ -487,7 +493,7 @@ function TournamentSetupContent({
       isAdmin,
       userName,
       handleImagesUploaded,
-    ],
+    ]
   );
 
   const lightboxElement = lightboxOpen && (
@@ -545,7 +551,11 @@ function TournamentSetupContent({
             onDelete: (name) => handlersRef.current.handleDelete?.(name),
           }}
           extensions={{
-            dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
+            dashboard: createAnalysisDashboardWrapper(
+              stats,
+              selectionStats,
+              isAdmin,
+            ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper
                 activeUser={activeUser}
@@ -581,65 +591,6 @@ function TournamentSetupContent({
             ),
           }}
         />
-        <div className={styles.selectionPanel}>
-          <NameManagementView
-            mode="tournament"
-            userName={userName}
-            onStartTournament={onStart}
-            tournamentProps={{
-              SwipeableCards: SwipeableNameCards,
-              isAdmin,
-              imageList: galleryImages,
-              gridClassName: styles.cardsContainer,
-            }}
-            profileProps={{
-              isAdmin: canManageActiveUser,
-              showUserFilter: profileIsAdmin,
-              userSelectOptions,
-              stats,
-              selectionStats,
-              onToggleVisibility: (nameId) =>
-                handlersRef.current.handleToggleVisibility?.(nameId),
-              onDelete: (name) => handlersRef.current.handleDelete?.(name),
-            }}
-            extensions={{
-              dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
-              bulkActions: (props) => (
-                <AnalysisBulkActionsWrapper
-                  activeUser={activeUser}
-                  canManageActiveUser={canManageActiveUser}
-                  isAdmin={isAdmin}
-                  fetchSelectionStats={fetchSelectionStats}
-                  showSuccess={showSuccess}
-                  showError={showError}
-                  showToast={showToast}
-                  {...props}
-                />
-              ),
-              nameGrid: () => (
-                <TournamentNameGrid
-                  isAdmin={isAdmin}
-                  galleryImages={galleryImages}
-                  canManageActiveUser={canManageActiveUser}
-                  onToggleVisibility={(nameId) =>
-                    handlersRef.current.handleToggleVisibility?.(nameId)
-                  }
-                  onDelete={(name) => handlersRef.current.handleDelete?.(name)}
-                  analysisHandlersProps={{
-                    shouldEnableAnalysisMode,
-                    activeUser,
-                    canManageActiveUser,
-                    handlersRef,
-                    fetchSelectionStats,
-                    showSuccess,
-                    showError,
-                    showToast,
-                  }}
-                />
-              ),
-            }}
-          />
-        </div>
         {lightboxElement}
       </div>
     </>

@@ -117,6 +117,24 @@
 
 .top-names-table {
   width: 100%;
+}
+
+.top-names-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.top-names-table th.sortable:hover {
+  background-color: rgb(255 255 255 / 5%);
+}
+
+.sort-indicator {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
   border-collapse: collapse;
   font-size: var(--analysis-text-body, 0.875rem);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));

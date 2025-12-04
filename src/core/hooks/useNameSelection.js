@@ -108,20 +108,12 @@ export function useNameSelection({
   // * Profile mode: toggle name ID
   const toggleName = useCallback(
     (nameOrId) => {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useNameSelection.js:109',message:'toggleName called',data:{mode,nameOrIdId:nameOrId?.id,nameOrIdName:nameOrId?.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-      // #endregion
       if (mode === "tournament") {
         // Tournament mode: nameOrId is a name object
         setSelectedNames((prev) => {
-          const wasSelected = prev.some((n) => n.id === nameOrId.id);
-          const newSelectedNames = wasSelected
+          const newSelectedNames = prev.some((n) => n.id === nameOrId.id)
             ? prev.filter((n) => n.id !== nameOrId.id)
             : [...prev, nameOrId];
-
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'useNameSelection.js:113',message:'toggleName state update',data:{nameOrIdId:nameOrId?.id,wasSelected,newSelectedCount:newSelectedNames.length,prevCount:prev.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-          // #endregion
 
           // Log the updated selected names (throttled)
           if (Date.now() - lastLogTsRef.current > 1000) {

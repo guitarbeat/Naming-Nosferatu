@@ -392,7 +392,7 @@ export function NameManagementView({
 
   return (
     <>
-      {/* UnifiedFilters rendered outside but above content (tournament mode) */}
+      {/* UnifiedFilters with Start Tournament button (tournament mode) */}
       {mode === "tournament" && (
         <UnifiedFilters
           mode={analysisMode ? "hybrid" : "tournament"}
@@ -438,6 +438,14 @@ export function NameManagementView({
               : undefined
           }
           analysisMode={mode === "tournament" ? analysisMode : false}
+          startTournamentButton={
+            selectedCount >= 2 && onStartTournament && !analysisMode
+              ? {
+                onClick: () => onStartTournament(selectedNames),
+                selectedCount,
+              }
+              : undefined
+          }
         />
       )}
       <NameManagementContext.Provider value={contextValue}>
@@ -481,16 +489,18 @@ export function NameManagementView({
               </section>
             )}
 
-          {/* Admin Analytics - Only shown in analysis mode for admins */}
-          {analysisMode && tournamentProps.isAdmin && (
-            <section
-              className={styles.dashboardSection}
-              aria-label="Admin analytics"
-              data-section="admin-analytics"
-            >
-              <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
-            </section>
-          )}
+          {/* Admin Analytics - Merged into AnalysisDashboard, only show if dashboard not available */}
+          {analysisMode &&
+            tournamentProps.isAdmin &&
+            !extensions.dashboard && (
+              <section
+                className={styles.dashboardSection}
+                aria-label="Admin analytics"
+                data-section="admin-analytics"
+              >
+                <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
+              </section>
+            )}
 
           {/* Unified Filters - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
           {mode !== "tournament" && (
@@ -610,6 +620,7 @@ export function NameManagementView({
             )}
 
           {/* Name Grid - Use extension if provided, otherwise use NameGrid */}
+          {/* * Always show extension (handles swipe mode internally), but hide default NameGrid in swipe mode */}
           <section
             className={styles.gridSection}
             aria-label="Name selection grid"
@@ -626,7 +637,7 @@ export function NameManagementView({
               ) : (
                 extensions.nameGrid
               )
-            ) : (
+            ) : !(mode === "tournament" && isSwipeMode) ? (
               <NameGrid
                 names={displayNames}
                 selectedNames={selectedNames}
@@ -650,24 +661,8 @@ export function NameManagementView({
                   mode === "tournament" ? tournamentProps.gridClassName : ""
                 }
               />
-            )}
+            ) : null}
           </section>
-
-          {/* Tournament Mode: Floating Start Button - hidden when Analysis Mode is active */}
-          {mode === "tournament" &&
-            selectedCount >= 2 &&
-            onStartTournament &&
-            !analysisMode && (
-              <div className={styles.floatingStartButton}>
-                <button
-                  className={styles.startButton}
-                  onClick={() => onStartTournament(selectedNames)}
-                  type="button"
-                >
-                  Start Tournament ({selectedCount})
-                </button>
-              </div>
-            )}
 
           {/* Mode-specific Extensions */}
           {extensions.sidebar && (

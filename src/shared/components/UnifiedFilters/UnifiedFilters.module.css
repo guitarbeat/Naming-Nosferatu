@@ -3,23 +3,49 @@
 /* Tournament Mode - Unified Bar */
 .unifiedBar {
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .unifiedContainer {
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  background: var(--card-background);
-  border: var(--card-border-width) solid var(--border-color);
-  border-radius: var(--card-border-radius);
-  backdrop-filter: blur(10px);
+  gap: var(--space-5);
+  width: auto;
+  max-width: 600px;
+  padding: var(--space-5) var(--space-6);
+  background: linear-gradient(
+    135deg,
+    rgb(255 255 255 / 8%),
+    rgb(255 255 255 / 4%)
+  );
+  border: 2px solid rgb(255 255 255 / 12%);
+  border-radius: calc(var(--card-border-radius) + 6px);
+  backdrop-filter: blur(20px) saturate(180%);
   min-height: auto;
   box-sizing: border-box;
   position: relative;
   isolation: isolate;
+  box-shadow:
+    0 6px 20px rgb(0 0 0 / 18%),
+    0 3px 10px rgb(0 0 0 / 12%),
+    inset 0 2px 2px rgb(255 255 255 / 10%),
+    inset 0 -1px 1px rgb(0 0 0 / 5%);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 0 auto;
+}
+
+.unifiedContainer:hover {
+  border-color: rgb(255 255 255 / 18%);
+  box-shadow:
+    0 8px 24px rgb(0 0 0 / 20%),
+    0 4px 12px rgb(0 0 0 / 15%),
+    inset 0 2px 2px rgb(255 255 255 / 12%),
+    inset 0 -1px 1px rgb(0 0 0 / 8%);
+  transform: translateY(-1px);
 }
 
 .unifiedInput {
@@ -101,33 +127,73 @@
 
 .unifiedActions {
   display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
+  gap: var(--space-5);
+  align-items: center;
   flex-shrink: 0;
   padding: 0;
-  width: 100%;
+  width: auto;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+}
+
+/* * Start Tournament button - inside unified container */
+.startTournamentButton {
+  padding: var(--button-padding-y-md) var(--button-padding-x-lg);
+  font-size: var(--text-base);
+  font-weight: var(--button-font-weight, 600);
+  letter-spacing: var(--button-letter-spacing, 0.02em);
+  color: var(--text-on-primary, #fff);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan)),
+    hsl(var(--hot-pink))
+  );
+  border: none;
+  border-radius: var(--radius-lg, 12px);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 16px hsl(var(--neon-cyan) / 40%),
+    0 2px 8px hsl(var(--hot-pink) / 30%);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: var(--space-2);
+}
+
+.startTournamentButton:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px hsl(var(--neon-cyan) / 50%),
+    0 3px 10px hsl(var(--hot-pink) / 40%);
+}
+
+.startTournamentButton:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 8px hsl(var(--neon-cyan) / 40%),
+    0 1px 4px hsl(var(--hot-pink) / 30%);
 }
 
 /* * Toggle Switch Component - Modern Design 2024 */
 .toggleWrapper {
   display: flex;
-  flex: 1;
-  min-width: 160px;
-  max-width: 220px;
+  flex: 0 1 auto;
+  min-width: 220px;
+  max-width: 300px;
+  position: relative;
 }
 
 .toggleSwitch {
   position: relative;
   width: 100%;
-  height: 44px;
+  height: 52px;
   padding: 0;
   background: transparent;
   border: none;
-  border-radius: 22px;
+  border-radius: 26px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: visible;
   isolation: isolate;
 }
@@ -141,27 +207,31 @@
   height: 100%;
   background: linear-gradient(
     135deg,
-    rgb(255 255 255 / 8%),
-    rgb(255 255 255 / 4%)
+    rgb(255 255 255 / 10%),
+    rgb(255 255 255 / 6%)
   );
-  backdrop-filter: blur(12px);
-  border: 1.5px solid rgb(255 255 255 / 12%);
-  border-radius: 22px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(18px) saturate(180%);
+  border: 2px solid rgb(255 255 255 / 14%);
+  border-radius: 26px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    inset 0 1px 2px rgb(255 255 255 / 10%),
-    0 2px 8px rgb(0 0 0 / 15%),
-    0 1px 2px rgb(0 0 0 / 10%);
+    inset 0 2px 4px rgb(255 255 255 / 10%),
+    inset 0 -1px 2px rgb(0 0 0 / 12%),
+    0 4px 14px rgb(0 0 0 / 22%),
+    0 2px 4px rgb(0 0 0 / 18%);
+  opacity: 0.8;
 }
 
 .toggleSwitch:hover .toggleTrack {
-  border-color: rgb(255 255 255 / 20%);
+  border-color: rgb(255 255 255 / 18%);
   box-shadow:
-    inset 0 1px 2px rgb(255 255 255 / 15%),
-    0 4px 16px rgb(0 0 0 / 20%),
-    0 2px 4px rgb(0 0 0 / 15%),
-    0 0 0 1px hsl(var(--neon-cyan) / 15%);
-  transform: translateY(-1px);
+    inset 0 2px 4px rgb(255 255 255 / 12%),
+    inset 0 -1px 2px rgb(0 0 0 / 12%),
+    0 4px 18px rgb(0 0 0 / 22%),
+    0 2px 6px rgb(0 0 0 / 18%),
+    0 0 0 1px hsl(var(--neon-cyan) / 20%);
+  transform: translateY(-2px);
+  opacity: 0.85;
 }
 
 .toggleSwitch:active .toggleTrack {
@@ -174,104 +244,125 @@
 .toggleSwitchActive .toggleTrack {
   background: linear-gradient(
     135deg,
-    hsl(var(--neon-cyan) / 25%),
-    hsl(var(--hot-pink) / 20%)
+    hsl(var(--neon-cyan) / 35%),
+    hsl(var(--hot-pink) / 30%)
   );
-  border-color: hsl(var(--neon-cyan) / 50%);
+  border-color: hsl(var(--neon-cyan) / 70%);
   box-shadow:
-    inset 0 1px 2px rgb(255 255 255 / 20%),
-    0 4px 20px hsl(var(--neon-cyan) / 25%),
-    0 2px 8px hsl(var(--hot-pink) / 20%),
-    0 0 0 1px hsl(var(--neon-cyan) / 30%);
+    inset 0 2px 4px rgb(255 255 255 / 30%),
+    inset 0 -1px 2px rgb(0 0 0 / 15%),
+    0 6px 24px hsl(var(--neon-cyan) / 40%),
+    0 3px 12px hsl(var(--hot-pink) / 35%),
+    0 0 0 2px hsl(var(--neon-cyan) / 50%);
+  opacity: 1;
 }
 
 .toggleSwitchActive:hover .toggleTrack {
-  border-color: hsl(var(--neon-cyan) / 65%);
+  border-color: hsl(var(--neon-cyan) / 80%);
   box-shadow:
-    inset 0 1px 2px rgb(255 255 255 / 25%),
-    0 6px 24px hsl(var(--neon-cyan) / 35%),
-    0 3px 12px hsl(var(--hot-pink) / 25%),
-    0 0 0 2px hsl(var(--neon-cyan) / 40%);
-  transform: translateY(-1px);
+    inset 0 2px 4px rgb(255 255 255 / 35%),
+    inset 0 -1px 2px rgb(0 0 0 / 18%),
+    0 8px 28px hsl(var(--neon-cyan) / 45%),
+    0 4px 14px hsl(var(--hot-pink) / 40%),
+    0 0 0 3px hsl(var(--neon-cyan) / 55%);
+  transform: translateY(-2px);
 }
 
-/* * Modern thumb with glassmorphic glow - labels inside */
+/* * Modern thumb with glassmorphic glow - labels inside (oval/rounded rectangle) */
 .toggleThumb {
   position: absolute;
-  left: 3px;
+  left: 4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 80px;
+  height: 44px;
   background: linear-gradient(
     135deg,
-    rgb(255 255 255 / 95%),
-    rgb(255 255 255 / 85%)
+    rgb(255 255 255 / 85%),
+    rgb(255 255 255 / 75%)
   );
-  border-radius: 50%;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 22px;
+  transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 4px 12px rgb(0 0 0 / 25%),
-    0 2px 6px rgb(0 0 0 / 15%),
-    inset 0 1px 2px rgb(255 255 255 / 50%),
-    inset 0 -1px 2px rgb(0 0 0 / 10%);
+    0 5px 14px rgb(0 0 0 / 38%),
+    0 2px 7px rgb(0 0 0 / 28%),
+    inset 0 2px 4px rgb(255 255 255 / 55%),
+    inset 0 -1px 2px rgb(0 0 0 / 22%);
   z-index: 3;
-  border: 1px solid rgb(255 255 255 / 20%);
+  border: 2px solid rgb(255 255 255 / 22%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  opacity: 0.92;
 }
 
 .toggleSwitch:hover .toggleThumb {
   box-shadow:
-    0 6px 16px rgb(0 0 0 / 30%),
-    0 3px 8px rgb(0 0 0 / 20%),
-    inset 0 1px 2px rgb(255 255 255 / 60%),
-    inset 0 -1px 2px rgb(0 0 0 / 15%);
-  transform: translateY(-50%) scale(1.05);
+    0 6px 18px rgb(0 0 0 / 35%),
+    0 3px 9px rgb(0 0 0 / 25%),
+    inset 0 2px 3px rgb(255 255 255 / 65%),
+    inset 0 -1px 2px rgb(0 0 0 / 18%);
+  transform: translateY(-50%) scale(1.06);
+  opacity: 0.95;
 }
 
 .toggleSwitchActive .toggleThumb {
-  left: calc(100% - 41px);
+  left: calc(100% - 84px);
   background: linear-gradient(
     135deg,
     hsl(var(--neon-cyan)),
     hsl(var(--hot-pink))
   );
-  border-color: hsl(var(--neon-cyan) / 40%);
+  border-color: hsl(var(--neon-cyan) / 75%);
   box-shadow:
-    0 6px 20px hsl(var(--neon-cyan) / 50%),
-    0 3px 10px hsl(var(--hot-pink) / 40%),
-    0 0 0 2px hsl(var(--neon-cyan) / 30%),
-    inset 0 1px 2px rgb(255 255 255 / 30%),
-    inset 0 -1px 2px rgb(0 0 0 / 20%);
-  transform: translateY(-50%) scale(1.08);
+    0 12px 32px hsl(var(--neon-cyan) / 70%),
+    0 6px 16px hsl(var(--hot-pink) / 60%),
+    0 0 0 5px hsl(var(--neon-cyan) / 50%),
+    inset 0 2px 4px rgb(255 255 255 / 50%),
+    inset 0 -1px 2px rgb(0 0 0 / 35%);
+  transform: translateY(-50%) scale(1.15);
+  opacity: 1;
 }
 
-/* * Label inside the thumb */
+/* * Label inside the thumb (oval shape provides more space) */
 .toggleLabelInside {
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: var(--font-weight-bold, 700);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.06em;
   color: var(--text-primary, #fff);
-  text-shadow: 0 1px 2px rgb(0 0 0 / 40%);
+  text-shadow:
+    0 1px 3px rgb(0 0 0 / 60%),
+    0 0 6px rgb(0 0 0 / 25%);
   white-space: nowrap;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 4;
   pointer-events: none;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 1.2;
+  opacity: 0.96;
+  padding: 0 4px;
+}
+
+.toggleSwitchActive .toggleLabelInside {
+  color: #fff;
+  text-shadow:
+    0 1px 4px rgb(0 0 0 / 75%),
+    0 0 12px hsl(var(--neon-cyan) / 70%),
+    0 0 24px hsl(var(--neon-cyan) / 40%);
+  opacity: 1;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 
 .toggleSwitchActive:hover .toggleThumb {
-  transform: translateY(-50%) scale(1.12);
+  transform: translateY(-50%) scale(1.18);
   box-shadow:
-    0 8px 24px hsl(var(--neon-cyan) / 60%),
-    0 4px 12px hsl(var(--hot-pink) / 50%),
-    0 0 0 3px hsl(var(--neon-cyan) / 40%),
-    inset 0 1px 2px rgb(255 255 255 / 40%),
-    inset 0 -1px 2px rgb(0 0 0 / 25%);
+    0 14px 36px hsl(var(--neon-cyan) / 75%),
+    0 7px 18px hsl(var(--hot-pink) / 65%),
+    0 0 0 6px hsl(var(--neon-cyan) / 55%),
+    inset 0 2px 4px rgb(255 255 255 / 55%),
+    inset 0 -1px 2px rgb(0 0 0 / 40%);
 }
 
 /* * Removed side labels - labels are now inside the thumb */
@@ -472,8 +563,9 @@
 /* Tablet and below - adjust layout */
 @media (width <= 1024px) {
   .unifiedContainer {
-    padding: var(--space-2) var(--space-3);
-    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    gap: var(--space-4);
+    max-width: 550px;
   }
 
   .unifiedInput {
@@ -491,30 +583,32 @@
   }
 
   .toggleSwitch {
-    height: 42px;
+    height: 44px;
   }
 
   .toggleThumb {
-    width: 36px;
-    height: 36px;
+    width: 76px;
+    height: 40px;
   }
 
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 39px);
+    left: calc(100% - 80px);
   }
 
   .toggleLabelInside {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
 }
 
 /* Mobile landscape and below - wrap elements */
 @media (width <= 768px) {
   .unifiedContainer {
-    padding: var(--space-2);
-    gap: var(--space-2);
+    padding: var(--space-4) var(--space-3);
+    gap: var(--space-3);
     min-height: auto;
-    flex-direction: column;
+    flex-direction: row;
+    max-width: 100%;
+    width: auto;
   }
 
   .toggleWrapper {
@@ -527,6 +621,12 @@
     width: 100%;
     flex-direction: column;
     gap: var(--space-3);
+  }
+
+  .startTournamentButton {
+    width: 100%;
+    margin-left: 0;
+    margin-top: var(--space-2);
   }
 
   .unifiedActions {
@@ -546,16 +646,16 @@
   }
 
   .toggleThumb {
-    width: 42px;
-    height: 42px;
+    width: 84px;
+    height: 48px;
   }
 
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 45px);
+    left: calc(100% - 88px);
   }
 
   .toggleLabelInside {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
   }
 
   .unifiedInput {
@@ -687,7 +787,9 @@
 /* Very small mobile - extreme optimization */
 @media (width <= 360px) {
   .unifiedContainer {
-    padding: var(--space-1);
+    padding: var(--space-3) var(--space-2);
+    max-width: 100%;
+    width: auto;
   }
 
   .unifiedInput,
