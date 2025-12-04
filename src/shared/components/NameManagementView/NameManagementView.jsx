@@ -41,6 +41,15 @@ export function useNameManagementContext() {
 }
 
 /**
+ * Safe hook to get NameManagementContext - returns null if not available
+ * Use this when the context is optional (e.g., in extension components)
+ */
+export function useNameManagementContextSafe() {
+  const context = useContext(NameManagementContext);
+  return context; // * Returns null if not available
+}
+
+/**
  * Unified Name Management View Component
  * @param {Object} props
  * @param {string} props.mode - Display mode: 'tournament' or 'profile'
@@ -306,6 +315,14 @@ export function NameManagementView({
       // Analysis mode
       analysisMode,
       setAnalysisMode: handleAnalysisModeToggle,
+      // Additional data for toolbar integration
+      categories: tournamentProps.categories || [],
+      filteredCount,
+      totalCount: names.length,
+      profileProps,
+      tournamentProps,
+      mode,
+      handleFilterChange,
     }),
     [
       names,
@@ -318,6 +335,11 @@ export function NameManagementView({
       refetch,
       setNames,
       setHiddenIds,
+      filteredCount,
+      tournamentProps,
+      profileProps,
+      mode,
+      handleFilterChange,
       // State values
       showSelectedOnly,
       setShowSelectedOnly,
@@ -397,53 +419,28 @@ export function NameManagementView({
   return (
     <>
       {/* TournamentToolbar with Start Tournament button (tournament mode) */}
-      {mode === "tournament" && (
+      {/* Note: In analysis mode, toolbar is integrated into CollapsibleHeader via dashboard extension */}
+      {mode === "tournament" && !analysisMode && (
         <TournamentToolbar
-          mode={analysisMode ? "hybrid" : "tournament"}
+          mode="tournament"
           filters={tournamentFilterConfig}
           onFilterChange={handleFilterChange}
           categories={categories}
-          showUserFilter={
-            profileProps.showUserFilter ||
-            (mode === "tournament" &&
-              analysisMode &&
-              profileProps.showUserFilter)
-          }
-          showSelectionFilter={
-            !!profileProps.selectionStats ||
-            (mode === "tournament" &&
-              analysisMode &&
-              !!profileProps.selectionStats)
-          }
+          showUserFilter={profileProps.showUserFilter}
+          showSelectionFilter={!!profileProps.selectionStats}
           userSelectOptions={profileProps.userSelectOptions}
-          filteredCount={
-            mode === "profile" || (mode === "tournament" && analysisMode)
-              ? filteredCount
-              : names.length
-          }
+          filteredCount={names.length}
           totalCount={names.length}
-          selectedCount={mode === "tournament" ? selectedCount : undefined}
-          showSelectedOnly={mode === "tournament" ? showSelectedOnly : false}
-          onToggleShowSelected={
-            mode === "tournament"
-              ? () => setShowSelectedOnly(!showSelectedOnly)
-              : undefined
-          }
-          isSwipeMode={mode === "tournament" ? isSwipeMode : false}
-          onToggleSwipeMode={
-            mode === "tournament"
-              ? () => setIsSwipeMode(!isSwipeMode)
-              : undefined
-          }
-          showCatPictures={mode === "tournament" ? showCatPictures : false}
-          onToggleCatPictures={
-            mode === "tournament"
-              ? () => setShowCatPictures(!showCatPictures)
-              : undefined
-          }
-          analysisMode={mode === "tournament" ? analysisMode : false}
+          selectedCount={selectedCount}
+          showSelectedOnly={showSelectedOnly}
+          onToggleShowSelected={() => setShowSelectedOnly(!showSelectedOnly)}
+          isSwipeMode={isSwipeMode}
+          onToggleSwipeMode={() => setIsSwipeMode(!isSwipeMode)}
+          showCatPictures={showCatPictures}
+          onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
+          analysisMode={false}
           startTournamentButton={
-            selectedCount >= 2 && onStartTournament && !analysisMode
+            selectedCount >= 2 && onStartTournament
               ? {
                   onClick: () => onStartTournament(selectedNames),
                   selectedCount,
@@ -499,7 +496,8 @@ export function NameManagementView({
           )}
 
           {/* Tournament Toolbar - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
-          {mode !== "tournament" && (
+          {/* Note: In analysis mode, toolbar is integrated into CollapsibleHeader via dashboard extension */}
+          {mode !== "tournament" && !analysisMode && (
             <section
               className={styles.filtersSection}
               aria-label="Filter and search controls"

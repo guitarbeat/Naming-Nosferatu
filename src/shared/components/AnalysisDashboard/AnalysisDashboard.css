@@ -112,7 +112,9 @@
 }
 
 .top-names-list {
-  margin-top: var(--analysis-gap-md, 12px);
+  margin: 0;
+  width: 100%;
+  padding: 0;
 }
 
 .top-names-table th.sortable {
@@ -175,34 +177,39 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: var(--analysis-text-body, 0.875rem);
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
-  border-radius: var(--analysis-radius-lg, 12px);
-  overflow: hidden;
-  border: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  border: none;
+  box-shadow: none;
+  margin: 0;
 }
 
 .top-names-table th {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
+  background: transparent;
   font-weight: var(--font-weight-semibold, 600);
   font-size: var(--analysis-text-caption, 0.75rem);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide, 0.05em);
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
+  padding-bottom: var(--analysis-gap-sm, 8px);
   text-align: left;
-  border-bottom: 2px solid var(--analysis-border, rgb(255 255 255 / 12%));
+  border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 10%));
   position: sticky;
   top: 0;
   z-index: 10;
+  line-height: 1.4;
 }
 
 .top-names-table td {
-  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 6%));
   color: var(--text-primary, #fff);
   vertical-align: middle;
   transition: background var(--analysis-duration-fast) var(--analysis-ease);
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .top-names-table tr:last-child td {
@@ -210,21 +217,19 @@
 }
 
 .top-names-row {
-  transition: background var(--analysis-duration-fast) var(--analysis-ease),
-              transform var(--analysis-duration-fast) var(--analysis-ease);
+  transition: background var(--analysis-duration-fast) var(--analysis-ease);
 }
 
 .top-names-row:hover {
-  background: var(--analysis-surface-2, rgb(255 255 255 / 8%));
-  transform: translateX(2px);
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 6%));
 }
 
 .top-names-row:nth-child(even) {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 2%));
+  background: transparent;
 }
 
 .top-names-row:nth-child(even):hover {
-  background: var(--analysis-surface-2, rgb(255 255 255 / 10%));
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 6%));
 }
 
 /* * Rank Badge */
@@ -237,16 +242,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  font-size: var(--analysis-text-caption, 0.75rem);
+  width: 20px;
+  height: 20px;
+  font-size: var(--analysis-text-caption, 0.65rem);
   font-weight: var(--font-weight-bold, 700);
   color: var(--text-primary, #fff);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 8%));
   border-radius: 50%;
-  border: 2px solid var(--analysis-border, rgb(255 255 255 / 15%));
+  border: 1px solid var(--analysis-border, rgb(255 255 255 / 15%));
   transition: all var(--analysis-duration-fast) var(--analysis-ease);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .rank-badge--top {
@@ -269,8 +274,11 @@
   font-weight: var(--font-weight-semibold, 600);
   color: var(--text-primary, #fff);
   min-width: 120px;
-  font-size: var(--analysis-text-body, 0.9375rem);
+  font-size: var(--analysis-text-body, 0.875rem);
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* * Metric Cells with Progress Bars */
@@ -282,17 +290,20 @@
 
 .metric-with-bar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: var(--analysis-gap-xs, 4px);
+  min-width: 0;
 }
 
 .metric-bar {
-  width: 100%;
-  height: 4px;
+  width: 60px;
+  height: 3px;
   background: rgb(255 255 255 / 8%);
   border-radius: 2px;
   overflow: hidden;
   position: relative;
+  flex-shrink: 0;
 }
 
 .metric-bar-fill {

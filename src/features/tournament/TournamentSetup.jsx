@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   NameManagementView,
-  useNameManagementContext,
+  useNameManagementContextSafe,
   Error,
   AnalysisDashboard,
   AnalysisBulkActions,
@@ -146,7 +146,7 @@ const createAnalysisDashboardWrapper = (
   return function AnalysisDashboardWrapperWithProps() {
     // * Get context inside the component - it's available here because this component
     // * is rendered inside NameManagementView's context provider
-    const context = useNameManagementContext();
+    const context = useNameManagementContextSafe();
     const handleNameHidden =
       onNameHidden ||
       (() => {

@@ -5,6 +5,7 @@
  */
 
 import PropTypes from "prop-types";
+import { useState, useEffect } from "react";
 import "./CollapsibleHeader.css";
 
 /**
@@ -57,6 +58,44 @@ const MinimizeIcon = () => (
 );
 
 /**
+ * Restore/Expand icon component for minimized state
+ */
+const RestoreIcon = () => (
+  <svg
+    className="collapsible-restore-icon"
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M3 4.5L6 7.5L9 4.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/**
+ * Hamburger dots component for FAB menu
+ */
+const HamburgerDots = ({ isExpanded }) => (
+  <div className="collapsible-hamburger-dots">
+    <span className="collapsible-dot collapsible-dot-first" />
+    <span className="collapsible-dot collapsible-dot-second" />
+    <span className="collapsible-dot collapsible-dot-third" />
+  </div>
+);
+
+HamburgerDots.propTypes = {
+  isExpanded: PropTypes.bool.isRequired,
+};
+
+/**
  * Collapsible Header Component
  * @param {Object} props
  * @param {string} props.title - Header title (required)
@@ -69,6 +108,7 @@ const MinimizeIcon = () => (
  * @param {string} props.className - Additional CSS classes
  * @param {string} props.variant - Style variant: 'default' | 'compact'
  * @param {boolean} props.showMinimize - Show minimize button (default: true)
+ * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
  */
 export function CollapsibleHeader({
   title,
@@ -81,7 +121,19 @@ export function CollapsibleHeader({
   className = "",
   variant = "default",
   showMinimize = true,
+  toolbar,
+  quickActions, // * Optional quick actions for FAB menu when minimized
 }) {
+  const [fabExpanded, setFabExpanded] = useState(false);
+  const hasQuickActions = isCollapsed && quickActions && quickActions.length > 0;
+
+  // * Reset FAB state when panel is expanded
+  useEffect(() => {
+    if (!isCollapsed) {
+      setFabExpanded(false);
+    }
+  }, [isCollapsed]);
+
   const handleMinimize = (e) => {
     e.stopPropagation();
     if (!isCollapsed) {
@@ -89,51 +141,134 @@ export function CollapsibleHeader({
     }
   };
 
+  const handleFabToggle = (e) => {
+    e.stopPropagation();
+    if (hasQuickActions) {
+      setFabExpanded(!fabExpanded);
+    } else {
+      onToggle();
+    }
+  };
+
+  const handleFabAction = (action, e) => {
+    e.stopPropagation();
+    if (action.onClick) {
+      action.onClick(e);
+    }
+    setFabExpanded(false);
+  };
+
+  // * Close FAB when clicking outside
+  useEffect(() => {
+    if (fabExpanded) {
+      const handleOutsideClick = (e) => {
+        const target = e.target;
+        const fabWrapper = target.closest('.collapsible-fab-wrapper');
+        const header = target.closest('.collapsible-header--collapsed');
+        const actionBar = target.closest('.collapsible-fab-action-bar');
+        
+        if (!fabWrapper && !header && !actionBar) {
+          setFabExpanded(false);
+        }
+      };
+      // * Use capture phase to catch clicks before they bubble
+      document.addEventListener('click', handleOutsideClick, true);
+      return () => document.removeEventListener('click', handleOutsideClick, true);
+    }
+  }, [fabExpanded]);
+
   return (
-    <header
-      className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
-    >
-      <button
-        type="button"
-        className="collapsible-toggle"
-        onClick={onToggle}
-        aria-expanded={!isCollapsed}
-        aria-controls={contentId}
-        aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
-        title={isCollapsed ? title : undefined}
+    <>
+      <div className={`collapsible-fab-wrapper ${hasQuickActions ? "collapsible-fab-wrapper--active" : ""}`}>
+        {/* FAB Action Bar - expands horizontally when FAB is clicked */}
+        {hasQuickActions && (
+          <div className={`collapsible-fab-action-bar ${fabExpanded ? "collapsible-fab-action-bar--expanded" : ""}`}>
+            <div className="collapsible-fab-actions">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  className={`collapsible-fab-action-item collapsible-fab-action-${index + 1}`}
+                  onClick={(e) => handleFabAction(action, e)}
+                  aria-label={action.label || action.title}
+                  title={action.title || action.label}
+                >
+                  {action.icon || action.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <header
+        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${hasQuickActions ? "collapsible-header--fab-enabled" : ""} ${fabExpanded ? "collapsible-header--fab-expanded" : ""} ${className}`}
       >
-        <ChevronIcon isCollapsed={isCollapsed} />
-        {isCollapsed ? (
-          /* Minimal collapsed state - just icon if available */
-          icon && <span className="collapsible-icon-collapsed" aria-hidden="true">{icon}</span>
-        ) : (
-          /* Expanded state - show icon and title */
-          <>
-            {icon && <span className="collapsible-icon" aria-hidden="true">{icon}</span>}
-            <span className="collapsible-title">{title}</span>
-          </>
-        )}
-        {isCollapsed && summary && (
-          <span className="collapsible-summary">{summary}</span>
-        )}
-      </button>
-      {!isCollapsed && (
-        <div className="collapsible-header-controls">
-          {actions && <div className="collapsible-actions">{actions}</div>}
-          {showMinimize && (
-            <button
-              type="button"
-              className="collapsible-minimize"
-              onClick={handleMinimize}
-              aria-label={`Minimize ${title}`}
-              title="Minimize"
-            >
-              <MinimizeIcon />
-            </button>
+        <button
+          type="button"
+          className="collapsible-toggle"
+          onClick={hasQuickActions ? handleFabToggle : onToggle}
+          aria-expanded={!isCollapsed}
+          aria-controls={contentId}
+          aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+          title={isCollapsed ? title : undefined}
+        >
+          {isCollapsed ? (
+            /* Minimized circular state - show hamburger dots or icon */
+            hasQuickActions ? (
+              <HamburgerDots isExpanded={fabExpanded} />
+            ) : (
+              <>
+                <ChevronIcon isCollapsed={isCollapsed} />
+                {icon && <span className="collapsible-icon-collapsed" aria-hidden="true">{icon}</span>}
+              </>
+            )
+          ) : (
+            /* Expanded state - show chevron, icon and title */
+            <>
+              <ChevronIcon isCollapsed={isCollapsed} />
+              {icon && <span className="collapsible-icon" aria-hidden="true">{icon}</span>}
+              <span className="collapsible-title">{title}</span>
+            </>
           )}
+          {isCollapsed && summary && (
+            <span className="collapsible-summary">{summary}</span>
+          )}
+        </button>
+        {!isCollapsed && (
+          <div className="collapsible-header-controls">
+            {actions && <div className="collapsible-actions">{actions}</div>}
+            {showMinimize && (
+              <button
+                type="button"
+                className="collapsible-minimize"
+                onClick={handleMinimize}
+                aria-label={`Minimize ${title}`}
+                title="Minimize"
+              >
+                <MinimizeIcon />
+              </button>
+            )}
+          </div>
+        )}
+        {/* Restore button - only shown when no quickActions (FAB menu handles restore when quickActions exist) */}
+        {isCollapsed && showMinimize && !hasQuickActions && (
+          <button
+            type="button"
+            className="collapsible-restore"
+            onClick={onToggle}
+            aria-label={`Restore ${title}`}
+            title={`Restore ${title}`}
+          >
+            <RestoreIcon />
+          </button>
+        )}
+        </header>
+      </div>
+      {!isCollapsed && toolbar && (
+        <div className="collapsible-header-toolbar">
+          {toolbar}
         </div>
       )}
-    </header>
+    </>
   );
 }
 
@@ -148,6 +283,15 @@ CollapsibleHeader.propTypes = {
   className: PropTypes.string,
   variant: PropTypes.oneOf(["default", "compact"]),
   showMinimize: PropTypes.bool,
+  toolbar: PropTypes.node,
+  quickActions: PropTypes.arrayOf(
+    PropTypes.shape({
+      icon: PropTypes.node,
+      label: PropTypes.string,
+      title: PropTypes.string,
+      onClick: PropTypes.func.isRequired,
+    })
+  ),
 };
 
 /**

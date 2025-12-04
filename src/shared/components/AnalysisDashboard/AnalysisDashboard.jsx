@@ -8,12 +8,15 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
+import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
+import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError, devLog } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
+import { formatDate } from "../../utils/timeUtils";
 import "./AnalysisDashboard.css";
 
 /**
@@ -95,6 +98,7 @@ export function AnalysisDashboard({
         rating: item.avg_rating || 1500,
         wins: item.total_wins || 0,
         selected: item.times_selected || 0,
+        dateSubmitted: item.created_at || item.date_submitted || null,
       }));
     }
 
@@ -109,6 +113,7 @@ export function AnalysisDashboard({
             rating: item.avg_rating || 1500,
             wins: item.wins || 0,
             selected: 0,
+            dateSubmitted: item.created_at || item.date_submitted || null,
           });
         }
       });
@@ -126,6 +131,7 @@ export function AnalysisDashboard({
             rating: 1500,
             wins: 0,
             selected: item.times_selected || 0,
+            dateSubmitted: item.created_at || item.date_submitted || null,
           });
         }
       });
@@ -235,16 +241,16 @@ export function AnalysisDashboard({
     ],
   );
 
-  const displayNames = useMemo(() => {
-    if (isAdmin && consolidatedNames.length > 0) {
-      return [...consolidatedNames].sort((a, b) => {
-        const aVal = a[sortField] ?? 0;
-        const bVal = b[sortField] ?? 0;
-        return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
-      });
-    }
+  // * Get context for filtering (optional - only if available)
+  const toolbarContext = useNameManagementContextSafe();
+  const filters = toolbarContext?.filterConfig || {};
 
-    if (highlights?.topRated?.length) {
+  const displayNames = useMemo(() => {
+    let names = [];
+
+    if (isAdmin && consolidatedNames.length > 0) {
+      names = [...consolidatedNames];
+    } else if (highlights?.topRated?.length) {
       const highlightMap = new Map();
       highlights.topRated.forEach((item) => {
         highlightMap.set(item.id, {
@@ -263,12 +269,108 @@ export function AnalysisDashboard({
           }
         });
       }
-      return Array.from(highlightMap.values())
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 10);
+      names = Array.from(highlightMap.values());
+    } else {
+      names = consolidatedNames;
     }
-    return consolidatedNames;
-  }, [highlights, consolidatedNames, isAdmin, sortField, sortDirection]);
+
+    // * Apply filters from TournamentToolbar
+    if (toolbarContext && filters) {
+      // Search filter
+      if (filters.searchTerm) {
+        const searchLower = filters.searchTerm.toLowerCase();
+        names = names.filter((n) =>
+          n.name.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Status filter (visibility)
+      if (filters.filterStatus && filters.filterStatus !== "all") {
+        // Note: This would need hiddenIds from context to work properly
+        // For now, we'll skip this filter as we don't have visibility data in consolidatedNames
+      }
+
+      // User filter
+      // Note: This would need user data per name, which we don't have in consolidatedNames
+      // This filter would need to be applied at the API level
+
+      // Selection filter
+      if (filters.selectionFilter && filters.selectionFilter !== "all") {
+        if (filters.selectionFilter === "selected") {
+          names = names.filter((n) => n.selected > 0);
+        } else if (filters.selectionFilter === "never_selected") {
+          names = names.filter((n) => n.selected === 0);
+        }
+      }
+
+      // Date filter (if dateSubmitted exists)
+      if (filters.dateFilter && filters.dateFilter !== "all") {
+        const now = new Date();
+        let filterDate = new Date(0); // Start of epoch
+
+        switch (filters.dateFilter) {
+          case "today":
+            filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            break;
+          case "week":
+            filterDate = new Date(now);
+            filterDate.setDate(now.getDate() - 7);
+            break;
+          case "month":
+            filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          case "year":
+            filterDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        }
+
+        names = names.filter((n) => {
+          if (!n.dateSubmitted) return false;
+          const submittedDate = new Date(n.dateSubmitted);
+          return submittedDate >= filterDate;
+        });
+      }
+    }
+
+    // * Apply sorting
+    if (isAdmin && sortField) {
+      names.sort((a, b) => {
+        let aVal = a[sortField];
+        let bVal = b[sortField];
+
+        // Handle date sorting
+        if (sortField === "dateSubmitted") {
+          aVal = aVal ? new Date(aVal).getTime() : 0;
+          bVal = bVal ? new Date(bVal).getTime() : 0;
+        }
+
+        // Handle string sorting
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortDirection === "desc"
+            ? bVal.localeCompare(aVal)
+            : aVal.localeCompare(bVal);
+        }
+
+        // Handle number sorting
+        aVal = aVal ?? 0;
+        bVal = bVal ?? 0;
+        return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
+      });
+    } else {
+      // Default sort by rating
+      names.sort((a, b) => b.rating - a.rating);
+    }
+
+    return names;
+  }, [
+    highlights,
+    consolidatedNames,
+    isAdmin,
+    sortField,
+    sortDirection,
+    toolbarContext,
+    filters,
+  ]);
 
   const summaryStats = useMemo(() => {
     if (displayNames.length === 0) return null;
@@ -330,6 +432,56 @@ export function AnalysisDashboard({
     return result;
   }, [summaryStats, displayNames]);
 
+  // * Get context for toolbar integration (optional - only if available)
+  // * Safe hook returns null if context is not available
+  // * Note: toolbarContext is now used above in displayNames useMemo
+
+  // * Build toolbar if context is available and in analysis mode
+  const toolbar = toolbarContext && toolbarContext.analysisMode ? (
+    <TournamentToolbar
+      mode="hybrid"
+      filters={toolbarContext.filterConfig}
+      onFilterChange={toolbarContext.handleFilterChange || ((newFilters) => {
+        // * Update context filters
+        if (newFilters.searchTerm !== undefined) {
+          toolbarContext.setSearchTerm(newFilters.searchTerm || "");
+        }
+        if (newFilters.category !== undefined) {
+          toolbarContext.setSelectedCategory(newFilters.category || null);
+        }
+        if (newFilters.sortBy !== undefined) {
+          toolbarContext.setSortBy(newFilters.sortBy || "alphabetical");
+        }
+        if (newFilters.filterStatus !== undefined) {
+          toolbarContext.setFilterStatus(newFilters.filterStatus);
+        }
+        if (newFilters.userFilter !== undefined) {
+          toolbarContext.setUserFilter(newFilters.userFilter);
+        }
+        if (newFilters.selectionFilter !== undefined) {
+          toolbarContext.setSelectionFilter(newFilters.selectionFilter);
+        }
+        if (newFilters.sortOrder !== undefined) {
+          toolbarContext.setSortOrder(newFilters.sortOrder);
+        }
+      })}
+      categories={toolbarContext.categories || []}
+      showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
+      showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
+      userSelectOptions={toolbarContext.profileProps?.userSelectOptions || []}
+      filteredCount={displayNames.length}
+      totalCount={consolidatedNames.length}
+      selectedCount={toolbarContext.selectedCount || 0}
+      showSelectedOnly={toolbarContext.showSelectedOnly || false}
+      onToggleShowSelected={toolbarContext.setShowSelectedOnly}
+      isSwipeMode={toolbarContext.isSwipeMode || false}
+      onToggleSwipeMode={toolbarContext.setIsSwipeMode}
+      showCatPictures={toolbarContext.showCatPictures || false}
+      onToggleCatPictures={toolbarContext.setShowCatPictures}
+      analysisMode={true}
+    />
+  ) : null;
+
   // Don't render if no data and not loading/error
   const hasData = displayNames.length > 0 || isLoading || error;
 
@@ -345,6 +497,7 @@ export function AnalysisDashboard({
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
         contentId="analysis-dashboard-content"
+        toolbar={toolbar}
       />
 
       <CollapsibleContent
@@ -452,6 +605,16 @@ export function AnalysisDashboard({
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
                       Selected {isAdmin && renderSortIndicator("selected")}
+                    </th>
+                    <th
+                      scope="col"
+                      className={isAdmin ? "sortable" : ""}
+                      onClick={
+                        isAdmin ? () => handleSort("dateSubmitted") : undefined
+                      }
+                      style={isAdmin ? { cursor: "pointer" } : undefined}
+                    >
+                      Date {isAdmin && renderSortIndicator("dateSubmitted")}
                     </th>
                     {isAdmin && <th scope="col">Actions</th>}
                   </tr>
@@ -565,6 +728,29 @@ export function AnalysisDashboard({
                                 />
                               </div>
                             </div>
+                          )}
+                        </td>
+                        <td className="top-names-date-cell">
+                          {item.dateSubmitted ? (
+                            <span
+                              className="top-names-date"
+                              aria-label={`Submitted: ${formatDate(item.dateSubmitted)}`}
+                              title={formatDate(item.dateSubmitted, {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                            >
+                              {formatDate(item.dateSubmitted, {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
+                          ) : (
+                            <span className="top-names-date top-names-date--unknown" aria-label="Date unknown">
+                              —
+                            </span>
                           )}
                         </td>
                         {isAdmin && (

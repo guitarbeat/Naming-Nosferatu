@@ -648,7 +648,7 @@ export const catNamesAPI = {
       // Get name details from cat_name_options
       const { data, error } = await supabase
         .from("cat_name_options")
-        .select("id, name, description, avg_rating, categories")
+        .select("id, name, description, avg_rating, categories, created_at")
         .eq("is_active", true)
         .eq("is_hidden", false)
         .order("avg_rating", { ascending: false })
@@ -675,6 +675,7 @@ export const catNamesAPI = {
             total_ratings: stats?.count || 0,
             wins: stats?.totalWins || 0,
             losses: stats?.totalLosses || 0,
+            created_at: row.created_at || null,
           };
         })
         .filter((row) => row.total_ratings > 0 || row.avg_rating > 1500) // Only names with actual ratings
@@ -763,7 +764,7 @@ export const catNamesAPI = {
           .select("name_id, rating, wins, losses, user_name"),
         supabase
           .from("cat_name_options")
-          .select("id, name, description, avg_rating, categories")
+          .select("id, name, description, avg_rating, categories, created_at")
           .eq("is_active", true)
           .eq("is_hidden", false),
       ]);
@@ -845,6 +846,7 @@ export const catNamesAPI = {
           win_rate: winRate,
           users_rated: ratStat.users.size,
           popularity_score: popularityScore,
+          created_at: name.created_at || null,
         };
       });
 

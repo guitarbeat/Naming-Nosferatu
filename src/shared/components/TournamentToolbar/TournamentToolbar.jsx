@@ -30,6 +30,13 @@ const FILTER_CONFIGS = {
     { value: "frequently_selected", label: "Frequently Selected" },
     { value: "recently_selected", label: "Recently Selected" },
   ],
+  date: [
+    { value: "all", label: "All Dates" },
+    { value: "today", label: "Today" },
+    { value: "week", label: "This Week" },
+    { value: "month", label: "This Month" },
+    { value: "year", label: "This Year" },
+  ],
 };
 
 const Toggle = ({ isActive, onClick, activeLabel, inactiveLabel, ariaLabel }) => (
@@ -82,6 +89,7 @@ function TournamentToolbar({
   showCatPictures,
   onToggleCatPictures,
   startTournamentButton,
+  analysisMode = false,
   className = "",
 }) {
   const update = (name, value) => onFilterChange?.({ ...filters, [name]: value });
@@ -238,6 +246,15 @@ function TournamentToolbar({
                 value={filters.selectionFilter || "all"}
                 options={FILTER_CONFIGS.selection}
                 onChange={(value) => update("selectionFilter", value)}
+              />
+            )}
+            {analysisMode && (
+              <FilterSelect
+                id="filter-date"
+                label="Date"
+                value={filters.dateFilter || "all"}
+                options={FILTER_CONFIGS.date}
+                onChange={(value) => update("dateFilter", value)}
               />
             )}
           </div>
