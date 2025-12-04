@@ -41,7 +41,6 @@ function createMockStoreState(overrides = {}) {
     },
     ui: {
       theme: "light",
-      showPerformanceDashboard: false,
       showGlobalAnalytics: false,
       showUserComparison: false,
       matrixMode: false,
@@ -67,8 +66,6 @@ function createMockStoreState(overrides = {}) {
       initializeFromStorage: vi.fn(),
     },
     uiActions: {
-      togglePerformanceDashboard: vi.fn(),
-      setPerformanceDashboardVisible: vi.fn(),
       toggleTheme: vi.fn(),
     },
     errorActions: {

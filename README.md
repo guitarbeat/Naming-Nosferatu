@@ -98,6 +98,7 @@ src/
 └── shared/                # Shared components
     ├── components/        # Reusable UI
     ├── services/          # Business logic
+    │   └── supabase/      # Supabase API and client
     └── utils/             # Utility functions
 ```
 
@@ -173,7 +174,7 @@ import {
   adminAPI,
   siteSettingsAPI,
   imagesAPI 
-} from '@/integrations/supabase/api';
+} from '@/shared/services/supabase/api';
 
 // Get all cat names with descriptions
 const names = await catNamesAPI.getNamesWithDescriptions();
@@ -184,8 +185,8 @@ const stats = await catNamesAPI.getUserStats(userName);
 // Create tournament
 const tournament = await tournamentsAPI.createTournament(names, ratings);
 
-// Get tournament history
-const history = await tournamentsAPI.getTournamentHistory(userName);
+// Get user tournaments
+const tournaments = await tournamentsAPI.getUserTournaments(userName);
 ```
 
 ### **Custom Hooks**

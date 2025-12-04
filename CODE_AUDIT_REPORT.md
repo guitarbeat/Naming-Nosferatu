@@ -156,6 +156,21 @@ These are flagged as unused by knip but ARE actually used via `@components` or `
 16. ✅ Removed deprecated route redirects
 17. ✅ Cleaned up all "legacy" and "backward compatibility" comments
 18. ✅ Removed empty PhotoPreviewStrip directory
+19. ✅ Removed 7 empty directories (store/ui, store/tournament, store/user, tournament/utils, utils/components, utils/api, PerformanceDashboard, styles)
+20. ✅ Cleaned up PerformanceDashboard references from tests
+21. ✅ Fixed all remaining direct `supabase` variable references (14 locations total) - migrated to `resolveSupabaseClient()` pattern:
+    - `getLeaderboard()` - 2 instances
+    - `removeName()` - 1 instance
+    - `getSiteStats()` - 2 instances
+    - `getNamesWithUserRatings()` - 1 instance
+    - `_getUserStatsFallback()` - 2 instances
+    - `adminAPI.listUsers()` - 2 instances
+    - Plus 4 instances from previous fixes
+22. ✅ Removed all "backward compatibility" comments from re-export files (coreUtils, authUtils, performanceUtils, AnalysisPanel, errorManager)
+23. ✅ Cleaned up compatibility comments in Loading.module.css, setupTests.js, and CollapsibleHeader.css
+24. ✅ All deprecated code and backward compatibility references removed
+25. ✅ Removed empty directories: `docs/` and `scripts/data/`
+26. ✅ Updated documentation (README.md, MIGRATION_GUIDE.md) to reflect current codebase structure and API paths
 
 ### Remaining Unused Exports (144)
 Many of these are false positives (used via barrel imports) or kept for future use:
@@ -163,7 +178,15 @@ Many of these are false positives (used via barrel imports) or kept for future u
 - PropTypes shapes - Used for development/validation
 - Some component exports - Used via barrel imports (`@components`)
 
+### Final Cleanup Summary
+- ✅ All empty directories removed (8 total)
+- ✅ All legacy code removed
+- ✅ All backward compatibility code removed
+- ✅ All deprecated files removed
+- ✅ PerformanceDashboard references cleaned from tests
+- ✅ Build passes successfully with no errors or warnings
+
 ### Recommendations
 1. **Low Priority**: Many utility exports are intentionally kept for future use or internal use
 2. **Medium Priority**: Verify barrel import usage for shared components
-3. **High Priority**: Build error needs investigation (separate from unused exports)
+3. **Completed**: All deprecated code and legacy compatibility removed

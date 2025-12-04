@@ -447,7 +447,12 @@ export const catNamesAPI = {
         return { success: false, error: "Supabase not configured" };
       }
 
-      const { error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase not configured" };
+      }
+
+      const { error } = await client
         .from("cat_name_options")
         .delete()
         .eq("name", name);
@@ -501,7 +506,9 @@ export const catNamesAPI = {
 
       // Get names with their aggregated rating stats from cat_name_ratings
       // This gives us actual user-submitted ratings, not just defaults
-      const { data: ratingStats, error: ratingError } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data: ratingStats, error: ratingError } = await client
         .from("cat_name_ratings")
         .select("name_id, rating, wins, losses");
 
@@ -528,7 +535,7 @@ export const catNamesAPI = {
       });
 
       // Get name details from cat_name_options
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from("cat_name_options")
         .select("id, name, description, avg_rating, categories, created_at")
         .eq("is_active", true)
@@ -585,7 +592,9 @@ export const catNamesAPI = {
       }
 
       // Query tournament_selections to get selection counts per name
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data, error } = await client
         .from("tournament_selections")
         .select("name_id, name");
 
@@ -797,13 +806,13 @@ export const catNamesAPI = {
           : 1500;
 
       // Find names never selected
-      const { data: neverSelected } = await supabase
+      const { data: neverSelected } = await client
         .from("cat_name_options")
         .select("id, name")
         .eq("is_active", true)
         .eq("is_hidden", false);
 
-      const { data: selectedIds } = await supabase
+      const { data: selectedIds } = await client
         .from("tournament_selections")
         .select("name_id");
 
@@ -889,7 +898,9 @@ export const catNamesAPI = {
 
       // Get all names with user-specific ratings
       // Global hidden status is on cat_name_options.is_hidden
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data, error } = await client
         .from("cat_name_options")
         .select(
           `
@@ -918,7 +929,7 @@ export const catNamesAPI = {
       }
 
       // Fetch selection counts for all names
-      const { data: selectionData } = await supabase
+      const { data: selectionData } = await client
         .from("tournament_selections")
         .select("name_id");
 
@@ -996,7 +1007,10 @@ export const catNamesAPI = {
       }
 
       // Get user rating statistics
-      const { data: ratingStats, error: ratingError } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return null;
+
+      const { data: ratingStats, error: ratingError } = await client
         .from("cat_name_ratings")
         .select("rating, is_hidden")
         .eq("user_name", userName);
@@ -1007,7 +1021,7 @@ export const catNamesAPI = {
       }
 
       // Get tournament selection statistics
-      const { data: selectionStats, error: selectionError } = await supabase
+      const { data: selectionStats, error: selectionError } = await client
         .from("tournament_selections")
         .select("name_id, tournament_id, selected_at, name")
         .eq("user_name", userName);
@@ -1105,7 +1119,9 @@ export const catNamesAPI = {
 
       // Get names with Aaron's ratings, ordered by his rating (highest first)
       // Only select columns that exist in the schema
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data, error } = await client
         .from("cat_name_options")
         .select(
           `
@@ -1413,7 +1429,9 @@ export const hiddenNamesAPI = {
       }
 
       // Global hidden names are stored directly on cat_name_options
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data, error } = await client
         .from("cat_name_options")
         .select("id, name, description, updated_at")
         .eq("is_hidden", true);
@@ -1566,7 +1584,9 @@ export const tournamentsAPI = {
       }
 
       // Query tournament_selections - actual columns: id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at
-      const { data, error } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+      const { data, error } = await client
         .from("tournament_selections")
         .select(
           "id, user_name, name_id, name, tournament_id, selected_at, selection_type, created_at",
@@ -1627,8 +1647,13 @@ export const tournamentsAPI = {
         return { success: false, error: "Supabase not configured" };
       }
 
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase not configured" };
+      }
+
       // Set user context for RLS policies
-      const { error: contextError } = await supabase.rpc("set_user_context", {
+      const { error: contextError } = await client.rpc("set_user_context", {
         user_name_param: userName,
       });
 
@@ -1650,7 +1675,7 @@ export const tournamentsAPI = {
         selection_type: "tournament_setup",
       }));
 
-      const { error: insertError } = await supabase
+      const { error: insertError } = await client
         .from("tournament_selections")
         .insert(selectionRecords);
 
@@ -1817,8 +1842,13 @@ export const deleteName = async (nameId) => {
       return { success: false, error: "Supabase not configured" };
     }
 
+    const client = await resolveSupabaseClient();
+    if (!client) {
+      return { success: false, error: "Supabase not configured" };
+    }
+
     // Check if name exists
-    const { data: nameData, error: nameError } = await supabase
+    const { data: nameData, error: nameError } = await client
       .from("cat_name_options")
       .select("name")
       .eq("id", nameId)
@@ -1835,7 +1865,7 @@ export const deleteName = async (nameId) => {
     }
 
     // Check if name is globally hidden (cat_name_options.is_hidden)
-    const { data: nameWithHidden, error: hiddenError } = await supabase
+    const { data: nameWithHidden, error: hiddenError } = await client
       .from("cat_name_options")
       .select("is_hidden")
       .eq("id", nameId)
@@ -1847,7 +1877,7 @@ export const deleteName = async (nameId) => {
     }
 
     // Use transaction to delete
-    const { error } = await supabase.rpc("delete_name_cascade", {
+    const { error } = await client.rpc("delete_name_cascade", {
       target_name_id: nameId,
     });
 
@@ -1876,12 +1906,15 @@ export const imagesAPI = {
         return [];
       }
 
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+
       const opts = {
         limit,
         search: undefined,
         sortBy: { column: "updated_at", order: "desc" },
       };
-      const { data, error } = await supabase.storage
+      const { data, error } = await client.storage
         .from("cat-images")
         .list(prefix, opts);
       if (error) {
@@ -1921,7 +1954,7 @@ export const imagesAPI = {
       // Map to public URLs
       const toUrl = (name) => {
         const fullPath = prefix ? `${prefix}/${name}` : name;
-        const { data: urlData } = supabase.storage
+        const { data: urlData } = client.storage
           .from("cat-images")
           .getPublicUrl(fullPath);
         return urlData?.publicUrl;
@@ -1940,20 +1973,21 @@ export const imagesAPI = {
    * Upload an image file to the `cat-images` bucket. Returns public URL.
    */
   async upload(file, _userName = "anon", prefix = "") {
-    if (!(await isSupabaseAvailable())) {
+    const client = await resolveSupabaseClient();
+    if (!client) {
       throw new Error("Supabase not configured");
     }
 
     const safe = (file?.name || "image").replace(/[^a-zA-Z0-9._-]/g, "_");
     // Store at bucket root to simplify listing (no recursion needed)
     const objectPath = `${prefix ? `${prefix}/` : ""}${Date.now()}-${safe}`;
-    const { error } = await supabase.storage
+    const { error } = await client.storage
       .from("cat-images")
       .upload(objectPath, file, {
         upsert: false,
       });
     if (error) throw error;
-    const { data } = supabase.storage
+    const { data } = client.storage
       .from("cat-images")
       .getPublicUrl(objectPath);
     return data?.publicUrl;
@@ -1978,8 +2012,11 @@ export const adminAPI = {
         return [];
       }
 
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+
       // Fetch users and roles separately (no FK relationship exists)
-      let usersQuery = supabase
+      let usersQuery = client
         .from("cat_app_users")
         .select("user_name, created_at, updated_at")
         .order("user_name", { ascending: true });
@@ -2005,7 +2042,7 @@ export const adminAPI = {
 
       // Fetch roles for these users
       const userNames = users.map((u) => u.user_name);
-      const { data: roles, error: rolesError } = await supabase
+      const { data: roles, error: rolesError } = await client
         .from("user_roles")
         .select("user_name, role")
         .in("user_name", userNames);

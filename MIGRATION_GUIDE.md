@@ -111,7 +111,7 @@ The most reliable way to migrate the schema is using the Supabase CLI to diff th
 We have created a set of scripts to automate the data migration.
 
 ### 1. Export Data
-Run the export script to fetch all data from the source project and save it as JSON files in `scripts/data/`.
+Run the export script to fetch all data from the source project and save it as JSON files (the `scripts/data/` directory will be created automatically if needed).
 ```bash
 node scripts/export_data.js
 ```

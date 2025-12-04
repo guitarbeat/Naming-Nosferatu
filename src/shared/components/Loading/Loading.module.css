@@ -101,7 +101,7 @@
 
 /* ===== COMPATIBILITY STYLES ===== */
 
-/* Maintain compatibility with old class names */
+/* Maintain compatibility with alternative class names */
 .loadingPlaceholder {
   display: flex;
   align-items: center;

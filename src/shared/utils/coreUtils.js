@@ -1,7 +1,7 @@
 /**
  * @module coreUtils
  * @description Consolidated utility functions for the cat names application.
- * This file re-exports from modular utility files for backward compatibility.
+ * This file re-exports from modular utility files.
  */
 
 export * from "./arrayUtils";

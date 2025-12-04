@@ -275,7 +275,7 @@
   padding: 0;
 }
 
-/* Backward compatibility - share chevron styles with AnalysisHeader */
+/* Share chevron styles with AnalysisHeader */
 .analysis-header-chevron {
   display: inline-flex;
   font-size: 0.75em;

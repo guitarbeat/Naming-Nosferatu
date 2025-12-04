@@ -25,8 +25,8 @@ Object.defineProperty(window, "matchMedia", {
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // * Deprecated API, kept for test compatibility
-    removeListener: vi.fn(), // * Deprecated API, kept for test compatibility
+    addListener: vi.fn(), // * Deprecated browser API, required for test compatibility
+    removeListener: vi.fn(), // * Deprecated browser API, required for test compatibility
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
