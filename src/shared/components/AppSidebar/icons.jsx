@@ -62,14 +62,6 @@ export const LogoutIcon = () => (
   </Icon>
 );
 
-// * ProfileIcon - Internal use only, not exported
-const ProfileIcon = () => (
-  <Icon name="profile">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </Icon>
-);
-
 export const PhotosIcon = () => (
   <Icon name="photos">
     <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />

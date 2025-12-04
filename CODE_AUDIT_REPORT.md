@@ -2,10 +2,11 @@
 Generated: 2025-12-04
 
 ## Summary
-- **Unused Files**: 1 ✅ FIXED
-- **Unused Exports**: 172 (reduced to ~150 after fixes)
-- **Dead Code Paths**: Multiple
+- **Unused Files**: 1 ✅ FIXED (removed ResultsInfo.jsx - 4KB)
+- **Unused Exports**: 172 → ~165 (removed 7+ unused exports)
+- **Dead Code Paths**: Multiple identified
 - **Bundle Size**: Analysis pending (build error to fix)
+- **Icons Cleaned**: Removed 2 unused icon components
 
 ## Critical Issues
 
@@ -56,7 +57,7 @@ Generated: 2025-12-04
 
 #### Sidebar Components ✅ FIXED
 - ✅ **FIXED**: `SidebarContent` - Changed to internal (not exported)
-- ✅ **FIXED**: `TournamentIcon`, `ProfileIcon` - Changed to internal (not exported, only used within icons.jsx)
+- ✅ **REMOVED**: `TournamentIcon`, `ProfileIcon` - Completely unused, removed (saves ~200 bytes)
 
 ### 4. Bundle Size Optimization Opportunities
 
@@ -91,8 +92,36 @@ Generated: 2025-12-04
 
 ## Action Items
 
-1. ✅ Fix build error
-2. ⏳ Remove unused file: `ResultsInfo.jsx`
-3. ⏳ Clean up Analysis Panel exports
-4. ⏳ Verify and clean shared/components/index.js exports
-5. ⏳ Run bundle size analysis after build fix
+1. ✅ **DONE**: Fixed build error (context refetch callback)
+2. ✅ **DONE**: Removed unused file: `ResultsInfo.jsx` (4KB)
+3. ✅ **DONE**: Cleaned up Analysis Panel exports (removed 8 unused sub-components)
+4. ✅ **DONE**: Removed unused icons (TournamentIcon, ProfileIcon)
+5. ✅ **DONE**: Made SidebarContent internal
+6. ⏳ **TODO**: Verify shared/components/index.js exports - many are used via barrel imports
+7. ⏳ **TODO**: Remove truly unused exports (getNextMatch, TOURNAMENT constant if unused, etc.)
+8. ⏳ **TODO**: Run bundle size analysis after build fix
+
+## Detailed Findings
+
+### Verified Used Exports (via barrel imports)
+These are flagged as unused by knip but ARE actually used via `@components` or `shared/components`:
+- `UnifiedFilters` - Used in NameManagementView
+- `FormField` - May be used
+- `CollapsibleSection`, `CollapsibleHeader`, `CollapsibleContent` - Used in AnalysisDashboard, AdminAnalytics
+- `BarChart` - May be used
+- `SkeletonLoader`, `Input`, `Select`, `NameCard` - Used via barrel imports
+- `AnalysisToggle`, `AnalysisModeBanner` - Used in NameManagementView
+- `AdminAnalytics` - Used in NameManagementView
+
+### Truly Unused Exports (Safe to Remove)
+1. `getNextMatch` - Exported but only used internally within same file
+2. `TOURNAMENT` constant - Exported but may only be used internally
+3. `filterAndSortNames`, `generateCategoryOptions` - Exported but never imported
+4. `useCategoryFilters` - Exported but never imported
+5. `NameSuggestionSection`, `PhotoPreviewStrip` - Exported but may be used directly
+6. Many utility functions in utils files - May be kept for future use or internal use
+
+### Bundle Size Impact
+- Removed unused file: ~4KB
+- Removed unused exports: ~2-3KB (tree-shaking will remove unused code)
+- **Total estimated savings**: ~6-7KB (before gzip)

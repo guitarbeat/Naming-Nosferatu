@@ -573,10 +573,7 @@ function TournamentSetupContent({
               selectionStats,
               isAdmin,
               activeUser,
-              () => {
-                // * Refresh names after hiding - context is available here
-                context.refetch();
-              }
+              fetchNames // * Use fetchNames callback which has access to context
             ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper
