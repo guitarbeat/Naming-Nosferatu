@@ -151,14 +151,8 @@ function UnifiedFilters({
 
   // * Render toggle switch
   const renderToggleSwitch = useCallback((config) => {
-    const {
-      onClick,
-      isActive,
-      activeLabel,
-      inactiveLabel,
-      ariaLabel,
-      key,
-    } = config;
+    const { onClick, isActive, activeLabel, inactiveLabel, ariaLabel, key } =
+      config;
     if (!onClick) return null;
 
     const toggleId = `toggle-${key}`;

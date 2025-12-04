@@ -380,22 +380,143 @@ export function NameManagementView({
     );
   }
 
+  // * Component to render UnifiedFilters outside but above content (tournament mode only)
+  const UnifiedFiltersWrapper = () => {
+    if (mode !== "tournament") return null;
+
+    const filterConfig = {
+      searchTerm,
+      category: selectedCategory,
+      sortBy,
+    };
+
+    return (
+      <UnifiedFilters
+        mode={analysisMode ? "hybrid" : "tournament"}
+        filters={filterConfig}
+        onFilterChange={handleFilterChange}
+        categories={categories}
+        showUserFilter={
+          profileProps.showUserFilter ||
+          (mode === "tournament" &&
+            analysisMode &&
+            profileProps.showUserFilter)
+        }
+        showSelectionFilter={
+          !!profileProps.selectionStats ||
+          (mode === "tournament" &&
+            analysisMode &&
+            !!profileProps.selectionStats)
+        }
+        userSelectOptions={profileProps.userSelectOptions}
+        filteredCount={
+          mode === "profile" || (mode === "tournament" && analysisMode)
+            ? filteredCount
+            : names.length
+        }
+        totalCount={names.length}
+        selectedCount={mode === "tournament" ? selectedCount : undefined}
+        showSelectedOnly={mode === "tournament" ? showSelectedOnly : false}
+        onToggleShowSelected={
+          mode === "tournament"
+            ? () => setShowSelectedOnly(!showSelectedOnly)
+            : undefined
+        }
+        isSwipeMode={mode === "tournament" ? isSwipeMode : false}
+        onToggleSwipeMode={
+          mode === "tournament"
+            ? () => setIsSwipeMode(!isSwipeMode)
+            : undefined
+        }
+        showCatPictures={mode === "tournament" ? showCatPictures : false}
+        onToggleCatPictures={
+          mode === "tournament"
+            ? () => setShowCatPictures(!showCatPictures)
+            : undefined
+        }
+        analysisMode={mode === "tournament" ? analysisMode : false}
+      />
+    );
+  };
+
+  // * Component to render UnifiedFilters outside but above content (tournament mode only)
+  const UnifiedFiltersWrapper = () => {
+    if (mode !== "tournament") return null;
+
+    const filterConfig = {
+      searchTerm,
+      category: selectedCategory,
+      sortBy,
+    };
+
+    return (
+      <UnifiedFilters
+        mode={analysisMode ? "hybrid" : "tournament"}
+        filters={filterConfig}
+        onFilterChange={handleFilterChange}
+        categories={categories}
+        showUserFilter={
+          profileProps.showUserFilter ||
+          (mode === "tournament" &&
+            analysisMode &&
+            profileProps.showUserFilter)
+        }
+        showSelectionFilter={
+          !!profileProps.selectionStats ||
+          (mode === "tournament" &&
+            analysisMode &&
+            !!profileProps.selectionStats)
+        }
+        userSelectOptions={profileProps.userSelectOptions}
+        filteredCount={
+          mode === "profile" || (mode === "tournament" && analysisMode)
+            ? filteredCount
+            : names.length
+        }
+        totalCount={names.length}
+        selectedCount={mode === "tournament" ? selectedCount : undefined}
+        showSelectedOnly={mode === "tournament" ? showSelectedOnly : false}
+        onToggleShowSelected={
+          mode === "tournament"
+            ? () => setShowSelectedOnly(!showSelectedOnly)
+            : undefined
+        }
+        isSwipeMode={mode === "tournament" ? isSwipeMode : false}
+        onToggleSwipeMode={
+          mode === "tournament"
+            ? () => setIsSwipeMode(!isSwipeMode)
+            : undefined
+        }
+        showCatPictures={mode === "tournament" ? showCatPictures : false}
+        onToggleCatPictures={
+          mode === "tournament"
+            ? () => setShowCatPictures(!showCatPictures)
+            : undefined
+        }
+        analysisMode={mode === "tournament" ? analysisMode : false}
+      />
+    );
+  };
+
   return (
-    <NameManagementContext.Provider value={contextValue}>
-      <div
-        className={`${styles.container} ${className}`}
-        data-component="name-management-view"
-        data-mode={mode}
-        role="main"
-        aria-label={`${mode === "tournament" ? "Tournament" : "Profile"} name management`}
-      >
-        {/* Analysis Mode Banner - Visual indicator when active */}
-        {analysisMode && mode === "tournament" && (
-          <AnalysisModeBanner
-            onClose={() => handleAnalysisModeToggle(false)}
-            showShortcut={true}
-          />
-        )}
+    <>
+      {/* UnifiedFilters rendered outside but above content (tournament mode) */}
+      {mode === "tournament" && <UnifiedFiltersWrapper />}
+      <NameManagementContext.Provider value={contextValue}>
+        <div
+          className={`${styles.container} ${className}`}
+          data-component="name-management-view"
+          data-mode={mode}
+          role="main"
+          aria-label={`${mode === "tournament" ? "Tournament" : "Profile"} name management`}
+        >
+          {/* Analysis Mode Banner - Visual indicator when active */}
+          {analysisMode && mode === "tournament" && (
+            <AnalysisModeBanner
+              onClose={() => handleAnalysisModeToggle(false)}
+              showShortcut={true}
+            />
+          )}
 
         {/* Mode-specific Header */}
         {extensions.header && (
@@ -433,59 +554,26 @@ export function NameManagementView({
           </section>
         )}
 
-        {/* Unified Filters */}
-        <section
-          className={styles.filtersSection}
-          aria-label="Filter and search controls"
-          data-section="filters"
-        >
-          <UnifiedFilters
-            mode={mode === "tournament" && analysisMode ? "hybrid" : mode}
-            filters={filterConfig}
-            onFilterChange={handleFilterChange}
-            categories={categories}
-            showUserFilter={
-              profileProps.showUserFilter ||
-              (mode === "tournament" &&
-                analysisMode &&
-                profileProps.showUserFilter)
-            }
-            showSelectionFilter={
-              !!profileProps.selectionStats ||
-              (mode === "tournament" &&
-                analysisMode &&
-                !!profileProps.selectionStats)
-            }
-            userSelectOptions={profileProps.userSelectOptions}
-            filteredCount={
-              mode === "profile" || (mode === "tournament" && analysisMode)
-                ? filteredCount
-                : names.length // * Use total names for tournament mode (filtering handled by NameGrid)
-            }
-            totalCount={names.length}
-            // Tournament mode results info props
-            selectedCount={mode === "tournament" ? selectedCount : undefined}
-            showSelectedOnly={mode === "tournament" ? showSelectedOnly : false}
-            onToggleShowSelected={
-              mode === "tournament"
-                ? () => setShowSelectedOnly(!showSelectedOnly)
-                : undefined
-            }
-            isSwipeMode={mode === "tournament" ? isSwipeMode : false}
-            onToggleSwipeMode={
-              mode === "tournament"
-                ? () => setIsSwipeMode(!isSwipeMode)
-                : undefined
-            }
-            showCatPictures={mode === "tournament" ? showCatPictures : false}
-            onToggleCatPictures={
-              mode === "tournament"
-                ? () => setShowCatPictures(!showCatPictures)
-                : undefined
-            }
-            analysisMode={mode === "tournament" ? analysisMode : false}
-          />
-        </section>
+        {/* Unified Filters - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
+        {mode !== "tournament" && (
+          <section
+            className={styles.filtersSection}
+            aria-label="Filter and search controls"
+            data-section="filters"
+          >
+            <UnifiedFilters
+              mode={mode}
+              filters={filterConfig}
+              onFilterChange={handleFilterChange}
+              categories={categories}
+              showUserFilter={profileProps.showUserFilter}
+              showSelectionFilter={!!profileProps.selectionStats}
+              userSelectOptions={profileProps.userSelectOptions}
+              filteredCount={filteredCount}
+              totalCount={names.length}
+            />
+          </section>
+        )}
 
         {/* Tournament Mode: Header Actions - hidden when custom nameGrid is used (actions are in ResultsInfo) */}
         {mode === "tournament" && !extensions.nameGrid && (

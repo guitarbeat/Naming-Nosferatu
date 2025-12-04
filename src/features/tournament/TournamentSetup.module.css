@@ -2718,11 +2718,10 @@
   height: 100%;
   min-height: 80px;
   break-inside: avoid;
-  transition: transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .photoWrapper:hover {
-  transform: translateY(-1px);
   z-index: 1;
 }
 
@@ -2741,9 +2740,10 @@
   border: 1px solid var(--border-color);
   border-radius: var(--card-border-radius-mosaic); /* * Use design token */
   box-shadow: var(--shadow-sm);
-  transition: transform var(--duration-normal) var(--ease-out);
+  transition: box-shadow var(--duration-normal) var(--ease-out);
   transform-style: preserve-3d;
-  perspective: 1000px;
+  will-change: transform;
+  transform: perspective(1000px);
 }
 
 .photoThumbnail.imageLoading {
@@ -2807,7 +2807,7 @@
 }
 
 .photoThumbnail:hover {
-  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .photoThumbnail:hover .photoOverlay {

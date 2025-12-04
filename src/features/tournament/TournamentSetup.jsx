@@ -520,61 +520,10 @@ function TournamentSetupContent({
     );
   }
 
-  // * Component to render UnifiedFilters outside but using context
-  const UnifiedFiltersWrapper = () => {
-    const context = useNameManagementContext();
-
-    // * Only render for tournament mode
-    if (context.mode !== "tournament") return null;
-
-    const filterConfig = {
-      searchTerm: context.searchTerm,
-      category: context.selectedCategory,
-      sortBy: context.sortBy,
-    };
-
-    return (
-      <UnifiedFilters
-        mode={context.analysisMode ? "hybrid" : "tournament"}
-        filters={filterConfig}
-        onFilterChange={(newFilters) => {
-          if (newFilters.searchTerm !== undefined) {
-            context.setSearchTerm(newFilters.searchTerm || "");
-          }
-          if (newFilters.category !== undefined) {
-            context.setSelectedCategory(newFilters.category || null);
-          }
-          if (newFilters.sortBy !== undefined) {
-            context.setSortBy(newFilters.sortBy);
-          }
-        }}
-        categories={[]}
-        showUserFilter={profileIsAdmin && context.analysisMode}
-        showSelectionFilter={!!selectionStats && context.analysisMode}
-        userSelectOptions={userSelectOptions}
-        filteredCount={context.names?.length || 0}
-        totalCount={context.names?.length || 0}
-        selectedCount={context.selectedCount}
-        showSelectedOnly={context.showSelectedOnly}
-        onToggleShowSelected={() =>
-          context.setShowSelectedOnly(!context.showSelectedOnly)
-        }
-        isSwipeMode={context.isSwipeMode}
-        onToggleSwipeMode={() => context.setIsSwipeMode(!context.isSwipeMode)}
-        showCatPictures={context.showCatPictures}
-        onToggleCatPictures={() =>
-          context.setShowCatPictures(!context.showCatPictures)
-        }
-        analysisMode={context.analysisMode}
-      />
-    );
-  };
-
   return (
     <>
       <ToastContainer />
       <div className={styles.container}>
-        {/* UnifiedFilters rendered outside but above selectionPanel */}
         <NameManagementView
           mode="tournament"
           userName={userName}
@@ -630,8 +579,6 @@ function TournamentSetupContent({
                 }}
               />
             ),
-            // * Render UnifiedFilters outside the main content
-            filtersAbove: () => <UnifiedFiltersWrapper />,
           }}
         />
         <div className={styles.selectionPanel}>
