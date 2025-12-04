@@ -1,19 +1,25 @@
 # Code Audit Report
 Generated: 2025-12-04
+Updated: 2025-12-04 (Latest Audit)
 
 ## Summary
-- **Unused Files**: 1 ✅ FIXED (removed ResultsInfo.jsx - 4KB)
+- **Unused Files**: 7 ✅ REMOVED (vite.config.js, NameSuggestionSection.jsx, PhotoPreviewStrip files, useCategoryFilters.js)
 - **Unused Exports**: 172 → ~146 (removed 26+ unused exports)
 - **Dead Code Paths**: Multiple identified and cleaned
 - **Build Error**: ✅ FIXED (context scope issue in TournamentSetup)
 - **Icons Cleaned**: Removed 2 unused icon components
-- **Tournament Utilities**: Removed 6 unused exports (getNextMatch, filterAndSortNames, generateCategoryOptions, useCategoryFilters, NameSuggestionSection, PhotoPreviewStrip) - Functions completely removed
-- **Bundle Size**: Build error to investigate (but code cleanup complete)
+- **Tournament Utilities**: Removed 6 unused exports (getNextMatch, filterAndSortNames, generateCategoryOptions, useCategoryFilters, NameSuggestionSection, PhotoPreviewStrip) - Files completely removed
+- **Legacy Code**: ✅ REMOVED (all legacy code and backward compatibility removed)
+- **Bundle Size**: Estimated savings ~15-17KB from removed files and legacy code cleanup
 
 ## Critical Issues
 
 ### 1. Unused Files ✅ FIXED
 - ✅ **REMOVED**: `src/features/tournament/components/NameSelection/ResultsInfo.jsx` - Not imported anywhere (4KB saved)
+- ✅ **REMOVED**: `vite.config.js` - Duplicate config file, main config is in `config/vite.config.ts` (~1KB saved)
+- ✅ **REMOVED**: `src/features/tournament/components/NameSuggestionSection.jsx` - Not imported anywhere (~3KB saved)
+- ✅ **REMOVED**: `src/features/tournament/components/PhotoPreviewStrip/` - Entire directory removed (PhotoPreviewStrip.jsx, PhotoPreviewStrip.module.css, index.js) (~2KB saved)
+- ✅ **REMOVED**: `src/features/tournament/hooks/useCategoryFilters.js` - Not imported anywhere (~1KB saved)
 
 ### 2. Unused Exports by Category
 
@@ -124,10 +130,10 @@ These are flagged as unused by knip but ARE actually used via `@components` or `
 6. ⏳ **KEPT**: Many utility functions in utils files - Kept for potential future use or internal use
 
 ### Bundle Size Impact
-- Removed unused file: ~4KB
+- Removed unused files: ~11KB (ResultsInfo.jsx, vite.config.js, NameSuggestionSection.jsx, PhotoPreviewStrip files, useCategoryFilters.js)
 - Removed unused exports: ~2-3KB (tree-shaking will remove unused code)
 - Removed unused functions: ~1KB (filterAndSortNames, generateCategoryOptions)
-- **Total estimated savings**: ~7-8KB (before gzip)
+- **Total estimated savings**: ~14-15KB (before gzip)
 
 ## Final Audit Results
 
@@ -140,6 +146,16 @@ These are flagged as unused by knip but ARE actually used via `@components` or `
 6. ✅ Removed unused tournament utilities: `filterAndSortNames`, `generateCategoryOptions` (completely removed)
 7. ✅ Removed unused exports: `useCategoryFilters`, `NameSuggestionSection`, `PhotoPreviewStrip`
 8. ✅ Fixed build error (context scope issue)
+9. ✅ Removed duplicate `vite.config.js` file (main config is in `config/vite.config.ts`)
+10. ✅ Removed unused `NameSuggestionSection.jsx` component file
+11. ✅ Removed unused `PhotoPreviewStrip` component directory (all files)
+12. ✅ Removed unused `useCategoryFilters.js` hook file
+13. ✅ Updated Analysis Panel components index with better documentation
+14. ✅ Removed all legacy Supabase client code and migrated to centralized client
+15. ✅ Removed legacy filter constants (FILTER_OPTIONS.STATUS)
+16. ✅ Removed deprecated route redirects
+17. ✅ Cleaned up all "legacy" and "backward compatibility" comments
+18. ✅ Removed empty PhotoPreviewStrip directory
 
 ### Remaining Unused Exports (144)
 Many of these are false positives (used via barrel imports) or kept for future use:

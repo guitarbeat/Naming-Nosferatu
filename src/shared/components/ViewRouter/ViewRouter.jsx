@@ -142,14 +142,6 @@ export default function ViewRouter({
 }) {
   const { isRoute, navigateTo } = useRouting();
 
-  // * Redirect /profile to /tournament?analysis=true (deprecated route)
-  // * Must be called unconditionally (Rules of Hooks)
-  useEffect(() => {
-    if (isRoute("/profile")) {
-      navigateTo("/tournament?analysis=true", { replace: true });
-    }
-  }, [isRoute, navigateTo]);
-
   // Handle special routes first
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
   // There is no navigation link to this page - users must manually type /bongo in the URL

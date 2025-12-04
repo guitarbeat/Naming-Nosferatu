@@ -2,127 +2,17 @@
  * @module supabaseClient
  * @description Consolidated Supabase client with unified API for cat name tournament system.
  * Combines all database operations, real-time subscriptions, and utility functions.
+ * * Uses the centralized client from client.ts
  */
 
-// * Import Supabase client directly to avoid TypeScript/JavaScript compatibility issues
-import { createClient } from "@supabase/supabase-js";
+import { resolveSupabaseClient } from "../client";
 
 // * Development mode check (browser-compatible)
 const isDev =
   typeof process !== "undefined" && process.env?.NODE_ENV === "development";
 
-// * Supabase configuration (isomorphic: works in browser and Node)
-const readFromViteEnv = (key) => {
-  try {
-    // Vite replaces import.meta.env at build time in the browser
-    // Guard access so Node does not error
-
-    return typeof import.meta !== "undefined" && import.meta.env
-      ? import.meta.env[key]
-      : undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-// * Read from environment variables (prioritize env vars over hardcoded values)
-// * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
-const SUPABASE_URL =
-  readFromViteEnv("VITE_SUPABASE_URL") ||
-  readFromViteEnv("SUPABASE_URL") ||
-  (typeof process !== "undefined" && process.env?.SUPABASE_URL) ||
-  "https://ocghxwwwuubgmwsxgyoy.supabase.co"; // Fallback for development
-
-const SUPABASE_ANON_KEY =
-  readFromViteEnv("VITE_SUPABASE_ANON_KEY") ||
-  readFromViteEnv("SUPABASE_ANON_KEY") ||
-  (typeof process !== "undefined" && process.env?.SUPABASE_ANON_KEY) ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0"; // Fallback for development
-
-let supabase = null;
-
-const resolveSupabaseClient = async () => {
-  // * Priority 1: Check for existing client instance from main client (prevents multiple GoTrueClient instances)
-  // * This is checked first to avoid race conditions during module initialization
-  if (typeof window !== "undefined" && window.__supabaseClient) {
-    if (isDev) {
-      console.log(
-        "🔧 Backend: Reusing existing Supabase client from window.__supabaseClient",
-      );
-    }
-    supabase = window.__supabaseClient;
-    return supabase;
-  }
-
-  // * Priority 2: Try to use the centralized client from client.ts to prevent multiple GoTrueClient instances
-  // * Import dynamically to avoid circular dependencies
-  try {
-    const { resolveSupabaseClient: getMainClient } = await import("../client");
-    const mainClient = await getMainClient();
-
-    if (mainClient) {
-      if (isDev) {
-        console.log(
-          "🔧 Backend: Using centralized Supabase client from client.ts",
-        );
-      }
-      supabase = mainClient;
-      // * Ensure it's stored in window for future lookups
-      if (typeof window !== "undefined") {
-        window.__supabaseClient = mainClient;
-      }
-      return supabase;
-    }
-  } catch (error) {
-    if (isDev) {
-      console.warn(
-        "⚠️ Could not import centralized client, falling back to legacy creation:",
-        error,
-      );
-    }
-  }
-
-  if (supabase) {
-    return supabase;
-  }
-
-  if (isDev) {
-    console.log("🔧 Backend: Resolving Supabase client (fallback)...");
-    console.log("   SUPABASE_URL:", SUPABASE_URL ? "SET" : "NOT SET");
-    console.log("   SUPABASE_ANON_KEY:", SUPABASE_ANON_KEY ? "SET" : "NOT SET");
-  }
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    if (isDev) {
-      console.warn(
-        "Missing Supabase environment variables (SUPABASE_URL / SUPABASE_ANON_KEY). Supabase features are disabled.",
-      );
-    }
-    return null;
-  }
-
-  try {
-    if (isDev) {
-      console.log("   Creating Supabase client (fallback)...");
-    }
-    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // * Store in window for reuse by other modules
-    if (typeof window !== "undefined") {
-      window.__supabaseClient = supabase;
-    }
-
-    if (isDev) {
-      console.log("   ✅ Supabase client created successfully");
-    }
-    return supabase;
-  } catch (error) {
-    console.error("Failed to initialize Supabase client:", error);
-    return null;
-  }
-};
-
-export { supabase, resolveSupabaseClient };
+// * Re-export for compatibility
+export { resolveSupabaseClient };
 export const getSupabaseServiceClient = resolveSupabaseClient;
 
 // ===== HELPER FUNCTIONS =====
@@ -132,16 +22,6 @@ export const getSupabaseServiceClient = resolveSupabaseClient;
  * @returns {boolean} True if Supabase is available
  */
 const isSupabaseAvailable = async () => {
-  // * Check for existing client first (prevents creating new instances)
-  if (typeof window !== "undefined" && window.__supabaseClient) {
-    return true;
-  }
-
-  // * Check local cached client
-  if (supabase) {
-    return true;
-  }
-
   // * Try to resolve client
   const client = await resolveSupabaseClient();
   if (!client) {
@@ -602,7 +482,9 @@ export const catNamesAPI = {
 
       // Apply category filter if provided
       if (categoryId) {
-        const { data: topNames, error: categoryError } = await supabase.rpc(
+        const client = await resolveSupabaseClient();
+        if (!client) return [];
+        const { data: topNames, error: categoryError } = await client.rpc(
           "get_top_names_by_category",
           {
             p_category: categoryId,
@@ -868,7 +750,8 @@ export const catNamesAPI = {
    */
   async getSiteStats() {
     try {
-      if (!(await isSupabaseAvailable())) {
+      const client = await resolveSupabaseClient();
+      if (!client) {
         return null;
       }
 
@@ -880,19 +763,19 @@ export const catNamesAPI = {
         ratingsResult,
         selectionsResult,
       ] = await Promise.all([
-        supabase
+        client
           .from("cat_name_options")
           .select("id", { count: "exact", head: true })
           .eq("is_active", true),
-        supabase
+        client
           .from("cat_name_options")
           .select("id", { count: "exact", head: true })
           .eq("is_hidden", true),
-        supabase
+        client
           .from("cat_app_users")
           .select("user_name", { count: "exact", head: true }),
-        supabase.from("cat_name_ratings").select("rating"),
-        supabase
+        client.from("cat_name_ratings").select("rating"),
+        client
           .from("tournament_selections")
           .select("id", { count: "exact", head: true }),
       ]);
@@ -957,7 +840,9 @@ export const catNamesAPI = {
         return null;
       }
 
-      const { data, error } = await supabase.rpc("get_user_stats", {
+      const client = await resolveSupabaseClient();
+      if (!client) return null;
+      const { data, error } = await client.rpc("get_user_stats", {
         p_user_name: userName,
       });
 
@@ -1575,7 +1460,11 @@ export const tournamentsAPI = {
 
       // Ensure the user account exists by calling the RPC function.
       // This will create the user if they don't exist, and do nothing if they do.
-      const { error: rpcError } = await supabase.rpc("create_user_account", {
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase not configured" };
+      }
+      const { error: rpcError } = await client.rpc("create_user_account", {
         p_user_name: userName,
       });
 
@@ -1614,7 +1503,7 @@ export const tournamentsAPI = {
   /**
    * Update tournament status
    * Note: Since tournament_selections is a per-selection table, we don't have a status field per tournament.
-   * This function is kept for backward compatibility but doesn't persist to the database.
+   * This function doesn't persist to the database.
    */
   async updateTournamentStatus(tournamentId, status) {
     try {
@@ -1623,7 +1512,11 @@ export const tournamentsAPI = {
       }
 
       // Check if any selections exist for this tournament
-      const { data: selections, error: fetchError } = await supabase
+      const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase not configured" };
+      }
+      const { data: selections, error: fetchError } = await client
         .from("tournament_selections")
         .select("user_name")
         .eq("tournament_id", tournamentId)
@@ -1642,7 +1535,7 @@ export const tournamentsAPI = {
 
       // Note: The tournament_selections table doesn't have a status field.
       // Status tracking would need to be added to the schema or handled in memory.
-      // For now, we just return success to maintain backward compatibility.
+      // For now, we just return success.
 
       return {
         success: true,
@@ -2147,9 +2040,8 @@ export const adminAPI = {
 // ===== SITE SETTINGS API =====
 export { siteSettingsAPI } from "./siteSettingsAPI.js";
 
-// ===== LEGACY EXPORTS (for backward compatibility) =====
+// ===== CONVENIENCE EXPORTS =====
 
-// Keep these for existing code that might still use them
 export const { getNamesWithDescriptions } = catNamesAPI;
 export const { getNamesWithUserRatings } = catNamesAPI;
 export const { getUserStats } = catNamesAPI;

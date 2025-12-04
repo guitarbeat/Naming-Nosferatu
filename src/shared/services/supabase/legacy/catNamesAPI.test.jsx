@@ -8,8 +8,8 @@ const { fromMock, supabaseMock } = vi.hoisted(() => {
   };
 });
 
-vi.mock("./supabaseClientIsolated.js", () => ({
-  supabase: supabaseMock,
+vi.mock("../client", () => ({
+  resolveSupabaseClient: vi.fn(() => Promise.resolve(supabaseMock)),
 }));
 
 import { catNamesAPI } from "./catNamesAPI.js";

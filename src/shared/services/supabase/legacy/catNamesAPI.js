@@ -3,14 +3,15 @@
  * @description Cat Names Management API functions
  */
 
-import { supabase } from "./supabaseClientIsolated.js";
+import { resolveSupabaseClient } from "../client";
 
 /**
  * Check if Supabase is configured and available
- * @returns {boolean} True if Supabase is available
+ * @returns {Promise<boolean>} True if Supabase is available
  */
-const isSupabaseAvailable = () => {
-  if (!supabase) {
+const isSupabaseAvailable = async () => {
+  const client = await resolveSupabaseClient();
+  if (!client) {
     if (process.env.NODE_ENV === "development") {
       console.warn("Supabase not configured. Some features may not work.");
     }
@@ -26,12 +27,13 @@ export const catNamesAPI = {
    */
   async getNamesWithDescriptions(includeHidden = false) {
     try {
-      if (!isSupabaseAvailable()) {
+      const client = await resolveSupabaseClient();
+      if (!client) {
         return [];
       }
 
       // Build query - optionally include hidden names for admin views
-      let query = supabase
+      let query = client
         .from("cat_name_options")
         .select("*")
         .order("name", { ascending: true });
@@ -67,11 +69,12 @@ export const catNamesAPI = {
    */
   async getUserStats(userName) {
     try {
-      if (!isSupabaseAvailable() || !userName) {
+      const client = await resolveSupabaseClient();
+      if (!client || !userName) {
         return null;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from("cat_name_ratings")
         .select("*")
         .eq("user_name", userName);

@@ -257,11 +257,7 @@ function AnalysisBulkActionsWrapper({
     let filtered = [...context.names];
 
     // Use shared isNameHidden utility for consistent visibility check
-    if (
-      context.filterStatus === "visible" ||
-      context.filterStatus === "active"
-    ) {
-      // * "active" is legacy alias for "visible"
+    if (context.filterStatus === "visible") {
       filtered = filtered.filter((name) => !isNameHidden(name));
     } else if (context.filterStatus === "hidden") {
       filtered = filtered.filter((name) => isNameHidden(name));

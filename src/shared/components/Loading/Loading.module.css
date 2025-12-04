@@ -99,9 +99,9 @@
   }
 }
 
-/* ===== LEGACY COMPATIBILITY ===== */
+/* ===== COMPATIBILITY STYLES ===== */
 
-/* Maintain backward compatibility with old class names */
+/* Maintain compatibility with old class names */
 .loadingPlaceholder {
   display: flex;
   align-items: center;

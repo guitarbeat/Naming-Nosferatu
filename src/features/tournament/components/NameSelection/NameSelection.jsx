@@ -46,13 +46,13 @@ function NameSelection({
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
-    // * Map filterStatus to visibility, handling both "active" (legacy) and "visible"
+    // * Map filterStatus to visibility
     const visibility =
       filterStatus === "hidden"
         ? "hidden"
         : filterStatus === "all"
           ? "all"
-          : filterStatus === "active" || filterStatus === "visible"
+          : filterStatus === "visible"
             ? "visible"
             : "visible"; // * Default to visible
 
@@ -126,7 +126,7 @@ NameSelection.propTypes = {
   selectedCategory: PropTypes.string,
   searchTerm: PropTypes.string,
   sortBy: PropTypes.string,
-  filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
+  filterStatus: PropTypes.oneOf(["visible", "hidden", "all"]),
   isSwipeMode: PropTypes.bool,
   onToggleSwipeMode: PropTypes.func,
   showCatPictures: PropTypes.bool,

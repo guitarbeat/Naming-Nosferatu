@@ -3,12 +3,13 @@
  * @description Site Settings Management API
  */
 
-import { supabase } from "./supabaseClientIsolated.js";
+import { resolveSupabaseClient } from "../client";
 
 const isDev = true; // Always log in prototype mode
 
-const isSupabaseAvailable = () => {
-  if (!supabase) {
+const isSupabaseAvailable = async () => {
+  const client = await resolveSupabaseClient();
+  if (!client) {
     if (isDev) {
       console.warn("Supabase not configured. Some features may not work.");
     }
@@ -23,12 +24,13 @@ export const siteSettingsAPI = {
    * @returns {Promise<Object|null>} Cat name object or null
    */
   async getCatChosenName() {
-    if (!isSupabaseAvailable()) {
+    const client = await resolveSupabaseClient();
+    if (!client) {
       return null;
     }
 
     try {
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from("site_settings")
         .select("value")
         .eq("key", "cat_chosen_name")
@@ -53,7 +55,8 @@ export const siteSettingsAPI = {
    * @returns {Promise<Object>} Success/error response
    */
   async updateCatChosenName(nameData, userName) {
-    if (!isSupabaseAvailable()) {
+    const client = await resolveSupabaseClient();
+    if (!client) {
       return { success: false, error: "Supabase not configured" };
     }
 
@@ -93,7 +96,7 @@ export const siteSettingsAPI = {
       };
 
       // Update the setting (RLS will enforce admin-only)
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from("site_settings")
         .update({
           value,
