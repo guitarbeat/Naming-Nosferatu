@@ -401,19 +401,17 @@ function Login({ onLogin }) {
                   We&apos;ll create an account automatically if it&apos;s your
                   first time.
                 </p>
-                {name.trim() && (
-                  <div className={styles.characterCounter}>
-                    <span className={styles.counterText}>
-                      {name.length}/30 characters
-                    </span>
-                    <div className={styles.counterBar}>
-                      <div
-                        className={styles.counterProgress}
-                        style={{ width: `${(name.length / 30) * 100}%` }}
-                      />
-                    </div>
+                <div className={styles.characterCounter}>
+                  <span className={styles.counterText}>
+                    {name.length}/30 characters
+                  </span>
+                  <div className={styles.counterBar}>
+                    <div
+                      className={styles.counterProgress}
+                      style={{ width: `${(name.length / 30) * 100}%` }}
+                    />
                   </div>
-                )}
+                </div>
               </div>
 
               <button
@@ -462,7 +460,7 @@ function Login({ onLogin }) {
                   </span>
                 )}
                 <span className={styles.buttonText}>
-                  {name.trim() ? "Continue" : "Get Random Name & Start"}
+                  {name.trim() ? "Continue" : "Random Name & Go"}
                 </span>
                 {!name.trim() && !isLoading && (
                   <span className={styles.buttonIcon} aria-hidden="true">
