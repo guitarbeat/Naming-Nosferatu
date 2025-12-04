@@ -645,15 +645,18 @@ export const catNamesAPI = {
         return [];
       }
 
+      const client = await resolveSupabaseClient();
+      if (!client) return [];
+
       // Fetch all data in parallel for efficiency
       const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
-        supabase
+        client
           .from("tournament_selections")
           .select("name_id, name, user_name"),
-        supabase
+        client
           .from("cat_name_ratings")
           .select("name_id, rating, wins, losses, user_name"),
-        supabase
+        client
           .from("cat_name_options")
           .select("id, name, description, avg_rating, categories, created_at")
           .eq("is_active", true)

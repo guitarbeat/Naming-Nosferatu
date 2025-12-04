@@ -39,8 +39,10 @@ export function useTournamentRoutingSync({
     lastViewRef.current = currentView;
 
     if (currentView === "profile") {
-      if (normalizedPath !== "/profile") {
-        navigateTo("/profile");
+      // Redirect profile view to tournament with analysis mode
+      const targetPath = "/tournament?analysis=true";
+      if (normalizedPath !== "/tournament" || !currentRoute.includes("analysis=true")) {
+        navigateTo(targetPath);
       }
       return;
     }
@@ -85,9 +87,11 @@ export function useTournamentRoutingSync({
       return;
     }
 
+    // Handle /profile route redirect to tournament with analysis mode
     if (normalizedPath === "/profile" && currentView !== "profile") {
       lastViewRef.current = "profile";
       onViewChange("profile");
+      navigateTo("/tournament?analysis=true", { replace: true });
       previousRouteRef.current = currentRoute;
       return;
     }

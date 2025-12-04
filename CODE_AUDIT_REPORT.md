@@ -158,19 +158,22 @@ These are flagged as unused by knip but ARE actually used via `@components` or `
 18. ✅ Removed empty PhotoPreviewStrip directory
 19. ✅ Removed 7 empty directories (store/ui, store/tournament, store/user, tournament/utils, utils/components, utils/api, PerformanceDashboard, styles)
 20. ✅ Cleaned up PerformanceDashboard references from tests
-21. ✅ Fixed all remaining direct `supabase` variable references (14 locations total) - migrated to `resolveSupabaseClient()` pattern:
+21. ✅ Fixed all remaining direct `supabase` variable references (17 locations total) - migrated to `resolveSupabaseClient()` pattern:
     - `getLeaderboard()` - 2 instances
     - `removeName()` - 1 instance
     - `getSiteStats()` - 2 instances
     - `getNamesWithUserRatings()` - 1 instance
     - `_getUserStatsFallback()` - 2 instances
     - `adminAPI.listUsers()` - 2 instances
+    - `getPopularityAnalytics()` - 3 instances
     - Plus 4 instances from previous fixes
 22. ✅ Removed all "backward compatibility" comments from re-export files (coreUtils, authUtils, performanceUtils, AnalysisPanel, errorManager)
 23. ✅ Cleaned up compatibility comments in Loading.module.css, setupTests.js, and CollapsibleHeader.css
 24. ✅ All deprecated code and backward compatibility references removed
 25. ✅ Removed empty directories: `docs/` and `scripts/data/`
 26. ✅ Updated documentation (README.md, MIGRATION_GUIDE.md) to reflect current codebase structure and API paths
+27. ✅ Fixed `getPopularityAnalytics()` - migrated 3 direct `supabase` references to use `resolveSupabaseClient()`
+28. ✅ Fixed `/profile` route handling - updated `useTournamentRoutingSync` to redirect to `/tournament?analysis=true` instead of dead route
 
 ### Remaining Unused Exports (144)
 Many of these are false positives (used via barrel imports) or kept for future use:
