@@ -71,6 +71,16 @@
   overflow: visible;
 }
 
+/* * User section content - stacked vertically */
+.navbar-section--right
+  .sidebar-group:has(.sidebar-user-display)
+  .sidebar-group-content {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+  width: 100%;
+}
+
 /* * Breadcrumb in navbar */
 .navbar-breadcrumb {
   position: relative;
@@ -337,8 +347,14 @@
 /* Logout button */
 .sidebar-menu-button.sidebar-logout-button {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   color: hsl(var(--destructive));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  width: 100%;
 }
 
 .sidebar-menu-button.sidebar-logout-button::before {
@@ -539,6 +555,16 @@
     min-width: auto;
     flex-shrink: 0;
     overflow: visible;
+  }
+
+  /* * User section content - stacked vertically on mobile */
+  .navbar-section--right
+    .sidebar-group:has(.sidebar-user-display)
+    .sidebar-group-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    width: 100%;
   }
 
   .navbar-section--right

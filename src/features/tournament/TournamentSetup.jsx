@@ -106,6 +106,8 @@ function AnalysisDashboardWrapper({
   selectionStats,
   highlights: propsHighlights,
   isAdmin = false,
+  activeUser,
+  onNameHidden,
 }) {
   // * Only render if stats are available
   if (!stats) return null;
@@ -116,6 +118,8 @@ function AnalysisDashboardWrapper({
       selectionStats={selectionStats}
       highlights={propsHighlights}
       isAdmin={isAdmin}
+      userName={activeUser}
+      onNameHidden={onNameHidden}
     />
   );
 }
@@ -124,17 +128,28 @@ AnalysisDashboardWrapper.propTypes = {
   stats: PropTypes.object,
   selectionStats: PropTypes.object,
   highlights: PropTypes.object,
+  isAdmin: PropTypes.bool,
+  activeUser: PropTypes.string,
+  onNameHidden: PropTypes.func,
 };
 
 // * Wrapper component factory to pass props to AnalysisDashboardWrapper
 // * This creates a component function that can use hooks properly
-const createAnalysisDashboardWrapper = (stats, selectionStats, isAdmin) => {
+const createAnalysisDashboardWrapper = (
+  stats,
+  selectionStats,
+  isAdmin,
+  activeUser,
+  onNameHidden
+) => {
   return function AnalysisDashboardWrapperWithProps() {
     return (
       <AnalysisDashboardWrapper
         stats={stats}
         selectionStats={selectionStats}
         isAdmin={isAdmin}
+        activeUser={activeUser}
+        onNameHidden={onNameHidden}
       />
     );
   };
@@ -555,6 +570,11 @@ function TournamentSetupContent({
               stats,
               selectionStats,
               isAdmin,
+              activeUser,
+              (nameId) => {
+                // * Refresh names after hiding
+                context.refetch();
+              }
             ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper

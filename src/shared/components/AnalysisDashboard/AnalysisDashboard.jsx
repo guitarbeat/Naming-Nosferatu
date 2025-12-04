@@ -8,10 +8,10 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
-import { catNamesAPI } from "../../services/supabase/api";
+import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { devError } from "../../utils/logger";
+import { devError, devLog } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
 import "./AnalysisDashboard.css";
@@ -30,10 +30,11 @@ export function AnalysisDashboard({
   stats: _stats, // * Unused - kept for compatibility
   selectionStats: _selectionStats, // * Unused - kept for compatibility
   highlights,
-  userName: _userName, // * Unused - kept for compatibility
+  userName,
   showGlobalLeaderboard = true,
   defaultCollapsed = false,
   isAdmin = false, // * Add admin prop to enable full analytics
+  onNameHidden, // * Callback when a name is hidden
 }) {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
@@ -46,7 +47,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed,
+    defaultCollapsed
   );
 
   // Fetch global leaderboard and selection popularity data on mount
@@ -157,7 +158,7 @@ export function AnalysisDashboard({
         setSortDirection("desc");
       }
     },
-    [sortField],
+    [sortField]
   );
 
   // * Render sort indicator
@@ -170,7 +171,51 @@ export function AnalysisDashboard({
         </span>
       );
     },
-    [sortField, sortDirection],
+    [sortField, sortDirection]
+  );
+
+  // * Handle hiding a name
+  const handleHideName = useCallback(
+    async (nameId, name) => {
+      if (!isAdmin || !userName) {
+        devError("[AnalysisDashboard] Cannot hide: not admin or no userName");
+        return;
+      }
+
+      try {
+        devLog("[AnalysisDashboard] Hiding name", { nameId, name, userName });
+        await hiddenNamesAPI.hideName(userName, nameId);
+        if (onNameHidden) {
+          onNameHidden(nameId);
+        }
+        // * Refresh data after hiding
+        const fetchData = async () => {
+          setIsLoading(true);
+          try {
+            if (isAdmin) {
+              const analytics = await catNamesAPI.getPopularityAnalytics(50);
+              setAnalyticsData(analytics);
+            } else {
+              const [leaderboard, popularity] = await Promise.all([
+                catNamesAPI.getLeaderboard(10),
+                catNamesAPI.getSelectionPopularity(10),
+              ]);
+              setLeaderboardData(leaderboard);
+              setSelectionPopularity(popularity);
+            }
+          } catch (err) {
+            devError("Failed to refresh after hide:", err);
+          } finally {
+            setIsLoading(false);
+          }
+        };
+        fetchData();
+      } catch (error) {
+        devError("[AnalysisDashboard] Error hiding name:", error);
+        throw error;
+      }
+    },
+    [isAdmin, userName, onNameHidden]
   );
 
   // Use highlights if provided, otherwise use consolidated data
@@ -253,7 +298,7 @@ export function AnalysisDashboard({
 
     if (summaryStats.maxSelected > 0) {
       const mostSelected = displayNames.find(
-        (n) => n.selected === summaryStats.maxSelected,
+        (n) => n.selected === summaryStats.maxSelected
       );
       if (mostSelected) {
         result.push({
@@ -394,11 +439,14 @@ export function AnalysisDashboard({
                     <th
                       scope="col"
                       className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("selected") : undefined}
+                      onClick={
+                        isAdmin ? () => handleSort("selected") : undefined
+                      }
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
                       Selected {isAdmin && renderSortIndicator("selected")}
                     </th>
+                    {isAdmin && <th scope="col">Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -408,21 +456,21 @@ export function AnalysisDashboard({
                       summaryStats && summaryStats.maxRating > 0
                         ? Math.min(
                             (item.rating / summaryStats.maxRating) * 100,
-                            100,
+                            100
                           )
                         : 0;
                     const winsPercent =
                       summaryStats && summaryStats.maxWins > 0
                         ? Math.min(
                             (item.wins / summaryStats.maxWins) * 100,
-                            100,
+                            100
                           )
                         : 0;
                     const selectedPercent =
                       summaryStats && summaryStats.maxSelected > 0
                         ? Math.min(
                             (item.selected / summaryStats.maxSelected) * 100,
-                            100,
+                            100
                           )
                         : 0;
 
@@ -512,6 +560,31 @@ export function AnalysisDashboard({
                             </div>
                           )}
                         </td>
+                        {isAdmin && (
+                          <td className="top-names-actions">
+                            <button
+                              type="button"
+                              className="top-names-hide-button"
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                  await handleHideName(item.id, item.name);
+                                } catch (error) {
+                                  devError(
+                                    "[AnalysisDashboard] Failed to hide name:",
+                                    error
+                                  );
+                                  // * Error will be handled by handleHideName
+                                }
+                              }}
+                              aria-label={`Hide ${item.name}`}
+                              title="Hide this name from tournaments"
+                            >
+                              <span aria-hidden="true">🙈</span>
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
@@ -527,6 +600,8 @@ export function AnalysisDashboard({
 
 AnalysisDashboard.propTypes = {
   isAdmin: PropTypes.bool,
+  userName: PropTypes.string,
+  onNameHidden: PropTypes.func,
   highlights: PropTypes.shape({
     topRated: PropTypes.arrayOf(nameItemShape),
     mostWins: PropTypes.arrayOf(nameItemShape),

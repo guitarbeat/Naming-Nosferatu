@@ -135,6 +135,44 @@
   font-size: 0.9em;
   opacity: 0.8;
 }
+
+/* * Actions column */
+.top-names-actions {
+  width: 60px;
+  text-align: center;
+  padding: var(--analysis-gap-sm, 8px);
+}
+
+.top-names-hide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.875rem;
+  color: hsl(var(--destructive));
+  background: transparent;
+  border: 1px solid hsl(var(--destructive) / 30%);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.top-names-hide-button:hover {
+  background: hsl(var(--destructive) / 10%);
+  border-color: hsl(var(--destructive) / 50%);
+  transform: scale(1.05);
+}
+
+.top-names-hide-button:active {
+  transform: scale(0.95);
+}
+
+.top-names-hide-button:focus-visible {
+  outline: 2px solid hsl(var(--destructive));
+  outline-offset: 2px;
+}
   border-collapse: collapse;
   font-size: var(--analysis-text-body, 0.875rem);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
