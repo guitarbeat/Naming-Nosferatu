@@ -26,7 +26,7 @@ import ScrollToTopButton from "./ScrollToTopButton";
 
 // * Direct named exports (not default exports)
 export { NameGrid } from "./NameGrid/NameGrid";
-export { UnifiedFilters } from "./UnifiedFilters/UnifiedFilters";
+export { TournamentToolbar } from "./TournamentToolbar/TournamentToolbar";
 export { default as FormField } from "./Form/FormField";
 export {
   NameManagementView,

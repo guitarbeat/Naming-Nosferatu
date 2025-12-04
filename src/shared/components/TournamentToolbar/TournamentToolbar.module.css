@@ -1,4 +1,4 @@
-/* UnifiedFilters - Unified Design System */
+/* TournamentToolbar - Unified Design System */
 
 /* Tournament Mode - Unified Bar */
 .unifiedBar {
@@ -6,6 +6,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: var(--space-3) 0;
 }
 
 .unifiedContainer {
@@ -13,39 +14,71 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
+  gap: var(--space-4);
   width: auto;
-  max-width: 600px;
-  padding: var(--space-5) var(--space-6);
-  background: linear-gradient(
-    135deg,
-    rgb(255 255 255 / 8%),
-    rgb(255 255 255 / 4%)
-  );
-  border: 2px solid rgb(255 255 255 / 12%);
-  border-radius: calc(var(--card-border-radius) + 6px);
-  backdrop-filter: blur(20px) saturate(180%);
+  max-width: 650px;
+  padding: var(--space-3) var(--space-5);
+  background: hsl(var(--card) / 95%);
+  border: 1px solid hsl(var(--border) / 60%);
+  border-radius: 20px;
+  backdrop-filter: blur(24px) saturate(180%);
   min-height: auto;
   box-sizing: border-box;
   position: relative;
   isolation: isolate;
   box-shadow:
-    0 6px 20px rgb(0 0 0 / 18%),
-    0 3px 10px rgb(0 0 0 / 12%),
-    inset 0 2px 2px rgb(255 255 255 / 10%),
-    inset 0 -1px 1px rgb(0 0 0 / 5%);
-  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    0 6px 24px hsl(var(--background) / 25%),
+    0 3px 12px hsl(var(--background) / 18%),
+    inset 0 1px 0 hsl(var(--foreground) / 8%);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin: 0 auto;
 }
 
+.unifiedContainer::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 25%),
+    hsl(var(--hot-pink) / 25%)
+  );
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .unifiedContainer:hover {
-  border-color: rgb(255 255 255 / 18%);
+  border-color: hsl(var(--border) / 80%);
   box-shadow:
-    0 8px 24px rgb(0 0 0 / 20%),
-    0 4px 12px rgb(0 0 0 / 15%),
-    inset 0 2px 2px rgb(255 255 255 / 12%),
-    inset 0 -1px 1px rgb(0 0 0 / 8%);
-  transform: translateY(-1px);
+    0 12px 40px hsl(var(--background) / 40%),
+    0 6px 20px hsl(var(--background) / 30%),
+    inset 0 1px 0 hsl(var(--foreground) / 12%);
+  transform: translateY(-2px);
+}
+
+.unifiedContainer:hover::before {
+  opacity: 1;
+}
+
+/* Light mode adjustments */
+:root[data-theme="light"] .unifiedContainer {
+  background: hsl(var(--card) / 98%);
+  border-color: hsl(var(--border) / 70%);
+  box-shadow:
+    0 8px 32px hsl(var(--foreground) / 8%),
+    0 4px 16px hsl(var(--foreground) / 5%),
+    inset 0 1px 0 hsl(var(--background) / 50%);
+}
+
+:root[data-theme="light"] .unifiedContainer:hover {
+  border-color: hsl(var(--border) / 90%);
+  box-shadow:
+    0 12px 40px hsl(var(--foreground) / 12%),
+    0 6px 20px hsl(var(--foreground) / 8%),
+    inset 0 1px 0 hsl(var(--background) / 60%);
 }
 
 .unifiedInput {
@@ -139,61 +172,106 @@
 
 /* * Start Tournament button - inside unified container */
 .startTournamentButton {
-  padding: var(--button-padding-y-md) var(--button-padding-x-lg);
-  font-size: var(--text-base);
-  font-weight: var(--button-font-weight, 600);
-  letter-spacing: var(--button-letter-spacing, 0.02em);
-  color: var(--text-on-primary, #fff);
+  position: relative;
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: hsl(var(--primary-foreground));
   background: linear-gradient(
     135deg,
     hsl(var(--neon-cyan)),
     hsl(var(--hot-pink))
   );
   border: none;
-  border-radius: var(--radius-lg, 12px);
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 4px 16px hsl(var(--neon-cyan) / 40%),
-    0 2px 8px hsl(var(--hot-pink) / 30%);
+    0 6px 24px hsl(var(--neon-cyan) / 50%),
+    0 3px 12px hsl(var(--hot-pink) / 40%),
+    inset 0 1px 0 hsl(var(--foreground) / 15%);
   white-space: nowrap;
   flex-shrink: 0;
-  margin-left: var(--space-2);
+  overflow: hidden;
+  text-shadow: 0 1px 2px hsl(var(--background) / 40%);
+}
+
+.startTournamentButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--foreground) / 0%),
+    hsl(var(--foreground) / 15%)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .startTournamentButton:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow:
-    0 6px 20px hsl(var(--neon-cyan) / 50%),
-    0 3px 10px hsl(var(--hot-pink) / 40%);
+    0 10px 32px hsl(var(--neon-cyan) / 60%),
+    0 5px 16px hsl(var(--hot-pink) / 50%),
+    inset 0 1px 0 hsl(var(--foreground) / 20%);
+}
+
+.startTournamentButton:hover::before {
+  opacity: 1;
 }
 
 .startTournamentButton:active {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(0.98);
   box-shadow:
-    0 2px 8px hsl(var(--neon-cyan) / 40%),
-    0 1px 4px hsl(var(--hot-pink) / 30%);
+    0 4px 16px hsl(var(--neon-cyan) / 50%),
+    0 2px 8px hsl(var(--hot-pink) / 40%),
+    inset 0 1px 0 hsl(var(--foreground) / 12%);
+}
+
+/* Light mode button adjustments */
+:root[data-theme="light"] .startTournamentButton {
+  box-shadow:
+    0 6px 24px hsl(var(--neon-cyan) / 40%),
+    0 3px 12px hsl(var(--hot-pink) / 30%),
+    inset 0 1px 0 hsl(var(--background) / 25%);
+  text-shadow: 0 1px 2px hsl(var(--background) / 50%);
+}
+
+:root[data-theme="light"] .startTournamentButton:hover {
+  box-shadow:
+    0 10px 32px hsl(var(--neon-cyan) / 50%),
+    0 5px 16px hsl(var(--hot-pink) / 40%),
+    inset 0 1px 0 hsl(var(--background) / 30%);
+}
+
+:root[data-theme="light"] .startTournamentButton:active {
+  box-shadow:
+    0 4px 16px hsl(var(--neon-cyan) / 40%),
+    0 2px 8px hsl(var(--hot-pink) / 30%),
+    inset 0 1px 0 hsl(var(--background) / 20%);
 }
 
 /* * Toggle Switch Component - Modern Design 2024 */
 .toggleWrapper {
   display: flex;
   flex: 0 1 auto;
-  min-width: 220px;
-  max-width: 300px;
+  min-width: 160px;
+  max-width: 200px;
   position: relative;
 }
 
 .toggleSwitch {
   position: relative;
   width: 100%;
-  height: 52px;
+  height: 44px;
   padding: 0;
   background: transparent;
   border: none;
-  border-radius: 26px;
+  border-radius: 22px;
   cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: visible;
   isolation: isolate;
 }
@@ -205,40 +283,36 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    135deg,
-    rgb(255 255 255 / 10%),
-    rgb(255 255 255 / 6%)
-  );
-  backdrop-filter: blur(18px) saturate(180%);
-  border: 2px solid rgb(255 255 255 / 14%);
-  border-radius: 26px;
+  background: hsl(var(--muted) / 40%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid hsl(var(--border) / 50%);
+  border-radius: 22px;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    inset 0 2px 4px rgb(255 255 255 / 10%),
-    inset 0 -1px 2px rgb(0 0 0 / 12%),
-    0 4px 14px rgb(0 0 0 / 22%),
-    0 2px 4px rgb(0 0 0 / 18%);
-  opacity: 0.8;
+    inset 0 1px 2px hsl(var(--foreground) / 5%),
+    inset 0 -1px 1px hsl(var(--background) / 10%),
+    0 3px 12px hsl(var(--background) / 22%),
+    0 2px 6px hsl(var(--background) / 18%);
+  opacity: 0.9;
 }
 
 .toggleSwitch:hover .toggleTrack {
-  border-color: rgb(255 255 255 / 18%);
+  border-color: hsl(var(--border) / 70%);
   box-shadow:
-    inset 0 2px 4px rgb(255 255 255 / 12%),
-    inset 0 -1px 2px rgb(0 0 0 / 12%),
-    0 4px 18px rgb(0 0 0 / 22%),
-    0 2px 6px rgb(0 0 0 / 18%),
-    0 0 0 1px hsl(var(--neon-cyan) / 20%);
-  transform: translateY(-2px);
-  opacity: 0.85;
+    inset 0 1px 2px hsl(var(--foreground) / 8%),
+    inset 0 -1px 1px hsl(var(--background) / 12%),
+    0 6px 20px hsl(var(--background) / 30%),
+    0 3px 10px hsl(var(--background) / 25%),
+    0 0 0 1px hsl(var(--neon-cyan) / 30%);
+  transform: translateY(-1px);
+  opacity: 1;
 }
 
 .toggleSwitch:active .toggleTrack {
   transform: translateY(0) scale(0.98);
   box-shadow:
-    inset 0 2px 4px rgb(0 0 0 / 20%),
-    0 1px 2px rgb(0 0 0 / 10%);
+    inset 0 2px 4px hsl(var(--background) / 25%),
+    0 2px 8px hsl(var(--background) / 20%);
 }
 
 .toggleSwitchActive .toggleTrack {
@@ -247,122 +321,203 @@
     hsl(var(--neon-cyan) / 35%),
     hsl(var(--hot-pink) / 30%)
   );
-  border-color: hsl(var(--neon-cyan) / 70%);
+  border-color: hsl(var(--neon-cyan) / 60%);
   box-shadow:
-    inset 0 2px 4px rgb(255 255 255 / 30%),
-    inset 0 -1px 2px rgb(0 0 0 / 15%),
-    0 6px 24px hsl(var(--neon-cyan) / 40%),
-    0 3px 12px hsl(var(--hot-pink) / 35%),
-    0 0 0 2px hsl(var(--neon-cyan) / 50%);
+    inset 0 1px 2px hsl(var(--foreground) / 15%),
+    inset 0 -1px 1px hsl(var(--background) / 20%),
+    0 8px 28px hsl(var(--neon-cyan) / 45%),
+    0 4px 14px hsl(var(--hot-pink) / 40%),
+    0 0 0 2px hsl(var(--neon-cyan) / 40%);
   opacity: 1;
 }
 
 .toggleSwitchActive:hover .toggleTrack {
-  border-color: hsl(var(--neon-cyan) / 80%);
+  border-color: hsl(var(--neon-cyan) / 70%);
   box-shadow:
-    inset 0 2px 4px rgb(255 255 255 / 35%),
-    inset 0 -1px 2px rgb(0 0 0 / 18%),
-    0 8px 28px hsl(var(--neon-cyan) / 45%),
-    0 4px 14px hsl(var(--hot-pink) / 40%),
-    0 0 0 3px hsl(var(--neon-cyan) / 55%);
-  transform: translateY(-2px);
+    inset 0 1px 2px hsl(var(--foreground) / 20%),
+    inset 0 -1px 1px hsl(var(--background) / 25%),
+    0 10px 32px hsl(var(--neon-cyan) / 50%),
+    0 5px 16px hsl(var(--hot-pink) / 45%),
+    0 0 0 3px hsl(var(--neon-cyan) / 45%);
+  transform: translateY(-1px);
+}
+
+/* Light mode toggle track adjustments */
+:root[data-theme="light"] .toggleTrack {
+  background: hsl(var(--muted) / 60%);
+  border-color: hsl(var(--border) / 60%);
+  box-shadow:
+    inset 0 1px 2px hsl(var(--foreground) / 8%),
+    inset 0 -1px 1px hsl(var(--background) / 15%),
+    0 4px 16px hsl(var(--foreground) / 10%),
+    0 2px 8px hsl(var(--foreground) / 8%);
+}
+
+:root[data-theme="light"] .toggleSwitch:hover .toggleTrack {
+  border-color: hsl(var(--border) / 80%);
+  box-shadow:
+    inset 0 1px 2px hsl(var(--foreground) / 10%),
+    inset 0 -1px 1px hsl(var(--background) / 18%),
+    0 6px 20px hsl(var(--foreground) / 12%),
+    0 3px 10px hsl(var(--foreground) / 10%),
+    0 0 0 1px hsl(var(--neon-cyan) / 40%);
+}
+
+:root[data-theme="light"] .toggleSwitchActive .toggleTrack {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 45%),
+    hsl(var(--hot-pink) / 40%)
+  );
+  border-color: hsl(var(--neon-cyan) / 70%);
+  box-shadow:
+    inset 0 1px 2px hsl(var(--background) / 25%),
+    inset 0 -1px 1px hsl(var(--foreground) / 15%),
+    0 8px 28px hsl(var(--neon-cyan) / 35%),
+    0 4px 14px hsl(var(--hot-pink) / 30%),
+    0 0 0 2px hsl(var(--neon-cyan) / 50%);
 }
 
 /* * Modern thumb with glassmorphic glow - labels inside (oval/rounded rectangle) */
 .toggleThumb {
   position: absolute;
-  left: 4px;
+  left: 3px;
   top: 50%;
   transform: translateY(-50%);
-  width: 80px;
-  height: 44px;
-  background: linear-gradient(
-    135deg,
-    rgb(255 255 255 / 85%),
-    rgb(255 255 255 / 75%)
-  );
-  border-radius: 22px;
+  width: 70px;
+  height: 38px;
+  background: hsl(var(--background) / 98%);
+  border-radius: 19px;
   transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow:
-    0 5px 14px rgb(0 0 0 / 38%),
-    0 2px 7px rgb(0 0 0 / 28%),
-    inset 0 2px 4px rgb(255 255 255 / 55%),
-    inset 0 -1px 2px rgb(0 0 0 / 22%);
+    0 6px 18px hsl(var(--background) / 40%),
+    0 3px 9px hsl(var(--background) / 30%),
+    inset 0 1px 2px hsl(var(--foreground) / 12%),
+    inset 0 -1px 1px hsl(var(--background) / 25%);
   z-index: 3;
-  border: 2px solid rgb(255 255 255 / 22%);
+  border: 1px solid hsl(var(--border) / 40%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: 0.92;
+  opacity: 0.98;
 }
 
 .toggleSwitch:hover .toggleThumb {
   box-shadow:
-    0 6px 18px rgb(0 0 0 / 35%),
-    0 3px 9px rgb(0 0 0 / 25%),
-    inset 0 2px 3px rgb(255 255 255 / 65%),
-    inset 0 -1px 2px rgb(0 0 0 / 18%);
-  transform: translateY(-50%) scale(1.06);
-  opacity: 0.95;
+    0 8px 22px hsl(var(--background) / 45%),
+    0 4px 11px hsl(var(--background) / 35%),
+    inset 0 1px 2px hsl(var(--foreground) / 15%),
+    inset 0 -1px 1px hsl(var(--background) / 30%);
+  transform: translateY(-50%) scale(1.05);
+  opacity: 1;
 }
 
 .toggleSwitchActive .toggleThumb {
-  left: calc(100% - 84px);
+  left: calc(100% - 73px);
   background: linear-gradient(
     135deg,
     hsl(var(--neon-cyan)),
     hsl(var(--hot-pink))
   );
-  border-color: hsl(var(--neon-cyan) / 75%);
+  border-color: hsl(var(--neon-cyan) / 60%);
   box-shadow:
-    0 12px 32px hsl(var(--neon-cyan) / 70%),
-    0 6px 16px hsl(var(--hot-pink) / 60%),
-    0 0 0 5px hsl(var(--neon-cyan) / 50%),
-    inset 0 2px 4px rgb(255 255 255 / 50%),
-    inset 0 -1px 2px rgb(0 0 0 / 35%);
-  transform: translateY(-50%) scale(1.15);
+    0 10px 28px hsl(var(--neon-cyan) / 65%),
+    0 5px 14px hsl(var(--hot-pink) / 55%),
+    0 0 0 4px hsl(var(--neon-cyan) / 35%),
+    inset 0 1px 2px hsl(var(--foreground) / 25%),
+    inset 0 -1px 1px hsl(var(--background) / 35%);
+  transform: translateY(-50%) scale(1.08);
   opacity: 1;
+}
+
+/* Light mode thumb adjustments */
+:root[data-theme="light"] .toggleThumb {
+  background: hsl(var(--background) / 100%);
+  border-color: hsl(var(--border) / 50%);
+  box-shadow:
+    0 6px 18px hsl(var(--foreground) / 15%),
+    0 3px 9px hsl(var(--foreground) / 12%),
+    inset 0 1px 2px hsl(var(--background) / 80%),
+    inset 0 -1px 1px hsl(var(--foreground) / 8%);
+}
+
+:root[data-theme="light"] .toggleSwitch:hover .toggleThumb {
+  box-shadow:
+    0 8px 22px hsl(var(--foreground) / 18%),
+    0 4px 11px hsl(var(--foreground) / 15%),
+    inset 0 1px 2px hsl(var(--background) / 85%),
+    inset 0 -1px 1px hsl(var(--foreground) / 10%);
+}
+
+:root[data-theme="light"] .toggleSwitchActive .toggleThumb {
+  box-shadow:
+    0 10px 28px hsl(var(--neon-cyan) / 50%),
+    0 5px 14px hsl(var(--hot-pink) / 40%),
+    0 0 0 4px hsl(var(--neon-cyan) / 30%),
+    inset 0 1px 2px hsl(var(--background) / 40%),
+    inset 0 -1px 1px hsl(var(--foreground) / 20%);
 }
 
 /* * Label inside the thumb (oval shape provides more space) */
 .toggleLabelInside {
-  font-size: 0.8rem;
-  font-weight: var(--font-weight-bold, 700);
-  letter-spacing: 0.06em;
-  color: var(--text-primary, #fff);
-  text-shadow:
-    0 1px 3px rgb(0 0 0 / 60%),
-    0 0 6px rgb(0 0 0 / 25%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: hsl(var(--foreground) / 90%);
+  text-shadow: 0 1px 2px hsl(var(--background) / 50%);
   white-space: nowrap;
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 4;
   pointer-events: none;
   text-transform: uppercase;
   line-height: 1.2;
-  opacity: 0.96;
+  opacity: 0.95;
   padding: 0 4px;
 }
 
 .toggleSwitchActive .toggleLabelInside {
-  color: #fff;
+  color: hsl(var(--primary-foreground));
   text-shadow:
-    0 1px 4px rgb(0 0 0 / 75%),
-    0 0 12px hsl(var(--neon-cyan) / 70%),
-    0 0 24px hsl(var(--neon-cyan) / 40%);
+    0 1px 3px hsl(var(--background) / 70%),
+    0 0 10px hsl(var(--neon-cyan) / 60%),
+    0 0 20px hsl(var(--neon-cyan) / 35%);
   opacity: 1;
-  font-weight: 900;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
 }
 
 .toggleSwitchActive:hover .toggleThumb {
-  transform: translateY(-50%) scale(1.18);
+  transform: translateY(-50%) scale(1.1);
   box-shadow:
-    0 14px 36px hsl(var(--neon-cyan) / 75%),
-    0 7px 18px hsl(var(--hot-pink) / 65%),
-    0 0 0 6px hsl(var(--neon-cyan) / 55%),
-    inset 0 2px 4px rgb(255 255 255 / 55%),
-    inset 0 -1px 2px rgb(0 0 0 / 40%);
+    0 12px 32px hsl(var(--neon-cyan) / 70%),
+    0 6px 16px hsl(var(--hot-pink) / 60%),
+    0 0 0 5px hsl(var(--neon-cyan) / 40%),
+    inset 0 1px 2px hsl(var(--foreground) / 30%),
+    inset 0 -1px 1px hsl(var(--background) / 40%);
+}
+
+/* Light mode label adjustments */
+:root[data-theme="light"] .toggleLabelInside {
+  color: hsl(var(--foreground) / 85%);
+  text-shadow: 0 1px 2px hsl(var(--background) / 60%);
+}
+
+:root[data-theme="light"] .toggleSwitchActive .toggleLabelInside {
+  color: hsl(var(--primary-foreground));
+  text-shadow:
+    0 1px 3px hsl(var(--background) / 80%),
+    0 0 10px hsl(var(--neon-cyan) / 50%),
+    0 0 20px hsl(var(--neon-cyan) / 25%);
+}
+
+:root[data-theme="light"] .toggleSwitchActive:hover .toggleThumb {
+  box-shadow:
+    0 12px 32px hsl(var(--neon-cyan) / 55%),
+    0 6px 16px hsl(var(--hot-pink) / 45%),
+    0 0 0 5px hsl(var(--neon-cyan) / 35%),
+    inset 0 1px 2px hsl(var(--background) / 50%),
+    inset 0 -1px 1px hsl(var(--foreground) / 25%);
 }
 
 /* * Removed side labels - labels are now inside the thumb */
@@ -563,8 +718,8 @@
 /* Tablet and below - adjust layout */
 @media (width <= 1024px) {
   .unifiedContainer {
-    padding: var(--space-4) var(--space-5);
-    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    gap: var(--space-3);
     max-width: 550px;
   }
 
@@ -579,7 +734,63 @@
 
   .toggleWrapper {
     min-width: 150px;
-    max-width: 200px;
+    max-width: 180px;
+  }
+
+  .toggleSwitch {
+    height: 42px;
+  }
+
+  .toggleThumb {
+    width: 66px;
+    height: 36px;
+  }
+
+  .toggleSwitchActive .toggleThumb {
+    left: calc(100% - 69px);
+  }
+
+  .toggleLabelInside {
+    font-size: 0.65rem;
+  }
+
+  .startTournamentButton {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+  }
+}
+
+/* Mobile landscape and below - wrap elements */
+@media (width <= 768px) {
+  .unifiedBar {
+    padding: var(--space-2) var(--space-2);
+  }
+
+  .unifiedContainer {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+    min-height: auto;
+    flex-direction: column;
+    max-width: 100%;
+    width: calc(100% - var(--space-4));
+    border-radius: 16px;
+  }
+
+  .toggleWrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+  }
+
+  .unifiedActions {
+    width: 100%;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .startTournamentButton {
+    width: 100%;
+    padding: var(--space-2) var(--space-4);
   }
 
   .toggleSwitch {
@@ -587,75 +798,16 @@
   }
 
   .toggleThumb {
-    width: 76px;
+    width: 75px;
     height: 40px;
   }
 
   .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 80px);
+    left: calc(100% - 78px);
   }
 
   .toggleLabelInside {
-    font-size: 0.65rem;
-  }
-}
-
-/* Mobile landscape and below - wrap elements */
-@media (width <= 768px) {
-  .unifiedContainer {
-    padding: var(--space-4) var(--space-3);
-    gap: var(--space-3);
-    min-height: auto;
-    flex-direction: row;
-    max-width: 100%;
-    width: auto;
-  }
-
-  .toggleWrapper {
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
-  }
-
-  .unifiedActions {
-    width: 100%;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .startTournamentButton {
-    width: 100%;
-    margin-left: 0;
-    margin-top: var(--space-2);
-  }
-
-  .unifiedActions {
-    flex-direction: column;
-    width: 100%;
-    gap: var(--space-3);
-  }
-
-  .toggleWrapper {
-    width: 100%;
-    max-width: 100%;
-    min-width: 100%;
-  }
-
-  .toggleSwitch {
-    height: 50px;
-  }
-
-  .toggleThumb {
-    width: 84px;
-    height: 48px;
-  }
-
-  .toggleSwitchActive .toggleThumb {
-    left: calc(100% - 88px);
-  }
-
-  .toggleLabelInside {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .unifiedInput {

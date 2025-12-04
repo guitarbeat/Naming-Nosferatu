@@ -16,7 +16,7 @@ import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import ErrorComponent from "../Error/Error";
 import Button from "../Button/Button";
-import { UnifiedFilters } from "../UnifiedFilters/UnifiedFilters";
+import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AdminAnalytics } from "../AdminAnalytics";
 import { useNameData } from "../../../core/hooks/useNameData";
@@ -176,7 +176,7 @@ export function NameManagementView({
   // * Names are passed directly to child components which handle their own filtering
   const displayNames = names;
 
-  // * Filter configuration for UnifiedFilters
+  // * Filter configuration for TournamentToolbar
   const filterConfig = useMemo(() => {
     // * In tournament mode with analysis mode, show hybrid filters
     if (mode === "tournament" && analysisMode) {
@@ -344,7 +344,7 @@ export function NameManagementView({
     ]
   );
 
-  // * Memoize UnifiedFilters props for tournament mode (must be before all early returns)
+  // * Memoize TournamentToolbar props for tournament mode (must be before all early returns)
   const tournamentFilterConfig = useMemo(
     () => ({
       searchTerm,
@@ -396,9 +396,9 @@ export function NameManagementView({
 
   return (
     <>
-      {/* UnifiedFilters with Start Tournament button (tournament mode) */}
+      {/* TournamentToolbar with Start Tournament button (tournament mode) */}
       {mode === "tournament" && (
-        <UnifiedFilters
+        <TournamentToolbar
           mode={analysisMode ? "hybrid" : "tournament"}
           filters={tournamentFilterConfig}
           onFilterChange={handleFilterChange}
@@ -498,14 +498,14 @@ export function NameManagementView({
             </section>
           )}
 
-          {/* Unified Filters - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
+          {/* Tournament Toolbar - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
           {mode !== "tournament" && (
             <section
               className={styles.filtersSection}
               aria-label="Filter and search controls"
               data-section="filters"
             >
-              <UnifiedFilters
+              <TournamentToolbar
                 mode={mode}
                 filters={filterConfig}
                 onFilterChange={handleFilterChange}
@@ -624,9 +624,8 @@ export function NameManagementView({
           >
             {extensions.nameGrid ? (
               typeof extensions.nameGrid === "function" ? (
-                // * Use React.createElement to create component inside Provider
-                // * This ensures the component renders with access to context
-                React.createElement(() => extensions.nameGrid())
+                // * Call function directly to render inside Provider context
+                extensions.nameGrid()
               ) : React.isValidElement(extensions.nameGrid) ? (
                 // * Clone element to ensure it has access to context
                 React.cloneElement(extensions.nameGrid)

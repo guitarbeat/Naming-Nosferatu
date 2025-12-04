@@ -1,8 +1,9 @@
 /**
  * @module AppSidebar
- * @description Application navbar navigation component (rendered as horizontal navbar, not sidebar)
+ * @description Application navbar navigation component with sliding indicator
  */
 
+import { useRef, useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import {
   Sidebar,
@@ -32,11 +33,35 @@ export function AppSidebar({
   onOpenSuggestName,
   onOpenPhotos,
 }) {
+  const navRef = useRef(null);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, opacity: 0 });
+
   // * Check if analysis mode is active
   const isAnalysisMode =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("analysis") === "true"
       : false;
+
+  // * Update sliding indicator position
+  const updateIndicator = useCallback(() => {
+    if (!navRef.current) return;
+    const activeItem = navRef.current.querySelector('[data-active="true"]');
+    if (activeItem) {
+      const navRect = navRef.current.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      setIndicator({
+        left: itemRect.left - navRect.left,
+        width: itemRect.width,
+        opacity: 1,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    updateIndicator();
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [updateIndicator, view, isAnalysisMode]);
 
   // * Toggle analysis mode
   const handleAnalysisToggle = () => {
@@ -73,14 +98,15 @@ export function AppSidebar({
         {/* Left Section: Navigation Items */}
         <NavbarSection className="navbar-left">
           <SidebarGroup open={true}>
-            <SidebarGroupContent>
+            <SidebarGroupContent ref={navRef} className="nav-items-container">
               {/* Combined Logo + Tournament Home Button */}
-              <SidebarMenuItem>
+              <SidebarMenuItem data-active={view === "tournament" && !isAnalysisMode}>
                 <SidebarMenuButton asChild>
                   <button
                     type="button"
                     onClick={() => setView("tournament")}
                     className="sidebar-home-button"
+                    data-active={view === "tournament" && !isAnalysisMode}
                     aria-label="Go to Tournament home"
                   >
                     <div className="sidebar-logo-icon">
@@ -132,8 +158,19 @@ export function AppSidebar({
                   view={view}
                   onClick={item.onClick || setView}
                   isActive={item.isActive}
+                  data-active={item.isActive}
                 />
               ))}
+
+              {/* Sliding indicator */}
+              <div
+                className="navbar-indicator"
+                style={{
+                  transform: `translateX(${indicator.left}px)`,
+                  width: `${indicator.width}px`,
+                  opacity: indicator.opacity,
+                }}
+              />
             </SidebarGroupContent>
           </SidebarGroup>
         </NavbarSection>
