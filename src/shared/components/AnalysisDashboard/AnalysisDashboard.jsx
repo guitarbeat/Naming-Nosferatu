@@ -606,7 +606,6 @@ AnalysisDashboard.propTypes = {
     topRated: PropTypes.arrayOf(nameItemShape),
     mostWins: PropTypes.arrayOf(nameItemShape),
   }),
-  userName: PropTypes.string,
   showGlobalLeaderboard: PropTypes.bool,
   defaultCollapsed: PropTypes.bool,
 };

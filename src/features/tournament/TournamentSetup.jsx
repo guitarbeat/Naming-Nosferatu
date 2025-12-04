@@ -143,13 +143,20 @@ const createAnalysisDashboardWrapper = (
   onNameHidden
 ) => {
   return function AnalysisDashboardWrapperWithProps() {
+    // * Get context inside the component to access refetch
+    const context = useNameManagementContext();
+    const handleNameHidden =
+      onNameHidden ||
+      (() => {
+        context.refetch();
+      });
     return (
       <AnalysisDashboardWrapper
         stats={stats}
         selectionStats={selectionStats}
         isAdmin={isAdmin}
         activeUser={activeUser}
-        onNameHidden={onNameHidden}
+        onNameHidden={handleNameHidden}
       />
     );
   };
@@ -571,10 +578,7 @@ function TournamentSetupContent({
               selectionStats,
               isAdmin,
               activeUser,
-              (nameId) => {
-                // * Refresh names after hiding
-                context.refetch();
-              }
+              undefined // * Will use context.refetch() inside the wrapper component
             ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper

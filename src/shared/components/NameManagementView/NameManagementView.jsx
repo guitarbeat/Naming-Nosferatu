@@ -34,7 +34,7 @@ export function useNameManagementContext() {
   const context = useContext(NameManagementContext);
   if (!context) {
     throw new Error(
-      "useNameManagementContext must be used within NameManagementView"
+      "useNameManagementContext must be used within NameManagementView",
     );
   }
   return context;
@@ -125,10 +125,10 @@ export function NameManagementView({
   // * Analysis mode: toggle for showing profile features in tournament mode
   // * Initialize from URL parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const [analysisMode, setAnalysisMode] = useState(
-    urlParams.get("analysis") === "true"
+    urlParams.get("analysis") === "true",
   );
 
   // * Sync analysis mode with URL
@@ -149,7 +149,7 @@ export function NameManagementView({
 
       navigateTo(newUrl);
     },
-    [navigateTo]
+    [navigateTo],
   );
 
   // * Sync analysis mode state when URL changes (e.g., from keyboard shortcut)
@@ -262,7 +262,7 @@ export function NameManagementView({
         }
       }
     },
-    [mode, analysisMode]
+    [mode, analysisMode],
   );
 
   // * Context value for extensions
@@ -338,7 +338,7 @@ export function NameManagementView({
       setSelectionFilter,
       analysisMode,
       handleAnalysisModeToggle,
-    ]
+    ],
   );
 
   // * Memoize UnifiedFilters props for tournament mode (must be before all early returns)
@@ -348,7 +348,7 @@ export function NameManagementView({
       category: selectedCategory,
       sortBy,
     }),
-    [searchTerm, selectedCategory, sortBy]
+    [searchTerm, selectedCategory, sortBy],
   );
 
   // * Loading state - check after all hooks
@@ -441,9 +441,9 @@ export function NameManagementView({
           startTournamentButton={
             selectedCount >= 2 && onStartTournament && !analysisMode
               ? {
-                onClick: () => onStartTournament(selectedNames),
-                selectedCount,
-              }
+                  onClick: () => onStartTournament(selectedNames),
+                  selectedCount,
+                }
               : undefined
           }
         />
@@ -490,17 +490,15 @@ export function NameManagementView({
             )}
 
           {/* Admin Analytics - Merged into AnalysisDashboard, only show if dashboard not available */}
-          {analysisMode &&
-            tournamentProps.isAdmin &&
-            !extensions.dashboard && (
-              <section
-                className={styles.dashboardSection}
-                aria-label="Admin analytics"
-                data-section="admin-analytics"
-              >
-                <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
-              </section>
-            )}
+          {analysisMode && tournamentProps.isAdmin && !extensions.dashboard && (
+            <section
+              className={styles.dashboardSection}
+              aria-label="Admin analytics"
+              data-section="admin-analytics"
+            >
+              <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
+            </section>
+          )}
 
           {/* Unified Filters - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
           {mode !== "tournament" && (
@@ -587,7 +585,7 @@ export function NameManagementView({
                   style={{
                     width: `${Math.max(
                       (selectedCount / Math.max(names.length, 1)) * 100,
-                      5
+                      5,
                     )}%`,
                   }}
                 />
@@ -611,7 +609,7 @@ export function NameManagementView({
                       onExport: () => {
                         exportTournamentResultsToCSV(
                           displayNames,
-                          "naming_nosferatu_export"
+                          "naming_nosferatu_export",
                         );
                       },
                     })

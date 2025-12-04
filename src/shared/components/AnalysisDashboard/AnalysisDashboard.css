@@ -115,10 +115,6 @@
   margin-top: var(--analysis-gap-md, 12px);
 }
 
-.top-names-table {
-  width: 100%;
-}
-
 .top-names-table th.sortable {
   cursor: pointer;
   user-select: none;
@@ -173,6 +169,9 @@
   outline: 2px solid hsl(var(--destructive));
   outline-offset: 2px;
 }
+
+.top-names-table {
+  width: 100%;
   border-collapse: collapse;
   font-size: var(--analysis-text-body, 0.875rem);
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
