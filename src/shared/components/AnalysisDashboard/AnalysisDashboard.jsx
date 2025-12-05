@@ -859,6 +859,11 @@ export function AnalysisDashboard({
                             </div>
                           )}
                         </td>
+                        {isAdmin && (
+                          <td className="top-names-insights-cell">
+                            <PerformanceBadges types={item.insights} />
+                          </td>
+                        )}
                         <td className="top-names-date-cell">
                           {item.dateSubmitted ? (
                             <span
