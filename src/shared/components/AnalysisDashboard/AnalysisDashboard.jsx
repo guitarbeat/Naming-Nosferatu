@@ -783,12 +783,17 @@ export function AnalysisDashboard({
                         <td className="top-names-name">{item.name}</td>
                         <td className="top-names-rating-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-rating"
-                              aria-label={`Rating: ${item.rating}`}
-                            >
-                              {item.rating}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-rating"
+                                aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
+                              >
+                                {item.rating}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.ratingPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
