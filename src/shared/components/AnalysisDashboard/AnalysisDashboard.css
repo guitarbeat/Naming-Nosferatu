@@ -2,6 +2,43 @@
  * Analysis Dashboard Styles
  */
 
+/* View Toggle */
+.analysis-view-toggle {
+  display: flex;
+  gap: var(--spacing-xs, 0.5rem);
+  margin-bottom: var(--spacing-md, 1rem);
+  padding: 4px;
+  background: var(--muted, hsl(0 0% 96%));
+  border-radius: var(--radius-lg, 12px);
+  width: fit-content;
+}
+
+.analysis-view-btn {
+  padding: var(--spacing-xs, 0.5rem) var(--spacing-md, 1rem);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--muted-foreground, hsl(0 0% 45%));
+}
+
+.analysis-view-btn:hover {
+  background: var(--accent, hsl(0 0% 92%));
+}
+
+.analysis-view-btn.active {
+  background: var(--background, white);
+  color: var(--foreground, hsl(0 0% 10%));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.analysis-chart-container {
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
 /* * Quick Stats Summary */
 .analysis-stats-summary {
   display: grid;

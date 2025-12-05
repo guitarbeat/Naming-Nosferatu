@@ -1195,6 +1195,136 @@ export const catNamesAPI = {
       return [];
     }
   },
+
+  /**
+   * Get ranking history data for bump chart visualization
+   * Tracks how names have moved in rankings over recent time periods
+   * @param {number} topN - Number of top names to track
+   * @param {number} periods - Number of time periods to show
+   * @returns {Object} { data: Array, timeLabels: Array }
+   */
+  async getRankingHistory(topN = 10, periods = 7) {
+    try {
+      if (!(await isSupabaseAvailable())) {
+        return { data: [], timeLabels: [] };
+      }
+
+      const client = await resolveSupabaseClient();
+      if (!client) return { data: [], timeLabels: [] };
+
+      // Get selection data grouped by date for the last N periods
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - (periods - 1));
+      
+      const { data: selections, error: selError } = await client
+        .from("tournament_selections")
+        .select("name_id, name, selected_at")
+        .gte("selected_at", startDate.toISOString())
+        .order("selected_at", { ascending: true });
+
+      if (selError) {
+        console.error("Error fetching selection history:", selError);
+        return { data: [], timeLabels: [] };
+      }
+
+      // Get current ratings for reference
+      const { data: ratings } = await client
+        .from("cat_name_ratings")
+        .select("name_id, rating, wins");
+
+      // Build rating map
+      const ratingMap = new Map();
+      (ratings || []).forEach((r) => {
+        const existing = ratingMap.get(r.name_id);
+        if (!existing || r.rating > existing.rating) {
+          ratingMap.set(r.name_id, { rating: r.rating, wins: r.wins || 0 });
+        }
+      });
+
+      // Group selections by date and name
+      const dateGroups = new Map();
+      const nameData = new Map();
+      
+      (selections || []).forEach((s) => {
+        const date = new Date(s.selected_at).toISOString().split("T")[0];
+        
+        if (!dateGroups.has(date)) {
+          dateGroups.set(date, new Map());
+        }
+        const dayMap = dateGroups.get(date);
+        
+        if (!dayMap.has(s.name_id)) {
+          dayMap.set(s.name_id, { name: s.name, count: 0 });
+        }
+        dayMap.get(s.name_id).count += 1;
+
+        // Track name metadata
+        if (!nameData.has(s.name_id)) {
+          const ratingInfo = ratingMap.get(s.name_id) || { rating: 1500, wins: 0 };
+          nameData.set(s.name_id, {
+            id: s.name_id,
+            name: s.name,
+            avgRating: ratingInfo.rating,
+            totalSelections: 0,
+          });
+        }
+        nameData.get(s.name_id).totalSelections += 1;
+      });
+
+      // Generate time labels for the last N days
+      const timeLabels = [];
+      const today = new Date();
+      for (let i = periods - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        timeLabels.push(label);
+      }
+
+      // Calculate rankings for each day
+      const dateKeys = [];
+      for (let i = periods - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        dateKeys.push(d.toISOString().split("T")[0]);
+      }
+
+      // Get top names by total selections
+      const sortedNames = Array.from(nameData.values())
+        .sort((a, b) => b.totalSelections - a.totalSelections)
+        .slice(0, topN);
+
+      // Build ranking data for each name
+      const rankingData = sortedNames.map((nameInfo) => {
+        const rankings = dateKeys.map((dateKey) => {
+          const dayData = dateGroups.get(dateKey);
+          if (!dayData) return null;
+          
+          // Sort all names by count for this day to get ranking
+          const dayEntries = Array.from(dayData.entries())
+            .sort((a, b) => b[1].count - a[1].count);
+          
+          const rankIndex = dayEntries.findIndex(([id]) => id === nameInfo.id);
+          return rankIndex >= 0 ? rankIndex + 1 : null;
+        });
+
+        return {
+          id: nameInfo.id,
+          name: nameInfo.name,
+          rankings,
+          avgRating: nameInfo.avgRating,
+          totalSelections: nameInfo.totalSelections,
+        };
+      });
+
+      return { data: rankingData, timeLabels };
+    } catch (error) {
+      if (isDev) {
+        console.error("Error fetching ranking history:", error);
+      }
+      return { data: [], timeLabels: [] };
+    }
+  },
 };
 
 /**
