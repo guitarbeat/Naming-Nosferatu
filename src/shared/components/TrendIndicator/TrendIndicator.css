@@ -1,0 +1,102 @@
+/**
+ * @file TrendIndicator.css
+ * @description Styles for the TrendIndicator component
+ */
+
+.trend-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--analysis-radius-sm, 0.375rem);
+  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+/* Up trend (green) */
+.trend-indicator.trend-up {
+  color: var(--color-success, #22c55e);
+  background-color: rgb(34 197 94 / 10%);
+}
+
+.trend-indicator.trend-up .trend-value::before {
+  content: '+';
+}
+
+/* Down trend (red) */
+.trend-indicator.trend-down {
+  color: var(--color-danger, #ef4444);
+  background-color: rgb(239 68 68 / 10%);
+}
+
+.trend-indicator.trend-down .trend-value::before {
+  content: '−';
+}
+
+/* Stable trend (gray) */
+.trend-indicator.trend-stable {
+  color: var(--color-subtle, #6b7280);
+  background-color: rgb(107 114 128 / 8%);
+}
+
+.trend-icon {
+  display: inline-flex;
+  font-size: 0.875em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.trend-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Animated version (bounces in on mount) */
+.trend-indicator.trend-animated {
+  animation: trendBounce var(--analysis-duration-normal, 300ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  opacity: 0;
+}
+
+@keyframes trendBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(2px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Hover state for interactive contexts */
+.trend-indicator:hover {
+  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.15);
+}
+
+/* Compact version (icon only) */
+.trend-indicator[aria-label] {
+  cursor: help;
+}
+
+/* Light theme adjustments */
+:root[data-theme="light"] .trend-indicator.trend-up {
+  color: #059669;
+  background-color: rgb(5 150 105 / 10%);
+}
+
+:root[data-theme="light"] .trend-indicator.trend-down {
+  color: #dc2626;
+  background-color: rgb(220 38 38 / 10%);
+}
+
+:root[data-theme="light"] .trend-indicator.trend-stable {
+  color: #6b7280;
+  background-color: rgb(107 114 128 / 8%);
+}
