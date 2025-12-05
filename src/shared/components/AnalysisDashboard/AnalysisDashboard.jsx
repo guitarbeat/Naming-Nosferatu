@@ -11,14 +11,20 @@ import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { BumpChart } from "../BumpChart";
+import { PerformanceBadges } from "../PerformanceBadge";
+import { TrendIndicator } from "../TrendIndicator";
+import { ColumnHeader } from "../ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
+import { useMetricComparison, useMultipleMetricComparison } from "../../hooks/useMetricComparison";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
 import { formatDate } from "../../utils/timeUtils";
+import { calculatePercentile, getInsightMessage } from "../../utils/metricsUtils";
+import { getMetricLabel } from "../../utils/metricDefinitions";
 import "./AnalysisDashboard.css";
 
 /**
