@@ -17,6 +17,14 @@ const applyDevtools = (storeImpl, config) => {
     return storeImpl;
   }
 
+  // * Check if devtools has been explicitly disabled due to previous errors
+  if (
+    typeof window !== "undefined" &&
+    window.__ZUSTAND_DEVTOOLS_DISABLED__
+  ) {
+    return storeImpl;
+  }
+
   // * Check if React DevTools is available before applying devtools
   // * This prevents errors when the extension is installed but API isn't ready
   // * The error "Cannot set properties of undefined (setting 'Activity')" occurs when
@@ -36,9 +44,11 @@ const applyDevtools = (storeImpl, config) => {
       // * Some DevTools versions may have the hook but not be ready
       // * The error "Cannot set properties of undefined (setting 'Activity')" occurs
       // * when the hook exists but the internal renderer tracking isn't ready
+      // * The 'Activity' error typically occurs when trying to set properties
+      // * on an undefined renderer object within the hook structure
+      
+      // * Check if renderers exists and is properly initialized
       if (hook.renderers && typeof hook.renderers === "object") {
-        // * Check if renderers Map/Set is actually usable
-        // * If it's not properly initialized, accessing it might throw
         try {
           // * Try to check if renderers has a size property (indicates it's a Map/Set)
           if (typeof hook.renderers.size !== "undefined") {
@@ -46,7 +56,14 @@ const applyDevtools = (storeImpl, config) => {
             // * If this throws, the hook isn't ready
             const rendererIds = Array.from(hook.renderers.keys());
             // * If we can access renderers without error, it's likely ready
+            // * Verify we can actually iterate without errors
             return rendererIds.length >= 0; // * Always true if no error thrown
+          }
+          // * If renderers exists but doesn't have size, try forEach
+          if (typeof hook.renderers.forEach === "function") {
+            // * Try to iterate to ensure it's fully initialized
+            hook.renderers.forEach(() => {});
+            return true; // * If forEach works, hook is ready
           }
         } catch {
           // * If accessing renderers throws, it's not ready
@@ -54,7 +71,10 @@ const applyDevtools = (storeImpl, config) => {
         }
       }
 
-      // * If hook exists but doesn't have expected structure, it's not ready
+      // * Conservative approach: if we can't verify renderers is ready,
+      // * don't enable devtools to prevent the 'Activity' error
+      // * Some React DevTools versions may work without renderers, but it's safer
+      // * to disable devtools if we can't verify the hook is fully initialized
       return false;
     } catch {
       return false;
@@ -76,14 +96,30 @@ const applyDevtools = (storeImpl, config) => {
   // * The error "Cannot set properties of undefined (setting 'Activity')" occurs
   // * when Zustand's devtools tries to register with React DevTools but the
   // * DevTools hook isn't fully initialized yet
+  // * Use a more defensive approach: wrap devtools call and catch any errors
   try {
+    // * Additional runtime check: verify hook is still valid before applying devtools
+    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    if (
+      !hook ||
+      typeof hook !== "object" ||
+      (hook.renderers && typeof hook.renderers !== "object")
+    ) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook invalid, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
     return devtools(storeImpl, {
       ...config,
       enabled: true,
     });
   } catch (error) {
     // * If devtools fails to initialize, fallback to plain store implementation
-    // * This catches initialization errors
+    // * This catches initialization errors including the 'Activity' property error
     if (process.env.NODE_ENV === "development") {
       console.warn(
         "[Zustand] DevTools initialization failed, using plain store:",
@@ -664,20 +700,53 @@ const storeImpl = (set, get) => ({
 // * Wrap store creation in try-catch to handle runtime errors during initialization
 let useAppStore;
 try {
-  useAppStore = create(
-    applyDevtools(storeImpl, {
-      name: "name-nosferatu-store",
-    }),
-  );
+  const storeWithDevtools = applyDevtools(storeImpl, {
+    name: "name-nosferatu-store",
+  });
+  useAppStore = create(storeWithDevtools);
 } catch (error) {
   // * If store creation fails (e.g., devtools runtime error), create plain store
+  // * This catches errors like "Cannot set properties of undefined (setting 'Activity')"
   if (process.env.NODE_ENV === "development") {
     console.warn(
       "[Zustand] Store creation failed, using plain store:",
       error.message || error,
     );
   }
+  // * Fallback: create store without devtools
   useAppStore = create(storeImpl);
+  
+  // * Set a flag to prevent future devtools attempts
+  if (typeof window !== "undefined") {
+    window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+  }
+}
+
+// * Set up global error handler to catch devtools errors at runtime
+// * This provides a safety net if the error occurs after store creation
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  const originalErrorHandler = window.onerror;
+  window.onerror = function (message, source, lineno, colno, error) {
+    // * Check if this is the specific "Activity" property error
+    if (
+      typeof message === "string" &&
+      message.includes("Cannot set properties of undefined") &&
+      message.includes("Activity")
+    ) {
+      // * Disable devtools to prevent future occurrences
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      console.warn(
+        "[Zustand] Caught devtools 'Activity' error at runtime, devtools disabled",
+      );
+      // * Don't prevent the error from being logged, but mark it as handled
+      return false; // * Return false to allow default error handling
+    }
+    // * Call original error handler if it exists
+    if (originalErrorHandler) {
+      return originalErrorHandler(message, source, lineno, colno, error);
+    }
+    return false;
+  };
 }
 
 // * Hook to initialize store from localStorage
