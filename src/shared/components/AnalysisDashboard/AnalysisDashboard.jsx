@@ -405,6 +405,40 @@ export function AnalysisDashboard({
     };
   }, [displayNames]);
 
+  // * Calculate percentiles and insights for each name
+  const namesWithInsights = useMemo(() => {
+    if (displayNames.length === 0) return [];
+
+    return displayNames.map((item) => {
+      const ratingPercentile = calculatePercentile(
+        item.rating,
+        displayNames.map((n) => n.rating),
+        true,
+      );
+      const selectedPercentile = calculatePercentile(
+        item.selected,
+        displayNames.map((n) => n.selected),
+        true,
+      );
+
+      // Determine insights/badges
+      const insights = [];
+      if (ratingPercentile >= 90) insights.push("top_rated");
+      if (selectedPercentile >= 90) insights.push("most_selected");
+      if (ratingPercentile >= 70 && selectedPercentile < 50)
+        insights.push("underrated");
+      if (item.wins > 0 && !displayNames.find((n) => n.id !== item.id && n.wins > 0))
+        insights.push("undefeated");
+
+      return {
+        ...item,
+        ratingPercentile,
+        selectedPercentile,
+        insights,
+      };
+    });
+  }, [displayNames]);
+
   const insights = useMemo(() => {
     if (!summaryStats || displayNames.length === 0) return [];
 
