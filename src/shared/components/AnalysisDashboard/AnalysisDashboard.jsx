@@ -11,14 +11,20 @@ import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { BumpChart } from "../BumpChart";
+import { PerformanceBadges } from "../PerformanceBadge";
+import { TrendIndicator } from "../TrendIndicator";
+import { ColumnHeader } from "../ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
+import { useMetricComparison, useMultipleMetricComparison } from "../../hooks/useMetricComparison";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
 import { formatDate } from "../../utils/timeUtils";
+import { calculatePercentile, getInsightMessage } from "../../utils/metricsUtils";
+import { getMetricLabel } from "../../utils/metricDefinitions";
 import "./AnalysisDashboard.css";
 
 /**
@@ -399,6 +405,40 @@ export function AnalysisDashboard({
     };
   }, [displayNames]);
 
+  // * Calculate percentiles and insights for each name
+  const namesWithInsights = useMemo(() => {
+    if (displayNames.length === 0) return [];
+
+    return displayNames.map((item) => {
+      const ratingPercentile = calculatePercentile(
+        item.rating,
+        displayNames.map((n) => n.rating),
+        true,
+      );
+      const selectedPercentile = calculatePercentile(
+        item.selected,
+        displayNames.map((n) => n.selected),
+        true,
+      );
+
+      // Determine insights/badges
+      const insights = [];
+      if (ratingPercentile >= 90) insights.push("top_rated");
+      if (selectedPercentile >= 90) insights.push("most_selected");
+      if (ratingPercentile >= 70 && selectedPercentile < 50)
+        insights.push("underrated");
+      if (item.wins > 0 && !displayNames.find((n) => n.id !== item.id && n.wins > 0))
+        insights.push("undefeated");
+
+      return {
+        ...item,
+        ratingPercentile,
+        selectedPercentile,
+        insights,
+      };
+    });
+  }, [displayNames]);
+
   const insights = useMemo(() => {
     if (!summaryStats || displayNames.length === 0) return [];
 
@@ -630,7 +670,18 @@ export function AnalysisDashboard({
                       onClick={isAdmin ? () => handleSort("rating") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Rating {isAdmin && renderSortIndicator("rating")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("rating")}
+                          metricName="rating"
+                          sortable={true}
+                          sorted={sortField === "rating"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Rating {renderSortIndicator("rating")}</>
+                      )}
                     </th>
                     <th
                       scope="col"
@@ -638,33 +689,67 @@ export function AnalysisDashboard({
                       onClick={isAdmin ? () => handleSort("wins") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Wins {isAdmin && renderSortIndicator("wins")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("total_wins")}
+                          metricName="total_wins"
+                          sortable={true}
+                          sorted={sortField === "wins"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Wins {renderSortIndicator("wins")}</>
+                      )}
                     </th>
                     <th
                       scope="col"
                       className={isAdmin ? "sortable" : ""}
-                      onClick={
-                        isAdmin ? () => handleSort("selected") : undefined
-                      }
+                      onClick={isAdmin ? () => handleSort("selected") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Selected {isAdmin && renderSortIndicator("selected")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("times_selected")}
+                          metricName="times_selected"
+                          sortable={true}
+                          sorted={sortField === "selected"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Selected {renderSortIndicator("selected")}</>
+                      )}
                     </th>
+                    {isAdmin && (
+                      <th scope="col">
+                        <span className="column-header-label">Insights</span>
+                      </th>
+                    )}
                     <th
                       scope="col"
                       className={isAdmin ? "sortable" : ""}
-                      onClick={
-                        isAdmin ? () => handleSort("dateSubmitted") : undefined
-                      }
+                      onClick={isAdmin ? () => handleSort("dateSubmitted") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Date {isAdmin && renderSortIndicator("dateSubmitted")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("created_at")}
+                          metricName="created_at"
+                          sortable={true}
+                          sorted={sortField === "dateSubmitted"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Date {renderSortIndicator("dateSubmitted")}</>
+                      )}
                     </th>
                     {isAdmin && <th scope="col">Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {displayNames.map((item, index) => {
+                  {namesWithInsights.map((item, index) => {
                     const rank = index + 1;
                     const ratingPercent =
                       summaryStats && summaryStats.maxRating > 0
@@ -698,12 +783,17 @@ export function AnalysisDashboard({
                         <td className="top-names-name">{item.name}</td>
                         <td className="top-names-rating-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-rating"
-                              aria-label={`Rating: ${item.rating}`}
-                            >
-                              {item.rating}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-rating"
+                                aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
+                              >
+                                {item.rating}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.ratingPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
@@ -750,12 +840,17 @@ export function AnalysisDashboard({
                         </td>
                         <td className="top-names-selected-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-selected"
-                              aria-label={`Selected ${item.selected} times`}
-                            >
-                              {item.selected}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-selected"
+                                aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
+                              >
+                                {item.selected}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.selectedPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
@@ -774,6 +869,11 @@ export function AnalysisDashboard({
                             </div>
                           )}
                         </td>
+                        {isAdmin && (
+                          <td className="top-names-insights-cell">
+                            <PerformanceBadges types={item.insights} />
+                          </td>
+                        )}
                         <td className="top-names-date-cell">
                           {item.dateSubmitted ? (
                             <span

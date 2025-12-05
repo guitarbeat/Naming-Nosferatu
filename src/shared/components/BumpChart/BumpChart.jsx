@@ -6,6 +6,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { TrendIndicator } from "../TrendIndicator";
 import "./BumpChart.css";
 
 // Color palette for the lines (vibrant, distinguishable colors)
@@ -131,6 +132,10 @@ export function BumpChart({
       const rank = line.rankings[clampedIndex];
 
       if (rank !== null) {
+        // Calculate movement from previous period
+        const previousRank = clampedIndex > 0 ? line.rankings[clampedIndex - 1] : null;
+        const movement = previousRank !== null ? previousRank - rank : 0;
+
         setTooltipData({
           x: e.clientX,
           y: e.clientY,
@@ -138,6 +143,9 @@ export function BumpChart({
           rank,
           period: timeLabels[clampedIndex],
           color: line.color,
+          avgRating: line.avgRating,
+          totalSelections: line.totalSelections,
+          movement,
         });
       }
     },
@@ -166,6 +174,12 @@ export function BumpChart({
 
   return (
     <div className="bump-chart-container">
+      <div className="bump-chart-description">
+        <p>
+          This chart shows how cat names rank over time. Higher positions (lower rank numbers)
+          indicate stronger performance. Hover over lines to see detailed metrics.
+        </p>
+      </div>
       <svg
         ref={svgRef}
         className="bump-chart-svg"
@@ -326,10 +340,29 @@ export function BumpChart({
             borderColor: tooltipData.color,
           }}
         >
-          <div className="bump-chart-tooltip-name">{tooltipData.name}</div>
+          <div className="bump-chart-tooltip-header">
+            <div className="bump-chart-tooltip-name">{tooltipData.name}</div>
+            {tooltipData.movement !== 0 && (
+              <TrendIndicator
+                direction={tooltipData.movement > 0 ? 'up' : 'down'}
+                percentChange={Math.abs(tooltipData.movement)}
+                compact={true}
+              />
+            )}
+          </div>
           <div className="bump-chart-tooltip-rank">
             Rank #{tooltipData.rank} · {tooltipData.period}
           </div>
+          {tooltipData.avgRating && (
+            <div className="bump-chart-tooltip-metric">
+              Rating: {tooltipData.avgRating}
+            </div>
+          )}
+          {tooltipData.totalSelections && (
+            <div className="bump-chart-tooltip-metric">
+              Selected: {tooltipData.totalSelections}x
+            </div>
+          )}
         </div>
       )}
 
