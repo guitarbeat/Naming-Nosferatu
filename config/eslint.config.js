@@ -52,6 +52,11 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
 
+      // * Type safety and undefined access prevention
+      'no-undef': 'error', // Catch undefined variables
+      // Note: TypeScript-specific rules (no-unsafe-*) only work with TypeScript files
+      // For JavaScript files, we rely on JSDoc types and runtime type guards
+
       // * Tree shaking and dead code elimination rules
       'no-unused-expressions': 'error',
       'no-unreachable': 'error',
