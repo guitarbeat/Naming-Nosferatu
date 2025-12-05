@@ -57,23 +57,35 @@ const applyDevtools = (storeImpl, config) => {
           return false;
         }
 
-        // * Try to get the first renderer to verify structure
-        // * Zustand devtools accesses renderers and sets properties on them
-        const firstRendererId = hook.renderers.keys().next().value;
-        if (firstRendererId !== undefined) {
-          const renderer = hook.renderers.get(firstRendererId);
-          // * Verify renderer exists and has the structure Zustand expects
-          // * The 'Activity' error occurs when trying to set properties on undefined renderer
-          if (!renderer || typeof renderer !== "object") {
-            return false;
+        // * Validate ALL renderers, not just the first one
+        // * Zustand devtools iterates over all renderers and sets properties on them
+        // * The 'Activity' error occurs when trying to set properties on undefined renderer
+        let hasValidRenderer = false;
+
+        try {
+          // * Iterate over all renderer IDs
+          for (const rendererId of hook.renderers.keys()) {
+            const renderer = hook.renderers.get(rendererId);
+            // * Verify renderer exists and is a valid object (not null, undefined, or non-object)
+            // * Note: typeof null === "object" in JavaScript, so we check !renderer first
+            // * Zustand devtools will try to set properties like 'Activity' on these objects
+            if (!renderer || typeof renderer !== "object" || renderer === null) {
+              // * Found invalid renderer, abort - devtools is not safe to use
+              return false;
+            }
+            hasValidRenderer = true;
           }
+        } catch {
+          // * If iterating renderers throws, it's not ready
+          return false;
         }
+
+        // * At least one valid renderer must exist
+        return hasValidRenderer;
       } catch {
         // * If accessing renderers throws, it's not ready
         return false;
       }
-
-      return true;
     } catch {
       return false;
     }
@@ -104,6 +116,34 @@ const applyDevtools = (storeImpl, config) => {
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "[Zustand] React DevTools hook invalid at runtime, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * Final validation: check all renderers one more time before applying devtools
+    // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+    try {
+      if (typeof hook.renderers.get === "function") {
+        for (const rendererId of hook.renderers.keys()) {
+          const renderer = hook.renderers.get(rendererId);
+          // * If any renderer is undefined, null, or not an object, abort devtools
+          // * Note: typeof null === "object" in JavaScript, so we check !renderer first
+          if (!renderer || typeof renderer !== "object" || renderer === null) {
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "[Zustand] Invalid renderer detected before devtools application, using plain store",
+              );
+            }
+            return storeImpl;
+          }
+        }
+      }
+    } catch (validationError) {
+      // * If validation fails, don't use devtools
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Renderer validation failed before devtools application, using plain store",
         );
       }
       return storeImpl;
@@ -731,29 +771,44 @@ if (
   try {
     const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
     if (hook && typeof hook === "object" && hook.renderers) {
-      // * Check if renderers Map contains any undefined renderer objects
-      // * This is what causes the 'Activity' error
-      if (hook.renderers instanceof Map) {
-        let hasInvalidRenderer = false;
+      // * Check if renderers Map contains any undefined or invalid renderer objects
+      // * This is what causes the 'Activity' error when Zustand devtools tries to set properties
+      if (hook.renderers instanceof Map || typeof hook.renderers.get === "function") {
         try {
-          hook.renderers.forEach((renderer) => {
-            if (!renderer || typeof renderer !== "object") {
-              hasInvalidRenderer = true;
+          // * Validate all renderers, not just iterate
+          // * Zustand devtools will try to set 'Activity' property on each renderer
+          for (const rendererId of hook.renderers.keys()) {
+            const renderer = hook.renderers.get(rendererId);
+            // * Check for undefined, null, or non-object renderers
+            // * Note: typeof null === "object" in JavaScript, so we check !renderer first
+            if (!renderer || typeof renderer !== "object" || renderer === null) {
+              // * Found invalid renderer, disable devtools
+              if (process.env.NODE_ENV === "development") {
+                console.warn(
+                  "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
+                );
+              }
+              window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+              break; // * Abort check
             }
-          });
+          }
         } catch {
-          // * If forEach fails, the hook isn't ready
-          hasInvalidRenderer = true;
-        }
-
-        if (hasInvalidRenderer) {
+          // * If iteration fails, the hook isn't ready - disable devtools
           if (process.env.NODE_ENV === "development") {
             console.warn(
-              "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
+              "[Zustand] React DevTools hook iteration failed, disabling devtools",
             );
           }
           window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
         }
+      } else {
+        // * If renderers is not a Map or Map-like, disable devtools
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[Zustand] React DevTools hook renderers is not a Map, disabling devtools",
+          );
+        }
+        window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
       }
     }
   } catch (error) {
