@@ -955,7 +955,6 @@ if (typeof window !== "undefined") {
   };
 
   // * Also catch unhandled promise rejections that might contain this error
-  const originalUnhandledRejection = window.onunhandledrejection;
   window.addEventListener("unhandledrejection", function (event) {
     const reason = event.reason;
     const errorMsg = reason?.message || String(reason || "");
