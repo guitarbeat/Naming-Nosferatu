@@ -22,6 +22,89 @@ import ErrorBoundary from "./shared/components/Error/ErrorBoundary.jsx";
 import ErrorBoundaryFallback from "./shared/components/Error/ErrorBoundaryFallback.jsx";
 import DeploymentErrorDetector from "./shared/components/DeploymentErrorDetector/DeploymentErrorDetector.jsx";
 
+// * Check for required environment variables before app initialization
+const checkEnvironmentVariables = () => {
+  const requiredVars = {
+    VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+  };
+
+  const missing = Object.entries(requiredVars)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  if (missing.length > 0) {
+    const errorMessage = `Missing required environment variables: ${missing.join(", ")}`;
+    console.error(`[App Initialization] ${errorMessage}`);
+    console.error(
+      "\nTo fix this:\n" +
+      "1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n" +
+      "2. Add the missing variables:\n" +
+      missing.map((key) => `   - ${key}`).join("\n") +
+      "\n3. Redeploy the application\n"
+    );
+
+    // * Display error in the DOM before React mounts
+    const root = document.getElementById("root");
+    if (root && !root.querySelector('[data-env-error]')) {
+      root.innerHTML = `
+        <div data-env-error="true">
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 2rem;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background: #f5f5f5;
+        ">
+          <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          ">
+            <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">⚠️</div>
+            <h1 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #dc2626; text-align: center;">
+              Configuration Error
+            </h1>
+            <p style="font-size: 1rem; line-height: 1.6; margin: 0 0 1.5rem; color: #666;">
+              The application is missing required environment variables:
+            </p>
+            <ul style="margin: 0 0 1.5rem; padding-left: 1.5rem; color: #666;">
+              ${missing.map((key) => `<li style="margin: 0.5rem 0;">${key}</li>`).join("")}
+            </ul>
+            <div style="padding: 1rem; background: #f5f5f5; border-radius: 8px; margin-bottom: 1.5rem;">
+              <h2 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem;">How to Fix:</h2>
+              <ol style="margin: 0; padding-left: 1.5rem; color: #666;">
+                <li style="margin: 0.5rem 0;">Go to Vercel Dashboard → Your Project → Settings → Environment Variables</li>
+                <li style="margin: 0.5rem 0;">Add the missing variables listed above</li>
+                <li style="margin: 0.5rem 0;">Redeploy the application</li>
+              </ol>
+            </div>
+            <button onclick="window.location.reload()" style="
+              width: 100%;
+              padding: 0.75rem 1.5rem;
+              background: #2563eb;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              font-size: 1rem;
+              font-weight: 600;
+              cursor: pointer;
+            ">Reload Page</button>
+          </div>
+        </div>
+        </div>
+      `;
+    }
+    // * Throw error to prevent React from mounting
+    throw new Error(errorMessage);
+  }
+};
+
 /**
  * * Safely converts a value to a string for logging
  * @param {*} value - Value to convert
@@ -106,17 +189,31 @@ if (process.env.NODE_ENV === "development") {
   console.info("[Boot] index.jsx loaded");
 }
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <StrictMode>
-    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-      <QueryClientProvider client={queryClient}>
-        <DeploymentErrorDetector />
-        <App />
-        {process.env.NODE_ENV === "development" && (
-          <ReactQueryDevtools initialIsOpen={false} />
-        )}
-      </QueryClientProvider>
-    </ErrorBoundary>
-  </StrictMode>,
-);
+// * Check environment variables before mounting React
+let envCheckPassed = false;
+try {
+  checkEnvironmentVariables();
+  envCheckPassed = true;
+} catch (error) {
+  // * Error already displayed in DOM via checkEnvironmentVariables
+  // * Don't mount React if environment variables are missing
+  console.error("[App Initialization] Failed environment variable check:", error);
+}
+
+// * Only mount React if environment check passed
+if (envCheckPassed) {
+  const root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(
+    <StrictMode>
+      <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+        <QueryClientProvider client={queryClient}>
+          <DeploymentErrorDetector />
+          <App />
+          {process.env.NODE_ENV === "development" && (
+            <ReactQueryDevtools initialIsOpen={false} />
+          )}
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </StrictMode>,
+  );
+}
