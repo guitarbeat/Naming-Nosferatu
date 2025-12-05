@@ -637,9 +637,15 @@ export const catNamesAPI = {
    * Get comprehensive popularity analytics for admin dashboard
    * Combines selection frequency, ratings, wins, and user engagement
    * @param {number} limit - Maximum number of results
+   * @param {string|null} userFilter - Filter by user: "all" (aggregate all users), "current" (current user), or specific username
+   * @param {string|null} currentUserName - Current user name (required if userFilter is "current")
    * @returns {Array} Names with full popularity metrics
    */
-  async getPopularityAnalytics(limit = 20) {
+  async getPopularityAnalytics(
+    limit = 20,
+    userFilter = "all",
+    currentUserName = null,
+  ) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -648,14 +654,28 @@ export const catNamesAPI = {
       const client = await resolveSupabaseClient();
       if (!client) return [];
 
+      // * Determine which users to include
+      let selectionsQuery = client
+        .from("tournament_selections")
+        .select("name_id, name, user_name");
+      let ratingsQuery = client
+        .from("cat_name_ratings")
+        .select("name_id, rating, wins, losses, user_name");
+
+      // * Apply user filter
+      if (userFilter && userFilter !== "all") {
+        const targetUser =
+          userFilter === "current" ? currentUserName : userFilter;
+        if (targetUser) {
+          selectionsQuery = selectionsQuery.eq("user_name", targetUser);
+          ratingsQuery = ratingsQuery.eq("user_name", targetUser);
+        }
+      }
+
       // Fetch all data in parallel for efficiency
       const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
-        client
-          .from("tournament_selections")
-          .select("name_id, name, user_name"),
-        client
-          .from("cat_name_ratings")
-          .select("name_id, rating, wins, losses, user_name"),
+        selectionsQuery,
+        ratingsQuery,
         client
           .from("cat_name_options")
           .select("id, name, description, avg_rating, categories, created_at")
@@ -1990,9 +2010,7 @@ export const imagesAPI = {
         upsert: false,
       });
     if (error) throw error;
-    const { data } = client.storage
-      .from("cat-images")
-      .getPublicUrl(objectPath);
+    const { data } = client.storage.from("cat-images").getPublicUrl(objectPath);
     return data?.publicUrl;
   },
 };

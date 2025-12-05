@@ -77,7 +77,9 @@ export function CollapsibleHeader({
           <ChevronIcon isCollapsed={isCollapsed} />
           {icon && (
             <span
-              className={isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"}
+              className={
+                isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
+              }
               aria-hidden="true"
             >
               {icon}

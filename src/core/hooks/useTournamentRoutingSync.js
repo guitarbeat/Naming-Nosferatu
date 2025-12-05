@@ -41,7 +41,10 @@ export function useTournamentRoutingSync({
     if (currentView === "profile") {
       // Redirect profile view to tournament with analysis mode
       const targetPath = "/tournament?analysis=true";
-      if (normalizedPath !== "/tournament" || !currentRoute.includes("analysis=true")) {
+      if (
+        normalizedPath !== "/tournament" ||
+        !currentRoute.includes("analysis=true")
+      ) {
         navigateTo(targetPath);
       }
       return;

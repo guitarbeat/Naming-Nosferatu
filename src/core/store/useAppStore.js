@@ -255,407 +255,407 @@ const getInitialUserState = () => {
 
 // * Store implementation
 const storeImpl = (set, get) => ({
-      // * Tournament State
-      tournament: {
-        names: null,
-        ratings: {},
-        isComplete: false,
-        isLoading: false,
-        voteHistory: [],
-        currentView: "tournament",
-      },
+  // * Tournament State
+  tournament: {
+    names: null,
+    ratings: {},
+    isComplete: false,
+    isLoading: false,
+    voteHistory: [],
+    currentView: "tournament",
+  },
 
-      // * User State
-      user: getInitialUserState(),
+  // * User State
+  user: getInitialUserState(),
 
-      // * UI State
-      ui: {
-        ...getInitialThemeState(),
-        showGlobalAnalytics: false,
-        showUserComparison: false,
-        matrixMode: false,
-      },
+  // * UI State
+  ui: {
+    ...getInitialThemeState(),
+    showGlobalAnalytics: false,
+    showUserComparison: false,
+    matrixMode: false,
+  },
 
-      // * Site Settings State
-      siteSettings: {
-        catChosenName: null,
-        isLoaded: false,
-      },
+  // * Site Settings State
+  siteSettings: {
+    catChosenName: null,
+    isLoaded: false,
+  },
 
-      // * Error State
-      errors: {
-        current: null,
-        history: [],
-      },
+  // * Error State
+  errors: {
+    current: null,
+    history: [],
+  },
 
-      // * Tournament Actions
-      tournamentActions: {
-        setNames: (names) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              names: names?.map((n) => ({
-                id: n.id,
-                name: n.name,
-                description: n.description,
-                rating: state.tournament.ratings[n.name]?.rating || 1500,
-              })),
-            },
+  // * Tournament Actions
+  tournamentActions: {
+    setNames: (names) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          names: names?.map((n) => ({
+            id: n.id,
+            name: n.name,
+            description: n.description,
+            rating: state.tournament.ratings[n.name]?.rating || 1500,
           })),
+        },
+      })),
 
-        setRatings: (ratings) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              ratings: { ...state.tournament.ratings, ...ratings },
-            },
-          })),
+    setRatings: (ratings) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          ratings: { ...state.tournament.ratings, ...ratings },
+        },
+      })),
 
-        setComplete: (isComplete) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              isComplete,
-            },
-          })),
+    setComplete: (isComplete) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          isComplete,
+        },
+      })),
 
-        setLoading: (isLoading) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              isLoading,
-            },
-          })),
+    setLoading: (isLoading) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          isLoading,
+        },
+      })),
 
-        addVote: (vote) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              voteHistory: [...state.tournament.voteHistory, vote],
-            },
-          })),
+    addVote: (vote) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          voteHistory: [...state.tournament.voteHistory, vote],
+        },
+      })),
 
-        resetTournament: () =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              names: null,
-              isComplete: false,
-              voteHistory: [],
-              isLoading: false, // * Explicitly set loading to false to prevent flashing
-              currentView: "tournament", // * Reset view to allow starting new tournament
-            },
-          })),
+    resetTournament: () =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          names: null,
+          isComplete: false,
+          voteHistory: [],
+          isLoading: false, // * Explicitly set loading to false to prevent flashing
+          currentView: "tournament", // * Reset view to allow starting new tournament
+        },
+      })),
 
-        setView: (view) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              currentView: view,
-            },
-          })),
-      },
+    setView: (view) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          currentView: view,
+        },
+      })),
+  },
 
-      // * User Actions
-      userActions: {
-        setUser: (userData) =>
-          set((state) => {
-            const newUser = {
-              ...state.user,
-              ...userData,
-            };
-            // * Persist to localStorage
-            try {
-              if (newUser.name) {
-                localStorage.setItem("catNamesUser", newUser.name);
-              } else {
-                localStorage.removeItem("catNamesUser");
-              }
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error updating localStorage:", error);
-              }
-            }
-            return {
-              user: newUser,
-            };
-          }),
+  // * User Actions
+  userActions: {
+    setUser: (userData) =>
+      set((state) => {
+        const newUser = {
+          ...state.user,
+          ...userData,
+        };
+        // * Persist to localStorage
+        try {
+          if (newUser.name) {
+            localStorage.setItem("catNamesUser", newUser.name);
+          } else {
+            localStorage.removeItem("catNamesUser");
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error updating localStorage:", error);
+          }
+        }
+        return {
+          user: newUser,
+        };
+      }),
 
-        login: (userName) =>
-          set((state) => {
-            const newUser = {
-              ...state.user,
-              name: userName,
-              isLoggedIn: true,
-            };
-            // * Persist to localStorage
-            try {
-              localStorage.setItem("catNamesUser", userName);
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error updating localStorage:", error);
-              }
-            }
-            return {
-              user: newUser,
-            };
-          }),
+    login: (userName) =>
+      set((state) => {
+        const newUser = {
+          ...state.user,
+          name: userName,
+          isLoggedIn: true,
+        };
+        // * Persist to localStorage
+        try {
+          localStorage.setItem("catNamesUser", userName);
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error updating localStorage:", error);
+          }
+        }
+        return {
+          user: newUser,
+        };
+      }),
 
-        logout: () =>
-          set((state) => {
-            // * Clear localStorage
-            try {
-              localStorage.removeItem("catNamesUser");
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error clearing localStorage:", error);
-              }
-            }
+    logout: () =>
+      set((state) => {
+        // * Clear localStorage
+        try {
+          localStorage.removeItem("catNamesUser");
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error clearing localStorage:", error);
+          }
+        }
+        return {
+          user: {
+            ...state.user,
+            name: "",
+            isLoggedIn: false,
+            isAdmin: false,
+          },
+          tournament: {
+            ...state.tournament,
+            names: null,
+            isComplete: false,
+            voteHistory: [],
+          },
+        };
+      }),
+
+    setAdminStatus: (isAdmin) =>
+      set((state) => ({
+        user: {
+          ...state.user,
+          isAdmin,
+        },
+      })),
+
+    // * Initialize user from localStorage
+    initializeFromStorage: () =>
+      set((state) => {
+        try {
+          const storedUser = localStorage.getItem("catNamesUser");
+          if (storedUser && state.user.name !== storedUser) {
             return {
               user: {
                 ...state.user,
-                name: "",
-                isLoggedIn: false,
-                isAdmin: false,
-              },
-              tournament: {
-                ...state.tournament,
-                names: null,
-                isComplete: false,
-                voteHistory: [],
+                name: storedUser,
+                isLoggedIn: true,
               },
             };
-          }),
-
-        setAdminStatus: (isAdmin) =>
-          set((state) => ({
-            user: {
-              ...state.user,
-              isAdmin,
-            },
-          })),
-
-        // * Initialize user from localStorage
-        initializeFromStorage: () =>
-          set((state) => {
-            try {
-              const storedUser = localStorage.getItem("catNamesUser");
-              if (storedUser && state.user.name !== storedUser) {
-                return {
-                  user: {
-                    ...state.user,
-                    name: storedUser,
-                    isLoggedIn: true,
-                  },
-                };
-              }
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error reading from localStorage:", error);
-              }
-            }
-            return state;
-          }),
-      },
-
-      // * UI Actions
-      uiActions: {
-        // * Initialize theme from DOM and system preference
-        initializeTheme: () => {
-          if (typeof document !== "undefined") {
-            const domTheme = document.documentElement?.dataset?.theme;
-            if (domTheme === "light" || domTheme === "dark") {
-              const { theme, themePreference } = get().ui;
-              if (themePreference === "system" && theme !== domTheme) {
-                set((state) => ({
-                  ui: {
-                    ...state.ui,
-                    theme: domTheme,
-                  },
-                }));
-              }
-            }
           }
-
-          subscribeToSystemTheme(set, get);
-        },
-
-        setTheme: (nextPreference) => {
-          if (!["light", "dark", "system"].includes(nextPreference)) {
-            return;
-          }
-
-          const isSystemPreference = nextPreference === "system";
-          const themeToApply = isSystemPreference
-            ? getSystemTheme()
-            : nextPreference;
-
-          try {
-            if (typeof window !== "undefined" && window.localStorage) {
-              if (isSystemPreference) {
-                window.localStorage.removeItem(THEME_STORAGE_KEY);
-              } else {
-                window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
-              }
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.error("Error updating theme localStorage:", error);
-            }
-          }
-
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              theme: themeToApply,
-              themePreference: isSystemPreference ? "system" : nextPreference,
-            },
-          }));
-
-          if (isSystemPreference) {
-            subscribeToSystemTheme(set, get);
-          }
-        },
-
-        toggleTheme: () => {
-          const currentTheme = get().ui.theme;
-          const newTheme = currentTheme === "light" ? "dark" : "light";
-
-          try {
-            if (typeof window !== "undefined" && window.localStorage) {
-              window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.error("Error updating theme localStorage:", error);
-            }
-          }
-
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              theme: newTheme,
-              themePreference: newTheme,
-            },
-          }));
-        },
-
-        setMatrixMode: (enabled) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              matrixMode: enabled,
-            },
-          })),
-
-        setGlobalAnalytics: (show) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showGlobalAnalytics: show,
-            },
-          })),
-
-        setUserComparison: (show) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showUserComparison: show,
-            },
-          })),
-      },
-
-      // * Error Actions
-      errorActions: {
-        setError: (error) =>
-          set((state) => ({
-            errors: {
-              current: error,
-              history: error
-                ? [...state.errors.history, error]
-                : state.errors.history,
-            },
-          })),
-
-        clearError: () =>
-          set((state) => ({
-            errors: {
-              ...state.errors,
-              current: null,
-            },
-          })),
-
-        logError: (error, context, metadata = {}) => {
-          const errorLog = {
-            error,
-            context,
-            metadata,
-            timestamp: new Date().toISOString(),
-          };
-
-          set((state) => ({
-            errors: {
-              ...state.errors,
-              history: [...state.errors.history, errorLog],
-            },
-          }));
-
-          // * Log to console for development
+        } catch (error) {
           if (process.env.NODE_ENV === "development") {
-            console.error("Error logged:", errorLog);
+            console.error("Error reading from localStorage:", error);
           }
-        },
-      },
+        }
+        return state;
+      }),
+  },
 
-      // * Site Settings Actions
-      siteSettingsActions: {
-        loadCatChosenName: async () => {
-          try {
-            const data = await siteSettingsAPI.getCatChosenName();
+  // * UI Actions
+  uiActions: {
+    // * Initialize theme from DOM and system preference
+    initializeTheme: () => {
+      if (typeof document !== "undefined") {
+        const domTheme = document.documentElement?.dataset?.theme;
+        if (domTheme === "light" || domTheme === "dark") {
+          const { theme, themePreference } = get().ui;
+          if (themePreference === "system" && theme !== domTheme) {
             set((state) => ({
-              siteSettings: {
-                ...state.siteSettings,
-                catChosenName: data,
-                isLoaded: true,
+              ui: {
+                ...state.ui,
+                theme: domTheme,
               },
             }));
-            return data;
-          } catch (error) {
-            console.error("Error loading cat chosen name:", error);
-            set((state) => ({
-              siteSettings: {
-                ...state.siteSettings,
-                isLoaded: true,
-              },
-            }));
-            return null;
           }
+        }
+      }
+
+      subscribeToSystemTheme(set, get);
+    },
+
+    setTheme: (nextPreference) => {
+      if (!["light", "dark", "system"].includes(nextPreference)) {
+        return;
+      }
+
+      const isSystemPreference = nextPreference === "system";
+      const themeToApply = isSystemPreference
+        ? getSystemTheme()
+        : nextPreference;
+
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          if (isSystemPreference) {
+            window.localStorage.removeItem(THEME_STORAGE_KEY);
+          } else {
+            window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+          }
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error updating theme localStorage:", error);
+        }
+      }
+
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          theme: themeToApply,
+          themePreference: isSystemPreference ? "system" : nextPreference,
         },
+      }));
 
-        updateCatChosenName: (nameData) =>
-          set((state) => ({
-            siteSettings: {
-              ...state.siteSettings,
-              catChosenName: nameData,
-            },
-          })),
-      },
+      if (isSystemPreference) {
+        subscribeToSystemTheme(set, get);
+      }
+    },
 
-      // * Computed Selectors
-      selectors: {
-        getTournamentNames: () => get().tournament.names,
-        getRatings: () => get().tournament.ratings,
-        getIsComplete: () => get().tournament.isComplete,
-        getIsLoading: () => get().tournament.isLoading,
-        getVoteHistory: () => get().tournament.voteHistory,
-        getCurrentView: () => get().tournament.currentView,
-        getUserName: () => get().user.name,
-        getIsLoggedIn: () => get().user.isLoggedIn,
-        getIsAdmin: () => get().user.isAdmin,
-        getTheme: () => get().ui.theme,
+    toggleTheme: () => {
+      const currentTheme = get().ui.theme;
+      const newTheme = currentTheme === "light" ? "dark" : "light";
 
-        getCurrentError: () => get().errors.current,
-      },
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error updating theme localStorage:", error);
+        }
+      }
+
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          theme: newTheme,
+          themePreference: newTheme,
+        },
+      }));
+    },
+
+    setMatrixMode: (enabled) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          matrixMode: enabled,
+        },
+      })),
+
+    setGlobalAnalytics: (show) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          showGlobalAnalytics: show,
+        },
+      })),
+
+    setUserComparison: (show) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          showUserComparison: show,
+        },
+      })),
+  },
+
+  // * Error Actions
+  errorActions: {
+    setError: (error) =>
+      set((state) => ({
+        errors: {
+          current: error,
+          history: error
+            ? [...state.errors.history, error]
+            : state.errors.history,
+        },
+      })),
+
+    clearError: () =>
+      set((state) => ({
+        errors: {
+          ...state.errors,
+          current: null,
+        },
+      })),
+
+    logError: (error, context, metadata = {}) => {
+      const errorLog = {
+        error,
+        context,
+        metadata,
+        timestamp: new Date().toISOString(),
+      };
+
+      set((state) => ({
+        errors: {
+          ...state.errors,
+          history: [...state.errors.history, errorLog],
+        },
+      }));
+
+      // * Log to console for development
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error logged:", errorLog);
+      }
+    },
+  },
+
+  // * Site Settings Actions
+  siteSettingsActions: {
+    loadCatChosenName: async () => {
+      try {
+        const data = await siteSettingsAPI.getCatChosenName();
+        set((state) => ({
+          siteSettings: {
+            ...state.siteSettings,
+            catChosenName: data,
+            isLoaded: true,
+          },
+        }));
+        return data;
+      } catch (error) {
+        console.error("Error loading cat chosen name:", error);
+        set((state) => ({
+          siteSettings: {
+            ...state.siteSettings,
+            isLoaded: true,
+          },
+        }));
+        return null;
+      }
+    },
+
+    updateCatChosenName: (nameData) =>
+      set((state) => ({
+        siteSettings: {
+          ...state.siteSettings,
+          catChosenName: nameData,
+        },
+      })),
+  },
+
+  // * Computed Selectors
+  selectors: {
+    getTournamentNames: () => get().tournament.names,
+    getRatings: () => get().tournament.ratings,
+    getIsComplete: () => get().tournament.isComplete,
+    getIsLoading: () => get().tournament.isLoading,
+    getVoteHistory: () => get().tournament.voteHistory,
+    getCurrentView: () => get().tournament.currentView,
+    getUserName: () => get().user.name,
+    getIsLoggedIn: () => get().user.isLoggedIn,
+    getIsAdmin: () => get().user.isAdmin,
+    getTheme: () => get().ui.theme,
+
+    getCurrentError: () => get().errors.current,
+  },
 });
 
 // * Safely apply devtools middleware with error handling
@@ -675,7 +675,7 @@ try {
     console.warn(
       "[Zustand] Store creation failed, using plain store:",
       error.message || error,
-);
+    );
   }
   useAppStore = create(storeImpl);
 }

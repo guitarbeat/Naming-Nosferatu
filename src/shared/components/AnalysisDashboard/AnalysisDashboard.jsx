@@ -51,7 +51,11 @@ export function AnalysisDashboard({
     defaultCollapsed,
   );
 
-  // Fetch global leaderboard and selection popularity data on mount
+  // * Get context for filtering (optional - only if available)
+  const toolbarContext = useNameManagementContextSafe();
+  const userFilter = toolbarContext?.filterConfig?.userFilter || "all";
+
+  // Fetch global leaderboard and selection popularity data on mount and when filters change
   useEffect(() => {
     if (!showGlobalLeaderboard) return;
 
@@ -61,7 +65,12 @@ export function AnalysisDashboard({
       try {
         if (isAdmin) {
           // * Admin: fetch full analytics (all names) - use getPopularityAnalytics for complete data
-          const analytics = await catNamesAPI.getPopularityAnalytics(50);
+          // * Pass userFilter to aggregate data from all users or filter by specific user
+          const analytics = await catNamesAPI.getPopularityAnalytics(
+            50,
+            userFilter,
+            userName,
+          );
           setAnalyticsData(analytics);
           // * Also fetch leaderboard/popularity for fallback
           const [leaderboard, popularity] = await Promise.all([
@@ -88,7 +97,7 @@ export function AnalysisDashboard({
     };
 
     fetchData();
-  }, [showGlobalLeaderboard, isAdmin]);
+  }, [showGlobalLeaderboard, isAdmin, userFilter, userName]);
 
   const consolidatedNames = useMemo(() => {
     if (isAdmin && analyticsData?.length) {
@@ -202,7 +211,11 @@ export function AnalysisDashboard({
         setTimeout(async () => {
           try {
             if (isAdmin) {
-              const analytics = await catNamesAPI.getPopularityAnalytics(50);
+              const analytics = await catNamesAPI.getPopularityAnalytics(
+                50,
+                userFilter,
+                userName,
+              );
               setAnalyticsData(analytics);
             } else {
               const [leaderboard, popularity] = await Promise.all([
@@ -219,7 +232,11 @@ export function AnalysisDashboard({
       } catch (error) {
         devError("[AnalysisDashboard] Error hiding name:", error);
         if (isAdmin) {
-          const analytics = await catNamesAPI.getPopularityAnalytics(50);
+          const analytics = await catNamesAPI.getPopularityAnalytics(
+            50,
+            userFilter,
+            userName,
+          );
           setAnalyticsData(analytics);
         } else {
           const [leaderboard, popularity] = await Promise.all([
@@ -238,11 +255,9 @@ export function AnalysisDashboard({
       analyticsData,
       leaderboardData,
       selectionPopularity,
+      userFilter,
     ],
   );
-
-  // * Get context for filtering (optional - only if available)
-  const toolbarContext = useNameManagementContextSafe();
 
   const displayNames = useMemo(() => {
     const filters = toolbarContext?.filterConfig || {};
@@ -276,21 +291,8 @@ export function AnalysisDashboard({
 
     // * Apply filters from TournamentToolbar
     if (toolbarContext && filters) {
-      // Search filter
-      if (filters.searchTerm) {
-        const searchLower = filters.searchTerm.toLowerCase();
-        names = names.filter((n) => n.name.toLowerCase().includes(searchLower));
-      }
-
-      // Status filter (visibility)
-      if (filters.filterStatus && filters.filterStatus !== "all") {
-        // Note: This would need hiddenIds from context to work properly
-        // For now, we'll skip this filter as we don't have visibility data in consolidatedNames
-      }
-
-      // User filter
-      // Note: This would need user data per name, which we don't have in consolidatedNames
-      // This filter would need to be applied at the API level
+      // * User filter is now applied at the API level in getPopularityAnalytics
+      // * No need to filter here as data is already filtered by user
 
       // Selection filter
       if (filters.selectionFilter && filters.selectionFilter !== "all") {

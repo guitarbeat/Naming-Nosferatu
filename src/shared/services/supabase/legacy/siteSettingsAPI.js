@@ -5,19 +5,6 @@
 
 import { resolveSupabaseClient } from "../client";
 
-const isDev = true; // Always log in prototype mode
-
-const isSupabaseAvailable = async () => {
-  const client = await resolveSupabaseClient();
-  if (!client) {
-    if (isDev) {
-      console.warn("Supabase not configured. Some features may not work.");
-    }
-    return false;
-  }
-  return true;
-};
-
 export const siteSettingsAPI = {
   /**
    * Get cat's chosen name

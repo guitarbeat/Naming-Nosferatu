@@ -5,21 +5,6 @@
 
 import { resolveSupabaseClient } from "../client";
 
-/**
- * Check if Supabase is configured and available
- * @returns {Promise<boolean>} True if Supabase is available
- */
-const isSupabaseAvailable = async () => {
-  const client = await resolveSupabaseClient();
-  if (!client) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Supabase not configured. Some features may not work.");
-    }
-    return false;
-  }
-  return true;
-};
-
 export const catNamesAPI = {
   /**
    * Get all names with descriptions and ratings (hidden names are filtered out globally)

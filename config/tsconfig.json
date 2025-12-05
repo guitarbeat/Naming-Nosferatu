@@ -15,7 +15,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
+    "baseUrl": "..",
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
@@ -29,12 +29,12 @@
     }
   },
   "include": [
-    "src/**/*",
-    "config/**/*"
+    "../src/**/*",
+    "../config/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "build",
-    "dist"
+    "../node_modules",
+    "../build",
+    "../dist"
   ]
 }
