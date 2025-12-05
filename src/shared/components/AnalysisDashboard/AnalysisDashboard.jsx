@@ -749,7 +749,7 @@ export function AnalysisDashboard({
                   </tr>
                 </thead>
                 <tbody>
-                  {displayNames.map((item, index) => {
+                  {namesWithInsights.map((item, index) => {
                     const rank = index + 1;
                     const ratingPercent =
                       summaryStats && summaryStats.maxRating > 0
