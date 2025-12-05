@@ -1286,7 +1286,8 @@ export const catNamesAPI = {
       for (let i = periods - 1; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
-        dateKeys.push(d.toISOString().split("T")[0]);
+        const [date] = d.toISOString().split("T");
+        dateKeys.push(date);
       }
 
       // Get top names by total selections
