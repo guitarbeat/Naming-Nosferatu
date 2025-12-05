@@ -630,42 +630,107 @@ export function AnalysisDashboard({
                   <tr>
                     <th scope="col">Rank</th>
                     <th scope="col">Name</th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("rating") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      Rating {isAdmin && renderSortIndicator("rating")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("wins") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      Wins {isAdmin && renderSortIndicator("wins")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={
-                        isAdmin ? () => handleSort("selected") : undefined
-                      }
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      Selected {isAdmin && renderSortIndicator("selected")}
-                    </th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={
-                        isAdmin ? () => handleSort("dateSubmitted") : undefined
-                      }
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      Date {isAdmin && renderSortIndicator("dateSubmitted")}
-                    </th>
+                    {isAdmin && (
+                      <th scope="col">
+                        <ColumnHeader
+                          label={getMetricLabel("rating")}
+                          metricName="rating"
+                          sortable={true}
+                          sorted={sortField === "rating"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      </th>
+                    )}
+                    {!isAdmin && (
+                      <th
+                        scope="col"
+                        className={isAdmin ? "sortable" : ""}
+                        onClick={isAdmin ? () => handleSort("rating") : undefined}
+                        style={isAdmin ? { cursor: "pointer" } : undefined}
+                      >
+                        Rating {isAdmin && renderSortIndicator("rating")}
+                      </th>
+                    )}
+                    {isAdmin && (
+                      <th scope="col">
+                        <ColumnHeader
+                          label={getMetricLabel("total_wins")}
+                          metricName="total_wins"
+                          sortable={true}
+                          sorted={sortField === "wins"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      </th>
+                    )}
+                    {!isAdmin && (
+                      <th
+                        scope="col"
+                        className={isAdmin ? "sortable" : ""}
+                        onClick={isAdmin ? () => handleSort("wins") : undefined}
+                        style={isAdmin ? { cursor: "pointer" } : undefined}
+                      >
+                        Wins {isAdmin && renderSortIndicator("wins")}
+                      </th>
+                    )}
+                    {isAdmin && (
+                      <th scope="col">
+                        <ColumnHeader
+                          label={getMetricLabel("times_selected")}
+                          metricName="times_selected"
+                          sortable={true}
+                          sorted={sortField === "selected"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      </th>
+                    )}
+                    {!isAdmin && (
+                      <th
+                        scope="col"
+                        className={isAdmin ? "sortable" : ""}
+                        onClick={
+                          isAdmin ? () => handleSort("selected") : undefined
+                        }
+                        style={isAdmin ? { cursor: "pointer" } : undefined}
+                      >
+                        Selected {isAdmin && renderSortIndicator("selected")}
+                      </th>
+                    )}
+                    {isAdmin && (
+                      <th scope="col">
+                        <ColumnHeader
+                          label="Insights"
+                          metricName={null}
+                          sortable={false}
+                        />
+                      </th>
+                    )}
+                    {isAdmin && (
+                      <th scope="col">
+                        <ColumnHeader
+                          label={getMetricLabel("created_at")}
+                          metricName="created_at"
+                          sortable={true}
+                          sorted={sortField === "dateSubmitted"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      </th>
+                    )}
+                    {!isAdmin && (
+                      <th
+                        scope="col"
+                        className={isAdmin ? "sortable" : ""}
+                        onClick={
+                          isAdmin ? () => handleSort("dateSubmitted") : undefined
+                        }
+                        style={isAdmin ? { cursor: "pointer" } : undefined}
+                      >
+                        Date {isAdmin && renderSortIndicator("dateSubmitted")}
+                      </th>
+                    )}
                     {isAdmin && <th scope="col">Actions</th>}
                   </tr>
                 </thead>
