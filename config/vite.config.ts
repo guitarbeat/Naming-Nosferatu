@@ -19,6 +19,12 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     envPrefix: ['VITE_', 'SUPABASE_'],
+    // * Ensure proper base path for production builds
+    base: '/',
+    // * Define process.env for compatibility
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
+    },
     css: {
       postcss: resolveFromRoot('config/postcss.config.js'),
     },
