@@ -1246,7 +1246,7 @@ export const catNamesAPI = {
       const nameData = new Map();
       
       (selections || []).forEach((s) => {
-        const date = new Date(s.selected_at).toISOString().split("T")[0];
+        const [date] = new Date(s.selected_at).toISOString().split("T");
         
         if (!dateGroups.has(date)) {
           dateGroups.set(date, new Map());
