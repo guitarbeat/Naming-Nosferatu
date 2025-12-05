@@ -11,6 +11,7 @@ import { siteSettingsAPI } from "../../shared/services/supabase/api";
 // * Helper to safely apply devtools middleware
 // * Prevents errors when React DevTools extension is installed but API isn't ready
 // * This fixes "Cannot set properties of undefined (setting 'Activity')" errors
+// * STRATEGY: By default, DON'T use devtools unless React DevTools is 100% ready
 const applyDevtools = (storeImpl, config) => {
   // * Only apply devtools in development
   if (process.env.NODE_ENV !== "development") {
@@ -18,10 +19,22 @@ const applyDevtools = (storeImpl, config) => {
   }
 
   // * Check if devtools has been explicitly disabled due to previous errors
+  // * This flag persists across page loads via early check
   if (
     typeof window !== "undefined" &&
     window.__ZUSTAND_DEVTOOLS_DISABLED__
   ) {
+    return storeImpl;
+  }
+
+  // * Early exit: If window is not available, don't use devtools
+  if (typeof window === "undefined") {
+    return storeImpl;
+  }
+
+  // * Early exit: If React DevTools hook doesn't exist at all, don't use devtools
+  // * This prevents errors when React DevTools extension is not installed
+  if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
     return storeImpl;
   }
 
@@ -60,28 +73,46 @@ const applyDevtools = (storeImpl, config) => {
         // * Validate ALL renderers, not just the first one
         // * Zustand devtools iterates over all renderers and sets properties on them
         // * The 'Activity' error occurs when trying to set properties on undefined renderer
-        let hasValidRenderer = false;
+        // * CRITICAL: ALL renderers must be valid - if ANY renderer is invalid, devtools is unsafe
+        let rendererCount = 0;
+        let validRendererCount = 0;
 
         try {
-          // * Iterate over all renderer IDs
-          for (const rendererId of hook.renderers.keys()) {
+          // * Get all renderer IDs first to avoid iteration issues
+          const rendererIds = Array.from(hook.renderers.keys());
+          rendererCount = rendererIds.length;
+
+          // * If there are no renderers at all, devtools can't work
+          if (rendererCount === 0) {
+            return false;
+          }
+
+          // * Iterate over all renderer IDs and validate each one
+          for (const rendererId of rendererIds) {
             const renderer = hook.renderers.get(rendererId);
             // * Verify renderer exists and is a valid object (not null, undefined, or non-object)
             // * Note: typeof null === "object" in JavaScript, so we check !renderer first
             // * Zustand devtools will try to set properties like 'Activity' on these objects
             if (!renderer || typeof renderer !== "object" || renderer === null) {
-              // * Found invalid renderer, abort - devtools is not safe to use
+              // * Found invalid renderer - devtools is NOT safe to use
+              // * Zustand devtools will try to iterate over all renderers and set properties
+              // * If any renderer is invalid, it will cause the 'Activity' error
               return false;
             }
-            hasValidRenderer = true;
+            validRendererCount++;
           }
+
+          // * ALL renderers must be valid - if count doesn't match, something is wrong
+          if (validRendererCount !== rendererCount) {
+            return false;
+          }
+
+          // * At least one valid renderer must exist
+          return validRendererCount > 0;
         } catch {
           // * If iterating renderers throws, it's not ready
           return false;
         }
-
-        // * At least one valid renderer must exist
-        return hasValidRenderer;
       } catch {
         // * If accessing renderers throws, it's not ready
         return false;
@@ -189,6 +220,47 @@ const applyDevtools = (storeImpl, config) => {
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "[Zustand] Renderer validation failed before devtools application, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * Final check: Verify React DevTools is still available right before calling devtools()
+    // * This prevents race conditions where renderers become invalid between checks
+    const finalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    if (
+      !finalHook ||
+      typeof finalHook !== "object" ||
+      !finalHook.renderers ||
+      typeof finalHook.renderers !== "object" ||
+      typeof finalHook.renderers.get !== "function"
+    ) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook invalid at final check, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * Final renderer validation: Check all renderers one last time
+    try {
+      const finalRendererIds = Array.from(finalHook.renderers.keys());
+      for (const rendererId of finalRendererIds) {
+        const renderer = finalHook.renderers.get(rendererId);
+        if (!renderer || typeof renderer !== "object" || renderer === null) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] Invalid renderer at final check, using plain store",
+            );
+          }
+          return storeImpl;
+        }
+      }
+    } catch {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Final renderer check failed, using plain store",
         );
       }
       return storeImpl;
@@ -834,6 +906,7 @@ const storeImpl = (set, get) => ({
 // * Early check: Disable devtools if React DevTools hook is not properly initialized
 // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
 // * by detecting problematic hook states before Zustand devtools tries to use them
+// * This check runs IMMEDIATELY when the module loads, before any store creation
 if (
   typeof window !== "undefined" &&
   process.env.NODE_ENV === "development"
@@ -847,20 +920,28 @@ if (
         try {
           // * Validate all renderers, not just iterate
           // * Zustand devtools will try to set 'Activity' property on each renderer
-          for (const rendererId of hook.renderers.keys()) {
+          // * CRITICAL: If ANY renderer is invalid, devtools will fail
+          const rendererIds = Array.from(hook.renderers.keys());
+          let hasInvalidRenderer = false;
+
+          for (const rendererId of rendererIds) {
             const renderer = hook.renderers.get(rendererId);
             // * Check for undefined, null, or non-object renderers
             // * Note: typeof null === "object" in JavaScript, so we check !renderer first
             if (!renderer || typeof renderer !== "object" || renderer === null) {
-              // * Found invalid renderer, disable devtools
-              if (process.env.NODE_ENV === "development") {
-                console.warn(
-                  "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
-                );
-              }
-              window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-              break; // * Abort check
+              hasInvalidRenderer = true;
+              break; // * Found invalid renderer, abort check
             }
+          }
+
+          if (hasInvalidRenderer || rendererIds.length === 0) {
+            // * Found invalid renderer or no renderers, disable devtools
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "[Zustand] React DevTools hook contains invalid renderers or no renderers, disabling devtools",
+              );
+            }
+            window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
           }
         } catch {
           // * If iteration fails, the hook isn't ready - disable devtools
@@ -880,6 +961,14 @@ if (
         }
         window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
       }
+    } else {
+      // * Hook doesn't exist or doesn't have renderers - disable devtools
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook not available, disabling devtools",
+        );
+      }
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
     }
   } catch (error) {
     // * If hook check fails, disable devtools to be safe
