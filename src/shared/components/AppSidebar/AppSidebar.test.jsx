@@ -19,7 +19,6 @@ describe("AppSidebar", () => {
             onStartNewTournament={vi.fn()}
             isLightTheme
             onThemeChange={vi.fn()}
-            onTogglePerformanceDashboard={vi.fn()}
           />
         </SidebarProvider>,
       ),

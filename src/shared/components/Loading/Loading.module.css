@@ -10,6 +10,15 @@
   padding: var(--spacing-component-padding);
 }
 
+.loadingGif {
+  max-width: 300px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
 /* Size variants */
 .small {
   font-size: 1.25rem;
@@ -40,7 +49,7 @@
   margin: -1px;
   overflow: hidden;
   white-space: nowrap;
-  border: 0;
+  border-width: 0;
   clip-path: inset(50%);
 }
 
@@ -90,9 +99,9 @@
   }
 }
 
-/* ===== LEGACY COMPATIBILITY ===== */
+/* ===== COMPATIBILITY STYLES ===== */
 
-/* Maintain backward compatibility with old class names */
+/* Maintain compatibility with alternative class names */
 .loadingPlaceholder {
   display: flex;
   align-items: center;

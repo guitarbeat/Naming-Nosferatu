@@ -39,7 +39,7 @@
   --shadow-subtle: 0 8px 20px rgb(15 23 42 / 3%);
   --shadow-medium: 0 18px 40px rgb(15 23 42 / 8%);
 
-  /* Synced light-mode variables for components using legacy names */
+  /* Synced light-mode variables for components using alternative names */
   --surface-light: #f1f5f9;
   --card-background-light: #f1f5f9;
   --card-hover-light: #e2e8f0;
@@ -136,7 +136,7 @@
   --shadow-subtle: 0 8px 24px rgb(2 6 23 / 45%);
   --shadow-medium: 0 24px 60px rgb(2 6 23 / 65%);
 
-  /* Synced light-mode variables for components using legacy names */
+  /* Synced light-mode variables for components using alternative names */
   --surface-dark: #0b1220;
   --card-background-dark: #0b1220;
   --card-hover-dark: #152135;

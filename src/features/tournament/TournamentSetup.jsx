@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   NameManagementView,
-  useNameManagementContext,
+  useNameManagementContextSafe,
   Error,
   AnalysisDashboard,
   AnalysisBulkActions,
@@ -41,7 +41,7 @@ function AnalysisHandlersProvider({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Initialize analysis mode from URL or prop
   useEffect(() => {
@@ -146,7 +146,7 @@ const createAnalysisDashboardWrapper = (
   return function AnalysisDashboardWrapperWithProps() {
     // * Get context inside the component - it's available here because this component
     // * is rendered inside NameManagementView's context provider
-    const context = useNameManagementContext();
+    const context = useNameManagementContextSafe();
     const handleNameHidden =
       onNameHidden ||
       (() => {
@@ -173,7 +173,7 @@ function AnalysisBulkActionsWrapper({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   const { selectedCount } = context;
   // * Keep both Set format for selection logic and original array for bulk operations
@@ -257,11 +257,7 @@ function AnalysisBulkActionsWrapper({
     let filtered = [...context.names];
 
     // Use shared isNameHidden utility for consistent visibility check
-    if (
-      context.filterStatus === "visible" ||
-      context.filterStatus === "active"
-    ) {
-      // * "active" is legacy alias for "visible"
+    if (context.filterStatus === "visible") {
       filtered = filtered.filter((name) => !isNameHidden(name));
     } else if (context.filterStatus === "hidden") {
       filtered = filtered.filter((name) => isNameHidden(name));
@@ -365,7 +361,7 @@ function TournamentNameGrid({
   onDelete,
   analysisHandlersProps,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Admin features only available in analysis mode
   const showAdminFeatures = context.analysisMode && canManageActiveUser;

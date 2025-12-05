@@ -94,9 +94,21 @@ SidebarGroupLabel.propTypes = {
 };
 
 // SidebarGroupContent
-export function SidebarGroupContent({ children, className = "" }) {
-  return <div className={`sidebar-group-content ${className}`}>{children}</div>;
-}
+export const SidebarGroupContent = forwardRef(
+  ({ children, className = "", ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={`sidebar-group-content ${className}`}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+
+SidebarGroupContent.displayName = "SidebarGroupContent";
 
 SidebarGroupContent.propTypes = {
   children: PropTypes.node.isRequired,
@@ -114,8 +126,12 @@ SidebarMenu.propTypes = {
 };
 
 // SidebarMenuItem
-export function SidebarMenuItem({ children, className = "" }) {
-  return <li className={`sidebar-menu-item ${className}`}>{children}</li>;
+export function SidebarMenuItem({ children, className = "", ...props }) {
+  return (
+    <li className={`sidebar-menu-item ${className}`} {...props}>
+      {children}
+    </li>
+  );
 }
 
 SidebarMenuItem.propTypes = {

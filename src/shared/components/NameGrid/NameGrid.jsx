@@ -52,21 +52,22 @@ export function NameGrid({
     if (selectedNames instanceof Set) return selectedNames;
     if (Array.isArray(selectedNames)) {
       return new Set(
-        selectedNames.map((item) => (typeof item === "object" ? item.id : item))
+        selectedNames.map((item) =>
+          typeof item === "object" ? item.id : item,
+        ),
       );
     }
     return new Set();
   }, [selectedNames]);
 
   const processedNames = useMemo(() => {
-    // * Map filterStatus to visibility, handling both "active" (legacy) and "visible"
+    // * Map filterStatus to visibility
     const visibility =
       filters.filterStatus === "hidden"
         ? "hidden"
         : filters.filterStatus === "all"
           ? "all"
-          : filters.filterStatus === "active" ||
-              filters.filterStatus === "visible"
+          : filters.filterStatus === "visible"
             ? "visible"
             : "visible"; // * Default to visible
 
@@ -186,7 +187,7 @@ NameGrid.propTypes = {
     category: PropTypes.string,
     sortBy: PropTypes.string,
     sortOrder: PropTypes.oneOf(["asc", "desc"]),
-    filterStatus: PropTypes.oneOf(["active", "visible", "hidden", "all"]),
+    filterStatus: PropTypes.oneOf(["visible", "hidden", "all"]),
   }),
   isAdmin: PropTypes.bool,
   showSelectedOnly: PropTypes.bool,

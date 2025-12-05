@@ -4,5 +4,5 @@
  * Note: throttle and debounce are available from functionUtils.js
  */
 
-// Re-export throttle from functionUtils for backward compatibility
+// Re-export throttle from functionUtils
 export { throttle } from "./functionUtils";

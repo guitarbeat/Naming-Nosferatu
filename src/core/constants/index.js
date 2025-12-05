@@ -20,12 +20,6 @@ export const FILTER_OPTIONS = {
     VISIBLE: "visible", // Default - show non-hidden names
     HIDDEN: "hidden", // Show only hidden names
   },
-  // Legacy aliases for backward compatibility
-  STATUS: {
-    ALL: "all",
-    ACTIVE: "active", // Maps to VISIBLE
-    HIDDEN: "hidden",
-  },
   USER: {
     ALL: "all",
     CURRENT: "current",

@@ -2,18 +2,29 @@
  * @module AnalysisDashboard
  * @description Shows top performing names to help users choose a name for their cat.
  * Displays a consolidated table with Rating, Wins, and Selected counts.
+ * Includes a bump chart visualization showing ranking changes over time.
  */
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
+import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
+import { BumpChart } from "../BumpChart";
+import { PerformanceBadges } from "../PerformanceBadge";
+import { TrendIndicator } from "../TrendIndicator";
+import { ColumnHeader } from "../ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
+import { useMetricComparison, useMultipleMetricComparison } from "../../hooks/useMetricComparison";
+import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { devError, devLog } from "../../utils/logger";
+import { devError } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
+import { formatDate } from "../../utils/timeUtils";
+import { calculatePercentile, getInsightMessage } from "../../utils/metricsUtils";
+import { getMetricLabel } from "../../utils/metricDefinitions";
 import "./AnalysisDashboard.css";
 
 /**
@@ -27,18 +38,18 @@ import "./AnalysisDashboard.css";
  * @param {boolean} props.defaultCollapsed - Default collapsed state
  */
 export function AnalysisDashboard({
-  stats: _stats, // * Unused - kept for compatibility
-  selectionStats: _selectionStats, // * Unused - kept for compatibility
   highlights,
   userName,
   showGlobalLeaderboard = true,
   defaultCollapsed = false,
-  isAdmin = false, // * Add admin prop to enable full analytics
-  onNameHidden, // * Callback when a name is hidden
+  isAdmin = false,
+  onNameHidden,
 }) {
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null); // * Admin: full analytics
+  const [rankingHistory, setRankingHistory] = useState({ data: [], timeLabels: [] });
+  const [viewMode, setViewMode] = useState("chart"); // "chart" or "table"
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortField, setSortField] = useState("rating"); // * Add sorting for admin
@@ -50,7 +61,11 @@ export function AnalysisDashboard({
     defaultCollapsed,
   );
 
-  // Fetch global leaderboard and selection popularity data on mount
+  // * Get context for filtering (optional - only if available)
+  const toolbarContext = useNameManagementContextSafe();
+  const userFilter = toolbarContext?.filterConfig?.userFilter || "all";
+
+  // Fetch global leaderboard and selection popularity data on mount and when filters change
   useEffect(() => {
     if (!showGlobalLeaderboard) return;
 
@@ -58,25 +73,27 @@ export function AnalysisDashboard({
       setIsLoading(true);
       setError(null);
       try {
+        const historyPromise = catNamesAPI.getRankingHistory(10, 7);
         if (isAdmin) {
-          // * Admin: fetch full analytics (all names) - use getPopularityAnalytics for complete data
-          const analytics = await catNamesAPI.getPopularityAnalytics(50);
-          setAnalyticsData(analytics);
-          // * Also fetch leaderboard/popularity for fallback
-          const [leaderboard, popularity] = await Promise.all([
+          const [analytics, leaderboard, popularity, history] = await Promise.all([
+            catNamesAPI.getPopularityAnalytics(50, userFilter, userName),
             catNamesAPI.getLeaderboard(50),
             catNamesAPI.getSelectionPopularity(50),
+            historyPromise,
           ]);
+          setAnalyticsData(analytics);
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
+          setRankingHistory(history);
         } else {
-          // * Regular: fetch top 10
-          const [leaderboard, popularity] = await Promise.all([
+          const [leaderboard, popularity, history] = await Promise.all([
             catNamesAPI.getLeaderboard(10),
             catNamesAPI.getSelectionPopularity(10),
+            historyPromise,
           ]);
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
+          setRankingHistory(history);
         }
       } catch (err) {
         devError("Failed to fetch analytics:", err);
@@ -87,12 +104,9 @@ export function AnalysisDashboard({
     };
 
     fetchData();
-  }, [showGlobalLeaderboard, isAdmin]);
+  }, [showGlobalLeaderboard, isAdmin, userFilter, userName]);
 
-  // * Consolidate all data into a single unified list
-  // * For admin: use full analytics data, for regular users: combine leaderboard and selection
   const consolidatedNames = useMemo(() => {
-    // * Admin mode: use full analytics data (all names with complete metrics)
     if (isAdmin && analyticsData?.length) {
       return analyticsData.map((item) => ({
         id: item.name_id,
@@ -100,13 +114,12 @@ export function AnalysisDashboard({
         rating: item.avg_rating || 1500,
         wins: item.total_wins || 0,
         selected: item.times_selected || 0,
+        dateSubmitted: item.created_at || item.date_submitted || null,
       }));
     }
 
-    // * Regular mode: combine leaderboard and selection data
     const nameMap = new Map();
 
-    // Add leaderboard data
     if (leaderboardData?.length) {
       leaderboardData.forEach((item) => {
         if (item.avg_rating > 1500 || item.wins > 0) {
@@ -116,12 +129,12 @@ export function AnalysisDashboard({
             rating: item.avg_rating || 1500,
             wins: item.wins || 0,
             selected: 0,
+            dateSubmitted: item.created_at || item.date_submitted || null,
           });
         }
       });
     }
 
-    // Add selection data
     if (selectionPopularity?.length) {
       selectionPopularity.forEach((item) => {
         const existing = nameMap.get(item.name_id);
@@ -134,21 +147,20 @@ export function AnalysisDashboard({
             rating: 1500,
             wins: 0,
             selected: item.times_selected || 0,
+            dateSubmitted: item.created_at || item.date_submitted || null,
           });
         }
       });
     }
 
-    // Sort by rating (most important for choosing a name), then by wins
     return Array.from(nameMap.values())
       .sort((a, b) => {
         if (b.rating !== a.rating) return b.rating - a.rating;
         return b.wins - a.wins;
       })
-      .slice(0, 10); // Top 10 names
+      .slice(0, 10);
   }, [leaderboardData, selectionPopularity, analyticsData, isAdmin]);
 
-  // * Handle sorting for admin mode
   const handleSort = useCallback(
     (field) => {
       if (sortField === field) {
@@ -161,7 +173,6 @@ export function AnalysisDashboard({
     [sortField],
   );
 
-  // * Render sort indicator
   const renderSortIndicator = useCallback(
     (field) => {
       if (sortField !== field) return null;
@@ -174,20 +185,15 @@ export function AnalysisDashboard({
     [sortField, sortDirection],
   );
 
-  // * Handle hiding a name with optimistic updates to prevent jumpy rerenders
   const handleHideName = useCallback(
-    async (nameId, name) => {
+    async (nameId, _name) => {
       if (!isAdmin || !userName) {
         devError("[AnalysisDashboard] Cannot hide: not admin or no userName");
         return;
       }
 
       try {
-        devLog("[AnalysisDashboard] Hiding name", { nameId, name, userName });
-
-        // * Optimistic update: immediately remove from local state (no loading state)
-        // * This prevents UI jumpiness by updating instantly
-        if (isAdmin && analyticsData) {
+        if (analyticsData) {
           setAnalyticsData((prev) =>
             prev ? prev.filter((item) => item.name_id !== nameId) : prev,
           );
@@ -203,21 +209,20 @@ export function AnalysisDashboard({
           );
         }
 
-        // * Call API in background
         await hiddenNamesAPI.hideName(userName, nameId);
 
-        // * Update context's hiddenIds without triggering full refetch
-        // * This prevents the double refetch that causes jumpiness
         if (onNameHidden) {
           onNameHidden(nameId);
         }
 
-        // * Silently refresh analytics in background after a delay
-        // * This ensures data consistency without blocking UI
-        const refreshTimeout = setTimeout(async () => {
+        setTimeout(async () => {
           try {
             if (isAdmin) {
-              const analytics = await catNamesAPI.getPopularityAnalytics(50);
+              const analytics = await catNamesAPI.getPopularityAnalytics(
+                50,
+                userFilter,
+                userName,
+              );
               setAnalyticsData(analytics);
             } else {
               const [leaderboard, popularity] = await Promise.all([
@@ -230,15 +235,15 @@ export function AnalysisDashboard({
           } catch (err) {
             devError("Failed to refresh after hide:", err);
           }
-        }, 500); // * Delay to batch multiple rapid hides
-
-        // * Store timeout for cleanup if component unmounts
-        return () => clearTimeout(refreshTimeout);
+        }, 500);
       } catch (error) {
         devError("[AnalysisDashboard] Error hiding name:", error);
-        // * Revert optimistic update on error by refreshing
         if (isAdmin) {
-          const analytics = await catNamesAPI.getPopularityAnalytics(50);
+          const analytics = await catNamesAPI.getPopularityAnalytics(
+            50,
+            userFilter,
+            userName,
+          );
           setAnalyticsData(analytics);
         } else {
           const [leaderboard, popularity] = await Promise.all([
@@ -248,7 +253,6 @@ export function AnalysisDashboard({
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
         }
-        throw error;
       }
     },
     [
@@ -258,24 +262,17 @@ export function AnalysisDashboard({
       analyticsData,
       leaderboardData,
       selectionPopularity,
+      userFilter,
     ],
   );
 
-  // Use highlights if provided, otherwise use consolidated data
   const displayNames = useMemo(() => {
-    // * Admin mode: apply sorting to consolidated data
-    if (isAdmin && consolidatedNames.length > 0) {
-      const sorted = [...consolidatedNames].sort((a, b) => {
-        const aVal = a[sortField] ?? 0;
-        const bVal = b[sortField] ?? 0;
-        return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
-      });
-      return sorted;
-    }
+    const filters = toolbarContext?.filterConfig || {};
+    let names = [];
 
-    // * Regular mode: use highlights if provided
-    if (highlights?.topRated?.length) {
-      // If highlights provided, combine them with consolidated data
+    if (isAdmin && consolidatedNames.length > 0) {
+      names = [...consolidatedNames];
+    } else if (highlights?.topRated?.length) {
       const highlightMap = new Map();
       highlights.topRated.forEach((item) => {
         highlightMap.set(item.id, {
@@ -294,14 +291,97 @@ export function AnalysisDashboard({
           }
         });
       }
-      return Array.from(highlightMap.values())
-        .sort((a, b) => b.rating - a.rating)
-        .slice(0, 10);
+      names = Array.from(highlightMap.values());
+    } else {
+      names = consolidatedNames;
     }
-    return consolidatedNames;
-  }, [highlights, consolidatedNames, isAdmin, sortField, sortDirection]);
 
-  // * Calculate summary stats for quick overview
+    // * Apply filters from TournamentToolbar
+    if (toolbarContext && filters) {
+      // * User filter is now applied at the API level in getPopularityAnalytics
+      // * No need to filter here as data is already filtered by user
+
+      // Selection filter
+      if (filters.selectionFilter && filters.selectionFilter !== "all") {
+        if (filters.selectionFilter === "selected") {
+          names = names.filter((n) => n.selected > 0);
+        } else if (filters.selectionFilter === "never_selected") {
+          names = names.filter((n) => n.selected === 0);
+        }
+      }
+
+      // Date filter (if dateSubmitted exists)
+      if (filters.dateFilter && filters.dateFilter !== "all") {
+        const now = new Date();
+        let filterDate = new Date(0); // Start of epoch
+
+        switch (filters.dateFilter) {
+          case "today":
+            filterDate = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+            );
+            break;
+          case "week":
+            filterDate = new Date(now);
+            filterDate.setDate(now.getDate() - 7);
+            break;
+          case "month":
+            filterDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+          case "year":
+            filterDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        }
+
+        names = names.filter((n) => {
+          if (!n.dateSubmitted) return false;
+          const submittedDate = new Date(n.dateSubmitted);
+          return submittedDate >= filterDate;
+        });
+      }
+    }
+
+    // * Apply sorting
+    if (isAdmin && sortField) {
+      names.sort((a, b) => {
+        let aVal = a[sortField];
+        let bVal = b[sortField];
+
+        // Handle date sorting
+        if (sortField === "dateSubmitted") {
+          aVal = aVal ? new Date(aVal).getTime() : 0;
+          bVal = bVal ? new Date(bVal).getTime() : 0;
+        }
+
+        // Handle string sorting
+        if (typeof aVal === "string" && typeof bVal === "string") {
+          return sortDirection === "desc"
+            ? bVal.localeCompare(aVal)
+            : aVal.localeCompare(bVal);
+        }
+
+        // Handle number sorting
+        aVal = aVal ?? 0;
+        bVal = bVal ?? 0;
+        return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
+      });
+    } else {
+      // Default sort by rating
+      names.sort((a, b) => b.rating - a.rating);
+    }
+
+    return names;
+  }, [
+    highlights,
+    consolidatedNames,
+    isAdmin,
+    sortField,
+    sortDirection,
+    toolbarContext,
+  ]);
+
   const summaryStats = useMemo(() => {
     if (displayNames.length === 0) return null;
 
@@ -325,7 +405,40 @@ export function AnalysisDashboard({
     };
   }, [displayNames]);
 
-  // * Generate insights based on data
+  // * Calculate percentiles and insights for each name
+  const namesWithInsights = useMemo(() => {
+    if (displayNames.length === 0) return [];
+
+    return displayNames.map((item) => {
+      const ratingPercentile = calculatePercentile(
+        item.rating,
+        displayNames.map((n) => n.rating),
+        true,
+      );
+      const selectedPercentile = calculatePercentile(
+        item.selected,
+        displayNames.map((n) => n.selected),
+        true,
+      );
+
+      // Determine insights/badges
+      const insights = [];
+      if (ratingPercentile >= 90) insights.push("top_rated");
+      if (selectedPercentile >= 90) insights.push("most_selected");
+      if (ratingPercentile >= 70 && selectedPercentile < 50)
+        insights.push("underrated");
+      if (item.wins > 0 && !displayNames.find((n) => n.id !== item.id && n.wins > 0))
+        insights.push("undefeated");
+
+      return {
+        ...item,
+        ratingPercentile,
+        selectedPercentile,
+        insights,
+      };
+    });
+  }, [displayNames]);
+
   const insights = useMemo(() => {
     if (!summaryStats || displayNames.length === 0) return [];
 
@@ -363,6 +476,60 @@ export function AnalysisDashboard({
     return result;
   }, [summaryStats, displayNames]);
 
+  // * Get context for toolbar integration (optional - only if available)
+  // * Safe hook returns null if context is not available
+  // * Note: toolbarContext is now used above in displayNames useMemo
+
+  // * Build toolbar if context is available and in analysis mode
+  const toolbar =
+    toolbarContext && toolbarContext.analysisMode ? (
+      <TournamentToolbar
+        mode="hybrid"
+        filters={toolbarContext.filterConfig}
+        onFilterChange={
+          toolbarContext.handleFilterChange ||
+          ((newFilters) => {
+            // * Update context filters
+            if (newFilters.searchTerm !== undefined) {
+              toolbarContext.setSearchTerm(newFilters.searchTerm || "");
+            }
+            if (newFilters.category !== undefined) {
+              toolbarContext.setSelectedCategory(newFilters.category || null);
+            }
+            if (newFilters.sortBy !== undefined) {
+              toolbarContext.setSortBy(newFilters.sortBy || "alphabetical");
+            }
+            if (newFilters.filterStatus !== undefined) {
+              toolbarContext.setFilterStatus(newFilters.filterStatus);
+            }
+            if (newFilters.userFilter !== undefined) {
+              toolbarContext.setUserFilter(newFilters.userFilter);
+            }
+            if (newFilters.selectionFilter !== undefined) {
+              toolbarContext.setSelectionFilter(newFilters.selectionFilter);
+            }
+            if (newFilters.sortOrder !== undefined) {
+              toolbarContext.setSortOrder(newFilters.sortOrder);
+            }
+          })
+        }
+        categories={toolbarContext.categories || []}
+        showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
+        showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
+        userSelectOptions={toolbarContext.profileProps?.userSelectOptions || []}
+        filteredCount={displayNames.length}
+        totalCount={consolidatedNames.length}
+        selectedCount={toolbarContext.selectedCount || 0}
+        showSelectedOnly={toolbarContext.showSelectedOnly || false}
+        onToggleShowSelected={toolbarContext.setShowSelectedOnly}
+        isSwipeMode={toolbarContext.isSwipeMode || false}
+        onToggleSwipeMode={toolbarContext.setIsSwipeMode}
+        showCatPictures={toolbarContext.showCatPictures || false}
+        onToggleCatPictures={toolbarContext.setShowCatPictures}
+        analysisMode={true}
+      />
+    ) : null;
+
   // Don't render if no data and not loading/error
   const hasData = displayNames.length > 0 || isLoading || error;
 
@@ -378,6 +545,7 @@ export function AnalysisDashboard({
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
         contentId="analysis-dashboard-content"
+        toolbar={toolbar}
       />
 
       <CollapsibleContent
@@ -398,62 +566,95 @@ export function AnalysisDashboard({
           </div>
         ) : (
           <>
-            {/* Quick Stats Summary - hide for admin (table shows all data) */}
-            {summaryStats && !isAdmin && (
-              <div className="analysis-stats-summary">
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Top Rating</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.maxRating}
-                  </div>
-                  <div className="analysis-stat-name">
-                    {summaryStats.topName?.name}
-                  </div>
-                </div>
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Avg Rating</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.avgRating}
-                  </div>
-                  <div className="analysis-stat-subtext">
-                    Across {displayNames.length} names
-                  </div>
-                </div>
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Total Selected</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.totalSelected}
-                  </div>
-                  <div className="analysis-stat-subtext">
-                    {summaryStats.maxSelected > 0
-                      ? `Most: ${summaryStats.maxSelected}x`
-                      : "No selections yet"}
-                  </div>
-                </div>
+            {/* View Toggle */}
+            <div className="analysis-view-toggle">
+              <button
+                type="button"
+                className={`analysis-view-btn ${viewMode === "chart" ? "active" : ""}`}
+                onClick={() => setViewMode("chart")}
+                aria-pressed={viewMode === "chart"}
+              >
+                📊 Bump Chart
+              </button>
+              <button
+                type="button"
+                className={`analysis-view-btn ${viewMode === "table" ? "active" : ""}`}
+                onClick={() => setViewMode("table")}
+                aria-pressed={viewMode === "table"}
+              >
+                📋 Table
+              </button>
+            </div>
+
+            {/* Bump Chart View */}
+            {viewMode === "chart" && (
+              <div className="analysis-chart-container">
+                <BumpChart
+                  data={rankingHistory.data}
+                  timeLabels={rankingHistory.timeLabels}
+                  maxDisplayed={10}
+                  height={320}
+                  showLegend={true}
+                />
               </div>
             )}
 
-            {/* Insights - hide for admin (table shows all data) */}
-            {insights.length > 0 && !isAdmin && (
-              <div className="analysis-insights">
-                {insights.map((insight, idx) => (
-                  <div
-                    key={idx}
-                    className={`analysis-insight analysis-insight--${insight.type}`}
-                  >
-                    <span className="analysis-insight-icon" aria-hidden="true">
-                      {insight.icon}
-                    </span>
-                    <span className="analysis-insight-text">
-                      {insight.message}
-                    </span>
+            {/* Table View */}
+            {viewMode === "table" && (
+              <>
+                {summaryStats && !isAdmin && (
+                  <div className="analysis-stats-summary">
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Top Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.maxRating}
+                      </div>
+                      <div className="analysis-stat-name">
+                        {summaryStats.topName?.name}
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Avg Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.avgRating}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        Across {displayNames.length} names
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Total Selected</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.totalSelected}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        {summaryStats.maxSelected > 0
+                          ? `Most: ${summaryStats.maxSelected}x`
+                          : "No selections yet"}
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            {/* Enhanced Table */}
-            <div className="top-names-list">
+                {insights.length > 0 && !isAdmin && (
+                  <div className="analysis-insights">
+                    {insights.map((insight, idx) => (
+                      <div
+                        key={idx}
+                        className={`analysis-insight analysis-insight--${insight.type}`}
+                      >
+                        <span className="analysis-insight-icon" aria-hidden="true">
+                          {insight.icon}
+                        </span>
+                        <span className="analysis-insight-text">
+                          {insight.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="top-names-list">
               <table
                 className="top-names-table"
                 role="table"
@@ -469,7 +670,18 @@ export function AnalysisDashboard({
                       onClick={isAdmin ? () => handleSort("rating") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Rating {isAdmin && renderSortIndicator("rating")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("rating")}
+                          metricName="rating"
+                          sortable={true}
+                          sorted={sortField === "rating"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Rating {renderSortIndicator("rating")}</>
+                      )}
                     </th>
                     <th
                       scope="col"
@@ -477,23 +689,67 @@ export function AnalysisDashboard({
                       onClick={isAdmin ? () => handleSort("wins") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Wins {isAdmin && renderSortIndicator("wins")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("total_wins")}
+                          metricName="total_wins"
+                          sortable={true}
+                          sorted={sortField === "wins"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Wins {renderSortIndicator("wins")}</>
+                      )}
                     </th>
                     <th
                       scope="col"
                       className={isAdmin ? "sortable" : ""}
-                      onClick={
-                        isAdmin ? () => handleSort("selected") : undefined
-                      }
+                      onClick={isAdmin ? () => handleSort("selected") : undefined}
                       style={isAdmin ? { cursor: "pointer" } : undefined}
                     >
-                      Selected {isAdmin && renderSortIndicator("selected")}
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("times_selected")}
+                          metricName="times_selected"
+                          sortable={true}
+                          sorted={sortField === "selected"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Selected {renderSortIndicator("selected")}</>
+                      )}
+                    </th>
+                    {isAdmin && (
+                      <th scope="col">
+                        <span className="column-header-label">Insights</span>
+                      </th>
+                    )}
+                    <th
+                      scope="col"
+                      className={isAdmin ? "sortable" : ""}
+                      onClick={isAdmin ? () => handleSort("dateSubmitted") : undefined}
+                      style={isAdmin ? { cursor: "pointer" } : undefined}
+                    >
+                      {isAdmin ? (
+                        <ColumnHeader
+                          label={getMetricLabel("created_at")}
+                          metricName="created_at"
+                          sortable={true}
+                          sorted={sortField === "dateSubmitted"}
+                          sortDirection={sortDirection}
+                          onSort={handleSort}
+                        />
+                      ) : (
+                        <>Date {renderSortIndicator("dateSubmitted")}</>
+                      )}
                     </th>
                     {isAdmin && <th scope="col">Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
-                  {displayNames.map((item, index) => {
+                  {namesWithInsights.map((item, index) => {
                     const rank = index + 1;
                     const ratingPercent =
                       summaryStats && summaryStats.maxRating > 0
@@ -527,12 +783,17 @@ export function AnalysisDashboard({
                         <td className="top-names-name">{item.name}</td>
                         <td className="top-names-rating-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-rating"
-                              aria-label={`Rating: ${item.rating}`}
-                            >
-                              {item.rating}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-rating"
+                                aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
+                              >
+                                {item.rating}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.ratingPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
@@ -579,12 +840,17 @@ export function AnalysisDashboard({
                         </td>
                         <td className="top-names-selected-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-selected"
-                              aria-label={`Selected ${item.selected} times`}
-                            >
-                              {item.selected}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-selected"
+                                aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
+                              >
+                                {item.selected}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.selectedPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
@@ -601,6 +867,37 @@ export function AnalysisDashboard({
                                 />
                               </div>
                             </div>
+                          )}
+                        </td>
+                        {isAdmin && (
+                          <td className="top-names-insights-cell">
+                            <PerformanceBadges types={item.insights} />
+                          </td>
+                        )}
+                        <td className="top-names-date-cell">
+                          {item.dateSubmitted ? (
+                            <span
+                              className="top-names-date"
+                              aria-label={`Submitted: ${formatDate(item.dateSubmitted)}`}
+                              title={formatDate(item.dateSubmitted, {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              })}
+                            >
+                              {formatDate(item.dateSubmitted, {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
+                          ) : (
+                            <span
+                              className="top-names-date top-names-date--unknown"
+                              aria-label="Date unknown"
+                            >
+                              —
+                            </span>
                           )}
                         </td>
                         {isAdmin && (
@@ -633,6 +930,8 @@ export function AnalysisDashboard({
                 </tbody>
               </table>
             </div>
+              </>
+            )}
           </>
         )}
       </CollapsibleContent>
@@ -650,6 +949,8 @@ AnalysisDashboard.propTypes = {
   }),
   showGlobalLeaderboard: PropTypes.bool,
   defaultCollapsed: PropTypes.bool,
+  stats: PropTypes.object,
+  selectionStats: PropTypes.object,
 };
 
 export default AnalysisDashboard;

@@ -1,16 +1,43 @@
 /**
  * @module CollapsibleHeader
- * @description Reusable collapsible header component for panels and sections.
- * Provides consistent styling and accessibility for collapsible UI patterns.
+ * @description Simple, reusable collapsible header component.
+ * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
 import PropTypes from "prop-types";
 import "./CollapsibleHeader.css";
 
 /**
+ * Chevron icon component - simple SVG for better control
+ */
+const ChevronIcon = ({ isCollapsed }) => (
+  <svg
+    className={`collapsible-chevron ${isCollapsed ? "collapsed" : ""}`}
+    width="12"
+    height="12"
+    viewBox="0 0 12 12"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path
+      d="M3 4.5L6 7.5L9 4.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+ChevronIcon.propTypes = {
+  isCollapsed: PropTypes.bool.isRequired,
+};
+
+/**
  * Collapsible Header Component
  * @param {Object} props
- * @param {string} props.title - Header title
+ * @param {string} props.title - Header title (required)
  * @param {string} props.icon - Emoji icon (optional)
  * @param {boolean} props.isCollapsed - Current collapsed state
  * @param {Function} props.onToggle - Toggle handler
@@ -19,6 +46,7 @@ import "./CollapsibleHeader.css";
  * @param {string} props.contentId - ID of the controlled content for a11y
  * @param {string} props.className - Additional CSS classes
  * @param {string} props.variant - Style variant: 'default' | 'compact'
+ * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
  */
 export function CollapsibleHeader({
   title,
@@ -30,32 +58,48 @@ export function CollapsibleHeader({
   contentId,
   className = "",
   variant = "default",
+  toolbar,
 }) {
   return (
-    <div
-      className={`collapsible-header collapsible-header--${variant} ${className}`}
-    >
-      <button
-        type="button"
-        className="collapsible-header-toggle"
-        onClick={onToggle}
-        aria-expanded={!isCollapsed}
-        aria-controls={contentId}
+    <>
+      <header
+        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
       >
-        <span
-          className={`collapsible-header-chevron ${isCollapsed ? "collapsed" : ""}`}
-          aria-hidden="true"
+        <button
+          type="button"
+          className="collapsible-toggle"
+          onClick={onToggle}
+          aria-expanded={!isCollapsed}
+          aria-controls={contentId}
+          aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+          title={isCollapsed ? title : undefined}
         >
-          ▼
-        </span>
-        {icon && <span aria-hidden="true">{icon}</span>}
-        <span className="collapsible-header-title">{title}</span>
-        {isCollapsed && summary && (
-          <span className="collapsible-header-summary">{summary}</span>
+          <ChevronIcon isCollapsed={isCollapsed} />
+          {icon && (
+            <span
+              className={
+                isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
+              }
+              aria-hidden="true"
+            >
+              {icon}
+            </span>
+          )}
+          {!isCollapsed && <span className="collapsible-title">{title}</span>}
+          {isCollapsed && summary && (
+            <span className="collapsible-summary">{summary}</span>
+          )}
+        </button>
+        {!isCollapsed && actions && (
+          <div className="collapsible-header-controls">
+            <div className="collapsible-actions">{actions}</div>
+          </div>
         )}
-      </button>
-      {actions && <div className="collapsible-header-actions">{actions}</div>}
-    </div>
+      </header>
+      {!isCollapsed && toolbar && (
+        <div className="collapsible-header-toolbar">{toolbar}</div>
+      )}
+    </>
   );
 }
 
@@ -69,6 +113,7 @@ CollapsibleHeader.propTypes = {
   contentId: PropTypes.string,
   className: PropTypes.string,
   variant: PropTypes.oneOf(["default", "compact"]),
+  toolbar: PropTypes.node,
 };
 
 /**

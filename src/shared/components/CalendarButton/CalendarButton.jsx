@@ -34,10 +34,12 @@ function CalendarButton({
     const winnerName = activeNames[0]?.name || "No winner yet";
 
     const today = new Date();
-    const startDate = today.toISOString().split("T")[0].replace(/-/g, "");
+    const [startDateISO] = today.toISOString().split("T");
+    const startDate = startDateISO.replace(/-/g, "");
     const endDate = new Date(today);
     endDate.setDate(endDate.getDate() + 1);
-    const endDateStr = endDate.toISOString().split("T")[0].replace(/-/g, "");
+    const [endDateISO] = endDate.toISOString().split("T");
+    const endDateStr = endDateISO.replace(/-/g, "");
 
     const text = `🐈‍⬛ ${winnerName}`;
     const details = `Cat name rankings for ${userName}:\n\n${activeNames

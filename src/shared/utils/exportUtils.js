@@ -25,7 +25,8 @@ function downloadBlob(blob, fileName) {
  * @returns {string} Formatted date string
  */
 function getDateString() {
-  return new Date().toISOString().split("T")[0];
+  const [date] = new Date().toISOString().split("T");
+  return date;
 }
 
 /**

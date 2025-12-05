@@ -7,6 +7,201 @@ import {
   getMediaQueryMatches,
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
+// * Import type guards from TypeScript file for compile-time type safety
+import {
+  isValidReactDevToolsHook,
+  areAllRenderersValid,
+} from "./types";
+
+// * Helper to safely apply devtools middleware
+// * Prevents errors when React DevTools extension is installed but API isn't ready
+// * This fixes "Cannot set properties of undefined (setting 'Activity')" errors
+// * STRATEGY: By default, DON'T use devtools unless React DevTools is 100% ready
+const applyDevtools = (storeImpl, config) => {
+  // * Only apply devtools in development
+  if (process.env.NODE_ENV !== "development") {
+    return storeImpl;
+  }
+
+  // * Check if devtools has been explicitly disabled due to previous errors
+  // * This flag persists across page loads via early check
+  if (
+    typeof window !== "undefined" &&
+    window.__ZUSTAND_DEVTOOLS_DISABLED__
+  ) {
+    return storeImpl;
+  }
+
+  // * Early exit: If window is not available, don't use devtools
+  if (typeof window === "undefined") {
+    return storeImpl;
+  }
+
+  // * Early exit: If React DevTools hook doesn't exist at all, don't use devtools
+  // * This prevents errors when React DevTools extension is not installed
+  if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+    return storeImpl;
+  }
+
+  // * Check if React DevTools is available and fully initialized
+  // * This prevents errors when the extension is installed but API isn't ready
+  // * The error "Cannot set properties of undefined (setting 'Activity')" occurs when
+  // * Zustand's devtools tries to set properties on renderer objects that don't exist yet
+  // * Uses type guards to ensure type safety and catch errors at development time
+  const isReactDevToolsAvailable = () => {
+    try {
+      if (typeof window === "undefined") {
+        return false;
+      }
+
+      const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+      // * Use type guard to check if hook is valid
+      if (!isValidReactDevToolsHook(hook)) {
+        return false;
+      }
+
+      // * TypeScript/type system now knows hook is ReactDevToolsHook
+      // * Use type guard to check if all renderers are valid
+      return areAllRenderersValid(hook);
+    } catch {
+      return false;
+    }
+  };
+
+  // * Only apply devtools if React DevTools is available and fully initialized
+  // * If not available, use plain store to prevent runtime errors
+  // * Also check if devtools was previously disabled due to errors
+  if (
+    !isReactDevToolsAvailable() ||
+    (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__)
+  ) {
+    if (process.env.NODE_ENV === "development") {
+      if (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__) {
+        console.warn(
+          "[Zustand] Devtools was previously disabled due to errors, using plain store",
+        );
+      } else {
+        console.warn(
+          "[Zustand] React DevTools not available or not ready, using plain store (devtools disabled)",
+        );
+      }
+    }
+    return storeImpl;
+  }
+
+  // * Wrap devtools middleware to catch runtime errors
+  // * Even with checks, Zustand devtools can throw errors when accessing hook properties
+  // * Uses type guards to ensure type safety
+  try {
+    // * Final runtime check: verify hook is still valid before applying devtools
+    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+    // * Use type guard to check if hook is valid
+    if (!isValidReactDevToolsHook(hook)) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook invalid at runtime, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * TypeScript/type system now knows hook is ReactDevToolsHook
+    // * Validate all renderers are valid before proceeding
+    if (!areAllRenderersValid(hook)) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Invalid renderers detected before devtools application, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * Final check: Verify React DevTools is still available right before calling devtools()
+    // * This prevents race conditions where renderers become invalid between checks
+    const finalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    if (!isValidReactDevToolsHook(finalHook) || !areAllRenderersValid(finalHook)) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook invalid at final check, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+
+    // * Apply devtools middleware with error handling
+    // * Wrap the devtools() call itself to catch initialization errors
+    let devtoolsMiddleware;
+    try {
+      devtoolsMiddleware = devtools(storeImpl, {
+        ...config,
+        enabled: true,
+      });
+    } catch (devtoolsInitError) {
+      // * If devtools initialization fails (e.g., accessing renderers during setup),
+      // * disable devtools and return plain store
+      if (typeof window !== "undefined") {
+        window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      }
+      if (process.env.NODE_ENV === "development") {
+        const errorMsg = devtoolsInitError?.message || String(devtoolsInitError);
+        if (errorMsg.includes("Activity") || errorMsg.includes("undefined")) {
+          console.warn(
+            "[Zustand] Devtools initialization failed with 'Activity' error, using plain store",
+          );
+        } else {
+          console.warn(
+            "[Zustand] Devtools initialization failed, using plain store:",
+            errorMsg,
+          );
+        }
+      }
+      return storeImpl;
+    }
+
+    // * Wrap the middleware to catch runtime errors when it accesses React DevTools
+    // * This provides an additional safety layer for errors that occur after initialization
+    return (set, get, api) => {
+      try {
+        return devtoolsMiddleware(set, get, api);
+      } catch (error) {
+        // * If devtools middleware throws at runtime, disable it and use plain store
+        const errorMsg = error?.message || String(error);
+        if (
+          typeof errorMsg === "string" &&
+          (errorMsg.includes("Activity") || errorMsg.includes("Cannot set properties of undefined"))
+        ) {
+          if (typeof window !== "undefined") {
+            window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+          }
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] Caught 'Activity' error in devtools middleware, disabling devtools",
+            );
+          }
+          return storeImpl(set, get, api);
+        }
+        // * Re-throw other errors
+        throw error;
+      }
+    };
+  } catch (error) {
+    // * If devtools fails to initialize, fallback to plain store implementation
+    // * This catches initialization errors including the 'Activity' property error
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[Zustand] DevTools initialization failed, using plain store:",
+        error.message || error,
+      );
+    }
+    // * Disable devtools to prevent future attempts
+    if (typeof window !== "undefined") {
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+    }
+    return storeImpl;
+  }
+};
 
 const THEME_STORAGE_KEY = "theme";
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
@@ -167,417 +362,539 @@ const getInitialUserState = () => {
  * Consolidates tournament state, user state, UI state, and actions into a single store.
  */
 
-const useAppStore = create(
-  devtools(
-    (set, get) => ({
-      // * Tournament State
-      tournament: {
-        names: null,
-        ratings: {},
-        isComplete: false,
-        isLoading: false,
-        voteHistory: [],
-        currentView: "tournament",
-      },
+// * Store implementation
+const storeImpl = (set, get) => ({
+  // * Tournament State
+  tournament: {
+    names: null,
+    ratings: {},
+    isComplete: false,
+    isLoading: false,
+    voteHistory: [],
+    currentView: "tournament",
+  },
 
-      // * User State
-      user: getInitialUserState(),
+  // * User State
+  user: getInitialUserState(),
 
-      // * UI State
-      ui: {
-        ...getInitialThemeState(),
-        showGlobalAnalytics: false,
-        showUserComparison: false,
-        matrixMode: false,
-      },
+  // * UI State
+  ui: {
+    ...getInitialThemeState(),
+    showGlobalAnalytics: false,
+    showUserComparison: false,
+    matrixMode: false,
+  },
 
-      // * Site Settings State
-      siteSettings: {
-        catChosenName: null,
-        isLoaded: false,
-      },
+  // * Site Settings State
+  siteSettings: {
+    catChosenName: null,
+    isLoaded: false,
+  },
 
-      // * Error State
-      errors: {
-        current: null,
-        history: [],
-      },
+  // * Error State
+  errors: {
+    current: null,
+    history: [],
+  },
 
-      // * Tournament Actions
-      tournamentActions: {
-        setNames: (names) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              names: names?.map((n) => ({
-                id: n.id,
-                name: n.name,
-                description: n.description,
-                rating: state.tournament.ratings[n.name]?.rating || 1500,
-              })),
-            },
+  // * Tournament Actions
+  tournamentActions: {
+    setNames: (names) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          names: names?.map((n) => ({
+            id: n.id,
+            name: n.name,
+            description: n.description,
+            rating: state.tournament.ratings[n.name]?.rating || 1500,
           })),
+        },
+      })),
 
-        setRatings: (ratings) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              ratings: { ...state.tournament.ratings, ...ratings },
-            },
-          })),
+    setRatings: (ratings) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          ratings: { ...state.tournament.ratings, ...ratings },
+        },
+      })),
 
-        setComplete: (isComplete) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              isComplete,
-            },
-          })),
+    setComplete: (isComplete) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          isComplete,
+        },
+      })),
 
-        setLoading: (isLoading) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              isLoading,
-            },
-          })),
+    setLoading: (isLoading) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          isLoading,
+        },
+      })),
 
-        addVote: (vote) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              voteHistory: [...state.tournament.voteHistory, vote],
-            },
-          })),
+    addVote: (vote) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          voteHistory: [...state.tournament.voteHistory, vote],
+        },
+      })),
 
-        resetTournament: () =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              names: null,
-              isComplete: false,
-              voteHistory: [],
-              isLoading: false, // * Explicitly set loading to false to prevent flashing
-              currentView: "tournament", // * Reset view to allow starting new tournament
-            },
-          })),
+    resetTournament: () =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          names: null,
+          isComplete: false,
+          voteHistory: [],
+          isLoading: false, // * Explicitly set loading to false to prevent flashing
+          currentView: "tournament", // * Reset view to allow starting new tournament
+        },
+      })),
 
-        setView: (view) =>
-          set((state) => ({
-            tournament: {
-              ...state.tournament,
-              currentView: view,
-            },
-          })),
-      },
+    setView: (view) =>
+      set((state) => ({
+        tournament: {
+          ...state.tournament,
+          currentView: view,
+        },
+      })),
+  },
 
-      // * User Actions
-      userActions: {
-        setUser: (userData) =>
-          set((state) => {
-            const newUser = {
-              ...state.user,
-              ...userData,
-            };
-            // * Persist to localStorage
-            try {
-              if (newUser.name) {
-                localStorage.setItem("catNamesUser", newUser.name);
-              } else {
-                localStorage.removeItem("catNamesUser");
-              }
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error updating localStorage:", error);
-              }
-            }
-            return {
-              user: newUser,
-            };
-          }),
+  // * User Actions
+  userActions: {
+    setUser: (userData) =>
+      set((state) => {
+        const newUser = {
+          ...state.user,
+          ...userData,
+        };
+        // * Persist to localStorage
+        try {
+          if (newUser.name) {
+            localStorage.setItem("catNamesUser", newUser.name);
+          } else {
+            localStorage.removeItem("catNamesUser");
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error updating localStorage:", error);
+          }
+        }
+        return {
+          user: newUser,
+        };
+      }),
 
-        login: (userName) =>
-          set((state) => {
-            const newUser = {
-              ...state.user,
-              name: userName,
-              isLoggedIn: true,
-            };
-            // * Persist to localStorage
-            try {
-              localStorage.setItem("catNamesUser", userName);
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error updating localStorage:", error);
-              }
-            }
-            return {
-              user: newUser,
-            };
-          }),
+    login: (userName) =>
+      set((state) => {
+        const newUser = {
+          ...state.user,
+          name: userName,
+          isLoggedIn: true,
+        };
+        // * Persist to localStorage
+        try {
+          localStorage.setItem("catNamesUser", userName);
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error updating localStorage:", error);
+          }
+        }
+        return {
+          user: newUser,
+        };
+      }),
 
-        logout: () =>
-          set((state) => {
-            // * Clear localStorage
-            try {
-              localStorage.removeItem("catNamesUser");
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error clearing localStorage:", error);
-              }
-            }
+    logout: () =>
+      set((state) => {
+        // * Clear localStorage
+        try {
+          localStorage.removeItem("catNamesUser");
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error clearing localStorage:", error);
+          }
+        }
+        return {
+          user: {
+            ...state.user,
+            name: "",
+            isLoggedIn: false,
+            isAdmin: false,
+          },
+          tournament: {
+            ...state.tournament,
+            names: null,
+            isComplete: false,
+            voteHistory: [],
+          },
+        };
+      }),
+
+    setAdminStatus: (isAdmin) =>
+      set((state) => ({
+        user: {
+          ...state.user,
+          isAdmin,
+        },
+      })),
+
+    // * Initialize user from localStorage
+    initializeFromStorage: () =>
+      set((state) => {
+        try {
+          const storedUser = localStorage.getItem("catNamesUser");
+          if (storedUser && state.user.name !== storedUser) {
             return {
               user: {
                 ...state.user,
-                name: "",
-                isLoggedIn: false,
-                isAdmin: false,
-              },
-              tournament: {
-                ...state.tournament,
-                names: null,
-                isComplete: false,
-                voteHistory: [],
+                name: storedUser,
+                isLoggedIn: true,
               },
             };
-          }),
-
-        setAdminStatus: (isAdmin) =>
-          set((state) => ({
-            user: {
-              ...state.user,
-              isAdmin,
-            },
-          })),
-
-        // * Initialize user from localStorage
-        initializeFromStorage: () =>
-          set((state) => {
-            try {
-              const storedUser = localStorage.getItem("catNamesUser");
-              if (storedUser && state.user.name !== storedUser) {
-                return {
-                  user: {
-                    ...state.user,
-                    name: storedUser,
-                    isLoggedIn: true,
-                  },
-                };
-              }
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") {
-                console.error("Error reading from localStorage:", error);
-              }
-            }
-            return state;
-          }),
-      },
-
-      // * UI Actions
-      uiActions: {
-        // * Initialize theme from DOM and system preference
-        initializeTheme: () => {
-          if (typeof document !== "undefined") {
-            const domTheme = document.documentElement?.dataset?.theme;
-            if (domTheme === "light" || domTheme === "dark") {
-              const { theme, themePreference } = get().ui;
-              if (themePreference === "system" && theme !== domTheme) {
-                set((state) => ({
-                  ui: {
-                    ...state.ui,
-                    theme: domTheme,
-                  },
-                }));
-              }
-            }
           }
-
-          subscribeToSystemTheme(set, get);
-        },
-
-        setTheme: (nextPreference) => {
-          if (!["light", "dark", "system"].includes(nextPreference)) {
-            return;
-          }
-
-          const isSystemPreference = nextPreference === "system";
-          const themeToApply = isSystemPreference
-            ? getSystemTheme()
-            : nextPreference;
-
-          try {
-            if (typeof window !== "undefined" && window.localStorage) {
-              if (isSystemPreference) {
-                window.localStorage.removeItem(THEME_STORAGE_KEY);
-              } else {
-                window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
-              }
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.error("Error updating theme localStorage:", error);
-            }
-          }
-
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              theme: themeToApply,
-              themePreference: isSystemPreference ? "system" : nextPreference,
-            },
-          }));
-
-          if (isSystemPreference) {
-            subscribeToSystemTheme(set, get);
-          }
-        },
-
-        toggleTheme: () => {
-          const currentTheme = get().ui.theme;
-          const newTheme = currentTheme === "light" ? "dark" : "light";
-
-          try {
-            if (typeof window !== "undefined" && window.localStorage) {
-              window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.error("Error updating theme localStorage:", error);
-            }
-          }
-
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              theme: newTheme,
-              themePreference: newTheme,
-            },
-          }));
-        },
-
-        setMatrixMode: (enabled) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              matrixMode: enabled,
-            },
-          })),
-
-        setGlobalAnalytics: (show) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showGlobalAnalytics: show,
-            },
-          })),
-
-        setUserComparison: (show) =>
-          set((state) => ({
-            ui: {
-              ...state.ui,
-              showUserComparison: show,
-            },
-          })),
-      },
-
-      // * Error Actions
-      errorActions: {
-        setError: (error) =>
-          set((state) => ({
-            errors: {
-              current: error,
-              history: error
-                ? [...state.errors.history, error]
-                : state.errors.history,
-            },
-          })),
-
-        clearError: () =>
-          set((state) => ({
-            errors: {
-              ...state.errors,
-              current: null,
-            },
-          })),
-
-        logError: (error, context, metadata = {}) => {
-          const errorLog = {
-            error,
-            context,
-            metadata,
-            timestamp: new Date().toISOString(),
-          };
-
-          set((state) => ({
-            errors: {
-              ...state.errors,
-              history: [...state.errors.history, errorLog],
-            },
-          }));
-
-          // * Log to console for development
+        } catch (error) {
           if (process.env.NODE_ENV === "development") {
-            console.error("Error logged:", errorLog);
+            console.error("Error reading from localStorage:", error);
           }
-        },
-      },
+        }
+        return state;
+      }),
+  },
 
-      // * Site Settings Actions
-      siteSettingsActions: {
-        loadCatChosenName: async () => {
-          try {
-            const data = await siteSettingsAPI.getCatChosenName();
+  // * UI Actions
+  uiActions: {
+    // * Initialize theme from DOM and system preference
+    initializeTheme: () => {
+      if (typeof document !== "undefined") {
+        const domTheme = document.documentElement?.dataset?.theme;
+        if (domTheme === "light" || domTheme === "dark") {
+          const { theme, themePreference } = get().ui;
+          if (themePreference === "system" && theme !== domTheme) {
             set((state) => ({
-              siteSettings: {
-                ...state.siteSettings,
-                catChosenName: data,
-                isLoaded: true,
+              ui: {
+                ...state.ui,
+                theme: domTheme,
               },
             }));
-            return data;
-          } catch (error) {
-            console.error("Error loading cat chosen name:", error);
-            set((state) => ({
-              siteSettings: {
-                ...state.siteSettings,
-                isLoaded: true,
-              },
-            }));
-            return null;
           }
-        },
+        }
+      }
 
-        updateCatChosenName: (nameData) =>
-          set((state) => ({
-            siteSettings: {
-              ...state.siteSettings,
-              catChosenName: nameData,
-            },
-          })),
-      },
-
-      // * Computed Selectors
-      selectors: {
-        getTournamentNames: () => get().tournament.names,
-        getRatings: () => get().tournament.ratings,
-        getIsComplete: () => get().tournament.isComplete,
-        getIsLoading: () => get().tournament.isLoading,
-        getVoteHistory: () => get().tournament.voteHistory,
-        getCurrentView: () => get().tournament.currentView,
-        getUserName: () => get().user.name,
-        getIsLoggedIn: () => get().user.isLoggedIn,
-        getIsAdmin: () => get().user.isAdmin,
-        getTheme: () => get().ui.theme,
-
-        getCurrentError: () => get().errors.current,
-      },
-    }),
-    {
-      name: "name-nosferatu-store",
-      enabled: process.env.NODE_ENV === "development",
+      subscribeToSystemTheme(set, get);
     },
-  ),
-);
+
+    setTheme: (nextPreference) => {
+      if (!["light", "dark", "system"].includes(nextPreference)) {
+        return;
+      }
+
+      const isSystemPreference = nextPreference === "system";
+      const themeToApply = isSystemPreference
+        ? getSystemTheme()
+        : nextPreference;
+
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          if (isSystemPreference) {
+            window.localStorage.removeItem(THEME_STORAGE_KEY);
+          } else {
+            window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+          }
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error updating theme localStorage:", error);
+        }
+      }
+
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          theme: themeToApply,
+          themePreference: isSystemPreference ? "system" : nextPreference,
+        },
+      }));
+
+      if (isSystemPreference) {
+        subscribeToSystemTheme(set, get);
+      }
+    },
+
+    toggleTheme: () => {
+      const currentTheme = get().ui.theme;
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error updating theme localStorage:", error);
+        }
+      }
+
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          theme: newTheme,
+          themePreference: newTheme,
+        },
+      }));
+    },
+
+    setMatrixMode: (enabled) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          matrixMode: enabled,
+        },
+      })),
+
+    setGlobalAnalytics: (show) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          showGlobalAnalytics: show,
+        },
+      })),
+
+    setUserComparison: (show) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          showUserComparison: show,
+        },
+      })),
+  },
+
+  // * Error Actions
+  errorActions: {
+    setError: (error) =>
+      set((state) => ({
+        errors: {
+          current: error,
+          history: error
+            ? [...state.errors.history, error]
+            : state.errors.history,
+        },
+      })),
+
+    clearError: () =>
+      set((state) => ({
+        errors: {
+          ...state.errors,
+          current: null,
+        },
+      })),
+
+    logError: (error, context, metadata = {}) => {
+      const errorLog = {
+        error,
+        context,
+        metadata,
+        timestamp: new Date().toISOString(),
+      };
+
+      set((state) => ({
+        errors: {
+          ...state.errors,
+          history: [...state.errors.history, errorLog],
+        },
+      }));
+
+      // * Log to console for development
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error logged:", errorLog);
+      }
+    },
+  },
+
+  // * Site Settings Actions
+  siteSettingsActions: {
+    loadCatChosenName: async () => {
+      try {
+        const data = await siteSettingsAPI.getCatChosenName();
+        set((state) => ({
+          siteSettings: {
+            ...state.siteSettings,
+            catChosenName: data,
+            isLoaded: true,
+          },
+        }));
+        return data;
+      } catch (error) {
+        console.error("Error loading cat chosen name:", error);
+        set((state) => ({
+          siteSettings: {
+            ...state.siteSettings,
+            isLoaded: true,
+          },
+        }));
+        return null;
+      }
+    },
+
+    updateCatChosenName: (nameData) =>
+      set((state) => ({
+        siteSettings: {
+          ...state.siteSettings,
+          catChosenName: nameData,
+        },
+      })),
+  },
+
+  // * Computed Selectors
+  selectors: {
+    getTournamentNames: () => get().tournament.names,
+    getRatings: () => get().tournament.ratings,
+    getIsComplete: () => get().tournament.isComplete,
+    getIsLoading: () => get().tournament.isLoading,
+    getVoteHistory: () => get().tournament.voteHistory,
+    getCurrentView: () => get().tournament.currentView,
+    getUserName: () => get().user.name,
+    getIsLoggedIn: () => get().user.isLoggedIn,
+    getIsAdmin: () => get().user.isAdmin,
+    getTheme: () => get().ui.theme,
+
+    getCurrentError: () => get().errors.current,
+  },
+});
+
+// * Early check: Disable devtools if React DevTools hook is not properly initialized
+// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+// * by detecting problematic hook states before Zustand devtools tries to use them
+// * This check runs IMMEDIATELY when the module loads, before any store creation
+// * Uses type guards to ensure type safety and catch errors at development time
+if (
+  typeof window !== "undefined" &&
+  process.env.NODE_ENV === "development"
+) {
+  try {
+    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+
+    // * Use type guard to check if hook is valid
+    if (!isValidReactDevToolsHook(hook)) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook not available or invalid, disabling devtools",
+        );
+      }
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+    } else {
+      // * TypeScript/type system now knows hook is ReactDevToolsHook
+      // * Check if all renderers are valid
+      if (!areAllRenderersValid(hook)) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
+          );
+        }
+        window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      }
+    }
+  } catch (error) {
+    // * If hook check fails, disable devtools to be safe
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[Zustand] Failed to check React DevTools hook, disabling devtools:",
+        error.message || error,
+      );
+    }
+    if (typeof window !== "undefined") {
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+    }
+  }
+}
+
+// * Safely apply devtools middleware with error handling
+// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+// * that occur when React DevTools extension is installed but API isn't ready
+// * Wrap store creation in try-catch to handle runtime errors during initialization
+let useAppStore;
+try {
+  const storeWithDevtools = applyDevtools(storeImpl, {
+    name: "name-nosferatu-store",
+  });
+  useAppStore = create(storeWithDevtools);
+} catch (error) {
+  // * If store creation fails (e.g., devtools runtime error), create plain store
+  // * This catches errors like "Cannot set properties of undefined (setting 'Activity')"
+  if (process.env.NODE_ENV === "development") {
+    console.warn(
+      "[Zustand] Store creation failed, using plain store:",
+      error.message || error,
+    );
+  }
+  // * Fallback: create store without devtools
+  useAppStore = create(storeImpl);
+  
+  // * Set a flag to prevent future devtools attempts
+  if (typeof window !== "undefined") {
+    window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+  }
+}
+
+// * Set up global error handler to catch devtools errors at runtime
+// * This provides a safety net if the error occurs after store creation
+// * Works in all environments, not just development
+if (typeof window !== "undefined") {
+  const originalErrorHandler = window.onerror;
+  window.onerror = function (message, source, lineno, colno, error) {
+    // * Check if this is the specific "Activity" property error
+    const messageStr = typeof message === "string" ? message : String(message || "");
+    const errorMsg = error?.message || "";
+    const combinedMsg = `${messageStr} ${errorMsg}`;
+    
+    if (
+      combinedMsg.includes("Cannot set properties of undefined") &&
+      combinedMsg.includes("Activity")
+    ) {
+      // * Disable devtools to prevent future occurrences
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Caught devtools 'Activity' error at runtime, devtools disabled",
+        );
+      }
+      // * Suppress the error to prevent it from appearing in console
+      return true; // * Return true to suppress the error
+    }
+    // * Call original error handler if it exists
+    if (originalErrorHandler) {
+      return originalErrorHandler(message, source, lineno, colno, error);
+    }
+    return false;
+  };
+
+  // * Also catch unhandled promise rejections that might contain this error
+  window.addEventListener("unhandledrejection", function (event) {
+    const reason = event.reason;
+    const errorMsg = reason?.message || String(reason || "");
+    
+    if (
+      typeof errorMsg === "string" &&
+      errorMsg.includes("Cannot set properties of undefined") &&
+      errorMsg.includes("Activity")
+    ) {
+      // * Disable devtools to prevent future occurrences
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Caught devtools 'Activity' error in unhandled rejection, devtools disabled",
+        );
+      }
+      // * Prevent the error from propagating
+      event.preventDefault();
+    }
+  });
+}
 
 // * Hook to initialize store from localStorage
 export const useAppStoreInitialization = () => {

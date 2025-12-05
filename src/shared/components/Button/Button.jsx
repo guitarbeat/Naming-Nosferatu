@@ -2,7 +2,7 @@
  * @module Button
  * @description Unified button component system using shadcn/ui.
  * Provides consistent styling, accessibility, and behavior across the app.
- * This component wraps the shadcn Button and maintains the legacy API.
+ * This component wraps the shadcn Button and provides a consistent API.
  */
 
 import React from "react";

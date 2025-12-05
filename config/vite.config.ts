@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     envPrefix: ['VITE_', 'SUPABASE_'],
+    css: {
+      postcss: resolveFromRoot('config/postcss.config.js'),
+    },
     resolve: {
       alias: {
         '@': resolveFromRoot('src'),

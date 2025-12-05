@@ -23,6 +23,7 @@ export function MenuNavItem({
   view,
   onClick,
   isActive: customIsActive,
+  ...rest
 }) {
   const isActive =
     customIsActive !== undefined
@@ -40,7 +41,7 @@ export function MenuNavItem({
   };
 
   return (
-    <SidebarMenuItem key={itemKey}>
+    <SidebarMenuItem key={itemKey} data-active={isActive} {...rest}>
       <SidebarMenuButton asChild>
         <a
           href="#"
@@ -48,6 +49,7 @@ export function MenuNavItem({
           className={isActive ? "active" : ""}
           aria-current={isActive ? "page" : undefined}
           title={label}
+          data-active={isActive}
         >
           <Icon />
           <span className="nav-item-label">{label}</span>

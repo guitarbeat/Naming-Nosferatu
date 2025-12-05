@@ -148,11 +148,12 @@
 }
 
 .tournamentTitle {
-  margin: 0 0 var(--space-3) 0;
-  font-size: var(--text-2xl);
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-3xl);
   font-weight: var(--font-weight-bold);
   color: var(--text-primary);
   line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
@@ -208,11 +209,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   width: 100%;
   max-width: min(1400px, 100vw);
-  padding: var(--space-2);
-  padding-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  padding-bottom: var(--space-8);
   margin-inline: auto;
   background: transparent;
   box-sizing: border-box;
@@ -273,24 +274,28 @@
 
 .header {
   composes: surfaceCard stack stackGapMd;
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
+  padding: var(--space-5);
+  margin-bottom: var(--space-3);
+  background: hsl(var(--card) / 95%);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 50%);
 }
 
 .stickyControls {
   position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--card-background);
-  border-bottom: 1px solid var(--border-color);
-  padding: var(--space-2) var(--space-3);
-  margin: 0 calc(var(--space-3) * -1) var(--space-2);
-  transition: box-shadow 0.3s ease;
+  top: 56px;
+  z-index: 90;
+  background: hsl(var(--background) / 98%);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid hsl(var(--border) / 40%);
+  padding: var(--space-3);
+  margin: 0 calc(var(--space-4) * -1) var(--space-3);
+  transition: all 0.3s ease;
 }
 
 .stickyControls.isStuck {
-  box-shadow: var(--shadow-md);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: 0 2px 12px hsl(var(--background) / 20%);
+  border-radius: 0;
 }
 
 .errorMessage {
@@ -463,19 +468,17 @@
 /* * Cards container - Enhanced mosaic layout with variable sizing and better spacing */
 .cardsContainer {
   display: grid;
-  /* * Responsive grid with optimal column sizing */
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   grid-auto-rows: min-content;
   grid-auto-flow: row dense;
-  gap: var(--space-4);
+  gap: var(--space-3);
   justify-content: center;
   width: 100%;
   max-width: 100%;
   margin-inline: auto;
   min-height: min-content;
   align-items: start;
-  padding: var(--space-2);
-  /* * Smooth transitions for layout changes */
+  padding: 0;
   transition:
     gap 0.3s ease,
     padding 0.3s ease;
@@ -484,30 +487,29 @@
 /* * Enhanced responsive breakpoints for better mobile experience */
 @media (width >= 1920px) {
   .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: var(--space-5);
-    padding: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-4);
   }
 }
 
 @media (width >= 1440px) and (width < 1920px) {
   .cardsContainer {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-4);
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--space-3);
   }
 }
 
 @media (width >= 1024px) and (width < 1440px) {
   .cardsContainer {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 }
 
 @media (width >= 768px) and (width < 1024px) {
   .cardsContainer {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 }
 
