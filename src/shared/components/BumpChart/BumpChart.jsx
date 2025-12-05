@@ -6,6 +6,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
+import { TrendIndicator } from "../TrendIndicator";
 import "./BumpChart.css";
 
 // Color palette for the lines (vibrant, distinguishable colors)
