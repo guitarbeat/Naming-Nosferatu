@@ -2,6 +2,7 @@
  * @module AnalysisDashboard
  * @description Shows top performing names to help users choose a name for their cat.
  * Displays a consolidated table with Rating, Wins, and Selected counts.
+ * Includes a bump chart visualization showing ranking changes over time.
  */
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -9,6 +10,7 @@ import PropTypes from "prop-types";
 import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
+import { BumpChart } from "../BumpChart";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
@@ -40,6 +42,8 @@ export function AnalysisDashboard({
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null); // * Admin: full analytics
+  const [rankingHistory, setRankingHistory] = useState({ data: [], timeLabels: [] });
+  const [viewMode, setViewMode] = useState("chart"); // "chart" or "table"
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortField, setSortField] = useState("rating"); // * Add sorting for admin
@@ -63,30 +67,27 @@ export function AnalysisDashboard({
       setIsLoading(true);
       setError(null);
       try {
+        const historyPromise = catNamesAPI.getRankingHistory(10, 7);
         if (isAdmin) {
-          // * Admin: fetch full analytics (all names) - use getPopularityAnalytics for complete data
-          // * Pass userFilter to aggregate data from all users or filter by specific user
-          const analytics = await catNamesAPI.getPopularityAnalytics(
-            50,
-            userFilter,
-            userName,
-          );
-          setAnalyticsData(analytics);
-          // * Also fetch leaderboard/popularity for fallback
-          const [leaderboard, popularity] = await Promise.all([
+          const [analytics, leaderboard, popularity, history] = await Promise.all([
+            catNamesAPI.getPopularityAnalytics(50, userFilter, userName),
             catNamesAPI.getLeaderboard(50),
             catNamesAPI.getSelectionPopularity(50),
+            historyPromise,
           ]);
+          setAnalyticsData(analytics);
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
+          setRankingHistory(history);
         } else {
-          // * Regular: fetch top 10
-          const [leaderboard, popularity] = await Promise.all([
+          const [leaderboard, popularity, history] = await Promise.all([
             catNamesAPI.getLeaderboard(10),
             catNamesAPI.getSelectionPopularity(10),
+            historyPromise,
           ]);
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
+          setRankingHistory(history);
         }
       } catch (err) {
         devError("Failed to fetch analytics:", err);
@@ -525,59 +526,95 @@ export function AnalysisDashboard({
           </div>
         ) : (
           <>
-            {summaryStats && !isAdmin && (
-              <div className="analysis-stats-summary">
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Top Rating</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.maxRating}
-                  </div>
-                  <div className="analysis-stat-name">
-                    {summaryStats.topName?.name}
-                  </div>
-                </div>
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Avg Rating</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.avgRating}
-                  </div>
-                  <div className="analysis-stat-subtext">
-                    Across {displayNames.length} names
-                  </div>
-                </div>
-                <div className="analysis-stat-card">
-                  <div className="analysis-stat-label">Total Selected</div>
-                  <div className="analysis-stat-value">
-                    {summaryStats.totalSelected}
-                  </div>
-                  <div className="analysis-stat-subtext">
-                    {summaryStats.maxSelected > 0
-                      ? `Most: ${summaryStats.maxSelected}x`
-                      : "No selections yet"}
-                  </div>
-                </div>
+            {/* View Toggle */}
+            <div className="analysis-view-toggle">
+              <button
+                type="button"
+                className={`analysis-view-btn ${viewMode === "chart" ? "active" : ""}`}
+                onClick={() => setViewMode("chart")}
+                aria-pressed={viewMode === "chart"}
+              >
+                📊 Bump Chart
+              </button>
+              <button
+                type="button"
+                className={`analysis-view-btn ${viewMode === "table" ? "active" : ""}`}
+                onClick={() => setViewMode("table")}
+                aria-pressed={viewMode === "table"}
+              >
+                📋 Table
+              </button>
+            </div>
+
+            {/* Bump Chart View */}
+            {viewMode === "chart" && (
+              <div className="analysis-chart-container">
+                <BumpChart
+                  data={rankingHistory.data}
+                  timeLabels={rankingHistory.timeLabels}
+                  maxDisplayed={10}
+                  height={320}
+                  showLegend={true}
+                />
               </div>
             )}
 
-            {insights.length > 0 && !isAdmin && (
-              <div className="analysis-insights">
-                {insights.map((insight, idx) => (
-                  <div
-                    key={idx}
-                    className={`analysis-insight analysis-insight--${insight.type}`}
-                  >
-                    <span className="analysis-insight-icon" aria-hidden="true">
-                      {insight.icon}
-                    </span>
-                    <span className="analysis-insight-text">
-                      {insight.message}
-                    </span>
+            {/* Table View */}
+            {viewMode === "table" && (
+              <>
+                {summaryStats && !isAdmin && (
+                  <div className="analysis-stats-summary">
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Top Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.maxRating}
+                      </div>
+                      <div className="analysis-stat-name">
+                        {summaryStats.topName?.name}
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Avg Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.avgRating}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        Across {displayNames.length} names
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Total Selected</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.totalSelected}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        {summaryStats.maxSelected > 0
+                          ? `Most: ${summaryStats.maxSelected}x`
+                          : "No selections yet"}
+                      </div>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            <div className="top-names-list">
+                {insights.length > 0 && !isAdmin && (
+                  <div className="analysis-insights">
+                    {insights.map((insight, idx) => (
+                      <div
+                        key={idx}
+                        className={`analysis-insight analysis-insight--${insight.type}`}
+                      >
+                        <span className="analysis-insight-icon" aria-hidden="true">
+                          {insight.icon}
+                        </span>
+                        <span className="analysis-insight-text">
+                          {insight.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="top-names-list">
               <table
                 className="top-names-table"
                 role="table"
@@ -793,6 +830,8 @@ export function AnalysisDashboard({
                 </tbody>
               </table>
             </div>
+              </>
+            )}
           </>
         )}
       </CollapsibleContent>
