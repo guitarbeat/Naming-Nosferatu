@@ -25,10 +25,10 @@ const applyDevtools = (storeImpl, config) => {
     return storeImpl;
   }
 
-  // * Check if React DevTools is available before applying devtools
+  // * Check if React DevTools is available and fully initialized
   // * This prevents errors when the extension is installed but API isn't ready
   // * The error "Cannot set properties of undefined (setting 'Activity')" occurs when
-  // * the DevTools hook exists but its internal structure isn't fully initialized
+  // * Zustand's devtools tries to set properties on renderer objects that don't exist yet
   const isReactDevToolsAvailable = () => {
     try {
       if (typeof window === "undefined") {
@@ -40,83 +40,106 @@ const applyDevtools = (storeImpl, config) => {
         return false;
       }
 
-      // * Additional check: ensure the hook is fully initialized
-      // * Some DevTools versions may have the hook but not be ready
-      // * The error "Cannot set properties of undefined (setting 'Activity')" occurs
-      // * when the hook exists but the internal renderer tracking isn't ready
-      // * The 'Activity' error typically occurs when trying to set properties
-      // * on an undefined renderer object within the hook structure
-      
-      // * Check if renderers exists and is properly initialized
-      if (hook.renderers && typeof hook.renderers === "object") {
-        try {
-          // * Try to check if renderers has a size property (indicates it's a Map/Set)
-          if (typeof hook.renderers.size !== "undefined") {
-            // * Try to access the renderers to see if it's actually ready
-            // * If this throws, the hook isn't ready
-            const rendererIds = Array.from(hook.renderers.keys());
-            // * If we can access renderers without error, it's likely ready
-            // * Verify we can actually iterate without errors
-            return rendererIds.length >= 0; // * Always true if no error thrown
-          }
-          // * If renderers exists but doesn't have size, try forEach
-          if (typeof hook.renderers.forEach === "function") {
-            // * Try to iterate to ensure it's fully initialized
-            hook.renderers.forEach(() => {});
-            return true; // * If forEach works, hook is ready
-          }
-        } catch {
-          // * If accessing renderers throws, it's not ready
-          return false;
-        }
+      // * Check if renderers exists and is a Map (Zustand devtools expects this)
+      if (!hook.renderers) {
+        return false;
       }
 
-      // * Conservative approach: if we can't verify renderers is ready,
-      // * don't enable devtools to prevent the 'Activity' error
-      // * Some React DevTools versions may work without renderers, but it's safer
-      // * to disable devtools if we can't verify the hook is fully initialized
-      return false;
+      // * Verify renderers is a Map-like structure
+      if (typeof hook.renderers !== "object") {
+        return false;
+      }
+
+      // * Try to access renderers safely - Zustand devtools will iterate over this
+      try {
+        // * Check if it's a Map by testing for Map methods
+        if (typeof hook.renderers.get !== "function") {
+          return false;
+        }
+
+        // * Try to get the first renderer to verify structure
+        // * Zustand devtools accesses renderers and sets properties on them
+        const firstRendererId = hook.renderers.keys().next().value;
+        if (firstRendererId !== undefined) {
+          const renderer = hook.renderers.get(firstRendererId);
+          // * Verify renderer exists and has the structure Zustand expects
+          // * The 'Activity' error occurs when trying to set properties on undefined renderer
+          if (!renderer || typeof renderer !== "object") {
+            return false;
+          }
+        }
+      } catch {
+        // * If accessing renderers throws, it's not ready
+        return false;
+      }
+
+      return true;
     } catch {
       return false;
     }
   };
 
-  // * Only apply devtools if React DevTools is available
+  // * Only apply devtools if React DevTools is available and fully initialized
   // * If not available, use plain store to prevent runtime errors
   if (!isReactDevToolsAvailable()) {
     if (process.env.NODE_ENV === "development") {
       console.warn(
-        "[Zustand] React DevTools not available, using plain store (devtools disabled)",
+        "[Zustand] React DevTools not available or not ready, using plain store (devtools disabled)",
       );
     }
     return storeImpl;
   }
 
-  // * Try to apply devtools, but fallback to plain store if it fails
-  // * The error "Cannot set properties of undefined (setting 'Activity')" occurs
-  // * when Zustand's devtools tries to register with React DevTools but the
-  // * DevTools hook isn't fully initialized yet
-  // * Use a more defensive approach: wrap devtools call and catch any errors
+  // * Wrap devtools middleware to catch runtime errors
+  // * Even with checks, Zustand devtools can throw errors when accessing hook properties
   try {
-    // * Additional runtime check: verify hook is still valid before applying devtools
+    // * Final runtime check: verify hook is still valid before applying devtools
     const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
     if (
       !hook ||
       typeof hook !== "object" ||
-      (hook.renderers && typeof hook.renderers !== "object")
+      !hook.renderers ||
+      typeof hook.renderers !== "object"
     ) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
-          "[Zustand] React DevTools hook invalid, using plain store",
+          "[Zustand] React DevTools hook invalid at runtime, using plain store",
         );
       }
       return storeImpl;
     }
 
-    return devtools(storeImpl, {
+    // * Apply devtools middleware
+    const devtoolsMiddleware = devtools(storeImpl, {
       ...config,
       enabled: true,
     });
+
+    // * Wrap the middleware to catch runtime errors when it accesses React DevTools
+    // * This provides an additional safety layer for errors that occur after initialization
+    return (set, get, api) => {
+      try {
+        return devtoolsMiddleware(set, get, api);
+      } catch (error) {
+        // * If devtools middleware throws at runtime, disable it and use plain store
+        if (
+          typeof error?.message === "string" &&
+          error.message.includes("Activity")
+        ) {
+          if (typeof window !== "undefined") {
+            window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+          }
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] Caught 'Activity' error in devtools middleware, disabling devtools",
+            );
+          }
+          return storeImpl(set, get, api);
+        }
+        // * Re-throw other errors
+        throw error;
+      }
+    };
   } catch (error) {
     // * If devtools fails to initialize, fallback to plain store implementation
     // * This catches initialization errors including the 'Activity' property error
@@ -125,6 +148,10 @@ const applyDevtools = (storeImpl, config) => {
         "[Zustand] DevTools initialization failed, using plain store:",
         error.message || error,
       );
+    }
+    // * Disable devtools to prevent future attempts
+    if (typeof window !== "undefined") {
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
     }
     return storeImpl;
   }
@@ -693,6 +720,55 @@ const storeImpl = (set, get) => ({
     getCurrentError: () => get().errors.current,
   },
 });
+
+// * Early check: Disable devtools if React DevTools hook is not properly initialized
+// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+// * by detecting problematic hook states before Zustand devtools tries to use them
+if (
+  typeof window !== "undefined" &&
+  process.env.NODE_ENV === "development"
+) {
+  try {
+    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    if (hook && typeof hook === "object" && hook.renderers) {
+      // * Check if renderers Map contains any undefined renderer objects
+      // * This is what causes the 'Activity' error
+      if (hook.renderers instanceof Map) {
+        let hasInvalidRenderer = false;
+        try {
+          hook.renderers.forEach((renderer) => {
+            if (!renderer || typeof renderer !== "object") {
+              hasInvalidRenderer = true;
+            }
+          });
+        } catch {
+          // * If forEach fails, the hook isn't ready
+          hasInvalidRenderer = true;
+        }
+
+        if (hasInvalidRenderer) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
+            );
+          }
+          window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+        }
+      }
+    }
+  } catch (error) {
+    // * If hook check fails, disable devtools to be safe
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "[Zustand] Failed to check React DevTools hook, disabling devtools:",
+        error.message || error,
+      );
+    }
+    if (typeof window !== "undefined") {
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+    }
+  }
+}
 
 // * Safely apply devtools middleware with error handling
 // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
