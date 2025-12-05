@@ -840,12 +840,17 @@ export function AnalysisDashboard({
                         </td>
                         <td className="top-names-selected-cell">
                           {isAdmin ? (
-                            <span
-                              className="top-names-selected"
-                              aria-label={`Selected ${item.selected} times`}
-                            >
-                              {item.selected}
-                            </span>
+                            <div className="metric-with-insight">
+                              <span
+                                className="top-names-selected"
+                                aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
+                              >
+                                {item.selected}
+                              </span>
+                              <span className="metric-percentile">
+                                {item.selectedPercentile}%ile
+                              </span>
+                            </div>
                           ) : (
                             <div className="metric-with-bar">
                               <span
