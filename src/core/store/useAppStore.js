@@ -7,92 +7,11 @@ import {
   getMediaQueryMatches,
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
-
-// * Type definitions for React DevTools hook
-// * These types help catch undefined property access at development time
-/**
- * @typedef {Object} ReactDevToolsRenderer
- * @property {unknown} [Activity] - Activity property that Zustand devtools tries to set
- */
-
-/**
- * @typedef {Map<number, ReactDevToolsRenderer>} ReactDevToolsRenderersMap
- */
-
-/**
- * @typedef {Object} ReactDevToolsHook
- * @property {ReactDevToolsRenderersMap} renderers - Map of renderer IDs to renderer objects
- */
-
-/**
- * Type guard to check if a value is a valid React DevTools renderer object
- * @param {unknown} renderer - Value to check
- * @returns {renderer is ReactDevToolsRenderer}
- */
-const isValidRenderer = (renderer) => {
-  return (
-    renderer !== null &&
-    renderer !== undefined &&
-    typeof renderer === "object" &&
-    !Array.isArray(renderer)
-  );
-};
-
-/**
- * Type guard to check if React DevTools hook is valid and ready
- * @param {unknown} hook - Hook to check
- * @returns {hook is ReactDevToolsHook}
- */
-const isValidReactDevToolsHook = (hook) => {
-  if (!hook || typeof hook !== "object") {
-    return false;
-  }
-
-  const typedHook = /** @type {Record<string, unknown>} */ (hook);
-
-  if (!typedHook.renderers) {
-    return false;
-  }
-
-  const renderers = typedHook.renderers;
-
-  // * Check if renderers is a Map-like structure
-  if (
-    typeof renderers !== "object" ||
-    renderers === null ||
-    typeof renderers.get !== "function" ||
-    typeof renderers.keys !== "function"
-  ) {
-    return false;
-  }
-
-  return true;
-};
-
-/**
- * Type guard to check if all renderers in the hook are valid
- * @param {ReactDevToolsHook} hook - Hook to check
- * @returns {boolean}
- */
-const areAllRenderersValid = (hook) => {
-  try {
-    const rendererIds = Array.from(hook.renderers.keys());
-    if (rendererIds.length === 0) {
-      return false;
-    }
-
-    for (const rendererId of rendererIds) {
-      const renderer = hook.renderers.get(rendererId);
-      if (!isValidRenderer(renderer)) {
-        return false;
-      }
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-};
+// * Import type guards from TypeScript file for compile-time type safety
+import {
+  isValidReactDevToolsHook,
+  areAllRenderersValid,
+} from "./types";
 
 // * Helper to safely apply devtools middleware
 // * Prevents errors when React DevTools extension is installed but API isn't ready
