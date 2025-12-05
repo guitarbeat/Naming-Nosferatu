@@ -61,17 +61,21 @@ export function NameGrid({
   }, [selectedNames]);
 
   const processedNames = useMemo(() => {
+    // * Map filterStatus to visibility
     const visibility =
       filters.filterStatus === "hidden"
         ? "hidden"
         : filters.filterStatus === "all"
           ? "all"
-          : "visible";
+          : filters.filterStatus === "visible"
+            ? "visible"
+            : "visible"; // * Default to visible
 
     let result = applyNameFilters(names, {
       searchTerm: filters.searchTerm,
       category: filters.category,
       sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder || "desc",
       visibility,
       isAdmin,
     });
@@ -182,7 +186,8 @@ NameGrid.propTypes = {
     searchTerm: PropTypes.string,
     category: PropTypes.string,
     sortBy: PropTypes.string,
-    filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
+    sortOrder: PropTypes.oneOf(["asc", "desc"]),
+    filterStatus: PropTypes.oneOf(["visible", "hidden", "all"]),
   }),
   isAdmin: PropTypes.bool,
   showSelectedOnly: PropTypes.bool,

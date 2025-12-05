@@ -100,20 +100,6 @@
   gap: var(--spacing-card-gap);
 }
 
-.floatingStartButton {
-  position: fixed;
-  bottom: var(--space-6);
-  right: var(--space-6);
-  z-index: 1000;
-}
-
-@media (width <= 768px) {
-  .floatingStartButton {
-    bottom: var(--space-4);
-    right: var(--space-4);
-  }
-}
-
 .sidebarSection {
   width: 100%;
   display: flex;
@@ -185,6 +171,8 @@
   cursor: pointer;
   transition: var(--button-transition);
   box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .startButton:hover {

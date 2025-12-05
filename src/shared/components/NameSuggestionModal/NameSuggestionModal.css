@@ -1,0 +1,212 @@
+/**
+ * Name Suggestion Modal Styles
+ */
+
+.name-suggestion-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.name-suggestion-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: calc(var(--z-modal) + 1);
+  transform: translate(-50%, -50%);
+  width: min(90vw, 500px);
+  max-height: 90vh;
+  padding: var(--space-6);
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow-y: auto;
+  animation: slideUp 0.3s var(--ease-out);
+}
+
+.name-suggestion-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.name-suggestion-modal-title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.name-suggestion-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: var(--text-2xl);
+  line-height: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.name-suggestion-modal-close:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+}
+
+.name-suggestion-modal-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.name-suggestion-modal-description {
+  margin: 0 0 var(--space-5) 0;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.name-suggestion-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.name-suggestion-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.name-suggestion-form-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.name-suggestion-form-input,
+.name-suggestion-form-textarea {
+  width: 100%;
+  padding: var(--space-3);
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--text-primary);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.name-suggestion-form-input:focus,
+.name-suggestion-form-textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+.name-suggestion-form-input:disabled,
+.name-suggestion-form-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.name-suggestion-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.name-suggestion-form-error {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--error-600);
+  background: rgb(var(--error-rgb) / 10%);
+  border: 1px solid rgb(var(--error-rgb) / 20%);
+  border-radius: var(--radius-md);
+}
+
+.name-suggestion-form-success {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--success-600);
+  background: rgb(var(--success-rgb) / 10%);
+  border: 1px solid rgb(var(--success-rgb) / 20%);
+  border-radius: var(--radius-md);
+}
+
+.name-suggestion-modal-actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+.name-suggestion-modal-cancel,
+.name-suggestion-modal-submit {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.name-suggestion-modal-cancel {
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid var(--border-color);
+}
+
+.name-suggestion-modal-cancel:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border-color: var(--border-color-hover);
+}
+
+.name-suggestion-modal-submit {
+  color: white;
+  background: var(--primary-500);
+  border: 1px solid var(--primary-600);
+}
+
+.name-suggestion-modal-submit:hover:not(:disabled) {
+  background: var(--primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.name-suggestion-modal-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}

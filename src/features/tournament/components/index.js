@@ -5,7 +5,6 @@
 
 // Existing components
 export { default as Lightbox } from "./Lightbox";
-export { default as NameSuggestionSection } from "./NameSuggestionSection";
 export { default as StartButton } from "./StartButton";
 
 // NameSelection components
@@ -13,6 +12,3 @@ export { NameSelection } from "./NameSelection";
 
 // SwipeMode components
 export { SwipeableNameCards } from "./SwipeMode";
-
-// PhotoPreviewStrip
-export { default as PhotoPreviewStrip } from "./PhotoPreviewStrip";

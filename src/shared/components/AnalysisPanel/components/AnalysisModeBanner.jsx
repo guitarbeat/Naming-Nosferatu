@@ -25,7 +25,14 @@ export function AnalysisModeBanner({ onClose, showShortcut = true }) {
     >
       <div className="analysis-mode-banner-content">
         <AnalysisBadge />
-        <span className="analysis-mode-banner-text">Analysis Mode Active</span>
+        <div className="analysis-mode-banner-text-group">
+          <span className="analysis-mode-banner-text">
+            Analysis Mode Active
+          </span>
+          <span className="analysis-mode-banner-description">
+            Advanced filters, analytics, and bulk actions enabled
+          </span>
+        </div>
         {showShortcut && (
           <span className="analysis-mode-banner-shortcut">
             {shortcutDisplay}
@@ -37,7 +44,8 @@ export function AnalysisModeBanner({ onClose, showShortcut = true }) {
           type="button"
           className="analysis-mode-banner-close"
           onClick={onClose}
-          aria-label="Dismiss Analysis Mode banner"
+          aria-label="Exit Analysis Mode"
+          title="Exit Analysis Mode"
         >
           <CloseIcon />
         </button>

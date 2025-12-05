@@ -11,15 +11,21 @@
 
 .admin-analytics-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: var(--analysis-text-body);
+  background: var(--analysis-surface-elevated);
+  border-radius: var(--analysis-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
 }
 
 .admin-analytics-table th,
 .admin-analytics-table td {
-  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
+  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
   text-align: left;
   border-bottom: 1px solid var(--analysis-border);
+  transition: background var(--analysis-duration-fast) var(--analysis-ease);
 }
 
 .admin-analytics-table th {
@@ -32,7 +38,9 @@
   white-space: nowrap;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 10;
+  border-bottom: 2px solid var(--analysis-border);
+  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
 }
 
 .admin-analytics-table th.sortable {
@@ -51,11 +59,14 @@
 }
 
 .admin-analytics-row {
-  transition: background var(--analysis-duration-fast) var(--analysis-ease);
+  transition:
+    background var(--analysis-duration-fast) var(--analysis-ease),
+    transform var(--analysis-duration-fast) var(--analysis-ease);
 }
 
 .admin-analytics-row:hover {
   background: var(--analysis-accent-subtle);
+  transform: translateX(2px);
 }
 
 .admin-analytics-row:nth-child(even) {
@@ -69,7 +80,9 @@
 .admin-analytics-rank {
   font-weight: var(--font-weight-bold);
   text-align: center;
-  width: 40px;
+  width: 50px;
+  font-size: var(--analysis-text-body);
+  color: var(--analysis-accent);
 }
 
 .admin-analytics-name {

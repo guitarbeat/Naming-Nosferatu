@@ -50,7 +50,8 @@ export function filterByVisibility(
  * @param {Object} filters - Filter configuration
  * @param {string} filters.searchTerm - Search text
  * @param {string} filters.category - Category filter
- * @param {string} filters.sortBy - Sort method
+ * @param {string} filters.sortBy - Sort method (rating, name, wins, losses, winRate, created, alphabetical)
+ * @param {string} filters.sortOrder - Sort order (asc, desc)
  * @param {string} filters.visibility - "visible" | "hidden" | "all"
  * @param {boolean} filters.isAdmin - Admin status
  * @returns {Array} Filtered and sorted names
@@ -59,7 +60,8 @@ export function applyNameFilters(names, filters = {}) {
   const {
     searchTerm = "",
     category = null,
-    sortBy = "alphabetical",
+    sortBy = "rating",
+    sortOrder = "desc",
     visibility = "visible",
     isAdmin = false,
   } = filters;
@@ -86,17 +88,49 @@ export function applyNameFilters(names, filters = {}) {
     );
   }
 
-  // 4. Sort
+  // 4. Sort with direction support
+  const isAsc = sortOrder === "asc";
+  const multiplier = isAsc ? 1 : -1;
+
   result.sort((a, b) => {
+    let comparison = 0;
+
     switch (sortBy) {
       case "rating":
-        return (b.avg_rating || 1500) - (a.avg_rating || 1500);
-      case "popularity":
-        return (b.popularity_score || 0) - (a.popularity_score || 0);
+        comparison = (a.avg_rating || 1500) - (b.avg_rating || 1500);
+        break;
+      case "name":
       case "alphabetical":
+        comparison = (a.name || "").localeCompare(b.name || "");
+        break;
+      case "wins":
+        comparison = (a.wins || 0) - (b.wins || 0);
+        break;
+      case "losses":
+        comparison = (a.losses || 0) - (b.losses || 0);
+        break;
+      case "winRate": {
+        const aWinRate =
+          a.wins && a.wins + a.losses > 0 ? a.wins / (a.wins + a.losses) : 0;
+        const bWinRate =
+          b.wins && b.wins + b.losses > 0 ? b.wins / (b.wins + b.losses) : 0;
+        comparison = aWinRate - bWinRate;
+        break;
+      }
+      case "created": {
+        const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
+        comparison = aDate - bDate;
+        break;
+      }
+      case "popularity":
+        comparison = (a.popularity_score || 0) - (b.popularity_score || 0);
+        break;
       default:
-        return (a.name || "").localeCompare(b.name || "");
+        comparison = (a.avg_rating || 1500) - (b.avg_rating || 1500);
     }
+
+    return comparison * multiplier;
   });
 
   return result;

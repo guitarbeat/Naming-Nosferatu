@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   NameManagementView,
-  useNameManagementContext,
+  useNameManagementContextSafe,
   Error,
   AnalysisDashboard,
   AnalysisBulkActions,
@@ -16,19 +16,14 @@ import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import { useImageGallery } from "./hooks";
 import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
-import {
-  NameSelection,
-  SwipeableNameCards,
-  Lightbox,
-  NameSuggestionSection,
-} from "./components";
+import { NameSelection, SwipeableNameCards, Lightbox } from "./components";
 import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
-import PhotoPreviewStrip from "./components/PhotoPreviewStrip";
 import { useProfileStats } from "../profile/hooks/useProfileStats";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
 import { useProfileUser } from "../profile/hooks/useProfileUser";
 import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import { FILTER_OPTIONS } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
 
@@ -46,7 +41,7 @@ function AnalysisHandlersProvider({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Initialize analysis mode from URL or prop
   useEffect(() => {
@@ -111,6 +106,9 @@ function AnalysisDashboardWrapper({
   stats,
   selectionStats,
   highlights: propsHighlights,
+  isAdmin = false,
+  activeUser,
+  onNameHidden,
 }) {
   // * Only render if stats are available
   if (!stats) return null;
@@ -120,6 +118,9 @@ function AnalysisDashboardWrapper({
       stats={stats}
       selectionStats={selectionStats}
       highlights={propsHighlights}
+      isAdmin={isAdmin}
+      userName={activeUser}
+      onNameHidden={onNameHidden}
     />
   );
 }
@@ -128,14 +129,37 @@ AnalysisDashboardWrapper.propTypes = {
   stats: PropTypes.object,
   selectionStats: PropTypes.object,
   highlights: PropTypes.object,
+  isAdmin: PropTypes.bool,
+  activeUser: PropTypes.string,
+  onNameHidden: PropTypes.func,
 };
 
 // * Wrapper component factory to pass props to AnalysisDashboardWrapper
 // * This creates a component function that can use hooks properly
-const createAnalysisDashboardWrapper = (stats, selectionStats) => {
+const createAnalysisDashboardWrapper = (
+  stats,
+  selectionStats,
+  isAdmin,
+  activeUser,
+  onNameHidden,
+) => {
   return function AnalysisDashboardWrapperWithProps() {
+    // * Get context inside the component - it's available here because this component
+    // * is rendered inside NameManagementView's context provider
+    const context = useNameManagementContextSafe();
+    const handleNameHidden =
+      onNameHidden ||
+      (() => {
+        context.refetch();
+      });
     return (
-      <AnalysisDashboardWrapper stats={stats} selectionStats={selectionStats} />
+      <AnalysisDashboardWrapper
+        stats={stats}
+        selectionStats={selectionStats}
+        isAdmin={isAdmin}
+        activeUser={activeUser}
+        onNameHidden={handleNameHidden}
+      />
     );
   };
 };
@@ -149,7 +173,7 @@ function AnalysisBulkActionsWrapper({
   showError,
   showToast,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   const { selectedCount } = context;
   // * Keep both Set format for selection logic and original array for bulk operations
@@ -233,11 +257,12 @@ function AnalysisBulkActionsWrapper({
     let filtered = [...context.names];
 
     // Use shared isNameHidden utility for consistent visibility check
-    if (context.filterStatus === "active") {
+    if (context.filterStatus === "visible") {
       filtered = filtered.filter((name) => !isNameHidden(name));
     } else if (context.filterStatus === "hidden") {
       filtered = filtered.filter((name) => isNameHidden(name));
     }
+    // * "all" shows everything (no filtering)
 
     return filtered;
   }, [context.names, context.filterStatus]);
@@ -336,7 +361,7 @@ function TournamentNameGrid({
   onDelete,
   analysisHandlersProps,
 }) {
-  const context = useNameManagementContext();
+  const context = useNameManagementContextSafe();
 
   // * Admin features only available in analysis mode
   const showAdminFeatures = context.analysisMode && canManageActiveUser;
@@ -361,7 +386,11 @@ function TournamentNameGrid({
         selectedCategory={context.selectedCategory}
         searchTerm={context.searchTerm}
         sortBy={context.sortBy}
-        filterStatus={showAdminFeatures ? context.filterStatus : "active"}
+        filterStatus={
+          showAdminFeatures
+            ? context.filterStatus
+            : FILTER_OPTIONS.VISIBILITY.VISIBLE
+        }
         isSwipeMode={context.isSwipeMode}
         onToggleSwipeMode={() => context.setIsSwipeMode(!context.isSwipeMode)}
         showCatPictures={context.showCatPictures}
@@ -530,76 +559,69 @@ function TournamentSetupContent({
     <>
       <ToastContainer />
       <div className={styles.container}>
-        <div className={styles.selectionPanel}>
-          <NameManagementView
-            mode="tournament"
-            userName={userName}
-            onStartTournament={onStart}
-            tournamentProps={{
-              SwipeableCards: SwipeableNameCards,
-              isAdmin,
-              imageList: galleryImages,
-              gridClassName: styles.cardsContainer,
-            }}
-            profileProps={{
-              isAdmin: canManageActiveUser,
-              showUserFilter: profileIsAdmin,
-              userSelectOptions,
+        <NameManagementView
+          mode="tournament"
+          userName={userName}
+          onStartTournament={onStart}
+          tournamentProps={{
+            SwipeableCards: SwipeableNameCards,
+            isAdmin,
+            imageList: galleryImages,
+            gridClassName: styles.cardsContainer,
+          }}
+          profileProps={{
+            isAdmin: canManageActiveUser,
+            showUserFilter: profileIsAdmin,
+            userSelectOptions,
+            stats,
+            selectionStats,
+            onToggleVisibility: (nameId) =>
+              handlersRef.current.handleToggleVisibility?.(nameId),
+            onDelete: (name) => handlersRef.current.handleDelete?.(name),
+          }}
+          extensions={{
+            dashboard: createAnalysisDashboardWrapper(
               stats,
               selectionStats,
-              onToggleVisibility: (nameId) =>
-                handlersRef.current.handleToggleVisibility?.(nameId),
-              onDelete: (name) => handlersRef.current.handleDelete?.(name),
-            }}
-            extensions={{
-              dashboard: createAnalysisDashboardWrapper(stats, selectionStats),
-              bulkActions: (props) => (
-                <AnalysisBulkActionsWrapper
-                  activeUser={activeUser}
-                  canManageActiveUser={canManageActiveUser}
-                  isAdmin={isAdmin}
-                  fetchSelectionStats={fetchSelectionStats}
-                  showSuccess={showSuccess}
-                  showError={showError}
-                  showToast={showToast}
-                  {...props}
-                />
-              ),
-              nameGrid: () => (
-                <TournamentNameGrid
-                  isAdmin={isAdmin}
-                  galleryImages={galleryImages}
-                  canManageActiveUser={canManageActiveUser}
-                  onToggleVisibility={(nameId) =>
-                    handlersRef.current.handleToggleVisibility?.(nameId)
-                  }
-                  onDelete={(name) => handlersRef.current.handleDelete?.(name)}
-                  analysisHandlersProps={{
-                    shouldEnableAnalysisMode,
-                    activeUser,
-                    canManageActiveUser,
-                    handlersRef,
-                    fetchSelectionStats,
-                    showSuccess,
-                    showError,
-                    showToast,
-                  }}
-                />
-              ),
-              nameSuggestion: (
-                <div className={styles.nameSuggestionWrapper}>
-                  <NameSuggestionSection />
-                </div>
-              ),
-            }}
-          />
-          {/* Photo Preview Strip - below name grid */}
-          <PhotoPreviewStrip
-            images={galleryImages}
-            onImageClick={handleImageOpen}
-            maxThumbnails={5}
-          />
-        </div>
+              isAdmin,
+              activeUser,
+              undefined, // * Will use context.refetch() inside the wrapper component
+            ),
+            bulkActions: (props) => (
+              <AnalysisBulkActionsWrapper
+                activeUser={activeUser}
+                canManageActiveUser={canManageActiveUser}
+                isAdmin={isAdmin}
+                fetchSelectionStats={fetchSelectionStats}
+                showSuccess={showSuccess}
+                showError={showError}
+                showToast={showToast}
+                {...props}
+              />
+            ),
+            nameGrid: () => (
+              <TournamentNameGrid
+                isAdmin={isAdmin}
+                galleryImages={galleryImages}
+                canManageActiveUser={canManageActiveUser}
+                onToggleVisibility={(nameId) =>
+                  handlersRef.current.handleToggleVisibility?.(nameId)
+                }
+                onDelete={(name) => handlersRef.current.handleDelete?.(name)}
+                analysisHandlersProps={{
+                  shouldEnableAnalysisMode,
+                  activeUser,
+                  canManageActiveUser,
+                  handlersRef,
+                  fetchSelectionStats,
+                  showSuccess,
+                  showError,
+                  showToast,
+                }}
+              />
+            ),
+          }}
+        />
         {lightboxElement}
       </div>
     </>

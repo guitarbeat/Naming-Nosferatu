@@ -53,7 +53,7 @@
 }
 
 .cardWrapper:hover {
-  transform: translateY(-4px) scale(1.02);
+  transform: scale(1.02);
   z-index: 10;
 }
 
@@ -154,7 +154,7 @@
 
   /* * Reduce hover transform on mobile for better touch experience */
   .cardWrapper:hover {
-    transform: translateY(-2px) scale(1.01);
+    transform: scale(1.01);
   }
 }
 

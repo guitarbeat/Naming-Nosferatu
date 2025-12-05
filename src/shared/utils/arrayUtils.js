@@ -79,15 +79,6 @@ export function isEmptyOrNotArray(value) {
 }
 
 /**
- * Safely get array length, returns 0 for non-arrays
- * @param {*} value - Value to check
- * @returns {number} Array length or 0
- */
-export function safeArrayLength(value) {
-  return Array.isArray(value) ? value.length : 0;
-}
-
-/**
  * Remove duplicates from array by key
  * @param {Array} array - Array to deduplicate
  * @param {string|Function} key - Key to deduplicate by (string or getter function)

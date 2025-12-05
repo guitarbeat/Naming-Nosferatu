@@ -35,32 +35,12 @@ function SwipeableNameCards({
       : null;
 
   // Enhanced mobile gestures
+  // * Disable useMobileGestures swipe handling - we handle it manually for better control
   const { elementRef: gestureRef, addHapticFeedback } = useMobileGestures({
-    enableSwipe: true,
+    enableSwipe: false, // * Disabled - using manual drag handlers instead
     enableLongPress: true,
     enableDoubleTap: true,
-    onSwipe: (data) => {
-      const { direction, distance } = data;
-      if (distance > 100) {
-        if (direction === "right") {
-          // Swipe right = select
-          if (!isSelected) {
-            onToggleName(currentName);
-            addHapticFeedback("success");
-          }
-        } else if (direction === "left") {
-          // Swipe left = deselect
-          if (isSelected) {
-            onToggleName(currentName);
-            addHapticFeedback("light");
-          }
-        }
-        // Move to next card
-        if (currentIndex < names.length - 1) {
-          setCurrentIndex(currentIndex + 1);
-        }
-      }
-    },
+    onSwipe: () => {}, // * Placeholder - swipe disabled
     onLongPress: () => {
       setIsLongPressing(true);
       addHapticFeedback("heavy");
@@ -75,19 +55,33 @@ function SwipeableNameCards({
   });
 
   const handleDragStart = (e) => {
+    // * Prevent default to avoid text selection and scrolling
+    e.preventDefault();
+    e.stopPropagation();
+
     const touch = e.touches ? e.touches[0] : e;
-    setDragStart({ x: touch.clientX, y: touch.clientY });
+    const startX = touch.clientX || touch.pageX;
+    const startY = touch.clientY || touch.pageY;
+
+    setDragStart({ x: startX, y: startY });
     setIsDragging(true);
     setSwipeDirection(null);
     setSwipeProgress(0);
+    setDragOffset({ x: 0, y: 0 });
   };
 
   const handleDragMove = (e) => {
     if (!isDragging) return;
 
+    // * Prevent default to avoid scrolling
+    e.preventDefault();
+    e.stopPropagation();
+
     const touch = e.touches ? e.touches[0] : e;
-    const deltaX = touch.clientX - dragStart.x;
-    const deltaY = touch.clientY - dragStart.y;
+    const currentX = touch.clientX || touch.pageX;
+    const currentY = touch.clientY || touch.pageY;
+    const deltaX = currentX - dragStart.x;
+    const deltaY = currentY - dragStart.y;
 
     setDragOffset({ x: deltaX, y: deltaY });
 
@@ -96,41 +90,60 @@ function SwipeableNameCards({
     setSwipeProgress(progress);
 
     // Determine swipe direction
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
       setSwipeDirection(deltaX > 0 ? "right" : "left");
+    } else {
+      setSwipeDirection(null);
     }
   };
 
-  const handleDragEnd = () => {
+  const handleDragEnd = (e) => {
     if (!isDragging) {
       return;
     }
 
+    // * Prevent default
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
     setIsDragging(false);
 
-    // If swiped far enough, process the swipe
-    if (swipeProgress > 0.5) {
-      if (swipeDirection === "right") {
+    // Capture current values to avoid stale closure
+    const capturedSwipeProgress = swipeProgress;
+    const capturedSwipeDirection = swipeDirection;
+    const capturedCurrentName = currentName;
+    const capturedIsSelected = isSelected;
+
+    // If swiped far enough, process the swipe (like Tinder - always advance after valid swipe)
+    if (capturedSwipeProgress > 0.5 && capturedSwipeDirection) {
+      // Process selection based on swipe direction
+      if (capturedSwipeDirection === "right") {
         // Swipe right = select/like (add to tournament)
-        if (!isSelected) {
-          onToggleName(currentName);
+        if (!capturedIsSelected) {
+          onToggleName(capturedCurrentName);
         }
-      } else if (swipeDirection === "left") {
+      } else if (capturedSwipeDirection === "left") {
         // Swipe left = pass (remove from tournament if selected)
-        if (isSelected) {
-          onToggleName(currentName);
+        if (capturedIsSelected) {
+          onToggleName(capturedCurrentName);
         }
       }
 
-      // Move to next card
+      // * Always move to next card after valid swipe (like Tinder)
       setTimeout(() => {
-        setCurrentIndex((prev) => (prev + 1) % names.length);
+        // * Use functional update to avoid stale closure
+        setCurrentIndex((prev) => {
+          const nextIndex = prev < names.length - 1 ? prev + 1 : prev;
+          return nextIndex;
+        });
         setDragOffset({ x: 0, y: 0 });
         setSwipeDirection(null);
         setSwipeProgress(0);
       }, 300);
     } else {
-      // Reset card position
+      // Reset card position with animation
       setDragOffset({ x: 0, y: 0 });
       setSwipeDirection(null);
       setSwipeProgress(0);

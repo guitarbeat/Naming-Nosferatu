@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import Error from "../Error/Error";
@@ -140,15 +140,7 @@ export default function ViewRouter({
   onTournamentComplete,
   onVote,
 }) {
-  const { isRoute, navigateTo } = useRouting();
-
-  // * Redirect /profile to /tournament?analysis=true (deprecated route)
-  // * Must be called unconditionally (Rules of Hooks)
-  useEffect(() => {
-    if (isRoute("/profile")) {
-      navigateTo("/tournament?analysis=true", { replace: true });
-    }
-  }, [isRoute, navigateTo]);
+  const { isRoute } = useRouting();
 
   // Handle special routes first
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL

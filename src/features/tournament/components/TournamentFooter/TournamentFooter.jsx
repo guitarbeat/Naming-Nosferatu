@@ -76,6 +76,9 @@ function TournamentFooter({
             <li>
               <kbd>Tab</kbd> Navigate between elements
             </li>
+            <li>
+              <kbd>C</kbd> Toggle cat pictures
+            </li>
           </ul>
         </div>
       )}

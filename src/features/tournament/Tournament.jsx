@@ -25,7 +25,6 @@ import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./constants";
-import { getRandomCatImage } from "./utils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
@@ -378,6 +377,17 @@ function TournamentContent({
       },
       canUndoNow,
       onClearSelection: () => setSelectedOption(null),
+      onSelectLeft: () => {
+        if (!isProcessing && !isTransitioning) {
+          setSelectedOption("left");
+        }
+      },
+      onSelectRight: () => {
+        if (!isProcessing && !isTransitioning) {
+          setSelectedOption("right");
+        }
+      },
+      onToggleCatPictures: () => setShowCatPictures((v) => !v),
     },
   );
 

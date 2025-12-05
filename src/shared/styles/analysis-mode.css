@@ -86,6 +86,8 @@ body:has(.analysis-mode-banner) {
     linear-gradient(to bottom, var(--analysis-border) 1px, transparent 1px);
   background-size: 40px 40px;
   background-attachment: fixed;
+  /* * Smooth background transition */
+  transition: background-image 0.5s ease;
 }
 
 body:has(.analysis-mode-banner)::after {
@@ -99,6 +101,18 @@ body:has(.analysis-mode-banner)::after {
   );
   pointer-events: none;
   z-index: -1;
+  /* * Smooth fade-in */
+  animation: analysis-bg-fade-in 0.6s ease;
+}
+
+@keyframes analysis-bg-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================
@@ -108,8 +122,9 @@ body:has(.analysis-mode-banner)::after {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--analysis-gap-md);
-  padding: var(--analysis-gap-lg);
+  gap: 0;
+  padding: 0;
+  margin: 0;
   background: var(--analysis-surface-1);
   border: 1px solid var(--analysis-border-accent);
   border-radius: var(--analysis-radius-xl);
@@ -117,7 +132,115 @@ body:has(.analysis-mode-banner)::after {
   backdrop-filter: blur(16px);
   transition:
     border-color var(--analysis-duration-normal) var(--analysis-ease),
-    box-shadow var(--analysis-duration-normal) var(--analysis-ease);
+    box-shadow var(--analysis-duration-normal) var(--analysis-ease),
+    opacity var(--analysis-duration-normal) var(--analysis-ease),
+    transform var(--analysis-duration-normal) var(--analysis-ease);
+  overflow: hidden;
+  /* * Smooth entrance when analysis mode activates */
+  animation: analysis-panel-fade-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Ensure panel doesn't have unwanted spacing */
+.analysis-panel > * {
+  margin: 0;
+}
+
+/* Integrated toolbar styling - seamless integration */
+.analysis-panel-toolbar {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+}
+
+/* Remove default TournamentToolbar container styling when inside panel */
+.analysis-panel-toolbar .filtersContainer {
+  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+  padding-bottom: var(--analysis-gap-sm, 8px);
+  margin: 0;
+  background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
+  border: none;
+  border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+  border-radius: 0;
+  backdrop-filter: none;
+}
+
+/* When toolbar is present, adjust header border */
+.analysis-panel:has(.analysis-panel-toolbar) .analysis-header {
+  border-bottom: none;
+}
+
+/* When toolbar is present, adjust collapsible header */
+.analysis-panel:has(.analysis-panel-toolbar) .collapsible-header {
+  border-bottom: none;
+  border-radius: var(--analysis-radius-xl, 16px) var(--analysis-radius-xl, 16px)
+    0 0;
+}
+
+/* When toolbar is present, adjust collapsible header collapsed state */
+.analysis-panel:has(.analysis-panel-toolbar) .collapsible-header--collapsed {
+  border-radius: var(--analysis-radius-xl, 16px) var(--analysis-radius-xl, 16px)
+    0 0;
+  margin-bottom: 0;
+}
+
+/* Toolbar should connect seamlessly with content */
+.analysis-panel:has(.analysis-panel-toolbar)
+  .collapsible-content
+  .collapsible-content-inner {
+  padding-top: var(--analysis-gap-md, 12px);
+}
+
+/* Ensure toolbar filters are properly styled within panel */
+.analysis-panel-toolbar .filtersContainer .resultsCount {
+  margin-bottom: var(--analysis-gap-sm, 8px);
+}
+
+.analysis-panel-toolbar .filtersContainer .filterRow {
+  margin-bottom: 0;
+}
+
+/* Content area - CollapsibleContent handles its own padding via inner wrapper */
+.analysis-panel > .collapsible-content {
+  padding: 0;
+  margin: 0;
+}
+
+/* Other direct children that need padding */
+.analysis-panel > .analysis-dashboard-content,
+.analysis-panel > .top-names-list,
+.analysis-panel > .admin-analytics-table-container {
+  padding: var(--analysis-gap-lg, 16px);
+  padding-top: var(--analysis-gap-md, 12px);
+  margin: 0;
+}
+
+/* Direct children that need padding (excluding headers and content wrappers) */
+.analysis-panel
+  > *:not(
+    .collapsible-header,
+    .analysis-header,
+    .collapsible-content,
+    .analysis-dashboard-content,
+    .top-names-list,
+    .admin-analytics-table-container,
+    .collapsible-content-inner
+  ) {
+  padding: var(--analysis-gap-lg, 16px);
+  padding-top: var(--analysis-gap-md, 12px);
+  margin: 0;
+}
+
+@keyframes analysis-panel-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .analysis-panel::before {
@@ -127,15 +250,21 @@ body:has(.analysis-mode-banner)::after {
   border-radius: inherit;
   background: linear-gradient(
     135deg,
-    rgb(var(--analysis-accent-rgb) / 4%) 0%,
+    rgb(var(--analysis-accent-rgb) / 3%) 0%,
     transparent 50%
   );
   pointer-events: none;
+  opacity: 0.6;
+  transition: opacity var(--analysis-duration-normal) var(--analysis-ease);
 }
 
 .analysis-panel:hover {
   border-color: var(--analysis-border-hover);
   box-shadow: var(--analysis-shadow-glow);
+}
+
+.analysis-panel:hover::before {
+  opacity: 1;
 }
 
 /* ==========================================================================
@@ -340,17 +469,31 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* ==========================================================================
-   ANALYSIS TOOLBAR - Unified Controls
+   ANALYSIS TOOLBAR - Unified Controls (Improved UX)
    ========================================================================== */
 .analysis-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--analysis-gap-sm);
-  padding: var(--analysis-gap-sm);
+  gap: var(--analysis-gap-md);
+  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
   background: var(--analysis-surface-elevated);
   border: 1px solid var(--analysis-border);
   border-radius: var(--analysis-radius-lg);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+  transition: box-shadow var(--analysis-duration-fast) var(--analysis-ease);
+}
+
+.analysis-toolbar:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 8%);
+}
+
+.analysis-toolbar-content {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+  flex: 1;
+  min-width: 0;
 }
 
 .analysis-toolbar-group {
@@ -359,14 +502,36 @@ body:has(.analysis-mode-banner)::after {
   gap: var(--analysis-gap-xs);
 }
 
-.analysis-toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--analysis-border);
-  margin: 0 var(--analysis-gap-xs);
+.analysis-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--analysis-gap-sm);
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
-/* * Toolbar selection info */
+.analysis-toolbar-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--analysis-border);
+  margin: 0 var(--analysis-gap-sm);
+  opacity: 0.5;
+}
+
+/* * Toolbar selection badge - improved visual prominence */
+.analysis-selection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--analysis-gap-xs);
+  padding: var(--analysis-gap-xs) var(--analysis-gap-md);
+  background: var(--analysis-accent-subtle);
+  border: 1px solid var(--analysis-border-accent);
+  border-radius: var(--analysis-radius-md);
+  font-size: var(--analysis-text-body);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .analysis-selection {
   display: flex;
   align-items: baseline;
@@ -380,21 +545,25 @@ body:has(.analysis-mode-banner)::after {
   font-size: var(--analysis-text-title);
   font-weight: var(--font-weight-bold);
   color: var(--analysis-accent);
+  line-height: 1;
 }
 
 .analysis-selection-label {
   color: var(--text-secondary);
+  font-size: var(--analysis-text-caption);
+  text-transform: lowercase;
+  font-weight: var(--font-weight-medium);
 }
 
 /* ==========================================================================
-   ANALYSIS BUTTONS - Intentional Actions
+   ANALYSIS BUTTONS - Intentional Actions (Enhanced UX)
    ========================================================================== */
 .analysis-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--analysis-gap-xs);
-  padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
+  padding: var(--analysis-gap-sm) var(--analysis-gap-md);
   font-size: var(--analysis-text-body);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
@@ -405,21 +574,34 @@ body:has(.analysis-mode-banner)::after {
   transition:
     background var(--analysis-duration-fast) var(--analysis-ease),
     border-color var(--analysis-duration-fast) var(--analysis-ease),
-    transform var(--analysis-duration-fast) var(--analysis-ease);
+    transform var(--analysis-duration-fast) var(--analysis-ease),
+    box-shadow var(--analysis-duration-fast) var(--analysis-ease);
+  white-space: nowrap;
+  min-height: 36px;
 }
 
 .analysis-btn:hover:not(:disabled) {
   background: var(--analysis-accent-subtle);
   border-color: var(--analysis-border-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
 }
 
 .analysis-btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 10%);
 }
 
 .analysis-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
+}
+
+.analysis-btn-count {
+  font-size: var(--analysis-text-caption);
+  opacity: 0.7;
+  margin-left: 2px;
 }
 
 /* * Primary action button */
@@ -698,6 +880,21 @@ body:has(.analysis-mode-banner)::after {
   border-bottom: 1px solid var(--analysis-border-accent);
   backdrop-filter: blur(16px);
   box-shadow: var(--analysis-shadow-sm);
+  /* * Smooth entrance animation */
+  animation: analysis-banner-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: top;
+}
+
+@keyframes analysis-banner-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .analysis-mode-banner-content {
@@ -706,10 +903,23 @@ body:has(.analysis-mode-banner)::after {
   gap: var(--analysis-gap-sm);
 }
 
+.analysis-mode-banner-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--analysis-gap-xs);
+  flex: 1;
+}
+
 .analysis-mode-banner-text {
   font-size: var(--analysis-text-body);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
+}
+
+.analysis-mode-banner-description {
+  font-size: var(--analysis-text-caption);
+  color: var(--text-secondary);
+  opacity: 0.85;
 }
 
 .analysis-mode-banner-shortcut {

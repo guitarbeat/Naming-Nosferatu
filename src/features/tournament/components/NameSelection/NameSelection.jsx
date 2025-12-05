@@ -21,14 +21,14 @@ function NameSelection({
   filterStatus,
   // Display options
   isSwipeMode,
-  onToggleSwipeMode: _onToggleSwipeMode, // * Handled by UnifiedFilters in NameManagementView
+  onToggleSwipeMode: _onToggleSwipeMode, // * Handled by TournamentToolbar in NameManagementView
   showCatPictures,
-  onToggleCatPictures: _onToggleCatPictures, // * Handled by UnifiedFilters in NameManagementView
+  onToggleCatPictures: _onToggleCatPictures, // * Handled by TournamentToolbar in NameManagementView
   imageList,
   SwipeableCards,
   showSelectedOnly,
-  onToggleShowSelected: _onToggleShowSelected, // * Handled by UnifiedFilters in NameManagementView
-  analysisMode: _analysisMode, // * Handled by UnifiedFilters in NameManagementView
+  onToggleShowSelected: _onToggleShowSelected, // * Handled by TournamentToolbar in NameManagementView
+  analysisMode: _analysisMode, // * Handled by TournamentToolbar in NameManagementView
   // Admin handlers
   onToggleVisibility,
   onDelete,
@@ -46,12 +46,15 @@ function NameSelection({
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
+    // * Map filterStatus to visibility
     const visibility =
       filterStatus === "hidden"
         ? "hidden"
         : filterStatus === "all"
           ? "all"
-          : "visible";
+          : filterStatus === "visible"
+            ? "visible"
+            : "visible"; // * Default to visible
 
     let result = applyNameFilters(availableNames, {
       searchTerm,
@@ -123,7 +126,7 @@ NameSelection.propTypes = {
   selectedCategory: PropTypes.string,
   searchTerm: PropTypes.string,
   sortBy: PropTypes.string,
-  filterStatus: PropTypes.oneOf(["active", "hidden", "all"]),
+  filterStatus: PropTypes.oneOf(["visible", "hidden", "all"]),
   isSwipeMode: PropTypes.bool,
   onToggleSwipeMode: PropTypes.func,
   showCatPictures: PropTypes.bool,

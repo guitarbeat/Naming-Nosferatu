@@ -80,9 +80,6 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   const mainContentRef = useRef(null);
   const retryButtonRef = useRef(null);
 
-  // Fallback timestamp for when error doesn't have one
-  const [fallbackTimestamp] = useState(() => Date.now());
-
   // * Focus management: Focus main content on mount for screen readers
   useEffect(() => {
     if (mainContentRef.current) {
@@ -95,15 +92,10 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
     const announcement = document.createElement("div");
     announcement.setAttribute("role", "alert");
     announcement.setAttribute("aria-live", "assertive");
-    announcement.setAttribute("aria-atomic", "true");
     announcement.className = "sr-only";
-    announcement.textContent =
-      "An error has occurred. Please review the error details below.";
+    announcement.textContent = "An error has occurred.";
     document.body.appendChild(announcement);
-
-    return () => {
-      document.body.removeChild(announcement);
-    };
+    return () => document.body.removeChild(announcement);
   }, []);
 
   const standardizedError = useMemo(
@@ -123,9 +115,6 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   );
 
   const canRetry = retryCount < DEFAULT_MAX_RETRIES;
-  const errorMessage =
-    standardizedError?.userMessage ||
-    "Oops! Something went wrong while helping you find the purr-fect cat name. Don't worry, our cats are still here to help!";
 
   const handleRetry = () => {
     if (!canRetry) {
@@ -140,70 +129,231 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
     resetErrorBoundary();
   };
 
+  // * Use diagnostics from standardized error if available
+  const diagnostics = standardizedError?.diagnostics || {};
+  const stackFrames = diagnostics?.stackFrames || [];
+  const debugHints = diagnostics?.debugHints || [];
+
   const diagnosticInfo = {
     timestamp: new Date().toISOString(),
     userAgent: navigator.userAgent,
     url: window.location.href,
-    errorType: standardizedError?.errorType || "Unknown",
+    errorType:
+      standardizedError?.type || standardizedError?.errorType || "Unknown",
     errorMessage: error?.message || error?.toString() || "Unknown error",
     errorStack: error?.stack || "No stack trace available",
     retryCount,
     hasNetwork: navigator.onLine ? "Online" : "Offline",
     backendHealth: "Not checked",
     additionalInfo: standardizedError?.additionalInfo || {},
+    severity: standardizedError?.severity || "Unknown",
+    context: standardizedError?.context || "React Component Error",
+    isRetryable: standardizedError?.isRetryable ?? false,
+    diagnostics,
+    stackFrames,
+    debugHints,
   };
 
   const handleCopyDiagnostics = async () => {
-    const diagnosticText = `Cat Name Tournament - Error Diagnostics
-═══════════════════════════════════════════
+    // * Use parsed stack frames from diagnostics if available, otherwise parse manually
+    const parsedFrames =
+      diagnosticInfo.stackFrames.length > 0
+        ? diagnosticInfo.stackFrames.slice(0, 5).map((frame) => ({
+            file: frame.file?.split("/").pop() || frame.file || "unknown",
+            fullPath: frame.file || "unknown",
+            line: frame.line || "?",
+            col: frame.column || "?",
+            function: frame.functionName || "anonymous",
+          }))
+        : diagnosticInfo.errorStack
+            .split("\n")
+            .filter(
+              (line) => line.includes("http://") || line.includes("file://"),
+            )
+            .map((line) => {
+              const match = line.match(/([^:]+):(\d+):(\d+)/);
+              if (match) {
+                const [, file, lineNum, colNum] = match;
+                const fileName = file.split("/").pop() || file;
+                const funcMatch = line.match(/at\s+(\w+)\s*\(/);
+                return {
+                  file: fileName,
+                  fullPath: file,
+                  line: lineNum,
+                  col: colNum,
+                  function: funcMatch ? funcMatch[1] : "anonymous",
+                };
+              }
+              return null;
+            })
+            .filter(Boolean)
+            .slice(0, 5);
 
-TIMESTAMP: ${diagnosticInfo.timestamp}
-ERROR TYPE: ${diagnosticInfo.errorType}
-RETRY COUNT: ${diagnosticInfo.retryCount}
-NETWORK STATUS: ${diagnosticInfo.hasNetwork}
-SCREEN SIZE: ${screenSize.isSmallMobile ? "Small Mobile" : screenSize.isMobile ? "Mobile" : screenSize.isTablet ? "Tablet" : "Desktop"}
+    // * Extract component/function names from stack
+    const componentMatches =
+      diagnosticInfo.errorStack.match(/at\s+(\w+)\s*\(/g);
+    const components = componentMatches
+      ? componentMatches.map((m) => m.replace(/at\s+(\w+)\s*\(/, "$1"))
+      : [];
 
-ERROR MESSAGE:
+    // * Determine likely fix category based on error type and message
+    const errorMsg = diagnosticInfo.errorMessage.toLowerCase();
+    const errorType = diagnosticInfo.errorType?.toLowerCase() || "";
+    let fixCategory = "RUNTIME_ERROR";
+    let suggestedFixes = [];
+
+    if (
+      errorType.includes("network") ||
+      errorType.includes("backend") ||
+      errorMsg.includes("fetch") ||
+      errorMsg.includes("network")
+    ) {
+      fixCategory = "NETWORK/BACKEND";
+      suggestedFixes = [
+        "Check network connectivity and browser console for CORS/network errors",
+        "Verify Supabase backend is accessible and API endpoints are correct",
+        "Check if backend service is running and environment variables are set",
+        "Review network request payload and headers",
+      ];
+    } else if (
+      errorMsg.includes("is not defined") ||
+      errorMsg.includes("cannot find")
+    ) {
+      fixCategory = "REFERENCE_ERROR";
+      suggestedFixes = [
+        "Check if variable/function is imported correctly",
+        "Verify the variable exists in the component scope",
+        "Check for typos in variable names",
+        "Ensure props are passed correctly to child components",
+        "Verify all dependencies are installed",
+      ];
+    } else if (
+      errorMsg.includes("must be used") ||
+      errorMsg.includes("context") ||
+      errorMsg.includes("provider")
+    ) {
+      fixCategory = "CONTEXT_HOOK_ERROR";
+      suggestedFixes = [
+        "Verify component is wrapped in the required Context Provider",
+        "Check if hook is called outside component render",
+        "Ensure Context Provider is rendered before component using hook",
+        "Verify prop names match between Provider and consumer",
+        "Check component hierarchy - hook must be descendant of Provider",
+      ];
+    } else if (
+      errorMsg.includes("cannot read") ||
+      errorMsg.includes("null") ||
+      errorMsg.includes("undefined")
+    ) {
+      fixCategory = "NULL_REFERENCE";
+      suggestedFixes = [
+        "Add null/undefined checks before accessing properties",
+        "Use optional chaining (?.) where appropriate",
+        "Provide default values for potentially undefined variables",
+        "Check if data is loaded before accessing",
+        "Verify API responses contain expected data structure",
+      ];
+    } else {
+      suggestedFixes = [
+        "Review the stack trace for the exact error location",
+        "Check component props and state management",
+        "Verify all dependencies are installed and versions match",
+        "Check for recent code changes that might have introduced the error",
+        "Review browser console for additional error details",
+      ];
+    }
+
+    const diagnosticText = `# Error Diagnostics for LLM Agent
+
+## Error Summary
+- **Type**: ${diagnosticInfo.errorType}
+- **Severity**: ${diagnosticInfo.severity}
+- **Category**: ${fixCategory}
+- **Context**: ${diagnosticInfo.context}
+- **Retryable**: ${diagnosticInfo.isRetryable ? "Yes" : "No"}
+- **Timestamp**: ${diagnosticInfo.timestamp}
+- **Retry Count**: ${diagnosticInfo.retryCount}/${DEFAULT_MAX_RETRIES}
+- **Network**: ${diagnosticInfo.hasNetwork}
+- **Screen Size**: ${screenSize.isSmallMobile ? "Small Mobile" : screenSize.isMobile ? "Mobile" : screenSize.isTablet ? "Tablet" : "Desktop"}
+
+## Error Message
+\`\`\`
 ${diagnosticInfo.errorMessage}
+\`\`\`
 
-ERROR STACK:
+## Stack Trace
+\`\`\`
 ${diagnosticInfo.errorStack}
+\`\`\`
 
-USER AGENT:
-${diagnosticInfo.userAgent}
-
-URL:
-${diagnosticInfo.url}
-
+## Code Locations (Top ${parsedFrames.length} frames)
 ${
-  diagnosticInfo.errorType === "NetworkError" ||
-  diagnosticInfo.errorType === "BackendError"
-    ? `
-⚠️  BACKEND DIAGNOSTICS
-═══════════════════════════════════════════
-This appears to be a backend connectivity issue.
-
-Possible causes:
-• Supabase backend is unreachable
-• Network connectivity problems
-• Database service is down
-• RPC function errors
-
-Please check:
-1. Internet connection
-2. Supabase project status
-3. Browser console for network errors
-4. Backend API health
-
-If this persists, the backend infrastructure may need attention.
-`
-    : ""
+  parsedFrames.length > 0
+    ? parsedFrames
+        .map(
+          (frame, idx) =>
+            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``,
+        )
+        .join("\n")
+    : "Unable to parse stack frames"
 }
 
-ADDITIONAL INFO:
-${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
+## Affected Components/Functions
+${
+  components.length > 0
+    ? components.map((c) => `- \`${c}\``).join("\n")
+    : parsedFrames.length > 0
+      ? parsedFrames
+          .map((f) => `- \`${f.function}\` (${f.file}:${f.line})`)
+          .join("\n")
+      : "- Unable to extract"
+}
 
-═══════════════════════════════════════════`;
+## Debug Hints
+${
+  diagnosticInfo.debugHints.length > 0
+    ? diagnosticInfo.debugHints
+        .map((hint) => `- **${hint.title}**: ${hint.detail}`)
+        .join("\n")
+    : "No specific debug hints available"
+}
+
+## Suggested Fixes
+${suggestedFixes.map((fix, idx) => `${idx + 1}. ${fix}`).join("\n")}
+
+## Environment
+- **URL**: ${diagnosticInfo.url}
+- **Browser**: ${navigator.userAgent.includes("Chrome") ? "Chrome" : navigator.userAgent.includes("Firefox") ? "Firefox" : navigator.userAgent.includes("Safari") ? "Safari" : "Unknown"}
+- **User Agent**: ${diagnosticInfo.userAgent}
+
+## Structured Error Data
+\`\`\`json
+${JSON.stringify(
+  {
+    errorType: diagnosticInfo.errorType,
+    severity: diagnosticInfo.severity,
+    context: diagnosticInfo.context,
+    isRetryable: diagnosticInfo.isRetryable,
+    message: diagnosticInfo.errorMessage,
+    stackFrames: parsedFrames,
+    components,
+    fixCategory,
+    ...diagnosticInfo.additionalInfo,
+  },
+  null,
+  2,
+)}
+\`\`\`
+
+## Next Steps for LLM Agent
+1. **Locate the error**: Check files mentioned in Code Locations above
+2. **Identify root cause**: Review the error message and stack trace
+3. **Apply fix**: Follow the Suggested Fixes based on the category
+4. **Verify**: Test the fix and ensure no regressions
+5. **Document**: If fix is non-trivial, add comments explaining the solution
+
+---
+*Generated for LLM agent analysis - ${new Date().toISOString()}*`;
 
     try {
       await navigator.clipboard.writeText(diagnosticText);
@@ -279,44 +429,15 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
           🐱
         </div>
         <h2 id="error-title" className={styles.boundaryTitle}>
-          Oops! Something went wrong
+          Something went wrong
         </h2>
 
-        <p id="error-message" className={styles.boundaryMessage}>
-          {errorMessage}
-        </p>
-
-        {/* Error Type Badge */}
         {(diagnosticInfo.errorType === "NetworkError" ||
           diagnosticInfo.errorType === "BackendError") && (
           <div className={styles.boundaryBackendWarning}>
             <span className={styles.boundaryWarningIcon}>⚠️</span>
-            <div>
-              <strong>Backend Connection Issue</strong>
-              <p>
-                This appears to be a connectivity problem with our backend
-                services.
-              </p>
-            </div>
+            <span>Connection issue detected</span>
           </div>
-        )}
-
-        <div className={styles.boundarySuggestions}>
-          <h3 className={styles.boundarySuggestionsTitle}>
-            Here&apos;s what you can try:
-          </h3>
-          <ul className={styles.boundarySuggestionsList}>
-            <li>🔄 Refresh the page to start fresh</li>
-            <li>🏠 Go back to the main page and try again</li>
-            <li>📱 Check your internet connection</li>
-            <li>🐱 Our cats are still working hard to help you!</li>
-          </ul>
-        </div>
-
-        {canRetry && (
-          <p id="retry-info" className={styles.boundaryRetryInfo}>
-            Attempt {retryCount + 1} of {DEFAULT_MAX_RETRIES}
-          </p>
         )}
 
         <div
@@ -328,28 +449,9 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
             ref={retryButtonRef}
             onClick={handleRetry}
             className={styles.boundaryRetryButton}
-            aria-label={
-              canRetry
-                ? `Try again (Attempt ${retryCount + 1} of ${DEFAULT_MAX_RETRIES})`
-                : "Reload page"
-            }
-            aria-describedby="retry-info"
+            aria-label={canRetry ? "Try again" : "Reload page"}
           >
-            <span className={styles.boundaryRetryIcon} aria-hidden="true">
-              🐱
-            </span>
             {canRetry ? "Try Again" : "Reload"}
-          </button>
-
-          <button
-            onClick={() => window.location.reload()}
-            className={styles.boundaryRefreshButton}
-            aria-label="Refresh the page"
-          >
-            <span className={styles.boundaryRefreshIcon} aria-hidden="true">
-              🔄
-            </span>
-            Refresh Page
           </button>
 
           <button
@@ -359,13 +461,9 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
             className={styles.boundaryHomeButton}
             aria-label="Return to home page"
           >
-            <span className={styles.boundaryHomeIcon} aria-hidden="true">
-              🏠
-            </span>
-            Back to Cat Names
+            Home
           </button>
 
-          {/* Copy Diagnostics Button */}
           <button
             onClick={handleCopyDiagnostics}
             className={styles.boundaryCopyButton}
@@ -426,20 +524,6 @@ ${JSON.stringify(diagnosticInfo.additionalInfo, null, 2)}
             </div>
           </details>
         )}
-
-        <div className={styles.boundarySupport}>
-          <p className={styles.boundarySupportText}>
-            If this problem persists, please contact support with the following
-            information:
-          </p>
-          <p
-            className={styles.boundaryErrorId}
-            aria-label={`Error ID: ${standardizedError?.timestamp || fallbackTimestamp}`}
-          >
-            {}
-            Error ID: {standardizedError?.timestamp || fallbackTimestamp}
-          </p>
-        </div>
       </div>
     </div>
   );

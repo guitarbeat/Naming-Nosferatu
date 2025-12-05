@@ -108,7 +108,8 @@ export function useTournamentState({
   };
 }
 
-export function getNextMatch(names, sorter, _matchNumber, options = {}) {
+// * Internal function - not exported (only used within this file)
+function getNextMatch(names, sorter, _matchNumber, options = {}) {
   if (!sorter || names.length <= 2) {
     return null;
   }

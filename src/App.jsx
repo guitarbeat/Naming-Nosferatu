@@ -7,7 +7,14 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo, lazy, Suspense } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  lazy,
+  Suspense,
+} from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Lazy load CatBackground since it's not critical for initial render
@@ -18,6 +25,7 @@ import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
 import { SidebarProvider, useSidebar } from "./shared/components/ui/sidebar";
 import { AppSidebar } from "./shared/components/AppSidebar/AppSidebar";
+import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 // * Lazy load heavy components for better code splitting
 import useUserSession from "@hooks/useUserSession";
@@ -41,6 +49,7 @@ import { devLog, devWarn, devError } from "./shared/utils/logger";
  */
 function App() {
   const { login, logout, isInitialized } = useUserSession();
+  const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
   // * Initialize store from localStorage
   useAppStoreInitialization();
@@ -296,6 +305,27 @@ function App() {
 
   // * Memoize main content to prevent unnecessary re-renders
 
+  // * Handle opening photos view
+  const handleOpenPhotos = useCallback(() => {
+    if (currentView === "photos") {
+      tournamentActions.setView("tournament");
+      navigateTo("/");
+    } else {
+      tournamentActions.setView("photos");
+      navigateTo("/");
+    }
+  }, [currentView, tournamentActions, navigateTo]);
+
+  // * Handle opening suggest name modal
+  const handleOpenSuggestName = useCallback(() => {
+    setIsSuggestNameModalOpen(true);
+  }, []);
+
+  // * Handle closing suggest name modal
+  const handleCloseSuggestName = useCallback(() => {
+    setIsSuggestNameModalOpen(false);
+  }, []);
+
   // * Memoize sidebar props to prevent unnecessary re-renders
   const sidebarProps = useMemo(
     () => ({
@@ -325,6 +355,8 @@ function App() {
       onStartNewTournament: handleStartNewTournament,
       isLightTheme: ui.theme === "light",
       onThemeChange: handleThemeChange,
+      onOpenSuggestName: handleOpenSuggestName,
+      onOpenPhotos: handleOpenPhotos,
       // * Pass breadcrumbs to navbar
       currentView: currentView || "tournament",
     }),
@@ -339,6 +371,8 @@ function App() {
       ui.theme,
       handleThemeChange,
       navigateTo,
+      handleOpenSuggestName,
+      handleOpenPhotos,
     ],
   );
 
@@ -360,7 +394,7 @@ function App() {
   }
 
   return (
-    <SidebarProvider collapsedWidth={160} defaultCollapsed={false}>
+    <SidebarProvider>
       <AppLayout
         sidebarProps={sidebarProps}
         user={user}
@@ -376,6 +410,8 @@ function App() {
         ui={ui}
         uiActions={uiActions}
         isAdmin={isAdmin}
+        isSuggestNameModalOpen={isSuggestNameModalOpen}
+        onCloseSuggestName={handleCloseSuggestName}
       />
     </SidebarProvider>
   );
@@ -395,6 +431,8 @@ function AppLayout({
   handleUpdateRatings,
   handleTournamentSetup,
   handleTournamentComplete,
+  isSuggestNameModalOpen,
+  onCloseSuggestName,
 }) {
   const { collapsed, collapsedWidth, toggleCollapsed } = useSidebar();
   const { isLoggedIn } = user;
@@ -484,6 +522,10 @@ function AppLayout({
         )}
 
         <ScrollToTopButton isLoggedIn={isLoggedIn} />
+        <NameSuggestionModal
+          isOpen={isSuggestNameModalOpen}
+          onClose={onCloseSuggestName}
+        />
       </main>
     </div>
   );
@@ -515,6 +557,8 @@ AppLayout.propTypes = {
   ui: PropTypes.shape({}).isRequired,
   uiActions: PropTypes.shape({}).isRequired,
   isAdmin: PropTypes.bool.isRequired,
+  isSuggestNameModalOpen: PropTypes.bool.isRequired,
+  onCloseSuggestName: PropTypes.func.isRequired,
 };
 
 // Test auto-deployment - Wed Oct 22 21:26:25 CDT 2025

@@ -2,7 +2,7 @@
  * @module TournamentSetup/components/PhotoThumbnail
  * @description Photo thumbnail with responsive image sources and 3D tilt effect
  */
-import { useState, useCallback, memo, useRef } from "react";
+import { useState, useCallback, memo, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { GALLERY_IMAGE_SIZES } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
@@ -12,6 +12,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
 
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [tiltStyle, setTiltStyle] = useState({});
 
   const handleImageLoad = useCallback(() => {
     setImageLoading(false);
@@ -22,6 +23,45 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
     setImageError(true);
     setImageLoading(false);
   }, []);
+
+  // * 3D tilt effect that follows mouse
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element || imageError) return;
+
+    const handleMouseMove = (e) => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = ((y - centerY) / centerY) * -5; // * Max 5 degrees
+      const rotateY = ((x - centerX) / centerX) * 5; // * Max 5 degrees
+
+      setTiltStyle({
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+        transition: "transform 0.1s ease-out",
+      });
+    };
+
+    const handleMouseLeave = () => {
+      setTiltStyle({
+        transform:
+          "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)",
+        transition: "transform 0.3s ease-out",
+      });
+    };
+
+    element.addEventListener("mousemove", handleMouseMove);
+    element.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      element.removeEventListener("mousemove", handleMouseMove);
+      element.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [imageError]);
 
   const handleClick = useCallback(
     (e) => {
@@ -61,6 +101,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
       onClick={handleClick}
       aria-label={`Open cat photo ${index + 1}`}
       disabled={imageError}
+      style={tiltStyle}
     >
       {imageError ? (
         <div className={styles.imageErrorPlaceholder}>

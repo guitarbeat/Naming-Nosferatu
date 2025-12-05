@@ -1,6 +1,6 @@
 /* ===== BUTTON UTILITIES ===== */
 /* * Consolidated button utilities - use Button component for most cases */
-/* * These utilities are for legacy support and utility classes */
+/* * These utilities provide utility classes for direct styling */
 
 .btn-base {
   display: inline-flex;
@@ -90,7 +90,7 @@
 }
 
 /* ===== CARD UTILITIES ===== */
-/* * Use Card component for most cases - these utilities are for legacy support */
+/* * Use Card component for most cases - these utilities provide utility classes */
 .card-base {
   padding: var(--card-padding-md);
   background: var(--card-background);

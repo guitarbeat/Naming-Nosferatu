@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 /**
  * * Reusable navigation item component
@@ -13,29 +13,46 @@ import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
  * @param {React.Component} props.icon - Icon component to render
  * @param {string} props.label - Button label
  * @param {string} props.view - Current active view
- * @param {Function} props.onClick - Click handler that receives the item key
+ * @param {Function} props.onClick - Click handler that receives the item key or custom handler
+ * @param {boolean} props.isActive - Whether the item is active (for custom handlers)
  */
-export function MenuNavItem({ itemKey, icon: Icon, label, view, onClick }) {
-  const { collapsed } = useSidebar();
-  const isActive = view === itemKey.toLowerCase();
+export function MenuNavItem({
+  itemKey,
+  icon: Icon,
+  label,
+  view,
+  onClick,
+  isActive: customIsActive,
+  ...rest
+}) {
+  const isActive =
+    customIsActive !== undefined
+      ? customIsActive
+      : view === itemKey.toLowerCase();
 
   const handleClick = (e) => {
     e.preventDefault();
-    onClick(itemKey.toLowerCase());
+    // * If onClick is provided directly, use it; otherwise use default behavior
+    if (onClick && typeof onClick === "function") {
+      onClick();
+    } else {
+      onClick(itemKey.toLowerCase());
+    }
   };
 
   return (
-    <SidebarMenuItem key={itemKey}>
+    <SidebarMenuItem key={itemKey} data-active={isActive} {...rest}>
       <SidebarMenuButton asChild>
         <a
           href="#"
           onClick={handleClick}
           className={isActive ? "active" : ""}
           aria-current={isActive ? "page" : undefined}
-          title={collapsed ? label : undefined}
+          title={label}
+          data-active={isActive}
         >
           <Icon />
-          <span>{label}</span>
+          <span className="nav-item-label">{label}</span>
         </a>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -48,4 +65,5 @@ MenuNavItem.propTypes = {
   label: PropTypes.string.isRequired,
   view: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  isActive: PropTypes.bool,
 };

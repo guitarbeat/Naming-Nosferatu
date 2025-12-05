@@ -19,6 +19,9 @@ import { useEffect } from "react";
  * @param {Function} [options.onUndo] - Callback to undo last vote
  * @param {boolean} [options.canUndoNow] - Whether undo is currently available
  * @param {Function} [options.onClearSelection] - Callback to clear selection
+ * @param {Function} [options.onSelectLeft] - Callback to select left name
+ * @param {Function} [options.onSelectRight] - Callback to select right name
+ * @param {Function} [options.onToggleCatPictures] - Callback to toggle cat pictures
  */
 export function useKeyboardControls(
   selectedOption,
@@ -27,7 +30,15 @@ export function useKeyboardControls(
   isMuted,
   handleVoteWithAnimation,
   globalEventListeners,
-  { onToggleHelp, onUndo, canUndoNow, onClearSelection } = {},
+  {
+    onToggleHelp,
+    onUndo,
+    canUndoNow,
+    onClearSelection,
+    onSelectLeft,
+    onSelectRight,
+    onToggleCatPictures,
+  } = {},
 ) {
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -36,11 +47,15 @@ export function useKeyboardControls(
       switch (e.key) {
         case "ArrowLeft":
           e.preventDefault();
-          // Handle left selection
+          if (typeof onSelectLeft === "function") {
+            onSelectLeft();
+          }
           break;
         case "ArrowRight":
           e.preventDefault();
-          // Handle right selection
+          if (typeof onSelectRight === "function") {
+            onSelectRight();
+          }
           break;
         case " ":
         case "Enter":
@@ -77,6 +92,20 @@ export function useKeyboardControls(
             if (typeof onToggleHelp === "function") onToggleHelp();
           }
           break;
+        case "c":
+        case "C":
+          // * Toggle cat pictures (only if not typing in an input)
+          if (
+            e.target.tagName !== "INPUT" &&
+            e.target.tagName !== "TEXTAREA" &&
+            !e.target.isContentEditable
+          ) {
+            e.preventDefault();
+            if (typeof onToggleCatPictures === "function") {
+              onToggleCatPictures();
+            }
+          }
+          break;
         default:
           break;
       }
@@ -108,5 +137,8 @@ export function useKeyboardControls(
     onUndo,
     canUndoNow,
     onClearSelection,
+    onSelectLeft,
+    onSelectRight,
+    onToggleCatPictures,
   ]);
 }

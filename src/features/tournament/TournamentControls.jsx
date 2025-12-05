@@ -39,6 +39,8 @@ const TournamentControls = ({
 
   volume,
   onVolumeChange,
+  showCatPictures,
+  onToggleCatPictures,
 }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showVolume, setShowVolume] = useState(false);
@@ -154,6 +156,23 @@ const TournamentControls = ({
           />
         )}
 
+        <IconButton
+          onClick={onToggleCatPictures}
+          icon={
+            <span className={styles.icon} aria-hidden="true">
+              🐱
+            </span>
+          }
+          variant="ghost"
+          ariaLabel={
+            showCatPictures ? "Hide cat pictures" : "Show cat pictures"
+          }
+          aria-pressed={showCatPictures}
+          disabled={isTransitioning}
+          title={showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+          className={`${styles.soundToggleButton} ${showCatPictures ? styles.muted : ""}`}
+        />
+
         {audioError && (
           <IconButton
             onClick={onRetryAudio}
@@ -250,6 +269,8 @@ TournamentControls.propTypes = {
     effects: PropTypes.number,
   }).isRequired,
   onVolumeChange: PropTypes.func.isRequired,
+  showCatPictures: PropTypes.bool,
+  onToggleCatPictures: PropTypes.func,
 };
 
 export default TournamentControls;

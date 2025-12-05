@@ -1,6 +1,6 @@
 /**
  * @module AnalysisPanel/components/AnalysisToolbar
- * @description Toolbar for Analysis Mode actions
+ * @description Toolbar for Analysis Mode actions with improved visual hierarchy
  */
 
 import PropTypes from "prop-types";
@@ -16,21 +16,13 @@ export function AnalysisToolbar({ children, selectedCount = 0, actions }) {
   return (
     <div className="analysis-toolbar">
       {selectedCount > 0 && (
-        <>
-          <div className="analysis-selection">
-            <span className="analysis-selection-count">{selectedCount}</span>
-            <span className="analysis-selection-label">selected</span>
-          </div>
-          <div className="analysis-toolbar-divider" />
-        </>
+        <div className="analysis-selection-badge">
+          <span className="analysis-selection-count">{selectedCount}</span>
+          <span className="analysis-selection-label">selected</span>
+        </div>
       )}
-      {children}
-      {actions && (
-        <>
-          <div style={{ flex: 1 }} />
-          <div className="analysis-toolbar-group">{actions}</div>
-        </>
-      )}
+      {children && <div className="analysis-toolbar-content">{children}</div>}
+      {actions && <div className="analysis-toolbar-actions">{actions}</div>}
     </div>
   );
 }

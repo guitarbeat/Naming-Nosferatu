@@ -98,6 +98,7 @@ src/
 └── shared/                # Shared components
     ├── components/        # Reusable UI
     ├── services/          # Business logic
+    │   └── supabase/      # Supabase API and client
     └── utils/             # Utility functions
 ```
 
@@ -173,7 +174,7 @@ import {
   adminAPI,
   siteSettingsAPI,
   imagesAPI 
-} from '@/integrations/supabase/api';
+} from '@/shared/services/supabase/api';
 
 // Get all cat names with descriptions
 const names = await catNamesAPI.getNamesWithDescriptions();
@@ -184,8 +185,8 @@ const stats = await catNamesAPI.getUserStats(userName);
 // Create tournament
 const tournament = await tournamentsAPI.createTournament(names, ratings);
 
-// Get tournament history
-const history = await tournamentsAPI.getTournamentHistory(userName);
+// Get user tournaments
+const tournaments = await tournamentsAPI.getUserTournaments(userName);
 ```
 
 ### **Custom Hooks**
@@ -344,9 +345,6 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 | `npm run lint` | Run ESLint |
 | `npm run lint:css` | Run Stylelint |
 | `npm run format` | Format code with Prettier |
-| `npm run knip` | Analyze dead code with Knip |
-| `npm run knip:fix` | Auto-fix unused exports |
-| `npm run knip:production` | Production mode analysis |
 
 ### **Code Quality**
 
@@ -355,25 +353,6 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 - **Formatting**: Prettier with consistent rules
 - **TypeScript**: Full type safety (where applicable)
 - **Testing**: Comprehensive unit and integration tests
-- **Dead Code Analysis**: Knip for finding unused files, dependencies, and exports
-
-### **Dead Code Analysis with Knip**
-
-Knip is the modern, all-in-one tool for maintaining clean JavaScript/TypeScript projects. It finds unused files, dependencies, and exports (even complex ones).
-
-```bash
-# Run Knip analysis
-npm run knip
-
-# Auto-fix unused exports
-npm run knip:fix
-
-# Production mode (more strict)
-npm run knip:production
-```
-
-**Features:**
-- Deep analysis of unused files, dependencies, and exports
 - Plugin system that understands Vite, React, and other tools
 - Auto-fix capability for unused exports
 - Zero configuration required (works out of the box)
