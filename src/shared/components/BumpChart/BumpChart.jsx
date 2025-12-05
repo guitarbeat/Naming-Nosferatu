@@ -334,10 +334,29 @@ export function BumpChart({
             borderColor: tooltipData.color,
           }}
         >
-          <div className="bump-chart-tooltip-name">{tooltipData.name}</div>
+          <div className="bump-chart-tooltip-header">
+            <div className="bump-chart-tooltip-name">{tooltipData.name}</div>
+            {tooltipData.movement !== 0 && (
+              <TrendIndicator
+                direction={tooltipData.movement > 0 ? 'up' : 'down'}
+                percentChange={Math.abs(tooltipData.movement)}
+                compact={true}
+              />
+            )}
+          </div>
           <div className="bump-chart-tooltip-rank">
             Rank #{tooltipData.rank} · {tooltipData.period}
           </div>
+          {tooltipData.avgRating && (
+            <div className="bump-chart-tooltip-metric">
+              Rating: {tooltipData.avgRating}
+            </div>
+          )}
+          {tooltipData.totalSelections && (
+            <div className="bump-chart-tooltip-metric">
+              Selected: {tooltipData.totalSelections}x
+            </div>
+          )}
         </div>
       )}
 
