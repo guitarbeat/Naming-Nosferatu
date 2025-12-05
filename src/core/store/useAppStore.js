@@ -93,11 +93,21 @@ const applyDevtools = (storeImpl, config) => {
 
   // * Only apply devtools if React DevTools is available and fully initialized
   // * If not available, use plain store to prevent runtime errors
-  if (!isReactDevToolsAvailable()) {
+  // * Also check if devtools was previously disabled due to errors
+  if (
+    !isReactDevToolsAvailable() ||
+    (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__)
+  ) {
     if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "[Zustand] React DevTools not available or not ready, using plain store (devtools disabled)",
-      );
+      if (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__) {
+        console.warn(
+          "[Zustand] Devtools was previously disabled due to errors, using plain store",
+        );
+      } else {
+        console.warn(
+          "[Zustand] React DevTools not available or not ready, using plain store (devtools disabled)",
+        );
+      }
     }
     return storeImpl;
   }
@@ -123,9 +133,22 @@ const applyDevtools = (storeImpl, config) => {
 
     // * Final validation: check all renderers one more time before applying devtools
     // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+    // * Perform multiple checks to ensure renderers are stable
     try {
       if (typeof hook.renderers.get === "function") {
-        for (const rendererId of hook.renderers.keys()) {
+        // * First pass: validate all renderers exist and are valid
+        const rendererIds = Array.from(hook.renderers.keys());
+        if (rendererIds.length === 0) {
+          // * No renderers available, don't use devtools
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] No renderers available, using plain store",
+            );
+          }
+          return storeImpl;
+        }
+
+        for (const rendererId of rendererIds) {
           const renderer = hook.renderers.get(rendererId);
           // * If any renderer is undefined, null, or not an object, abort devtools
           // * Note: typeof null === "object" in JavaScript, so we check !renderer first
@@ -138,6 +161,28 @@ const applyDevtools = (storeImpl, config) => {
             return storeImpl;
           }
         }
+
+        // * Second pass: verify renderers are still valid (they might have changed)
+        // * This catches race conditions where renderers become invalid between checks
+        for (const rendererId of rendererIds) {
+          const renderer = hook.renderers.get(rendererId);
+          if (!renderer || typeof renderer !== "object" || renderer === null) {
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "[Zustand] Renderer became invalid during validation, using plain store",
+              );
+            }
+            return storeImpl;
+          }
+        }
+      } else {
+        // * Renderers is not a Map-like structure, don't use devtools
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "[Zustand] Renderers is not Map-like, using plain store",
+          );
+        }
+        return storeImpl;
       }
     } catch (validationError) {
       // * If validation fails, don't use devtools
@@ -149,11 +194,35 @@ const applyDevtools = (storeImpl, config) => {
       return storeImpl;
     }
 
-    // * Apply devtools middleware
-    const devtoolsMiddleware = devtools(storeImpl, {
-      ...config,
-      enabled: true,
-    });
+    // * Apply devtools middleware with error handling
+    // * Wrap the devtools() call itself to catch initialization errors
+    let devtoolsMiddleware;
+    try {
+      devtoolsMiddleware = devtools(storeImpl, {
+        ...config,
+        enabled: true,
+      });
+    } catch (devtoolsInitError) {
+      // * If devtools initialization fails (e.g., accessing renderers during setup),
+      // * disable devtools and return plain store
+      if (typeof window !== "undefined") {
+        window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      }
+      if (process.env.NODE_ENV === "development") {
+        const errorMsg = devtoolsInitError?.message || String(devtoolsInitError);
+        if (errorMsg.includes("Activity") || errorMsg.includes("undefined")) {
+          console.warn(
+            "[Zustand] Devtools initialization failed with 'Activity' error, using plain store",
+          );
+        } else {
+          console.warn(
+            "[Zustand] Devtools initialization failed, using plain store:",
+            errorMsg,
+          );
+        }
+      }
+      return storeImpl;
+    }
 
     // * Wrap the middleware to catch runtime errors when it accesses React DevTools
     // * This provides an additional safety layer for errors that occur after initialization
@@ -162,9 +231,10 @@ const applyDevtools = (storeImpl, config) => {
         return devtoolsMiddleware(set, get, api);
       } catch (error) {
         // * If devtools middleware throws at runtime, disable it and use plain store
+        const errorMsg = error?.message || String(error);
         if (
-          typeof error?.message === "string" &&
-          error.message.includes("Activity")
+          typeof errorMsg === "string" &&
+          (errorMsg.includes("Activity") || errorMsg.includes("Cannot set properties of undefined"))
         ) {
           if (typeof window !== "undefined") {
             window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
@@ -855,22 +925,28 @@ try {
 
 // * Set up global error handler to catch devtools errors at runtime
 // * This provides a safety net if the error occurs after store creation
-if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+// * Works in all environments, not just development
+if (typeof window !== "undefined") {
   const originalErrorHandler = window.onerror;
   window.onerror = function (message, source, lineno, colno, error) {
     // * Check if this is the specific "Activity" property error
+    const messageStr = typeof message === "string" ? message : String(message || "");
+    const errorMsg = error?.message || "";
+    const combinedMsg = `${messageStr} ${errorMsg}`;
+    
     if (
-      typeof message === "string" &&
-      message.includes("Cannot set properties of undefined") &&
-      message.includes("Activity")
+      combinedMsg.includes("Cannot set properties of undefined") &&
+      combinedMsg.includes("Activity")
     ) {
       // * Disable devtools to prevent future occurrences
       window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-      console.warn(
-        "[Zustand] Caught devtools 'Activity' error at runtime, devtools disabled",
-      );
-      // * Don't prevent the error from being logged, but mark it as handled
-      return false; // * Return false to allow default error handling
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Caught devtools 'Activity' error at runtime, devtools disabled",
+        );
+      }
+      // * Suppress the error to prevent it from appearing in console
+      return true; // * Return true to suppress the error
     }
     // * Call original error handler if it exists
     if (originalErrorHandler) {
@@ -878,6 +954,29 @@ if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
     }
     return false;
   };
+
+  // * Also catch unhandled promise rejections that might contain this error
+  const originalUnhandledRejection = window.onunhandledrejection;
+  window.addEventListener("unhandledrejection", function (event) {
+    const reason = event.reason;
+    const errorMsg = reason?.message || String(reason || "");
+    
+    if (
+      typeof errorMsg === "string" &&
+      errorMsg.includes("Cannot set properties of undefined") &&
+      errorMsg.includes("Activity")
+    ) {
+      // * Disable devtools to prevent future occurrences
+      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] Caught devtools 'Activity' error in unhandled rejection, devtools disabled",
+        );
+      }
+      // * Prevent the error from propagating
+      event.preventDefault();
+    }
+  });
 }
 
 // * Hook to initialize store from localStorage
