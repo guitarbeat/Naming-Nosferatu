@@ -132,6 +132,10 @@ export function BumpChart({
       const rank = line.rankings[clampedIndex];
 
       if (rank !== null) {
+        // Calculate movement from previous period
+        const previousRank = clampedIndex > 0 ? line.rankings[clampedIndex - 1] : null;
+        const movement = previousRank !== null ? previousRank - rank : 0;
+
         setTooltipData({
           x: e.clientX,
           y: e.clientY,
@@ -139,6 +143,9 @@ export function BumpChart({
           rank,
           period: timeLabels[clampedIndex],
           color: line.color,
+          avgRating: line.avgRating,
+          totalSelections: line.totalSelections,
+          movement,
         });
       }
     },
