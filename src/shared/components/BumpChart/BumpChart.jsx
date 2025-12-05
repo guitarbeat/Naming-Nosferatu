@@ -174,6 +174,12 @@ export function BumpChart({
 
   return (
     <div className="bump-chart-container">
+      <div className="bump-chart-description">
+        <p>
+          This chart shows how cat names rank over time. Higher positions (lower rank numbers)
+          indicate stronger performance. Hover over lines to see detailed metrics.
+        </p>
+      </div>
       <svg
         ref={svgRef}
         className="bump-chart-svg"
