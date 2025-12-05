@@ -20,6 +20,7 @@ import "@styles/index.css";
 import App from "./App.jsx";
 import ErrorBoundary from "./shared/components/Error/ErrorBoundary.jsx";
 import ErrorBoundaryFallback from "./shared/components/Error/ErrorBoundaryFallback.jsx";
+import DeploymentErrorDetector from "./shared/components/DeploymentErrorDetector/DeploymentErrorDetector.jsx";
 
 /**
  * * Safely converts a value to a string for logging
@@ -110,6 +111,7 @@ root.render(
   <StrictMode>
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <QueryClientProvider client={queryClient}>
+        <DeploymentErrorDetector />
         <App />
         {process.env.NODE_ENV === "development" && (
           <ReactQueryDevtools initialIsOpen={false} />
