@@ -8,10 +8,7 @@ import {
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 // * Import type guards from TypeScript file for compile-time type safety
-import {
-  isValidReactDevToolsHook,
-  areAllRenderersValid,
-} from "./types";
+import { isValidReactDevToolsHook, areAllRenderersValid } from "./types";
 
 // * Helper to safely apply devtools middleware
 // * Prevents errors when React DevTools extension is installed but API isn't ready
@@ -25,10 +22,7 @@ const applyDevtools = (storeImpl, config) => {
 
   // * Check if devtools has been explicitly disabled due to previous errors
   // * This flag persists across page loads via early check
-  if (
-    typeof window !== "undefined" &&
-    window.__ZUSTAND_DEVTOOLS_DISABLED__
-  ) {
+  if (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__) {
     return storeImpl;
   }
 
@@ -77,7 +71,10 @@ const applyDevtools = (storeImpl, config) => {
     (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__)
   ) {
     if (process.env.NODE_ENV === "development") {
-      if (typeof window !== "undefined" && window.__ZUSTAND_DEVTOOLS_DISABLED__) {
+      if (
+        typeof window !== "undefined" &&
+        window.__ZUSTAND_DEVTOOLS_DISABLED__
+      ) {
         console.warn(
           "[Zustand] Devtools was previously disabled due to errors, using plain store",
         );
@@ -121,7 +118,10 @@ const applyDevtools = (storeImpl, config) => {
     // * Final check: Verify React DevTools is still available right before calling devtools()
     // * This prevents race conditions where renderers become invalid between checks
     const finalHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-    if (!isValidReactDevToolsHook(finalHook) || !areAllRenderersValid(finalHook)) {
+    if (
+      !isValidReactDevToolsHook(finalHook) ||
+      !areAllRenderersValid(finalHook)
+    ) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "[Zustand] React DevTools hook invalid at final check, using plain store",
@@ -134,7 +134,10 @@ const applyDevtools = (storeImpl, config) => {
     // * Wrap the devtools() call itself to catch initialization errors
     // * Double-check renderers are still valid right before calling devtools()
     const preCheckHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-    if (!isValidReactDevToolsHook(preCheckHook) || !areAllRenderersValid(preCheckHook)) {
+    if (
+      !isValidReactDevToolsHook(preCheckHook) ||
+      !areAllRenderersValid(preCheckHook)
+    ) {
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "[Zustand] React DevTools hook invalid at pre-devtools check, using plain store",
@@ -142,7 +145,7 @@ const applyDevtools = (storeImpl, config) => {
       }
       return storeImpl;
     }
-    
+
     let devtoolsMiddleware;
     try {
       devtoolsMiddleware = devtools(storeImpl, {
@@ -156,7 +159,8 @@ const applyDevtools = (storeImpl, config) => {
         window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
       }
       if (process.env.NODE_ENV === "development") {
-        const errorMsg = devtoolsInitError?.message || String(devtoolsInitError);
+        const errorMsg =
+          devtoolsInitError?.message || String(devtoolsInitError);
         if (errorMsg.includes("Activity") || errorMsg.includes("undefined")) {
           console.warn(
             "[Zustand] Devtools initialization failed with 'Activity' error, using plain store",
@@ -176,9 +180,15 @@ const applyDevtools = (storeImpl, config) => {
     return (set, get, api) => {
       // * Final runtime check: verify renderers are still valid before executing middleware
       // * This prevents errors if renderers become invalid between initialization and execution
-      if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+      if (
+        typeof window !== "undefined" &&
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__
+      ) {
         const runtimeHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-        if (!isValidReactDevToolsHook(runtimeHook) || !areAllRenderersValid(runtimeHook)) {
+        if (
+          !isValidReactDevToolsHook(runtimeHook) ||
+          !areAllRenderersValid(runtimeHook)
+        ) {
           if (typeof window !== "undefined") {
             window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
           }
@@ -190,7 +200,7 @@ const applyDevtools = (storeImpl, config) => {
           return storeImpl(set, get, api);
         }
       }
-      
+
       try {
         return devtoolsMiddleware(set, get, api);
       } catch (error) {
@@ -198,7 +208,8 @@ const applyDevtools = (storeImpl, config) => {
         const errorMsg = error?.message || String(error);
         if (
           typeof errorMsg === "string" &&
-          (errorMsg.includes("Activity") || errorMsg.includes("Cannot set properties of undefined"))
+          (errorMsg.includes("Activity") ||
+            errorMsg.includes("Cannot set properties of undefined"))
         ) {
           if (typeof window !== "undefined") {
             window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
@@ -800,10 +811,7 @@ const storeImpl = (set, get) => ({
 // * by detecting problematic hook states before Zustand devtools tries to use them
 // * This check runs IMMEDIATELY when the module loads, before any store creation
 // * Uses type guards to ensure type safety and catch errors at development time
-if (
-  typeof window !== "undefined" &&
-  process.env.NODE_ENV === "development"
-) {
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
   try {
     const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
 
@@ -862,7 +870,7 @@ try {
   }
   // * Fallback: create store without devtools
   useAppStore = create(storeImpl);
-  
+
   // * Set a flag to prevent future devtools attempts
   if (typeof window !== "undefined") {
     window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
@@ -876,10 +884,11 @@ if (typeof window !== "undefined") {
   const originalErrorHandler = window.onerror;
   window.onerror = function (message, source, lineno, colno, error) {
     // * Check if this is the specific "Activity" property error
-    const messageStr = typeof message === "string" ? message : String(message || "");
+    const messageStr =
+      typeof message === "string" ? message : String(message || "");
     const errorMsg = error?.message || "";
     const combinedMsg = `${messageStr} ${errorMsg}`;
-    
+
     if (
       combinedMsg.includes("Cannot set properties of undefined") &&
       combinedMsg.includes("Activity")
@@ -902,10 +911,10 @@ if (typeof window !== "undefined") {
   };
 
   // * Also catch unhandled promise rejections that might contain this error
-  window.addEventListener("unhandledrejection", function (event) {
-    const reason = event.reason;
+  window.addEventListener("unhandledrejection", (event) => {
+    const { reason } = event;
     const errorMsg = reason?.message || String(reason || "");
-    
+
     if (
       typeof errorMsg === "string" &&
       errorMsg.includes("Cannot set properties of undefined") &&

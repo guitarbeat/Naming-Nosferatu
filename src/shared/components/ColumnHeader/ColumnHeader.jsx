@@ -3,9 +3,9 @@
  * @description Reusable table column header with optional sorting and metric explanation
  */
 
-import PropTypes from 'prop-types';
-import { MetricExplainer, InfoIcon } from '../MetricExplainer';
-import './ColumnHeader.css';
+import PropTypes from "prop-types";
+import { MetricExplainer, InfoIcon } from "../MetricExplainer";
+import "./ColumnHeader.css";
 
 /**
  * ColumnHeader Component
@@ -26,22 +26,22 @@ export function ColumnHeader({
   metricName,
   sortable = true,
   sorted = false,
-  sortDirection = 'desc',
+  sortDirection = "desc",
   onSort,
-  className = '',
+  className = "",
 }) {
   const handleSort = () => {
     if (!sortable || !onSort) return;
 
     // Toggle direction if already sorted by this column
-    const newDirection = sorted && sortDirection === 'desc' ? 'asc' : 'desc';
+    const newDirection = sorted && sortDirection === "desc" ? "asc" : "desc";
     onSort(metricName, newDirection);
   };
 
   const headerClass = `
     column-header
-    ${sortable ? 'column-header-sortable' : ''}
-    ${sorted ? 'column-header-sorted' : ''}
+    ${sortable ? "column-header-sortable" : ""}
+    ${sorted ? "column-header-sorted" : ""}
     ${className}
   `.trim();
 
@@ -53,7 +53,7 @@ export function ColumnHeader({
         {/* Sort indicator */}
         {sortable && sorted && (
           <span className="column-header-sort-indicator" aria-hidden="true">
-            {sortDirection === 'desc' ? '▼' : '▲'}
+            {sortDirection === "desc" ? "▼" : "▲"}
           </span>
         )}
       </div>
@@ -76,7 +76,7 @@ export function ColumnHeader({
       className={`${headerClass} column-header-button`}
       onClick={handleSort}
       aria-sort={
-        sorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'
+        sorted ? (sortDirection === "asc" ? "ascending" : "descending") : "none"
       }
       type="button"
     >
@@ -90,11 +90,11 @@ ColumnHeader.propTypes = {
   metricName: PropTypes.string,
   sortable: PropTypes.bool,
   sorted: PropTypes.bool,
-  sortDirection: PropTypes.oneOf(['asc', 'desc']),
+  sortDirection: PropTypes.oneOf(["asc", "desc"]),
   onSort: PropTypes.func,
   className: PropTypes.string,
 };
 
-ColumnHeader.displayName = 'ColumnHeader';
+ColumnHeader.displayName = "ColumnHeader";
 
 export default ColumnHeader;

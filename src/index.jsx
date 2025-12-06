@@ -26,7 +26,8 @@ import DeploymentErrorDetector from "./shared/components/DeploymentErrorDetector
 const checkEnvironmentVariables = () => {
   const requiredVars = {
     VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-    VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env
+      .VITE_SUPABASE_PUBLISHABLE_KEY,
   };
 
   const missing = Object.entries(requiredVars)
@@ -37,16 +38,16 @@ const checkEnvironmentVariables = () => {
     const errorMessage = `Missing required environment variables: ${missing.join(", ")}`;
     console.error(`[App Initialization] ${errorMessage}`);
     console.error(
-      "\nTo fix this:\n" +
-      "1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n" +
-      "2. Add the missing variables:\n" +
-      missing.map((key) => `   - ${key}`).join("\n") +
-      "\n3. Redeploy the application\n"
+      `\nTo fix this:\n` +
+        `1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n` +
+        `2. Add the missing variables:\n${missing
+          .map((key) => `   - ${key}`)
+          .join("\n")}\n3. Redeploy the application\n`,
     );
 
     // * Display error in the DOM before React mounts
     const root = document.getElementById("root");
-    if (root && !root.querySelector('[data-env-error]')) {
+    if (root && !root.querySelector("[data-env-error]")) {
       root.innerHTML = `
         <div data-env-error="true">
         <div style="
@@ -197,7 +198,10 @@ try {
 } catch (error) {
   // * Error already displayed in DOM via checkEnvironmentVariables
   // * Don't mount React if environment variables are missing
-  console.error("[App Initialization] Failed environment variable check:", error);
+  console.error(
+    "[App Initialization] Failed environment variable check:",
+    error,
+  );
 }
 
 // * Only mount React if environment check passed

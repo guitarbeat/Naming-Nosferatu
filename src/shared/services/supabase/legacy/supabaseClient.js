@@ -1215,7 +1215,7 @@ export const catNamesAPI = {
       // Get selection data grouped by date for the last N periods
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - (periods - 1));
-      
+
       const { data: selections, error: selError } = await client
         .from("tournament_selections")
         .select("name_id, name, selected_at")
@@ -1244,15 +1244,15 @@ export const catNamesAPI = {
       // Group selections by date and name
       const dateGroups = new Map();
       const nameData = new Map();
-      
+
       (selections || []).forEach((s) => {
         const [date] = new Date(s.selected_at).toISOString().split("T");
-        
+
         if (!dateGroups.has(date)) {
           dateGroups.set(date, new Map());
         }
         const dayMap = dateGroups.get(date);
-        
+
         if (!dayMap.has(s.name_id)) {
           dayMap.set(s.name_id, { name: s.name, count: 0 });
         }
@@ -1260,7 +1260,10 @@ export const catNamesAPI = {
 
         // Track name metadata
         if (!nameData.has(s.name_id)) {
-          const ratingInfo = ratingMap.get(s.name_id) || { rating: 1500, wins: 0 };
+          const ratingInfo = ratingMap.get(s.name_id) || {
+            rating: 1500,
+            wins: 0,
+          };
           nameData.set(s.name_id, {
             id: s.name_id,
             name: s.name,
@@ -1277,7 +1280,10 @@ export const catNamesAPI = {
       for (let i = periods - 1; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
-        const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        const label = d.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
         timeLabels.push(label);
       }
 
@@ -1300,11 +1306,12 @@ export const catNamesAPI = {
         const rankings = dateKeys.map((dateKey) => {
           const dayData = dateGroups.get(dateKey);
           if (!dayData) return null;
-          
+
           // Sort all names by count for this day to get ranking
-          const dayEntries = Array.from(dayData.entries())
-            .sort((a, b) => b[1].count - a[1].count);
-          
+          const dayEntries = Array.from(dayData.entries()).sort(
+            (a, b) => b[1].count - a[1].count,
+          );
+
           const rankIndex = dayEntries.findIndex(([id]) => id === nameInfo.id);
           return rankIndex >= 0 ? rankIndex + 1 : null;
         });

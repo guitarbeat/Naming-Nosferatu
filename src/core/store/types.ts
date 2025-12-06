@@ -83,26 +83,26 @@ function isRendererWritable(renderer: ReactDevToolsRenderer): boolean {
   if (renderer === null || renderer === undefined) {
     return false;
   }
-  
+
   try {
     // * Test if we can set a property on the renderer
     // * Use a unique symbol-like key to avoid conflicts
     const testKey = "__ZUSTAND_WRITABILITY_TEST__";
     const originalValue = (renderer as Record<string, unknown>)[testKey];
-    
+
     // * Try to set a test property
     (renderer as Record<string, unknown>)[testKey] = true;
-    
+
     // * Check if the property was actually set
     const wasSet = (renderer as Record<string, unknown>)[testKey] === true;
-    
+
     // * Restore original value or delete test property
     if (originalValue === undefined) {
       delete (renderer as Record<string, unknown>)[testKey];
     } else {
       (renderer as Record<string, unknown>)[testKey] = originalValue;
     }
-    
+
     return wasSet;
   } catch {
     // * If setting property throws an error, renderer is not writable
@@ -121,7 +121,7 @@ export function areAllRenderersValid(hook: ReactDevToolsHook): boolean {
     if (!hook || !hook.renderers) {
       return false;
     }
-    
+
     const rendererIds = Array.from(hook.renderers.keys());
     if (rendererIds.length === 0) {
       return false;
@@ -129,20 +129,20 @@ export function areAllRenderersValid(hook: ReactDevToolsHook): boolean {
 
     for (const rendererId of rendererIds) {
       const renderer = hook.renderers.get(rendererId);
-      
+
       // * Check if renderer exists and is valid
       // * This prevents "Cannot set properties of undefined" errors
       if (!isValidRenderer(renderer)) {
         return false;
       }
-      
+
       // * Check if renderer is writable before allowing devtools
       // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
       // * Note: isValidRenderer already checks for null/undefined, but we double-check here
       if (renderer === null || renderer === undefined) {
         return false;
       }
-      
+
       if (!isRendererWritable(renderer)) {
         return false;
       }

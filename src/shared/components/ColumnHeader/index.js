@@ -1,1 +1,1 @@
-export { ColumnHeader, default } from './ColumnHeader';
+export { ColumnHeader, default } from "./ColumnHeader";

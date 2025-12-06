@@ -1,1 +1,1 @@
-export { TrendIndicator, default } from './TrendIndicator';
+export { TrendIndicator, default } from "./TrendIndicator";

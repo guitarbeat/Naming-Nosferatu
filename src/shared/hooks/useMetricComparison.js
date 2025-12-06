@@ -4,14 +4,13 @@
  * Provides memoized calculations to avoid unnecessary recalculations.
  */
 
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import {
   calculatePercentile,
-  determineTrend,
   getInsightMessage,
   getComparisonText,
   calculateStats,
-} from '../utils/metricsUtils';
+} from "../utils/metricsUtils";
 
 /**
  * Hook to calculate metric comparisons and insights for a single item
@@ -26,10 +25,10 @@ import {
  */
 export function useMetricComparison(item, allItems = [], options = {}) {
   const {
-    ratingField = item?.rating != null ? 'rating' : 'avg_rating',
-    selectedField = item?.selected != null ? 'selected' : 'times_selected',
-    winsField = item?.wins != null ? 'wins' : 'total_wins',
-    lossesField = item?.losses != null ? 'losses' : 'total_losses',
+    ratingField = item?.rating != null ? "rating" : "avg_rating",
+    selectedField = item?.selected != null ? "selected" : "times_selected",
+    winsField = item?.wins != null ? "wins" : "total_wins",
+    lossesField = item?.losses != null ? "losses" : "total_losses",
   } = options;
 
   return useMemo(() => {
@@ -39,9 +38,9 @@ export function useMetricComparison(item, allItems = [], options = {}) {
         ratingPercentile: 50,
         selectedPercentile: 50,
         winsPercentile: 50,
-        insightMessage: '',
-        comparisonText: '',
-        trend: { direction: 'stable', percentChange: 0 },
+        insightMessage: "",
+        comparisonText: "",
+        trend: { direction: "stable", percentChange: 0 },
         stats: { avgRating: 1500, avgSelected: 0, avgWins: 0 },
       };
     }
@@ -67,10 +66,16 @@ export function useMetricComparison(item, allItems = [], options = {}) {
 
     // Calculate stats for context
     const stats = {
-      avgRating: Math.round(allRatings.reduce((a, b) => a + b, 0) / allRatings.length),
+      avgRating: Math.round(
+        allRatings.reduce((a, b) => a + b, 0) / allRatings.length,
+      ),
       avgSelected:
-        Math.round((allSelected.reduce((a, b) => a + b, 0) / allSelected.length) * 10) / 10,
-      avgWins: Math.round((allWins.reduce((a, b) => a + b, 0) / allWins.length) * 10) / 10,
+        Math.round(
+          (allSelected.reduce((a, b) => a + b, 0) / allSelected.length) * 10,
+        ) / 10,
+      avgWins:
+        Math.round((allWins.reduce((a, b) => a + b, 0) / allWins.length) * 10) /
+        10,
     };
 
     // Generate insight message
@@ -83,10 +88,10 @@ export function useMetricComparison(item, allItems = [], options = {}) {
     });
 
     // Generate comparison text
-    const comparisonText = getComparisonText(rating, stats.avgRating, 'rating');
+    const comparisonText = getComparisonText(rating, stats.avgRating, "rating");
 
     // Determine trend (if we have previous data)
-    const trend = { direction: 'stable', percentChange: 0 };
+    const trend = { direction: "stable", percentChange: 0 };
 
     return {
       percentile,
@@ -118,16 +123,98 @@ export function useMultipleMetricComparison(items = [], options = {}) {
   return useMemo(() => {
     if (!items || items.length === 0) return [];
 
+    const {
+      ratingField = items[0]?.rating != null ? "rating" : "avg_rating",
+      selectedField = items[0]?.selected != null
+        ? "selected"
+        : "times_selected",
+      winsField = items[0]?.wins != null ? "wins" : "total_wins",
+      lossesField = items[0]?.losses != null ? "losses" : "total_losses",
+    } = options;
+
+    // Calculate insights for all items at once (not using hook inside map)
     return items.map((item) => {
-      // Calculate insights for this item
-      const insights = useMetricComparison(item, items, options);
+      // Extract metric values
+      const rating = item[ratingField] ?? 1500;
+      const selected = item[selectedField] ?? 0;
+      const wins = item[winsField] ?? 0;
+      const losses = item[lossesField] ?? 0;
+
+      // Get all values for percentile calculation
+      const allRatings = items.map((i) => i[ratingField] ?? 1500);
+      const allSelected = items.map((i) => i[selectedField] ?? 0);
+      const allWins = items.map((i) => i[winsField] ?? 0);
+
+      // Calculate percentiles
+      const ratingPercentile = calculatePercentile(rating, allRatings, true);
+      const selectedPercentile = calculatePercentile(
+        selected,
+        allSelected,
+        true,
+      );
+      const winsPercentile = calculatePercentile(wins, allWins, true);
+
+      // Overall percentile (average of rating and selected)
+      const percentile = Math.round(
+        (ratingPercentile + selectedPercentile) / 2,
+      );
+
+      // Calculate stats for context
+      const stats = {
+        avgRating: Math.round(
+          allRatings.reduce((a, b) => a + b, 0) / allRatings.length,
+        ),
+        avgSelected:
+          Math.round(
+            (allSelected.reduce((a, b) => a + b, 0) / allSelected.length) * 10,
+          ) / 10,
+        avgWins:
+          Math.round(
+            (allWins.reduce((a, b) => a + b, 0) / allWins.length) * 10,
+          ) / 10,
+      };
+
+      // Generate insight message
+      const insightMessage = getInsightMessage({
+        rating,
+        selected,
+        wins,
+        losses,
+        percentile,
+      });
+
+      // Generate comparison text
+      const comparisonText = getComparisonText(
+        rating,
+        stats.avgRating,
+        "rating",
+      );
+
+      // Determine trend (if we have previous data)
+      const trend = { direction: "stable", percentChange: 0 };
+
+      const insights = {
+        percentile,
+        ratingPercentile,
+        selectedPercentile,
+        winsPercentile,
+        insightMessage,
+        comparisonText,
+        trend,
+        stats,
+        metrics: {
+          rating,
+          selected,
+          wins,
+          losses,
+        },
+      };
 
       return {
         ...item,
         _insights: insights,
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, options]);
 }
 
@@ -139,9 +226,9 @@ export function useMultipleMetricComparison(items = [], options = {}) {
  */
 export function useMetricsStatistics(items = [], options = {}) {
   const {
-    ratingField = 'rating',
-    selectedField = 'selected',
-    winsField = 'wins',
+    ratingField = "rating",
+    selectedField = "selected",
+    winsField = "wins",
   } = options;
 
   return useMemo(() => {
@@ -175,10 +262,10 @@ export function useMetricsStatistics(items = [], options = {}) {
  */
 export function useHasInsight(item, allItems = [], insightType, options = {}) {
   const {
-    ratingField = 'rating',
-    selectedField = 'selected',
-    winsField = 'wins',
-    lossesField = 'losses',
+    ratingField = "rating",
+    selectedField = "selected",
+    winsField = "wins",
+    lossesField = "losses",
   } = options;
 
   return useMemo(() => {
@@ -196,27 +283,35 @@ export function useHasInsight(item, allItems = [], insightType, options = {}) {
     const selectedPercentile = calculatePercentile(selected, allSelected, true);
 
     switch (insightType) {
-      case 'top_rated':
+      case "top_rated":
         return ratingPercentile >= 90;
 
-      case 'most_selected':
+      case "most_selected":
         return selectedPercentile >= 90;
 
-      case 'underrated':
+      case "underrated":
         return ratingPercentile >= 70 && selectedPercentile < 50;
 
-      case 'undefeated':
+      case "undefeated":
         return wins > 0 && losses === 0;
 
-      case 'undiscovered':
+      case "undiscovered":
         return selected === 0;
 
-      case 'new':
+      case "new":
         // Check if item has very few selections/ratings
         return selected < 2 && wins + losses < 2;
 
       default:
         return false;
     }
-  }, [item, allItems, insightType, ratingField, selectedField, winsField, lossesField]);
+  }, [
+    item,
+    allItems,
+    insightType,
+    ratingField,
+    selectedField,
+    winsField,
+    lossesField,
+  ]);
 }

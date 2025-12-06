@@ -22,10 +22,10 @@ function DeploymentErrorDetector({ onErrorDetected }) {
     // * Check for script loading failures
     const checkScriptLoading = () => {
       const scripts = document.querySelectorAll('script[type="module"]');
-      let failedScripts = [];
+      const failedScripts = [];
 
       scripts.forEach((script) => {
-        script.addEventListener("error", (event) => {
+        script.addEventListener("error", () => {
           const src = script.src || script.getAttribute("src");
           failedScripts.push({
             src,
@@ -270,9 +270,7 @@ ${deploymentError.cspViolation ? `\n## CSP Violation Details\n- Blocked URI: ${d
     <div className={styles.deploymentError} role="alert">
       <div className={styles.deploymentErrorContent}>
         <div className={styles.deploymentErrorIcon}>⚠️</div>
-        <h2 className={styles.deploymentErrorTitle}>
-          {deploymentError.title}
-        </h2>
+        <h2 className={styles.deploymentErrorTitle}>{deploymentError.title}</h2>
         <p className={styles.deploymentErrorMessage}>
           {deploymentError.message}
         </p>

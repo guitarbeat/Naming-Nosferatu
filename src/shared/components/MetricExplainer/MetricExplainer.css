@@ -15,24 +15,25 @@
   cursor: help;
   padding: 0.25rem;
   border-radius: var(--analysis-radius-full, 999px);
-  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: all var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
   line-height: 1;
   outline: none;
   user-select: none;
 }
 
 .metric-explainer-trigger:hover {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.15);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.15);
   transform: scale(1.1);
 }
 
 .metric-explainer-trigger:focus {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.2);
-  box-shadow: 0 0 0 2px rgba(var(--analysis-accent-rgb, 47 243 224), 0.3);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.2);
+  box-shadow: 0 0 0 2px rgb(var(--analysis-accent-rgb, 47 243 224), 0.3);
 }
 
 .metric-explainer-trigger[aria-expanded="true"] {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.2);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.2);
 }
 
 /* Popover Container */
@@ -46,9 +47,10 @@
   background-color: var(--analysis-surface-1, var(--card-background));
   border: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
   border-radius: var(--analysis-radius-lg, 0.5rem);
-  box-shadow: var(--analysis-shadow-lg, 0 20px 25px -5px rgba(0, 0, 0, 0.1));
+  box-shadow: var(--analysis-shadow-lg, 0 20px 25px -5px rgb(0 0 0 / 10%));
   backdrop-filter: blur(12px);
-  animation: popoverFadeIn var(--analysis-duration-normal, 300ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  animation: popoverFadeIn var(--analysis-duration-normal, 300ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
 }
 
 @keyframes popoverFadeIn {
@@ -153,11 +155,12 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--analysis-radius-sm, 0.375rem);
-  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: all var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 .metric-explainer-close:hover {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.1);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.1);
   color: var(--analysis-accent, var(--color-neon-cyan));
 }
 
@@ -197,7 +200,7 @@
 }
 
 .metric-explainer-description {
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.75rem;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -219,7 +222,7 @@
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0 0.375rem;
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.15);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.15);
   border-radius: var(--analysis-radius-sm, 0.375rem);
   font-weight: 500;
   color: var(--analysis-accent, var(--color-neon-cyan));
@@ -229,13 +232,13 @@
 .metric-explainer-examples {
   margin: 0.75rem 0;
   padding: 0.75rem;
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.05);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.05);
   border-radius: var(--analysis-radius-md, 0.375rem);
 }
 
 .metric-explainer-examples-title {
   display: block;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -263,7 +266,7 @@
   display: inline-block;
   min-width: 3rem;
   padding: 0 0.375rem;
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.2);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.2);
   border-radius: var(--analysis-radius-sm, 0.375rem);
   font-weight: 600;
   color: var(--analysis-accent, var(--color-neon-cyan));
@@ -278,11 +281,12 @@
 
 /* Help text */
 .metric-explainer-help {
-  margin: 0.75rem 0 0 0;
+  margin: 0.75rem 0 0;
   padding: 0.75rem;
-  background-color: rgba(250, 204, 21, 0.05);
-  border-left: 3px solid rgba(250, 204, 21, 0.5);
-  border-radius: 0 var(--analysis-radius-sm, 0.375rem) var(--analysis-radius-sm, 0.375rem) 0;
+  background-color: rgb(250 204 21 / 5%);
+  border-left: 3px solid rgb(250 204 21 / 50%);
+  border-radius: 0 var(--analysis-radius-sm, 0.375rem)
+    var(--analysis-radius-sm, 0.375rem) 0;
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -291,7 +295,7 @@
 
 /* Range info */
 .metric-explainer-range {
-  margin: 0.75rem 0 0 0;
+  margin: 0.75rem 0 0;
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--text-secondary);
@@ -315,15 +319,15 @@
 
 /* Light theme adjustments */
 :root[data-theme="light"] .metric-explainer-popover {
-  background-color: #ffffff;
+  background-color: #fff;
   border-color: rgb(0 0 0 / 12%);
   box-shadow:
-    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 20px 25px -5px rgb(0 0 0 / 10%),
     0 0 0 1px rgb(0 0 0 / 8%);
 }
 
 :root[data-theme="light"] .metric-explainer-arrow {
-  background-color: #ffffff;
+  background-color: #fff;
   border-color: rgb(0 0 0 / 12%);
 }
 

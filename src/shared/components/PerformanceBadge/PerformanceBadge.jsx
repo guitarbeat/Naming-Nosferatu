@@ -3,9 +3,9 @@
  * @description Component to display achievement/status badges for names
  */
 
-import PropTypes from 'prop-types';
-import { getInsightCategory } from '../../utils/metricDefinitions';
-import './PerformanceBadge.css';
+import PropTypes from "prop-types";
+import { getInsightCategory } from "../../utils/metricDefinitions";
+import "./PerformanceBadge.css";
 
 /**
  * PerformanceBadge Component
@@ -18,7 +18,12 @@ import './PerformanceBadge.css';
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element}
  */
-export function PerformanceBadge({ type, label, variant = 'md', className = '' }) {
+export function PerformanceBadge({
+  type,
+  label,
+  variant = "md",
+  className = "",
+}) {
   const category = getInsightCategory(type);
 
   if (!category && !label) {
@@ -26,9 +31,10 @@ export function PerformanceBadge({ type, label, variant = 'md', className = '' }
   }
 
   const badgeLabel = label || category?.label || type;
-  const badgeIcon = category?.icon || '•';
-  const badgeDescription = category?.description || '';
-  const badgeClass = `performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
+  const badgeIcon = category?.icon || "•";
+  const badgeDescription = category?.description || "";
+  const badgeClass =
+    `performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
 
   return (
     <span
@@ -48,11 +54,11 @@ export function PerformanceBadge({ type, label, variant = 'md', className = '' }
 PerformanceBadge.propTypes = {
   type: PropTypes.string.isRequired,
   label: PropTypes.string,
-  variant: PropTypes.oneOf(['sm', 'md']),
+  variant: PropTypes.oneOf(["sm", "md"]),
   className: PropTypes.string,
 };
 
-PerformanceBadge.displayName = 'PerformanceBadge';
+PerformanceBadge.displayName = "PerformanceBadge";
 
 /**
  * Multiple Performance Badges Component
@@ -63,7 +69,7 @@ PerformanceBadge.displayName = 'PerformanceBadge';
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element}
  */
-export function PerformanceBadges({ types = [], className = '' }) {
+export function PerformanceBadges({ types = [], className = "" }) {
   if (!types || types.length === 0) {
     return null;
   }
@@ -82,6 +88,6 @@ PerformanceBadges.propTypes = {
   className: PropTypes.string,
 };
 
-PerformanceBadges.displayName = 'PerformanceBadges';
+PerformanceBadges.displayName = "PerformanceBadges";
 
 export default PerformanceBadge;
