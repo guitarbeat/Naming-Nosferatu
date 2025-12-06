@@ -48,6 +48,8 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         output: {
+          // * Ensure proper module format for vendor chunks to prevent export issues
+          format: 'es',
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
@@ -108,7 +110,15 @@ export default defineConfig(({ mode }) => {
           drop_debugger: true,
           pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
         },
-        format: { comments: false },
+        format: {
+          comments: false,
+          // * Preserve module structure to prevent export object issues
+          preserve_annotations: false,
+        },
+        mangle: {
+          // * Preserve module exports to prevent undefined object errors
+          reserved: ['exports', 'module'],
+        },
       },
       chunkSizeWarningLimit: 500,
       cssCodeSplit: true,
