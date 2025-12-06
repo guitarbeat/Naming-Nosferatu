@@ -2,12 +2,23 @@
  * @module BumpChart
  * @description Interactive bump chart visualization showing ranking changes over time.
  * Displays how cat names move up/down in rankings across different time periods.
+ * Features animated line drawing and staggered point appearances.
  */
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { TrendIndicator } from "../TrendIndicator";
 import "./BumpChart.css";
+
+// Animation configuration
+const ANIMATION_CONFIG = {
+  lineDuration: 800,
+  lineStagger: 120,
+  pointDelay: 400,
+  pointStagger: 60,
+  legendDelay: 600,
+  legendStagger: 80,
+};
 
 // Color palette for the lines (vibrant, distinguishable colors)
 const COLORS = [
@@ -62,11 +73,21 @@ export function BumpChart({
   showLegend = true,
   onNameClick,
   highlightedName = null,
+  animated = true,
 }) {
   const svgRef = useRef(null);
   const [hoveredName, setHoveredName] = useState(null);
   const [dimensions, setDimensions] = useState({ width: 600, height });
   const [tooltipData, setTooltipData] = useState(null);
+  const [animationKey, setAnimationKey] = useState(0);
+  const [pathLengths, setPathLengths] = useState({});
+
+  // Trigger re-animation when data changes
+  useEffect(() => {
+    if (animated) {
+      setAnimationKey(prev => prev + 1);
+    }
+  }, [data, animated]);
 
   // Responsive sizing
   useEffect(() => {
@@ -237,24 +258,41 @@ export function BumpChart({
 
         {/* Lines for each name */}
         <g className="bump-chart-lines">
-          {chartData.lines.map((line) => {
+          {chartData.lines.map((line, lineIndex) => {
             const isHighlighted =
               hoveredName === line.name || highlightedName === line.name;
             const isOtherHighlighted =
               (hoveredName || highlightedName) && !isHighlighted;
+            
+            const pathD = generatePath(
+              line.rankings,
+              width,
+              chartHeight,
+              padding,
+              chartData.maxRank
+            );
+
+            // Calculate path length for animation
+            const getPathLength = (d) => {
+              if (!d) return 0;
+              try {
+                const tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                tempPath.setAttribute('d', d);
+                return tempPath.getTotalLength();
+              } catch {
+                return 1000;
+              }
+            };
+
+            const pathLength = getPathLength(pathD);
+            const lineDelay = lineIndex * ANIMATION_CONFIG.lineStagger;
 
             return (
-              <g key={line.id} className="bump-chart-line-group">
+              <g key={`${line.id}-${animationKey}`} className="bump-chart-line-group">
                 {/* Glow effect for highlighted line */}
                 {isHighlighted && (
                   <path
-                    d={generatePath(
-                      line.rankings,
-                      width,
-                      chartHeight,
-                      padding,
-                      chartData.maxRank
-                    )}
+                    d={pathD}
                     fill="none"
                     stroke={line.color}
                     strokeWidth={8}
@@ -262,27 +300,28 @@ export function BumpChart({
                   />
                 )}
 
-                {/* Main line */}
+                {/* Main line with draw animation */}
                 <path
-                  d={generatePath(
-                    line.rankings,
-                    width,
-                    chartHeight,
-                    padding,
-                    chartData.maxRank
-                  )}
+                  d={pathD}
                   fill="none"
                   stroke={line.color}
                   strokeWidth={isHighlighted ? 4 : 2.5}
-                  className={`bump-chart-line ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
+                  className={`bump-chart-line ${animated ? 'animated' : ''} ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
                   onMouseEnter={() => setHoveredName(line.name)}
                   onMouseMove={(e) => handleMouseMove(e, line)}
                   onMouseLeave={handleMouseLeave}
                   onClick={() => onNameClick?.(line.id, line.name)}
-                  style={{ cursor: onNameClick ? "pointer" : "default" }}
+                  style={{
+                    cursor: onNameClick ? "pointer" : "default",
+                    ...(animated && {
+                      strokeDasharray: pathLength,
+                      strokeDashoffset: pathLength,
+                      animation: `drawLine ${ANIMATION_CONFIG.lineDuration}ms ease-out ${lineDelay}ms forwards`,
+                    }),
+                  }}
                 />
 
-                {/* Data points */}
+                {/* Data points with staggered pop-in animation */}
                 {line.rankings.map((rank, i) => {
                   if (rank === null) return null;
                   const x =
@@ -293,6 +332,10 @@ export function BumpChart({
                     ((rank - 1) * (chartHeight - padding * 2)) /
                       (chartData.maxRank - 1);
 
+                  const pointDelay = animated
+                    ? lineDelay + ANIMATION_CONFIG.pointDelay + i * ANIMATION_CONFIG.pointStagger
+                    : 0;
+
                   return (
                     <circle
                       key={`point-${line.id}-${i}`}
@@ -300,14 +343,17 @@ export function BumpChart({
                       cy={y}
                       r={isHighlighted ? 6 : 4}
                       fill={line.color}
-                      className={`bump-chart-point ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
+                      className={`bump-chart-point ${animated ? 'animated' : ''} ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
                       onMouseEnter={() => setHoveredName(line.name)}
                       onMouseLeave={handleMouseLeave}
+                      style={animated ? {
+                        animation: `popInPoint 300ms ease-out ${pointDelay}ms forwards`,
+                      } : undefined}
                     />
                   );
                 })}
 
-                {/* End label */}
+                {/* End label with fade-in animation */}
                 {line.rankings[line.rankings.length - 1] !== null && (
                   <text
                     x={width - padding + 8}
@@ -317,9 +363,12 @@ export function BumpChart({
                         (chartHeight - padding * 2)) /
                         (chartData.maxRank - 1)
                     }
-                    className={`bump-chart-name-label ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
+                    className={`bump-chart-name-label ${animated ? 'animated' : ''} ${isHighlighted ? "highlighted" : ""} ${isOtherHighlighted ? "dimmed" : ""}`}
                     dominantBaseline="middle"
                     fill={line.color}
+                    style={animated ? {
+                      animation: `fadeSlideIn 400ms ease-out ${lineDelay + ANIMATION_CONFIG.lineDuration}ms forwards`,
+                    } : undefined}
                   >
                     {line.name}
                   </text>
@@ -368,24 +417,35 @@ export function BumpChart({
 
       {/* Legend */}
       {showLegend && (
-        <div className="bump-chart-legend">
-          {chartData.lines.slice(0, 5).map((line) => (
-            <button
-              key={line.id}
-              type="button"
-              className={`bump-chart-legend-item ${hoveredName === line.name ? "active" : ""}`}
-              onMouseEnter={() => setHoveredName(line.name)}
-              onMouseLeave={handleMouseLeave}
-              onClick={() => onNameClick?.(line.id, line.name)}
-              style={{ "--legend-color": line.color }}
-            >
-              <span className="bump-chart-legend-color" />
-              <span className="bump-chart-legend-name">{line.name}</span>
-              <span className="bump-chart-legend-change">
-                {formatChange(line.change)}
-              </span>
-            </button>
-          ))}
+        <div className="bump-chart-legend" key={`legend-${animationKey}`}>
+          {chartData.lines.slice(0, 5).map((line, idx) => {
+            const legendDelay = animated
+              ? ANIMATION_CONFIG.legendDelay + idx * ANIMATION_CONFIG.legendStagger
+              : 0;
+
+            return (
+              <button
+                key={line.id}
+                type="button"
+                className={`bump-chart-legend-item ${animated ? 'animated' : ''} ${hoveredName === line.name ? "active" : ""}`}
+                onMouseEnter={() => setHoveredName(line.name)}
+                onMouseLeave={handleMouseLeave}
+                onClick={() => onNameClick?.(line.id, line.name)}
+                style={{
+                  "--legend-color": line.color,
+                  ...(animated && {
+                    animation: `fadeSlideUp 400ms ease-out ${legendDelay}ms forwards`,
+                  }),
+                }}
+              >
+                <span className="bump-chart-legend-color" />
+                <span className="bump-chart-legend-name">{line.name}</span>
+                <span className="bump-chart-legend-change">
+                  {formatChange(line.change)}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -416,6 +476,7 @@ BumpChart.propTypes = {
   ),
   timeLabels: PropTypes.arrayOf(PropTypes.string),
   maxDisplayed: PropTypes.number,
+  animated: PropTypes.bool,
   height: PropTypes.number,
   showLegend: PropTypes.bool,
   onNameClick: PropTypes.func,

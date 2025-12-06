@@ -39,7 +39,7 @@
 
 /* Lines */
 .bump-chart-line {
-  transition: all 0.2s ease;
+  transition: stroke-width 0.2s ease, opacity 0.2s ease;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -59,18 +59,23 @@
 
 /* Data points */
 .bump-chart-point {
-  transition: all 0.15s ease;
+  transition: r 0.15s ease, opacity 0.15s ease;
   stroke: var(--background, white);
   stroke-width: 2;
 }
 
-.bump-chart-point.highlighted {
+.bump-chart-point.animated {
+  opacity: 0;
   transform-origin: center;
-  animation: pulse-point 1s ease infinite;
+}
+
+.bump-chart-point.highlighted {
+  animation: pulse-point 1s ease infinite !important;
+  opacity: 1 !important;
 }
 
 .bump-chart-point.dimmed {
-  opacity: 0.2;
+  opacity: 0.2 !important;
 }
 
 @keyframes pulse-point {
@@ -89,12 +94,60 @@
   transition: opacity 0.2s ease;
 }
 
+.bump-chart-name-label.animated {
+  opacity: 0;
+}
+
 .bump-chart-name-label.highlighted {
   font-weight: 700;
+  opacity: 1 !important;
 }
 
 .bump-chart-name-label.dimmed {
-  opacity: 0.2;
+  opacity: 0.2 !important;
+}
+
+/* Animation Keyframes */
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes popInPoint {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Tooltip */
@@ -143,6 +196,10 @@
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+.bump-chart-legend-item.animated {
+  opacity: 0;
 }
 
 .bump-chart-legend-item:hover,
@@ -225,5 +282,18 @@
   .bump-chart-rank-label,
   .bump-chart-time-label {
     font-size: 9px;
+  }
+}
+
+/* Reduced motion - respect user preference */
+@media (prefers-reduced-motion: reduce) {
+  .bump-chart-line,
+  .bump-chart-point,
+  .bump-chart-name-label,
+  .bump-chart-legend-item {
+    animation: none !important;
+    opacity: 1 !important;
+    stroke-dashoffset: 0 !important;
+    transform: none !important;
   }
 }
