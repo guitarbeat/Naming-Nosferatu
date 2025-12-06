@@ -3,9 +3,9 @@
   position: relative;
   width: 100%;
   padding: var(--spacing-md, 1rem);
-  background: var(--card, hsl(0, 0%, 98%));
+  background: transparent;
   border-radius: var(--radius-lg, 12px);
-  border: 1px solid var(--border, hsl(0, 0%, 90%));
+  border: none;
 }
 
 .bump-chart-svg {
@@ -19,7 +19,7 @@
   stroke: var(--border, hsl(0, 0%, 88%));
   stroke-width: 1;
   stroke-dasharray: 4 4;
-  opacity: 0.5;
+  opacity: 0.25;
 }
 
 /* Rank labels (left side) */
@@ -190,12 +190,13 @@
   align-items: center;
   gap: var(--spacing-xs, 0.5rem);
   padding: var(--spacing-xs, 0.5rem) var(--spacing-sm, 0.75rem);
-  background: var(--muted, hsl(0, 0%, 96%));
-  border: 1px solid var(--border, hsl(0, 0%, 90%));
+  background: transparent;
+  border: 1px solid var(--legend-color, var(--border, hsl(0, 0%, 90%)));
   border-radius: var(--radius-full, 100px);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s ease;
+  opacity: 0.8;
 }
 
 .bump-chart-legend-item.animated {
@@ -204,9 +205,10 @@
 
 .bump-chart-legend-item:hover,
 .bump-chart-legend-item.active {
-  background: var(--accent, hsl(0, 0%, 92%));
+  background: color-mix(in srgb, var(--legend-color) 8%, transparent);
   border-color: var(--legend-color);
   box-shadow: 0 0 0 2px var(--legend-color);
+  opacity: 1;
 }
 
 .bump-chart-legend-color {
@@ -250,8 +252,8 @@
 /* Dark mode */
 :root[data-theme="dark"] .bump-chart-container,
 .dark .bump-chart-container {
-  background: var(--card, hsl(0, 0%, 8%));
-  border-color: var(--border, hsl(0, 0%, 20%));
+  background: transparent;
+  border: none;
 }
 
 :root[data-theme="dark"] .bump-chart-tooltip,
@@ -261,8 +263,8 @@
 
 :root[data-theme="dark"] .bump-chart-legend-item,
 .dark .bump-chart-legend-item {
-  background: var(--muted, hsl(0, 0%, 15%));
-  border-color: var(--border, hsl(0, 0%, 25%));
+  background: transparent;
+  border-color: var(--legend-color, var(--border, hsl(0, 0%, 25%)));
 }
 
 /* Responsive */

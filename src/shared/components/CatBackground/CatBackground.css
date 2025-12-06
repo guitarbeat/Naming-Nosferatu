@@ -57,93 +57,10 @@
   }
 }
 
-/* Floating cats container */
-.cat-background__floating-cats {
-  position: absolute;
-  inset: 0;
-  pointer-events: auto;
-}
-
-/* Floating cats - simplified */
-.cat-background__cat {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  opacity: 0.7;
-  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 15%));
-  transition:
-    opacity 0.3s,
-    transform 0.3s;
-  animation: float 8s ease-in-out infinite;
-  will-change: transform;
-}
-
-.cat-background__cat:hover {
-  opacity: 1;
-  transform: scale(1.15);
-}
-
-/* Cat positions - only 2 cats now */
-.cat-background__cat--1 {
-  top: 15%;
-  left: 8%;
-  animation-delay: 0s;
-}
-
-.cat-background__cat--2 {
-  top: 55%;
-  right: 10%;
-  animation-delay: 3s;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-15px);
-  }
-}
-
-/* Cat media styling */
-.cat-background__cat video,
-.cat-background__cat img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-/* Mobile - smaller cats */
-@media (width <= 768px) {
-  .cat-background__cat {
-    width: 35px;
-    height: 35px;
-  }
-
-  .cat-background__cat--1 {
-    top: 10%;
-    left: 5%;
-  }
-
-  .cat-background__cat--2 {
-    top: 70%;
-    right: 8%;
-  }
-}
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .cat-background__stars,
-  .cat-background__nebula,
-  .cat-background__cat {
+  .cat-background__nebula {
     animation: none;
-  }
-
-  .cat-background__cat {
-    opacity: 0.5;
   }
 }

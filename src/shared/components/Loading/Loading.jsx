@@ -4,9 +4,22 @@
  * Supports multiple loading display variants: spinner, suspense, and skeleton
  */
 
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import PropTypes from "prop-types";
 import styles from "./Loading.module.css";
+
+const LOADING_ASSETS = [
+  "/assets/images/cat.gif",
+  "/assets/images/cat.webm",
+];
+
+/**
+ * Get a random loading asset
+ * @returns {string} Random asset path
+ */
+const getRandomLoadingAsset = () => {
+  return LOADING_ASSETS[Math.floor(Math.random() * LOADING_ASSETS.length)];
+};
 
 /**
  * Unified Loading Component
@@ -26,6 +39,9 @@ const Loading = ({
   className = "",
   children,
 }) => {
+  const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
+  const isVideo = randomAsset.endsWith(".webm");
+
   // Suspense variant (React Suspense wrapper)
   if (variant === "suspense") {
     if (!children) return null;
@@ -34,11 +50,22 @@ const Loading = ({
       <div
         className={`${styles.container} ${overlay ? styles.overlay : ""} ${className}`}
       >
-        <img
-          src="/assets/images/bby-cat.GIF"
-          alt="Loading..."
-          className={styles.loadingGif}
-        />
+        {isVideo ? (
+          <video
+            src={randomAsset}
+            alt="Loading..."
+            className={styles.loadingGif}
+            autoPlay
+            muted
+            loop
+          />
+        ) : (
+          <img
+            src={randomAsset}
+            alt="Loading..."
+            className={styles.loadingGif}
+          />
+        )}
         {text && <p className={styles.text}>{text}</p>}
         <span className={styles.srOnly}>Loading...</span>
       </div>
@@ -67,11 +94,22 @@ const Loading = ({
 
   return (
     <div className={containerClasses} role="status" aria-label="Loading">
-      <img
-        src="/assets/images/bby-cat.GIF"
-        alt="Loading..."
-        className={styles.loadingGif}
-      />
+      {isVideo ? (
+        <video
+          src={randomAsset}
+          alt="Loading..."
+          className={styles.loadingGif}
+          autoPlay
+          muted
+          loop
+        />
+      ) : (
+        <img
+          src={randomAsset}
+          alt="Loading..."
+          className={styles.loadingGif}
+        />
+      )}
       {text && <p className={styles.text}>{text}</p>}
       <span className={styles.srOnly}>Loading...</span>
     </div>
