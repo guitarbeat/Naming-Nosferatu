@@ -132,6 +132,17 @@ const applyDevtools = (storeImpl, config) => {
 
     // * Apply devtools middleware with error handling
     // * Wrap the devtools() call itself to catch initialization errors
+    // * Double-check renderers are still valid right before calling devtools()
+    const preCheckHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+    if (!isValidReactDevToolsHook(preCheckHook) || !areAllRenderersValid(preCheckHook)) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Zustand] React DevTools hook invalid at pre-devtools check, using plain store",
+        );
+      }
+      return storeImpl;
+    }
+    
     let devtoolsMiddleware;
     try {
       devtoolsMiddleware = devtools(storeImpl, {
@@ -163,6 +174,23 @@ const applyDevtools = (storeImpl, config) => {
     // * Wrap the middleware to catch runtime errors when it accesses React DevTools
     // * This provides an additional safety layer for errors that occur after initialization
     return (set, get, api) => {
+      // * Final runtime check: verify renderers are still valid before executing middleware
+      // * This prevents errors if renderers become invalid between initialization and execution
+      if (typeof window !== "undefined" && window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
+        const runtimeHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+        if (!isValidReactDevToolsHook(runtimeHook) || !areAllRenderersValid(runtimeHook)) {
+          if (typeof window !== "undefined") {
+            window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
+          }
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              "[Zustand] Renderers invalid at middleware execution time, using plain store",
+            );
+          }
+          return storeImpl(set, get, api);
+        }
+      }
+      
       try {
         return devtoolsMiddleware(set, get, api);
       } catch (error) {

@@ -72,12 +72,56 @@ export function isValidReactDevToolsHook(
 }
 
 /**
- * Type guard to check if all renderers in the hook are valid
+ * Check if a renderer object is writable (can have properties set on it)
+ * This prevents "Cannot set properties of undefined" errors when Zustand devtools
+ * tries to set the 'Activity' property
+ * @param renderer - Renderer object to check
+ * @returns True if renderer is writable
+ */
+function isRendererWritable(renderer: ReactDevToolsRenderer): boolean {
+  // * Double-check renderer is not null or undefined
+  if (renderer === null || renderer === undefined) {
+    return false;
+  }
+  
+  try {
+    // * Test if we can set a property on the renderer
+    // * Use a unique symbol-like key to avoid conflicts
+    const testKey = "__ZUSTAND_WRITABILITY_TEST__";
+    const originalValue = (renderer as Record<string, unknown>)[testKey];
+    
+    // * Try to set a test property
+    (renderer as Record<string, unknown>)[testKey] = true;
+    
+    // * Check if the property was actually set
+    const wasSet = (renderer as Record<string, unknown>)[testKey] === true;
+    
+    // * Restore original value or delete test property
+    if (originalValue === undefined) {
+      delete (renderer as Record<string, unknown>)[testKey];
+    } else {
+      (renderer as Record<string, unknown>)[testKey] = originalValue;
+    }
+    
+    return wasSet;
+  } catch {
+    // * If setting property throws an error, renderer is not writable
+    return false;
+  }
+}
+
+/**
+ * Type guard to check if all renderers in the hook are valid and writable
  * @param hook - Hook to check
- * @returns True if all renderers are valid
+ * @returns True if all renderers are valid and writable
  */
 export function areAllRenderersValid(hook: ReactDevToolsHook): boolean {
   try {
+    // * Ensure renderers map exists and is accessible
+    if (!hook || !hook.renderers) {
+      return false;
+    }
+    
     const rendererIds = Array.from(hook.renderers.keys());
     if (rendererIds.length === 0) {
       return false;
@@ -85,13 +129,32 @@ export function areAllRenderersValid(hook: ReactDevToolsHook): boolean {
 
     for (const rendererId of rendererIds) {
       const renderer = hook.renderers.get(rendererId);
+      
+      // * Check if renderer exists and is valid
+      // * This prevents "Cannot set properties of undefined" errors
       if (!isValidRenderer(renderer)) {
+        return false;
+      }
+      
+      // * Check if renderer is writable before allowing devtools
+      // * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
+      // * Note: isValidRenderer already checks for null/undefined, but we double-check here
+      if (renderer === null || renderer === undefined) {
+        return false;
+      }
+      
+      if (!isRendererWritable(renderer)) {
         return false;
       }
     }
 
     return true;
-  } catch {
+  } catch (error) {
+    // * If any error occurs during validation, consider renderers invalid
+    // * This prevents errors from propagating and causing runtime issues
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[Zustand] Error validating renderers:", error);
+    }
     return false;
   }
 }
