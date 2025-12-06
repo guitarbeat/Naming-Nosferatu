@@ -592,7 +592,7 @@ export function AnalysisDashboard({
                 <BumpChart
                   data={rankingHistory.data}
                   timeLabels={rankingHistory.timeLabels}
-                  maxDisplayed={10}
+                  maxDisplayed={displayNames.length}
                   height={320}
                   showLegend={true}
                 />
