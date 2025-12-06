@@ -202,6 +202,42 @@ export type Database = {
           },
         ]
       }
+      flo_shares: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          shared_with_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id: string
+          shared_with_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          shared_with_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flo_shares_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flo_shares_shared_with_id_fkey"
+            columns: ["shared_with_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           apps: string[] | null
