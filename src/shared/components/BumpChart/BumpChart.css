@@ -252,8 +252,8 @@
 /* Dark mode */
 :root[data-theme="dark"] .bump-chart-container,
 .dark .bump-chart-container {
-  background: var(--card, hsl(0, 0%, 8%));
-  border-color: var(--border, hsl(0, 0%, 20%));
+  background: transparent;
+  border: none;
 }
 
 :root[data-theme="dark"] .bump-chart-tooltip,
