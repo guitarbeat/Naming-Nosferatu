@@ -57,6 +57,8 @@ export default defineConfig(({ mode }) => {
       // * Optimize chunk splitting for better caching and parallel loading
       rollupOptions: {
         output: {
+          // * Ensure proper module format for vendor chunks to prevent export issues
+          format: 'es',
           // * Manual chunk splitting strategy - prevents deployment failures from large chunks
           manualChunks: (id) => {
             // * Vendor chunks - separate large dependencies to improve caching and reduce initial load
@@ -156,16 +158,22 @@ export default defineConfig(({ mode }) => {
           drop_debugger: true,
           pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
           passes: 2, // * Multiple passes for better compression
-          unsafe: true, // * Enable unsafe optimizations
-          unsafe_comps: true,
-          unsafe_math: true,
-          unsafe_methods: true,
+          // * Disable unsafe optimizations to prevent module export issues
+          // * These can break module exports when splitting vendor chunks
+          unsafe: false,
+          unsafe_comps: false,
+          unsafe_math: false,
+          unsafe_methods: false,
         },
         format: {
           comments: false, // * Remove comments
+          // * Preserve module structure to prevent export object issues
+          preserve_annotations: false,
         },
         mangle: {
           safari10: true, // * Fix Safari 10 issues
+          // * Preserve module exports to prevent undefined object errors
+          reserved: ['exports', 'module'],
         },
       },
       // * Chunk size warnings threshold (500kb)
