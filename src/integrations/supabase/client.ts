@@ -2,37 +2,20 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+// Hardcoded fallbacks for production builds where env vars may not be available
+const FALLBACK_SUPABASE_URL = 'https://ocghxwwwuubgmwsxgyoy.supabase.co';
+const FALLBACK_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0';
 
-// * Validate environment variables before creating client
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  const missingVars = [];
-  if (!SUPABASE_URL) missingVars.push('VITE_SUPABASE_URL');
-  if (!SUPABASE_PUBLISHABLE_KEY) missingVars.push('VITE_SUPABASE_PUBLISHABLE_KEY');
-  
-  console.error(
-    `[Supabase Client] Missing required environment variables: ${missingVars.join(', ')}\n` +
-    `Please set these variables in your Vercel project settings:\n` +
-    `1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n` +
-    `2. Add ${missingVars.join(' and ')}\n` +
-    `3. Redeploy the application`
-  );
-  
-  // * Create a mock client that will fail gracefully instead of crashing
-  // * This allows the app to render and show proper error messages
-  throw new Error(
-    `Missing Supabase environment variables: ${missingVars.join(', ')}. ` +
-    `Please configure them in Vercel project settings and redeploy.`
-  );
-}
+// Try to get from env vars, fall back to hardcoded values
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_SUPABASE_KEY;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
-    storage: localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     persistSession: true,
     autoRefreshToken: true,
   }
