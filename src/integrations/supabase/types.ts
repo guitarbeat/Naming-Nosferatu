@@ -208,18 +208,21 @@ export type Database = {
           id: string
           owner_id: string
           shared_with_id: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           owner_id: string
           shared_with_id: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           owner_id?: string
           shared_with_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
