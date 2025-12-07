@@ -58,6 +58,9 @@ export default defineConfig(({ mode }) => {
               if (id.includes('@supabase')) {
                 return 'supabase-vendor';
               }
+              if (id.includes('@tanstack/react-query')) {
+                return 'query-vendor';
+              }
               if (id.includes('@radix-ui') || id.includes('@heroicons') || id.includes('lucide-react')) {
                 return 'ui-vendor';
               }
@@ -66,6 +69,9 @@ export default defineConfig(({ mode }) => {
               }
               if (id.includes('zustand')) {
                 return 'state-vendor';
+              }
+              if (id.includes('class-variance-authority') || id.includes('tailwind-merge') || id.includes('clsx')) {
+                return 'utils-vendor';
               }
               return 'vendor';
             }
