@@ -115,20 +115,57 @@ export function useMetricComparison(item, allItems = [], options = {}) {
  * @returns {Object[]} Items enriched with metric insights
  */
 export function useMultipleMetricComparison(items = [], options = {}) {
+  const {
+    ratingField = 'rating',
+    selectedField = 'selected',
+    winsField = 'wins',
+    lossesField = 'losses',
+  } = options;
+
   return useMemo(() => {
     if (!items || items.length === 0) return [];
 
+    // Pre-calculate all values for percentile calculations
+    const allRatings = items.map((i) => i[ratingField] ?? 1500);
+    const allSelected = items.map((i) => i[selectedField] ?? 0);
+    const allWins = items.map((i) => i[winsField] ?? 0);
+
+    const stats = {
+      avgRating: Math.round(allRatings.reduce((a, b) => a + b, 0) / allRatings.length),
+      avgSelected: Math.round((allSelected.reduce((a, b) => a + b, 0) / allSelected.length) * 10) / 10,
+      avgWins: Math.round((allWins.reduce((a, b) => a + b, 0) / allWins.length) * 10) / 10,
+    };
+
     return items.map((item) => {
-      // Calculate insights for this item
-      const insights = useMetricComparison(item, items, options);
+      const rating = item[ratingField] ?? 1500;
+      const selected = item[selectedField] ?? 0;
+      const wins = item[winsField] ?? 0;
+      const losses = item[lossesField] ?? 0;
+
+      const ratingPercentile = calculatePercentile(rating, allRatings, true);
+      const selectedPercentile = calculatePercentile(selected, allSelected, true);
+      const winsPercentile = calculatePercentile(wins, allWins, true);
+      const percentile = Math.round((ratingPercentile + selectedPercentile) / 2);
+
+      const insightMessage = getInsightMessage({ rating, selected, wins, losses, percentile });
+      const comparisonText = getComparisonText(rating, stats.avgRating, 'rating');
 
       return {
         ...item,
-        _insights: insights,
+        _insights: {
+          percentile,
+          ratingPercentile,
+          selectedPercentile,
+          winsPercentile,
+          insightMessage,
+          comparisonText,
+          trend: { direction: 'stable', percentChange: 0 },
+          stats,
+          metrics: { rating, selected, wins, losses },
+        },
       };
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, options]);
+  }, [items, ratingField, selectedField, winsField, lossesField]);
 }
 
 /**
