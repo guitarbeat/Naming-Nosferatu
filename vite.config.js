@@ -3,7 +3,7 @@ import path from 'node:path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { componentTagger } from 'lovable-tagger';
-
+import { visualizer } from 'rollup-plugin-visualizer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -16,6 +16,13 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       mode === 'development' && componentTagger(),
+      mode === 'production' && visualizer({
+        filename: 'stats.html',
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        template: 'treemap',
+      }),
     ].filter(Boolean),
     envPrefix: ['VITE_', 'SUPABASE_'],
     css: {
