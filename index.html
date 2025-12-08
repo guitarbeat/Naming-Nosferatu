@@ -18,6 +18,20 @@
         host === "::1";
       if (isLocal) return;
 
+      const dummyRenderer = { Activity: null };
+      const renderers = {
+        get() { return dummyRenderer; },
+        set() { return this; },
+        has() { return true; },
+        clear() { return undefined; },
+        delete() { return true; },
+        keys() { return [].values(); },
+        values() { return [].values(); },
+        entries() { return [].entries(); },
+        forEach() { return undefined; },
+        get size() { return 1; },
+      };
+
       const stub = {
         isDisabled: true,
         supportsFiber: true,
@@ -27,7 +41,7 @@
         getFiberRoots() {
           return new Map();
         },
-        renderers: new Map(),
+        renderers,
       };
       // * Lock the stub to prevent later mutation by extensions
       try {
