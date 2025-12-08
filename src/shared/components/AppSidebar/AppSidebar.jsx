@@ -144,7 +144,7 @@ export function AppSidebar({
   }, [view, isAnalysisMode, currentRoute, updateIndicator]);
 
   // * Toggle analysis mode
-  const handleAnalysisToggle = () => {
+  const handleAnalysisToggle = useCallback(() => {
     const currentPath = window.location.pathname;
     const currentSearch = new URLSearchParams(window.location.search);
 
@@ -158,7 +158,7 @@ export function AppSidebar({
     const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
     window.history.pushState({}, "", newUrl);
     window.dispatchEvent(new PopStateEvent("popstate"));
-  };
+  }, [isAnalysisMode]);
 
   // * Define navigation items - data-driven approach
   // * Note: Tournament is handled separately as the home button

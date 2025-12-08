@@ -50,7 +50,7 @@ function registerServiceWorker() {
         trySkipWaiting(registration.waiting);
 
         registration.addEventListener("updatefound", () => {
-          const installing = registration.installing;
+          const { installing } = registration;
           if (!installing) {
             return;
           }
