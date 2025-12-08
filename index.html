@@ -29,6 +29,10 @@
         },
         renderers: new Map(),
       };
+      // * Lock the stub to prevent later mutation by extensions
+      try {
+        Object.freeze(stub);
+      } catch {}
 
       try {
         Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
