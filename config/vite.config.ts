@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
 
   const serverPort = Number(env.VITE_PORT) || 5173;
   const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
+  const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === 'true';
 
   return {
     plugins: [react()],
@@ -186,8 +187,8 @@ export default defineConfig(({ mode }) => {
       reportCompressedSize: true,
       // * Target modern browsers for smaller bundles
       target: 'esnext',
-      // * Enable source maps only in development
-      sourcemap: mode === 'development',
+      // * Enable source maps in development; allow opt-in for production debugging
+      sourcemap: enableProdSourcemap || mode === 'development',
     },
     // * Optimize dependency pre-bundling
     optimizeDeps: {
