@@ -21,8 +21,8 @@ describe("AppSidebar", () => {
             currentTheme="light"
             onThemePreferenceChange={vi.fn()}
           />
-        </SidebarProvider>,
-      ),
+        </SidebarProvider>
+      )
     ).not.toThrow();
 
     // Test that main navigation elements are present

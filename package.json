@@ -33,7 +33,6 @@
   "scripts": {
     "dev": "vite --config config/vite.config.ts",
     "build": "vite build --config config/vite.config.ts --outDir dist",
-    "build:dev": "vite build --config config/vite.config.ts --mode development",
     "preview": "vite preview --config config/vite.config.ts",
     "test": "vitest run --config config/vitest.config.mjs",
     "format": "prettier --write .",

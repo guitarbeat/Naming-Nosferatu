@@ -433,11 +433,7 @@
   border-color: var(--primary-color, #475569);
   background: linear-gradient(
     135deg,
-    color-mix(
-      in srgb,
-      var(--primary-color, #475569) 22%,
-      transparent
-    ),
+    color-mix(in srgb, var(--primary-color, #475569) 22%, transparent),
     color-mix(in srgb, var(--accent-500, #f1a438) 22%, transparent)
   );
   box-shadow: 0 0 0 1px
