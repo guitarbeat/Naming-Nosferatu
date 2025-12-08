@@ -3,14 +3,14 @@
  * @description Popover component for explaining metrics with definitions and examples
  */
 
-import { useState, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useRef, useEffect } from "react";
+import PropTypes from "prop-types";
 import {
   getMetricDefinition,
   getMetricLabel,
   getRatingRangeLabel,
-} from '../../utils/metricDefinitions';
-import './MetricExplainer.css';
+} from "../../utils/metricDefinitions";
+import "./MetricExplainer.css";
 
 /**
  * MetricExplainer Component
@@ -28,7 +28,7 @@ export function MetricExplainer({
   metricName,
   value = null,
   children,
-  placement = 'top',
+  placement = "top",
   onClose,
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,17 +53,17 @@ export function MetricExplainer({
     };
 
     const handleEscapeKey = (event) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         handleClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscapeKey);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [isOpen]);
 
@@ -81,7 +81,10 @@ export function MetricExplainer({
   }
 
   const label = getMetricLabel(metricName);
-  const valueLabel = value !== null && metricName === 'rating' ? getRatingRangeLabel(value) : null;
+  const valueLabel =
+    value !== null && metricName === "rating"
+      ? getRatingRangeLabel(value)
+      : null;
 
   return (
     <div className="metric-explainer">
@@ -90,7 +93,7 @@ export function MetricExplainer({
         className="metric-explainer-trigger"
         onClick={handleToggle}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             handleToggle();
           }
@@ -99,7 +102,7 @@ export function MetricExplainer({
         tabIndex="0"
         aria-expanded={isOpen}
         aria-label={`Show explanation for ${label}`}
-        title={`Click to learn about ${label}`}
+        title={`Learn about ${label}`}
       >
         {children}
       </div>
@@ -116,7 +119,9 @@ export function MetricExplainer({
             <div className="metric-explainer-header">
               <h3 className="metric-explainer-title">{label}</h3>
               {valueLabel && (
-                <span className="metric-explainer-value-label">{valueLabel}</span>
+                <span className="metric-explainer-value-label">
+                  {valueLabel}
+                </span>
               )}
             </div>
 
@@ -129,14 +134,21 @@ export function MetricExplainer({
             {value !== null && (
               <div className="metric-explainer-context">
                 <strong>Your value:</strong> {value}
-                {valueLabel && <span className="metric-explainer-level"> ({valueLabel})</span>}
+                {valueLabel && (
+                  <span className="metric-explainer-level">
+                    {" "}
+                    ({valueLabel})
+                  </span>
+                )}
               </div>
             )}
 
             {/* Examples */}
             {definition.examples && definition.examples.length > 0 && (
               <div className="metric-explainer-examples">
-                <strong className="metric-explainer-examples-title">Examples:</strong>
+                <strong className="metric-explainer-examples-title">
+                  Examples:
+                </strong>
                 <ul className="metric-explainer-examples-list">
                   {definition.examples.map((example, index) => (
                     <li key={index} className="metric-explainer-example-item">
@@ -183,11 +195,11 @@ MetricExplainer.propTypes = {
   metricName: PropTypes.string.isRequired,
   value: PropTypes.number,
   children: PropTypes.node.isRequired,
-  placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right']),
+  placement: PropTypes.oneOf(["top", "bottom", "left", "right"]),
   onClose: PropTypes.func,
 };
 
-MetricExplainer.displayName = 'MetricExplainer';
+MetricExplainer.displayName = "MetricExplainer";
 
 /**
  * InfoIcon Component - Commonly used trigger for MetricExplainer

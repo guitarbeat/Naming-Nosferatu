@@ -7,6 +7,41 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Help Me Name My Cat!</title>
 
+  <script>
+    // * Disable React DevTools hook in production/non-localhost before React loads
+    (function hardDisableProdReactDevTools() {
+      if (typeof window === "undefined") return;
+      const host = window.location.hostname;
+      const isLocal =
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        host === "::1";
+      if (isLocal) return;
+
+      const stub = {
+        isDisabled: true,
+        supportsFiber: true,
+        inject() {},
+        onCommitFiberRoot() {},
+        onCommitFiberUnmount() {},
+        getFiberRoots() {
+          return new Map();
+        },
+        renderers: new Map(),
+      };
+
+      try {
+        Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
+          value: stub,
+          writable: false,
+          configurable: false,
+        });
+        return;
+      } catch {
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = stub;
+      }
+    })();
+  </script>
   <!-- Mobile-specific meta tags for better navbar experience -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,41 +88,6 @@
 
   <!-- * Resource hints for better performance -->
   <!-- * Prefetch removed - Vite will handle this automatically in production -->
-  <script>
-    // * Disable React DevTools hook in production to prevent Activity errors
-    (function disableProdReactDevTools() {
-      if (typeof window === "undefined") return;
-      const isLocalhost = /^(localhost|127\.0\.0\.1|::1)$/i.test(window.location.hostname);
-      if (isLocalhost) return;
-
-      const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-      if (hook && typeof hook === "object") {
-        try {
-          hook.isDisabled = true;
-          hook.inject = function inject() { };
-          hook.onCommitFiberRoot = function onCommitFiberRoot() { };
-          hook.onCommitFiberUnmount = function onCommitFiberUnmount() { };
-          hook.getFiberRoots = function getFiberRoots() {
-            return new Map();
-          };
-          return;
-        } catch {
-          // * Swallow errors to avoid blocking app boot
-        }
-      }
-
-      window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
-        isDisabled: true,
-        supportsFiber: true,
-        inject() { },
-        onCommitFiberRoot() { },
-        onCommitFiberUnmount() { },
-        getFiberRoots() {
-          return new Map();
-        },
-      };
-    })();
-  </script>
 </head>
 
 <body>

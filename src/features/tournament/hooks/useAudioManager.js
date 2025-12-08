@@ -131,7 +131,7 @@ export function useAudioManager() {
           if (process.env.NODE_ENV === "development") {
             console.error("Error playing audio:", error);
           }
-          setAudioError("Unable to play background music. Click to try again.");
+          setAudioError("Unable to play background music. Try again.");
         }
       }
     };
@@ -179,7 +179,7 @@ export function useAudioManager() {
             if (musicRef.current && !newMuted) {
               musicRef.current.play().catch((error) => {
                 if (error.name !== "AbortError") {
-                  setAudioError("Unable to play audio. Click to try again.");
+                  setAudioError("Unable to play audio. Try again.");
                 }
               });
             }
@@ -225,7 +225,7 @@ export function useAudioManager() {
                 });
 
                 // * Set user-friendly error message
-                setAudioError("Unable to play audio. Click to try again.");
+                setAudioError("Unable to play audio. Try again.");
 
                 if (process.env.NODE_ENV === "development") {
                   console.warn("Audio playback error (non-critical):", error);

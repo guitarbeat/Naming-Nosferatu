@@ -32,45 +32,42 @@ export const USER_FRIENDLY_MESSAGES = {
   [ERROR_TYPES.NETWORK]: {
     [ERROR_SEVERITY.LOW]: "Connection is slow. Please try again.",
     [ERROR_SEVERITY.MEDIUM]:
-      "Network connection issue. Please check your internet and try again.",
-    [ERROR_SEVERITY.HIGH]:
-      "Unable to connect to the server. Please try again later.",
-    [ERROR_SEVERITY.CRITICAL]:
-      "Service temporarily unavailable. Please try again later.",
+      "Network issue. Check your connection and try again.",
+    [ERROR_SEVERITY.HIGH]: "Can't connect to the server. Try again soon.",
+    [ERROR_SEVERITY.CRITICAL]: "Service unavailable. Please try again later.",
   },
   [ERROR_TYPES.AUTH]: {
     [ERROR_SEVERITY.LOW]: "Please log in again.",
-    [ERROR_SEVERITY.MEDIUM]: "Your session has expired. Please log in again.",
-    [ERROR_SEVERITY.HIGH]:
-      "Authentication failed. Please check your credentials.",
-    [ERROR_SEVERITY.CRITICAL]: "Account access issue. Please contact support.",
+    [ERROR_SEVERITY.MEDIUM]: "Session expired. Please log in again.",
+    [ERROR_SEVERITY.HIGH]: "Sign-in failed. Check your credentials.",
+    [ERROR_SEVERITY.CRITICAL]:
+      "Account access issue. Please contact support.",
   },
   [ERROR_TYPES.DATABASE]: {
-    [ERROR_SEVERITY.LOW]: "Data loading is slow. Please try again.",
-    [ERROR_SEVERITY.MEDIUM]: "Unable to load data. Please refresh the page.",
-    [ERROR_SEVERITY.HIGH]: "Data access error. Please try again later.",
+    [ERROR_SEVERITY.LOW]: "Data is loading slowly. Please try again.",
+    [ERROR_SEVERITY.MEDIUM]: "Can't load data. Please refresh.",
+    [ERROR_SEVERITY.HIGH]: "Data access error. Try again later.",
     [ERROR_SEVERITY.CRITICAL]:
       "Database connection issue. Please try again later.",
   },
   [ERROR_TYPES.VALIDATION]: {
     [ERROR_SEVERITY.LOW]: "Please check your input and try again.",
-    [ERROR_SEVERITY.MEDIUM]:
-      "Invalid input detected. Please review and try again.",
-    [ERROR_SEVERITY.HIGH]: "Input validation failed. Please check your data.",
+    [ERROR_SEVERITY.MEDIUM]: "Invalid input. Please review and try again.",
+    [ERROR_SEVERITY.HIGH]: "Validation failed. Please check your data.",
     [ERROR_SEVERITY.CRITICAL]:
       "Critical validation error. Please contact support.",
   },
   [ERROR_TYPES.RUNTIME]: {
     [ERROR_SEVERITY.LOW]: "Something went wrong. Please try again.",
-    [ERROR_SEVERITY.MEDIUM]: "An error occurred. Please refresh the page.",
-    [ERROR_SEVERITY.HIGH]: "Application error. Please try again later.",
+    [ERROR_SEVERITY.MEDIUM]: "An error occurred. Please refresh.",
+    [ERROR_SEVERITY.HIGH]: "App error. Please try again later.",
     [ERROR_SEVERITY.CRITICAL]:
       "Critical application error. Please contact support.",
   },
   [ERROR_TYPES.UNKNOWN]: {
     [ERROR_SEVERITY.LOW]: "Something unexpected happened. Please try again.",
-    [ERROR_SEVERITY.MEDIUM]: "An unexpected error occurred. Please try again.",
-    [ERROR_SEVERITY.HIGH]: "Unexpected error. Please try again later.",
+    [ERROR_SEVERITY.MEDIUM]: "Unexpected error. Please try again.",
+    [ERROR_SEVERITY.HIGH]: "Unexpected error. Try again later.",
     [ERROR_SEVERITY.CRITICAL]:
       "Critical unexpected error. Please contact support.",
   },

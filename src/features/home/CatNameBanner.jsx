@@ -23,7 +23,7 @@ function CatNameBanner({ catName = null, isAdmin = false }) {
         <div className={styles.nameSection}>{fullName}</div>
       </div>
       {isAdmin && (
-        <p className={styles.adminNote}>✏️ You can edit this in your Profile</p>
+        <p className={styles.adminNote}>✏️ Edit this in your Profile</p>
       )}
     </div>
   );

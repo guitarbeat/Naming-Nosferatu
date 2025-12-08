@@ -149,8 +149,8 @@ const TournamentControls = ({
             disabled={isTransitioning}
             title={
               isShuffle
-                ? "Shuffle: On (click to turn off)"
-                : "Shuffle: Off (click to turn on)"
+                ? "Shuffle: On (toggle to turn off)"
+                : "Shuffle: Off (toggle to turn on)"
             }
             className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
           />
