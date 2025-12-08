@@ -21,7 +21,7 @@
       // * Remove any existing hook and hard-lock it to undefined
       try {
         delete (window as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
-      } catch {}
+      } catch { }
       try {
         Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
           value: undefined,
@@ -138,7 +138,6 @@
             'Check that the HTML file is being served correctly',
           ],
         });
-        return;
       }
 
       // * Monitor script loading
