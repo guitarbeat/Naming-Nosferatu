@@ -3,7 +3,7 @@
  * @description Application navbar navigation component with sliding indicator
  */
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import {
   Sidebar,
@@ -43,12 +43,23 @@ export function AppSidebar({
   onNavigate,
 }) {
   const navRef = useRef(null);
+  const indicatorRef = useRef({
+    left: 0,
+    width: 12,
+    opacity: 0,
+    translateY: 0,
+  });
   const [indicator, setIndicator] = useState({
     left: 0,
     width: 12,
     opacity: 0,
     translateY: 0,
   });
+
+  const applyIndicator = useCallback((next) => {
+    indicatorRef.current = next;
+    setIndicator(next);
+  }, []);
 
   // * Check if analysis mode is active
   const isAnalysisMode =
@@ -61,59 +72,70 @@ export function AppSidebar({
     (animate = false) => {
       if (!navRef.current) return;
       const activeItem = navRef.current.querySelector('[data-active="true"]');
-      if (activeItem) {
-        const navRect = navRef.current.getBoundingClientRect();
-        const itemRect = activeItem.getBoundingClientRect();
-        const centerX = itemRect.left - navRect.left + itemRect.width / 2 - 6;
+      if (!activeItem) {
+        applyIndicator({
+          ...indicatorRef.current,
+          opacity: 0,
+          translateY: 0,
+        });
+        return;
+      }
 
-        if (animate) {
-          // Bounce animation
-          const start = indicator.left;
-          const end = centerX;
-          const startTime = Date.now();
-          const duration = 500;
+      const navRect = navRef.current.getBoundingClientRect();
+      const itemRect = activeItem.getBoundingClientRect();
+      const targetLeft = itemRect.left - navRect.left + itemRect.width / 2 - 6;
 
-          const animateStep = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-            const currentX = start + (end - start) * eased;
-            const bounceY = -40 * (4 * eased * (1 - eased)); // Parabolic bounce
+      if (!animate) {
+        applyIndicator({
+          left: targetLeft,
+          width: 12,
+          opacity: 1,
+          translateY: 0,
+        });
+        return;
+      }
 
-            setIndicator({
-              left: currentX,
-              width: 12,
-              opacity: 1,
-              translateY: bounceY,
-            });
+      const startLeft = indicatorRef.current.left;
+      const startTime = performance.now();
+      const duration = 400;
 
-            if (progress < 1) {
-              requestAnimationFrame(animateStep);
-            } else {
-              setIndicator({ left: end, width: 12, opacity: 1, translateY: 0 });
-            }
-          };
+      const animateStep = (timestamp) => {
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const currentX = startLeft + (targetLeft - startLeft) * eased;
+        const bounceY = -32 * (4 * eased * (1 - eased));
 
+        applyIndicator({
+          left: currentX,
+          width: 12,
+          opacity: 1,
+          translateY: bounceY,
+        });
+
+        if (progress < 1) {
           requestAnimationFrame(animateStep);
         } else {
-          setIndicator({
-            left: centerX,
+          applyIndicator({
+            left: targetLeft,
             width: 12,
             opacity: 1,
             translateY: 0,
           });
         }
-      }
+      };
+
+      requestAnimationFrame(animateStep);
     },
-    [indicator.left]
+    [applyIndicator]
   );
 
   useEffect(() => {
-    // Initial position without animation
-    setTimeout(() => updateIndicator(false), 100);
-    window.addEventListener("resize", () => updateIndicator(false));
-    return () =>
-      window.removeEventListener("resize", () => updateIndicator(false));
+    // * Ensure indicator placement on mount and resize with proper cleanup
+    const handleResize = () => updateIndicator(false);
+    updateIndicator(false);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [updateIndicator]);
 
   useEffect(() => {
@@ -140,44 +162,55 @@ export function AppSidebar({
 
   // * Define navigation items - data-driven approach
   // * Note: Tournament is handled separately as the home button
-  const navItems = [
-    {
-      key: "gallery",
-      label: "Gallery",
-      icon: PhotosIcon,
-      onClick: () => {
-        if (typeof onOpenPhotos === "function") {
-          onOpenPhotos();
-        }
+  const navItems = useMemo(
+    () => [
+      {
+        key: "gallery",
+        label: "Gallery",
+        icon: PhotosIcon,
+        onClick: () => {
+          if (typeof onOpenPhotos === "function") {
+            onOpenPhotos();
+          }
+        },
+        isActive: view === "photos",
+        ariaLabel: "Open cat photo gallery",
       },
-      isActive: view === "photos",
-      ariaLabel: "Open cat photo gallery",
-    },
-    {
-      key: "results",
-      label: "Results",
-      icon: ResultsIcon,
-      onClick: () => {
-        if (typeof onNavigate === "function") {
-          onNavigate("/results");
-        }
+      {
+        key: "results",
+        label: "Results",
+        icon: ResultsIcon,
+        onClick: () => {
+          if (typeof onNavigate === "function") {
+            onNavigate("/results");
+          }
+        },
+        href: "/results",
+        isActive:
+          typeof currentRoute === "string" &&
+          currentRoute.startsWith("/results"),
+        ariaLabel: "See completed tournament results",
       },
-      href: "/results",
-      isActive:
-        typeof currentRoute === "string" && currentRoute.startsWith("/results"),
-      ariaLabel: "See completed tournament results",
-    },
-    {
-      key: "analysis",
-      label: "Analysis Mode",
-      icon: AnalysisIcon,
-      onClick: handleAnalysisToggle,
-      isActive: isAnalysisMode,
-      ariaLabel: isAnalysisMode
-        ? "Disable analysis mode"
-        : "Enable analysis mode",
-    },
-  ];
+      {
+        key: "analysis",
+        label: "Analysis Mode",
+        icon: AnalysisIcon,
+        onClick: handleAnalysisToggle,
+        isActive: isAnalysisMode,
+        ariaLabel: isAnalysisMode
+          ? "Disable analysis mode"
+          : "Enable analysis mode",
+      },
+    ],
+    [
+      currentRoute,
+      handleAnalysisToggle,
+      isAnalysisMode,
+      onNavigate,
+      onOpenPhotos,
+      view,
+    ]
+  );
 
   return (
     <Sidebar className="app-sidebar">
