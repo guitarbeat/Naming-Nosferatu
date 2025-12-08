@@ -23,9 +23,18 @@
         isDisabled: true,
         supportsFiber: true,
         renderers: new Map(),
-        inject() {},
-        onCommitFiberRoot() {},
-        onCommitFiberUnmount() {},
+        inject(renderer) {
+          const id = renderer?.rendererID || this.renderers.size + 1;
+          const safeRenderer = renderer || { rendererID: id, renderer: {}, helpers: {} };
+          if (!safeRenderer.renderer) safeRenderer.renderer = {};
+          if (typeof safeRenderer.renderer.Activity === "undefined") {
+            safeRenderer.renderer.Activity = null;
+          }
+          this.renderers.set(id, safeRenderer);
+          return id;
+        },
+        onCommitFiberRoot() { },
+        onCommitFiberUnmount() { },
         getFiberRoots() {
           return new Map();
         },
@@ -33,7 +42,7 @@
 
       try {
         Object.freeze(stub);
-      } catch {}
+      } catch { }
 
       try {
         Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {

@@ -7,12 +7,8 @@ import {
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 
-// * Helper to safely apply devtools middleware
-// * Disabled globally to avoid prod crashes from React DevTools hook issues
-const applyDevtools = (storeImpl, config) => {
-  // * Always return plain store to avoid devtools in all environments
-  return storeImpl;
-};
+// * Devtools middleware disabled entirely to avoid prod crashes
+const applyDevtools = (storeImpl) => storeImpl;
 
 const THEME_STORAGE_KEY = "theme";
 const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
@@ -578,134 +574,10 @@ const storeImpl = (set, get) => ({
   },
 });
 
-// * Early check: Disable devtools if React DevTools hook is not properly initialized
-// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
-// * by detecting problematic hook states before Zustand devtools tries to use them
-// * This check runs IMMEDIATELY when the module loads, before any store creation
-// * Uses type guards to ensure type safety and catch errors at development time
-if (
-  typeof window !== "undefined" &&
-  process.env.NODE_ENV === "development"
-) {
-  try {
-    const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
-
-    // * Use type guard to check if hook is valid
-    if (!isValidReactDevToolsHook(hook)) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn(
-          "[Zustand] React DevTools hook not available or invalid, disabling devtools",
-        );
-      }
-      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-    } else {
-      // * TypeScript/type system now knows hook is ReactDevToolsHook
-      // * Check if all renderers are valid
-      if (!areAllRenderersValid(hook)) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn(
-            "[Zustand] React DevTools hook contains invalid renderers, disabling devtools",
-          );
-        }
-        window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-      }
-    }
-  } catch (error) {
-    // * If hook check fails, disable devtools to be safe
-    if (process.env.NODE_ENV === "development") {
-      console.warn(
-        "[Zustand] Failed to check React DevTools hook, disabling devtools:",
-        error.message || error,
-      );
-    }
-    if (typeof window !== "undefined") {
-      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-    }
-  }
-}
-
-// * Safely apply devtools middleware with error handling
-// * This prevents "Cannot set properties of undefined (setting 'Activity')" errors
-// * that occur when React DevTools extension is installed but API isn't ready
-// * Wrap store creation in try-catch to handle runtime errors during initialization
-let useAppStore;
-try {
-  const storeWithDevtools = applyDevtools(storeImpl, {
-    name: "name-nosferatu-store",
-  });
-  useAppStore = create(storeWithDevtools);
-} catch (error) {
-  // * If store creation fails (e.g., devtools runtime error), create plain store
-  // * This catches errors like "Cannot set properties of undefined (setting 'Activity')"
-  if (process.env.NODE_ENV === "development") {
-    console.warn(
-      "[Zustand] Store creation failed, using plain store:",
-      error.message || error,
-    );
-  }
-  // * Fallback: create store without devtools
-  useAppStore = create(storeImpl);
-
-  // * Set a flag to prevent future devtools attempts
-  if (typeof window !== "undefined") {
-    window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-  }
-}
-
-// * Set up global error handler to catch devtools errors at runtime
-// * This provides a safety net if the error occurs after store creation
-// * Works in all environments, not just development
-if (typeof window !== "undefined") {
-  const originalErrorHandler = window.onerror;
-  window.onerror = function (message, source, lineno, colno, error) {
-    // * Check if this is the specific "Activity" property error
-    const messageStr = typeof message === "string" ? message : String(message || "");
-    const errorMsg = error?.message || "";
-    const combinedMsg = `${messageStr} ${errorMsg}`;
-
-    if (
-      combinedMsg.includes("Cannot set properties of undefined") &&
-      combinedMsg.includes("Activity")
-    ) {
-      // * Disable devtools to prevent future occurrences
-      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-      if (process.env.NODE_ENV === "development") {
-        console.warn(
-          "[Zustand] Caught devtools 'Activity' error at runtime, devtools disabled",
-        );
-      }
-      // * Suppress the error to prevent it from appearing in console
-      return true; // * Return true to suppress the error
-    }
-    // * Call original error handler if it exists
-    if (originalErrorHandler) {
-      return originalErrorHandler(message, source, lineno, colno, error);
-    }
-    return false;
-  };
-
-  // * Also catch unhandled promise rejections that might contain this error
-  window.addEventListener("unhandledrejection", function (event) {
-    const reason = event.reason;
-    const errorMsg = reason?.message || String(reason || "");
-
-    if (
-      typeof errorMsg === "string" &&
-      errorMsg.includes("Cannot set properties of undefined") &&
-      errorMsg.includes("Activity")
-    ) {
-      // * Disable devtools to prevent future occurrences
-      window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
-      if (process.env.NODE_ENV === "development") {
-        console.warn(
-          "[Zustand] Caught devtools 'Activity' error in unhandled rejection, devtools disabled",
-        );
-      }
-      // * Prevent the error from propagating
-      event.preventDefault();
-    }
-  });
-}
+// * Create store without any devtools integration (safest for production)
+const useAppStore = create(applyDevtools(storeImpl, {
+  name: "name-nosferatu-store",
+}));
 
 // * Hook to initialize store from localStorage
 export const useAppStoreInitialization = () => {
