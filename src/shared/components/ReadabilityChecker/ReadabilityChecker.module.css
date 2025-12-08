@@ -1,0 +1,150 @@
+/* * ReadabilityChecker component styles - Development only */
+
+.checker {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.375rem;
+  background-color: var(--bg-secondary, #f8f9fa);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.checkerValid {
+  border-color: #10b981;
+  background-color: #ecfdf5;
+}
+
+.checkerInvalid {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+}
+
+.checkerToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.25rem 0;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: inherit;
+  color: inherit;
+}
+
+.checkerToggle:hover {
+  opacity: 0.8;
+}
+
+.checkerIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.checkerSummary {
+  flex: 1;
+  font-weight: 500;
+}
+
+.checkerToggleIcon {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.checkerDetails {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.checkerIssues,
+.checkerSuggestions,
+.checkerMetrics {
+  margin-bottom: 1rem;
+}
+
+.checkerIssues:last-child,
+.checkerSuggestions:last-child,
+.checkerMetrics:last-child {
+  margin-bottom: 0;
+}
+
+.checkerIssuesTitle,
+.checkerSuggestionsTitle,
+.checkerMetricsTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.checkerIssuesList,
+.checkerSuggestionsList {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+
+.checkerIssue,
+.checkerSuggestion {
+  margin-bottom: 0.25rem;
+  color: var(--text-secondary, #64748b);
+}
+
+.checkerIssue {
+  color: var(--text-error, #dc2626);
+}
+
+.checkerSuggestion {
+  font-style: italic;
+  color: var(--text-secondary, #64748b);
+}
+
+.checkerMetricsList {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+}
+
+.checkerMetricsList dt {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.checkerMetricsList dd {
+  margin: 0;
+  color: var(--text-secondary, #64748b);
+}
+
+/* * Dark mode support */
+:root[data-theme="dark"] .checker {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:root[data-theme="dark"] .checkerValid {
+  border-color: #10b981;
+  background-color: #064e3b;
+}
+
+:root[data-theme="dark"] .checkerInvalid {
+  border-color: #f59e0b;
+  background-color: #78350f;
+}
+
+:root[data-theme="dark"] .checkerIssuesTitle,
+:root[data-theme="dark"] .checkerSuggestionsTitle,
+:root[data-theme="dark"] .checkerMetricsTitle,
+:root[data-theme="dark"] .checkerMetricsList dt {
+  color: #f1f5f9;
+}
+
+:root[data-theme="dark"] .checkerIssue,
+:root[data-theme="dark"] .checkerSuggestion,
+:root[data-theme="dark"] .checkerMetricsList dd {
+  color: #cbd5e1;
+}

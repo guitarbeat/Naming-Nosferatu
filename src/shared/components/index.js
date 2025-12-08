@@ -44,6 +44,7 @@ export { AdminAnalytics } from "./AdminAnalytics";
 export { CollapsibleSection } from "./CollapsibleSection";
 export { CollapsibleHeader, CollapsibleContent } from "./CollapsibleHeader";
 export { BarChart } from "./BarChart";
+export { default as ReadabilityChecker } from "./ReadabilityChecker";
 
 // * Named exports
 export {

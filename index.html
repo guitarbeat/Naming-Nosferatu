@@ -2,34 +2,34 @@
 <html lang="en" data-theme="light">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Help Me Name My Cat!</title>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Help Me Name My Cat!</title>
 
-    <!-- Mobile-specific meta tags for better navbar experience -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
+  <!-- Mobile-specific meta tags for better navbar experience -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
 
-    <!-- SEO -->
-    <meta name="description"
-        content="Pick the perfect cat name via a fun tournament. Save, compare, and share results.">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f7fb">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617">
+  <!-- SEO -->
+  <meta name="description" content="Pick the perfect cat name via a fun tournament. Save, compare, and share results.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f7fb">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617">
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="Name Nosferatu">
-    <meta property="og:description" content="Tournament-style voting for cat names.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="/images/IMG_4844.jpg">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Name Nosferatu">
+  <meta property="og:description" content="Tournament-style voting for cat names.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/images/IMG_4844.jpg">
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Name Nosferatu">
-    <meta name="twitter:description" content="Tournament-style voting for cat names.">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Name Nosferatu">
+  <meta name="twitter:description" content="Tournament-style voting for cat names.">
   <meta name="twitter:image" content="/images/IMG_4844.jpg">
 
   <!-- Font performance - optimized loading strategy -->
@@ -40,167 +40,206 @@
   <link rel="dns-prefetch" href="//glgmoelyqnbyavabjgyw.supabase.co">
   <link rel="preconnect" href="https://glgmoelyqnbyavabjgyw.supabase.co" crossorigin>
   <!-- * Load fonts asynchronously to prevent render blocking -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link
       href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&display=swap"
-      rel="stylesheet"></noscript>
+      rel="stylesheet">
+  </noscript>
   <!-- Black cat favicon stored as a standalone SVG asset -->
   <link rel="icon" href="/assets/images/black-cat-favicon.svg" type="image/svg+xml" />
-  
+
   <!-- * Resource hints for better performance -->
   <!-- * Prefetch removed - Vite will handle this automatically in production -->
+  <script>
+    // * Disable React DevTools hook in production to prevent Activity errors
+    (function disableProdReactDevTools() {
+      if (typeof window === "undefined") return;
+      const isLocalhost = /^(localhost|127\.0\.0\.1|::1)$/i.test(window.location.hostname);
+      if (isLocalhost) return;
+
+      const hook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      if (hook && typeof hook === "object") {
+        try {
+          hook.isDisabled = true;
+          hook.inject = function inject() { };
+          hook.onCommitFiberRoot = function onCommitFiberRoot() { };
+          hook.onCommitFiberUnmount = function onCommitFiberUnmount() { };
+          hook.getFiberRoots = function getFiberRoots() {
+            return new Map();
+          };
+          return;
+        } catch {
+          // * Swallow errors to avoid blocking app boot
+        }
+      }
+
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+        isDisabled: true,
+        supportsFiber: true,
+        inject() { },
+        onCommitFiberRoot() { },
+        onCommitFiberUnmount() { },
+        getFiberRoots() {
+          return new Map();
+        },
+      };
+    })();
+  </script>
 </head>
 
 <body>
-    <script>
-      (function applyInitialTheme() {
-        const { documentElement, body } = document;
-        if (!documentElement) {
-          return;
-        }
+  <script>
+    (function applyInitialTheme() {
+      const { documentElement, body } = document;
+      if (!documentElement) {
+        return;
+      }
 
-        const STORAGE_KEY = 'theme';
-        const resolveStoredPreference = () => {
-          try {
-            if (!window.localStorage) return null;
-            const stored = window.localStorage.getItem(STORAGE_KEY);
-            return stored === 'light' || stored === 'dark' ? stored : null;
-          } catch (error) {
-            if (
-              typeof process !== 'undefined' &&
-              process.env &&
-              process.env.NODE_ENV === 'development'
-            ) {
-              console.error('Unable to read stored theme during boot:', error);
-            }
-            return null;
+      const STORAGE_KEY = 'theme';
+      const resolveStoredPreference = () => {
+        try {
+          if (!window.localStorage) return null;
+          const stored = window.localStorage.getItem(STORAGE_KEY);
+          return stored === 'light' || stored === 'dark' ? stored : null;
+        } catch (error) {
+          if (
+            typeof process !== 'undefined' &&
+            process.env &&
+            process.env.NODE_ENV === 'development'
+          ) {
+            console.error('Unable to read stored theme during boot:', error);
           }
-        };
-
-        const resolveSystemPreference = () =>
-          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-
-        const theme = resolveStoredPreference() ?? resolveSystemPreference();
-
-        documentElement.dataset.theme = theme;
-        if (body) {
-          body.dataset.theme = theme;
+          return null;
         }
-      })();
-    </script>
-    <div id="root"></div>
-    <script>
-      // * Deployment error detection - runs before React loads
-      (function detectDeploymentErrors() {
-        const ERROR_DISPLAY_ID = 'deployment-error-display';
-        const MAX_WAIT_TIME = 5000; // * 5 seconds
-        
-        // * Check if root element exists
-        const root = document.getElementById('root');
-        if (!root) {
-          showDeploymentError({
-            title: 'Root Element Missing',
-            message: 'The application root element (#root) was not found in the HTML.',
-            suggestions: [
-              'Verify index.html contains <div id="root"></div>',
-              'Check that the HTML file is being served correctly',
-            ],
-          });
-          return;
-        }
+      };
 
-        // * Monitor script loading
-        const mainScript = document.querySelector('script[src*="index"]');
-        if (mainScript) {
-          let scriptLoaded = false;
-          let scriptError = false;
+      const resolveSystemPreference = () =>
+        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
 
-          mainScript.addEventListener('load', () => {
-            scriptLoaded = true;
-          });
+      const theme = resolveStoredPreference() ?? resolveSystemPreference();
 
-          mainScript.addEventListener('error', () => {
-            scriptError = true;
-            showDeploymentError({
-              title: 'JavaScript Failed to Load',
-              message: 'The application\'s JavaScript files could not be loaded. This is often caused by:',
-              details: [
-                'Content Security Policy (CSP) blocking scripts',
-                'Incorrect build output paths',
-                'Missing or incorrect base path configuration',
-                'Network issues preventing script downloads',
-              ],
-              suggestions: [
-                'Check browser console for CSP violations (look for "Content-Security-Policy" errors)',
-                'Verify that script files exist in the /assets/js/ directory',
-                'Check Network tab to see if scripts return 404 or are blocked',
-                'Review vercel.json CSP configuration',
-                'Ensure Vite build completed successfully',
-              ],
-            });
-          });
+      documentElement.dataset.theme = theme;
+      if (body) {
+        body.dataset.theme = theme;
+      }
+    })();
+  </script>
+  <div id="root"></div>
+  <script>
+    // * Deployment error detection - runs before React loads
+    (function detectDeploymentErrors() {
+      const ERROR_DISPLAY_ID = 'deployment-error-display';
+      const MAX_WAIT_TIME = 5000; // * 5 seconds
 
-          // * Check if app initialized after timeout
-          setTimeout(() => {
-            if (!scriptLoaded && !scriptError) {
-              // * Script might have loaded but app didn't initialize
-              if (root.children.length === 0) {
-                showDeploymentError({
-                  title: 'Application Failed to Initialize',
-                  message: 'The JavaScript loaded but the application failed to initialize. Possible causes:',
-                  details: [
-                    'JavaScript errors preventing React from mounting',
-                    'Missing environment variables (VITE_SUPABASE_URL, etc.)',
-                    'Build configuration issues',
-                    'Runtime errors in the application code',
-                  ],
-                  suggestions: [
-                    'Open browser console (F12) and check for JavaScript errors',
-                    'Verify all required environment variables are set in Vercel',
-                    'Check that the build completed without errors',
-                    'Review the error boundary fallback for more details',
-                    'Try rebuilding the application',
-                  ],
-                });
-              }
-            }
-          }, MAX_WAIT_TIME);
-        }
+      // * Check if root element exists
+      const root = document.getElementById('root');
+      if (!root) {
+        showDeploymentError({
+          title: 'Root Element Missing',
+          message: 'The application root element (#root) was not found in the HTML.',
+          suggestions: [
+            'Verify index.html contains <div id="root"></div>',
+            'Check that the HTML file is being served correctly',
+          ],
+        });
+        return;
+      }
 
-        // * Monitor CSP violations
-        document.addEventListener('securitypolicyviolation', (event) => {
-          if (event.violatedDirective === 'script-src' || event.effectiveDirective === 'script-src') {
-            showDeploymentError({
-              title: 'Content Security Policy Violation',
-              message: 'The application\'s scripts are being blocked by Content Security Policy:',
-              details: [
-                'Blocked resource: ' + (event.blockedURI || 'Unknown'),
-                'Violated directive: ' + event.violatedDirective,
-                'Current CSP: ' + event.originalPolicy,
-              ],
-              suggestions: [
-                'Update vercel.json CSP to allow scripts from \'self\'',
-                'Add \'blob:\' to script-src for Vite\'s dynamic imports',
-                'Ensure \'unsafe-inline\' is included if needed',
-                'Check that script sources match CSP rules',
-                'Review Vercel deployment logs for CSP configuration',
-              ],
-            });
-          }
+      // * Monitor script loading
+      const mainScript = document.querySelector('script[src*="index"]');
+      if (mainScript) {
+        let scriptLoaded = false;
+        let scriptError = false;
+
+        mainScript.addEventListener('load', () => {
+          scriptLoaded = true;
         });
 
-        function showDeploymentError(errorInfo) {
-          // * Remove existing error display if present
-          const existing = document.getElementById(ERROR_DISPLAY_ID);
-          if (existing) {
-            existing.remove();
-          }
+        mainScript.addEventListener('error', () => {
+          scriptError = true;
+          showDeploymentError({
+            title: 'JavaScript Failed to Load',
+            message: 'The application\'s JavaScript files could not be loaded. This is often caused by:',
+            details: [
+              'Content Security Policy (CSP) blocking scripts',
+              'Incorrect build output paths',
+              'Missing or incorrect base path configuration',
+              'Network issues preventing script downloads',
+            ],
+            suggestions: [
+              'Check browser console for CSP violations (look for "Content-Security-Policy" errors)',
+              'Verify that script files exist in the /assets/js/ directory',
+              'Check Network tab to see if scripts return 404 or are blocked',
+              'Review vercel.json CSP configuration',
+              'Ensure Vite build completed successfully',
+            ],
+          });
+        });
 
-          const errorDiv = document.createElement('div');
-          errorDiv.id = ERROR_DISPLAY_ID;
-          errorDiv.style.cssText = `
+        // * Check if app initialized after timeout
+        setTimeout(() => {
+          if (!scriptLoaded && !scriptError) {
+            // * Script might have loaded but app didn't initialize
+            if (root.children.length === 0) {
+              showDeploymentError({
+                title: 'Application Failed to Initialize',
+                message: 'The JavaScript loaded but the application failed to initialize. Possible causes:',
+                details: [
+                  'JavaScript errors preventing React from mounting',
+                  'Missing environment variables (VITE_SUPABASE_URL, etc.)',
+                  'Build configuration issues',
+                  'Runtime errors in the application code',
+                ],
+                suggestions: [
+                  'Open browser console (F12) and check for JavaScript errors',
+                  'Verify all required environment variables are set in Vercel',
+                  'Check that the build completed without errors',
+                  'Review the error boundary fallback for more details',
+                  'Try rebuilding the application',
+                ],
+              });
+            }
+          }
+        }, MAX_WAIT_TIME);
+      }
+
+      // * Monitor CSP violations
+      document.addEventListener('securitypolicyviolation', (event) => {
+        if (event.violatedDirective === 'script-src' || event.effectiveDirective === 'script-src') {
+          showDeploymentError({
+            title: 'Content Security Policy Violation',
+            message: 'The application\'s scripts are being blocked by Content Security Policy:',
+            details: [
+              'Blocked resource: ' + (event.blockedURI || 'Unknown'),
+              'Violated directive: ' + event.violatedDirective,
+              'Current CSP: ' + event.originalPolicy,
+            ],
+            suggestions: [
+              'Update vercel.json CSP to allow scripts from \'self\'',
+              'Add \'blob:\' to script-src for Vite\'s dynamic imports',
+              'Ensure \'unsafe-inline\' is included if needed',
+              'Check that script sources match CSP rules',
+              'Review Vercel deployment logs for CSP configuration',
+            ],
+          });
+        }
+      });
+
+      function showDeploymentError(errorInfo) {
+        // * Remove existing error display if present
+        const existing = document.getElementById(ERROR_DISPLAY_ID);
+        if (existing) {
+          existing.remove();
+        }
+
+        const errorDiv = document.createElement('div');
+        errorDiv.id = ERROR_DISPLAY_ID;
+        errorDiv.style.cssText = `
             position: fixed;
             top: 0;
             left: 0;
@@ -217,8 +256,8 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           `;
 
-          const content = document.createElement('div');
-          content.style.cssText = `
+        const content = document.createElement('div');
+        content.style.cssText = `
             background: white;
             border-radius: 12px;
             padding: 2rem;
@@ -228,7 +267,7 @@
             color: #1a1a1a;
           `;
 
-          content.innerHTML = `
+        content.innerHTML = `
             <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">⚠️</div>
             <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #dc2626; text-align: center;">
               ${errorInfo.title}
@@ -268,13 +307,13 @@
             </div>
           `;
 
-          errorDiv.appendChild(content);
-          document.body.appendChild(errorDiv);
-        }
-      })();
-    </script>
-    <!-- * Entry point - Vite transforms this path during build to point to bundled assets -->
-    <script type="module" src="/src/index.jsx"></script>
+        errorDiv.appendChild(content);
+        document.body.appendChild(errorDiv);
+      }
+    })();
+  </script>
+  <!-- * Entry point - Vite transforms this path during build to point to bundled assets -->
+  <script type="module" src="/src/index.jsx"></script>
 </body>
 
 </html>

@@ -71,7 +71,7 @@ function DeploymentErrorDetector({ onErrorDetected }) {
         if (root && root.children.length === 0) {
           // * Check if scripts loaded but app didn't initialize
           const hasLoadedScripts = Array.from(document.scripts).some(
-            (s) => s.src && s.src.includes("assets"),
+            (s) => s.src && s.src.includes("assets")
           );
 
           if (!hasLoadedScripts) {
@@ -153,7 +153,9 @@ function DeploymentErrorDetector({ onErrorDetected }) {
     const checkEnvironmentVariables = () => {
       // * Check for Supabase configuration
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const supabaseKey =
+        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+        import.meta.env.VITE_SUPABASE_ANON_KEY;
 
       if (!supabaseUrl || !supabaseKey) {
         setDeploymentError({
@@ -163,12 +165,13 @@ function DeploymentErrorDetector({ onErrorDetected }) {
             "Required environment variables are not configured. This may cause the application to fail:",
           details: [
             !supabaseUrl && "VITE_SUPABASE_URL is missing",
-            !supabaseKey && "VITE_SUPABASE_PUBLISHABLE_KEY is missing",
+            !supabaseKey &&
+              "VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) is missing",
           ].filter(Boolean),
           suggestions: [
             "Go to Vercel project settings → Environment Variables",
             "Add VITE_SUPABASE_URL with your Supabase project URL",
-            "Add VITE_SUPABASE_PUBLISHABLE_KEY with your Supabase anon key",
+            "Add VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) with your anon key",
             "Redeploy the application after adding variables",
             "Verify variables are set for Production environment",
           ],
@@ -270,9 +273,7 @@ ${deploymentError.cspViolation ? `\n## CSP Violation Details\n- Blocked URI: ${d
     <div className={styles.deploymentError} role="alert">
       <div className={styles.deploymentErrorContent}>
         <div className={styles.deploymentErrorIcon}>⚠️</div>
-        <h2 className={styles.deploymentErrorTitle}>
-          {deploymentError.title}
-        </h2>
+        <h2 className={styles.deploymentErrorTitle}>{deploymentError.title}</h2>
         <p className={styles.deploymentErrorMessage}>
           {deploymentError.message}
         </p>
