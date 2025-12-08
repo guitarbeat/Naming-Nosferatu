@@ -10,11 +10,11 @@
 
 ## 🎯 **What is Name Nosferatu?**
 
-A scientifically-driven tournament platform that helps you discover the perfect cat name using the same Elo rating algorithm that ranks chess grandmasters. Make data-driven decisions about your feline companion's nomenclature!
+A tournament platform for finding the perfect cat name. Compare names side-by-side. Vote on your favorites. Rankings update instantly using the same system that ranks chess players.
 
 ### **Key Features**
 
-- **🧠 Scientific Ranking**: Elo-based tournament system
+- **🧠 Ranking System**: Compare names and see which rank highest
 - **🎨 Adaptive UI**: Automatic dark/light theme detection
 - **📱 Mobile Mastery**: Touch-optimized responsive design
 - **⚡ Performance**: Sub-500ms load times with 48% smaller bundle
@@ -108,15 +108,15 @@ src/
 
 ### **Core Tables**
 
-| Table | Purpose | Key Fields |
-|-------|---------|------------|
-| `cat_app_users` | User accounts | `user_name`, `preferences`, `created_at`, `updated_at` |
-| `cat_name_options` | Available cat names | `name`, `description`, `avg_rating`, `categories`, `is_active` |
-| `cat_name_ratings` | User ratings for names | `user_name`, `name_id`, `rating`, `wins`, `losses`, `is_hidden` |
+| Table                   | Purpose                          | Key Fields                                                               |
+| ----------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `cat_app_users`         | User accounts                    | `user_name`, `preferences`, `created_at`, `updated_at`                   |
+| `cat_name_options`      | Available cat names              | `name`, `description`, `avg_rating`, `categories`, `is_active`           |
+| `cat_name_ratings`      | User ratings for names           | `user_name`, `name_id`, `rating`, `wins`, `losses`, `is_hidden`          |
 | `tournament_selections` | Tournament participation history | `user_name`, `name_id`, `tournament_id`, `selected_at`, `selection_type` |
-| `user_roles` | User role assignments | `user_name`, `role` (enum: admin, user) |
-| `audit_log` | System audit trail | `table_name`, `operation`, `user_name`, `old_values`, `new_values` |
-| `site_settings` | Application settings | `key`, `value`, `updated_by` |
+| `user_roles`            | User role assignments            | `user_name`, `role` (enum: admin, user)                                  |
+| `audit_log`             | System audit trail               | `table_name`, `operation`, `user_name`, `old_values`, `new_values`       |
+| `site_settings`         | Application settings             | `key`, `value`, `updated_by`                                             |
 
 ### **Schema Optimizations (November 2025)**
 
@@ -237,12 +237,12 @@ npm run test
 
 ## 📈 **Performance Metrics**
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| **Bundle Size** | 391KB | <500KB | ✅ Excellent |
-| **Load Time** | <800ms | <1.5s | ✅ Excellent |
-| **Lighthouse Score** | 95+ | >90 | ✅ Excellent |
-| **Security Issues** | 0 | 0 | ✅ Perfect |
+| Metric               | Current | Target | Status      |
+| -------------------- | ------- | ------ | ----------- |
+| **Bundle Size**      | 391KB   | <500KB | ✅ Excellent |
+| **Load Time**        | <800ms  | <1.5s  | ✅ Excellent |
+| **Lighthouse Score** | 95+     | >90    | ✅ Excellent |
+| **Security Issues**  | 0       | 0      | ✅ Perfect   |
 
 ---
 
@@ -335,16 +335,16 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 
 ### **Available Scripts**
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Development server with HMR |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run test suite |
-| `npm run test:coverage` | Tests with coverage report |
-| `npm run lint` | Run ESLint |
-| `npm run lint:css` | Run Stylelint |
-| `npm run format` | Format code with Prettier |
+| Command                 | Description                 |
+| ----------------------- | --------------------------- |
+| `npm run dev`           | Development server with HMR |
+| `npm run build`         | Production build            |
+| `npm run preview`       | Preview production build    |
+| `npm run test`          | Run test suite              |
+| `npm run test:coverage` | Tests with coverage report  |
+| `npm run lint`          | Run ESLint                  |
+| `npm run lint:css`      | Run Stylelint               |
+| `npm run format`        | Format code with Prettier   |
 
 ### **Code Quality**
 
