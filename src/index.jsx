@@ -37,6 +37,22 @@ const checkEnvironmentVariables = () => {
     .map(([key]) => key);
 
   if (missing.length > 0) {
+    // #region agent log
+    const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
+    fetch(LOG_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "H3",
+        location: "index.jsx:env-check",
+        message: "missing env vars",
+        data: { missing, env: import.meta.env.MODE },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
     const errorMessage = `Missing required environment variables: ${missing.join(", ")}`;
     console.error(`[App Initialization] ${errorMessage}`);
     console.error(
@@ -106,6 +122,22 @@ const checkEnvironmentVariables = () => {
     // * Throw error to prevent React from mounting
     throw new Error(errorMessage);
   }
+  // #region agent log
+  const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
+  fetch(LOG_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "H3",
+      location: "index.jsx:env-check",
+      message: "env vars ok",
+      data: { mode: import.meta.env.MODE },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 };
 
 /**
@@ -204,6 +236,22 @@ try {
     "[App Initialization] Failed environment variable check:",
     error
   );
+  // #region agent log
+  const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
+  fetch(LOG_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "H3",
+      location: "index.jsx:env-check-catch",
+      message: "env check failed",
+      data: { error: String(error) },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+  // #endregion
 }
 
 // * Only mount React if environment check passed

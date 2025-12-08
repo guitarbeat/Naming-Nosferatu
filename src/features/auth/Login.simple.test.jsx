@@ -47,20 +47,20 @@ describe("Login Component - Simple Tests", () => {
   it("renders main title", async () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
-    expect(screen.getByText("Ready to Judge the Names?")).toBeInTheDocument();
+    expect(screen.getByText("Ready to Rate Cat Names?")).toBeInTheDocument();
   });
 
   it("renders login form title", async () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
-    expect(screen.getByText("Ready to Judge the Names?")).toBeInTheDocument();
+    expect(screen.getByText("Ready to Rate Cat Names?")).toBeInTheDocument();
   });
 
   it("renders login subtitle", async () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
     expect(
-      screen.getByText(/Enter your name to start judging cat names/i),
+      screen.getByText(/Enter your name to get started/i),
     ).toBeInTheDocument();
   });
 

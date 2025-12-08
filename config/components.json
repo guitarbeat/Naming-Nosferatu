@@ -4,8 +4,8 @@
   "rsc": false,
   "tsx": false,
   "tailwind": {
-    "config": "config/tailwind.config.js",
-    "css": "src/shared/styles/reset.css",
+    "config": "./tailwind.config.js",
+    "css": "../src/shared/styles/reset.css",
     "baseColor": "slate",
     "cssVariables": true
   },

@@ -3,6 +3,8 @@ import path from 'node:path';
 
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import { componentTagger } from 'lovable-tagger';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,7 +20,18 @@ export default defineConfig(({ mode }) => {
   const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === 'true';
 
   return {
-    plugins: [react()],
+    plugins: [
+      react(),
+      mode === 'development' && componentTagger(),
+      mode === 'production' &&
+        visualizer({
+          filename: 'stats.html',
+          open: false,
+          gzipSize: true,
+          brotliSize: true,
+          template: 'treemap',
+        }),
+    ].filter(Boolean),
     envPrefix: ['VITE_', 'SUPABASE_'],
     // * Ensure proper base path for production builds
     base: '/',
@@ -38,19 +51,19 @@ export default defineConfig(({ mode }) => {
         '@services': resolveFromRoot('src/shared/services'),
         '@styles': resolveFromRoot('src/shared/styles'),
         '@features': resolveFromRoot('src/features'),
-        '@core': resolveFromRoot('src/core')
+        '@core': resolveFromRoot('src/core'),
       },
       // Ensure a single React instance to avoid hooks dispatcher being null
-      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime']
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
     },
     server: {
       host: '::',
-      port: 8080,
-      hmr: { overlay: false }
+      port: serverPort,
+      hmr: { overlay: false },
     },
     preview: {
       host: true,
-      port: previewPort
+      port: previewPort,
     },
     build: {
       outDir: resolveFromRoot('dist'),
@@ -75,6 +88,10 @@ export default defineConfig(({ mode }) => {
                 return 'react-vendor';
               }
               
+              if (id.includes('@tanstack/react-query')) {
+                return 'query-vendor';
+              }
+
               // * Supabase client in separate chunk (large, changes infrequently)
               if (id.includes('@supabase')) {
                 return 'supabase-vendor';
@@ -94,6 +111,14 @@ export default defineConfig(({ mode }) => {
                 return 'dnd-vendor';
               }
               
+              if (
+                id.includes('class-variance-authority') ||
+                id.includes('tailwind-merge') ||
+                id.includes('clsx')
+              ) {
+                return 'utils-vendor';
+              }
+
               // * State management (Zustand) - small but frequently used
               if (id.includes('zustand')) {
                 return 'state-vendor';

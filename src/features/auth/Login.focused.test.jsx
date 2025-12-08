@@ -31,11 +31,11 @@ describe("Login Component - Focused Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
 
     expect(
-      screen.getByRole("heading", { name: "Ready to Judge the Names?" }),
+      screen.getByRole("heading", { name: "Ready to Rate Cat Names?" }),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Now it's your turn! Enter your name to start judging cat names and help find the perfect one.",
+        "Enter your name to get started. Compare names and find your favorite.",
       ),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Your name")).toBeInTheDocument();

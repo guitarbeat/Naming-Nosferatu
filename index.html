@@ -7,59 +7,6 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Help Me Name My Cat!</title>
 
-  <script>
-    // * Disable React DevTools hook in production/non-localhost before React loads
-    (function hardDisableProdReactDevTools() {
-      if (typeof window === "undefined") return;
-      const host = window.location.hostname;
-      const isLocal =
-        host === "localhost" ||
-        host === "127.0.0.1" ||
-        host === "::1";
-      if (isLocal) return;
-
-      // * Force a frozen no-op hook and block overrides
-      const stub = {
-        isDisabled: true,
-        supportsFiber: true,
-        renderers: new Map(),
-        inject(renderer) {
-          const id = renderer?.rendererID || this.renderers.size + 1;
-          const safeRenderer = renderer || { rendererID: id, renderer: {}, helpers: {} };
-          if (!safeRenderer.renderer) safeRenderer.renderer = {};
-          if (typeof safeRenderer.renderer.Activity === "undefined") {
-            safeRenderer.renderer.Activity = null;
-          }
-          this.renderers.set(id, safeRenderer);
-          return id;
-        },
-        onCommitFiberRoot() { },
-        onCommitFiberUnmount() { },
-        getFiberRoots() {
-          return new Map();
-        },
-      };
-
-      try {
-        Object.freeze(stub);
-      } catch { }
-
-      try {
-        Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-          configurable: false,
-          enumerable: false,
-          get() {
-            return stub;
-          },
-          set() {
-            return stub;
-          },
-        });
-      } catch {
-        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = stub;
-      }
-    })();
-  </script>
   <!-- Mobile-specific meta tags for better navbar experience -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -168,7 +115,9 @@
       }
 
       // * Monitor script loading
-      const mainScript = document.querySelector('script[src*="index"]');
+      const mainScript =
+        document.querySelector('script[type="module"][src]') ||
+        document.querySelector('script[src*="index"]');
       if (mainScript) {
         let scriptLoaded = false;
         let scriptError = false;

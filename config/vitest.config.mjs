@@ -1,16 +1,18 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react-swc';
 import { fileURLToPath } from 'url';
 import { dirname, resolve as pathResolve } from 'path';
 
+import react from '@vitejs/plugin-react-swc';
+import { defineConfig } from 'vitest/config';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const projectRoot = pathResolve(__dirname, '..');
 
 export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'jsdom',
-    setupFiles: ['./src/setupTests.js'],
+    setupFiles: [pathResolve(projectRoot, 'src/setupTests.js')],
     globals: true,
     testTimeout: 10000,
     env: {
@@ -20,14 +22,14 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': pathResolve(__dirname, '../src'),
-      '@components': pathResolve(__dirname, '../src/shared/components'),
-      '@hooks': pathResolve(__dirname, '../src/core/hooks'),
-      '@utils': pathResolve(__dirname, '../src/shared/utils'),
-      '@services': pathResolve(__dirname, '../src/shared/services'),
-      '@styles': pathResolve(__dirname, '../src/shared/styles'),
-      '@features': pathResolve(__dirname, '../src/features'),
-      '@core': pathResolve(__dirname, '../src/core'),
+      '@': pathResolve(projectRoot, 'src'),
+      '@components': pathResolve(projectRoot, 'src/shared/components'),
+      '@hooks': pathResolve(projectRoot, 'src/core/hooks'),
+      '@utils': pathResolve(projectRoot, 'src/shared/utils'),
+      '@services': pathResolve(projectRoot, 'src/shared/services'),
+      '@styles': pathResolve(projectRoot, 'src/shared/styles'),
+      '@features': pathResolve(projectRoot, 'src/features'),
+      '@core': pathResolve(projectRoot, 'src/core'),
     },
   },
 });
