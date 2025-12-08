@@ -21,6 +21,60 @@ import ErrorBoundary from "./shared/components/Error/ErrorBoundary.jsx";
 import ErrorBoundaryFallback from "./shared/components/Error/ErrorBoundaryFallback.jsx";
 import DeploymentErrorDetector from "./shared/components/DeploymentErrorDetector/DeploymentErrorDetector.jsx";
 
+/**
+ * * Registers the service worker in production builds only.
+ * * Includes an update flow that forces waiting workers to activate
+ * * so users are less likely to stay on a stale bundle.
+ */
+function registerServiceWorker() {
+  if (!import.meta.env.PROD || !("serviceWorker" in navigator)) {
+    return;
+  }
+
+  const handleControllerChange = () => {
+    window.location.reload();
+  };
+
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        const trySkipWaiting = (worker) => {
+          if (!worker) {
+            return;
+          }
+          worker.postMessage({ type: "SKIP_WAITING" });
+        };
+
+        // * Immediately activate a waiting worker after registration
+        trySkipWaiting(registration.waiting);
+
+        registration.addEventListener("updatefound", () => {
+          const installing = registration.installing;
+          if (!installing) {
+            return;
+          }
+          installing.addEventListener("statechange", () => {
+            if (
+              installing.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              trySkipWaiting(installing);
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error("[ServiceWorker] Registration failed:", error);
+      });
+  });
+
+  navigator.serviceWorker.addEventListener(
+    "controllerchange",
+    handleControllerChange
+  );
+}
+
 // * Check for required environment variables before app initialization
 const checkEnvironmentVariables = () => {
   const supabaseKey =
@@ -60,7 +114,7 @@ const checkEnvironmentVariables = () => {
         `1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n` +
         `2. Add the missing variables:\n${missing
           .map((key) => `   - ${key}`)
-          .join("\n")}\n3. Redeploy the application\n`,
+          .join("\n")}\n3. Redeploy the application\n`
     );
 
     // * Display error in the DOM before React mounts
@@ -224,6 +278,8 @@ if (process.env.NODE_ENV === "development") {
   console.info("[Boot] index.jsx loaded");
 }
 
+registerServiceWorker();
+
 // * Check environment variables before mounting React
 let envCheckPassed = false;
 try {
@@ -234,7 +290,7 @@ try {
   // * Don't mount React if environment variables are missing
   console.error(
     "[App Initialization] Failed environment variable check:",
-    error,
+    error
   );
   // #region agent log
   const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
@@ -265,6 +321,6 @@ if (envCheckPassed) {
           <App />
         </QueryClientProvider>
       </ErrorBoundary>
-    </StrictMode>,
+    </StrictMode>
   );
 }
