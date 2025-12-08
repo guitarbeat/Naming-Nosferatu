@@ -968,6 +968,7 @@
   .welcomeTitle {
     font-size: clamp(1.125rem, 3.5vw, 1.5rem);
     line-height: 1.1;
+    letter-spacing: 0.01em;
   }
 
   .welcomeText {
@@ -984,6 +985,16 @@
     padding: clamp(0.5rem, 1.5vw, 0.625rem);
     margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
     font-size: clamp(0.75rem, 2vw, 0.85rem);
+  }
+
+  .formCard {
+    width: 100%;
+    padding: clamp(1.5rem, 5vw, 2rem);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+  }
+
+  .loginInput {
+    min-height: 44px;
   }
 
   /* * Button component handles responsive sizing */
