@@ -18,18 +18,36 @@
         host === "::1";
       if (isLocal) return;
 
-      // * Remove any existing hook and hard-lock it to undefined
+      // * Force a frozen no-op hook and block overrides
+      const stub = {
+        isDisabled: true,
+        supportsFiber: true,
+        renderers: new Map(),
+        inject() {},
+        onCommitFiberRoot() {},
+        onCommitFiberUnmount() {},
+        getFiberRoots() {
+          return new Map();
+        },
+      };
+
       try {
-        delete (window as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
-      } catch { }
+        Object.freeze(stub);
+      } catch {}
+
       try {
         Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-          value: undefined,
-          writable: false,
           configurable: false,
+          enumerable: false,
+          get() {
+            return stub;
+          },
+          set() {
+            return stub;
+          },
         });
       } catch {
-        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = undefined;
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = stub;
       }
     })();
   </script>

@@ -645,7 +645,7 @@ try {
   }
   // * Fallback: create store without devtools
   useAppStore = create(storeImpl);
-  
+
   // * Set a flag to prevent future devtools attempts
   if (typeof window !== "undefined") {
     window.__ZUSTAND_DEVTOOLS_DISABLED__ = true;
@@ -662,7 +662,7 @@ if (typeof window !== "undefined") {
     const messageStr = typeof message === "string" ? message : String(message || "");
     const errorMsg = error?.message || "";
     const combinedMsg = `${messageStr} ${errorMsg}`;
-    
+
     if (
       combinedMsg.includes("Cannot set properties of undefined") &&
       combinedMsg.includes("Activity")
@@ -688,7 +688,7 @@ if (typeof window !== "undefined") {
   window.addEventListener("unhandledrejection", function (event) {
     const reason = event.reason;
     const errorMsg = reason?.message || String(reason || "");
-    
+
     if (
       typeof errorMsg === "string" &&
       errorMsg.includes("Cannot set properties of undefined") &&
