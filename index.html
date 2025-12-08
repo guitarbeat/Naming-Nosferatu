@@ -18,45 +18,18 @@
         host === "::1";
       if (isLocal) return;
 
-      const dummyRenderer = { Activity: null };
-      const renderers = {
-        get() { return dummyRenderer; },
-        set() { return this; },
-        has() { return true; },
-        clear() { return undefined; },
-        delete() { return true; },
-        keys() { return [].values(); },
-        values() { return [].values(); },
-        entries() { return [].entries(); },
-        forEach() { return undefined; },
-        get size() { return 1; },
-      };
-
-      const stub = {
-        isDisabled: true,
-        supportsFiber: true,
-        inject() { },
-        onCommitFiberRoot() { },
-        onCommitFiberUnmount() { },
-        getFiberRoots() {
-          return new Map();
-        },
-        renderers,
-      };
-      // * Lock the stub to prevent later mutation by extensions
+      // * Remove any existing hook and hard-lock it to undefined
       try {
-        Object.freeze(stub);
-      } catch { }
-
+        delete (window as Record<string, unknown>).__REACT_DEVTOOLS_GLOBAL_HOOK__;
+      } catch {}
       try {
         Object.defineProperty(window, "__REACT_DEVTOOLS_GLOBAL_HOOK__", {
-          value: stub,
+          value: undefined,
           writable: false,
           configurable: false,
         });
-        return;
       } catch {
-        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = stub;
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = undefined;
       }
     })();
   </script>
