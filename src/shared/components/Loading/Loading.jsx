@@ -8,10 +8,7 @@ import React, { Suspense, useMemo } from "react";
 import PropTypes from "prop-types";
 import styles from "./Loading.module.css";
 
-const LOADING_ASSETS = [
-  "/assets/images/cat.gif",
-  "/assets/images/cat.webm",
-];
+const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
 
 /**
  * Get a random loading asset
@@ -104,11 +101,7 @@ const Loading = ({
           loop
         />
       ) : (
-        <img
-          src={randomAsset}
-          alt="Loading..."
-          className={styles.loadingGif}
-        />
+        <img src={randomAsset} alt="Loading..." className={styles.loadingGif} />
       )}
       {text && <p className={styles.text}>{text}</p>}
       <span className={styles.srOnly}>Loading...</span>

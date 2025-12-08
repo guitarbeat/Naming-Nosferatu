@@ -3,7 +3,7 @@
  * @description Popover component for explaining metrics with definitions and examples
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import {
   getMetricDefinition,
@@ -37,6 +37,11 @@ export function MetricExplainer({
 
   const definition = getMetricDefinition(metricName);
 
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    onClose?.();
+  }, [onClose]);
+
   // Close popover when clicking outside
   useEffect(() => {
     if (!isOpen) return;
@@ -65,15 +70,10 @@ export function MetricExplainer({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [isOpen]);
+  }, [handleClose, isOpen]);
 
   const handleToggle = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    onClose?.();
+    setIsOpen((prev) => !prev);
   };
 
   if (!definition) {

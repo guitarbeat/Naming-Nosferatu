@@ -1,3 +1,35 @@
+/* Base theme scaffolding */
+:root {
+  color-scheme: light;
+  background-color: var(--background-color, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+  transition:
+    background-color var(--transition-theme),
+    color var(--transition-theme),
+    border-color var(--transition-theme);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    background-color: #020617;
+    color: #f8fafc;
+  }
+}
+
+:root[data-theme] body {
+  transition:
+    background-color var(--transition-theme),
+    color var(--transition-theme);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  :root body {
+    transition: none;
+  }
+}
+
 /* ===== LIGHT THEME ===== */
 :root[data-theme="light"] {
   --primary-color: var(--primary-600);

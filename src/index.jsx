@@ -56,11 +56,11 @@ const checkEnvironmentVariables = () => {
     const errorMessage = `Missing required environment variables: ${missing.join(", ")}`;
     console.error(`[App Initialization] ${errorMessage}`);
     console.error(
-      "\nTo fix this:\n" +
-        "1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n" +
-        "2. Add the missing variables:\n" +
-        missing.map((key) => `   - ${key}`).join("\n") +
-        "\n3. Redeploy the application\n"
+      `\nTo fix this:\n` +
+        `1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n` +
+        `2. Add the missing variables:\n${missing
+          .map((key) => `   - ${key}`)
+          .join("\n")}\n3. Redeploy the application\n`,
     );
 
     // * Display error in the DOM before React mounts
@@ -234,7 +234,7 @@ try {
   // * Don't mount React if environment variables are missing
   console.error(
     "[App Initialization] Failed environment variable check:",
-    error
+    error,
   );
   // #region agent log
   const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
@@ -265,6 +265,6 @@ if (envCheckPassed) {
           <App />
         </QueryClientProvider>
       </ErrorBoundary>
-    </StrictMode>
+    </StrictMode>,
   );
 }

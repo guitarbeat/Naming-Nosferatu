@@ -11,7 +11,10 @@
  */
 export function countWords(text) {
   if (!text || typeof text !== "string") return 0;
-  return text.trim().split(/\s+/).filter((word) => word.length > 0).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 }
 
 /**
@@ -264,13 +267,17 @@ export function validateButtonText(text) {
   const genericTexts = ["click here", "here", "more", "link", "button"];
   if (genericTexts.some((generic) => text.toLowerCase().includes(generic))) {
     issues.push("Button text is too generic");
-    suggestions.push("Use specific, descriptive text (e.g., 'Start Tournament' instead of 'Click here')");
+    suggestions.push(
+      "Use specific, descriptive text (e.g., 'Start Tournament' instead of 'Click here')",
+    );
   }
 
   // * Check for "click" in text (not needed)
   if (text.toLowerCase().includes("click")) {
     issues.push("Avoid using 'click' in button text");
-    suggestions.push("Button text should describe the action, not how to interact");
+    suggestions.push(
+      "Button text should describe the action, not how to interact",
+    );
   }
 
   return {

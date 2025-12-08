@@ -40,8 +40,7 @@ export const USER_FRIENDLY_MESSAGES = {
     [ERROR_SEVERITY.LOW]: "Please log in again.",
     [ERROR_SEVERITY.MEDIUM]: "Session expired. Please log in again.",
     [ERROR_SEVERITY.HIGH]: "Sign-in failed. Check your credentials.",
-    [ERROR_SEVERITY.CRITICAL]:
-      "Account access issue. Please contact support.",
+    [ERROR_SEVERITY.CRITICAL]: "Account access issue. Please contact support.",
   },
   [ERROR_TYPES.DATABASE]: {
     [ERROR_SEVERITY.LOW]: "Data is loading slowly. Please try again.",

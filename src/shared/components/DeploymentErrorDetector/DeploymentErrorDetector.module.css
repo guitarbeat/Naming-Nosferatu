@@ -1,10 +1,7 @@
 .deploymentError {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  inset: 0;
+  background: rgb(0 0 0 / 85%);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -15,12 +12,12 @@
 }
 
 .deploymentErrorContent {
-  background: var(--color-background, #ffffff);
+  background: var(--color-background, #fff);
   border-radius: 12px;
   padding: 2rem;
   max-width: 600px;
   width: 100%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 30%);
   color: var(--color-text, #1a1a1a);
 }
 
@@ -124,7 +121,7 @@
 .deploymentErrorDebug pre {
   margin: 0;
   padding: 0.75rem;
-  background: var(--color-background, #ffffff);
+  background: var(--color-background, #fff);
   border-radius: 4px;
   overflow-x: auto;
   font-size: 0.875rem;
@@ -134,7 +131,7 @@
 /* * Dark mode support */
 [data-theme="dark"] .deploymentErrorContent {
   background: var(--color-background, #1a1a1a);
-  color: var(--color-text, #ffffff);
+  color: var(--color-text, #fff);
 }
 
 [data-theme="dark"] .deploymentErrorMessage {
@@ -152,7 +149,7 @@
 }
 
 /* * Mobile responsiveness */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .deploymentErrorContent {
     padding: 1.5rem;
   }

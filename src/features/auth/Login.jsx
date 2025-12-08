@@ -249,7 +249,7 @@ function Login({ onLogin }) {
       setError(
         formattedError.userMessage ||
           err.message ||
-          "Unable to log in. Please check your connection and try again."
+          "Unable to log in. Please check your connection and try again.",
       );
     } finally {
       setIsLoading(false);

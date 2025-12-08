@@ -76,13 +76,13 @@ function Results({
         type,
       });
     },
-    [showToast]
+    [showToast],
   );
 
   // * Memoize tournament name set to prevent recreation on every render
   const tournamentNameSet = useMemo(
     () => new Set(currentTournamentNames?.map((n) => n.name) || []),
-    [currentTournamentNames]
+    [currentTournamentNames],
   );
 
   // * Memoize bracket matches calculation to prevent recalculation on every render
@@ -98,7 +98,7 @@ function Results({
           vote?.match?.left?.name &&
           vote?.match?.right?.name &&
           tournamentNameSet.has(vote.match.left.name) &&
-          tournamentNameSet.has(vote.match.right.name)
+          tournamentNameSet.has(vote.match.right.name),
       )
       .map((vote, index) => {
         // Prefer outcome fields if present
@@ -148,9 +148,9 @@ function Results({
       new Map(
         (currentTournamentNames || [])
           .filter((name) => name?.name)
-          .map(({ id, name }) => [name, id])
+          .map(({ id, name }) => [name, id]),
       ),
-    [currentTournamentNames]
+    [currentTournamentNames],
   );
 
   // Memoized rankings processor
@@ -166,7 +166,7 @@ function Results({
           id: nameToIdMapRef.get(name),
           name,
           rating: Math.round(
-            typeof rating === "number" ? rating : rating?.rating || 1500
+            typeof rating === "number" ? rating : rating?.rating || 1500,
           ),
           wins: typeof rating === "object" ? rating.wins || 0 : 0,
           losses: typeof rating === "object" ? rating.losses || 0 : 0,
@@ -174,7 +174,7 @@ function Results({
         }))
         .sort((a, b) => b.rating - a.rating);
     },
-    [tournamentNameSet, nameToIdMap]
+    [tournamentNameSet, nameToIdMap],
   );
 
   // * Memoize processed rankings to avoid unnecessary recalculations
@@ -209,7 +209,7 @@ function Results({
 
         const updatedRankings = adjustedRankings.map((ranking) => {
           const oldRanking = currentRankings.find(
-            (r) => r.name === ranking.name
+            (r) => r.name === ranking.name,
           );
           return {
             ...ranking,
@@ -235,13 +235,13 @@ function Results({
         devError("Failed to update rankings:", error);
         showToastMessage(
           "Failed to update rankings. Please try again.",
-          "error"
+          "error",
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [currentRankings, ratings, onUpdateRatings, showToastMessage]
+    [currentRankings, ratings, onUpdateRatings, showToastMessage],
   );
 
   // * Single optimized vfx effect hook (removed duplicate)

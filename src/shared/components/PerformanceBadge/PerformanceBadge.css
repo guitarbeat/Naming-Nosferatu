@@ -14,7 +14,8 @@
   line-height: 1;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: all var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
   white-space: nowrap;
 }
 

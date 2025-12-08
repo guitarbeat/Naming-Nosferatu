@@ -12,7 +12,19 @@ const LOG_ENDPOINT = `http://${typeof window !== "undefined" ? window.location.h
 // * Devtools middleware disabled entirely to avoid prod crashes
 const applyDevtools = (storeImpl) => {
   // #region agent log
-  fetch(LOG_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H2', location: 'useAppStore.js:applyDevtools', message: 'applyDevtools invoked', data: { env: process.env.NODE_ENV }, timestamp: Date.now() }) }).catch(() => { });
+  fetch(LOG_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "H2",
+      location: "useAppStore.js:applyDevtools",
+      message: "applyDevtools invoked",
+      data: { env: process.env.NODE_ENV },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
   // #endregion
   return storeImpl;
 };
@@ -582,11 +594,25 @@ const storeImpl = (set, get) => ({
 });
 
 // * Create store without any devtools integration (safest for production)
-const useAppStore = create(applyDevtools(storeImpl, {
-  name: "name-nosferatu-store",
-}));
+const useAppStore = create(
+  applyDevtools(storeImpl, {
+    name: "name-nosferatu-store",
+  }),
+);
 // #region agent log
-fetch(LOG_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: 'debug-session', runId: 'run1', hypothesisId: 'H2', location: 'useAppStore.js:store-created', message: 'store created', data: { env: process.env.NODE_ENV }, timestamp: Date.now() }) }).catch(() => { });
+fetch(LOG_ENDPOINT, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    sessionId: "debug-session",
+    runId: "run1",
+    hypothesisId: "H2",
+    location: "useAppStore.js:store-created",
+    message: "store created",
+    data: { env: process.env.NODE_ENV },
+    timestamp: Date.now(),
+  }),
+}).catch(() => {});
 // #endregion
 
 // * Hook to initialize store from localStorage

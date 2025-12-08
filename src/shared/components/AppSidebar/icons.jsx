@@ -88,3 +88,20 @@ export const AnalysisIcon = () => (
     <path d="M7 7l10 10M17 7l-10 10" strokeWidth="1.5" opacity="0.6" />
   </Icon>
 );
+
+export const HomeIcon = () => (
+  <Icon name="home">
+    <path d="m3 11 9-8 9 8" />
+    <path d="M4 10.5V21h6v-6h4v6h6v-10.5" />
+  </Icon>
+);
+
+export const ResultsIcon = () => (
+  <Icon name="results">
+    <path d="M8 21h8" />
+    <path d="M12 21V9" />
+    <path d="m7 4 5-2 5 2" />
+    <path d="M6 7h12v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6z" />
+    <path d="M10 13h4" />
+  </Icon>
+);

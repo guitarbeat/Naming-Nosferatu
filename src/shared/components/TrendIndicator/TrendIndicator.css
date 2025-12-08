@@ -12,7 +12,8 @@
   font-weight: 500;
   padding: 0.25rem 0.5rem;
   border-radius: var(--analysis-radius-sm, 0.375rem);
-  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: all var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 /* Up trend (green) */
@@ -22,7 +23,7 @@
 }
 
 .trend-indicator.trend-up .trend-value::before {
-  content: '+';
+  content: "+";
 }
 
 /* Down trend (red) */
@@ -32,7 +33,7 @@
 }
 
 .trend-indicator.trend-down .trend-value::before {
-  content: '−';
+  content: "−";
 }
 
 /* Stable trend (gray) */
@@ -54,7 +55,8 @@
 
 /* Animated version (bounces in on mount) */
 .trend-indicator.trend-animated {
-  animation: trendBounce var(--analysis-duration-normal, 300ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
+  animation: trendBounce var(--analysis-duration-normal, 300ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1)) forwards;
   opacity: 0;
 }
 
@@ -77,7 +79,7 @@
 
 /* Hover state for interactive contexts */
 .trend-indicator:hover {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.15);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.15);
 }
 
 /* Compact version (icon only) */

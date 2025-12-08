@@ -17,8 +17,9 @@ describe("AppSidebar", () => {
             isAdmin={false}
             onLogout={vi.fn()}
             onStartNewTournament={vi.fn()}
-            isLightTheme
-            onThemeChange={vi.fn()}
+            themePreference="light"
+            currentTheme="light"
+            onThemePreferenceChange={vi.fn()}
           />
         </SidebarProvider>,
       ),

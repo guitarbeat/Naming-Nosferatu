@@ -8,7 +8,7 @@
   gap: var(--spacing-xs, 0.5rem);
   margin-bottom: var(--spacing-md, 1rem);
   padding: 4px;
-  background: var(--muted, hsl(0 0% 96%));
+  background: var(--muted, hsl(0deg 0% 96%));
   border-radius: var(--radius-lg, 12px);
   width: fit-content;
 }
@@ -22,17 +22,17 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-  color: var(--muted-foreground, hsl(0 0% 45%));
+  color: var(--muted-foreground, hsl(0deg 0% 45%));
 }
 
 .analysis-view-btn:hover {
-  background: var(--accent, hsl(0 0% 92%));
+  background: var(--accent, hsl(0deg 0% 92%));
 }
 
 .analysis-view-btn.active {
   background: var(--background, white);
-  color: var(--foreground, hsl(0 0% 10%));
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: var(--foreground, hsl(0deg 0% 10%));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .analysis-chart-container {

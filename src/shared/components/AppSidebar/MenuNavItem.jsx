@@ -22,6 +22,8 @@ export function MenuNavItem({
   label,
   view,
   onClick,
+  href = "#",
+  ariaLabel,
   isActive: customIsActive,
   ...rest
 }) {
@@ -31,12 +33,14 @@ export function MenuNavItem({
       : view === itemKey.toLowerCase();
 
   const handleClick = (e) => {
+    // * Prevent full reloads while still allowing keyboard navigation
     e.preventDefault();
-    // * If onClick is provided directly, use it; otherwise use default behavior
-    if (onClick && typeof onClick === "function") {
-      onClick();
-    } else {
-      onClick(itemKey.toLowerCase());
+    if (typeof onClick === "function") {
+      if (onClick.length > 0) {
+        onClick(itemKey.toLowerCase());
+      } else {
+        onClick();
+      }
     }
   };
 
@@ -44,10 +48,11 @@ export function MenuNavItem({
     <SidebarMenuItem key={itemKey} data-active={isActive} {...rest}>
       <SidebarMenuButton asChild>
         <a
-          href="#"
+          href={href}
           onClick={handleClick}
           className={isActive ? "active" : ""}
           aria-current={isActive ? "page" : undefined}
+          aria-label={ariaLabel || label}
           title={label}
           data-active={isActive}
         >
@@ -65,5 +70,7 @@ MenuNavItem.propTypes = {
   label: PropTypes.string.isRequired,
   view: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
+  href: PropTypes.string,
+  ariaLabel: PropTypes.string,
   isActive: PropTypes.bool,
 };

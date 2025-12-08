@@ -30,15 +30,11 @@ function ReadabilityChecker({
   headingLevel = 2,
   showDetails = false,
 }) {
-  // * Only render in development
-  if (process.env.NODE_ENV !== "development") {
-    return null;
-  }
-
+  const isDevelopment = process.env.NODE_ENV === "development";
   const [isExpanded, setIsExpanded] = useState(showDetails);
 
   const analysis = useMemo(() => {
-    if (!text || typeof text !== "string") {
+    if (!isDevelopment || !text || typeof text !== "string") {
       return null;
     }
 
@@ -52,9 +48,9 @@ function ReadabilityChecker({
       default:
         return analyzeReadability(text);
     }
-  }, [text, type, headingLevel]);
+  }, [headingLevel, isDevelopment, text, type]);
 
-  if (!analysis || !text) {
+  if (!isDevelopment || !analysis || !text) {
     return null;
   }
 

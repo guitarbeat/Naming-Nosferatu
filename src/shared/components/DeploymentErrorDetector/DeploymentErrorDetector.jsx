@@ -22,10 +22,10 @@ function DeploymentErrorDetector({ onErrorDetected }) {
     // * Check for script loading failures
     const checkScriptLoading = () => {
       const scripts = document.querySelectorAll('script[type="module"]');
-      let failedScripts = [];
+      const failedScripts = [];
 
       scripts.forEach((script) => {
-        script.addEventListener("error", (event) => {
+        script.addEventListener("error", () => {
           const src = script.src || script.getAttribute("src");
           failedScripts.push({
             src,
@@ -71,7 +71,7 @@ function DeploymentErrorDetector({ onErrorDetected }) {
         if (root && root.children.length === 0) {
           // * Check if scripts loaded but app didn't initialize
           const hasLoadedScripts = Array.from(document.scripts).some(
-            (s) => s.src && s.src.includes("assets")
+            (s) => s.src && s.src.includes("assets"),
           );
 
           if (!hasLoadedScripts) {

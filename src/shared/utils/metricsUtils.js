@@ -13,12 +13,12 @@
  */
 export function calculatePercentile(value, allValues, higherIsBetter = true) {
   if (!allValues || allValues.length === 0) return 50;
-  
+
   const validValues = allValues.filter((v) => v != null && !isNaN(v));
   if (validValues.length === 0) return 50;
-  
+
   const sorted = [...validValues].sort((a, b) => a - b);
-  
+
   if (higherIsBetter) {
     // For higher-is-better metrics, count how many values are below this value
     const belowCount = sorted.filter((v) => v < value).length;
@@ -39,17 +39,17 @@ export function calculatePercentile(value, allValues, higherIsBetter = true) {
  */
 export function determineTrend(current, previous, threshold = 5) {
   if (current == null || previous == null || previous === 0) {
-    return { direction: 'stable', percentChange: 0 };
+    return { direction: "stable", percentChange: 0 };
   }
-  
+
   const percentChange = ((current - previous) / previous) * 100;
-  
+
   if (Math.abs(percentChange) < threshold) {
-    return { direction: 'stable', percentChange: 0 };
+    return { direction: "stable", percentChange: 0 };
   }
-  
+
   return {
-    direction: percentChange > 0 ? 'up' : 'down',
+    direction: percentChange > 0 ? "up" : "down",
     percentChange: Math.round(Math.abs(percentChange) * 10) / 10,
   };
 }
@@ -60,32 +60,38 @@ export function determineTrend(current, previous, threshold = 5) {
  * @returns {string} Insight message
  */
 export function getInsightMessage(metrics = {}) {
-  const { rating = 1500, selected = 0, wins = 0, losses = 0, percentile = 50 } = metrics;
-  
+  const {
+    rating = 1500,
+    selected = 0,
+    wins = 0,
+    losses = 0,
+    percentile = 50,
+  } = metrics;
+
   if (selected === 0) {
     return "Never selected yet";
   }
-  
+
   if (percentile >= 90) {
     return "Top 10% most popular";
   }
-  
+
   if (percentile >= 75) {
     return "Top 25% most popular";
   }
-  
+
   if (wins > 0 && losses === 0) {
-    return `Undefeated (${wins} win${wins !== 1 ? 's' : ''})`;
+    return `Undefeated (${wins} win${wins !== 1 ? "s" : ""})`;
   }
-  
+
   if (rating > 1700) {
     return "Strong contender";
   }
-  
+
   if (selected > 10) {
     return "Popular choice";
   }
-  
+
   return "Emerging name";
 }
 
@@ -96,26 +102,29 @@ export function getInsightMessage(metrics = {}) {
  */
 export function formatMetricLabel(metricName) {
   const labelMap = {
-    avg_rating: 'Rating',
-    rating: 'Rating',
-    times_selected: 'Times Selected',
-    selected: 'Selected',
-    total_wins: 'Wins',
-    wins: 'Wins',
-    total_losses: 'Losses',
-    losses: 'Losses',
-    win_rate: 'Win Rate',
-    popularity_score: 'Popularity Score',
-    unique_selectors: 'Unique Selectors',
-    users_rated: 'Users Rated',
-    created_at: 'Created',
-    date_submitted: 'Submitted',
+    avg_rating: "Rating",
+    rating: "Rating",
+    times_selected: "Times Selected",
+    selected: "Selected",
+    total_wins: "Wins",
+    wins: "Wins",
+    total_losses: "Losses",
+    losses: "Losses",
+    win_rate: "Win Rate",
+    popularity_score: "Popularity Score",
+    unique_selectors: "Unique Selectors",
+    users_rated: "Users Rated",
+    created_at: "Created",
+    date_submitted: "Submitted",
   };
-  
-  return labelMap[metricName] || metricName
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+
+  return (
+    labelMap[metricName] ||
+    metricName
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
 }
 
 /**
@@ -125,21 +134,21 @@ export function formatMetricLabel(metricName) {
  * @param {number} percentile - The percentile rank (0-100)
  * @returns {string} CSS variable or color name
  */
-export function getMetricColor(metricName, value = 0, percentile = 50) {
+export function getMetricColor(_metricName, _value = 0, percentile = 50) {
   // Higher percentile = better color
   if (percentile >= 75) {
-    return 'var(--color-success, #22c55e)'; // Green
+    return "var(--color-success, #22c55e)"; // Green
   }
-  
+
   if (percentile >= 50) {
-    return 'var(--color-info, #3b82f6)'; // Blue
+    return "var(--color-info, #3b82f6)"; // Blue
   }
-  
+
   if (percentile >= 25) {
-    return 'var(--color-warning, #f59e0b)'; // Amber
+    return "var(--color-warning, #f59e0b)"; // Amber
   }
-  
-  return 'var(--color-subtle, #6b7280)'; // Gray
+
+  return "var(--color-subtle, #6b7280)"; // Gray
 }
 
 /**
@@ -163,7 +172,7 @@ export function formatRating(rating = 1500) {
  * @returns {string} Formatted win rate percentage
  */
 export function formatWinRate(wins = 0, losses = 0) {
-  if (wins + losses === 0) return 'N/A';
+  if (wins + losses === 0) return "N/A";
   const rate = (wins / (wins + losses)) * 100;
   return `${Math.round(rate)}%`;
 }
@@ -175,20 +184,20 @@ export function formatWinRate(wins = 0, losses = 0) {
  * @param {string} metricName - The metric name (for context)
  * @returns {string} Comparison text (e.g., "25% above average")
  */
-export function getComparisonText(value, average, metricName = 'average') {
-  if (average === 0 || value == null) return '';
-  
+export function getComparisonText(value, average, _metricName = "average") {
+  if (average === 0 || value == null) return "";
+
   const diff = ((value - average) / average) * 100;
   const absDiff = Math.round(Math.abs(diff));
-  
+
   if (Math.abs(diff) < 5) {
-    return 'at average';
+    return "at average";
   }
-  
+
   if (diff > 0) {
     return `${absDiff}% above average`;
   }
-  
+
   return `${absDiff}% below average`;
 }
 
@@ -201,13 +210,13 @@ export function getComparisonText(value, average, metricName = 'average') {
  */
 export function rankItems(items, metricName, descending = true) {
   if (!items || items.length === 0) return [];
-  
+
   const sorted = [...items].sort((a, b) => {
     const aVal = a[metricName] ?? 0;
     const bVal = b[metricName] ?? 0;
     return descending ? bVal - aVal : aVal - bVal;
   });
-  
+
   return sorted.map((item, index) => ({
     ...item,
     rank: index + 1,
@@ -221,23 +230,24 @@ export function rankItems(items, metricName, descending = true) {
  */
 export function calculateStats(values = []) {
   const validValues = values.filter((v) => v != null && !isNaN(v));
-  
+
   if (validValues.length === 0) {
     return { min: 0, max: 0, mean: 0, median: 0, stdDev: 0 };
   }
-  
+
   const sorted = [...validValues].sort((a, b) => a - b);
-  const min = sorted[0];
+  const [min] = sorted;
   const max = sorted[sorted.length - 1];
   const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length;
   const median =
     sorted.length % 2 === 0
       ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
       : sorted[Math.floor(sorted.length / 2)];
-  
+
   const variance =
-    sorted.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / sorted.length;
+    sorted.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) /
+    sorted.length;
   const stdDev = Math.sqrt(variance);
-  
+
   return { min, max, mean, median, stdDev };
 }

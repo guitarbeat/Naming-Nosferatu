@@ -3,8 +3,8 @@
  * @description Component to display trend indicators (up/down arrows with percentage change)
  */
 
-import PropTypes from 'prop-types';
-import './TrendIndicator.css';
+import PropTypes from "prop-types";
+import "./TrendIndicator.css";
 
 /**
  * TrendIndicator Component
@@ -19,26 +19,39 @@ import './TrendIndicator.css';
  * @returns {JSX.Element}
  */
 export function TrendIndicator({
-  direction = 'stable',
+  direction = "stable",
   percentChange = 0,
   compact = false,
-  className = '',
+  className = "",
   animated = true,
 }) {
-  const trendClass = `trend-indicator trend-${direction} ${animated ? 'trend-animated' : ''} ${className}`.trim();
+  const trendClass =
+    `trend-indicator trend-${direction} ${animated ? "trend-animated" : ""} ${className}`.trim();
 
   const renderIcon = () => {
     switch (direction) {
-      case 'up':
-        return <span className="trend-icon" aria-hidden="true">📈</span>;
-      case 'down':
-        return <span className="trend-icon" aria-hidden="true">📉</span>;
+      case "up":
+        return (
+          <span className="trend-icon" aria-hidden="true">
+            📈
+          </span>
+        );
+      case "down":
+        return (
+          <span className="trend-icon" aria-hidden="true">
+            📉
+          </span>
+        );
       default:
-        return <span className="trend-icon" aria-hidden="true">➡️</span>;
+        return (
+          <span className="trend-icon" aria-hidden="true">
+            ➡️
+          </span>
+        );
     }
   };
 
-  const ariaLabel = `${direction === 'up' ? 'Trending up' : direction === 'down' ? 'Trending down' : 'Stable'} ${percentChange ? `by ${percentChange}%` : ''}`;
+  const ariaLabel = `${direction === "up" ? "Trending up" : direction === "down" ? "Trending down" : "Stable"} ${percentChange ? `by ${percentChange}%` : ""}`;
 
   if (compact) {
     return (
@@ -53,7 +66,7 @@ export function TrendIndicator({
       {renderIcon()}
       {percentChange !== 0 && (
         <span className="trend-value">
-          {direction === 'up' ? '+' : direction === 'down' ? '−' : ''}
+          {direction === "up" ? "+" : direction === "down" ? "−" : ""}
           {percentChange}%
         </span>
       )}
@@ -62,13 +75,13 @@ export function TrendIndicator({
 }
 
 TrendIndicator.propTypes = {
-  direction: PropTypes.oneOf(['up', 'down', 'stable']),
+  direction: PropTypes.oneOf(["up", "down", "stable"]),
   percentChange: PropTypes.number,
   compact: PropTypes.bool,
   className: PropTypes.string,
   animated: PropTypes.bool,
 };
 
-TrendIndicator.displayName = 'TrendIndicator';
+TrendIndicator.displayName = "TrendIndicator";
 
 export default TrendIndicator;

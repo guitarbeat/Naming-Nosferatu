@@ -12,18 +12,16 @@ import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { BumpChart } from "../BumpChart";
 import { PerformanceBadges } from "../PerformanceBadge";
-import { TrendIndicator } from "../TrendIndicator";
 import { ColumnHeader } from "../ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
 import { useCollapsible } from "../../hooks/useCollapsible";
-import { useMetricComparison, useMultipleMetricComparison } from "../../hooks/useMetricComparison";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError } from "../../utils/logger";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
 import { formatDate } from "../../utils/timeUtils";
-import { calculatePercentile, getInsightMessage } from "../../utils/metricsUtils";
+import { calculatePercentile } from "../../utils/metricsUtils";
 import { getMetricLabel } from "../../utils/metricDefinitions";
 import "./AnalysisDashboard.css";
 
@@ -48,7 +46,10 @@ export function AnalysisDashboard({
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [selectionPopularity, setSelectionPopularity] = useState(null);
   const [analyticsData, setAnalyticsData] = useState(null); // * Admin: full analytics
-  const [rankingHistory, setRankingHistory] = useState({ data: [], timeLabels: [] });
+  const [rankingHistory, setRankingHistory] = useState({
+    data: [],
+    timeLabels: [],
+  });
   const [viewMode, setViewMode] = useState("chart"); // "chart" or "table"
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -75,12 +76,13 @@ export function AnalysisDashboard({
       try {
         const historyPromise = catNamesAPI.getRankingHistory(10, 7);
         if (isAdmin) {
-          const [analytics, leaderboard, popularity, history] = await Promise.all([
-            catNamesAPI.getPopularityAnalytics(50, userFilter, userName),
-            catNamesAPI.getLeaderboard(50),
-            catNamesAPI.getSelectionPopularity(50),
-            historyPromise,
-          ]);
+          const [analytics, leaderboard, popularity, history] =
+            await Promise.all([
+              catNamesAPI.getPopularityAnalytics(50, userFilter, userName),
+              catNamesAPI.getLeaderboard(50),
+              catNamesAPI.getSelectionPopularity(50),
+              historyPromise,
+            ]);
           setAnalyticsData(analytics);
           setLeaderboardData(leaderboard);
           setSelectionPopularity(popularity);
@@ -427,7 +429,10 @@ export function AnalysisDashboard({
       if (selectedPercentile >= 90) insights.push("most_selected");
       if (ratingPercentile >= 70 && selectedPercentile < 50)
         insights.push("underrated");
-      if (item.wins > 0 && !displayNames.find((n) => n.id !== item.id && n.wins > 0))
+      if (
+        item.wins > 0 &&
+        !displayNames.find((n) => n.id !== item.id && n.wins > 0)
+      )
         insights.push("undefeated");
 
       return {
@@ -643,7 +648,10 @@ export function AnalysisDashboard({
                         key={idx}
                         className={`analysis-insight analysis-insight--${insight.type}`}
                       >
-                        <span className="analysis-insight-icon" aria-hidden="true">
+                        <span
+                          className="analysis-insight-icon"
+                          aria-hidden="true"
+                        >
                           {insight.icon}
                         </span>
                         <span className="analysis-insight-text">
@@ -655,281 +663,294 @@ export function AnalysisDashboard({
                 )}
 
                 <div className="top-names-list">
-              <table
-                className="top-names-table"
-                role="table"
-                aria-label="Top performing cat names ranked by rating, wins, and selection count"
-              >
-                <thead>
-                  <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Name</th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("rating") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      {isAdmin ? (
-                        <ColumnHeader
-                          label={getMetricLabel("rating")}
-                          metricName="rating"
-                          sortable={true}
-                          sorted={sortField === "rating"}
-                          sortDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      ) : (
-                        <>Rating {renderSortIndicator("rating")}</>
-                      )}
-                    </th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("wins") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      {isAdmin ? (
-                        <ColumnHeader
-                          label={getMetricLabel("total_wins")}
-                          metricName="total_wins"
-                          sortable={true}
-                          sorted={sortField === "wins"}
-                          sortDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      ) : (
-                        <>Wins {renderSortIndicator("wins")}</>
-                      )}
-                    </th>
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("selected") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      {isAdmin ? (
-                        <ColumnHeader
-                          label={getMetricLabel("times_selected")}
-                          metricName="times_selected"
-                          sortable={true}
-                          sorted={sortField === "selected"}
-                          sortDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      ) : (
-                        <>Selected {renderSortIndicator("selected")}</>
-                      )}
-                    </th>
-                    {isAdmin && (
-                      <th scope="col">
-                        <span className="column-header-label">Insights</span>
-                      </th>
-                    )}
-                    <th
-                      scope="col"
-                      className={isAdmin ? "sortable" : ""}
-                      onClick={isAdmin ? () => handleSort("dateSubmitted") : undefined}
-                      style={isAdmin ? { cursor: "pointer" } : undefined}
-                    >
-                      {isAdmin ? (
-                        <ColumnHeader
-                          label={getMetricLabel("created_at")}
-                          metricName="created_at"
-                          sortable={true}
-                          sorted={sortField === "dateSubmitted"}
-                          sortDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      ) : (
-                        <>Date {renderSortIndicator("dateSubmitted")}</>
-                      )}
-                    </th>
-                    {isAdmin && <th scope="col">Actions</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {namesWithInsights.map((item, index) => {
-                    const rank = index + 1;
-                    const ratingPercent =
-                      summaryStats && summaryStats.maxRating > 0
-                        ? Math.min(
-                            (item.rating / summaryStats.maxRating) * 100,
-                            100,
-                          )
-                        : 0;
-                    const winsPercent =
-                      summaryStats && summaryStats.maxWins > 0
-                        ? Math.min(
-                            (item.wins / summaryStats.maxWins) * 100,
-                            100,
-                          )
-                        : 0;
-                    const selectedPercent =
-                      summaryStats && summaryStats.maxSelected > 0
-                        ? Math.min(
-                            (item.selected / summaryStats.maxSelected) * 100,
-                            100,
-                          )
-                        : 0;
-
-                    return (
-                      <tr key={item.id || index} className="top-names-row">
-                        <td className="top-names-rank" scope="row">
-                          <span className="rank-badge rank-badge--top">
-                            {isAdmin ? getRankDisplay(rank) : rank}
-                          </span>
-                        </td>
-                        <td className="top-names-name">{item.name}</td>
-                        <td className="top-names-rating-cell">
+                  <table
+                    className="top-names-table"
+                    role="table"
+                    aria-label="Top performing cat names ranked by rating, wins, and selection count"
+                  >
+                    <thead>
+                      <tr>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Name</th>
+                        <th
+                          scope="col"
+                          className={isAdmin ? "sortable" : ""}
+                          onClick={
+                            isAdmin ? () => handleSort("rating") : undefined
+                          }
+                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                        >
                           {isAdmin ? (
-                            <div className="metric-with-insight">
-                              <span
-                                className="top-names-rating"
-                                aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
-                              >
-                                {item.rating}
-                              </span>
-                              <span className="metric-percentile">
-                                {item.ratingPercentile}%ile
-                              </span>
-                            </div>
+                            <ColumnHeader
+                              label={getMetricLabel("rating")}
+                              metricName="rating"
+                              sortable={true}
+                              sorted={sortField === "rating"}
+                              sortDirection={sortDirection}
+                              onSort={handleSort}
+                            />
                           ) : (
-                            <div className="metric-with-bar">
-                              <span
-                                className="top-names-rating"
-                                aria-label={`Rating: ${item.rating}`}
-                              >
-                                {item.rating}
-                              </span>
-                              <div className="metric-bar">
-                                <div
-                                  className="metric-bar-fill metric-bar-fill--rating"
-                                  style={{ width: `${ratingPercent}%` }}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                            </div>
+                            <>Rating {renderSortIndicator("rating")}</>
                           )}
-                        </td>
-                        <td className="top-names-wins-cell">
+                        </th>
+                        <th
+                          scope="col"
+                          className={isAdmin ? "sortable" : ""}
+                          onClick={
+                            isAdmin ? () => handleSort("wins") : undefined
+                          }
+                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                        >
                           {isAdmin ? (
-                            <span
-                              className="top-names-wins"
-                              aria-label={`Wins: ${item.wins}`}
-                            >
-                              {item.wins}
-                            </span>
+                            <ColumnHeader
+                              label={getMetricLabel("total_wins")}
+                              metricName="total_wins"
+                              sortable={true}
+                              sorted={sortField === "wins"}
+                              sortDirection={sortDirection}
+                              onSort={handleSort}
+                            />
                           ) : (
-                            <div className="metric-with-bar">
-                              <span
-                                className="top-names-wins"
-                                aria-label={`Wins: ${item.wins}`}
-                              >
-                                {item.wins}
-                              </span>
-                              <div className="metric-bar">
-                                <div
-                                  className="metric-bar-fill metric-bar-fill--wins"
-                                  style={{ width: `${winsPercent}%` }}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                            </div>
+                            <>Wins {renderSortIndicator("wins")}</>
                           )}
-                        </td>
-                        <td className="top-names-selected-cell">
+                        </th>
+                        <th
+                          scope="col"
+                          className={isAdmin ? "sortable" : ""}
+                          onClick={
+                            isAdmin ? () => handleSort("selected") : undefined
+                          }
+                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                        >
                           {isAdmin ? (
-                            <div className="metric-with-insight">
-                              <span
-                                className="top-names-selected"
-                                aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
-                              >
-                                {item.selected}
-                              </span>
-                              <span className="metric-percentile">
-                                {item.selectedPercentile}%ile
-                              </span>
-                            </div>
+                            <ColumnHeader
+                              label={getMetricLabel("times_selected")}
+                              metricName="times_selected"
+                              sortable={true}
+                              sorted={sortField === "selected"}
+                              sortDirection={sortDirection}
+                              onSort={handleSort}
+                            />
                           ) : (
-                            <div className="metric-with-bar">
-                              <span
-                                className="top-names-selected"
-                                aria-label={`Selected ${item.selected} times`}
-                              >
-                                {item.selected}
-                              </span>
-                              <div className="metric-bar">
-                                <div
-                                  className="metric-bar-fill metric-bar-fill--selected"
-                                  style={{ width: `${selectedPercent}%` }}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                            </div>
+                            <>Selected {renderSortIndicator("selected")}</>
                           )}
-                        </td>
+                        </th>
                         {isAdmin && (
-                          <td className="top-names-insights-cell">
-                            <PerformanceBadges types={item.insights} />
-                          </td>
-                        )}
-                        <td className="top-names-date-cell">
-                          {item.dateSubmitted ? (
-                            <span
-                              className="top-names-date"
-                              aria-label={`Submitted: ${formatDate(item.dateSubmitted)}`}
-                              title={formatDate(item.dateSubmitted, {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                              })}
-                            >
-                              {formatDate(item.dateSubmitted, {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
+                          <th scope="col">
+                            <span className="column-header-label">
+                              Insights
                             </span>
+                          </th>
+                        )}
+                        <th
+                          scope="col"
+                          className={isAdmin ? "sortable" : ""}
+                          onClick={
+                            isAdmin
+                              ? () => handleSort("dateSubmitted")
+                              : undefined
+                          }
+                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                        >
+                          {isAdmin ? (
+                            <ColumnHeader
+                              label={getMetricLabel("created_at")}
+                              metricName="created_at"
+                              sortable={true}
+                              sorted={sortField === "dateSubmitted"}
+                              sortDirection={sortDirection}
+                              onSort={handleSort}
+                            />
                           ) : (
-                            <span
-                              className="top-names-date top-names-date--unknown"
-                              aria-label="Date unknown"
-                            >
-                              —
-                            </span>
+                            <>Date {renderSortIndicator("dateSubmitted")}</>
                           )}
-                        </td>
-                        {isAdmin && (
-                          <td className="top-names-actions">
-                            <button
-                              type="button"
-                              className="top-names-hide-button"
-                              onClick={async (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                try {
-                                  await handleHideName(item.id, item.name);
-                                } catch (error) {
-                                  devError(
-                                    "[AnalysisDashboard] Failed to hide name:",
-                                    error,
-                                  );
-                                }
-                              }}
-                              aria-label={`Hide ${item.name}`}
-                              title="Hide this name from tournaments"
-                            >
-                              <span aria-hidden="true">🙈</span>
-                            </button>
-                          </td>
-                        )}
+                        </th>
+                        {isAdmin && <th scope="col">Actions</th>}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                    </thead>
+                    <tbody>
+                      {namesWithInsights.map((item, index) => {
+                        const rank = index + 1;
+                        const ratingPercent =
+                          summaryStats && summaryStats.maxRating > 0
+                            ? Math.min(
+                                (item.rating / summaryStats.maxRating) * 100,
+                                100,
+                              )
+                            : 0;
+                        const winsPercent =
+                          summaryStats && summaryStats.maxWins > 0
+                            ? Math.min(
+                                (item.wins / summaryStats.maxWins) * 100,
+                                100,
+                              )
+                            : 0;
+                        const selectedPercent =
+                          summaryStats && summaryStats.maxSelected > 0
+                            ? Math.min(
+                                (item.selected / summaryStats.maxSelected) *
+                                  100,
+                                100,
+                              )
+                            : 0;
+
+                        return (
+                          <tr key={item.id || index} className="top-names-row">
+                            <td className="top-names-rank" scope="row">
+                              <span className="rank-badge rank-badge--top">
+                                {isAdmin ? getRankDisplay(rank) : rank}
+                              </span>
+                            </td>
+                            <td className="top-names-name">{item.name}</td>
+                            <td className="top-names-rating-cell">
+                              {isAdmin ? (
+                                <div className="metric-with-insight">
+                                  <span
+                                    className="top-names-rating"
+                                    aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
+                                  >
+                                    {item.rating}
+                                  </span>
+                                  <span className="metric-percentile">
+                                    {item.ratingPercentile}%ile
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="metric-with-bar">
+                                  <span
+                                    className="top-names-rating"
+                                    aria-label={`Rating: ${item.rating}`}
+                                  >
+                                    {item.rating}
+                                  </span>
+                                  <div className="metric-bar">
+                                    <div
+                                      className="metric-bar-fill metric-bar-fill--rating"
+                                      style={{ width: `${ratingPercent}%` }}
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+                            <td className="top-names-wins-cell">
+                              {isAdmin ? (
+                                <span
+                                  className="top-names-wins"
+                                  aria-label={`Wins: ${item.wins}`}
+                                >
+                                  {item.wins}
+                                </span>
+                              ) : (
+                                <div className="metric-with-bar">
+                                  <span
+                                    className="top-names-wins"
+                                    aria-label={`Wins: ${item.wins}`}
+                                  >
+                                    {item.wins}
+                                  </span>
+                                  <div className="metric-bar">
+                                    <div
+                                      className="metric-bar-fill metric-bar-fill--wins"
+                                      style={{ width: `${winsPercent}%` }}
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+                            <td className="top-names-selected-cell">
+                              {isAdmin ? (
+                                <div className="metric-with-insight">
+                                  <span
+                                    className="top-names-selected"
+                                    aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
+                                  >
+                                    {item.selected}
+                                  </span>
+                                  <span className="metric-percentile">
+                                    {item.selectedPercentile}%ile
+                                  </span>
+                                </div>
+                              ) : (
+                                <div className="metric-with-bar">
+                                  <span
+                                    className="top-names-selected"
+                                    aria-label={`Selected ${item.selected} times`}
+                                  >
+                                    {item.selected}
+                                  </span>
+                                  <div className="metric-bar">
+                                    <div
+                                      className="metric-bar-fill metric-bar-fill--selected"
+                                      style={{ width: `${selectedPercent}%` }}
+                                      aria-hidden="true"
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+                            {isAdmin && (
+                              <td className="top-names-insights-cell">
+                                <PerformanceBadges types={item.insights} />
+                              </td>
+                            )}
+                            <td className="top-names-date-cell">
+                              {item.dateSubmitted ? (
+                                <span
+                                  className="top-names-date"
+                                  aria-label={`Submitted: ${formatDate(item.dateSubmitted)}`}
+                                  title={formatDate(item.dateSubmitted, {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })}
+                                >
+                                  {formatDate(item.dateSubmitted, {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                              ) : (
+                                <span
+                                  className="top-names-date top-names-date--unknown"
+                                  aria-label="Date unknown"
+                                >
+                                  —
+                                </span>
+                              )}
+                            </td>
+                            {isAdmin && (
+                              <td className="top-names-actions">
+                                <button
+                                  type="button"
+                                  className="top-names-hide-button"
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    try {
+                                      await handleHideName(item.id, item.name);
+                                    } catch (error) {
+                                      devError(
+                                        "[AnalysisDashboard] Failed to hide name:",
+                                        error,
+                                      );
+                                    }
+                                  }}
+                                  aria-label={`Hide ${item.name}`}
+                                  title="Hide this name from tournaments"
+                                >
+                                  <span aria-hidden="true">🙈</span>
+                                </button>
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </>
             )}
           </>

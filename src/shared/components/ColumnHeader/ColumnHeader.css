@@ -37,33 +37,34 @@
   color: var(--text-secondary, rgb(255 255 255 / 70%));
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transition: all var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: all var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
   position: relative;
 }
 
 .column-header-button:hover {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.08);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.08);
   color: var(--text-primary);
 }
 
 .column-header-button:focus {
   outline: 2px solid var(--analysis-accent, var(--color-neon-cyan));
   outline-offset: -2px;
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.1);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.1);
 }
 
 .column-header-button:active {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.15);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.15);
 }
 
 /* Sorted column state */
 .column-header-button.column-header-sorted {
   color: var(--analysis-accent, var(--color-neon-cyan));
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.08);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.08);
 }
 
 .column-header-button.column-header-sorted:hover {
-  background-color: rgba(var(--analysis-accent-rgb, 47 243 224), 0.12);
+  background-color: rgb(var(--analysis-accent-rgb, 47 243 224), 0.12);
 }
 
 /* Label container */
@@ -90,7 +91,8 @@
   font-size: 0.625rem;
   line-height: 1;
   color: var(--analysis-accent, var(--color-neon-cyan));
-  transition: transform var(--analysis-duration-fast, 150ms) var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition: transform var(--analysis-duration-fast, 150ms)
+    var(--analysis-ease, cubic-bezier(0.22, 1, 0.36, 1));
   flex-shrink: 0;
 }
 
@@ -131,7 +133,7 @@
 }
 
 /* Mobile responsiveness */
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .column-header {
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;

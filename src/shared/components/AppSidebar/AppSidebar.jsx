@@ -17,7 +17,13 @@ import { MenuActionItem } from "./MenuActionItem";
 import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { NavbarSection } from "./NavbarSection";
 import { UserDisplay } from "./components/UserDisplay";
-import { LogoutIcon, PhotosIcon, SuggestIcon, AnalysisIcon } from "./icons";
+import {
+  LogoutIcon,
+  PhotosIcon,
+  SuggestIcon,
+  AnalysisIcon,
+  ResultsIcon,
+} from "./icons";
 import "./AppSidebar.css";
 
 export function AppSidebar({
@@ -28,10 +34,13 @@ export function AppSidebar({
   isAdmin,
   onLogout,
   onStartNewTournament: _onStartNewTournament,
-  isLightTheme,
-  onThemeChange,
+  themePreference,
+  currentTheme,
+  onThemePreferenceChange,
   onOpenSuggestName,
   onOpenPhotos,
+  currentRoute,
+  onNavigate,
 }) {
   const navRef = useRef(null);
   const [indicator, setIndicator] = useState({
@@ -96,7 +105,7 @@ export function AppSidebar({
         }
       }
     },
-    [indicator.left],
+    [indicator.left]
   );
 
   useEffect(() => {
@@ -110,7 +119,7 @@ export function AppSidebar({
   useEffect(() => {
     // Animate on view/mode change
     updateIndicator(true);
-  }, [view, isAnalysisMode, updateIndicator]);
+  }, [view, isAnalysisMode, currentRoute, updateIndicator]);
 
   // * Toggle analysis mode
   const handleAnalysisToggle = () => {
@@ -133,11 +142,40 @@ export function AppSidebar({
   // * Note: Tournament is handled separately as the home button
   const navItems = [
     {
+      key: "gallery",
+      label: "Gallery",
+      icon: PhotosIcon,
+      onClick: () => {
+        if (typeof onOpenPhotos === "function") {
+          onOpenPhotos();
+        }
+      },
+      isActive: view === "photos",
+      ariaLabel: "Open cat photo gallery",
+    },
+    {
+      key: "results",
+      label: "Results",
+      icon: ResultsIcon,
+      onClick: () => {
+        if (typeof onNavigate === "function") {
+          onNavigate("/results");
+        }
+      },
+      href: "/results",
+      isActive:
+        typeof currentRoute === "string" && currentRoute.startsWith("/results"),
+      ariaLabel: "See completed tournament results",
+    },
+    {
       key: "analysis",
-      label: "Analysis",
+      label: "Analysis Mode",
       icon: AnalysisIcon,
       onClick: handleAnalysisToggle,
       isActive: isAnalysisMode,
+      ariaLabel: isAnalysisMode
+        ? "Disable analysis mode"
+        : "Enable analysis mode",
     },
   ];
 
@@ -209,6 +247,8 @@ export function AppSidebar({
                   view={view}
                   onClick={item.onClick || setView}
                   isActive={item.isActive}
+                  href={item.href}
+                  ariaLabel={item.ariaLabel}
                   data-active={item.isActive}
                 />
               ))}
@@ -242,20 +282,11 @@ export function AppSidebar({
                 condition={true}
               />
 
-              {/* Cat Gallery */}
-              <MenuActionItem
-                icon={PhotosIcon}
-                label="Gallery"
-                onClick={onOpenPhotos}
-                className="sidebar-gallery-button"
-                ariaLabel="View cat photo gallery"
-                condition={true}
-              />
-
               {/* Theme Toggle */}
               <ThemeToggleActionItem
-                onClick={onThemeChange}
-                isLightTheme={isLightTheme}
+                onChange={onThemePreferenceChange}
+                themePreference={themePreference}
+                currentTheme={currentTheme}
               />
             </SidebarGroupContent>
           </SidebarGroup>
@@ -289,8 +320,11 @@ AppSidebar.propTypes = {
   isAdmin: PropTypes.bool,
   onLogout: PropTypes.func.isRequired,
   onStartNewTournament: PropTypes.func,
-  isLightTheme: PropTypes.bool.isRequired,
-  onThemeChange: PropTypes.func.isRequired,
+  themePreference: PropTypes.oneOf(["light", "dark", "system"]).isRequired,
+  currentTheme: PropTypes.oneOf(["light", "dark"]).isRequired,
+  onThemePreferenceChange: PropTypes.func.isRequired,
   onOpenSuggestName: PropTypes.func,
   onOpenPhotos: PropTypes.func,
+  currentRoute: PropTypes.string,
+  onNavigate: PropTypes.func,
 };

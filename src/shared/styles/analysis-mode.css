@@ -129,8 +129,9 @@ body:has(.analysis-mode-banner)::after {
   border: 1px solid var(--analysis-border-accent);
   border-radius: var(--analysis-radius-xl);
   box-shadow:
-    0 8px 32px color-mix(in srgb, var(--analysis-accent-rgb, 47 243 224) 5%, transparent),
-    0 2px 8px rgba(0, 0, 0, 0.1);
+    0 8px 32px
+      color-mix(in srgb, var(--analysis-accent-rgb, 47 243 224) 5%, transparent),
+    0 2px 8px rgb(0 0 0 / 10%);
   backdrop-filter: blur(16px);
   transition:
     border-color var(--analysis-duration-normal) var(--analysis-ease),
@@ -263,8 +264,13 @@ body:has(.analysis-mode-banner)::after {
 .analysis-panel:hover {
   border-color: var(--analysis-border-hover);
   box-shadow:
-    0 12px 48px color-mix(in srgb, var(--analysis-accent-rgb, 47 243 224) 10%, transparent),
-    0 4px 12px rgba(0, 0, 0, 0.15);
+    0 12px 48px
+      color-mix(
+        in srgb,
+        var(--analysis-accent-rgb, 47 243 224) 10%,
+        transparent
+      ),
+    0 4px 12px rgb(0 0 0 / 15%);
 }
 
 .analysis-panel:hover::before {

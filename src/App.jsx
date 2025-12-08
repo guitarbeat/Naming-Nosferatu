@@ -19,7 +19,7 @@ import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Lazy load CatBackground since it's not critical for initial render
 const CatBackground = lazy(
-  () => import("@components/CatBackground/CatBackground"),
+  () => import("@components/CatBackground/CatBackground")
 );
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
@@ -162,7 +162,7 @@ function App() {
         // * Save ratings to database
         const saveResult = await tournamentsAPI.saveTournamentRatings(
           user.name,
-          ratingsArray,
+          ratingsArray
         );
 
         devLog("[App] Save ratings result:", saveResult);
@@ -170,7 +170,7 @@ function App() {
         if (!saveResult.success) {
           devWarn(
             "[App] Failed to save ratings to database:",
-            saveResult.error,
+            saveResult.error
           );
         }
 
@@ -191,7 +191,7 @@ function App() {
         });
       }
     },
-    [user.name, tournamentActions, navigateTo],
+    [user.name, tournamentActions, navigateTo]
   );
 
   // * Handle start new tournament
@@ -218,7 +218,7 @@ function App() {
         tournamentActions.setLoading(false);
       }, 100);
     },
-    [tournamentActions],
+    [tournamentActions]
   );
 
   // * Handle ratings update
@@ -236,7 +236,7 @@ function App() {
               rating: data.rating || 1500,
               wins: data.wins || 0,
               losses: data.losses || 0,
-            }),
+            })
           );
         }
 
@@ -244,7 +244,7 @@ function App() {
         if (user.name) {
           const saveResult = await tournamentsAPI.saveTournamentRatings(
             user.name,
-            ratingsArray,
+            ratingsArray
           );
 
           devLog("[App] Update ratings result:", saveResult);
@@ -271,7 +271,7 @@ function App() {
         throw error;
       }
     },
-    [tournamentActions, user.name],
+    [tournamentActions, user.name]
   );
 
   // * Handle logout
@@ -280,10 +280,13 @@ function App() {
     tournamentActions.resetTournament();
   }, [logout, tournamentActions]);
 
-  // * Handle theme change
-  const handleThemeChange = useCallback(() => {
-    uiActions.toggleTheme();
-  }, [uiActions]);
+  // * Handle theme preference change (light, dark, or system)
+  const handleThemePreferenceChange = useCallback(
+    (nextPreference) => {
+      uiActions.setTheme(nextPreference);
+    },
+    [uiActions]
+  );
 
   useThemeSync(ui.theme);
 
@@ -300,7 +303,7 @@ function App() {
         throw error;
       }
     },
-    [login],
+    [login]
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -353,12 +356,15 @@ function App() {
       isAdmin,
       onLogout: handleLogout,
       onStartNewTournament: handleStartNewTournament,
-      isLightTheme: ui.theme === "light",
-      onThemeChange: handleThemeChange,
+      themePreference: ui.themePreference,
+      currentTheme: ui.theme,
+      onThemePreferenceChange: handleThemePreferenceChange,
       onOpenSuggestName: handleOpenSuggestName,
       onOpenPhotos: handleOpenPhotos,
       // * Pass breadcrumbs to navbar
       currentView: currentView || "tournament",
+      currentRoute,
+      onNavigate: navigateTo,
     }),
     [
       currentView,
@@ -368,12 +374,14 @@ function App() {
       isAdmin,
       handleLogout,
       handleStartNewTournament,
+      ui.themePreference,
       ui.theme,
-      handleThemeChange,
+      handleThemePreferenceChange,
       navigateTo,
       handleOpenSuggestName,
       handleOpenPhotos,
-    ],
+      currentRoute,
+    ]
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -461,7 +469,7 @@ function AppLayout({
       "--sidebar-expanded-width": "clamp(208px, 24vw, 224px)",
       "--sidebar-collapsed-width": `${collapsedWidth}px`,
     }),
-    [collapsedWidth],
+    [collapsedWidth]
   );
 
   const mainWrapperClassName = useMemo(
@@ -469,7 +477,7 @@ function AppLayout({
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn],
+    [isLoggedIn]
   );
 
   return (

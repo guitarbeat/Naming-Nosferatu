@@ -1,1 +1,5 @@
-export { PerformanceBadge, PerformanceBadges, default } from './PerformanceBadge';
+export {
+  PerformanceBadge,
+  PerformanceBadges,
+  default,
+} from "./PerformanceBadge";
