@@ -25,6 +25,27 @@ export function useProfileStats(activeUser) {
     isMountedRef.current = true;
 
     const loadStats = async () => {
+      // * If activeUser is null, fetch aggregate stats from all users
+      if (activeUser === null) {
+        setStatsLoading(true);
+        try {
+          const aggregateStats = await fetchUserStatsFromDB(null);
+          if (!isMountedRef.current) return;
+          setStats(aggregateStats);
+        } catch (error) {
+          if (!isMountedRef.current) return;
+          if (process.env.NODE_ENV === "development") {
+            console.error("Error loading aggregate stats:", error);
+          }
+          setStats(null);
+        } finally {
+          if (isMountedRef.current) {
+            setStatsLoading(false);
+          }
+        }
+        return;
+      }
+
       if (!activeUser) {
         setStatsLoading(false);
         return;
@@ -91,7 +112,8 @@ export function useProfileStats(activeUser) {
   );
 
   useEffect(() => {
-    if (activeUser) {
+    // * Fetch selection stats for specific user or aggregate (null = all users)
+    if (activeUser !== undefined) {
       fetchSelectionStats(activeUser);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

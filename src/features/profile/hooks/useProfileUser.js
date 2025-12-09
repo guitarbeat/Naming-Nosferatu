@@ -37,6 +37,7 @@ export function useProfileUser(userName) {
     }
 
     const options = [
+      { value: FILTER_OPTIONS.USER.ALL, label: "All Users (Aggregate)" },
       { value: FILTER_OPTIONS.USER.CURRENT, label: "Your Data" },
     ];
 
@@ -103,10 +104,17 @@ export function useProfileUser(userName) {
       return;
     }
 
+    // * For admins: handle "all" filter specially (set to null for aggregate data)
+    if (userFilter === FILTER_OPTIONS.USER.ALL) {
+      if (activeUser !== null) {
+        setActiveUser(null);
+      }
+      return;
+    }
+
     if (
       !userFilter ||
-      userFilter === FILTER_OPTIONS.USER.CURRENT ||
-      userFilter === FILTER_OPTIONS.USER.ALL
+      userFilter === FILTER_OPTIONS.USER.CURRENT
     ) {
       if (activeUser !== userName) {
         setActiveUser(userName);

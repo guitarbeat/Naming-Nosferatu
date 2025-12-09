@@ -20,9 +20,8 @@
 :global(html.login-page) {
   height: 100vh;
   min-height: 100vh;
-  max-height: 100vh;
-  contain: layout style;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 :global(body.login-page::-webkit-scrollbar) {
@@ -38,9 +37,7 @@
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  height: 100vh;
   min-height: 100vh;
-  max-height: 100vh;
   overflow-y: auto;
   /* * Add padding-top to account for fixed navbar */
   padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
