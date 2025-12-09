@@ -1,6 +1,6 @@
 /**
  * @module useBongoCat
- * @description Custom hook for BongoCat component event handling and positioning
+ * @description Custom hook for BongoCat component event handling and positioning with enhanced animations
  */
 /**
  * --- AUTO-GENERATED DOCSTRING ---
@@ -33,25 +33,58 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ANIMATION_STATES,
+  TYPING_SPEED_THRESHOLDS,
+  MILESTONE_THRESHOLDS,
+  TIME_MOODS,
+  DEFAULT_CONFIG,
+} from "../../shared/components/BongoCat/constants";
 
 /**
- * Custom hook for BongoCat component functionality
+ * Custom hook for BongoCat component functionality with enhanced animations
  * @param {Object} options - Hook options
  * @param {Object} options.containerRef - Reference to the container element
  * @param {number} options.size - Base size of the cat
  * @param {Function} options.onBongo - Callback when cat is bongoed
+ * @param {string} options.personality - Personality mode (playful, sleepy, energetic)
+ * @param {boolean} options.reduceMotion - Whether to reduce motion for accessibility
+ * @param {boolean} options.enableSounds - Whether to enable sound effects
  * @returns {Object} Hook state and handlers
  */
-export function useBongoCat({ containerRef, size, onBongo }) {
+export function useBongoCat({
+  containerRef,
+  size,
+  onBongo,
+  personality = DEFAULT_CONFIG.personality,
+  reduceMotion: reduceMotionProp = DEFAULT_CONFIG.reduceMotion,
+  enableSounds = DEFAULT_CONFIG.enableSounds,
+}) {
+  // * Check system preference for reduced motion
+  const systemPrefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = reduceMotionProp || systemPrefersReducedMotion;
   const [isPawsDown, setIsPawsDown] = useState(false);
   const [containerTop, setContainerTop] = useState(0);
   const [catSize, setCatSize] = useState(size);
   const [isVisible, setIsVisible] = useState(true);
   const [containerZIndex, setContainerZIndex] = useState(0);
+  const [animationState, setAnimationState] = useState(ANIMATION_STATES.IDLE);
+  const [headTilt, setHeadTilt] = useState(0);
+  const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const [tailAngle, setTailAngle] = useState(0);
+  const [earTwitch, setEarTwitch] = useState(false);
 
   const lastKeyTimeRef = useRef(0);
   const keysHeldRef = useRef(new Set());
   const resizeObserverRef = useRef(null);
+  const typingHistoryRef = useRef([]);
+  const characterCountRef = useRef(0);
+  const lastBackspaceTimeRef = useRef(0);
+  const pauseStartTimeRef = useRef(null);
+  const cursorPositionRef = useRef({ x: 0, y: 0 });
+  const animationFrameRef = useRef(null);
 
   // Calculate position based on container position with debouncing
   const updatePosition = useCallback(() => {
@@ -109,6 +142,113 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     }
   }, [containerRef, size]);
 
+  /**
+   * Calculate typing speed (characters per second)
+   * @returns {number} Typing speed in CPS
+   */
+  const calculateTypingSpeed = useCallback(() => {
+    const now = Date.now();
+    const recentHistory = typingHistoryRef.current.filter(
+      (entry) => now - entry.time < 2000, // Last 2 seconds
+    );
+    if (recentHistory.length < 2) return 0;
+    const timeSpan = (now - recentHistory[0].time) / 1000; // Convert to seconds
+    return recentHistory.length / timeSpan;
+  }, []);
+
+  /**
+   * Get current time-based mood multiplier
+   * @returns {number} Mood multiplier
+   */
+  const getTimeMoodMultiplier = useCallback(() => {
+    const hour = new Date().getHours();
+    for (const [period, config] of Object.entries(TIME_MOODS)) {
+      if (config.hours.includes(hour)) {
+        return config.multiplier;
+      }
+    }
+    return 1.0;
+  }, []);
+
+  /**
+   * Check for milestone achievements
+   * @param {number} count - Current character count
+   */
+  const checkMilestones = useCallback(
+    (count) => {
+      const milestone = MILESTONE_THRESHOLDS.find(
+        (threshold) =>
+          characterCountRef.current < threshold && count >= threshold,
+      );
+      if (milestone) {
+        setAnimationState(ANIMATION_STATES.CELEBRATING);
+        setTimeout(() => {
+          setAnimationState(ANIMATION_STATES.IDLE);
+        }, 2000);
+        if (enableSounds) {
+          // * Sound effect would be triggered here if enabled
+        }
+      }
+    },
+    [enableSounds],
+  );
+
+  /**
+   * Update cursor position tracking for eye following
+   */
+  const updateCursorPosition = useCallback((e) => {
+    if (containerRef?.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const catCenterX = rect.left + rect.width / 2;
+      const catCenterY = rect.top + rect.height / 2;
+      const deltaX = e.clientX - catCenterX;
+      const deltaY = e.clientY - catCenterY;
+      // Normalize to -1 to 1 range for eye movement
+      const maxDistance = Math.max(rect.width, rect.height) / 2;
+      cursorPositionRef.current = {
+        x: Math.max(-1, Math.min(1, deltaX / maxDistance)),
+        y: Math.max(-1, Math.min(1, deltaY / maxDistance)),
+      };
+    }
+  }, [containerRef]);
+
+  /**
+   * Animation loop for smooth 60fps animations
+   */
+  const animationLoop = useCallback(() => {
+    if (reduceMotion) {
+      animationFrameRef.current = null;
+      return;
+    }
+
+    // * Update eye position to follow cursor
+    setEyePosition({
+      x: cursorPositionRef.current.x * 2, // Max 2px movement
+      y: cursorPositionRef.current.y * 2,
+    });
+
+    // * Update tail swish based on animation state
+    const time = Date.now() / 1000;
+    if (animationState === ANIMATION_STATES.TYPING_FAST) {
+      setTailAngle(Math.sin(time * 4) * 15); // Fast swish
+    } else if (animationState === ANIMATION_STATES.IDLE) {
+      setTailAngle(Math.sin(time * 0.8) * 8); // Slow idle swish
+    } else if (animationState === ANIMATION_STATES.SLEEPY) {
+      setTailAngle(Math.sin(time * 0.3) * 3); // Very slow sleepy swish
+    } else {
+      setTailAngle(Math.sin(time * 1.5) * 10); // Normal swish
+    }
+
+    // * Random ear twitches
+    if (Math.random() < 0.01) {
+      // 1% chance per frame
+      setEarTwitch(true);
+      setTimeout(() => setEarTwitch(false), 150);
+    }
+
+    animationFrameRef.current = requestAnimationFrame(animationLoop);
+  }, [reduceMotion, animationState]);
+
   const handleKeyDown = useCallback(
     (e) => {
       if (e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) {
@@ -116,6 +256,50 @@ export function useBongoCat({ containerRef, size, onBongo }) {
       }
 
       const now = Date.now();
+      const isBackspace = e.key === "Backspace" || e.key === "Delete";
+
+      // Track backspace for confused animation
+      if (isBackspace) {
+        lastBackspaceTimeRef.current = now;
+        setAnimationState(ANIMATION_STATES.BACKSPACE);
+        setTimeout(() => {
+          // Return to previous state after backspace animation
+          const speed = calculateTypingSpeed();
+          if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
+            setAnimationState(ANIMATION_STATES.TYPING_FAST);
+          } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
+            setAnimationState(ANIMATION_STATES.TYPING_SLOW);
+          } else {
+            setAnimationState(ANIMATION_STATES.IDLE);
+          }
+        }, 500);
+      } else {
+        // Track typing for speed calculation
+        typingHistoryRef.current.push({ time: now });
+        // Keep only last 50 entries
+        if (typingHistoryRef.current.length > 50) {
+          typingHistoryRef.current.shift();
+        }
+
+        characterCountRef.current += 1;
+        checkMilestones(characterCountRef.current);
+
+        // Determine typing speed state
+        const speed = calculateTypingSpeed();
+        if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
+          setAnimationState(ANIMATION_STATES.TYPING_FAST);
+          setHeadTilt(Math.sin(now / 200) * 5); // Slight head movement
+        } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
+          setAnimationState(ANIMATION_STATES.TYPING_SLOW);
+          setHeadTilt(0);
+        } else {
+          setAnimationState(ANIMATION_STATES.IDLE);
+        }
+
+        // Clear pause timer
+        pauseStartTimeRef.current = null;
+      }
+
       if (now - lastKeyTimeRef.current > 1000) {
         lastKeyTimeRef.current = now;
       }
@@ -129,7 +313,7 @@ export function useBongoCat({ containerRef, size, onBongo }) {
         onBongo();
       }
     },
-    [isPawsDown, onBongo],
+    [isPawsDown, onBongo, calculateTypingSpeed, checkMilestones],
   );
 
   const handleKeyUp = useCallback((e) => {
@@ -139,6 +323,8 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     // If no keys are being held down anymore, set paws up
     if (keysHeldRef.current.size === 0) {
       setIsPawsDown(false);
+      // Start pause timer
+      pauseStartTimeRef.current = Date.now();
     }
   }, []);
 
@@ -147,6 +333,57 @@ export function useBongoCat({ containerRef, size, onBongo }) {
   const resizeTimeoutRef = useRef(null);
   const orientationTimeoutRef = useRef(null);
   const mutationTimeoutRef = useRef(null);
+
+  // * Check for long pauses to trigger sleepy state
+  useEffect(() => {
+    const pauseCheckInterval = setInterval(() => {
+      if (
+        pauseStartTimeRef.current &&
+        Date.now() - pauseStartTimeRef.current > 5000 && // 5 seconds
+        animationState !== ANIMATION_STATES.SLEEPY &&
+        !isPawsDown
+      ) {
+        setAnimationState(ANIMATION_STATES.SLEEPY);
+      } else if (isPawsDown || Date.now() - pauseStartTimeRef.current < 5000) {
+        if (animationState === ANIMATION_STATES.SLEEPY) {
+          const speed = calculateTypingSpeed();
+          if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
+            setAnimationState(ANIMATION_STATES.TYPING_FAST);
+          } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
+            setAnimationState(ANIMATION_STATES.TYPING_SLOW);
+          } else {
+            setAnimationState(ANIMATION_STATES.IDLE);
+          }
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(pauseCheckInterval);
+  }, [animationState, isPawsDown, calculateTypingSpeed]);
+
+  // * Start animation loop
+  useEffect(() => {
+    if (!reduceMotion) {
+      animationFrameRef.current = requestAnimationFrame(animationLoop);
+    }
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [animationLoop, reduceMotion]);
+
+  // * Track cursor movement for eye following
+  useEffect(() => {
+    if (reduceMotion) return;
+    const handleMouseMove = (e) => {
+      requestAnimationFrame(() => updateCursorPosition(e));
+    };
+    document.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [updateCursorPosition, reduceMotion]);
 
   // Set up event listeners and observers with performance optimizations
   useEffect(() => {
@@ -264,5 +501,11 @@ export function useBongoCat({ containerRef, size, onBongo }) {
     isVisible,
     containerZIndex,
     updatePosition,
+    animationState,
+    headTilt,
+    eyePosition,
+    tailAngle,
+    earTwitch,
+    characterCount: characterCountRef.current,
   };
 }

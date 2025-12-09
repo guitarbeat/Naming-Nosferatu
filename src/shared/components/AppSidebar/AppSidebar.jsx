@@ -43,6 +43,7 @@ export function AppSidebar({
   onNavigate,
 }) {
   const navRef = useRef(null);
+  const resizeRafRef = useRef(null);
   const [indicator, setIndicator] = useState({ left: 0, opacity: 0 });
 
   // * Check if analysis mode is active
@@ -68,11 +69,21 @@ export function AppSidebar({
   useEffect(() => {
     // * Ensure indicator placement on mount and resize with proper cleanup
     if (typeof window === "undefined") return undefined;
-    const handleResize = () => requestAnimationFrame(updateIndicator);
-    const rafId = requestAnimationFrame(updateIndicator);
+    const handleResize = () => {
+      if (resizeRafRef.current) return;
+      resizeRafRef.current = requestAnimationFrame(() => {
+        resizeRafRef.current = null;
+        updateIndicator();
+      });
+    };
+    const initialRafId = requestAnimationFrame(updateIndicator);
     window.addEventListener("resize", handleResize);
     return () => {
-      cancelAnimationFrame(rafId);
+      if (resizeRafRef.current) {
+        cancelAnimationFrame(resizeRafRef.current);
+        resizeRafRef.current = null;
+      }
+      cancelAnimationFrame(initialRafId);
       window.removeEventListener("resize", handleResize);
     };
   }, [updateIndicator]);

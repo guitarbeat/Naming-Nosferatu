@@ -17,34 +17,137 @@
 import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { useBongoCat } from "@hooks/useBongoCat";
+import { CAT_VARIANTS, PERSONALITY_MODES, DEFAULT_CONFIG } from "./constants";
 import styles from "./BongoCat.module.css";
 
 /**
  * Render the core cat body without paws.
+ * @param {Object} params
+ * @param {string} params.animationState - Current animation state
+ * @param {number} params.headTilt - Head tilt angle in degrees
+ * @param {Object} params.eyePosition - Eye position offset {x, y}
+ * @param {number} params.tailAngle - Tail swish angle in degrees
+ * @param {boolean} params.earTwitch - Whether ears should twitch
+ * @param {boolean} params.reduceMotion - Whether to reduce motion
  * @returns {JSX.Element}
  */
-const CatBody = () => (
+const CatBody = ({
+  animationState,
+  headTilt,
+  eyePosition,
+  tailAngle,
+  earTwitch,
+  reduceMotion,
+}) => (
   <div className={styles.cat}>
-    <div className={styles.head} />
-    <div className={`${styles.ears} ${styles.fill}`}>
+    {/* Tail */}
+    <div
+      className={`${styles.tail} ${styles[animationState] || ""}`}
+      style={
+        !reduceMotion
+          ? {
+              transform: `rotate(${tailAngle}deg)`,
+            }
+          : {}
+      }
+    />
+    {/* Head with tilt */}
+    <div
+      className={`${styles.head} ${styles[animationState] || ""}`}
+      style={
+        !reduceMotion && headTilt !== 0
+          ? {
+              transform: `rotate(${headTilt}deg)`,
+            }
+          : {}
+      }
+    />
+    {/* Ears with twitch */}
+    <div
+      className={`${styles.ears} ${styles.fill} ${earTwitch ? styles.earTwitch : ""}`}
+    >
       <div className={styles.ear} />
       <div className={styles.ear} />
     </div>
-    <div className={`${styles.ears} ${styles.outline}`}>
+    <div
+      className={`${styles.ears} ${styles.outline} ${earTwitch ? styles.earTwitch : ""}`}
+    >
       <div className={styles.ear} />
       <div className={styles.ear} />
     </div>
-    <div className={styles.face}>
+    {/* Face */}
+    <div className={`${styles.face} ${styles[animationState] || ""}`}>
       <div className={styles.eyes}>
-        <div className={styles.eye} />
-        <div className={styles.eye} />
+        <div
+          className={`${styles.eye} ${styles[animationState] || ""}`}
+          style={
+            !reduceMotion
+              ? {
+                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
+                }
+              : {}
+          }
+        >
+          <div
+            className={styles.pupil}
+            style={
+              !reduceMotion
+                ? {
+                    transform: `translate(calc(-50% + ${eyePosition.x * 0.5}px), calc(-50% + ${eyePosition.y * 0.5}px))`,
+                  }
+                : {}
+            }
+          />
+        </div>
+        <div
+          className={`${styles.eye} ${styles[animationState] || ""}`}
+          style={
+            !reduceMotion
+              ? {
+                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
+                }
+              : {}
+          }
+        >
+          <div
+            className={styles.pupil}
+            style={
+              !reduceMotion
+                ? {
+                    transform: `translate(calc(-50% + ${eyePosition.x * 0.5}px), calc(-50% + ${eyePosition.y * 0.5}px))`,
+                  }
+                : {}
+            }
+          />
+        </div>
       </div>
-      <div className={styles.mouth}>
+      <div className={`${styles.mouth} ${styles[animationState] || ""}`}>
         <div className={styles.uu} />
       </div>
     </div>
   </div>
 );
+
+CatBody.propTypes = {
+  animationState: PropTypes.string,
+  headTilt: PropTypes.number,
+  eyePosition: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+  }),
+  tailAngle: PropTypes.number,
+  earTwitch: PropTypes.bool,
+  reduceMotion: PropTypes.bool,
+};
+
+CatBody.defaultProps = {
+  animationState: "idle",
+  headTilt: 0,
+  eyePosition: { x: 0, y: 0 },
+  tailAngle: 0,
+  earTwitch: false,
+  reduceMotion: false,
+};
 
 /**
  * Render a set of paws.
@@ -61,8 +164,10 @@ const Paw = () => (
   </div>
 );
 
-const Paws = ({ position, className = "" }) => (
-  <div className={`${styles.paws} ${styles[position]} ${className}`.trim()}>
+const Paws = ({ position, className = "", animationState = "" }) => (
+  <div
+    className={`${styles.paws} ${styles[position]} ${animationState ? styles[animationState] : ""} ${className}`.trim()}
+  >
     {position === "up" ? (
       <>
         <Paw />
@@ -80,6 +185,12 @@ const Paws = ({ position, className = "" }) => (
 Paws.propTypes = {
   position: PropTypes.oneOf(["up", "down"]).isRequired,
   className: PropTypes.string,
+  animationState: PropTypes.string,
+};
+
+Paws.propTypes = {
+  position: PropTypes.oneOf(["up", "down"]).isRequired,
+  className: PropTypes.string,
 };
 
 const PawsContainer = ({
@@ -90,6 +201,7 @@ const PawsContainer = ({
   display,
   styleVars,
   pawsPosition,
+  animationState,
 }) => (
   <div
     className={`${styles.bongoContainer} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
@@ -100,7 +212,7 @@ const PawsContainer = ({
     }}
   >
     <div className={styles.container} style={styleVars}>
-      <Paws position={pawsPosition} />
+      <Paws position={pawsPosition} animationState={animationState} />
     </div>
   </div>
 );
@@ -113,17 +225,51 @@ PawsContainer.propTypes = {
   display: PropTypes.string.isRequired,
   styleVars: PropTypes.object.isRequired,
   pawsPosition: PropTypes.string.isRequired,
+  animationState: PropTypes.string,
 };
 
 const BongoCat = memo(
-  ({ size = 0.5, color = "#000", onBongo, containerRef }) => {
-    const { isPawsDown, containerTop, catSize, isVisible, containerZIndex } =
-      useBongoCat({ containerRef, size, onBongo });
+  ({
+    size = DEFAULT_CONFIG.size,
+    color = "#000",
+    variant = DEFAULT_CONFIG.variant,
+    personality = DEFAULT_CONFIG.personality,
+    reduceMotion = DEFAULT_CONFIG.reduceMotion,
+    enableSounds = DEFAULT_CONFIG.enableSounds,
+    onBongo,
+    containerRef,
+  }) => {
+    const {
+      isPawsDown,
+      containerTop,
+      catSize,
+      isVisible,
+      containerZIndex,
+      animationState,
+      headTilt,
+      eyePosition,
+      tailAngle,
+      earTwitch,
+    } = useBongoCat({
+      containerRef,
+      size,
+      onBongo,
+      personality,
+      reduceMotion,
+      enableSounds,
+    });
+
+    // * Use variant colors if provided, otherwise use color prop
+    const catVariant = CAT_VARIANTS[variant] || {
+      bg: color,
+      outline: color === "#000" ? "#222" : color === "#fff" ? "#eee" : color,
+      toebean: "#44262c",
+    };
 
     const styleVars = {
-      "--cat-bg": color,
-      "--cat-outline":
-        color === "#000" ? "#222" : color === "#fff" ? "#eee" : color,
+      "--cat-bg": catVariant.bg,
+      "--cat-outline": catVariant.outline,
+      "--toebean": catVariant.toebean,
       "--cat-size": catSize,
     };
 
@@ -136,9 +282,24 @@ const BongoCat = memo(
           role="img"
           aria-label="Bongo cat animation"
         >
-          <CatBody />
-          <Paws position="up" className={isPawsDown ? styles.hide : ""} />
-          <Paws position="down" className={isPawsDown ? "" : styles.hide} />
+          <CatBody
+            animationState={animationState}
+            headTilt={headTilt}
+            eyePosition={eyePosition}
+            tailAngle={tailAngle}
+            earTwitch={earTwitch}
+            reduceMotion={reduceMotion}
+          />
+          <Paws
+            position="up"
+            className={isPawsDown ? styles.hide : ""}
+            animationState={animationState}
+          />
+          <Paws
+            position="down"
+            className={isPawsDown ? "" : styles.hide}
+            animationState={animationState}
+          />
         </div>
       );
     }
@@ -173,7 +334,14 @@ const BongoCat = memo(
             role="img"
             aria-label="Bongo cat animation"
           >
-            <CatBody />
+            <CatBody
+              animationState={animationState}
+              headTilt={headTilt}
+              eyePosition={eyePosition}
+              tailAngle={tailAngle}
+              earTwitch={earTwitch}
+              reduceMotion={reduceMotion}
+            />
           </div>
         </div>
 
@@ -187,6 +355,7 @@ const BongoCat = memo(
           display={isPawsDown ? "none" : "block"}
           styleVars={styleVars}
           pawsPosition="up"
+          animationState={animationState}
         />
 
         {/* Down paws - above container with high z-index */}
@@ -199,10 +368,11 @@ const BongoCat = memo(
           display={isPawsDown ? "block" : "none"}
           styleVars={styleVars}
           pawsPosition="down"
+          animationState={animationState}
         />
       </>
     );
-  },
+  }
 );
 
 BongoCat.displayName = "BongoCat";
@@ -210,6 +380,10 @@ BongoCat.displayName = "BongoCat";
 BongoCat.propTypes = {
   size: PropTypes.number,
   color: PropTypes.string,
+  variant: PropTypes.oneOf(Object.keys(CAT_VARIANTS)),
+  personality: PropTypes.oneOf(Object.keys(PERSONALITY_MODES)),
+  reduceMotion: PropTypes.bool,
+  enableSounds: PropTypes.bool,
   onBongo: PropTypes.func,
   containerRef: PropTypes.object,
 };

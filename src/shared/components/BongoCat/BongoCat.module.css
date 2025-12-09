@@ -70,6 +70,34 @@
   /* transform: rotate(15deg); */
   top: calc(15rem * var(--scale));
   left: calc(15rem * var(--scale));
+  transform-origin: center center;
+}
+
+/* Tail */
+.tail {
+  position: absolute;
+  top: calc(50rem * var(--scale));
+  left: calc(35rem * var(--scale));
+  width: calc(8rem * var(--scale));
+  height: calc(25rem * var(--scale));
+  background: var(--cat-bg);
+  border: var(--linesize) solid var(--cat-outline);
+  border-radius: 50% 50% 0 0;
+  transform-origin: top center;
+  transition: transform 0.1s ease-out;
+}
+
+.tail::after {
+  content: "";
+  position: absolute;
+  bottom: calc(-3rem * var(--scale));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(6rem * var(--scale));
+  height: calc(6rem * var(--scale));
+  background: var(--cat-bg);
+  border: var(--linesize) solid var(--cat-outline);
+  border-radius: 50%;
 }
 
 .head {
@@ -78,6 +106,24 @@
   background: var(--cat-bg);
   border: var(--linesize) solid var(--cat-outline);
   border-radius: 50%;
+  transform-origin: center center;
+  transition: transform 0.2s ease-out;
+}
+
+/* * Breathing animation for idle state */
+.head.idle {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
 }
 
 /* Ears - Base styles */
@@ -86,6 +132,8 @@
   border-left: calc(7rem * var(--scale)) solid transparent;
   transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
     rotate(-15deg);
+  transform-origin: bottom center;
+  transition: transform 0.15s ease-out;
 }
 
 .ears .ear:last-child {
@@ -93,6 +141,43 @@
   border-left: calc(3rem * var(--scale)) solid transparent;
   transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
     rotate(33deg);
+  transform-origin: bottom center;
+  transition: transform 0.15s ease-out;
+}
+
+/* * Ear twitch animation */
+.ears.earTwitch .ear:first-child {
+  animation: earTwitchLeft 0.15s ease-out;
+}
+
+.ears.earTwitch .ear:last-child {
+  animation: earTwitchRight 0.15s ease-out;
+}
+
+@keyframes earTwitchLeft {
+  0%,
+  100% {
+    transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
+      rotate(-15deg);
+  }
+
+  50% {
+    transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
+      rotate(-25deg);
+  }
+}
+
+@keyframes earTwitchRight {
+  0%,
+  100% {
+    transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
+      rotate(33deg);
+  }
+
+  50% {
+    transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
+      rotate(43deg);
+  }
 }
 
 /* Fill variant */
@@ -130,6 +215,46 @@
   background: var(--cat-bg);
   border: var(--linesize) solid var(--cat-outline);
   border-radius: 50%;
+  transition: transform 0.2s ease-out;
+}
+
+/* * Face animations for different states */
+.face.typing-fast {
+  animation: excitedFace 0.3s ease-out infinite;
+}
+
+@keyframes excitedFace {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.face.sleepy {
+  opacity: 0.9;
+}
+
+.face.celebrating {
+  animation: celebrateFace 0.5s ease-out;
+}
+
+@keyframes celebrateFace {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+
+  75% {
+    transform: scale(1.1) rotate(5deg);
+  }
 }
 
 /* Eyes */
@@ -148,6 +273,8 @@
   background: white;
   border: var(--linesize) solid var(--cat-outline);
   border-radius: 50%;
+  transition: transform 0.1s ease-out;
+  overflow: hidden;
 }
 
 .eye:first-child {
@@ -158,12 +285,118 @@
   right: 0;
 }
 
+/* Eye pupils for tracking */
+.pupil {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(4rem * var(--scale));
+  height: calc(4rem * var(--scale));
+  background: var(--cat-bg);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease-out;
+  pointer-events: none;
+}
+
+/* * Eye animations for different states */
+.eyes .eye.sleepy {
+  height: calc(2rem * var(--scale));
+  border-radius: 50% 50% 0 0;
+  animation: sleepyBlink 0.3s ease-out;
+}
+
+@keyframes sleepyBlink {
+  0%,
+  100% {
+    height: calc(8rem * var(--scale));
+  }
+
+  50% {
+    height: calc(2rem * var(--scale));
+  }
+}
+
+.eyes .eye.backspace {
+  animation: confusedBlink 0.5s ease-out;
+}
+
+@keyframes confusedBlink {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(calc(-1rem * var(--scale)), 0);
+  }
+
+  75% {
+    transform: translate(calc(1rem * var(--scale)), 0);
+  }
+}
+
+.eyes .eye.celebrating {
+  animation: celebrateBlink 0.3s ease-out 3;
+}
+
+@keyframes celebrateBlink {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+}
+
 /* Mouth */
 .mouth {
   top: calc(18rem * var(--scale));
   left: calc(12rem * var(--scale));
   width: calc(16rem * var(--scale));
   height: calc(8rem * var(--scale));
+  transition: transform 0.2s ease-out;
+}
+
+/* * Mouth expressions for different states */
+.mouth.sleepy {
+  transform: translateY(calc(2rem * var(--scale)));
+}
+
+.mouth.backspace {
+  animation: confusedMouth 0.5s ease-out;
+}
+
+@keyframes confusedMouth {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(calc(-1rem * var(--scale)));
+  }
+
+  75% {
+    transform: translateX(calc(1rem * var(--scale)));
+  }
+}
+
+.mouth.celebrating {
+  animation: celebrateMouth 0.3s ease-out 3;
+}
+
+@keyframes celebrateMouth {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .uu {
@@ -265,6 +498,25 @@
   }
 }
 
+/* * Enhanced paw animations for fast typing */
+.paws.down.typing-fast .paw {
+  animation: pawDownFast 0.15s ease-out;
+}
+
+@keyframes pawDownFast {
+  0% {
+    transform: translateY(calc(-10rem * var(--scale))) scale(1);
+  }
+
+  50% {
+    transform: translateY(calc(-5rem * var(--scale))) scale(1.1);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Hover effects */
 .container:hover .head {
   transform: scale(1.05);
@@ -274,6 +526,24 @@
 .container:hover .face {
   transform: scale(1.05);
   transition: transform 0.2s ease;
+}
+
+/* * Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .head,
+  .face,
+  .tail,
+  .eye,
+  .pupil,
+  .ears .ear,
+  .mouth {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .head.idle {
+    animation: none !important;
+  }
 }
 
 /* Responsive adjustments */
