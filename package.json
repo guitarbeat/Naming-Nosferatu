@@ -114,7 +114,8 @@
     "webpack-dev-server": "^4.15.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.16",
     "form-data": "^2.5.4",
-    "tough-cookie": "^4.1.3"
+    "tough-cookie": "^4.1.3",
+    "fetch-blob": "^4.0.0"
   },
   "funding": {
     "type": "individual",

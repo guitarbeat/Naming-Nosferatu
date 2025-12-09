@@ -11,7 +11,7 @@ import PhotoThumbnail from "./PhotoThumbnail";
 import styles from "../../TournamentSetup.module.css";
 
 function PhotoGallery({
-  galleryImages,
+  galleryImages = [],
   showAllPhotos,
   onShowAllPhotosToggle,
   onImageOpen,
@@ -19,9 +19,12 @@ function PhotoGallery({
   userName,
   onImagesUploaded,
 }) {
+  // * Ensure galleryImages is always an array
+  const safeGalleryImages = Array.isArray(galleryImages) ? galleryImages : [];
+
   const displayImages = useMemo(
-    () => (showAllPhotos ? galleryImages : galleryImages.slice(0, 8)),
-    [galleryImages, showAllPhotos],
+    () => (showAllPhotos ? safeGalleryImages : safeGalleryImages.slice(0, 8)),
+    [safeGalleryImages, showAllPhotos]
   );
 
   const handleFileUpload = useCallback(
@@ -59,56 +62,62 @@ function PhotoGallery({
         e.target.value = "";
       }
     },
-    [userName, onImagesUploaded],
+    [userName, onImagesUploaded]
   );
 
   return (
     <div className={styles.starsSection}>
       <div className={styles.galleryHeader}>
         <h3 className={styles.galleryTitle}>Photos</h3>
-        <span className={styles.photoCount}>{galleryImages.length}</span>
+        <span className={styles.photoCount}>{safeGalleryImages.length}</span>
       </div>
-      <div className={styles.photoGrid}>
-        {displayImages.map((image, index) => {
-          // * Calculate size for mosaic effect - vary based on index
-          const imageHash = image
-            .split("")
-            .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-          const hashMod = Math.abs(imageHash) % 100;
+      {safeGalleryImages.length === 0 ? (
+        <div className={styles.emptyGallery}>
+          <p>No photos available</p>
+        </div>
+      ) : (
+        <div className={styles.photoGrid}>
+          {displayImages.map((image, index) => {
+            // * Calculate size for mosaic effect - vary based on index
+            const imageHash = image
+              .split("")
+              .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const hashMod = Math.abs(imageHash) % 100;
 
-          // * Row span: vary from 4-10 rows (80-200px) for visual interest
-          const rowSpan = 4 + (hashMod % 7); // * 4-10 rows
+            // * Row span: vary from 4-10 rows (80-200px) for visual interest
+            const rowSpan = 4 + (hashMod % 7); // * 4-10 rows
 
-          // * Column span: create variety (1-2 columns)
-          let colSpan = 1;
-          // * 30% of photos get 2 columns for featured effect
-          if (hashMod < 30) {
-            colSpan = 2;
-          }
+            // * Column span: create variety (1-2 columns)
+            let colSpan = 1;
+            // * 30% of photos get 2 columns for featured effect
+            if (hashMod < 30) {
+              colSpan = 2;
+            }
 
-          return (
-            <div
-              key={image}
-              className={styles.photoWrapper}
-              style={{
-                gridRow: `span ${rowSpan}`,
-                gridColumn: colSpan > 1 ? `span ${colSpan}` : "auto",
-              }}
-              data-col-span={colSpan}
-              data-row-span={rowSpan}
-            >
-              <PhotoThumbnail
-                image={image}
-                index={index}
-                onImageOpen={onImageOpen}
-              />
-            </div>
-          );
-        })}
-      </div>
+            return (
+              <div
+                key={image}
+                className={styles.photoWrapper}
+                style={{
+                  gridRow: `span ${rowSpan}`,
+                  gridColumn: colSpan > 1 ? `span ${colSpan}` : "auto",
+                }}
+                data-col-span={colSpan}
+                data-row-span={rowSpan}
+              >
+                <PhotoThumbnail
+                  image={image}
+                  index={index}
+                  onImageOpen={onImageOpen}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className={styles.photoToolbar}>
-        {galleryImages.length > 8 && (
+        {safeGalleryImages.length > 8 && (
           <div className={styles.photoActionsRow}>
             <button
               type="button"
@@ -117,7 +126,7 @@ function PhotoGallery({
             >
               {showAllPhotos
                 ? "Show fewer photos"
-                : `Show ${galleryImages.length - 8} more photos`}
+                : `Show ${safeGalleryImages.length - 8} more photos`}
             </button>
           </div>
         )}

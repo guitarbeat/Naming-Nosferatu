@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Select from "../Form/Select";
+import LiquidGlass from "../LiquidGlass";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./TournamentToolbar.module.css";
 
@@ -109,157 +110,193 @@ function TournamentToolbar({
 
   if (isTournament) {
     return (
-      <div className={`${styles.unifiedBar} ${className}`} data-mode={mode}>
-        <div className={styles.unifiedContainer}>
-          {(onToggleSwipeMode || onToggleCatPictures) && (
-            <div className={styles.unifiedActions}>
-              {onToggleSwipeMode && (
-                <Toggle
-                  isActive={isSwipeMode}
-                  onClick={onToggleSwipeMode}
-                  activeLabel="Tap"
-                  inactiveLabel="Swipe"
-                  ariaLabel={
-                    isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"
-                  }
-                />
-              )}
-              {onToggleCatPictures && (
-                <Toggle
-                  isActive={showCatPictures}
-                  onClick={onToggleCatPictures}
-                  activeLabel="Cats"
-                  inactiveLabel="Names"
-                  ariaLabel={
-                    showCatPictures ? "Hide cat pictures" : "Show cat pictures"
-                  }
-                />
-              )}
-            </div>
-          )}
-          {startTournamentButton && (
-            <button
-              className={styles.startTournamentButton}
-              onClick={startTournamentButton.onClick}
-              type="button"
-            >
-              Start Tournament ({startTournamentButton.selectedCount})
-            </button>
-          )}
+      <LiquidGlass
+        width={650}
+        height={80}
+        radius={20}
+        scale={-180}
+        saturation={1.2}
+        frost={0.08}
+        inputBlur={12}
+        outputBlur={0.8}
+        className={className}
+        style={{ width: "100%", height: "auto" }}
+      >
+        <div className={`${styles.unifiedBar}`} data-mode={mode}>
+          <div className={styles.unifiedContainer}>
+            {(onToggleSwipeMode || onToggleCatPictures) && (
+              <div className={styles.unifiedActions}>
+                {onToggleSwipeMode && (
+                  <Toggle
+                    isActive={isSwipeMode}
+                    onClick={onToggleSwipeMode}
+                    activeLabel="Tap"
+                    inactiveLabel="Swipe"
+                    ariaLabel={
+                      isSwipeMode
+                        ? "Switch to swipe mode"
+                        : "Switch to tap mode"
+                    }
+                  />
+                )}
+                {onToggleCatPictures && (
+                  <Toggle
+                    isActive={showCatPictures}
+                    onClick={onToggleCatPictures}
+                    activeLabel="Cats"
+                    inactiveLabel="Names"
+                    ariaLabel={
+                      showCatPictures
+                        ? "Hide cat pictures"
+                        : "Show cat pictures"
+                    }
+                  />
+                )}
+              </div>
+            )}
+            {startTournamentButton && (
+              <button
+                className={styles.startTournamentButton}
+                onClick={startTournamentButton.onClick}
+                type="button"
+              >
+                Start Tournament ({startTournamentButton.selectedCount})
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      </LiquidGlass>
     );
   }
 
   return (
-    <div className={`${styles.filtersContainer} ${className}`}>
-      <div className={styles.resultsCount}>
-        <span className={styles.count}>{filteredCount.toLocaleString()}</span>
-        {filteredCount !== totalCount && (
-          <>
-            <span className={styles.separator}>/</span>
-            <span className={styles.total}>{totalCount.toLocaleString()}</span>
-            <span className={styles.badge}>filtered</span>
-          </>
-        )}
-        {filteredCount === totalCount && (
-          <span className={`${styles.badge} ${styles.badgeTotal}`}>total</span>
-        )}
-      </div>
-
-      {isHybrid && categories.length > 0 && (
-        <div className={styles.filterRow}>
-          <FilterSelect
-            id="filter-category"
-            label="Category"
-            value={filters.category}
-            options={categories.map((cat) => ({ value: cat, label: cat }))}
-            onChange={(value) => update("category", value)}
-          />
+    <LiquidGlass
+      width={1200}
+      height={300}
+      radius={24}
+      scale={-180}
+      saturation={1.2}
+      frost={0.08}
+      inputBlur={12}
+      outputBlur={0.8}
+      className={className}
+      style={{ width: "100%", height: "auto" }}
+    >
+      <div className={styles.filtersContainer}>
+        <div className={styles.resultsCount}>
+          <span className={styles.count}>{filteredCount.toLocaleString()}</span>
+          {filteredCount !== totalCount && (
+            <>
+              <span className={styles.separator}>/</span>
+              <span className={styles.total}>
+                {totalCount.toLocaleString()}
+              </span>
+              <span className={styles.badge}>filtered</span>
+            </>
+          )}
+          {filteredCount === totalCount && (
+            <span className={`${styles.badge} ${styles.badgeTotal}`}>
+              total
+            </span>
+          )}
         </div>
-      )}
 
-      {showFilters && (
-        <div className={styles.filtersGrid}>
+        {isHybrid && categories.length > 0 && (
           <div className={styles.filterRow}>
             <FilterSelect
-              id="filter-status"
-              label="Status"
-              value={filters.filterStatus || FILTER_OPTIONS.VISIBILITY.VISIBLE}
-              options={FILTER_CONFIGS.visibility}
-              onChange={(value) =>
-                update(
-                  "filterStatus",
-                  value === "active"
-                    ? FILTER_OPTIONS.VISIBILITY.VISIBLE
-                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE,
-                )
-              }
+              id="filter-category"
+              label="Category"
+              value={filters.category}
+              options={categories.map((cat) => ({ value: cat, label: cat }))}
+              onChange={(value) => update("category", value)}
             />
-            {showUserFilter && (
-              <FilterSelect
-                id="filter-user"
-                label="User"
-                value={filters.userFilter || FILTER_OPTIONS.USER.ALL}
-                options={userSelectOptions || FILTER_CONFIGS.users}
-                onChange={(value) => update("userFilter", value)}
-              />
-            )}
-            {showSelectionFilter && (
-              <FilterSelect
-                id="filter-selection"
-                label="Selection"
-                value={filters.selectionFilter || "all"}
-                options={FILTER_CONFIGS.selection}
-                onChange={(value) => update("selectionFilter", value)}
-              />
-            )}
-            {analysisMode && (
-              <FilterSelect
-                id="filter-date"
-                label="Date"
-                value={filters.dateFilter || "all"}
-                options={FILTER_CONFIGS.date}
-                onChange={(value) => update("dateFilter", value)}
-              />
-            )}
           </div>
-          <div className={styles.filterRow}>
-            <div className={styles.sortGroup}>
-              <label htmlFor="filter-sort" className={styles.filterLabel}>
-                Sort By
-              </label>
-              <div className={styles.sortControls}>
-                <Select
-                  id="filter-sort"
-                  name="filter-sort"
-                  value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
-                  onChange={(e) => update("sortBy", e.target.value)}
-                  options={FILTER_CONFIGS.sort}
-                  className={styles.filterSelect}
+        )}
+
+        {showFilters && (
+          <div className={styles.filtersGrid}>
+            <div className={styles.filterRow}>
+              <FilterSelect
+                id="filter-status"
+                label="Status"
+                value={
+                  filters.filterStatus || FILTER_OPTIONS.VISIBILITY.VISIBLE
+                }
+                options={FILTER_CONFIGS.visibility}
+                onChange={(value) =>
+                  update(
+                    "filterStatus",
+                    value === "active"
+                      ? FILTER_OPTIONS.VISIBILITY.VISIBLE
+                      : value || FILTER_OPTIONS.VISIBILITY.VISIBLE
+                  )
+                }
+              />
+              {showUserFilter && (
+                <FilterSelect
+                  id="filter-user"
+                  label="User"
+                  value={filters.userFilter || FILTER_OPTIONS.USER.ALL}
+                  options={userSelectOptions || FILTER_CONFIGS.users}
+                  onChange={(value) => update("userFilter", value)}
                 />
-                <button
-                  type="button"
-                  onClick={() =>
-                    update(
-                      "sortOrder",
-                      isAsc
-                        ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC,
-                    )
-                  }
-                  className={styles.sortOrderButton}
-                  title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
-                  aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
-                >
-                  {isAsc ? "↑" : "↓"}
-                </button>
+              )}
+              {showSelectionFilter && (
+                <FilterSelect
+                  id="filter-selection"
+                  label="Selection"
+                  value={filters.selectionFilter || "all"}
+                  options={FILTER_CONFIGS.selection}
+                  onChange={(value) => update("selectionFilter", value)}
+                />
+              )}
+              {analysisMode && (
+                <FilterSelect
+                  id="filter-date"
+                  label="Date"
+                  value={filters.dateFilter || "all"}
+                  options={FILTER_CONFIGS.date}
+                  onChange={(value) => update("dateFilter", value)}
+                />
+              )}
+            </div>
+            <div className={styles.filterRow}>
+              <div className={styles.sortGroup}>
+                <label htmlFor="filter-sort" className={styles.filterLabel}>
+                  Sort By
+                </label>
+                <div className={styles.sortControls}>
+                  <Select
+                    id="filter-sort"
+                    name="filter-sort"
+                    value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
+                    onChange={(e) => update("sortBy", e.target.value)}
+                    options={FILTER_CONFIGS.sort}
+                    className={styles.filterSelect}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      update(
+                        "sortOrder",
+                        isAsc
+                          ? FILTER_OPTIONS.ORDER.DESC
+                          : FILTER_OPTIONS.ORDER.ASC
+                      )
+                    }
+                    className={styles.sortOrderButton}
+                    title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
+                    aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
+                  >
+                    {isAsc ? "↑" : "↓"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </LiquidGlass>
   );
 }
 

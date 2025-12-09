@@ -209,3 +209,26 @@ NavbarMenuButton.propTypes = {
   className: PropTypes.string,
   asChild: PropTypes.bool,
 };
+
+// NavbarSection - Consolidated from AppNavbar/NavbarSection.jsx
+export const NavbarSection = forwardRef(
+  ({ children, className = "", alignRight = false, ...props }, ref) => {
+    const baseClass = alignRight
+      ? "navbar-section navbar-section--right"
+      : "navbar-section navbar-section--left";
+
+    return (
+      <div ref={ref} className={`${baseClass} ${className}`} {...props}>
+        {children}
+      </div>
+    );
+  }
+);
+
+NavbarSection.displayName = "NavbarSection";
+
+NavbarSection.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  alignRight: PropTypes.bool,
+};

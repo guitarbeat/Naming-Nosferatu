@@ -29,6 +29,7 @@
   padding: clamp(0.5rem, 1vw, 0.75rem);
 }
 
+/* * NavbarSection styles moved to ui/navbar.css - keeping only AppNavbar-specific overrides */
 .navbar-section {
   gap: clamp(0.5rem, 1vw, 0.75rem);
 }

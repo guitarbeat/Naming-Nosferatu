@@ -535,13 +535,19 @@ export const catNamesAPI = {
       });
 
       // Get name details from cat_name_options
-      const { data, error } = await client
+      let query = client
         .from("cat_name_options")
         .select("id, name, description, avg_rating, categories, created_at")
         .eq("is_active", true)
         .eq("is_hidden", false)
-        .order("avg_rating", { ascending: false })
-        .limit(limit * 2); // Get more to filter
+        .order("avg_rating", { ascending: false });
+
+      // * Only apply limit if specified (null means get all)
+      if (limit) {
+        query = query.limit(limit * 2);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Error fetching leaderboard:", error);
@@ -568,8 +574,12 @@ export const catNamesAPI = {
           };
         })
         .filter((row) => row.total_ratings > 0 || row.avg_rating > 1500) // Only names with actual ratings
-        .sort((a, b) => b.avg_rating - a.avg_rating)
-        .slice(0, limit);
+        .sort((a, b) => b.avg_rating - a.avg_rating);
+
+      // * Only apply slice if limit is specified (null means get all)
+      if (limit) {
+        return leaderboard.slice(0, limit);
+      }
 
       return leaderboard;
     } catch (error) {
@@ -615,16 +625,19 @@ export const catNamesAPI = {
       });
 
       // Convert to array and sort by count
-      const results = Array.from(selectionCounts.values())
-        .sort((a, b) => b.count - a.count)
-        .slice(0, limit)
-        .map((item) => ({
-          name_id: item.name_id,
-          name: item.name,
-          times_selected: item.count,
-        }));
+      let results = Array.from(selectionCounts.values())
+        .sort((a, b) => b.count - a.count);
 
-      return results;
+      // * Only apply limit if specified (null means get all)
+      if (limit) {
+        results = results.slice(0, limit);
+      }
+
+      return results.map((item) => ({
+        name_id: item.name_id,
+        name: item.name,
+        times_selected: item.count,
+      }));
     } catch (error) {
       if (isDev) {
         console.error("Error fetching selection popularity:", error);
@@ -765,9 +778,14 @@ export const catNamesAPI = {
       });
 
       // Sort by popularity score and return top results
-      return analytics
-        .sort((a, b) => b.popularity_score - a.popularity_score)
-        .slice(0, limit);
+      const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
+
+      // * Only apply limit if specified (null means get all)
+      if (limit) {
+        return sorted.slice(0, limit);
+      }
+
+      return sorted;
     } catch (error) {
       if (isDev) {
         console.error("Error fetching popularity analytics:", error);

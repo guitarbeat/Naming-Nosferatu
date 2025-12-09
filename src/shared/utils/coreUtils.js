@@ -16,3 +16,4 @@ export * from "./exportUtils";
 export * from "./functionUtils";
 export * from "./classNameUtils";
 export * from "./nameFilterUtils";
+export * from "./ratingUtils";

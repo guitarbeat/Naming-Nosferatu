@@ -5,6 +5,7 @@
  */
 
 import PropTypes from "prop-types";
+import LiquidGlass from "../LiquidGlass";
 import "./CollapsibleHeader.css";
 
 /**
@@ -47,6 +48,7 @@ ChevronIcon.propTypes = {
  * @param {string} props.className - Additional CSS classes
  * @param {string} props.variant - Style variant: 'default' | 'compact'
  * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
+ * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
  */
 export function CollapsibleHeader({
   title,
@@ -59,11 +61,26 @@ export function CollapsibleHeader({
   className = "",
   variant = "default",
   toolbar,
+  liquidGlass,
 }) {
-  return (
+  // * Default config for liquid glass
+  const defaultGlassConfig = {
+    width: 800,
+    height: 80,
+    radius: 12,
+    scale: -180,
+    saturation: 1.2,
+    frost: 0.08,
+    inputBlur: 12,
+    outputBlur: 0.8,
+  };
+
+  const shouldUseLiquidGlass = !!liquidGlass;
+
+  const headerContent = (
     <>
       <header
-        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
+        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${shouldUseLiquidGlass ? "" : className}`}
       >
         <button
           type="button"
@@ -101,6 +118,40 @@ export function CollapsibleHeader({
       )}
     </>
   );
+
+  if (shouldUseLiquidGlass) {
+    const {
+      width = defaultGlassConfig.width,
+      height = defaultGlassConfig.height,
+      radius = defaultGlassConfig.radius,
+      scale = defaultGlassConfig.scale,
+      saturation = defaultGlassConfig.saturation,
+      frost = defaultGlassConfig.frost,
+      inputBlur = defaultGlassConfig.inputBlur,
+      outputBlur = defaultGlassConfig.outputBlur,
+      ...glassProps
+    } = typeof liquidGlass === "object" ? liquidGlass : defaultGlassConfig;
+
+    return (
+      <LiquidGlass
+        width={width}
+        height={height}
+        radius={radius}
+        scale={scale}
+        saturation={saturation}
+        frost={frost}
+        inputBlur={inputBlur}
+        outputBlur={outputBlur}
+        className={className}
+        style={{ width: "100%", height: "auto" }}
+        {...glassProps}
+      >
+        {headerContent}
+      </LiquidGlass>
+    );
+  }
+
+  return headerContent;
 }
 
 CollapsibleHeader.propTypes = {
@@ -114,6 +165,19 @@ CollapsibleHeader.propTypes = {
   className: PropTypes.string,
   variant: PropTypes.oneOf(["default", "compact"]),
   toolbar: PropTypes.node,
+  liquidGlass: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      radius: PropTypes.number,
+      scale: PropTypes.number,
+      saturation: PropTypes.number,
+      frost: PropTypes.number,
+      inputBlur: PropTypes.number,
+      outputBlur: PropTypes.number,
+    }),
+  ]),
 };
 
 /**

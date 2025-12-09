@@ -266,6 +266,14 @@
   }
 }
 
+/* Empty gallery state */
+.emptyGallery {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
 @media (width <= 500px) {
   .masonryGrid {
     column-count: 1;

@@ -59,8 +59,11 @@ describe("Login Component - Simple Tests", () => {
   it("renders login subtitle", async () => {
     render(<Login onLogin={mockOnLogin} />);
     await screen.findByText("Cats sleep 12-16 hours per day!");
+    // * Component shows help text instead of subtitle
     expect(
-      screen.getByText(/Enter your name to get started/i),
+      screen.getByText(
+        /We'll create an account automatically if it's your first time/i
+      )
     ).toBeInTheDocument();
   });
 
@@ -69,8 +72,8 @@ describe("Login Component - Simple Tests", () => {
     await screen.findByText("Cats sleep 12-16 hours per day!");
     expect(
       screen.getByText(
-        "We'll create an account automatically if it's your first time.",
-      ),
+        "We'll create an account automatically if it's your first time."
+      )
     ).toBeInTheDocument();
   });
 
@@ -85,7 +88,7 @@ describe("Login Component - Simple Tests", () => {
 
     await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
     await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
+      screen.getByRole("button", { name: "Continue to tournament" })
     );
 
     await waitFor(() => {
@@ -107,7 +110,7 @@ describe("Login Component - Simple Tests", () => {
 
     await user.type(screen.getByLabelText("Your name"), "Invalid Name");
     await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
+      screen.getByRole("button", { name: "Continue to tournament" })
     );
 
     await waitFor(() => {

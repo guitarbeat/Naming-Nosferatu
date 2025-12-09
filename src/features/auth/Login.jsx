@@ -267,7 +267,7 @@ function Login({ onLogin }) {
           liquidGlass={{
             width: 600,
             height: 400,
-            radius: 24,
+            radius: 999, // * Pill-shaped: will be capped at height/2 (200px)
             scale: -180,
             saturation: 1.2,
             frost: 0.08,

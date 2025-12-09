@@ -81,21 +81,21 @@ const ToastItem = ({
 
   return (
     <LiquidGlass
-      width={320}
-      height={80}
-      radius={12}
-      scale={-120}
-      saturation={1.05}
-      frost={0.03}
-      inputBlur={8}
-      outputBlur={0.5}
+      width={280}
+      height={60}
+      radius={10}
+      scale={-100}
+      saturation={1.0}
+      frost={0.02}
+      inputBlur={6}
+      outputBlur={0.4}
       className={styles.toastGlass}
       id={`toast-${type}-filter`}
       style={{
         width: "auto",
         height: "auto",
-        minWidth: "280px",
-        maxWidth: "400px",
+        minWidth: "240px",
+        maxWidth: "320px",
       }}
     >
       <div

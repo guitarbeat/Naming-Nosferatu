@@ -30,6 +30,8 @@ import { ErrorManager } from "@services/errorManager";
 import { tournamentsAPI } from "@services/supabase/api";
 import { NAVBAR } from "@core/constants";
 import { devLog, devWarn, devError } from "./shared/utils/logger";
+import { ratingsToArray, ratingsToObject } from "./shared/utils/ratingUtils";
+import { useKeyboardShortcuts } from "./core/hooks/useKeyboardShortcuts";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -75,45 +77,10 @@ function App() {
   // Get admin status from server-side validation
   const { isAdmin } = user;
 
-  // * Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      // * Navbar toggle (Ctrl+B or Cmd+B)
-      if ((event.ctrlKey || event.metaKey) && event.key === "b") {
-        event.preventDefault();
-        // * Toggle navbar - will be handled in AppLayout
-        const navbarToggleEvent = new CustomEvent("toggleNavbar");
-        window.dispatchEvent(navbarToggleEvent);
-      }
-
-      // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
-      if (
-        (event.ctrlKey || event.metaKey) &&
-        event.shiftKey &&
-        event.key === "A"
-      ) {
-        event.preventDefault();
-        // * Toggle Analysis Mode via URL parameter
-        const currentPath = window.location.pathname;
-        const currentSearch = new URLSearchParams(window.location.search);
-        const isAnalysisMode = currentSearch.get("analysis") === "true";
-
-        if (isAnalysisMode) {
-          currentSearch.delete("analysis");
-        } else {
-          currentSearch.set("analysis", "true");
-        }
-
-        const newSearch = currentSearch.toString();
-        const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
-
-        navigateTo(newUrl);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [navigateTo]);
+  // * Keyboard shortcuts - consolidated into custom hook
+  useKeyboardShortcuts({
+    navigateTo,
+  });
 
   // * Handle tournament completion
   const handleTournamentComplete = useCallback(
@@ -125,29 +92,9 @@ function App() {
           throw new Error("No user name available");
         }
 
-        // Convert finalRatings to array format for database save
-        let ratingsArray;
-        if (Array.isArray(finalRatings)) {
-          ratingsArray = finalRatings;
-        } else {
-          // Convert object {name: {rating, wins, losses}, ...} to array
-          ratingsArray = Object.entries(finalRatings).map(([name, data]) => ({
-            name,
-            rating: data.rating || 1500,
-            wins: data.wins || 0,
-            losses: data.losses || 0,
-          }));
-        }
-
-        // Convert to object format for store
-        const updatedRatings = ratingsArray.reduce((acc, item) => {
-          acc[item.name] = {
-            rating: item.rating,
-            wins: item.wins || 0,
-            losses: item.losses || 0,
-          };
-          return acc;
-        }, {});
+        // * Convert ratings using utility functions
+        const ratingsArray = ratingsToArray(finalRatings);
+        const updatedRatings = ratingsToObject(ratingsArray);
 
         devLog("[App] Ratings to save:", ratingsArray);
 

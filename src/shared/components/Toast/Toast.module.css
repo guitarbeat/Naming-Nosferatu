@@ -5,8 +5,8 @@
   pointer-events: auto;
   transform: translateX(100%);
   transition: var(--transition-base);
-  animation: slideIn var(--duration-fast) cubic-bezier(0.68, -0.55, 0.265, 1.55)
-    forwards;
+  /* * Less disruptive: subtle slide-in animation */
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .toastGlass.exiting {
@@ -87,9 +87,9 @@
 .content {
   position: relative;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  padding: 16px;
+  padding: 12px 14px;
 }
 
 .icon {
@@ -99,9 +99,9 @@
 
 .message {
   flex: 1;
-  font-size: var(--text-base);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--leading-normal);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium, 500);
+  line-height: 1.4;
 }
 
 .dismissButton {
@@ -166,11 +166,11 @@
   }
 }
 
-/* Animations */
+/* Animations - less disruptive */
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(100%) scale(0.95);
+    transform: translateX(100%) scale(0.98);
   }
 
   to {
@@ -319,46 +319,62 @@
 /* ===== TOAST CONTAINER (for multiple toasts) ===== */
 .container {
   position: fixed;
-  z-index: 1000;
+  z-index: 999; /* * Lower z-index to be less disruptive */
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-height: calc(100vh - 40px);
+  gap: 8px; /* * Tighter spacing */
+  max-height: calc(100vh - 24px);
   overflow-y: auto;
   pointer-events: none;
+  /* * Subtle scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 20%) transparent;
 }
 
-/* Position variants */
+.container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.container::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 20%);
+  border-radius: 2px;
+}
+
+/* Position variants - less disruptive positioning */
 .topLeft {
-  top: 20px;
-  left: 20px;
+  top: 12px;
+  left: 12px;
 }
 
 .topCenter {
-  top: 20px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .topRight {
-  top: 20px;
-  right: 20px;
+  top: 12px;
+  right: 12px;
 }
 
 .bottomLeft {
-  bottom: 20px;
-  left: 20px;
+  bottom: 12px;
+  left: 12px;
 }
 
 .bottomCenter {
-  bottom: 20px;
+  bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .bottomRight {
-  right: 20px;
-  bottom: 20px;
+  right: 12px;
+  bottom: 12px;
 }
 
 /* Toast item within container */

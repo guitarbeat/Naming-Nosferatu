@@ -5,7 +5,12 @@
 
 import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { Navbar, NavbarMenuItem, NavbarMenuButton } from "../ui/navbar";
+import {
+  Navbar,
+  NavbarMenuItem,
+  NavbarMenuButton,
+  NavbarSection,
+} from "../ui/navbar";
 import LiquidGlass from "../LiquidGlass";
 import { MenuNavItem } from "./MenuNavItem";
 import { MenuActionItem } from "./MenuActionItem";
@@ -163,12 +168,12 @@ export function AppNavbar({
             </button>
           </div>
 
-          <div
+          <NavbarSection
             ref={(el) => {
               navRef.current = el;
               menuRef.current = el;
             }}
-            className="nav-items-container navbar-section navbar-section--left"
+            className="nav-items-container"
             id="navbar-menu"
             data-open={isMenuOpen}
             role="menu"
@@ -253,7 +258,7 @@ export function AppNavbar({
                 opacity: indicator.opacity,
               }}
             />
-          </div>
+          </NavbarSection>
 
           {/* Divider between nav items and actions */}
           <div className="navbar-divider" aria-hidden="true" />

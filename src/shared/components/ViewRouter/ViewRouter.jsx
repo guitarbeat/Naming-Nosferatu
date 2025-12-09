@@ -6,7 +6,7 @@ import { useRouting } from "@hooks/useRouting";
 // * Import components directly (no lazy loading to prevent chunking issues)
 import Tournament from "@features/tournament/Tournament";
 import TournamentSetup from "@features/tournament/TournamentSetup";
-import Results from "@features/tournament/Results";
+import Dashboard from "@features/tournament/Dashboard";
 import BongoPage from "@features/bongo/BongoPage";
 
 export default function ViewRouter({
@@ -43,20 +43,21 @@ export default function ViewRouter({
     );
   }
 
-  // * Only show results if tournament is complete AND we have names (completed tournament)
-  // * This prevents showing results when tournament is reset but route is still /results
-  const shouldShowResults =
-    tournament.isComplete && tournament.names !== null && isRoute("/results");
+  // * Show Dashboard (Results + Analysis) if on /results or /analysis routes
+  // * Dashboard can show personal results if tournament is complete, or global data anytime
+  const shouldShowDashboard = isRoute("/results") || isRoute("/analysis");
 
-  if (shouldShowResults) {
+  if (shouldShowDashboard) {
+    const hasPersonalData = tournament.isComplete && tournament.names !== null;
     return (
-      <Results
-        ratings={tournament.ratings}
+      <Dashboard
+        personalRatings={hasPersonalData ? tournament.ratings : null}
+        currentTournamentNames={hasPersonalData ? tournament.names : null}
+        voteHistory={hasPersonalData ? tournament.voteHistory : null}
         onStartNew={onStartNewTournament}
-        userName={userName}
         onUpdateRatings={onUpdateRatings}
-        currentTournamentNames={tournament.names}
-        voteHistory={tournament.voteHistory}
+        userName={userName}
+        mode="both"
       />
     );
   }

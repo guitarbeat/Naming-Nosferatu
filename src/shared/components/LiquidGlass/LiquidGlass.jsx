@@ -32,7 +32,7 @@ function LiquidGlass({
   className = "",
   width = 200,
   height = 80,
-  radius = 18,
+  radius = 999, // * Default to very large radius for pill shape
   scale = -180,
   saturation = 1.1,
   frost = 0.05,
@@ -67,6 +67,8 @@ function LiquidGlass({
 
     const buildDisplacementImage = () => {
       const borderSize = Math.min(width, height) * (border * 0.5);
+      // * Calculate pill-shaped radius: minimum of specified radius or half the height
+      const pillRadius = Math.min(radius, height * 0.5);
       const svgContent = `
         <svg class="displacement-image" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -82,11 +84,11 @@ function LiquidGlass({
           <!-- backdrop -->
           <rect x="0" y="0" width="${width}" height="${height}" fill="black"></rect>
           <!-- red linear -->
-          <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#red-${id})" />
+          <rect x="0" y="0" width="${width}" height="${height}" rx="${pillRadius}" fill="url(#red-${id})" />
           <!-- blue linear -->
-          <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#blue-${id})" style="mix-blend-mode: ${blend}" />
+          <rect x="0" y="0" width="${width}" height="${height}" rx="${pillRadius}" fill="url(#blue-${id})" style="mix-blend-mode: ${blend}" />
           <!-- block out distortion (input blur controls edge softness) -->
-          <rect x="${borderSize}" y="${Math.min(width, height) * (border * 0.5)}" width="${width - borderSize * 2}" height="${height - borderSize * 2}" rx="${radius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${inputBlur}px)" />
+          <rect x="${borderSize}" y="${Math.min(width, height) * (border * 0.5)}" width="${width - borderSize * 2}" height="${height - borderSize * 2}" rx="${pillRadius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${inputBlur}px)" />
         </svg>
       `;
 
@@ -114,9 +116,11 @@ function LiquidGlass({
 
       // * Update CSS variables
       if (containerRef.current) {
+        // * Calculate pill-shaped radius for CSS (minimum of specified radius or half the height)
+        const pillRadius = Math.min(radius, height * 0.5);
         containerRef.current.style.setProperty("--width", `${width}`);
         containerRef.current.style.setProperty("--height", `${height}`);
-        containerRef.current.style.setProperty("--radius", `${radius}`);
+        containerRef.current.style.setProperty("--radius", `${pillRadius}`);
         containerRef.current.style.setProperty("--frost", `${frost}`);
         containerRef.current.style.setProperty(
           "--output-blur",

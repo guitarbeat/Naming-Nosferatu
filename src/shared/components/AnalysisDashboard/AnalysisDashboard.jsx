@@ -98,9 +98,9 @@ export function AnalysisDashboard({
         if (isAdmin) {
           const [analytics, leaderboard, popularity, history] =
             await Promise.all([
-              catNamesAPI.getPopularityAnalytics(50, userFilter, userName),
-              catNamesAPI.getLeaderboard(50),
-              catNamesAPI.getSelectionPopularity(50),
+              catNamesAPI.getPopularityAnalytics(null, userFilter, userName),
+              catNamesAPI.getLeaderboard(null),
+              catNamesAPI.getSelectionPopularity(null),
               historyPromise,
             ]);
           setAnalyticsData(analytics);
@@ -109,8 +109,8 @@ export function AnalysisDashboard({
           setRankingHistory(history);
         } else {
           const [leaderboard, popularity, history] = await Promise.all([
-            catNamesAPI.getLeaderboard(10),
-            catNamesAPI.getSelectionPopularity(10),
+            catNamesAPI.getLeaderboard(null),
+            catNamesAPI.getSelectionPopularity(null),
             historyPromise,
           ]);
           setLeaderboardData(leaderboard);
@@ -182,12 +182,10 @@ export function AnalysisDashboard({
       });
     }
 
-    return Array.from(nameMap.values())
-      .sort((a, b) => {
-        if (b.rating !== a.rating) return b.rating - a.rating;
-        return b.wins - a.wins;
-      })
-      .slice(0, 10);
+    return Array.from(nameMap.values()).sort((a, b) => {
+      if (b.rating !== a.rating) return b.rating - a.rating;
+      return b.wins - a.wins;
+    });
   }, [leaderboardData, selectionPopularity, analyticsData, isAdmin]);
 
   const handleSort = useCallback(
@@ -372,8 +370,8 @@ export function AnalysisDashboard({
       }
     }
 
-    // * Apply sorting
-    if (isAdmin && sortField) {
+    // * Apply sorting (available for all users)
+    if (sortField) {
       names.sort((a, b) => {
         let aVal = a[sortField];
         let bVal = b[sortField];
@@ -397,7 +395,7 @@ export function AnalysisDashboard({
         return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
       });
     } else {
-      // Default sort by rating
+      // Default sort by rating descending
       names.sort((a, b) => b.rating - a.rating);
     }
 
@@ -450,8 +448,17 @@ export function AnalysisDashboard({
         true
       );
 
-      // Determine insights/badges
+      // Determine insights/badges - focus on worst performers for removal
       const insights = [];
+      // * Worst performers (for removal/hiding)
+      if (ratingPercentile <= 10) insights.push("worst_rated");
+      if (selectedPercentile <= 10 && item.selected === 0)
+        insights.push("never_selected");
+      if (item.selected === 0 && item.wins === 0 && item.rating <= 1500)
+        insights.push("inactive");
+      if (ratingPercentile <= 20 && selectedPercentile <= 20)
+        insights.push("poor_performer");
+      // * Good performers (keep for reference)
       if (ratingPercentile >= 90) insights.push("top_rated");
       if (selectedPercentile >= 90) insights.push("most_selected");
       if (ratingPercentile >= 70 && selectedPercentile < 50)
@@ -476,32 +483,59 @@ export function AnalysisDashboard({
 
     const result = [];
 
-    if (summaryStats.topName) {
+    // * Focus on worst performers for removal/hiding
+    const worstRated = displayNames
+      .filter((n) => n.rating < 1500)
+      .sort((a, b) => a.rating - b.rating)[0];
+    if (worstRated) {
       result.push({
-        type: "top",
-        message: `${summaryStats.topName.name} leads with a rating of ${summaryStats.topName.rating}`,
-        icon: "🏆",
+        type: "warning",
+        message: `${worstRated.name} has the lowest rating (${worstRated.rating}) - consider hiding`,
+        icon: "⚠️",
       });
     }
 
-    if (summaryStats.maxSelected > 0) {
-      const mostSelected = displayNames.find(
-        (n) => n.selected === summaryStats.maxSelected
-      );
-      if (mostSelected) {
+    const neverSelected = displayNames.filter((n) => n.selected === 0);
+    if (neverSelected.length > 0) {
+      const oldestNeverSelected = neverSelected
+        .filter((n) => n.dateSubmitted)
+        .sort(
+          (a, b) =>
+            new Date(a.dateSubmitted).getTime() -
+            new Date(b.dateSubmitted).getTime()
+        )[0];
+      if (oldestNeverSelected) {
         result.push({
-          type: "popular",
-          message: `${mostSelected.name} is the most selected (${summaryStats.maxSelected}x)`,
-          icon: "⭐",
+          type: "warning",
+          message: `${neverSelected.length} name${neverSelected.length > 1 ? "s" : ""} never selected. ${oldestNeverSelected.name} is oldest - consider removing`,
+          icon: "🗑️",
+        });
+      } else if (neverSelected.length > 0) {
+        result.push({
+          type: "warning",
+          message: `${neverSelected.length} name${neverSelected.length > 1 ? "s" : ""} never selected - consider hiding inactive ones`,
+          icon: "🗑️",
         });
       }
     }
 
-    if (summaryStats.avgRating > 1600) {
+    const lowPerformers = displayNames.filter(
+      (n) => n.rating <= 1500 && n.selected === 0 && n.wins === 0
+    );
+    if (lowPerformers.length > 0) {
       result.push({
-        type: "quality",
-        message: `High average rating of ${summaryStats.avgRating} indicates strong contenders`,
-        icon: "✨",
+        type: "warning",
+        message: `${lowPerformers.length} inactive name${lowPerformers.length > 1 ? "s" : ""} (no rating, no selections, no wins) - safe to hide`,
+        icon: "🚫",
+      });
+    }
+
+    // * Keep some positive insights for context
+    if (summaryStats.topName) {
+      result.push({
+        type: "info",
+        message: `${summaryStats.topName.name} leads with a rating of ${summaryStats.topName.rating}`,
+        icon: "🏆",
       });
     }
 
@@ -546,6 +580,9 @@ export function AnalysisDashboard({
             }
             if (newFilters.selectionFilter !== undefined) {
               toolbarContext.setSelectionFilter(newFilters.selectionFilter);
+            }
+            if (newFilters.dateFilter !== undefined) {
+              toolbarContext.setDateFilter(newFilters.dateFilter);
             }
             if (newFilters.sortOrder !== undefined) {
               toolbarContext.setSortOrder(newFilters.sortOrder);
@@ -716,11 +753,9 @@ export function AnalysisDashboard({
                         <th scope="col">Name</th>
                         <th
                           scope="col"
-                          className={isAdmin ? "sortable" : ""}
-                          onClick={
-                            isAdmin ? () => handleSort("rating") : undefined
-                          }
-                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                          className="sortable"
+                          onClick={() => handleSort("rating")}
+                          style={{ cursor: "pointer" }}
                         >
                           {isAdmin ? (
                             <ColumnHeader
@@ -737,11 +772,9 @@ export function AnalysisDashboard({
                         </th>
                         <th
                           scope="col"
-                          className={isAdmin ? "sortable" : ""}
-                          onClick={
-                            isAdmin ? () => handleSort("wins") : undefined
-                          }
-                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                          className="sortable"
+                          onClick={() => handleSort("wins")}
+                          style={{ cursor: "pointer" }}
                         >
                           {isAdmin ? (
                             <ColumnHeader
@@ -758,11 +791,9 @@ export function AnalysisDashboard({
                         </th>
                         <th
                           scope="col"
-                          className={isAdmin ? "sortable" : ""}
-                          onClick={
-                            isAdmin ? () => handleSort("selected") : undefined
-                          }
-                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                          className="sortable"
+                          onClick={() => handleSort("selected")}
+                          style={{ cursor: "pointer" }}
                         >
                           {isAdmin ? (
                             <ColumnHeader
@@ -786,13 +817,9 @@ export function AnalysisDashboard({
                         )}
                         <th
                           scope="col"
-                          className={isAdmin ? "sortable" : ""}
-                          onClick={
-                            isAdmin
-                              ? () => handleSort("dateSubmitted")
-                              : undefined
-                          }
-                          style={isAdmin ? { cursor: "pointer" } : undefined}
+                          className="sortable"
+                          onClick={() => handleSort("dateSubmitted")}
+                          style={{ cursor: "pointer" }}
                         >
                           {isAdmin ? (
                             <ColumnHeader
@@ -1054,29 +1081,192 @@ export function AnalysisDashboard({
                   </div>
                 )}
 
-                {namesWithInsights.some((n) => n.insights.length > 0) && (
-                  <div className="analysis-insight-cards">
-                    {namesWithInsights
-                      .filter((n) => n.insights.length > 0)
-                      .slice(0, 6)
-                      .map((n) => (
-                        <div key={n.id} className="analysis-insight-card">
-                          <div className="analysis-insight-card-name">
-                            {n.name}
+                {/* * Show worst performers first for removal/hiding */}
+                {namesWithInsights.some((n) =>
+                  n.insights.some((i) =>
+                    [
+                      "worst_rated",
+                      "never_selected",
+                      "inactive",
+                      "poor_performer",
+                    ].includes(i)
+                  )
+                ) && (
+                  <div className="analysis-insights-section">
+                    <h3 className="analysis-insights-section-title">
+                      ⚠️ Names to Consider Hiding
+                    </h3>
+                    <div className="analysis-insight-cards">
+                      {namesWithInsights
+                        .filter((n) =>
+                          n.insights.some((i) =>
+                            [
+                              "worst_rated",
+                              "never_selected",
+                              "inactive",
+                              "poor_performer",
+                            ].includes(i)
+                          )
+                        )
+                        .sort((a, b) => {
+                          // * Sort by worst first: inactive > never selected > worst rated > poor performer
+                          const priority = {
+                            inactive: 0,
+                            never_selected: 1,
+                            worst_rated: 2,
+                            poor_performer: 3,
+                          };
+                          const aPriority = Math.min(
+                            ...a.insights
+                              .filter((i) =>
+                                [
+                                  "worst_rated",
+                                  "never_selected",
+                                  "inactive",
+                                  "poor_performer",
+                                ].includes(i)
+                              )
+                              .map((i) => priority[i] ?? 99)
+                          );
+                          const bPriority = Math.min(
+                            ...b.insights
+                              .filter((i) =>
+                                [
+                                  "worst_rated",
+                                  "never_selected",
+                                  "inactive",
+                                  "poor_performer",
+                                ].includes(i)
+                              )
+                              .map((i) => priority[i] ?? 99)
+                          );
+                          if (aPriority !== bPriority)
+                            return aPriority - bPriority;
+                          // * Then by rating (lowest first)
+                          return a.rating - b.rating;
+                        })
+                        .slice(0, 12)
+                        .map((n) => (
+                          <div
+                            key={n.id}
+                            className="analysis-insight-card analysis-insight-card--warning"
+                          >
+                            <div className="analysis-insight-card-header">
+                              <div className="analysis-insight-card-name">
+                                {n.name}
+                              </div>
+                              {canHideNames && (
+                                <button
+                                  type="button"
+                                  className="analysis-insight-card-hide"
+                                  onClick={async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    try {
+                                      await handleHideName(n.id, n.name);
+                                    } catch (error) {
+                                      devError(
+                                        "[AnalysisDashboard] Failed to hide name:",
+                                        error
+                                      );
+                                    }
+                                  }}
+                                  aria-label={`Hide ${n.name}`}
+                                  title="Hide this name"
+                                >
+                                  Hide
+                                </button>
+                              )}
+                            </div>
+                            <div className="analysis-insight-card-metrics">
+                              <span>Rating {Math.round(n.rating)}</span>
+                              <span>{n.selected} selected</span>
+                              {n.wins > 0 && <span>{n.wins} wins</span>}
+                            </div>
+                            <div className="analysis-insight-card-tags">
+                              {n.insights
+                                .filter((i) =>
+                                  [
+                                    "worst_rated",
+                                    "never_selected",
+                                    "inactive",
+                                    "poor_performer",
+                                  ].includes(i)
+                                )
+                                .map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="analysis-insight-tag analysis-insight-tag--warning"
+                                  >
+                                    {tag.replace("_", " ")}
+                                  </span>
+                                ))}
+                            </div>
                           </div>
-                          <div className="analysis-insight-card-metrics">
-                            <span>Rating {Math.round(n.rating)}</span>
-                            <span>{n.selected} selected</span>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* * Show good performers for reference */}
+                {namesWithInsights.some((n) =>
+                  n.insights.some((i) =>
+                    [
+                      "top_rated",
+                      "most_selected",
+                      "underrated",
+                      "undefeated",
+                    ].includes(i)
+                  )
+                ) && (
+                  <div className="analysis-insights-section">
+                    <h3 className="analysis-insights-section-title">
+                      ✨ Top Performers (Keep)
+                    </h3>
+                    <div className="analysis-insight-cards">
+                      {namesWithInsights
+                        .filter((n) =>
+                          n.insights.some((i) =>
+                            [
+                              "top_rated",
+                              "most_selected",
+                              "underrated",
+                              "undefeated",
+                            ].includes(i)
+                          )
+                        )
+                        .slice(0, 6)
+                        .map((n) => (
+                          <div key={n.id} className="analysis-insight-card">
+                            <div className="analysis-insight-card-name">
+                              {n.name}
+                            </div>
+                            <div className="analysis-insight-card-metrics">
+                              <span>Rating {Math.round(n.rating)}</span>
+                              <span>{n.selected} selected</span>
+                            </div>
+                            <div className="analysis-insight-card-tags">
+                              {n.insights
+                                .filter((i) =>
+                                  [
+                                    "top_rated",
+                                    "most_selected",
+                                    "underrated",
+                                    "undefeated",
+                                  ].includes(i)
+                                )
+                                .map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="analysis-insight-tag"
+                                  >
+                                    {tag.replace("_", " ")}
+                                  </span>
+                                ))}
+                            </div>
                           </div>
-                          <div className="analysis-insight-card-tags">
-                            {n.insights.map((tag) => (
-                              <span key={tag} className="analysis-insight-tag">
-                                {tag.replace("_", " ")}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                    </div>
                   </div>
                 )}
               </div>

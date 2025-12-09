@@ -25,6 +25,7 @@ import { useKeyboardControls } from "./hooks/useKeyboardControls";
 import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./constants";
+import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
@@ -45,7 +46,7 @@ function TournamentContent({
     names,
     existingRatings,
     onComplete,
-    onVote,
+    onVote
   );
 
   const {
@@ -179,11 +180,11 @@ function TournamentContent({
       setLastMatchResult(resultMessage);
       const showTimer = setTimeout(
         () => setShowMatchResult(true),
-        TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY,
+        TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY
       );
       const hideTimer = setTimeout(
         () => setShowMatchResult(false),
-        TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY,
+        TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY
       );
       matchResultTimersRef.current.push(showTimer, hideTimer);
       showSuccess("Vote recorded successfully!", {
@@ -194,7 +195,7 @@ function TournamentContent({
     },
     // * setState functions (setUndoExpiresAt, setSelectedOption) are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentMatch, showSuccess],
+    [currentMatch, showSuccess]
   );
 
   // * Handle vote with animation
@@ -273,11 +274,11 @@ function TournamentContent({
 
         setSelectedOption(null);
         await new Promise((resolve) =>
-          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM),
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM)
         );
         setIsProcessing(false);
         await new Promise((resolve) =>
-          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT),
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT)
         );
         setIsTransitioning(false);
       } catch (error) {
@@ -314,7 +315,7 @@ function TournamentContent({
       onVote,
       currentMatch,
       showError,
-    ],
+    ]
   );
 
   // * Handle name card click
@@ -326,7 +327,7 @@ function TournamentContent({
     },
     // * setState function (setSelectedOption) is stable and doesn't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isProcessing, isTransitioning, handleVoteWithAnimation],
+    [isProcessing, isTransitioning, handleVoteWithAnimation]
   );
 
   // * Handle end early
@@ -388,7 +389,7 @@ function TournamentContent({
         }
       },
       onToggleCatPictures: () => setShowCatPictures((v) => !v),
-    },
+    }
   );
 
   // * Transform match history for bracket
@@ -421,29 +422,8 @@ function TournamentContent({
 
       const matchNumber = vote?.matchNumber ?? index + 1;
 
-      // * Calculate round based on bracket structure
-      // * For bracket: matches per round = Math.floor(remainingNames / 2)
-      // * Winners advancing = matchesInRound + (remainingNames % 2) [winners + byes]
-      let calculatedRound = 1;
-
-      // * For 2 names, there's only 1 match in round 1
-      if (names.length === 2) {
-        calculatedRound = 1;
-      } else {
-        let remainingNames = names.length;
-        let matchesInRound = Math.floor(remainingNames / 2);
-        let matchesPlayed = 0;
-
-        while (matchesPlayed + matchesInRound < matchNumber) {
-          matchesPlayed += matchesInRound;
-          // * Winners advancing = matches (1 winner each) + byes (if odd number)
-          const winners = matchesInRound; // 1 winner per match
-          const byes = remainingNames % 2; // Odd names get a bye
-          remainingNames = winners + byes; // Total advancing to next round
-          matchesInRound = Math.floor(remainingNames / 2);
-          calculatedRound++;
-        }
-      }
+      // * Calculate round using shared utility function
+      const calculatedRound = calculateBracketRound(names.length, matchNumber);
 
       return {
         id: matchNumber,

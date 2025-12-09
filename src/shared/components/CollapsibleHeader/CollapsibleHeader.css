@@ -240,27 +240,62 @@
   border-bottom: none;
 }
 
-/* Collapsible content - simple grid animation */
+/* * Better fit: Seamless visual connection between header and content */
+.analysis-panel:has(.collapsible-header) .collapsible-content {
+  background: var(--analysis-surface, transparent);
+  border-radius: 0 0 var(--analysis-radius-lg, 12px)
+    var(--analysis-radius-lg, 12px);
+}
+
+/* * Better fit: Smooth border transition */
+.analysis-panel:has(.collapsible-header) .collapsible-content:not(.collapsed) {
+  border-top: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+}
+
+/* Collapsible content - improved grid animation with better fit */
 .collapsible-content {
   display: grid;
   grid-template-rows: 1fr;
   overflow: hidden;
-  transition: grid-template-rows var(--analysis-duration-normal, 200ms)
-    var(--analysis-ease, ease-out);
+  visibility: visible;
+  opacity: 1;
+  transition:
+    grid-template-rows var(--analysis-duration-normal, 250ms)
+      cubic-bezier(0.4, 0, 0.2, 1),
+    opacity var(--analysis-duration-normal, 200ms)
+      var(--analysis-ease, ease-out),
+    visibility 0s 0s,
+    max-height var(--analysis-duration-normal, 250ms)
+      cubic-bezier(0.4, 0, 0.2, 1);
   margin: 0;
   padding: 0;
+  max-height: 10000px; /* * Allow large content to expand naturally */
 }
 
 .collapsible-content.collapsed {
   grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0;
+  transition:
+    grid-template-rows var(--analysis-duration-normal, 250ms)
+      cubic-bezier(0.4, 0, 0.2, 1),
+    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+    visibility 0s var(--analysis-duration-normal, 250ms),
+    max-height var(--analysis-duration-normal, 250ms)
+      cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .collapsible-content-inner {
   min-height: 0;
-  overflow: hidden;
+  overflow: visible; /* * Allow content to scroll naturally */
   padding: var(--analysis-gap-lg, 16px);
   padding-top: var(--analysis-gap-md, 12px);
+  padding-bottom: var(--analysis-gap-lg, 16px);
   margin: 0;
+  /* * Better fit: ensure content doesn't feel cramped */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* When inside analysis-panel with collapsible header, adjust padding */
@@ -270,9 +305,41 @@
   padding-top: var(--analysis-gap-md, 12px);
 }
 
-/* When collapsed, remove padding */
+/* When collapsed, remove padding smoothly */
 .collapsible-content.collapsed .collapsible-content-inner {
   padding: 0;
+  overflow: hidden;
+}
+
+/* * Better fit: Handle overflow for tables and long content */
+.collapsible-content-inner > * {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* * Better fit: Ensure tables scroll horizontally when needed */
+.collapsible-content-inner table {
+  width: 100%;
+  min-width: fit-content;
+}
+
+/* * Better fit: Smooth scrollbar styling */
+.collapsible-content-inner::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.collapsible-content-inner::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.collapsible-content-inner::-webkit-scrollbar-thumb {
+  background: var(--analysis-border, rgb(255 255 255 / 12%));
+  border-radius: 4px;
+}
+
+.collapsible-content-inner::-webkit-scrollbar-thumb:hover {
+  background: var(--analysis-border, rgb(255 255 255 / 20%));
 }
 
 /* Share chevron styles with AnalysisHeader */
@@ -337,5 +404,19 @@
 
   .collapsible-header {
     padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+  }
+
+  /* * Better fit: Optimize padding on mobile */
+  .collapsible-content-inner {
+    padding: var(--analysis-gap-md, 12px);
+    padding-top: var(--analysis-gap-sm, 8px);
+    padding-bottom: var(--analysis-gap-md, 12px);
+  }
+
+  /* * Better fit: Ensure tables are scrollable on mobile */
+  .collapsible-content-inner table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

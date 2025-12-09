@@ -43,6 +43,11 @@ function AnalysisHandlersProvider({
 }) {
   const context = useNameManagementContextSafe();
 
+  // * Return null if context is not available
+  if (!context) {
+    return null;
+  }
+
   // * Initialize analysis mode from URL or prop
   useEffect(() => {
     if (shouldEnableAnalysisMode && !context.analysisMode) {
@@ -150,7 +155,7 @@ const createAnalysisDashboardWrapper = (
     const handleNameHidden =
       onNameHidden ||
       (() => {
-        context.refetch();
+        context?.refetch();
       });
     return (
       <AnalysisDashboardWrapper
@@ -174,6 +179,11 @@ function AnalysisBulkActionsWrapper({
   showToast,
 }) {
   const context = useNameManagementContextSafe();
+
+  // * Return null if context is not available
+  if (!context) {
+    return null;
+  }
 
   const { selectedCount } = context;
   // * Keep both Set format for selection logic and original array for bulk operations
@@ -363,6 +373,11 @@ function TournamentNameGrid({
 }) {
   const context = useNameManagementContextSafe();
 
+  // * Return null if context is not available (component not within NameManagementView)
+  if (!context) {
+    return null;
+  }
+
   // * Admin features only available in analysis mode
   const showAdminFeatures = context.analysisMode && canManageActiveUser;
 
@@ -469,6 +484,7 @@ function TournamentSetupContent({
   // * Lightbox handlers
   const handleImageOpen = useCallback(
     (image) => {
+      if (!galleryImages || !Array.isArray(galleryImages)) return;
       const idx = galleryImages.indexOf(image);
       if (idx !== -1) {
         setLightboxIndex(idx);
@@ -494,7 +510,13 @@ function TournamentSetupContent({
   }, []);
 
   const preloadImages = useMemo(() => {
-    if (!lightboxOpen || galleryImages.length === 0) return [];
+    if (
+      !lightboxOpen ||
+      !galleryImages ||
+      !Array.isArray(galleryImages) ||
+      galleryImages.length === 0
+    )
+      return [];
     const preload = [];
     const prevIndex =
       lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
@@ -525,15 +547,18 @@ function TournamentSetupContent({
     ]
   );
 
-  const lightboxElement = lightboxOpen && (
-    <Lightbox
-      images={galleryImages}
-      currentIndex={lightboxIndex}
-      onClose={handleLightboxClose}
-      onNavigate={handleLightboxNavigate}
-      preloadImages={preloadImages}
-    />
-  );
+  const lightboxElement = lightboxOpen &&
+    galleryImages &&
+    Array.isArray(galleryImages) &&
+    galleryImages.length > 0 && (
+      <Lightbox
+        images={galleryImages}
+        currentIndex={lightboxIndex}
+        onClose={handleLightboxClose}
+        onNavigate={handleLightboxNavigate}
+        preloadImages={preloadImages}
+      />
+    );
 
   if (currentView === "photos") {
     return (

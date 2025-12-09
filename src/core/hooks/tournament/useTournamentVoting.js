@@ -4,6 +4,7 @@ import {
   getPreferencesMap,
   initializeSorterPairs,
 } from "../../../shared/utils/coreUtils";
+import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
 
 /**
  * Hook for handling tournament voting logic
@@ -157,22 +158,8 @@ export function useTournamentVoting({
         history: [...(persistentState.matchHistory || []), matchRecord],
       });
 
-      // * Calculate new round number based on bracket structure
-      let newRoundNumber = roundNumber;
-      if (names.length > 2) {
-        let remainingNames = names.length;
-        let matchesInRound = Math.floor(remainingNames / 2);
-        let matchesPlayed = 0;
-
-        while (matchesPlayed + matchesInRound < nextMatchNumber) {
-          matchesPlayed += matchesInRound;
-          const winners = matchesInRound;
-          const byes = remainingNames % 2;
-          remainingNames = winners + byes;
-          matchesInRound = Math.floor(remainingNames / 2);
-          newRoundNumber++;
-        }
-      }
+      // * Calculate new round number using shared utility function
+      const newRoundNumber = calculateBracketRound(names.length, nextMatchNumber);
 
       setTimeout(() => {
         updateTournamentState({

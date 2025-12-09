@@ -61,12 +61,20 @@ export function computeRating(
 
 // TODO: REVIEW Consider whether matchesPlayed should also be clamped to maxMatches
 
+/**
+ * * Calculate maximum number of rounds needed for a bracket tournament
+ * @param {number} namesCount - Total number of names in the tournament
+ * @returns {number} Maximum round number
+ */
 function calculateMaxRoundForNames(namesCount) {
   let maxRound = 1;
   let remainingNames = namesCount;
 
   while (remainingNames > 1) {
-    remainingNames = Math.ceil(remainingNames / 2);
+    const matchesThisRound = Math.floor(remainingNames / 2);
+    const winners = matchesThisRound; // * 1 winner per match
+    const byes = remainingNames % 2; // * Odd names get a bye
+    remainingNames = winners + byes; // * Total advancing to next round
     maxRound++;
   }
 
@@ -75,6 +83,7 @@ function calculateMaxRoundForNames(namesCount) {
 
 /**
  * * Calculate which bracket round a match belongs to based on total names and match number
+ * Uses explicit winners + byes calculation for accuracy.
  * @param {number} namesCount - Total number of names in the tournament
  * @param {number} matchNumber - The match number (1-indexed)
  * @returns {number} The round number (1-indexed)
@@ -102,14 +111,22 @@ export function calculateBracketRound(namesCount, matchNumber) {
 
   let roundNumber = 1;
   let remainingNames = namesCount;
-  let matchesThisRound = Math.floor(remainingNames / 2);
+  let matchesPlayed = 0;
   const maxRounds = Math.ceil(Math.log2(namesCount)) + 1; // * Safety limit to prevent infinite loops
-  let remainingMatchNumber = matchNumber;
 
-  while (remainingMatchNumber > matchesThisRound && roundNumber < maxRounds) {
-    remainingMatchNumber -= matchesThisRound;
-    remainingNames = Math.ceil(remainingNames / 2);
-    matchesThisRound = Math.floor(remainingNames / 2);
+  while (matchesPlayed < matchNumber - 1 && roundNumber < maxRounds) {
+    const matchesThisRound = Math.floor(remainingNames / 2);
+
+    // * Check if this match is in the current round
+    if (matchesPlayed + matchesThisRound >= matchNumber) {
+      break;
+    }
+
+    // * Move to next round
+    matchesPlayed += matchesThisRound;
+    const winners = matchesThisRound; // * 1 winner per match
+    const byes = remainingNames % 2; // * Odd names get a bye
+    remainingNames = winners + byes; // * Total advancing to next round
     roundNumber++;
   }
 

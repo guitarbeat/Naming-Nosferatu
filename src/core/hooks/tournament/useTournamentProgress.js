@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from "react";
+import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
 
 export function useTournamentProgress({
   namesLength,
@@ -75,31 +76,14 @@ export function useTournamentProgress({
       const previousMatchNumber =
         remainingHistory.length > 0
           ? remainingHistory[remainingHistory.length - 1]?.matchNumber ||
-            currentMatchNumber
+          currentMatchNumber
           : currentMatchNumber;
 
-      let calculatedRound = 1;
-
-      // * For 2 names, there's only 1 match in round 1
-      if (namesLength === 2) {
-        calculatedRound = 1;
-      } else {
-        // * For bracket: matches per round = Math.floor(remainingNames / 2)
-        // * Winners advancing = matchesInRound + (remainingNames % 2) [winners + byes]
-        let remainingNames = namesLength;
-        let matchesInRound = Math.floor(remainingNames / 2);
-        let matchesPlayed = 0;
-
-        while (matchesPlayed + matchesInRound < previousMatchNumber) {
-          matchesPlayed += matchesInRound;
-          // * Winners advancing = matches (1 winner each) + byes (if odd number)
-          const winners = matchesInRound; // 1 winner per match
-          const byes = remainingNames % 2; // Odd names get a bye
-          remainingNames = winners + byes; // Total advancing to next round
-          matchesInRound = Math.floor(remainingNames / 2);
-          calculatedRound++;
-        }
-      }
+      // * Use shared utility function for round calculation
+      const calculatedRound = calculateBracketRound(
+        namesLength,
+        previousMatchNumber
+      );
 
       if (calculatedRound !== roundNumber) {
         updateTournamentState({ roundNumber: calculatedRound });

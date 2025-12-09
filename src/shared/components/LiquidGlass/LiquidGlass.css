@@ -1,6 +1,11 @@
 .liquid-glass {
   position: relative;
-  border-radius: calc(var(--radius, 16) * 1px);
+  /* * Pill-shaped: use minimum of specified radius or half the height (ensures true pill shape) */
+  border-radius: min(
+    calc(var(--radius, 999) * 1px),
+    calc(var(--height, 80) * 0.5px),
+    9999px
+  );
   overflow: hidden;
   z-index: 1;
 }
