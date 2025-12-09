@@ -306,8 +306,8 @@
   text-align: center;
   font-weight: var(--font-weight-normal);
   line-height: var(--leading-tight);
-  color: var(--text-secondary);
-  opacity: 0.9;
+  color: var(--text-primary);
+  opacity: 1;
   transition: var(--transition-opacity);
 }
 
