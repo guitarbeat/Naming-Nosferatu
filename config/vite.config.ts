@@ -68,92 +68,9 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: resolveFromRoot('dist'),
       emptyOutDir: true,
-      // * Optimize chunk splitting for better caching and parallel loading
       rollupOptions: {
         output: {
-          // * Ensure proper module format for vendor chunks to prevent export issues
           format: 'es',
-          // * Manual chunk splitting strategy - prevents deployment failures from large chunks
-          manualChunks: (id) => {
-            // * Vendor chunks - separate large dependencies to improve caching and reduce initial load
-            if (id.includes('node_modules')) {
-              // * React and React DOM in separate chunk (most critical, changes rarely)
-              if (
-                id.includes('react') ||
-                id.includes('react-dom') ||
-                id.includes('react/jsx-runtime') ||
-                id.includes('scheduler') ||
-                id.includes('react/jsx-dev-runtime')
-              ) {
-                return 'react-vendor';
-              }
-              
-              if (id.includes('@tanstack/react-query')) {
-                return 'query-vendor';
-              }
-
-              // * Supabase client in separate chunk (large, changes infrequently)
-              if (id.includes('@supabase')) {
-                return 'supabase-vendor';
-              }
-              
-              // * UI libraries (Radix, Heroicons, Lucide) - often used together
-              if (
-                id.includes('@radix-ui') ||
-                id.includes('@heroicons') ||
-                id.includes('lucide-react')
-              ) {
-                return 'ui-vendor';
-              }
-              
-              // * Drag and drop library (large, only used in specific features)
-              if (id.includes('@hello-pangea')) {
-                return 'dnd-vendor';
-              }
-              
-              if (
-                id.includes('class-variance-authority') ||
-                id.includes('tailwind-merge') ||
-                id.includes('clsx')
-              ) {
-                return 'utils-vendor';
-              }
-
-              // * State management (Zustand) - small but frequently used
-              if (id.includes('zustand')) {
-                return 'state-vendor';
-              }
-              
-              // * All other node_modules go into a common vendor chunk
-              return 'vendor';
-            }
-            
-            // * Split large feature modules to prevent chunk size issues
-            // * Results component is already large (106KB), keep it separate
-            if (id.includes('/features/tournament/Results')) {
-              return 'results-feature';
-            }
-            
-            // * Tournament component is already split, but ensure it stays separate
-            if (id.includes('/features/tournament/Tournament') && !id.includes('TournamentSetup')) {
-              return 'tournament-feature';
-            }
-            
-            // * TournamentSetup can be its own chunk
-            if (id.includes('/features/tournament/TournamentSetup')) {
-              return 'tournament-setup-feature';
-            }
-            
-            // * Supabase services (legacy client is large)
-            if (id.includes('/shared/services/supabase/legacy')) {
-              return 'supabase-legacy';
-            }
-            
-            // * Shared components that are large
-            if (id.includes('/shared/components/NameManagementView')) {
-              return 'name-management';
-            }
-          },
           // * Optimize chunk file names for better caching
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',

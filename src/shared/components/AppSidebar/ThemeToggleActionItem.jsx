@@ -28,57 +28,47 @@ export function ThemeToggleActionItem({
       ? `Following system preference (${currentTheme} right now)`
       : `Using ${themePreference} mode`;
 
+  const handleSelect = (value) => {
+    if (value === themePreference) return;
+    onChange(value);
+  };
+
   return (
-    <SidebarMenuItem className="theme-toggle">
-      <fieldset
-        className="theme-toggle__fieldset"
-        aria-describedby={`${groupId}-desc`}
-      >
-        <legend id={`${groupId}-label`} className="theme-toggle__legend">
-          Theme
-        </legend>
-        <p id={`${groupId}-desc`} className="sr-only">
-          Choose light, dark, or follow your device setting. Your choice
-          persists between visits.
-        </p>
-        <div
-          className="theme-toggle__options"
-          role="radiogroup"
-          aria-labelledby={`${groupId}-label`}
-        >
-          {options.map((option) => {
-            const isSelected = themePreference === option.value;
-            const optionId = `${groupId}-${option.value}`;
-            return (
-              <label
-                key={option.value}
-                className={`theme-toggle__option ${
-                  isSelected ? "theme-toggle__option--active" : ""
-                }`}
-                htmlFor={optionId}
-              >
-                <input
-                  type="radio"
-                  name={`${groupId}-theme`}
-                  id={optionId}
-                  value={option.value}
-                  checked={isSelected}
-                  onChange={(event) => onChange(event.target.value)}
-                />
-                <span aria-hidden="true" className="theme-toggle__icon">
-                  {option.icon ?? (
-                    <span className="theme-toggle__system-icon">A</span>
-                  )}
-                </span>
-                <span className="theme-toggle__label-text">{option.label}</span>
-              </label>
-            );
-          })}
-        </div>
-        <div className="theme-toggle__status" aria-live="polite">
+    <SidebarMenuItem className="theme-toggle theme-toggle--compact">
+      <div className="theme-toggle__header" id={`${groupId}-label`}>
+        <span className="theme-toggle__title">Theme</span>
+        <span className="theme-toggle__status" aria-live="polite">
           {statusLabel}
-        </div>
-      </fieldset>
+        </span>
+      </div>
+      <div
+        className="theme-toggle__chips"
+        role="radiogroup"
+        aria-labelledby={`${groupId}-label`}
+      >
+        {options.map((option) => {
+          const isSelected = themePreference === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              className={`theme-toggle__chip ${
+                isSelected ? "theme-toggle__chip--active" : ""
+              }`}
+              onClick={() => handleSelect(option.value)}
+              aria-pressed={isSelected}
+              aria-label={option.label}
+            >
+              <span aria-hidden="true" className="theme-toggle__icon">
+                {option.icon ?? (
+                  <span className="theme-toggle__system-icon">A</span>
+                )}
+              </span>
+              <span className="theme-toggle__chip-label">{option.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </SidebarMenuItem>
   );
 }

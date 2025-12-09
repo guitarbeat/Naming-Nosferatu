@@ -67,15 +67,20 @@ export function AppSidebar({
 
   useEffect(() => {
     // * Ensure indicator placement on mount and resize with proper cleanup
-    const handleResize = () => updateIndicator();
-    updateIndicator();
+    if (typeof window === "undefined") return undefined;
+    const handleResize = () => requestAnimationFrame(updateIndicator);
+    const rafId = requestAnimationFrame(updateIndicator);
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", handleResize);
+    };
   }, [updateIndicator]);
 
   useEffect(() => {
     // * Refresh indicator on view/mode change
-    updateIndicator();
+    const rafId = requestAnimationFrame(updateIndicator);
+    return () => cancelAnimationFrame(rafId);
   }, [view, isAnalysisMode, currentRoute, updateIndicator]);
 
   // * Toggle analysis mode
@@ -148,133 +153,134 @@ export function AppSidebar({
   );
 
   return (
-    <Sidebar className="app-sidebar">
-      <div className="navbar-content">
-        {/* Left Section: Navigation Items */}
-        <NavbarSection className="navbar-left">
-          <SidebarGroup open={true}>
-            <SidebarGroupContent ref={navRef} className="nav-items-container">
-              {/* Combined Logo + Tournament Home Button */}
-              <SidebarMenuItem
-                data-active={view === "tournament" && !isAnalysisMode}
-              >
-                <SidebarMenuButton asChild>
-                  <button
-                    type="button"
-                    onClick={() => setView("tournament")}
-                    className="sidebar-home-button"
-                    data-active={view === "tournament" && !isAnalysisMode}
-                    aria-label="Go to Tournament home"
-                  >
-                    <div className="sidebar-logo-icon">
-                      <video
-                        className="sidebar-logo-video"
-                        width="24"
-                        height="24"
-                        muted
-                        loop
-                        autoPlay
-                        playsInline
-                        preload="none"
-                        aria-label="Cat animation"
-                        onError={(e) => {
-                          // * Fallback to image if video fails to load
-                          e.target.style.display = "none";
-                          const img = e.target.nextElementSibling;
-                          if (img) img.style.display = "block";
-                        }}
-                      >
-                        <source
-                          src="/assets/images/cat.webm"
-                          type="video/webm"
-                        />
-                        <img
-                          src="/assets/images/cat.gif"
-                          alt="Cat animation"
+    <Sidebar className="app-sidebar" role="navigation" aria-label="Primary">
+      <div className="navbar-shell">
+        <div className="navbar-content">
+          {/* Left Section: Navigation Items */}
+          <NavbarSection className="navbar-left">
+            <SidebarGroup open={true}>
+              <SidebarGroupContent ref={navRef} className="nav-items-container">
+                {/* Combined Logo + Tournament Home Button */}
+                <SidebarMenuItem
+                  data-active={view === "tournament" && !isAnalysisMode}
+                >
+                  <SidebarMenuButton asChild>
+                    <button
+                      type="button"
+                      onClick={() => setView("tournament")}
+                      className="sidebar-home-button"
+                      data-active={view === "tournament" && !isAnalysisMode}
+                      aria-label="Go to Tournament home"
+                    >
+                      <div className="sidebar-logo-icon">
+                        <video
+                          className="sidebar-logo-video"
                           width="24"
                           height="24"
-                          loading="lazy"
-                          decoding="async"
-                          fetchPriority="low"
-                          style={{ display: "none" }}
-                        />
-                      </video>
-                    </div>
-                    <span>Tournament</span>
-                  </button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+                          muted
+                          loop
+                          autoPlay
+                          playsInline
+                          preload="none"
+                          aria-label="Cat animation"
+                          onError={(e) => {
+                            // * Fallback to image if video fails to load
+                            e.target.style.display = "none";
+                            const img = e.target.nextElementSibling;
+                            if (img) img.style.display = "block";
+                          }}
+                        >
+                          <source
+                            src="/assets/images/cat.webm"
+                            type="video/webm"
+                          />
+                          <img
+                            src="/assets/images/cat.gif"
+                            alt="Cat animation"
+                            width="24"
+                            height="24"
+                            loading="lazy"
+                            decoding="async"
+                            fetchPriority="low"
+                            style={{ display: "none" }}
+                          />
+                        </video>
+                      </div>
+                      <span>Tournament</span>
+                    </button>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
 
-              {/* Main Navigation */}
-              {navItems.map((item) => (
-                <MenuNavItem
-                  key={item.key}
-                  itemKey={item.key}
-                  icon={item.icon}
-                  label={item.label}
-                  view={view}
-                  onClick={item.onClick || setView}
-                  isActive={item.isActive}
-                  href={item.href}
-                  ariaLabel={item.ariaLabel}
-                  data-active={item.isActive}
-                />
-              ))}
+                {/* Main Navigation */}
+                {navItems.map((item) => (
+                  <MenuNavItem
+                    key={item.key}
+                    itemKey={item.key}
+                    icon={item.icon}
+                    label={item.label}
+                    view={view}
+                    onClick={item.onClick || setView}
+                    isActive={item.isActive}
+                    href={item.href}
+                    ariaLabel={item.ariaLabel}
+                    data-active={item.isActive}
+                  />
+                ))}
 
-              {/* Sliding indicator with bounce */}
-              <div
-                className="navbar-indicator"
-                style={{
-                  transform: `translateX(${indicator.left}px)`,
-                  width: "12px",
-                  height: "12px",
-                  opacity: indicator.opacity,
-                }}
-              />
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </NavbarSection>
-
-        {/* Right Section: Actions */}
-        <NavbarSection className="navbar-right" alignRight>
-          {/* Actions Section */}
-          <SidebarGroup open={true}>
-            <SidebarGroupContent>
-              {/* Suggest a Name */}
-              <MenuActionItem
-                icon={SuggestIcon}
-                label="Suggest Name"
-                onClick={onOpenSuggestName}
-                className="sidebar-suggest-button"
-                ariaLabel="Suggest a new cat name"
-                condition={true}
-              />
-
-              {/* Theme Toggle */}
-              <ThemeToggleActionItem
-                onChange={onThemePreferenceChange}
-                themePreference={themePreference}
-                currentTheme={currentTheme}
-              />
-            </SidebarGroupContent>
-          </SidebarGroup>
-
-          {/* User Display and Logout - Stacked vertically */}
-          {isLoggedIn && userName && (
-            <SidebarGroup open={true}>
-              <SidebarGroupContent>
-                <UserDisplay userName={userName} isAdmin={isAdmin} />
-                <MenuActionItem
-                  icon={LogoutIcon}
-                  label="Logout"
-                  onClick={onLogout}
-                  className="sidebar-logout-button"
-                  condition={isLoggedIn}
+                {/* Sliding indicator with bounce */}
+                <div
+                  className="navbar-indicator"
+                  style={{
+                    transform: `translateX(${indicator.left}px)`,
+                    width: "12px",
+                    height: "12px",
+                    opacity: indicator.opacity,
+                  }}
                 />
               </SidebarGroupContent>
             </SidebarGroup>
-          )}
-        </NavbarSection>
+          </NavbarSection>
+
+          <div className="navbar-divider" aria-hidden="true" />
+
+          {/* Right Section: Actions */}
+          <NavbarSection className="navbar-right" alignRight>
+            <div className="navbar-action-tray">
+              <SidebarGroup open={true} className="navbar-actions-shell">
+                <SidebarGroupContent className="navbar-actions">
+                  <MenuActionItem
+                    icon={SuggestIcon}
+                    label="Suggest Name"
+                    onClick={onOpenSuggestName}
+                    className="sidebar-suggest-button"
+                    ariaLabel="Suggest a new cat name"
+                    condition={true}
+                  />
+                  <ThemeToggleActionItem
+                    onChange={onThemePreferenceChange}
+                    themePreference={themePreference}
+                    currentTheme={currentTheme}
+                  />
+                </SidebarGroupContent>
+              </SidebarGroup>
+
+              {isLoggedIn && userName && (
+                <SidebarGroup open={true} className="navbar-user-shell">
+                  <SidebarGroupContent className="navbar-user">
+                    <UserDisplay userName={userName} isAdmin={isAdmin} />
+                    <MenuActionItem
+                      icon={LogoutIcon}
+                      label="Logout"
+                      onClick={onLogout}
+                      className="sidebar-logout-button"
+                      condition={isLoggedIn}
+                    />
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              )}
+            </div>
+          </NavbarSection>
+        </div>
       </div>
     </Sidebar>
   );
