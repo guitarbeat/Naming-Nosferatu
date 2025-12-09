@@ -8,10 +8,73 @@ import { getUserStats } from "../../../shared/services/supabase/api";
 
 /**
  * * Use database-optimized stats calculation
- * @param {string} userName - User name to fetch stats for
- * @returns {Promise<Object|null>} User stats or null
+ * @param {string|null} userName - User name to fetch stats for, or null for aggregate stats from all users
+ * @returns {Promise<Object|null>} User stats or aggregate stats or null
  */
 export async function fetchUserStatsFromDB(userName) {
+  // * If userName is null, calculate aggregate stats from all users
+  if (userName === null) {
+    try {
+      const supabaseClient = await resolveSupabaseClient();
+      if (!supabaseClient) return null;
+
+      // * Fetch aggregate stats from all users
+      const { data: ratings, error: ratingsError } = await supabaseClient
+        .from("cat_name_ratings")
+        .select("rating, wins, losses, user_name");
+
+      if (ratingsError) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error fetching aggregate ratings:", ratingsError);
+        }
+        return null;
+      }
+
+      const { data: selections, error: selectionsError } = await supabaseClient
+        .from("tournament_selections")
+        .select("user_name, tournament_id");
+
+      if (selectionsError) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error fetching aggregate selections:", selectionsError);
+        }
+        return null;
+      }
+
+      // * Calculate aggregate metrics
+      const totalRatings = ratings?.length || 0;
+      const totalWins = ratings?.reduce((sum, r) => sum + (r.wins || 0), 0) || 0;
+      const totalLosses = ratings?.reduce((sum, r) => sum + (r.losses || 0), 0) || 0;
+      const avgRating = totalRatings > 0
+        ? Math.round(ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) / totalRatings)
+        : 1500;
+      const uniqueUsers = new Set([
+        ...(ratings?.map(r => r.user_name) || []),
+        ...(selections?.map(s => s.user_name) || [])
+      ]).size;
+      const totalTournaments = new Set(selections?.map(s => s.tournament_id) || []).size;
+      const totalSelections = selections?.length || 0;
+
+      return {
+        names_rated: totalRatings,
+        active_ratings: totalRatings,
+        hidden_ratings: 0,
+        avg_rating_given: avgRating,
+        total_wins: totalWins,
+        total_losses: totalLosses,
+        total_tournaments: totalTournaments,
+        total_selections: totalSelections,
+        unique_users: uniqueUsers,
+        is_aggregate: true,
+      };
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Error calculating aggregate stats:", error);
+      }
+      return null;
+    }
+  }
+
   if (!userName) return null;
 
   if (!(await resolveSupabaseClient())) {
@@ -134,7 +197,7 @@ function generateImprovementTip(
 
 /**
  * * Calculate selection analytics using tournament_selections table
- * @param {string} userName - User name to calculate stats for
+ * @param {string|null} userName - User name to calculate stats for, or null for aggregate stats from all users
  * @returns {Promise<Object|null>} Selection statistics or null
  */
 export async function calculateSelectionStats(userName) {
@@ -142,11 +205,16 @@ export async function calculateSelectionStats(userName) {
     const supabaseClient = await resolveSupabaseClient();
     if (!supabaseClient) return null;
 
-    // Query tournament_selections table directly
-    const { data: selections, error } = await supabaseClient
+    // * Build query - if userName is null, fetch all selections (aggregate)
+    let selectionsQuery = supabaseClient
       .from("tournament_selections")
-      .select("name_id, name, tournament_id, selected_at")
-      .eq("user_name", userName)
+      .select("name_id, name, tournament_id, selected_at, user_name");
+
+    if (userName !== null) {
+      selectionsQuery = selectionsQuery.eq("user_name", userName);
+    }
+
+    const { data: selections, error } = await selectionsQuery
       .order("selected_at", { ascending: false });
 
     if (error) {
@@ -160,11 +228,14 @@ export async function calculateSelectionStats(userName) {
       return null;
     }
 
-    // Calculate basic metrics
+    // * Calculate basic metrics
     const totalSelections = selections.length;
     const uniqueTournaments = new Set(selections.map((s) => s.tournament_id))
       .size;
     const uniqueNames = new Set(selections.map((s) => s.name_id)).size;
+    const uniqueUsers = userName === null
+      ? new Set(selections.map((s) => s.user_name)).size
+      : 1;
     const avgSelectionsPerName =
       uniqueNames > 0
         ? Math.round((totalSelections / uniqueNames) * 10) / 10
@@ -241,25 +312,34 @@ export async function calculateSelectionStats(userName) {
     // Cross-user ranking not supported without a view; omit
     const userRank = "N/A";
 
-    // Generate insights
-    const insights = {
-      selectionPattern: generateSelectionPattern(selections),
-      preferredCategories: await generatePreferredCategories(selections),
-      improvementTip: generateImprovementTip(
-        totalSelections,
-        uniqueTournaments,
-        currentStreak,
-      ),
-    };
+    // * Generate insights - adjust for aggregate vs individual user
+    const isAggregate = userName === null;
+    const insights = isAggregate
+      ? {
+        selectionPattern: "Aggregate data from all users",
+        preferredCategories: await generatePreferredCategories(selections),
+        improvementTip: `Total activity across ${uniqueUsers || 0} users`,
+      }
+      : {
+        selectionPattern: generateSelectionPattern(selections),
+        preferredCategories: await generatePreferredCategories(selections),
+        improvementTip: generateImprovementTip(
+          totalSelections,
+          uniqueTournaments,
+          currentStreak,
+        ),
+      };
 
     return {
       totalSelections,
       totalTournaments: uniqueTournaments,
       avgSelectionsPerName,
       mostSelectedName,
-      currentStreak,
-      maxStreak,
+      currentStreak: userName === null ? 0 : currentStreak, // Streaks don't apply to aggregate
+      maxStreak: userName === null ? 0 : maxStreak, // Streaks don't apply to aggregate
       userRank: userRank || "N/A",
+      uniqueUsers: userName === null ? uniqueUsers : 1,
+      isAggregate: userName === null,
       insights,
       // * Per-name selection data for filtering
       nameSelectionCounts, // Map of name_id -> selection count

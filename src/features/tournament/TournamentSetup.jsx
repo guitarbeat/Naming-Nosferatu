@@ -464,6 +464,8 @@ function TournamentSetupContent({
     activeUser,
     canManageActiveUser,
     userSelectOptions,
+    userFilter,
+    setUserFilter,
   } = useProfileUser(userName);
   const { stats, selectionStats, fetchSelectionStats } =
     useProfileStats(activeUser);
@@ -598,6 +600,8 @@ function TournamentSetupContent({
             isAdmin: canManageActiveUser,
             showUserFilter: profileIsAdmin,
             userSelectOptions,
+            userFilter,
+            setUserFilter,
             stats,
             selectionStats,
             onToggleVisibility: (nameId) =>

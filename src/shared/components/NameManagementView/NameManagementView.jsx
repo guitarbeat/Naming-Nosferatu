@@ -126,7 +126,10 @@ export function NameManagementView({
   const [filterStatus, setFilterStatus] = useState(
     FILTER_OPTIONS.VISIBILITY.VISIBLE
   );
-  const [userFilter, setUserFilter] = useState("all");
+  // * Use userFilter from profileProps if available, otherwise use local state
+  const [localUserFilter, setLocalUserFilter] = useState("all");
+  const userFilter = profileProps.userFilter ?? localUserFilter;
+  const setUserFilter = profileProps.setUserFilter ?? setLocalUserFilter;
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectionFilter, setSelectionFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");

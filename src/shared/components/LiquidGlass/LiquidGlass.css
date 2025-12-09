@@ -43,7 +43,8 @@
   );
 
   /* * Liquid glass uses backdrop-filter with SVG filter for refraction effect */
-  backdrop-filter: url(var(--filter-id, none)) saturate(var(--saturation, 1));
+  /* * Note: backdrop-filter with url() is set via JavaScript for browser compatibility */
+  backdrop-filter: var(--backdrop-filter, blur(8px) saturate(1));
 
   /* * Subtle glass-like shadows */
   box-shadow:

@@ -128,7 +128,12 @@ function LiquidGlass({
         );
         containerRef.current.style.setProperty("--saturation", `${saturation}`);
         containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
-        // * Apply filter with saturation
+        // * Apply filter with saturation - set as CSS variable for CSS fallback
+        containerRef.current.style.setProperty(
+          "--backdrop-filter",
+          `url(#${id}) saturate(${saturation})`
+        );
+        // * Also set directly for immediate application
         containerRef.current.style.backdropFilter = `url(#${id}) saturate(${saturation})`;
       }
 
