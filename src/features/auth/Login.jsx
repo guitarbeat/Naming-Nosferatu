@@ -252,6 +252,9 @@ function Login({ onLogin }) {
         {/* Premium Hero Section - Tournament Info */}
         <div className={styles.heroContent}>
           <h1 className={styles.welcomeTitle}>Ready to Rate Cat Names?</h1>
+          <p className={styles.welcomeText}>
+            Enter your name to get started. Compare names and find your favorite.
+          </p>
         </div>
 
         {/* Premium Form Card - Call to Action */}
