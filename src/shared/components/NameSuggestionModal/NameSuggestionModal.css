@@ -12,17 +12,60 @@
 }
 
 .name-suggestion-modal-glass {
-  overflow-y: auto;
+  overflow: hidden;
   animation: slideUp 0.3s var(--ease-out);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  max-width: 90vw;
+}
+
+.name-suggestion-modal-glass .liquid-glass-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .name-suggestion-modal {
   width: 100%;
   height: 100%;
   padding: var(--space-6);
+  padding-bottom: var(--space-6);
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
+  border-radius: inherit;
+  /* * Ensure content doesn't get cut off */
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border) / 50%) transparent;
+  /* * Ensure padding is included in width calculation */
+  max-width: 100%;
+}
+
+.name-suggestion-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.name-suggestion-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.name-suggestion-modal::-webkit-scrollbar-thumb {
+  background: hsl(var(--border) / 50%);
+  border-radius: 4px;
+}
+
+.name-suggestion-modal::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border) / 70%);
 }
 
 .name-suggestion-modal-header {
@@ -76,6 +119,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
 }
 
 .name-suggestion-form-group {
@@ -93,6 +139,7 @@
 .name-suggestion-form-input,
 .name-suggestion-form-textarea {
   width: 100%;
+  max-width: 100%;
   padding: var(--space-3);
   font-size: var(--text-base);
   font-family: inherit;
@@ -101,6 +148,7 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   transition: all var(--duration-fast) var(--ease-out);
+  box-sizing: border-box;
 }
 
 .name-suggestion-form-input:focus,
@@ -143,7 +191,11 @@
   display: flex;
   gap: var(--space-3);
   justify-content: flex-end;
-  margin-top: var(--space-2);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .name-suggestion-modal-cancel,
@@ -154,6 +206,9 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: fit-content;
 }
 
 .name-suggestion-modal-cancel {

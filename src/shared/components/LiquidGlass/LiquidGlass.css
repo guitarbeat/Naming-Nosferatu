@@ -1,10 +1,9 @@
 .liquid-glass {
   position: relative;
-  /* * Pill-shaped: use minimum of specified radius or half the height (ensures true pill shape) */
+  /* * Use specified radius, but cap at half height to prevent over-rounding for tall elements */
   border-radius: min(
     calc(var(--radius, 999) * 1px),
-    calc(var(--height, 80) * 0.5px),
-    9999px
+    calc(var(--height, 80) * 0.5 * 1px)
   );
   overflow: hidden;
   z-index: 1;

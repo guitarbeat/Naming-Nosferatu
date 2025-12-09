@@ -196,12 +196,12 @@ export function NameSuggestionModal({ isOpen, onClose }) {
       <LiquidGlass
         width={500}
         height={600}
-        radius={16}
-        scale={-180}
-        saturation={1.1}
+        radius={20}
+        scale={-80}
+        saturation={1.05}
         frost={0.08}
-        inputBlur={11}
-        outputBlur={0.7}
+        inputBlur={8}
+        outputBlur={1.2}
         className="name-suggestion-modal-glass"
         id="name-suggestion-modal-filter"
         style={{
@@ -211,6 +211,9 @@ export function NameSuggestionModal({ isOpen, onClose }) {
           transform: "translate(-50%, -50%)",
           width: "min(90vw, 500px)",
           maxHeight: "90vh",
+          height: "auto",
+          minHeight: "400px",
+          maxWidth: "min(90vw, 500px)",
           zIndex: "calc(var(--z-modal) + 1)",
         }}
       >

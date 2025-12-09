@@ -44,11 +44,31 @@ export default function ViewRouter({
   }
 
   // * Show Dashboard (Results + Analysis) if on /results or /analysis routes
-  // * Dashboard can show personal results if tournament is complete, or global data anytime
-  const shouldShowDashboard = isRoute("/results") || isRoute("/analysis");
+  // * Check route path (without query params) to determine if we should show dashboard
+  const currentPath =
+    typeof window !== "undefined"
+      ? window.location.pathname
+      : currentRoute.split("?")[0].split("#")[0];
+  const shouldShowDashboard =
+    currentPath === "/results" || currentPath === "/analysis";
 
   if (shouldShowDashboard) {
     const hasPersonalData = tournament.isComplete && tournament.names !== null;
+    
+    // * Check URL for analysis parameter to determine initial view mode
+    const urlParams =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams();
+    const isAnalysisMode = urlParams.get("analysis") === "true";
+    
+    // * Determine mode: if analysis=true, show global only; if /results, show personal (or both if has data)
+    const dashboardMode = isAnalysisMode
+      ? "global"
+      : hasPersonalData
+        ? "personal"
+        : "global";
+
     return (
       <Dashboard
         personalRatings={hasPersonalData ? tournament.ratings : null}
@@ -57,7 +77,7 @@ export default function ViewRouter({
         onStartNew={onStartNewTournament}
         onUpdateRatings={onUpdateRatings}
         userName={userName}
-        mode="both"
+        mode={dashboardMode}
       />
     );
   }

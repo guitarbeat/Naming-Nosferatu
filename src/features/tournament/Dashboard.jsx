@@ -54,9 +54,25 @@ function Dashboard({
   isAdmin = false,
   mode = "both",
 }) {
-  const [viewMode, setViewMode] = useState(
-    mode === "personal" ? "personal" : "global"
-  );
+  // * Initialize view mode based on prop: "personal" shows personal, "global" shows global, "both" defaults to personal if data exists
+  const [viewMode, setViewMode] = useState(() => {
+    if (mode === "personal") return "personal";
+    if (mode === "global") return "global";
+    // * For "both" mode, default to personal if data exists, otherwise global
+    const hasPersonalData =
+      personalRatings && Object.keys(personalRatings).length > 0;
+    return hasPersonalData ? "personal" : "global";
+  });
+
+  // * Sync viewMode with mode prop changes (e.g., when URL parameter changes)
+  useEffect(() => {
+    if (mode === "personal") {
+      setViewMode("personal");
+    } else if (mode === "global") {
+      setViewMode("global");
+    }
+    // * For "both" mode, don't force change - let user toggle
+  }, [mode]);
   const [dataView, setDataView] = useState("table"); // "table" | "chart" | "insights"
   const [isLoading, setIsLoading] = useState(false);
 
