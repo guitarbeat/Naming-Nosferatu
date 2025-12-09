@@ -811,7 +811,7 @@ body:has(.analysis-mode-banner)::after {
 }
 
 /* ==========================================================================
-   ANALYSIS TOGGLE - Sidebar Mode Switch
+   ANALYSIS TOGGLE - Navbar Mode Switch
    ========================================================================== */
 .analysis-toggle {
   position: relative;

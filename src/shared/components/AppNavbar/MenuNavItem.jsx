@@ -1,10 +1,10 @@
 /**
  * @module MenuNavItem
- * @description Reusable navigation item component for sidebar menu
+ * @description Reusable navigation item component for navbar menu
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { NavbarMenuButton, NavbarMenuItem } from "../ui/navbar";
 
 /**
  * * Reusable navigation item component
@@ -45,8 +45,8 @@ export function MenuNavItem({
   };
 
   return (
-    <SidebarMenuItem key={itemKey} data-active={isActive} {...rest}>
-      <SidebarMenuButton asChild>
+    <NavbarMenuItem key={itemKey} data-active={isActive} {...rest}>
+      <NavbarMenuButton asChild>
         <a
           href={href}
           onClick={handleClick}
@@ -59,8 +59,8 @@ export function MenuNavItem({
           <Icon />
           <span className="nav-item-label">{label}</span>
         </a>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+      </NavbarMenuButton>
+    </NavbarMenuItem>
   );
 }
 

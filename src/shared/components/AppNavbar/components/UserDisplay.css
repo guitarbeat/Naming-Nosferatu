@@ -1,6 +1,6 @@
 /* UserDisplay Component - Compact Horizontal Design */
 
-.sidebar-user-display {
+.navbar-user-display {
   position: relative;
   display: flex;
   flex-direction: row;
@@ -15,14 +15,14 @@
   min-width: 0;
 }
 
-.sidebar-user-display__content {
+.navbar-user-display__content {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   min-width: 0;
 }
 
-.sidebar-user-display__text {
+.navbar-user-display__text {
   display: flex;
   flex-direction: row;
   gap: var(--space-2);
@@ -30,7 +30,7 @@
   min-width: 0;
 }
 
-.sidebar-user-display__name {
+.navbar-user-display__name {
   display: block;
   overflow: hidden;
   font-size: var(--text-sm);
@@ -41,7 +41,7 @@
   transition: color 0.2s ease;
 }
 
-.sidebar-user-display__admin-label {
+.navbar-user-display__admin-label {
   display: inline-flex;
   align-items: center;
   padding: 2px 6px;
@@ -62,25 +62,25 @@
 }
 
 /* Light theme */
-:root[data-theme="light"] .sidebar-user-display {
+:root[data-theme="light"] .navbar-user-display {
   background: hsl(var(--accent) / 10%);
 }
 
-:root[data-theme="light"] .sidebar-user-display__name {
+:root[data-theme="light"] .navbar-user-display__name {
   color: hsl(var(--foreground) / 90%);
 }
 
 /* Mobile responsive */
 @media (width <= 768px) {
-  .sidebar-user-display {
+  .navbar-user-display {
     padding: 0.75rem 0.5rem;
   }
 
-  .sidebar-user-display__text {
+  .navbar-user-display__text {
     display: none;
   }
 
-  .sidebar-user-display__icon {
+  .navbar-user-display__icon {
     width: 2rem;
     height: 2rem;
     font-size: 0.75rem;
@@ -89,15 +89,15 @@
 
 /* Mobile responsive */
 @media (width <= 768px) {
-  .sidebar-user-display {
+  .navbar-user-display {
     padding: var(--space-1) var(--space-2);
   }
 
-  .sidebar-user-display__name {
+  .navbar-user-display__name {
     max-width: 80px;
   }
 
-  .sidebar-user-display__admin-label {
+  .navbar-user-display__admin-label {
     display: none;
   }
 }

@@ -45,6 +45,8 @@ export { CollapsibleSection } from "./CollapsibleSection";
 export { CollapsibleHeader, CollapsibleContent } from "./CollapsibleHeader";
 export { BarChart } from "./BarChart";
 export { default as ReadabilityChecker } from "./ReadabilityChecker";
+export { default as LiquidGlass } from "./LiquidGlass";
+export { useLiquidGlass } from "./LiquidGlass/useLiquidGlass";
 
 // * Named exports
 export {

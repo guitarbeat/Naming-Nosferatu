@@ -89,7 +89,7 @@ vi.mock("@core/store/useAppStore", () => {
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
-      () => selector(storeState),
+      () => selector(storeState)
     );
 
   const mergeState = (partial) => {
@@ -164,8 +164,8 @@ vi.mock("@components/ViewRouter/ViewRouter", () => ({
 //     ) : null,
 // }));
 
-vi.mock("./shared/components/AppSidebar/AppSidebar", () => ({
-  AppSidebar: () => (
+vi.mock("./shared/components/AppNavbar/AppNavbar", () => ({
+  AppNavbar: () => (
     <aside>
       <button type="button" aria-label="Go to home page">
         Home

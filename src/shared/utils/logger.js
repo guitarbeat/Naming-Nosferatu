@@ -3,60 +3,46 @@
  * @description Logging utilities for development and debugging.
  */
 
-const isDev = process.env.NODE_ENV === "development";
-const isProd = process.env.NODE_ENV === "production";
+const isDev = import.meta.env.DEV;
+const isProd = import.meta.env.PROD;
+
+// * No-op used to strip logging code from production bundles
+const noop = () => { };
 
 /**
  * * Log messages during development only
  * @param {...any} args - Arguments to log
  */
-export function devLog(...args) {
-  if (isDev) {
+export const devLog = isDev
+  ? (...args) => {
     // * Log with [DEV] prefix - browser console will handle objects properly
-    // * Objects are passed as-is so they can be inspected in console
     console.log("[DEV]", ...args);
   }
-}
+  : noop;
 
 /**
  * * Log warning messages during development only
  * @param {...any} args - Arguments to log
  */
-export function devWarn(...args) {
-  if (isDev) {
-    console.warn("[DEV]", ...args);
-  }
-}
+export const devWarn = isDev ? (...args) => console.warn("[DEV]", ...args) : noop;
 
 /**
  * * Log error messages during development only
  * @param {...any} args - Arguments to log
  */
-export function devError(...args) {
-  if (isDev) {
-    console.error("[DEV]", ...args);
-  }
-}
+export const devError = isDev ? (...args) => console.error("[DEV]", ...args) : noop;
 
 /**
  * * Log info messages during development only
  * @param {...any} args - Arguments to log
  */
-export function devInfo(...args) {
-  if (isDev) {
-    console.info("[DEV]", ...args);
-  }
-}
+export const devInfo = isDev ? (...args) => console.info("[DEV]", ...args) : noop;
 
 /**
  * * Log debug messages during development only
  * @param {...any} args - Arguments to log
  */
-export function devDebug(...args) {
-  if (isDev) {
-    console.debug("[DEV]", ...args);
-  }
-}
+export const devDebug = isDev ? (...args) => console.debug("[DEV]", ...args) : noop;
 
 /**
  * * Execute a callback only in development mode
@@ -77,11 +63,11 @@ export function createLogger(namespace) {
   const prefix = `[${namespace}]`;
 
   return {
-    log: (...args) => isDev && console.log(prefix, ...args),
-    warn: (...args) => isDev && console.warn(prefix, ...args),
-    error: (...args) => isDev && console.error(prefix, ...args),
-    info: (...args) => isDev && console.info(prefix, ...args),
-    debug: (...args) => isDev && console.debug(prefix, ...args),
+    log: isDev ? (...args) => console.log(prefix, ...args) : noop,
+    warn: isDev ? (...args) => console.warn(prefix, ...args) : noop,
+    error: isDev ? (...args) => console.error(prefix, ...args) : noop,
+    info: isDev ? (...args) => console.info(prefix, ...args) : noop,
+    debug: isDev ? (...args) => console.debug(prefix, ...args) : noop,
   };
 }
 

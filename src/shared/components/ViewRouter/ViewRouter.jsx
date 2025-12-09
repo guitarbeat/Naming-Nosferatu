@@ -1,6 +1,5 @@
-import React, { Suspense } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import Loading from "../Loading/Loading";
 import Error from "../Error/Error";
 import Login from "@features/auth/Login";
 import { useRouting } from "@hooks/useRouting";

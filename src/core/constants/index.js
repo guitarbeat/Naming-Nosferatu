@@ -109,13 +109,20 @@ export const SOUND_EFFECTS = [
   { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
 ];
 
+// * Navbar Constants
+export const NAVBAR = {
+  COLLAPSED_WIDTH: 80,
+  EXPANDED_WIDTH: 280,
+  EXPANDED_WIDTH_RESPONSIVE: "clamp(208px, 24vw, 224px)",
+};
+
 // * Local Storage Keys
 export const STORAGE_KEYS = {
   USER: "catNamesUser",
   THEME: "catNamesTheme",
   ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
   ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
-  SIDEBAR_COLLAPSED: "sidebar-collapsed",
+  NAVBAR_COLLAPSED: "navbar-collapsed",
   SOUND_ENABLED: "soundEnabled",
   MUSIC_VOLUME: "musicVolume",
   EFFECTS_VOLUME: "effectsVolume",

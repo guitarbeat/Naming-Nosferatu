@@ -1,17 +1,17 @@
 /**
  * @module AnalysisPanel/components/AnalysisToggle
- * @description Toggle button for Analysis Mode (sidebar)
+ * @description Toggle button for Analysis Mode (navbar)
  */
 
 import PropTypes from "prop-types";
 import { formatShortcut } from "../../../utils/platformUtils";
 
 /**
- * Toggle button for Analysis Mode (sidebar)
+ * Toggle button for Analysis Mode (navbar)
  * @param {Object} props
  * @param {boolean} props.active - Whether Analysis Mode is active
  * @param {Function} props.onClick - Click handler
- * @param {boolean} props.collapsed - Whether sidebar is collapsed
+ * @param {boolean} props.collapsed - Whether navbar is collapsed
  */
 export function AnalysisToggle({ active, onClick, collapsed = false }) {
   const shortcutKey = formatShortcut("A", { ctrl: true, shift: true });

@@ -6,9 +6,10 @@
   width: 100%;
   height: 100vh;
 
-  --sidebar-expanded-width: 280px;
-  --sidebar-collapsed-width: 80px;
-  --sidebar-current-width: var(--sidebar-expanded-width);
+  /* * Navbar widths - keep in sync with NAVBAR constants in core/constants/index.js */
+  --navbar-expanded-width: 280px;
+  --navbar-collapsed-width: 80px;
+  --navbar-current-width: var(--navbar-expanded-width);
 }
 
 .app-main-wrapper {
@@ -64,6 +65,31 @@
 .app-main-wrapper {
   position: relative;
   z-index: 1;
+}
+
+/* * Ensure navbar is always visible, including on login page */
+.app--login .navbar,
+.app--login .app-navbar {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-sticky, 1020);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* * Ensure LiquidGlass wrapper is also visible */
+.app--login .app-navbar-glass {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-sticky, 1020);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 /* Responsive adjustments */

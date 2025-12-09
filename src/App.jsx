@@ -7,18 +7,18 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Import CatBackground directly (no lazy loading to prevent chunking issues)
 import CatBackground from "@components/CatBackground/CatBackground";
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
-import { SidebarProvider, useSidebar } from "./shared/components/ui/sidebar";
-import { AppSidebar } from "./shared/components/AppSidebar/AppSidebar";
+import { NavbarProvider, useNavbar } from "./shared/components/ui/navbar";
+import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
-// * Lazy load heavy components for better code splitting
+// * Core state and routing hooks
 import useUserSession from "@hooks/useUserSession";
 import { useRouting } from "@hooks/useRouting";
 import { useTournamentRoutingSync } from "@hooks/useTournamentRoutingSync";
@@ -28,6 +28,7 @@ import useAppStore, {
 } from "@core/store/useAppStore";
 import { ErrorManager } from "@services/errorManager";
 import { tournamentsAPI } from "@services/supabase/api";
+import { NAVBAR } from "@core/constants";
 import { devLog, devWarn, devError } from "./shared/utils/logger";
 
 /**
@@ -77,12 +78,12 @@ function App() {
   // * Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // * Sidebar toggle (Ctrl+B or Cmd+B)
+      // * Navbar toggle (Ctrl+B or Cmd+B)
       if ((event.ctrlKey || event.metaKey) && event.key === "b") {
         event.preventDefault();
-        // * Toggle sidebar - will be handled in AppLayout
-        const sidebarToggleEvent = new CustomEvent("toggleSidebar");
-        window.dispatchEvent(sidebarToggleEvent);
+        // * Toggle navbar - will be handled in AppLayout
+        const navbarToggleEvent = new CustomEvent("toggleNavbar");
+        window.dispatchEvent(navbarToggleEvent);
       }
 
       // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
@@ -320,8 +321,8 @@ function App() {
     setIsSuggestNameModalOpen(false);
   }, []);
 
-  // * Memoize sidebar props to prevent unnecessary re-renders
-  const sidebarProps = useMemo(
+  // * Memoize navbar props to prevent unnecessary re-renders
+  const navbarProps = useMemo(
     () => ({
       view: currentView || "tournament",
       setView: (view) => {
@@ -393,33 +394,40 @@ function App() {
   }
 
   return (
-    <SidebarProvider>
-      <AppLayout
-        sidebarProps={sidebarProps}
-        user={user}
-        errors={errors}
-        errorActions={errorActions}
-        tournament={tournament}
-        tournamentActions={tournamentActions}
-        handleLogin={handleLogin}
-        handleStartNewTournament={handleStartNewTournament}
-        handleUpdateRatings={handleUpdateRatings}
-        handleTournamentSetup={handleTournamentSetup}
-        handleTournamentComplete={handleTournamentComplete}
-        ui={ui}
-        uiActions={uiActions}
-        isAdmin={isAdmin}
-        isSuggestNameModalOpen={isSuggestNameModalOpen}
-        onCloseSuggestName={handleCloseSuggestName}
-      />
-    </SidebarProvider>
+    <AppLayout
+      navbarProps={navbarProps}
+      user={user}
+      errors={errors}
+      errorActions={errorActions}
+      tournament={tournament}
+      tournamentActions={tournamentActions}
+      handleLogin={handleLogin}
+      handleStartNewTournament={handleStartNewTournament}
+      handleUpdateRatings={handleUpdateRatings}
+      handleTournamentSetup={handleTournamentSetup}
+      handleTournamentComplete={handleTournamentComplete}
+      ui={ui}
+      uiActions={uiActions}
+      isAdmin={isAdmin}
+      isSuggestNameModalOpen={isSuggestNameModalOpen}
+      onCloseSuggestName={handleCloseSuggestName}
+    />
   );
 }
 
 export default App;
 
-function AppLayout({
-  sidebarProps,
+// * Provider-wrapped layout to guarantee navbar context
+function AppLayout(props) {
+  return (
+    <NavbarProvider>
+      <AppLayoutInner {...props} />
+    </NavbarProvider>
+  );
+}
+
+function AppLayoutInner({
+  navbarProps,
   user,
   errors,
   errorActions,
@@ -433,23 +441,22 @@ function AppLayout({
   isSuggestNameModalOpen,
   onCloseSuggestName,
 }) {
-  const { collapsed, collapsedWidth, toggleCollapsed } = useSidebar();
+  const { collapsed, collapsedWidth, toggleCollapsed } = useNavbar();
   const { isLoggedIn } = user;
 
-  // * Listen for keyboard shortcut to toggle sidebar
+  // * Listen for keyboard shortcut to toggle navbar
   useEffect(() => {
-    const handleToggleSidebar = () => {
+    const handleToggleNavbar = () => {
       toggleCollapsed();
     };
 
-    window.addEventListener("toggleSidebar", handleToggleSidebar);
-    return () =>
-      window.removeEventListener("toggleSidebar", handleToggleSidebar);
+    window.addEventListener("toggleNavbar", handleToggleNavbar);
+    return () => window.removeEventListener("toggleNavbar", handleToggleNavbar);
   }, [toggleCollapsed]);
 
   const appClassName = [
     "app",
-    collapsed ? "app--sidebar-collapsed" : "",
+    collapsed ? "app--navbar-collapsed" : "",
     !isLoggedIn ? "app--login" : "",
   ]
     .filter(Boolean)
@@ -457,8 +464,8 @@ function AppLayout({
 
   const layoutStyle = useMemo(
     () => ({
-      "--sidebar-expanded-width": "clamp(208px, 24vw, 224px)",
-      "--sidebar-collapsed-width": `${collapsedWidth}px`,
+      "--navbar-expanded-width": NAVBAR.EXPANDED_WIDTH_RESPONSIVE,
+      "--navbar-collapsed-width": `${collapsedWidth}px`,
     }),
     [collapsedWidth]
   );
@@ -481,8 +488,8 @@ function AppLayout({
       {/* * Static cat-themed background */}
       <CatBackground />
 
-      {/* * Primary navigation lives in the sidebar */}
-      <AppSidebar {...sidebarProps} />
+      {/* * Primary navigation lives in the navbar */}
+      <AppNavbar {...navbarProps} />
 
       <main id="main-content" className={mainWrapperClassName} tabIndex="-1">
         {errors.current && isLoggedIn && (
@@ -529,7 +536,7 @@ function AppLayout({
 }
 
 AppLayout.propTypes = {
-  sidebarProps: PropTypes.shape({}).isRequired,
+  navbarProps: PropTypes.shape({}).isRequired,
   user: PropTypes.shape({
     isLoggedIn: PropTypes.bool.isRequired,
     name: PropTypes.string,

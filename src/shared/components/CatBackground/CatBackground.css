@@ -1,66 +1,82 @@
-/* Cat Background - Simplified for Performance */
 .cat-background {
   position: fixed;
   inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
+  background: #050b16;
 }
 
-/* Stars - simplified gradient */
-.cat-background__stars {
+.cat-background__gradient {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(1px 1px at 20px 30px, #ffd700, transparent),
-    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-    radial-gradient(1px 1px at 160px 30px, #ffeb3b, transparent),
-    radial-gradient(1px 1px at 250px 90px, rgb(255 193 7 / 70%), transparent);
-  background-repeat: repeat;
-  background-size: 300px 150px;
-  opacity: 0.6;
-  animation: twinkle 4s ease-in-out infinite alternate;
+    radial-gradient(
+      circle at 50% 120%,
+      rgb(255 255 255 / 5%) 0%,
+      rgb(255 255 255 / 0%) 60%
+    ),
+    radial-gradient(
+      circle at 80% 0%,
+      rgb(0 140 255 / 25%) 0%,
+      rgb(0 0 0 / 0%) 50%
+    ),
+    radial-gradient(
+      circle at 20% -10%,
+      rgb(255 200 255 / 25%) 0%,
+      rgb(0 0 0 / 0%) 45%
+    ),
+    linear-gradient(
+      to bottom,
+      #0a0f1e 0%,
+      #0b1224 30%,
+      #08101f 60%,
+      #050b16 100%
+    );
+  background-attachment: fixed;
+  color: white;
+}
+
+.cat-background__sky,
+#sky {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cat-background__star {
+  position: absolute;
+  color: rgb(255 255 255 / 95%);
+  font-family: Georgia, serif;
+  user-select: none;
+  will-change: transform, opacity, filter;
+  filter: blur(var(--twinkle-blur, 0px));
+  opacity: var(--twinkle-alpha, 0.8);
+  transform: scale(var(--twinkle-scale, 1));
+  animation: twinkle var(--twinkle-duration, 3.2s) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+
+/* ! Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cat-background__star {
+    animation: none;
+    transition: none;
+  }
 }
 
 @keyframes twinkle {
-  0% {
-    opacity: 0.4;
-  }
-
-  100% {
-    opacity: 0.8;
-  }
-}
-
-/* Nebula - simplified */
-.cat-background__nebula {
-  position: absolute;
-  inset: -25%;
-  background: radial-gradient(
-    ellipse at 40% 50%,
-    rgb(138 43 226 / 8%) 0%,
-    transparent 60%
-  );
-  animation: nebula-pulse 12s ease-in-out infinite;
-}
-
-@keyframes nebula-pulse {
   0%,
   100% {
-    opacity: 0.6;
-    transform: scale(1);
+    opacity: 0;
+    transform: scale(calc(var(--twinkle-scale, 1) * 0.6));
   }
-
-  50% {
-    opacity: 0.8;
-    transform: scale(1.02);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .cat-background__stars,
-  .cat-background__nebula {
-    animation: none;
+  45% {
+    opacity: var(--twinkle-alpha, 0.85);
+    transform: scale(var(--twinkle-scale, 1));
   }
 }

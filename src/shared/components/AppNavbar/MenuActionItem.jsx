@@ -1,10 +1,10 @@
 /**
  * @module MenuActionItem
- * @description Reusable action item component for sidebar menu
+ * @description Reusable action item component for navbar menu
  */
 
 import PropTypes from "prop-types";
-import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { NavbarMenuButton, NavbarMenuItem } from "../ui/navbar";
 
 /**
  * * Reusable action item component
@@ -31,8 +31,8 @@ export function MenuActionItem({
   const buttonAriaLabel = ariaLabel || label;
 
   return (
-    <SidebarMenuItem>
-      <SidebarMenuButton asChild>
+    <NavbarMenuItem>
+      <NavbarMenuButton asChild>
         <button
           type="button"
           onClick={onClick}
@@ -42,8 +42,8 @@ export function MenuActionItem({
           <Icon />
           <span>{label}</span>
         </button>
-      </SidebarMenuButton>
-    </SidebarMenuItem>
+      </NavbarMenuButton>
+    </NavbarMenuItem>
   );
 }
 

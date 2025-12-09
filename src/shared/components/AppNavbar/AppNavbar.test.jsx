@@ -1,15 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { SidebarProvider } from "../ui/sidebar";
-import { AppSidebar } from "./AppSidebar";
+import { NavbarProvider } from "../ui/navbar";
+import { AppNavbar } from "./AppNavbar";
 
-describe("AppSidebar", () => {
+describe("AppNavbar", () => {
   it("renders navigation items without throwing", () => {
     expect(() =>
       render(
-        <SidebarProvider>
-          <AppSidebar
+        <NavbarProvider>
+          <AppNavbar
             view="tournament"
             setView={vi.fn()}
             isLoggedIn
@@ -21,8 +21,8 @@ describe("AppSidebar", () => {
             currentTheme="light"
             onThemePreferenceChange={vi.fn()}
           />
-        </SidebarProvider>,
-      ),
+        </NavbarProvider>
+      )
     ).not.toThrow();
 
     // Test that main navigation elements are present

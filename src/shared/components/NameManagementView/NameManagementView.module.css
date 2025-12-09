@@ -100,7 +100,7 @@
   gap: var(--spacing-card-gap);
 }
 
-.sidebarSection {
+.navbarSection {
   width: 100%;
   display: flex;
   flex-direction: column;

@@ -14,6 +14,7 @@ const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, '');
+  const isProd = mode === 'production';
 
   const serverPort = Number(env.VITE_PORT) || 5173;
   const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
@@ -21,7 +22,14 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      react(),
+      react({
+        // * Strip PropTypes from production bundles to reduce size
+        babel: {
+          plugins: isProd
+            ? [['transform-react-remove-prop-types', { removeImport: true }]]
+            : [],
+        },
+      }),
       mode === 'development' && componentTagger(),
       mode === 'production' &&
         visualizer({
