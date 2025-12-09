@@ -214,7 +214,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
           height: "auto",
           minHeight: "400px",
           maxWidth: "min(90vw, 500px)",
-          zIndex: "calc(var(--z-modal) + 1)",
+          zIndex: "1051",
         }}
       >
         <div
