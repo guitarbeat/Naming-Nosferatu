@@ -164,20 +164,8 @@ function App() {
   const handleUpdateRatings = useCallback(
     async (adjustedRatings) => {
       try {
-        // Convert to array format for database save
-        let ratingsArray;
-        if (Array.isArray(adjustedRatings)) {
-          ratingsArray = adjustedRatings;
-        } else {
-          ratingsArray = Object.entries(adjustedRatings).map(
-            ([name, data]) => ({
-              name,
-              rating: data.rating || 1500,
-              wins: data.wins || 0,
-              losses: data.losses || 0,
-            })
-          );
-        }
+        // * Convert ratings using utility functions
+        const ratingsArray = ratingsToArray(adjustedRatings);
 
         // * Save ratings to database
         if (user.name) {
@@ -189,15 +177,8 @@ function App() {
           devLog("[App] Update ratings result:", saveResult);
         }
 
-        // Convert to object format for store
-        const updatedRatings = ratingsArray.reduce((acc, item) => {
-          acc[item.name] = {
-            rating: item.rating,
-            wins: item.wins || 0,
-            losses: item.losses || 0,
-          };
-          return acc;
-        }, {});
+        // * Convert to object format for store
+        const updatedRatings = ratingsToObject(ratingsArray);
 
         tournamentActions.setRatings(updatedRatings);
         return true;
