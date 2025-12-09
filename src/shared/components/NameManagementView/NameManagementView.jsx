@@ -128,6 +128,7 @@ export function NameManagementView({
   const [userFilter, setUserFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
   const [selectionFilter, setSelectionFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
   const [filteredCount] = useState(0);
 
   // * Routing hook for URL updates
@@ -196,6 +197,7 @@ export function NameManagementView({
         filterStatus,
         userFilter,
         selectionFilter,
+        dateFilter,
         sortOrder,
       };
     } else if (mode === "tournament") {
@@ -223,6 +225,7 @@ export function NameManagementView({
     filterStatus,
     userFilter,
     selectionFilter,
+    dateFilter,
     sortOrder,
   ]);
 
@@ -249,6 +252,9 @@ export function NameManagementView({
         if (newFilters.selectionFilter !== undefined) {
           setSelectionFilter(newFilters.selectionFilter);
         }
+        if (newFilters.dateFilter !== undefined) {
+          setDateFilter(newFilters.dateFilter || "all");
+        }
         if (newFilters.sortOrder !== undefined) {
           setSortOrder(newFilters.sortOrder);
         }
@@ -265,6 +271,9 @@ export function NameManagementView({
         }
         if (newFilters.selectionFilter !== undefined) {
           setSelectionFilter(newFilters.selectionFilter);
+        }
+        if (newFilters.dateFilter !== undefined) {
+          setDateFilter(newFilters.dateFilter || "all");
         }
         if (newFilters.sortBy !== undefined) {
           setSortBy(newFilters.sortBy);
@@ -312,6 +321,8 @@ export function NameManagementView({
       setSortOrder,
       selectionFilter,
       setSelectionFilter,
+      dateFilter,
+      setDateFilter,
       // Analysis mode
       analysisMode,
       setAnalysisMode: handleAnalysisModeToggle,
@@ -361,6 +372,8 @@ export function NameManagementView({
       setSortOrder,
       selectionFilter,
       setSelectionFilter,
+      dateFilter,
+      setDateFilter,
       analysisMode,
       handleAnalysisModeToggle,
     ]

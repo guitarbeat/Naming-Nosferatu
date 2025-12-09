@@ -12,6 +12,7 @@ import {
 } from "../../utils/validationUtils";
 import { ErrorManager } from "../../services/errorManager";
 import useAppStore from "../../../core/store/useAppStore";
+import LiquidGlass from "../LiquidGlass";
 import "./NameSuggestionModal.css";
 
 /**
@@ -73,7 +74,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
       setName(e.target.value);
       if (error) setError("");
     },
-    [error],
+    [error]
   );
 
   const handleDescriptionChange = useCallback(
@@ -81,7 +82,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
       setDescription(e.target.value);
       if (error) setError("");
     },
-    [error],
+    [error]
   );
 
   const handleSubmit = useCallback(
@@ -123,7 +124,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         const res = await catNamesAPI.addName(
           nameValidation.value,
           descriptionValidation.value,
-          userName,
+          userName
         );
 
         // * Check if component is still mounted before updating state
@@ -169,7 +170,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         }
       }
     },
-    [name, description, userName, onClose],
+    [name, description, userName, onClose]
   );
 
   const handleClose = useCallback(() => {
@@ -192,101 +193,123 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         onClick={handleClose}
         aria-hidden="true"
       />
-      <div
-        className="name-suggestion-modal"
-        role="dialog"
-        aria-labelledby="suggest-name-title"
-        aria-describedby="suggest-name-description"
-        aria-modal="true"
+      <LiquidGlass
+        width={500}
+        height={600}
+        radius={16}
+        scale={-180}
+        saturation={1.1}
+        frost={0.08}
+        inputBlur={11}
+        outputBlur={0.7}
+        className="name-suggestion-modal-glass"
+        id="name-suggestion-modal-filter"
+        style={{
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "min(90vw, 500px)",
+          maxHeight: "90vh",
+          zIndex: "calc(var(--z-modal) + 1)",
+        }}
       >
-        <div className="name-suggestion-modal-header">
-          <h2 id="suggest-name-title" className="name-suggestion-modal-title">
-            💡 Suggest a Name
-          </h2>
-          <button
-            type="button"
-            className="name-suggestion-modal-close"
-            onClick={handleClose}
-            aria-label="Close modal"
-            disabled={isSubmitting}
-          >
-            ×
-          </button>
-        </div>
-
-        <p
-          id="suggest-name-description"
-          className="name-suggestion-modal-description"
+        <div
+          className="name-suggestion-modal"
+          role="dialog"
+          aria-labelledby="suggest-name-title"
+          aria-describedby="suggest-name-description"
+          aria-modal="true"
         >
-          Help us expand the list by suggesting new cat names!
-        </p>
-
-        <form onSubmit={handleSubmit} className="name-suggestion-modal-form">
-          <div className="name-suggestion-form-group">
-            <label
-              htmlFor="modal-name-input"
-              className="name-suggestion-form-label"
-            >
-              Name
-            </label>
-            <input
-              id="modal-name-input"
-              ref={nameInputRef}
-              type="text"
-              value={name}
-              onChange={handleNameChange}
-              placeholder="e.g., Whiskers"
-              className="name-suggestion-form-input"
-              disabled={isSubmitting}
-              maxLength={50}
-              required
-            />
-          </div>
-
-          <div className="name-suggestion-form-group">
-            <label
-              htmlFor="modal-description-input"
-              className="name-suggestion-form-label"
-            >
-              Description
-            </label>
-            <textarea
-              id="modal-description-input"
-              value={description}
-              onChange={handleDescriptionChange}
-              placeholder="A brief description of why this name is special"
-              className="name-suggestion-form-textarea"
-              disabled={isSubmitting}
-              maxLength={500}
-              rows={4}
-              required
-            />
-          </div>
-
-          {error && <div className="name-suggestion-form-error">{error}</div>}
-          {success && (
-            <div className="name-suggestion-form-success">{success}</div>
-          )}
-
-          <div className="name-suggestion-modal-actions">
+          <div className="name-suggestion-modal-header">
+            <h2 id="suggest-name-title" className="name-suggestion-modal-title">
+              💡 Suggest a Name
+            </h2>
             <button
               type="button"
+              className="name-suggestion-modal-close"
               onClick={handleClose}
-              className="name-suggestion-modal-cancel"
+              aria-label="Close modal"
               disabled={isSubmitting}
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="name-suggestion-modal-submit"
-              disabled={isSubmitting || !isFormValid}
-            >
-              {isSubmitting ? "Submitting..." : "Submit Suggestion"}
+              ×
             </button>
           </div>
-        </form>
-      </div>
+
+          <p
+            id="suggest-name-description"
+            className="name-suggestion-modal-description"
+          >
+            Help us expand the list by suggesting new cat names!
+          </p>
+
+          <form onSubmit={handleSubmit} className="name-suggestion-modal-form">
+            <div className="name-suggestion-form-group">
+              <label
+                htmlFor="modal-name-input"
+                className="name-suggestion-form-label"
+              >
+                Name
+              </label>
+              <input
+                id="modal-name-input"
+                ref={nameInputRef}
+                type="text"
+                value={name}
+                onChange={handleNameChange}
+                placeholder="e.g., Whiskers"
+                className="name-suggestion-form-input"
+                disabled={isSubmitting}
+                maxLength={50}
+                required
+              />
+            </div>
+
+            <div className="name-suggestion-form-group">
+              <label
+                htmlFor="modal-description-input"
+                className="name-suggestion-form-label"
+              >
+                Description
+              </label>
+              <textarea
+                id="modal-description-input"
+                value={description}
+                onChange={handleDescriptionChange}
+                placeholder="A brief description of why this name is special"
+                className="name-suggestion-form-textarea"
+                disabled={isSubmitting}
+                maxLength={500}
+                rows={4}
+                required
+              />
+            </div>
+
+            {error && <div className="name-suggestion-form-error">{error}</div>}
+            {success && (
+              <div className="name-suggestion-form-success">{success}</div>
+            )}
+
+            <div className="name-suggestion-modal-actions">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="name-suggestion-modal-cancel"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="name-suggestion-modal-submit"
+                disabled={isSubmitting || !isFormValid}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Suggestion"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </LiquidGlass>
     </>
   );
 }

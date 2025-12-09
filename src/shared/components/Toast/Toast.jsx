@@ -6,6 +6,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import LiquidGlass from "../LiquidGlass";
 import styles from "./Toast.module.css";
 
 /**
@@ -79,43 +80,62 @@ const ToastItem = ({
   };
 
   return (
-    <div
-      className={`
-        ${styles.item}
-        ${getTypeClass()}
-        ${isExiting ? styles.exiting : ""}
-        ${className}
-      `}
-      role="alert"
-      aria-live="polite"
-      aria-atomic="true"
+    <LiquidGlass
+      width={320}
+      height={80}
+      radius={12}
+      scale={-120}
+      saturation={1.05}
+      frost={0.03}
+      inputBlur={8}
+      outputBlur={0.5}
+      className={styles.toastGlass}
+      id={`toast-${type}-filter`}
+      style={{
+        width: "auto",
+        height: "auto",
+        minWidth: "280px",
+        maxWidth: "400px",
+      }}
     >
-      <div className={styles.content}>
-        <span className={styles.icon}>{getTypeIcon()}</span>
-        <span className={styles.message}>{message}</span>
-        <button
-          onClick={handleDismiss}
-          className={styles.dismissButton}
-          aria-label="Dismiss notification"
-          type="button"
-        >
-          ×
-        </button>
-      </div>
-
-      {/* Progress bar for auto-dismiss */}
-      {autoDismiss && (
-        <div className={styles.progressBar}>
-          <div
-            className={styles.progressFill}
-            style={{
-              animationDuration: `${duration}ms`,
-              animationPlayState: isExiting ? "paused" : "running",
-            }}
-          />
+      <div
+        className={`
+          ${styles.item}
+          ${getTypeClass()}
+          ${isExiting ? styles.exiting : ""}
+          ${className}
+        `}
+        role="alert"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div className={styles.content}>
+          <span className={styles.icon}>{getTypeIcon()}</span>
+          <span className={styles.message}>{message}</span>
+          <button
+            onClick={handleDismiss}
+            className={styles.dismissButton}
+            aria-label="Dismiss notification"
+            type="button"
+          >
+            ×
+          </button>
         </div>
-      )}
-    </div>
+
+        {/* Progress bar for auto-dismiss */}
+        {autoDismiss && (
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{
+                animationDuration: `${duration}ms`,
+                animationPlayState: isExiting ? "paused" : "running",
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </LiquidGlass>
   );
 };
 
@@ -164,7 +184,7 @@ const ToastContainer = ({
     (toastId) => {
       removeToast?.(toastId);
     },
-    [removeToast],
+    [removeToast]
   );
 
   if (toasts.length === 0) {
@@ -304,7 +324,7 @@ ToastContainer.propTypes = {
       type: PropTypes.oneOf(["success", "error", "info", "warning"]),
       duration: PropTypes.number,
       autoDismiss: PropTypes.bool,
-    }),
+    })
   ),
   removeToast: PropTypes.func.isRequired,
   position: PropTypes.oneOf([

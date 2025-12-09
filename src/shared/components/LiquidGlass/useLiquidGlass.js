@@ -2,28 +2,30 @@ import { useState, useCallback } from 'react';
 
 /**
  * Hook for managing liquid glass effect configuration
- * Replaces the traditional frost-based configuration with liquid glass parameters
+ * Based on the improved displacement map approach
+ *
+ * @param {Object} initialConfig - Initial configuration overrides
+ * @returns {Object} Configuration object with presets and update methods
  */
 export function useLiquidGlass(initialConfig = {}) {
   const base = {
-    icons: false,
     scale: -180,
-    radius: 16,
+    radius: 18,
     border: 0.07,
     lightness: 50,
-    displace: 0.3,
+    outputBlur: 0.7,
     blend: 'difference',
     xChannel: 'R',
     yChannel: 'B',
     alpha: 0.93,
-    blur: 11,
+    inputBlur: 11,
     chromaticR: 0,
     chromaticG: 10,
     chromaticB: 20,
-    saturation: 1,
-    turbulence: 0.3, // * Liquid glass specific - replaces frost
-    width: 336,
-    height: 96,
+    saturation: 1.1,
+    frost: 0.05,
+    width: 200,
+    height: 80,
   };
 
   const presets = {
@@ -31,16 +33,16 @@ export function useLiquidGlass(initialConfig = {}) {
       ...base,
       width: 336,
       height: 96,
-      displace: 0.35,
-      icons: true,
-      turbulence: 0.25, // * Lower turbulence for dock
+      outputBlur: 0.7,
+      frost: 0.05,
+      radius: 16,
     },
     pill: {
       ...base,
       width: 200,
       height: 80,
-      displace: 0,
-      turbulence: 0.15,
+      outputBlur: 0.5,
+      frost: 0,
       radius: 40,
     },
     bubble: {
@@ -48,8 +50,8 @@ export function useLiquidGlass(initialConfig = {}) {
       radius: 70,
       width: 140,
       height: 140,
-      displace: 0.25,
-      turbulence: 0.2,
+      outputBlur: 0,
+      frost: 0,
     },
     free: {
       ...base,
@@ -59,10 +61,9 @@ export function useLiquidGlass(initialConfig = {}) {
       border: 0.15,
       alpha: 0.74,
       lightness: 60,
-      blur: 10,
-      displace: 0,
+      inputBlur: 10,
+      outputBlur: 0,
       scale: -300,
-      turbulence: 0.35, // * Higher turbulence for free mode
     },
   };
 

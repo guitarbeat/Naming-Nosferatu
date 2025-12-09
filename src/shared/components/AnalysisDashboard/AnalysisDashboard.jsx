@@ -50,21 +50,35 @@ export function AnalysisDashboard({
     data: [],
     timeLabels: [],
   });
-  const [viewMode, setViewMode] = useState("chart"); // "chart" or "table"
+  const [viewMode, setViewMode] = useState("chart"); // "chart" | "table" | "insights"
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sortField, setSortField] = useState("rating"); // * Add sorting for admin
   const [sortDirection, setSortDirection] = useState("desc");
+  const canHideNames = isAdmin && typeof onNameHidden === "function";
 
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed,
+    defaultCollapsed
   );
 
   // * Get context for filtering (optional - only if available)
   const toolbarContext = useNameManagementContextSafe();
   const userFilter = toolbarContext?.filterConfig?.userFilter || "all";
+  const dateFilter = toolbarContext?.filterConfig?.dateFilter || "all";
+
+  // * Map date filter to period count for ranking history
+  const rankingPeriods = useMemo(() => {
+    const map = {
+      today: 2,
+      week: 7,
+      month: 30,
+      year: 365,
+      all: 7,
+    };
+    return Math.max(map[dateFilter] || 7, 2);
+  }, [dateFilter]);
 
   // Fetch global leaderboard and selection popularity data on mount and when filters change
   useEffect(() => {
@@ -74,7 +88,13 @@ export function AnalysisDashboard({
       setIsLoading(true);
       setError(null);
       try {
-        const historyPromise = catNamesAPI.getRankingHistory(10, 7);
+        const historyPromise = catNamesAPI.getRankingHistory(
+          10,
+          rankingPeriods,
+          {
+            dateFilter,
+          }
+        );
         if (isAdmin) {
           const [analytics, leaderboard, popularity, history] =
             await Promise.all([
@@ -106,7 +126,14 @@ export function AnalysisDashboard({
     };
 
     fetchData();
-  }, [showGlobalLeaderboard, isAdmin, userFilter, userName]);
+  }, [
+    showGlobalLeaderboard,
+    isAdmin,
+    userFilter,
+    userName,
+    rankingPeriods,
+    dateFilter,
+  ]);
 
   const consolidatedNames = useMemo(() => {
     if (isAdmin && analyticsData?.length) {
@@ -172,7 +199,7 @@ export function AnalysisDashboard({
         setSortDirection("desc");
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const renderSortIndicator = useCallback(
@@ -184,7 +211,7 @@ export function AnalysisDashboard({
         </span>
       );
     },
-    [sortField, sortDirection],
+    [sortField, sortDirection]
   );
 
   const handleHideName = useCallback(
@@ -197,17 +224,17 @@ export function AnalysisDashboard({
       try {
         if (analyticsData) {
           setAnalyticsData((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
         if (leaderboardData) {
           setLeaderboardData((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
         if (selectionPopularity) {
           setSelectionPopularity((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
 
@@ -223,7 +250,7 @@ export function AnalysisDashboard({
               const analytics = await catNamesAPI.getPopularityAnalytics(
                 50,
                 userFilter,
-                userName,
+                userName
               );
               setAnalyticsData(analytics);
             } else {
@@ -244,7 +271,7 @@ export function AnalysisDashboard({
           const analytics = await catNamesAPI.getPopularityAnalytics(
             50,
             userFilter,
-            userName,
+            userName
           );
           setAnalyticsData(analytics);
         } else {
@@ -265,7 +292,7 @@ export function AnalysisDashboard({
       leaderboardData,
       selectionPopularity,
       userFilter,
-    ],
+    ]
   );
 
   const displayNames = useMemo(() => {
@@ -322,7 +349,7 @@ export function AnalysisDashboard({
             filterDate = new Date(
               now.getFullYear(),
               now.getMonth(),
-              now.getDate(),
+              now.getDate()
             );
             break;
           case "week":
@@ -415,12 +442,12 @@ export function AnalysisDashboard({
       const ratingPercentile = calculatePercentile(
         item.rating,
         displayNames.map((n) => n.rating),
-        true,
+        true
       );
       const selectedPercentile = calculatePercentile(
         item.selected,
         displayNames.map((n) => n.selected),
-        true,
+        true
       );
 
       // Determine insights/badges
@@ -459,7 +486,7 @@ export function AnalysisDashboard({
 
     if (summaryStats.maxSelected > 0) {
       const mostSelected = displayNames.find(
-        (n) => n.selected === summaryStats.maxSelected,
+        (n) => n.selected === summaryStats.maxSelected
       );
       if (mostSelected) {
         result.push({
@@ -480,6 +507,13 @@ export function AnalysisDashboard({
 
     return result;
   }, [summaryStats, displayNames]);
+
+  const filteredRankingData = useMemo(() => {
+    if (!rankingHistory?.data?.length) return [];
+    const allowedIds = new Set(displayNames.map((n) => n.id));
+    if (allowedIds.size === 0) return rankingHistory.data;
+    return rankingHistory.data.filter((entry) => allowedIds.has(entry.id));
+  }, [rankingHistory.data, displayNames]);
 
   // * Get context for toolbar integration (optional - only if available)
   // * Safe hook returns null if context is not available
@@ -589,13 +623,21 @@ export function AnalysisDashboard({
               >
                 📋 Table
               </button>
+              <button
+                type="button"
+                className={`analysis-view-btn ${viewMode === "insights" ? "active" : ""}`}
+                onClick={() => setViewMode("insights")}
+                aria-pressed={viewMode === "insights"}
+              >
+                💡 Insights
+              </button>
             </div>
 
             {/* Bump Chart View */}
             {viewMode === "chart" && (
               <div className="analysis-chart-container">
                 <BumpChart
-                  data={rankingHistory.data}
+                  data={filteredRankingData}
                   timeLabels={rankingHistory.timeLabels}
                   maxDisplayed={displayNames.length}
                   height={320}
@@ -765,7 +807,7 @@ export function AnalysisDashboard({
                             <>Date {renderSortIndicator("dateSubmitted")}</>
                           )}
                         </th>
-                        {isAdmin && <th scope="col">Actions</th>}
+                        {canHideNames && <th scope="col">Actions</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -775,14 +817,14 @@ export function AnalysisDashboard({
                           summaryStats && summaryStats.maxRating > 0
                             ? Math.min(
                                 (item.rating / summaryStats.maxRating) * 100,
-                                100,
+                                100
                               )
                             : 0;
                         const winsPercent =
                           summaryStats && summaryStats.maxWins > 0
                             ? Math.min(
                                 (item.wins / summaryStats.maxWins) * 100,
-                                100,
+                                100
                               )
                             : 0;
                         const selectedPercent =
@@ -790,7 +832,7 @@ export function AnalysisDashboard({
                             ? Math.min(
                                 (item.selected / summaryStats.maxSelected) *
                                   100,
-                                100,
+                                100
                               )
                             : 0;
 
@@ -921,7 +963,7 @@ export function AnalysisDashboard({
                                 </span>
                               )}
                             </td>
-                            {isAdmin && (
+                            {canHideNames && (
                               <td className="top-names-actions">
                                 <button
                                   type="button"
@@ -934,14 +976,14 @@ export function AnalysisDashboard({
                                     } catch (error) {
                                       devError(
                                         "[AnalysisDashboard] Failed to hide name:",
-                                        error,
+                                        error
                                       );
                                     }
                                   }}
                                   aria-label={`Hide ${item.name}`}
                                   title="Hide this name from tournaments"
                                 >
-                                  <span aria-hidden="true">🙈</span>
+                                  <span aria-hidden="true">Hide</span>
                                 </button>
                               </td>
                             )}
@@ -952,6 +994,92 @@ export function AnalysisDashboard({
                   </table>
                 </div>
               </>
+            )}
+
+            {/* Insights View */}
+            {viewMode === "insights" && (
+              <div className="analysis-insights-panel">
+                {summaryStats && !isAdmin && (
+                  <div className="analysis-stats-summary">
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Top Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.maxRating}
+                      </div>
+                      <div className="analysis-stat-name">
+                        {summaryStats.topName?.name}
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Avg Rating</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.avgRating}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        Across {displayNames.length} names
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Total Selected</div>
+                      <div className="analysis-stat-value">
+                        {summaryStats.totalSelected}
+                      </div>
+                      <div className="analysis-stat-subtext">
+                        {summaryStats.maxSelected > 0
+                          ? `Most: ${summaryStats.maxSelected}x`
+                          : "No selections yet"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {insights.length > 0 && !isAdmin && (
+                  <div className="analysis-insights">
+                    {insights.map((insight, idx) => (
+                      <div
+                        key={idx}
+                        className={`analysis-insight analysis-insight--${insight.type}`}
+                      >
+                        <span
+                          className="analysis-insight-icon"
+                          aria-hidden="true"
+                        >
+                          {insight.icon}
+                        </span>
+                        <span className="analysis-insight-text">
+                          {insight.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {namesWithInsights.some((n) => n.insights.length > 0) && (
+                  <div className="analysis-insight-cards">
+                    {namesWithInsights
+                      .filter((n) => n.insights.length > 0)
+                      .slice(0, 6)
+                      .map((n) => (
+                        <div key={n.id} className="analysis-insight-card">
+                          <div className="analysis-insight-card-name">
+                            {n.name}
+                          </div>
+                          <div className="analysis-insight-card-metrics">
+                            <span>Rating {Math.round(n.rating)}</span>
+                            <span>{n.selected} selected</span>
+                          </div>
+                          <div className="analysis-insight-card-tags">
+                            {n.insights.map((tag) => (
+                              <span key={tag} className="analysis-insight-tag">
+                                {tag.replace("_", " ")}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             )}
           </>
         )}

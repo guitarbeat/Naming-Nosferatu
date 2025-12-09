@@ -25,15 +25,13 @@ export function UserDisplay({ userName, isAdmin = false }) {
       : userName;
 
   return (
-    <div className="sidebar-user-display">
-      <div className="sidebar-user-display__content">
-        <div className="sidebar-user-display__text">
-          <span className="sidebar-user-display__name">
-            {truncatedUserName}
-          </span>
+    <div className="navbar-user-display">
+      <div className="navbar-user-display__content">
+        <div className="navbar-user-display__text">
+          <span className="navbar-user-display__name">{truncatedUserName}</span>
           {isAdmin && (
             <span
-              className="sidebar-user-display__admin-label"
+              className="navbar-user-display__admin-label"
               aria-label="Admin"
             >
               Admin
