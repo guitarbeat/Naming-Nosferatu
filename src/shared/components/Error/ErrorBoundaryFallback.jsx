@@ -5,6 +5,7 @@ import {
   getMediaQueryList,
   attachMediaQueryListener,
 } from "../../utils/mediaQueries";
+import LiquidGlass from "../LiquidGlass";
 import styles from "./Error.module.css";
 
 const DEFAULT_MAX_RETRIES = 3;
@@ -109,9 +110,9 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
           isCritical: false,
         },
         // eslint-disable-next-line react-hooks/purity
-        Date.now(),
+        Date.now()
       ),
-    [error],
+    [error]
   );
 
   const canRetry = retryCount < DEFAULT_MAX_RETRIES;
@@ -168,7 +169,7 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
         : diagnosticInfo.errorStack
             .split("\n")
             .filter(
-              (line) => line.includes("http://") || line.includes("file://"),
+              (line) => line.includes("http://") || line.includes("file://")
             )
             .map((line) => {
               const match = line.match(/([^:]+):(\d+):(\d+)/);
@@ -292,7 +293,7 @@ ${
     ? parsedFrames
         .map(
           (frame, idx) =>
-            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``,
+            `${idx + 1}. **${frame.function}** in \`${frame.file}\` (Line ${frame.line}, Col ${frame.col})\n   Full path: \`${frame.fullPath}\``
         )
         .join("\n")
     : "Unable to parse stack frames"
@@ -341,7 +342,7 @@ ${JSON.stringify(
     ...diagnosticInfo.additionalInfo,
   },
   null,
-  2,
+  2
 )}
 \`\`\`
 
@@ -420,111 +421,126 @@ ${JSON.stringify(
       aria-labelledby="error-title"
       aria-describedby="error-message"
     >
-      <div
-        ref={mainContentRef}
-        className={boundaryContentClassName}
-        tabIndex={-1}
+      <LiquidGlass
+        width={600}
+        height={400}
+        radius={24}
+        scale={-180}
+        saturation={1.2}
+        frost={0.08}
+        inputBlur={12}
+        outputBlur={0.8}
+        className={styles.boundaryGlass}
+        id="error-boundary-glass-filter"
+        style={{ width: "100%", maxWidth: "600px", height: "auto" }}
       >
-        <div className={styles.boundaryIcon} aria-hidden="true">
-          🐱
-        </div>
-        <h2 id="error-title" className={styles.boundaryTitle}>
-          Something went wrong
-        </h2>
-
-        {(diagnosticInfo.errorType === "NetworkError" ||
-          diagnosticInfo.errorType === "BackendError") && (
-          <div className={styles.boundaryBackendWarning}>
-            <span className={styles.boundaryWarningIcon}>⚠️</span>
-            <span>Connection issue detected</span>
-          </div>
-        )}
-
         <div
-          className={styles.boundaryActions}
-          role="group"
-          aria-label="Error recovery actions"
+          ref={mainContentRef}
+          className={boundaryContentClassName}
+          tabIndex={-1}
         >
-          <button
-            ref={retryButtonRef}
-            onClick={handleRetry}
-            className={styles.boundaryRetryButton}
-            aria-label={canRetry ? "Try again" : "Reload page"}
-          >
-            {canRetry ? "Try Again" : "Reload"}
-          </button>
+          <div className={styles.boundaryIcon} aria-hidden="true">
+            🐱
+          </div>
+          <h2 id="error-title" className={styles.boundaryTitle}>
+            Something went wrong
+          </h2>
 
-          <button
-            onClick={() => {
-              window.location.href = "/";
-            }}
-            className={styles.boundaryHomeButton}
-            aria-label="Return to home page"
-          >
-            Home
-          </button>
-
-          <button
-            onClick={handleCopyDiagnostics}
-            className={styles.boundaryCopyButton}
-            aria-label={
-              copied
-                ? "Diagnostics copied to clipboard"
-                : "Copy diagnostic information to clipboard"
-            }
-            aria-pressed={copied}
-          >
-            <span className={styles.boundaryCopyIcon} aria-hidden="true">
-              {copied ? "✅" : "📋"}
-            </span>
-            {copied ? "Copied!" : "Copy Diagnostics"}
-          </button>
-        </div>
-
-        {process.env.NODE_ENV === "development" && error && (
-          <details
-            className={styles.boundaryDetails}
-            open={isDetailsOpen}
-            onToggle={(e) => setIsDetailsOpen(e.target.open)}
-          >
-            <summary>Error Details (Development)</summary>
-            <div className={styles.boundaryErrorContent}>
-              <h4>Error:</h4>
-              <pre
-                className={styles.boundaryErrorStack}
-                role="log"
-                aria-label="Error stack trace"
-              >
-                {error.toString()}
-              </pre>
-
-              {standardizedError && (
-                <>
-                  <h4>Error Analysis:</h4>
-                  <ul className={styles.boundaryErrorList}>
-                    <li>
-                      <strong>Type:</strong> {standardizedError.errorType}
-                    </li>
-                    <li>
-                      <strong>Severity:</strong> {standardizedError.severity}
-                    </li>
-                    <li>
-                      <strong>Context:</strong> {standardizedError.context}
-                    </li>
-                    <li>
-                      <strong>Retryable:</strong>{" "}
-                      {standardizedError.isRetryable ? "Yes" : "No"}
-                    </li>
-                    <li>
-                      <strong>Timestamp:</strong> {standardizedError.timestamp}
-                    </li>
-                  </ul>
-                </>
-              )}
+          {(diagnosticInfo.errorType === "NetworkError" ||
+            diagnosticInfo.errorType === "BackendError") && (
+            <div className={styles.boundaryBackendWarning}>
+              <span className={styles.boundaryWarningIcon}>⚠️</span>
+              <span>Connection issue detected</span>
             </div>
-          </details>
-        )}
-      </div>
+          )}
+
+          <div
+            className={styles.boundaryActions}
+            role="group"
+            aria-label="Error recovery actions"
+          >
+            <button
+              ref={retryButtonRef}
+              onClick={handleRetry}
+              className={styles.boundaryRetryButton}
+              aria-label={canRetry ? "Try again" : "Reload page"}
+            >
+              {canRetry ? "Try Again" : "Reload"}
+            </button>
+
+            <button
+              onClick={() => {
+                window.location.href = "/";
+              }}
+              className={styles.boundaryHomeButton}
+              aria-label="Return to home page"
+            >
+              Home
+            </button>
+
+            <button
+              onClick={handleCopyDiagnostics}
+              className={styles.boundaryCopyButton}
+              aria-label={
+                copied
+                  ? "Diagnostics copied to clipboard"
+                  : "Copy diagnostic information to clipboard"
+              }
+              aria-pressed={copied}
+            >
+              <span className={styles.boundaryCopyIcon} aria-hidden="true">
+                {copied ? "✅" : "📋"}
+              </span>
+              {copied ? "Copied!" : "Copy Diagnostics"}
+            </button>
+          </div>
+
+          {process.env.NODE_ENV === "development" && error && (
+            <details
+              className={styles.boundaryDetails}
+              open={isDetailsOpen}
+              onToggle={(e) => setIsDetailsOpen(e.target.open)}
+            >
+              <summary>Error Details (Development)</summary>
+              <div className={styles.boundaryErrorContent}>
+                <h4>Error:</h4>
+                <pre
+                  className={styles.boundaryErrorStack}
+                  role="log"
+                  aria-label="Error stack trace"
+                >
+                  {error.toString()}
+                </pre>
+
+                {standardizedError && (
+                  <>
+                    <h4>Error Analysis:</h4>
+                    <ul className={styles.boundaryErrorList}>
+                      <li>
+                        <strong>Type:</strong> {standardizedError.errorType}
+                      </li>
+                      <li>
+                        <strong>Severity:</strong> {standardizedError.severity}
+                      </li>
+                      <li>
+                        <strong>Context:</strong> {standardizedError.context}
+                      </li>
+                      <li>
+                        <strong>Retryable:</strong>{" "}
+                        {standardizedError.isRetryable ? "Yes" : "No"}
+                      </li>
+                      <li>
+                        <strong>Timestamp:</strong>{" "}
+                        {standardizedError.timestamp}
+                      </li>
+                    </ul>
+                  </>
+                )}
+              </div>
+            </details>
+          )}
+        </div>
+      </LiquidGlass>
     </div>
   );
 }

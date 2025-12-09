@@ -3,7 +3,7 @@
  * @description Application navbar navigation component with sliding indicator
  */
 
-import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Navbar, NavbarMenuItem, NavbarMenuButton } from "../ui/navbar";
 import LiquidGlass from "../LiquidGlass";
@@ -13,6 +13,7 @@ import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { UserDisplay } from "./components/UserDisplay";
 import { LogoutIcon, SuggestIcon } from "./icons";
 import { buildNavItems } from "./navConfig";
+import { useNavbarIndicator, useNavbarMenu } from "./hooks";
 import "./Navbar.css";
 
 export function AppNavbar({
@@ -31,80 +32,31 @@ export function AppNavbar({
   currentRoute,
   onNavigate,
 }) {
-  const navRef = useRef(null);
-  const resizeRafRef = useRef(null);
-  const [indicator, setIndicator] = useState({ left: 0, opacity: 0 });
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const indicatorSize = 14;
-
   // * Check if analysis mode is active
   const isAnalysisMode =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("analysis") === "true"
       : false;
 
-  // * Update sliding indicator position with minimal JS
-  const updateIndicator = useCallback(() => {
-    if (!navRef.current) return;
-    const activeItem = navRef.current.querySelector('[data-active="true"]');
-    if (!activeItem) {
-      setIndicator((prev) => ({ ...prev, opacity: 0 }));
-      return;
-    }
-    const navRect = navRef.current.getBoundingClientRect();
-    const itemRect = activeItem.getBoundingClientRect();
-    // * Center the indicator under the active item using the configured size
-    const targetLeft =
-      itemRect.left - navRect.left + itemRect.width / 2 - indicatorSize / 2;
-    setIndicator({ left: targetLeft, opacity: 1 });
-  }, [indicatorSize]);
+  // * Use custom hooks for indicator and menu management
+  const { navRef, indicator, indicatorSize } = useNavbarIndicator({
+    indicatorSize: 14,
+    view,
+    isAnalysisMode,
+    currentRoute,
+  });
 
-  useEffect(() => {
-    // * Ensure indicator placement on mount and resize with proper cleanup
-    if (typeof window === "undefined") return undefined;
-    const handleResize = () => {
-      if (resizeRafRef.current) return;
-      resizeRafRef.current = requestAnimationFrame(() => {
-        resizeRafRef.current = null;
-        updateIndicator();
-      });
-    };
-    const initialRafId = requestAnimationFrame(updateIndicator);
-    window.addEventListener("resize", handleResize);
-    return () => {
-      if (resizeRafRef.current) {
-        cancelAnimationFrame(resizeRafRef.current);
-        resizeRafRef.current = null;
-      }
-      cancelAnimationFrame(initialRafId);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [updateIndicator]);
-
-  useEffect(() => {
-    // * Refresh indicator on view/mode change
-    const rafId = requestAnimationFrame(updateIndicator);
-    return () => cancelAnimationFrame(rafId);
-  }, [view, isAnalysisMode, currentRoute, updateIndicator]);
-
-  useEffect(() => {
-    // * Close the mobile menu whenever navigation changes
-    setIsMenuOpen(false);
-  }, [view, currentRoute, isAnalysisMode]);
-
-  useEffect(() => {
-    // * Close menu on Escape for accessibility
-    const handleKey = (event) => {
-      if (event.key === "Escape") {
-        setIsMenuOpen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
+  const { isMenuOpen, toggleMenu, closeMenu, menuButtonRef, menuRef } =
+    useNavbarMenu({
+      view,
+      currentRoute,
+      isAnalysisMode,
+    });
 
   // * Toggle analysis mode
   const handleAnalysisToggle = useCallback(() => {
+    if (typeof window === "undefined") return;
+
     const currentPath = window.location.pathname;
     const currentSearch = new URLSearchParams(window.location.search);
 
@@ -143,24 +95,34 @@ export function AppNavbar({
 
   const handleNavItemClick = useCallback(
     (item) => {
-      setIsMenuOpen(false);
+      closeMenu();
       if (typeof item.onClick === "function") {
         item.onClick();
       } else {
         setView(item.key);
       }
     },
-    [setView]
+    [closeMenu, setView]
   );
+
+  const handleHomeClick = useCallback(() => {
+    closeMenu();
+    setView("tournament");
+  }, [closeMenu, setView]);
 
   return (
     <LiquidGlass
       width={1200}
       height={90}
       radius={18}
-      turbulence={0.18}
+      scale={-180}
       saturation={1.1}
-      displace={0.25}
+      frost={0.05}
+      inputBlur={8}
+      outputBlur={0.9}
+      chromaticR={10}
+      chromaticG={11}
+      chromaticB={12}
       className="app-navbar-glass"
       id="navbar-liquid-glass"
       style={{ width: "100%", height: "auto", minHeight: "72px" }}
@@ -178,15 +140,19 @@ export function AppNavbar({
               className="menu-checkbox"
               type="checkbox"
               checked={isMenuOpen}
-              onChange={() => setIsMenuOpen((prev) => !prev)}
+              onChange={toggleMenu}
               aria-hidden="true"
             />
             <button
+              ref={menuButtonRef}
               type="button"
               className="menu-button"
               aria-expanded={isMenuOpen}
               aria-controls="navbar-menu"
-              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-label={
+                isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+              }
+              onClick={toggleMenu}
             >
               <span className="menu-button-label" data-show-when="closed">
                 Menu
@@ -198,10 +164,15 @@ export function AppNavbar({
           </div>
 
           <div
+            ref={(el) => {
+              navRef.current = el;
+              menuRef.current = el;
+            }}
             className="nav-items-container navbar-section navbar-section--left"
             id="navbar-menu"
             data-open={isMenuOpen}
-            ref={navRef}
+            role="menu"
+            aria-label="Navigation menu"
           >
             {/* Combined Logo + Tournament Home Button */}
             <NavbarMenuItem
@@ -210,10 +181,15 @@ export function AppNavbar({
               <NavbarMenuButton asChild>
                 <button
                   type="button"
-                  onClick={() => setView("tournament")}
+                  onClick={handleHomeClick}
                   className="navbar-home-button"
                   data-active={view === "tournament" && !isAnalysisMode}
                   aria-label="Go to Tournament home"
+                  aria-current={
+                    view === "tournament" && !isAnalysisMode
+                      ? "page"
+                      : undefined
+                  }
                 >
                   <div className="navbar-logo-icon">
                     <video
@@ -279,6 +255,9 @@ export function AppNavbar({
             />
           </div>
 
+          {/* Divider between nav items and actions */}
+          <div className="navbar-divider" aria-hidden="true" />
+
           {/* Inline Actions inside nav container for alignment */}
           <div className="navbar-action-tray nav-inline-actions">
             <div className="navbar-actions-shell">
@@ -319,7 +298,16 @@ export function AppNavbar({
         <div
           className="navbar-overlay"
           data-open={isMenuOpen}
-          onClick={() => setIsMenuOpen(false)}
+          onClick={closeMenu}
+          onKeyDown={(e) => {
+            // * Allow Escape and Enter to close overlay
+            if (e.key === "Escape" || e.key === "Enter") {
+              closeMenu();
+            }
+          }}
+          role="button"
+          tabIndex={isMenuOpen ? 0 : -1}
+          aria-label="Close navigation menu"
         />
       </Navbar>
     </LiquidGlass>

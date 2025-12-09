@@ -7,9 +7,7 @@ import PropTypes from "prop-types";
 
 import { Card, Error } from "../../shared/components";
 import { validateUsername } from "../../shared/utils/validationUtils";
-import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { ErrorManager } from "../../shared/services/errorManager";
-import CatNameBanner from "../home/CatNameBanner";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
@@ -17,15 +15,12 @@ function Login({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [catFact, setCatFact] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const [catName, setCatName] = useState(null);
-  const [loadingCatName, setLoadingCatName] = useState(true);
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
 
   const containerRef = useRef(null);
   const formRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
   const catRef = useRef(null);
+  const catSvgRef = useRef(null);
 
   // Add login-page class to body and html when component mounts
   useEffect(() => {
@@ -38,31 +33,6 @@ function Login({ onLogin }) {
       document.documentElement.classList.remove("login-page");
     };
   }, []);
-
-  // Load cat's chosen name
-  useEffect(() => {
-    loadCatName();
-  }, []);
-
-  const loadCatName = async () => {
-    try {
-      const data = await siteSettingsAPI.getCatChosenName();
-      setCatName(data);
-    } catch (error) {
-      // * Use ErrorManager for consistent error handling
-      ErrorManager.handleError(error, "Load Cat Name", {
-        isRetryable: true,
-        affectsUserData: false,
-        isCritical: false,
-      });
-      // * Silently fail - cat name banner is optional
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Failed to load cat name (non-critical):", error);
-      }
-    } finally {
-      setLoadingCatName(false);
-    }
-  };
 
   const funnyPrefixes = [
     "Captain",
@@ -125,11 +95,6 @@ function Login({ onLogin }) {
     }
     const funName = generateFunName();
     setName(funName);
-    setIsTyping(false);
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = null;
-    }
     if (error) {
       setError("");
     }
@@ -142,30 +107,23 @@ function Login({ onLogin }) {
     }
   };
 
-  const resetTypingTimer = () => {
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      typingTimeoutRef.current = null;
-    }, 1200);
-  };
-
   // * Track mouse position for eye following
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (catRef.current) {
-        const rect = catRef.current.getBoundingClientRect();
+      const target = catSvgRef.current || catRef.current;
+      if (target) {
+        const rect = target.getBoundingClientRect();
         const catCenterX = rect.left + rect.width / 2;
         const catCenterY = rect.top + rect.height / 2;
         const deltaX = e.clientX - catCenterX;
         const deltaY = e.clientY - catCenterY;
-        // * Normalize to reasonable eye movement range (max 3px for pupils)
-        // * Increased from 1.5px to make movement more noticeable
+        // * Normalize to reasonable eye movement range (max 4px for pupils)
         const maxDistance = Math.max(rect.width, rect.height) / 2;
         const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
         const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
         setEyePosition({
-          x: normalizedX * 3,
-          y: normalizedY * 3,
+          x: normalizedX * 4,
+          y: normalizedY * 4,
         });
       }
     };
@@ -221,22 +179,10 @@ function Login({ onLogin }) {
     };
 
     fetchCatFact();
-
-    return () => {
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = null;
-      }
-    };
   }, []);
 
   const handleNameChange = (e) => {
     setName(e.target.value);
-    setIsTyping(true);
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    resetTypingTimer();
     if (error) {
       setError("");
     }
@@ -305,18 +251,7 @@ function Login({ onLogin }) {
       <div className={styles.heroContainer} ref={containerRef}>
         {/* Premium Hero Section - Tournament Info */}
         <div className={styles.heroContent}>
-          <div style={{ marginBottom: "clamp(1rem, 4vw, 2rem)" }}>
-            {/* Cat Name Banner */}
-            {!loadingCatName && catName && (
-              <CatNameBanner catName={catName} isAdmin={false} />
-            )}
-          </div>
-
           <h1 className={styles.welcomeTitle}>Ready to Rate Cat Names?</h1>
-          <p className={styles.welcomeText}>
-            Enter your name to get started. Compare names and find your
-            favorite.
-          </p>
         </div>
 
         {/* Premium Form Card - Call to Action */}
@@ -326,6 +261,16 @@ function Login({ onLogin }) {
           background="transparent"
           shadow="xl"
           padding="xl"
+          liquidGlass={{
+            width: 600,
+            height: 400,
+            radius: 24,
+            scale: -180,
+            saturation: 1.2,
+            frost: 0.08,
+            inputBlur: 12,
+            outputBlur: 0.8,
+          }}
         >
           <div
             id="loginInteraction"
@@ -349,18 +294,6 @@ function Login({ onLogin }) {
                 )}
               </span>
             </p>
-            {isTyping ? (
-              <div className={styles.typingIndicator}>
-                <span className={styles.typingText}>
-                  The cat is watching you type!
-                </span>
-                <span className={styles.typingDots}>
-                  <span className={styles.dot}>.</span>
-                  <span className={styles.dot}>.</span>
-                  <span className={styles.dot}>.</span>
-                </span>
-              </div>
-            ) : null}
 
             <form
               ref={formRef}
@@ -385,6 +318,7 @@ function Login({ onLogin }) {
                       </div>
                       <div className="thecat">
                         <svg
+                          ref={catSvgRef}
                           width="45.952225mm"
                           height="35.678726mm"
                           viewBox="0 0 45.952225 35.678726"
@@ -701,8 +635,8 @@ function Login({ onLogin }) {
                                 display: "inline",
                                 fill: "#000000",
                                 fillOpacity: "1",
-                                stroke: "none",
-                                strokeWidth: "0.529167",
+                                stroke: "#000000",
+                                strokeWidth: "2",
                                 strokeLinecap: "round",
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
@@ -903,8 +837,8 @@ function Login({ onLogin }) {
                                 display: "inline",
                                 fill: "#000000",
                                 fillOpacity: "1",
-                                stroke: "none",
-                                strokeWidth: "0.529167",
+                                stroke: "#000000",
+                                strokeWidth: "2",
                                 strokeLinecap: "round",
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
@@ -969,17 +903,11 @@ function Login({ onLogin }) {
                   We&apos;ll create an account automatically if it&apos;s your
                   first time.
                 </p>
-                <div className={styles.characterCounter}>
-                  <span className={styles.counterText}>
+                {name.length > 0 && (
+                  <p className={styles.counterText}>
                     {name.length}/30 characters
-                  </span>
-                  <div className={styles.counterBar}>
-                    <div
-                      className={styles.counterProgress}
-                      style={{ width: `${(name.length / 30) * 100}%` }}
-                    />
-                  </div>
-                </div>
+                  </p>
+                )}
               </div>
 
               <button
@@ -1037,17 +965,6 @@ function Login({ onLogin }) {
                 )}
               </button>
             </form>
-
-            {name && (
-              <div className={styles.namePreview}>
-                <p className={styles.helperText}>
-                  Logging in as{" "}
-                  <span className={styles.nameHighlight}>
-                    &quot;{name}&quot;
-                  </span>
-                </p>
-              </div>
-            )}
           </div>
         </Card>
       </div>

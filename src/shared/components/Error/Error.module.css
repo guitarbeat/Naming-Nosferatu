@@ -60,19 +60,23 @@
   }
 }
 
+.boundaryGlass {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .boundaryContent {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 600px;
+  height: 100%;
   padding: clamp(var(--space-6), 5vw, var(--space-12));
   text-align: center;
   outline: none;
-  background: var(--glass-bg-strong);
-  border: var(--card-border-width) solid var(--glass-border);
-  border-radius: clamp(var(--radius-lg), 3vw, var(--radius-xl));
-  box-shadow: var(--glass-shadow), var(--glow-vibrant);
-  backdrop-filter: blur(var(--glass-blur-strong)) saturate(180%);
+  background: transparent;
+  border: none;
+  border-radius: inherit;
   transition: var(--transition-base);
 }
 
@@ -177,7 +181,7 @@
   background: rgb(255 255 255 / 5%);
   border: 1px solid var(--glass-border);
   border-radius: clamp(8px, 2vw, 12px);
-  backdrop-filter: blur(5px);
+  /* * backdrop-filter removed - parent uses LiquidGlass */
 }
 
 .boundarySuggestionsTitle {
@@ -509,7 +513,7 @@
   background: rgb(0 0 0 / 20%);
   border: 1px solid var(--glass-border);
   border-radius: clamp(8px, 2vw, 12px);
-  backdrop-filter: blur(5px);
+  /* * backdrop-filter removed - parent uses LiquidGlass */
 }
 
 .boundaryDetails summary {
@@ -1043,7 +1047,7 @@
   border: 1px solid var(--inline-accent-border);
   border-radius: var(--radius-xl, 1rem);
   box-shadow: var(--glass-shadow, 0 8px 32px rgb(0 0 0 / 10%));
-  backdrop-filter: blur(var(--glass-blur, 16px));
+  /* * backdrop-filter removed - inline errors don't need glass effect */
   transition: var(--transition-all, all 0.2s ease);
 }
 

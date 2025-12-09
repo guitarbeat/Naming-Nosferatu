@@ -32,10 +32,18 @@
 }
 
 .liquid-glass {
-  background: light-dark(hsl(0 0% 100% / 0), hsl(0 0% 0% / 0));
+  /* * Frost effect: subtle background tint for better visual separation */
+  background: light-dark(
+    hsl(0 0% 100% / var(--frost, 0)),
+    hsl(0 0% 0% / var(--frost, 0))
+  );
+
   /* * Liquid glass uses backdrop-filter with SVG filter for refraction effect */
-  backdrop-filter: saturate(var(--saturation, 1));
+  backdrop-filter: url(var(--filter-id, none)) saturate(var(--saturation, 1));
+
+  /* * Subtle glass-like shadows */
   box-shadow:
+    /* Inner highlights */
     0 0 2px 1px
       light-dark(
         color-mix(in oklch, canvasText, #0000 85%),
@@ -48,12 +56,9 @@
         color-mix(in oklch, canvasText, #0000 85%)
       )
       inset,
-    0px 4px 16px rgba(17, 17, 26, 0.05),
+    /* Outer depth shadows */ 0px 4px 16px rgba(17, 17, 26, 0.05),
     0px 8px 24px rgba(17, 17, 26, 0.05),
-    0px 16px 56px rgba(17, 17, 26, 0.05),
-    0px 4px 16px rgba(17, 17, 26, 0.05) inset,
-    0px 8px 24px rgba(17, 17, 26, 0.05) inset,
-    0px 16px 56px rgba(17, 17, 26, 0.05) inset;
+    0px 16px 56px rgba(17, 17, 26, 0.05);
 }
 
 .liquid-glass * {

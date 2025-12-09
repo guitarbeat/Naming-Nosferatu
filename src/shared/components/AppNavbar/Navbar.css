@@ -1,48 +1,56 @@
 /* AppNavbar (Navbar) Slim Styles */
 
+/* * App navbar surface tokens – respects global theme variables */
 .app-navbar {
-  position: relative;
-  min-height: 34px;
+  --navbar-surface: var(--glass-bg, hsl(var(--background) / 85%));
+  --navbar-surface-strong: var(--glass-bg-strong, hsl(var(--background) / 92%));
+  --navbar-surface-light: var(--glass-bg-light, hsl(var(--background) / 75%));
+  --navbar-border: var(--glass-border, hsl(var(--border) / 32%));
+  --navbar-shadow: var(
+    --glass-shadow,
+    0 12px 32px hsl(var(--background) / 22%)
+  );
+  --navbar-text: var(--text-primary, hsl(var(--foreground)));
+  --navbar-overlay: var(--overlay-dark, rgba(0, 0, 0, 0.35));
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky, 1020);
+
+  width: 100%;
   padding: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left);
   isolation: isolate;
+  pointer-events: auto;
 }
 
 .app-navbar .navbar-shell {
-  padding: clamp(0.15rem, 0.75vw, 0.35rem);
-}
-
-.app-navbar .navbar-content {
-  padding: clamp(0.25rem, 0.8vw, 0.45rem) clamp(0.6rem, 1.2vw, 0.85rem);
-  gap: clamp(0.5rem, 1vw, 0.85rem);
-  border: 1px solid hsl(var(--border) / 30%);
-  border-radius: var(--radius-lg);
-  background:
-    linear-gradient(
-      140deg,
-      hsl(var(--background) / 92%),
-      hsl(var(--background) / 82%)
-    ),
-    radial-gradient(
-      circle at 20% 10%,
-      hsl(var(--neon-cyan) / 10%),
-      transparent 36%
-    );
-  box-shadow:
-    0 8px 24px hsl(var(--background) / 16%),
-    inset 0 1px 0 hsl(var(--foreground) / 6%);
-  backdrop-filter: blur(14px) saturate(150%);
+  padding: clamp(0.5rem, 1vw, 0.75rem);
 }
 
 .navbar-section {
-  gap: var(--space-1);
+  gap: clamp(0.5rem, 1vw, 0.75rem);
 }
 
 .navbar-section--left {
-  overflow: hidden;
+  overflow: visible;
+  flex: 1;
+  min-width: 0;
 }
 
 .navbar-divider {
-  display: none;
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--navbar-border) 20%,
+    var(--navbar-border) 80%,
+    transparent 100%
+  );
+  margin: 0 clamp(0.25rem, 0.5vw, 0.5rem);
+  flex-shrink: 0;
 }
 
 .navbar-mobile-toggle {
@@ -50,112 +58,145 @@
 }
 
 .nav-items-container {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: calc(var(--space-1) * 0.75) var(--space-2);
-  border: 1px solid hsl(var(--border) / 32%);
-  border-radius: var(--radius-md);
-  background: hsl(var(--background) / 72%);
-  box-shadow:
-    0 6px 18px hsl(var(--background) / 12%),
-    inset 0 1px 0 hsl(var(--foreground) / 6%);
-}
-
-.nav-inline-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  flex-wrap: nowrap;
+  gap: clamp(0.375rem, 0.75vw, 0.5rem);
+  flex: 1;
+  min-width: 0;
 }
 
 .nav-items-container .navbar-menu-button {
-  min-height: 32px;
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-xs);
-  background: hsl(var(--background) / 55%);
-  border-color: hsl(var(--border) / 35%);
-  box-shadow:
-    inset 0 1px 0 hsl(var(--foreground) / 10%),
-    0 4px 12px hsl(var(--background) / 12%);
-}
-
-.nav-items-container .navbar-menu-button:hover {
-  background: hsl(var(--accent) / 16%);
-  border-color: hsl(var(--accent) / 45%);
-  color: hsl(var(--foreground));
-}
-
-.nav-items-container .navbar-menu-button[aria-current="page"],
-.nav-items-container .navbar-menu-button.active {
-  background:
-    linear-gradient(
-      135deg,
-      hsl(var(--neon-cyan) / 18%),
-      hsl(var(--hot-pink) / 14%)
-    ),
-    hsl(var(--background) / 78%);
-  border-color: hsl(var(--neon-cyan) / 60%);
-  color: hsl(var(--foreground));
-  box-shadow:
-    0 8px 18px hsl(var(--neon-cyan) / 18%),
-    inset 0 1px 0 hsl(var(--foreground) / 10%);
+  min-height: 36px;
+  white-space: nowrap;
 }
 
 .nav-items-container .nav-item-label {
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  line-height: 1;
+  color: hsl(var(--foreground));
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
 }
 
-.navbar-indicator {
-  position: absolute;
-  bottom: 4px;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  background: linear-gradient(
-    135deg,
-    hsl(var(--neon-cyan)),
-    hsl(var(--hot-pink))
-  );
-  border-radius: 50%;
-  box-shadow:
-    0 4px 12px hsl(var(--neon-cyan) / 35%),
-    0 2px 6px hsl(var(--hot-pink) / 25%),
-    inset 0 1px 0 hsl(var(--background) / 80%);
-  border: 1px solid hsl(var(--neon-cyan) / 60%);
-  transition:
-    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.15s ease;
-  pointer-events: none;
+/* * Ensure icons and text are properly aligned in nav items */
+.nav-items-container .navbar-menu-button {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.nav-items-container .navbar-menu-button svg,
+.nav-items-container .navbar-menu-button .icon {
+  display: block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
 }
 
 .navbar-action-tray {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: clamp(0.5rem, 1vw, 0.75rem);
+  flex-shrink: 0;
 }
 
 .navbar-actions-shell,
 .navbar-user-shell {
-  padding: var(--space-1) var(--space-2);
+  padding: clamp(0.375rem, 0.5vw, 0.5rem) clamp(0.5rem, 0.75vw, 0.75rem);
   border-radius: var(--radius-md);
-  border: 1px solid hsl(var(--border) / 28%);
-  background: hsl(var(--background) / 70%);
+  border: 1px solid var(--navbar-border);
+  background: var(--navbar-surface);
   box-shadow:
-    0 6px 18px hsl(var(--background) / 12%),
+    var(--navbar-shadow),
     inset 0 1px 0 hsl(var(--foreground) / 6%);
-  backdrop-filter: blur(10px);
+  /* * backdrop-filter removed - using LiquidGlass on parent navbar */
+}
+
+.navbar-actions-shell .navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.375rem, 0.5vw, 0.5rem);
+}
+
+.navbar-actions-shell .navbar-menu-button {
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.navbar-user-shell .navbar-user {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 0.75vw, 0.75rem);
+}
+
+.navbar-user-shell .navbar-menu-button {
+  min-height: 36px;
+  flex-shrink: 0;
 }
 
 .navbar-home-button {
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--text-xs);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.375rem, 0.5vw, 0.5rem);
+  padding: clamp(0.375rem, 0.5vw, 0.5rem) clamp(0.5rem, 0.75vw, 0.75rem);
+  min-height: 36px;
+  font-size: var(--text-sm);
+  font-weight: 600;
   letter-spacing: 0.01em;
+  color: hsl(var(--foreground) / 85%);
   border-radius: var(--radius-md);
+  transition:
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.navbar-home-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 8%),
+    hsl(var(--hot-pink) / 6%)
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-home-button:hover::before,
+.navbar-home-button:focus-visible::before {
+  opacity: 1;
+}
+
+.navbar-home-button:hover,
+.navbar-home-button:focus-visible {
+  color: hsl(var(--foreground));
+  transform: scale(1.02);
+  outline: 2px solid hsl(var(--accent) / 30%);
+  outline-offset: 2px;
+}
+
+.navbar-home-button:active {
+  transform: scale(0.98);
+}
+
+.navbar-home-button[data-active="true"] {
+  color: hsl(var(--foreground));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 12%),
+    hsl(var(--hot-pink) / 10%)
+  );
 }
 
 .navbar-home-button span {
@@ -164,11 +205,40 @@
 
 .navbar-logo-icon,
 .navbar-logo-video {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: block;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.navbar-logo-icon video,
+.navbar-logo-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-home-button span {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+  margin: 0;
+  padding: 0;
 }
 
 @media (width <= 930px) {
+  .navbar-divider {
+    display: none;
+  }
+
   .navbar-mobile-toggle {
     display: flex;
     align-items: center;
@@ -181,30 +251,58 @@
     width: 3.5em;
     min-height: 36px;
     border-radius: 999px;
-    border: 1px solid hsl(var(--border) / 40%);
-    background: hsl(var(--background) / 75%);
-    color: hsl(var(--foreground));
+    border: 1px solid var(--navbar-border);
+    background: var(--navbar-surface-light);
+    color: var(--navbar-text);
     display: grid;
     place-items: center;
     padding: var(--space-1) var(--space-2);
     font-weight: 700;
     letter-spacing: 0.02em;
     transition:
-      background 0.15s ease-out,
-      transform 0.15s ease-out;
+      background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .menu-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--neon-cyan) / 10%),
+      hsl(var(--hot-pink) / 8%)
+    );
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .menu-button:hover::before,
+  .menu-button:focus-visible::before {
+    opacity: 1;
   }
 
   .menu-button:hover,
   .menu-button:focus-visible {
     background: hsl(var(--accent) / 18%);
-    outline: none;
+    outline: 2px solid hsl(var(--accent) / 40%);
+    outline-offset: 2px;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px hsl(var(--accent) / 15%);
+  }
+
+  .menu-button:active {
+    transform: scale(0.98);
   }
 
   .menu-button-label[data-show-when="open"] {
     display: none;
   }
 
-  .app-navbar .navbar-content {
+  .navbar-content {
     flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
@@ -220,15 +318,28 @@
     gap: var(--space-2);
     padding: var(--space-2);
     border-radius: var(--radius-lg);
-    background: hsl(var(--background) / 96%);
-    border-color: hsl(var(--border) / 45%);
+    background: var(--navbar-surface-strong);
+    border: 1px solid var(--navbar-border);
     box-shadow:
-      0 18px 48px hsl(var(--background) / 24%),
+      var(--navbar-shadow),
       inset 0 1px 0 hsl(var(--foreground) / 10%);
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      display 0s 0.3s;
+    pointer-events: none;
   }
 
   .nav-items-container[data-open="true"] {
     display: flex;
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
   }
 
   .nav-inline-actions {
@@ -240,50 +351,21 @@
     flex-wrap: nowrap;
   }
 
-  /* When menu is open, allow wrapping and column stack */
-  .app-navbar .navbar-content[data-menu-open="true"] {
+  /* * Allows wrapping when menu is open */
+  .navbar-content[data-menu-open="true"] {
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1);
+    position: relative;
+    z-index: 91;
   }
 
-  .app-navbar .navbar-content[data-menu-open="true"] .nav-inline-actions {
+  .navbar-content[data-menu-open="true"] .nav-inline-actions {
     width: auto;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-1);
-  }
-
-  /* Override base column layout on very small screens to keep nav horizontal */
-  @media (width <= 640px) {
-    /* Force horizontal flow on mobile; overrides base column rules */
-    .app-navbar .navbar-content {
-      flex-direction: row !important;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-1);
-    }
-
-    .app-navbar .nav-items-container {
-      flex-direction: row !important;
-      flex-wrap: wrap !important;
-      justify-content: flex-start;
-      align-items: center;
-      gap: var(--space-1);
-    }
-
-    .app-navbar .nav-inline-actions,
-    .app-navbar .navbar-action-tray {
-      flex-direction: row !important;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--space-1);
-    }
-  }
-
-  .navbar-divider {
-    display: none;
   }
 
   .navbar-section--left {
@@ -304,22 +386,27 @@
   .navbar-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(2px);
+    background: var(--navbar-overlay);
+    /* * backdrop-filter removed - overlay doesn't need glass effect */
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      backdrop-filter 0.3s ease;
     z-index: 90;
+    cursor: pointer;
   }
 
   .navbar-overlay[data-open="true"] {
     opacity: 1;
     pointer-events: auto;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
   }
 
-  .app-navbar .navbar-content[data-menu-open="true"] {
-    position: relative;
-    z-index: 91;
+  .navbar-overlay:focus-visible {
+    outline: 2px solid hsl(var(--accent) / 60%);
+    outline-offset: -2px;
   }
 
   .menu-checkbox {
@@ -337,10 +424,56 @@
     .menu-button-label[data-show-when="open"] {
     display: inline;
   }
+
+  /* * Fallback: Use aria-expanded for label visibility */
+  .menu-button[aria-expanded="true"]
+    .menu-button-label[data-show-when="closed"] {
+    display: none;
+  }
+
+  .menu-button[aria-expanded="true"] .menu-button-label[data-show-when="open"] {
+    display: inline;
+  }
+
+  .menu-button[aria-expanded="false"]
+    .menu-button-label[data-show-when="open"] {
+    display: none;
+  }
+
+  .menu-button[aria-expanded="false"]
+    .menu-button-label[data-show-when="closed"] {
+    display: inline;
+  }
+}
+
+/* * Keep horizontal flow on small screens */
+@media (width <= 640px) {
+  .navbar-content {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .nav-items-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .nav-inline-actions,
+  .navbar-action-tray {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1);
+  }
 }
 
 @media (width <= 768px) {
-  .app-navbar .navbar-content {
+  .navbar-content {
     padding: 0.4rem 0.65rem;
   }
 

@@ -1,18 +1,29 @@
 /* Unified Toast Component Styles */
 
-/* ===== INDIVIDUAL TOAST ITEMS ===== */
-.item {
-  min-width: 300px;
-  max-width: 400px;
+/* ===== LIQUID GLASS WRAPPER ===== */
+.toastGlass {
   pointer-events: auto;
-  background: var(--card-background, #fff);
-  border-left: var(--card-border-width) solid;
-  border-radius: var(--card-border-radius);
-  box-shadow: var(--shadow-md);
   transform: translateX(100%);
   transition: var(--transition-base);
   animation: slideIn var(--duration-fast) cubic-bezier(0.68, -0.55, 0.265, 1.55)
     forwards;
+}
+
+.toastGlass.exiting {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+/* ===== INDIVIDUAL TOAST ITEMS ===== */
+.item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  background: transparent;
+  border-left: var(--card-border-width) solid;
+  border-radius: inherit;
 }
 
 /* * Tournament mode visual: higher contrast glass/blur so it stands out over game UI */

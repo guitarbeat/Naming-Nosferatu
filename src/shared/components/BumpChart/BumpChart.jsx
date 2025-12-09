@@ -37,15 +37,14 @@ const COLORS = [
 /**
  * Generate SVG path for a bump chart line (smooth curves)
  */
-function generatePath(points, chartWidth, chartHeight, padding, maxRank) {
+function generatePath(points, chartWidth, chartHeight, padding, rankToY) {
   if (!points || points.length < 2) return "";
 
   const xStep = (chartWidth - padding * 2) / (points.length - 1);
-  const yScale = (chartHeight - padding * 2) / (maxRank - 1);
 
   const coords = points.map((rank, i) => ({
     x: padding + i * xStep,
-    y: padding + (rank - 1) * yScale,
+    y: rankToY(rank),
   }));
 
   // Create smooth bezier curve
@@ -79,12 +78,14 @@ export function BumpChart({
   const [hoveredName, setHoveredName] = useState(null);
   const [dimensions, setDimensions] = useState({ width: 600, height });
   const [tooltipData, setTooltipData] = useState(null);
+  const [useNormalizedScale, setUseNormalizedScale] = useState(false);
+  const [highlightTopMovers, setHighlightTopMovers] = useState(false);
   const animationKey = useMemo(
     () =>
       animated
         ? `anim-${data.map((item) => item.id).join("|")}-${timeLabels.join("|")}`
         : "static",
-    [animated, data, timeLabels],
+    [animated, data, timeLabels]
   );
 
   // Responsive sizing
@@ -116,7 +117,7 @@ export function BumpChart({
 
     const maxRank = Math.max(
       ...sortedNames.flatMap((d) => d.rankings.filter((r) => r !== null)),
-      10,
+      10
     );
 
     const lines = sortedNames.map((item, idx) => ({
@@ -129,7 +130,27 @@ export function BumpChart({
       change: calculateChange(item.rankings),
     }));
 
-    return { lines, maxRank: Math.min(maxRank, maxDisplayed) };
+    const topUpMover = lines
+      .filter((l) => l.change > 0)
+      .sort((a, b) => b.change - a.change)[0];
+    const topDownMover = lines
+      .filter((l) => l.change < 0)
+      .sort((a, b) => a.change - b.change)[0];
+    const mostSelected = lines
+      .filter(
+        (l) => l.totalSelections !== undefined && l.totalSelections !== null
+      )
+      .sort((a, b) => (b.totalSelections ?? 0) - (a.totalSelections ?? 0))[0];
+
+    return {
+      lines,
+      maxRank: Math.min(maxRank, maxDisplayed),
+      summary: {
+        topUpMover,
+        topDownMover,
+        mostSelected,
+      },
+    };
   }, [data, timeLabels, maxDisplayed]);
 
   const handleMouseMove = useCallback(
@@ -146,7 +167,7 @@ export function BumpChart({
       const periodIndex = Math.round((x - padding) / xStep);
       const clampedIndex = Math.max(
         0,
-        Math.min(periodIndex, timeLabels.length - 1),
+        Math.min(periodIndex, timeLabels.length - 1)
       );
       const rank = line.rankings[clampedIndex];
 
@@ -166,10 +187,11 @@ export function BumpChart({
           avgRating: line.avgRating,
           totalSelections: line.totalSelections,
           movement,
+          previousRank,
         });
       }
     },
-    [dimensions.width, timeLabels],
+    [dimensions.width, timeLabels]
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -192,6 +214,29 @@ export function BumpChart({
   const { width } = dimensions;
   const chartHeight = height;
 
+  const rankToY = useCallback(
+    (rank) => {
+      const maxRank = chartData.maxRank;
+      const fraction = (rank - 1) / Math.max(1, maxRank - 1);
+      const eased = useNormalizedScale ? Math.pow(fraction, 0.6) : fraction;
+      return padding + eased * (chartHeight - padding * 2);
+    },
+    [chartData.maxRank, chartHeight, padding, useNormalizedScale]
+  );
+
+  const rankTicks = useNormalizedScale
+    ? [0, 0.25, 0.5, 0.75, 1].map((t) => ({
+        label: `${Math.round(t * 100)}%`,
+        y: padding + t * (chartHeight - padding * 2),
+      }))
+    : Array.from({ length: chartData.maxRank }, (_, i) => ({
+        label: `#${i + 1}`,
+        y:
+          padding +
+          (i * (chartHeight - padding * 2)) /
+            Math.max(1, chartData.maxRank - 1),
+      }));
+
   return (
     <div className="bump-chart-container">
       <div className="bump-chart-description">
@@ -200,6 +245,56 @@ export function BumpChart({
           rank numbers) indicate stronger performance. Hover over lines to see
           detailed metrics.
         </p>
+        <div className="bump-chart-controls">
+          <button
+            type="button"
+            className={`bump-chart-control ${useNormalizedScale ? "active" : ""}`}
+            onClick={() => setUseNormalizedScale((prev) => !prev)}
+          >
+            Normalize Y-axis
+          </button>
+          <button
+            type="button"
+            className={`bump-chart-control ${highlightTopMovers ? "active" : ""}`}
+            onClick={() => setHighlightTopMovers((prev) => !prev)}
+            disabled={
+              !chartData.summary?.topUpMover && !chartData.summary?.topDownMover
+            }
+          >
+            Highlight movers
+          </button>
+        </div>
+        {chartData.summary && (
+          <div className="bump-chart-summary">
+            {chartData.summary.topUpMover && (
+              <div className="bump-chart-chip">
+                <span className="chip-label">Top climber</span>
+                <span className="chip-value">
+                  {chartData.summary.topUpMover.name} ↑
+                  {chartData.summary.topUpMover.change}
+                </span>
+              </div>
+            )}
+            {chartData.summary.topDownMover && (
+              <div className="bump-chart-chip chip-negative">
+                <span className="chip-label">Biggest drop</span>
+                <span className="chip-value">
+                  {chartData.summary.topDownMover.name} ↓
+                  {Math.abs(chartData.summary.topDownMover.change)}
+                </span>
+              </div>
+            )}
+            {chartData.summary.mostSelected && (
+              <div className="bump-chart-chip">
+                <span className="chip-label">Most picked</span>
+                <span className="chip-value">
+                  {chartData.summary.mostSelected.name} ·{" "}
+                  {chartData.summary.mostSelected.totalSelections ?? 0}x
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <svg
         ref={svgRef}
@@ -210,31 +305,26 @@ export function BumpChart({
       >
         {/* Background grid */}
         <g className="bump-chart-grid">
-          {Array.from({ length: chartData.maxRank }, (_, i) => {
-            const y =
-              padding +
-              (i * (chartHeight - padding * 2)) / (chartData.maxRank - 1);
-            return (
-              <g key={`grid-${i}`}>
-                <line
-                  x1={padding}
-                  y1={y}
-                  x2={width - padding}
-                  y2={y}
-                  className="bump-chart-gridline"
-                />
-                <text
-                  x={padding - 10}
-                  y={y}
-                  className="bump-chart-rank-label"
-                  textAnchor="end"
-                  dominantBaseline="middle"
-                >
-                  #{i + 1}
-                </text>
-              </g>
-            );
-          })}
+          {rankTicks.map((tick, idx) => (
+            <g key={`grid-${idx}`}>
+              <line
+                x1={padding}
+                y1={tick.y}
+                x2={width - padding}
+                y2={tick.y}
+                className="bump-chart-gridline"
+              />
+              <text
+                x={padding - 10}
+                y={tick.y}
+                className="bump-chart-rank-label"
+                textAnchor="end"
+                dominantBaseline="middle"
+              >
+                {tick.label}
+              </text>
+            </g>
+          ))}
         </g>
 
         {/* Time period labels */}
@@ -259,8 +349,17 @@ export function BumpChart({
         {/* Lines for each name */}
         <g className="bump-chart-lines">
           {chartData.lines.map((line, lineIndex) => {
+            const moverNames = [
+              chartData.summary?.topUpMover?.name,
+              chartData.summary?.topDownMover?.name,
+            ].filter(Boolean);
+            const toggleHighlighted =
+              highlightTopMovers && moverNames.includes(line.name);
+
             const isHighlighted =
-              hoveredName === line.name || highlightedName === line.name;
+              hoveredName === line.name ||
+              highlightedName === line.name ||
+              toggleHighlighted;
             const isOtherHighlighted =
               (hoveredName || highlightedName) && !isHighlighted;
 
@@ -269,7 +368,7 @@ export function BumpChart({
               width,
               chartHeight,
               padding,
-              chartData.maxRank,
+              rankToY
             );
 
             // Calculate path length for animation
@@ -278,7 +377,7 @@ export function BumpChart({
               try {
                 const tempPath = document.createElementNS(
                   "http://www.w3.org/2000/svg",
-                  "path",
+                  "path"
                 );
                 tempPath.setAttribute("d", d);
                 return tempPath.getTotalLength();
@@ -333,10 +432,7 @@ export function BumpChart({
                   const x =
                     padding +
                     (i * (width - padding * 2)) / (timeLabels.length - 1);
-                  const y =
-                    padding +
-                    ((rank - 1) * (chartHeight - padding * 2)) /
-                      (chartData.maxRank - 1);
+                  const y = rankToY(rank);
 
                   const pointDelay = animated
                     ? lineDelay +
@@ -418,6 +514,20 @@ export function BumpChart({
           <div className="bump-chart-tooltip-rank">
             Rank #{tooltipData.rank} · {tooltipData.period}
           </div>
+          {tooltipData.previousRank !== null && (
+            <div className="bump-chart-tooltip-metric">
+              Δ vs prev:{" "}
+              {tooltipData.movement > 0
+                ? "↑"
+                : tooltipData.movement < 0
+                  ? "↓"
+                  : "–"}
+              {Math.abs(tooltipData.movement)}
+              {tooltipData.previousRank
+                ? ` (was #${tooltipData.previousRank})`
+                : ""}
+            </div>
+          )}
           {tooltipData.avgRating && (
             <div className="bump-chart-tooltip-metric">
               Rating: {tooltipData.avgRating}
@@ -489,7 +599,7 @@ BumpChart.propTypes = {
       rankings: PropTypes.arrayOf(PropTypes.number).isRequired,
       avgRating: PropTypes.number,
       totalSelections: PropTypes.number,
-    }),
+    })
   ),
   timeLabels: PropTypes.arrayOf(PropTypes.string),
   maxDisplayed: PropTypes.number,

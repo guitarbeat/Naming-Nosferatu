@@ -823,9 +823,9 @@ export const catNamesAPI = {
       const avgRating =
         totalRatings > 0
           ? Math.round(
-              ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
-                totalRatings,
-            )
+            ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
+            totalRatings,
+          )
           : 1500;
 
       // Find names never selected
@@ -1086,21 +1086,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-              a[1] > b[1] ? a : b,
-            )[0]
+            a[1] > b[1] ? a : b,
+          )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-              ...selections.map((s) => new Date(s.selected_at).getTime()),
-            )
+            ...selections.map((s) => new Date(s.selected_at).getTime()),
+          )
           : null;
 
       return {
@@ -1201,9 +1201,11 @@ export const catNamesAPI = {
    * Tracks how names have moved in rankings over recent time periods
    * @param {number} topN - Number of top names to track
    * @param {number} periods - Number of time periods to show
+   * @param {Object} [options] - Optional filters (e.g., dateFilter)
+   * @param {string} [options.dateFilter] - Date range filter key
    * @returns {Object} { data: Array, timeLabels: Array }
    */
-  async getRankingHistory(topN = 10, periods = 7) {
+  async getRankingHistory(topN = 10, periods = 7, options = {}) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { data: [], timeLabels: [] };
@@ -1212,9 +1214,22 @@ export const catNamesAPI = {
       const client = await resolveSupabaseClient();
       if (!client) return { data: [], timeLabels: [] };
 
+      const dateFilterPeriods = {
+        today: 2,
+        week: 7,
+        month: 30,
+        year: 365,
+        all: periods,
+      };
+      const requestedPeriods =
+        options?.periods ??
+        dateFilterPeriods[options?.dateFilter] ??
+        periods;
+      const periodCount = Math.max(requestedPeriods, 2);
+
       // Get selection data grouped by date for the last N periods
       const startDate = new Date();
-      startDate.setDate(startDate.getDate() - (periods - 1));
+      startDate.setDate(startDate.getDate() - (periodCount - 1));
 
       const { data: selections, error: selError } = await client
         .from("tournament_selections")
@@ -1277,7 +1292,7 @@ export const catNamesAPI = {
       // Generate time labels for the last N days
       const timeLabels = [];
       const today = new Date();
-      for (let i = periods - 1; i >= 0; i--) {
+      for (let i = periodCount - 1; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const label = d.toLocaleDateString("en-US", {
@@ -1289,7 +1304,7 @@ export const catNamesAPI = {
 
       // Calculate rankings for each day
       const dateKeys = [];
-      for (let i = periods - 1; i >= 0; i--) {
+      for (let i = periodCount - 1; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
         const [date] = d.toISOString().split("T");

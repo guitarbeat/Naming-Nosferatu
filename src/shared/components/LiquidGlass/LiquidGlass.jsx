@@ -3,22 +3,44 @@ import "./LiquidGlass.css";
 
 /**
  * LiquidGlass component - Creates a liquid glass refraction effect using SVG filters
- * Replaces the traditional frosted glass with a dynamic, wavy refraction effect
+ * Based on: https://codepen.io/jh3y/pen/EajLxJV
+ *
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Content to render inside glass
+ * @param {string} props.className - Additional CSS classes
+ * @param {number} props.width - Width of the glass effect
+ * @param {number} props.height - Height of the glass effect
+ * @param {number} props.radius - Border radius in pixels
+ * @param {number} props.scale - Displacement scale (-180 default)
+ * @param {number} props.saturation - Color saturation multiplier (1 = normal)
+ * @param {number} props.frost - Frost overlay opacity (0-1)
+ * @param {number} props.alpha - Displacement map alpha (0-1)
+ * @param {number} props.lightness - Displacement map lightness (0-100)
+ * @param {number} props.inputBlur - Input blur for displacement image
+ * @param {number} props.outputBlur - Output blur for final effect
+ * @param {number} props.border - Border width as fraction of size (0-1)
+ * @param {string} props.blend - Blend mode for gradient mixing
+ * @param {string} props.xChannel - X displacement channel (R/G/B)
+ * @param {string} props.yChannel - Y displacement channel (R/G/B)
+ * @param {number} props.chromaticR - Red channel offset
+ * @param {number} props.chromaticG - Green channel offset
+ * @param {number} props.chromaticB - Blue channel offset
+ * @param {string} props.id - Unique filter ID
  */
 function LiquidGlass({
   children,
   className = "",
-  width = 336,
-  height = 96,
-  radius = 16,
-  turbulence = 0.3,
+  width = 200,
+  height = 80,
+  radius = 18,
   scale = -180,
-  saturation = 1,
+  saturation = 1.1,
+  frost = 0.05,
   alpha = 0.93,
   lightness = 50,
-  blur = 11,
+  inputBlur = 11,
+  outputBlur = 0.7,
   border = 0.07,
-  displace = 0.35,
   blend = "difference",
   xChannel = "R",
   yChannel = "B",
@@ -63,8 +85,8 @@ function LiquidGlass({
           <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#red-${id})" />
           <!-- blue linear -->
           <rect x="0" y="0" width="${width}" height="${height}" rx="${radius}" fill="url(#blue-${id})" style="mix-blend-mode: ${blend}" />
-          <!-- block out distortion -->
-          <rect x="${borderSize}" y="${Math.min(width, height) * (border * 0.5)}" width="${width - borderSize * 2}" height="${height - borderSize * 2}" rx="${radius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${blur}px)" />
+          <!-- block out distortion (input blur controls edge softness) -->
+          <rect x="${borderSize}" y="${Math.min(width, height) * (border * 0.5)}" width="${width - borderSize * 2}" height="${height - borderSize * 2}" rx="${radius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${inputBlur}px)" />
         </svg>
       `;
 
@@ -95,51 +117,44 @@ function LiquidGlass({
         containerRef.current.style.setProperty("--width", `${width}`);
         containerRef.current.style.setProperty("--height", `${height}`);
         containerRef.current.style.setProperty("--radius", `${radius}`);
-        containerRef.current.style.setProperty("--turbulence", `${turbulence}`);
-        containerRef.current.style.setProperty("--output-blur", `${displace}`);
+        containerRef.current.style.setProperty("--frost", `${frost}`);
+        containerRef.current.style.setProperty(
+          "--output-blur",
+          `${outputBlur}`
+        );
         containerRef.current.style.setProperty("--saturation", `${saturation}`);
         containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
+        // * Apply filter with saturation
         containerRef.current.style.backdropFilter = `url(#${id}) saturate(${saturation})`;
       }
 
-      // * Update displacement map scales
+      // * Update chromatic aberration displacement scales
       const redChannel = filterRef.current.querySelector("#redchannel");
       const greenChannel = filterRef.current.querySelector("#greenchannel");
       const blueChannel = filterRef.current.querySelector("#bluechannel");
-      const mainDisplacement = filterRef.current.querySelector(
-        "feDisplacementMap:not([id])"
-      );
-
-      if (mainDisplacement) {
-        mainDisplacement.setAttribute("scale", scale);
-        mainDisplacement.setAttribute("xChannelSelector", xChannel);
-        mainDisplacement.setAttribute("yChannelSelector", yChannel);
-      }
 
       if (redChannel) {
         redChannel.setAttribute("scale", scale + chromaticR);
+        redChannel.setAttribute("xChannelSelector", xChannel);
+        redChannel.setAttribute("yChannelSelector", yChannel);
       }
 
       if (greenChannel) {
         greenChannel.setAttribute("scale", scale + chromaticG);
+        greenChannel.setAttribute("xChannelSelector", xChannel);
+        greenChannel.setAttribute("yChannelSelector", yChannel);
       }
 
       if (blueChannel) {
         blueChannel.setAttribute("scale", scale + chromaticB);
+        blueChannel.setAttribute("xChannelSelector", xChannel);
+        blueChannel.setAttribute("yChannelSelector", yChannel);
       }
 
-      // * Update turbulence
-      const feTurbulence = filterRef.current.querySelector("feTurbulence");
-      if (feTurbulence) {
-        feTurbulence.setAttribute("baseFrequency", turbulence);
-        feTurbulence.setAttribute("numOctaves", "3");
-        feTurbulence.setAttribute("seed", "2");
-      }
-
-      // * Update blur
+      // * Update output blur (softens the chromatic aberration)
       const feGaussianBlur = filterRef.current.querySelector("feGaussianBlur");
       if (feGaussianBlur) {
-        feGaussianBlur.setAttribute("stdDeviation", displace);
+        feGaussianBlur.setAttribute("stdDeviation", outputBlur);
       }
     };
 
@@ -158,14 +173,14 @@ function LiquidGlass({
     width,
     height,
     radius,
-    turbulence,
     scale,
     saturation,
+    frost,
     alpha,
     lightness,
-    blur,
+    inputBlur,
+    outputBlur,
     border,
-    displace,
     blend,
     xChannel,
     yChannel,
@@ -194,29 +209,12 @@ function LiquidGlass({
       >
         <defs>
           <filter id={id} colorInterpolationFilters="sRGB">
-            {/* * Turbulence for liquid glass wavy effect */}
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.3"
-              numOctaves="3"
-              seed="2"
-              result="turbulence"
-            />
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="turbulence"
-              scale="20"
-              xChannelSelector="R"
-              yChannelSelector="G"
-              result="turbulent"
-            />
-
-            {/* * Input displacement image */}
+            {/* * The input displacement image (generated SVG with gradients) */}
             <feImage x="0" y="0" width="100%" height="100%" result="map" />
 
             {/* * RED channel with strongest displacement */}
             <feDisplacementMap
-              in="turbulent"
+              in="SourceGraphic"
               in2="map"
               id="redchannel"
               xChannelSelector={xChannel}
@@ -235,7 +233,7 @@ function LiquidGlass({
 
             {/* * GREEN channel (reference / least displaced) */}
             <feDisplacementMap
-              in="turbulent"
+              in="SourceGraphic"
               in2="map"
               id="greenchannel"
               xChannelSelector={xChannel}
@@ -254,7 +252,7 @@ function LiquidGlass({
 
             {/* * BLUE channel with medium displacement */}
             <feDisplacementMap
-              in="turbulent"
+              in="SourceGraphic"
               in2="map"
               id="bluechannel"
               xChannelSelector={xChannel}
@@ -271,12 +269,12 @@ function LiquidGlass({
               result="blue"
             />
 
-            {/* * Blend channels back together */}
+            {/* * Blend channels back together (chromatic aberration) */}
             <feBlend in="red" in2="green" mode="screen" result="rg" />
             <feBlend in="rg" in2="blue" mode="screen" result="output" />
 
-            {/* * Final blur for smooth liquid glass effect */}
-            <feGaussianBlur in="output" stdDeviation="0.7" />
+            {/* * Output blur softens the chromatic aberration effect */}
+            <feGaussianBlur in="output" stdDeviation={outputBlur} />
           </filter>
         </defs>
       </svg>
