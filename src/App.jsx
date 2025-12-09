@@ -7,20 +7,11 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  lazy,
-  Suspense,
-} from "react";
+import { useCallback, useEffect, useMemo, useState, Suspense } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
-// * Lazy load CatBackground since it's not critical for initial render
-const CatBackground = lazy(
-  () => import("@components/CatBackground/CatBackground"),
-);
+// * Import CatBackground directly (no lazy loading to prevent chunking issues)
+import CatBackground from "@components/CatBackground/CatBackground";
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
 import { SidebarProvider, useSidebar } from "./shared/components/ui/sidebar";
@@ -162,7 +153,7 @@ function App() {
         // * Save ratings to database
         const saveResult = await tournamentsAPI.saveTournamentRatings(
           user.name,
-          ratingsArray,
+          ratingsArray
         );
 
         devLog("[App] Save ratings result:", saveResult);
@@ -170,7 +161,7 @@ function App() {
         if (!saveResult.success) {
           devWarn(
             "[App] Failed to save ratings to database:",
-            saveResult.error,
+            saveResult.error
           );
         }
 
@@ -191,7 +182,7 @@ function App() {
         });
       }
     },
-    [user.name, tournamentActions, navigateTo],
+    [user.name, tournamentActions, navigateTo]
   );
 
   // * Handle start new tournament
@@ -218,7 +209,7 @@ function App() {
         tournamentActions.setLoading(false);
       }, 100);
     },
-    [tournamentActions],
+    [tournamentActions]
   );
 
   // * Handle ratings update
@@ -236,7 +227,7 @@ function App() {
               rating: data.rating || 1500,
               wins: data.wins || 0,
               losses: data.losses || 0,
-            }),
+            })
           );
         }
 
@@ -244,7 +235,7 @@ function App() {
         if (user.name) {
           const saveResult = await tournamentsAPI.saveTournamentRatings(
             user.name,
-            ratingsArray,
+            ratingsArray
           );
 
           devLog("[App] Update ratings result:", saveResult);
@@ -271,7 +262,7 @@ function App() {
         throw error;
       }
     },
-    [tournamentActions, user.name],
+    [tournamentActions, user.name]
   );
 
   // * Handle logout
@@ -285,7 +276,7 @@ function App() {
     (nextPreference) => {
       uiActions.setTheme(nextPreference);
     },
-    [uiActions],
+    [uiActions]
   );
 
   useThemeSync(ui.theme);
@@ -303,7 +294,7 @@ function App() {
         throw error;
       }
     },
-    [login],
+    [login]
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -381,7 +372,7 @@ function App() {
       handleOpenSuggestName,
       handleOpenPhotos,
       currentRoute,
-    ],
+    ]
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -469,7 +460,7 @@ function AppLayout({
       "--sidebar-expanded-width": "clamp(208px, 24vw, 224px)",
       "--sidebar-collapsed-width": `${collapsedWidth}px`,
     }),
-    [collapsedWidth],
+    [collapsedWidth]
   );
 
   const mainWrapperClassName = useMemo(
@@ -477,7 +468,7 @@ function AppLayout({
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn],
+    [isLoggedIn]
   );
 
   return (
@@ -487,10 +478,8 @@ function AppLayout({
         Skip to main content
       </a>
 
-      {/* * Static cat-themed background - lazy loaded */}
-      <Suspense fallback={null}>
-        <CatBackground />
-      </Suspense>
+      {/* * Static cat-themed background */}
+      <CatBackground />
 
       {/* * Primary navigation lives in the sidebar */}
       <AppSidebar {...sidebarProps} />

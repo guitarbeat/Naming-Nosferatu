@@ -71,8 +71,9 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           format: 'es',
-          // * Optimize chunk file names for better caching
-          chunkFileNames: 'assets/js/[name]-[hash].js',
+          // * Inline all dynamic imports into a single bundle to prevent chunk loading issues
+          inlineDynamicImports: true,
+          // * Single entry file name (no chunks)
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: (assetInfo) => {
             if (!assetInfo.name) {
@@ -102,7 +103,6 @@ export default defineConfig(({ mode }) => {
           pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
           passes: 2, // * Multiple passes for better compression
           // * Disable unsafe optimizations to prevent module export issues
-          // * These can break module exports when splitting vendor chunks
           unsafe: false,
           unsafe_comps: false,
           unsafe_math: false,
@@ -121,8 +121,8 @@ export default defineConfig(({ mode }) => {
       },
       // * Chunk size warnings threshold (500kb)
       chunkSizeWarningLimit: 500,
-      // * Enable CSS code splitting
-      cssCodeSplit: true,
+      // * Disable CSS code splitting - bundle all CSS into a single file
+      cssCodeSplit: false,
       // * Optimize asset inlining threshold (4kb - smaller assets will be inlined)
       assetsInlineLimit: 4096,
       // * Enable gzip compression reporting
