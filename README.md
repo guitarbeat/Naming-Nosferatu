@@ -321,12 +321,16 @@ If you prefer to run Supabase locally:
 2. Start local Supabase: `supabase start`
 3. Use the local URLs provided by the CLI
 
-### **Build Commands**
+### **Build Commands (Vite-first)**
 
 ```bash
-npm run build    # Production build
-npm run preview  # Preview production build
-npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
+npm run dev         # Vite dev server with HMR
+npm run build       # Vite production build (config/vite.config.ts)
+npm run preview     # Vite preview of the built app
+# Direct Vite CLI (optional)
+npx vite build --config config/vite.config.ts
+npx vite preview --config config/vite.config.ts
+npx vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```
 
 ---
@@ -335,16 +339,16 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 
 ### **Available Scripts**
 
-| Command                 | Description                 |
-| ----------------------- | --------------------------- |
-| `npm run dev`           | Development server with HMR |
-| `npm run build`         | Production build            |
-| `npm run preview`       | Preview production build    |
-| `npm run test`          | Run test suite              |
-| `npm run test:coverage` | Tests with coverage report  |
-| `npm run lint`          | Run ESLint                  |
-| `npm run lint:css`      | Run Stylelint               |
-| `npm run format`        | Format code with Prettier   |
+| Command           | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `npm run dev`     | Start Vite dev server with HMR                    |
+| `npm run build`   | Vite production build                             |
+| `npm run preview` | Preview the built app via Vite                    |
+| `npm run test`    | Run Vitest suite                                  |
+| `npm run lint`    | ESLint + Stylelint + Prettier + type checks       |
+| `npm run format`  | Format code with Prettier                         |
+| `npm run clean`   | Remove dist and Vite cache (`node_modules/.vite`) |
+| `npm run check`   | CSS usage report (PurgeCSS + discard-unused)      |
 
 ### **Code Quality**
 

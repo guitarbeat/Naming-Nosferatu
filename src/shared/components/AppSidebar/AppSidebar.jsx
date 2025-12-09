@@ -43,23 +43,7 @@ export function AppSidebar({
   onNavigate,
 }) {
   const navRef = useRef(null);
-  const indicatorRef = useRef({
-    left: 0,
-    width: 12,
-    opacity: 0,
-    translateY: 0,
-  });
-  const [indicator, setIndicator] = useState({
-    left: 0,
-    width: 12,
-    opacity: 0,
-    translateY: 0,
-  });
-
-  const applyIndicator = useCallback((next) => {
-    indicatorRef.current = next;
-    setIndicator(next);
-  }, []);
+  const [indicator, setIndicator] = useState({ left: 0, opacity: 0 });
 
   // * Check if analysis mode is active
   const isAnalysisMode =
@@ -67,80 +51,31 @@ export function AppSidebar({
       ? new URLSearchParams(window.location.search).get("analysis") === "true"
       : false;
 
-  // * Update sliding indicator position with bounce animation
-  const updateIndicator = useCallback(
-    (animate = false) => {
-      if (!navRef.current) return;
-      const activeItem = navRef.current.querySelector('[data-active="true"]');
-      if (!activeItem) {
-        applyIndicator({
-          ...indicatorRef.current,
-          opacity: 0,
-          translateY: 0,
-        });
-        return;
-      }
-
-      const navRect = navRef.current.getBoundingClientRect();
-      const itemRect = activeItem.getBoundingClientRect();
-      const targetLeft = itemRect.left - navRect.left + itemRect.width / 2 - 6;
-
-      if (!animate) {
-        applyIndicator({
-          left: targetLeft,
-          width: 12,
-          opacity: 1,
-          translateY: 0,
-        });
-        return;
-      }
-
-      const startLeft = indicatorRef.current.left;
-      const startTime = performance.now();
-      const duration = 400;
-
-      const animateStep = (timestamp) => {
-        const elapsed = timestamp - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const currentX = startLeft + (targetLeft - startLeft) * eased;
-        const bounceY = -32 * (4 * eased * (1 - eased));
-
-        applyIndicator({
-          left: currentX,
-          width: 12,
-          opacity: 1,
-          translateY: bounceY,
-        });
-
-        if (progress < 1) {
-          requestAnimationFrame(animateStep);
-        } else {
-          applyIndicator({
-            left: targetLeft,
-            width: 12,
-            opacity: 1,
-            translateY: 0,
-          });
-        }
-      };
-
-      requestAnimationFrame(animateStep);
-    },
-    [applyIndicator]
-  );
+  // * Update sliding indicator position with minimal JS
+  const updateIndicator = useCallback(() => {
+    if (!navRef.current) return;
+    const activeItem = navRef.current.querySelector('[data-active="true"]');
+    if (!activeItem) {
+      setIndicator((prev) => ({ ...prev, opacity: 0 }));
+      return;
+    }
+    const navRect = navRef.current.getBoundingClientRect();
+    const itemRect = activeItem.getBoundingClientRect();
+    const targetLeft = itemRect.left - navRect.left + itemRect.width / 2 - 6;
+    setIndicator({ left: targetLeft, opacity: 1 });
+  }, []);
 
   useEffect(() => {
     // * Ensure indicator placement on mount and resize with proper cleanup
-    const handleResize = () => updateIndicator(false);
-    updateIndicator(false);
+    const handleResize = () => updateIndicator();
+    updateIndicator();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [updateIndicator]);
 
   useEffect(() => {
-    // Animate on view/mode change
-    updateIndicator(true);
+    // * Refresh indicator on view/mode change
+    updateIndicator();
   }, [view, isAnalysisMode, currentRoute, updateIndicator]);
 
   // * Toggle analysis mode
@@ -290,9 +225,9 @@ export function AppSidebar({
               <div
                 className="navbar-indicator"
                 style={{
-                  transform: `translateX(${indicator.left}px) translateY(${indicator.translateY}px)`,
-                  width: `${indicator.width}px`,
-                  height: `${indicator.width}px`,
+                  transform: `translateX(${indicator.left}px)`,
+                  width: "12px",
+                  height: "12px",
                   opacity: indicator.opacity,
                 }}
               />
