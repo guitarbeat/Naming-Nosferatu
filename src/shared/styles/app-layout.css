@@ -5,6 +5,7 @@
   flex-direction: column;
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* * Use dynamic viewport height on mobile for better browser chrome handling */
 
   /* * Navbar widths - keep in sync with NAVBAR constants in core/constants/index.js */
   --navbar-expanded-width: 280px;
