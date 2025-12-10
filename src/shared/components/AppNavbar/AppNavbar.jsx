@@ -351,6 +351,16 @@ export function AppNavbar({
       variant === "mobile"
         ? "app-navbar__mobile-link-label"
         : "app-navbar__link-label";
+    const labelText =
+      variant === "mobile" ? item.shortLabel || item.label : item.label;
+    const labelId = `nav-${variant}-${item.key}-label`;
+    const descriptionId =
+      variant === "mobile" && item.description
+        ? `nav-${variant}-${item.key}-description`
+        : undefined;
+    const ariaLabelledby = descriptionId
+      ? `${labelId} ${descriptionId}`
+      : labelId;
 
     return (
       <button
@@ -363,6 +373,8 @@ export function AppNavbar({
         data-active={item.isActive}
         aria-current={item.isActive ? "page" : undefined}
         aria-label={item.ariaLabel || item.label}
+        aria-labelledby={ariaLabelledby}
+        aria-describedby={descriptionId}
         title={item.label}
       >
         {Icon && (
@@ -370,7 +382,17 @@ export function AppNavbar({
             <Icon />
           </span>
         )}
-        <span className={labelClass}>{item.label}</span>
+        <span className={labelClass}>
+          <span id={labelId}>{labelText}</span>
+          {variant === "mobile" && item.description ? (
+            <span
+              id={descriptionId}
+              className="app-navbar__mobile-link-description"
+            >
+              {item.description}
+            </span>
+          ) : null}
+        </span>
       </button>
     );
   };

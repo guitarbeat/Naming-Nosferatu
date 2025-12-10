@@ -5,6 +5,8 @@ const NAV_DEFINITIONS = [
   {
     key: "gallery",
     label: "Gallery",
+    shortLabel: "Photos",
+    description: "Browse the latest community cat shots.",
     icon: PhotosIcon,
     ariaLabel: "Open cat photo gallery",
     isActive: ({ view }) => view === "photos",
@@ -12,7 +14,9 @@ const NAV_DEFINITIONS = [
   },
   {
     key: "results",
-    label: "Results",
+    label: "Results & Winners",
+    shortLabel: "Results",
+    description: "See current standings and past champs.",
     icon: ResultsIcon,
     ariaLabel: "See completed tournament results",
     href: "/results",
@@ -23,6 +27,8 @@ const NAV_DEFINITIONS = [
   {
     key: "analysis",
     label: "Analysis Mode",
+    shortLabel: "Analysis",
+    description: "Dive into matchup stats and trends.",
     icon: AnalysisIcon,
     ariaLabel: ({ isAnalysisMode }) =>
       isAnalysisMode ? "Disable analysis mode" : "Enable analysis mode",
