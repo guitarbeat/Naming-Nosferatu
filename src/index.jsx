@@ -13,6 +13,7 @@
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { HeroUIProvider } from "@heroui/react";
 import { setupGlobalErrorHandling } from "@services/errorManager";
 import { queryClient } from "@services/supabase/queryClient";
 import "@styles/index.css";
@@ -315,12 +316,14 @@ if (envCheckPassed) {
   const root = ReactDOM.createRoot(document.getElementById("root"));
   root.render(
     <StrictMode>
-      <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
-        <QueryClientProvider client={queryClient}>
-          <DeploymentErrorDetector />
-          <App />
-        </QueryClientProvider>
-      </ErrorBoundary>
+      <HeroUIProvider>
+        <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+          <QueryClientProvider client={queryClient}>
+            <DeploymentErrorDetector />
+            <App />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </HeroUIProvider>
     </StrictMode>,
   );
 }
