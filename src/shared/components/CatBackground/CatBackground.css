@@ -37,6 +37,12 @@
   color: white;
 }
 
+@media (max-width: 768px) {
+  .cat-background__gradient {
+    background-attachment: scroll;
+  }
+}
+
 .cat-background__sky,
 #sky {
   position: absolute;
