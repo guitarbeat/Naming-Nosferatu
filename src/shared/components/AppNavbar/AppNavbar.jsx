@@ -25,7 +25,7 @@ import LiquidGlass from "../LiquidGlass";
 import { UserDisplay } from "./components/UserDisplay";
 import { LogoutIcon, SuggestIcon } from "./icons";
 import { buildNavItems } from "./navConfig";
-import { useNavbarIndicator, useNavbarMenu } from "./hooks";
+import { useNavbarIndicator } from "./hooks";
 import "./Navbar.css";
 
 /**
