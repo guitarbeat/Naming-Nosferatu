@@ -38,6 +38,7 @@
   justify-content: flex-start;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh; /* * Use dynamic viewport height on mobile */
   overflow-y: auto;
   /* * Add padding-top to account for fixed navbar */
   padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
