@@ -19,7 +19,9 @@
 :global(body.login-page),
 :global(html.login-page) {
   height: 100vh;
+  height: 100dvh; /* * Use dynamic viewport height on mobile */
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
 }
