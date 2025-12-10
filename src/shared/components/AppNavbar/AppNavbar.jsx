@@ -153,7 +153,7 @@ export function AppNavbar({
               type="button"
               className="menu-button"
               aria-expanded={isMenuOpen}
-              aria-controls="navbar-menu"
+              aria-controls="navbar-mobile-panel"
               aria-label={
                 isMenuOpen ? "Close navigation menu" : "Open navigation menu"
               }
@@ -171,10 +171,9 @@ export function AppNavbar({
           <NavbarSection
             ref={(el) => {
               navRef.current = el;
-              menuRef.current = el;
             }}
-            className="nav-items-container"
-            id="navbar-menu"
+            className="nav-items-container nav-items-container--desktop"
+            id="navbar-menu-desktop"
             data-open={isMenuOpen}
             role="menu"
             aria-label="Navigation menu"
@@ -264,39 +263,118 @@ export function AppNavbar({
           <div className="navbar-divider" aria-hidden="true" />
 
           {/* Inline Actions inside nav container for alignment */}
-          <div className="navbar-action-tray nav-inline-actions">
-            <div className="navbar-actions-shell">
-              <div className="navbar-actions">
-                <MenuActionItem
-                  icon={SuggestIcon}
-                  label="Suggest Name"
-                  onClick={onOpenSuggestName}
-                  className="navbar-suggest-button"
-                  ariaLabel="Suggest a new cat name"
-                  condition={true}
-                />
-                <ThemeToggleActionItem
-                  onChange={onThemePreferenceChange}
-                  themePreference={themePreference}
-                  currentTheme={currentTheme}
-                />
-              </div>
+          <NavbarActions
+            variant="desktop"
+            isLoggedIn={isLoggedIn}
+            userName={userName}
+            isAdmin={isAdmin}
+            onLogout={onLogout}
+            onOpenSuggestName={onOpenSuggestName}
+            themePreference={themePreference}
+            currentTheme={currentTheme}
+            onThemePreferenceChange={onThemePreferenceChange}
+          />
+        </div>
+        <div
+          ref={menuRef}
+          id="navbar-mobile-panel"
+          className="navbar-mobile-panel"
+          data-open={isMenuOpen}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="navbar-mobile-panel-label"
+          aria-hidden={isMenuOpen ? "false" : "true"}
+        >
+          <div className="navbar-mobile-panel__inner">
+            <div className="navbar-mobile-panel__header">
+              <p
+                id="navbar-mobile-panel-label"
+                className="navbar-mobile-panel__title"
+              >
+                Navigation
+              </p>
+              <button
+                type="button"
+                className="navbar-mobile-panel__close"
+                onClick={closeMenu}
+                aria-label="Close navigation menu"
+              >
+                Close
+              </button>
             </div>
-
-            {isLoggedIn && userName && (
-              <div className="navbar-user-shell">
-                <div className="navbar-user">
-                  <UserDisplay userName={userName} isAdmin={isAdmin} />
-                  <MenuActionItem
-                    icon={LogoutIcon}
-                    label="Logout"
-                    onClick={onLogout}
-                    className="navbar-logout-button"
-                    condition={isLoggedIn}
-                  />
-                </div>
-              </div>
-            )}
+            <ul className="navbar-mobile-menu" role="menu" aria-label="Primary navigation">
+              <li className="navbar-mobile-menu__item">
+                <button
+                  type="button"
+                  className="navbar-mobile-link"
+                  data-active={view === "tournament" && !isAnalysisMode}
+                  onClick={handleHomeClick}
+                  role="menuitem"
+                  aria-current={
+                    view === "tournament" && !isAnalysisMode ? "page" : undefined
+                  }
+                >
+                  <div className="navbar-mobile-link__icon">
+                    <video
+                      className="navbar-logo-video"
+                      width="24"
+                      height="24"
+                      muted
+                      loop
+                      autoPlay
+                      playsInline
+                      preload="none"
+                      aria-label="Cat animation"
+                    >
+                      <source src="/assets/images/cat.webm" type="video/webm" />
+                      <img
+                        src="/assets/images/cat.gif"
+                        alt="Cat animation"
+                        width="24"
+                        height="24"
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="low"
+                      />
+                    </video>
+                  </div>
+                  <span className="navbar-mobile-link__label">Tournament</span>
+                </button>
+              </li>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={`mobile-${item.key}`} className="navbar-mobile-menu__item">
+                    <button
+                      type="button"
+                      className="navbar-mobile-link"
+                      data-active={item.isActive}
+                      onClick={() => handleNavItemClick(item)}
+                      role="menuitem"
+                      aria-current={item.isActive ? "page" : undefined}
+                      aria-label={item.ariaLabel || item.label}
+                    >
+                      <span className="navbar-mobile-link__icon">
+                        <Icon />
+                      </span>
+                      <span className="navbar-mobile-link__label">{item.label}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="navbar-mobile-panel__title">Quick actions</p>
+            <NavbarActions
+              variant="mobile"
+              isLoggedIn={isLoggedIn}
+              userName={userName}
+              isAdmin={isAdmin}
+              onLogout={onLogout}
+              onOpenSuggestName={onOpenSuggestName}
+              themePreference={themePreference}
+              currentTheme={currentTheme}
+              onThemePreferenceChange={onThemePreferenceChange}
+            />
           </div>
         </div>
         {/* Mobile overlay to lock scroll and close menu on click */}
@@ -334,4 +412,72 @@ AppNavbar.propTypes = {
   onOpenPhotos: PropTypes.func,
   currentRoute: PropTypes.string,
   onNavigate: PropTypes.func,
+};
+
+function NavbarActions({
+  variant = "desktop",
+  isLoggedIn,
+  userName,
+  isAdmin,
+  onLogout,
+  onOpenSuggestName,
+  themePreference,
+  currentTheme,
+  onThemePreferenceChange,
+}) {
+  const trayClassNames = [
+    "navbar-action-tray",
+    variant === "desktop" ? "nav-inline-actions" : "navbar-action-tray--mobile",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div className={trayClassNames} data-variant={variant}>
+      <div className="navbar-actions-shell">
+        <div className="navbar-actions">
+          <MenuActionItem
+            icon={SuggestIcon}
+            label="Suggest Name"
+            onClick={() => onOpenSuggestName?.()}
+            className="navbar-suggest-button"
+            ariaLabel="Suggest a new cat name"
+            condition={Boolean(onOpenSuggestName)}
+          />
+          <ThemeToggleActionItem
+            onChange={onThemePreferenceChange}
+            themePreference={themePreference}
+            currentTheme={currentTheme}
+          />
+        </div>
+      </div>
+
+      {isLoggedIn && userName && (
+        <div className="navbar-user-shell">
+          <div className="navbar-user">
+            <UserDisplay userName={userName} isAdmin={isAdmin} />
+            <MenuActionItem
+              icon={LogoutIcon}
+              label="Logout"
+              onClick={onLogout}
+              className="navbar-logout-button"
+              condition={isLoggedIn}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+NavbarActions.propTypes = {
+  variant: PropTypes.oneOf(["desktop", "mobile"]),
+  isLoggedIn: PropTypes.bool.isRequired,
+  userName: PropTypes.string,
+  isAdmin: PropTypes.bool,
+  onLogout: PropTypes.func.isRequired,
+  onOpenSuggestName: PropTypes.func,
+  themePreference: PropTypes.oneOf(["light", "dark", "system"]).isRequired,
+  currentTheme: PropTypes.oneOf(["light", "dark"]).isRequired,
+  onThemePreferenceChange: PropTypes.func.isRequired,
 };
