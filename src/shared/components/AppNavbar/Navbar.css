@@ -34,6 +34,24 @@
     var(--text-primary, hsl(var(--foreground))) 94%,
     #ffffff 6%
   );
+  --nav-font-family: var(
+    --font-sans,
+    "Space Grotesk",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif
+  );
+  --nav-weight-strong: 700;
+  --nav-weight-medium: 600;
+  --nav-letter-spacing-wide: 0.08em;
+  --nav-letter-spacing-tight: 0.02em;
+  --nav-font-size-brand: clamp(0.85rem, 0.9vw, 0.95rem);
+  --nav-font-size-title: clamp(0.92rem, 1vw, 1rem);
+  --nav-font-size-label: clamp(0.82rem, 0.85vw, 0.95rem);
+  --nav-font-size-subtitle: 0.72rem;
+  --nav-font-size-meta: 0.75rem;
   width: min(1320px, calc(100% - clamp(1rem, 4vw, 4.5rem)));
   display: flex;
   flex-direction: column;
@@ -49,6 +67,7 @@
     inset 0 1px 0 hsl(var(--foreground) / 14%);
   backdrop-filter: blur(var(--glass-blur, 18px)) saturate(165%);
   color: var(--nav-text);
+  font-family: var(--nav-font-family);
   pointer-events: auto;
 }
 
@@ -99,11 +118,9 @@
   border-radius: 999px;
   border: 1px solid transparent;
   background: color-mix(in srgb, var(--nav-pill) 35%, transparent);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: var(--nav-weight-strong);
   color: var(--nav-text);
-  text-transform: uppercase;
-  font-size: clamp(0.85rem, 0.9vw, 0.95rem);
+  font-size: var(--nav-font-size-brand);
   transition:
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.3s ease,
@@ -152,19 +169,42 @@
 }
 
 .app-navbar__brand-title {
-  font-size: clamp(0.92rem, 1vw, 1rem);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: var(--nav-font-size-title);
+  font-weight: var(--nav-weight-strong);
 }
 
 .app-navbar__brand-subtitle {
-  font-size: 0.72rem;
+  font-size: var(--nav-font-size-subtitle);
   color: color-mix(
     in srgb,
     var(--text-secondary, var(--muted-foreground)) 90%,
     var(--nav-text) 10%
   );
-  letter-spacing: 0.08em;
+  letter-spacing: var(--nav-letter-spacing-wide);
+}
+
+/* * Shared typography tokens */
+:where(
+    .app-navbar__link,
+    .app-navbar__mobile-link,
+    .app-navbar__mobile-action,
+    .app-navbar__theme-chip,
+    .app-navbar__dropdown-item,
+    .app-navbar__dropdown-user
+  ) {
+  font-size: var(--nav-font-size-label);
+  font-weight: var(--nav-weight-medium);
+  letter-spacing: var(--nav-letter-spacing-tight);
+}
+
+:where(
+    .app-navbar__brand-button,
+    .app-navbar__brand-title,
+    .app-navbar__mobile-home,
+    .app-navbar__mobile-heading
+  ) {
+  text-transform: uppercase;
+  letter-spacing: var(--nav-letter-spacing-wide);
 }
 
 /* * Desktop link rail */
@@ -192,9 +232,6 @@
     color-mix(in srgb, var(--nav-pill) 70%, transparent)
   );
   color: var(--nav-text);
-  font-weight: 600;
-  font-size: clamp(0.82rem, 0.85vw, 0.95rem);
-  letter-spacing: 0.01em;
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -243,7 +280,7 @@
 .app-navbar__link-label,
 .app-navbar__mobile-link-label {
   white-space: nowrap;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--nav-letter-spacing-tight);
 }
 
 /* * Utility cluster on the right */
@@ -359,10 +396,9 @@
   width: 100%;
   padding: 0.65rem 0.85rem;
   border-radius: 16px;
-  border: 1px solid hsl(var(--border) / 35%);
-  background: hsl(var(--background) / 88%);
-  font-weight: 600;
-  color: hsl(var(--foreground) / 85%);
+  border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);
+  background: color-mix(in srgb, var(--nav-pill) 60%, transparent);
+  color: var(--nav-text);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -370,12 +406,12 @@
 }
 
 .app-navbar__mobile-link[data-active="true"] {
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--neon-cyan) / 55%);
+  color: var(--nav-text);
+  border-color: color-mix(in srgb, hsl(var(--neon-cyan)) 55%, transparent);
   background: linear-gradient(
     135deg,
-    hsl(var(--neon-cyan) / 22%),
-    hsl(var(--hot-pink) / 18%)
+    color-mix(in srgb, hsl(var(--neon-cyan)) 28%, transparent),
+    color-mix(in srgb, hsl(var(--hot-pink)) 22%, transparent)
   );
 }
 
@@ -390,15 +426,11 @@
 }
 
 .app-navbar__mobile-home {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.85rem;
+  font-size: var(--nav-font-size-label);
 }
 
 .app-navbar__mobile-heading {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: var(--nav-font-size-meta);
   color: hsl(var(--muted-foreground));
 }
 
@@ -418,7 +450,7 @@
   border-radius: 14px;
   border: 1px solid hsl(var(--border) / 30%);
   background: hsl(var(--background) / 88%);
-  font-weight: 600;
+  color: var(--nav-text);
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -461,7 +493,7 @@
   border-radius: 12px;
   border: 1px solid hsl(var(--border) / 35%);
   background: hsl(var(--background) / 88%);
-  font-weight: 600;
+  color: var(--nav-text);
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease,
@@ -506,8 +538,7 @@
   gap: 0.5rem;
   padding: 0.5rem 0.65rem;
   border-radius: 12px;
-  font-weight: 600;
-  color: hsl(var(--foreground) / 90%);
+  color: color-mix(in srgb, var(--nav-text) 90%, hsl(var(--foreground) / 90%) 10%);
 }
 
 .app-navbar__dropdown-item[data-active="true"] {
@@ -525,7 +556,7 @@
 }
 
 .app-navbar__dropdown-user {
-  font-weight: 600;
+  color: color-mix(in srgb, var(--nav-text) 92%, hsl(var(--foreground)) 8%);
 }
 
 /* * Accessibility helper */
