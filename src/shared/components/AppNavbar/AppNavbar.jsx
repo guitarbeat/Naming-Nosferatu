@@ -1,26 +1,37 @@
 /**
- * @module AppNavbar
- * @description Application navbar navigation component with sliding indicator
+ * @module AppNavbar (Shadcn/ui-refactored)
+ * @description Simplified navbar component using shadcn/ui primitives and Radix UI
+ * Much simpler than original with less custom code and better maintainability
  */
 
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import {
   Navbar,
+  NavbarContent,
+  NavbarSection,
+  NavbarMenu,
   NavbarMenuItem,
   NavbarMenuButton,
-  NavbarSection,
-} from "../ui/navbar";
+  NavbarSeparator,
+  NavbarIconButton,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../ui/navbar-shadcn";
 import LiquidGlass from "../LiquidGlass";
-import { MenuNavItem } from "./MenuNavItem";
-import { MenuActionItem } from "./MenuActionItem";
-import { ThemeToggleActionItem } from "./ThemeToggleActionItem";
 import { UserDisplay } from "./components/UserDisplay";
 import { LogoutIcon, SuggestIcon } from "./icons";
 import { buildNavItems } from "./navConfig";
 import { useNavbarIndicator, useNavbarMenu } from "./hooks";
 import "./Navbar.css";
 
+/**
+ * Main Navbar Component
+ * Wraps everything in LiquidGlass effect and provides navigation structure
+ */
 export function AppNavbar({
   view,
   setView,
@@ -28,7 +39,6 @@ export function AppNavbar({
   userName,
   isAdmin,
   onLogout,
-  onStartNewTournament: _onStartNewTournament,
   themePreference,
   currentTheme,
   onThemePreferenceChange,
@@ -37,26 +47,22 @@ export function AppNavbar({
   currentRoute,
   onNavigate,
 }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navRef = useRef(null);
+
   // * Check if analysis mode is active
   const isAnalysisMode =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("analysis") === "true"
       : false;
 
-  // * Use custom hooks for indicator and menu management
-  const { navRef, indicator, indicatorSize } = useNavbarIndicator({
+  // * Hook for sliding indicator animation
+  const { indicator, indicatorSize } = useNavbarIndicator({
     indicatorSize: 14,
     view,
     isAnalysisMode,
     currentRoute,
   });
-
-  const { isMenuOpen, toggleMenu, closeMenu, menuButtonRef, menuRef } =
-    useNavbarMenu({
-      view,
-      currentRoute,
-      isAnalysisMode,
-    });
 
   // * Toggle analysis mode
   const handleAnalysisToggle = useCallback(() => {
@@ -77,7 +83,7 @@ export function AppNavbar({
     window.dispatchEvent(new PopStateEvent("popstate"));
   }, [isAnalysisMode]);
 
-  // * Build navigation items from single source of truth
+  // * Build navigation items
   const navItems = useMemo(
     () =>
       buildNavItems({
@@ -88,32 +94,25 @@ export function AppNavbar({
         onNavigate,
         onToggleAnalysis: handleAnalysisToggle,
       }),
-    [
-      currentRoute,
-      handleAnalysisToggle,
-      isAnalysisMode,
-      onNavigate,
-      onOpenPhotos,
-      view,
-    ]
+    [currentRoute, handleAnalysisToggle, isAnalysisMode, onNavigate, onOpenPhotos, view]
   );
 
   const handleNavItemClick = useCallback(
     (item) => {
-      closeMenu();
+      setIsMobileMenuOpen(false);
       if (typeof item.onClick === "function") {
         item.onClick();
       } else {
         setView(item.key);
       }
     },
-    [closeMenu, setView]
+    [setView]
   );
 
   const handleHomeClick = useCallback(() => {
-    closeMenu();
+    setIsMobileMenuOpen(false);
     setView("tournament");
-  }, [closeMenu, setView]);
+  }, [setView]);
 
   return (
     <LiquidGlass
@@ -125,63 +124,15 @@ export function AppNavbar({
       frost={0.05}
       inputBlur={8}
       outputBlur={0.9}
-      chromaticR={10}
-      chromaticG={11}
-      chromaticB={12}
       className="app-navbar-glass"
-      id="navbar-liquid-glass"
       style={{ width: "100%", height: "auto", minHeight: "72px" }}
     >
-      <Navbar
-        className="app-navbar navbar-shell"
-        role="navigation"
-        aria-label="Primary"
-      >
-        <div className="navbar-content" data-menu-open={isMenuOpen}>
-          {/* Left Section: Navigation Items */}
-          <div className="navbar-mobile-toggle">
-            <input
-              id="navbar-menu-toggle"
-              className="menu-checkbox"
-              type="checkbox"
-              checked={isMenuOpen}
-              onChange={toggleMenu}
-              aria-hidden="true"
-            />
-            <button
-              ref={menuButtonRef}
-              type="button"
-              className="menu-button"
-              aria-expanded={isMenuOpen}
-              aria-controls="navbar-mobile-panel"
-              aria-label={
-                isMenuOpen ? "Close navigation menu" : "Open navigation menu"
-              }
-              onClick={toggleMenu}
-            >
-              <span className="menu-button-label" data-show-when="closed">
-                Menu
-              </span>
-              <span className="menu-button-label" data-show-when="open">
-                Close
-              </span>
-            </button>
-          </div>
-
-          <NavbarSection
-            ref={(el) => {
-              navRef.current = el;
-            }}
-            className="nav-items-container nav-items-container--desktop"
-            id="navbar-menu-desktop"
-            data-open={isMenuOpen}
-            role="menu"
-            aria-label="Navigation menu"
-          >
-            {/* Combined Logo + Tournament Home Button */}
-            <NavbarMenuItem
-              data-active={view === "tournament" && !isAnalysisMode}
-            >
+      <Navbar className="app-navbar navbar-shell" role="navigation" aria-label="Primary">
+        <NavbarContent>
+          {/* Desktop Navigation */}
+          <NavbarSection className="nav-items-container nav-items-container--desktop">
+            {/* Home/Tournament Button */}
+            <NavbarMenuItem data-active={view === "tournament" && !isAnalysisMode}>
               <NavbarMenuButton asChild>
                 <button
                   type="button"
@@ -189,11 +140,7 @@ export function AppNavbar({
                   className="navbar-home-button"
                   data-active={view === "tournament" && !isAnalysisMode}
                   aria-label="Go to Tournament home"
-                  aria-current={
-                    view === "tournament" && !isAnalysisMode
-                      ? "page"
-                      : undefined
-                  }
+                  aria-current={view === "tournament" && !isAnalysisMode ? "page" : undefined}
                 >
                   <div className="navbar-logo-icon">
                     <video
@@ -207,7 +154,6 @@ export function AppNavbar({
                       preload="none"
                       aria-label="Cat animation"
                       onError={(e) => {
-                        // * Fallback to image if video fails to load
                         e.target.style.display = "none";
                         const img = e.target.nextElementSibling;
                         if (img) img.style.display = "block";
@@ -231,23 +177,30 @@ export function AppNavbar({
               </NavbarMenuButton>
             </NavbarMenuItem>
 
-            {/* Main Navigation */}
-            {navItems.map((item) => (
-              <MenuNavItem
-                key={item.key}
-                itemKey={item.key}
-                icon={item.icon}
-                label={item.label}
-                view={view}
-                onClick={() => handleNavItemClick(item)}
-                isActive={item.isActive}
-                href={item.href}
-                ariaLabel={item.ariaLabel}
-                data-active={item.isActive}
-              />
-            ))}
+            {/* Navigation Items */}
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavbarMenuItem key={item.key} data-active={item.isActive}>
+                  <NavbarMenuButton asChild>
+                    <button
+                      type="button"
+                      onClick={() => handleNavItemClick(item)}
+                      className={item.isActive ? "active" : ""}
+                      aria-current={item.isActive ? "page" : undefined}
+                      aria-label={item.ariaLabel || item.label}
+                      title={item.label}
+                      data-active={item.isActive}
+                    >
+                      <Icon />
+                      <span className="nav-item-label">{item.label}</span>
+                    </button>
+                  </NavbarMenuButton>
+                </NavbarMenuItem>
+              );
+            })}
 
-            {/* Sliding indicator with bounce */}
+            {/* Sliding Indicator */}
             <div
               className="navbar-indicator"
               style={{
@@ -259,139 +212,129 @@ export function AppNavbar({
             />
           </NavbarSection>
 
-          {/* Divider between nav items and actions */}
-          <div className="navbar-divider" aria-hidden="true" />
+          {/* Divider */}
+          <NavbarSeparator />
 
-          {/* Inline Actions inside nav container for alignment */}
-          <NavbarActions
-            variant="desktop"
-            isLoggedIn={isLoggedIn}
-            userName={userName}
-            isAdmin={isAdmin}
-            onLogout={onLogout}
-            onOpenSuggestName={onOpenSuggestName}
-            themePreference={themePreference}
-            currentTheme={currentTheme}
-            onThemePreferenceChange={onThemePreferenceChange}
-          />
-        </div>
-        <div
-          ref={menuRef}
-          id="navbar-mobile-panel"
-          className="navbar-mobile-panel"
-          data-open={isMenuOpen}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="navbar-mobile-panel-label"
-          aria-hidden={isMenuOpen ? "false" : "true"}
-        >
-          <div className="navbar-mobile-panel__inner">
-            <div className="navbar-mobile-panel__header">
-              <p
-                id="navbar-mobile-panel-label"
-                className="navbar-mobile-panel__title"
+          {/* Action Items */}
+          <NavbarSection>
+            <NavbarMenuItem>
+              <NavbarIconButton
+                onClick={onOpenSuggestName}
+                aria-label="Suggest a new cat name"
+                title="Suggest a name"
               >
-                Navigation
-              </p>
-              <button
-                type="button"
-                className="navbar-mobile-panel__close"
-                onClick={closeMenu}
-                aria-label="Close navigation menu"
-              >
-                Close
-              </button>
-            </div>
-            <ul className="navbar-mobile-menu" role="menu" aria-label="Primary navigation">
-              <li className="navbar-mobile-menu__item">
-                <button
-                  type="button"
-                  className="navbar-mobile-link"
-                  data-active={view === "tournament" && !isAnalysisMode}
-                  onClick={handleHomeClick}
-                  role="menuitem"
-                  aria-current={
-                    view === "tournament" && !isAnalysisMode ? "page" : undefined
-                  }
+                <SuggestIcon />
+              </NavbarIconButton>
+            </NavbarMenuItem>
+
+            {/* Theme Toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <NavbarIconButton
+                  aria-label={`Theme: ${themePreference}. Currently ${currentTheme}`}
+                  title="Toggle theme"
                 >
-                  <div className="navbar-mobile-link__icon">
-                    <video
-                      className="navbar-logo-video"
-                      width="24"
-                      height="24"
-                      muted
-                      loop
-                      autoPlay
-                      playsInline
-                      preload="none"
-                      aria-label="Cat animation"
-                    >
-                      <source src="/assets/images/cat.webm" type="video/webm" />
-                      <img
-                        src="/assets/images/cat.gif"
-                        alt="Cat animation"
-                        width="24"
-                        height="24"
-                        loading="lazy"
-                        decoding="async"
-                        fetchPriority="low"
-                      />
-                    </video>
-                  </div>
-                  <span className="navbar-mobile-link__label">Tournament</span>
-                </button>
-              </li>
+                  {currentTheme === "dark" ? "🌙" : "☀️"}
+                </NavbarIconButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {["light", "dark", "system"].map((theme) => (
+                  <DropdownMenuItem
+                    key={theme}
+                    onClick={() => onThemePreferenceChange(theme)}
+                    data-active={themePreference === theme}
+                  >
+                    <span>{theme === "light" ? "☀️" : theme === "dark" ? "🌙" : "⚙️"}</span>
+                    <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* User Menu */}
+            {isLoggedIn && userName && (
+              <>
+                <NavbarSeparator />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <NavbarIconButton aria-label={`User menu for ${userName}`}>
+                      <UserDisplay userName={userName} isAdmin={isAdmin} />
+                    </NavbarIconButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem disabled>
+                      <span className="text-sm">{userName}</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={onLogout}>
+                      <LogoutIcon />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            )}
+          </NavbarSection>
+
+          {/* Mobile Menu Toggle */}
+          <NavbarSection className="navbar-mobile-toggle">
+            <NavbarIconButton
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle navigation menu"
+              aria-controls="navbar-mobile-menu"
+            >
+              {isMobileMenuOpen ? "✕" : "☰"}
+            </NavbarIconButton>
+          </NavbarSection>
+        </NavbarContent>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div
+            id="navbar-mobile-menu"
+            className="navbar-mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
+          >
+            <NavbarMenu>
+              <NavbarMenuItem>
+                <NavbarMenuButton asChild>
+                  <button
+                    type="button"
+                    onClick={handleHomeClick}
+                    data-active={view === "tournament" && !isAnalysisMode}
+                    className="navbar-mobile-link"
+                    aria-current={view === "tournament" && !isAnalysisMode ? "page" : undefined}
+                  >
+                    <span>Tournament</span>
+                  </button>
+                </NavbarMenuButton>
+              </NavbarMenuItem>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <li key={`mobile-${item.key}`} className="navbar-mobile-menu__item">
-                    <button
-                      type="button"
-                      className="navbar-mobile-link"
-                      data-active={item.isActive}
-                      onClick={() => handleNavItemClick(item)}
-                      role="menuitem"
-                      aria-current={item.isActive ? "page" : undefined}
-                      aria-label={item.ariaLabel || item.label}
-                    >
-                      <span className="navbar-mobile-link__icon">
+                  <NavbarMenuItem key={`mobile-${item.key}`}>
+                    <NavbarMenuButton asChild>
+                      <button
+                        type="button"
+                        onClick={() => handleNavItemClick(item)}
+                        data-active={item.isActive}
+                        className="navbar-mobile-link"
+                        aria-current={item.isActive ? "page" : undefined}
+                        aria-label={item.ariaLabel || item.label}
+                      >
                         <Icon />
-                      </span>
-                      <span className="navbar-mobile-link__label">{item.label}</span>
-                    </button>
-                  </li>
+                        <span>{item.label}</span>
+                      </button>
+                    </NavbarMenuButton>
+                  </NavbarMenuItem>
                 );
               })}
-            </ul>
-            <p className="navbar-mobile-panel__title">Quick actions</p>
-            <NavbarActions
-              variant="mobile"
-              isLoggedIn={isLoggedIn}
-              userName={userName}
-              isAdmin={isAdmin}
-              onLogout={onLogout}
-              onOpenSuggestName={onOpenSuggestName}
-              themePreference={themePreference}
-              currentTheme={currentTheme}
-              onThemePreferenceChange={onThemePreferenceChange}
-            />
+            </NavbarMenu>
           </div>
-        </div>
-        {/* Mobile overlay to lock scroll and close menu on click */}
-        <div
-          className="navbar-overlay"
-          data-open={isMenuOpen}
-          onClick={closeMenu}
-          onKeyDown={(e) => {
-            // * Allow Escape and Enter to close overlay
-            if (e.key === "Escape" || e.key === "Enter") {
-              closeMenu();
-            }
-          }}
-          role="button"
-          tabIndex={isMenuOpen ? 0 : -1}
-          aria-label="Close navigation menu"
-        />
+        )}
       </Navbar>
     </LiquidGlass>
   );
@@ -404,7 +347,6 @@ AppNavbar.propTypes = {
   userName: PropTypes.string,
   isAdmin: PropTypes.bool,
   onLogout: PropTypes.func.isRequired,
-  onStartNewTournament: PropTypes.func,
   themePreference: PropTypes.oneOf(["light", "dark", "system"]).isRequired,
   currentTheme: PropTypes.oneOf(["light", "dark"]).isRequired,
   onThemePreferenceChange: PropTypes.func.isRequired,
@@ -414,70 +356,4 @@ AppNavbar.propTypes = {
   onNavigate: PropTypes.func,
 };
 
-function NavbarActions({
-  variant = "desktop",
-  isLoggedIn,
-  userName,
-  isAdmin,
-  onLogout,
-  onOpenSuggestName,
-  themePreference,
-  currentTheme,
-  onThemePreferenceChange,
-}) {
-  const trayClassNames = [
-    "navbar-action-tray",
-    variant === "desktop" ? "nav-inline-actions" : "navbar-action-tray--mobile",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return (
-    <div className={trayClassNames} data-variant={variant}>
-      <div className="navbar-actions-shell">
-        <div className="navbar-actions">
-          <MenuActionItem
-            icon={SuggestIcon}
-            label="Suggest Name"
-            onClick={() => onOpenSuggestName?.()}
-            className="navbar-suggest-button"
-            ariaLabel="Suggest a new cat name"
-            condition={Boolean(onOpenSuggestName)}
-          />
-          <ThemeToggleActionItem
-            onChange={onThemePreferenceChange}
-            themePreference={themePreference}
-            currentTheme={currentTheme}
-          />
-        </div>
-      </div>
-
-      {isLoggedIn && userName && (
-        <div className="navbar-user-shell">
-          <div className="navbar-user">
-            <UserDisplay userName={userName} isAdmin={isAdmin} />
-            <MenuActionItem
-              icon={LogoutIcon}
-              label="Logout"
-              onClick={onLogout}
-              className="navbar-logout-button"
-              condition={isLoggedIn}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-NavbarActions.propTypes = {
-  variant: PropTypes.oneOf(["desktop", "mobile"]),
-  isLoggedIn: PropTypes.bool.isRequired,
-  userName: PropTypes.string,
-  isAdmin: PropTypes.bool,
-  onLogout: PropTypes.func.isRequired,
-  onOpenSuggestName: PropTypes.func,
-  themePreference: PropTypes.oneOf(["light", "dark", "system"]).isRequired,
-  currentTheme: PropTypes.oneOf(["light", "dark"]).isRequired,
-  onThemePreferenceChange: PropTypes.func.isRequired,
-};
+export default AppNavbar;
