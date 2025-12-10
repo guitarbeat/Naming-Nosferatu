@@ -100,6 +100,7 @@ export function NameManagementView({
     selectedNames,
     toggleName,
     toggleNameById,
+    toggleNamesByIds,
     selectAll: _selectAll,
     selectedCount,
   } = useNameSelection({
@@ -308,6 +309,7 @@ export function NameManagementView({
       selectedNames,
       toggleName,
       toggleNameById,
+      toggleNamesByIds,
       selectedCount,
       hiddenIds,
       filterConfig,
@@ -355,6 +357,7 @@ export function NameManagementView({
       selectedNames,
       toggleName,
       toggleNameById,
+      toggleNamesByIds,
       selectedCount,
       hiddenIds,
       filterConfig,

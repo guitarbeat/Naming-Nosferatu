@@ -282,15 +282,18 @@ function AnalysisBulkActionsWrapper({
     filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id));
 
   const handleSelectAll = useCallback(() => {
-    if (allVisibleSelected) {
-      filteredAndSortedNames.forEach((name) => {
-        context?.toggleNameById?.(name.id, false);
-      });
-    } else {
-      filteredAndSortedNames.forEach((name) => {
-        context?.toggleNameById?.(name.id, true);
-      });
+    const visibleNameIds = filteredAndSortedNames.map((name) => name.id);
+    if (visibleNameIds.length === 0) {
+      return;
     }
+    const shouldSelect = !allVisibleSelected;
+    if (context?.toggleNamesByIds) {
+      context.toggleNamesByIds(visibleNameIds, shouldSelect);
+      return;
+    }
+    visibleNameIds.forEach((id) => {
+      context?.toggleNameById?.(id, shouldSelect);
+    });
   }, [allVisibleSelected, filteredAndSortedNames, context]);
 
   const handleExport = useCallback(() => {

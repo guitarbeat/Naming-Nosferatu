@@ -230,13 +230,18 @@ export function useBongoCat({
       if (Math.random() < 0.01) {
         // 1% chance per frame
         setEarTwitch(true);
-        setTimeout(() => setEarTwitch(false), 150);
       }
 
       animationFrameRef.current = requestAnimationFrame(loop);
     },
     [reduceMotion, animationState],
   );
+
+  useEffect(() => {
+    if (!earTwitch) return undefined;
+    const timer = setTimeout(() => setEarTwitch(false), 150);
+    return () => clearTimeout(timer);
+  }, [earTwitch]);
 
   const handleKeyDown = useCallback(
     (e) => {
