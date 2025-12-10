@@ -28,8 +28,10 @@ describe("AppNavbar", () => {
     ).not.toThrow();
 
     // Test that main navigation elements are present
-    expect(screen.getByText("Tournament")).toBeInTheDocument();
+    const homeButtons = screen.getAllByLabelText("Go to Tournament home");
+    expect(homeButtons.length).toBeGreaterThan(0);
     // UserInfo component shows username when not collapsed
-    expect(screen.getByText(/Test User/i)).toBeInTheDocument();
+    const userLabels = screen.getAllByText(/Test User/i);
+    expect(userLabels.length).toBeGreaterThan(0);
   });
 });

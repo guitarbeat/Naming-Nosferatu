@@ -1,19 +1,11 @@
 /**
- * @module AppNavbar (HeroUI Navbar)
- * @description Navigation bar powered by @heroui/react primitives to reduce
- * bespoke layout logic and keep the component lean.
+ * @module AppNavbar
+ * @description Fully custom navigation bar built on HeroUI primitives for actions only.
  */
 
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenu,
-  NavbarMenuItem,
-  NavbarMenuToggle,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
@@ -24,6 +16,8 @@ import LiquidGlass from "../LiquidGlass";
 import { UserDisplay } from "./components/UserDisplay";
 import { LogoutIcon, SuggestIcon } from "./icons";
 import { buildNavItems } from "./navConfig";
+import { ErrorManager } from "@services/errorManager";
+import { logAuditEvent } from "@services/audit/auditLogger";
 import "./Navbar.css";
 
 const THEME_OPTIONS = [
@@ -31,9 +25,11 @@ const THEME_OPTIONS = [
   { key: "dark", label: "Dark", icon: "🌙" },
   { key: "system", label: "System", icon: "⚙️" },
 ];
+const MOBILE_MENU_ID = "app-navbar-mobile-panel";
+const DESKTOP_BREAKPOINT = 960;
 
 /**
- * Main App Navbar component powered by HeroUI primitives.
+ * Main App Navbar component powered by a custom layout layer.
  */
 export function AppNavbar({
   view,
@@ -89,37 +85,205 @@ export function AppNavbar({
         onToggleAnalysis: handleAnalysisToggle,
       }),
     [
-      currentRoute,
-      handleAnalysisToggle,
-      isAnalysisMode,
-      onNavigate,
-      onOpenPhotos,
       view,
+      currentRoute,
+      isAnalysisMode,
+      onOpenPhotos,
+      onNavigate,
+      handleAnalysisToggle,
     ],
   );
 
-  // * Close the HeroUI drawer before navigating
-  const handleNavItemClick = useCallback(
-    (item) => {
-      setIsMobileMenuOpen(false);
-      if (typeof item.onClick === "function") {
-        item.onClick();
-        return;
-      }
-      setView(item.key);
+  const logNavbarAudit = useCallback(
+    (operation, details = {}) => {
+      void logAuditEvent({
+        tableName: "app_navbar",
+        operation,
+        userName: userName ?? null,
+        details: {
+          route: currentRoute ?? null,
+          view,
+          isAnalysisMode,
+          timestamp: new Date().toISOString(),
+          ...details,
+        },
+      });
     },
-    [setView],
+    [currentRoute, isAnalysisMode, userName, view],
   );
 
-  const handleHomeClick = useCallback(() => {
-    setIsMobileMenuOpen(false);
-    setView("tournament");
-  }, [setView]);
-
-  const handleMobileAction = useCallback((action) => {
-    setIsMobileMenuOpen(false);
-    action?.();
+  const closeMenuForSource = useCallback((source) => {
+    if (source === "mobile") {
+      setIsMobileMenuOpen(false);
+    }
   }, []);
+
+  const executeSafely = useCallback(async (action, context, metadata = {}) => {
+    if (typeof action !== "function") {
+      ErrorManager.handleError(
+        new Error("Action handler is unavailable"),
+        context,
+        {
+          ...metadata,
+          isRetryable: false,
+          affectsUserData: false,
+        },
+      );
+      return false;
+    }
+
+    try {
+      await Promise.resolve(action());
+      return true;
+    } catch (error) {
+      ErrorManager.handleError(error, context, {
+        ...metadata,
+        isRetryable: false,
+        affectsUserData: false,
+      });
+      return false;
+    }
+  }, []);
+
+  const handleNavItemClick = useCallback(
+    async (item, source = "desktop") => {
+      closeMenuForSource(source);
+      let handled = true;
+
+      if (typeof item.onClick === "function") {
+        handled = await executeSafely(
+          () => item.onClick(),
+          "Navbar Navigation",
+          { source, target: item.key },
+        );
+      } else {
+        setView(item.key);
+      }
+
+      if (handled) {
+        logNavbarAudit("navigate", {
+          source,
+          target: item.key,
+          label: item.label,
+        });
+      }
+    },
+    [closeMenuForSource, executeSafely, logNavbarAudit, setView],
+  );
+
+  const handleHomeClick = useCallback(
+    async (source = "desktop") => {
+      closeMenuForSource(source);
+      setView("tournament");
+      logNavbarAudit("navigate_home", { source });
+    },
+    [closeMenuForSource, logNavbarAudit, setView],
+  );
+
+  const handleThemeChange = useCallback(
+    async (nextPreference, source = "desktop") => {
+      closeMenuForSource(source);
+      const succeeded = await executeSafely(
+        () => onThemePreferenceChange?.(nextPreference),
+        "Theme Preference Change",
+        { nextPreference, source },
+      );
+
+      if (succeeded) {
+        logNavbarAudit("theme_change", { nextPreference, source });
+      }
+    },
+    [
+      closeMenuForSource,
+      executeSafely,
+      logNavbarAudit,
+      onThemePreferenceChange,
+    ],
+  );
+
+  const handleSuggestAction = useCallback(
+    async (source = "desktop") => {
+      closeMenuForSource(source);
+      const succeeded = await executeSafely(
+        () => onOpenSuggestName?.(),
+        "Open Suggest Name Modal",
+        { source },
+      );
+
+      if (succeeded) {
+        logNavbarAudit("open_suggest_modal", { source });
+      }
+    },
+    [closeMenuForSource, executeSafely, logNavbarAudit, onOpenSuggestName],
+  );
+
+  const handleLogoutAction = useCallback(
+    async (source = "desktop") => {
+      closeMenuForSource(source);
+      const succeeded = await executeSafely(() => onLogout?.(), "User Logout", {
+        source,
+      });
+
+      if (succeeded) {
+        logNavbarAudit("logout", { source });
+      }
+    },
+    [closeMenuForSource, executeSafely, logNavbarAudit, onLogout],
+  );
+
+  const handleMobileToggle = useCallback(() => {
+    setIsMobileMenuOpen((prev) => {
+      const nextState = !prev;
+      logNavbarAudit(nextState ? "mobile_menu_open" : "mobile_menu_close", {
+        trigger: "toggle_button",
+      });
+      return nextState;
+    });
+  }, [logNavbarAudit]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return undefined;
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const rafId = window.requestAnimationFrame(() => {
+      setIsMobileMenuOpen(false);
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [isMobileMenuOpen, view, currentRoute, isAnalysisMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleResize = () => {
+      if (window.innerWidth > DESKTOP_BREAKPOINT && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen || typeof window === "undefined") {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+        logNavbarAudit("mobile_menu_close", { trigger: "escape_key" });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileMenuOpen, logNavbarAudit]);
 
   const themeIcon =
     currentTheme === "dark" ? "🌙" : currentTheme === "light" ? "☀️" : "⚙️";
@@ -129,22 +293,22 @@ export function AppNavbar({
   const renderHomeButton = (variant = "desktop") => (
     <button
       type="button"
-      onClick={
-        variant === "mobile"
-          ? () => handleMobileAction(handleHomeClick)
-          : handleHomeClick
-      }
+      onClick={() => {
+        void handleHomeClick(variant);
+      }}
       className={
-        variant === "mobile" ? "navbar-mobile-link" : "navbar-home-button"
+        variant === "mobile"
+          ? "app-navbar__mobile-link app-navbar__mobile-home"
+          : "app-navbar__brand-button"
       }
       data-active={homeIsActive}
       aria-current={homeIsActive ? "page" : undefined}
       aria-label="Go to Tournament home"
-      title="Tournament"
+      title="Tournament view"
     >
-      <div className="navbar-logo-icon">
+      <div className="app-navbar__brand-icon">
         <video
-          className="navbar-logo-video"
+          className="app-navbar__brand-video"
           width="24"
           height="24"
           muted
@@ -172,25 +336,29 @@ export function AppNavbar({
           />
         </video>
       </div>
-      <span>Tournament</span>
+      <span className="app-navbar__brand-text">
+        <span className="app-navbar__brand-title">Tournament</span>
+        <span className="app-navbar__brand-subtitle">Daily bracket</span>
+      </span>
     </button>
   );
 
   const renderNavButton = (item, variant = "desktop") => {
     const Icon = item.icon;
     const className =
-      variant === "mobile" ? "navbar-mobile-link" : "navbar-menu-button";
+      variant === "mobile" ? "app-navbar__mobile-link" : "app-navbar__link";
     const labelClass =
-      variant === "mobile" ? "navbar-mobile-link__label" : "nav-item-label";
+      variant === "mobile"
+        ? "app-navbar__mobile-link-label"
+        : "app-navbar__link-label";
 
     return (
       <button
+        key={`${variant}-${item.key}`}
         type="button"
-        onClick={() =>
-          variant === "mobile"
-            ? handleMobileAction(() => handleNavItemClick(item))
-            : handleNavItemClick(item)
-        }
+        onClick={() => {
+          void handleNavItemClick(item, variant);
+        }}
         className={className}
         data-active={item.isActive}
         aria-current={item.isActive ? "page" : undefined}
@@ -198,7 +366,7 @@ export function AppNavbar({
         title={item.label}
       >
         {Icon && (
-          <span className="navbar-menu-button__icon">
+          <span className="app-navbar__link-icon" aria-hidden="true">
             <Icon />
           </span>
         )}
@@ -209,65 +377,42 @@ export function AppNavbar({
 
   return (
     <LiquidGlass
-      width={1200}
-      height={90}
-      radius={18}
-      scale={-180}
-      saturation={1.1}
-      frost={0.05}
-      inputBlur={8}
-      outputBlur={0.9}
+      width={1240}
+      height={110}
+      radius={26}
+      scale={-160}
+      saturation={1.05}
+      frost={0.08}
+      inputBlur={9}
+      outputBlur={0.85}
       className="app-navbar-glass"
-      style={{ width: "100%", height: "auto", minHeight: "72px" }}
+      style={{ width: "100%", height: "auto", minHeight: "92px" }}
     >
-      <Navbar
-        className="app-navbar"
-        shouldHideOnScroll={false}
-        isMenuOpen={isMobileMenuOpen}
-        onMenuOpenChange={setIsMobileMenuOpen}
-        role="navigation"
-        aria-label="Primary"
-      >
-        <NavbarContent justify="start" className="app-navbar__lead">
-          <NavbarMenuToggle
-            aria-label={
-              isMobileMenuOpen
-                ? "Close navigation menu"
-                : "Open navigation menu"
-            }
-            className="app-navbar__menu-toggle"
-          />
-          <NavbarBrand className="app-navbar__brand">
-            {renderHomeButton()}
-          </NavbarBrand>
-        </NavbarContent>
+      <header className="app-navbar" role="banner">
+        <div className="app-navbar__row">
+          <div className="app-navbar__brand">{renderHomeButton()}</div>
 
-        <NavbarContent justify="center" className="app-navbar__links" as="div">
-          {navItems.map((item) => (
-            <NavbarItem key={item.key} className="app-navbar__link-item">
-              {renderNavButton(item)}
-            </NavbarItem>
-          ))}
-        </NavbarContent>
+          <nav className="app-navbar__links" aria-label="Primary navigation">
+            {navItems.map((item) => renderNavButton(item))}
+          </nav>
 
-        <NavbarContent justify="end" className="app-navbar__actions" as="div">
-          <NavbarItem className="app-navbar__action">
+          <div className="app-navbar__utilities">
             <Button
               isIconOnly
               size="sm"
               radius="full"
               variant="light"
-              className="navbar-icon-button"
+              className="app-navbar__icon-button"
               aria-label="Suggest a new cat name"
               title="Suggest a name"
-              onPress={() => onOpenSuggestName?.()}
+              onPress={() => {
+                void handleSuggestAction("desktop");
+              }}
               isDisabled={!onOpenSuggestName}
             >
               <SuggestIcon />
             </Button>
-          </NavbarItem>
 
-          <NavbarItem className="app-navbar__action">
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Button
@@ -275,9 +420,9 @@ export function AppNavbar({
                   size="sm"
                   radius="full"
                   variant="light"
-                  className="navbar-icon-button"
+                  className="app-navbar__icon-button"
                   aria-label={`Theme: ${themePreference}. Currently ${currentTheme}`}
-                  title="Toggle theme"
+                  title="Choose a theme"
                 >
                   {themeIcon}
                 </Button>
@@ -289,25 +434,28 @@ export function AppNavbar({
                 {THEME_OPTIONS.map((option) => (
                   <DropdownItem
                     key={option.key}
+                    className="app-navbar__dropdown-item"
                     data-active={themePreference === option.key}
-                    onPress={() => onThemePreferenceChange(option.key)}
+                    onPress={() => {
+                      void handleThemeChange(option.key, "desktop");
+                    }}
                   >
-                    <span className="theme-option-icon">{option.icon}</span>
+                    <span className="app-navbar__dropdown-icon">
+                      {option.icon}
+                    </span>
                     <span>{option.label}</span>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
             </Dropdown>
-          </NavbarItem>
 
-          {isLoggedIn && userName ? (
-            <NavbarItem className="app-navbar__action">
+            {isLoggedIn && userName ? (
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
                   <Button
                     variant="light"
                     radius="full"
-                    className="navbar-user-button"
+                    className="app-navbar__user-button"
                     aria-label={`User menu for ${userName}`}
                   >
                     <UserDisplay userName={userName} isAdmin={isAdmin} />
@@ -318,84 +466,113 @@ export function AppNavbar({
                   className="app-navbar__dropdown"
                 >
                   <DropdownItem key="user" isDisabled>
-                    <span className="navbar-dropdown__user">{userName}</span>
+                    <span className="app-navbar__dropdown-user">
+                      {userName}
+                    </span>
                   </DropdownItem>
                   <DropdownItem
                     key="logout"
-                    className="navbar-dropdown__logout"
-                    onPress={onLogout}
+                    className="app-navbar__dropdown-item app-navbar__dropdown-item--logout"
+                    onPress={() => {
+                      void handleLogoutAction("desktop");
+                    }}
                   >
                     <LogoutIcon />
                     <span>Logout</span>
                   </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-            </NavbarItem>
-          ) : null}
-        </NavbarContent>
+            ) : null}
 
-        <NavbarMenu
-          id="app-navbar-mobile-menu"
-          className="app-navbar__mobile-menu"
+            <button
+              type="button"
+              className="app-navbar__toggle"
+              aria-label={
+                isMobileMenuOpen
+                  ? "Close navigation menu"
+                  : "Open navigation menu"
+              }
+              aria-expanded={isMobileMenuOpen}
+              aria-controls={MOBILE_MENU_ID}
+              onClick={handleMobileToggle}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+        </div>
+
+        <div
+          id={MOBILE_MENU_ID}
+          className="app-navbar__mobile-panel"
+          data-open={isMobileMenuOpen}
         >
-          <NavbarMenuItem key="mobile-home">
-            {renderHomeButton("mobile")}
-          </NavbarMenuItem>
-          {navItems.map((item) => (
-            <NavbarMenuItem key={`mobile-${item.key}`}>
-              {renderNavButton(item, "mobile")}
-            </NavbarMenuItem>
-          ))}
-          <NavbarMenuItem
-            key="mobile-actions"
-            className="app-navbar__mobile-section"
+          <nav
+            className="app-navbar__mobile-links"
+            aria-label="Mobile primary navigation"
           >
+            {renderHomeButton("mobile")}
+            {navItems.map((item) => renderNavButton(item, "mobile"))}
+          </nav>
+
+          <div className="app-navbar__mobile-actions">
             <p className="app-navbar__mobile-heading">Quick actions</p>
-            <div className="app-navbar__mobile-actions">
-              <Button
-                variant="flat"
-                radius="full"
-                className="navbar-mobile-action"
-                startContent={<SuggestIcon />}
-                onPress={() => handleMobileAction(onOpenSuggestName)}
-                isDisabled={!onOpenSuggestName}
+
+            <button
+              type="button"
+              className="app-navbar__mobile-action"
+              onClick={() => {
+                void handleSuggestAction("mobile");
+              }}
+              disabled={!onOpenSuggestName}
+            >
+              <span
+                className="app-navbar__mobile-action-icon"
+                aria-hidden="true"
               >
-                Suggest a name
-              </Button>
+                <SuggestIcon />
+              </span>
+              <span>Suggest a name</span>
+            </button>
 
-              <div className="app-navbar__mobile-theme">
-                {THEME_OPTIONS.map((option) => (
-                  <button
-                    type="button"
-                    key={option.key}
-                    className="app-navbar__theme-chip"
-                    data-active={themePreference === option.key}
-                    onClick={() =>
-                      handleMobileAction(() =>
-                        onThemePreferenceChange(option.key),
-                      )
-                    }
-                  >
-                    <span>{option.icon}</span>
-                    <span>{option.label}</span>
-                  </button>
-                ))}
-              </div>
-
-              {isLoggedIn && userName ? (
+            <div className="app-navbar__mobile-theme">
+              {THEME_OPTIONS.map((option) => (
                 <button
                   type="button"
-                  className="navbar-mobile-action navbar-mobile-action--logout"
-                  onClick={() => handleMobileAction(onLogout)}
+                  key={option.key}
+                  className="app-navbar__theme-chip"
+                  data-active={themePreference === option.key}
+                  onClick={() => {
+                    void handleThemeChange(option.key, "mobile");
+                  }}
                 >
-                  <LogoutIcon />
+                  <span aria-hidden="true">{option.icon}</span>
+                  <span>{option.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {isLoggedIn && userName ? (
+              <div className="app-navbar__mobile-user">
+                <UserDisplay userName={userName} isAdmin={isAdmin} />
+                <button
+                  type="button"
+                  className="app-navbar__mobile-action app-navbar__mobile-action--logout"
+                  onClick={() => {
+                    void handleLogoutAction("mobile");
+                  }}
+                >
+                  <span aria-hidden="true">
+                    <LogoutIcon />
+                  </span>
                   <span>Logout</span>
                 </button>
-              ) : null}
-            </div>
-          </NavbarMenuItem>
-        </NavbarMenu>
-      </Navbar>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </header>
     </LiquidGlass>
   );
 }

@@ -11,6 +11,10 @@
   --navbar-expanded-width: 280px;
   --navbar-collapsed-width: 80px;
   --navbar-current-width: var(--navbar-expanded-width);
+  --app-navbar-offset-base: clamp(6rem, 16vw, 7.75rem);
+  --app-navbar-offset: calc(
+    var(--app-navbar-offset-base) + env(safe-area-inset-top)
+  );
 }
 
 .app-main-wrapper {
@@ -32,7 +36,12 @@
 
 /* Standard layout for logged-in users */
 .app-main-wrapper:not(.app-main-wrapper--login) {
-  padding: clamp(5.5rem, 7vw, 6.5rem) clamp(1.5rem, 6vw, 3rem);
+  --app-main-side-padding: clamp(1.5rem, 6vw, 3rem);
+  --app-main-bottom-padding: clamp(2rem, 4vw, 3rem);
+
+  padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem))
+    var(--app-main-side-padding) var(--app-main-bottom-padding)
+    var(--app-main-side-padding);
 }
 
 /* Hero layout for login page - full-width, centered, immersive */
@@ -41,7 +50,7 @@
   align-items: stretch;
   justify-content: flex-start;
   height: 100vh;
-  padding: clamp(5.5rem, 7vw, 6.5rem) 0 0;
+  padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) 0 0;
 }
 
 .app-main-wrapper--login > * {
@@ -96,7 +105,12 @@
 /* Responsive adjustments */
 @media (width <= 768px) {
   .app-main-wrapper:not(.app-main-wrapper--login) {
-    padding: clamp(1rem, 4vw, 2rem);
+    padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem)
+      clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
+  }
+
+  .app-main-wrapper--login {
+    padding-top: var(--app-navbar-offset);
   }
 }
 
