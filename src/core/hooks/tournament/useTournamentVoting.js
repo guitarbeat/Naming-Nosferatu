@@ -159,7 +159,10 @@ export function useTournamentVoting({
       });
 
       // * Calculate new round number using shared utility function
-      const newRoundNumber = calculateBracketRound(names.length, nextMatchNumber);
+      const newRoundNumber = calculateBracketRound(
+        names.length,
+        nextMatchNumber,
+      );
 
       setTimeout(() => {
         updateTournamentState({

@@ -23,8 +23,8 @@ describe("AppNavbar", () => {
               onThemePreferenceChange={vi.fn()}
             />
           </NavbarProvider>
-        </HeroUIProvider>
-      )
+        </HeroUIProvider>,
+      ),
     ).not.toThrow();
 
     // Test that main navigation elements are present

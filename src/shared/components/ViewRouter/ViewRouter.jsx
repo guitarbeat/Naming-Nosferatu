@@ -20,7 +20,7 @@ export default function ViewRouter({
   onTournamentComplete,
   onVote,
 }) {
-  const { isRoute } = useRouting();
+  const { isRoute, currentRoute } = useRouting();
 
   // Handle special routes first
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL

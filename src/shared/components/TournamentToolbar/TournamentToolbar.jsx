@@ -228,7 +228,7 @@ function TournamentToolbar({
                     "filterStatus",
                     value === "active"
                       ? FILTER_OPTIONS.VISIBILITY.VISIBLE
-                      : value || FILTER_OPTIONS.VISIBILITY.VISIBLE
+                      : value || FILTER_OPTIONS.VISIBILITY.VISIBLE,
                   )
                 }
               />
@@ -281,7 +281,7 @@ function TournamentToolbar({
                         "sortOrder",
                         isAsc
                           ? FILTER_OPTIONS.ORDER.DESC
-                          : FILTER_OPTIONS.ORDER.ASC
+                          : FILTER_OPTIONS.ORDER.ASC,
                       )
                     }
                     className={styles.sortOrderButton}

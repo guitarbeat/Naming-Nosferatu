@@ -43,13 +43,9 @@ function AnalysisHandlersProvider({
 }) {
   const context = useNameManagementContextSafe();
 
-  // * Return null if context is not available
-  if (!context) {
-    return null;
-  }
-
   // * Initialize analysis mode from URL or prop
   useEffect(() => {
+    if (!context) return;
     if (shouldEnableAnalysisMode && !context.analysisMode) {
       context.setAnalysisMode(true);
     }
@@ -57,39 +53,44 @@ function AnalysisHandlersProvider({
 
   const setHiddenNames = useCallback(
     (updater) => {
-      context.setHiddenIds(updater);
+      context?.setHiddenIds?.(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
-      context.setNames(updater);
+      context?.setNames?.(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
-    context.refetch();
+    context?.refetch?.();
   }, [context]);
 
   const { handleToggleVisibility, handleDelete } = useProfileNameOperations(
     activeUser,
     canManageActiveUser,
-    context.hiddenIds,
+    context?.hiddenIds ?? new Set(),
     setHiddenNames,
     setAllNames,
     fetchNames,
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
   React.useEffect(() => {
+    if (!context) return;
     handlersRef.current.handleToggleVisibility = handleToggleVisibility;
     handlersRef.current.handleDelete = handleDelete;
-  }, [handleToggleVisibility, handleDelete, handlersRef]);
+  }, [context, handleToggleVisibility, handleDelete, handlersRef]);
+
+  if (!context) {
+    return null;
+  }
 
   return null;
 }
@@ -146,7 +147,7 @@ const createAnalysisDashboardWrapper = (
   selectionStats,
   isAdmin,
   activeUser,
-  onNameHidden
+  onNameHidden,
 ) => {
   return function AnalysisDashboardWrapperWithProps() {
     // * Get context inside the component - it's available here because this component
@@ -180,39 +181,35 @@ function AnalysisBulkActionsWrapper({
 }) {
   const context = useNameManagementContextSafe();
 
-  // * Return null if context is not available
-  if (!context) {
-    return null;
-  }
-
-  const { selectedCount } = context;
+  const selectedCount = context?.selectedCount ?? 0;
+  const selectedNamesValue = context?.selectedNames;
   // * Keep both Set format for selection logic and original array for bulk operations
   const selectedNamesSet = useMemo(
     () =>
-      context.selectedNames instanceof Set
-        ? context.selectedNames
+      selectedNamesValue instanceof Set
+        ? selectedNamesValue
         : new Set(
-            Array.isArray(context.selectedNames)
-              ? context.selectedNames.map((name) =>
-                  typeof name === "object" ? name.id : name
+            Array.isArray(selectedNamesValue)
+              ? selectedNamesValue.map((name) =>
+                  typeof name === "object" ? name.id : name,
                 )
-              : []
+              : [],
           ),
-    [context.selectedNames]
+    [selectedNamesValue],
   );
 
   // * Extract name IDs from selectedNames, handling different formats
   const selectedNamesArray = useMemo(() => {
-    if (!context.selectedNames) return [];
+    if (!selectedNamesValue) return [];
 
     // * If it's a Set (profile mode), convert to array of IDs
-    if (context.selectedNames instanceof Set) {
-      return Array.from(context.selectedNames).filter((id) => id != null);
+    if (selectedNamesValue instanceof Set) {
+      return Array.from(selectedNamesValue).filter((id) => id != null);
     }
 
     // * If it's an array, extract IDs properly
-    if (Array.isArray(context.selectedNames)) {
-      return context.selectedNames
+    if (Array.isArray(selectedNamesValue)) {
+      return selectedNamesValue
         .map((name) => {
           // * If it's an object with an id property, extract it
           if (typeof name === "object" && name !== null && name.id) {
@@ -229,53 +226,56 @@ function AnalysisBulkActionsWrapper({
     }
 
     return [];
-  }, [context.selectedNames]);
+  }, [selectedNamesValue]);
 
   const setHiddenNames = useCallback(
     (updater) => {
-      context.setHiddenIds(updater);
+      context?.setHiddenIds?.(updater);
     },
-    [context]
+    [context],
   );
 
   const setAllNames = useCallback(
     (updater) => {
-      context.setNames(updater);
+      context?.setNames?.(updater);
     },
-    [context]
+    [context],
   );
 
   const fetchNames = useCallback(() => {
-    context.refetch();
+    context?.refetch?.();
   }, [context]);
 
   const { handleBulkHide, handleBulkUnhide } = useProfileNameOperations(
     activeUser,
     canManageActiveUser,
-    context.hiddenIds,
+    context?.hiddenIds ?? new Set(),
     setHiddenNames,
     setAllNames,
     fetchNames,
     fetchSelectionStats,
     showSuccess,
     showError,
-    showToast
+    showToast,
   );
 
+  const contextNames = context?.names;
+  const contextFilterStatus = context?.filterStatus;
+
   const filteredAndSortedNames = useMemo(() => {
-    if (!context.names || context.names.length === 0) return [];
-    let filtered = [...context.names];
+    if (!contextNames || contextNames.length === 0) return [];
+    let filtered = [...contextNames];
 
     // Use shared isNameHidden utility for consistent visibility check
-    if (context.filterStatus === "visible") {
+    if (contextFilterStatus === "visible") {
       filtered = filtered.filter((name) => !isNameHidden(name));
-    } else if (context.filterStatus === "hidden") {
+    } else if (contextFilterStatus === "hidden") {
       filtered = filtered.filter((name) => isNameHidden(name));
     }
     // * "all" shows everything (no filtering)
 
     return filtered;
-  }, [context.names, context.filterStatus]);
+  }, [contextNames, contextFilterStatus]);
 
   const allVisibleSelected =
     filteredAndSortedNames.length > 0 &&
@@ -284,11 +284,11 @@ function AnalysisBulkActionsWrapper({
   const handleSelectAll = useCallback(() => {
     if (allVisibleSelected) {
       filteredAndSortedNames.forEach((name) => {
-        context.toggleNameById(name.id, false);
+        context?.toggleNameById?.(name.id, false);
       });
     } else {
       filteredAndSortedNames.forEach((name) => {
-        context.toggleNameById(name.id, true);
+        context?.toggleNameById?.(name.id, true);
       });
     }
   }, [allVisibleSelected, filteredAndSortedNames, context]);
@@ -296,11 +296,11 @@ function AnalysisBulkActionsWrapper({
   const handleExport = useCallback(() => {
     exportTournamentResultsToCSV(
       filteredAndSortedNames,
-      "naming_nosferatu_export"
+      "naming_nosferatu_export",
     );
   }, [filteredAndSortedNames]);
 
-  if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
+  if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
     return null;
   }
 
@@ -320,7 +320,7 @@ function AnalysisBulkActionsWrapper({
         if (selectedNamesArray.length === 0) {
           devWarn(
             "[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-            selectedCount
+            selectedCount,
           );
           showError("No names selected");
           return;
@@ -331,7 +331,7 @@ function AnalysisBulkActionsWrapper({
         } catch (error) {
           devError("[TournamentSetup] Error calling handleBulkHide:", error);
           showError(
-            `Failed to hide names: ${error.message || "Unknown error"}`
+            `Failed to hide names: ${error.message || "Unknown error"}`,
           );
         }
       }}
@@ -472,7 +472,7 @@ function TournamentSetupContent({
 
   // * Check URL for analysis mode parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
+    typeof window !== "undefined" ? window.location.search : "",
   );
   const shouldEnableAnalysisMode =
     enableAnalysisMode || urlParams.get("analysis") === "true";
@@ -493,14 +493,14 @@ function TournamentSetupContent({
         setLightboxOpen(true);
       }
     },
-    [galleryImages]
+    [galleryImages],
   );
 
   const handleImagesUploaded = useCallback(
     (uploaded) => {
       addImages(uploaded);
     },
-    [addImages]
+    [addImages],
   );
 
   const handleLightboxNavigate = useCallback((newIndex) => {
@@ -546,7 +546,7 @@ function TournamentSetupContent({
       isAdmin,
       userName,
       handleImagesUploaded,
-    ]
+    ],
   );
 
   const lightboxElement = lightboxOpen &&
@@ -614,7 +614,7 @@ function TournamentSetupContent({
               selectionStats,
               isAdmin,
               activeUser,
-              undefined // * Will use context.refetch() inside the wrapper component
+              undefined, // * Will use context.refetch() inside the wrapper component
             ),
             bulkActions: (props) => (
               <AnalysisBulkActionsWrapper

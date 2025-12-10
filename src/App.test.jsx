@@ -89,7 +89,7 @@ vi.mock("@core/store/useAppStore", () => {
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
-      () => selector(storeState)
+      () => selector(storeState),
     );
 
   const mergeState = (partial) => {

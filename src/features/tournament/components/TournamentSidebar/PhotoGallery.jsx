@@ -20,11 +20,14 @@ function PhotoGallery({
   onImagesUploaded,
 }) {
   // * Ensure galleryImages is always an array
-  const safeGalleryImages = Array.isArray(galleryImages) ? galleryImages : [];
+  const safeGalleryImages = useMemo(
+    () => (Array.isArray(galleryImages) ? galleryImages : []),
+    [galleryImages],
+  );
 
   const displayImages = useMemo(
     () => (showAllPhotos ? safeGalleryImages : safeGalleryImages.slice(0, 8)),
-    [safeGalleryImages, showAllPhotos]
+    [safeGalleryImages, showAllPhotos],
   );
 
   const handleFileUpload = useCallback(
@@ -62,7 +65,7 @@ function PhotoGallery({
         e.target.value = "";
       }
     },
-    [userName, onImagesUploaded]
+    [userName, onImagesUploaded],
   );
 
   return (

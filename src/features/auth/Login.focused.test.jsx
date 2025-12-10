@@ -31,18 +31,18 @@ describe("Login Component - Focused Tests", () => {
     render(<Login onLogin={mockOnLogin} />);
 
     expect(
-      screen.getByRole("heading", { name: "Ready to Rate Cat Names?" })
+      screen.getByRole("heading", { name: "Ready to Rate Cat Names?" }),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Your name")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "We'll create an account automatically if it's your first time."
-      )
+        "We'll create an account automatically if it's your first time.",
+      ),
     ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(
-        screen.getByText("Cats sleep 12-16 hours per day!")
+        screen.getByText("Cats sleep 12-16 hours per day!"),
       ).toBeInTheDocument();
     });
   });
@@ -67,7 +67,7 @@ describe("Login Component - Focused Tests", () => {
     });
     await waitFor(() => {
       expect(
-        screen.queryByRole("button", { name: "Generate a random judge name" })
+        screen.queryByRole("button", { name: "Generate a random judge name" }),
       ).not.toBeInTheDocument();
     });
 
@@ -85,7 +85,7 @@ describe("Login Component - Focused Tests", () => {
 
     await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
     await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" })
+      screen.getByRole("button", { name: "Continue to tournament" }),
     );
 
     await waitFor(() => {
@@ -105,7 +105,7 @@ describe("Login Component - Focused Tests", () => {
 
     await user.type(screen.getByLabelText("Your name"), "Bad Name");
     await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" })
+      screen.getByRole("button", { name: "Continue to tournament" }),
     );
 
     await waitFor(() => {
@@ -122,8 +122,8 @@ describe("Login Component - Focused Tests", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Cats are amazing creatures with unique personalities!"
-        )
+          "Cats are amazing creatures with unique personalities!",
+        ),
       ).toBeInTheDocument();
     });
   });

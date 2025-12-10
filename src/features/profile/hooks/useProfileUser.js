@@ -112,10 +112,7 @@ export function useProfileUser(userName) {
       return;
     }
 
-    if (
-      !userFilter ||
-      userFilter === FILTER_OPTIONS.USER.CURRENT
-    ) {
+    if (!userFilter || userFilter === FILTER_OPTIONS.USER.CURRENT) {
       if (activeUser !== userName) {
         setActiveUser(userName);
       }

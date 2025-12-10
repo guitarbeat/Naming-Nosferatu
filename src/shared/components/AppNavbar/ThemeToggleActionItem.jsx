@@ -22,7 +22,7 @@ export function ThemeToggleActionItem({
   ];
 
   const currentIndex = themes.findIndex(
-    (theme) => theme.value === themePreference
+    (theme) => theme.value === themePreference,
   );
   const currentThemeData = themes[currentIndex];
 

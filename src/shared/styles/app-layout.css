@@ -41,7 +41,7 @@
   align-items: stretch;
   justify-content: flex-start;
   height: 100vh;
-  padding: clamp(5.5rem, 7vw, 6.5rem) 0 0 0;
+  padding: clamp(5.5rem, 7vw, 6.5rem) 0 0;
 }
 
 .app-main-wrapper--login > * {

@@ -37,7 +37,7 @@
   color: white;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .cat-background__gradient {
     background-attachment: scroll;
   }
@@ -60,7 +60,7 @@
   font-family: Georgia, serif;
   user-select: none;
   will-change: transform, opacity, filter;
-  filter: blur(var(--twinkle-blur, 0px));
+  filter: blur(var(--twinkle-blur, 0));
   opacity: var(--twinkle-alpha, 0.8);
   transform: scale(var(--twinkle-scale, 1));
   animation: twinkle var(--twinkle-duration, 3.2s) ease-in-out infinite;
@@ -81,6 +81,7 @@
     opacity: 0;
     transform: scale(calc(var(--twinkle-scale, 1) * 0.6));
   }
+
   45% {
     opacity: var(--twinkle-alpha, 0.85);
     transform: scale(var(--twinkle-scale, 1));

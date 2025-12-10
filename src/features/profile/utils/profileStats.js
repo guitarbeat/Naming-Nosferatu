@@ -36,23 +36,34 @@ export async function fetchUserStatsFromDB(userName) {
 
       if (selectionsError) {
         if (process.env.NODE_ENV === "development") {
-          console.error("Error fetching aggregate selections:", selectionsError);
+          console.error(
+            "Error fetching aggregate selections:",
+            selectionsError,
+          );
         }
         return null;
       }
 
       // * Calculate aggregate metrics
       const totalRatings = ratings?.length || 0;
-      const totalWins = ratings?.reduce((sum, r) => sum + (r.wins || 0), 0) || 0;
-      const totalLosses = ratings?.reduce((sum, r) => sum + (r.losses || 0), 0) || 0;
-      const avgRating = totalRatings > 0
-        ? Math.round(ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) / totalRatings)
-        : 1500;
+      const totalWins =
+        ratings?.reduce((sum, r) => sum + (r.wins || 0), 0) || 0;
+      const totalLosses =
+        ratings?.reduce((sum, r) => sum + (r.losses || 0), 0) || 0;
+      const avgRating =
+        totalRatings > 0
+          ? Math.round(
+              ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+                totalRatings,
+            )
+          : 1500;
       const uniqueUsers = new Set([
-        ...(ratings?.map(r => r.user_name) || []),
-        ...(selections?.map(s => s.user_name) || [])
+        ...(ratings?.map((r) => r.user_name) || []),
+        ...(selections?.map((s) => s.user_name) || []),
       ]).size;
-      const totalTournaments = new Set(selections?.map(s => s.tournament_id) || []).size;
+      const totalTournaments = new Set(
+        selections?.map((s) => s.tournament_id) || [],
+      ).size;
       const totalSelections = selections?.length || 0;
 
       return {
@@ -214,8 +225,10 @@ export async function calculateSelectionStats(userName) {
       selectionsQuery = selectionsQuery.eq("user_name", userName);
     }
 
-    const { data: selections, error } = await selectionsQuery
-      .order("selected_at", { ascending: false });
+    const { data: selections, error } = await selectionsQuery.order(
+      "selected_at",
+      { ascending: false },
+    );
 
     if (error) {
       if (process.env.NODE_ENV === "development") {
@@ -233,9 +246,8 @@ export async function calculateSelectionStats(userName) {
     const uniqueTournaments = new Set(selections.map((s) => s.tournament_id))
       .size;
     const uniqueNames = new Set(selections.map((s) => s.name_id)).size;
-    const uniqueUsers = userName === null
-      ? new Set(selections.map((s) => s.user_name)).size
-      : 1;
+    const uniqueUsers =
+      userName === null ? new Set(selections.map((s) => s.user_name)).size : 1;
     const avgSelectionsPerName =
       uniqueNames > 0
         ? Math.round((totalSelections / uniqueNames) * 10) / 10
@@ -316,19 +328,19 @@ export async function calculateSelectionStats(userName) {
     const isAggregate = userName === null;
     const insights = isAggregate
       ? {
-        selectionPattern: "Aggregate data from all users",
-        preferredCategories: await generatePreferredCategories(selections),
-        improvementTip: `Total activity across ${uniqueUsers || 0} users`,
-      }
+          selectionPattern: "Aggregate data from all users",
+          preferredCategories: await generatePreferredCategories(selections),
+          improvementTip: `Total activity across ${uniqueUsers || 0} users`,
+        }
       : {
-        selectionPattern: generateSelectionPattern(selections),
-        preferredCategories: await generatePreferredCategories(selections),
-        improvementTip: generateImprovementTip(
-          totalSelections,
-          uniqueTournaments,
-          currentStreak,
-        ),
-      };
+          selectionPattern: generateSelectionPattern(selections),
+          preferredCategories: await generatePreferredCategories(selections),
+          improvementTip: generateImprovementTip(
+            totalSelections,
+            uniqueTournaments,
+            currentStreak,
+          ),
+        };
 
     return {
       totalSelections,

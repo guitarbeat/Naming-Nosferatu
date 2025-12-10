@@ -123,6 +123,7 @@ The component manages the following animation states:
 ## Backward Compatibility
 
 The component maintains full backward compatibility:
+
 - Existing `color` prop still works
 - Default props match previous behavior
 - All existing usage continues to work without changes

@@ -22,8 +22,7 @@
   height: 100dvh; /* * Use dynamic viewport height on mobile */
   min-height: 100vh;
   min-height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden auto;
 }
 
 :global(body.login-page::-webkit-scrollbar) {
@@ -43,16 +42,13 @@
   min-height: 100dvh; /* * Use dynamic viewport height on mobile */
   overflow-y: auto;
   /* * Add padding-top to account for fixed navbar */
-  padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
+  padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem);
   margin: 0 auto;
 }
 
 .backgroundContainer {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   z-index: 0;
   width: 100%;
   height: 100vh;
@@ -1000,7 +996,7 @@
 }
 
 :global(.mouse-detector) {
-  padding: 20px 30px 30px 30px;
+  padding: 20px 30px 30px;
 }
 
 :global(.mouse-detector:hover .sleep-symbol) {
@@ -1068,13 +1064,14 @@
   justify-content: center;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .catMouseDetector {
     top: clamp(-160px, -12vw, -80px);
   }
 
   :global(.mouse-detector) {
-    padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px) clamp(15px, 3vw, 30px);
+    padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px)
+      clamp(15px, 3vw, 30px);
   }
 
   :global(.cat) {
@@ -1086,7 +1083,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .catMouseDetector {
     top: clamp(-120px, -10vw, -60px);
   }

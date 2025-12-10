@@ -129,7 +129,11 @@ export function AppNavbar({
   const renderHomeButton = (variant = "desktop") => (
     <button
       type="button"
-      onClick={variant === "mobile" ? () => handleMobileAction(handleHomeClick) : handleHomeClick}
+      onClick={
+        variant === "mobile"
+          ? () => handleMobileAction(handleHomeClick)
+          : handleHomeClick
+      }
       className={
         variant === "mobile" ? "navbar-mobile-link" : "navbar-home-button"
       }
@@ -227,7 +231,9 @@ export function AppNavbar({
         <NavbarContent justify="start" className="app-navbar__lead">
           <NavbarMenuToggle
             aria-label={
-              isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
+              isMobileMenuOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
             }
             className="app-navbar__menu-toggle"
           />
@@ -276,7 +282,10 @@ export function AppNavbar({
                   {themeIcon}
                 </Button>
               </DropdownTrigger>
-              <DropdownMenu aria-label="Theme selector" className="app-navbar__dropdown">
+              <DropdownMenu
+                aria-label="Theme selector"
+                className="app-navbar__dropdown"
+              >
                 {THEME_OPTIONS.map((option) => (
                   <DropdownItem
                     key={option.key}
@@ -304,7 +313,10 @@ export function AppNavbar({
                     <UserDisplay userName={userName} isAdmin={isAdmin} />
                   </Button>
                 </DropdownTrigger>
-                <DropdownMenu aria-label="User menu" className="app-navbar__dropdown">
+                <DropdownMenu
+                  aria-label="User menu"
+                  className="app-navbar__dropdown"
+                >
                   <DropdownItem key="user" isDisabled>
                     <span className="navbar-dropdown__user">{userName}</span>
                   </DropdownItem>
@@ -322,14 +334,22 @@ export function AppNavbar({
           ) : null}
         </NavbarContent>
 
-        <NavbarMenu id="app-navbar-mobile-menu" className="app-navbar__mobile-menu">
-          <NavbarMenuItem key="mobile-home">{renderHomeButton("mobile")}</NavbarMenuItem>
+        <NavbarMenu
+          id="app-navbar-mobile-menu"
+          className="app-navbar__mobile-menu"
+        >
+          <NavbarMenuItem key="mobile-home">
+            {renderHomeButton("mobile")}
+          </NavbarMenuItem>
           {navItems.map((item) => (
             <NavbarMenuItem key={`mobile-${item.key}`}>
               {renderNavButton(item, "mobile")}
             </NavbarMenuItem>
           ))}
-          <NavbarMenuItem key="mobile-actions" className="app-navbar__mobile-section">
+          <NavbarMenuItem
+            key="mobile-actions"
+            className="app-navbar__mobile-section"
+          >
             <p className="app-navbar__mobile-heading">Quick actions</p>
             <div className="app-navbar__mobile-actions">
               <Button
@@ -350,7 +370,11 @@ export function AppNavbar({
                     key={option.key}
                     className="app-navbar__theme-chip"
                     data-active={themePreference === option.key}
-                    onClick={() => handleMobileAction(() => onThemePreferenceChange(option.key))}
+                    onClick={() =>
+                      handleMobileAction(() =>
+                        onThemePreferenceChange(option.key),
+                      )
+                    }
                   >
                     <span>{option.icon}</span>
                     <span>{option.label}</span>
