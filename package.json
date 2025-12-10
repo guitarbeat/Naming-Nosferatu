@@ -47,7 +47,7 @@
     "@supabase/supabase-js": "^2.83.0",
     "@tanstack/react-query": "^5.90.12",
     "class-variance-authority": "^0.7.1",
-    "lovable-tagger": "^1.1.11",
+    "lovable-tagger": "^1.1.13",
     "lucide-react": "^0.556.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
