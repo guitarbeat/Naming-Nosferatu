@@ -22,7 +22,6 @@ export {
   DropdownMenuSeparator,
 } from "./navbar-shadcn";
 
-// Legacy exports for backwards compatibility (if needed)
-export const NavbarGroup = NavbarSeparator;
+export { NavbarSeparator as NavbarGroup } from "./navbar-shadcn";
 export const NavbarGroupLabel = () => null;
-export const NavbarGroupContent = NavbarContent;
+export { NavbarContent as NavbarGroupContent } from "./navbar-shadcn";
