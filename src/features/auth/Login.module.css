@@ -19,7 +19,9 @@
 :global(body.login-page),
 :global(html.login-page) {
   height: 100vh;
+  height: 100dvh; /* * Use dynamic viewport height on mobile */
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -38,6 +40,7 @@
   justify-content: flex-start;
   width: 100%;
   min-height: 100vh;
+  min-height: 100dvh; /* * Use dynamic viewport height on mobile */
   overflow-y: auto;
   /* * Add padding-top to account for fixed navbar */
   padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
@@ -53,7 +56,9 @@
   z-index: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh; /* * Use dynamic viewport height on mobile */
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--background-color);
 }
 
@@ -983,14 +988,15 @@
 
 .catMouseDetector {
   position: absolute;
-  top: -150px;
-  left: 250px;
-  right: 0;
+  top: clamp(-200px, -15vw, -100px);
+  left: 50%;
+  right: auto;
   z-index: 10;
   pointer-events: none;
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateX(-50%);
 }
 
 :global(.mouse-detector) {
@@ -1060,6 +1066,47 @@
   pointer-events: none;
   display: flex;
   justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .catMouseDetector {
+    top: clamp(-160px, -12vw, -80px);
+  }
+
+  :global(.mouse-detector) {
+    padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px) clamp(15px, 3vw, 30px);
+  }
+
+  :global(.cat) {
+    padding: clamp(15px, 3vw, 30px);
+  }
+
+  :global(.thecat) {
+    margin-bottom: clamp(-20px, -5vw, -35px);
+  }
+}
+
+@media (max-width: 480px) {
+  .catMouseDetector {
+    top: clamp(-120px, -10vw, -60px);
+  }
+
+  :global(.mouse-detector) {
+    padding: 8px 12px 15px;
+  }
+
+  :global(.cat) {
+    padding: 15px;
+  }
+
+  :global(.thecat) {
+    margin-bottom: -20px;
+  }
+
+  :global(.sleep-symbol span:nth-child(2)),
+  :global(.sleep-symbol span:nth-child(3)) {
+    margin-left: -5px;
+  }
 }
 
 :global(#tail) {

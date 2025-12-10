@@ -54,14 +54,14 @@ export default function ViewRouter({
 
   if (shouldShowDashboard) {
     const hasPersonalData = tournament.isComplete && tournament.names !== null;
-    
+
     // * Check URL for analysis parameter to determine initial view mode
     const urlParams =
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search)
         : new URLSearchParams();
     const isAnalysisMode = urlParams.get("analysis") === "true";
-    
+
     // * Determine mode: if analysis=true, show global only; if /results, show personal (or both if has data)
     const dashboardMode = isAnalysisMode
       ? "global"

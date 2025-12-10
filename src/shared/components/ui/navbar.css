@@ -1366,3 +1366,259 @@
   margin: 0;
   padding: 0;
 }
+
+/* ============================================================================
+   RADIX UI DROPDOWN MENU STYLES
+   ========================================================================== */
+
+.navbar-dropdown-content {
+  min-width: 160px;
+  padding: var(--space-1);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 98%) 0%,
+    hsl(var(--background) / 95%) 100%
+  );
+  border: 1px solid hsl(var(--border) / 60%);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 20px 56px hsl(var(--background) / 40%),
+    0 8px 24px hsl(var(--background) / 25%),
+    0 2px 8px hsl(var(--background) / 15%),
+    0 0 0 1px hsl(var(--neon-cyan) / 10%);
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  z-index: 9999;
+}
+
+@keyframes dropdownSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+:root[data-theme="dark"] .navbar-dropdown-content {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 98%) 0%,
+    hsl(var(--background) / 92%) 100%
+  );
+  border-color: hsl(var(--border) / 50%);
+  box-shadow:
+    0 20px 56px hsl(0 0 0 / 50%),
+    0 8px 24px hsl(0 0 0 / 35%),
+    0 2px 8px hsl(0 0 0 / 20%),
+    0 0 0 1px hsl(var(--neon-cyan) / 8%);
+}
+
+.navbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: hsl(var(--foreground) / 85%);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    all 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.15s ease;
+  outline: none;
+  white-space: nowrap;
+}
+
+.navbar-dropdown-item:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--accent) / 12%);
+  transform: translateX(2px);
+}
+
+.navbar-dropdown-item:focus-visible {
+  background: hsl(var(--accent) / 15%);
+  outline: 2px solid hsl(var(--neon-cyan) / 60%);
+  outline-offset: -2px;
+}
+
+.navbar-dropdown-item[data-active="true"] {
+  color: hsl(var(--foreground));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 14%),
+    hsl(var(--hot-pink) / 10%)
+  );
+  font-weight: 600;
+}
+
+.navbar-dropdown-item[data-disabled] {
+  color: hsl(var(--muted-foreground));
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.navbar-dropdown-separator {
+  height: 1px;
+  background: hsl(var(--border) / 40%);
+  margin: var(--space-1) 0;
+}
+
+/* ============================================================================
+   NAVBAR ICON BUTTON STYLES
+   ========================================================================== */
+
+.navbar-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  padding: var(--space-1);
+  font-size: 1rem;
+  color: hsl(var(--foreground) / 78%);
+  background: transparent;
+  border: 1px solid hsl(var(--border) / 30%);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    all 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s ease,
+    color 0.2s ease;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.navbar-icon-button:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--accent) / 12%);
+  border-color: hsl(var(--accent) / 50%);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 12px hsl(var(--background) / 20%),
+    0 2px 6px hsl(var(--accent) / 15%);
+}
+
+.navbar-icon-button:active {
+  transform: translateY(-1px);
+  transition-duration: 0.1s;
+}
+
+.navbar-icon-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px hsl(var(--neon-cyan) / 60%),
+    0 0 0 4px hsl(var(--neon-cyan) / 20%);
+}
+
+/* Mobile menu toggle styles */
+.navbar-mobile-toggle {
+  display: none;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+}
+
+@media (width <= 768px) {
+  .navbar-mobile-toggle {
+    display: flex;
+  }
+
+  .navbar-icon-button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* Mobile menu dropdown styles */
+.navbar-mobile-menu {
+  display: none;
+  padding: var(--space-2);
+  background: linear-gradient(
+    145deg,
+    hsl(var(--background) / 96%),
+    hsl(var(--background) / 92%)
+  );
+  border-top: 1px solid hsl(var(--border) / 40%);
+  animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar-mobile-menu[data-open="true"] {
+  display: block;
+}
+
+.navbar-mobile-menu .navbar-menu {
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.navbar-mobile-menu .navbar-mobile-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: hsl(var(--foreground) / 82%);
+  background: hsl(var(--background) / 65%);
+  border: 1px solid hsl(var(--border) / 30%);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.navbar-mobile-link:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--accent) / 12%);
+  border-color: hsl(var(--accent) / 50%);
+  transform: translateX(4px);
+}
+
+.navbar-mobile-link:focus-visible {
+  outline: 2px solid hsl(var(--neon-cyan) / 60%);
+  outline-offset: 2px;
+}
+
+.navbar-mobile-link[data-active="true"] {
+  color: hsl(var(--foreground));
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 14%),
+    hsl(var(--hot-pink) / 10%)
+  );
+  border-color: hsl(var(--neon-cyan) / 60%);
+}
+
+.navbar-mobile-link svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+@media (width <= 768px) {
+  .navbar-mobile-menu {
+    width: 100%;
+  }
+
+  .navbar-mobile-link {
+    min-height: 44px;
+  }
+}
