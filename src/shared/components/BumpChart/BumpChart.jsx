@@ -216,7 +216,7 @@ export function BumpChart({
 
   const rankToY = useCallback(
     (rank) => {
-      const maxRank = chartData.maxRank;
+      const {maxRank} = chartData;
       const fraction = (rank - 1) / Math.max(1, maxRank - 1);
       const eased = useNormalizedScale ? Math.pow(fraction, 0.6) : fraction;
       return padding + eased * (chartHeight - padding * 2);

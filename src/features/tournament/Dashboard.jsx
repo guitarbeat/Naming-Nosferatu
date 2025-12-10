@@ -14,22 +14,18 @@ import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import { Card, Toast } from "@components";
 import { BumpChart } from "../../shared/components/BumpChart";
 import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
-import { ColumnHeader } from "../../shared/components/ColumnHeader";
 import {
   CollapsibleHeader,
   CollapsibleContent,
 } from "../../shared/components/CollapsibleHeader";
 import {
   catNamesAPI,
-  hiddenNamesAPI,
 } from "../../shared/services/supabase/api";
 import { devError } from "../../shared/utils/logger";
 import { useToast } from "../../shared/hooks/useToast";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
 import { getRankDisplay } from "../../shared/utils/displayUtils";
-import { formatDate } from "../../shared/utils/timeUtils";
 import { calculatePercentile } from "../../shared/utils/metricsUtils";
-import { getMetricLabel } from "../../shared/utils/metricDefinitions";
 import styles from "./Dashboard.module.css";
 
 /**
@@ -299,8 +295,8 @@ function Dashboard({
 
     const sorted = [...globalLeaderboard];
     sorted.sort((a, b) => {
-      let aVal = a[sortField] || 0;
-      let bVal = b[sortField] || 0;
+      const aVal = a[sortField] || 0;
+      const bVal = b[sortField] || 0;
 
       if (sortDirection === "asc") {
         return aVal > bVal ? 1 : -1;
