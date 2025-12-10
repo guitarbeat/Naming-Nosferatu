@@ -13,43 +13,77 @@
 
 /* * Primary navbar surface with glass treatment */
 .app-navbar {
-  width: min(1180px, 100%);
+  --nav-surface: color-mix(
+    in srgb,
+    var(--glass-bg, hsl(var(--background) / 82%)) 80%,
+    hsl(var(--background) / 62%) 20%
+  );
+  --nav-surface-strong: color-mix(
+    in srgb,
+    var(--glass-bg-strong, hsl(var(--background) / 90%)) 85%,
+    hsl(var(--background) / 70%) 15%
+  );
+  --nav-pill: color-mix(in srgb, var(--nav-surface-strong) 65%, var(--nav-surface) 35%);
+  --nav-border: color-mix(
+    in srgb,
+    var(--glass-border, hsl(var(--border) / 45%)) 80%,
+    transparent
+  );
+  --nav-text: color-mix(
+    in srgb,
+    var(--text-primary, hsl(var(--foreground))) 94%,
+    #ffffff 6%
+  );
+  width: min(1320px, calc(100% - clamp(1rem, 4vw, 4.5rem)));
   display: flex;
   flex-direction: column;
-  gap: clamp(0.5rem, 1vw, 0.85rem);
-  padding: clamp(0.75rem, 1vw, 1rem) clamp(0.85rem, 1.6vw, 1.35rem);
-  border-radius: 24px;
-  border: 1px solid hsl(var(--border) / 35%);
-  background: linear-gradient(
-      135deg,
-      hsl(var(--background) / 94%),
-      hsl(var(--background) / 84%)
-    )
+  gap: clamp(0.6rem, 1vw, 0.95rem);
+  padding: clamp(0.85rem, 1.4vw, 1.25rem) clamp(1rem, 2vw, 1.8rem);
+  border-radius: 28px;
+  border: 1px solid var(--nav-border);
+  background: linear-gradient(140deg, var(--nav-surface), var(--nav-surface-strong))
     padding-box;
   box-shadow:
-    0 25px 65px hsl(var(--background) / 30%),
-    0 10px 25px hsl(var(--background) / 18%),
-    inset 0 1px 0 hsl(var(--foreground) / 12%);
-  backdrop-filter: blur(18px) saturate(160%);
+    0 28px 75px hsl(var(--background) / 28%),
+    0 12px 28px hsl(var(--background) / 18%),
+    inset 0 1px 0 hsl(var(--foreground) / 14%);
+  backdrop-filter: blur(var(--glass-blur, 18px)) saturate(165%);
+  color: var(--nav-text);
   pointer-events: auto;
 }
 
 :root[data-theme="light"] .app-navbar {
-  background: linear-gradient(
-      130deg,
-      hsl(var(--background) / 98%),
-      hsl(var(--background) / 90%)
-    )
-    padding-box;
+  --nav-surface: color-mix(
+    in srgb,
+    var(--glass-bg-light, rgb(241 245 249 / 60%)) 70%,
+    #ffffff 30%
+  );
+  --nav-surface-strong: color-mix(
+    in srgb,
+    var(--glass-bg, rgb(241 245 249 / 75%)) 55%,
+    rgb(226 232 240) 45%
+  );
+  --nav-border: color-mix(
+    in srgb,
+    var(--glass-border, rgb(15 23 42 / 10%)) 60%,
+    rgb(255 255 255 / 50%)
+  );
+  --nav-text: color-mix(
+    in srgb,
+    var(--text-primary, hsl(var(--foreground))) 96%,
+    rgb(15 23 42) 4%
+  );
   box-shadow:
-    0 20px 55px hsl(var(--foreground) / 14%),
+    0 22px 58px hsl(var(--foreground) / 12%),
     inset 0 1px 0 hsl(var(--foreground) / 10%);
 }
 
 .app-navbar__row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  width: 100%;
+  gap: clamp(0.75rem, 2vw, 2.5rem);
 }
 
 .app-navbar__brand {
@@ -60,16 +94,16 @@
 .app-navbar__brand-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.85rem;
-  padding: 0.5rem 0.95rem;
+  gap: 0.9rem;
+  padding: 0.55rem 1.1rem;
   border-radius: 999px;
   border: 1px solid transparent;
-  background: transparent;
+  background: color-mix(in srgb, var(--nav-pill) 35%, transparent);
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: hsl(var(--foreground));
+  letter-spacing: 0.06em;
+  color: var(--nav-text);
   text-transform: uppercase;
-  font-size: 0.85rem;
+  font-size: clamp(0.85rem, 0.9vw, 0.95rem);
   transition:
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.3s ease,
@@ -80,9 +114,9 @@
 .app-navbar__brand-button[data-active="true"],
 .app-navbar__brand-button:hover,
 .app-navbar__brand-button:focus-visible {
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--accent) / 50%);
-  background: hsl(var(--accent) / 18%);
+  color: var(--nav-text);
+  border-color: color-mix(in srgb, var(--accent-color, hsl(var(--accent))) 55%, transparent);
+  background: color-mix(in srgb, var(--nav-pill) 80%, var(--accent-color, hsl(var(--accent))) 20%);
   transform: translateY(-1px);
 }
 
@@ -118,14 +152,18 @@
 }
 
 .app-navbar__brand-title {
-  font-size: 0.9rem;
+  font-size: clamp(0.92rem, 1vw, 1rem);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .app-navbar__brand-subtitle {
-  font-size: 0.7rem;
-  color: hsl(var(--muted-foreground));
+  font-size: 0.72rem;
+  color: color-mix(
+    in srgb,
+    var(--text-secondary, var(--muted-foreground)) 90%,
+    var(--nav-text) 10%
+  );
   letter-spacing: 0.08em;
 }
 
@@ -133,46 +171,59 @@
 .app-navbar__links {
   flex: 1 1 auto;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
+  justify-content: flex-start;
+  gap: clamp(0.4rem, 1.4vw, 1.5rem);
   min-width: 0;
+  padding-inline: clamp(0.1rem, 1.8vw, 2rem);
 }
 
 .app-navbar__link {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.9rem;
+  gap: 0.5rem;
+  padding: 0.55rem clamp(0.85rem, 1.6vw, 1.4rem);
   border-radius: 999px;
-  border: 1px solid transparent;
-  background: hsl(var(--background) / 70%);
-  color: hsl(var(--foreground) / 80%);
+  border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);
+  background: linear-gradient(
+    145deg,
+    var(--nav-pill),
+    color-mix(in srgb, var(--nav-pill) 70%, transparent)
+  );
+  color: var(--nav-text);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: clamp(0.82rem, 0.85vw, 0.95rem);
+  letter-spacing: 0.01em;
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
     background-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .app-navbar__link:hover {
-  border-color: hsl(var(--accent) / 45%);
-  color: hsl(var(--foreground));
+  border-color: color-mix(
+    in srgb,
+    var(--accent-color, hsl(var(--accent))) 55%,
+    transparent
+  );
+  box-shadow: 0 10px 24px
+    color-mix(in srgb, var(--accent-color, hsl(var(--accent))) 26%, transparent);
   transform: translateY(-1px);
 }
 
 .app-navbar__link[data-active="true"] {
-  color: hsl(var(--foreground));
-  border-color: hsl(var(--neon-cyan) / 55%);
+  color: var(--nav-text);
+  border-color: color-mix(in srgb, hsl(var(--neon-cyan)) 55%, transparent);
   background: linear-gradient(
     135deg,
-    hsl(var(--neon-cyan) / 25%),
-    hsl(var(--hot-pink) / 20%)
+    color-mix(in srgb, hsl(var(--neon-cyan)) 35%, transparent),
+    color-mix(in srgb, hsl(var(--hot-pink)) 30%, transparent)
   );
   box-shadow:
-    0 8px 20px hsl(var(--neon-cyan) / 24%),
+    0 10px 26px hsl(var(--neon-cyan) / 30%),
     inset 0 1px 0 hsl(var(--foreground) / 15%);
 }
 
@@ -199,14 +250,16 @@
 .app-navbar__utilities {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  min-width: clamp(140px, 22vw, 260px);
 }
 
 .app-navbar__icon-button,
 .app-navbar__user-button {
-  border: 1px solid hsl(var(--border) / 35%);
-  background: hsl(var(--background) / 80%);
-  color: hsl(var(--foreground));
+  border: 1px solid color-mix(in srgb, var(--nav-text) 18%, transparent);
+  background: color-mix(in srgb, var(--nav-pill) 80%, transparent);
+  color: var(--nav-text);
   transition:
     transform 0.25s ease,
     border-color 0.25s ease,
@@ -215,7 +268,11 @@
 
 .app-navbar__icon-button:hover,
 .app-navbar__user-button:hover {
-  border-color: hsl(var(--accent) / 45%);
+  border-color: color-mix(
+    in srgb,
+    var(--accent-color, hsl(var(--accent))) 55%,
+    transparent
+  );
   transform: translateY(-1px);
 }
 
