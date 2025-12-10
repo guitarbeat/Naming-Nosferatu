@@ -983,14 +983,15 @@
 
 .catMouseDetector {
   position: absolute;
-  top: -150px;
-  left: 250px;
-  right: 0;
+  top: clamp(-200px, -15vw, -100px);
+  left: 50%;
+  right: auto;
   z-index: 10;
   pointer-events: none;
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateX(-50%);
 }
 
 :global(.mouse-detector) {
