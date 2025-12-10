@@ -11,8 +11,8 @@ import PropTypes from "prop-types";
 function Icon({ name: _name, children, ...props }) {
   const defaultProps = {
     xmlns: "http://www.w3.org/2000/svg",
-    width: "20",
-    height: "20",
+    width: "22",
+    height: "22",
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -64,9 +64,10 @@ export const LogoutIcon = () => (
 
 export const PhotosIcon = () => (
   <Icon name="photos">
-    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-    <circle cx="9" cy="9" r="2" />
-    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+    <path d="M4 8a3 3 0 0 1 3-3h2l1.2-1.6a1 1 0 0 1 .8-.4h4a1 1 0 0 1 .8.4L18 5h2a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" />
+    <circle cx="12" cy="11" r="2.6" />
+    <path d="m4 16 4.5-4 2.5 2.5L14 11l6 5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M17 7.5h.01" strokeWidth="2.4" strokeLinecap="round" />
   </Icon>
 );
 
@@ -79,13 +80,12 @@ export const SuggestIcon = () => (
 
 export const AnalysisIcon = () => (
   <Icon name="analysis">
-    <path d="M3 3v18h18" />
-    <circle cx="7" cy="7" r="2.5" fill="currentColor" opacity="0.2" />
-    <circle cx="17" cy="7" r="2.5" fill="currentColor" opacity="0.2" />
-    <circle cx="7" cy="17" r="2.5" fill="currentColor" opacity="0.2" />
-    <circle cx="17" cy="17" r="2.5" fill="currentColor" opacity="0.2" />
-    <path d="M9 7h6M9 17h6M7 9v6M17 9v6" strokeWidth="1.5" />
-    <path d="M7 7l10 10M17 7l-10 10" strokeWidth="1.5" opacity="0.6" />
+    <path d="M4 20V6" />
+    <path d="M20 20H4" />
+    <path d="m6 14 3.5-4 3 3 5.5-6" />
+    <circle cx="9.5" cy="10" r="1.6" fill="currentColor" opacity="0.35" />
+    <circle cx="17.5" cy="7" r="1.6" fill="currentColor" opacity="0.35" />
+    <path d="M18 4v3h3" />
   </Icon>
 );
 
@@ -99,10 +99,13 @@ export const HomeIcon = () => (
 export const ResultsIcon = () => (
   <Icon name="results">
     <path d="M8 21h8" />
-    <path d="M12 21V9" />
-    <path d="m7 4 5-2 5 2" />
-    <path d="M6 7h12v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6z" />
-    <path d="M10 13h4" />
+    <path d="M10 21v-4.5" />
+    <path d="M14 21v-4.5" />
+    <path d="M6 5h12v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6Z" />
+    <path d="M9 5V3h6v2" />
+    <path d="M6 9H3V6h3" />
+    <path d="M18 6h3v3h-3" />
+    <path d="m9 11 3-2 3 2" />
   </Icon>
 );
 
