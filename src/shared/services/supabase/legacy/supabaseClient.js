@@ -625,8 +625,9 @@ export const catNamesAPI = {
       });
 
       // Convert to array and sort by count
-      let results = Array.from(selectionCounts.values())
-        .sort((a, b) => b.count - a.count);
+      let results = Array.from(selectionCounts.values()).sort(
+        (a, b) => b.count - a.count,
+      );
 
       // * Only apply limit if specified (null means get all)
       if (limit) {
@@ -778,7 +779,9 @@ export const catNamesAPI = {
       });
 
       // Sort by popularity score and return top results
-      const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
+      const sorted = analytics.sort(
+        (a, b) => b.popularity_score - a.popularity_score,
+      );
 
       // * Only apply limit if specified (null means get all)
       if (limit) {
@@ -841,9 +844,9 @@ export const catNamesAPI = {
       const avgRating =
         totalRatings > 0
           ? Math.round(
-            ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
-            totalRatings,
-          )
+              ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
+                totalRatings,
+            )
           : 1500;
 
       // Find names never selected
@@ -1104,21 +1107,21 @@ export const catNamesAPI = {
       const mostSelected =
         Object.keys(nameCounts).length > 0
           ? Object.entries(nameCounts).reduce((a, b) =>
-            a[1] > b[1] ? a : b,
-          )[0]
+              a[1] > b[1] ? a : b,
+            )[0]
           : "None";
 
       const firstSelection =
         selections.length > 0
           ? Math.min(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
       const lastSelection =
         selections.length > 0
           ? Math.max(
-            ...selections.map((s) => new Date(s.selected_at).getTime()),
-          )
+              ...selections.map((s) => new Date(s.selected_at).getTime()),
+            )
           : null;
 
       return {
@@ -1240,9 +1243,7 @@ export const catNamesAPI = {
         all: periods,
       };
       const requestedPeriods =
-        options?.periods ??
-        dateFilterPeriods[options?.dateFilter] ??
-        periods;
+        options?.periods ?? dateFilterPeriods[options?.dateFilter] ?? periods;
       const periodCount = Math.max(requestedPeriods, 2);
 
       // Get selection data grouped by date for the last N periods

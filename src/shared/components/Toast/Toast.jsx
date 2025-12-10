@@ -184,7 +184,7 @@ const ToastContainer = ({
     (toastId) => {
       removeToast?.(toastId);
     },
-    [removeToast]
+    [removeToast],
   );
 
   if (toasts.length === 0) {
@@ -324,7 +324,7 @@ ToastContainer.propTypes = {
       type: PropTypes.oneOf(["success", "error", "info", "warning"]),
       duration: PropTypes.number,
       autoDismiss: PropTypes.bool,
-    })
+    }),
   ),
   removeToast: PropTypes.func.isRequired,
   position: PropTypes.oneOf([

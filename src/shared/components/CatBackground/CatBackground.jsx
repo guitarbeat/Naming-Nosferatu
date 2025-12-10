@@ -17,7 +17,7 @@ export default function CatBackground() {
     }
 
     const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
+      "(prefers-reduced-motion: reduce)",
     ).matches;
 
     if (prefersReducedMotion) {
@@ -27,7 +27,7 @@ export default function CatBackground() {
 
     let starCount = Number.parseInt(
       skyElement.dataset.stars ?? `${DEFAULT_STAR_COUNT}`,
-      10
+      10,
     );
 
     if (Number.isNaN(starCount)) {
@@ -51,23 +51,23 @@ export default function CatBackground() {
       el.style.fontSize = `${size.toFixed(2)}px`;
       el.style.setProperty(
         "--twinkle-duration",
-        `${randomBetween(2.6, 4.8).toFixed(2)}s`
+        `${randomBetween(2.6, 4.8).toFixed(2)}s`,
       );
       el.style.setProperty(
         "--twinkle-delay",
-        `${randomBetween(-4, 0).toFixed(2)}s`
+        `${randomBetween(-4, 0).toFixed(2)}s`,
       );
       el.style.setProperty(
         "--twinkle-scale",
-        `${randomBetween(0.9, 1.8).toFixed(2)}`
+        `${randomBetween(0.9, 1.8).toFixed(2)}`,
       );
       el.style.setProperty(
         "--twinkle-alpha",
-        `${randomBetween(0.45, 0.95).toFixed(2)}`
+        `${randomBetween(0.45, 0.95).toFixed(2)}`,
       );
       el.style.setProperty(
         "--twinkle-blur",
-        `${randomBetween(0, 1.2).toFixed(2)}px`
+        `${randomBetween(0, 1.2).toFixed(2)}px`,
       );
 
       skyElement.appendChild(el);

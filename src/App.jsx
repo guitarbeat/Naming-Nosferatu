@@ -101,7 +101,7 @@ function App() {
         // * Save ratings to database
         const saveResult = await tournamentsAPI.saveTournamentRatings(
           user.name,
-          ratingsArray
+          ratingsArray,
         );
 
         devLog("[App] Save ratings result:", saveResult);
@@ -109,7 +109,7 @@ function App() {
         if (!saveResult.success) {
           devWarn(
             "[App] Failed to save ratings to database:",
-            saveResult.error
+            saveResult.error,
           );
         }
 
@@ -130,7 +130,7 @@ function App() {
         });
       }
     },
-    [user.name, tournamentActions, navigateTo]
+    [user.name, tournamentActions, navigateTo],
   );
 
   // * Handle start new tournament
@@ -157,7 +157,7 @@ function App() {
         tournamentActions.setLoading(false);
       }, 100);
     },
-    [tournamentActions]
+    [tournamentActions],
   );
 
   // * Handle ratings update
@@ -171,7 +171,7 @@ function App() {
         if (user.name) {
           const saveResult = await tournamentsAPI.saveTournamentRatings(
             user.name,
-            ratingsArray
+            ratingsArray,
           );
 
           devLog("[App] Update ratings result:", saveResult);
@@ -191,7 +191,7 @@ function App() {
         throw error;
       }
     },
-    [tournamentActions, user.name]
+    [tournamentActions, user.name],
   );
 
   // * Handle logout
@@ -205,7 +205,7 @@ function App() {
     (nextPreference) => {
       uiActions.setTheme(nextPreference);
     },
-    [uiActions]
+    [uiActions],
   );
 
   useThemeSync(ui.theme);
@@ -223,7 +223,7 @@ function App() {
         throw error;
       }
     },
-    [login]
+    [login],
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -301,7 +301,7 @@ function App() {
       handleOpenSuggestName,
       handleOpenPhotos,
       currentRoute,
-    ]
+    ],
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -395,7 +395,7 @@ function AppLayoutInner({
       "--navbar-expanded-width": NAVBAR.EXPANDED_WIDTH_RESPONSIVE,
       "--navbar-collapsed-width": `${collapsedWidth}px`,
     }),
-    [collapsedWidth]
+    [collapsedWidth],
   );
 
   const mainWrapperClassName = useMemo(
@@ -403,7 +403,7 @@ function AppLayoutInner({
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn]
+    [isLoggedIn],
   );
 
   return (

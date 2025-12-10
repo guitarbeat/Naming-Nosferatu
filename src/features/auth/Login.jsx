@@ -221,7 +221,7 @@ function Login({ onLogin }) {
       setError(
         formattedError.userMessage ||
           err.message ||
-          "Unable to log in. Please check your connection and try again."
+          "Unable to log in. Please check your connection and try again.",
       );
     } finally {
       setIsLoading(false);
@@ -253,7 +253,8 @@ function Login({ onLogin }) {
         <div className={styles.heroContent}>
           <h1 className={styles.welcomeTitle}>Ready to Rate Cat Names?</h1>
           <p className={styles.welcomeText}>
-            Enter your name to get started. Compare names and find your favorite.
+            Enter your name to get started. Compare names and find your
+            favorite.
           </p>
         </div>
 

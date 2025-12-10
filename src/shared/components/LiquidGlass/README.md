@@ -21,7 +21,7 @@ npm install gsap
 ## Basic Usage
 
 ```jsx
-import LiquidGlass from '@/shared/components/LiquidGlass';
+import LiquidGlass from "@/shared/components/LiquidGlass";
 
 function MyComponent() {
   return (
@@ -37,19 +37,19 @@ function MyComponent() {
 For more control, use the `useLiquidGlass` hook:
 
 ```jsx
-import LiquidGlass, { useLiquidGlass } from '@/shared/components/LiquidGlass';
+import LiquidGlass, { useLiquidGlass } from "@/shared/components/LiquidGlass";
 
 function MyComponent() {
   const { config, updateConfig, setPreset } = useLiquidGlass();
 
   return (
     <>
-      <button onClick={() => setPreset('dock')}>Dock</button>
-      <button onClick={() => setPreset('pill')}>Pill</button>
+      <button onClick={() => setPreset("dock")}>Dock</button>
+      <button onClick={() => setPreset("pill")}>Pill</button>
       <button onClick={() => updateConfig({ turbulence: 0.5 })}>
         Increase Turbulence
       </button>
-      
+
       <LiquidGlass {...config}>
         <div>Your content</div>
       </LiquidGlass>

@@ -18,9 +18,7 @@ import {
   CollapsibleHeader,
   CollapsibleContent,
 } from "../../shared/components/CollapsibleHeader";
-import {
-  catNamesAPI,
-} from "../../shared/services/supabase/api";
+import { catNamesAPI } from "../../shared/services/supabase/api";
 import { devError } from "../../shared/utils/logger";
 import { useToast } from "../../shared/hooks/useToast";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
@@ -37,7 +35,6 @@ import styles from "./Dashboard.module.css";
  * @param {Function} props.onStartNew - Start new tournament callback
  * @param {Function} props.onUpdateRatings - Update ratings callback
  * @param {string} props.userName - Current user name
- * @param {boolean} props.isAdmin - Whether user is admin
  * @param {string} props.mode - "personal" | "global" | "both" (default: "both")
  */
 function Dashboard({
@@ -47,7 +44,6 @@ function Dashboard({
   onStartNew,
   onUpdateRatings,
   userName,
-  isAdmin = false,
   mode = "both",
 }) {
   // * Initialize view mode based on prop: "personal" shows personal, "global" shows global, "both" defaults to personal if data exists
@@ -98,7 +94,7 @@ function Dashboard({
   // * Process personal tournament rankings
   const tournamentNameSet = useMemo(
     () => new Set(currentTournamentNames?.map((n) => n.name) || []),
-    [currentTournamentNames]
+    [currentTournamentNames],
   );
 
   const nameToIdMap = useMemo(
@@ -106,9 +102,9 @@ function Dashboard({
       new Map(
         (currentTournamentNames || [])
           .filter((name) => name?.name)
-          .map(({ id, name }) => [name, id])
+          .map(({ id, name }) => [name, id]),
       ),
-    [currentTournamentNames]
+    [currentTournamentNames],
   );
 
   useEffect(() => {
@@ -124,7 +120,7 @@ function Dashboard({
           id: nameToIdMap.get(name),
           name,
           rating: Math.round(
-            typeof rating === "number" ? rating : rating?.rating || 1500
+            typeof rating === "number" ? rating : rating?.rating || 1500,
           ),
           wins: typeof rating === "object" ? rating.wins || 0 : 0,
           losses: typeof rating === "object" ? rating.losses || 0 : 0,
@@ -186,7 +182,7 @@ function Dashboard({
           vote?.match?.left?.name &&
           vote?.match?.right?.name &&
           tournamentNameSet.has(vote.match.left.name) &&
-          tournamentNameSet.has(vote.match.right.name)
+          tournamentNameSet.has(vote.match.right.name),
       )
       .map((vote, index) => {
         const leftOutcome = vote?.match?.left?.outcome;
@@ -239,7 +235,7 @@ function Dashboard({
 
         const updatedRankings = adjustedRankings.map((ranking) => {
           const oldRanking = personalRankings.find(
-            (r) => r.name === ranking.name
+            (r) => r.name === ranking.name,
           );
           return {
             ...ranking,
@@ -274,7 +270,7 @@ function Dashboard({
         setIsLoading(false);
       }
     },
-    [personalRankings, personalRatings, onUpdateRatings, showToast]
+    [personalRankings, personalRatings, onUpdateRatings, showToast],
   );
 
   // * Handle sorting
@@ -486,7 +482,7 @@ function Dashboard({
                     name={name}
                     percentile={calculatePercentile(
                       index,
-                      sortedGlobalLeaderboard.length
+                      sortedGlobalLeaderboard.length,
                     )}
                   />
                 </td>
@@ -555,7 +551,6 @@ Dashboard.propTypes = {
   onStartNew: PropTypes.func.isRequired,
   onUpdateRatings: PropTypes.func,
   userName: PropTypes.string.isRequired,
-  isAdmin: PropTypes.bool,
   mode: PropTypes.oneOf(["personal", "global", "both"]),
 };
 

@@ -52,11 +52,7 @@ An advanced typing visualization component featuring a responsive animated cat t
 ```jsx
 import BongoCat from "@components/BongoCat";
 
-<BongoCat
-  size={0.5}
-  color="#ff6b9d"
-  containerRef={containerRef}
-/>
+<BongoCat size={0.5} color="#ff6b9d" containerRef={containerRef} />;
 ```
 
 ### Advanced Usage
@@ -72,7 +68,7 @@ import BongoCat from "@components/BongoCat";
   enableSounds={false}
   containerRef={containerRef}
   onBongo={() => console.log("Cat is typing!")}
-/>
+/>;
 ```
 
 ## Props

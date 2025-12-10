@@ -7,7 +7,7 @@ const isDev = import.meta.env.DEV;
 const isProd = import.meta.env.PROD;
 
 // * No-op used to strip logging code from production bundles
-const noop = () => { };
+const noop = () => {};
 
 /**
  * * Log messages during development only
@@ -15,34 +15,42 @@ const noop = () => { };
  */
 export const devLog = isDev
   ? (...args) => {
-    // * Log with [DEV] prefix - browser console will handle objects properly
-    console.log("[DEV]", ...args);
-  }
+      // * Log with [DEV] prefix - browser console will handle objects properly
+      console.log("[DEV]", ...args);
+    }
   : noop;
 
 /**
  * * Log warning messages during development only
  * @param {...any} args - Arguments to log
  */
-export const devWarn = isDev ? (...args) => console.warn("[DEV]", ...args) : noop;
+export const devWarn = isDev
+  ? (...args) => console.warn("[DEV]", ...args)
+  : noop;
 
 /**
  * * Log error messages during development only
  * @param {...any} args - Arguments to log
  */
-export const devError = isDev ? (...args) => console.error("[DEV]", ...args) : noop;
+export const devError = isDev
+  ? (...args) => console.error("[DEV]", ...args)
+  : noop;
 
 /**
  * * Log info messages during development only
  * @param {...any} args - Arguments to log
  */
-export const devInfo = isDev ? (...args) => console.info("[DEV]", ...args) : noop;
+export const devInfo = isDev
+  ? (...args) => console.info("[DEV]", ...args)
+  : noop;
 
 /**
  * * Log debug messages during development only
  * @param {...any} args - Arguments to log
  */
-export const devDebug = isDev ? (...args) => console.debug("[DEV]", ...args) : noop;
+export const devDebug = isDev
+  ? (...args) => console.debug("[DEV]", ...args)
+  : noop;
 
 /**
  * * Execute a callback only in development mode

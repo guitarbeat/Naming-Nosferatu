@@ -186,6 +186,45 @@ export function useNameSelection({
     [mode, names, scheduleSave],
   );
 
+  const toggleNamesByIds = useCallback(
+    (nameIds = [], shouldSelect = true) => {
+      if (!Array.isArray(nameIds) || nameIds.length === 0) {
+        return;
+      }
+      const idSet = new Set(nameIds);
+      if (mode === "tournament") {
+        setSelectedNames((prev) => {
+          if (shouldSelect) {
+            const additions = names.filter(
+              (name) =>
+                idSet.has(name.id) &&
+                !prev.some((selected) => selected.id === name.id),
+            );
+            if (additions.length === 0) return prev;
+            const updated = [...prev, ...additions];
+            scheduleSave(updated);
+            return updated;
+          }
+          const updated = prev.filter((name) => !idSet.has(name.id));
+          if (updated.length === prev.length) return prev;
+          scheduleSave(updated);
+          return updated;
+        });
+      } else {
+        setSelectedNames((prev) => {
+          const updated = new Set(prev);
+          if (shouldSelect) {
+            idSet.forEach((id) => updated.add(id));
+          } else {
+            idSet.forEach((id) => updated.delete(id));
+          }
+          return updated;
+        });
+      }
+    },
+    [mode, names, scheduleSave],
+  );
+
   // * Select all names
   const selectAll = useCallback(() => {
     if (mode === "tournament") {
@@ -237,6 +276,7 @@ export function useNameSelection({
     setSelectedNames,
     toggleName,
     toggleNameById,
+    toggleNamesByIds,
     selectAll,
     clearSelection,
     isSelected,

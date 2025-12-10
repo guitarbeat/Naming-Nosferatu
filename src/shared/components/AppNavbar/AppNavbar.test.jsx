@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { HeroUIProvider } from "@heroui/react";
 
 import { NavbarProvider } from "../ui/navbar";
 import { AppNavbar } from "./AppNavbar";
@@ -8,21 +9,22 @@ describe("AppNavbar", () => {
   it("renders navigation items without throwing", () => {
     expect(() =>
       render(
-        <NavbarProvider>
-          <AppNavbar
-            view="tournament"
-            setView={vi.fn()}
-            isLoggedIn
-            userName="Test User"
-            isAdmin={false}
-            onLogout={vi.fn()}
-            onStartNewTournament={vi.fn()}
-            themePreference="light"
-            currentTheme="light"
-            onThemePreferenceChange={vi.fn()}
-          />
-        </NavbarProvider>
-      )
+        <HeroUIProvider>
+          <NavbarProvider>
+            <AppNavbar
+              view="tournament"
+              setView={vi.fn()}
+              isLoggedIn
+              userName="Test User"
+              isAdmin={false}
+              onLogout={vi.fn()}
+              themePreference="light"
+              currentTheme="light"
+              onThemePreferenceChange={vi.fn()}
+            />
+          </NavbarProvider>
+        </HeroUIProvider>,
+      ),
     ).not.toThrow();
 
     // Test that main navigation elements are present

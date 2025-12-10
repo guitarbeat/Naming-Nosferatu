@@ -13,6 +13,7 @@ import {
 import PropTypes from "prop-types";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { Separator } from "@radix-ui/react-separator";
+import { Slot } from "@radix-ui/react-slot";
 import { STORAGE_KEYS, NAVBAR } from "@core/constants";
 import useLocalStorage from "@core/hooks/useLocalStorage";
 import "./navbar.css";
@@ -27,7 +28,7 @@ export function useNavbar() {
   const context = useContext(NavbarContext);
   if (!context) {
     console.warn(
-      "[Navbar] useNavbar called without provider. Falling back to defaults."
+      "[Navbar] useNavbar called without provider. Falling back to defaults.",
     );
     return {
       collapsed: false,
@@ -41,7 +42,7 @@ export function useNavbar() {
 export function NavbarProvider({ children }) {
   const [collapsed, setCollapsed] = useLocalStorage(
     STORAGE_KEYS.NAVBAR_COLLAPSED,
-    false
+    false,
   );
 
   const collapsedWidth = NAVBAR.COLLAPSED_WIDTH;
@@ -56,7 +57,7 @@ export function NavbarProvider({ children }) {
       collapsedWidth,
       toggleCollapsed,
     }),
-    [collapsed, toggleCollapsed]
+    [collapsed, collapsedWidth, toggleCollapsed],
   );
 
   return (
@@ -84,7 +85,7 @@ export const Navbar = forwardRef(
         {children}
       </nav>
     );
-  }
+  },
 );
 
 Navbar.displayName = "Navbar";
@@ -100,7 +101,7 @@ export const NavbarContent = forwardRef(
         {children}
       </div>
     );
-  }
+  },
 );
 
 NavbarContent.displayName = "NavbarContent";
@@ -124,7 +125,7 @@ export const NavbarSection = forwardRef(
         {children}
       </div>
     );
-  }
+  },
 );
 
 NavbarSection.displayName = "NavbarSection";
@@ -135,7 +136,12 @@ NavbarSection.propTypes = {
 };
 
 export const NavbarSeparator = forwardRef((props, ref) => (
-  <Separator ref={ref} className="navbar-separator" orientation="vertical" {...props} />
+  <Separator
+    ref={ref}
+    className="navbar-separator"
+    orientation="vertical"
+    {...props}
+  />
 ));
 
 NavbarSeparator.displayName = "NavbarSeparator";
@@ -156,7 +162,7 @@ export const NavbarMenu = forwardRef(
         {children}
       </ul>
     );
-  }
+  },
 );
 
 NavbarMenu.displayName = "NavbarMenu";
@@ -168,11 +174,15 @@ NavbarMenu.propTypes = {
 export const NavbarMenuItem = forwardRef(
   ({ children, className = "", ...rest }, ref) => {
     return (
-      <li ref={ref} className={`navbar-menu-item ${className}`.trim()} {...rest}>
+      <li
+        ref={ref}
+        className={`navbar-menu-item ${className}`.trim()}
+        {...rest}
+      >
         {children}
       </li>
     );
-  }
+  },
 );
 
 NavbarMenuItem.displayName = "NavbarMenuItem";
@@ -184,18 +194,19 @@ NavbarMenuItem.propTypes = {
 export const NavbarMenuButton = forwardRef(
   ({ children, className = "", asChild = false, ...rest }, ref) => {
     const buttonClass = `navbar-menu-button ${className}`.trim();
+    const Component = asChild ? Slot : "button";
 
     return (
-      <button
+      <Component
         ref={ref}
-        type="button"
+        type={asChild ? undefined : "button"}
         className={buttonClass}
         {...rest}
       >
         {children}
-      </button>
+      </Component>
     );
-  }
+  },
 );
 
 NavbarMenuButton.displayName = "NavbarMenuButton";
@@ -219,7 +230,7 @@ export const DropdownMenuContent = forwardRef(
       sideOffset={8}
       {...rest}
     />
-  )
+  ),
 );
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
@@ -230,7 +241,7 @@ export const DropdownMenuItem = forwardRef(
       className={`navbar-dropdown-item ${className}`.trim()}
       {...rest}
     />
-  )
+  ),
 );
 DropdownMenuItem.displayName = "DropdownMenuItem";
 
@@ -241,7 +252,7 @@ export const DropdownMenuSeparator = forwardRef(
       className={`navbar-dropdown-separator ${className}`.trim()}
       {...rest}
     />
-  )
+  ),
 );
 DropdownMenuSeparator.displayName = "DropdownMenuSeparator";
 
@@ -261,7 +272,7 @@ export const NavbarIconButton = forwardRef(
         {children}
       </button>
     );
-  }
+  },
 );
 
 NavbarIconButton.displayName = "NavbarIconButton";

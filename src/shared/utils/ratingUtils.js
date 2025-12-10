@@ -32,17 +32,14 @@ export function ratingsToObject(ratingsArray) {
     return {};
   }
 
-  return ratingsArray.reduce(
-    (acc, item) => {
-      acc[item.name] = {
-        rating: item.rating || 1500,
-        wins: item.wins || 0,
-        losses: item.losses || 0,
-      };
-      return acc;
-    },
-    {}
-  );
+  return ratingsArray.reduce((acc, item) => {
+    acc[item.name] = {
+      rating: item.rating || 1500,
+      wins: item.wins || 0,
+      losses: item.losses || 0,
+    };
+    return acc;
+  }, {});
 }
 
 /**

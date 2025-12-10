@@ -76,13 +76,13 @@ export function useTournamentProgress({
       const previousMatchNumber =
         remainingHistory.length > 0
           ? remainingHistory[remainingHistory.length - 1]?.matchNumber ||
-          currentMatchNumber
+            currentMatchNumber
           : currentMatchNumber;
 
       // * Use shared utility function for round calculation
       const calculatedRound = calculateBracketRound(
         namesLength,
-        previousMatchNumber
+        previousMatchNumber,
       );
 
       if (calculatedRound !== roundNumber) {

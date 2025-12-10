@@ -37,7 +37,6 @@ import {
   ANIMATION_STATES,
   TYPING_SPEED_THRESHOLDS,
   MILESTONE_THRESHOLDS,
-  TIME_MOODS,
   DEFAULT_CONFIG,
 } from "../../shared/components/BongoCat/constants";
 
@@ -47,7 +46,6 @@ import {
  * @param {Object} options.containerRef - Reference to the container element
  * @param {number} options.size - Base size of the cat
  * @param {Function} options.onBongo - Callback when cat is bongoed
- * @param {string} options.personality - Personality mode (playful, sleepy, energetic)
  * @param {boolean} options.reduceMotion - Whether to reduce motion for accessibility
  * @param {boolean} options.enableSounds - Whether to enable sound effects
  * @returns {Object} Hook state and handlers
@@ -56,7 +54,6 @@ export function useBongoCat({
   containerRef,
   size,
   onBongo,
-  personality = DEFAULT_CONFIG.personality,
   reduceMotion: reduceMotionProp = DEFAULT_CONFIG.reduceMotion,
   enableSounds = DEFAULT_CONFIG.enableSounds,
 }) {
@@ -157,20 +154,6 @@ export function useBongoCat({
   }, []);
 
   /**
-   * Get current time-based mood multiplier
-   * @returns {number} Mood multiplier
-   */
-  const getTimeMoodMultiplier = useCallback(() => {
-    const hour = new Date().getHours();
-    for (const [period, config] of Object.entries(TIME_MOODS)) {
-      if (config.hours.includes(hour)) {
-        return config.multiplier;
-      }
-    }
-    return 1.0;
-  }, []);
-
-  /**
    * Check for milestone achievements
    * @param {number} count - Current character count
    */
@@ -196,58 +179,69 @@ export function useBongoCat({
   /**
    * Update cursor position tracking for eye following
    */
-  const updateCursorPosition = useCallback((e) => {
-    if (containerRef?.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const catCenterX = rect.left + rect.width / 2;
-      const catCenterY = rect.top + rect.height / 2;
-      const deltaX = e.clientX - catCenterX;
-      const deltaY = e.clientY - catCenterY;
-      // Normalize to -1 to 1 range for eye movement
-      const maxDistance = Math.max(rect.width, rect.height) / 2;
-      cursorPositionRef.current = {
-        x: Math.max(-1, Math.min(1, deltaX / maxDistance)),
-        y: Math.max(-1, Math.min(1, deltaY / maxDistance)),
-      };
-    }
-  }, [containerRef]);
+  const updateCursorPosition = useCallback(
+    (e) => {
+      if (containerRef?.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const catCenterX = rect.left + rect.width / 2;
+        const catCenterY = rect.top + rect.height / 2;
+        const deltaX = e.clientX - catCenterX;
+        const deltaY = e.clientY - catCenterY;
+        // Normalize to -1 to 1 range for eye movement
+        const maxDistance = Math.max(rect.width, rect.height) / 2;
+        cursorPositionRef.current = {
+          x: Math.max(-1, Math.min(1, deltaX / maxDistance)),
+          y: Math.max(-1, Math.min(1, deltaY / maxDistance)),
+        };
+      }
+    },
+    [containerRef],
+  );
 
   /**
    * Animation loop for smooth 60fps animations
    */
-  const animationLoop = useCallback(() => {
-    if (reduceMotion) {
-      animationFrameRef.current = null;
-      return;
-    }
+  const animationLoop = useCallback(
+    function loop() {
+      if (reduceMotion) {
+        animationFrameRef.current = null;
+        return;
+      }
 
-    // * Update eye position to follow cursor
-    setEyePosition({
-      x: cursorPositionRef.current.x * 2, // Max 2px movement
-      y: cursorPositionRef.current.y * 2,
-    });
+      // * Update eye position to follow cursor
+      setEyePosition({
+        x: cursorPositionRef.current.x * 2, // Max 2px movement
+        y: cursorPositionRef.current.y * 2,
+      });
 
-    // * Update tail swish based on animation state
-    const time = Date.now() / 1000;
-    if (animationState === ANIMATION_STATES.TYPING_FAST) {
-      setTailAngle(Math.sin(time * 4) * 15); // Fast swish
-    } else if (animationState === ANIMATION_STATES.IDLE) {
-      setTailAngle(Math.sin(time * 0.8) * 8); // Slow idle swish
-    } else if (animationState === ANIMATION_STATES.SLEEPY) {
-      setTailAngle(Math.sin(time * 0.3) * 3); // Very slow sleepy swish
-    } else {
-      setTailAngle(Math.sin(time * 1.5) * 10); // Normal swish
-    }
+      // * Update tail swish based on animation state
+      const time = Date.now() / 1000;
+      if (animationState === ANIMATION_STATES.TYPING_FAST) {
+        setTailAngle(Math.sin(time * 4) * 15); // Fast swish
+      } else if (animationState === ANIMATION_STATES.IDLE) {
+        setTailAngle(Math.sin(time * 0.8) * 8); // Slow idle swish
+      } else if (animationState === ANIMATION_STATES.SLEEPY) {
+        setTailAngle(Math.sin(time * 0.3) * 3); // Very slow sleepy swish
+      } else {
+        setTailAngle(Math.sin(time * 1.5) * 10); // Normal swish
+      }
 
-    // * Random ear twitches
-    if (Math.random() < 0.01) {
-      // 1% chance per frame
-      setEarTwitch(true);
-      setTimeout(() => setEarTwitch(false), 150);
-    }
+      // * Random ear twitches
+      if (Math.random() < 0.01) {
+        // 1% chance per frame
+        setEarTwitch(true);
+      }
 
-    animationFrameRef.current = requestAnimationFrame(animationLoop);
-  }, [reduceMotion, animationState]);
+      animationFrameRef.current = requestAnimationFrame(loop);
+    },
+    [reduceMotion, animationState],
+  );
+
+  useEffect(() => {
+    if (!earTwitch) return undefined;
+    const timer = setTimeout(() => setEarTwitch(false), 150);
+    return () => clearTimeout(timer);
+  }, [earTwitch]);
 
   const handleKeyDown = useCallback(
     (e) => {

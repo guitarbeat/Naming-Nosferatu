@@ -21,7 +21,7 @@ const Card = React.forwardRef(
       liquidGlass,
       ...props
     },
-    ref
+    ref,
   ) => {
     const cardClasses = [
       styles.card,
@@ -103,7 +103,7 @@ const Card = React.forwardRef(
         {children}
       </Component>
     );
-  }
+  },
 );
 
 Card.displayName = "Card";
