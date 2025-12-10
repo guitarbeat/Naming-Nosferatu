@@ -38,10 +38,9 @@
 .app-main-wrapper:not(.app-main-wrapper--login) {
   --app-main-side-padding: clamp(1.5rem, 6vw, 3rem);
   --app-main-bottom-padding: clamp(2rem, 4vw, 3rem);
-  padding:
-    max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem))
-    var(--app-main-side-padding)
-    var(--app-main-bottom-padding)
+
+  padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem))
+    var(--app-main-side-padding) var(--app-main-bottom-padding)
     var(--app-main-side-padding);
 }
 
@@ -51,10 +50,7 @@
   align-items: stretch;
   justify-content: flex-start;
   height: 100vh;
-  padding-top: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem));
-  padding-right: 0;
-  padding-bottom: 0;
-  padding-left: 0;
+  padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) 0 0;
 }
 
 .app-main-wrapper--login > * {
@@ -109,10 +105,8 @@
 /* Responsive adjustments */
 @media (width <= 768px) {
   .app-main-wrapper:not(.app-main-wrapper--login) {
-    padding-top: var(--app-navbar-offset);
-    padding-right: clamp(1rem, 4vw, 2rem);
-    padding-bottom: clamp(2rem, 5vw, 3rem);
-    padding-left: clamp(1rem, 4vw, 2rem);
+    padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem)
+      clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
   }
 
   .app-main-wrapper--login {

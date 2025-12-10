@@ -20,8 +20,7 @@
   padding: clamp(0.75rem, 1vw, 1rem) clamp(0.85rem, 1.6vw, 1.35rem);
   border-radius: 24px;
   border: 1px solid hsl(var(--border) / 35%);
-  background:
-    linear-gradient(
+  background: linear-gradient(
       135deg,
       hsl(var(--background) / 94%),
       hsl(var(--background) / 84%)
@@ -36,8 +35,7 @@
 }
 
 :root[data-theme="light"] .app-navbar {
-  background:
-    linear-gradient(
+  background: linear-gradient(
       130deg,
       hsl(var(--background) / 98%),
       hsl(var(--background) / 90%)

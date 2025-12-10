@@ -118,8 +118,14 @@ export function AppNavbar({
   }, []);
 
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [view, currentRoute, isAnalysisMode]);
+    if (!isMobileMenuOpen) return undefined;
+
+    const rafId = window.requestAnimationFrame(() => {
+      setIsMobileMenuOpen(false);
+    });
+
+    return () => window.cancelAnimationFrame(rafId);
+  }, [isMobileMenuOpen, view, currentRoute, isAnalysisMode]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -324,7 +330,9 @@ export function AppNavbar({
                   className="app-navbar__dropdown"
                 >
                   <DropdownItem key="user" isDisabled>
-                    <span className="app-navbar__dropdown-user">{userName}</span>
+                    <span className="app-navbar__dropdown-user">
+                      {userName}
+                    </span>
                   </DropdownItem>
                   <DropdownItem
                     key="logout"
@@ -379,7 +387,10 @@ export function AppNavbar({
               onClick={() => handleMobileAction(onOpenSuggestName)}
               disabled={!onOpenSuggestName}
             >
-              <span className="app-navbar__mobile-action-icon" aria-hidden="true">
+              <span
+                className="app-navbar__mobile-action-icon"
+                aria-hidden="true"
+              >
                 <SuggestIcon />
               </span>
               <span>Suggest a name</span>
