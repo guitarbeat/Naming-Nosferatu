@@ -431,13 +431,29 @@
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.2s ease,
-    background 0.2s ease;
+    background 0.2s ease,
+    scale 0.2s ease;
   animation: inputFadeIn 0.6s ease 0.8s both;
+}
+
+.loginInput:hover:not(:focus):not(.error) {
+  transform: scale(1.02);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 10%),
+    0 4px 12px rgb(0 0 0 / 8%);
 }
 
 :root[data-theme="light"] .loginInput {
   background: rgb(var(--login-rgb-slate-50) / 55%);
   border-color: rgb(var(--login-rgb-slate-900) / 7%);
+}
+
+:root[data-theme="light"] .loginInput:hover:not(:focus):not(.error) {
+  background: rgb(var(--login-rgb-slate-50) / 60%);
+  border-color: rgb(var(--login-rgb-slate-900) / 12%);
+  box-shadow:
+    0 2px 8px rgb(var(--login-rgb-slate-900) / 6%),
+    0 4px 12px rgb(var(--login-rgb-slate-900) / 4%);
 }
 
 :root[data-theme="light"] .loginInput:focus {
@@ -451,6 +467,14 @@
 :root[data-theme="dark"] .loginInput {
   background: rgb(var(--login-rgb-slate-900) / 50%);
   border-color: rgb(255 255 255 / 12%);
+}
+
+:root[data-theme="dark"] .loginInput:hover:not(:focus):not(.error) {
+  background: rgb(var(--login-rgb-slate-900) / 55%);
+  border-color: rgb(255 255 255 / 18%);
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 15%),
+    0 4px 16px rgb(0 0 0 / 12%);
 }
 
 :root[data-theme="dark"] .loginInput:focus {
