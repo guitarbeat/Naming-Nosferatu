@@ -10,6 +10,7 @@ import {
   hiddenNamesAPI,
 } from "../../../shared/services/supabase/api";
 import { devLog, devWarn, devError } from "../../../shared/utils/logger";
+import { clearAllCaches } from "../../../shared/utils/cacheUtils";
 
 /**
  * * Hook for managing name operations
@@ -100,6 +101,9 @@ export function useProfileNameOperations(
           const hiddenIds = new Set(globalHiddenData.map((r) => r.id));
           setHiddenNames(hiddenIds);
         }
+
+        // * Clear caches to ensure hidden names don't appear in tournaments
+        clearAllCaches();
       } catch (error) {
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
@@ -236,6 +240,9 @@ export function useProfileNameOperations(
 
           // Clear selection
           setSelectedNames(new Set());
+
+          // * Clear caches to ensure hidden names don't appear in tournaments
+          clearAllCaches();
 
           // Refresh data
           fetchNames(activeUser);

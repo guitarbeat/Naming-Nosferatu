@@ -3,6 +3,8 @@ import { tournamentsAPI } from "@services/supabase/api";
 import { ErrorManager } from "@services/errorManager";
 import { devLog, devWarn, devError } from "@utils/logger";
 import { ratingsToArray, ratingsToObject } from "@utils/ratingUtils";
+import { isNameHidden } from "../../shared/utils/nameFilterUtils";
+import { clearTournamentCache } from "../../shared/utils/cacheUtils";
 
 /**
  * Custom hook for tournament-related handlers
@@ -69,12 +71,23 @@ export function useTournamentHandlers({
 
   const handleTournamentSetup = useCallback(
     (names) => {
+      // * Clear tournament cache to ensure fresh data
+      clearTournamentCache();
+      
       // * Reset tournament state and set loading
       tournamentActions.resetTournament();
       tournamentActions.setLoading(true);
 
-      // Direct tournament creation
-      const processedNames = names;
+      // * Filter out hidden names before starting tournament
+      const processedNames = Array.isArray(names)
+        ? names.filter((name) => !isNameHidden(name))
+        : [];
+
+      if (processedNames.length === 0) {
+        devWarn("[App] No visible names available after filtering hidden names");
+        tournamentActions.setLoading(false);
+        return;
+      }
 
       tournamentActions.setNames(processedNames);
       // Ensure we are on the tournament view after starting

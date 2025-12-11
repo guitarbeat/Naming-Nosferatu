@@ -26,6 +26,7 @@ import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./constants";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
+import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
@@ -37,13 +38,19 @@ function TournamentContent({
 }) {
   const { showSuccess, showError } = useToast();
 
+  // * Filter out hidden names as a safety measure
+  const visibleNames = useMemo(
+    () => (Array.isArray(names) ? names.filter((name) => !isNameHidden(name)) : []),
+    [names]
+  );
+
   // * Global event listeners ref for proper cleanup
   const globalEventListeners = useRef(new Set());
 
   // * Custom hooks
   const audioManager = useAudioManager();
   const tournamentState = useTournamentState(
-    names,
+    visibleNames,
     existingRatings,
     onComplete,
     onVote,
@@ -394,7 +401,7 @@ function TournamentContent({
 
   // * Transform match history for bracket
   const transformedMatches = useMemo(() => {
-    if (!names || names.length === 0) return [];
+    if (!visibleNames || visibleNames.length === 0) return [];
 
     return matchHistory.map((vote, index) => {
       // Prefer explicit win flags if available
@@ -423,7 +430,7 @@ function TournamentContent({
       const matchNumber = vote?.matchNumber ?? index + 1;
 
       // * Calculate round using shared utility function
-      const calculatedRound = calculateBracketRound(names.length, matchNumber);
+      const calculatedRound = calculateBracketRound(visibleNames.length, matchNumber);
 
       return {
         id: matchNumber,
@@ -433,7 +440,7 @@ function TournamentContent({
         winner,
       };
     });
-  }, [matchHistory, names]);
+  }, [matchHistory, visibleNames]);
 
   // * Error state
   if (isError) {
@@ -452,14 +459,16 @@ function TournamentContent({
   }
 
   // * Loading state
-  if (!randomizedNames.length || !currentMatch) {
+  if (!visibleNames.length || !randomizedNames.length || !currentMatch) {
     return (
       <div className={styles.tournamentContainer}>
         <Loading variant="spinner" />
         <p style={{ textAlign: "center", marginTop: "1rem" }}>
-          {!randomizedNames.length
-            ? "Setting up tournament..."
-            : "Preparing tournament..."}
+          {!visibleNames.length
+            ? "No visible names available..."
+            : !randomizedNames.length
+              ? "Setting up tournament..."
+              : "Preparing tournament..."}
         </p>
       </div>
     );
