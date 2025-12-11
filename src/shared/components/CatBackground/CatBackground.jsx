@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import "./CatBackground.css";
 
-const DEFAULT_STAR_COUNT = 60;
+const DEFAULT_STAR_COUNT = 120;
 const MOBILE_STAR_REDUCTION = 0.4;
 const MOBILE_MAX_WIDTH = 600;
 const STAR_GLYPH = "✦";
