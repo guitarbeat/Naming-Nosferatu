@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Import CatBackground directly (no lazy loading to prevent chunking issues)
@@ -16,6 +16,12 @@ import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
 import { AppNavbar } from "./shared/components/AppNavbar";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
+
+// * Performance monitoring
+import {
+  initializePerformanceMonitoring,
+  cleanupPerformanceMonitoring,
+} from "./shared/utils/performanceMonitor";
 
 // * Core state and routing hooks
 import useUserSession from "@hooks/useUserSession";
