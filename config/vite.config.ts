@@ -79,10 +79,11 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           format: 'es',
-          // * Inline all dynamic imports into a single bundle to prevent chunk loading issues
-          inlineDynamicImports: true,
-          // * Single entry file name (no chunks)
+          // * Enable code splitting for lazy-loaded components (better performance)
+          inlineDynamicImports: false,
+          // * Configure chunk names for better caching
           entryFileNames: 'assets/js/[name]-[hash].js',
+          chunkFileNames: 'assets/js/chunk-[name]-[hash].js',
           assetFileNames: (assetInfo) => {
             if (!assetInfo.name) {
               return 'assets/[name]-[hash][extname]';
