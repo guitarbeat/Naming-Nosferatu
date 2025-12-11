@@ -45,57 +45,9 @@ const normalizeStoredTheme = (value) => {
 };
 
 export const getInitialThemeState = () => {
-  const defaultState = {
-    theme: "light",
-    themePreference: "system",
-  };
-
-  if (typeof window === "undefined") {
-    return defaultState;
-  }
-
-  let storedPreference = null;
-
-  try {
-    const stored = window.localStorage?.getItem(THEME_STORAGE_KEY);
-    const normalized = normalizeStoredTheme(stored);
-
-    if (normalized) {
-      if (stored !== normalized && window.localStorage) {
-        window.localStorage.setItem(THEME_STORAGE_KEY, normalized);
-      }
-      storedPreference = normalized;
-    } else if (stored && window.localStorage) {
-      window.localStorage.removeItem(THEME_STORAGE_KEY);
-    }
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Unable to read stored theme from localStorage:", error);
-    }
-  }
-
-  if (storedPreference) {
-    return {
-      theme: storedPreference,
-      themePreference: storedPreference,
-    };
-  }
-
-  const domTheme =
-    typeof document !== "undefined"
-      ? document.documentElement?.dataset?.theme
-      : null;
-
-  if (domTheme === "light" || domTheme === "dark") {
-    return {
-      theme: domTheme,
-      themePreference: "system",
-    };
-  }
-
   return {
-    theme: getSystemTheme(),
-    themePreference: "system",
+    theme: "dark",
+    themePreference: "dark",
   };
 };
 
