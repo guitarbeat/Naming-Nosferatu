@@ -1,6 +1,7 @@
 /**
  * @module Tournament/components/TournamentHeader
- * @description Header component for tournament view with progress information
+ * @description Header for tournament view showing setup controls or progress.
+ * @author Aaron Lor
  */
 
 import PropTypes from "prop-types";
@@ -10,12 +11,10 @@ import styles from "../../Tournament.module.css";
 import setupStyles from "../../TournamentSetup.module.css";
 
 function TournamentHeader({
-  // Tournament phase props
   roundNumber,
   currentMatchNumber,
   totalMatches,
   progress,
-  // Setup phase props
   selectedNames,
   availableNames,
   onSelectAll,
@@ -26,11 +25,9 @@ function TournamentHeader({
   onStart,
   isAdmin,
 }) {
-  // Determine if we're in setup mode (has selectedNames) or tournament mode (has roundNumber)
   const isSetupMode = selectedNames !== undefined;
 
   if (isSetupMode) {
-    // Setup mode: show progress and controls
     return (
       <div className={setupStyles.panelHeader}>
         <div className={setupStyles.headerRow}>
@@ -98,7 +95,6 @@ function TournamentHeader({
     );
   }
 
-  // Tournament mode: show round and match info inline
   return (
     <Card
       className={styles.progressInfo}
@@ -114,24 +110,22 @@ function TournamentHeader({
         <span className={styles.matchCount}>
           Match {currentMatchNumber} of {totalMatches}
         </span>
-        <div
-          className={styles.percentageInfo}
-          aria-label={`Tournament is ${progress}% complete`}
-        >
-          {progress}% Complete
-        </div>
+      </div>
+      <div
+        className={styles.percentageInfo}
+        aria-label={`Tournament is ${progress}% complete`}
+      >
+        {progress}% Complete
       </div>
     </Card>
   );
 }
 
 TournamentHeader.propTypes = {
-  // Tournament phase props
   roundNumber: PropTypes.number,
   currentMatchNumber: PropTypes.number,
   totalMatches: PropTypes.number,
   progress: PropTypes.number,
-  // Setup phase props
   selectedNames: PropTypes.arrayOf(PropTypes.object),
   availableNames: PropTypes.arrayOf(PropTypes.object),
   onSelectAll: PropTypes.func,
