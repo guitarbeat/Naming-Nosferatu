@@ -2,12 +2,12 @@
  * @module Card
  * @description Reusable card component with flexible styling options
  */
-import React, { useId } from "react";
+import React, { useId, memo } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./Card.module.css";
 
-const Card = React.forwardRef(
+const Card = memo(React.forwardRef(
   (
     {
       children,
@@ -108,7 +108,7 @@ const Card = React.forwardRef(
       </Component>
     );
   },
-);
+));
 
 Card.displayName = "Card";
 

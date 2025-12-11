@@ -5,10 +5,6 @@
 
 export type ViewType = "tournament" | "photos" | string;
 
-export type ThemePreference = "light" | "dark" | "system";
-
-export type ThemeType = "light" | "dark";
-
 export interface NavItem {
   key: string;
   label: string;
@@ -26,10 +22,6 @@ export interface AppNavbarProps {
   userName?: string;
   isAdmin?: boolean;
   onLogout: () => void;
-  themePreference: ThemePreference;
-  currentTheme: ThemeType;
-  onThemePreferenceChange: (preference: ThemePreference) => void;
-  onThemeToggle?: () => void;
   onOpenSuggestName?: () => void;
   onOpenPhotos?: () => void;
   currentRoute?: string;
@@ -48,10 +40,6 @@ export interface NavbarContextValue {
   closeMobileMenu: () => void;
   onOpenPhotos?: () => void;
   onOpenSuggestName?: () => void;
-  themePreference: ThemePreference;
-  currentTheme: ThemeType;
-  onThemePreferenceChange: (preference: ThemePreference) => void;
-  onThemeToggle?: () => void;
   isLoggedIn: boolean;
   userName?: string;
   isAdmin?: boolean;

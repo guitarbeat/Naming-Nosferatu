@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Import CatBackground directly (no lazy loading to prevent chunking issues)
@@ -17,11 +17,16 @@ import { Error, Loading, ScrollToTopButton } from "@components";
 import { AppNavbar } from "./shared/components/AppNavbar";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
+// * Performance monitoring
+import {
+  initializePerformanceMonitoring,
+  cleanupPerformanceMonitoring,
+} from "./shared/utils/performanceMonitor";
+
 // * Core state and routing hooks
 import useUserSession from "@hooks/useUserSession";
 import { useRouting } from "@hooks/useRouting";
 import { useTournamentRoutingSync } from "@hooks/useTournamentRoutingSync";
-import { useThemeSync } from "@hooks/useThemeSync";
 import useAppStore, {
   useAppStoreInitialization,
 } from "@core/store/useAppStore";
@@ -40,6 +45,12 @@ import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
 function App() {
   const { login, logout, isInitialized } = useUserSession();
   const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
+
+  // * Initialize performance monitoring
+  useEffect(() => {
+    initializePerformanceMonitoring();
+    return () => cleanupPerformanceMonitoring();
+  }, []);
 
   // * Initialize store from localStorage
   useAppStoreInitialization();
@@ -96,20 +107,6 @@ function App() {
     tournamentActions.resetTournament();
   }, [logout, tournamentActions]);
 
-  // * Handle theme preference change (light, dark, or system)
-  const handleThemePreferenceChange = useCallback(
-    (nextPreference) => {
-      uiActions.setTheme(nextPreference);
-    },
-    [uiActions]
-  );
-
-  // * Handle theme toggle (light <-> dark)
-  const handleThemeToggle = useCallback(() => {
-    uiActions.toggleTheme();
-  }, [uiActions]);
-
-  useThemeSync(ui.theme);
 
   // * Handle user login
   const handleLogin = useCallback(
@@ -175,10 +172,6 @@ function App() {
       isAdmin,
       onLogout: handleLogout,
       onStartNewTournament: handleStartNewTournament,
-      themePreference: ui.themePreference,
-      currentTheme: ui.theme,
-      onThemePreferenceChange: handleThemePreferenceChange,
-      onThemeToggle: handleThemeToggle,
       onOpenSuggestName: handleOpenSuggestName,
       onOpenPhotos: handleOpenPhotos,
       // * Pass breadcrumbs to navbar
@@ -194,10 +187,6 @@ function App() {
       isAdmin,
       handleLogout,
       handleStartNewTournament,
-      ui.themePreference,
-      ui.theme,
-      handleThemePreferenceChange,
-      handleThemeToggle,
       navigateTo,
       handleOpenSuggestName,
       handleOpenPhotos,

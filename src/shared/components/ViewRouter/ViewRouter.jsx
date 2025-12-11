@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Error from "../Error/Error";
 import Login from "@features/auth/Login";
 import { useRouting } from "@hooks/useRouting";
-// * Import components directly (no lazy loading to prevent chunking issues)
+// * Import components directly to maintain stability
 import Tournament from "@features/tournament/Tournament";
 import TournamentSetup from "@features/tournament/TournamentSetup";
 import Dashboard from "@features/tournament/Dashboard";

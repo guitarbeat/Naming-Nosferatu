@@ -1,10 +1,5 @@
 import { create } from "zustand";
 import { useEffect } from "react";
-import {
-  attachMediaQueryListener,
-  getMediaQueryList,
-  getMediaQueryMatches,
-} from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
 
@@ -30,127 +25,11 @@ const applyDevtools = (storeImpl) => {
   return storeImpl;
 };
 
-const THEME_STORAGE_KEY = "theme";
-const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
-
-const getSystemTheme = () =>
-  getMediaQueryMatches(COLOR_SCHEME_QUERY) ? "dark" : "light";
-
-const normalizeStoredTheme = (value) => {
-  if (value === "light" || value === "dark") {
-    return value;
-  }
-
-  return null;
-};
-
 export const getInitialThemeState = () => {
-  const defaultState = {
-    theme: "light",
-    themePreference: "system",
-  };
-
-  if (typeof window === "undefined") {
-    return defaultState;
-  }
-
-  let storedPreference = null;
-
-  try {
-    const stored = window.localStorage?.getItem(THEME_STORAGE_KEY);
-    const normalized = normalizeStoredTheme(stored);
-
-    if (normalized) {
-      if (stored !== normalized && window.localStorage) {
-        window.localStorage.setItem(THEME_STORAGE_KEY, normalized);
-      }
-      storedPreference = normalized;
-    } else if (stored && window.localStorage) {
-      window.localStorage.removeItem(THEME_STORAGE_KEY);
-    }
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Unable to read stored theme from localStorage:", error);
-    }
-  }
-
-  if (storedPreference) {
-    return {
-      theme: storedPreference,
-      themePreference: storedPreference,
-    };
-  }
-
-  const domTheme =
-    typeof document !== "undefined"
-      ? document.documentElement?.dataset?.theme
-      : null;
-
-  if (domTheme === "light" || domTheme === "dark") {
-    return {
-      theme: domTheme,
-      themePreference: "system",
-    };
-  }
-
   return {
-    theme: getSystemTheme(),
-    themePreference: "system",
+    theme: "dark",
+    themePreference: "dark",
   };
-};
-
-let hasSubscribedToSystemTheme = false;
-
-const subscribeToSystemTheme = (set, get) => {
-  if (hasSubscribedToSystemTheme) {
-    return;
-  }
-
-  const mediaQuery = getMediaQueryList(COLOR_SCHEME_QUERY);
-  if (!mediaQuery) {
-    return;
-  }
-
-  const handleChange = (event) => {
-    const matches =
-      typeof event?.matches === "boolean" ? event.matches : mediaQuery.matches;
-
-    if (get().ui.themePreference !== "system") {
-      return;
-    }
-
-    const nextTheme = matches ? "dark" : "light";
-
-    set((state) => {
-      if (state.ui.theme === nextTheme) {
-        return state;
-      }
-
-      return {
-        ui: {
-          ...state.ui,
-          theme: nextTheme,
-        },
-      };
-    });
-  };
-
-  attachMediaQueryListener(mediaQuery, handleChange);
-
-  hasSubscribedToSystemTheme = true;
-
-  const preferredTheme = mediaQuery.matches ? "dark" : "light";
-  if (
-    get().ui.themePreference === "system" &&
-    get().ui.theme !== preferredTheme
-  ) {
-    set((state) => ({
-      ui: {
-        ...state.ui,
-        theme: preferredTheme,
-      },
-    }));
-  }
 };
 
 const getInitialUserState = () => {
@@ -402,86 +281,6 @@ const storeImpl = (set, get) => ({
 
   // * UI Actions
   uiActions: {
-    // * Initialize theme from DOM and system preference
-    initializeTheme: () => {
-      if (typeof document !== "undefined") {
-        const domTheme = document.documentElement?.dataset?.theme;
-        if (domTheme === "light" || domTheme === "dark") {
-          const { theme, themePreference } = get().ui;
-          if (themePreference === "system" && theme !== domTheme) {
-            set((state) => ({
-              ui: {
-                ...state.ui,
-                theme: domTheme,
-              },
-            }));
-          }
-        }
-      }
-
-      subscribeToSystemTheme(set, get);
-    },
-
-    setTheme: (nextPreference) => {
-      if (!["light", "dark", "system"].includes(nextPreference)) {
-        return;
-      }
-
-      const isSystemPreference = nextPreference === "system";
-      const themeToApply = isSystemPreference
-        ? getSystemTheme()
-        : nextPreference;
-
-      try {
-        if (typeof window !== "undefined" && window.localStorage) {
-          if (isSystemPreference) {
-            window.localStorage.removeItem(THEME_STORAGE_KEY);
-          } else {
-            window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
-          }
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error updating theme localStorage:", error);
-        }
-      }
-
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          theme: themeToApply,
-          themePreference: isSystemPreference ? "system" : nextPreference,
-        },
-      }));
-
-      if (isSystemPreference) {
-        subscribeToSystemTheme(set, get);
-      }
-    },
-
-    toggleTheme: () => {
-      const currentTheme = get().ui.theme;
-      const newTheme = currentTheme === "light" ? "dark" : "light";
-
-      try {
-        if (typeof window !== "undefined" && window.localStorage) {
-          window.localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error updating theme localStorage:", error);
-        }
-      }
-
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          theme: newTheme,
-          themePreference: newTheme,
-        },
-      }));
-    },
-
     setMatrixMode: (enabled) =>
       set((state) => ({
         ui: {
@@ -629,9 +428,7 @@ export const useAppStoreInitialization = () => {
   useEffect(() => {
     // * Initialize user state from localStorage on mount
     userActions.initializeFromStorage();
-    // * Initialize theme state from localStorage on mount
-    uiActions.initializeTheme();
-  }, [userActions, uiActions]);
+  }, [userActions]);
 };
 
 // * Computed selectors for derived state

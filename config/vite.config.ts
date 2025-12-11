@@ -79,7 +79,7 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           format: 'es',
-          // * Inline all dynamic imports into a single bundle to prevent chunk loading issues
+          // * Keep inlineDynamicImports for stability - maintains existing behavior
           inlineDynamicImports: true,
           // * Single entry file name (no chunks)
           entryFileNames: 'assets/js/[name]-[hash].js',
