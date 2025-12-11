@@ -65,9 +65,7 @@ function createMockStoreState(overrides = {}) {
       setUser: vi.fn(),
       initializeFromStorage: vi.fn(),
     },
-    uiActions: {
-      toggleTheme: vi.fn(),
-    },
+    uiActions: {},
     errorActions: {
       clearError: vi.fn(),
     },
@@ -142,10 +140,6 @@ vi.mock("@hooks/useRouting", () => ({
 
 vi.mock("@hooks/useTournamentRoutingSync", () => ({
   useTournamentRoutingSync: () => "/",
-}));
-
-vi.mock("@hooks/useThemeSync", () => ({
-  useThemeSync: () => {},
 }));
 
 vi.mock("@components/CatBackground/CatBackground", () => ({
