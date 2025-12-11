@@ -12,7 +12,7 @@
 }
 
 .name-suggestion-modal-glass {
-  overflow: hidden;
+  overflow: visible;
   animation: slideUp 0.3s var(--ease-out);
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   height: 100%;
   border-radius: inherit;
 }
@@ -35,8 +35,9 @@
   width: 100%;
   height: 100%;
   padding: var(--space-6);
-  padding-bottom: var(--space-6);
-  overflow: hidden auto;
+  padding-bottom: var(--space-8, 2rem);
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   z-index: 2;
   display: flex;
@@ -83,6 +84,15 @@
   color: var(--text-primary);
 }
 
+/* * Theme-specific text color improvements */
+:root[data-theme="light"] .name-suggestion-modal-title {
+  color: hsl(0deg 0% 10%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-title {
+  color: hsl(0deg 0% 98%);
+}
+
 .name-suggestion-modal-close {
   display: flex;
   align-items: center;
@@ -98,6 +108,24 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--duration-fast) var(--ease-out);
+}
+
+:root[data-theme="light"] .name-suggestion-modal-close {
+  color: hsl(0deg 0% 40%);
+}
+
+:root[data-theme="light"] .name-suggestion-modal-close:hover:not(:disabled) {
+  color: hsl(0deg 0% 15%);
+  background: hsl(0deg 0% 95%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-close {
+  color: hsl(0deg 0% 65%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-close:hover:not(:disabled) {
+  color: hsl(0deg 0% 95%);
+  background: hsl(0deg 0% 20%);
 }
 
 .name-suggestion-modal-close:hover:not(:disabled) {
@@ -116,6 +144,14 @@
   color: var(--text-secondary);
 }
 
+:root[data-theme="light"] .name-suggestion-modal-description {
+  color: hsl(0deg 0% 35%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-description {
+  color: hsl(0deg 0% 75%);
+}
+
 .name-suggestion-modal-form {
   display: flex;
   flex-direction: column;
@@ -123,6 +159,7 @@
   flex: 1;
   min-height: 0;
   overflow: visible;
+  padding-bottom: var(--space-2);
 }
 
 .name-suggestion-form-group {
@@ -135,6 +172,14 @@
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary);
+}
+
+:root[data-theme="light"] .name-suggestion-form-label {
+  color: hsl(0deg 0% 15%);
+}
+
+:root[data-theme="dark"] .name-suggestion-form-label {
+  color: hsl(0deg 0% 95%);
 }
 
 .name-suggestion-form-input,
@@ -152,11 +197,47 @@
   box-sizing: border-box;
 }
 
+:root[data-theme="light"] .name-suggestion-form-input,
+:root[data-theme="light"] .name-suggestion-form-textarea {
+  color: hsl(0deg 0% 10%);
+  background: hsl(0deg 0% 100%);
+  border-color: hsl(0deg 0% 85%);
+}
+
+:root[data-theme="light"] .name-suggestion-form-input::placeholder,
+:root[data-theme="light"] .name-suggestion-form-textarea::placeholder {
+  color: hsl(0deg 0% 50%);
+}
+
+:root[data-theme="dark"] .name-suggestion-form-input,
+:root[data-theme="dark"] .name-suggestion-form-textarea {
+  color: hsl(0deg 0% 98%);
+  background: hsl(0deg 0% 15%);
+  border-color: hsl(0deg 0% 30%);
+}
+
+:root[data-theme="dark"] .name-suggestion-form-input::placeholder,
+:root[data-theme="dark"] .name-suggestion-form-textarea::placeholder {
+  color: hsl(0deg 0% 60%);
+}
+
 .name-suggestion-form-input:focus,
 .name-suggestion-form-textarea:focus {
   outline: none;
   border-color: var(--primary-500);
   box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 10%);
+}
+
+:root[data-theme="light"] .name-suggestion-form-input:focus,
+:root[data-theme="light"] .name-suggestion-form-textarea:focus {
+  border-color: hsl(var(--primary) / 60%);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 15%);
+}
+
+:root[data-theme="dark"] .name-suggestion-form-input:focus,
+:root[data-theme="dark"] .name-suggestion-form-textarea:focus {
+  border-color: hsl(var(--primary) / 70%);
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 20%);
 }
 
 .name-suggestion-form-input:disabled,
@@ -216,6 +297,28 @@
   color: var(--text-secondary);
   background: transparent;
   border: 1px solid var(--border-color);
+}
+
+:root[data-theme="light"] .name-suggestion-modal-cancel {
+  color: hsl(0deg 0% 40%);
+  border-color: hsl(0deg 0% 80%);
+}
+
+:root[data-theme="light"] .name-suggestion-modal-cancel:hover:not(:disabled) {
+  color: hsl(0deg 0% 15%);
+  background: hsl(0deg 0% 96%);
+  border-color: hsl(0deg 0% 70%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-cancel {
+  color: hsl(0deg 0% 70%);
+  border-color: hsl(0deg 0% 35%);
+}
+
+:root[data-theme="dark"] .name-suggestion-modal-cancel:hover:not(:disabled) {
+  color: hsl(0deg 0% 95%);
+  background: hsl(0deg 0% 20%);
+  border-color: hsl(0deg 0% 45%);
 }
 
 .name-suggestion-modal-cancel:hover:not(:disabled) {
