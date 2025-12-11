@@ -40,7 +40,8 @@ function createMockStoreState(overrides = {}) {
       currentView: "tournament",
     },
     ui: {
-      theme: "light",
+      theme: "dark",
+      themePreference: "dark",
       showGlobalAnalytics: false,
       showUserComparison: false,
       matrixMode: false,
