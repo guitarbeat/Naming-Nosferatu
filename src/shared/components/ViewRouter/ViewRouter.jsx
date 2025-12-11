@@ -1,16 +1,13 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import Error from "../Error/Error";
 import Login from "@features/auth/Login";
 import { useRouting } from "@hooks/useRouting";
-import { Loading } from "@components";
-// * Lazy load heavy components for better initial load performance
-const Tournament = lazy(() => import("@features/tournament/Tournament"));
-const TournamentSetup = lazy(() =>
-  import("@features/tournament/TournamentSetup")
-);
-const Dashboard = lazy(() => import("@features/tournament/Dashboard"));
-const BongoPage = lazy(() => import("@features/bongo/BongoPage"));
+// * Import components directly to maintain stability
+import Tournament from "@features/tournament/Tournament";
+import TournamentSetup from "@features/tournament/TournamentSetup";
+import Dashboard from "@features/tournament/Dashboard";
+import BongoPage from "@features/bongo/BongoPage";
 
 export default function ViewRouter({
   isLoggedIn,
