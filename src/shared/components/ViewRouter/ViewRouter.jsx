@@ -79,27 +79,31 @@ export default function ViewRouter({
         : "global";
 
     return (
-      <Dashboard
-        personalRatings={hasPersonalData ? tournament.ratings : null}
-        currentTournamentNames={hasPersonalData ? tournament.names : null}
-        voteHistory={hasPersonalData ? tournament.voteHistory : null}
-        onStartNew={onStartNewTournament}
-        onUpdateRatings={onUpdateRatings}
-        userName={userName}
-        mode={dashboardMode}
-      />
+      <Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+        <Dashboard
+          personalRatings={hasPersonalData ? tournament.ratings : null}
+          currentTournamentNames={hasPersonalData ? tournament.names : null}
+          voteHistory={hasPersonalData ? tournament.voteHistory : null}
+          onStartNew={onStartNewTournament}
+          onUpdateRatings={onUpdateRatings}
+          userName={userName}
+          mode={dashboardMode}
+        />
+      </Suspense>
     );
   }
 
   return (
     <Error variant="boundary">
-      <Tournament
-        names={tournament.names}
-        existingRatings={tournament.ratings}
-        onComplete={onTournamentComplete}
-        userName={userName}
-        onVote={onVote}
-      />
+      <Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+        <Tournament
+          names={tournament.names}
+          existingRatings={tournament.ratings}
+          onComplete={onTournamentComplete}
+          userName={userName}
+          onVote={onVote}
+        />
+      </Suspense>
     </Error>
   );
 }
