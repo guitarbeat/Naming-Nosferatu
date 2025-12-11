@@ -429,6 +429,68 @@
   padding: var(--space-3);
 }
 
+@media (width <= 640px) {
+  .tournamentControls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+  }
+
+  .tournamentControlsGlass {
+    padding: var(--space-2);
+    margin: 0 auto var(--space-3);
+  }
+
+  .soundControls {
+    width: 100%;
+    justify-content: space-between;
+    gap: var(--space-1_5);
+    padding: var(--space-1);
+    flex-wrap: wrap;
+  }
+
+  .volumeControls {
+    gap: var(--space-1);
+  }
+
+  .volumeLabel {
+    font-size: var(--text-xs);
+  }
+
+  .volumeSlider {
+    min-width: 120px;
+  }
+
+  .controlButton {
+    width: 100%;
+    min-height: 44px;
+    font-size: var(--text-sm);
+  }
+
+  .trackInfo {
+    width: 100%;
+    text-align: center;
+    font-size: var(--text-xs);
+  }
+}
+
+@media (width <= 480px) {
+  .soundControls {
+    gap: var(--space-1);
+    padding: var(--space-1);
+  }
+
+  .volumeSlider {
+    min-width: 100px;
+  }
+
+  .controlButton {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
 .controlButton {
   display: inline-flex;
   gap: var(--space-2);
