@@ -52,7 +52,15 @@
   <link rel="icon" href="/assets/images/black-cat-favicon.svg" type="image/svg+xml" />
 
   <!-- * Resource hints for better performance -->
-  <!-- * Prefetch removed - Vite will handle this automatically in production -->
+  <!-- * Prefetch for secondary routes -->
+  <link rel="prefetch" href="/assets/js/chunk-Dashboard-*.js" as="script">
+  <link rel="prefetch" href="/assets/js/chunk-Tournament-*.js" as="script">
+
+  <!-- * Optimize painting performance with no-visible-paint directive -->
+  <style>
+    html { background-color: #050b16; }
+    body { background-color: #050b16; }
+  </style>
 </head>
 
 <body>
