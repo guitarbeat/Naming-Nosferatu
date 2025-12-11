@@ -1,10 +1,5 @@
 import { create } from "zustand";
 import { useEffect } from "react";
-import {
-  attachMediaQueryListener,
-  getMediaQueryList,
-  getMediaQueryMatches,
-} from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
 
@@ -30,79 +25,11 @@ const applyDevtools = (storeImpl) => {
   return storeImpl;
 };
 
-const THEME_STORAGE_KEY = "theme";
-const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)";
-
-const getSystemTheme = () =>
-  getMediaQueryMatches(COLOR_SCHEME_QUERY) ? "dark" : "light";
-
-const normalizeStoredTheme = (value) => {
-  if (value === "light" || value === "dark") {
-    return value;
-  }
-
-  return null;
-};
-
 export const getInitialThemeState = () => {
   return {
     theme: "dark",
     themePreference: "dark",
   };
-};
-
-let hasSubscribedToSystemTheme = false;
-
-const subscribeToSystemTheme = (set, get) => {
-  if (hasSubscribedToSystemTheme) {
-    return;
-  }
-
-  const mediaQuery = getMediaQueryList(COLOR_SCHEME_QUERY);
-  if (!mediaQuery) {
-    return;
-  }
-
-  const handleChange = (event) => {
-    const matches =
-      typeof event?.matches === "boolean" ? event.matches : mediaQuery.matches;
-
-    if (get().ui.themePreference !== "system") {
-      return;
-    }
-
-    const nextTheme = matches ? "dark" : "light";
-
-    set((state) => {
-      if (state.ui.theme === nextTheme) {
-        return state;
-      }
-
-      return {
-        ui: {
-          ...state.ui,
-          theme: nextTheme,
-        },
-      };
-    });
-  };
-
-  attachMediaQueryListener(mediaQuery, handleChange);
-
-  hasSubscribedToSystemTheme = true;
-
-  const preferredTheme = mediaQuery.matches ? "dark" : "light";
-  if (
-    get().ui.themePreference === "system" &&
-    get().ui.theme !== preferredTheme
-  ) {
-    set((state) => ({
-      ui: {
-        ...state.ui,
-        theme: preferredTheme,
-      },
-    }));
-  }
 };
 
 const getInitialUserState = () => {
