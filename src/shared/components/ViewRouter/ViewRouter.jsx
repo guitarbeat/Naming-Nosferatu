@@ -29,7 +29,11 @@ export default function ViewRouter({
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
   // There is no navigation link to this page - users must manually type /bongo in the URL
   if (isRoute("/bongo")) {
-    return <BongoPage isLoggedIn={isLoggedIn} userName={userName} />;
+    return (
+      <Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+        <BongoPage isLoggedIn={isLoggedIn} userName={userName} />
+      </Suspense>
+    );
   }
 
   if (!isLoggedIn) {
@@ -38,11 +42,13 @@ export default function ViewRouter({
 
   if (tournament.names === null) {
     return (
-      <TournamentSetup
-        onStart={onTournamentSetup}
-        userName={userName}
-        existingRatings={tournament.ratings}
-      />
+      <Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+        <TournamentSetup
+          onStart={onTournamentSetup}
+          userName={userName}
+          existingRatings={tournament.ratings}
+        />
+      </Suspense>
     );
   }
 
