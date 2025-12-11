@@ -30,10 +30,6 @@ export function AppNavbar({
   userName,
   isAdmin,
   onLogout,
-  themePreference,
-  currentTheme,
-  onThemePreferenceChange,
-  onThemeToggle,
   onOpenSuggestName,
   onOpenPhotos,
 }: AppNavbarProps) {
@@ -82,7 +78,6 @@ export function AppNavbar({
     setView("tournament");
   }, [closeMobileMenu, setView]);
 
-  const handleThemeChange = createHandler(onThemePreferenceChange);
   const handleLogout = createHandler(onLogout);
 
   const isHomeViewActive = view === "tournament" && !isAnalysisMode;
@@ -100,10 +95,6 @@ export function AppNavbar({
       closeMobileMenu,
       onOpenPhotos,
       onOpenSuggestName,
-      themePreference,
-      currentTheme,
-      onThemePreferenceChange: handleThemeChange,
-      onThemeToggle,
       isLoggedIn,
       userName,
       isAdmin,
@@ -121,10 +112,6 @@ export function AppNavbar({
       closeMobileMenu,
       onOpenPhotos,
       onOpenSuggestName,
-      themePreference,
-      currentTheme,
-      handleThemeChange,
-      onThemeToggle,
       isLoggedIn,
       userName,
       isAdmin,
@@ -177,10 +164,6 @@ export function AppNavbar({
             isAdmin={isAdmin}
             onLogout={handleLogout}
             onOpenSuggestName={onOpenSuggestName}
-            themePreference={themePreference}
-            currentTheme={currentTheme}
-            onThemePreferenceChange={handleThemeChange}
-            onThemeToggle={onThemeToggle}
           />
 
           <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
