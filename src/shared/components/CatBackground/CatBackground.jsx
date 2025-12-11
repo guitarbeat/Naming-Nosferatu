@@ -1,28 +1,25 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import "./CatBackground.css";
 
-const DEFAULT_STAR_COUNT = 120;
+const DEFAULT_STAR_COUNT = 60;
 const MOBILE_STAR_REDUCTION = 0.4;
 const MOBILE_MAX_WIDTH = 600;
 const STAR_GLYPH = "✦";
+
 const randomBetween = (min, max) => Math.random() * (max - min) + min;
 
 export default function CatBackground() {
   const skyRef = useRef(null);
+  const idleCallbackRef = useRef(null);
 
-  useEffect(() => {
-    const skyElement = skyRef.current;
-    if (!skyElement) {
-      return undefined;
-    }
-
+  const generateStars = useCallback((skyElement) => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
     if (prefersReducedMotion) {
       skyElement.innerHTML = "";
-      return undefined;
+      return;
     }
 
     let starCount = Number.parseInt(
@@ -39,6 +36,8 @@ export default function CatBackground() {
     }
 
     skyElement.innerHTML = "";
+
+    const fragment = document.createDocumentFragment();
 
     for (let i = 0; i < starCount; i += 1) {
       const el = document.createElement("div");
@@ -70,13 +69,33 @@ export default function CatBackground() {
         `${randomBetween(0, 1.2).toFixed(2)}px`,
       );
 
-      skyElement.appendChild(el);
+      fragment.appendChild(el);
+    }
+
+    skyElement.appendChild(fragment);
+  }, []);
+
+  useEffect(() => {
+    const skyElement = skyRef.current;
+    if (!skyElement) {
+      return undefined;
+    }
+
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      idleCallbackRef.current = window.requestIdleCallback(() => {
+        generateStars(skyElement);
+      });
+    } else {
+      generateStars(skyElement);
     }
 
     return () => {
+      if (idleCallbackRef.current) {
+        cancelIdleCallback(idleCallbackRef.current);
+      }
       skyElement.innerHTML = "";
     };
-  }, []);
+  }, [generateStars]);
 
   return (
     <div className="cat-background" aria-hidden="true">
