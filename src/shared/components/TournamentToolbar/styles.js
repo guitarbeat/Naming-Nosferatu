@@ -4,6 +4,7 @@
  */
 export const styles = {
   unifiedContainer: "tournament-toolbar-unified-container",
+  toggleStack: "tournament-toolbar-toggle-stack",
   filtersContainer: "tournament-toolbar-filters-container",
   startButton: "tournament-toolbar-start-button",
   toggleWrapper: "tournament-toolbar-toggle-wrapper",

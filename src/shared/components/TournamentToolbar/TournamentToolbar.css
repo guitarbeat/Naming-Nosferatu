@@ -392,7 +392,16 @@
    ========================================================================== */
 
 .tournament-toolbar-toggle-wrapper {
-  flex: 0 1 var(--tt-toggle-wrapper-flex-basis);
+  flex: 1 1 var(--tt-toggle-wrapper-flex-basis);
+}
+
+.tournament-toolbar-toggle-stack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
 }
 
 .tournament-toolbar-toggle-switch {
@@ -760,6 +769,11 @@
     padding: var(--space-3);
   }
 
+  .tournament-toolbar-toggle-stack {
+    flex-wrap: wrap;
+    gap: var(--tt-gap-small);
+  }
+
   .tournament-toolbar-toggle-wrapper,
   .tournament-toolbar-start-button {
     width: 100%;
@@ -801,4 +815,43 @@
   .tournament-toolbar-count {
     font-size: var(--text-sm);
   }
+}
+
+/* ==========================================================================
+   Light Theme Contrast Tweaks
+   ========================================================================== */
+:root[data-theme="light"] .tournament-toolbar-unified-container {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(241, 245, 249, 0.95) 70%,
+    rgba(226, 232, 240, 0.95) 100%
+  );
+  border: 1px solid #cbd5e1;
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.12),
+    0 4px 12px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .tournament-toolbar-toggle-switch {
+  border-color: rgba(148, 163, 184, 0.9);
+  background: linear-gradient(
+    180deg,
+    rgba(226, 232, 240, 0.9),
+    rgba(209, 213, 219, 0.9)
+  );
+}
+
+:root[data-theme="light"] .tournament-toolbar-toggle-switch::before {
+  background: linear-gradient(
+    var(--tt-gradient-angle),
+    rgba(14, 165, 233, 0.35),
+    rgba(236, 72, 153, 0.35)
+  );
+}
+
+:root[data-theme="light"] .tournament-toolbar-toggle-label {
+  color: #0f172a;
+  text-shadow: none;
 }
