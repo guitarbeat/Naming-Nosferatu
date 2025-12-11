@@ -19,8 +19,8 @@ function TournamentModeToolbar({
             <BinaryToggle
               isActive={isSwipeMode}
               onClick={onToggleSwipeMode}
-              activeLabel="Tap"
-              inactiveLabel="Swipe"
+              activeLabel="Swipe"
+              inactiveLabel="Tap"
               ariaLabel={
                 isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"
               }

@@ -332,13 +332,12 @@
   align-items: center;
   justify-content: center;
   gap: var(--tt-gap);
-  padding: var(--space-3) var(--space-5);
-  background: var(--tt-surface);
-  border: var(--tt-border);
-  border-radius: var(--tt-radius-lg);
-  box-shadow: var(--tt-shadow-container);
-  backdrop-filter: blur(var(--tt-backdrop-blur-medium))
-    saturate(var(--tt-backdrop-saturate));
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .tournament-toolbar-filters-container {
@@ -821,16 +820,9 @@
    Light Theme Contrast Tweaks
    ========================================================================== */
 :root[data-theme="light"] .tournament-toolbar-unified-container {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(241, 245, 249, 0.95) 70%,
-    rgba(226, 232, 240, 0.95) 100%
-  );
-  border: 1px solid #cbd5e1;
-  box-shadow:
-    0 12px 30px rgba(15, 23, 42, 0.12),
-    0 4px 12px rgba(15, 23, 42, 0.08);
+  background: transparent;
+  border: none;
+  box-shadow: none;
   color: #0f172a;
 }
 
