@@ -47,6 +47,12 @@ function App() {
   const { login, logout, isInitialized } = useUserSession();
   const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
+  // * Initialize performance monitoring
+  useEffect(() => {
+    initializePerformanceMonitoring();
+    return () => cleanupPerformanceMonitoring();
+  }, []);
+
   // * Initialize store from localStorage
   useAppStoreInitialization();
 
