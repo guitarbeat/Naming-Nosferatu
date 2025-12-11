@@ -5,7 +5,7 @@
  * This component wraps the shadcn Button and provides a consistent API.
  */
 
-import React from "react";
+import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { Loader2 } from "lucide-react";
 import { Button as ShadcnButton } from "../ui/button";
@@ -94,4 +94,4 @@ Button.propTypes = {
 
 Button.displayName = "Button";
 
-export default Button;
+export default memo(Button);
