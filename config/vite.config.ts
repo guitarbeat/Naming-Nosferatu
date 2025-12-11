@@ -79,11 +79,10 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           format: 'es',
-          // * Enable code splitting for lazy-loaded components (better performance)
-          inlineDynamicImports: false,
-          // * Configure chunk names for better caching
+          // * Keep inlineDynamicImports for stability - maintains existing behavior
+          inlineDynamicImports: true,
+          // * Single entry file name (no chunks)
           entryFileNames: 'assets/js/[name]-[hash].js',
-          chunkFileNames: 'assets/js/chunk-[name]-[hash].js',
           assetFileNames: (assetInfo) => {
             if (!assetInfo.name) {
               return 'assets/[name]-[hash][extname]';
