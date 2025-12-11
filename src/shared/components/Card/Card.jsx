@@ -112,6 +112,9 @@ const Card = React.forwardRef(
 
 Card.displayName = "Card";
 
+const CardMemo = memo(Card);
+CardMemo.displayName = "Card";
+
 Card.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
@@ -136,4 +139,4 @@ Card.propTypes = {
   ]),
 };
 
-export default Card;
+export default CardMemo;
