@@ -18,6 +18,7 @@ import { useCollapsible } from "../../hooks/useCollapsible";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError } from "../../utils/logger";
+import { clearAllCaches } from "../../utils/cacheUtils";
 import { nameItemShape } from "../../propTypes";
 import { getRankDisplay } from "../../utils/displayUtils";
 import { formatDate } from "../../utils/timeUtils";
@@ -237,6 +238,9 @@ export function AnalysisDashboard({
         }
 
         await hiddenNamesAPI.hideName(userName, nameId);
+
+        // * Clear caches to ensure hidden names don't appear in tournaments
+        clearAllCaches();
 
         if (onNameHidden) {
           onNameHidden(nameId);
