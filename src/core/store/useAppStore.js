@@ -501,9 +501,7 @@ export const useAppStoreInitialization = () => {
   useEffect(() => {
     // * Initialize user state from localStorage on mount
     userActions.initializeFromStorage();
-    // * Initialize theme state from localStorage on mount
-    uiActions.initializeTheme();
-  }, [userActions, uiActions]);
+  }, [userActions]);
 };
 
 // * Computed selectors for derived state
