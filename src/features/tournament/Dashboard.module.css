@@ -145,17 +145,31 @@
   align-items: center;
   gap: var(--space-5);
   width: 100%;
-  padding: var(--space-4);
+  padding: var(--space-6);
   margin: var(--space-5) auto 0;
   background: linear-gradient(
     135deg,
-    rgb(255 255 255 / 4%) 0%,
-    rgb(255 255 255 / 2%) 100%
+    rgb(var(--neon-cyan-rgb) / 8%) 0%,
+    rgb(var(--hot-pink-rgb) / 6%) 100%
   );
-  border: 1px solid rgb(255 255 255 / 10%);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
+  border: 2px solid rgb(var(--neon-cyan-rgb) / 25%);
+  border-radius: 24px;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 32px rgb(var(--neon-cyan-rgb) / 15%),
+    0 4px 16px rgb(var(--hot-pink-rgb) / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 15%);
   max-width: 900px;
+  transition: all 0.3s ease;
+}
+
+.actions:hover {
+  border-color: rgb(var(--neon-cyan-rgb) / 35%);
+  box-shadow:
+    0 12px 40px rgb(var(--neon-cyan-rgb) / 20%),
+    0 6px 20px rgb(var(--hot-pink-rgb) / 15%),
+    inset 0 1px 0 rgb(255 255 255 / 20%);
+  transform: translateY(-2px);
 }
 
 .actionsButtons {
@@ -170,7 +184,28 @@
 
 .startNewButton {
   white-space: nowrap;
-  min-width: 180px;
+  min-width: 240px;
+  font-size: var(--text-lg);
+  padding: var(--space-4) var(--space-6);
+  transform: scale(1.05);
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 6px 16px hsl(var(--neon-cyan) / 30%),
+      0 3px 8px hsl(var(--hot-pink) / 20%),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  50% {
+    box-shadow:
+      0 8px 24px hsl(var(--neon-cyan) / 45%),
+      0 6px 16px hsl(var(--hot-pink) / 30%),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
 }
 
 .tip {
