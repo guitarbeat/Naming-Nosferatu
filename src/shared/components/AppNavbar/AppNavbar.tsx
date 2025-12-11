@@ -37,7 +37,6 @@ export function AppNavbar({
   onOpenSuggestName,
   onOpenPhotos,
 }: AppNavbarProps) {
-  const collapsedGlassSize = 72;
   const navbarGlassId = useId();
   const { isCollapsed, toggle: toggleCollapse } = useNavbarCollapse(false);
   const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu, close: closeMobileMenu } = useMobileMenu();
@@ -140,17 +139,11 @@ export function AppNavbar({
         className={`app-navbar-glass app-navbar--horizontal ${
           isCollapsed ? "app-navbar-glass--collapsed" : ""
         }`}
-        width={isCollapsed ? collapsedGlassSize : dimensions.width}
-        height={isCollapsed ? collapsedGlassSize : dimensions.height}
-        radius={isCollapsed ? 18 : undefined}
+        width={isCollapsed ? 64 : dimensions.width}
+        height={isCollapsed ? 56 : dimensions.height}
         style={
           isCollapsed
-            ? {
-                "--navbar-collapsed-size": `${collapsedGlassSize}px`,
-                width: collapsedGlassSize,
-                height: collapsedGlassSize,
-                overflow: "visible",
-              }
+            ? { width: "auto", maxWidth: "max-content", height: "auto", overflow: "visible" }
             : { width: "100%", height: "auto", overflow: "visible" }
         }
         data-orientation="horizontal"

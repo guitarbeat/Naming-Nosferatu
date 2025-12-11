@@ -16,7 +16,7 @@
   height: auto;
   min-height: 0;
   padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 4vw, 2.5rem);
-  pointer-events: auto;
+  pointer-events: none;
   overflow: visible;
   transition:
     height 0.3s ease,
@@ -24,13 +24,12 @@
 }
 
 .app-navbar-glass--collapsed {
-  --navbar-collapsed-size: 72px;
-  height: var(--navbar-collapsed-size);
-  min-height: var(--navbar-collapsed-size);
-  width: var(--navbar-collapsed-size);
-  max-width: var(--navbar-collapsed-size);
-  padding: 0.25rem;
-  justify-content: center;
+  height: auto !important;
+  min-height: 64px;
+  padding: 0.5rem !important;
+  width: auto !important;
+  max-width: max-content !important;
+  justify-content: flex-start;
   align-items: center;
   overflow: visible;
   left: clamp(1rem, 4vw, 2.5rem);
@@ -41,10 +40,9 @@
 .app-navbar-glass--collapsed.liquid-glass,
 .app-navbar-glass--collapsed.liquid-glass.app-navbar--horizontal,
 .app-navbar-glass--collapsed.liquid-glass[data-orientation="horizontal"] {
-  width: var(--navbar-collapsed-size);
-  height: var(--navbar-collapsed-size);
-  max-width: var(--navbar-collapsed-size);
-  right: auto;
+  width: auto !important;
+  max-width: max-content !important;
+  right: auto !important;
 }
 
 /* Main Navbar Container */
@@ -77,12 +75,12 @@
 
 .app-navbar--collapsed {
   min-height: 56px;
-  padding: 0.2rem;
+  padding: 0.35rem;
   opacity: 0.98;
   overflow: visible;
-  width: auto;
-  max-width: max-content;
-  border-radius: 18px;
+  width: auto !important;
+  max-width: max-content !important;
+  border-radius: 9999px;
   flex-shrink: 0;
 }
 
@@ -109,16 +107,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   padding: 0;
   border-radius: 10px;
   border: 1px solid hsl(var(--border) / 40%);
   background: hsl(var(--background) / 70%);
-  color: hsl(var(--foreground) / 95%);
+  color: hsl(var(--foreground) / 90%);
   cursor: pointer;
   transition: all 0.2s ease;
-  z-index: 3;
   box-shadow:
     0 2px 8px hsl(var(--foreground) / 8%),
     0 0 8px hsl(var(--foreground) / 4%),
@@ -158,7 +155,6 @@
     0 2px 8px hsl(var(--neon-cyan) / 20%),
     0 0 12px hsl(var(--neon-cyan) / 15%),
     inset 0 1px 0 hsl(var(--foreground) / 8%);
-  color: hsl(var(--foreground) / 98%);
 }
 
 .app-navbar__collapse-toggle--collapsed:hover,
@@ -184,10 +180,6 @@
   width: 20px;
   height: 20px;
   transition: all 0.2s ease;
-}
-
-.app-navbar__collapse-hamburger path {
-  stroke: currentColor;
 }
 
 /* Brand Button */
@@ -568,11 +560,11 @@
 /* Desktop - Never show mobile toggle */
 @media (width > 960px) {
   .app-navbar__toggle {
-    display: none;
+    display: none !important;
   }
 
   .app-navbar__mobile {
-    display: none;
+    display: none !important;
   }
 }
 

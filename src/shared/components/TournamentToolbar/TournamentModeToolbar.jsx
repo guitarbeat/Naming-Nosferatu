@@ -14,7 +14,7 @@ function TournamentModeToolbar({
   return (
     <div className={styles.unifiedContainer} data-mode={mode}>
       {(onToggleSwipeMode || onToggleCatPictures) && (
-        <>
+        <div className={styles.toggleStack}>
           {onToggleSwipeMode && (
             <BinaryToggle
               isActive={isSwipeMode}
@@ -37,7 +37,7 @@ function TournamentModeToolbar({
               }
             />
           )}
-        </>
+        </div>
       )}
       {startTournamentButton && (
         <StartTournamentButton
