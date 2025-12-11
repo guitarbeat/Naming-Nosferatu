@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -71,31 +71,7 @@
         return;
       }
 
-      const STORAGE_KEY = 'theme';
-      const resolveStoredPreference = () => {
-        try {
-          if (!window.localStorage) return null;
-          const stored = window.localStorage.getItem(STORAGE_KEY);
-          return stored === 'light' || stored === 'dark' ? stored : null;
-        } catch (error) {
-          if (
-            typeof process !== 'undefined' &&
-            process.env &&
-            process.env.NODE_ENV === 'development'
-          ) {
-            console.error('Unable to read stored theme during boot:', error);
-          }
-          return null;
-        }
-      };
-
-      const resolveSystemPreference = () =>
-        window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
-
-      const theme = resolveStoredPreference() ?? resolveSystemPreference();
-
+      const theme = 'dark';
       documentElement.dataset.theme = theme;
       if (body) {
         body.dataset.theme = theme;
