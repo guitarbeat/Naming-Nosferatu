@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useId } from "react";
 
 const BASE_CONFIG = {
   scale: -180,
@@ -67,8 +67,13 @@ const PRESETS = {
  * @returns {Object} Configuration object with presets and update methods
  */
 export function useLiquidGlass(initialConfig = {}) {
+  // * Generate unique ID for this instance to prevent conflicts
+  const uniqueId = useId();
+  const defaultId = `liquid-glass-${uniqueId.replace(/:/g, "-")}`;
+
   const [config, setConfig] = useState({
     ...PRESETS.dock,
+    id: initialConfig.id || defaultId,
     ...initialConfig,
     preset: initialConfig.preset || "dock",
   });
@@ -95,4 +100,4 @@ export function useLiquidGlass(initialConfig = {}) {
   };
 }
 
-export default useLiquidGlass;
+// Default export removed - hook is imported as named export

@@ -28,7 +28,7 @@ export function useProfileUser(userName) {
     [isAdmin, activeUser, userName],
   );
 
-  const userSelectOptions = useMemo(() => {
+  const userOptions = useMemo(() => {
     if (!isAdmin) {
       return [
         { value: FILTER_OPTIONS.USER.ALL, label: "All Users" },
@@ -181,7 +181,7 @@ export function useProfileUser(userName) {
     userFilter,
     setUserFilter,
     canManageActiveUser,
-    userSelectOptions,
+    userOptions,
     availableUsers,
     userListLoading,
     userListError,

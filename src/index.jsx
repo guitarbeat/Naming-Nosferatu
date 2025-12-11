@@ -8,8 +8,6 @@
  * @requires App
  */
 
-// * Debug code removed - testing clean app
-
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -72,7 +70,7 @@ function registerServiceWorker() {
 
   navigator.serviceWorker.addEventListener(
     "controllerchange",
-    handleControllerChange,
+    handleControllerChange
   );
 }
 
@@ -115,7 +113,7 @@ const checkEnvironmentVariables = () => {
         `1. Go to Vercel Dashboard → Your Project → Settings → Environment Variables\n` +
         `2. Add the missing variables:\n${missing
           .map((key) => `   - ${key}`)
-          .join("\n")}\n3. Redeploy the application\n`,
+          .join("\n")}\n3. Redeploy the application\n`
     );
 
     // * Display error in the DOM before React mounts
@@ -291,7 +289,7 @@ try {
   // * Don't mount React if environment variables are missing
   console.error(
     "[App Initialization] Failed environment variable check:",
-    error,
+    error
   );
   // #region agent log
   const LOG_ENDPOINT = `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
@@ -324,6 +322,6 @@ if (envCheckPassed) {
           </QueryClientProvider>
         </ErrorBoundary>
       </HeroUIProvider>
-    </StrictMode>,
+    </StrictMode>
   );
 }

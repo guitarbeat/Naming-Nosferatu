@@ -37,4 +37,4 @@ export function useCollapsible(storageKey = null, defaultValue = false) {
   };
 }
 
-export default useCollapsible;
+// Default export removed - hook is imported as named export

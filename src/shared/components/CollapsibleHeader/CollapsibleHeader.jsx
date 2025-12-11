@@ -4,6 +4,7 @@
  * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
+import { useId } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
 import "./CollapsibleHeader.css";
@@ -76,18 +77,21 @@ export function CollapsibleHeader({
   };
 
   const shouldUseLiquidGlass = !!liquidGlass;
+  const headerGlassId = useId();
+  const resolvedContentId =
+    contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
 
   const headerContent = (
     <>
       <header
-        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${shouldUseLiquidGlass ? "" : className}`}
+        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
       >
         <button
           type="button"
           className="collapsible-toggle"
           onClick={onToggle}
           aria-expanded={!isCollapsed}
-          aria-controls={contentId}
+          aria-controls={resolvedContentId}
           aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
           title={isCollapsed ? title : undefined}
         >
@@ -129,11 +133,13 @@ export function CollapsibleHeader({
       frost = defaultGlassConfig.frost,
       inputBlur = defaultGlassConfig.inputBlur,
       outputBlur = defaultGlassConfig.outputBlur,
+      id,
       ...glassProps
     } = typeof liquidGlass === "object" ? liquidGlass : defaultGlassConfig;
 
     return (
       <LiquidGlass
+        id={id || `header-glass-${headerGlassId.replace(/:/g, "-")}`}
         width={width}
         height={height}
         radius={radius}
@@ -194,9 +200,10 @@ export function CollapsibleContent({
   children,
   className = "",
 }) {
+  const contentId = id;
   return (
     <div
-      id={id}
+      id={contentId}
       className={`collapsible-content ${isCollapsed ? "collapsed" : ""} ${className}`}
     >
       <div className="collapsible-content-inner">{children}</div>

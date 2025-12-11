@@ -15,14 +15,15 @@ const SUPABASE_PUBLISHABLE_KEY =
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      storage: typeof window !== "undefined" ? localStorage : undefined,
-      persistSession: true,
-      autoRefreshToken: true,
-    },
-  },
-);
+// Unused export removed - use resolveSupabaseClient from @services/supabase/client instead
+// export const supabase = createClient<Database>(
+//   SUPABASE_URL,
+//   SUPABASE_PUBLISHABLE_KEY,
+//   {
+//     auth: {
+//       storage: typeof window !== "undefined" ? localStorage : undefined,
+//       persistSession: true,
+//       autoRefreshToken: true,
+//     },
+//   },
+// );

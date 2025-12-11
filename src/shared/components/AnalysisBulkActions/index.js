@@ -1,2 +1,2 @@
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
-export { default } from "./AnalysisBulkActions";
+// Default export removed - component is imported as named export

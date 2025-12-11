@@ -1,4 +1,12 @@
-/* App Layout Styles */
+/**
+ * App Layout Styles
+ * @module app-layout
+ * @description Main application layout styles including container, wrapper, and responsive adjustments
+ */
+
+/* ============================================================================
+   ROOT APP CONTAINER
+   ============================================================================ */
 
 .app {
   display: flex;
@@ -7,15 +15,16 @@
   height: 100vh;
   height: 100dvh; /* * Use dynamic viewport height on mobile for better browser chrome handling */
 
-  /* * Navbar widths - keep in sync with NAVBAR constants in core/constants/index.js */
-  --navbar-expanded-width: 280px;
-  --navbar-collapsed-width: 80px;
-  --navbar-current-width: var(--navbar-expanded-width);
+  /* Navbar offset calculations */
   --app-navbar-offset-base: clamp(6rem, 16vw, 7.75rem);
   --app-navbar-offset: calc(
     var(--app-navbar-offset-base) + env(safe-area-inset-top)
   );
 }
+
+/* ============================================================================
+   MAIN CONTENT WRAPPER
+   ============================================================================ */
 
 .app-main-wrapper {
   box-sizing: border-box;
@@ -32,19 +41,29 @@
   border: none;
   box-shadow: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 }
 
-/* Standard layout for logged-in users */
+/* ============================================================================
+   STANDARD LAYOUT (Logged-in users)
+   ============================================================================ */
+
 .app-main-wrapper:not(.app-main-wrapper--login) {
+  /* Spacing variables */
   --app-main-side-padding: clamp(1.5rem, 6vw, 3rem);
   --app-main-bottom-padding: clamp(2rem, 4vw, 3rem);
 
+  /* Horizontal navbar on top - use padding-top, no left padding */
   padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem))
     var(--app-main-side-padding) var(--app-main-bottom-padding)
     var(--app-main-side-padding);
 }
 
-/* Hero layout for login page - full-width, centered, immersive */
+/* ============================================================================
+   LOGIN PAGE LAYOUT
+   ============================================================================ */
+
 .app-main-wrapper--login {
   gap: 0;
   align-items: stretch;
@@ -58,10 +77,46 @@
   margin: 0;
 }
 
-/* Breadcrumb removed */
-.app-breadcrumb-container {
-  display: none;
+/* ============================================================================
+   NAVBAR VISIBILITY (Login page)
+   ============================================================================ */
+
+/* Ensure navbar is always visible, including on login page */
+.app--login .navbar,
+.app--login .app-navbar {
+  display: flex;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-sticky, 1020);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
 }
+
+/* Ensure LiquidGlass wrapper is also visible */
+.app--login .app-navbar-glass {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  z-index: var(--z-sticky, 1020);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Desktop: vertical navbar for login page */
+@media (width > 960px) {
+  .app--login .app-navbar-glass {
+    right: auto;
+    bottom: 0;
+  }
+}
+
+/* ============================================================================
+   BACKGROUND & LAYERING
+   ============================================================================ */
 
 /* Cat background positioning */
 .app .cat-background {
@@ -77,32 +132,10 @@
   z-index: 1;
 }
 
-/* * Ensure navbar is always visible, including on login page */
-.app--login .navbar,
-.app--login .app-navbar {
-  display: flex;
-  visibility: visible;
-  opacity: 1;
-  z-index: var(--z-sticky, 1020);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================================================ */
 
-/* * Ensure LiquidGlass wrapper is also visible */
-.app--login .app-navbar-glass {
-  display: block;
-  visibility: visible;
-  opacity: 1;
-  z-index: var(--z-sticky, 1020);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-}
-
-/* Responsive adjustments */
 @media (width <= 768px) {
   .app-main-wrapper:not(.app-main-wrapper--login) {
     padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem)
@@ -114,7 +147,19 @@
   }
 }
 
-/* Global loading overlay positioning */
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Breadcrumb removed */
+.app-breadcrumb-container {
+  display: none;
+}
+
+/* ============================================================================
+   GLOBAL LOADING OVERLAY
+   ============================================================================ */
+
 .global-loading-overlay {
   position: fixed;
   inset: 0;

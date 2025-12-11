@@ -1,8 +1,0 @@
-/* CSS Custom Properties for responsive design */
-:root {
-  --mobile-touch-target-min: 48px;
-  --mobile-touch-target-large: clamp(3.5rem, 10vw, 3.75rem);
-  --mobile-content-padding: clamp(4rem, 14vw, 5rem);
-  --mobile-safe-spacing: clamp(1rem, 6vw, 1.5rem);
-  --mobile-safe-spacing-small: clamp(0.75rem, 5vw, 1.25rem);
-}

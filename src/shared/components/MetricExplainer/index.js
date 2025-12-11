@@ -1,1 +1,2 @@
-export { MetricExplainer, InfoIcon, default } from "./MetricExplainer";
+export { MetricExplainer, InfoIcon } from "./MetricExplainer";
+// Default export removed - components are imported as named exports

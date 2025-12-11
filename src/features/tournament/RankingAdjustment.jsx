@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { Card } from "../../shared/components";
 import { ErrorManager } from "../../shared/services/errorManager";
+import { TIMING } from "../../core/constants";
 import "./RankingAdjustment.css";
 /**
  * --- AUTO-GENERATED DOCSTRING ---
@@ -126,13 +127,13 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
               if (isMountedRef.current) {
                 setSaveStatus("");
               }
-            }, 3000);
+            }, TIMING.STATUS_ERROR_DISPLAY_DURATION_MS);
 
             if (process.env.NODE_ENV === "development") {
               console.error("Failed to save rankings:", error);
             }
           });
-      }, 500);
+      }, TIMING.SAVE_DEBOUNCE_DELAY_MS);
     }
 
     return () => {
@@ -160,12 +161,12 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
     // Enhanced rating calculation with better wins/losses preservation
     const adjustedItems = newItems.map((item, index) => {
       const originalItem = items.find(
-        (original) => original.name === item.name,
+        (original) => original.name === item.name
       );
       return {
         ...item,
         rating: Math.round(
-          1000 + (1000 * (newItems.length - index)) / newItems.length,
+          1000 + (1000 * (newItems.length - index)) / newItems.length
         ),
         // Explicitly preserve wins and losses from the original item
         wins: originalItem?.wins ?? 0,

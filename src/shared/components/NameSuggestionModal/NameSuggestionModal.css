@@ -20,7 +20,9 @@
   max-width: 90vw;
 }
 
-.name-suggestion-modal-glass .liquid-glass-content {
+/* liquid-glass-content wrapper removed - styles applied to direct children */
+.name-suggestion-modal-glass
+  > *:not(.liquid-glass-filter, .displacement-image-container) {
   display: flex;
   flex-direction: column;
   min-height: 0;

@@ -47,7 +47,7 @@ const createSupabaseClient =
           "\n   Please check that SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file.",
           "\n   Expected format:",
           "\n   SUPABASE_URL=https://your-project.supabase.co",
-          "\n   SUPABASE_ANON_KEY=your-anon-key",
+          "\n   SUPABASE_ANON_KEY=your-anon-key"
         );
       }
       return null;
@@ -72,7 +72,7 @@ const createSupabaseClient =
             if (process.env.NODE_ENV === "development") {
               console.warn(
                 "⚠️ Local storage unavailable, session persistence disabled:",
-                error,
+                error
               );
             }
             return undefined;
@@ -80,11 +80,24 @@ const createSupabaseClient =
         })(),
       } as const;
 
+      // Get current user name from localStorage to include in headers
+      let currentUserName: string | null = null;
+      try {
+        if (typeof window !== "undefined" && window.localStorage) {
+          currentUserName = window.localStorage.getItem("catNamesUser");
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("Could not read user from localStorage:", error);
+        }
+      }
+
       const client = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: authOptions,
         global: {
           headers: {
             "X-Client-Info": "cat-name-tournament",
+            ...(currentUserName ? { "x-user-name": currentUserName } : {}),
           },
         },
         db: {
@@ -103,7 +116,7 @@ const createSupabaseClient =
           if (process.env.NODE_ENV === "development") {
             console.error(
               "⚠️ Database connection test failed:",
-              testError.message,
+              testError.message
             );
           }
           // Don't fail initialization, just warn
@@ -132,7 +145,7 @@ const createSupabaseClient =
           "\n   - Invalid credentials",
           "\n   - Network connectivity issues",
           "\n   - CORS configuration problems",
-          "\n   - Supabase service outage",
+          "\n   - Supabase service outage"
         );
       }
       return null;
@@ -140,7 +153,7 @@ const createSupabaseClient =
   };
 
 const getSupabaseClient = async (
-  retryCount = 0,
+  retryCount = 0
 ): Promise<SupabaseClient<Database> | null> => {
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 1000;
@@ -158,7 +171,7 @@ const getSupabaseClient = async (
       .catch(async (error) => {
         console.error(
           `❌ Supabase initialization failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`,
-          error,
+          error
         );
         initializationPromise = null;
 
@@ -192,6 +205,38 @@ export const getSupabaseClientSync = (): SupabaseClient<Database> | null =>
 export const resolveSupabaseClient =
   async (): Promise<SupabaseClient<Database> | null> =>
     getSupabaseClientSync() ?? (await getSupabaseClient());
+
+/**
+ * Update the x-user-name header for the current Supabase client
+ * Call this when user logs in or out to ensure RLS policies work correctly
+ */
+export const updateSupabaseUserContext = (userName: string | null): void => {
+  if (!supabase) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        "Cannot update user context: Supabase client not initialized"
+      );
+    }
+    return;
+  }
+
+  // Update the headers for future requests
+  // Note: This uses the internal API of the Supabase client
+  // @ts-ignore - accessing internal property
+  if (supabase.rest && supabase.rest.headers) {
+    if (userName) {
+      // @ts-ignore
+      supabase.rest.headers["x-user-name"] = userName;
+    } else {
+      // @ts-ignore
+      delete supabase.rest.headers["x-user-name"];
+    }
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.log(`🔄 Updated Supabase user context: ${userName || "(none)"}`);
+  }
+};
 
 if (!supabase) {
   void getSupabaseClient();

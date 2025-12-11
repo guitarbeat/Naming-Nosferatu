@@ -133,6 +133,25 @@
 }
 
 /* ==========================================================================
+   Z-INDEX SYSTEM
+   ========================================================================== */
+:root {
+  --z-negative: -1;
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-elevate: 1;
+  --z-sticky: 1000;
+  --z-drawer: 200;
+  --z-modal: 300;
+  --z-popover: 400;
+  --z-toast: 500;
+}
+
+/* ==========================================================================
    TRANSITION SYSTEM
    ========================================================================== */
 :root {
@@ -172,6 +191,30 @@
   --shadow-pink: 0 4px 16px rgb(250 38 160 / 15%);
   --shadow-gradient:
     0 8px 24px rgb(47 243 224 / 12%), 0 4px 12px rgb(250 38 160 / 10%);
+
+  /* * Legacy shadow variables (from effects.css) */
+  --shadow-color: rgb(0 0 0 / 40%);
+  --shadow-color-light: rgb(0 0 0 / 15%);
+  --shadow-color-medium: rgb(0 0 0 / 25%);
+  --shadow-color-strong: rgb(0 0 0 / 35%);
+
+  /* * Text shadows */
+  --text-shadow-sm: 0 2px 8px rgb(0 0 0 / 20%);
+  --text-shadow-lg: 0 2px 12px rgb(0 0 0 / 40%);
+
+  /* * Overlay colors */
+  --overlay-light: rgb(0 0 0 / 25%);
+  --overlay-medium: rgb(0 0 0 / 40%);
+  --overlay-dark: rgb(0 0 0 / 55%);
+  --overlay-darker: rgb(0 0 0 / 65%);
+
+  /* * Vibrant overlay options */
+  --overlay-cyan: rgb(47 243 224 / 10%);
+  --overlay-pink: rgb(250 38 160 / 10%);
+  --overlay-red: rgb(245 23 32 / 10%);
+  --overlay-cyan-medium: rgb(47 243 224 / 20%);
+  --overlay-pink-medium: rgb(250 38 160 / 20%);
+  --overlay-red-medium: rgb(245 23 32 / 20%);
 }
 
 /* ==========================================================================
@@ -194,20 +237,6 @@
 }
 
 /* ==========================================================================
-   Z-INDEX SYSTEM
-   ========================================================================== */
-:root {
-  --z-base: 0;
-  --z-dropdown: 1000;
-  --z-sticky: 1020;
-  --z-fixed: 1030;
-  --z-modal-backdrop: 1040;
-  --z-modal: 1050;
-  --z-popover: 1060;
-  --z-tooltip: 1070;
-}
-
-/* ==========================================================================
    RESPONSIVE BREAKPOINTS
    ========================================================================== */
 :root {
@@ -224,6 +253,8 @@
 :root {
   /* * Button tokens - Consolidated from buttons.css */
   --button-base-height: 48px;
+  --button-base-padding-x: var(--space-4);
+  --button-base-padding-y: var(--space-3);
   --button-height-sm: 32px;
   --button-height-md: 40px;
   --button-height-lg: 48px;

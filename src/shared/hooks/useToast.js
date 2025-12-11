@@ -83,4 +83,4 @@ export function useToast(options = {}) {
   };
 }
 
-export default useToast;
+// Default export removed - hook is imported as named export

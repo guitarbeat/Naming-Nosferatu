@@ -5,6 +5,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import useMobileGestures from "../../../../core/hooks/useMobileGestures";
+import { TIMING } from "../../../../core/constants";
 import { getRandomCatImage } from "../../utils";
 import { CAT_IMAGES } from "../../constants";
 import SwipeCard from "./SwipeCard";
@@ -45,7 +46,7 @@ function SwipeableNameCards({
       setIsLongPressing(true);
       addHapticFeedback("heavy");
       // Show additional info or context menu
-      setTimeout(() => setIsLongPressing(false), 1000);
+      setTimeout(() => setIsLongPressing(false), TIMING.LONG_PRESS_TIMEOUT_MS);
     },
     onDoubleTap: () => {
       // Double tap to toggle selection

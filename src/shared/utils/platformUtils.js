@@ -109,13 +109,14 @@ export function createActivationHandler(callback) {
   };
 }
 
-export default {
-  isMacPlatform,
-  getModifierKey,
-  formatShortcut,
-  getShortcutString,
-  isActivationKey,
-  matchesShortcut,
-  createActivationHandler,
-  SHORTCUTS,
-};
+// Default export removed - use named exports instead
+// export default {
+//   isMacPlatform,
+//   getModifierKey,
+//   formatShortcut,
+//   getShortcutString,
+//   isActivationKey,
+//   matchesShortcut,
+//   createActivationHandler,
+//   SHORTCUTS,
+// };

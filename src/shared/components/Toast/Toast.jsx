@@ -4,7 +4,7 @@
  * Supports both individual toast rendering and container management with multiple toasts.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./Toast.module.css";
@@ -30,6 +30,7 @@ const ToastItem = ({
 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
+  const toastGlassId = useId();
 
   const handleDismiss = useCallback(() => {
     setIsExiting(true);
@@ -81,6 +82,7 @@ const ToastItem = ({
 
   return (
     <LiquidGlass
+      id={`toast-glass-${toastGlassId.replace(/:/g, "-")}`}
       width={280}
       height={60}
       radius={10}
@@ -90,7 +92,6 @@ const ToastItem = ({
       inputBlur={6}
       outputBlur={0.4}
       className={styles.toastGlass}
-      id={`toast-${type}-filter`}
       style={{
         width: "auto",
         height: "auto",

@@ -147,9 +147,10 @@ export function exportTournamentResultsToCSV(
   });
 }
 
-export default {
-  exportToCSV,
-  exportNamesToCSV,
-  exportTournamentResultsToCSV,
-  arrayToCSV,
-};
+// Default export removed - use named exports instead
+// export default {
+//   exportToCSV,
+//   exportNamesToCSV,
+//   exportTournamentResultsToCSV,
+//   arrayToCSV,
+// };

@@ -2,7 +2,7 @@
  * @module Card
  * @description Reusable card component with flexible styling options
  */
-import React from "react";
+import React, { useId } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./Card.module.css";
@@ -39,6 +39,8 @@ const Card = React.forwardRef(
 
     // * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
     const shouldUseLiquidGlass = liquidGlass || background === "glass";
+    // * Generate unique ID for this LiquidGlass instance
+    const glassId = useId();
 
     if (shouldUseLiquidGlass) {
       // * Default config for glass background or custom liquidGlass config
@@ -62,6 +64,7 @@ const Card = React.forwardRef(
         frost = defaultGlassConfig.frost,
         inputBlur = defaultGlassConfig.inputBlur,
         outputBlur = defaultGlassConfig.outputBlur,
+        id,
         ...glassProps
       } = typeof liquidGlass === "object" ? liquidGlass : defaultGlassConfig;
 
@@ -79,6 +82,7 @@ const Card = React.forwardRef(
 
       return (
         <LiquidGlass
+          id={id || `card-glass-${glassId.replace(/:/g, "-")}`}
           width={width}
           height={height}
           radius={radius}

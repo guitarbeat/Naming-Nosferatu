@@ -60,7 +60,7 @@ export function AnalysisDashboard({
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     STORAGE_KEYS.ANALYSIS_DASHBOARD_COLLAPSED,
-    defaultCollapsed,
+    defaultCollapsed
   );
 
   // * Get context for filtering (optional - only if available)
@@ -93,7 +93,7 @@ export function AnalysisDashboard({
           rankingPeriods,
           {
             dateFilter,
-          },
+          }
         );
         if (isAdmin) {
           const [analytics, leaderboard, popularity, history] =
@@ -197,7 +197,7 @@ export function AnalysisDashboard({
         setSortDirection("desc");
       }
     },
-    [sortField],
+    [sortField]
   );
 
   const renderSortIndicator = useCallback(
@@ -209,7 +209,7 @@ export function AnalysisDashboard({
         </span>
       );
     },
-    [sortField, sortDirection],
+    [sortField, sortDirection]
   );
 
   const handleHideName = useCallback(
@@ -222,17 +222,17 @@ export function AnalysisDashboard({
       try {
         if (analyticsData) {
           setAnalyticsData((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
         if (leaderboardData) {
           setLeaderboardData((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
         if (selectionPopularity) {
           setSelectionPopularity((prev) =>
-            prev ? prev.filter((item) => item.name_id !== nameId) : prev,
+            prev ? prev.filter((item) => item.name_id !== nameId) : prev
           );
         }
 
@@ -248,7 +248,7 @@ export function AnalysisDashboard({
               const analytics = await catNamesAPI.getPopularityAnalytics(
                 50,
                 userFilter,
-                userName,
+                userName
               );
               setAnalyticsData(analytics);
             } else {
@@ -269,7 +269,7 @@ export function AnalysisDashboard({
           const analytics = await catNamesAPI.getPopularityAnalytics(
             50,
             userFilter,
-            userName,
+            userName
           );
           setAnalyticsData(analytics);
         } else {
@@ -290,7 +290,7 @@ export function AnalysisDashboard({
       leaderboardData,
       selectionPopularity,
       userFilter,
-    ],
+    ]
   );
 
   const displayNames = useMemo(() => {
@@ -347,7 +347,7 @@ export function AnalysisDashboard({
             filterDate = new Date(
               now.getFullYear(),
               now.getMonth(),
-              now.getDate(),
+              now.getDate()
             );
             break;
           case "week":
@@ -440,12 +440,12 @@ export function AnalysisDashboard({
       const ratingPercentile = calculatePercentile(
         item.rating,
         displayNames.map((n) => n.rating),
-        true,
+        true
       );
       const selectedPercentile = calculatePercentile(
         item.selected,
         displayNames.map((n) => n.selected),
-        true,
+        true
       );
 
       // Determine insights/badges - focus on worst performers for removal
@@ -502,7 +502,7 @@ export function AnalysisDashboard({
         .sort(
           (a, b) =>
             new Date(a.dateSubmitted).getTime() -
-            new Date(b.dateSubmitted).getTime(),
+            new Date(b.dateSubmitted).getTime()
         );
       if (oldestNeverSelected) {
         result.push({
@@ -520,7 +520,7 @@ export function AnalysisDashboard({
     }
 
     const lowPerformers = displayNames.filter(
-      (n) => n.rating <= 1500 && n.selected === 0 && n.wins === 0,
+      (n) => n.rating <= 1500 && n.selected === 0 && n.wins === 0
     );
     if (lowPerformers.length > 0) {
       result.push({
@@ -592,7 +592,7 @@ export function AnalysisDashboard({
         categories={toolbarContext.categories || []}
         showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
         showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
-        userSelectOptions={toolbarContext.profileProps?.userSelectOptions || []}
+        userOptions={toolbarContext.profileProps?.userOptions || []}
         filteredCount={displayNames.length}
         totalCount={consolidatedNames.length}
         selectedCount={toolbarContext.selectedCount || 0}
@@ -844,14 +844,14 @@ export function AnalysisDashboard({
                           summaryStats && summaryStats.maxRating > 0
                             ? Math.min(
                                 (item.rating / summaryStats.maxRating) * 100,
-                                100,
+                                100
                               )
                             : 0;
                         const winsPercent =
                           summaryStats && summaryStats.maxWins > 0
                             ? Math.min(
                                 (item.wins / summaryStats.maxWins) * 100,
-                                100,
+                                100
                               )
                             : 0;
                         const selectedPercent =
@@ -859,7 +859,7 @@ export function AnalysisDashboard({
                             ? Math.min(
                                 (item.selected / summaryStats.maxSelected) *
                                   100,
-                                100,
+                                100
                               )
                             : 0;
 
@@ -1003,7 +1003,7 @@ export function AnalysisDashboard({
                                     } catch (error) {
                                       devError(
                                         "[AnalysisDashboard] Failed to hide name:",
-                                        error,
+                                        error
                                       );
                                     }
                                   }}
@@ -1089,8 +1089,8 @@ export function AnalysisDashboard({
                       "never_selected",
                       "inactive",
                       "poor_performer",
-                    ].includes(i),
-                  ),
+                    ].includes(i)
+                  )
                 ) && (
                   <div className="analysis-insights-section">
                     <h3 className="analysis-insights-section-title">
@@ -1105,8 +1105,8 @@ export function AnalysisDashboard({
                               "never_selected",
                               "inactive",
                               "poor_performer",
-                            ].includes(i),
-                          ),
+                            ].includes(i)
+                          )
                         )
                         .sort((a, b) => {
                           // * Sort by worst first: inactive > never selected > worst rated > poor performer
@@ -1124,9 +1124,9 @@ export function AnalysisDashboard({
                                   "never_selected",
                                   "inactive",
                                   "poor_performer",
-                                ].includes(i),
+                                ].includes(i)
                               )
-                              .map((i) => priority[i] ?? 99),
+                              .map((i) => priority[i] ?? 99)
                           );
                           const bPriority = Math.min(
                             ...b.insights
@@ -1136,9 +1136,9 @@ export function AnalysisDashboard({
                                   "never_selected",
                                   "inactive",
                                   "poor_performer",
-                                ].includes(i),
+                                ].includes(i)
                               )
-                              .map((i) => priority[i] ?? 99),
+                              .map((i) => priority[i] ?? 99)
                           );
                           if (aPriority !== bPriority)
                             return aPriority - bPriority;
@@ -1167,7 +1167,7 @@ export function AnalysisDashboard({
                                     } catch (error) {
                                       devError(
                                         "[AnalysisDashboard] Failed to hide name:",
-                                        error,
+                                        error
                                       );
                                     }
                                   }}
@@ -1191,7 +1191,7 @@ export function AnalysisDashboard({
                                     "never_selected",
                                     "inactive",
                                     "poor_performer",
-                                  ].includes(i),
+                                  ].includes(i)
                                 )
                                 .map((tag) => (
                                   <span
@@ -1216,8 +1216,8 @@ export function AnalysisDashboard({
                       "most_selected",
                       "underrated",
                       "undefeated",
-                    ].includes(i),
-                  ),
+                    ].includes(i)
+                  )
                 ) && (
                   <div className="analysis-insights-section">
                     <h3 className="analysis-insights-section-title">
@@ -1232,8 +1232,8 @@ export function AnalysisDashboard({
                               "most_selected",
                               "underrated",
                               "undefeated",
-                            ].includes(i),
-                          ),
+                            ].includes(i)
+                          )
                         )
                         .slice(0, 6)
                         .map((n) => (
@@ -1253,7 +1253,7 @@ export function AnalysisDashboard({
                                     "most_selected",
                                     "underrated",
                                     "undefeated",
-                                  ].includes(i),
+                                  ].includes(i)
                                 )
                                 .map((tag) => (
                                   <span

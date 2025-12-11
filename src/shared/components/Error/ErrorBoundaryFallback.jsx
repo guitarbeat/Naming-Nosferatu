@@ -80,6 +80,9 @@ function ErrorBoundaryFallback({ error, resetErrorBoundary, onRetry }) {
   const screenSize = useScreenSize();
   const mainContentRef = useRef(null);
   const retryButtonRef = useRef(null);
+  const announcementRef = useRef(null);
+  const textAreaRef = useRef(null);
+  const copyTimeoutRef = useRef(null);
 
   // * Focus management: Focus main content on mount for screen readers
   useEffect(() => {
@@ -367,10 +370,17 @@ ${JSON.stringify(
       announcement.className = "sr-only";
       announcement.textContent = "Diagnostic information copied to clipboard";
       document.body.appendChild(announcement);
+      announcementRef.current = announcement;
 
-      setTimeout(() => {
+      copyTimeoutRef.current = setTimeout(() => {
         setCopied(false);
-        document.body.removeChild(announcement);
+        if (
+          announcementRef.current &&
+          document.body.contains(announcementRef.current)
+        ) {
+          document.body.removeChild(announcementRef.current);
+        }
+        announcementRef.current = null;
       }, 2000);
     } catch (err) {
       console.error("Failed to copy diagnostics:", err);
@@ -380,15 +390,20 @@ ${JSON.stringify(
       textArea.style.position = "fixed";
       textArea.style.opacity = "0";
       document.body.appendChild(textArea);
+      textAreaRef.current = textArea;
       textArea.select();
       try {
         document.execCommand("copy");
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
       } catch (fallbackErr) {
         console.error("Fallback copy also failed:", fallbackErr);
       }
-      document.body.removeChild(textArea);
+      // * Remove textArea immediately after copy attempt
+      if (textAreaRef.current && document.body.contains(textAreaRef.current)) {
+        document.body.removeChild(textAreaRef.current);
+      }
+      textAreaRef.current = null;
     }
   };
 

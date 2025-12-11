@@ -1,2 +1,2 @@
 export { AnalysisDashboard } from "./AnalysisDashboard";
-export { default } from "./AnalysisDashboard";
+// Default export removed - component is imported as named export

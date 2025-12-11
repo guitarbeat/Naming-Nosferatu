@@ -53,17 +53,5 @@ export const deduplicateImages = (images) => {
   return deduped;
 };
 
-/**
- * Extract unique categories from names
- * @param {Array} names - Available names
- * @returns {Array} Category objects
- */
-export const extractCategories = (names) => {
-  const unique = new Set();
-  (names || []).forEach((n) => {
-    (n.categories || []).forEach((c) => unique.add(c));
-  });
-  return Array.from(unique)
-    .sort((a, b) => a.localeCompare(b))
-    .map((name) => ({ id: name, name }));
-};
+// Unused function removed
+// export const extractCategories = (names) => { ... };

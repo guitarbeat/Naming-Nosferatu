@@ -83,33 +83,79 @@ export function useTournamentVoting({
       // * Update Elo ratings
       const newRatings = { ...currentRatings };
 
-      if (winnerName && loserName && elo) {
-        const winnerRating = newRatings[winnerName]?.rating || 1500;
-        const loserRating = newRatings[loserName]?.rating || 1500;
-
-        const { winner: newWinnerRating, loser: newLoserRating } =
-          elo.calculateNewRatings(winnerRating, loserRating);
-
-        newRatings[winnerName] = {
-          ...(newRatings[winnerName] || {}),
-          rating: newWinnerRating,
-          wins: (newRatings[winnerName]?.wins || 0) + 1,
+      if (elo) {
+        // Get current ratings and stats for both names
+        const leftRating = newRatings[leftName]?.rating || 1500;
+        const rightRating = newRatings[rightName]?.rating || 1500;
+        const leftStats = {
+          winsA: newRatings[leftName]?.wins || 0,
+          lossesA: newRatings[leftName]?.losses || 0,
+        };
+        const rightStats = {
+          winsB: newRatings[rightName]?.wins || 0,
+          lossesB: newRatings[rightName]?.losses || 0,
         };
 
-        newRatings[loserName] = {
-          ...(newRatings[loserName] || {}),
-          rating: newLoserRating,
-          losses: (newRatings[loserName]?.losses || 0) + 1,
+        // Determine outcome based on vote type
+        let outcome;
+        if (voteType === "both") {
+          outcome = "both";
+        } else if (voteType === "neither") {
+          outcome = "none";
+        } else {
+          outcome = winner; // "left" or "right"
+        }
+
+        // Calculate new ratings using the correct method signature
+        const {
+          newRatingA,
+          newRatingB,
+          winsA,
+          lossesA,
+          winsB,
+          lossesB,
+        } = elo.calculateNewRatings(
+          leftRating,
+          rightRating,
+          outcome,
+          { ...leftStats, ...rightStats }
+        );
+
+        // Update left name
+        newRatings[leftName] = {
+          ...(newRatings[leftName] || {}),
+          rating: newRatingA,
+          wins: winsA,
+          losses: lossesA,
+        };
+
+        // Update right name
+        newRatings[rightName] = {
+          ...(newRatings[rightName] || {}),
+          rating: newRatingB,
+          wins: winsB,
+          losses: lossesB,
         };
       }
 
-      // * Update sorter preferences
-      if (sorter && winnerName && loserName) {
-        if (typeof sorter.recordPreference === "function") {
-          sorter.recordPreference(winnerName, loserName);
-        } else if (sorter.preferences instanceof Map) {
-          const key = `${winnerName}-${loserName}`;
-          sorter.preferences.set(key, 1);
+      // * Update sorter preferences, including neutral votes to avoid repeats
+      if (sorter) {
+        const markCompared = (left, right, value = 1) => {
+          if (typeof sorter.recordPreference === "function") {
+            sorter.recordPreference(left, right, value);
+          } else if (sorter.preferences instanceof Map) {
+            const key = `${left}-${right}`;
+            sorter.preferences.set(key, value);
+          }
+        };
+
+        if (winnerName && loserName) {
+          // Standard preference
+          markCompared(winnerName, loserName, 1);
+        } else if (voteType === "both" || voteType === "neither") {
+          // Neutral comparison: mark pair as seen so it doesn't repeat
+          markCompared(leftName, rightName, 0);
+          markCompared(rightName, leftName, 0);
         }
       }
 

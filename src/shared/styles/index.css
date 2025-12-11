@@ -7,18 +7,13 @@
 @import url("./design-tokens.css");
 @import url("./colors.css");
 @import url("./typography.css");
-@import url("./layout.css");
-@import url("./borders.css");
-@import url("./z-index.css");
 
 /* Effects & transitions */
-@import url("./effects.css");
 @import url("./transitions.css");
 @import url("./animations.css");
 @import url("./background-effects.css");
 @import url("./shimmer.css");
 @import url("./glass.css");
-@import url("./cursor-interactions.css");
 @import url("./interactions.css");
 
 /* Buttons & interactive elements */
@@ -29,21 +24,10 @@
 @import url("./analysis-mode.css");
 
 /* Utility layers */
-@import url("./utilities-layout.css");
-@import url("./utilities-components.css");
-@import url("./utilities-typography.css");
-@import url("./utilities-misc.css");
+@import url("./utilities.css");
 
 /* Theme variants */
 @import url("./themes.css");
 
 /* Responsive & device-specific tweaks */
-@import url("./mobile.css");
-@import url("./responsive-variables.css");
-@import url("./responsive-global.css");
-@import url("./responsive-small-mobile.css");
-@import url("./responsive-touch.css");
-@import url("./responsive-high-contrast.css");
-@import url("./responsive-reduced-motion.css");
-@import url("./responsive-safe-area.css");
-@import url("./responsive-landscape.css");
+@import url("./responsive-mobile.css");

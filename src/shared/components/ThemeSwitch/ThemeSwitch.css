@@ -1,0 +1,202 @@
+/* Theme Switch Component Styles */
+
+.theme-switch {
+  --switch-width: 4.4rem;
+  --switch-height: 2.2rem;
+  --switch-border-radius: calc(var(--switch-height) / 2);
+  --switch-padding: 0.2rem;
+  --switch-handle-size: calc(var(--switch-height) - 2 * var(--switch-padding));
+  --handle-translate: 0;
+
+  position: relative;
+  margin: 0 1rem 0 auto;
+  z-index: 9999;
+  width: var(--switch-width);
+  height: var(--switch-height);
+  border-radius: var(--switch-border-radius);
+  background: linear-gradient(90deg, #78d6c6 0%, #419197 50%, #04162e 100%);
+  background-size: 200% 100%;
+  background-position: 0 0;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    background-position 1s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  animation:
+    switchEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+    cosmicFloat 8s ease-in-out infinite;
+  opacity: 1;
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 20%),
+    inset 0 2px 4px rgb(255 255 255 / 15%),
+    0 0 0 1px rgb(0 0 0 / 10%);
+  outline: none;
+}
+
+.theme-switch .switch-handle {
+  position: absolute;
+  top: var(--switch-padding);
+  left: var(--switch-padding);
+  width: var(--switch-handle-size);
+  height: var(--switch-handle-size);
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff7d66 -50%, #f5fccd 50%, #49676b 150%);
+  background-size: 100% 200%;
+  transform: translateX(var(--handle-translate));
+  transform-origin: center;
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.5s ease,
+    box-shadow 0.3s ease;
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 25%),
+    inset 0 2px 4px rgb(255 255 255 / 30%),
+    0 0 0 2px rgb(255 255 255 / 10%);
+}
+
+.theme-switch .switch-handle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgb(255 255 255 / 40%) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.theme-switch.light-theme {
+  background-position: 100% 0;
+
+  --handle-translate: calc(var(--switch-width) - var(--switch-height));
+}
+
+.theme-switch.light-theme .switch-handle {
+  background: linear-gradient(180deg, #b5bcc6 -50%, #f3f2f1 50%, #49676b 150%);
+}
+
+.theme-switch:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgb(255 255 255 / 55%),
+    0 0 0 5px rgb(0 0 0 / 35%),
+    0 2px 8px rgb(0 0 0 / 15%),
+    inset 0 1px 2px rgb(255 255 255 / 10%);
+}
+
+.theme-switch:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 16px rgb(0 0 0 / 25%),
+    inset 0 2px 4px rgb(255 255 255 / 20%),
+    0 0 0 1px rgb(0 0 0 / 15%);
+}
+
+.theme-switch:hover .switch-handle {
+  transform: translateX(var(--handle-translate)) scale(1.1);
+  box-shadow:
+    0 6px 16px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 40%),
+    0 0 0 2px rgb(255 255 255 / 20%);
+}
+
+.theme-switch:hover .switch-handle::before {
+  opacity: 1;
+}
+
+.theme-switch:focus-visible {
+  transform: none;
+  box-shadow:
+    0 0 0 3px rgb(100 200 255 / 60%),
+    0 0 0 5px rgb(0 0 0 / 20%),
+    0 4px 12px rgb(0 0 0 / 15%),
+    inset 0 1px 2px rgb(255 255 255 / 10%);
+}
+
+.theme-switch:focus-visible .switch-handle {
+  transform: translateX(var(--handle-translate)) scale(1.05);
+}
+
+.theme-switch:focus-visible .switch-handle::before {
+  opacity: 0.5;
+}
+
+.theme-switch:active {
+  transform: translateY(0);
+  box-shadow:
+    0 2px 6px rgb(0 0 0 / 30%),
+    inset 0 2px 4px rgb(255 255 255 / 10%);
+}
+
+.theme-switch:active .switch-handle {
+  transform: translateX(var(--handle-translate)) scale(0.95);
+  box-shadow:
+    0 2px 6px rgb(0 0 0 / 40%),
+    inset 0 1px 2px rgb(0 0 0 / 30%);
+}
+
+.theme-switch::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgb(255 255 255 / 15%) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.theme-switch:hover::after,
+.theme-switch:focus-visible::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch {
+    animation: none;
+  }
+
+  .theme-switch .switch-handle {
+    transition:
+      background 0.8s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .theme-switch:hover .switch-handle,
+  .theme-switch:focus-visible .switch-handle {
+    transform: translateX(var(--handle-translate));
+  }
+}
+
+@media (width <= 768px) {
+  .theme-switch {
+    --switch-width: calc(4.4rem * 0.8);
+    --switch-height: calc(2.2rem * 0.8);
+
+    animation:
+      cosmicFloat 6s ease-in-out infinite,
+      switchEntrance 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+@media (width <= 480px) {
+  .theme-switch {
+    animation:
+      cosmicFloat 4s ease-in-out infinite,
+      switchEntrance 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+@media (width <= 767px) {
+  .theme-switch {
+    margin-right: 0.5rem;
+  }
+}

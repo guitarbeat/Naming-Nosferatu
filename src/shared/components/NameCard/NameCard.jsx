@@ -33,6 +33,7 @@
 
 import React, { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
+import { TIMING } from "../../../core/constants";
 import CatImage from "../CatImage";
 import styles from "./NameCard.module.css";
 
@@ -80,7 +81,10 @@ function NameCard({
 
   useEffect(() => {
     if (isRippling) {
-      const timer = setTimeout(() => setIsRippling(false), 600);
+      const timer = setTimeout(
+        () => setIsRippling(false),
+        TIMING.RIPPLE_ANIMATION_DURATION_MS
+      );
       return () => clearTimeout(timer);
     }
   }, [isRippling]);
@@ -311,7 +315,7 @@ function NameCard({
                 tooltipPosition.x + 10,
                 typeof window !== "undefined"
                   ? window.innerWidth - 320
-                  : tooltipPosition.x + 10,
+                  : tooltipPosition.x + 10
               ),
               top: Math.max(tooltipPosition.y - 10, 10),
               zIndex: 1000,
@@ -348,7 +352,7 @@ function NameCard({
                           {suffix}
                         </span>
                       </div>
-                    ),
+                    )
                 )}
               </div>
 

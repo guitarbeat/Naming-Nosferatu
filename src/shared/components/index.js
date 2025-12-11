@@ -30,13 +30,13 @@ export { TournamentToolbar } from "./TournamentToolbar/TournamentToolbar";
 export { default as FormField } from "./Form/FormField";
 export {
   NameManagementView,
-  useNameManagementContext,
   useNameManagementContextSafe,
 } from "./NameManagementView/NameManagementView";
+// useNameManagementContext removed - only useNameManagementContextSafe is used
 
 // * Analysis Mode Components
-export { AnalysisToggle, AnalysisModeBanner } from "./AnalysisPanel";
 export { AnalysisDashboard } from "./AnalysisDashboard";
+// AnalysisToggle and AnalysisModeBanner removed - not used anywhere
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
 export { AdminAnalytics } from "./AdminAnalytics";
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo, useCallback } from "react";
 import "./LiquidGlass.css";
 
 /**
@@ -26,28 +26,30 @@ import "./LiquidGlass.css";
  * @param {number} props.chromaticG - Green channel offset
  * @param {number} props.chromaticB - Blue channel offset
  * @param {string} props.id - Unique filter ID
+ * @param {boolean} props.showCrosshair - Show crosshair pattern overlay (default: false)
  */
 function LiquidGlass({
   children,
   className = "",
-  width = 200,
-  height = 80,
-  radius = 999, // * Default to very large radius for pill shape
-  scale = -180,
-  saturation = 1.1,
-  frost = 0.05,
-  alpha = 0.93,
-  lightness = 50,
-  inputBlur = 11,
-  outputBlur = 0.7,
-  border = 0.07,
-  blend = "difference",
+  width = 240,
+  height = 110,
+  radius = 42,
+  scale = -110,
+  saturation = 1.08,
+  frost = 0.12,
+  alpha = 0.64,
+  lightness = 48,
+  inputBlur = 14,
+  outputBlur = 0.9,
+  border = 0.06,
+  blend = "soft-light",
   xChannel = "R",
   yChannel = "B",
-  chromaticR = 0,
-  chromaticG = 10,
-  chromaticB = 20,
+  chromaticR = 4,
+  chromaticG = 5,
+  chromaticB = 6,
   id = "liquid-glass-filter",
+  showCrosshair = false,
   style = {},
   ...props
 }) {
@@ -55,7 +57,224 @@ function LiquidGlass({
   const svgRef = useRef(null);
   const filterRef = useRef(null);
   const displacementImageRef = useRef(null);
+  const resizeTimeoutRef = useRef(null);
+  const isInitialMountRef = useRef(true);
 
+  // * Validate dimensions to prevent errors - memoized to avoid recalculation
+  const validWidth = useMemo(() => Math.max(1, width), [width]);
+  const validHeight = useMemo(() => Math.max(1, height), [height]);
+  const validRadius = useMemo(() => Math.max(0, radius), [radius]);
+
+  // * Generate unique IDs for internal filter elements
+  const redChannelId = useMemo(() => `redchannel-${id}`, [id]);
+  const greenChannelId = useMemo(() => `greenchannel-${id}`, [id]);
+  const blueChannelId = useMemo(() => `bluechannel-${id}`, [id]);
+  const feGaussianBlurId = useMemo(() => `gaussianblur-${id}`, [id]);
+
+  // * Check browser support for backdrop-filter with url()
+  // * Uses a more reliable detection method that checks if the property is actually supported
+  const supportsBackdropFilterUrl = useMemo(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return false;
+    }
+    try {
+      const testEl = document.createElement("div");
+      testEl.style.backdropFilter = "url(#test)";
+      const hasUrl = testEl.style.backdropFilter.includes("url");
+      // * Clean up test element
+      testEl.remove();
+      return hasUrl;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  // * Calculate pill-shaped radius: minimum of specified radius or half the height
+  const pillRadius = useMemo(
+    () => Math.min(validRadius, validHeight * 0.5),
+    [validRadius, validHeight]
+  );
+
+  // * Calculate border size
+  const borderSize = useMemo(
+    () => Math.min(validWidth, validHeight) * (border * 0.5),
+    [validWidth, validHeight, border]
+  );
+
+  const buildDisplacementImage = useCallback(() => {
+    if (!displacementImageRef.current || !filterRef.current) return;
+
+    const svgContent = `
+      <svg class="displacement-image" viewBox="0 0 ${validWidth} ${validHeight}" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="red-${id}" x1="100%" y1="0%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#000"/>
+            <stop offset="100%" stop-color="red"/>
+          </linearGradient>
+          <linearGradient id="blue-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#000"/>
+            <stop offset="100%" stop-color="blue"/>
+          </linearGradient>
+        </defs>
+        <!-- backdrop -->
+        <rect x="0" y="0" width="${validWidth}" height="${validHeight}" fill="black"></rect>
+        <!-- red linear -->
+        <rect x="0" y="0" width="${validWidth}" height="${validHeight}" rx="${pillRadius}" fill="url(#red-${id})" />
+        <!-- blue linear -->
+        <rect x="0" y="0" width="${validWidth}" height="${validHeight}" rx="${pillRadius}" fill="url(#blue-${id})" style="mix-blend-mode: ${blend}" />
+        <!-- block out distortion (input blur controls edge softness) -->
+        <rect x="${borderSize}" y="${borderSize}" width="${validWidth - borderSize * 2}" height="${validHeight - borderSize * 2}" rx="${pillRadius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${inputBlur}px)" />
+      </svg>
+    `;
+
+    try {
+      displacementImageRef.current.innerHTML = svgContent;
+      const svgEl = displacementImageRef.current.querySelector(
+        ".displacement-image"
+      );
+      if (svgEl) {
+        const serialized = new XMLSerializer().serializeToString(svgEl);
+        const encoded = encodeURIComponent(serialized);
+        const dataUri = `data:image/svg+xml,${encoded}`;
+
+        // * Update feImage href
+        const feImage = filterRef.current.querySelector("feImage");
+        if (feImage) {
+          feImage.setAttribute("href", dataUri);
+        }
+
+        // * Update all feDisplacementMap elements with x/y channel selectors (matching example pattern)
+        const allDisplacementMaps =
+          filterRef.current.querySelectorAll("feDisplacementMap");
+        allDisplacementMaps.forEach((map) => {
+          map.setAttribute("xChannelSelector", xChannel);
+          map.setAttribute("yChannelSelector", yChannel);
+        });
+      }
+    } catch (error) {
+      // * Silently fail if SVG serialization fails (e.g., in test environments)
+      console.warn("LiquidGlass: Failed to build displacement image", error);
+    }
+  }, [
+    validWidth,
+    validHeight,
+    pillRadius,
+    borderSize,
+    blend,
+    lightness,
+    alpha,
+    inputBlur,
+    id,
+    xChannel,
+    yChannel,
+  ]);
+
+  // * Check if view transitions are supported
+  const supportsViewTransition = useMemo(() => {
+    return typeof document !== "undefined" && "startViewTransition" in document;
+  }, []);
+
+  const updateFilter = useCallback(() => {
+    if (!filterRef.current || !containerRef.current) return;
+
+    buildDisplacementImage();
+
+    // * Update CSS variables
+    containerRef.current.style.setProperty("--width", `${validWidth}`);
+    containerRef.current.style.setProperty("--height", `${validHeight}`);
+    containerRef.current.style.setProperty("--radius", `${pillRadius}`);
+    containerRef.current.style.setProperty("--frost", `${frost}`);
+    containerRef.current.style.setProperty("--output-blur", `${outputBlur}`);
+    containerRef.current.style.setProperty("--saturation", `${saturation}`);
+    containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
+
+    // * Apply backdrop-filter with browser compatibility check
+    const backdropFilterValue = supportsBackdropFilterUrl
+      ? `url(#${id}) saturate(${saturation})` // * Chromium browsers: use url() filter for liquid glass effect
+      : `blur(8px) saturate(${saturation})`; // * Fallback for Firefox/WebKit: use blur + saturate
+    containerRef.current.style.setProperty(
+      "--backdrop-filter",
+      backdropFilterValue
+    );
+    containerRef.current.style.backdropFilter = backdropFilterValue;
+
+    // * Set base scale on all feDisplacementMap elements first (matching example pattern)
+    const allDisplacementMaps =
+      filterRef.current.querySelectorAll("feDisplacementMap");
+    allDisplacementMaps.forEach((map) => {
+      map.setAttribute("scale", scale);
+    });
+
+    // * Update chromatic aberration displacement scales using unique IDs
+    // * Override base scale with channel-specific scales
+    const channels = [
+      { id: redChannelId, scale: scale + chromaticR },
+      { id: greenChannelId, scale: scale + chromaticG },
+      { id: blueChannelId, scale: scale + chromaticB },
+    ];
+
+    channels.forEach(({ id: channelId, scale: channelScale }) => {
+      const channel = filterRef.current.querySelector(`#${channelId}`);
+      if (channel) {
+        channel.setAttribute("scale", channelScale);
+      }
+    });
+
+    // * Update output blur (softens the chromatic aberration)
+    const feGaussianBlur = filterRef.current.querySelector(
+      `#${feGaussianBlurId}`
+    );
+    if (feGaussianBlur) {
+      feGaussianBlur.setAttribute("stdDeviation", outputBlur);
+    }
+  }, [
+    buildDisplacementImage,
+    validWidth,
+    validHeight,
+    pillRadius,
+    frost,
+    outputBlur,
+    saturation,
+    id,
+    supportsBackdropFilterUrl,
+    redChannelId,
+    greenChannelId,
+    blueChannelId,
+    feGaussianBlurId,
+    scale,
+    chromaticR,
+    chromaticG,
+    chromaticB,
+    xChannel,
+    yChannel,
+  ]);
+
+  // * Wrapper function that uses view transitions for smooth updates (matching example pattern)
+  const updateFilterWithTransition = useCallback(() => {
+    if (!supportsViewTransition) {
+      updateFilter();
+      return;
+    }
+
+    // * Use view transition for smooth visual updates
+    document.startViewTransition(() => {
+      updateFilter();
+    });
+  }, [supportsViewTransition, updateFilter]);
+
+  // * Store latest updateFilter in ref so setup effect can access it without dependency issues
+  const updateFilterRef = useRef(updateFilter);
+  const updateFilterWithTransitionRef = useRef(updateFilterWithTransition);
+
+  useEffect(() => {
+    updateFilterRef.current = updateFilter;
+  }, [updateFilter]);
+
+  useEffect(() => {
+    updateFilterWithTransitionRef.current = updateFilterWithTransition;
+  }, [updateFilterWithTransition]);
+
+  // * Setup effect: runs once on mount to initialize filter and setup resize handler
   useEffect(() => {
     if (!containerRef.current || !svgRef.current) return;
 
@@ -64,139 +283,59 @@ function LiquidGlass({
     if (!filterElement) return;
 
     filterRef.current = filterElement;
+    // * Initial update doesn't need transition
+    updateFilterRef.current();
+    // * Mark that initial mount is complete
+    isInitialMountRef.current = false;
 
-    const buildDisplacementImage = () => {
-      const borderSize = Math.min(width, height) * (border * 0.5);
-      // * Calculate pill-shaped radius: minimum of specified radius or half the height
-      const pillRadius = Math.min(radius, height * 0.5);
-      const svgContent = `
-        <svg class="displacement-image" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="red-${id}" x1="100%" y1="0%" x2="0%" y2="0%">
-              <stop offset="0%" stop-color="#000"/>
-              <stop offset="100%" stop-color="red"/>
-            </linearGradient>
-            <linearGradient id="blue-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#000"/>
-              <stop offset="100%" stop-color="blue"/>
-            </linearGradient>
-          </defs>
-          <!-- backdrop -->
-          <rect x="0" y="0" width="${width}" height="${height}" fill="black"></rect>
-          <!-- red linear -->
-          <rect x="0" y="0" width="${width}" height="${height}" rx="${pillRadius}" fill="url(#red-${id})" />
-          <!-- blue linear -->
-          <rect x="0" y="0" width="${width}" height="${height}" rx="${pillRadius}" fill="url(#blue-${id})" style="mix-blend-mode: ${blend}" />
-          <!-- block out distortion (input blur controls edge softness) -->
-          <rect x="${borderSize}" y="${Math.min(width, height) * (border * 0.5)}" width="${width - borderSize * 2}" height="${height - borderSize * 2}" rx="${pillRadius}" fill="hsl(0 0% ${lightness}% / ${alpha})" style="filter:blur(${inputBlur}px)" />
-        </svg>
-      `;
-
-      if (displacementImageRef.current) {
-        displacementImageRef.current.innerHTML = svgContent;
-        const svgEl = displacementImageRef.current.querySelector(
-          ".displacement-image",
-        );
-        if (svgEl) {
-          const serialized = new XMLSerializer().serializeToString(svgEl);
-          const encoded = encodeURIComponent(serialized);
-          const dataUri = `data:image/svg+xml,${encoded}`;
-
-          // * Update feImage href
-          const feImage = filterRef.current.querySelector("feImage");
-          if (feImage) {
-            feImage.setAttribute("href", dataUri);
-          }
-        }
-      }
-    };
-
-    const updateFilter = () => {
-      buildDisplacementImage();
-
-      // * Update CSS variables
-      if (containerRef.current) {
-        // * Calculate pill-shaped radius for CSS (minimum of specified radius or half the height)
-        const pillRadius = Math.min(radius, height * 0.5);
-        containerRef.current.style.setProperty("--width", `${width}`);
-        containerRef.current.style.setProperty("--height", `${height}`);
-        containerRef.current.style.setProperty("--radius", `${pillRadius}`);
-        containerRef.current.style.setProperty("--frost", `${frost}`);
-        containerRef.current.style.setProperty(
-          "--output-blur",
-          `${outputBlur}`,
-        );
-        containerRef.current.style.setProperty("--saturation", `${saturation}`);
-        containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
-        // * Apply filter with saturation - set as CSS variable for CSS fallback
-        containerRef.current.style.setProperty(
-          "--backdrop-filter",
-          `url(#${id}) saturate(${saturation})`,
-        );
-        // * Also set directly for immediate application
-        containerRef.current.style.backdropFilter = `url(#${id}) saturate(${saturation})`;
-      }
-
-      // * Update chromatic aberration displacement scales
-      const redChannel = filterRef.current.querySelector("#redchannel");
-      const greenChannel = filterRef.current.querySelector("#greenchannel");
-      const blueChannel = filterRef.current.querySelector("#bluechannel");
-
-      if (redChannel) {
-        redChannel.setAttribute("scale", scale + chromaticR);
-        redChannel.setAttribute("xChannelSelector", xChannel);
-        redChannel.setAttribute("yChannelSelector", yChannel);
-      }
-
-      if (greenChannel) {
-        greenChannel.setAttribute("scale", scale + chromaticG);
-        greenChannel.setAttribute("xChannelSelector", xChannel);
-        greenChannel.setAttribute("yChannelSelector", yChannel);
-      }
-
-      if (blueChannel) {
-        blueChannel.setAttribute("scale", scale + chromaticB);
-        blueChannel.setAttribute("xChannelSelector", xChannel);
-        blueChannel.setAttribute("yChannelSelector", yChannel);
-      }
-
-      // * Update output blur (softens the chromatic aberration)
-      const feGaussianBlur = filterRef.current.querySelector("feGaussianBlur");
-      if (feGaussianBlur) {
-        feGaussianBlur.setAttribute("stdDeviation", outputBlur);
-      }
-    };
-
-    updateFilter();
-
-    // * Update on window resize
+    // * Debounced resize handler to prevent performance issues
     const handleResize = () => {
-      updateFilter();
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      resizeTimeoutRef.current = setTimeout(() => {
+        updateFilterWithTransitionRef.current();
+      }, 150); // * 150ms debounce
     };
+
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
     };
+    // * Only run on mount and when id changes (filter setup)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
+  // * Update filter with view transition when props change (for smooth transitions)
+  useEffect(() => {
+    // * Skip on initial mount (handled by setup effect above)
+    if (isInitialMountRef.current || !filterRef.current) return;
+    // * Use view transition for prop changes to create smooth visual updates
+    updateFilterWithTransition();
   }, [
-    width,
-    height,
-    radius,
-    scale,
-    saturation,
+    updateFilterWithTransition,
+    // * Dependencies that should trigger smooth transitions
+    validWidth,
+    validHeight,
+    pillRadius,
     frost,
-    alpha,
-    lightness,
-    inputBlur,
     outputBlur,
-    border,
-    blend,
-    xChannel,
-    yChannel,
+    saturation,
+    scale,
     chromaticR,
     chromaticG,
     chromaticB,
-    id,
+    xChannel,
+    yChannel,
+    blend,
+    lightness,
+    alpha,
+    inputBlur,
+    border,
   ]);
 
   return (
@@ -204,13 +343,13 @@ function LiquidGlass({
       ref={containerRef}
       className={`liquid-glass ${className}`}
       style={{
-        width: style.width || `${width}px`,
-        height: style.height || `${height}px`,
+        width: style.width || `${validWidth}px`,
+        height: style.height || `${validHeight}px`,
         ...style,
       }}
       {...props}
     >
-      <div className="liquid-glass-content">{children}</div>
+      {children}
       <svg
         ref={svgRef}
         className="liquid-glass-filter"
@@ -225,7 +364,7 @@ function LiquidGlass({
             <feDisplacementMap
               in="SourceGraphic"
               in2="map"
-              id="redchannel"
+              id={redChannelId}
               xChannelSelector={xChannel}
               yChannelSelector={yChannel}
               result="dispRed"
@@ -244,7 +383,7 @@ function LiquidGlass({
             <feDisplacementMap
               in="SourceGraphic"
               in2="map"
-              id="greenchannel"
+              id={greenChannelId}
               xChannelSelector={xChannel}
               yChannelSelector={yChannel}
               result="dispGreen"
@@ -263,7 +402,7 @@ function LiquidGlass({
             <feDisplacementMap
               in="SourceGraphic"
               in2="map"
-              id="bluechannel"
+              id={blueChannelId}
               xChannelSelector={xChannel}
               yChannelSelector={yChannel}
               result="dispBlue"
@@ -283,7 +422,11 @@ function LiquidGlass({
             <feBlend in="rg" in2="blue" mode="screen" result="output" />
 
             {/* * Output blur softens the chromatic aberration effect */}
-            <feGaussianBlur in="output" stdDeviation={outputBlur} />
+            <feGaussianBlur
+              id={feGaussianBlurId}
+              in="output"
+              stdDeviation={outputBlur}
+            />
           </filter>
         </defs>
       </svg>
@@ -291,6 +434,37 @@ function LiquidGlass({
         ref={displacementImageRef}
         className="displacement-image-container"
       />
+      {showCrosshair && (
+        <div
+          className="liquid-glass-crosshair"
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            display: "grid",
+            placeItems: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "40%",
+              height: "2px",
+              background: "rgba(255, 255, 255, 0.6)",
+              borderRadius: "2px",
+              position: "absolute",
+            }}
+          />
+          <div
+            style={{
+              width: "2px",
+              height: "40%",
+              background: "rgba(255, 255, 255, 0.6)",
+              borderRadius: "2px",
+              position: "absolute",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }

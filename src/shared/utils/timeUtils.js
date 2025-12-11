@@ -91,10 +91,11 @@ export function formatDateTime(date, options = {}) {
   return d.toLocaleString(undefined, options);
 }
 
-export default {
-  formatRelativeTime,
-  formatDuration,
-  formatDate,
-  formatTime,
-  formatDateTime,
-};
+// Default export removed - use named exports instead
+// export default {
+//   formatRelativeTime,
+//   formatDuration,
+//   formatDate,
+//   formatTime,
+//   formatDateTime,
+// };

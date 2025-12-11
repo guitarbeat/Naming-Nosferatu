@@ -39,6 +39,7 @@ import {
   MILESTONE_THRESHOLDS,
   DEFAULT_CONFIG,
 } from "../../shared/components/BongoCat/constants";
+import { TIMING } from "../../core/constants";
 
 /**
  * Custom hook for BongoCat component functionality with enhanced animations
@@ -239,7 +240,10 @@ export function useBongoCat({
 
   useEffect(() => {
     if (!earTwitch) return undefined;
-    const timer = setTimeout(() => setEarTwitch(false), 150);
+    const timer = setTimeout(
+      () => setEarTwitch(false),
+      TIMING.EAR_TWITCH_DURATION_MS,
+    );
     return () => clearTimeout(timer);
   }, [earTwitch]);
 
@@ -294,7 +298,7 @@ export function useBongoCat({
         pauseStartTimeRef.current = null;
       }
 
-      if (now - lastKeyTimeRef.current > 1000) {
+      if (now - lastKeyTimeRef.current > TIMING.PAUSE_CHECK_INTERVAL_MS) {
         lastKeyTimeRef.current = now;
       }
 
@@ -350,7 +354,7 @@ export function useBongoCat({
           }
         }
       }
-    }, 1000);
+    }, TIMING.PAUSE_CHECK_INTERVAL_MS);
 
     return () => clearInterval(pauseCheckInterval);
   }, [animationState, isPawsDown, calculateTypingSpeed]);

@@ -3,7 +3,7 @@
  * @description Modal component for suggesting new cat names
  */
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useId, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { catNamesAPI } from "../../services/supabase/api";
 import {
@@ -30,6 +30,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
   const successTimeoutRef = useRef(null);
   const isMountedRef = useRef(true);
   const nameInputRef = useRef(null);
+  const modalGlassId = useId();
 
   // * Get current user name from store for RLS context
   const userName = useAppStore((state) => state.user.name);
@@ -194,6 +195,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         aria-hidden="true"
       />
       <LiquidGlass
+        id={`modal-glass-${modalGlassId.replace(/:/g, "-")}`}
         width={500}
         height={600}
         radius={20}
@@ -203,7 +205,6 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         inputBlur={8}
         outputBlur={1.2}
         className="name-suggestion-modal-glass"
-        id="name-suggestion-modal-filter"
         style={{
           position: "fixed",
           top: "50%",

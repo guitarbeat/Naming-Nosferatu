@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { useToast } from "../../../shared/hooks/useToast";
 import Toast from "../../../shared/components/Toast/Toast";
 import { devLog, devError } from "../../../shared/utils/logger";
+import { NOTIFICATION } from "../../../core/constants";
 
 /**
  * * Hook for profile notification functions with toast UI
@@ -26,15 +27,15 @@ export function useProfileNotifications() {
       devLog("✅", message);
       showSuccessToast(message, { duration: 5000 });
     },
-    [showSuccessToast],
+    [showSuccessToast]
   );
 
   const showError = useCallback(
     (message) => {
       devError("❌", message);
-      showErrorToast(message, { duration: 7000 }); // Longer duration for errors
+      showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
     },
-    [showErrorToast],
+    [showErrorToast]
   );
 
   const showToast = useCallback(
@@ -46,7 +47,7 @@ export function useProfileNotifications() {
         duration: type === "error" ? 7000 : 5000,
       });
     },
-    [showToastMessage],
+    [showToastMessage]
   );
 
   const ToastContainer = useCallback(() => {
@@ -56,7 +57,7 @@ export function useProfileNotifications() {
         toasts={toasts}
         removeToast={removeToast}
         position="top-right"
-        maxToasts={5}
+        maxToasts={NOTIFICATION.MAX_TOASTS}
       />
     );
   }, [toasts, removeToast]);

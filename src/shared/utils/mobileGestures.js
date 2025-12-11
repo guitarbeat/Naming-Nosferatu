@@ -3,6 +3,8 @@
  * @description Advanced mobile gesture utilities for enhanced touch interactions
  */
 
+import { GESTURE_THRESHOLDS } from "../../core/constants";
+
 class MobileGestures {
   constructor() {
     this.gestures = new Map();
@@ -10,10 +12,10 @@ class MobileGestures {
     this.gestureCallbacks = new Map();
     this.isEnabled = true;
     this.thresholds = {
-      swipe: 50,
-      longPress: 500,
-      doubleTap: 300,
-      pinch: 0.1,
+      swipe: GESTURE_THRESHOLDS.SWIPE_DISTANCE_PX,
+      longPress: GESTURE_THRESHOLDS.LONG_PRESS_DURATION_MS,
+      doubleTap: GESTURE_THRESHOLDS.DOUBLE_TAP_INTERVAL_MS,
+      pinch: GESTURE_THRESHOLDS.PINCH_SCALE_THRESHOLD,
     };
   }
 
@@ -125,7 +127,7 @@ class MobileGestures {
         // Calculate total distance
         activeTouch.distance = Math.sqrt(
           Math.pow(touch.clientX - activeTouch.startX, 2) +
-            Math.pow(touch.clientY - activeTouch.startY, 2),
+          Math.pow(touch.clientY - activeTouch.startY, 2),
         );
       }
     });
@@ -234,7 +236,7 @@ class MobileGestures {
 
       const initialDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2),
+        Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       // Store initial pinch distance
@@ -256,7 +258,7 @@ class MobileGestures {
 
       const currentDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2),
+        Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
@@ -296,7 +298,10 @@ class MobileGestures {
     }
 
     // Handle tap gestures
-    if (activeTouch.distance < 10 && duration < 300) {
+    if (
+      activeTouch.distance < GESTURE_THRESHOLDS.TOUCH_DISTANCE_THRESHOLD_PX &&
+      duration < GESTURE_THRESHOLDS.TOUCH_DURATION_THRESHOLD_MS
+    ) {
       this.handleTap(activeTouch, touch, event);
     }
   }

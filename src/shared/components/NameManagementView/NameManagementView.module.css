@@ -9,6 +9,8 @@
   min-height: 100vh;
   padding: var(--spacing-page-padding);
   box-sizing: border-box;
+  overflow-x: visible;
+  min-width: 0;
 }
 
 /* * Section containers - using unified section utilities */
@@ -97,7 +99,9 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   gap: var(--spacing-card-gap);
+  overflow-x: visible;
 }
 
 .navbarSection {

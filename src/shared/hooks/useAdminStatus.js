@@ -60,4 +60,4 @@ export function useAdminStatus(userName) {
   return { isAdmin, isLoading, error };
 }
 
-export default useAdminStatus;
+// Default export removed - hook is imported as named export

@@ -13,6 +13,7 @@ import {
 import { devLog } from "../../shared/utils/coreUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { FALLBACK_NAMES } from "../../features/tournament/constants";
+import { TIMING } from "../../core/constants";
 
 /**
  * Unified hook for fetching name data
@@ -62,7 +63,10 @@ export function useNameData({
       let supabaseClient;
       try {
         const { promise: clientTimeout, timeoutId: clientTimeoutId } =
-          createTimeout(10000, "Supabase client timeout after 10 seconds");
+          createTimeout(
+            TIMING.SUPABASE_CLIENT_TIMEOUT_MS,
+            `Supabase client timeout after ${TIMING.SUPABASE_CLIENT_TIMEOUT_MS / 1000} seconds`,
+          );
 
         supabaseClient = await Promise.race([
           resolveSupabaseClient(),

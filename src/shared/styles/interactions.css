@@ -375,6 +375,199 @@ textarea:disabled,
 }
 
 /* ==========================================================================
+   CURSOR STYLES
+   ========================================================================== */
+
+/* Base cursor for interactive elements */
+button,
+a,
+[role="button"],
+[tabindex]:not([tabindex="-1"]),
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+label[for],
+.clickable {
+  cursor: pointer;
+}
+
+/* Text input cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+textarea {
+  cursor: text;
+}
+
+/* Disabled state cursor */
+button:disabled,
+button:disabled:hover,
+input:disabled,
+input:disabled:hover,
+select:disabled,
+select:disabled:hover,
+textarea:disabled,
+textarea:disabled:hover,
+.disabled,
+.disabled:hover,
+[aria-disabled="true"],
+[aria-disabled="true"]:hover {
+  cursor: not-allowed;
+}
+
+/* Loading state cursor */
+.loading,
+.loading:hover,
+[aria-busy="true"],
+[aria-busy="true"]:hover {
+  cursor: wait;
+}
+
+/* Grab/grabbing cursors for draggable elements */
+.draggable,
+[draggable="true"],
+.swipeCard {
+  cursor: grab;
+}
+
+.draggable:active,
+[draggable="true"]:active,
+.swipeCard:active,
+.dragging,
+.dragging:hover {
+  cursor: grabbing;
+}
+
+/* Resize cursors */
+.resize-horizontal {
+  cursor: ew-resize;
+}
+
+.resize-vertical {
+  cursor: ns-resize;
+}
+
+.resize-both {
+  cursor: nwse-resize;
+}
+
+/* Help cursor for tooltips */
+.help,
+[aria-describedby],
+[title]:not([title=""], button, a) {
+  cursor: help;
+}
+
+/* Copy cursor for copyable content */
+.copyable,
+[data-copy] {
+  cursor: copy;
+}
+
+/* Context-specific cursors */
+a[href]:not([href=""], [href="#"], [aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+a[href=""]:not([aria-disabled="true"]),
+a[href="#"]:not([aria-disabled="true"]) {
+  cursor: default;
+}
+
+img[onclick],
+img[role="button"],
+img.clickable {
+  cursor: pointer;
+}
+
+.card:not(.disabled, .static),
+.name-card:not(.disabled),
+.swipeCard:not(.disabled) {
+  cursor: pointer;
+}
+
+.card.static,
+.card.disabled,
+.name-card.disabled,
+.swipeCard.disabled {
+  cursor: default;
+}
+
+/* ==========================================================================
+   POINTER EVENTS MANAGEMENT
+   ========================================================================== */
+
+/* Prevent text selection on interactive elements */
+button,
+[role="button"],
+.draggable,
+[draggable="true"] {
+  user-select: none;
+}
+
+/* Allow text selection in inputs and textareas */
+input,
+textarea,
+[contenteditable="true"] {
+  user-select: text;
+}
+
+/* Enable pointer events for loading overlays */
+.loading-overlay {
+  pointer-events: auto;
+  cursor: wait;
+}
+
+/* ==========================================================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ========================================================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  /* Remove hover effects on touch devices */
+  button:not(:disabled):hover,
+  a:not([aria-disabled="true"]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover {
+    transform: none;
+  }
+
+  /* Enhanced active state for touch */
+  button:not(:disabled):active,
+  a:not([aria-disabled="true"]):active,
+  [role="button"]:not([aria-disabled="true"]):active,
+  .clickable:not(.disabled):active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+
+  /* Larger touch targets */
+  button,
+  a,
+  [role="button"],
+  .clickable {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Name card touch feedback */
+  .name-card:active,
+  .card:not(.disabled):active {
+    transform: scale(0.98);
+    transition: all 0.1s ease-out;
+  }
+
+  /* Prevent text selection on touch */
+  .name-card,
+  .card {
+    user-select: none;
+  }
+}
+
+/* ==========================================================================
    REDUCED MOTION - Accessibility
    ========================================================================== */
 
@@ -385,5 +578,27 @@ textarea:disabled,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  button:not(:disabled):hover,
+  a:not([aria-disabled="true"]):hover,
+  [role="button"]:not([aria-disabled="true"]):hover,
+  .clickable:not(.disabled):hover,
+  .name-card:not(.disabled):hover {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   HIGH CONTRAST MODE
+   ========================================================================== */
+
+@media (prefers-contrast: more) {
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 4px solid;
+    outline-offset: 4px;
   }
 }

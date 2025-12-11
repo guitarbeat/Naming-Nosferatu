@@ -1,0 +1,662 @@
+/* ============================================================================
+   APP NAVBAR STYLES - HORIZONTAL LAYOUT ONLY
+   ============================================================================ */
+
+/* Glass Container */
+.app-navbar-glass {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky, 1020);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(1rem, 4vw, 2.5rem);
+  pointer-events: auto;
+  overflow: visible;
+  transition:
+    height 0.3s ease,
+    padding 0.3s ease;
+}
+
+.app-navbar-glass--collapsed {
+  --navbar-collapsed-size: 72px;
+  height: var(--navbar-collapsed-size);
+  min-height: var(--navbar-collapsed-size);
+  width: var(--navbar-collapsed-size);
+  max-width: var(--navbar-collapsed-size);
+  padding: 0.25rem;
+  justify-content: center;
+  align-items: center;
+  overflow: visible;
+  left: clamp(1rem, 4vw, 2.5rem);
+  right: auto;
+}
+
+/* Override LiquidGlass internal width when collapsed */
+.app-navbar-glass--collapsed.liquid-glass,
+.app-navbar-glass--collapsed.liquid-glass.app-navbar--horizontal,
+.app-navbar-glass--collapsed.liquid-glass[data-orientation="horizontal"] {
+  width: var(--navbar-collapsed-size);
+  height: var(--navbar-collapsed-size);
+  max-width: var(--navbar-collapsed-size);
+  right: auto;
+}
+
+/* Main Navbar Container */
+.app-navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(0.5rem, 1.2vw, 0.875rem);
+  width: 100%;
+  max-width: 1400px;
+  min-height: 56px;
+  padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
+  border-radius: 24px;
+  border: 1px solid hsl(var(--border) / 40%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 85%) 0%,
+    hsl(var(--background) / 92%) 50%,
+    hsl(var(--background) / 85%) 100%
+  );
+  box-shadow:
+    0 4px 24px hsl(var(--foreground) / 8%),
+    0 2px 8px hsl(var(--foreground) / 4%),
+    inset 0 1px 0 hsl(var(--foreground) / 6%);
+  pointer-events: auto;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible;
+}
+
+.app-navbar--collapsed {
+  min-height: 56px;
+  padding: 0.2rem;
+  opacity: 0.98;
+  overflow: visible;
+  width: auto;
+  max-width: max-content;
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+.app-navbar--collapsed > :not(.app-navbar__collapse-toggle) {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  max-width: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app-navbar--collapsed .app-navbar__collapse-toggle {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Collapse Toggle - Hamburger Menu */
+.app-navbar__collapse-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 40%);
+  background: hsl(var(--background) / 70%);
+  color: hsl(var(--foreground) / 95%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 3;
+  box-shadow:
+    0 2px 8px hsl(var(--foreground) / 8%),
+    0 0 8px hsl(var(--foreground) / 4%),
+    inset 0 1px 0 hsl(var(--foreground) / 6%);
+}
+
+.app-navbar__collapse-toggle:hover {
+  background: hsl(var(--background) / 85%);
+  border-color: hsl(var(--border) / 60%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px hsl(var(--foreground) / 12%),
+    0 0 12px hsl(var(--foreground) / 6%),
+    inset 0 1px 0 hsl(var(--foreground) / 8%);
+}
+
+.app-navbar__collapse-toggle:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow:
+    0 1px 4px hsl(var(--foreground) / 8%),
+    0 0 6px hsl(var(--foreground) / 4%),
+    inset 0 1px 0 hsl(var(--foreground) / 6%);
+}
+
+.app-navbar__collapse-toggle:focus-visible {
+  outline: 2px solid hsl(var(--neon-cyan) / 70%);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.app-navbar__collapse-toggle--collapsed,
+.app-navbar--collapsed .app-navbar__collapse-toggle,
+.app-navbar-glass--collapsed .app-navbar__collapse-toggle {
+  background: hsl(var(--background) / 80%);
+  border-color: hsl(var(--neon-cyan) / 50%);
+  box-shadow:
+    0 2px 8px hsl(var(--neon-cyan) / 20%),
+    0 0 12px hsl(var(--neon-cyan) / 15%),
+    inset 0 1px 0 hsl(var(--foreground) / 8%);
+  color: hsl(var(--foreground) / 98%);
+}
+
+.app-navbar__collapse-toggle--collapsed:hover,
+.app-navbar--collapsed .app-navbar__collapse-toggle:hover,
+.app-navbar-glass--collapsed .app-navbar__collapse-toggle:hover {
+  background: hsl(var(--background) / 90%);
+  border-color: hsl(var(--neon-cyan) / 70%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px hsl(var(--neon-cyan) / 30%),
+    0 0 16px hsl(var(--neon-cyan) / 20%),
+    inset 0 1px 0 hsl(var(--foreground) / 10%);
+}
+
+.app-navbar__collapse-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app-navbar__collapse-hamburger {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s ease;
+}
+
+.app-navbar__collapse-hamburger path {
+  stroke: currentColor;
+}
+
+/* Brand Button */
+.app-navbar__brand {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border) / 30%);
+  background: hsl(var(--background) / 60%);
+  color: hsl(var(--foreground));
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.app-navbar__brand:hover {
+  background: hsl(var(--background) / 80%);
+  border-color: hsl(var(--border) / 50%);
+  transform: translateY(-1px);
+}
+
+.app-navbar__brand[data-active="true"] {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 20%) 0%,
+    hsl(var(--hot-pink) / 15%) 100%
+  );
+  border-color: hsl(var(--neon-cyan) / 40%);
+  box-shadow: 0 2px 8px hsl(var(--neon-cyan) / 20%);
+}
+
+.app-navbar__brand small {
+  font-size: 0.7em;
+  font-weight: 500;
+  opacity: 0.7;
+  margin-top: 0.125rem;
+}
+
+/* Navigation Links */
+.app-navbar__link {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 25%);
+  background: hsl(var(--background) / 50%);
+  color: hsl(var(--foreground) / 90%);
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-navbar__link:hover {
+  background: hsl(var(--background) / 70%);
+  border-color: hsl(var(--border) / 40%);
+  color: hsl(var(--foreground));
+  transform: translateY(-1px);
+}
+
+.app-navbar__link[data-active="true"] {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 25%) 0%,
+    hsl(var(--hot-pink) / 20%) 100%
+  );
+  border-color: hsl(var(--neon-cyan) / 50%);
+  color: hsl(var(--foreground));
+  box-shadow:
+    0 2px 8px hsl(var(--neon-cyan) / 25%),
+    inset 0 1px 0 hsl(var(--foreground) / 10%);
+}
+
+.app-navbar__link-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Action Buttons */
+.app-navbar__action-button,
+.app-navbar__user-button {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 25%);
+  background: hsl(var(--background) / 50%);
+  color: hsl(var(--foreground) / 90%);
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.app-navbar__action-button:hover,
+.app-navbar__user-button:hover {
+  background: hsl(var(--background) / 70%);
+  border-color: hsl(var(--border) / 40%);
+  color: hsl(var(--foreground));
+  transform: translateY(-1px);
+}
+
+.app-navbar__action-button[data-icon-only="true"] {
+  padding: 0;
+  min-width: 2.5rem;
+}
+
+.app-navbar__action-label {
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  font-weight: 500;
+}
+
+.app-navbar__logout-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* User Display */
+.navbar-user-display {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.navbar-user-display__content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.navbar-user-display__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.navbar-user-display__name {
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  font-weight: 600;
+  color: hsl(var(--foreground) / 95%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.navbar-user-display__admin-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: hsl(var(--neon-cyan));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+}
+
+/* Mobile Menu Toggle - Only show on tablet and below when collapsed */
+.app-navbar__toggle {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 30%);
+  background: hsl(var(--background) / 60%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.app-navbar__toggle:hover {
+  background: hsl(var(--background) / 80%);
+  border-color: hsl(var(--border) / 50%);
+}
+
+.app-navbar__toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: hsl(var(--foreground) / 90%);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.app-navbar__toggle span:not(:last-child) {
+  margin-bottom: 4px;
+}
+
+/* Mobile Menu */
+.app-navbar__mobile {
+  position: fixed;
+  top: calc(clamp(0.75rem, 2vw, 1.25rem) + 56px + 0.5rem);
+  left: clamp(1rem, 4vw, 2.5rem);
+  right: clamp(1rem, 4vw, 2.5rem);
+  max-width: 500px;
+  max-height: calc(100vh - 120px);
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid hsl(var(--border) / 40%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 95%) 0%,
+    hsl(var(--background) / 98%) 100%
+  );
+  backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow:
+    0 8px 32px hsl(var(--foreground) / 12%),
+    0 4px 16px hsl(var(--foreground) / 8%);
+  overflow-y: auto;
+  z-index: 1022;
+  pointer-events: auto;
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-navbar__mobile[data-open="true"] {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.app-navbar__mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 25%);
+  background: hsl(var(--background) / 60%);
+  color: hsl(var(--foreground) / 90%);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+
+.app-navbar__mobile-link:last-child {
+  margin-bottom: 0;
+}
+
+.app-navbar__mobile-link:hover {
+  background: hsl(var(--background) / 80%);
+  border-color: hsl(var(--border) / 40%);
+  transform: translateX(4px);
+}
+
+.app-navbar__mobile-link[data-active="true"] {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--neon-cyan) / 25%) 0%,
+    hsl(var(--hot-pink) / 20%) 100%
+  );
+  border-color: hsl(var(--neon-cyan) / 50%);
+  color: hsl(var(--foreground));
+}
+
+/* Dropdown Menus */
+.app-navbar__dropdown {
+  min-width: 180px;
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border) / 40%);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--background) / 98%) 0%,
+    hsl(var(--background) / 95%) 100%
+  );
+  box-shadow:
+    0 8px 24px hsl(var(--foreground) / 10%),
+    0 4px 12px hsl(var(--foreground) / 6%);
+}
+
+.app-navbar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 8px;
+  color: hsl(var(--foreground) / 90%);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.app-navbar__dropdown-item:hover {
+  background: hsl(var(--background) / 80%);
+}
+
+.app-navbar__dropdown-item[data-active="true"] {
+  background: hsl(var(--accent) / 15%);
+  color: hsl(var(--accent));
+}
+
+.app-navbar__dropdown-item--logout {
+  color: hsl(var(--destructive));
+}
+
+.app-navbar__dropdown-item--logout:hover {
+  background: hsl(var(--destructive) / 10%);
+}
+
+/* Responsive Design */
+@media (width <= 960px) {
+  .app-navbar {
+    gap: clamp(0.375rem, 1vw, 0.625rem);
+    padding: clamp(0.625rem, 1.2vw, 0.875rem) clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  /* Hide navigation items when collapsed on tablet/mobile */
+  .app-navbar--collapsed .app-navbar__link,
+  .app-navbar--collapsed .app-navbar__action-button,
+  .app-navbar--collapsed .app-navbar__user-button {
+    display: none;
+  }
+
+  /* Show mobile menu toggle only when navbar is collapsed on tablet/mobile */
+  .app-navbar--collapsed .app-navbar__toggle {
+    display: flex;
+  }
+
+  /* When navbar is expanded, show all items and hide mobile toggle */
+  .app-navbar:not(.app-navbar--collapsed) .app-navbar__link,
+  .app-navbar:not(.app-navbar--collapsed) .app-navbar__action-button,
+  .app-navbar:not(.app-navbar--collapsed) .app-navbar__user-button {
+    display: flex;
+  }
+
+  .app-navbar:not(.app-navbar--collapsed) .app-navbar__toggle {
+    display: none;
+  }
+
+  .app-navbar__brand small {
+    display: none;
+  }
+
+  .app-navbar__collapse-toggle {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .app-navbar__collapse-hamburger {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Desktop - Never show mobile toggle */
+@media (width > 960px) {
+  .app-navbar__toggle {
+    display: none;
+  }
+
+  .app-navbar__mobile {
+    display: none;
+  }
+}
+
+@media (width <= 640px) {
+  .app-navbar-glass {
+    padding: 0.625rem 1rem;
+  }
+
+  .app-navbar {
+    padding: 0.625rem 0.875rem;
+    min-height: 48px;
+    /* Allow horizontal scrolling if needed on very small screens */
+    overflow-x: auto;
+    overflow-y: visible;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-navbar::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .app-navbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--foreground) / 20%);
+    border-radius: 2px;
+  }
+
+  .app-navbar__brand {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Make buttons more compact on mobile */
+  .app-navbar__link,
+  .app-navbar__action-button,
+  .app-navbar__user-button {
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+    min-width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  /* Show only icons on very small screens, hide text labels */
+  .app-navbar__link-text {
+    display: none;
+  }
+}
+
+@media (width <= 480px) {
+  .app-navbar__mobile {
+    left: 1rem;
+    right: 1rem;
+    max-width: none;
+  }
+}
+
+/* Accessibility & Performance */
+.app-navbar__link:focus-visible,
+.app-navbar__brand:focus-visible,
+.app-navbar__action-button:focus-visible,
+.app-navbar__user-button:focus-visible,
+.app-navbar__toggle:focus-visible,
+.app-navbar__collapse-toggle:focus-visible {
+  outline: 2px solid hsl(var(--neon-cyan) / 70%);
+  outline-offset: 2px;
+}
+
+.app-navbar__link,
+.app-navbar__brand,
+.app-navbar__action-button,
+.app-navbar__user-button {
+  contain: layout style paint;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-navbar,
+  .app-navbar-glass,
+  .app-navbar__link,
+  .app-navbar__brand,
+  .app-navbar__action-button,
+  .app-navbar__user-button,
+  .app-navbar__toggle,
+  .app-navbar__collapse-toggle,
+  .app-navbar__mobile {
+    transition: none;
+  }
+}

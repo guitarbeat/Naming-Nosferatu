@@ -8,29 +8,12 @@ import { useEffect } from "react";
 /**
  * Hook for managing global keyboard shortcuts
  * @param {Object} options
- * @param {Function} options.onNavbarToggle - Callback for navbar toggle (Ctrl/Cmd+B)
  * @param {Function} options.onAnalysisToggle - Callback for analysis mode toggle (Ctrl/Cmd+Shift+A)
  * @param {Function} options.navigateTo - Navigation function for analysis toggle
  */
-export function useKeyboardShortcuts({
-  onNavbarToggle,
-  onAnalysisToggle,
-  navigateTo,
-}) {
+export function useKeyboardShortcuts({ onAnalysisToggle, navigateTo }) {
   useEffect(() => {
     const handleKeyDown = (event) => {
-      // * Navbar toggle (Ctrl+B or Cmd+B)
-      if ((event.ctrlKey || event.metaKey) && event.key === "b") {
-        event.preventDefault();
-        if (onNavbarToggle) {
-          onNavbarToggle();
-        } else {
-          // * Fallback: dispatch custom event
-          const navbarToggleEvent = new CustomEvent("toggleNavbar");
-          window.dispatchEvent(navbarToggleEvent);
-        }
-      }
-
       // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
       if (
         (event.ctrlKey || event.metaKey) &&
@@ -64,7 +47,8 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onNavbarToggle, onAnalysisToggle, navigateTo]);
+  }, [onAnalysisToggle, navigateTo]);
 }
 
-export default useKeyboardShortcuts;
+// Default export removed - use named export instead
+// export default useKeyboardShortcuts;

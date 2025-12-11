@@ -89,7 +89,7 @@ vi.mock("@core/store/useAppStore", () => {
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
-      () => selector(storeState),
+      () => selector(storeState)
     );
 
   const mergeState = (partial) => {
@@ -156,14 +156,6 @@ vi.mock("@components/ViewRouter/ViewRouter", () => ({
   default: () => <div data-testid="view-router" />,
 }));
 
-// * PerformanceDashboard mock removed - feature no longer exists
-// vi.mock("@components/PerformanceDashboard", () => ({
-//   default: ({ isVisible }) =>
-//     isVisible ? (
-//       <div data-testid="performance-dashboard">Performance Dashboard</div>
-//     ) : null,
-// }));
-
 vi.mock("./shared/components/AppNavbar/AppNavbar", () => ({
   AppNavbar: () => (
     <aside>
@@ -208,27 +200,6 @@ describe("App", () => {
     expect(overlayMessage.closest(".global-loading-overlay")).not.toBeNull();
   });
 
-  // * PerformanceDashboard feature removed - test disabled
-  // it("renders the admin performance dashboard when toggled on", async () => {
-  //   __resetMockState({
-  //     user: { isLoggedIn: true, isAdmin: true },
   //     ui: { showPerformanceDashboard: false },
   //   });
-  //
-  //   render(<App />);
-  //
-  //   expect(
-  //     screen.queryByTestId("performance-dashboard"),
-  //   ).not.toBeInTheDocument();
-  //
-  //   await act(async () => {
-  //     __setMockState({
-  //       ui: { showPerformanceDashboard: true },
-  //     });
-  //   });
-  //
-  //   await waitFor(() => {
-  //     expect(screen.getByTestId("performance-dashboard")).toBeVisible();
-  //   });
-  // });
 });

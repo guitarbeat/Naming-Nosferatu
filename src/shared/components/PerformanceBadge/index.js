@@ -1,5 +1,5 @@
 export {
   PerformanceBadge,
   PerformanceBadges,
-  default,
 } from "./PerformanceBadge";
+// Default export removed - components are imported as named exports

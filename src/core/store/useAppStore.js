@@ -6,6 +6,7 @@ import {
   getMediaQueryMatches,
 } from "../../shared/utils/mediaQueries";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
+import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
 
 const LOG_ENDPOINT = `http://${typeof window !== "undefined" ? window.location.hostname : "127.0.0.1"}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
 
@@ -24,7 +25,7 @@ const applyDevtools = (storeImpl) => {
       data: { env: process.env.NODE_ENV },
       timestamp: Date.now(),
     }),
-  }).catch(() => {});
+  }).catch(() => { });
   // #endregion
   return storeImpl;
 };
@@ -326,6 +327,8 @@ const storeImpl = (set, get) => ({
         // * Persist to localStorage
         try {
           localStorage.setItem("catNamesUser", userName);
+          // Update Supabase client headers for RLS policies
+          updateSupabaseUserContext(userName);
         } catch (error) {
           if (process.env.NODE_ENV === "development") {
             console.error("Error updating localStorage:", error);
@@ -341,6 +344,8 @@ const storeImpl = (set, get) => ({
         // * Clear localStorage
         try {
           localStorage.removeItem("catNamesUser");
+          // Clear Supabase client headers
+          updateSupabaseUserContext(null);
         } catch (error) {
           if (process.env.NODE_ENV === "development") {
             console.error("Error clearing localStorage:", error);
@@ -376,6 +381,8 @@ const storeImpl = (set, get) => ({
         try {
           const storedUser = localStorage.getItem("catNamesUser");
           if (storedUser && state.user.name !== storedUser) {
+            // Update Supabase client headers for RLS policies
+            updateSupabaseUserContext(storedUser);
             return {
               user: {
                 ...state.user,
@@ -612,7 +619,7 @@ fetch(LOG_ENDPOINT, {
     data: { env: process.env.NODE_ENV },
     timestamp: Date.now(),
   }),
-}).catch(() => {});
+}).catch(() => { });
 // #endregion
 
 // * Hook to initialize store from localStorage

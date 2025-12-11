@@ -55,7 +55,6 @@ export function useProfileNameOperations(
 
         if (!canManageActiveUser) {
           showError("Only admins can change visibility");
-          showToast("Only admins can hide or unhide names", "error");
           return;
         }
 
@@ -84,8 +83,8 @@ export function useProfileNameOperations(
         setAllNames((prev) =>
           Array.isArray(prev)
             ? prev.map((n) =>
-                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
-              )
+              n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
+            )
             : prev,
         );
 
@@ -105,8 +104,7 @@ export function useProfileNameOperations(
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
         devError("Profile - Toggle Visibility error:", errorMessage);
-        showToast(`Failed to toggle name visibility: ${errorMessage}`, "error");
-        showError("Failed to update visibility");
+        showError(`Failed to update visibility: ${errorMessage}`);
       }
     },
     [
@@ -135,7 +133,6 @@ export function useProfileNameOperations(
 
         if (!canManageActiveUser) {
           showError("Only admins can delete names");
-          showToast("Only admins can delete names", "error");
           return;
         }
 
@@ -149,8 +146,7 @@ export function useProfileNameOperations(
         const errorMessage =
           error instanceof Error ? error.message : "Unknown error";
         devError("Profile - Delete Name error:", errorMessage);
-        showToast(`Failed to delete name: ${errorMessage}`, "error");
-        showError("Failed to delete name");
+        showError(`Failed to delete name: ${errorMessage}`);
       }
     },
     [
@@ -207,7 +203,6 @@ export function useProfileNameOperations(
           const errorMsg = `Only admins can ${action} names`;
           devWarn("[useProfileNameOperations]", errorMsg);
           showError(errorMsg);
-          showToast(errorMsg, "error");
           return;
         }
 
@@ -226,9 +221,8 @@ export function useProfileNameOperations(
           const count = result.processed;
           const message = `✅ Successfully ${action} ${count} name${count !== 1 ? "s" : ""}`;
 
-          // Show clear success feedback
+          // Show clear success feedback (showSuccess already calls showToast internally)
           showSuccess(message);
-          showToast(message, "success");
 
           // Update local state optimistically
           setHiddenNames((prev) => {
@@ -259,7 +253,6 @@ export function useProfileNameOperations(
           });
 
           showError(errorMessage);
-          showToast(errorMessage, "error");
         }
       } catch (error) {
         devError(`Profile - Bulk ${isHide ? "Hide" : "Unhide"} error:`, error);
@@ -268,7 +261,6 @@ export function useProfileNameOperations(
           error instanceof Error
             ? `❌ Failed to ${action} names: ${error.message}`
             : `❌ Failed to ${action} names. Please try again.`;
-        showToast(errorMessage, "error");
         showError(errorMessage);
       }
     },

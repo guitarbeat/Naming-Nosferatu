@@ -106,32 +106,8 @@ export const TYPING_SPEED_THRESHOLDS = {
  */
 export const MILESTONE_THRESHOLDS = [10, 25, 50, 100, 250, 500, 1000];
 
-/**
- * Time-based mood adjustments
- * @type {Object<string, Object>}
- */
-export const TIME_MOODS = {
-  morning: {
-    hours: [6, 7, 8, 9, 10, 11],
-    mood: "energetic",
-    multiplier: 1.2,
-  },
-  afternoon: {
-    hours: [12, 13, 14, 15, 16, 17],
-    mood: "playful",
-    multiplier: 1.0,
-  },
-  evening: {
-    hours: [18, 19, 20, 21, 22],
-    mood: "playful",
-    multiplier: 0.9,
-  },
-  night: {
-    hours: [23, 0, 1, 2, 3, 4, 5],
-    mood: "sleepy",
-    multiplier: 0.7,
-  },
-};
+// Unused constant removed
+// export const TIME_MOODS = { ... };
 
 /**
  * Default configuration

@@ -211,7 +211,7 @@
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
-  max-width: min(1400px, 100vw);
+  max-width: 100%;
   padding: var(--space-3) var(--space-4);
   padding-bottom: var(--space-8);
   margin-inline: auto;
@@ -220,12 +220,25 @@
 }
 
 .photosViewContainer {
-  max-width: min(1800px, 100vw);
+  max-width: 100%;
 }
 
 .photosViewContent {
   width: 100%;
+  max-width: 100%;
   padding: var(--space-4);
+}
+
+.photosViewContent .starsSection {
+  width: 100%;
+  max-width: 100%;
+  background: hsl(var(--card) / 95%);
+  backdrop-filter: blur(12px);
+  border: 1px solid hsl(var(--border) / 50%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+  min-height: auto;
 }
 
 .photosViewTitle {
@@ -272,6 +285,14 @@
   text-align: center;
   color: var(--text-secondary);
   font-size: var(--text-sm);
+  background: hsl(var(--card) / 30%);
+  border-radius: var(--radius-md);
+  border: 1px dashed hsl(var(--border) / 40%);
+}
+
+.photosViewContent .emptyGallery {
+  padding: var(--space-12);
+  background: hsl(var(--card) / 20%);
 }
 
 @media (width <= 500px) {
@@ -480,13 +501,15 @@
   grid-auto-rows: min-content;
   grid-auto-flow: row dense;
   gap: var(--space-3);
-  justify-content: center;
+  justify-content: start;
   width: 100%;
   max-width: 100%;
-  margin-inline: auto;
+  margin-inline: 0;
   min-height: min-content;
+  min-width: 0;
   align-items: start;
   padding: 0;
+  overflow-x: visible;
   transition:
     gap 0.3s ease,
     padding 0.3s ease;
@@ -841,7 +864,12 @@
   justify-content: space-between;
   margin-bottom: var(--space-4);
   padding-bottom: var(--space-3);
-  border-bottom: 2px solid var(--border-color);
+  border-bottom: 2px solid hsl(var(--border) / 50%);
+}
+
+.photosViewContent .galleryHeader {
+  border-bottom: 2px solid hsl(var(--border) / 50%);
+  margin-bottom: var(--space-5);
 }
 
 .galleryTitle {
@@ -2694,6 +2722,14 @@
   composes: clusterWrap;
   justify-content: space-between;
   width: 100%;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid hsl(var(--border) / 30%);
+}
+
+.photosViewContent .photoToolbar {
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
 }
 
 .photoActionsRow {
@@ -2721,6 +2757,51 @@
   gap: var(--space-3); /* * Larger gaps for more space */
   align-items: start;
   min-height: 300px; /* * Minimum height to take up space */
+  width: 100%;
+}
+
+/* * Full-width photo grid for photos view */
+.photosViewContent .photoGrid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  margin-top: var(--space-4);
+}
+
+@media (width <= 1200px) {
+  .photosViewContent .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (width <= 900px) {
+  .photosViewContent .photoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-3);
+  }
+}
+
+@media (width <= 600px) {
+  .photosViewContent .photoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+}
+
+@media (width <= 480px) {
+  .photosViewContent .photoGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .photosViewContent .starsSection {
+    padding: var(--space-4);
+  }
+
+  .photosViewContent {
+    padding: var(--space-3);
+  }
 }
 
 .photoWrapper {

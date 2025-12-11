@@ -7,15 +7,14 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
 // * Import CatBackground directly (no lazy loading to prevent chunking issues)
 import CatBackground from "@components/CatBackground/CatBackground";
 import ViewRouter from "@components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "@components";
-import { NavbarProvider, useNavbar } from "./shared/components/ui/navbar";
-import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
+import { AppNavbar } from "./shared/components/AppNavbar";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 // * Core state and routing hooks
@@ -26,12 +25,9 @@ import { useThemeSync } from "@hooks/useThemeSync";
 import useAppStore, {
   useAppStoreInitialization,
 } from "@core/store/useAppStore";
-import { ErrorManager } from "@services/errorManager";
-import { tournamentsAPI } from "@services/supabase/api";
-import { NAVBAR } from "@core/constants";
-import { devLog, devWarn, devError } from "./shared/utils/logger";
-import { ratingsToArray, ratingsToObject } from "./shared/utils/ratingUtils";
+import { devError } from "./shared/utils/logger";
 import { useKeyboardShortcuts } from "./core/hooks/useKeyboardShortcuts";
+import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -82,117 +78,17 @@ function App() {
     navigateTo,
   });
 
-  // * Handle tournament completion
-  const handleTournamentComplete = useCallback(
-    async (finalRatings) => {
-      try {
-        devLog("[App] handleTournamentComplete called with:", finalRatings);
-
-        if (!user.name) {
-          throw new Error("No user name available");
-        }
-
-        // * Convert ratings using utility functions
-        const ratingsArray = ratingsToArray(finalRatings);
-        const updatedRatings = ratingsToObject(ratingsArray);
-
-        devLog("[App] Ratings to save:", ratingsArray);
-
-        // * Save ratings to database
-        const saveResult = await tournamentsAPI.saveTournamentRatings(
-          user.name,
-          ratingsArray,
-        );
-
-        devLog("[App] Save ratings result:", saveResult);
-
-        if (!saveResult.success) {
-          devWarn(
-            "[App] Failed to save ratings to database:",
-            saveResult.error,
-          );
-        }
-
-        // * Update store with new ratings
-        tournamentActions.setRatings(updatedRatings);
-        tournamentActions.setComplete(true);
-
-        devLog("[App] Tournament marked as complete, navigating to /results");
-
-        // * Navigate to results page
-        navigateTo("/results");
-      } catch (error) {
-        devError("[App] Error in handleTournamentComplete:", error);
-        ErrorManager.handleError(error, "Tournament Completion", {
-          isRetryable: true,
-          affectsUserData: true,
-          isCritical: false,
-        });
-      }
-    },
-    [user.name, tournamentActions, navigateTo],
-  );
-
-  // * Handle start new tournament
-  const handleStartNewTournament = useCallback(() => {
-    tournamentActions.resetTournament();
-  }, [tournamentActions]);
-
-  // * Handle tournament setup
-  const handleTournamentSetup = useCallback(
-    (names) => {
-      // * Reset tournament state and set loading
-      tournamentActions.resetTournament();
-      tournamentActions.setLoading(true);
-
-      // Direct tournament creation
-      const processedNames = names;
-
-      tournamentActions.setNames(processedNames);
-      // Ensure we are on the tournament view after starting
-      tournamentActions.setView("tournament");
-
-      // * Use setTimeout to ensure the loading state is visible and prevent flashing
-      setTimeout(() => {
-        tournamentActions.setLoading(false);
-      }, 100);
-    },
-    [tournamentActions],
-  );
-
-  // * Handle ratings update
-  const handleUpdateRatings = useCallback(
-    async (adjustedRatings) => {
-      try {
-        // * Convert ratings using utility functions
-        const ratingsArray = ratingsToArray(adjustedRatings);
-
-        // * Save ratings to database
-        if (user.name) {
-          const saveResult = await tournamentsAPI.saveTournamentRatings(
-            user.name,
-            ratingsArray,
-          );
-
-          devLog("[App] Update ratings result:", saveResult);
-        }
-
-        // * Convert to object format for store
-        const updatedRatings = ratingsToObject(ratingsArray);
-
-        tournamentActions.setRatings(updatedRatings);
-        return true;
-      } catch (error) {
-        ErrorManager.handleError(error, "Rating Update", {
-          isRetryable: true,
-          affectsUserData: true,
-          isCritical: false,
-        });
-        throw error;
-      }
-    },
-    [tournamentActions, user.name],
-  );
+  // * Tournament handlers extracted to custom hook
+  const {
+    handleTournamentComplete,
+    handleStartNewTournament,
+    handleTournamentSetup,
+    handleUpdateRatings,
+  } = useTournamentHandlers({
+    userName: user.name,
+    tournamentActions,
+    navigateTo,
+  });
 
   // * Handle logout
   const handleLogout = useCallback(async () => {
@@ -205,12 +101,15 @@ function App() {
     (nextPreference) => {
       uiActions.setTheme(nextPreference);
     },
-    [uiActions],
+    [uiActions]
   );
 
-  useThemeSync(ui.theme);
+  // * Handle theme toggle (light <-> dark)
+  const handleThemeToggle = useCallback(() => {
+    uiActions.toggleTheme();
+  }, [uiActions]);
 
-  // * Welcome screen removed
+  useThemeSync(ui.theme);
 
   // * Handle user login
   const handleLogin = useCallback(
@@ -223,7 +122,7 @@ function App() {
         throw error;
       }
     },
-    [login],
+    [login]
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -279,6 +178,7 @@ function App() {
       themePreference: ui.themePreference,
       currentTheme: ui.theme,
       onThemePreferenceChange: handleThemePreferenceChange,
+      onThemeToggle: handleThemeToggle,
       onOpenSuggestName: handleOpenSuggestName,
       onOpenPhotos: handleOpenPhotos,
       // * Pass breadcrumbs to navbar
@@ -297,11 +197,12 @@ function App() {
       ui.themePreference,
       ui.theme,
       handleThemePreferenceChange,
+      handleThemeToggle,
       navigateTo,
       handleOpenSuggestName,
       handleOpenPhotos,
       currentRoute,
-    ],
+    ]
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -345,16 +246,7 @@ function App() {
 
 export default App;
 
-// * Provider-wrapped layout to guarantee navbar context
-function AppLayout(props) {
-  return (
-    <NavbarProvider>
-      <AppLayoutInner {...props} />
-    </NavbarProvider>
-  );
-}
-
-function AppLayoutInner({
+function AppLayout({
   navbarProps,
   user,
   errors,
@@ -369,41 +261,21 @@ function AppLayoutInner({
   isSuggestNameModalOpen,
   onCloseSuggestName,
 }) {
-  const { collapsed, collapsedWidth, toggleCollapsed } = useNavbar();
   const { isLoggedIn } = user;
 
-  // * Listen for keyboard shortcut to toggle navbar
-  useEffect(() => {
-    const handleToggleNavbar = () => {
-      toggleCollapsed();
-    };
-
-    window.addEventListener("toggleNavbar", handleToggleNavbar);
-    return () => window.removeEventListener("toggleNavbar", handleToggleNavbar);
-  }, [toggleCollapsed]);
-
-  const appClassName = [
-    "app",
-    collapsed ? "app--navbar-collapsed" : "",
-    !isLoggedIn ? "app--login" : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const layoutStyle = useMemo(
-    () => ({
-      "--navbar-expanded-width": NAVBAR.EXPANDED_WIDTH_RESPONSIVE,
-      "--navbar-collapsed-width": `${collapsedWidth}px`,
-    }),
-    [collapsedWidth],
+  const appClassName = useMemo(
+    () => (!isLoggedIn ? "app app--login" : "app"),
+    [isLoggedIn]
   );
+
+  const layoutStyle = useMemo(() => ({}), []);
 
   const mainWrapperClassName = useMemo(
     () =>
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn],
+    [isLoggedIn]
   );
 
   return (

@@ -1,5 +1,5 @@
 export {
   CollapsibleHeader,
   CollapsibleContent,
-  default,
 } from "./CollapsibleHeader";
+// Default export removed - components are imported as named exports

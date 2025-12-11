@@ -16,7 +16,7 @@ import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import ErrorComponent from "../Error/Error";
 import Button from "../Button/Button";
-import LiquidGlass from "../LiquidGlass";
+import StartTournamentButton from "../StartTournamentButton/StartTournamentButton";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AdminAnalytics } from "../AdminAnalytics";
@@ -35,7 +35,7 @@ export function useNameManagementContext() {
   const context = useContext(NameManagementContext);
   if (!context) {
     throw new Error(
-      "useNameManagementContext must be used within NameManagementView",
+      "useNameManagementContext must be used within NameManagementView"
     );
   }
   return context;
@@ -125,7 +125,7 @@ export function NameManagementView({
 
   // * Profile mode: filter state
   const [filterStatus, setFilterStatus] = useState(
-    FILTER_OPTIONS.VISIBILITY.VISIBLE,
+    FILTER_OPTIONS.VISIBILITY.VISIBLE
   );
   // * Use userFilter from profileProps if available, otherwise use local state
   const [localUserFilter, setLocalUserFilter] = useState("all");
@@ -142,10 +142,10 @@ export function NameManagementView({
   // * Analysis mode: toggle for showing profile features in tournament mode
   // * Initialize from URL parameter
   const urlParams = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : "",
+    typeof window !== "undefined" ? window.location.search : ""
   );
   const [analysisMode, setAnalysisMode] = useState(
-    urlParams.get("analysis") === "true",
+    urlParams.get("analysis") === "true"
   );
 
   // * Sync analysis mode with URL
@@ -166,7 +166,7 @@ export function NameManagementView({
 
       navigateTo(newUrl);
     },
-    [navigateTo],
+    [navigateTo]
   );
 
   // * Sync analysis mode state when URL changes (e.g., from keyboard shortcut)
@@ -234,57 +234,79 @@ export function NameManagementView({
     sortOrder,
   ]);
 
-  // * Handle filter changes
+  // * Handle filter changes - new API: (name, value)
   const handleFilterChange = useCallback(
-    (newFilters) => {
+    (name, value) => {
       // * Tournament mode with analysis mode: handle both filter sets
       if (mode === "tournament" && analysisMode) {
-        if (newFilters.searchTerm !== undefined) {
-          setSearchTerm(newFilters.searchTerm || "");
-        }
-        if (newFilters.category !== undefined) {
-          setSelectedCategory(newFilters.category || null);
-        }
-        if (newFilters.sortBy !== undefined) {
-          setSortBy(newFilters.sortBy || "alphabetical");
-        }
-        if (newFilters.filterStatus !== undefined) {
-          setFilterStatus(newFilters.filterStatus);
-        }
-        if (newFilters.userFilter !== undefined) {
-          setUserFilter(newFilters.userFilter);
-        }
-        if (newFilters.selectionFilter !== undefined) {
-          setSelectionFilter(newFilters.selectionFilter);
-        }
-        if (newFilters.dateFilter !== undefined) {
-          setDateFilter(newFilters.dateFilter || "all");
-        }
-        if (newFilters.sortOrder !== undefined) {
-          setSortOrder(newFilters.sortOrder);
+        switch (name) {
+          case "searchTerm":
+            setSearchTerm(value || "");
+            break;
+          case "category":
+            setSelectedCategory(value || null);
+            break;
+          case "sortBy":
+            setSortBy(value || "alphabetical");
+            break;
+          case "filterStatus":
+            setFilterStatus(value);
+            break;
+          case "userFilter":
+            setUserFilter(value);
+            break;
+          case "selectionFilter":
+            setSelectionFilter(value);
+            break;
+          case "dateFilter":
+            setDateFilter(value || "all");
+            break;
+          case "sortOrder":
+            setSortOrder(value);
+            break;
+          default:
+            break;
         }
       } else if (mode === "tournament") {
-        setSearchTerm(newFilters.searchTerm || "");
-        setSelectedCategory(newFilters.category || null);
-        setSortBy(newFilters.sortBy || "alphabetical");
+        switch (name) {
+          case "searchTerm":
+            setSearchTerm(value || "");
+            break;
+          case "category":
+            setSelectedCategory(value || null);
+            break;
+          case "sortBy":
+            setSortBy(value || "alphabetical");
+            break;
+          default:
+            break;
+        }
       } else {
-        if (newFilters.filterStatus !== undefined) {
-          setFilterStatus(newFilters.filterStatus);
-        }
-        if (newFilters.userFilter !== undefined) {
-          setUserFilter(newFilters.userFilter);
-        }
-        if (newFilters.selectionFilter !== undefined) {
-          setSelectionFilter(newFilters.selectionFilter);
-        }
-        if (newFilters.dateFilter !== undefined) {
-          setDateFilter(newFilters.dateFilter || "all");
-        }
-        if (newFilters.sortBy !== undefined) {
-          setSortBy(newFilters.sortBy);
-        }
-        if (newFilters.sortOrder !== undefined) {
-          setSortOrder(newFilters.sortOrder);
+        // Profile mode
+        switch (name) {
+          case "searchTerm":
+            setSearchTerm(value || "");
+            break;
+          case "filterStatus":
+            setFilterStatus(value);
+            break;
+          case "userFilter":
+            setUserFilter(value);
+            break;
+          case "selectionFilter":
+            setSelectionFilter(value);
+            break;
+          case "dateFilter":
+            setDateFilter(value || "all");
+            break;
+          case "sortBy":
+            setSortBy(value);
+            break;
+          case "sortOrder":
+            setSortOrder(value);
+            break;
+          default:
+            break;
         }
       }
     },
@@ -299,7 +321,7 @@ export function NameManagementView({
       setSelectionFilter,
       setDateFilter,
       setSortOrder,
-    ],
+    ]
   );
 
   // * Context value for extensions
@@ -394,7 +416,7 @@ export function NameManagementView({
       setDateFilter,
       analysisMode,
       handleAnalysisModeToggle,
-    ],
+    ]
   );
 
   // * Memoize TournamentToolbar props for tournament mode (must be before all early returns)
@@ -405,7 +427,7 @@ export function NameManagementView({
       sortBy,
       sortOrder,
     }),
-    [searchTerm, selectedCategory, sortBy, sortOrder],
+    [searchTerm, selectedCategory, sortBy, sortOrder]
   );
 
   // * Loading state - check after all hooks
@@ -459,7 +481,7 @@ export function NameManagementView({
           categories={categories}
           showUserFilter={profileProps.showUserFilter}
           showSelectionFilter={!!profileProps.selectionStats}
-          userSelectOptions={profileProps.userSelectOptions}
+          userOptions={profileProps.userOptions}
           filteredCount={names.length}
           totalCount={names.length}
           selectedCount={selectedCount}
@@ -481,254 +503,229 @@ export function NameManagementView({
         />
       )}
       <NameManagementContext.Provider value={contextValue}>
-        <LiquidGlass
-          width={1200}
-          height={800}
-          radius={24}
-          scale={-180}
-          saturation={1.2}
-          frost={0.08}
-          inputBlur={12}
-          outputBlur={0.8}
-          className={className}
-          style={{ width: "100%", height: "auto" }}
+        <div
+          className={`${styles.container} ${className}`}
+          data-component="name-management-view"
+          data-mode={mode}
+          role="main"
+          aria-label={`${mode === "tournament" ? "Tournament" : "Profile"} name management`}
         >
-          <div
-            className={styles.container}
-            data-component="name-management-view"
-            data-mode={mode}
-            role="main"
-            aria-label={`${mode === "tournament" ? "Tournament" : "Profile"} name management`}
-          >
-            {/* Analysis Mode Banner - Removed per user request */}
+          {/* Analysis Mode Banner - Removed per user request */}
 
-            {/* Mode-specific Header */}
-            {extensions.header && (
-              <div className={styles.headerSection}>
-                {typeof extensions.header === "function"
-                  ? extensions.header()
-                  : extensions.header}
-              </div>
-            )}
+          {/* Mode-specific Header */}
+          {extensions.header && (
+            <div className={styles.headerSection}>
+              {typeof extensions.header === "function"
+                ? extensions.header()
+                : extensions.header}
+            </div>
+          )}
 
-            {/* Profile Dashboard (profile mode or analysis mode) */}
-            {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
-              extensions.dashboard && (
-                <section
-                  className={styles.dashboardSection}
-                  aria-label="Dashboard and statistics"
-                  data-section="dashboard"
-                >
-                  {React.isValidElement(extensions.dashboard)
-                    ? extensions.dashboard
-                    : typeof extensions.dashboard === "function"
-                      ? React.createElement(extensions.dashboard)
-                      : extensions.dashboard}
-                </section>
-              )}
-
-            {/* Admin Analytics - Merged into AnalysisDashboard, only show if dashboard not available */}
-            {analysisMode &&
-              tournamentProps.isAdmin &&
-              !extensions.dashboard && (
-                <section
-                  className={styles.dashboardSection}
-                  aria-label="Admin analytics"
-                  data-section="admin-analytics"
-                >
-                  <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
-                </section>
-              )}
-
-            {/* Tournament Toolbar - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
-            {/* Note: In analysis mode, toolbar is integrated into CollapsibleHeader via dashboard extension */}
-            {mode !== "tournament" && !analysisMode && (
+          {/* Profile Dashboard (profile mode or analysis mode) */}
+          {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
+            extensions.dashboard && (
               <section
-                className={styles.filtersSection}
-                aria-label="Filter and search controls"
-                data-section="filters"
+                className={styles.dashboardSection}
+                aria-label="Dashboard and statistics"
+                data-section="dashboard"
               >
-                <TournamentToolbar
-                  mode={mode}
-                  filters={filterConfig}
-                  onFilterChange={handleFilterChange}
-                  categories={categories}
-                  showUserFilter={profileProps.showUserFilter}
-                  showSelectionFilter={!!profileProps.selectionStats}
-                  userSelectOptions={profileProps.userSelectOptions}
-                  filteredCount={filteredCount}
-                  totalCount={names.length}
-                />
+                {React.isValidElement(extensions.dashboard)
+                  ? extensions.dashboard
+                  : typeof extensions.dashboard === "function"
+                    ? React.createElement(extensions.dashboard)
+                    : extensions.dashboard}
               </section>
             )}
 
-            {/* Tournament Mode: Header Actions - hidden when custom nameGrid is used (actions are in ResultsInfo) */}
-            {mode === "tournament" && !extensions.nameGrid && (
-              <nav
-                className={styles.tournamentActions}
-                aria-label="Tournament action buttons"
-                data-section="tournament-actions"
-              >
-                {selectedCount > 0 && !analysisMode && (
-                  <Button
-                    variant={showSelectedOnly ? "primary" : "secondary"}
-                    size="small"
-                    onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-                    className={styles.actionButton}
-                  >
-                    {showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
-                  </Button>
-                )}
+          {/* Admin Analytics - Merged into AnalysisDashboard, only show if dashboard not available */}
+          {analysisMode && tournamentProps.isAdmin && !extensions.dashboard && (
+            <section
+              className={styles.dashboardSection}
+              aria-label="Admin analytics"
+              data-section="admin-analytics"
+            >
+              <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
+            </section>
+          )}
 
-                {/* View mode toggles - only show when not in analysis mode */}
-                {!analysisMode && (
-                  <>
-                    <Button
-                      variant={isSwipeMode ? "primary" : "secondary"}
-                      size="small"
-                      onClick={() => setIsSwipeMode(!isSwipeMode)}
-                      className={styles.actionButton}
-                    >
-                      {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
-                    </Button>
+          {/* Tournament Toolbar - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
+          {/* Note: In analysis mode, toolbar is integrated into CollapsibleHeader via dashboard extension */}
+          {mode !== "tournament" && !analysisMode && (
+            <section
+              className={styles.filtersSection}
+              aria-label="Filter and search controls"
+              data-section="filters"
+            >
+              <TournamentToolbar
+                mode={mode}
+                filters={filterConfig}
+                onFilterChange={handleFilterChange}
+                categories={categories}
+                showUserFilter={profileProps.showUserFilter}
+                showSelectionFilter={!!profileProps.selectionStats}
+                userOptions={profileProps.userOptions}
+                filteredCount={filteredCount}
+                totalCount={names.length}
+              />
+            </section>
+          )}
 
-                    <Button
-                      variant={showCatPictures ? "primary" : "secondary"}
-                      size="small"
-                      onClick={() => setShowCatPictures(!showCatPictures)}
-                      className={styles.actionButton}
-                    >
-                      {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
-                    </Button>
-                  </>
-                )}
-
-                {/* * Start Tournament button - hidden when Analysis Mode is active */}
-                {selectedCount >= 2 && onStartTournament && !analysisMode && (
-                  <Button
-                    variant="primary"
-                    size="large"
-                    onClick={() => onStartTournament(selectedNames)}
-                    className={styles.startButton}
-                  >
-                    Start Tournament
-                  </Button>
-                )}
-              </nav>
-            )}
-
-            {/* Tournament Mode: Progress Bar - hidden when custom nameGrid is used (it includes ResultsInfo) */}
-            {mode === "tournament" && !analysisMode && !extensions.nameGrid && (
-              <div className={styles.progressSection}>
-                <div className={styles.progressBar}>
-                  <div
-                    className={styles.progressFill}
-                    style={{
-                      width: `${Math.max(
-                        (selectedCount / Math.max(names.length, 1)) * 100,
-                        5,
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <span className={styles.progressText}>
-                  {selectedCount} of {names.length} names selected
-                </span>
-              </div>
-            )}
-
-            {/* Profile Mode: Bulk Actions (profile mode or analysis mode) */}
-            {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
-              extensions.bulkActions && (
-                <section
-                  className={styles.bulkActionsSection}
-                  aria-label="Bulk actions"
-                  data-section="bulk-actions"
+          {/* Tournament Mode: Header Actions - hidden when custom nameGrid is used (actions are in ResultsInfo) */}
+          {mode === "tournament" && !extensions.nameGrid && (
+            <nav
+              className={styles.tournamentActions}
+              aria-label="Tournament action buttons"
+              data-section="tournament-actions"
+            >
+              {selectedCount > 0 && !analysisMode && (
+                <Button
+                  variant={showSelectedOnly ? "primary" : "secondary"}
+                  size="small"
+                  onClick={() => setShowSelectedOnly(!showSelectedOnly)}
+                  className={styles.actionButton}
                 >
-                  {typeof extensions.bulkActions === "function"
-                    ? React.createElement(extensions.bulkActions, {
-                        onExport: () => {
-                          exportTournamentResultsToCSV(
-                            displayNames,
-                            "naming_nosferatu_export",
-                          );
-                        },
-                      })
-                    : extensions.bulkActions}
-                </section>
+                  {showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
+                </Button>
               )}
 
-            {/* Name Grid - Use extension if provided, otherwise use NameGrid */}
-            {/* * Always show extension (handles swipe mode internally), but hide default NameGrid in swipe mode */}
-            <section
-              className={styles.gridSection}
-              aria-label="Name selection grid"
-              data-section="name-grid"
-            >
-              {extensions.nameGrid ? (
-                typeof extensions.nameGrid === "function" ? (
-                  // * Call function directly to render inside Provider context
-                  extensions.nameGrid()
-                ) : React.isValidElement(extensions.nameGrid) ? (
-                  // * Clone element to ensure it has access to context
-                  React.cloneElement(extensions.nameGrid)
-                ) : (
-                  extensions.nameGrid
-                )
-              ) : !(mode === "tournament" && isSwipeMode) ? (
-                <NameGrid
-                  names={displayNames}
-                  selectedNames={selectedNames}
-                  onToggleName={toggleName}
-                  filters={filterConfig}
-                  isAdmin={
-                    mode === "profile" ||
-                    (mode === "tournament" && analysisMode)
-                      ? profileProps.isAdmin
-                      : false
-                  }
-                  showSelectedOnly={
-                    mode === "tournament" && !analysisMode
-                      ? showSelectedOnly
-                      : false
-                  }
-                  showCatPictures={showCatPictures}
-                  imageList={tournamentProps.imageList || []}
-                  onToggleVisibility={profileProps.onToggleVisibility}
-                  onDelete={profileProps.onDelete}
-                  className={
-                    mode === "tournament" ? tournamentProps.gridClassName : ""
-                  }
+              {/* View mode toggles - only show when not in analysis mode */}
+              {!analysisMode && (
+                <>
+                  <Button
+                    variant={isSwipeMode ? "primary" : "secondary"}
+                    size="small"
+                    onClick={() => setIsSwipeMode(!isSwipeMode)}
+                    className={styles.actionButton}
+                  >
+                    {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
+                  </Button>
+
+                  <Button
+                    variant={showCatPictures ? "primary" : "secondary"}
+                    size="small"
+                    onClick={() => setShowCatPictures(!showCatPictures)}
+                    className={styles.actionButton}
+                  >
+                    {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+                  </Button>
+                </>
+              )}
+
+              {/* * Start Tournament button removed - now handled by TournamentToolbar above */}
+              {/* * This section only shows when !extensions.nameGrid, but TournamentToolbar always shows the button */}
+            </nav>
+          )}
+
+          {/* Tournament Mode: Progress Bar - hidden when custom nameGrid is used (it includes ResultsInfo) */}
+          {mode === "tournament" && !analysisMode && !extensions.nameGrid && (
+            <div className={styles.progressSection}>
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{
+                    width: `${Math.max(
+                      (selectedCount / Math.max(names.length, 1)) * 100,
+                      5
+                    )}%`,
+                  }}
                 />
-              ) : null}
-            </section>
-
-            {/* Mode-specific Extensions */}
-            {extensions.navbar && (
-              <div className={styles.navbarSection}>
-                {typeof extensions.navbar === "function"
-                  ? extensions.navbar()
-                  : extensions.navbar}
               </div>
+              <span className={styles.progressText}>
+                {selectedCount} of {names.length} names selected
+              </span>
+            </div>
+          )}
+
+          {/* Profile Mode: Bulk Actions (profile mode or analysis mode) */}
+          {(mode === "profile" || (mode === "tournament" && analysisMode)) &&
+            extensions.bulkActions && (
+              <section
+                className={styles.bulkActionsSection}
+                aria-label="Bulk actions"
+                data-section="bulk-actions"
+              >
+                {typeof extensions.bulkActions === "function"
+                  ? React.createElement(extensions.bulkActions, {
+                      onExport: () => {
+                        exportTournamentResultsToCSV(
+                          displayNames,
+                          "naming_nosferatu_export"
+                        );
+                      },
+                    })
+                  : extensions.bulkActions}
+              </section>
             )}
 
-            {extensions.lightbox && (
-              <div className={styles.lightboxSection}>
-                {typeof extensions.lightbox === "function"
-                  ? extensions.lightbox()
-                  : extensions.lightbox}
-              </div>
-            )}
+          {/* Name Grid - Use extension if provided, otherwise use NameGrid */}
+          {/* * Always show extension (handles swipe mode internally), but hide default NameGrid in swipe mode */}
+          <section
+            className={styles.gridSection}
+            aria-label="Name selection grid"
+            data-section="name-grid"
+          >
+            {extensions.nameGrid ? (
+              typeof extensions.nameGrid === "function" ? (
+                // * Call function directly to render inside Provider context
+                extensions.nameGrid()
+              ) : React.isValidElement(extensions.nameGrid) ? (
+                // * Clone element to ensure it has access to context
+                React.cloneElement(extensions.nameGrid)
+              ) : (
+                extensions.nameGrid
+              )
+            ) : !(mode === "tournament" && isSwipeMode) ? (
+              <NameGrid
+                names={displayNames}
+                selectedNames={selectedNames}
+                onToggleName={toggleName}
+                filters={filterConfig}
+                isAdmin={
+                  mode === "profile" || (mode === "tournament" && analysisMode)
+                    ? profileProps.isAdmin
+                    : false
+                }
+                showSelectedOnly={
+                  mode === "tournament" && !analysisMode
+                    ? showSelectedOnly
+                    : false
+                }
+                showCatPictures={showCatPictures}
+                imageList={tournamentProps.imageList || []}
+                onToggleVisibility={profileProps.onToggleVisibility}
+                onDelete={profileProps.onDelete}
+                className={
+                  mode === "tournament" ? tournamentProps.gridClassName : ""
+                }
+              />
+            ) : null}
+          </section>
 
-            {extensions.nameSuggestion && (
-              <div className={styles.nameSuggestionSection}>
-                {typeof extensions.nameSuggestion === "function"
-                  ? extensions.nameSuggestion()
-                  : extensions.nameSuggestion}
-              </div>
-            )}
-          </div>
-        </LiquidGlass>
+          {/* Mode-specific Extensions */}
+          {extensions.navbar && (
+            <div className={styles.navbarSection}>
+              {typeof extensions.navbar === "function"
+                ? extensions.navbar()
+                : extensions.navbar}
+            </div>
+          )}
+
+          {extensions.lightbox && (
+            <div className={styles.lightboxSection}>
+              {typeof extensions.lightbox === "function"
+                ? extensions.lightbox()
+                : extensions.lightbox}
+            </div>
+          )}
+
+          {extensions.nameSuggestion && (
+            <div className={styles.nameSuggestionSection}>
+              {typeof extensions.nameSuggestion === "function"
+                ? extensions.nameSuggestion()
+                : extensions.nameSuggestion}
+            </div>
+          )}
+        </div>
       </NameManagementContext.Provider>
     </>
   );
@@ -762,7 +759,7 @@ NameManagementView.propTypes = {
     highlights: PropTypes.object,
     isAdmin: PropTypes.bool,
     showUserFilter: PropTypes.bool,
-    userSelectOptions: PropTypes.array,
+    userOptions: PropTypes.array,
   }),
   className: PropTypes.string,
 };
