@@ -847,3 +847,32 @@
   color: #0f172a;
   text-shadow: none;
 }
+
+:root[data-theme="dark"] .tournament-toolbar-unified-container {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] .tournament-toolbar-toggle-switch {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(
+    180deg,
+    rgba(24, 33, 52, 0.9),
+    rgba(16, 24, 40, 0.9)
+  );
+}
+
+:root[data-theme="dark"] .tournament-toolbar-toggle-switch::before {
+  background: linear-gradient(
+    var(--tt-gradient-angle),
+    rgba(47, 243, 224, 0.4),
+    rgba(250, 38, 160, 0.35)
+  );
+}
+
+:root[data-theme="dark"] .tournament-toolbar-toggle-label {
+  color: #e2e8f0;
+  text-shadow: none;
+}

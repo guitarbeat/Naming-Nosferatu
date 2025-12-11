@@ -23,6 +23,7 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { Button, IconButton } from "@components";
+import LiquidGlass from "../../shared/components/LiquidGlass";
 import styles from "./Tournament.module.css";
 
 const TournamentControls = ({
@@ -51,202 +52,214 @@ const TournamentControls = ({
   };
 
   return (
-    <div
-      className={styles.tournamentControls}
-      role="toolbar"
-      aria-label="Tournament controls"
+    <LiquidGlass
+      width={1200}
+      height={140}
+      radius={28}
+      scale={-95}
+      saturation={1.06}
+      frost={0.12}
+      outputBlur={0.8}
+      className={styles.tournamentControlsGlass}
+      style={{ width: "100%", height: "auto", padding: 0 }}
     >
-      <div className={styles.soundControls}>
-        <IconButton
-          onClick={audioError ? onRetryAudio : onToggleMute}
-          icon={
-            isMuted ? (
-              <SpeakerXMarkIcon className={styles.icon} aria-hidden="true" />
-            ) : (
-              <SpeakerWaveIcon className={styles.icon} aria-hidden="true" />
-            )
-          }
-          variant={audioError ? "danger" : "ghost"}
-          ariaLabel={
-            isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"
-          }
-          aria-pressed={isMuted}
-          disabled={isTransitioning}
-          title={isMuted ? "Unmute" : "Mute"}
-          className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
-        />
-
-        {!isMuted && (
-          <div
-            className={styles.volumeContainer}
-            onMouseEnter={() => setShowVolume(true)}
-            onMouseLeave={() => setShowVolume(false)}
-          >
-            <div
-              className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}
-            >
-              <label className={styles.volumeLabel}>
-                🎵
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume.music}
-                  onChange={(e) =>
-                    onVolumeChange("music", parseFloat(e.target.value))
-                  }
-                  className={styles.volumeSlider}
-                />
-              </label>
-              <label className={styles.volumeLabel}>
-                🎮
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={volume.effects}
-                  onChange={(e) =>
-                    onVolumeChange("effects", parseFloat(e.target.value))
-                  }
-                  className={styles.volumeSlider}
-                />
-              </label>
-            </div>
-          </div>
-        )}
-
-        {!isMuted && (
+      <div
+        className={styles.tournamentControls}
+        role="toolbar"
+        aria-label="Tournament controls"
+      >
+        <div className={styles.soundControls}>
           <IconButton
-            onClick={onNextTrack}
+            onClick={audioError ? onRetryAudio : onToggleMute}
             icon={
-              <MusicalNoteIcon className={styles.icon} aria-hidden="true" />
+              isMuted ? (
+                <SpeakerXMarkIcon className={styles.icon} aria-hidden="true" />
+              ) : (
+                <SpeakerWaveIcon className={styles.icon} aria-hidden="true" />
+              )
             }
-            variant="ghost"
-            ariaLabel="Next track"
+            variant={audioError ? "danger" : "ghost"}
+            ariaLabel={
+              isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"
+            }
+            aria-pressed={isMuted}
             disabled={isTransitioning}
-            title={
-              trackInfo
-                ? `Now Playing: ${trackInfo.name}\nClick for next track`
-                : "Next track"
-            }
-            className={styles.soundToggleButton}
+            title={isMuted ? "Unmute" : "Mute"}
+            className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
           />
-        )}
 
-        {!isMuted && (
+          {!isMuted && (
+            <div
+              className={styles.volumeContainer}
+              onMouseEnter={() => setShowVolume(true)}
+              onMouseLeave={() => setShowVolume(false)}
+            >
+              <div
+                className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}
+              >
+                <label className={styles.volumeLabel}>
+                  🎵
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume.music}
+                    onChange={(e) =>
+                      onVolumeChange("music", parseFloat(e.target.value))
+                    }
+                    className={styles.volumeSlider}
+                  />
+                </label>
+                <label className={styles.volumeLabel}>
+                  🎮
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={volume.effects}
+                    onChange={(e) =>
+                      onVolumeChange("effects", parseFloat(e.target.value))
+                    }
+                    className={styles.volumeSlider}
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {!isMuted && (
+            <IconButton
+              onClick={onNextTrack}
+              icon={
+                <MusicalNoteIcon className={styles.icon} aria-hidden="true" />
+              }
+              variant="ghost"
+              ariaLabel="Next track"
+              disabled={isTransitioning}
+              title={
+                trackInfo
+                  ? `Now Playing: ${trackInfo.name}\nClick for next track`
+                  : "Next track"
+              }
+              className={styles.soundToggleButton}
+            />
+          )}
+
+          {!isMuted && (
+            <IconButton
+              onClick={onToggleShuffle}
+              icon={
+                <span className={styles.icon} aria-hidden="true">
+                  🔀
+                </span>
+              }
+              variant="ghost"
+              ariaLabel={isShuffle ? "Disable shuffle" : "Enable shuffle"}
+              aria-pressed={isShuffle}
+              disabled={isTransitioning}
+              title={
+                isShuffle
+                  ? "Shuffle: On (toggle to turn off)"
+                  : "Shuffle: Off (toggle to turn on)"
+              }
+              className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
+            />
+          )}
+
           <IconButton
-            onClick={onToggleShuffle}
+            onClick={onToggleCatPictures}
             icon={
               <span className={styles.icon} aria-hidden="true">
-                🔀
+                🐱
               </span>
             }
             variant="ghost"
-            ariaLabel={isShuffle ? "Disable shuffle" : "Enable shuffle"}
-            aria-pressed={isShuffle}
+            ariaLabel={
+              showCatPictures ? "Hide cat pictures" : "Show cat pictures"
+            }
+            aria-pressed={showCatPictures}
             disabled={isTransitioning}
-            title={
-              isShuffle
-                ? "Shuffle: On (toggle to turn off)"
-                : "Shuffle: Off (toggle to turn on)"
-            }
-            className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
+            title={showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
+            className={`${styles.soundToggleButton} ${showCatPictures ? styles.muted : ""}`}
           />
-        )}
 
-        <IconButton
-          onClick={onToggleCatPictures}
-          icon={
-            <span className={styles.icon} aria-hidden="true">
-              🐱
-            </span>
-          }
-          variant="ghost"
-          ariaLabel={
-            showCatPictures ? "Hide cat pictures" : "Show cat pictures"
-          }
-          aria-pressed={showCatPictures}
+          {audioError && (
+            <IconButton
+              onClick={onRetryAudio}
+              icon={
+                <ExclamationCircleIcon
+                  className={styles.icon}
+                  aria-hidden="true"
+                />
+              }
+              variant="danger"
+              ariaLabel="Retry playing audio"
+              title={audioError}
+              className={`${styles.soundToggleButton} ${styles.error}`}
+            />
+          )}
+
+          {!isMuted && trackInfo && trackInfo.name && (
+            <div className={styles.trackInfo} aria-live="polite">
+              <span className={styles.trackName}>{trackInfo.name}</span>
+            </div>
+          )}
+        </div>
+
+        <Button
+          onClick={() => setShowConfirmation(true)}
+          variant="danger"
+          size="large"
           disabled={isTransitioning}
-          title={showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
-          className={`${styles.soundToggleButton} ${showCatPictures ? styles.muted : ""}`}
-        />
+          className={styles.controlButton}
+          aria-label="End tournament early"
+        >
+          End Tournament Early
+        </Button>
 
-        {audioError && (
-          <IconButton
-            onClick={onRetryAudio}
-            icon={
-              <ExclamationCircleIcon
-                className={styles.icon}
-                aria-hidden="true"
-              />
-            }
-            variant="danger"
-            ariaLabel="Retry playing audio"
-            title={audioError}
-            className={`${styles.soundToggleButton} ${styles.error}`}
-          />
-        )}
-
-        {!isMuted && trackInfo && trackInfo.name && (
-          <div className={styles.trackInfo} aria-live="polite">
-            <span className={styles.trackName}>{trackInfo.name}</span>
-          </div>
+        {showConfirmation && (
+          <>
+            <div
+              className={styles.modalBackdrop}
+              onClick={() => setShowConfirmation(false)}
+              aria-hidden="true"
+            />
+            <div
+              className={styles.modal}
+              role="dialog"
+              aria-labelledby="confirm-end-title"
+              aria-describedby="confirm-end-description"
+            >
+              <h2 id="confirm-end-title" className={styles.modalTitle}>
+                End Tournament?
+              </h2>
+              <p id="confirm-end-description" className={styles.modalText}>
+                Are you sure you want to end the tournament early?
+              </p>
+              <div className={styles.modalActions}>
+                <Button
+                  onClick={handleEndConfirm}
+                  variant="danger"
+                  autoFocus
+                  className={styles.confirmButton}
+                >
+                  Yes, End Tournament
+                </Button>
+                <Button
+                  onClick={() => setShowConfirmation(false)}
+                  variant="secondary"
+                  className={styles.cancelButton}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </div>
-
-      <Button
-        onClick={() => setShowConfirmation(true)}
-        variant="danger"
-        size="large"
-        disabled={isTransitioning}
-        className={styles.controlButton}
-        aria-label="End tournament early"
-      >
-        End Tournament Early
-      </Button>
-
-      {showConfirmation && (
-        <>
-          <div
-            className={styles.modalBackdrop}
-            onClick={() => setShowConfirmation(false)}
-            aria-hidden="true"
-          />
-          <div
-            className={styles.modal}
-            role="dialog"
-            aria-labelledby="confirm-end-title"
-            aria-describedby="confirm-end-description"
-          >
-            <h2 id="confirm-end-title" className={styles.modalTitle}>
-              End Tournament?
-            </h2>
-            <p id="confirm-end-description" className={styles.modalText}>
-              Are you sure you want to end the tournament early?
-            </p>
-            <div className={styles.modalActions}>
-              <Button
-                onClick={handleEndConfirm}
-                variant="danger"
-                autoFocus
-                className={styles.confirmButton}
-              >
-                Yes, End Tournament
-              </Button>
-              <Button
-                onClick={() => setShowConfirmation(false)}
-                variant="secondary"
-                className={styles.cancelButton}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+    </LiquidGlass>
   );
 };
 

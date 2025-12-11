@@ -48,18 +48,17 @@ export function NavbarActions({
   return (
     <>
       <Button
-        isIconOnly
         size="sm"
         radius="full"
-        variant="light"
-        className="app-navbar__action-button"
-        data-icon-only="true"
+        variant="flat"
+        className="app-navbar__action-button app-navbar__suggest-button"
         aria-label="Suggest a new cat name"
         title="Suggest a new cat name"
         onPress={onOpenSuggestName}
         isDisabled={!onOpenSuggestName}
+        startContent={<SuggestIcon />}
       >
-        <SuggestIcon />
+        Suggest
       </Button>
 
       {isLoggedIn && userName && (
