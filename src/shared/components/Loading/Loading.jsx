@@ -4,7 +4,7 @@
  * Supports multiple loading display variants: spinner, suspense, and skeleton
  */
 
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useMemo, memo } from "react";
 import PropTypes from "prop-types";
 import styles from "./Loading.module.css";
 
@@ -120,4 +120,4 @@ Loading.propTypes = {
 
 Loading.displayName = "Loading";
 
-export default Loading;
+export default memo(Loading);
