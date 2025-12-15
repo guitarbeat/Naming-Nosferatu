@@ -12,8 +12,8 @@ describe('computeRating', () => {
     expect(computeRating(1500, 0, 10, 5, 10)).toBe(1613);
   });
 
-  it('should handle matchesPlayed exceeding maxMatches by clamping (implicitly capped by blendFactor logic)', () => {
-    // Even though the blendFactor cap (0.8) handles large values, clamping ensures correctness conceptually.
+  it('should handle matchesPlayed exceeding maxMatches by clamping', () => {
+    // matchesPlayed is clamped to maxMatches to prevent logical inconsistencies.
     // matchesPlayed=20, maxMatches=10
     // If clamped to 10: blendFactor = min(0.8, (10/10)*0.9) = min(0.8, 0.9) = 0.8
     // Result: 0.8 * 1750 + 0.2 * 1500 = 1400 + 300 = 1700

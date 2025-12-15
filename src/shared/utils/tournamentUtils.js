@@ -54,6 +54,7 @@ export function computeRating(
 
   // * Ensure maxMatches is at least 1 to avoid division by zero
   const safeMaxMatches = Math.max(1, maxMatches);
+  // * Clamp matchesPlayed to be between 0 and safeMaxMatches to prevent logical inconsistencies
 
   // * Clamp matchesPlayed to be between 0 and safeMaxMatches
   // * This prevents logical inconsistencies if matchesPlayed > maxMatches
