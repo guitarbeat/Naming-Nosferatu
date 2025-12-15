@@ -52,7 +52,7 @@ export function computeRating(
     ((totalNames - position - 1) / (totalNames - 1)) * ratingSpread;
   const newPositionRating = 1500 + positionValue;
   const safeMaxMatches = Math.max(1, maxMatches);
-  // * Clamp matchesPlayed to be between 0 and safeMaxMatches
+  // * Clamp matchesPlayed to be between 0 and safeMaxMatches to prevent logical inconsistencies
   const safeMatchesPlayed = Math.max(
     0,
     Math.min(matchesPlayed, safeMaxMatches),
