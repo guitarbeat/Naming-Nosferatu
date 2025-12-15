@@ -51,16 +51,23 @@ export function computeRating(
   const positionValue =
     ((totalNames - position - 1) / (totalNames - 1)) * ratingSpread;
   const newPositionRating = 1500 + positionValue;
+
+  // * Ensure maxMatches is at least 1 to avoid division by zero
   const safeMaxMatches = Math.max(1, maxMatches);
   // * Clamp matchesPlayed to be between 0 and safeMaxMatches to prevent logical inconsistencies
+
+  // * Clamp matchesPlayed to be between 0 and safeMaxMatches
+  // * This prevents logical inconsistencies if matchesPlayed > maxMatches
   const safeMatchesPlayed = Math.max(
     0,
     Math.min(matchesPlayed, safeMaxMatches),
   );
+
   const blendFactor = Math.min(
     0.8,
     (safeMatchesPlayed / safeMaxMatches) * 0.9,
   );
+
   const newRating = Math.round(
     blendFactor * newPositionRating + (1 - blendFactor) * existingRating,
   );
