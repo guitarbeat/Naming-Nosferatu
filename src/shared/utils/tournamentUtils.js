@@ -52,14 +52,20 @@ export function computeRating(
     ((totalNames - position - 1) / (totalNames - 1)) * ratingSpread;
   const newPositionRating = 1500 + positionValue;
   const safeMaxMatches = Math.max(1, maxMatches);
-  const blendFactor = Math.min(0.8, (matchesPlayed / safeMaxMatches) * 0.9);
+  // * Clamp matchesPlayed to be between 0 and safeMaxMatches
+  const safeMatchesPlayed = Math.max(
+    0,
+    Math.min(matchesPlayed, safeMaxMatches),
+  );
+  const blendFactor = Math.min(
+    0.8,
+    (safeMatchesPlayed / safeMaxMatches) * 0.9,
+  );
   const newRating = Math.round(
     blendFactor * newPositionRating + (1 - blendFactor) * existingRating,
   );
   return Math.max(1000, Math.min(2000, newRating));
 }
-
-// TODO: REVIEW Consider whether matchesPlayed should also be clamped to maxMatches
 
 /**
  * * Calculate maximum number of rounds needed for a bracket tournament
