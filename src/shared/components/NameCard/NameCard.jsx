@@ -89,22 +89,20 @@ function NameCard({
     }
   }, [isRippling]);
 
+  // * Check if metadata has any relevant data
+  const hasMetadata =
+    metadata &&
+    (metadata.rating ||
+      metadata.wins !== undefined ||
+      metadata.losses !== undefined ||
+      metadata.popularity ||
+      metadata.tournaments ||
+      (metadata.categories && metadata.categories.length > 0));
+
   // Mouse follow effect for background
   useEffect(() => {
     const card = cardRef.current;
-    if (!card || disabled) return;
-
-    // * Check if metadata has any relevant data
-    const hasMetadata =
-      metadata &&
-      (metadata.rating ||
-        metadata.wins !== undefined ||
-        metadata.losses !== undefined ||
-        metadata.popularity ||
-        metadata.tournaments ||
-        (metadata.categories && metadata.categories.length > 0));
-
-    if (!hasMetadata) return;
+    if (!card || disabled || !hasMetadata) return;
 
     const handleMouseMove = (e) => {
       // * Safety check for clientX/clientY
@@ -127,7 +125,23 @@ function NameCard({
     };
     // * Use metadata object directly - React will handle object reference changes
     // * This ensures the dependency array size stays constant
-  }, [disabled, metadata]);
+  }, [disabled, metadata, hasMetadata]);
+
+  const handleFocus = () => {
+    if (!cardRef.current || disabled || !hasMetadata) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    // Position tooltip to the right of the card for keyboard users
+    setTooltipPosition({
+      x: rect.right > 0 ? rect.right - 20 : 100, // Fallback for JSDOM/testing
+      y: rect.top > 0 ? rect.top + 20 : 100,
+    });
+    setShowTooltip(true);
+  };
+
+  const handleBlur = () => {
+    setShowTooltip(false);
+  };
 
   const handleInteraction = (event) => {
     if (disabled) {
@@ -216,6 +230,8 @@ function NameCard({
         className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
         onClick={isInteractive ? handleInteraction : undefined}
         onKeyDown={isInteractive ? handleInteraction : undefined}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         disabled={isInteractive ? disabled : undefined}
         aria-pressed={isInteractive ? isSelected : undefined}
         aria-label={getAriaLabel()}
