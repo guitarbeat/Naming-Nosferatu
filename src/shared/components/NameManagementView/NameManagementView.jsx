@@ -16,7 +16,6 @@ import PropTypes from "prop-types";
 import Loading from "../Loading/Loading";
 import ErrorComponent from "../Error/Error";
 import Button from "../Button/Button";
-import StartTournamentButton from "../StartTournamentButton/StartTournamentButton";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AdminAnalytics } from "../AdminAnalytics";

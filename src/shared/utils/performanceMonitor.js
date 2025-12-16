@@ -112,7 +112,7 @@ function reportNavigationMetrics() {
   const timing = window.performance?.timing;
   if (!timing) return;
 
-  const navigationStart = timing.navigationStart;
+  const {navigationStart} = timing;
   const domContentLoadedTime = timing.domContentLoadedEventEnd - navigationStart;
   const loadCompleteTime = timing.loadEventEnd - navigationStart;
   const connectTime = timing.responseEnd - timing.requestStart;
