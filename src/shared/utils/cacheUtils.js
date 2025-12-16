@@ -20,7 +20,7 @@ export function clearTournamentCache() {
       }
     }
     keysToRemove.forEach((key) => window.localStorage.removeItem(key));
-    
+
     if (process.env.NODE_ENV === "development") {
       console.log(`🧹 Cleared ${keysToRemove.length} tournament cache entries`);
     }
@@ -41,13 +41,13 @@ export function clearNameDataCache() {
     queryClient.invalidateQueries({ queryKey: ["catNames"] });
     queryClient.invalidateQueries({ queryKey: ["hiddenNames"] });
     queryClient.invalidateQueries({ queryKey: ["userRatings"] });
-    
+
     // Remove cached queries
     queryClient.removeQueries({ queryKey: ["names"] });
     queryClient.removeQueries({ queryKey: ["catNames"] });
     queryClient.removeQueries({ queryKey: ["hiddenNames"] });
     queryClient.removeQueries({ queryKey: ["userRatings"] });
-    
+
     if (process.env.NODE_ENV === "development") {
       console.log("🧹 Cleared React Query name data cache");
     }

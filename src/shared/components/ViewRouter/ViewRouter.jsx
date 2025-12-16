@@ -1,13 +1,16 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import Error from "../Error/Error";
+import Loading from "../Loading/Loading";
 import Login from "@features/auth/Login";
 import { useRouting } from "@hooks/useRouting";
 // * Import components directly to maintain stability
 import Tournament from "@features/tournament/Tournament";
 import TournamentSetup from "@features/tournament/TournamentSetup";
-import Dashboard from "@features/tournament/Dashboard";
-import BongoPage from "@features/bongo/BongoPage";
+
+// * Lazy load heavy/hidden components
+const Dashboard = lazy(() => import("@features/tournament/Dashboard"));
+const BongoPage = lazy(() => import("@features/bongo/BongoPage"));
 
 export default function ViewRouter({
   isLoggedIn,
@@ -26,7 +29,11 @@ export default function ViewRouter({
   // NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
   // There is no navigation link to this page - users must manually type /bongo in the URL
   if (isRoute("/bongo")) {
-    return <BongoPage isLoggedIn={isLoggedIn} userName={userName} />;
+    return (
+      <Suspense fallback={<Loading variant="spinner" text="Loading Bongo..." />}>
+        <BongoPage isLoggedIn={isLoggedIn} userName={userName} />
+      </Suspense>
+    );
   }
 
   if (!isLoggedIn) {
@@ -70,15 +77,19 @@ export default function ViewRouter({
         : "global";
 
     return (
-      <Dashboard
-        personalRatings={hasPersonalData ? tournament.ratings : null}
-        currentTournamentNames={hasPersonalData ? tournament.names : null}
-        voteHistory={hasPersonalData ? tournament.voteHistory : null}
-        onStartNew={onStartNewTournament}
-        onUpdateRatings={onUpdateRatings}
-        userName={userName}
-        mode={dashboardMode}
-      />
+      <Suspense
+        fallback={<Loading variant="spinner" text="Loading Dashboard..." />}
+      >
+        <Dashboard
+          personalRatings={hasPersonalData ? tournament.ratings : null}
+          currentTournamentNames={hasPersonalData ? tournament.names : null}
+          voteHistory={hasPersonalData ? tournament.voteHistory : null}
+          onStartNew={onStartNewTournament}
+          onUpdateRatings={onUpdateRatings}
+          userName={userName}
+          mode={dashboardMode}
+        />
+      </Suspense>
     );
   }
 

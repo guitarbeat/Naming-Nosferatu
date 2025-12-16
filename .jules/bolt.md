@@ -1,0 +1,1 @@
+## 2025-05-23 - [Initialization] **Learning:** Codebase is React 19 + Vite. Dependencies were missing. **Action:** Ran `npm install` and `npm run lint`. Found unused variables in `performanceMonitor.js` and unnecessary dependencies in hooks.

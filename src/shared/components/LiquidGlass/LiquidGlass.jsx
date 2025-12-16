@@ -307,7 +307,7 @@ function LiquidGlass({
       }
     };
     // * Only run on mount and when id changes (filter setup)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [id]);
 
   // * Update filter with view transition when props change (for smooth transitions)
