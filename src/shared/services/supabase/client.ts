@@ -199,12 +199,9 @@ const getSupabaseClient = async (
   return initializationPromise;
 };
 
-export const getSupabaseClientSync = (): SupabaseClient<Database> | null =>
-  supabase;
-
 export const resolveSupabaseClient =
   async (): Promise<SupabaseClient<Database> | null> =>
-    getSupabaseClientSync() ?? (await getSupabaseClient());
+    supabase ?? (await getSupabaseClient());
 
 /**
  * Update the x-user-name header for the current Supabase client

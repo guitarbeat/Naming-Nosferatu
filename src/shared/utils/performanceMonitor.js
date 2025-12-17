@@ -197,8 +197,8 @@ export function cleanupPerformanceMonitoring() {
   performanceMetrics.observers.forEach((observer) => {
     try {
       observer.disconnect();
-    } catch (_error) {
-      console.debug("Error disconnecting observer:", _error);
+    } catch (error) {
+      console.debug("Error disconnecting observer:", error);
     }
   });
   performanceMetrics.observers = [];

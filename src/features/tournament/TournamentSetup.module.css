@@ -2283,8 +2283,8 @@
   justify-content: center;
   width: 100%;
   max-width: 100%;
-  min-height: 400px;
-  padding: 2rem 0;
+  min-height: 320px;
+  padding: 1.5rem 0;
 }
 
 .swipeButtons {
@@ -2337,7 +2337,7 @@
 .swipeCardWrapper {
   position: relative;
   width: min(100%, 420px);
-  height: 600px;
+  height: clamp(360px, 70vh, 520px);
   perspective: 1200px;
 }
 
@@ -2347,7 +2347,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  padding: clamp(1.5rem, 4vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -2376,6 +2376,7 @@
     border-color 0.3s var(--ease-out),
     background 0.3s var(--ease-out);
   /* * Transform transitions are handled by tilt effect (when not dragging) or drag handlers */
+  transform: translate3d(0, 0, 0);
 }
 
 /* * Enhanced hover state for desktop */
@@ -2437,6 +2438,20 @@
   border: 2px solid var(--mimosa, #e8bf76);
   box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
   animation: longPressPulse 0.5s ease-in-out infinite alternate;
+}
+
+.swipeCard[data-direction="left"] {
+  border-color: rgb(239 68 68 / 60%);
+  box-shadow:
+    0 16px 40px rgb(239 68 68 / 30%),
+    0 0 0 2px rgb(239 68 68 / 20%);
+}
+
+.swipeCard[data-direction="right"] {
+  border-color: rgb(34 197 94 / 60%);
+  box-shadow:
+    0 16px 40px rgb(34 197 94 / 30%),
+    0 0 0 2px rgb(34 197 94 / 20%);
 }
 
 @keyframes longPressPulse {

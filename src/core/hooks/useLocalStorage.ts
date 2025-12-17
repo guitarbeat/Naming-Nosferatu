@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module useLocalStorage
  * @description Custom hook for managing localStorage with error handling and type safety.
@@ -13,7 +12,7 @@ import { useState, useCallback } from "react";
  * @param {any} initialValue - The initial value if key doesn't exist
  * @returns {Array} [storedValue, setValue] - Current value and setter function
  */
-export default function useLocalStorage(key, initialValue) {
+export default function useLocalStorage<T>(key: string, initialValue: T) {
   // Get from local storage then parse stored json or return initialValue
   const [storedValue, setStoredValue] = useState(() => {
     if (typeof window === "undefined") {
@@ -42,11 +41,13 @@ export default function useLocalStorage(key, initialValue) {
 
   // Return a wrapped version of useState's setter function that persists the new value to localStorage
   const setValue = useCallback(
-    (value) => {
+    (value: T | ((prev: T) => T)) => {
       try {
         // Allow value to be a function so we have the same API as useState
         const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+          value instanceof Function
+            ? (value as (prev: T) => T)(storedValue as T)
+            : value;
         setStoredValue(valueToStore);
         if (typeof window !== "undefined") {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));

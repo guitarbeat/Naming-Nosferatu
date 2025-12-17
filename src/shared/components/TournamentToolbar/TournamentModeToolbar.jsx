@@ -11,6 +11,15 @@ function TournamentModeToolbar({
   startTournamentButton,
   mode,
 }) {
+  const selectedCount = startTournamentButton?.selectedCount ?? 0;
+  const isReady = selectedCount >= 2;
+  const countLabel =
+    selectedCount === 1 ? "1 selected name" : `${selectedCount} selected names`;
+
+  const buttonLabel = isReady
+    ? `Start the tournament with ${countLabel}`
+    : "Select at least 2 names to start";
+
   return (
     <div className={styles.unifiedContainer} data-mode={mode}>
       {(onToggleSwipeMode || onToggleCatPictures) && (
@@ -42,10 +51,12 @@ function TournamentModeToolbar({
       {startTournamentButton && (
         <StartTournamentButton
           onClick={startTournamentButton.onClick}
+          disabled={!isReady}
           className={styles.startButton}
-          ariaLabel={`Start Tournament with ${startTournamentButton.selectedCount} selected name${startTournamentButton.selectedCount !== 1 ? "s" : ""}`}
+          ariaLabel={buttonLabel}
+          startIcon={isReady ? undefined : null}
         >
-          Start Tournament ({startTournamentButton.selectedCount})
+          {buttonLabel}
         </StartTournamentButton>
       )}
     </div>

@@ -1,5 +1,6 @@
 import React, { useId } from "react";
 import PropTypes from "prop-types";
+import ToolbarGlass from "./ToolbarGlass";
 import TournamentModeToolbar from "./TournamentModeToolbar";
 import FilterModeToolbar from "./FilterModeToolbar";
 import "./TournamentToolbar.css";
@@ -25,13 +26,14 @@ function TournamentToolbar({
   const isTournament = mode === "tournament";
   const isHybrid = mode === "hybrid";
   const showFilters = isHybrid || mode === "profile";
-  const toolbarId = useId();
+  const toolbarGlassId = useId();
+  const glassId = `toolbar-glass-${toolbarGlassId.replace(/:/g, "-")}`;
 
   return (
-    <div
-      id={`toolbar-${toolbarId.replace(/:/g, "-")}`}
+    <ToolbarGlass
+      mode={isTournament ? "tournament" : "filter"}
+      id={glassId}
       className={className}
-      role="presentation"
     >
       {isTournament ? (
         <TournamentModeToolbar
@@ -57,7 +59,7 @@ function TournamentToolbar({
           showFilters={showFilters}
         />
       )}
-    </div>
+    </ToolbarGlass>
   );
 }
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module App
  * @description Main application component for the cat name tournament app.
@@ -43,6 +42,16 @@ import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
  *
  * @returns {JSX.Element} Fully configured application layout.
  */
+type StoreSlice = {
+  user: any;
+  tournament: any;
+  ui: any;
+  errors: any;
+  tournamentActions: any;
+  uiActions: any;
+  errorActions: any;
+};
+
 function App() {
   const { login, logout, isInitialized } = useUserSession();
   const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
@@ -65,10 +74,12 @@ function App() {
     tournamentActions,
     uiActions,
     errorActions,
-  } = useAppStore();
+  } = useAppStore() as StoreSlice;
 
   // * Explicitly select currentView to ensure re-renders when it changes
-  const currentView = useAppStore((state) => state.tournament.currentView);
+  const currentView = useAppStore(
+    (state: StoreSlice) => state.tournament.currentView,
+  );
 
   // * Simple URL routing helpers
   const { currentRoute, navigateTo } = useRouting();
@@ -88,6 +99,7 @@ function App() {
   // * Keyboard shortcuts - consolidated into custom hook
   useKeyboardShortcuts({
     navigateTo,
+    onAnalysisToggle: () => {},
   });
 
   // * Tournament handlers extracted to custom hook
@@ -110,7 +122,7 @@ function App() {
 
   // * Handle user login
   const handleLogin = useCallback(
-    async (userName) => {
+    async (userName: string) => {
       try {
         const success = await login(userName);
         return success;
@@ -149,18 +161,19 @@ function App() {
   const navbarProps = useMemo(
     () => ({
       view: currentView || "tournament",
-      setView: (view) => {
+      setView: (view: string) => {
+        const nextView = view;
         // * Toggle photos view: if clicking photos and already on photos, go back to tournament
-        if (view === "photos" && currentView === "photos") {
+        if (nextView === "photos" && currentView === "photos") {
           tournamentActions.setView("tournament");
           navigateTo("/");
         } else {
-          tournamentActions.setView(view);
+          tournamentActions.setView(nextView);
 
           // * Direct navigation for each view
-          if (view === "tournament") {
+          if (nextView === "tournament") {
             navigateTo("/");
-          } else if (view === "photos") {
+          } else if (nextView === "photos") {
             // * Stay on same route, just change view state
             // * ViewRouter will show TournamentSetup which handles photos view
             navigateTo("/");
@@ -235,6 +248,25 @@ function App() {
 
 export default App;
 
+type AppLayoutProps = {
+  navbarProps: any;
+  user: any;
+  errors: any;
+  errorActions: any;
+  tournament: any;
+  tournamentActions: any;
+  handleLogin: (userName: string) => Promise<any>;
+  handleStartNewTournament: () => void;
+  handleUpdateRatings: (ratings: any) => void;
+  handleTournamentSetup: (names?: any) => void;
+  handleTournamentComplete: (finalRatings: any) => Promise<void>;
+  isSuggestNameModalOpen: boolean;
+  onCloseSuggestName: () => void;
+  ui: any;
+  uiActions: any;
+  isAdmin: boolean;
+};
+
 function AppLayout({
   navbarProps,
   user,
@@ -249,7 +281,8 @@ function AppLayout({
   handleTournamentComplete,
   isSuggestNameModalOpen,
   onCloseSuggestName,
-}) {
+  ui,
+}: AppLayoutProps) {
   const { isLoggedIn } = user;
 
   const appClassName = useMemo(
@@ -280,7 +313,7 @@ function AppLayout({
       {/* * Primary navigation lives in the navbar */}
       <AppNavbar {...navbarProps} />
 
-      <main id="main-content" className={mainWrapperClassName} tabIndex="-1">
+      <main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
         {errors.current && isLoggedIn && (
           <Error
             variant="list"
@@ -299,7 +332,7 @@ function AppLayout({
           onUpdateRatings={handleUpdateRatings}
           onTournamentSetup={handleTournamentSetup}
           onTournamentComplete={handleTournamentComplete}
-          onVote={(vote) => tournamentActions.addVote(vote)}
+          onVote={(vote: any) => tournamentActions.addVote(vote)}
         />
 
         {/* * Global loading overlay */}

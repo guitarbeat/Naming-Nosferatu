@@ -9,6 +9,11 @@
   background: rgb(0 0 0 / 60%);
   /* * backdrop-filter removed - modal uses LiquidGlass instead */
   animation: fadeIn 0.2s ease-out;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 88px 16px 24px;
+  box-sizing: border-box;
 }
 
 .name-suggestion-modal-glass {
@@ -16,7 +21,7 @@
   animation: slideUp 0.3s var(--ease-out);
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  max-height: calc(100vh - 120px);
   max-width: 90vw;
 }
 

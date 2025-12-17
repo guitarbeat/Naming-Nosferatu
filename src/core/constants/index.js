@@ -133,37 +133,6 @@ export const GESTURE_THRESHOLDS = {
   TOUCH_DURATION_THRESHOLD_MS: 300,
 };
 
-// * Audio Constants
-export const AUDIO = {
-  DEFAULT_MUSIC_VOLUME: 0.2,
-  DEFAULT_EFFECTS_VOLUME: 0.3,
-  AUDIO_RETRY_DELAY: 50,
-  TRACK_CHANGE_DELAY: 50,
-};
-
-// * Music Tracks
-export const MUSIC_TRACKS = [
-  {
-    path: "/assets/sounds/AdhesiveWombat - Night Shade.mp3",
-    name: "Night Shade",
-  },
-  { path: "/assets/sounds/MiseryBusiness.mp3", name: "Misery Business" },
-  { path: "/assets/sounds/what-is-love.mp3", name: "What is Love" },
-  {
-    path: "/assets/sounds/Lemon Demon - The Ultimate Showdown (8-Bit Remix).mp3",
-    name: "Ultimate Showdown (8-Bit)",
-  },
-  { path: "/assets/sounds/Main Menu 1 (Ruins).mp3", name: "Ruins" },
-];
-
-// * Sound Effects
-export const SOUND_EFFECTS = [
-  { path: "/assets/sounds/gameboy-pluck.mp3", weight: 0.5 },
-  { path: "/assets/sounds/wow.mp3", weight: 0.2 },
-  { path: "/assets/sounds/surprise.mp3", weight: 0.1 },
-  { path: "/assets/sounds/level-up.mp3", weight: 0.2 },
-];
-
 // * Navbar Constants - removed unused NAVBAR constant
 // * Navbar styling is handled via CSS and inline styles in AppNavbar component
 

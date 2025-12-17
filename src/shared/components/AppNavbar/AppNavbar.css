@@ -21,31 +21,28 @@
   transition:
     height 0.3s ease,
     padding 0.3s ease;
-  border-radius: 9999px;
 }
 
 .app-navbar-glass--collapsed {
-  height: 64px;
-  width: 64px;
+  height: auto !important;
   min-height: 64px;
-  padding: 0;
-  max-width: 64px;
-  justify-content: center;
+  padding: 0.5rem !important;
+  width: auto !important;
+  max-width: max-content !important;
+  justify-content: flex-start;
   align-items: center;
   overflow: visible;
   left: clamp(1rem, 4vw, 2.5rem);
   right: auto;
-  position: fixed;
-  display: flex;
 }
 
 /* Override LiquidGlass internal width when collapsed */
 .app-navbar-glass--collapsed.liquid-glass,
 .app-navbar-glass--collapsed.liquid-glass.app-navbar--horizontal,
 .app-navbar-glass--collapsed.liquid-glass[data-orientation="horizontal"] {
-  width: 64px;
-  max-width: 64px;
-  right: auto;
+  width: auto !important;
+  max-width: max-content !important;
+  right: auto !important;
 }
 
 /* Main Navbar Container */
@@ -55,10 +52,10 @@
   align-items: center;
   gap: clamp(0.5rem, 1.2vw, 0.875rem);
   width: 100%;
-  max-width: none;
+  max-width: 1400px;
   min-height: 56px;
   padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
-  border-radius: 9999px;
+  border-radius: 0;
   border: none;
   background: transparent;
   box-shadow: none;
@@ -69,19 +66,14 @@
 }
 
 .app-navbar--collapsed {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  min-height: 64px;
-  padding: 0;
+  min-height: 56px;
+  padding: 0.35rem;
   opacity: 0.98;
   overflow: visible;
+  width: auto !important;
+  max-width: max-content !important;
   border-radius: 9999px;
   flex-shrink: 0;
-  gap: 0;
 }
 
 .app-navbar--collapsed > :not(.app-navbar__collapse-toggle) {
@@ -103,27 +95,41 @@
 
 /* Collapse Toggle - Hamburger Menu */
 .app-navbar__collapse-toggle {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  transform: none;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 2.5rem;
+  height: 2.5rem;
   padding: 0;
-  border-radius: 9999px;
-  border: 1px solid hsl(var(--border) / 30%);
+  border-radius: 10px;
+  border: 1px solid hsl(var(--border) / 40%);
   background: hsl(var(--background) / 70%);
   color: hsl(var(--foreground) / 90%);
   cursor: pointer;
-  transition: none;
+  transition: all 0.2s ease;
+  box-shadow:
+    0 2px 8px hsl(var(--foreground) / 8%),
+    0 0 8px hsl(var(--foreground) / 4%),
+    inset 0 1px 0 hsl(var(--foreground) / 6%);
 }
 
 .app-navbar__collapse-toggle:hover {
   background: hsl(var(--background) / 85%);
   border-color: hsl(var(--border) / 60%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 10px hsl(var(--foreground) / 12%),
+    0 0 12px hsl(var(--foreground) / 6%),
+    inset 0 1px 0 hsl(var(--foreground) / 8%);
+}
+
+.app-navbar__collapse-toggle:active {
+  transform: translateY(0) scale(0.95);
+  box-shadow:
+    0 1px 4px hsl(var(--foreground) / 8%),
+    0 0 6px hsl(var(--foreground) / 4%),
+    inset 0 1px 0 hsl(var(--foreground) / 6%);
 }
 
 .app-navbar__collapse-toggle:focus-visible {
@@ -137,6 +143,10 @@
 .app-navbar-glass--collapsed .app-navbar__collapse-toggle {
   background: hsl(var(--background) / 80%);
   border-color: hsl(var(--neon-cyan) / 50%);
+  box-shadow:
+    0 2px 8px hsl(var(--neon-cyan) / 20%),
+    0 0 12px hsl(var(--neon-cyan) / 15%),
+    inset 0 1px 0 hsl(var(--foreground) / 8%);
 }
 
 .app-navbar__collapse-toggle--collapsed:hover,
@@ -144,6 +154,11 @@
 .app-navbar-glass--collapsed .app-navbar__collapse-toggle:hover {
   background: hsl(var(--background) / 90%);
   border-color: hsl(var(--neon-cyan) / 70%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 12px hsl(var(--neon-cyan) / 30%),
+    0 0 16px hsl(var(--neon-cyan) / 20%),
+    inset 0 1px 0 hsl(var(--foreground) / 10%);
 }
 
 .app-navbar__collapse-icon {
@@ -156,21 +171,7 @@
 .app-navbar__collapse-hamburger {
   width: 20px;
   height: 20px;
-  transition: none;
-}
-
-.app-navbar__collapse-toggle svg {
-  display: block;
-  line-height: 0;
-}
-
-.app-navbar--collapsed .app-navbar__collapse-toggle {
-  inset: 0;
-  margin: auto;
-  transform: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
+  transition: all 0.2s ease;
 }
 
 /* Brand Button */
@@ -196,6 +197,7 @@
 .app-navbar__brand:hover {
   background: hsl(var(--background) / 80%);
   border-color: hsl(var(--border) / 50%);
+  transform: translateY(-1px);
 }
 
 .app-navbar__brand[data-active="true"] {
@@ -238,6 +240,7 @@
   background: hsl(var(--background) / 70%);
   border-color: hsl(var(--border) / 40%);
   color: hsl(var(--foreground));
+  transform: translateY(-1px);
 }
 
 .app-navbar__link[data-active="true"] {
@@ -300,6 +303,7 @@
 }
 
 .app-navbar__suggest-button:hover {
+  transform: translateY(-1px);
   box-shadow:
     0 8px 22px hsl(var(--neon-cyan) / 48%),
     0 4px 14px hsl(var(--hot-pink) / 32%),
@@ -307,6 +311,7 @@
 }
 
 .app-navbar__suggest-button:active {
+  transform: translateY(0);
   box-shadow:
     0 4px 12px hsl(var(--neon-cyan) / 38%),
     0 2px 8px hsl(var(--hot-pink) / 26%);
@@ -317,6 +322,7 @@
   background: hsl(var(--background) / 70%);
   border-color: hsl(var(--border) / 40%);
   color: hsl(var(--foreground));
+  transform: translateY(-1px);
 }
 
 .app-navbar__action-button[data-icon-only="true"] {

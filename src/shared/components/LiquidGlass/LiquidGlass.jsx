@@ -227,7 +227,6 @@ function LiquidGlass({
     if (feGaussianBlur) {
       feGaussianBlur.setAttribute("stdDeviation", outputBlur);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     buildDisplacementImage,
     validWidth,
@@ -246,8 +245,6 @@ function LiquidGlass({
     chromaticR,
     chromaticG,
     chromaticB,
-    xChannel,
-    yChannel,
   ]);
 
   // * Wrapper function that uses view transitions for smooth updates (matching example pattern)

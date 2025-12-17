@@ -1,94 +1,106 @@
 import { useEffect } from "react";
 
+/**
+ * Keyboard bindings for tournament interactions.
+ * Provides lightweight defaults to keep UI responsive without the legacy hook.
+ */
 export function useKeyboardControls(
   selectedOption,
   isProcessing,
   isTransitioning,
   isMuted,
   handleVoteWithAnimation,
-  globalEventListeners,
-  {
-    onToggleHelp,
-    onUndo,
-    canUndoNow,
-    onClearSelection,
-    onSelectLeft,
-    onSelectRight,
-    onToggleCatPictures,
-  },
+  globalEventListenersRef,
+  options = {},
 ) {
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const handleKeyDown = (event) => {
-      if (isProcessing || isTransitioning) return;
+      if (isProcessing || isTransitioning) {
+        return;
+      }
 
-      switch (event.key) {
-        case "ArrowLeft":
-          onSelectLeft?.();
-          break;
-        case "ArrowRight":
-          onSelectRight?.();
-          break;
-        case "ArrowUp":
-        case "ArrowDown":
-          if (!selectedOption) onToggleHelp?.();
-          break;
-        case " ":
-        case "Enter":
-          if (selectedOption) {
-            handleVoteWithAnimation(selectedOption);
-          }
-          break;
-        case "Escape":
-          onClearSelection?.();
-          if (canUndoNow) {
-            onUndo?.();
-          }
-          break;
-        case "m":
-        case "M":
-          if (!isMuted) {
-            onToggleCatPictures?.();
-          }
-          break;
-        default:
-          break;
+      const { key } = event;
+
+      if (key === "ArrowLeft") {
+        options.onSelectLeft?.();
+        return;
+      }
+
+      if (key === "ArrowRight") {
+        options.onSelectRight?.();
+        return;
+      }
+
+      if (key === "ArrowUp") {
+        handleVoteWithAnimation?.("both");
+        return;
+      }
+
+      if (key === "ArrowDown") {
+        handleVoteWithAnimation?.("neither");
+        return;
+      }
+
+      if (key === "Enter" && selectedOption) {
+        handleVoteWithAnimation?.(selectedOption);
+        return;
+      }
+
+      if (key === "Escape") {
+        options.onClearSelection?.();
+        return;
+      }
+
+      if (key === "h" || key === "H") {
+        options.onToggleHelp?.();
+        return;
+      }
+
+      if (key === "u" || key === "U") {
+        options.onUndo?.();
+        return;
+      }
+
+      if (key === "c" || key === "C") {
+        options.onToggleCatPictures?.();
+        return;
+      }
+
+      if ((key === "m" || key === "M") && typeof isMuted === "boolean") {
+        options.onToggleMute?.();
       }
     };
 
+    const listenersSet = globalEventListenersRef?.current;
+
     window.addEventListener("keydown", handleKeyDown);
-    const listenerSet =
-      globalEventListeners && globalEventListeners.current instanceof Set
-        ? globalEventListeners.current
-        : null;
-    listenerSet?.add({ event: "keydown", handler: handleKeyDown });
+    if (listenersSet) {
+      listenersSet.add({
+        event: "keydown",
+        handler: handleKeyDown,
+      });
+    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      if (!listenerSet) return;
-      listenerSet.forEach((listener) => {
-        if (
-          listener.handler === handleKeyDown &&
-          listener.event === "keydown"
-        ) {
-          listenerSet.delete(listener);
-        }
-      });
+      if (listenersSet?.delete) {
+        listenersSet.forEach((listener) => {
+          if (
+            listener?.event === "keydown" &&
+            listener?.handler === handleKeyDown
+          ) {
+            listenersSet.delete(listener);
+          }
+        });
+      }
     };
   }, [
-    canUndoNow,
-    globalEventListeners,
+    globalEventListenersRef,
     handleVoteWithAnimation,
     isMuted,
     isProcessing,
     isTransitioning,
-    onClearSelection,
-    onSelectLeft,
-    onSelectRight,
-    onToggleCatPictures,
-    onToggleHelp,
-    onUndo,
+    options,
     selectedOption,
   ]);
 }

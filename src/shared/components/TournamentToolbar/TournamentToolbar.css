@@ -326,11 +326,9 @@
 
 .tournament-toolbar-filters-container {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
   gap: var(--tt-gap-small);
-  padding: var(--space-2) var(--space-3);
-  overflow-x: auto;
+  padding: var(--space-3);
   background: var(--tt-surface-strong);
   border: var(--tt-border);
   border-radius: var(--tt-radius-lg);
@@ -344,32 +342,53 @@
 
 .tournament-toolbar-start-button {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 46px;
   padding: var(--space-2) var(--space-5);
   font-weight: var(--tt-font-weight-button);
   letter-spacing: var(--tt-letter-spacing-button);
-  color: hsl(var(--primary-foreground));
-  background: linear-gradient(
-    var(--tt-gradient-angle),
-    hsl(var(--neon-cyan)),
-    hsl(var(--hot-pink))
-  );
-  border: none;
-  border-radius: var(--tt-radius-md);
+  text-transform: uppercase;
+  color: white;
+  background:
+    linear-gradient(135deg, rgb(12 74 110 / 65%), rgb(30 41 59 / 55%)),
+    radial-gradient(circle at 20% 20%, rgb(165 243 252 / 25%), transparent 40%);
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 999px;
   cursor: pointer;
   transition:
     transform var(--transition-base),
-    box-shadow var(--transition-base);
-  box-shadow: var(--tt-shadow-button-default);
+    box-shadow var(--transition-base),
+    filter var(--transition-base);
+  box-shadow:
+    0 10px 30px rgb(12 74 110 / 30%),
+    0 6px 18px rgb(59 130 246 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 35%);
 }
 
 .tournament-toolbar-start-button:hover {
   transform: var(--tt-transform-hover-lift);
-  box-shadow: var(--tt-shadow-button-hover);
+  box-shadow:
+    0 16px 40px rgb(12 74 110 / 36%),
+    0 8px 20px rgb(59 130 246 / 22%),
+    inset 0 1px 0 rgb(255 255 255 / 45%);
+  filter: brightness(1.03);
 }
 
 .tournament-toolbar-start-button:active {
   transform: var(--tt-transform-active-reset);
-  box-shadow: var(--tt-shadow-button-active);
+  box-shadow:
+    0 12px 28px rgb(12 74 110 / 28%),
+    0 6px 16px rgb(59 130 246 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 35%);
+}
+
+.tournament-toolbar-start-button:disabled {
+  filter: grayscale(0.2);
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* ==========================================================================
@@ -655,22 +674,20 @@
 
 .tournament-toolbar-filters-grid {
   display: flex;
-  flex-flow: row nowrap;
-  align-items: flex-end;
+  flex-direction: column;
   gap: var(--tt-gap-small);
-  overflow-x: auto;
 }
 
 .tournament-toolbar-filter-row {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: var(--tt-gap-small);
 }
 
 .tournament-toolbar-filter-group,
 .tournament-toolbar-sort-group {
   flex: 1;
-  min-width: 140px;
+  min-width: var(--tt-filter-group-min-width);
   display: flex;
   flex-direction: column;
   gap: var(--tt-filter-group-gap);

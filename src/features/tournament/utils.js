@@ -1,32 +1,51 @@
-// Utility helpers for tournament features (image handling)
+/**
+ * Utility helpers for tournament features.
+ */
 
-function getBaseName(value) {
-  const path =
-    typeof value === "string" ? value : value?.name || value?.url || "";
-  const fileName = path.split("/").pop() || path;
-  return fileName.replace(/\.[^/.]+$/, "").toLowerCase();
-}
-
-export function deduplicateImages(images = []) {
-  const seen = new Set();
-  const result = [];
-
-  for (const image of images) {
-    const key = getBaseName(image);
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    result.push(image);
+/**
+ * Pick a deterministic image for a given id.
+ * Falls back to the first image when the list is empty.
+ * @param {string|number} id
+ * @param {string[]} imageList
+ * @returns {string|undefined}
+ */
+export function getRandomCatImage(id, imageList = []) {
+  if (!Array.isArray(imageList) || imageList.length === 0) {
+    return undefined;
   }
 
-  return result;
+  const seed =
+    typeof id === "string"
+      ? Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0)
+      : Number(id) || 0;
+
+  const index = Math.abs(seed) % imageList.length;
+  return imageList[index];
 }
 
-export function getRandomCatImage(id, images = []) {
-  if (!id || !Array.isArray(images) || images.length === 0) return null;
-  const hash = [...String(id)].reduce(
-    (acc, char) => acc + char.charCodeAt(0),
-    0,
-  );
-  const index = hash % images.length;
-  return images[index] || null;
+/**
+ * Deduplicate images by base filename (ignores extension).
+ * Earlier occurrences win.
+ * @param {string[]} images
+ * @returns {string[]}
+ */
+export function deduplicateImages(images = []) {
+  const seen = new Set();
+  const unique = [];
+
+  for (const image of images) {
+    if (typeof image !== "string" || image.length === 0) {
+      continue;
+    }
+
+    const base = image.replace(/\.[^./]+$/, "");
+    if (seen.has(base)) {
+      continue;
+    }
+
+    seen.add(base);
+    unique.push(image);
+  }
+
+  return unique;
 }

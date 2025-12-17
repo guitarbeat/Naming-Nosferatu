@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/index.jsx"],
+  "entry": ["src/main.tsx"],
   "project": ["src/**/*.{js,jsx,ts,tsx}", "config/**/*.{js,ts}"],
   "ignore": [
     "**/*.test.{js,jsx,ts,tsx}",
@@ -11,7 +11,10 @@
     "**/README.md",
     "**/IMPLEMENTATION.md",
     "config/postcss.config.js",
-    "config/tailwind.config.js"
+    "config/tailwind.config.js",
+    "src/types/shims.d.ts",
+    "src/shared/utils/performanceMonitor.d.ts",
+    "src/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
   ],
   "ignoreDependencies": [
     "@types/*",

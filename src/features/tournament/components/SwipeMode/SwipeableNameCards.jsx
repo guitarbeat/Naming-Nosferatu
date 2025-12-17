@@ -8,8 +8,8 @@ import useMobileGestures from "../../../../core/hooks/useMobileGestures";
 import { TIMING } from "../../../../core/constants";
 import { getRandomCatImage } from "../../utils";
 import { CAT_IMAGES } from "../../constants";
-import SwipeCard from "./SwipeCard.jsx";
-import SwipeControls from "./SwipeControls.jsx";
+import SwipeCard from "./SwipeCard";
+import SwipeControls from "./SwipeControls";
 import styles from "../../TournamentSetup.module.css";
 
 function SwipeableNameCards({

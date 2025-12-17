@@ -9,8 +9,8 @@
  */
 export const METRICS = {
   rating: {
-    label: "Elo Rating",
-    shortLabel: "Elo",
+    label: "Rating",
+    shortLabel: "Rating",
     description:
       "Elo-based rating system (similar to chess ratings). Higher is better.",
     fullDescription:

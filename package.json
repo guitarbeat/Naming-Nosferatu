@@ -51,6 +51,7 @@
     "@supabase/supabase-js": "^2.87.1",
     "@tanstack/react-query": "^5.90.12",
     "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "framer-motion": "^12.23.25",
     "lovable-tagger": "^1.1.13",
     "lucide-react": "^0.556.0",
@@ -91,6 +92,7 @@
     "tailwindcss": "^4.1.17",
     "terser": "^5.44.1",
     "ts-prune": "^0.10.3",
+    "tsr": "^1.3.4",
     "typescript": "^5.9.3",
     "vite": "^7.2.2",
     "vitest": "^4.0.15"

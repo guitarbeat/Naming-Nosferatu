@@ -1,9 +1,11 @@
+// @ts-nocheck
 /**
  * @module AppNavbar
  * @description Main application navigation bar component - refactored for maintainability
  */
 
 import { useCallback, useMemo, useId } from "react";
+import LiquidGlass from "../LiquidGlass";
 import { NavbarProvider } from "./NavbarContext";
 import { NavbarBrand } from "./NavbarBrand";
 import { NavbarLink } from "./NavbarLink";
@@ -41,7 +43,7 @@ export function AppNavbar({
   } = useMobileMenu();
   const isAnalysisMode = useAnalysisMode();
   const toggleAnalysis = useToggleAnalysis();
-  const { navbarRef } = useNavbarDimensions(isCollapsed);
+  const { navbarRef, dimensions } = useNavbarDimensions(isCollapsed);
 
   const navItems = useMemo(
     () =>
@@ -124,19 +126,19 @@ export function AppNavbar({
 
   return (
     <NavbarProvider value={contextValue}>
-      <div
+      <LiquidGlass
         id={`navbar-glass-${navbarGlassId.replace(/:/g, "-")}`}
         className={`app-navbar-glass app-navbar--horizontal ${
           isCollapsed ? "app-navbar-glass--collapsed" : ""
         }`}
+        width={isCollapsed ? 64 : dimensions.width}
+        height={isCollapsed ? 56 : dimensions.height}
         style={
           isCollapsed
             ? {
-                width: "64px",
-                height: "64px",
-                minWidth: "64px",
-                minHeight: "64px",
-                padding: 0,
+                width: "auto",
+                maxWidth: "max-content",
+                height: "auto",
                 overflow: "visible",
               }
             : { width: "100%", height: "auto", overflow: "visible" }
@@ -150,19 +152,6 @@ export function AppNavbar({
           className={`app-navbar app-navbar--horizontal ${
             isCollapsed ? "app-navbar--collapsed" : ""
           }`}
-          style={
-            isCollapsed
-              ? {
-                  width: "64px",
-                  height: "64px",
-                  minWidth: "64px",
-                  minHeight: "64px",
-                  padding: 0,
-                  display: "block",
-                  position: "relative",
-                }
-              : undefined
-          }
           role="banner"
           data-orientation="horizontal"
           data-collapsed={isCollapsed}
@@ -195,7 +184,7 @@ export function AppNavbar({
             onToggle={toggleMobileMenu}
           />
         </header>
-      </div>
+      </LiquidGlass>
 
       <MobileMenu
         isOpen={isMobileMenuOpen}
@@ -207,5 +196,3 @@ export function AppNavbar({
     </NavbarProvider>
   );
 }
-
-export default AppNavbar;

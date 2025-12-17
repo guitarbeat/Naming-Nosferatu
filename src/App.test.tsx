@@ -1,13 +1,12 @@
-// @ts-nocheck
 import React, { useSyncExternalStore } from "react";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-function isPlainObject(value) {
+function isPlainObject(value: unknown) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function deepMerge(target, source) {
+function deepMerge(target: any, source: any) {
   const startingPoint = isPlainObject(target) ? { ...target } : {};
 
   if (!isPlainObject(source)) {
@@ -25,7 +24,7 @@ function deepMerge(target, source) {
   return startingPoint;
 }
 
-function createMockStoreState(overrides = {}) {
+function createMockStoreState(overrides: any = {}) {
   const baseState = {
     user: {
       isLoggedIn: true,
@@ -78,21 +77,21 @@ function createMockStoreState(overrides = {}) {
 
 vi.mock("@core/store/useAppStore", () => {
   let storeState = createMockStoreState();
-  const listeners = new Set();
+  const listeners = new Set<() => void>();
 
-  const subscribe = (listener) => {
+  const subscribe = (listener: () => void) => {
     listeners.add(listener);
     return () => listeners.delete(listener);
   };
 
-  const useAppStore = (selector = (state) => state) =>
+  const useAppStore = (selector: (state: any) => any = (state) => state) =>
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
       () => selector(storeState),
     );
 
-  const mergeState = (partial) => {
+  const mergeState = (partial: any) => {
     if (!isPlainObject(partial)) {
       return storeState;
     }
@@ -102,12 +101,12 @@ vi.mock("@core/store/useAppStore", () => {
     return storeState;
   };
 
-  const setState = (update) => {
+  const setState = (update: any) => {
     const partial = typeof update === "function" ? update(storeState) : update;
     return mergeState(partial);
   };
 
-  const resetState = (overrides = {}) => {
+  const resetState = (overrides: any = {}) => {
     storeState = createMockStoreState(overrides);
     listeners.forEach((listener) => listener());
     return storeState;

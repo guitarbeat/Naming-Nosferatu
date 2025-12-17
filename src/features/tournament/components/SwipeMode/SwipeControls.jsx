@@ -4,33 +4,33 @@ import styles from "../../TournamentSetup.module.css";
 function SwipeControls({
   onSwipeLeft,
   onSwipeRight,
-  currentIndex = 0,
-  totalCount = 0,
+  currentIndex,
+  totalCount,
 }) {
   return (
     <div
-      className={styles.swipeControls}
+      className={styles.swipeButtons}
       role="group"
       aria-label="Swipe controls"
     >
       <button
         type="button"
+        className={`${styles.swipeButton} ${styles.swipeLeftButton}`}
         onClick={onSwipeLeft}
-        className={styles.swipeButton}
-        aria-label="Swipe left"
+        aria-label="Reject name"
       >
-        ⬅️ Skip
+        ❌ Reject
       </button>
-      <div className={styles.swipeProgressLabel}>
-        {currentIndex + 1} / {totalCount || "?"}
+      <div className={styles.cardProgress}>
+        {currentIndex + 1} / {totalCount}
       </div>
       <button
         type="button"
+        className={`${styles.swipeButton} ${styles.swipeRightButton}`}
         onClick={onSwipeRight}
-        className={styles.swipeButton}
-        aria-label="Swipe right"
+        aria-label="Accept name"
       >
-        ➡️ Select
+        ✅ Accept
       </button>
     </div>
   );
@@ -39,8 +39,8 @@ function SwipeControls({
 SwipeControls.propTypes = {
   onSwipeLeft: PropTypes.func.isRequired,
   onSwipeRight: PropTypes.func.isRequired,
-  currentIndex: PropTypes.number,
-  totalCount: PropTypes.number,
+  currentIndex: PropTypes.number.isRequired,
+  totalCount: PropTypes.number.isRequired,
 };
 
 export default SwipeControls;
