@@ -245,7 +245,13 @@ export function useBongoCat({
         onBongo();
       }
     },
-    [isPawsDown, onBongo, calculateTypingSpeed, checkMilestones, updateAnimationStateFromSpeed],
+    [
+      isPawsDown,
+      onBongo,
+      calculateTypingSpeed,
+      checkMilestones,
+      updateAnimationStateFromSpeed,
+    ],
   );
 
   const handleKeyUp = useCallback((e) => {
@@ -279,7 +285,12 @@ export function useBongoCat({
     }, TIMING.PAUSE_CHECK_INTERVAL_MS);
 
     return () => clearInterval(pauseCheckInterval);
-  }, [animationState, isPawsDown, calculateTypingSpeed, updateAnimationStateFromSpeed]);
+  }, [
+    animationState,
+    isPawsDown,
+    calculateTypingSpeed,
+    updateAnimationStateFromSpeed,
+  ]);
 
   useEffect(() => {
     if (!reduceMotion) {

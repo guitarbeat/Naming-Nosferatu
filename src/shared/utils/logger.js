@@ -52,10 +52,6 @@ export const devDebug = isDev
   ? (...args) => console.debug("[DEV]", ...args)
   : noop;
 
-// Unused utility functions removed:
-// - devOnly
-// - createLogger
-
 /**
  * Check if running in development mode
  * @returns {boolean} True if in development mode
@@ -72,15 +68,3 @@ export function isProdMode() {
   return isProd;
 }
 
-// Default export removed - use named exports instead
-// export default {
-//   devLog,
-//   devWarn,
-//   devError,
-//   devInfo,
-//   devDebug,
-//   devOnly,
-//   createLogger,
-//   isDevMode,
-//   isProdMode,
-// };

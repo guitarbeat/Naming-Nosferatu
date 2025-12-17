@@ -50,6 +50,3 @@ export function useKeyboardShortcuts({ onAnalysisToggle, navigateTo }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onAnalysisToggle, navigateTo]);
 }
-
-// Default export removed - use named export instead
-// export default useKeyboardShortcuts;

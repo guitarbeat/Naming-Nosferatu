@@ -28,12 +28,3 @@ export function getRankDisplay(rank) {
 // - truncateText
 // - getInitials
 
-// Default export removed - use named exports instead
-// export default {
-//   getRankDisplay,
-//   formatNumber,
-//   formatPercent,
-//   calculateWinRate,
-//   truncateText,
-//   getInitials,
-// };

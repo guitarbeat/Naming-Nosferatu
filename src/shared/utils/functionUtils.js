@@ -3,9 +3,6 @@
  * @description Utility functions for function manipulation (debounce, throttle, etc.)
  */
 
-// Unused utility function removed:
-// - debounce (not imported anywhere, only throttle is re-exported from performanceUtils)
-
 /**
  * Creates a throttled function that only invokes func at most once per every wait ms.
  * @param {Function} func - The function to throttle
@@ -78,10 +75,3 @@ export function throttle(func, wait, options = {}) {
 // - once
 // - memoize
 
-// Default export removed - use named exports instead
-// export default {
-//   debounce,
-//   throttle,
-//   once,
-//   memoize,
-// };

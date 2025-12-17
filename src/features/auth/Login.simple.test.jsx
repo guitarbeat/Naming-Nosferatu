@@ -1,13 +1,10 @@
 /**
  * @fileoverview Simple tests for Login component
  */
-import React from "react";
 import { screen, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import Login from "./Login";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import {
-  mockCatFact,
   renderLoginAndWait,
   setupFetchSuccess,
   submitLoginForm,
@@ -37,8 +34,7 @@ describe("Login Component - Simple Tests", () => {
   });
 
   it("renders without crashing", async () => {
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText(mockCatFact);
+    await renderLoginAndWait({ onLogin: mockOnLogin });
   });
 
   it("renders main title", async () => {

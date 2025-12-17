@@ -20,10 +20,3 @@ export function cn(...classes) {
 // - conditionalClass
 // - conditionalClasses
 
-// Default export removed - use named exports instead
-// export default {
-//   cn,
-//   cnStyles,
-//   conditionalClass,
-//   conditionalClasses,
-// };
