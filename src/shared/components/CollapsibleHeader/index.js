@@ -1,1 +1,5 @@
-export { CollapsibleHeader, CollapsibleContent } from "./CollapsibleHeader";
+export {
+  CollapsibleHeader,
+  CollapsibleContent,
+  CollapsibleSection,
+} from "./CollapsibleHeader";

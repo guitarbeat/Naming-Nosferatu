@@ -11,6 +11,7 @@ import {
   HEADER_GLASS_CONFIG,
   resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
+import { useCollapsible } from "../../hooks/useCollapsible";
 import "./CollapsibleHeader.css";
 
 /**
@@ -208,6 +209,91 @@ CollapsibleContent.propTypes = {
   isCollapsed: PropTypes.bool.isRequired,
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
+};
+
+/**
+ * Collapsible Section Component
+ * A convenience wrapper that combines CollapsibleHeader and CollapsibleContent
+ * with built-in state management.
+ *
+ * @param {Object} props
+ * @param {string} props.title - Section title
+ * @param {string} props.icon - Emoji icon for the title
+ * @param {React.ReactNode} props.summary - Content to show when collapsed
+ * @param {React.ReactNode} props.actions - Action buttons in header
+ * @param {React.ReactNode} props.children - Section content
+ * @param {string} props.storageKey - localStorage key for persistence
+ * @param {boolean} props.defaultCollapsed - Default collapsed state
+ * @param {string} props.className - Additional CSS classes
+ * @param {string} props.variant - Style variant: 'default' | 'compact'
+ * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
+ * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
+ */
+export function CollapsibleSection({
+  title,
+  icon,
+  summary,
+  actions,
+  children,
+  storageKey = null,
+  defaultCollapsed = false,
+  className = "",
+  variant = "default",
+  toolbar,
+  liquidGlass,
+}) {
+  const { isCollapsed, toggleCollapsed } = useCollapsible(
+    storageKey,
+    defaultCollapsed,
+  );
+
+  const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;
+
+  return (
+    <div className={className}>
+      <CollapsibleHeader
+        title={title}
+        icon={icon}
+        isCollapsed={isCollapsed}
+        onToggle={toggleCollapsed}
+        summary={summary}
+        actions={actions}
+        contentId={contentId}
+        variant={variant}
+        toolbar={toolbar}
+        liquidGlass={liquidGlass}
+      />
+      <CollapsibleContent id={contentId} isCollapsed={isCollapsed}>
+        {children}
+      </CollapsibleContent>
+    </div>
+  );
+}
+
+CollapsibleSection.propTypes = {
+  title: PropTypes.string.isRequired,
+  icon: PropTypes.string,
+  summary: PropTypes.node,
+  actions: PropTypes.node,
+  children: PropTypes.node.isRequired,
+  storageKey: PropTypes.string,
+  defaultCollapsed: PropTypes.bool,
+  className: PropTypes.string,
+  variant: PropTypes.oneOf(["default", "compact"]),
+  toolbar: PropTypes.node,
+  liquidGlass: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({
+      width: PropTypes.number,
+      height: PropTypes.number,
+      radius: PropTypes.number,
+      scale: PropTypes.number,
+      saturation: PropTypes.number,
+      frost: PropTypes.number,
+      inputBlur: PropTypes.number,
+      outputBlur: PropTypes.number,
+    }),
+  ]),
 };
 
 export default CollapsibleHeader;

@@ -41,4 +41,3 @@ export async function submitLoginForm(name: string) {
     screen.getByRole("button", { name: "Continue to tournament" }),
   );
 }
-

@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2025-12-17T22:36:40.550Z",
+    "detectionDate": "2025-12-17T22:40:19.484Z",
     "formats": {
       "javascript": {
         "sources": {
@@ -1301,8 +1301,8 @@
             "newClones": 0
           },
           "src/features/auth/utils/svgStyles.js": {
-            "lines": 25,
-            "tokens": 84,
+            "lines": 54,
+            "tokens": 196,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1480,6 +1480,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "src/shared/utils/nameSelectionUtils.js": {
+            "lines": 54,
+            "tokens": 331,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "src/shared/utils/nameGenerationUtils.js": {
             "lines": 68,
             "tokens": 330,
@@ -1493,8 +1505,8 @@
             "newClones": 0
           },
           "src/shared/utils/nameFilterUtils.js": {
-            "lines": 163,
-            "tokens": 1212,
+            "lines": 173,
+            "tokens": 1268,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1732,6 +1744,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "src/shared/hooks/useAsyncOperation.js": {
+            "lines": 89,
+            "tokens": 480,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "src/shared/hooks/useAdminStatus.js": {
             "lines": 60,
             "tokens": 394,
@@ -1793,8 +1817,8 @@
             "newClones": 0
           },
           "src/features/tournament/TournamentSetup.jsx": {
-            "lines": 511,
-            "tokens": 3514,
+            "lines": 478,
+            "tokens": 3229,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1914,14 +1938,14 @@
           }
         },
         "total": {
-          "lines": 14534,
-          "tokens": 100869,
-          "sources": 159,
+          "lines": 14683,
+          "tokens": 101563,
+          "sources": 161,
           "clones": 11,
           "duplicatedLines": 417,
           "duplicatedTokens": 2134,
-          "percentage": 2.87,
-          "percentageTokens": 2.12,
+          "percentage": 2.84,
+          "percentageTokens": 2.1,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -2337,8 +2361,8 @@
             "newClones": 0
           },
           "src/shared/components/NameGrid/NameGrid.jsx": {
-            "lines": 193,
-            "tokens": 1529,
+            "lines": 187,
+            "tokens": 1458,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2757,8 +2781,8 @@
             "newClones": 0
           },
           "src/features/tournament/TournamentSetup.jsx": {
-            "lines": 675,
-            "tokens": 4598,
+            "lines": 646,
+            "tokens": 4329,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2781,14 +2805,14 @@
             "newClones": 0
           },
           "src/features/tournament/Tournament.jsx": {
-            "lines": 599,
-            "tokens": 4392,
+            "lines": 595,
+            "tokens": 4349,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
-            "duplicatedTokens": 83,
-            "percentage": 1.84,
-            "percentageTokens": 1.89,
+            "duplicatedTokens": 86,
+            "percentage": 1.85,
+            "percentageTokens": 1.98,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2834,9 +2858,9 @@
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
-            "duplicatedTokens": 83,
+            "duplicatedTokens": 86,
             "percentage": 1.98,
-            "percentageTokens": 1.81,
+            "percentageTokens": 1.87,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2865,8 +2889,8 @@
             "newClones": 0
           },
           "src/features/auth/Login.jsx": {
-            "lines": 823,
-            "tokens": 4695,
+            "lines": 824,
+            "tokens": 4708,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2890,12 +2914,12 @@
           }
         },
         "total": {
-          "lines": 14759,
-          "tokens": 106171,
+          "lines": 14721,
+          "tokens": 105801,
           "sources": 80,
           "clones": 4,
           "duplicatedLines": 48,
-          "duplicatedTokens": 432,
+          "duplicatedTokens": 435,
           "percentage": 0.33,
           "percentageTokens": 0.41,
           "newDuplicatedLines": 0,
@@ -3368,14 +3392,14 @@
       }
     },
     "total": {
-      "lines": 34587,
-      "tokens": 247254,
-      "sources": 275,
+      "lines": 34698,
+      "tokens": 247578,
+      "sources": 277,
       "clones": 17,
       "duplicatedLines": 485,
-      "duplicatedTokens": 2782,
+      "duplicatedTokens": 2785,
       "percentage": 1.4,
-      "percentageTokens": 1.13,
+      "percentageTokens": 1.12,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -3564,7 +3588,7 @@
     {
       "format": "jsx",
       "lines": 12,
-      "fragment": ");\n\n        return {\n          id: matchNumber,\n          round: calculatedRound,\n          name1: vote?.match?.left?.name || \"Unknown\",\n          name2: vote?.match?.right?.name || \"Unknown\",\n          winner,\n        };\n      });\n  }, [\n    voteHistory",
+      "fragment": ", matchNumber);\n\n        return {\n          id: matchNumber,\n          round: calculatedRound,\n          name1: vote?.match?.left?.name || \"Unknown\",\n          name2: vote?.match?.right?.name || \"Unknown\",\n          winner,\n        };\n      });\n  }, [\n    voteHistory",
       "tokens": 0,
       "firstFile": {
         "name": "src/features/tournament/Dashboard.jsx",
@@ -3572,8 +3596,8 @@
         "end": 224,
         "startLoc": {
           "line": 213,
-          "column": 12,
-          "position": 1986
+          "column": 11,
+          "position": 1983
         },
         "endLoc": {
           "line": 224,
@@ -3583,17 +3607,17 @@
       },
       "secondFile": {
         "name": "src/features/tournament/Tournament.jsx",
-        "start": 437,
-        "end": 447,
+        "start": 431,
+        "end": 443,
         "startLoc": {
-          "line": 437,
+          "line": 431,
           "column": 7,
-          "position": 3300
+          "position": 3251
         },
         "endLoc": {
-          "line": 447,
+          "line": 443,
           "column": 13,
-          "position": 3381
+          "position": 3338
         }
       }
     },
@@ -3604,32 +3628,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 180,
-        "end": 232,
+        "start": 181,
+        "end": 233,
         "startLoc": {
-          "line": 180,
+          "line": 181,
           "column": 31,
-          "position": 1274
+          "position": 1287
         },
         "endLoc": {
-          "line": 232,
+          "line": 233,
           "column": 11,
-          "position": 1521
+          "position": 1534
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 167,
-        "end": 189,
+        "start": 168,
+        "end": 190,
         "startLoc": {
-          "line": 167,
+          "line": 168,
           "column": 2,
-          "position": 1214
+          "position": 1227
         },
         "endLoc": {
-          "line": 189,
+          "line": 190,
           "column": 11,
-          "position": 1317
+          "position": 1330
         }
       }
     },
@@ -3640,32 +3664,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 234,
-        "end": 267,
+        "start": 235,
+        "end": 268,
         "startLoc": {
-          "line": 234,
+          "line": 235,
           "column": 8,
-          "position": 1532
+          "position": 1545
         },
         "endLoc": {
-          "line": 267,
+          "line": 268,
           "column": 9,
-          "position": 1696
+          "position": 1709
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 178,
-        "end": 186,
+        "start": 179,
+        "end": 187,
         "startLoc": {
-          "line": 178,
+          "line": 179,
           "column": 7,
-          "position": 1267
+          "position": 1280
         },
         "endLoc": {
-          "line": 186,
+          "line": 187,
           "column": 40,
-          "position": 1299
+          "position": 1312
         }
       }
     },
@@ -3676,32 +3700,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 277,
-        "end": 312,
+        "start": 278,
+        "end": 313,
         "startLoc": {
-          "line": 277,
+          "line": 278,
           "column": 33,
-          "position": 1749
+          "position": 1762
         },
         "endLoc": {
-          "line": 312,
+          "line": 313,
           "column": 40,
-          "position": 1913
+          "position": 1926
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 267,
-        "end": 296,
+        "start": 268,
+        "end": 297,
         "startLoc": {
-          "line": 267,
+          "line": 268,
           "column": 2,
-          "position": 1701
+          "position": 1714
         },
         "endLoc": {
-          "line": 296,
+          "line": 297,
           "column": 39,
-          "position": 1835
+          "position": 1848
         }
       }
     },
@@ -3712,32 +3736,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 315,
-        "end": 360,
+        "start": 316,
+        "end": 361,
         "startLoc": {
-          "line": 315,
+          "line": 316,
           "column": 31,
-          "position": 1929
+          "position": 1942
         },
         "endLoc": {
-          "line": 360,
+          "line": 361,
           "column": 10,
-          "position": 2138
+          "position": 2151
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 267,
-        "end": 313,
+        "start": 268,
+        "end": 314,
         "startLoc": {
-          "line": 267,
+          "line": 268,
           "column": 2,
-          "position": 1701
+          "position": 1714
         },
         "endLoc": {
-          "line": 313,
+          "line": 314,
           "column": 7,
-          "position": 1921
+          "position": 1934
         }
       }
     },
@@ -3748,32 +3772,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 405,
-        "end": 470,
+        "start": 406,
+        "end": 471,
         "startLoc": {
-          "line": 405,
+          "line": 406,
           "column": 31,
-          "position": 2369
+          "position": 2382
         },
         "endLoc": {
-          "line": 470,
+          "line": 471,
           "column": 10,
-          "position": 2702
+          "position": 2715
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 352,
-        "end": 415,
+        "start": 353,
+        "end": 416,
         "startLoc": {
-          "line": 352,
+          "line": 353,
           "column": 33,
-          "position": 2100
+          "position": 2113
         },
         "endLoc": {
-          "line": 415,
+          "line": 416,
           "column": 10,
-          "position": 2420
+          "position": 2433
         }
       }
     },
@@ -3784,32 +3808,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 473,
-        "end": 499,
+        "start": 474,
+        "end": 500,
         "startLoc": {
-          "line": 473,
+          "line": 474,
           "column": 4,
-          "position": 2718
+          "position": 2731
         },
         "endLoc": {
-          "line": 499,
+          "line": 500,
           "column": 10,
-          "position": 2857
+          "position": 2870
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 175,
-        "end": 270,
+        "start": 176,
+        "end": 271,
         "startLoc": {
-          "line": 175,
+          "line": 176,
           "column": 11,
-          "position": 1252
+          "position": 1265
         },
         "endLoc": {
-          "line": 270,
+          "line": 271,
           "column": 7,
-          "position": 1716
+          "position": 1729
         }
       }
     },
@@ -3820,32 +3844,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 524,
-        "end": 565,
+        "start": 525,
+        "end": 566,
         "startLoc": {
-          "line": 524,
+          "line": 525,
           "column": 33,
-          "position": 2979
+          "position": 2992
         },
         "endLoc": {
-          "line": 565,
+          "line": 566,
           "column": 39,
-          "position": 3198
+          "position": 3211
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 492,
-        "end": 529,
+        "start": 493,
+        "end": 530,
         "startLoc": {
-          "line": 492,
+          "line": 493,
           "column": 31,
-          "position": 2806
+          "position": 2819
         },
         "endLoc": {
-          "line": 529,
+          "line": 530,
           "column": 9,
-          "position": 3015
+          "position": 3028
         }
       }
     },
@@ -3856,32 +3880,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 607,
-        "end": 671,
+        "start": 608,
+        "end": 672,
         "startLoc": {
-          "line": 607,
+          "line": 608,
           "column": 2,
-          "position": 3419
+          "position": 3432
         },
         "endLoc": {
-          "line": 671,
+          "line": 672,
           "column": 40,
-          "position": 3741
+          "position": 3754
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 556,
-        "end": 617,
+        "start": 557,
+        "end": 618,
         "startLoc": {
-          "line": 556,
+          "line": 557,
           "column": 11,
-          "position": 3155
+          "position": 3168
         },
         "endLoc": {
-          "line": 617,
+          "line": 618,
           "column": 39,
-          "position": 3464
+          "position": 3477
         }
       }
     },
@@ -3892,32 +3916,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 660,
-        "end": 692,
+        "start": 661,
+        "end": 693,
         "startLoc": {
-          "line": 660,
+          "line": 661,
           "column": 33,
-          "position": 3687
+          "position": 3700
         },
         "endLoc": {
-          "line": 692,
+          "line": 693,
           "column": 5,
-          "position": 3848
+          "position": 3861
         }
       },
       "secondFile": {
         "name": "src/features/auth/Login.jsx",
-        "start": 460,
-        "end": 483,
+        "start": 461,
+        "end": 484,
         "startLoc": {
-          "line": 460,
+          "line": 461,
           "column": 31,
-          "position": 2651
+          "position": 2664
         },
         "endLoc": {
-          "line": 483,
+          "line": 484,
           "column": 2,
-          "position": 2764
+          "position": 2777
         }
       }
     },

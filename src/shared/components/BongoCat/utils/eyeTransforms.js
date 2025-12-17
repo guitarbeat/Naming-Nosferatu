@@ -29,7 +29,11 @@ export function getPupilTransform(eyePosition, multiplier = 0.5) {
  * @param {Function} getTransform - Transform function
  * @returns {Object} Style object
  */
-export function getConditionalEyeStyle(reduceMotion, eyePosition, getTransform) {
+export function getConditionalEyeStyle(
+  reduceMotion,
+  eyePosition,
+  getTransform,
+) {
   return !reduceMotion
     ? {
         transform: getTransform(eyePosition),

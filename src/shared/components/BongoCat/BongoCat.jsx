@@ -52,10 +52,7 @@ const CatBody = ({
     {/* Tail */}
     <div
       className={`${styles.tail} ${styles[animationState] || ""}`}
-      style={getConditionalTransform(
-        reduceMotion,
-        `rotate(${tailAngle}deg)`,
-      )}
+      style={getConditionalTransform(reduceMotion, `rotate(${tailAngle}deg)`)}
     />
     {/* Head with tilt */}
     <div
@@ -84,7 +81,11 @@ const CatBody = ({
       <div className={styles.eyes}>
         <div
           className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={getConditionalEyeStyle(reduceMotion, eyePosition, getEyeTransform)}
+          style={getConditionalEyeStyle(
+            reduceMotion,
+            eyePosition,
+            getEyeTransform,
+          )}
         >
           <div
             className={styles.pupil}
@@ -97,7 +98,11 @@ const CatBody = ({
         </div>
         <div
           className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={getConditionalEyeStyle(reduceMotion, eyePosition, getEyeTransform)}
+          style={getConditionalEyeStyle(
+            reduceMotion,
+            eyePosition,
+            getEyeTransform,
+          )}
         >
           <div
             className={styles.pupil}

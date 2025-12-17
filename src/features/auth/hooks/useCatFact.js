@@ -6,7 +6,8 @@
 import { useState, useEffect } from "react";
 import { ErrorManager } from "../../../shared/services/errorManager";
 
-const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
+const FALLBACK_CAT_FACT =
+  "Cats are amazing creatures with unique personalities!";
 const CAT_FACT_API_URL = "https://catfact.ninja/fact";
 const REQUEST_TIMEOUT_MS = 5000;
 
@@ -21,7 +22,10 @@ export function useCatFact() {
     const fetchCatFact = async () => {
       // * Create abort controller for timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT_MS,
+      );
 
       try {
         const response = await fetch(CAT_FACT_API_URL, {

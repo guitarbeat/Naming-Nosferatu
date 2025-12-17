@@ -5,8 +5,7 @@
  */
 
 // * Core UI Components
-import Button from "./Button/Button";
-import IconButton from "./Button/IconButton";
+import Button, { IconButton } from "./Button";
 import Card from "./Card/Card";
 import Loading from "./Loading/Loading";
 import Error from "./Error/Error";
@@ -39,8 +38,11 @@ export { AnalysisBulkActions } from "./AnalysisBulkActions";
 export { AdminAnalytics } from "./AdminAnalytics";
 
 // * Utility Components
-export { CollapsibleSection } from "./CollapsibleSection";
-export { CollapsibleHeader, CollapsibleContent } from "./CollapsibleHeader";
+export {
+  CollapsibleHeader,
+  CollapsibleContent,
+  CollapsibleSection,
+} from "./CollapsibleHeader";
 export { BarChart } from "./BarChart";
 export { default as ReadabilityChecker } from "./ReadabilityChecker";
 export { default as LiquidGlass } from "./LiquidGlass";

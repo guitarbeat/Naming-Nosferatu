@@ -12,25 +12,29 @@
   background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
   transition:
-    background var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
-    padding var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
-    min-height var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
-    max-height var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
-    opacity var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
-    border-color var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out);
+    background var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    padding var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    min-height var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    max-height var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
   min-height: auto;
   max-height: none;
   overflow: visible;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
 }
 
 .collapsible-header:hover {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
+  background: rgb(47 243 224 / 4%);
+  border-color: rgb(47 243 224 / 30%);
 }
 
 .collapsible-header--default {
@@ -88,14 +92,15 @@
   flex: 1;
   padding: 0;
   font-size: var(--analysis-text-body, 0.9375rem);
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--font-weight-semibold, 800);
+  letter-spacing: -0.02em;
   color: var(--text-primary, #fff);
   background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: color var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+  transition: color var(--analysis-duration-fast, 180ms)
+    cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-toggle:hover {
@@ -111,28 +116,43 @@
 /* Chevron icon - clean SVG animation */
 .collapsible-chevron {
   flex-shrink: 0;
-  width: 12px;
-  height: 12px;
-  color: var(--text-secondary, rgb(255 255 255 / 70%));
-  transition: transform var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+  width: 14px;
+  height: 14px;
+  color: var(--text-secondary, rgb(255 255 255 / 60%));
+  transition:
+    transform var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-chevron.collapsed {
   transform: rotate(-90deg);
 }
 
-.collapsible-toggle:hover .collapsible-chevron {
+.collapsible-header:hover .collapsible-chevron {
   color: var(--analysis-accent, #2ff3e0);
 }
 
 /* Icon and title */
 .collapsible-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  font-size: 1.1em;
+  width: 32px;
+  height: 32px;
+  background: rgb(47 243 224 / 10%);
+  border-radius: 8px;
+  color: var(--analysis-accent, #2ff3e0);
+  box-shadow: 0 0 15px rgb(47 243 224 / 15%);
+  font-size: 1.2rem;
   line-height: 1;
-  transition: opacity var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+  transition:
+    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    background var(--analysis-duration-fast, 180ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow var(--analysis-duration-fast, 180ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Collapsed icon - visible and interactive */
@@ -154,11 +174,13 @@
 
 .collapsible-title {
   flex-shrink: 0;
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--font-weight-semibold, 800);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    max-width var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
+    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    max-width var(--analysis-duration-fast, 180ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Title in collapsed state - hidden in circle design */
@@ -175,15 +197,26 @@
 .collapsible-header--show-summary .collapsible-summary {
   display: inline-block;
   margin-left: auto;
-  padding-left: var(--analysis-gap-md, 12px);
-  border-left: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  font-size: var(--analysis-text-caption, 0.75rem);
-  font-weight: var(--font-weight-normal, 400);
-  color: var(--text-secondary, rgb(255 255 255 / 70%));
+  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--analysis-accent, #2ff3e0);
+  background: rgb(47 243 224 / 8%);
+  padding: 2px 8px;
+  border-radius: 4px;
+  opacity: 0.8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 40%;
+  transition:
+    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    background var(--analysis-duration-fast, 180ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.collapsible-header:hover .collapsible-summary {
+  opacity: 1;
+  background: rgb(47 243 224 / 12%);
 }
 
 /* Header controls container - always show when expanded */
@@ -207,7 +240,7 @@
 .collapsible-header-toolbar {
   padding: 0;
   margin: 0;
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
+  background: rgb(0 0 0 / 20%);
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
   border-radius: 0;
   overflow: hidden;
@@ -260,16 +293,17 @@
   visibility: visible;
   opacity: 1;
   transition:
-    grid-template-rows var(--analysis-duration-normal, 250ms)
-      cubic-bezier(0.4, 0, 0.2, 1),
-    opacity var(--analysis-duration-normal, 200ms)
-      var(--analysis-ease, ease-out),
+    grid-template-rows var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
     visibility 0s 0s,
-    max-height var(--analysis-duration-normal, 250ms)
-      cubic-bezier(0.4, 0, 0.2, 1);
+    max-height var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
   margin: 0;
   padding: 0;
   max-height: 10000px; /* * Allow large content to expand naturally */
+  pointer-events: auto;
 }
 
 .collapsible-content.collapsed {
@@ -277,13 +311,15 @@
   opacity: 0;
   visibility: hidden;
   max-height: 0;
+  pointer-events: none;
   transition:
-    grid-template-rows var(--analysis-duration-normal, 250ms)
-      cubic-bezier(0.4, 0, 0.2, 1),
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    visibility 0s var(--analysis-duration-normal, 250ms),
-    max-height var(--analysis-duration-normal, 250ms)
-      cubic-bezier(0.4, 0, 0.2, 1);
+    grid-template-rows var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s var(--analysis-duration-normal, 320ms),
+    max-height var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-content-inner {
@@ -346,8 +382,10 @@
 .analysis-header-chevron {
   display: inline-flex;
   font-size: 0.75em;
-  transition: transform var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+  transition:
+    transform var(--analysis-duration-normal, 320ms)
+      cubic-bezier(0.2, 0.8, 0.2, 1),
+    color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .analysis-header-chevron.collapsed {
@@ -373,6 +411,11 @@
 
 .analysis-header-toggle:hover {
   color: var(--analysis-accent, #2ff3e0);
+}
+
+.analysis-header-toggle {
+  transition: color var(--analysis-duration-fast, 180ms)
+    cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .analysis-header-summary {

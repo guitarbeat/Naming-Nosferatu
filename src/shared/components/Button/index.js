@@ -3,4 +3,4 @@
  * @description Unified button component system exports
  */
 
-export { default } from "./Button";
+export { default, IconButton } from "./Button";
