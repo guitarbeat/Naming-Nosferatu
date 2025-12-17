@@ -3,7 +3,8 @@
  * @description Consolidated authentication utilities including constants, validation, error handling, and API functions
  */
 
-import { resolveSupabaseClient } from "@/shared/services/supabase/client";
+import { resolveSupabaseClient } from "../services/supabase/client";
+
 
 // ============================================================================
 // Constants
@@ -449,7 +450,7 @@ const fetchUserRole = async (activeSupabase, userName) => {
 };
 
 /**
- * Checks if a user has a specific role or higher (unused - kept for potential future use)
+ * Checks if a user has a specific role or higher
  * @param {string} userName - The username to check
  * @param {string} requiredRole - The minimum role required
  * @returns {Promise<boolean>} True if user has the required role or higher

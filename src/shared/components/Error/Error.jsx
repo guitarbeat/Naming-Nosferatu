@@ -489,7 +489,7 @@ class ErrorBoundary extends React.Component {
       const hasChanges =
         resetKeys.length !== prevProps.resetKeys.length ||
         resetKeys.some(
-          (key, index) => !Object.is(key, prevProps.resetKeys[index])
+          (key, index) => !Object.is(key, prevProps.resetKeys[index]),
         );
 
       if (hasChanges) {
@@ -557,7 +557,7 @@ ErrorBoundary.propTypes = {
       PropTypes.number,
       PropTypes.bool,
       PropTypes.object,
-    ])
+    ]),
   ),
 };
 

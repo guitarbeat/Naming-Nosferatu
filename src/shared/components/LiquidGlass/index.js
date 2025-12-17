@@ -1,3 +1,2 @@
-export { default } from "./LiquidGlass";
+export { default, LiquidGlassToggleButton } from "./LiquidGlass";
 export { useLiquidGlass } from "./useLiquidGlass";
-export { default as LiquidGlassToggleButton } from "./LiquidGlassToggleButton";

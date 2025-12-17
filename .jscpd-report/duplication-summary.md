@@ -23,12 +23,15 @@ Notes:
   - Extracted conditional transform styles in BongoCat for reduceMotion logic.
   - Extracted getVisibleNames utility to consolidate Array.isArray + filter pattern.
   - Extracted name selection utilities (selectedNamesToSet, extractNameIds) to reduce conversion duplication.
-  - Created useAsyncOperation hook for consistent async operation handling with loading/error states.
+  - Removed unused files: svgStyles.js, useAsyncOperation.js, IconButton.jsx (consolidated into Button.jsx), CollapsibleSection (consolidated into CollapsibleHeader).
+  - Removed empty CollapsibleSection directory.
+  - Cleaned up commented-out exports in AnalysisPanel/components/index.js.
+  - Removed redundant comment about default export removal.
 - Remaining targets: `Login.jsx` (SVG duplication remains, but logic extracted - low priority).
 
 Next steps to reduce duplication:
 - `Login.jsx`: Large SVG markup could potentially be extracted to a separate component (low priority - most duplication is in SVG paths, not logic).
-- Current jscpd (src): 17 clones, 485 duplicated lines (1.40%).
+- Current jscpd (src): 18 clones, 508 duplicated lines (1.46%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
 

@@ -99,5 +99,3 @@ export function useLiquidGlass(initialConfig = {}) {
     presets: PRESETS,
   };
 }
-
-// Default export removed - hook is imported as named export

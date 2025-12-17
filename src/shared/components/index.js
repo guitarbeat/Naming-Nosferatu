@@ -21,7 +21,7 @@ import NameCard from "./NameCard/NameCard";
 import Bracket from "./Bracket/Bracket";
 import CatImage from "./CatImage/CatImage";
 import StartTournamentButton from "./StartTournamentButton/StartTournamentButton";
-import ScrollToTopButton from "./ScrollToTopButton";
+import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
 
 // * Direct named exports (not default exports)
 export { NameGrid } from "./NameGrid/NameGrid";
