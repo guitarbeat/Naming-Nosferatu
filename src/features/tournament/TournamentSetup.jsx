@@ -14,6 +14,10 @@ import {
 } from "../../shared/components";
 import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
+import {
+  selectedNamesToSet,
+  extractNameIds,
+} from "../../shared/utils/nameSelectionUtils";
 import { useImageGallery } from "./hooks";
 import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
 import { NameSelection, SwipeableNameCards, Lightbox } from "./components";
@@ -193,48 +197,15 @@ function AnalysisBulkActionsWrapper({
   const selectedNamesValue = context?.selectedNames;
   // * Keep both Set format for selection logic and original array for bulk operations
   const selectedNamesSet = useMemo(
-    () =>
-      selectedNamesValue instanceof Set
-        ? selectedNamesValue
-        : new Set(
-            Array.isArray(selectedNamesValue)
-              ? selectedNamesValue.map((name) =>
-                  typeof name === "object" ? name.id : name,
-                )
-              : [],
-          ),
+    () => selectedNamesToSet(selectedNamesValue),
     [selectedNamesValue],
   );
 
   // * Extract name IDs from selectedNames, handling different formats
-  const selectedNamesArray = useMemo(() => {
-    if (!selectedNamesValue) return [];
-
-    // * If it's a Set (profile mode), convert to array of IDs
-    if (selectedNamesValue instanceof Set) {
-      return Array.from(selectedNamesValue).filter((id) => id != null);
-    }
-
-    // * If it's an array, extract IDs properly
-    if (Array.isArray(selectedNamesValue)) {
-      return selectedNamesValue
-        .map((name) => {
-          // * If it's an object with an id property, extract it
-          if (typeof name === "object" && name !== null && name.id) {
-            return name.id;
-          }
-          // * If it's already a string (ID), use it directly
-          if (typeof name === "string") {
-            return name;
-          }
-          // * Otherwise, return null to filter out
-          return null;
-        })
-        .filter((id) => id != null); // * Filter out null/undefined values
-    }
-
-    return [];
-  }, [selectedNamesValue]);
+  const selectedNamesArray = useMemo(
+    () => extractNameIds(selectedNamesValue),
+    [selectedNamesValue],
+  );
 
   const { setHiddenNames, setAllNames, fetchNames } =
     useNameManagementCallbacks(context);

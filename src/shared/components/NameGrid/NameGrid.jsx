@@ -14,6 +14,7 @@ import {
   isNameHidden,
   mapFilterStatusToVisibility,
 } from "../../utils/nameFilterUtils";
+import { selectedNamesToSet } from "../../utils/nameSelectionUtils";
 import styles from "./NameGrid.module.css";
 
 export function NameGrid({
@@ -52,17 +53,10 @@ export function NameGrid({
     1920: "16px",
   };
 
-  const selectedSet = useMemo(() => {
-    if (selectedNames instanceof Set) return selectedNames;
-    if (Array.isArray(selectedNames)) {
-      return new Set(
-        selectedNames.map((item) =>
-          typeof item === "object" ? item.id : item,
-        ),
-      );
-    }
-    return new Set();
-  }, [selectedNames]);
+  const selectedSet = useMemo(
+    () => selectedNamesToSet(selectedNames),
+    [selectedNames],
+  );
 
   const processedNames = useMemo(() => {
     const visibility = mapFilterStatusToVisibility(filters.filterStatus);
