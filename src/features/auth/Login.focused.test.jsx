@@ -13,6 +13,7 @@ import {
   setupFetchFailure,
   setupFetchSuccess,
   resetFetchMock,
+  submitLoginForm,
 } from "./loginTestUtils";
 
 vi.mock("../../shared/utils/validationUtils", () => ({
@@ -76,13 +77,7 @@ describe("Login Component - Focused Tests", () => {
     mockOnLogin.mockResolvedValueOnce();
 
     await renderLoginAndWait({ onLogin: mockOnLogin });
-
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
-    await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
-    );
+    await submitLoginForm("Judge Whisker");
 
     await waitFor(() => {
       expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
@@ -95,13 +90,7 @@ describe("Login Component - Focused Tests", () => {
     validateUsername.mockReturnValue({ success: false, error: errorMessage });
 
     await renderLoginAndWait({ onLogin: mockOnLogin });
-
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText("Your name"), "Bad Name");
-    await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
-    );
+    await submitLoginForm("Bad Name");
 
     await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();

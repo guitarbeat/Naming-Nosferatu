@@ -2,8 +2,7 @@
  * @fileoverview Simple tests for Login component
  */
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, waitFor } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "./Login";
 import { validateUsername } from "../../shared/utils/validationUtils";
@@ -11,6 +10,7 @@ import {
   mockCatFact,
   renderLoginAndWait,
   setupFetchSuccess,
+  submitLoginForm,
 } from "./loginTestUtils";
 
 // * Mock useToast hook
@@ -75,13 +75,7 @@ describe("Login Component - Simple Tests", () => {
     mockOnLogin.mockResolvedValueOnce();
 
     await renderLoginAndWait({ onLogin: mockOnLogin });
-
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText("Your name"), "Judge Whisker");
-    await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
-    );
+    await submitLoginForm("Judge Whisker");
 
     await waitFor(() => {
       expect(validateUsername).toHaveBeenCalledWith("Judge Whisker");
@@ -96,13 +90,7 @@ describe("Login Component - Simple Tests", () => {
     });
 
     await renderLoginAndWait({ onLogin: mockOnLogin });
-
-    const user = userEvent.setup();
-
-    await user.type(screen.getByLabelText("Your name"), "Invalid Name");
-    await user.click(
-      screen.getByRole("button", { name: "Continue to tournament" }),
-    );
+    await submitLoginForm("Invalid Name");
 
     await waitFor(() => {
       expect(mockOnLogin).not.toHaveBeenCalled();
