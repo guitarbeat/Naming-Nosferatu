@@ -16,11 +16,12 @@ Notes:
   - Extracted form submission helper in Login tests.
   - Extracted animation state logic in useBongoCat.
   - Created useNameManagementCallbacks hook in TournamentSetup.
+  - Major Login.jsx refactor: extracted name generation, cat fact fetching, eye tracking, form handling, and body class management into reusable hooks/utilities (reduced from 995 to 823 lines).
 - Remaining large targets: `Login.jsx` (main component still has significant duplication).
 
 Next steps to reduce duplication:
-- `Login.jsx`: extract shared form/validation handlers and cat-fact fetch into a hook/util reused across login flows.
-- Current jscpd (src): 23 clones, 689 duplicated lines (2.01%).
+- `Login.jsx`: Large SVG markup could potentially be extracted to a separate component (low priority - most duplication is in SVG paths).
+- Current jscpd (src): 23 clones, 689 duplicated lines (2.00%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
 
