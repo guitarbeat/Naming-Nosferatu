@@ -13,4 +13,9 @@ Notes:
   - Added shared login test helpers and refactored Login tests.
   - Reduced duplication in BongoCat tail animation loop.
 - Remaining large targets: `Login.jsx`, `TournamentSetup.jsx`.
+
+Next steps to reduce duplication:
+- `Login.jsx`: extract shared form/validation handlers and cat-fact fetch into a hook/util reused across login flows.
+- `TournamentSetup.jsx`: pull repeated filter/setup/handler wiring into local helpers or a small hook; consolidate context handler registration.
+- After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
