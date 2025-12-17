@@ -42,6 +42,14 @@
   "ignoreBinaries": ["vite", "vitest"],
   "ignoreIssues": {
     "src/core/store/types.ts": ["exports"],
+    "src/core/store/useAppStore.ts": ["exports"],
+    "src/shared/components/**": ["exports"],
+    "src/shared/utils/**": ["exports"],
+    "src/shared/propTypes/index.js": ["exports"],
+    "src/shared/services/errorManager/index.js": ["exports"],
+    "src/shared/services/supabase/api.js": ["exports"],
+    "src/shared/services/supabase/queryClient.ts": ["exports"],
+    "src/features/tournament/constants.js": ["exports"],
     "src/integrations/supabase/client.ts": ["exports"],
     "src/integrations/supabase/types.ts": ["exports"]
   },

@@ -11,10 +11,6 @@ import { resolveSupabaseClient } from "../client";
 const isDev =
   typeof process !== "undefined" && process.env?.NODE_ENV === "development";
 
-// * Re-export for compatibility
-export { resolveSupabaseClient };
-export const getSupabaseServiceClient = resolveSupabaseClient;
-
 // ===== HELPER FUNCTIONS =====
 
 /**
