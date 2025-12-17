@@ -6,6 +6,17 @@ import CalendarButton from "./CalendarButton";
 describe("CalendarButton", () => {
   const originalOpen = window.open;
 
+  const renderAndOpen = (rankings, userName = "Test User") => {
+    const { getByRole } = render(
+      <CalendarButton rankings={rankings} userName={userName} />,
+    );
+    fireEvent.click(getByRole("button", { name: /add to google calendar/i }));
+    const [[url]] = window.open.mock.calls;
+    const [, queryString] = url.split("?");
+    const params = new URLSearchParams(queryString);
+    return { params, getByRole };
+  };
+
   beforeEach(() => {
     window.open = vi.fn();
   });
@@ -21,16 +32,8 @@ describe("CalendarButton", () => {
       { id: 2, name: "Shadow", rating: 1500, is_hidden: true },
     ];
 
-    const { getByRole } = render(
-      <CalendarButton rankings={rankings} userName="Test User" />,
-    );
-
-    fireEvent.click(getByRole("button", { name: /add to google calendar/i }));
-
+    const { params } = renderAndOpen(rankings);
     expect(window.open).toHaveBeenCalledTimes(1);
-    const [[url]] = window.open.mock.calls;
-    const [, queryString] = url.split("?");
-    const params = new URLSearchParams(queryString);
     const details = params.get("details");
 
     expect(details).toContain("Whiskers");
@@ -45,16 +48,7 @@ describe("CalendarButton", () => {
       { id: 4, name: "Oliver", rating: 1500, is_hidden: true },
     ];
 
-    const { getByRole } = render(
-      <CalendarButton rankings={rankings} userName="Test User" />,
-    );
-
-    fireEvent.click(getByRole("button", { name: /add to google calendar/i }));
-
-    expect(window.open).toHaveBeenCalledTimes(1);
-    const [[url]] = window.open.mock.calls;
-    const [, queryString] = url.split("?");
-    const params = new URLSearchParams(queryString);
+    const { params } = renderAndOpen(rankings);
     const details = params.get("details");
     const text = params.get("text");
 
@@ -85,10 +79,7 @@ describe("CalendarButton", () => {
       { id: 2, name: "Shadow", rating: 1500, is_hidden: true },
     ];
 
-    const { getByRole } = render(
-      <CalendarButton rankings={rankings} userName="Test User" />,
-    );
-
+    const { getByRole } = renderAndOpen(rankings);
     const button = getByRole("button");
     expect(button).toBeInTheDocument();
   });
@@ -99,12 +90,7 @@ describe("CalendarButton", () => {
       { id: 4, name: "Oliver", rating: 1500, is_hidden: true },
     ];
 
-    const { getByRole } = render(
-      <CalendarButton rankings={rankings} userName="Test User" />,
-    );
-
-    const button = getByRole("button");
-    expect(button).toBeInTheDocument();
+    renderAndOpen(rankings);
 
     // Verify that only visible names are included
     const visibleRankings = rankings
