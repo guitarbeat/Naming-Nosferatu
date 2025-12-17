@@ -36,8 +36,8 @@ Next steps to reduce duplication:
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
 
 ## Knip findings (latest run):
-- **Unused files**: None (removed `src/shared/services/supabase/legacy/catNamesAPI.js` - was replaced by implementation in `supabaseClient.js`)
-- **Duplicate exports (17)**: Mostly false positives from shared components (already in ignoreIssues config)
+- **Unused files**: Removed unused files: svgStyles.js, useAsyncOperation.js, IconButton.jsx (consolidated), CollapsibleSection (consolidated), DeploymentErrorDetector.module.css, LiquidGlassToggleButton.jsx, ScrollToTopButton/index.js, ThemeSwitch.css
+- **Duplicate exports (16)**: Mostly false positives from shared components (already in ignoreIssues config)
 - **Configuration hints**: Various suggestions to remove items from ignore lists (intentionally ignored for now)
 
 ## Additional findings:
