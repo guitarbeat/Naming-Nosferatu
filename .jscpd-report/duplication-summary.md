@@ -17,11 +17,14 @@ Notes:
   - Extracted animation state logic in useBongoCat.
   - Created useNameManagementCallbacks hook in TournamentSetup.
   - Major Login.jsx refactor: extracted name generation, cat fact fetching, eye tracking, form handling, and body class management into reusable hooks/utilities (reduced from 995 to 823 lines).
+  - Extracted SVG transform utilities for Login.jsx and BongoCat.jsx eye animations.
+  - Extracted visibility mapping (mapFilterStatusToVisibility) shared by NameGrid and NameSelection.
+  - Extracted liquid glass config resolution shared by Card and CollapsibleHeader.
 - Remaining targets: `Login.jsx` (SVG duplication remains, but logic extracted - low priority).
 
 Next steps to reduce duplication:
 - `Login.jsx`: Large SVG markup could potentially be extracted to a separate component (low priority - most duplication is in SVG paths, not logic).
-- Current jscpd (src): 23 clones, 689 duplicated lines (2.00%).
+- Current jscpd (src): 17 clones, 485 duplicated lines (1.40%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
 
