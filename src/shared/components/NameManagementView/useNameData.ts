@@ -6,15 +6,15 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { resolveSupabaseClient } from "../../shared/services/supabase/client";
+import { resolveSupabaseClient } from "../../services/supabase/client";
 import {
   getNamesWithDescriptions,
   getNamesWithUserRatings,
-} from "../../shared/services/supabase/api";
-import { devLog } from "../../shared/utils/coreUtils";
-import { ErrorManager } from "../../shared/services/errorManager";
-import { FALLBACK_NAMES } from "../../features/tournament/constants";
-import { TIMING } from "../../core/constants";
+} from "../../services/supabase/api";
+import { devLog } from "../../utils/coreUtils";
+import { ErrorManager } from "../../services/errorManager";
+import { FALLBACK_NAMES } from "../../../features/tournament/constants";
+import { TIMING } from "../../../core/constants";
 
 /**
  * Unified hook for fetching name data

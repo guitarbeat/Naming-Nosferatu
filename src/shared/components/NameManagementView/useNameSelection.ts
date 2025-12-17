@@ -6,10 +6,10 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { resolveSupabaseClient } from "../../shared/services/supabase/client";
-import { tournamentsAPI } from "../../shared/services/supabase/api";
-import { devLog } from "../../shared/utils/coreUtils";
-import { ErrorManager } from "../../shared/services/errorManager";
+import { resolveSupabaseClient } from "../../services/supabase/client";
+import { tournamentsAPI } from "../../services/supabase/api";
+import { devLog } from "../../utils/coreUtils";
+import { ErrorManager } from "../../services/errorManager";
 
 /**
  * Unified hook for name selection management
