@@ -12,11 +12,14 @@ Notes:
   - DRY’d `src/shared/components/CalendarButton/CalendarButton.test.jsx`.
   - Added shared login test helpers and refactored Login tests.
   - Reduced duplication in BongoCat tail animation loop.
-- Remaining large targets: `Login.jsx`, `TournamentSetup.jsx`.
+  - Extracted Card class builders, Button constants, mobileGestures distance helper.
+  - Extracted form submission helper in Login tests.
+  - Extracted animation state logic in useBongoCat.
+  - Created useNameManagementCallbacks hook in TournamentSetup.
+- Remaining large targets: `Login.jsx` (main component still has significant duplication).
 
 Next steps to reduce duplication:
 - `Login.jsx`: extract shared form/validation handlers and cat-fact fetch into a hook/util reused across login flows.
-- `TournamentSetup.jsx`: pull repeated filter/setup/handler wiring into local helpers or a small hook; consolidate context handler registration.
 - Current jscpd (src): 27 clones, 745 duplicated lines (~2.15%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
