@@ -59,13 +59,3 @@ export function buildComparisonsMap(history) {
   }
   return comparisons;
 }
-
-// Unused utility functions removed:
-// - isNonEmptyArray
-// - isEmptyOrNotArray
-// - uniqueBy
-// - groupBy
-// - sortByNumber
-// - sortByString
-// - sortByDate
-// - topN

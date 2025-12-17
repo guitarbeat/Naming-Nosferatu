@@ -21,4 +21,3 @@ export { AnalysisBadge } from "./AnalysisBadge";
 // * External components - exported for use outside AnalysisPanel
 export { AnalysisToolbar } from "./AnalysisToolbar";
 export { AnalysisButton } from "./AnalysisButton";
-// AnalysisToggle and AnalysisModeBanner removed - not used anywhere

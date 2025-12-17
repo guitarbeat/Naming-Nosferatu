@@ -21,10 +21,3 @@ export function getRankDisplay(rank) {
   }
 }
 
-// Unused utility functions removed:
-// - formatNumber
-// - formatPercent
-// - calculateWinRate
-// - truncateText
-// - getInitials
-

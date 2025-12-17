@@ -3,9 +3,6 @@
  * @description Centralized application constants for consistency and maintainability.
  */
 
-// * Tournament Constants - removed unused TOURNAMENT constant
-// * Use TOURNAMENT_TIMING, VALIDATION, or FILTER_OPTIONS instead
-
 // * Filter Options
 // * Simplified: names are either visible or hidden
 export const FILTER_OPTIONS = {
@@ -132,9 +129,6 @@ export const GESTURE_THRESHOLDS = {
   TOUCH_DISTANCE_THRESHOLD_PX: 10,
   TOUCH_DURATION_THRESHOLD_MS: 300,
 };
-
-// * Navbar Constants - removed unused NAVBAR constant
-// * Navbar styling is handled via CSS and inline styles in AppNavbar component
 
 // * Local Storage Keys
 export const STORAGE_KEYS = {

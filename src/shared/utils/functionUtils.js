@@ -71,7 +71,3 @@ export function throttle(func, wait, options = {}) {
   return throttled;
 }
 
-// Unused utility functions removed:
-// - once
-// - memoize
-

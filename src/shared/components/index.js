@@ -32,11 +32,9 @@ export {
   NameManagementView,
   useNameManagementContextSafe,
 } from "./NameManagementView/NameManagementView";
-// useNameManagementContext removed - only useNameManagementContextSafe is used
 
 // * Analysis Mode Components
 export { AnalysisDashboard } from "./AnalysisDashboard";
-// AnalysisToggle and AnalysisModeBanner removed - not used anywhere
 export { AnalysisBulkActions } from "./AnalysisBulkActions";
 export { AdminAnalytics } from "./AdminAnalytics";
 

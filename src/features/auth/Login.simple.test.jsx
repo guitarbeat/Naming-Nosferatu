@@ -52,8 +52,8 @@ describe("Login Component - Simple Tests", () => {
     // * Component shows help text instead of subtitle
     expect(
       screen.getByText(
-        /We'll create an account automatically if it's your first time/i,
-      ),
+        /We'll create an account automatically if it's your first time/i
+      )
     ).toBeInTheDocument();
   });
 
@@ -61,8 +61,8 @@ describe("Login Component - Simple Tests", () => {
     await renderLoginAndWait({ onLogin: mockOnLogin });
     expect(
       screen.getByText(
-        "We'll create an account automatically if it's your first time.",
-      ),
+        "We'll create an account automatically if it's your first time."
+      )
     ).toBeInTheDocument();
   });
 

@@ -14,9 +14,5 @@
 export function cn(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
-// Unused utility functions removed:
-// - cnStyles
-// - conditionalClass
 // - conditionalClasses
 

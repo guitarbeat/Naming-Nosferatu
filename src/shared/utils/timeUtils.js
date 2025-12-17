@@ -91,7 +91,6 @@ export function formatDateTime(date, options = {}) {
   return d.toLocaleString(undefined, options);
 }
 
-// Default export removed - use named exports instead
 // export default {
 //   formatRelativeTime,
 //   formatDuration,

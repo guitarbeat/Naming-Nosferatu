@@ -95,8 +95,6 @@ export function NameGrid({
     return imageList[Math.abs(hash) % imageList.length];
   };
 
-  // Removed complex calculateCardSize - cards now auto-size to content
-
   if (isLoading) {
     return (
       <div className={`${styles.gridContainer} ${className}`}>

@@ -10,5 +10,3 @@ export {
   AnalysisToolbar,
   AnalysisButton,
 } from "./AnalysisPanel";
-// AnalysisToggle and AnalysisModeBanner removed - not used anywhere
-// Default export removed - component is imported as named export

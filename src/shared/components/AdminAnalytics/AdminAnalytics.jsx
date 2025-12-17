@@ -100,8 +100,6 @@ export function AdminAnalytics({ isAdmin = false }) {
     });
   }, [analyticsData, sortField, sortDirection]);
 
-  // * Summary stats removed - not useful for choosing a name
-
   // Handle column header click for sorting
   const handleSort = (field) => {
     if (sortField === field) {

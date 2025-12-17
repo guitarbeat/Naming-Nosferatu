@@ -47,6 +47,5 @@ AnalysisPanel.propTypes = {
 
 // Re-export only components used externally
 export { AnalysisToolbar, AnalysisButton } from "./components";
-// AnalysisToggle and AnalysisModeBanner removed - not used anywhere
 
 export default AnalysisPanel;

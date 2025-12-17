@@ -106,9 +106,6 @@ export const TYPING_SPEED_THRESHOLDS = {
  */
 export const MILESTONE_THRESHOLDS = [10, 25, 50, 100, 250, 500, 1000];
 
-// Unused constant removed
-// export const TIME_MOODS = { ... };
-
 /**
  * Default configuration
  * @type {Object}
