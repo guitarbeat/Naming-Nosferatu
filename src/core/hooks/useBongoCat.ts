@@ -149,14 +149,21 @@ export function useBongoCat({
       });
 
       const time = Date.now() / 1000;
-      if (animationState === ANIMATION_STATES.TYPING_FAST) {
-        setTailAngle(Math.sin(time * 4) * 15);
-      } else if (animationState === ANIMATION_STATES.IDLE) {
-        setTailAngle(Math.sin(time * 0.8) * 8);
-      } else if (animationState === ANIMATION_STATES.SLEEPY) {
-        setTailAngle(Math.sin(time * 0.3) * 3);
-      } else {
-        setTailAngle(Math.sin(time * 1.5) * 10);
+      const setTailForState = (speed: number, amplitude: number) => {
+        setTailAngle(Math.sin(time * speed) * amplitude);
+      };
+      switch (animationState) {
+        case ANIMATION_STATES.TYPING_FAST:
+          setTailForState(4, 15);
+          break;
+        case ANIMATION_STATES.IDLE:
+          setTailForState(0.8, 8);
+          break;
+        case ANIMATION_STATES.SLEEPY:
+          setTailForState(0.3, 3);
+          break;
+        default:
+          setTailForState(1.5, 10);
       }
 
       if (Math.random() < 0.01) {
