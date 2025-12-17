@@ -374,6 +374,11 @@ export function AnalysisDashboard({
       }
     }
 
+    // * If filters produced no rows, fall back to aggregated set so insights still render
+    if (names.length === 0 && consolidatedNames.length > 0) {
+      names = [...consolidatedNames];
+    }
+
     // * Apply sorting (available for all users)
     if (sortField) {
       names.sort((a, b) => {

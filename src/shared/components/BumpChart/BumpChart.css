@@ -381,7 +381,7 @@
 
 .bump-chart-legend-name {
   font-weight: 500;
-  color: var(--foreground, hsl(0deg 0% 10%));
+  color: var(--text-primary, #fff);
 }
 
 .bump-chart-legend-change {

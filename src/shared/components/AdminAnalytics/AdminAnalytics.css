@@ -22,7 +22,7 @@
 
 .admin-analytics-table th,
 .admin-analytics-table td {
-  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
+  padding: 6px 8px;
   text-align: left;
   border-bottom: 1px solid var(--analysis-border);
   transition: background var(--analysis-duration-fast) var(--analysis-ease);
@@ -40,7 +40,7 @@
   top: 0;
   z-index: 10;
   border-bottom: 2px solid var(--analysis-border);
-  padding: var(--analysis-gap-md) var(--analysis-gap-lg);
+  padding: 6px 8px;
 }
 
 .admin-analytics-table th.sortable {
@@ -88,7 +88,7 @@
 .admin-analytics-name {
   font-weight: var(--font-weight-medium);
   color: var(--text-primary);
-  max-width: 150px;
+  max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

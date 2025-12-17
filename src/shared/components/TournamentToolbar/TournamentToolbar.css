@@ -326,9 +326,11 @@
 
 .tournament-toolbar-filters-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: var(--tt-gap-small);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  overflow-x: auto;
   background: var(--tt-surface-strong);
   border: var(--tt-border);
   border-radius: var(--tt-radius-lg);
