@@ -20,6 +20,9 @@ Notes:
   - Extracted SVG transform utilities for Login.jsx and BongoCat.jsx eye animations.
   - Extracted visibility mapping (mapFilterStatusToVisibility) shared by NameGrid and NameSelection.
   - Extracted liquid glass config resolution shared by Card and CollapsibleHeader.
+  - Extracted conditional transform styles in BongoCat for reduceMotion logic.
+  - Extracted getVisibleNames utility to consolidate Array.isArray + filter pattern.
+  - Extracted name selection utilities (selectedNamesToSet, extractNameIds) to reduce conversion duplication.
 - Remaining targets: `Login.jsx` (SVG duplication remains, but logic extracted - low priority).
 
 Next steps to reduce duplication:
