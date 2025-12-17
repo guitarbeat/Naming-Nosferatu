@@ -14,6 +14,17 @@ export function isNameHidden(name) {
 }
 
 /**
+ * Map filterStatus to visibility string
+ * @param {string} filterStatus - Filter status ("hidden" | "all" | "visible")
+ * @returns {string} Visibility string ("hidden" | "all" | "visible")
+ */
+export function mapFilterStatusToVisibility(filterStatus) {
+  if (filterStatus === "hidden") return "hidden";
+  if (filterStatus === "all") return "all";
+  return "visible"; // Default to visible
+}
+
+/**
  * Filter names based on visibility
  * @param {Array} names - Array of name objects
  * @param {Object} options - Filter options

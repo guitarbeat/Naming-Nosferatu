@@ -70,4 +70,3 @@ export function throttle(func, wait, options = {}) {
 
   return throttled;
 }
-

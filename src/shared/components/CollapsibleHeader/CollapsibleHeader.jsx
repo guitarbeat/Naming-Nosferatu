@@ -7,6 +7,10 @@
 import { useId } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
+import {
+  HEADER_GLASS_CONFIG,
+  resolveGlassConfig,
+} from "../LiquidGlass/utils/glassConfig";
 import "./CollapsibleHeader.css";
 
 /**
@@ -64,18 +68,6 @@ export function CollapsibleHeader({
   toolbar,
   liquidGlass,
 }) {
-  // * Default config for liquid glass
-  const defaultGlassConfig = {
-    width: 800,
-    height: 80,
-    radius: 12,
-    scale: -180,
-    saturation: 1.2,
-    frost: 0.08,
-    inputBlur: 12,
-    outputBlur: 0.8,
-  };
-
   const shouldUseLiquidGlass = !!liquidGlass;
   const headerGlassId = useId();
   const resolvedContentId =
@@ -125,17 +117,17 @@ export function CollapsibleHeader({
 
   if (shouldUseLiquidGlass) {
     const {
-      width = defaultGlassConfig.width,
-      height = defaultGlassConfig.height,
-      radius = defaultGlassConfig.radius,
-      scale = defaultGlassConfig.scale,
-      saturation = defaultGlassConfig.saturation,
-      frost = defaultGlassConfig.frost,
-      inputBlur = defaultGlassConfig.inputBlur,
-      outputBlur = defaultGlassConfig.outputBlur,
+      width,
+      height,
+      radius,
+      scale,
+      saturation,
+      frost,
+      inputBlur,
+      outputBlur,
       id,
       ...glassProps
-    } = typeof liquidGlass === "object" ? liquidGlass : defaultGlassConfig;
+    } = resolveGlassConfig(liquidGlass, HEADER_GLASS_CONFIG);
 
     return (
       <LiquidGlass

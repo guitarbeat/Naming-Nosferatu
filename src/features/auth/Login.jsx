@@ -11,6 +11,7 @@ import { useBodyClass } from "../../shared/hooks/useBodyClass";
 import { useCatFact } from "./hooks/useCatFact";
 import { useEyeTracking } from "./hooks/useEyeTracking";
 import { useLoginForm } from "./hooks/useLoginForm";
+import { getEyeTransform } from "./utils/svgTransforms";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
@@ -381,7 +382,7 @@ function Login({ onLogin }) {
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
                                 strokeOpacity: "0.988235",
-                                transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x}, ${eyePosition.y})`,
+                                transform: getEyeTransform(eyePosition),
                               }}
                               id="ellipse15"
                               cx="112.57543"
@@ -400,7 +401,7 @@ function Login({ onLogin }) {
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
                                 strokeOpacity: "0.988235",
-                                transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x * 1.1}, ${eyePosition.y * 1.1})`,
+                                transform: getEyeTransform(eyePosition, 1.1),
                               }}
                               id="ellipse16"
                               cx="112.70263"
@@ -436,7 +437,7 @@ function Login({ onLogin }) {
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
                                 strokeOpacity: "0.988235",
-                                transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x}, ${eyePosition.y})`,
+                                transform: getEyeTransform(eyePosition),
                               }}
                               id="ellipse18"
                               cx="105.22613"
@@ -455,7 +456,7 @@ function Login({ onLogin }) {
                                 strokeLinejoin: "round",
                                 strokeDasharray: "none",
                                 strokeOpacity: "0.988235",
-                                transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x * 1.1}, ${eyePosition.y * 1.1})`,
+                                transform: getEyeTransform(eyePosition, 1.1),
                               }}
                               id="ellipse19"
                               cx="105.35332"
@@ -585,7 +586,7 @@ function Login({ onLogin }) {
                                   strokeLinejoin: "round",
                                   strokeDasharray: "none",
                                   strokeOpacity: "0.988235",
-                                  transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x}, ${eyePosition.y})`,
+                                  transform: getEyeTransform(eyePosition),
                                 }}
                                 id="ellipse25"
                                 cx="112.24622"
@@ -603,7 +604,7 @@ function Login({ onLogin }) {
                                   strokeLinejoin: "round",
                                   strokeDasharray: "none",
                                   strokeOpacity: "0.988235",
-                                  transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x * 1.1}, ${eyePosition.y * 1.1})`,
+                                  transform: getEyeTransform(eyePosition, 1.1),
                                 }}
                                 id="ellipse26"
                                 cx="112.37342"
@@ -637,7 +638,7 @@ function Login({ onLogin }) {
                                   strokeLinejoin: "round",
                                   strokeDasharray: "none",
                                   strokeOpacity: "0.988235",
-                                  transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x}, ${eyePosition.y})`,
+                                  transform: getEyeTransform(eyePosition),
                                 }}
                                 id="ellipse28"
                                 cx="105.00267"
@@ -655,7 +656,7 @@ function Login({ onLogin }) {
                                   strokeLinejoin: "round",
                                   strokeDasharray: "none",
                                   strokeOpacity: "0.988235",
-                                  transform: `matrix(0.98048242,-0.19660678,0.20800608,0.97812753,0,0) translate(${eyePosition.x * 1.1}, ${eyePosition.y * 1.1})`,
+                                  transform: getEyeTransform(eyePosition, 1.1),
                                 }}
                                 id="ellipse29"
                                 cx="105.12987"

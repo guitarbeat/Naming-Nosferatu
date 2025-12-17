@@ -5,9 +5,21 @@
 import React, { useId, memo } from "react";
 import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
+import {
+  DEFAULT_GLASS_CONFIG,
+  resolveGlassConfig,
+} from "../LiquidGlass/utils/glassConfig";
 import styles from "./Card.module.css";
 
-const buildCardClasses = (variant, padding, shadow, border, background, liquidGlass, className) => {
+const buildCardClasses = (
+  variant,
+  padding,
+  shadow,
+  border,
+  background,
+  liquidGlass,
+  className,
+) => {
   return [
     styles.card,
     styles[variant],
@@ -68,34 +80,27 @@ const Card = memo(
       const glassId = useId();
 
       if (shouldUseLiquidGlass) {
-        // * Default config for glass background or custom liquidGlass config
-        const defaultGlassConfig = {
-          width: 300,
-          height: 200,
-          radius: 16,
-          scale: -180,
-          saturation: 1.1,
-          frost: 0.05,
-          inputBlur: 11,
-          outputBlur: 0.7,
-        };
-
         const {
-          width = defaultGlassConfig.width,
-          height = defaultGlassConfig.height,
-          radius = defaultGlassConfig.radius,
-          scale = defaultGlassConfig.scale,
-          saturation = defaultGlassConfig.saturation,
-          frost = defaultGlassConfig.frost,
-          inputBlur = defaultGlassConfig.inputBlur,
-          outputBlur = defaultGlassConfig.outputBlur,
+          width,
+          height,
+          radius,
+          scale,
+          saturation,
+          frost,
+          inputBlur,
+          outputBlur,
           id,
           ...glassProps
-        } = typeof liquidGlass === "object" ? liquidGlass : defaultGlassConfig;
+        } = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG);
 
         // * Separate wrapper classes (for LiquidGlass) from content classes
         const wrapperClasses = [className].filter(Boolean).join(" ");
-        const contentClasses = buildContentClasses(variant, padding, shadow, border);
+        const contentClasses = buildContentClasses(
+          variant,
+          padding,
+          shadow,
+          border,
+        );
 
         return (
           <LiquidGlass

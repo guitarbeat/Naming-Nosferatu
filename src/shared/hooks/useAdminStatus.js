@@ -59,4 +59,3 @@ export function useAdminStatus(userName) {
 
   return { isAdmin, isLoading, error };
 }
-

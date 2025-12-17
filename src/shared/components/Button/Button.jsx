@@ -24,7 +24,13 @@ const sizeMapping = {
   large: "lg",
 };
 
-export const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
+export const BUTTON_VARIANTS = [
+  "primary",
+  "secondary",
+  "danger",
+  "ghost",
+  "login",
+];
 export const BUTTON_SIZES = ["small", "medium", "large"];
 
 const Button = ({

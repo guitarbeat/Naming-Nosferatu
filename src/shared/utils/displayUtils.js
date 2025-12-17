@@ -20,4 +20,3 @@ export function getRankDisplay(rank) {
       return rank;
   }
 }
-

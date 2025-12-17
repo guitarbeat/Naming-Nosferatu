@@ -9,7 +9,11 @@ import PropTypes from "prop-types";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import NameCard from "../NameCard/NameCard";
 import SkeletonLoader from "../SkeletonLoader/SkeletonLoader";
-import { applyNameFilters, isNameHidden } from "../../utils/nameFilterUtils";
+import {
+  applyNameFilters,
+  isNameHidden,
+  mapFilterStatusToVisibility,
+} from "../../utils/nameFilterUtils";
 import styles from "./NameGrid.module.css";
 
 export function NameGrid({
@@ -61,15 +65,7 @@ export function NameGrid({
   }, [selectedNames]);
 
   const processedNames = useMemo(() => {
-    // * Map filterStatus to visibility
-    const visibility =
-      filters.filterStatus === "hidden"
-        ? "hidden"
-        : filters.filterStatus === "all"
-          ? "all"
-          : filters.filterStatus === "visible"
-            ? "visible"
-            : "visible"; // * Default to visible
+    const visibility = mapFilterStatusToVisibility(filters.filterStatus);
 
     let result = applyNameFilters(names, {
       searchTerm: filters.searchTerm,

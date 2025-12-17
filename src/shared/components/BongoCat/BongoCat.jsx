@@ -18,6 +18,11 @@ import React, { memo } from "react";
 import PropTypes from "prop-types";
 import { useBongoCat } from "@hooks/useBongoCat";
 import { CAT_VARIANTS, PERSONALITY_MODES, DEFAULT_CONFIG } from "./constants";
+import {
+  getEyeTransform,
+  getPupilTransform,
+  getConditionalEyeStyle,
+} from "./utils/eyeTransforms";
 import styles from "./BongoCat.module.css";
 
 /**
@@ -80,44 +85,28 @@ const CatBody = ({
       <div className={styles.eyes}>
         <div
           className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={
-            !reduceMotion
-              ? {
-                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
-                }
-              : {}
-          }
+          style={getConditionalEyeStyle(reduceMotion, eyePosition, getEyeTransform)}
         >
           <div
             className={styles.pupil}
-            style={
-              !reduceMotion
-                ? {
-                    transform: `translate(calc(-50% + ${eyePosition.x * 0.5}px), calc(-50% + ${eyePosition.y * 0.5}px))`,
-                  }
-                : {}
-            }
+            style={getConditionalEyeStyle(
+              reduceMotion,
+              eyePosition,
+              getPupilTransform,
+            )}
           />
         </div>
         <div
           className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={
-            !reduceMotion
-              ? {
-                  transform: `translate(${eyePosition.x}px, ${eyePosition.y}px)`,
-                }
-              : {}
-          }
+          style={getConditionalEyeStyle(reduceMotion, eyePosition, getEyeTransform)}
         >
           <div
             className={styles.pupil}
-            style={
-              !reduceMotion
-                ? {
-                    transform: `translate(calc(-50% + ${eyePosition.x * 0.5}px), calc(-50% + ${eyePosition.y * 0.5}px))`,
-                  }
-                : {}
-            }
+            style={getConditionalEyeStyle(
+              reduceMotion,
+              eyePosition,
+              getPupilTransform,
+            )}
           />
         </div>
       </div>

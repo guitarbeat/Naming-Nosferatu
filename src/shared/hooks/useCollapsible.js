@@ -36,4 +36,3 @@ export function useCollapsible(storageKey = null, defaultValue = false) {
     setCollapsed,
   };
 }
-

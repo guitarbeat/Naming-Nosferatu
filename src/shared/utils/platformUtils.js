@@ -108,4 +108,3 @@ export function createActivationHandler(callback) {
     }
   };
 }
-

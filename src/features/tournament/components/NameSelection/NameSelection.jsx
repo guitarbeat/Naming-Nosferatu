@@ -6,7 +6,10 @@
 import { useMemo, memo } from "react";
 import PropTypes from "prop-types";
 import { NameGrid } from "../../../../shared/components";
-import { applyNameFilters } from "../../../../shared/utils/nameFilterUtils";
+import {
+  applyNameFilters,
+  mapFilterStatusToVisibility,
+} from "../../../../shared/utils/nameFilterUtils";
 import styles from "../../TournamentSetup.module.css";
 
 function NameSelection({
@@ -46,15 +49,7 @@ function NameSelection({
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
-    // * Map filterStatus to visibility
-    const visibility =
-      filterStatus === "hidden"
-        ? "hidden"
-        : filterStatus === "all"
-          ? "all"
-          : filterStatus === "visible"
-            ? "visible"
-            : "visible"; // * Default to visible
+    const visibility = mapFilterStatusToVisibility(filterStatus);
 
     let result = applyNameFilters(availableNames, {
       searchTerm,
