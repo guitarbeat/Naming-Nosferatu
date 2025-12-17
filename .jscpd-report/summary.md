@@ -17,5 +17,6 @@ Notes:
 Next steps to reduce duplication:
 - `Login.jsx`: extract shared form/validation handlers and cat-fact fetch into a hook/util reused across login flows.
 - `TournamentSetup.jsx`: pull repeated filter/setup/handler wiring into local helpers or a small hook; consolidate context handler registration.
+- Current jscpd (src): 27 clones, 745 duplicated lines (~2.15%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
