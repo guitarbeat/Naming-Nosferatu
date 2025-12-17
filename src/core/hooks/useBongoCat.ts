@@ -118,6 +118,25 @@ export function useBongoCat({
     [enableSounds],
   );
 
+  const updateAnimationStateFromSpeed = useCallback(
+    (speed: number, now?: number) => {
+      if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
+        setAnimationState(ANIMATION_STATES.TYPING_FAST);
+        if (now !== undefined) {
+          setHeadTilt(Math.sin(now / 200) * 5);
+        }
+      } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
+        setAnimationState(ANIMATION_STATES.TYPING_SLOW);
+        if (now !== undefined) {
+          setHeadTilt(0);
+        }
+      } else {
+        setAnimationState(ANIMATION_STATES.IDLE);
+      }
+    },
+    [],
+  );
+
   const updateCursorPosition = useCallback(
     (e) => {
       if (containerRef?.current) {
@@ -198,13 +217,7 @@ export function useBongoCat({
         setAnimationState(ANIMATION_STATES.BACKSPACE);
         setTimeout(() => {
           const speed = calculateTypingSpeed();
-          if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
-            setAnimationState(ANIMATION_STATES.TYPING_FAST);
-          } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
-            setAnimationState(ANIMATION_STATES.TYPING_SLOW);
-          } else {
-            setAnimationState(ANIMATION_STATES.IDLE);
-          }
+          updateAnimationStateFromSpeed(speed);
         }, 500);
       } else {
         typingHistoryRef.current.push({ time: now });
@@ -216,15 +229,7 @@ export function useBongoCat({
         checkMilestones(characterCountRef.current);
 
         const speed = calculateTypingSpeed();
-        if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
-          setAnimationState(ANIMATION_STATES.TYPING_FAST);
-          setHeadTilt(Math.sin(now / 200) * 5);
-        } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
-          setAnimationState(ANIMATION_STATES.TYPING_SLOW);
-          setHeadTilt(0);
-        } else {
-          setAnimationState(ANIMATION_STATES.IDLE);
-        }
+        updateAnimationStateFromSpeed(speed, now);
 
         pauseStartTimeRef.current = null;
       }
@@ -240,7 +245,7 @@ export function useBongoCat({
         onBongo();
       }
     },
-    [isPawsDown, onBongo, calculateTypingSpeed, checkMilestones],
+    [isPawsDown, onBongo, calculateTypingSpeed, checkMilestones, updateAnimationStateFromSpeed],
   );
 
   const handleKeyUp = useCallback((e) => {
@@ -268,19 +273,13 @@ export function useBongoCat({
       } else if (isPawsDown || Date.now() - pauseStartTimeRef.current < 5000) {
         if (animationState === ANIMATION_STATES.SLEEPY) {
           const speed = calculateTypingSpeed();
-          if (speed > TYPING_SPEED_THRESHOLDS.FAST) {
-            setAnimationState(ANIMATION_STATES.TYPING_FAST);
-          } else if (speed > TYPING_SPEED_THRESHOLDS.SLOW) {
-            setAnimationState(ANIMATION_STATES.TYPING_SLOW);
-          } else {
-            setAnimationState(ANIMATION_STATES.IDLE);
-          }
+          updateAnimationStateFromSpeed(speed);
         }
       }
     }, TIMING.PAUSE_CHECK_INTERVAL_MS);
 
     return () => clearInterval(pauseCheckInterval);
-  }, [animationState, isPawsDown, calculateTypingSpeed]);
+  }, [animationState, isPawsDown, calculateTypingSpeed, updateAnimationStateFromSpeed]);
 
   useEffect(() => {
     if (!reduceMotion) {

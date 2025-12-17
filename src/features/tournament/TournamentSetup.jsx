@@ -30,6 +30,29 @@ import styles from "./TournamentSetup.module.css";
 // * Error boundary component
 const ErrorBoundary = Error;
 
+// * Shared hook for context callbacks
+function useNameManagementCallbacks(context) {
+  const setHiddenNames = useCallback(
+    (updater) => {
+      context?.setHiddenIds?.(updater);
+    },
+    [context],
+  );
+
+  const setAllNames = useCallback(
+    (updater) => {
+      context?.setNames?.(updater);
+    },
+    [context],
+  );
+
+  const fetchNames = useCallback(() => {
+    context?.refetch?.();
+  }, [context]);
+
+  return { setHiddenNames, setAllNames, fetchNames };
+}
+
 // * Component that creates handlers inside context and initializes analysis mode
 function AnalysisHandlersProvider({
   shouldEnableAnalysisMode,
@@ -51,23 +74,8 @@ function AnalysisHandlersProvider({
     }
   }, [shouldEnableAnalysisMode, context]);
 
-  const setHiddenNames = useCallback(
-    (updater) => {
-      context?.setHiddenIds?.(updater);
-    },
-    [context],
-  );
-
-  const setAllNames = useCallback(
-    (updater) => {
-      context?.setNames?.(updater);
-    },
-    [context],
-  );
-
-  const fetchNames = useCallback(() => {
-    context?.refetch?.();
-  }, [context]);
+  const { setHiddenNames, setAllNames, fetchNames } =
+    useNameManagementCallbacks(context);
 
   const { handleToggleVisibility, handleDelete } = useProfileNameOperations(
     activeUser,
@@ -228,23 +236,8 @@ function AnalysisBulkActionsWrapper({
     return [];
   }, [selectedNamesValue]);
 
-  const setHiddenNames = useCallback(
-    (updater) => {
-      context?.setHiddenIds?.(updater);
-    },
-    [context],
-  );
-
-  const setAllNames = useCallback(
-    (updater) => {
-      context?.setNames?.(updater);
-    },
-    [context],
-  );
-
-  const fetchNames = useCallback(() => {
-    context?.refetch?.();
-  }, [context]);
+  const { setHiddenNames, setAllNames, fetchNames } =
+    useNameManagementCallbacks(context);
 
   const { handleBulkHide, handleBulkUnhide } = useProfileNameOperations(
     activeUser,
