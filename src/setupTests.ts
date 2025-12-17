@@ -96,10 +96,18 @@ vi.mock("@supabase/supabase-js", () => ({
 // * Mock react-responsive-masonry for test environment
 vi.mock("react-responsive-masonry", () => {
   const MockMasonry = ({ children, className }) =>
-    React.createElement("div", { className, "data-testid": "masonry" }, children);
+    React.createElement(
+      "div",
+      { className, "data-testid": "masonry" },
+      children,
+    );
 
   const MockResponsiveMasonry = ({ children, className }) =>
-    React.createElement("div", { className, "data-testid": "responsive-masonry" }, children);
+    React.createElement(
+      "div",
+      { className, "data-testid": "responsive-masonry" },
+      children,
+    );
 
   return {
     default: MockMasonry,

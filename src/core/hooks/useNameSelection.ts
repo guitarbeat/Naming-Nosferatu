@@ -26,7 +26,9 @@ export function useNameSelection({
   userName,
   enableAutoSave = true,
 }) {
-  const [selectedNames, setSelectedNames] = useState(mode === "tournament" ? [] : new Set());
+  const [selectedNames, setSelectedNames] = useState(
+    mode === "tournament" ? [] : new Set(),
+  );
 
   const saveTimeoutRef = useRef(null);
   const lastSavedHashRef = useRef("");
@@ -102,8 +104,14 @@ export function useNameSelection({
             ? prev.filter((n) => n.id !== nameOrId.id)
             : [...prev, nameOrId];
 
-          if (Date.now() - lastLogTsRef.current > 1000 && process.env.NODE_ENV === "development") {
-            devLog("🎮 TournamentSetup: Selected names updated", newSelectedNames);
+          if (
+            Date.now() - lastLogTsRef.current > 1000 &&
+            process.env.NODE_ENV === "development"
+          ) {
+            devLog(
+              "🎮 TournamentSetup: Selected names updated",
+              newSelectedNames,
+            );
             lastLogTsRef.current = Date.now();
           }
 
@@ -170,7 +178,9 @@ export function useNameSelection({
         setSelectedNames((prev) => {
           if (shouldSelect) {
             const additions = names.filter(
-              (name) => idSet.has(name.id) && !prev.some((selected) => selected.id === name.id),
+              (name) =>
+                idSet.has(name.id) &&
+                !prev.some((selected) => selected.id === name.id),
             );
             if (additions.length === 0) return prev;
             const updated = [...prev, ...additions];
@@ -232,7 +242,8 @@ export function useNameSelection({
     [mode, selectedNames],
   );
 
-  const selectedCount = mode === "tournament" ? selectedNames.length : selectedNames.size;
+  const selectedCount =
+    mode === "tournament" ? selectedNames.length : selectedNames.size;
 
   return {
     selectedNames,

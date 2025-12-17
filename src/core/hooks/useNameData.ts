@@ -58,12 +58,16 @@ export function useNameData({
 
       let supabaseClient;
       try {
-        const { promise: clientTimeout, timeoutId: clientTimeoutId } = createTimeout(
-          TIMING.SUPABASE_CLIENT_TIMEOUT_MS,
-          `Supabase client timeout after ${TIMING.SUPABASE_CLIENT_TIMEOUT_MS / 1000} seconds`,
-        );
+        const { promise: clientTimeout, timeoutId: clientTimeoutId } =
+          createTimeout(
+            TIMING.SUPABASE_CLIENT_TIMEOUT_MS,
+            `Supabase client timeout after ${TIMING.SUPABASE_CLIENT_TIMEOUT_MS / 1000} seconds`,
+          );
 
-        supabaseClient = await Promise.race([resolveSupabaseClient(), clientTimeout]);
+        supabaseClient = await Promise.race([
+          resolveSupabaseClient(),
+          clientTimeout,
+        ]);
 
         if (clientTimeoutId) {
           clearTimeout(clientTimeoutId);
@@ -99,10 +103,8 @@ export function useNameData({
 
       if (mode === "tournament") {
         try {
-          const { promise: fetchTimeout, timeoutId: fetchTimeoutId } = createTimeout(
-            15000,
-            "Data fetch timeout after 15 seconds",
-          );
+          const { promise: fetchTimeout, timeoutId: fetchTimeoutId } =
+            createTimeout(15000, "Data fetch timeout after 15 seconds");
 
           const fetchPromise = getNamesWithDescriptions(true);
           namesData = await Promise.race([fetchPromise, fetchTimeout]);
@@ -119,7 +121,9 @@ export function useNameData({
             namesData[0]?.description?.includes("temporary fallback")
           ) {
             if (process.env.NODE_ENV === "development") {
-              console.warn("⚠️ Backend returned fallback names - Supabase may not be fully available");
+              console.warn(
+                "⚠️ Backend returned fallback names - Supabase may not be fully available",
+              );
             }
           }
         } catch (timeoutError) {
@@ -128,11 +132,15 @@ export function useNameData({
             setNames(FALLBACK_NAMES);
             setIsLoading(false);
             if (enableErrorHandling) {
-              ErrorManager.handleError(timeoutError, "TournamentSetup - Data Fetch Timeout", {
-                isRetryable: true,
-                affectsUserData: false,
-                isCritical: false,
-              });
+              ErrorManager.handleError(
+                timeoutError,
+                "TournamentSetup - Data Fetch Timeout",
+                {
+                  isRetryable: true,
+                  affectsUserData: false,
+                  isCritical: false,
+                },
+              );
             }
             return;
           }
@@ -158,16 +166,25 @@ export function useNameData({
         throw new Error("Invalid response: namesData is not an array");
       }
 
-      const hiddenIdsSet = new Set(namesData.filter((name) => name.is_hidden === true).map((name) => name.id));
+      const hiddenIdsSet = new Set(
+        namesData
+          .filter((name) => name.is_hidden === true)
+          .map((name) => name.id),
+      );
 
-      const sortedNames = [...namesData].sort((a, b) => (a?.name || "").localeCompare(b?.name || ""));
+      const sortedNames = [...namesData].sort((a, b) =>
+        (a?.name || "").localeCompare(b?.name || ""),
+      );
 
       if (process.env.NODE_ENV === "development") {
-        devLog(`🎮 ${mode === "tournament" ? "TournamentSetup" : "Profile"}: Data loaded`, {
-          availableNames: sortedNames.length,
-          hiddenNames: hiddenIdsSet.size,
-          mode,
-        });
+        devLog(
+          `🎮 ${mode === "tournament" ? "TournamentSetup" : "Profile"}: Data loaded`,
+          {
+            availableNames: sortedNames.length,
+            hiddenNames: hiddenIdsSet.size,
+            mode,
+          },
+        );
       }
 
       setNames(sortedNames);

@@ -118,4 +118,3 @@ export function useTournament({
     userName: persistentState.userName,
   };
 }
-

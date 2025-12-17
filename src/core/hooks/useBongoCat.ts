@@ -78,16 +78,22 @@ export function useBongoCat({
 
       setIsVisible(rect.top < viewportHeight);
 
-      const containerComputedStyle = window.getComputedStyle(containerRef.current);
+      const containerComputedStyle = window.getComputedStyle(
+        containerRef.current,
+      );
       const containerZ =
-        containerComputedStyle.zIndex === "auto" ? 1 : parseInt(containerComputedStyle.zIndex, 10);
+        containerComputedStyle.zIndex === "auto"
+          ? 1
+          : parseInt(containerComputedStyle.zIndex, 10);
       setContainerZIndex(containerZ);
     }
   }, [containerRef, size]);
 
   const calculateTypingSpeed = useCallback(() => {
     const now = Date.now();
-    const recentHistory = typingHistoryRef.current.filter((entry) => now - entry.time < 2000);
+    const recentHistory = typingHistoryRef.current.filter(
+      (entry) => now - entry.time < 2000,
+    );
     if (recentHistory.length < 2) return 0;
     const timeSpan = (now - recentHistory[0].time) / 1000;
     return recentHistory.length / timeSpan;
@@ -96,7 +102,8 @@ export function useBongoCat({
   const checkMilestones = useCallback(
     (count) => {
       const milestone = MILESTONE_THRESHOLDS.find(
-        (threshold) => characterCountRef.current < threshold && count >= threshold,
+        (threshold) =>
+          characterCountRef.current < threshold && count >= threshold,
       );
       if (milestone) {
         setAnimationState(ANIMATION_STATES.CELEBRATING);
@@ -163,7 +170,10 @@ export function useBongoCat({
 
   useEffect(() => {
     if (!earTwitch) return undefined;
-    const timer = setTimeout(() => setEarTwitch(false), TIMING.EAR_TWITCH_DURATION_MS);
+    const timer = setTimeout(
+      () => setEarTwitch(false),
+      TIMING.EAR_TWITCH_DURATION_MS,
+    );
     return () => clearTimeout(timer);
   }, [earTwitch]);
 
@@ -350,7 +360,10 @@ export function useBongoCat({
 
         window.removeEventListener("scroll", handleScroll);
         window.removeEventListener("resize", handleResize);
-        window.removeEventListener("orientationchange", handleOrientationChange);
+        window.removeEventListener(
+          "orientationchange",
+          handleOrientationChange,
+        );
         mutationObserver.disconnect();
 
         if (scrollTimeoutRef.current) {
