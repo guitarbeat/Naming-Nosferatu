@@ -7,8 +7,13 @@ import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "./Login";
 import { validateUsername } from "../../shared/utils/validationUtils";
-
-globalThis.fetch = vi.fn();
+import {
+  mockCatFact,
+  renderLoginAndWait,
+  setupFetchFailure,
+  setupFetchSuccess,
+  resetFetchMock,
+} from "./loginTestUtils";
 
 vi.mock("../../shared/utils/validationUtils", () => ({
   validateUsername: vi.fn(),
@@ -19,12 +24,8 @@ describe("Login Component - Focused Tests", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    globalThis.fetch.mockReset();
-    globalThis.fetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ fact: "Cats sleep 12-16 hours per day!" }),
-    });
+    resetFetchMock();
+    setupFetchSuccess();
   });
 
   it("renders hero copy, cat fact, and helper content", async () => {
@@ -41,9 +42,7 @@ describe("Login Component - Focused Tests", () => {
     ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(
-        screen.getByText("Cats sleep 12-16 hours per day!"),
-      ).toBeInTheDocument();
+      expect(screen.getByText(mockCatFact)).toBeInTheDocument();
     });
   });
 
@@ -51,9 +50,7 @@ describe("Login Component - Focused Tests", () => {
     const user = userEvent.setup();
     const deterministicRandom = vi.spyOn(Math, "random").mockReturnValue(0.01);
 
-    render(<Login onLogin={mockOnLogin} />);
-
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
 
     const randomButton = screen.getByRole("button", {
       name: "Generate a random name",
@@ -78,8 +75,7 @@ describe("Login Component - Focused Tests", () => {
     validateUsername.mockReturnValue({ success: true, value: "Judge Whisker" });
     mockOnLogin.mockResolvedValueOnce();
 
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
 
     const user = userEvent.setup();
 
@@ -98,8 +94,7 @@ describe("Login Component - Focused Tests", () => {
     const errorMessage = "That name is cursed by ancient cat magic.";
     validateUsername.mockReturnValue({ success: false, error: errorMessage });
 
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
 
     const user = userEvent.setup();
 
@@ -115,8 +110,7 @@ describe("Login Component - Focused Tests", () => {
   });
 
   it("falls back to a default fact when fetching a cat fact fails", async () => {
-    globalThis.fetch.mockRejectedValueOnce(new Error("nope"));
-
+    setupFetchFailure(new Error("nope"));
     render(<Login onLogin={mockOnLogin} />);
 
     await waitFor(() => {

@@ -7,9 +7,11 @@ import userEvent from "@testing-library/user-event";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import Login from "./Login";
 import { validateUsername } from "../../shared/utils/validationUtils";
-
-// * Mock fetch for cat facts
-globalThis.fetch = vi.fn();
+import {
+  mockCatFact,
+  renderLoginAndWait,
+  setupFetchSuccess,
+} from "./loginTestUtils";
 
 // * Mock useToast hook
 const mockShowSuccess = vi.fn();
@@ -31,34 +33,26 @@ describe("Login Component - Simple Tests", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // * Mock successful cat fact fetch
-    globalThis.fetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ fact: "Cats sleep 12-16 hours per day!" }),
-    });
+    setupFetchSuccess();
   });
 
   it("renders without crashing", async () => {
     render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await screen.findByText(mockCatFact);
   });
 
   it("renders main title", async () => {
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
     expect(screen.getByText("Ready to Rate Cat Names?")).toBeInTheDocument();
   });
 
   it("renders login form title", async () => {
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
     expect(screen.getByText("Ready to Rate Cat Names?")).toBeInTheDocument();
   });
 
   it("renders login subtitle", async () => {
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
     // * Component shows help text instead of subtitle
     expect(
       screen.getByText(
@@ -68,8 +62,7 @@ describe("Login Component - Simple Tests", () => {
   });
 
   it("renders random name description when collapsed", async () => {
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
     expect(
       screen.getByText(
         "We'll create an account automatically if it's your first time.",
@@ -81,8 +74,7 @@ describe("Login Component - Simple Tests", () => {
     validateUsername.mockReturnValue({ success: true, value: "Judge Whisker" });
     mockOnLogin.mockResolvedValueOnce();
 
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
 
     const user = userEvent.setup();
 
@@ -103,8 +95,7 @@ describe("Login Component - Simple Tests", () => {
       error: "Name is invalid",
     });
 
-    render(<Login onLogin={mockOnLogin} />);
-    await screen.findByText("Cats sleep 12-16 hours per day!");
+    await renderLoginAndWait({ onLogin: mockOnLogin });
 
     const user = userEvent.setup();
 
