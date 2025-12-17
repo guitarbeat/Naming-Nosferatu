@@ -20,7 +20,7 @@ Notes:
 
 Next steps to reduce duplication:
 - `Login.jsx`: extract shared form/validation handlers and cat-fact fetch into a hook/util reused across login flows.
-- Current jscpd (src): 23 clones, 689 duplicated lines (1.99%).
+- Current jscpd (src): 23 clones, 689 duplicated lines (2.01%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
 
@@ -28,3 +28,17 @@ Next steps to reduce duplication:
 - **Unused files**: None (removed `src/shared/services/supabase/legacy/catNamesAPI.js` - was replaced by implementation in `supabaseClient.js`)
 - **Duplicate exports (17)**: Mostly false positives from shared components (already in ignoreIssues config)
 - **Configuration hints**: Various suggestions to remove items from ignore lists (intentionally ignored for now)
+
+## Additional findings:
+- **Empty test file**: `src/App.test.tsx` is empty (0 lines) - could be removed or populated with tests
+- **Stub implementations**: `useAudioManager.js` is a stub but actively used by Tournament.jsx (not dead code)
+- **Placeholder comments**: Found in `useAudioManager.js` and `useBongoCat.ts` - these are documentation, not dead code
+
+## Remaining opportunities:
+1. **Login.jsx** (1012 duplicated lines, 18 clones) - Major refactor needed to extract:
+   - Form validation handlers
+   - Cat fact fetching logic
+   - Name generation utilities
+   - Eye tracking logic
+2. **BongoCat.jsx** (44 duplicated lines) - Some duplication remains in animation logic
+3. **TournamentSetup.jsx** (40 duplicated lines) - Some handler wiring duplication remains
