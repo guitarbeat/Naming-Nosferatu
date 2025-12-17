@@ -13,8 +13,7 @@ import Toast from "./Toast/Toast";
 import SkeletonLoader from "./SkeletonLoader/SkeletonLoader";
 
 // * Form Components
-import Input from "./Form/Input";
-import Select from "./Form/Select";
+import { Input, Select } from "./Form";
 
 // * Feature Components
 import NameCard from "./NameCard/NameCard";
@@ -26,7 +25,7 @@ import ScrollToTopButton from "./ScrollToTopButton/ScrollToTopButton";
 // * Direct named exports (not default exports)
 export { NameGrid } from "./NameGrid/NameGrid";
 export { TournamentToolbar } from "./TournamentToolbar/TournamentToolbar";
-export { default as FormField } from "./Form/FormField";
+export { FormField } from "./Form";
 export {
   NameManagementView,
   useNameManagementContextSafe,
@@ -43,10 +42,11 @@ export {
   CollapsibleContent,
   CollapsibleSection,
 } from "./CollapsibleHeader";
-export { BarChart } from "./BarChart";
-export { default as ReadabilityChecker } from "./ReadabilityChecker";
+export { BarChart, BumpChart } from "./Charts";
+export { TrendIndicator } from "./PerformanceBadge";
 export { default as LiquidGlass } from "./LiquidGlass";
 export { useLiquidGlass } from "./LiquidGlass/useLiquidGlass";
+export { default as NoiseBackground } from "./NoiseBackground/NoiseBackground";
 
 // * Named exports
 export {

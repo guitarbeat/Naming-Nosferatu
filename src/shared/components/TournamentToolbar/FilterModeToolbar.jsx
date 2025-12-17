@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import PropTypes from "prop-types";
-import Select from "../Form/Select";
+import { Select } from "../Form";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { FILTER_CONFIGS } from "./filterConfigs";
 import FilterSelect from "./FilterSelect";

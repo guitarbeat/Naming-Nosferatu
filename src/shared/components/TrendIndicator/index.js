@@ -1,1 +1,0 @@
-export { TrendIndicator } from "./TrendIndicator";

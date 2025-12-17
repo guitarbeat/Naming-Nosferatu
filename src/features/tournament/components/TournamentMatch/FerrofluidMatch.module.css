@@ -1,0 +1,276 @@
+/**
+ * FerrofluidMatch.module.css
+ * Styles for the ferrofluid-inspired tournament match display
+ */
+
+/* Battle Stage Container */
+.battleStage {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* Stage Wrapper */
+.stageWrapper {
+  position: relative;
+  display: flex;
+  gap: 120px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fighter Orb */
+.fighterOrb {
+  position: relative;
+  width: 320px;
+  height: 320px;
+  background: #0a0a0a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+  z-index: 2;
+  will-change: transform;
+}
+
+.fighterOrb::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    135deg,
+    #2ff3e0 0%,
+    #fa26a0 25%,
+    #f51720 50%,
+    #fa26a0 75%,
+    #2ff3e0 100%
+  );
+  border-radius: 50%;
+  opacity: 0.3;
+  z-index: -1;
+}
+
+.fighterOrb.selected {
+  transform: scale(1.05);
+}
+
+.fighterOrb.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Magnetic Spikes Animation */
+.spikes {
+  position: absolute;
+  inset: -20px;
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 10deg,
+    #000 10deg 20deg
+  );
+  mask: radial-gradient(transparent 50%, black 70%);
+  -webkit-mask: radial-gradient(transparent 55%, black 70%);
+  opacity: 0.4;
+  animation: rotateSpikes 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotateSpikes {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fighter Content */
+.fighterContent {
+  text-align: center;
+  z-index: 10;
+  filter: blur(0px) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-4);
+}
+
+/* Avatar/Image Wrapper */
+.avatarWrap {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) contrast(1.2);
+  transition:
+    transform 0.5s ease,
+    filter 0.5s ease;
+}
+
+.fighterOrb:hover .avatarWrap img {
+  transform: scale(1.1);
+  filter: grayscale(0%);
+}
+
+.fighterOrb.disabled:hover .avatarWrap img {
+  transform: none;
+  filter: grayscale(100%) contrast(1.2);
+}
+
+/* Name Text */
+.nameText {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: white;
+  margin: 0;
+  text-align: center;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* VS Text */
+.vsCore {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.vsText {
+  font-size: 10rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: white;
+  font-style: italic;
+  opacity: 0.8;
+  pointer-events: none;
+  line-height: 1;
+}
+
+/* Magnetic Line */
+.magneticLine {
+  position: absolute;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  top: 50%;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Hover Effects */
+@media (hover: hover) and (pointer: fine) {
+  .fighterOrb:not(.disabled):hover {
+    transform: translateX(40px) scale(1.05);
+  }
+
+  .fighterOrb.right:not(.disabled):hover {
+    transform: translateX(-40px) scale(1.05);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .battleStage {
+    height: 500px;
+  }
+
+  .stageWrapper {
+    gap: 80px;
+  }
+
+  .fighterOrb {
+    width: 280px;
+    height: 280px;
+  }
+
+  .avatarWrap {
+    width: 150px;
+    height: 150px;
+  }
+
+  .nameText {
+    font-size: 1.75rem;
+  }
+
+  .vsText {
+    font-size: 8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .battleStage {
+    height: 400px;
+  }
+
+  .stageWrapper {
+    gap: 40px;
+    flex-direction: column;
+  }
+
+  .fighterOrb {
+    width: 240px;
+    height: 240px;
+  }
+
+  .avatarWrap {
+    width: 120px;
+    height: 120px;
+  }
+
+  .nameText {
+    font-size: 1.5rem;
+  }
+
+  .vsText {
+    font-size: 5rem;
+  }
+
+  .fighterOrb:not(.disabled):hover {
+    transform: translateY(-20px) scale(1.05);
+  }
+
+  .fighterOrb.right:not(.disabled):hover {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+/* SVG Filter Definition */
+.ferroFilter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}

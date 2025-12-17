@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { AnalysisPanel } from "../AnalysisPanel";
 import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
-import { BumpChart } from "../BumpChart";
+import { BumpChart } from "../Charts";
 import { PerformanceBadges } from "../PerformanceBadge";
 import { ColumnHeader } from "../ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";

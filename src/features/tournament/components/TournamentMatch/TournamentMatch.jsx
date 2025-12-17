@@ -1,13 +1,15 @@
 /**
  * @module Tournament/components/TournamentMatch
- * @description Component for displaying the current tournament match with two NameCards
+ * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
-import { Card, Error, Button } from "../../../../shared/components";
-import NameCard from "../../../../shared/components/NameCard/NameCard";
+import { Error, Button } from "../../../../shared/components";
 import { getRandomCatImage } from "../../utils";
-import styles from "../../Tournament.module.css";
+import useMagneticPull from "../../hooks/useMagneticPull";
+import styles from "./FerrofluidMatch.module.css";
+import tournamentStyles from "../../Tournament.module.css";
 
 function TournamentMatch({
   currentMatch,
@@ -22,67 +24,136 @@ function TournamentMatch({
   showCatPictures = false,
   imageList = [],
 }) {
+  const leftOrbRef = useRef(null);
+  const rightOrbRef = useRef(null);
+  const isEnabled = !isProcessing && !isTransitioning;
+
+  useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);
+
+  const leftImage =
+    showCatPictures && currentMatch.left?.id
+      ? getRandomCatImage(currentMatch.left.id, imageList)
+      : undefined;
+
+  const rightImage =
+    showCatPictures && currentMatch.right?.id
+      ? getRandomCatImage(currentMatch.right.id, imageList)
+      : undefined;
+
   return (
-    <Card
-      className={styles.matchup}
-      background="glass"
-      padding="none"
-      shadow="medium"
+    <div
+      className={tournamentStyles.matchup}
       role="region"
       aria-label="Current matchup"
       aria-busy={isTransitioning || isProcessing}
     >
-      <div className={styles.namesRow}>
-        <div
-          className={`${styles.nameContainer} ${selectedOption === "left" ? styles.selected : ""}`}
-          role="group"
-          aria-label="Left name option"
-        >
-          <NameCard
-            name={currentMatch.left?.name || "Unknown"}
-            description={currentMatch.left?.description || ""}
-            onClick={() => onNameCardClick("left")}
-            selected={selectedOption === "left"}
-            disabled={isProcessing || isTransitioning}
-            shortcutHint="Press ← arrow key"
-            size="medium"
-            image={
-              showCatPictures && currentMatch.left?.id
-                ? getRandomCatImage(currentMatch.left.id, imageList)
-                : undefined
-            }
-          />
-        </div>
+      {/* SVG Filter Definition */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        className={styles.ferroFilter}
+      >
+        <defs>
+          <filter id="tournament-ferro-goo">
+            <feGaussianBlur
+              in="SourceGraphic"
+              stdDeviation="12"
+              result="blur"
+            />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 25 -12"
+              result="goo"
+            />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+          </filter>
+        </defs>
+      </svg>
 
-        <div className={styles.vsSection} aria-hidden="true">
-          <span className={styles.vsText}>vs</span>
-        </div>
+      {/* Battle Stage */}
+      <div
+        className={styles.battleStage}
+        style={{ filter: "url(#tournament-ferro-goo)" }}
+      >
+        <div className={styles.stageWrapper}>
+          {/* Left Fighter Orb */}
+          <div
+            ref={leftOrbRef}
+            className={`${styles.fighterOrb} ${selectedOption === "left" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
+            role="button"
+            tabIndex={isEnabled ? 0 : -1}
+            aria-label={`Select ${currentMatch.left?.name || "Unknown"}`}
+            aria-pressed={selectedOption === "left"}
+            onClick={() => isEnabled && onNameCardClick("left")}
+            onKeyDown={(e) => {
+              if (isEnabled && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                onNameCardClick("left");
+              }
+            }}
+          >
+            <div className={styles.spikes} aria-hidden="true" />
+            <div className={styles.fighterContent}>
+              {leftImage && (
+                <div className={styles.avatarWrap}>
+                  <img
+                    src={leftImage}
+                    alt={currentMatch.left?.name || "Unknown"}
+                  />
+                </div>
+              )}
+              <h3 className={styles.nameText}>
+                {currentMatch.left?.name || "Unknown"}
+              </h3>
+            </div>
+          </div>
 
-        <div
-          className={`${styles.nameContainer} ${selectedOption === "right" ? styles.selected : ""}`}
-          role="group"
-          aria-label="Right name option"
-        >
-          <NameCard
-            name={currentMatch.right?.name || "Unknown"}
-            description={currentMatch.right?.description || ""}
-            onClick={() => onNameCardClick("right")}
-            selected={selectedOption === "right"}
-            disabled={isProcessing || isTransitioning}
-            shortcutHint="Press → arrow key"
-            size="medium"
-            image={
-              showCatPictures && currentMatch.right?.id
-                ? getRandomCatImage(currentMatch.right.id, imageList)
-                : undefined
-            }
-          />
+          {/* VS Text */}
+          <div className={styles.vsCore} aria-hidden="true">
+            <div className={styles.vsText}>VS</div>
+          </div>
+
+          {/* Right Fighter Orb */}
+          <div
+            ref={rightOrbRef}
+            className={`${styles.fighterOrb} ${styles.right} ${selectedOption === "right" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
+            role="button"
+            tabIndex={isEnabled ? 0 : -1}
+            aria-label={`Select ${currentMatch.right?.name || "Unknown"}`}
+            aria-pressed={selectedOption === "right"}
+            onClick={() => isEnabled && onNameCardClick("right")}
+            onKeyDown={(e) => {
+              if (isEnabled && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                onNameCardClick("right");
+              }
+            }}
+          >
+            <div className={styles.spikes} aria-hidden="true" />
+            <div className={styles.fighterContent}>
+              {rightImage && (
+                <div className={styles.avatarWrap}>
+                  <img
+                    src={rightImage}
+                    alt={currentMatch.right?.name || "Unknown"}
+                  />
+                </div>
+              )}
+              <h3 className={styles.nameText}>
+                {currentMatch.right?.name || "Unknown"}
+              </h3>
+            </div>
+          </div>
+
+          {/* Magnetic Line */}
+          <div className={styles.magneticLine} aria-hidden="true" />
         </div>
       </div>
 
       {/* Extra Voting Options */}
       <div
-        className={styles.extraOptions}
+        className={tournamentStyles.extraOptions}
         role="group"
         aria-label="Additional voting options"
       >
@@ -90,12 +161,12 @@ function TournamentMatch({
           onClick={() => onVoteWithAnimation("both")}
           disabled={isProcessing || isTransitioning}
           variant={selectedOption === "both" ? "primary" : "secondary"}
-          className={`${styles.extraOptionsButton} ${selectedOption === "both" ? styles.selected : ""}`}
+          className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "both" ? tournamentStyles.selected : ""}`}
           aria-pressed={selectedOption === "both"}
           aria-label="Vote for both names (Press Up arrow key)"
         >
           I Like Both!{" "}
-          <span className={styles.shortcutHint} aria-hidden="true">
+          <span className={tournamentStyles.shortcutHint} aria-hidden="true">
             (↑ Up)
           </span>
         </Button>
@@ -104,12 +175,12 @@ function TournamentMatch({
           onClick={() => onVoteWithAnimation("neither")}
           disabled={isProcessing || isTransitioning}
           variant={selectedOption === "neither" ? "primary" : "secondary"}
-          className={`${styles.extraOptionsButton} ${selectedOption === "neither" ? styles.selected : ""}`}
+          className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "neither" ? tournamentStyles.selected : ""}`}
           aria-pressed={selectedOption === "neither"}
           aria-label="Skip this match (Press Down arrow key)"
         >
           Skip{" "}
-          <span className={styles.shortcutHint} aria-hidden="true">
+          <span className={tournamentStyles.shortcutHint} aria-hidden="true">
             (↓ Down)
           </span>
         </Button>
@@ -127,10 +198,10 @@ function TournamentMatch({
           showRetry={true}
           showDismiss={true}
           size="medium"
-          className={styles.votingError}
+          className={tournamentStyles.votingError}
         />
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -139,10 +210,12 @@ TournamentMatch.propTypes = {
     left: PropTypes.shape({
       name: PropTypes.string,
       description: PropTypes.string,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
     right: PropTypes.shape({
       name: PropTypes.string,
       description: PropTypes.string,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   }).isRequired,
   selectedOption: PropTypes.oneOf(["left", "right", "both", "neither", null]),
@@ -153,6 +226,8 @@ TournamentMatch.propTypes = {
   onVoteWithAnimation: PropTypes.func.isRequired,
   onVoteRetry: PropTypes.func.isRequired,
   onDismissError: PropTypes.func.isRequired,
+  showCatPictures: PropTypes.bool,
+  imageList: PropTypes.array,
 };
 
 export default TournamentMatch;

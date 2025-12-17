@@ -12,7 +12,7 @@ import CalendarButton from "../../shared/components/CalendarButton/CalendarButto
 import StartTournamentButton from "../../shared/components/StartTournamentButton/StartTournamentButton";
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
 import { Card, Toast } from "@components";
-import { BumpChart } from "../../shared/components/BumpChart";
+import { BumpChart } from "../../shared/components/Charts";
 import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
 import {
   CollapsibleHeader,

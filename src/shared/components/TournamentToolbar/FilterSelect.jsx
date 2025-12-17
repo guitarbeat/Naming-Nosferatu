@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import Select from "../Form/Select";
+import { Select } from "../Form";
 import { styles } from "./styles";
 
 function FilterSelect({ id, label, value, options, onChange }) {

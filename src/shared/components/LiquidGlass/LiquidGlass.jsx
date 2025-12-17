@@ -467,8 +467,6 @@ function LiquidGlass({
   );
 }
 
-export default LiquidGlass;
-
 /**
  * LiquidGlassToggleButton
  * A pill-shaped glass button that swaps its label on click.
@@ -531,4 +529,5 @@ LiquidGlassToggleButton.propTypes = {
   className: PropTypes.string,
 };
 
+export default LiquidGlass;
 export { LiquidGlassToggleButton };

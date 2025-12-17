@@ -3,9 +3,143 @@
  * @description Reusable table column header with optional sorting and metric explanation
  */
 
+import React from "react";
 import PropTypes from "prop-types";
-import { MetricExplainer, InfoIcon } from "../MetricExplainer";
 import "./ColumnHeader.css";
+
+/**
+ * InfoIcon Component - Commonly used trigger for MetricExplainer
+ */
+function InfoIcon() {
+  return (
+    <span
+      className="info-icon"
+      aria-hidden="true"
+      title="Click for more information"
+    >
+      ⓘ
+    </span>
+  );
+}
+
+/**
+ * MetricExplainer Component
+ * Shows detailed explanation of a metric in a popover
+ */
+function MetricExplainer({
+  metricName,
+  value = null,
+  children,
+  placement = "top",
+  onClose,
+}) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const triggerRef = React.useRef(null);
+  const popoverRef = React.useRef(null);
+
+  // Use metricName to determine if we have a definition
+  const hasDefinition = metricName && typeof metricName === "string";
+
+  const handleClose = React.useCallback(() => {
+    setIsOpen(false);
+    onClose?.();
+  }, [onClose]);
+
+  // Close popover when clicking outside
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (
+        popoverRef.current &&
+        triggerRef.current &&
+        !popoverRef.current.contains(event.target) &&
+        !triggerRef.current.contains(event.target)
+      ) {
+        handleClose();
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [handleClose, isOpen]);
+
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  if (!hasDefinition) {
+    return children;
+  }
+
+  const label = metricName; // Use metricName as the label
+
+  return (
+    <div className="metric-explainer">
+      <div
+        ref={triggerRef}
+        className="metric-explainer-trigger"
+        onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
+        role="button"
+        tabIndex="0"
+        aria-expanded={isOpen}
+        aria-label={`Show explanation for ${label}`}
+        title={`Learn about ${label}`}
+      >
+        {children}
+      </div>
+
+      {isOpen && (
+        <div
+          ref={popoverRef}
+          className={`metric-explainer-popover metric-explainer-popover-${placement}`}
+          role="tooltip"
+          aria-hidden="false"
+        >
+          <div className="metric-explainer-content">
+            <div className="metric-explainer-header">
+              <h3 className="metric-explainer-title">{label}</h3>
+              {value !== null && (
+                <span className="metric-explainer-value-label">
+                  Current value: {value}
+                </span>
+              )}
+            </div>
+            <p className="metric-explainer-description">
+              This metric shows performance data for {label}.
+            </p>
+            <button
+              className="metric-explainer-close"
+              onClick={handleClose}
+              aria-label="Close explanation"
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="metric-explainer-arrow" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * ColumnHeader Component

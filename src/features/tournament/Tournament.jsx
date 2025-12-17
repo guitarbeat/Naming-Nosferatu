@@ -12,7 +12,12 @@ import React, {
   useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import { Loading, Error, Button } from "../../shared/components";
+import {
+  Loading,
+  Error,
+  Button,
+  NoiseBackground,
+} from "../../shared/components";
 import TournamentControls from "./TournamentControls";
 import TournamentHeader from "./components/TournamentHeader";
 import TournamentMatch from "./components/TournamentMatch";
@@ -50,7 +55,7 @@ function TournamentContent({
     visibleNames,
     existingRatings,
     onComplete,
-    onVote,
+    onVote
   );
 
   const {
@@ -184,11 +189,11 @@ function TournamentContent({
       setLastMatchResult(resultMessage);
       const showTimer = setTimeout(
         () => setShowMatchResult(true),
-        TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY,
+        TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY
       );
       const hideTimer = setTimeout(
         () => setShowMatchResult(false),
-        TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY,
+        TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY
       );
       matchResultTimersRef.current.push(showTimer, hideTimer);
       showSuccess("Vote recorded successfully!", {
@@ -199,7 +204,7 @@ function TournamentContent({
     },
     // * setState functions (setUndoExpiresAt, setSelectedOption) are stable and don't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentMatch, showSuccess],
+    [currentMatch, showSuccess]
   );
 
   // * Handle vote with animation
@@ -278,11 +283,11 @@ function TournamentContent({
 
         setSelectedOption(null);
         await new Promise((resolve) =>
-          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM),
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM)
         );
         setIsProcessing(false);
         await new Promise((resolve) =>
-          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT),
+          setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT)
         );
         setIsTransitioning(false);
       } catch (error) {
@@ -319,7 +324,7 @@ function TournamentContent({
       onVote,
       currentMatch,
       showError,
-    ],
+    ]
   );
 
   // * Handle name card click
@@ -331,7 +336,7 @@ function TournamentContent({
     },
     // * setState function (setSelectedOption) is stable and doesn't need to be in dependencies
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isProcessing, isTransitioning, handleVoteWithAnimation],
+    [isProcessing, isTransitioning, handleVoteWithAnimation]
   );
 
   // * Handle end early
@@ -393,7 +398,7 @@ function TournamentContent({
         }
       },
       onToggleCatPictures: () => setShowCatPictures((v) => !v),
-    },
+    }
   );
 
   // * Transform match history for bracket
@@ -429,7 +434,7 @@ function TournamentContent({
       // * Calculate round using shared utility function
       const calculatedRound = calculateBracketRound(
         visibleNames.length,
-        matchNumber,
+        matchNumber
       );
 
       return {
@@ -476,6 +481,9 @@ function TournamentContent({
 
   return (
     <div className={styles.tournament} role="main" aria-live="polite">
+      {/* Noise Background */}
+      <NoiseBackground opacity={0.05} />
+
       {/* Progress Information */}
       <TournamentHeader
         roundNumber={roundNumber}
