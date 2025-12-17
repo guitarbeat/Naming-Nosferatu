@@ -26,7 +26,7 @@ const applyDevtools = (storeImpl) => {
   return storeImpl;
 };
 
-export const getInitialThemeState = () => {
+const getInitialThemeState = () => {
   if (typeof window !== "undefined") {
     try {
       const storedTheme = window.localStorage.getItem("theme");
@@ -498,23 +498,6 @@ export const useAppStoreInitialization = () => {
     // * Initialize user state from localStorage on mount
     userActions.initializeFromStorage();
   }, [userActions]);
-};
-
-// * Computed selectors for derived state
-export const selectTournamentStats = (state) => {
-  const totalNames = state.tournament.names?.length || 0;
-  const totalVotes = state.tournament.voteHistory.length;
-  const totalPossibleMatches =
-    totalNames > 1 ? (totalNames * (totalNames - 1)) / 2 : 0;
-
-  return {
-    totalNames,
-    totalVotes,
-    isComplete: state.tournament.isComplete,
-    isLoading: state.tournament.isLoading,
-    progress:
-      totalPossibleMatches > 0 ? (totalVotes / totalPossibleMatches) * 100 : 0,
-  };
 };
 
 export default useAppStore;
