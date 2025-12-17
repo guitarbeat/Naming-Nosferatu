@@ -26,7 +26,7 @@ import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./constants";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
-import { isNameHidden } from "../../shared/utils/nameFilterUtils";
+import { getVisibleNames } from "../../shared/utils/nameFilterUtils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component
@@ -39,11 +39,7 @@ function TournamentContent({
   const { showSuccess, showError } = useToast();
 
   // * Filter out hidden names as a safety measure
-  const visibleNames = useMemo(
-    () =>
-      Array.isArray(names) ? names.filter((name) => !isNameHidden(name)) : [],
-    [names],
-  );
+  const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 
   // * Global event listeners ref for proper cleanup
   const globalEventListeners = useRef(new Set());

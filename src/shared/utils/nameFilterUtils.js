@@ -14,6 +14,16 @@ export function isNameHidden(name) {
 }
 
 /**
+ * Filter array of names to only visible ones
+ * @param {Array} names - Array of name objects
+ * @returns {Array} Filtered array of visible names
+ */
+export function getVisibleNames(names) {
+  if (!Array.isArray(names)) return [];
+  return names.filter((name) => !isNameHidden(name));
+}
+
+/**
  * Map filterStatus to visibility string
  * @param {string} filterStatus - Filter status ("hidden" | "all" | "visible")
  * @returns {string} Visibility string ("hidden" | "all" | "visible")

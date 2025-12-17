@@ -12,6 +12,7 @@ import { useCatFact } from "./hooks/useCatFact";
 import { useEyeTracking } from "./hooks/useEyeTracking";
 import { useLoginForm } from "./hooks/useLoginForm";
 import { getEyeTransform } from "./utils/svgTransforms";
+import { getPathStyle } from "./utils/svgStyles";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
