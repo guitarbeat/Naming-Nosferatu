@@ -3,15 +3,6 @@
 /* ===== LIQUID GLASS WRAPPER ===== */
 .toastGlass {
   pointer-events: auto;
-  transform: translateX(100%);
-  transition: var(--transition-base);
-  /* * Less disruptive: subtle slide-in animation */
-  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.toastGlass.exiting {
-  opacity: 0;
-  transform: translateX(100%);
 }
 
 /* ===== INDIVIDUAL TOAST ITEMS ===== */
@@ -55,7 +46,6 @@
 
 .item.exiting {
   opacity: 0;
-  transform: translateX(100%);
 }
 
 /* Type-specific styling */
@@ -123,370 +113,345 @@
 
 .dismissButton:hover {
   background: rgb(255 255 255 / 100%);
-  transform: scale(1.15);
-  transition: all 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .dismissButton:active {
-  transform: scale(0.95);
-}
+  background: rgb(255 255 255 / 90%);
 
-.dismissButton:focus {
-  outline: 2px solid currentcolor;
-  outline-offset: 2px;
-}
-
-/* Progress bar */
-.progressBar {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 3px;
-  overflow: hidden;
-  background: rgb(0 0 0 / 10%);
-  border-radius: 0 0 8px 8px;
-}
-
-.progressFill {
-  height: 100%;
-  background: currentcolor;
-  opacity: 0.6;
-  transform-origin: left;
-  animation: progressShrink linear forwards;
-}
-
-@keyframes progressShrink {
-  from {
-    transform: scaleX(1);
+  .dismissButton:focus {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
   }
 
-  to {
-    transform: scaleX(0);
+  /* Progress bar */
+  .progressBar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    overflow: hidden;
+    background: rgb(0 0 0 / 10%);
+    border-radius: 0 0 8px 8px;
   }
-}
 
-/* Animations - less disruptive */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.98);
+  .progressFill {
+    height: 100%;
+    background: currentcolor;
+    opacity: 0.6;
   }
 
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
+  /* Removed slide/scale animations for a static toast */
 
-/* Mobile responsiveness */
-@media (width <= 768px) {
+  /* Mobile responsiveness */
+  @media (width <= 768px) {
+    .container {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      min-width: auto;
+      max-width: none;
+      transform: translateY(-100%);
+      gap: 8px;
+      max-height: calc(100vh - 20px);
+    }
+
+    .topLeft,
+    .topRight {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+    }
+
+    .topCenter {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      transform: none;
+    }
+
+    .bottomLeft,
+    .bottomRight {
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+    }
+
+    .bottomCenter {
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      transform: none;
+    }
+
+    .container.exiting {
+      transform: translateY(-100%);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-100%) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .content {
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .message {
+      font-size: 0.9rem;
+    }
+
+    .dismissButton {
+      width: 20px;
+      height: 20px;
+      font-size: 1em;
+    }
+  }
+
+  @media (width <= 480px) {
+    .container {
+      top: 5px;
+      right: 5px;
+      left: 5px;
+    }
+
+    .content {
+      padding: 10px;
+    }
+
+    .message {
+      font-size: 0.85rem;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: more) {
+    .container {
+      border-width: 2px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+    }
+
+    .dismissButton {
+      border-width: 2px;
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .container {
+      transition: none;
+      animation: none;
+    }
+
+    .progressFill {
+      animation: none;
+    }
+
+    .dismissButton:hover {
+      transform: none;
+    }
+  }
+
+  /* Focus visible for keyboard navigation */
+  .dismissButton:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
+  }
+
+  /* Print styles */
+  @media print {
+    .container {
+      position: static;
+      margin: 10px 0;
+      border: 1px solid #000;
+      box-shadow: none;
+    }
+
+    .progressBar {
+      display: none;
+    }
+  }
+
+  /* ===== TOAST CONTAINER (for multiple toasts) ===== */
   .container {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    min-width: auto;
-    max-width: none;
-    transform: translateY(-100%);
-    gap: 8px;
-    max-height: calc(100vh - 20px);
+    position: fixed;
+    z-index: 999; /* * Lower z-index to be less disruptive */
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* * Tighter spacing */
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    pointer-events: none;
+    /* * Subtle scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 20%) transparent;
   }
 
-  .topLeft,
-  .topRight {
-    top: 10px;
-    right: 10px;
-    left: 10px;
+  .container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .container::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 20%);
+    border-radius: 2px;
+  }
+
+  /* Position variants - less disruptive positioning */
+  .topLeft {
+    top: 12px;
+    left: 12px;
   }
 
   .topCenter {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    transform: none;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  .bottomLeft,
-  .bottomRight {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
+  .topRight {
+    top: 12px;
+    right: 12px;
+  }
+
+  .bottomLeft {
+    bottom: 12px;
+    left: 12px;
   }
 
   .bottomCenter {
-    right: 10px;
-    bottom: 10px;
-    left: 10px;
-    transform: none;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
-  .container.exiting {
-    transform: translateY(-100%);
+  .bottomRight {
+    right: 12px;
+    bottom: 12px;
   }
 
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(-100%) scale(0.95);
+  /* Toast item within container */
+  .toastItem {
+    margin: 0;
+    pointer-events: auto;
+  }
+
+  /* Hidden count indicator */
+  .hiddenCount {
+    align-self: center;
+    padding: 8px 12px;
+    margin-top: 5px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary, #374151);
+    text-align: center;
+    pointer-events: none;
+    background: var(--overlay-dark, rgb(0 0 0 / 80%));
+    border-radius: 20px;
+  }
+
+  /* ===== RESPONSIVE DESIGN ===== */
+
+  /* Merged into the main mobile media query block above */
+
+  @media (width <= 480px) {
+    .container {
+      gap: 6px;
     }
 
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
+    .item {
+      top: 5px;
+      right: 5px;
+      left: 5px;
+    }
+
+    .content {
+      padding: 10px;
+    }
+
+    .message {
+      font-size: 0.85rem;
+    }
+
+    .hiddenCount {
+      padding: 6px 10px;
+      font-size: 0.8rem;
     }
   }
 
-  .content {
-    gap: 8px;
-    padding: 12px;
+  /* ===== ACCESSIBILITY & PREFERENCES ===== */
+
+  /* High contrast mode support */
+  @media (prefers-contrast: more) {
+    .item {
+      border-width: 2px;
+      box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+    }
+
+    .dismissButton {
+      border-width: 2px;
+    }
+
+    .hiddenCount {
+      background: #000;
+      border: 2px solid #fff;
+    }
   }
 
-  .message {
-    font-size: 0.9rem;
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .item {
+      transition: none;
+      animation: none;
+    }
+
+    .progressFill {
+      animation: none;
+    }
+
+    .dismissButton:hover {
+      transform: none;
+    }
   }
 
-  .dismissButton {
-    width: 20px;
-    height: 20px;
-    font-size: 1em;
-  }
-}
-
-@media (width <= 480px) {
-  .container {
-    top: 5px;
-    right: 5px;
-    left: 5px;
+  /* Focus visible for keyboard navigation */
+  .dismissButton:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 2px;
   }
 
-  .content {
-    padding: 10px;
-  }
+  /* Print styles */
+  @media print {
+    .container {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
 
-  .message {
-    font-size: 0.85rem;
-  }
-}
+    .item {
+      position: static;
+      margin: 10px 0;
+      border: 1px solid #000;
+      box-shadow: none;
+    }
 
-/* High contrast mode support */
-@media (prefers-contrast: more) {
-  .container {
-    border-width: 2px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-  }
+    .progressBar {
+      display: none;
+    }
 
-  .dismissButton {
-    border-width: 2px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .container {
-    transition: none;
-    animation: none;
-  }
-
-  .progressFill {
-    animation: none;
-  }
-
-  .dismissButton:hover {
-    transform: none;
-  }
-}
-
-/* Focus visible for keyboard navigation */
-.dismissButton:focus-visible {
-  outline: 2px solid currentcolor;
-  outline-offset: 2px;
-}
-
-/* Print styles */
-@media print {
-  .container {
-    position: static;
-    margin: 10px 0;
-    border: 1px solid #000;
-    box-shadow: none;
-  }
-
-  .progressBar {
-    display: none;
-  }
-}
-
-/* ===== TOAST CONTAINER (for multiple toasts) ===== */
-.container {
-  position: fixed;
-  z-index: 999; /* * Lower z-index to be less disruptive */
-  display: flex;
-  flex-direction: column;
-  gap: 8px; /* * Tighter spacing */
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
-  pointer-events: none;
-  /* * Subtle scrollbar styling */
-  scrollbar-width: thin;
-  scrollbar-color: rgb(255 255 255 / 20%) transparent;
-}
-
-.container::-webkit-scrollbar {
-  width: 4px;
-}
-
-.container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.container::-webkit-scrollbar-thumb {
-  background: rgb(255 255 255 / 20%);
-  border-radius: 2px;
-}
-
-/* Position variants - less disruptive positioning */
-.topLeft {
-  top: 12px;
-  left: 12px;
-}
-
-.topCenter {
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.topRight {
-  top: 12px;
-  right: 12px;
-}
-
-.bottomLeft {
-  bottom: 12px;
-  left: 12px;
-}
-
-.bottomCenter {
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.bottomRight {
-  right: 12px;
-  bottom: 12px;
-}
-
-/* Toast item within container */
-.toastItem {
-  margin: 0;
-  pointer-events: auto;
-}
-
-/* Hidden count indicator */
-.hiddenCount {
-  align-self: center;
-  padding: 8px 12px;
-  margin-top: 5px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary, #374151);
-  text-align: center;
-  pointer-events: none;
-  background: var(--overlay-dark, rgb(0 0 0 / 80%));
-  border-radius: 20px;
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-
-/* Merged into the main mobile media query block above */
-
-@media (width <= 480px) {
-  .container {
-    gap: 6px;
-  }
-
-  .item {
-    top: 5px;
-    right: 5px;
-    left: 5px;
-  }
-
-  .content {
-    padding: 10px;
-  }
-
-  .message {
-    font-size: 0.85rem;
-  }
-
-  .hiddenCount {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-}
-
-/* ===== ACCESSIBILITY & PREFERENCES ===== */
-
-/* High contrast mode support */
-@media (prefers-contrast: more) {
-  .item {
-    border-width: 2px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-  }
-
-  .dismissButton {
-    border-width: 2px;
-  }
-
-  .hiddenCount {
-    background: #000;
-    border: 2px solid #fff;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .item {
-    transition: none;
-    animation: none;
-  }
-
-  .progressFill {
-    animation: none;
-  }
-
-  .dismissButton:hover {
-    transform: none;
-  }
-}
-
-/* Focus visible for keyboard navigation */
-.dismissButton:focus-visible {
-  outline: 2px solid currentcolor;
-  outline-offset: 2px;
-}
-
-/* Print styles */
-@media print {
-  .container {
-    position: static;
-    max-height: none;
-    overflow: visible;
-  }
-
-  .item {
-    position: static;
-    margin: 10px 0;
-    border: 1px solid #000;
-    box-shadow: none;
-  }
-
-  .progressBar {
-    display: none;
-  }
-
-  .hiddenCount {
-    display: none;
+    .hiddenCount {
+      display: none;
+    }
   }
 }

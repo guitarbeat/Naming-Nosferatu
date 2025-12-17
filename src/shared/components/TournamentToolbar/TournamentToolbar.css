@@ -653,20 +653,22 @@
 
 .tournament-toolbar-filters-grid {
   display: flex;
-  flex-direction: column;
+  flex-flow: row nowrap;
+  align-items: flex-end;
   gap: var(--tt-gap-small);
+  overflow-x: auto;
 }
 
 .tournament-toolbar-filter-row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--tt-gap-small);
 }
 
 .tournament-toolbar-filter-group,
 .tournament-toolbar-sort-group {
   flex: 1;
-  min-width: var(--tt-filter-group-min-width);
+  min-width: 140px;
   display: flex;
   flex-direction: column;
   gap: var(--tt-filter-group-gap);

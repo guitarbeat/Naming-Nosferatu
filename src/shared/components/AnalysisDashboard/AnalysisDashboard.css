@@ -437,7 +437,7 @@
 
 .top-names-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 640px;
   border-collapse: separate;
   border-spacing: 0;
   font-size: var(--analysis-text-body, 0.875rem);
@@ -456,8 +456,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide, 0.05em);
   color: var(--text-secondary, rgb(255 255 255 / 70%));
-  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
-  padding-bottom: var(--analysis-gap-sm, 8px);
+  padding: 4px 6px 6px;
   text-align: left;
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 10%));
   position: sticky;
@@ -467,7 +466,7 @@
 }
 
 .top-names-table td {
-  padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
+  padding: 4px 6px;
   border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 6%));
   color: var(--text-primary, #fff);
   vertical-align: middle;
