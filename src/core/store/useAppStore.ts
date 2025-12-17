@@ -4,25 +4,28 @@ import { useEffect } from "react";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
 
-const LOG_ENDPOINT = `http://${typeof window !== "undefined" ? window.location.hostname : "127.0.0.1"}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`;
+const LOG_ENDPOINT =
+  typeof window !== "undefined"
+    ? `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`
+    : null;
 
 // * Devtools middleware disabled entirely to avoid prod crashes
 const applyDevtools = (storeImpl) => {
-  // #region agent log
-  fetch(LOG_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sessionId: "debug-session",
-      runId: "run1",
-      hypothesisId: "H2",
-      location: "useAppStore.js:applyDevtools",
-      message: "applyDevtools invoked",
-      data: { env: process.env.NODE_ENV },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
+  if (process.env.NODE_ENV === "development" && LOG_ENDPOINT) {
+    fetch(LOG_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sessionId: "debug-session",
+        runId: "run1",
+        hypothesisId: "H2",
+        location: "useAppStore.js:applyDevtools",
+        message: "applyDevtools invoked",
+        data: { env: process.env.NODE_ENV },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  }
   return storeImpl;
 };
 
