@@ -17,11 +17,18 @@ function SwipeCard({
   onDragStart,
   onDragMove,
   onDragEnd,
+  stackIndex = 0,
 }) {
+  const depth = Math.max(0, stackIndex);
+  const isTopCard = depth === 0;
   const translateX = dragOffset?.x ?? 0;
   const translateY = dragOffset?.y ?? 0;
   const rotation = Math.max(-15, Math.min(15, translateX / 5));
-  const opacity = 1 - Math.min(swipeProgress * 0.4, 0.6);
+  const baseOpacity = 1 - Math.min(swipeProgress * 0.4, 0.6);
+  const stackedScale = 1 - depth * 0.04;
+  const stackedTranslateY = depth * 16;
+  const stackedOpacity = isTopCard ? baseOpacity : 0.55;
+  const shouldAnimateStack = !isDragging && !isLongPressing;
 
   const cardClassName = clsx(styles.swipeCard, {
     [styles.withCatPictures]: showCatPictures,
@@ -37,9 +44,16 @@ function SwipeCard({
         data-selected={isSelected}
         data-dragging={isDragging}
         data-long-pressing={isLongPressing}
+        aria-hidden={!isTopCard}
         style={{
-          transform: `translate(${translateX}px, ${translateY}px) rotate(${rotation}deg)`,
-          opacity,
+          transform: `translate(${translateX}px, ${translateY + stackedTranslateY}px) rotate(${rotation}deg) scale(${stackedScale})`,
+          opacity: stackedOpacity,
+          zIndex: 8 - depth,
+          pointerEvents: isTopCard ? "auto" : "none",
+          filter: isTopCard ? "none" : "saturate(0.92) brightness(0.95)",
+          transition: shouldAnimateStack
+            ? "transform 240ms ease, opacity 240ms ease, filter 240ms ease"
+            : "none",
         }}
         ref={gestureRef}
         onMouseDown={onDragStart}
@@ -93,6 +107,7 @@ SwipeCard.propTypes = {
   onDragStart: PropTypes.func,
   onDragMove: PropTypes.func,
   onDragEnd: PropTypes.func,
+  stackIndex: PropTypes.number,
 };
 
 export default SwipeCard;

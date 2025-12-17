@@ -2287,10 +2287,24 @@
   padding: 1.5rem 0;
 }
 
+.swipeStack {
+  position: relative;
+  width: min(100%, 420px);
+  height: clamp(360px, 70vh, 520px);
+  perspective: 1200px;
+}
+
 .swipeButtons {
   composes: cluster;
   gap: var(--space-6);
   justify-content: center;
+}
+
+.swipeUndoButton {
+  composes: buttonSecondary;
+  min-width: 110px;
+  padding-block: var(--space-2);
+  font-size: var(--text-sm);
 }
 
 .swipeButton {
@@ -2335,10 +2349,10 @@
 }
 
 .swipeCardWrapper {
-  position: relative;
-  width: min(100%, 420px);
-  height: clamp(360px, 70vh, 520px);
-  perspective: 1200px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .swipeCard {

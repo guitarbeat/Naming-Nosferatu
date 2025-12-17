@@ -4,6 +4,7 @@ import styles from "../../TournamentSetup.module.css";
 function SwipeControls({
   onSwipeLeft,
   onSwipeRight,
+  onUndo,
   currentIndex,
   totalCount,
 }) {
@@ -13,6 +14,15 @@ function SwipeControls({
       role="group"
       aria-label="Swipe controls"
     >
+      <button
+        type="button"
+        className={`${styles.swipeButton} ${styles.swipeUndoButton}`}
+        onClick={onUndo}
+        aria-label="Undo last swipe"
+        disabled={currentIndex === 0}
+      >
+        ↩️ Undo
+      </button>
       <button
         type="button"
         className={`${styles.swipeButton} ${styles.swipeLeftButton}`}
@@ -39,6 +49,7 @@ function SwipeControls({
 SwipeControls.propTypes = {
   onSwipeLeft: PropTypes.func.isRequired,
   onSwipeRight: PropTypes.func.isRequired,
+  onUndo: PropTypes.func.isRequired,
   currentIndex: PropTypes.number.isRequired,
   totalCount: PropTypes.number.isRequired,
 };

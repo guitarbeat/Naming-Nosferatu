@@ -41,6 +41,8 @@
     "unused": "ts-prune --project config/tsconfig.json",
     "knip": "knip",
     "knip:fix": "knip --fix",
+    "tsr": "cd config && tsr -p tsconfig.json '../src/(main|index)\\.tsx$'",
+    "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/(main|index)\\.tsx$'",
     "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {

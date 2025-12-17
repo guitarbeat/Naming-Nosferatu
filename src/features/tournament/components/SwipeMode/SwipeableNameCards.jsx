@@ -29,6 +29,11 @@ function SwipeableNameCards({
   const [isLongPressing, setIsLongPressing] = useState(false);
 
   const currentName = names[currentIndex];
+  const nextName = names[currentIndex + 1];
+  const nextImageSrc =
+    showCatPictures && nextName
+      ? getRandomCatImage(nextName.id, imageList)
+      : null;
   const isSelected = selectedNames.some((n) => n.id === currentName?.id);
   const imageSrc =
     showCatPictures && currentName
@@ -175,30 +180,65 @@ function SwipeableNameCards({
     }, 300);
   };
 
+  const handleUndo = () => {
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
+    setDragOffset({ x: 0, y: 0 });
+    setSwipeDirection(null);
+    setSwipeProgress(0);
+    setIsDragging(false);
+    setIsLongPressing(false);
+  };
+
   if (!currentName) return null;
 
   return (
     <div className={styles.swipeContainer}>
-      <SwipeCard
-        name={currentName}
-        isSelected={isSelected}
-        swipeDirection={swipeDirection}
-        swipeProgress={swipeProgress}
-        dragOffset={dragOffset}
-        isDragging={isDragging}
-        isLongPressing={isLongPressing}
-        showCatPictures={showCatPictures}
-        imageSrc={imageSrc}
-        isAdmin={isAdmin}
-        gestureRef={gestureRef}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-      />
+      <div className={styles.swipeStack} aria-live="polite">
+        {nextName ? (
+          <SwipeCard
+            key={nextName.id ?? `${nextName?.name || "preview"}-next`}
+            name={nextName}
+            isSelected={selectedNames.some((n) => n.id === nextName?.id)}
+            swipeDirection={null}
+            swipeProgress={0}
+            dragOffset={{ x: 0, y: 0 }}
+            isDragging={false}
+            isLongPressing={false}
+            showCatPictures={showCatPictures}
+            imageSrc={nextImageSrc}
+            isAdmin={isAdmin}
+            gestureRef={null}
+            onDragStart={undefined}
+            onDragMove={undefined}
+            onDragEnd={undefined}
+            stackIndex={1}
+          />
+        ) : null}
+
+        <SwipeCard
+          key={currentName?.id ?? `${currentName?.name || "card"}-current`}
+          name={currentName}
+          isSelected={isSelected}
+          swipeDirection={swipeDirection}
+          swipeProgress={swipeProgress}
+          dragOffset={dragOffset}
+          isDragging={isDragging}
+          isLongPressing={isLongPressing}
+          showCatPictures={showCatPictures}
+          imageSrc={imageSrc}
+          isAdmin={isAdmin}
+          gestureRef={gestureRef}
+          onDragStart={handleDragStart}
+          onDragMove={handleDragMove}
+          onDragEnd={handleDragEnd}
+          stackIndex={0}
+        />
+      </div>
 
       <SwipeControls
         onSwipeLeft={() => handleSwipeButton("left")}
         onSwipeRight={() => handleSwipeButton("right")}
+        onUndo={handleUndo}
         currentIndex={currentIndex}
         totalCount={names.length}
       />
