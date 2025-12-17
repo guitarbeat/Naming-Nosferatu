@@ -39,8 +39,8 @@
     "lint": "eslint --config config/eslint.config.js \"src/**/*.{js,jsx,ts,tsx}\" --fix && stylelint --config config/.stylelintrc.json \"src/**/*.css\" --fix && prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,md,json}\" && tsc --noEmit --project config/tsconfig.json",
     "check": "echo 'CSS analysis:' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\n').length,'→',r.css.split('\\n').length));\"",
     "unused": "ts-prune --project config/tsconfig.json",
-    "knip": "knip",
-    "knip:fix": "knip --fix",
+    "knip": "knip --config config/knip.json",
+    "knip:fix": "knip --config config/knip.json --fix",
     "tsr": "cd config && tsr -p tsconfig.json '../src/(main|index)\\.tsx$'",
     "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/(main|index)\\.tsx$'",
     "clean": "rm -rf build dist node_modules/.vite"
