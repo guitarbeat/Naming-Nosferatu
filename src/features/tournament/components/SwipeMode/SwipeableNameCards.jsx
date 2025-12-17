@@ -4,7 +4,7 @@
  */
 import { useState } from "react";
 import PropTypes from "prop-types";
-import useMobileGestures from "../../../../core/hooks/useMobileGestures";
+import useMobileGestures from "./useMobileGestures";
 import { TIMING } from "../../../../core/constants";
 import { getRandomCatImage } from "../../utils";
 import { CAT_IMAGES } from "../../constants";
