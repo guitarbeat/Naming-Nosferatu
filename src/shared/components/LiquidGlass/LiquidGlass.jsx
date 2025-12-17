@@ -93,13 +93,13 @@ function LiquidGlass({
   // * Calculate pill-shaped radius: minimum of specified radius or half the height
   const pillRadius = useMemo(
     () => Math.min(validRadius, validHeight * 0.5),
-    [validRadius, validHeight]
+    [validRadius, validHeight],
   );
 
   // * Calculate border size
   const borderSize = useMemo(
     () => Math.min(validWidth, validHeight) * (border * 0.5),
-    [validWidth, validHeight, border]
+    [validWidth, validHeight, border],
   );
 
   const buildDisplacementImage = useCallback(() => {
@@ -131,7 +131,7 @@ function LiquidGlass({
     try {
       displacementImageRef.current.innerHTML = svgContent;
       const svgEl = displacementImageRef.current.querySelector(
-        ".displacement-image"
+        ".displacement-image",
       );
       if (svgEl) {
         const serialized = new XMLSerializer().serializeToString(svgEl);
@@ -195,7 +195,7 @@ function LiquidGlass({
       : `blur(8px) saturate(${saturation})`; // * Fallback for Firefox/WebKit: use blur + saturate
     containerRef.current.style.setProperty(
       "--backdrop-filter",
-      backdropFilterValue
+      backdropFilterValue,
     );
     containerRef.current.style.backdropFilter = backdropFilterValue;
 
@@ -223,7 +223,7 @@ function LiquidGlass({
 
     // * Update output blur (softens the chromatic aberration)
     const feGaussianBlur = filterRef.current.querySelector(
-      `#${feGaussianBlurId}`
+      `#${feGaussianBlurId}`,
     );
     if (feGaussianBlur) {
       feGaussianBlur.setAttribute("stdDeviation", outputBlur);
@@ -488,7 +488,7 @@ function LiquidGlassToggleButton({
 
   const currentLabel = useMemo(
     () => (isOn ? labelOn : labelOff),
-    [isOn, labelOn, labelOff]
+    [isOn, labelOn, labelOff],
   );
 
   const handleClick = () => {
