@@ -17,10 +17,10 @@ Notes:
   - Extracted animation state logic in useBongoCat.
   - Created useNameManagementCallbacks hook in TournamentSetup.
   - Major Login.jsx refactor: extracted name generation, cat fact fetching, eye tracking, form handling, and body class management into reusable hooks/utilities (reduced from 995 to 823 lines).
-- Remaining large targets: `Login.jsx` (main component still has significant duplication).
+- Remaining targets: `Login.jsx` (SVG duplication remains, but logic extracted - low priority).
 
 Next steps to reduce duplication:
-- `Login.jsx`: Large SVG markup could potentially be extracted to a separate component (low priority - most duplication is in SVG paths).
+- `Login.jsx`: Large SVG markup could potentially be extracted to a separate component (low priority - most duplication is in SVG paths, not logic).
 - Current jscpd (src): 23 clones, 689 duplicated lines (2.00%).
 - After refactors, rerun `npx jscpd --silent --reporters console --format javascript,typescript,jsx,tsx src` to confirm duplicate count drops.
 - Reports are available in `.jscpd-report/html/index.html` and `.jscpd-report/jscpd-report.json` for full details and locations.
@@ -31,15 +31,11 @@ Next steps to reduce duplication:
 - **Configuration hints**: Various suggestions to remove items from ignore lists (intentionally ignored for now)
 
 ## Additional findings:
-- **Empty test file**: `src/App.test.tsx` is empty (0 lines) - could be removed or populated with tests
+- **Empty test file**: Removed `src/App.test.tsx` (was empty, 0 lines)
 - **Stub implementations**: `useAudioManager.js` is a stub but actively used by Tournament.jsx (not dead code)
 - **Placeholder comments**: Found in `useAudioManager.js` and `useBongoCat.ts` - these are documentation, not dead code
 
 ## Remaining opportunities:
-1. **Login.jsx** (1012 duplicated lines, 18 clones) - Major refactor needed to extract:
-   - Form validation handlers
-   - Cat fact fetching logic
-   - Name generation utilities
-   - Eye tracking logic
+1. **Login.jsx** - Logic extracted (reduced from 995 to 823 lines). Remaining duplication is primarily in SVG markup (low priority).
 2. **BongoCat.jsx** (44 duplicated lines) - Some duplication remains in animation logic
 3. **TournamentSetup.jsx** (40 duplicated lines) - Some handler wiring duplication remains
