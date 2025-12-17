@@ -2,92 +2,42 @@
  * @module Login
  * @description User login component with fun cat-themed interactions.
  */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 
 import { Card, Error } from "../../shared/components";
-import { validateUsername } from "../../shared/utils/validationUtils";
-import { ErrorManager } from "../../shared/services/errorManager";
+import { generateFunName } from "../../shared/utils/nameGenerationUtils";
+import { useBodyClass } from "../../shared/hooks/useBodyClass";
+import { useCatFact } from "./hooks/useCatFact";
+import { useEyeTracking } from "./hooks/useEyeTracking";
+import { useLoginForm } from "./hooks/useLoginForm";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }) {
-  const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [catFact, setCatFact] = useState("");
-  const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
-
   const containerRef = useRef(null);
   const formRef = useRef(null);
   const catRef = useRef(null);
   const catSvgRef = useRef(null);
 
-  // Add login-page class to body and html when component mounts
-  useEffect(() => {
-    document.body.classList.add("login-page");
-    document.documentElement.classList.add("login-page");
+  // * Manage body class for styling
+  useBodyClass("login-page");
 
-    // Remove class when component unmounts
-    return () => {
-      document.body.classList.remove("login-page");
-      document.documentElement.classList.remove("login-page");
-    };
-  }, []);
+  // * Fetch cat fact
+  const catFact = useCatFact();
 
-  const funnyPrefixes = [
-    "Captain",
-    "Dr.",
-    "Professor",
-    "Lord",
-    "Lady",
-    "Sir",
-    "Duchess",
-    "Count",
-    "Princess",
-    "Chief",
-    "Master",
-    "Agent",
-    "Detective",
-    "Admiral",
-  ];
+  // * Track eye position
+  const eyePosition = useEyeTracking({ catRef, catSvgRef });
 
-  const funnyAdjectives = [
-    "Whiskers",
-    "Purrington",
-    "Meowington",
-    "Pawsome",
-    "Fluffles",
-    "Scratchy",
-    "Naptastic",
-    "Furball",
-    "Cattastic",
-    "Pawdorable",
-    "Whiskertron",
-    "Purrfect",
-  ];
-
-  const sanitizeGeneratedName = (value) =>
-    value
-      .replace(/[^a-zA-Z0-9 _-]/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-
-  const generateFunName = () => {
-    let attempts = 0;
-    let generatedName = "";
-
-    while (!generatedName && attempts < 3) {
-      const prefix =
-        funnyPrefixes[Math.floor(Math.random() * funnyPrefixes.length)];
-      const adjective =
-        funnyAdjectives[Math.floor(Math.random() * funnyAdjectives.length)];
-
-      generatedName = sanitizeGeneratedName(`${prefix} ${adjective}`);
-      attempts += 1;
-    }
-
-    return generatedName || "Cat Judge";
-  };
+  // * Form state and handlers
+  const {
+    name,
+    setName,
+    isLoading,
+    error,
+    handleNameChange,
+    handleSubmit,
+    clearError,
+  } = useLoginForm(onLogin);
 
   const handleRandomNameClick = () => {
     if (isLoading) {
@@ -96,7 +46,7 @@ function Login({ onLogin }) {
     const funName = generateFunName();
     setName(funName);
     if (error) {
-      setError("");
+      clearError();
     }
   };
 
@@ -104,127 +54,6 @@ function Login({ onLogin }) {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleRandomNameClick();
-    }
-  };
-
-  // * Track mouse position for eye following
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      const target = catSvgRef.current || catRef.current;
-      if (target) {
-        const rect = target.getBoundingClientRect();
-        const catCenterX = rect.left + rect.width / 2;
-        const catCenterY = rect.top + rect.height / 2;
-        const deltaX = e.clientX - catCenterX;
-        const deltaY = e.clientY - catCenterY;
-        // * Normalize to reasonable eye movement range (max 4px for pupils)
-        const maxDistance = Math.max(rect.width, rect.height) / 2;
-        const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
-        const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
-        setEyePosition({
-          x: normalizedX * 4,
-          y: normalizedY * 4,
-        });
-      }
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
-
-  // Fetch cat fact on component mount
-  useEffect(() => {
-    const fetchCatFact = async () => {
-      // * Create abort controller for timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      try {
-        const response = await fetch("https://catfact.ninja/fact", {
-          signal: controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // * Validate response structure
-        if (data && typeof data.fact === "string") {
-          setCatFact(data.fact);
-        } else {
-          throw new Error("Invalid response format from cat fact API");
-        }
-      } catch (error) {
-        // * Handle abort/timeout gracefully
-        if (error.name === "AbortError" || error.name === "TimeoutError") {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("Cat fact request timed out");
-          }
-        } else {
-          // * Use ErrorManager for consistent error handling
-          ErrorManager.handleError(error, "Fetch Cat Fact", {
-            isRetryable: true,
-            affectsUserData: false,
-            isCritical: false,
-          });
-        }
-
-        // * Set fallback message
-        setCatFact("Cats are amazing creatures with unique personalities!");
-      }
-    };
-
-    fetchCatFact();
-  }, []);
-
-  const handleNameChange = (e) => {
-    setName(e.target.value);
-    if (error) {
-      setError("");
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // * Prevent duplicate submissions
-    if (isLoading) {
-      return;
-    }
-
-    const finalName = name.trim() || generateFunName();
-
-    // Validate the username
-    const validation = validateUsername(finalName);
-    if (!validation.success) {
-      setError(validation.error);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(""); // Clear any previous errors
-      await onLogin(validation.value);
-    } catch (err) {
-      // * Use ErrorManager for consistent error handling
-      const formattedError = ErrorManager.handleError(err, "User Login", {
-        isRetryable: true,
-        affectsUserData: false,
-        isCritical: false,
-      });
-
-      // * Set user-friendly error message
-      setError(
-        formattedError.userMessage ||
-          err.message ||
-          "Unable to log in. Please check your connection and try again.",
-      );
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -896,7 +725,7 @@ function Login({ onLogin }) {
                     error={error}
                     context="form"
                     position="below"
-                    onDismiss={() => setError("")}
+                    onDismiss={clearError}
                     showRetry={false}
                     showDismiss={true}
                     size="medium"
