@@ -23,6 +23,7 @@ Notes:
   - Extracted conditional transform styles in BongoCat for reduceMotion logic.
   - Extracted getVisibleNames utility to consolidate Array.isArray + filter pattern.
   - Extracted name selection utilities (selectedNamesToSet, extractNameIds) to reduce conversion duplication.
+  - Created useAsyncOperation hook for consistent async operation handling with loading/error states.
 - Remaining targets: `Login.jsx` (SVG duplication remains, but logic extracted - low priority).
 
 Next steps to reduce duplication:
