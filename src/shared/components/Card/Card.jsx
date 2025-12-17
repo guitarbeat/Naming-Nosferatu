@@ -7,6 +7,34 @@ import PropTypes from "prop-types";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./Card.module.css";
 
+const buildCardClasses = (variant, padding, shadow, border, background, liquidGlass, className) => {
+  return [
+    styles.card,
+    styles[variant],
+    styles[`padding-${padding}`],
+    styles[`shadow-${shadow}`],
+    border ? styles.bordered : "",
+    background !== "solid" && background !== "glass" && !liquidGlass
+      ? styles[`background-${background}`]
+      : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+const buildContentClasses = (variant, padding, shadow, border) => {
+  return [
+    styles.card,
+    styles[variant],
+    styles[`padding-${padding}`],
+    styles[`shadow-${shadow}`],
+    border ? styles.bordered : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
 const Card = memo(
   React.forwardRef(
     (
@@ -24,19 +52,15 @@ const Card = memo(
       },
       ref,
     ) => {
-      const cardClasses = [
-        styles.card,
-        styles[variant],
-        styles[`padding-${padding}`],
-        styles[`shadow-${shadow}`],
-        border ? styles.bordered : "",
-        background !== "solid" && background !== "glass" && !liquidGlass
-          ? styles[`background-${background}`]
-          : "",
+      const cardClasses = buildCardClasses(
+        variant,
+        padding,
+        shadow,
+        border,
+        background,
+        liquidGlass,
         className,
-      ]
-        .filter(Boolean)
-        .join(" ");
+      );
 
       // * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
       const shouldUseLiquidGlass = liquidGlass || background === "glass";
@@ -71,15 +95,7 @@ const Card = memo(
 
         // * Separate wrapper classes (for LiquidGlass) from content classes
         const wrapperClasses = [className].filter(Boolean).join(" ");
-        const contentClasses = [
-          styles.card,
-          styles[variant],
-          styles[`padding-${padding}`],
-          styles[`shadow-${shadow}`],
-          border ? styles.bordered : "",
-        ]
-          .filter(Boolean)
-          .join(" ");
+        const contentClasses = buildContentClasses(variant, padding, shadow, border);
 
         return (
           <LiquidGlass

@@ -6,7 +6,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import Button from "./Button";
+import Button, { BUTTON_VARIANTS, BUTTON_SIZES } from "./Button";
 
 /**
  * IconButton component for icon-only buttons
@@ -52,14 +52,8 @@ const IconButton = ({
 
 IconButton.propTypes = {
   icon: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "danger",
-    "ghost",
-    "login",
-  ]),
-  size: PropTypes.oneOf(["small", "medium", "large"]),
+  variant: PropTypes.oneOf(BUTTON_VARIANTS),
+  size: PropTypes.oneOf(BUTTON_SIZES),
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
   onClick: PropTypes.func,

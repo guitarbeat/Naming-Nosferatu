@@ -226,6 +226,19 @@ class MobileGestures {
   }
 
   /**
+   * Calculate distance between two touches
+   * @param {Touch} touch1 - First touch
+   * @param {Touch} touch2 - Second touch
+   * @returns {number} Distance in pixels
+   */
+  calculateTouchDistance(touch1, touch2) {
+    return Math.sqrt(
+      Math.pow(touch2.clientX - touch1.clientX, 2) +
+        Math.pow(touch2.clientY - touch1.clientY, 2),
+    );
+  }
+
+  /**
    * Handle multi-touch start
    * @param {Touch[]} touches - Array of touch objects
    * @param {TouchEvent} _event - Touch event
@@ -234,10 +247,7 @@ class MobileGestures {
     if (touches.length === 2) {
       const [touch1, touch2] = touches;
 
-      const initialDistance = Math.sqrt(
-        Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2),
-      );
+      const initialDistance = this.calculateTouchDistance(touch1, touch2);
 
       // Store initial pinch distance
       this.activeTouches.get(`${touch1.identifier}_0`).initialPinchDistance =
@@ -256,10 +266,7 @@ class MobileGestures {
     if (touches.length === 2) {
       const [touch1, touch2] = touches;
 
-      const currentDistance = Math.sqrt(
-        Math.pow(touch2.clientX - touch1.clientX, 2) +
-          Math.pow(touch2.clientY - touch1.clientY, 2),
-      );
+      const currentDistance = this.calculateTouchDistance(touch1, touch2);
 
       const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
       const activeTouch2 = this.activeTouches.get(`${touch2.identifier}_1`);

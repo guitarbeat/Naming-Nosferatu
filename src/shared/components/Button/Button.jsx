@@ -24,6 +24,9 @@ const sizeMapping = {
   large: "lg",
 };
 
+export const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
+export const BUTTON_SIZES = ["small", "medium", "large"];
+
 const Button = ({
   children,
   variant = "primary",
@@ -74,14 +77,8 @@ const Button = ({
 
 Button.propTypes = {
   children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf([
-    "primary",
-    "secondary",
-    "danger",
-    "ghost",
-    "login",
-  ]),
-  size: PropTypes.oneOf(["small", "medium", "large"]),
+  variant: PropTypes.oneOf(BUTTON_VARIANTS),
+  size: PropTypes.oneOf(BUTTON_SIZES),
   disabled: PropTypes.bool,
   loading: PropTypes.bool,
   type: PropTypes.oneOf(["button", "submit", "reset"]),
