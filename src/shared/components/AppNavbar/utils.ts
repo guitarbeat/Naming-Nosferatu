@@ -31,7 +31,9 @@ export function buildNavItems(context: BuildNavItemsContext): NavItem[] {
       label: "Analysis Mode",
       shortLabel: "Analysis",
       icon: AnalysisIcon,
-      ariaLabel: isAnalysisMode ? "Disable analysis mode" : "Enable analysis mode",
+      ariaLabel: isAnalysisMode
+        ? "Disable analysis mode"
+        : "Enable analysis mode",
       isActive: Boolean(isAnalysisMode),
       onClick: () => onToggleAnalysis(),
     },

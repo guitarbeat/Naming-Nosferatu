@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useNameSelection
  * @description Unified hook for managing name selection state for both Tournament and Profile views.

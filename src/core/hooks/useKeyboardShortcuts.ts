@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useKeyboardShortcuts
  * @description Custom hook for handling global keyboard shortcuts

@@ -36,8 +36,7 @@
   height: 100%;
   padding: var(--space-6);
   padding-bottom: var(--space-8, 2rem);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   position: relative;
   z-index: 2;
   display: flex;

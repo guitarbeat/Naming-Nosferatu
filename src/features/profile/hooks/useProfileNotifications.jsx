@@ -27,7 +27,7 @@ export function useProfileNotifications() {
       devLog("✅", message);
       showSuccessToast(message, { duration: 5000 });
     },
-    [showSuccessToast]
+    [showSuccessToast],
   );
 
   const showError = useCallback(
@@ -35,7 +35,7 @@ export function useProfileNotifications() {
       devError("❌", message);
       showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
     },
-    [showErrorToast]
+    [showErrorToast],
   );
 
   const showToast = useCallback(
@@ -47,7 +47,7 @@ export function useProfileNotifications() {
         duration: type === "error" ? 7000 : 5000,
       });
     },
-    [showToastMessage]
+    [showToastMessage],
   );
 
   const ToastContainer = useCallback(() => {

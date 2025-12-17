@@ -161,12 +161,12 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
     // Enhanced rating calculation with better wins/losses preservation
     const adjustedItems = newItems.map((item, index) => {
       const originalItem = items.find(
-        (original) => original.name === item.name
+        (original) => original.name === item.name,
       );
       return {
         ...item,
         rating: Math.round(
-          1000 + (1000 * (newItems.length - index)) / newItems.length
+          1000 + (1000 * (newItems.length - index)) / newItems.length,
         ),
         // Explicitly preserve wins and losses from the original item
         wins: originalItem?.wins ?? 0,

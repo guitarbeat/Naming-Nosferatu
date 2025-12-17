@@ -21,28 +21,31 @@
   transition:
     height 0.3s ease,
     padding 0.3s ease;
+  border-radius: 9999px;
 }
 
 .app-navbar-glass--collapsed {
-  height: auto !important;
+  height: 64px;
+  width: 64px;
   min-height: 64px;
-  padding: 0.5rem !important;
-  width: auto !important;
-  max-width: max-content !important;
-  justify-content: flex-start;
+  padding: 0;
+  max-width: 64px;
+  justify-content: center;
   align-items: center;
   overflow: visible;
   left: clamp(1rem, 4vw, 2.5rem);
   right: auto;
+  position: fixed;
+  display: flex;
 }
 
 /* Override LiquidGlass internal width when collapsed */
 .app-navbar-glass--collapsed.liquid-glass,
 .app-navbar-glass--collapsed.liquid-glass.app-navbar--horizontal,
 .app-navbar-glass--collapsed.liquid-glass[data-orientation="horizontal"] {
-  width: auto !important;
-  max-width: max-content !important;
-  right: auto !important;
+  width: 64px;
+  max-width: 64px;
+  right: auto;
 }
 
 /* Main Navbar Container */
@@ -52,10 +55,10 @@
   align-items: center;
   gap: clamp(0.5rem, 1.2vw, 0.875rem);
   width: 100%;
-  max-width: 1400px;
+  max-width: none;
   min-height: 56px;
   padding: clamp(0.75rem, 1.5vw, 1rem) clamp(1rem, 2vw, 1.5rem);
-  border-radius: 0;
+  border-radius: 9999px;
   border: none;
   background: transparent;
   box-shadow: none;
@@ -66,14 +69,19 @@
 }
 
 .app-navbar--collapsed {
-  min-height: 56px;
-  padding: 0.35rem;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  padding: 0;
   opacity: 0.98;
   overflow: visible;
-  width: auto !important;
-  max-width: max-content !important;
   border-radius: 9999px;
   flex-shrink: 0;
+  gap: 0;
 }
 
 .app-navbar--collapsed > :not(.app-navbar__collapse-toggle) {
@@ -95,41 +103,27 @@
 
 /* Collapse Toggle - Hamburger Menu */
 .app-navbar__collapse-toggle {
-  position: relative;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  transform: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border-radius: 10px;
-  border: 1px solid hsl(var(--border) / 40%);
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border) / 30%);
   background: hsl(var(--background) / 70%);
   color: hsl(var(--foreground) / 90%);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow:
-    0 2px 8px hsl(var(--foreground) / 8%),
-    0 0 8px hsl(var(--foreground) / 4%),
-    inset 0 1px 0 hsl(var(--foreground) / 6%);
+  transition: none;
 }
 
 .app-navbar__collapse-toggle:hover {
   background: hsl(var(--background) / 85%);
   border-color: hsl(var(--border) / 60%);
-  transform: translateY(-1px);
-  box-shadow:
-    0 4px 10px hsl(var(--foreground) / 12%),
-    0 0 12px hsl(var(--foreground) / 6%),
-    inset 0 1px 0 hsl(var(--foreground) / 8%);
-}
-
-.app-navbar__collapse-toggle:active {
-  transform: translateY(0) scale(0.95);
-  box-shadow:
-    0 1px 4px hsl(var(--foreground) / 8%),
-    0 0 6px hsl(var(--foreground) / 4%),
-    inset 0 1px 0 hsl(var(--foreground) / 6%);
 }
 
 .app-navbar__collapse-toggle:focus-visible {
@@ -143,10 +137,6 @@
 .app-navbar-glass--collapsed .app-navbar__collapse-toggle {
   background: hsl(var(--background) / 80%);
   border-color: hsl(var(--neon-cyan) / 50%);
-  box-shadow:
-    0 2px 8px hsl(var(--neon-cyan) / 20%),
-    0 0 12px hsl(var(--neon-cyan) / 15%),
-    inset 0 1px 0 hsl(var(--foreground) / 8%);
 }
 
 .app-navbar__collapse-toggle--collapsed:hover,
@@ -154,11 +144,6 @@
 .app-navbar-glass--collapsed .app-navbar__collapse-toggle:hover {
   background: hsl(var(--background) / 90%);
   border-color: hsl(var(--neon-cyan) / 70%);
-  transform: translateY(-1px);
-  box-shadow:
-    0 4px 12px hsl(var(--neon-cyan) / 30%),
-    0 0 16px hsl(var(--neon-cyan) / 20%),
-    inset 0 1px 0 hsl(var(--foreground) / 10%);
 }
 
 .app-navbar__collapse-icon {
@@ -171,7 +156,21 @@
 .app-navbar__collapse-hamburger {
   width: 20px;
   height: 20px;
-  transition: all 0.2s ease;
+  transition: none;
+}
+
+.app-navbar__collapse-toggle svg {
+  display: block;
+  line-height: 0;
+}
+
+.app-navbar--collapsed .app-navbar__collapse-toggle {
+  inset: 0;
+  margin: auto;
+  transform: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
 }
 
 /* Brand Button */
@@ -197,7 +196,6 @@
 .app-navbar__brand:hover {
   background: hsl(var(--background) / 80%);
   border-color: hsl(var(--border) / 50%);
-  transform: translateY(-1px);
 }
 
 .app-navbar__brand[data-active="true"] {
@@ -240,7 +238,6 @@
   background: hsl(var(--background) / 70%);
   border-color: hsl(var(--border) / 40%);
   color: hsl(var(--foreground));
-  transform: translateY(-1px);
 }
 
 .app-navbar__link[data-active="true"] {
@@ -299,19 +296,17 @@
   box-shadow:
     0 6px 18px hsl(var(--neon-cyan) / 40%),
     0 3px 10px hsl(var(--hot-pink) / 28%),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    inset 0 1px 0 rgb(255 255 255 / 50%);
 }
 
 .app-navbar__suggest-button:hover {
-  transform: translateY(-1px);
   box-shadow:
     0 8px 22px hsl(var(--neon-cyan) / 48%),
     0 4px 14px hsl(var(--hot-pink) / 32%),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    inset 0 1px 0 rgb(255 255 255 / 60%);
 }
 
 .app-navbar__suggest-button:active {
-  transform: translateY(0);
   box-shadow:
     0 4px 12px hsl(var(--neon-cyan) / 38%),
     0 2px 8px hsl(var(--hot-pink) / 26%);
@@ -322,7 +317,6 @@
   background: hsl(var(--background) / 70%);
   border-color: hsl(var(--border) / 40%);
   color: hsl(var(--foreground));
-  transform: translateY(-1px);
 }
 
 .app-navbar__action-button[data-icon-only="true"] {
@@ -595,15 +589,15 @@
 :root[data-theme="dark"] .app-navbar {
   background: linear-gradient(
     135deg,
-    rgba(6, 11, 22, 0.78) 0%,
-    rgba(10, 17, 31, 0.78) 50%,
-    rgba(6, 11, 22, 0.78) 100%
+    rgb(6 11 22 / 78%) 0%,
+    rgb(10 17 31 / 78%) 50%,
+    rgb(6 11 22 / 78%) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(255 255 255 / 10%);
   box-shadow:
-    0 10px 32px rgba(0, 0, 0, 0.4),
-    0 4px 12px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 10px 32px rgb(0 0 0 / 40%),
+    0 4px 12px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 8%);
   color: #e2e8f0;
 }
 
@@ -612,8 +606,8 @@
 :root[data-theme="dark"] .app-navbar__action-button,
 :root[data-theme="dark"] .app-navbar__user-button,
 :root[data-theme="dark"] .app-navbar__collapse-toggle {
-  background: rgba(12, 19, 33, 0.82);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgb(12 19 33 / 82%);
+  border-color: rgb(255 255 255 / 14%);
   color: #e2e8f0;
 }
 
@@ -626,17 +620,17 @@
 :root[data-theme="dark"] .app-navbar__action-button:hover,
 :root[data-theme="dark"] .app-navbar__user-button:hover,
 :root[data-theme="dark"] .app-navbar__collapse-toggle:hover {
-  background: rgba(26, 35, 53, 0.9);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgb(26 35 53 / 90%);
+  border-color: rgb(255 255 255 / 20%);
   color: #f8fafc;
 }
 
 :root[data-theme="dark"] .app-navbar__link[data-active="true"] {
   color: #f8fafc;
-  border-color: rgba(47, 243, 224, 0.35);
+  border-color: rgb(47 243 224 / 35%);
   box-shadow:
-    0 4px 14px rgba(47, 243, 224, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 4px 14px rgb(47 243 224 / 25%),
+    inset 0 1px 0 rgb(255 255 255 / 18%);
 }
 
 :root[data-theme="light"] .app-navbar__brand,
@@ -644,8 +638,8 @@
 :root[data-theme="light"] .app-navbar__action-button,
 :root[data-theme="light"] .app-navbar__user-button,
 :root[data-theme="light"] .app-navbar__collapse-toggle {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(148, 163, 184, 0.7);
+  background: rgb(255 255 255 / 90%);
+  border-color: rgb(148 163 184 / 70%);
   color: #0f172a;
 }
 
@@ -658,17 +652,17 @@
 :root[data-theme="light"] .app-navbar__action-button:hover,
 :root[data-theme="light"] .app-navbar__user-button:hover,
 :root[data-theme="light"] .app-navbar__collapse-toggle:hover {
-  background: rgba(226, 232, 240, 0.95);
-  border-color: rgba(100, 116, 139, 0.8);
+  background: rgb(226 232 240 / 95%);
+  border-color: rgb(100 116 139 / 80%);
   color: #0f172a;
 }
 
 :root[data-theme="light"] .app-navbar__link[data-active="true"] {
   color: #0f172a;
-  border-color: rgba(14, 165, 233, 0.55);
+  border-color: rgb(14 165 233 / 55%);
   box-shadow:
-    0 4px 14px rgba(14, 165, 233, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+    0 4px 14px rgb(14 165 233 / 25%),
+    inset 0 1px 0 rgb(255 255 255 / 45%);
 }
 
 /* Desktop - Never show mobile toggle */
@@ -691,8 +685,7 @@
     padding: 0.625rem 0.875rem;
     min-height: 48px;
     /* Allow horizontal scrolling if needed on very small screens */
-    overflow-x: auto;
-    overflow-y: visible;
+    overflow: auto visible;
     scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
   }

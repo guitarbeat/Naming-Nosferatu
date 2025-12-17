@@ -22,7 +22,6 @@ export function NavbarActions({
   onLogout,
   onOpenSuggestName,
 }: NavbarActionsProps) {
-
   return (
     <>
       <Button

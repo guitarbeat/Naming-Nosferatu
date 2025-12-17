@@ -47,7 +47,7 @@ const createSupabaseClient =
           "\n   Please check that SUPABASE_URL and SUPABASE_ANON_KEY are set in your .env file.",
           "\n   Expected format:",
           "\n   SUPABASE_URL=https://your-project.supabase.co",
-          "\n   SUPABASE_ANON_KEY=your-anon-key"
+          "\n   SUPABASE_ANON_KEY=your-anon-key",
         );
       }
       return null;
@@ -72,7 +72,7 @@ const createSupabaseClient =
             if (process.env.NODE_ENV === "development") {
               console.warn(
                 "⚠️ Local storage unavailable, session persistence disabled:",
-                error
+                error,
               );
             }
             return undefined;
@@ -116,7 +116,7 @@ const createSupabaseClient =
           if (process.env.NODE_ENV === "development") {
             console.error(
               "⚠️ Database connection test failed:",
-              testError.message
+              testError.message,
             );
           }
           // Don't fail initialization, just warn
@@ -145,7 +145,7 @@ const createSupabaseClient =
           "\n   - Invalid credentials",
           "\n   - Network connectivity issues",
           "\n   - CORS configuration problems",
-          "\n   - Supabase service outage"
+          "\n   - Supabase service outage",
         );
       }
       return null;
@@ -153,7 +153,7 @@ const createSupabaseClient =
   };
 
 const getSupabaseClient = async (
-  retryCount = 0
+  retryCount = 0,
 ): Promise<SupabaseClient<Database> | null> => {
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 1000;
@@ -171,7 +171,7 @@ const getSupabaseClient = async (
       .catch(async (error) => {
         console.error(
           `❌ Supabase initialization failed (attempt ${retryCount + 1}/${MAX_RETRIES + 1}):`,
-          error
+          error,
         );
         initializationPromise = null;
 
@@ -214,7 +214,7 @@ export const updateSupabaseUserContext = (userName: string | null): void => {
   if (!supabase) {
     if (process.env.NODE_ENV === "development") {
       console.warn(
-        "Cannot update user context: Supabase client not initialized"
+        "Cannot update user context: Supabase client not initialized",
       );
     }
     return;

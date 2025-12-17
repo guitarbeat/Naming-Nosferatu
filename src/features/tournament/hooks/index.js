@@ -4,3 +4,5 @@
  */
 
 export { useImageGallery } from "./useImageGallery";
+export { useAudioManager } from "./useAudioManager";
+export { useKeyboardControls } from "./useKeyboardControls";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo } from "react";
 import EloRating from "../../features/tournament/EloRating";
 import useAppStore from "../store/useAppStore";

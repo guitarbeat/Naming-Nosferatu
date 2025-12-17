@@ -4,7 +4,6 @@
  */
 
 import { useCallback, useMemo, useId } from "react";
-import LiquidGlass from "../LiquidGlass";
 import { NavbarProvider } from "./NavbarContext";
 import { NavbarBrand } from "./NavbarBrand";
 import { NavbarLink } from "./NavbarLink";
@@ -35,10 +34,14 @@ export function AppNavbar({
 }: AppNavbarProps) {
   const navbarGlassId = useId();
   const { isCollapsed, toggle: toggleCollapse } = useNavbarCollapse(false);
-  const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu, close: closeMobileMenu } = useMobileMenu();
+  const {
+    isOpen: isMobileMenuOpen,
+    toggle: toggleMobileMenu,
+    close: closeMobileMenu,
+  } = useMobileMenu();
   const isAnalysisMode = useAnalysisMode();
   const toggleAnalysis = useToggleAnalysis();
-  const { navbarRef, dimensions } = useNavbarDimensions(isCollapsed);
+  const { navbarRef } = useNavbarDimensions(isCollapsed);
 
   const navItems = useMemo(
     () =>
@@ -48,7 +51,7 @@ export function AppNavbar({
         onOpenPhotos,
         onToggleAnalysis: toggleAnalysis,
       }),
-    [view, isAnalysisMode, onOpenPhotos, toggleAnalysis]
+    [view, isAnalysisMode, onOpenPhotos, toggleAnalysis],
   );
 
   const createHandler = useCallback(
@@ -58,7 +61,7 @@ export function AppNavbar({
         void Promise.resolve(fn?.(...args));
       };
     },
-    [closeMobileMenu]
+    [closeMobileMenu],
   );
 
   const handleNavClick = useCallback(
@@ -70,7 +73,7 @@ export function AppNavbar({
       }
       setView(item.key);
     },
-    [closeMobileMenu, setView]
+    [closeMobileMenu, setView],
   );
 
   const handleHomeClick = useCallback(() => {
@@ -116,21 +119,26 @@ export function AppNavbar({
       userName,
       isAdmin,
       handleLogout,
-    ]
+    ],
   );
 
   return (
     <NavbarProvider value={contextValue}>
-      <LiquidGlass
+      <div
         id={`navbar-glass-${navbarGlassId.replace(/:/g, "-")}`}
         className={`app-navbar-glass app-navbar--horizontal ${
           isCollapsed ? "app-navbar-glass--collapsed" : ""
         }`}
-        width={isCollapsed ? 64 : dimensions.width}
-        height={isCollapsed ? 56 : dimensions.height}
         style={
           isCollapsed
-            ? { width: "auto", maxWidth: "max-content", height: "auto", overflow: "visible" }
+            ? {
+                width: "64px",
+                height: "64px",
+                minWidth: "64px",
+                minHeight: "64px",
+                padding: 0,
+                overflow: "visible",
+              }
             : { width: "100%", height: "auto", overflow: "visible" }
         }
         data-orientation="horizontal"
@@ -142,11 +150,27 @@ export function AppNavbar({
           className={`app-navbar app-navbar--horizontal ${
             isCollapsed ? "app-navbar--collapsed" : ""
           }`}
+          style={
+            isCollapsed
+              ? {
+                  width: "64px",
+                  height: "64px",
+                  minWidth: "64px",
+                  minHeight: "64px",
+                  padding: 0,
+                  display: "block",
+                  position: "relative",
+                }
+              : undefined
+          }
           role="banner"
           data-orientation="horizontal"
           data-collapsed={isCollapsed}
         >
-          <NavbarCollapseToggle isCollapsed={isCollapsed} onToggle={toggleCollapse} />
+          <NavbarCollapseToggle
+            isCollapsed={isCollapsed}
+            onToggle={toggleCollapse}
+          />
 
           <NavbarBrand
             isActive={isHomeViewActive}
@@ -166,9 +190,12 @@ export function AppNavbar({
             onOpenSuggestName={onOpenSuggestName}
           />
 
-          <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
+          <MobileMenuToggle
+            isOpen={isMobileMenuOpen}
+            onToggle={toggleMobileMenu}
+          />
         </header>
-      </LiquidGlass>
+      </div>
 
       <MobileMenu
         isOpen={isMobileMenuOpen}

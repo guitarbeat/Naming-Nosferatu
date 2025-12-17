@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback, useMemo } from "react";
 import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
 

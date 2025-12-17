@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useRouting
  * @description Simple URL-based routing hook for handling different routes

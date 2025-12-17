@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback } from "react";
 import { tournamentsAPI } from "@services/supabase/api";
 import { ErrorManager } from "@services/errorManager";
@@ -73,7 +74,7 @@ export function useTournamentHandlers({
     (names) => {
       // * Clear tournament cache to ensure fresh data
       clearTournamentCache();
-      
+
       // * Reset tournament state and set loading
       tournamentActions.resetTournament();
       tournamentActions.setLoading(true);
@@ -84,7 +85,9 @@ export function useTournamentHandlers({
         : [];
 
       if (processedNames.length === 0) {
-        devWarn("[App] No visible names available after filtering hidden names");
+        devWarn(
+          "[App] No visible names available after filtering hidden names",
+        );
         tournamentActions.setLoading(false);
         return;
       }

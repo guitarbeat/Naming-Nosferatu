@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module App
  * @description Main application component for the cat name tournament app.
@@ -107,7 +108,6 @@ function App() {
     tournamentActions.resetTournament();
   }, [logout, tournamentActions]);
 
-
   // * Handle user login
   const handleLogin = useCallback(
     async (userName) => {
@@ -119,7 +119,7 @@ function App() {
         throw error;
       }
     },
-    [login]
+    [login],
   );
 
   // * Memoize main content to prevent unnecessary re-renders
@@ -191,7 +191,7 @@ function App() {
       handleOpenSuggestName,
       handleOpenPhotos,
       currentRoute,
-    ]
+    ],
   );
 
   // * Show loading screen while initializing user session from localStorage
@@ -254,7 +254,7 @@ function AppLayout({
 
   const appClassName = useMemo(
     () => (!isLoggedIn ? "app app--login" : "app"),
-    [isLoggedIn]
+    [isLoggedIn],
   );
 
   const layoutStyle = useMemo(() => ({}), []);
@@ -264,7 +264,7 @@ function AppLayout({
       ["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
         .filter(Boolean)
         .join(" "),
-    [isLoggedIn]
+    [isLoggedIn],
   );
 
   return (

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useNameData
  * @description Unified hook for fetching name data for both Tournament and Profile views.

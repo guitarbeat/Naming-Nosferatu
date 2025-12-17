@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
 import {

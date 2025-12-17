@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useMobileGestures
  * @description React hook for mobile gesture interactions

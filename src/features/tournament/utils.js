@@ -1,57 +1,32 @@
-/**
- * @module TournamentSetup/utils
- * @description Utility functions for tournament setup
- */
+// Utility helpers for tournament features (image handling)
 
-import { CAT_IMAGES } from "./constants";
+function getBaseName(value) {
+  const path =
+    typeof value === "string" ? value : value?.name || value?.url || "";
+  const fileName = path.split("/").pop() || path;
+  return fileName.replace(/\.[^/.]+$/, "").toLowerCase();
+}
 
-/**
- * Get a consistent random cat image for a given name ID
- * @param {string|number} nameId - The name ID to hash
- * @param {Array<string>} imageList - Optional image list to use
- * @returns {string} Image URL
- */
-export const getRandomCatImage = (nameId, imageList = CAT_IMAGES) => {
-  // * Convert UUID string to a number for consistent image selection
-  let numericId;
-  if (typeof nameId === "string") {
-    // * Use a simple hash of the UUID string to get a consistent number
-    numericId = nameId.split("").reduce((hash, char) => {
-      return char.charCodeAt(0) + ((hash << 5) - hash);
-    }, 0);
-  } else {
-    numericId = nameId;
-  }
-
-  // * Use the numeric ID to consistently get the same image for the same name
-  const list =
-    Array.isArray(imageList) && imageList.length ? imageList : CAT_IMAGES;
-  const index = Math.abs(numericId) % list.length;
-  return list[index];
-};
-
-/**
- * Deduplicate images by base name
- * @param {Array<string>} images - Array of image URLs
- * @returns {Array<string>} Deduplicated image URLs
- */
-export const deduplicateImages = (images) => {
+export function deduplicateImages(images = []) {
   const seen = new Set();
-  const deduped = [];
+  const result = [];
 
-  for (const url of images) {
-    if (!url) continue;
-    // * Strip query/hash and extension
-    const [clean] = String(url).split(/[?#]/);
-    const name = clean.substring(clean.lastIndexOf("/") + 1);
-    const base = name.replace(/\.[^.]+$/, "").toLowerCase();
-    if (seen.has(base)) continue;
-    seen.add(base);
-    deduped.push(url);
+  for (const image of images) {
+    const key = getBaseName(image);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    result.push(image);
   }
 
-  return deduped;
-};
+  return result;
+}
 
-// Unused function removed
-// export const extractCategories = (names) => { ... };
+export function getRandomCatImage(id, images = []) {
+  if (!id || !Array.isArray(images) || images.length === 0) return null;
+  const hash = [...String(id)].reduce(
+    (acc, char) => acc + char.charCodeAt(0),
+    0,
+  );
+  const index = hash % images.length;
+  return images[index] || null;
+}

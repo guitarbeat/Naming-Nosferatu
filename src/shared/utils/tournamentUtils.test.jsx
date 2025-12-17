@@ -1,7 +1,7 @@
-import { computeRating } from './tournamentUtils';
+import { computeRating } from "./tournamentUtils";
 
-describe('computeRating', () => {
-  it('should compute rating correctly for standard inputs', () => {
+describe("computeRating", () => {
+  it("should compute rating correctly for standard inputs", () => {
     // existingRating=1500, position=0 (top), totalNames=10, matchesPlayed=5, maxMatches=10
     // Expected calculation:
     // ratingSpread = 250
@@ -12,7 +12,7 @@ describe('computeRating', () => {
     expect(computeRating(1500, 0, 10, 5, 10)).toBe(1613);
   });
 
-  it('should handle matchesPlayed exceeding maxMatches by clamping', () => {
+  it("should handle matchesPlayed exceeding maxMatches by clamping", () => {
     // matchesPlayed is clamped to maxMatches to prevent logical inconsistencies.
     // matchesPlayed=20, maxMatches=10
     // If clamped to 10: blendFactor = min(0.8, (10/10)*0.9) = min(0.8, 0.9) = 0.8
@@ -20,7 +20,7 @@ describe('computeRating', () => {
     expect(computeRating(1500, 0, 10, 20, 10)).toBe(1700);
   });
 
-  it('should clamp negative matchesPlayed to 0', () => {
+  it("should clamp negative matchesPlayed to 0", () => {
     // matchesPlayed=-5, maxMatches=10
     // Clamped to 0: blendFactor = min(0.8, (0/10)*0.9) = 0
     // Result: 0 * 1750 + 1 * 1500 = 1500

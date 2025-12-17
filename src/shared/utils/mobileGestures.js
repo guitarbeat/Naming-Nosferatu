@@ -127,7 +127,7 @@ class MobileGestures {
         // Calculate total distance
         activeTouch.distance = Math.sqrt(
           Math.pow(touch.clientX - activeTouch.startX, 2) +
-          Math.pow(touch.clientY - activeTouch.startY, 2),
+            Math.pow(touch.clientY - activeTouch.startY, 2),
         );
       }
     });
@@ -236,7 +236,7 @@ class MobileGestures {
 
       const initialDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-        Math.pow(touch2.clientY - touch1.clientY, 2),
+          Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       // Store initial pinch distance
@@ -258,7 +258,7 @@ class MobileGestures {
 
       const currentDistance = Math.sqrt(
         Math.pow(touch2.clientX - touch1.clientX, 2) +
-        Math.pow(touch2.clientY - touch1.clientY, 2),
+          Math.pow(touch2.clientY - touch1.clientY, 2),
       );
 
       const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);

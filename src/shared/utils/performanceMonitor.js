@@ -38,14 +38,15 @@ export function initializePerformanceMonitoring() {
       const lcpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries();
         const lastEntry = entries[entries.length - 1];
-        performanceMetrics.metrics.lcp = lastEntry.renderTime || lastEntry.loadTime;
+        performanceMetrics.metrics.lcp =
+          lastEntry.renderTime || lastEntry.loadTime;
         console.debug(
-          `[Performance] Largest Contentful Paint: ${performanceMetrics.metrics.lcp}ms`
+          `[Performance] Largest Contentful Paint: ${performanceMetrics.metrics.lcp}ms`,
         );
       });
       lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
       performanceMetrics.observers.push(lcpObserver);
-    } catch (error) {
+    } catch (_error) {
       console.debug("LCP observer not supported");
     }
 
@@ -57,13 +58,15 @@ export function initializePerformanceMonitoring() {
           if (!entry.hadRecentInput) {
             clsValue += entry.value;
             performanceMetrics.metrics.cls = clsValue;
-            console.debug(`[Performance] Cumulative Layout Shift: ${clsValue.toFixed(3)}`);
+            console.debug(
+              `[Performance] Cumulative Layout Shift: ${clsValue.toFixed(3)}`,
+            );
           }
         }
       });
       clsObserver.observe({ entryTypes: ["layout-shift"] });
       performanceMetrics.observers.push(clsObserver);
-    } catch (error) {
+    } catch (_error) {
       console.debug("CLS observer not supported");
     }
 
@@ -74,13 +77,13 @@ export function initializePerformanceMonitoring() {
         entries.forEach((entry) => {
           performanceMetrics.metrics.fid = entry.processingDuration;
           console.debug(
-            `[Performance] First Input Delay: ${entry.processingDuration}ms`
+            `[Performance] First Input Delay: ${entry.processingDuration}ms`,
           );
         });
       });
       fidObserver.observe({ entryTypes: ["first-input"] });
       performanceMetrics.observers.push(fidObserver);
-    } catch (error) {
+    } catch (_error) {
       console.debug("FID observer not supported");
     }
 
@@ -92,14 +95,14 @@ export function initializePerformanceMonitoring() {
           if (entry.name === "first-contentful-paint") {
             performanceMetrics.metrics.fcp = entry.startTime;
             console.debug(
-              `[Performance] First Contentful Paint: ${entry.startTime}ms`
+              `[Performance] First Contentful Paint: ${entry.startTime}ms`,
             );
           }
         });
       });
       fcpObserver.observe({ entryTypes: ["paint"] });
       performanceMetrics.observers.push(fcpObserver);
-    } catch (error) {
+    } catch (_error) {
       console.debug("FCP observer not supported");
     }
   }
@@ -112,8 +115,9 @@ function reportNavigationMetrics() {
   const timing = window.performance?.timing;
   if (!timing) return;
 
-  const {navigationStart} = timing;
-  const domContentLoadedTime = timing.domContentLoadedEventEnd - navigationStart;
+  const { navigationStart } = timing;
+  const domContentLoadedTime =
+    timing.domContentLoadedEventEnd - navigationStart;
   const loadCompleteTime = timing.loadEventEnd - navigationStart;
   const connectTime = timing.responseEnd - timing.requestStart;
 
@@ -144,7 +148,7 @@ export function measureComponentRender(componentName, callback) {
 
   if (duration > 50) {
     console.debug(
-      `[Performance] ${componentName} render time: ${duration.toFixed(2)}ms`
+      `[Performance] ${componentName} render time: ${duration.toFixed(2)}ms`,
     );
   }
 
@@ -172,7 +176,7 @@ export async function measureAsync(label, promise) {
     const duration = performance.now() - startTime;
     console.debug(
       `[Performance] ${label} (failed): ${duration.toFixed(2)}ms`,
-      error
+      error,
     );
     throw error;
   }
@@ -193,8 +197,8 @@ export function cleanupPerformanceMonitoring() {
   performanceMetrics.observers.forEach((observer) => {
     try {
       observer.disconnect();
-    } catch (error) {
-      console.debug("Error disconnecting observer:", error);
+    } catch (_error) {
+      console.debug("Error disconnecting observer:", _error);
     }
   });
   performanceMetrics.observers = [];

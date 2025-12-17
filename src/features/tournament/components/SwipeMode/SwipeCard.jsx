@@ -1,10 +1,4 @@
-/**
- * @module TournamentSetup/components/SwipeCard
- * @description Individual swipeable card with cat name and optional image
- */
 import PropTypes from "prop-types";
-import { CatImage } from "../../../../shared/components";
-import { DEFAULT_DESCRIPTION } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
 
 function SwipeCard({
@@ -23,179 +17,67 @@ function SwipeCard({
   onDragMove,
   onDragEnd,
 }) {
-  // * Card style - only use drag transform
-  const cardStyle = isDragging
-    ? {
-        transform: `translate(${dragOffset.x}px, ${dragOffset.y}px) rotate(${dragOffset.x * 0.1}deg)`,
-        opacity: 0.9,
-      }
-    : {
-        opacity: 1,
-      };
-
-  const swipeOverlayStyle = {
-    opacity: swipeProgress,
-    transform: `scale(${0.8 + swipeProgress * 0.2})`,
-  };
+  const translateX = dragOffset?.x ?? 0;
+  const translateY = dragOffset?.y ?? 0;
 
   return (
     <div
-      className={`${styles.swipeCardWrapper} ${showCatPictures ? styles.withCatPictures : ""}`}
+      ref={gestureRef}
+      className={`${styles.swipeCard} ${isSelected ? styles.selected : ""}`}
+      style={{
+        transform: `translate(${translateX}px, ${translateY}px)`,
+        opacity: swipeDirection ? 0.9 : 1,
+        transition: isDragging ? "none" : "transform 0.2s ease",
+      }}
+      onMouseDown={onDragStart}
+      onMouseMove={onDragMove}
+      onMouseUp={onDragEnd}
+      onTouchStart={onDragStart}
+      onTouchMove={onDragMove}
+      onTouchEnd={onDragEnd}
+      aria-pressed={isSelected}
+      role="button"
     >
-      <div
-        ref={(node) => {
-          // * Set gestureRef - use callback pattern to avoid mutating props
-          if (typeof gestureRef === "function") {
-            gestureRef(node);
-          } else if (
-            gestureRef &&
-            typeof gestureRef === "object" &&
-            "current" in gestureRef
-          ) {
-            // eslint-disable-next-line react-hooks/immutability
-            gestureRef.current = node;
-          }
-        }}
-        className={`${styles.swipeCard} ${isSelected ? styles.selected : ""} ${showCatPictures ? styles.withCatPictures : ""} ${isLongPressing ? styles.longPressing : ""}`}
-        style={cardStyle}
-        onMouseDown={(e) => {
-          e.preventDefault();
-          onDragStart(e);
-        }}
-        onMouseMove={(e) => {
-          if (isDragging) {
-            e.preventDefault();
-            onDragMove(e);
-          }
-        }}
-        onMouseUp={(e) => {
-          e.preventDefault();
-          onDragEnd(e);
-        }}
-        onMouseLeave={(e) => {
-          if (isDragging) {
-            e.preventDefault();
-            onDragEnd(e);
-          }
-        }}
-        onTouchStart={(e) => {
-          e.preventDefault();
-          onDragStart(e);
-        }}
-        onTouchMove={(e) => {
-          if (isDragging) {
-            e.preventDefault();
-            onDragMove(e);
-          }
-        }}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          onDragEnd(e);
-        }}
-        onTouchCancel={(e) => {
-          if (isDragging) {
-            e.preventDefault();
-            onDragEnd(e);
-          }
-        }}
-      >
-        {/* Swipe direction overlays - positioned absolutely over the card */}
-        {swipeDirection === "right" && (
-          <div
-            className={`${styles.swipeOverlay} ${styles.swipeRight} ${styles.active}`}
-            style={swipeOverlayStyle}
-          >
-            <span className={styles.swipeText}>👍 SELECTED</span>
+      {showCatPictures && imageSrc ? (
+        <img
+          src={imageSrc}
+          alt={name?.name || "Cat"}
+          className={styles.swipeCardImage}
+        />
+      ) : null}
+      <div className={styles.swipeCardContent}>
+        <div className={styles.swipeCardTitle}>{name?.name || "Unknown"}</div>
+        {name?.description ? (
+          <div className={styles.swipeCardDescription}>{name.description}</div>
+        ) : null}
+        {isAdmin && isLongPressing ? (
+          <div className={styles.swipeCardBadge}>Admin</div>
+        ) : null}
+        {swipeDirection ? (
+          <div className={styles.swipeCardBadge}>
+            {swipeDirection} {(swipeProgress * 100).toFixed(0)}%
           </div>
-        )}
-        {swipeDirection === "left" && (
-          <div
-            className={`${styles.swipeOverlay} ${styles.swipeLeft} ${styles.active}`}
-            style={swipeOverlayStyle}
-          >
-            <span className={styles.swipeText}>👎 SKIPPED</span>
-          </div>
-        )}
-
-        {/* Card content */}
-        <div className={styles.swipeCardContent}>
-          {/* Cat picture when enabled */}
-          {showCatPictures && imageSrc && (
-            <CatImage
-              src={imageSrc}
-              containerClassName={styles.swipeCardImageContainer}
-              imageClassName={styles.swipeCardImage}
-              loading="eager"
-              decoding="async"
-            />
-          )}
-
-          <h3 className={styles.swipeCardName}>{name.name}</h3>
-          <p className={styles.swipeCardDescription}>
-            {name.description || DEFAULT_DESCRIPTION}
-          </p>
-
-          {/* Admin metadata */}
-          {isAdmin && (
-            <div className={styles.swipeCardMetadata}>
-              {name.avg_rating && (
-                <span className={styles.metadataItem}>
-                  ⭐ {name.avg_rating}
-                </span>
-              )}
-              {name.popularity_score && (
-                <span className={styles.metadataItem}>
-                  🔥 {name.popularity_score}
-                </span>
-              )}
-              {name.categories && name.categories.length > 0 && (
-                <span className={styles.metadataItem}>
-                  🏷️ {name.categories.join(", ")}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Selection indicator - Only show when selected */}
-        {isSelected && (
-          <div className={`${styles.selectionIndicator} ${styles.selected}`}>
-            ✓ Selected
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
 }
 
 SwipeCard.propTypes = {
-  name: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    avg_rating: PropTypes.number,
-    popularity_score: PropTypes.number,
-    categories: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-  isSelected: PropTypes.bool.isRequired,
-  swipeDirection: PropTypes.oneOf(["left", "right", null]),
-  swipeProgress: PropTypes.number.isRequired,
-  dragOffset: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-  }).isRequired,
-  isDragging: PropTypes.bool.isRequired,
-  isLongPressing: PropTypes.bool.isRequired,
+  name: PropTypes.object,
+  isSelected: PropTypes.bool,
+  swipeDirection: PropTypes.string,
+  swipeProgress: PropTypes.number,
+  dragOffset: PropTypes.shape({ x: PropTypes.number, y: PropTypes.number }),
+  isDragging: PropTypes.bool,
+  isLongPressing: PropTypes.bool,
   showCatPictures: PropTypes.bool,
   imageSrc: PropTypes.string,
   isAdmin: PropTypes.bool,
-  gestureRef: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
-  ]),
-  onDragStart: PropTypes.func.isRequired,
-  onDragMove: PropTypes.func.isRequired,
-  onDragEnd: PropTypes.func.isRequired,
+  gestureRef: PropTypes.any,
+  onDragStart: PropTypes.func,
+  onDragMove: PropTypes.func,
+  onDragEnd: PropTypes.func,
 };
 
 export default SwipeCard;

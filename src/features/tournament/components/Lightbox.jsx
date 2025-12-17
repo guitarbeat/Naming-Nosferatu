@@ -46,7 +46,7 @@ function Lightbox({
         isTransitioningRef.current = false;
       }, TIMING.LIGHTBOX_TRANSITION_DURATION_MS);
     },
-    [currentIndex, onNavigate]
+    [currentIndex, onNavigate],
   );
 
   const handlePrev = useCallback(() => {
@@ -134,7 +134,7 @@ function Lightbox({
         clearTimeout(transitionTimerRef.current);
       }
     },
-    []
+    [],
   );
 
   // * Simple fallback pattern - original working approach

@@ -27,28 +27,33 @@ AppNavbar/
 ## ✨ Key Improvements
 
 ### 1. **Removed 80% of Constants**
+
 - Eliminated 100+ constant declarations
 - Moved values inline where they're used
 - Kept only essential values (breakpoints, IDs)
 - Result: ~500 lines of code removed
 
 ### 2. **Extracted CSS to Separate File**
+
 - All 755 lines of CSS moved to `AppNavbar.css`
 - Proper CSS organization with comments
 - Better caching and reusability
 - Easier to maintain and theme
 
 ### 3. **Context API for Props**
+
 - Created `NavbarContext` to eliminate prop drilling
 - All child components access shared state via context
 - Reduced component prop counts by 50-70%
 - Cleaner component interfaces
 
 ### 4. **Split into Smaller Components**
+
 Before: 1 file, 1578 lines
 After: 13 files, ~150 lines average
 
 Components:
+
 - `NavbarBrand` - Brand/logo button
 - `NavbarLink` - Navigation links
 - `NavbarCollapseToggle` - Expand/collapse button
@@ -58,6 +63,7 @@ Components:
 - `MobileMenuToggle` - Mobile hamburger
 
 ### 5. **Full TypeScript Migration**
+
 - Added comprehensive type definitions in `types.ts`
 - All components use TypeScript
 - Proper interfaces for all props
@@ -65,18 +71,21 @@ Components:
 - Better IDE autocomplete and error detection
 
 ### 6. **Fixed Collapsed State Bug**
+
 - Fixed LiquidGlass width/positioning in collapsed state
 - Proper width calculation using `useNavbarDimensions` hook
 - Smooth transitions between states
 - No visual glitches
 
 ### 7. **Conditional Mobile Toggle Rendering**
+
 - Mobile toggle only shows on tablet/mobile (≤960px)
 - Only visible when navbar is collapsed
 - Hidden on desktop with `!important` override
 - Better responsive behavior
 
 ### 8. **Focus Trap for Mobile Menu**
+
 - Implemented proper focus trap in `MobileMenu`
 - Tab cycles through menu items only
 - Shift+Tab works correctly
@@ -84,6 +93,7 @@ Components:
 - Improved accessibility
 
 ### 9. **Theme Icon Shows Preference**
+
 - Changed from showing current theme to preference
 - Sun (☀️) for light preference
 - Moon (🌙) for dark preference
@@ -117,28 +127,35 @@ function App() {
 ## 🔧 Custom Hooks
 
 ### `useAnalysisMode()`
+
 Tracks analysis mode state from URL query parameter.
 
 ### `useToggleAnalysis()`
+
 Toggles analysis mode in URL.
 
 ### `useNavbarCollapse()`
+
 Manages navbar collapse state with localStorage persistence.
 
 ### `useMobileMenu()`
+
 Handles mobile menu open/close with escape key and outside click.
 
 ### `useNavbarDimensions()`
+
 Calculates navbar dimensions for LiquidGlass effect.
 
 ## 📦 Components API
 
 ### AppNavbar
+
 Main component - see `types.ts` for full prop interface.
 
 ### NavbarBrand
+
 ```tsx
-<NavbarBrand 
+<NavbarBrand
   isActive={boolean}
   onClick={() => void}
   ariaLabel={string}
@@ -146,8 +163,9 @@ Main component - see `types.ts` for full prop interface.
 ```
 
 ### NavbarLink
+
 ```tsx
-<NavbarLink 
+<NavbarLink
   item={NavItem}
   onClick={(item) => void}
   className={string}
@@ -156,6 +174,7 @@ Main component - see `types.ts` for full prop interface.
 ```
 
 ### NavbarActions
+
 ```tsx
 <NavbarActions
   isLoggedIn={boolean}
@@ -199,6 +218,7 @@ import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar.tsx";
 ## 🧪 Testing
 
 The original test file `AppNavbar.test.jsx` may need updates for TypeScript. Consider:
+
 - Converting to `.test.tsx`
 - Using TypeScript test utilities
 - Testing individual components in isolation

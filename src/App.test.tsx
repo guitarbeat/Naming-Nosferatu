@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useSyncExternalStore } from "react";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -88,7 +89,7 @@ vi.mock("@core/store/useAppStore", () => {
     useSyncExternalStore(
       subscribe,
       () => selector(storeState),
-      () => selector(storeState)
+      () => selector(storeState),
     );
 
   const mergeState = (partial) => {

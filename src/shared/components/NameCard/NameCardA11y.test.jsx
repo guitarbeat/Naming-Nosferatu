@@ -20,7 +20,7 @@ describe("NameCard Accessibility", () => {
         metadata={mockMetadata}
         // Make sure it's interactive or we force tabIndex in our fix
         onClick={() => {}}
-      />
+      />,
     );
 
     const card = screen.getByRole("button", { name: /Whiskers/i });

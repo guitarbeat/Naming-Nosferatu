@@ -160,7 +160,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-none)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-soft));
-
   --tt-shadow-button-default:
     0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-hugest)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger)),
@@ -169,7 +168,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-none)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
-
   --tt-shadow-button-hover:
     0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
       hsl(var(--neon-cyan) / 50%),
@@ -178,7 +176,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-none)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-stronger));
-
   --tt-shadow-button-active:
     0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
       hsl(var(--neon-cyan) / 36%),
@@ -187,7 +184,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-none)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
-
   --tt-shadow-toggle-inactive:
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-small)
       var(--tt-shadow-blur-medium)
@@ -197,7 +193,6 @@
     0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
       var(--tt-shadow-spread-tiny)
       hsl(var(--border) / var(--tt-opacity-shadow-strong));
-
   --tt-shadow-toggle-active:
     0 var(--tt-shadow-blur-large) var(--tt-shadow-blur-hugest)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-strong)),
@@ -209,7 +204,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-small)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
-
   --tt-shadow-toggle-active-hover:
     0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-stronger)),
@@ -221,7 +215,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-small)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
-
   --tt-shadow-thumb-inactive:
     0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
       hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
@@ -230,7 +223,6 @@
     inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
       var(--tt-shadow-offset-small)
       hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
-
   --tt-shadow-thumb-active:
     0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-largest)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-background-strong)),
@@ -242,19 +234,16 @@
     0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
       var(--tt-shadow-spread-larger)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-soft));
-
   --tt-shadow-label-inactive:
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
       hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
     0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
       hsl(var(--background) / var(--tt-opacity-shadow-strong));
-
   --tt-shadow-label-hover:
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
       hsl(var(--background) / 50%),
     0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
       hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
-
   --tt-shadow-label-active:
     0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
@@ -262,13 +251,11 @@
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
       hsl(var(--background) / 50%);
-
   --tt-shadow-label-inactive-dimmed:
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
       hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
     0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
       hsl(var(--background) / var(--tt-opacity-shadow-stronger));
-
   --tt-shadow-focus:
     0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
       var(--tt-shadow-blur-strong)
@@ -285,13 +272,11 @@
       hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
     0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
       hsl(var(--background) / var(--tt-opacity-shadow-strong));
-
   --tt-text-shadow-label-hover:
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
       hsl(var(--background) / 50%),
     0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
       hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
-
   --tt-text-shadow-label-active:
     0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
@@ -299,7 +284,6 @@
       hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
       hsl(var(--background) / 50%);
-
   --tt-text-shadow-label-inactive-dimmed:
     0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
       hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
@@ -742,7 +726,7 @@
 .tournament-toolbar-sort-icon {
   width: 16px;
   height: 16px;
-  color: currentColor;
+  color: currentcolor;
 }
 
 /* ==========================================================================
@@ -827,19 +811,19 @@
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch {
-  border-color: rgba(148, 163, 184, 0.9);
+  border-color: rgb(148 163 184 / 90%);
   background: linear-gradient(
     180deg,
-    rgba(226, 232, 240, 0.9),
-    rgba(209, 213, 219, 0.9)
+    rgb(226 232 240 / 90%),
+    rgb(209 213 219 / 90%)
   );
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch::before {
   background: linear-gradient(
     var(--tt-gradient-angle),
-    rgba(14, 165, 233, 0.35),
-    rgba(236, 72, 153, 0.35)
+    rgb(14 165 233 / 35%),
+    rgb(236 72 153 / 35%)
   );
 }
 
@@ -856,19 +840,15 @@
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: linear-gradient(
-    180deg,
-    rgba(24, 33, 52, 0.9),
-    rgba(16, 24, 40, 0.9)
-  );
+  border-color: rgb(255 255 255 / 18%);
+  background: linear-gradient(180deg, rgb(24 33 52 / 90%), rgb(16 24 40 / 90%));
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch::before {
   background: linear-gradient(
     var(--tt-gradient-angle),
-    rgba(47, 243, 224, 0.4),
-    rgba(250, 38, 160, 0.35)
+    rgb(47 243 224 / 40%),
+    rgb(250 38 160 / 35%)
   );
 }
 

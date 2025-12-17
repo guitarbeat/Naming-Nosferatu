@@ -63,10 +63,7 @@ export function computeRating(
     Math.min(matchesPlayed, safeMaxMatches),
   );
 
-  const blendFactor = Math.min(
-    0.8,
-    (safeMatchesPlayed / safeMaxMatches) * 0.9,
-  );
+  const blendFactor = Math.min(0.8, (safeMatchesPlayed / safeMaxMatches) * 0.9);
 
   const newRating = Math.round(
     blendFactor * newPositionRating + (1 - blendFactor) * existingRating,

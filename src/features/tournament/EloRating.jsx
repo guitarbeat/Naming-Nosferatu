@@ -25,7 +25,7 @@ import { ELO_RATING } from "../../core/constants";
 class EloRating {
   constructor(
     defaultRating = ELO_RATING.DEFAULT_RATING,
-    kFactor = ELO_RATING.DEFAULT_K_FACTOR
+    kFactor = ELO_RATING.DEFAULT_K_FACTOR,
   ) {
     this.defaultRating = defaultRating;
     this.kFactor = kFactor;

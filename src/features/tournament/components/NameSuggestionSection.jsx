@@ -39,7 +39,7 @@ function NameSuggestionSection() {
       setIsSubmitting(true);
       const res = await catNamesAPI.addName(
         nameValidation.value,
-        descriptionValidation.value
+        descriptionValidation.value,
       );
       if (res?.success === false) {
         throw new Error(res.error || "Failed to add name");

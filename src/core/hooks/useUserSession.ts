@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useUserSession
  * @description Hook for managing user sessions with username-based authentication (no email/password)

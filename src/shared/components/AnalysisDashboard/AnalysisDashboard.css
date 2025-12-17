@@ -376,6 +376,8 @@
   padding: 0;
   max-width: 1100px;
   margin-inline: auto;
+  overflow-x: auto;
+  padding-inline: 8px;
 }
 
 .top-names-table th.sortable {
@@ -435,6 +437,7 @@
 
 .top-names-table {
   width: 100%;
+  min-width: 720px;
   border-collapse: separate;
   border-spacing: 0;
   font-size: var(--analysis-text-body, 0.875rem);
@@ -470,7 +473,8 @@
   vertical-align: middle;
   transition: background var(--analysis-duration-fast) var(--analysis-ease);
   line-height: 1.4;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .top-names-table tr:last-child td {

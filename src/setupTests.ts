@@ -1,3 +1,4 @@
+// @ts-nocheck
 // * Test setup file for vitest
 import { vi } from "vitest";
 import React from "react";

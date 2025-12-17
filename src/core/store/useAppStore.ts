@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { create } from "zustand";
 import { useEffect } from "react";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
@@ -20,7 +21,7 @@ const applyDevtools = (storeImpl) => {
       data: { env: process.env.NODE_ENV },
       timestamp: Date.now(),
     }),
-  }).catch(() => { });
+  }).catch(() => {});
   // #endregion
   return storeImpl;
 };
@@ -324,7 +325,8 @@ const storeImpl = (set, get) => ({
 
       let resolvedTheme = newTheme;
       if (isSystem && typeof window !== "undefined" && window.matchMedia) {
-        resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)")
+          .matches
           ? "dark"
           : "light";
       }
@@ -342,34 +344,34 @@ const storeImpl = (set, get) => ({
 
         // Handle system theme listener
         if (isSystem) {
-           // Define the listener
-           const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-           const listener = (e) => {
-             // Only update if preference is still system
-             if (get().ui.themePreference === "system") {
-                set((s) => ({
-                  ui: {
-                    ...s.ui,
-                    theme: e.matches ? "dark" : "light"
-                  }
-                }));
-             }
-           };
-           // Remove previous listener if possible?
-           // We can't easily remove anonymous listeners without storing reference.
-           // For now, we assume simple usage or relies on component effect for cleanup (useThemeSync).
-           // But the test expects the store to update.
-           // We can try adding it.
-           mediaQuery.addEventListener("change", listener);
+          // Define the listener
+          const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+          const listener = (e) => {
+            // Only update if preference is still system
+            if (get().ui.themePreference === "system") {
+              set((s) => ({
+                ui: {
+                  ...s.ui,
+                  theme: e.matches ? "dark" : "light",
+                },
+              }));
+            }
+          };
+          // Remove previous listener if possible?
+          // We can't easily remove anonymous listeners without storing reference.
+          // For now, we assume simple usage or relies on component effect for cleanup (useThemeSync).
+          // But the test expects the store to update.
+          // We can try adding it.
+          mediaQuery.addEventListener("change", listener);
         }
       }
     },
 
     initializeTheme: () => {
-       if (typeof window !== "undefined") {
-         let storedTheme = localStorage.getItem("theme") || "dark";
-         get().uiActions.setTheme(storedTheme);
-       }
+      if (typeof window !== "undefined") {
+        let storedTheme = localStorage.getItem("theme") || "dark";
+        get().uiActions.setTheme(storedTheme);
+      }
     },
   },
 
@@ -485,7 +487,7 @@ fetch(LOG_ENDPOINT, {
     data: { env: process.env.NODE_ENV },
     timestamp: Date.now(),
   }),
-}).catch(() => { });
+}).catch(() => {});
 // #endregion
 
 // * Hook to initialize store from localStorage

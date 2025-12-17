@@ -21,7 +21,7 @@ function LiquidGlassToggleButton({
 
   const currentLabel = useMemo(
     () => (isOn ? labelOn : labelOff),
-    [isOn, labelOn, labelOff]
+    [isOn, labelOn, labelOff],
   );
 
   const handleClick = () => {

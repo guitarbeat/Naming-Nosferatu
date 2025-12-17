@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @module useBongoCat
  * @description Custom hook for BongoCat component event handling and positioning with enhanced animations

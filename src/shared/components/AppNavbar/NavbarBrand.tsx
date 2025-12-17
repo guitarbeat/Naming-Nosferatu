@@ -9,7 +9,11 @@ interface NavbarBrandProps {
   ariaLabel: string;
 }
 
-export function NavbarBrand({ isActive, onClick, ariaLabel }: NavbarBrandProps) {
+export function NavbarBrand({
+  isActive,
+  onClick,
+  ariaLabel,
+}: NavbarBrandProps) {
   return (
     <button
       type="button"

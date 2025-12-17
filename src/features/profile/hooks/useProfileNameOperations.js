@@ -23,7 +23,6 @@ import { clearAllCaches } from "../../../shared/utils/cacheUtils";
  * @param {Function} fetchSelectionStats - Function to refetch selection stats
  * @param {Function} showSuccess - Success notification function
  * @param {Function} showError - Error notification function
- * @param {Function} showToast - Toast notification function
  * @returns {Object} Name operation handlers
  */
 export function useProfileNameOperations(
@@ -36,7 +35,6 @@ export function useProfileNameOperations(
   fetchSelectionStats,
   showSuccess,
   showError,
-  showToast,
 ) {
   const [selectedNames, setSelectedNames] = useState(new Set());
 
@@ -84,8 +82,8 @@ export function useProfileNameOperations(
         setAllNames((prev) =>
           Array.isArray(prev)
             ? prev.map((n) =>
-              n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
-            )
+                n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
+              )
             : prev,
         );
 
@@ -116,7 +114,6 @@ export function useProfileNameOperations(
       activeUser,
       showSuccess,
       showError,
-      showToast,
       canManageActiveUser,
       setHiddenNames,
       setAllNames,
@@ -157,7 +154,6 @@ export function useProfileNameOperations(
       fetchNames,
       fetchSelectionStats,
       showError,
-      showToast,
       canManageActiveUser,
       activeUser,
     ],
@@ -278,7 +274,6 @@ export function useProfileNameOperations(
       setHiddenNames,
       showError,
       showSuccess,
-      showToast,
     ],
   );
 

@@ -30,7 +30,9 @@ export default function ViewRouter({
   // There is no navigation link to this page - users must manually type /bongo in the URL
   if (isRoute("/bongo")) {
     return (
-      <Suspense fallback={<Loading variant="spinner" text="Loading Bongo..." />}>
+      <Suspense
+        fallback={<Loading variant="spinner" text="Loading Bongo..." />}
+      >
         <BongoPage isLoggedIn={isLoggedIn} userName={userName} />
       </Suspense>
     );

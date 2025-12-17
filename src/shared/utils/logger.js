@@ -7,7 +7,7 @@ const isDev = import.meta.env.DEV;
 const isProd = import.meta.env.PROD;
 
 // * No-op used to strip logging code from production bundles
-const noop = () => { };
+const noop = () => {};
 
 /**
  * * Log messages during development only
@@ -15,9 +15,9 @@ const noop = () => { };
  */
 export const devLog = isDev
   ? (...args) => {
-    // * Log with [DEV] prefix - browser console will handle objects properly
-    console.log("[DEV]", ...args);
-  }
+      // * Log with [DEV] prefix - browser console will handle objects properly
+      console.log("[DEV]", ...args);
+    }
   : noop;
 
 /**

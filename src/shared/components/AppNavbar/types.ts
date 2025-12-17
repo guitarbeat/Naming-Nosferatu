@@ -4,6 +4,8 @@
  */
 
 export type ViewType = "tournament" | "photos" | string;
+export type ThemePreference = "light" | "dark" | "system";
+export type ThemeType = ThemePreference;
 
 export interface NavItem {
   key: string;

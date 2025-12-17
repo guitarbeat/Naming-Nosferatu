@@ -40,8 +40,9 @@ function TournamentContent({
 
   // * Filter out hidden names as a safety measure
   const visibleNames = useMemo(
-    () => (Array.isArray(names) ? names.filter((name) => !isNameHidden(name)) : []),
-    [names]
+    () =>
+      Array.isArray(names) ? names.filter((name) => !isNameHidden(name)) : [],
+    [names],
   );
 
   // * Global event listeners ref for proper cleanup
@@ -430,7 +431,10 @@ function TournamentContent({
       const matchNumber = vote?.matchNumber ?? index + 1;
 
       // * Calculate round using shared utility function
-      const calculatedRound = calculateBracketRound(visibleNames.length, matchNumber);
+      const calculatedRound = calculateBracketRound(
+        visibleNames.length,
+        matchNumber,
+      );
 
       return {
         id: matchNumber,

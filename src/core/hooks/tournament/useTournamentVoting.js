@@ -107,19 +107,11 @@ export function useTournamentVoting({
         }
 
         // Calculate new ratings using the correct method signature
-        const {
-          newRatingA,
-          newRatingB,
-          winsA,
-          lossesA,
-          winsB,
-          lossesB,
-        } = elo.calculateNewRatings(
-          leftRating,
-          rightRating,
-          outcome,
-          { ...leftStats, ...rightStats }
-        );
+        const { newRatingA, newRatingB, winsA, lossesA, winsB, lossesB } =
+          elo.calculateNewRatings(leftRating, rightRating, outcome, {
+            ...leftStats,
+            ...rightStats,
+          });
 
         // Update left name
         newRatings[leftName] = {

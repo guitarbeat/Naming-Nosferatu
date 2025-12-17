@@ -24,7 +24,10 @@ export function UserDisplay({ userName, isAdmin = false }: UserDisplayProps) {
         <div className="navbar-user-display__text">
           <span className="navbar-user-display__name">{truncatedUserName}</span>
           {isAdmin && (
-            <span className="navbar-user-display__admin-label" aria-label="Admin">
+            <span
+              className="navbar-user-display__admin-label"
+              aria-label="Admin"
+            >
               Admin
             </span>
           )}

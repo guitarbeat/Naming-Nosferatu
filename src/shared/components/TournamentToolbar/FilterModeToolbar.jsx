@@ -26,7 +26,7 @@ function FilterModeToolbar({
         value: cat,
         label: cat,
       })),
-    [categories]
+    [categories],
   );
 
   const isAsc = filters.sortOrder === FILTER_OPTIONS.ORDER.ASC;
@@ -72,7 +72,7 @@ function FilterModeToolbar({
                   "filterStatus",
                   value === "active"
                     ? FILTER_OPTIONS.VISIBILITY.VISIBLE
-                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE
+                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE,
                 )
               }
             />
@@ -125,7 +125,7 @@ function FilterModeToolbar({
                       "sortOrder",
                       isAsc
                         ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC
+                        : FILTER_OPTIONS.ORDER.ASC,
                     )
                   }
                   className={styles.sortOrderButton}
@@ -157,7 +157,7 @@ FilterModeToolbar.propTypes = {
     PropTypes.shape({
       value: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
-    })
+    }),
   ),
   showSelectionFilter: PropTypes.bool,
   analysisMode: PropTypes.bool,
