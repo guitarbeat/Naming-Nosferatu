@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef, useCallback } from "react";
-import mobileGestures from "../../shared/utils/mobileGestures";
+import mobileGestures from "../../../../shared/utils/mobileGestures";
 
 /**
  * Custom hook for mobile gesture interactions
