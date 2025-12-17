@@ -23,6 +23,10 @@ import {
   getPupilTransform,
   getConditionalEyeStyle,
 } from "./utils/eyeTransforms";
+import {
+  getConditionalTransform,
+  getConditionalTransformWithValue,
+} from "./utils/conditionalStyles";
 import styles from "./BongoCat.module.css";
 
 /**
@@ -48,24 +52,19 @@ const CatBody = ({
     {/* Tail */}
     <div
       className={`${styles.tail} ${styles[animationState] || ""}`}
-      style={
-        !reduceMotion
-          ? {
-              transform: `rotate(${tailAngle}deg)`,
-            }
-          : {}
-      }
+      style={getConditionalTransform(
+        reduceMotion,
+        `rotate(${tailAngle}deg)`,
+      )}
     />
     {/* Head with tilt */}
     <div
       className={`${styles.head} ${styles[animationState] || ""}`}
-      style={
-        !reduceMotion && headTilt !== 0
-          ? {
-              transform: `rotate(${headTilt}deg)`,
-            }
-          : {}
-      }
+      style={getConditionalTransformWithValue(
+        reduceMotion,
+        headTilt,
+        (tilt) => `rotate(${tilt}deg)`,
+      )}
     />
     {/* Ears with twitch */}
     <div
