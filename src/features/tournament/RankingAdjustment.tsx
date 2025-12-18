@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { Card } from "../../shared/components";
+import Card from "../../shared/components/Card";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { TIMING } from "../../core/constants";
 import "./RankingAdjustment.css";

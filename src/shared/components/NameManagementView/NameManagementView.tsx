@@ -22,7 +22,7 @@ import { AdminAnalytics } from "../AdminAnalytics";
 import { useNameData } from "./useNameData";
 import { useNameSelection } from "./useNameSelection";
 import useAppStore from "../../../core/store/useAppStore";
-import { useRouting } from "@hooks/useRouting";
+import { useRouting } from "../../../core/hooks/useRouting";
 import { exportTournamentResultsToCSV } from "../../utils/exportUtils";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./NameManagementView.module.css";

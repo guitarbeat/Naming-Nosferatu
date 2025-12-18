@@ -269,7 +269,7 @@ function useNavbarDimensions(isCollapsed: boolean) {
           const rect = navbarRef.current.getBoundingClientRect();
           const newWidth = Math.max(rect.width, 64);
           const newHeight = Math.max(rect.height, 56);
-          
+
           // Only update if dimensions actually changed
           setDimensions((prev) => {
             if (prev.width === newWidth && prev.height === newHeight) {

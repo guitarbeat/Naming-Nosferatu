@@ -22,7 +22,7 @@ import {
   MusicalNoteIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Button, IconButton } from "@components";
+import { Button, IconButton } from "../../shared/components/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass";
 import styles from "./Tournament.module.css";
 

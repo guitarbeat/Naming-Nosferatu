@@ -8,10 +8,11 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import RankingAdjustment from "./RankingAdjustment";
 import Bracket from "../../shared/components/Bracket/Bracket";
-import CalendarButton from "../../shared/components/CalendarButton/CalendarButton";
+import { CalendarButton } from "../../shared/components/Button";
 import StartTournamentButton from "../../shared/components/StartTournamentButton/StartTournamentButton";
 import StatsCard from "../../shared/components/StatsCard/StatsCard";
-import { Card, Toast } from "@components";
+import Card from "../../shared/components/Card";
+import Toast from "../../shared/components/Toast/Toast";
 import { BumpChart } from "../../shared/components/Charts";
 import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
 import {

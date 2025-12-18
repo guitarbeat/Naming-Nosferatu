@@ -5,7 +5,7 @@
  */
 import { useMemo, memo } from "react";
 import PropTypes from "prop-types";
-import { NameGrid } from "../../../../shared/components";
+import { NameGrid } from "../../../../shared/components/NameGrid/NameGrid";
 import {
   applyNameFilters,
   mapFilterStatusToVisibility,

@@ -49,8 +49,8 @@
     "check:deps": "knip --config config/knip.json",
     "check:deps:fix": "knip --config config/knip.json --fix",
     "check:all": "npm run lint && npm run check:css && npm run check:unused && npm run check:deps",
-    "tsr": "cd config && tsr -p tsconfig.json '../src/main\\.tsx$' '../src/setupTests\\.ts$' '../src/shared/components/NameManagementView/NameManagementView\\.jsx$' '../src/features/tournament/components/SwipeMode/SwipeableNameCards\\.jsx$'",
-    "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/main\\.tsx$' '../src/setupTests\\.ts$' '../src/shared/components/NameManagementView/NameManagementView\\.jsx$' '../src/features/tournament/components/SwipeMode/SwipeableNameCards\\.jsx$'",
+    "tsr": "cd config && tsr -p tsconfig.json '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$'",
+    "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$'",
     "clean": "rm -rf build dist node_modules/.vite"
   },
   "dependencies": {

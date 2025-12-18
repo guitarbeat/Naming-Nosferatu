@@ -8,19 +8,21 @@ import PropTypes from "prop-types";
 import {
   NameManagementView,
   useNameManagementContextSafe,
-  Error,
-  AnalysisDashboard,
-  AnalysisBulkActions,
-} from "../../shared/components";
+} from "../../shared/components/NameManagementView/NameManagementView";
+import Error from "../../shared/components/Error/Error";
+import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard";
+import { AnalysisBulkActions } from "../../shared/components/AnalysisPanel";
 import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import {
   selectedNamesToSet,
   extractNameIds,
 } from "../../shared/utils/nameSelectionUtils";
-import { useImageGallery } from "./hooks";
+import { useImageGallery } from "./hooks/useImageGallery";
 import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
-import { NameSelection, SwipeableNameCards, Lightbox } from "./components";
+import { NameSelection } from "./components/NameSelection";
+import { SwipeableNameCards } from "./components/SwipeMode";
+import Lightbox from "./components/Lightbox";
 import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
 import { useProfileStats } from "../profile/hooks/useProfileStats";
 import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";

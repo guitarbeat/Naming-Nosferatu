@@ -5,7 +5,8 @@
 
 import React, { useRef } from "react";
 import PropTypes from "prop-types";
-import { Error, Button } from "../../../../shared/components";
+import Error from "../../../../shared/components/Error/Error";
+import { Button } from "../../../../shared/components/Button";
 import { getRandomCatImage } from "../../utils";
 import useMagneticPull from "../../hooks/useMagneticPull";
 import styles from "./FerrofluidMatch.module.css";

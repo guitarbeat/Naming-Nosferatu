@@ -5,7 +5,7 @@
 
 import PropTypes from "prop-types";
 import { validateCatName } from "../../../shared/utils/validationUtils";
-import { TournamentButton } from "../../../shared/components";
+import { TournamentButton } from "../../../shared/components/Button";
 import styles from "../TournamentSetup.module.css";
 
 function StartButton({ selectedNames, onStart, variant = "default" }) {

@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { Bracket } from "../../../../shared/components";
+import Bracket from "../../../../shared/components/Bracket/Bracket";
 import styles from "../../Tournament.module.css";
 
 function TournamentFooter({

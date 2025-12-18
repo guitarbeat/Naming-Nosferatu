@@ -7,7 +7,7 @@
 
 import PropTypes from "prop-types";
 import "../../styles/analysis-mode.css";
-import { AnalysisHeader } from "./components";
+import { AnalysisHeader } from "./components/AnalysisHeader";
 
 /**
  * Primary Analysis Panel container
@@ -46,4 +46,6 @@ AnalysisPanel.propTypes = {
 };
 
 // Re-export only components used externally
-export { AnalysisToolbar, AnalysisButton, AnalysisBulkActions } from "./components";
+export { AnalysisToolbar } from "./components/AnalysisToolbar";
+export { AnalysisButton } from "./components/AnalysisButton";
+export { AnalysisBulkActions } from "./components/AnalysisBulkActions";

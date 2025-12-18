@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
-import { useAdminStatus } from "../../../shared/hooks";
+import { useAdminStatus } from "../../../shared/hooks/useAdminStatus";
 import { adminAPI } from "../../../shared/services/supabase/api";
 
 /**

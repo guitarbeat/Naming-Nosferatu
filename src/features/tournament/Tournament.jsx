@@ -12,12 +12,9 @@ import React, {
   useMemo,
 } from "react";
 import PropTypes from "prop-types";
-import {
-  Loading,
-  Error,
-  Button,
-
-} from "../../shared/components";
+import Loading from "../../shared/components/Loading/Loading";
+import Error from "../../shared/components/Error/Error";
+import { Button } from "../../shared/components/Button";
 import TournamentControls from "./TournamentControls";
 import TournamentHeader from "./components/TournamentHeader";
 import TournamentMatch from "./components/TournamentMatch";
