@@ -6,7 +6,7 @@
 
 // * Core UI Components
 import { Button, IconButton, TournamentButton, ScrollToTopButton } from "./Button";
-import Card from "./Card/Card";
+import Card from "./Card";
 import Loading from "./Loading/Loading";
 import CatImage from "./CatImage";
 import Error from "./Error/Error";

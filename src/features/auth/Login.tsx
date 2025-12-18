@@ -6,6 +6,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { generateFunName } from "../../shared/utils/nameGenerationUtils";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
+import { NoiseBackground } from "../../shared/components";
 import styles from "./Login.module.css";
 
 const FALLBACK_CAT_FACT =

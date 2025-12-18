@@ -1,6 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import PropTypes from "prop-types";
 
+interface CatImageProps {
+  src?: string;
+  alt?: string;
+  containerClassName?: string;
+  imageClassName?: string;
+  loading?: "lazy" | "eager";
+  decoding?: "async" | "auto" | "sync";
+  containerStyle?: React.CSSProperties;
+  onLoad?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+  onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+}
+
 /**
  * Shared cat image renderer used by multiple card components.
  * Handles responsive sources, fallback logging, and automatic
@@ -16,12 +28,12 @@ function CatImage({
   containerStyle,
   onLoad,
   onError,
-}) {
-  const containerRef = useRef(null);
-  const imageRef = useRef(null);
+}: CatImageProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   const analyseImage = useMemo(
-    () => (imgEl) => {
+    () => (imgEl: HTMLImageElement) => {
       try {
         const naturalW = imgEl.naturalWidth || imgEl.width;
         const naturalH = imgEl.naturalHeight || imgEl.height;
@@ -38,12 +50,14 @@ function CatImage({
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) return {};
+
         ctx.drawImage(imgEl, 0, 0, w, h);
         const { data } = ctx.getImageData(0, 0, w, h);
 
         const rowEnergy = new Array(h).fill(0);
-        const toGray = (r, g, b) => r * 0.299 + g * 0.587 + b * 0.114;
-        const idx = (x, y) => (y * w + x) * 4;
+        const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
+        const idx = (x: number, y: number) => (y * w + x) * 4;
 
         let totalR = 0;
         let totalG = 0;
@@ -119,7 +133,7 @@ function CatImage({
   );
 
   const applyImageEnhancements = useCallback(
-    (imgEl) => {
+    (imgEl: HTMLImageElement | null) => {
       if (!imgEl) return;
       const container = containerRef.current;
       if (!container) return;
@@ -158,8 +172,8 @@ function CatImage({
   );
 
   const handleLoad = useCallback(
-    (event) => {
-      const target = event?.target || imageRef.current;
+    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      const target = event?.currentTarget || imageRef.current;
       applyImageEnhancements(target);
       onLoad?.(event);
     },
@@ -167,9 +181,9 @@ function CatImage({
   );
 
   const handleError = useCallback(
-    (event) => {
-      if (event?.target?.src) {
-        console.error("Image failed to load:", event.target.src);
+    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      if (event?.currentTarget?.src) {
+        console.error("Image failed to load:", event.currentTarget.src);
       }
       onError?.(event);
     },
@@ -201,7 +215,7 @@ function CatImage({
   const mergedStyle = {
     ...containerStyle,
     ...(src ? { ["--bg-image"]: `url(${src})` } : {}),
-  };
+  } as React.CSSProperties;
 
   const renderImage = () => {
     const commonProps = {
@@ -213,7 +227,7 @@ function CatImage({
       decoding,
       onLoad: handleLoad,
       onError: handleError,
-      crossOrigin: "anonymous",
+      crossOrigin: "anonymous" as const,
     };
 
     if (String(src).startsWith("/assets/images/")) {

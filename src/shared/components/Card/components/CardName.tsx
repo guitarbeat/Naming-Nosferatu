@@ -38,6 +38,38 @@ import Card from "../Card";
 import CatImage from "../../CatImage";
 import styles from "./CardName.module.css";
 
+interface NameMetadata {
+  rating?: number;
+  popularity?: number;
+  tournaments?: number;
+  categories?: string[];
+  wins?: number;
+  losses?: number;
+  totalMatches?: number;
+  winRate?: number;
+  rank?: number;
+  description?: string;
+  [key: string]: any;
+}
+
+interface CardNameProps {
+  name: string;
+  description?: string;
+  isSelected?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
+  shortcutHint?: string;
+  className?: string;
+  size?: "small" | "medium";
+  metadata?: NameMetadata;
+  isAdmin?: boolean;
+  isHidden?: boolean;
+  _onToggleVisibility?: (id: string) => void;
+  _onDelete?: (name: any) => void;
+  onSelectionChange?: (selected: boolean) => void;
+  image?: string;
+}
+
 function CardName({
   name,
   description,
@@ -54,13 +86,12 @@ function CardName({
   _onDelete,
   onSelectionChange,
   image,
-}) {
-  // ... existing implementation ...
+}: CardNameProps) {
   const [rippleStyle, setRippleStyle] = useState({});
   const [isRippling, setIsRippling] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
-  const cardRef = React.useRef(null);
+  const cardRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isRippling) {
@@ -85,7 +116,7 @@ function CardName({
     const card = cardRef.current;
     if (!card || disabled || !hasMetadata) return;
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       if (typeof e.clientX === "number" && typeof e.clientY === "number") {
         setTooltipPosition({ x: e.clientX, y: e.clientY });
         setShowTooltip(true);
@@ -120,20 +151,24 @@ function CardName({
     setShowTooltip(false);
   };
 
-  const handleInteraction = (event) => {
+  const handleInteraction = (event: React.MouseEvent | React.KeyboardEvent) => {
     if (disabled) {
       return;
     }
 
     if (
       event.type === "click" ||
-      (event.type === "keydown" && (event.key === "Enter" || event.key === " "))
+      (event.type === "keydown" && 
+        ((event as React.KeyboardEvent).key === "Enter" || (event as React.KeyboardEvent).key === " "))
     ) {
       event.preventDefault();
 
       const rect = event.currentTarget.getBoundingClientRect();
-      const x = event.clientX ? event.clientX - rect.left : rect.width / 2;
-      const y = event.clientY ? event.clientY - rect.top : rect.height / 2;
+      const clientX = (event as React.MouseEvent).clientX;
+      const clientY = (event as React.MouseEvent).clientY;
+      
+      const x = clientX ? clientX - rect.left : rect.width / 2;
+      const y = clientY ? clientY - rect.top : rect.height / 2;
 
       setRippleStyle({
         left: `${x}px`,
@@ -167,13 +202,13 @@ function CardName({
     return label;
   };
 
-  const getSafeId = (text) => {
+  const getSafeId = (text: string) => {
     return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
   };
 
   const cardClasses = [
     styles.card,
-    styles[size],
+    styles[size || "medium"],
     isSelected && styles.selected,
     disabled && styles.disabled,
     isHidden && styles.hidden,
@@ -184,7 +219,7 @@ function CardName({
     .join(" ");
 
   const isInteractive =
-    !disabled && (onClick || (isAdmin && onSelectionChange));
+    !disabled && (!!onClick || (isAdmin && !!onSelectionChange));
   const Component = isInteractive ? "button" : "div";
 
   return (
@@ -193,10 +228,11 @@ function CardName({
         as={Component}
         ref={cardRef}
         className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
-        onClick={isInteractive ? handleInteraction : undefined}
-        onKeyDown={isInteractive ? handleInteraction : undefined}
+        onClick={isInteractive ? (handleInteraction as any) : undefined}
+        onKeyDown={isInteractive ? (handleInteraction as any) : undefined}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        // @ts-expect-error - Card props might not fully match HTML attributes
         disabled={isInteractive ? disabled : undefined}
         aria-pressed={isInteractive ? isSelected : undefined}
         aria-label={getAriaLabel()}
@@ -379,8 +415,8 @@ CardName.propTypes = {
   }),
   isAdmin: PropTypes.bool,
   isHidden: PropTypes.bool,
-  onToggleVisibility: PropTypes.func,
-  onDelete: PropTypes.func,
+  _onToggleVisibility: PropTypes.func,
+  _onDelete: PropTypes.func,
   onSelectionChange: PropTypes.func,
   image: PropTypes.string,
 };

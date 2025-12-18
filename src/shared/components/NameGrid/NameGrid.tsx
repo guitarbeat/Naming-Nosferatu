@@ -7,7 +7,7 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import NameCard from "../NameCard/NameCard";
+import Card from "../Card";
 import Loading from "../Loading/Loading";
 import {
   applyNameFilters,
@@ -16,6 +16,37 @@ import {
 } from "../../utils/nameFilterUtils";
 import { selectedNamesToSet } from "../../utils/nameSelectionUtils";
 import styles from "./NameGrid.module.css";
+
+interface NameItem {
+  id: string | number;
+  name: string;
+  description?: string;
+  avg_rating?: number;
+  popularity_score?: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface NameGridProps {
+  names: NameItem[];
+  selectedNames?: NameItem[] | Set<string | number>;
+  onToggleName?: (name: NameItem) => void;
+  filters?: {
+    searchTerm?: string;
+    category?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    filterStatus?: "visible" | "hidden" | "all";
+  };
+  isAdmin?: boolean;
+  showSelectedOnly?: boolean;
+  showCatPictures?: boolean;
+  imageList?: string[];
+  onToggleVisibility?: (id: string | number) => void;
+  onDelete?: (name: NameItem) => void;
+  isLoading?: boolean;
+  className?: string;
+}
 
 export function NameGrid({
   names = [],
@@ -30,7 +61,7 @@ export function NameGrid({
   onDelete,
   isLoading = false,
   className = "",
-}) {
+}: NameGridProps) {
   // * Responsive breakpoints for masonry layout
   const columnsCountBreakPoints = {
     350: 1,
@@ -77,9 +108,9 @@ export function NameGrid({
     return result;
   }, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
-  const getCatImage = (nameId) => {
+  const getCatImage = (nameId: string | number) => {
     if (!showCatPictures || !imageList.length) return undefined;
-    const hash = nameId
+    const hash = String(nameId)
       .split("")
       .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return imageList[Math.abs(hash) % imageList.length];
@@ -131,7 +162,7 @@ export function NameGrid({
 
             return (
               <div key={nameObj.id} className={styles.cardWrapper}>
-                <NameCard
+                <Card.Name
                   name={nameObj.name}
                   description={nameObj.description}
                   isSelected={selectedSet.has(nameObj.id)}
@@ -148,11 +179,11 @@ export function NameGrid({
                   className={isNameHidden(nameObj) ? styles.hiddenCard : ""}
                   isAdmin={isAdmin}
                   isHidden={isNameHidden(nameObj)}
-                  onToggleVisibility={
+                  _onToggleVisibility={
                     isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined
                   }
-                  onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
-                  showAdminControls={isAdmin}
+                  _onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
+                  onSelectionChange={undefined}
                 />
               </div>
             );

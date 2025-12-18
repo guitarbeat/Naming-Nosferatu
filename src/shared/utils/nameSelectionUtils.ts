@@ -4,16 +4,21 @@
  */
 
 interface NameItem {
-  id: string;
-  [key: string]: unknown;
+  id: string | number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 /**
- * Convert selected names array to a Set of IDs
- * @param selectedNames - Array of selected name objects
- * @returns Set of selected name IDs
+ * Converts an array of selected names to a Set of IDs for O(1) lookup.
+ * Handles both array of objects and existing Set.
  */
-export function selectedNamesToSet(selectedNames: NameItem[]): Set<string> {
+export function selectedNamesToSet(
+  selectedNames: NameItem[] | Set<string | number>,
+): Set<string | number> {
+  if (selectedNames instanceof Set) {
+    return selectedNames;
+  }
   return new Set(selectedNames.map((n) => n.id));
 }
 
@@ -23,8 +28,8 @@ export function selectedNamesToSet(selectedNames: NameItem[]): Set<string> {
  * @returns Array of name IDs
  */
 export function extractNameIds(
-  selectedNamesValue: NameItem[] | Set<string>
-): string[] {
+  selectedNamesValue: NameItem[] | Set<string | number>,
+): (string | number)[] {
   if (Array.isArray(selectedNamesValue)) {
     return selectedNamesValue.map((n) => n.id);
   }

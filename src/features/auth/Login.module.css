@@ -6,7 +6,7 @@
   --bg-paper: #d2b48c;
   --ink: #3c2f2f;
 
-  background: var(--bg-paper);
+  background: radial-gradient(circle at center, #e6ccac 0%, #d2b48c 100%);
   font-family: "Courier New", monospace;
   height: 100vh;
   display: flex;
