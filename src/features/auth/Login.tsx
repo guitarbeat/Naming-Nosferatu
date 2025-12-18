@@ -71,7 +71,7 @@ function useCatFact() {
 /**
  * Hook to track mouse position and calculate eye position for cat SVG
  */
-function useEyeTracking({ catRef, catSvgRef }: { catRef: React.RefObject<HTMLElement>; catSvgRef: React.RefObject<HTMLElement> }) {
+function useEyeTracking({ catRef, catSvgRef }: { catRef: React.RefObject<HTMLElement | null>; catSvgRef: React.RefObject<HTMLElement | null> }) {
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
