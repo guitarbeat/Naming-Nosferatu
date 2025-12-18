@@ -33,15 +33,12 @@
 
 import React, { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
-import { TIMING } from "../../../core/constants";
-import Card from "../Card/Card";
-import CatImage from "../CatImage";
-import styles from "./NameCard.module.css";
+import { TIMING } from "../../../../core/constants";
+import Card from "../Card";
+import CatImage from "../../CatImage";
+import styles from "./CardName.module.css";
 
-// ... imports ...
-
-function NameCard({
-  // ... props ...
+function CardName({
   name,
   description,
   isSelected,
@@ -58,14 +55,13 @@ function NameCard({
   onSelectionChange,
   image,
 }) {
-  // ... existing hooks ...
+  // ... existing implementation ...
   const [rippleStyle, setRippleStyle] = useState({});
   const [isRippling, setIsRippling] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = React.useRef(null);
 
-  // ... existing effects ...
   useEffect(() => {
     if (isRippling) {
       const timer = setTimeout(
@@ -76,7 +72,6 @@ function NameCard({
     }
   }, [isRippling]);
 
-  // * Check if metadata has any relevant data
   const hasMetadata =
     metadata &&
     (metadata.rating ||
@@ -86,13 +81,11 @@ function NameCard({
       metadata.tournaments ||
       (metadata.categories && metadata.categories.length > 0));
 
-  // Mouse follow effect for background
   useEffect(() => {
     const card = cardRef.current;
     if (!card || disabled || !hasMetadata) return;
 
     const handleMouseMove = (e) => {
-      // * Safety check for clientX/clientY
       if (typeof e.clientX === "number" && typeof e.clientY === "number") {
         setTooltipPosition({ x: e.clientX, y: e.clientY });
         setShowTooltip(true);
@@ -110,17 +103,14 @@ function NameCard({
       card.removeEventListener("mousemove", handleMouseMove);
       card.removeEventListener("mouseleave", handleMouseLeave);
     };
-    // * Use metadata object directly - React will handle object reference changes
-    // * This ensures the dependency array size stays constant
   }, [disabled, metadata, hasMetadata]);
 
   const handleFocus = () => {
     if (!cardRef.current || disabled || !hasMetadata) return;
 
     const rect = cardRef.current.getBoundingClientRect();
-    // Position tooltip to the right of the card for keyboard users
     setTooltipPosition({
-      x: rect.right > 0 ? rect.right - 20 : 100, // Fallback for JSDOM/testing
+      x: rect.right > 0 ? rect.right - 20 : 100,
       y: rect.top > 0 ? rect.top + 20 : 100,
     });
     setShowTooltip(true);
@@ -141,7 +131,6 @@ function NameCard({
     ) {
       event.preventDefault();
 
-      // Create ripple effect
       const rect = event.currentTarget.getBoundingClientRect();
       const x = event.clientX ? event.clientX - rect.left : rect.width / 2;
       const y = event.clientY ? event.clientY - rect.top : rect.height / 2;
@@ -153,24 +142,14 @@ function NameCard({
 
       setIsRippling(true);
 
-      // Handle selection change if this is an admin card
       if (isAdmin && onSelectionChange) {
         onSelectionChange(!isSelected);
       }
 
-      // Call the regular onClick if provided
       onClick?.();
     }
   };
 
-  // Handle admin action clicks (prevent card click when clicking admin buttons)
-  const _handleAdminAction = (e, action) => {
-    e.stopPropagation();
-    e.preventDefault();
-    action();
-  };
-
-  // Enhanced accessibility for button state
   const getAriaLabel = () => {
     let label = name;
     if (description) {
@@ -188,13 +167,12 @@ function NameCard({
     return label;
   };
 
-  // Generate safe ID for aria-describedby
   const getSafeId = (text) => {
     return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
   };
 
   const cardClasses = [
-    styles.card, // Keep local styles for specific overrides
+    styles.card,
     styles[size],
     isSelected && styles.selected,
     disabled && styles.disabled,
@@ -211,7 +189,6 @@ function NameCard({
 
   return (
     <div className={styles.cardContainer}>
-      {/* Main card content */}
       <Card
         as={Component}
         ref={cardRef}
@@ -229,12 +206,10 @@ function NameCard({
         aria-labelledby={`${getSafeId(name)}-title`}
         type={isInteractive ? "button" : undefined}
         role={!isInteractive ? "article" : undefined}
-        // Card specific props
         variant={isSelected ? "primary" : "default"}
         padding={size === "small" ? "small" : "medium"}
         interactive={isInteractive}
       >
-        {/* Cat image when provided */}
         {image && (
           <CatImage
             src={image}
@@ -255,7 +230,6 @@ function NameCard({
           </p>
         )}
 
-        {/* Enhanced metadata display */}
         {metadata && (
           <div className={styles.metadata}>
             {metadata.rating && (
@@ -309,9 +283,6 @@ function NameCard({
         )}
       </Card>
 
-      {/* Admin actions overlay removed - use bulk actions instead */}
-
-      {/* Enhanced tooltip with detailed stats */}
       {showTooltip &&
         metadata &&
         tooltipPosition.x > 0 &&
@@ -385,7 +356,7 @@ function NameCard({
   );
 }
 
-NameCard.propTypes = {
+CardName.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   isSelected: PropTypes.bool,
@@ -411,6 +382,7 @@ NameCard.propTypes = {
   onToggleVisibility: PropTypes.func,
   onDelete: PropTypes.func,
   onSelectionChange: PropTypes.func,
+  image: PropTypes.string,
 };
 
-export default memo(NameCard);
+export default memo(CardName);
