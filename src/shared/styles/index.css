@@ -11,7 +11,7 @@
 /* Effects & transitions */
 @import url("./transitions.css");
 @import url("./animations.css");
-@import url("./background-effects.css");
+
 @import url("./shimmer.css");
 @import url("./glass.css");
 @import url("./interactions.css");

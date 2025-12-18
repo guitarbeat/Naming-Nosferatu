@@ -27,7 +27,7 @@ export { AnalysisDashboard } from "./AnalysisDashboard";
 export { AnalysisBulkActions } from "./AnalysisPanel";
 
 // * Utility Components
-export { default as NoiseBackground } from "./NoiseBackground/NoiseBackground";
+
 
 // * Named exports
 export { Button, IconButton, TournamentButton, ScrollToTopButton, Card, CatImage, Loading, Error, Toast, Bracket };

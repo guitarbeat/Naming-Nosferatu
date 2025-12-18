@@ -16,7 +16,7 @@ import {
   Loading,
   Error,
   Button,
-  NoiseBackground,
+
 } from "../../shared/components";
 import TournamentControls from "./TournamentControls";
 import TournamentHeader from "./components/TournamentHeader";
@@ -482,7 +482,7 @@ function TournamentContent({
   return (
     <div className={styles.tournament} role="main" aria-live="polite">
       {/* Noise Background */}
-      <NoiseBackground opacity={0.05} />
+
 
       {/* Progress Information */}
       <TournamentHeader
