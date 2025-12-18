@@ -10,6 +10,28 @@ import { StartButton } from "../StartButton";
 import styles from "../../Tournament.module.css";
 import setupStyles from "../../TournamentSetup.module.css";
 
+interface NameItem {
+  id?: string | number;
+  name?: string;
+  [key: string]: unknown;
+}
+
+interface TournamentHeaderProps {
+  roundNumber?: number;
+  currentMatchNumber?: number;
+  totalMatches?: number;
+  progress?: number;
+  selectedNames?: NameItem[];
+  availableNames?: NameItem[];
+  onSelectAll?: () => void;
+  isSwipeMode?: boolean;
+  onSwipeModeToggle?: () => void;
+  showCatPictures?: boolean;
+  onCatPicturesToggle?: () => void;
+  onStart?: (names: NameItem[]) => void;
+  isAdmin?: boolean;
+}
+
 function TournamentHeader({
   roundNumber,
   currentMatchNumber,
@@ -24,7 +46,7 @@ function TournamentHeader({
   onCatPicturesToggle,
   onStart,
   isAdmin,
-}) {
+}: TournamentHeaderProps) {
   const isSetupMode = selectedNames !== undefined;
 
   if (isSetupMode) {
@@ -38,12 +60,12 @@ function TournamentHeader({
                 onClick={onSelectAll}
                 type="button"
                 aria-label={
-                  selectedNames.length === availableNames.length
+                  availableNames && selectedNames.length === availableNames.length
                     ? "Clear all selections"
                     : "Select all names"
                 }
               >
-                {selectedNames.length === availableNames.length
+                {availableNames && selectedNames.length === availableNames.length
                   ? "✨ Start Fresh"
                   : "🎲 Select All"}
               </button>

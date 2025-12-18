@@ -10,6 +10,16 @@ import { devError } from "../../../../shared/utils/logger";
 import PhotoThumbnail from "./PhotoThumbnail";
 import styles from "../../TournamentSetup.module.css";
 
+interface PhotoGalleryProps {
+  galleryImages?: string[];
+  showAllPhotos: boolean;
+  onShowAllPhotosToggle: () => void;
+  onImageOpen: (image: string) => void;
+  isAdmin: boolean;
+  userName?: string;
+  onImagesUploaded: (images: string[]) => void;
+}
+
 function PhotoGallery({
   galleryImages = [],
   showAllPhotos,
@@ -18,7 +28,7 @@ function PhotoGallery({
   isAdmin,
   userName,
   onImagesUploaded,
-}) {
+}: PhotoGalleryProps) {
   // * Ensure galleryImages is always an array
   const safeGalleryImages = useMemo(
     () => (Array.isArray(galleryImages) ? galleryImages : []),
@@ -31,12 +41,12 @@ function PhotoGallery({
   );
 
   const handleFileUpload = useCallback(
-    async (e) => {
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
       if (!files.length) return;
 
       try {
-        const uploaded = [];
+        const uploaded: string[] = [];
         const uploadPromises = files.map(async (f) => {
           try {
             const compressed = await compressImageFile(f, {

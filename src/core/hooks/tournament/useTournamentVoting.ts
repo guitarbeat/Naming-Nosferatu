@@ -367,7 +367,7 @@ function getNextMatch(
         }));
       const comparisons = buildComparisonsMap(comparisonHistory);
 
-      let bestPair = null;
+      let bestPair: [string, string] | null = null;
       let bestScore = Infinity;
       const pairIndex =
         typeof sorterAny._pairIndex === "number"

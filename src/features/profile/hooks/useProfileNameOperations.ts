@@ -167,10 +167,10 @@ export function useProfileNameOperations(
   const performBulkOperation = useCallback(
     async (
       nameIds: IdType[],
-      operation: (userName: string, nameIds: IdType[]) => Promise<{ success: boolean; processed: number; error?: string; results?: unknown[]; errors?: string[] }>,
+      operation: (userName: string, nameIds: IdType[]) => Promise<{ success: boolean; processed?: number; error?: string; results?: unknown[]; errors?: string[] }>,
       successMessage: string,
       isHide: boolean
-    ) => {
+    ): Promise<void> => {
       devLog("[useProfileNameOperations] performBulkOperation called", {
         nameIds,
         nameIdsLength: nameIds?.length,
@@ -212,7 +212,7 @@ export function useProfileNameOperations(
 
         devLog("[useProfileNameOperations] Operation result:", result);
 
-        if (result.success && result.processed > 0) {
+        if (result.success && (result.processed ?? 0) > 0) {
           const action = isHide ? "hidden" : "unhidden";
           const count = result.processed;
           const message = `✅ Successfully ${action} ${count} name${count !== 1 ? "s" : ""}`;
@@ -275,20 +275,22 @@ export function useProfileNameOperations(
 
   // * Handle bulk hide operation
   const handleBulkHide = useCallback(
-    (nameIds: IdType[]) =>
-      performBulkOperation(nameIds, hiddenNamesAPI.hideNames, "Hidden", true),
+    async (nameIds: IdType[]) => {
+      await performBulkOperation(nameIds, hiddenNamesAPI.hideNames, "Hidden", true);
+    },
     [performBulkOperation],
   );
 
   // * Handle bulk unhide operation
   const handleBulkUnhide = useCallback(
-    (nameIds: IdType[]) =>
-      performBulkOperation(
+    async (nameIds: IdType[]) => {
+      await performBulkOperation(
         nameIds,
         hiddenNamesAPI.unhideNames,
         "Unhidden",
         false,
-      ),
+      );
+    },
     [performBulkOperation],
   );
 

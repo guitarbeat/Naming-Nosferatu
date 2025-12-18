@@ -11,7 +11,7 @@ import { getUserStats } from "../../../shared/services/supabase/api";
  * @param {string|null} userName - User name to fetch stats for, or null for aggregate stats from all users
  * @returns {Promise<Object|null>} User stats or aggregate stats or null
  */
-export async function fetchUserStatsFromDB(userName) {
+export async function fetchUserStatsFromDB(userName: string | null) {
   // * If userName is null, calculate aggregate stats from all users
   if (userName === null) {
     try {
@@ -106,12 +106,18 @@ export async function fetchUserStatsFromDB(userName) {
   }
 }
 
+interface Selection {
+  tournament_id: string;
+  name_id?: string | number;
+  selected_at?: string;
+}
+
 /**
  * * Generate selection pattern insights
  * @param {Array} selections - Array of selection objects
  * @returns {string} Selection pattern description
  */
-function generateSelectionPattern(selections) {
+function generateSelectionPattern(selections: Selection[]) {
   if (!selections || selections.length === 0)
     return "No selection data available";
 
@@ -135,35 +141,43 @@ function generateSelectionPattern(selections) {
  * @param {Array} selections - Array of selection objects
  * @returns {Promise<string>} Preferred categories description
  */
-async function generatePreferredCategories(selections) {
+async function generatePreferredCategories(selections: Selection[]) {
   try {
-    const nameIds = selections.map((s) => s.name_id).filter(Boolean);
+    const nameIds = selections
+      .map((s) => s.name_id)
+      .filter((id): id is string | number =>
+        id !== undefined && id !== null && (typeof id === "string" || typeof id === "number")
+      );
     const supabaseClient = await resolveSupabaseClient();
 
     if (!supabaseClient || nameIds.length === 0) {
       return "Analyzing your preferences...";
     }
 
+    // Convert all IDs to strings for Supabase query (Supabase .in() expects string[])
+    const stringIds = nameIds.map((id) => String(id));
+
     const { data: names, error } = await supabaseClient
       .from("cat_name_options")
       .select("categories")
-      .in("id", nameIds);
+      .in("id", stringIds);
 
     if (error || !names) return "Analyzing your preferences...";
 
-    const categoryCounts = {};
+    const categoryCounts: Record<string, number> = {};
     names.forEach((name) => {
       if (name.categories && Array.isArray(name.categories)) {
-        name.categories.forEach((cat) => {
+        name.categories.forEach((cat: string) => {
           categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
         });
       }
     });
 
-    const topCategories = Object.entries(categoryCounts)
-      .sort(([, a], [, b]) => b - a)
+    const topCategories: string[] = Object.entries(categoryCounts)
+      .sort(([, a], [, b]) => (b as number) - (a as number))
       .slice(0, 3)
-      .map(([cat]) => cat);
+      .map(([cat]) => cat)
+      .filter((cat: string | undefined): cat is string => typeof cat === "string");
 
     if (topCategories.length > 0) {
       return `You favor: ${topCategories.join(", ")}`;
@@ -183,9 +197,9 @@ async function generatePreferredCategories(selections) {
  * @returns {string} Improvement tip
  */
 function generateImprovementTip(
-  totalSelections,
-  totalTournaments,
-  currentStreak,
+  totalSelections: number,
+  totalTournaments: number,
+  currentStreak: number,
 ) {
   if (totalSelections === 0) {
     return "Start selecting names to see your first tournament!";
@@ -211,7 +225,7 @@ function generateImprovementTip(
  * @param {string|null} userName - User name to calculate stats for, or null for aggregate stats from all users
  * @returns {Promise<Object|null>} Selection statistics or null
  */
-export async function calculateSelectionStats(userName) {
+export async function calculateSelectionStats(userName: string | null) {
   try {
     const supabaseClient = await resolveSupabaseClient();
     if (!supabaseClient) return null;
@@ -254,23 +268,29 @@ export async function calculateSelectionStats(userName) {
         : 0;
 
     // Find most selected name and build per-name selection data
-    const nameCounts = {};
-    const nameSelectionCounts = {}; // Per name_id selection counts
-    const nameLastSelected = {}; // Per name_id last selected date
-    const nameSelectionFrequency = {}; // Per name_id selection frequency
+    const nameCounts: Record<string, number> = {};
+    const nameSelectionCounts: Record<string, number> = {}; // Per name_id selection counts
+    const nameLastSelected: Record<string, string> = {}; // Per name_id last selected date
+    const nameSelectionFrequency: Record<string, number> = {}; // Per name_id selection frequency
 
     selections.forEach((s) => {
       // Count by name (for most selected)
-      nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
+      const { name } = s as Selection & { name?: string };
+      if (name) {
+        nameCounts[name] = (nameCounts[name] || 0) + 1;
+      }
 
       // Count by name_id (for filtering)
-      nameSelectionCounts[s.name_id] =
-        (nameSelectionCounts[s.name_id] || 0) + 1;
+      if (s.name_id) {
+        nameSelectionCounts[s.name_id] =
+          (nameSelectionCounts[s.name_id] || 0) + 1;
+      }
 
       // Track last selected date per name_id
       const selectedDate = s.selected_at ? new Date(s.selected_at) : null;
       if (
         selectedDate &&
+        s.name_id &&
         (!nameLastSelected[s.name_id] ||
           selectedDate > new Date(nameLastSelected[s.name_id]))
       ) {
@@ -288,7 +308,7 @@ export async function calculateSelectionStats(userName) {
     });
 
     const mostSelectedName =
-      Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || "N/A";
+      Object.entries(nameCounts).sort(([, a], [, b]) => (b as number) - (a as number))[0]?.[0] || "N/A";
 
     // Calculate selection streak (consecutive days)
     const sortedSelections = selections
@@ -304,10 +324,10 @@ export async function calculateSelectionStats(userName) {
       if (i === 0) {
         tempStreak = 1;
       } else {
-        const prevDate = new Date(sortedSelections[i - 1]);
-        const currDate = new Date(sortedSelections[i]);
+        const prevDate = new Date(sortedSelections[i - 1] as string);
+        const currDate = new Date(sortedSelections[i] as string);
         const dayDiff = Math.floor(
-          (currDate - prevDate) / (1000 * 60 * 60 * 24),
+          (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24),
         );
 
         if (dayDiff === 1) {

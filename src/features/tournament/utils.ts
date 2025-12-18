@@ -9,7 +9,7 @@
  * @param {string[]} imageList
  * @returns {string|undefined}
  */
-export function getRandomCatImage(id, imageList = []) {
+export function getRandomCatImage(id: string | number, imageList: string[] = []): string | undefined {
   if (!Array.isArray(imageList) || imageList.length === 0) {
     return undefined;
   }
@@ -29,7 +29,7 @@ export function getRandomCatImage(id, imageList = []) {
  * @param {string[]} images
  * @returns {string[]}
  */
-export function deduplicateImages(images = []) {
+export function deduplicateImages(images: string[] = []): string[] {
   const seen = new Set();
   const unique = [];
 

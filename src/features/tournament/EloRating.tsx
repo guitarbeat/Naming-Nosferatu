@@ -22,10 +22,22 @@ import { ELO_RATING } from "../../core/constants";
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
+interface EloStats {
+  winsA?: number;
+  lossesA?: number;
+  winsB?: number;
+  lossesB?: number;
+}
+
 class EloRating {
+  defaultRating: number;
+  kFactor: number;
+  minRating: number;
+  maxRating: number;
+
   constructor(
-    defaultRating = ELO_RATING.DEFAULT_RATING,
-    kFactor = ELO_RATING.DEFAULT_K_FACTOR,
+    defaultRating: number = ELO_RATING.DEFAULT_RATING,
+    kFactor: number = ELO_RATING.DEFAULT_K_FACTOR,
   ) {
     this.defaultRating = defaultRating;
     this.kFactor = kFactor;
@@ -33,13 +45,13 @@ class EloRating {
     this.maxRating = ELO_RATING.MAX_RATING;
   }
 
-  getExpectedScore(ratingA, ratingB) {
+  getExpectedScore(ratingA: number, ratingB: number): number {
     return (
       1 / (1 + Math.pow(10, (ratingB - ratingA) / ELO_RATING.RATING_DIVISOR))
     );
   }
 
-  getKFactor(rating, games = 0) {
+  getKFactor(rating: number, games: number = 0): number {
     if (games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD) {
       return this.kFactor * ELO_RATING.NEW_PLAYER_K_MULTIPLIER;
     }
@@ -52,7 +64,7 @@ class EloRating {
     return this.kFactor;
   }
 
-  updateRating(rating, expected, actual, games = 0) {
+  updateRating(rating: number, expected: number, actual: number, games: number = 0): number {
     const k = this.getKFactor(rating, games);
     const newRating = Math.round(rating + k * (actual - expected));
     return Math.max(this.minRating, Math.min(this.maxRating, newRating));
@@ -68,7 +80,7 @@ class EloRating {
    * @param {number} [stats.lossesA] - Losses for player A
    * @returns {Object} New ratings and updated win/loss counts for both items
    */
-  calculateNewRatings(ratingA, ratingB, outcome, stats = {}) {
+  calculateNewRatings(ratingA: number, ratingB: number, outcome: "left" | "right" | "both" | "none" | string, stats: EloStats = {}) {
     const expectedA = this.getExpectedScore(ratingA, ratingB);
     const expectedB = this.getExpectedScore(ratingB, ratingA);
 

@@ -6,11 +6,18 @@
 import PropTypes from "prop-types";
 import { validateCatName } from "../../../shared/utils/validationUtils";
 import { TournamentButton } from "../../../shared/components/Button";
+import { NameItem } from "../../../shared/propTypes";
 import styles from "../TournamentSetup.module.css";
 
-function StartButton({ selectedNames, onStart, variant = "default" }) {
-  const validateNames = (names) => {
-    return names.every((nameObj) => {
+interface StartButtonProps {
+  selectedNames: NameItem[];
+  onStart: (names: NameItem[]) => void;
+  variant?: "default" | "header";
+}
+
+function StartButton({ selectedNames, onStart, variant = "default" }: StartButtonProps) {
+  const validateNames = (names: NameItem[]) => {
+    return names.every((nameObj: NameItem) => {
       if (!nameObj || typeof nameObj !== "object" || !nameObj.id) {
         return false;
       }
@@ -58,6 +65,7 @@ function StartButton({ selectedNames, onStart, variant = "default" }) {
       }
       size={variant === "header" ? "medium" : "large"}
       startIcon={isReady ? undefined : null}
+      endIcon={undefined}
     >
       {buttonText}
     </TournamentButton>
@@ -71,3 +79,4 @@ StartButton.propTypes = {
 };
 
 export default StartButton;
+export { StartButton };

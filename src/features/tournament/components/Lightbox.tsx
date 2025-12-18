@@ -69,7 +69,7 @@ function Lightbox({
 
   // * Touch gesture handlers for mobile
   const onTouchStart = useCallback((e: React.TouchEvent) => {
-    const [touch] = e.targetTouches;
+    const [touch] = Array.from(e.targetTouches);
     if (touch) {
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
       touchEndRef.current = { x: 0, y: 0 };
@@ -77,7 +77,7 @@ function Lightbox({
   }, []);
 
   const onTouchMove = useCallback((e: React.TouchEvent) => {
-    const [touch] = e.targetTouches;
+    const [touch] = Array.from(e.targetTouches);
     if (touch) {
       touchEndRef.current = { x: touch.clientX, y: touch.clientY };
     }

@@ -1,6 +1,31 @@
 import PropTypes from "prop-types";
 import clsx from "clsx";
+import { RefObject } from "react";
 import styles from "../../TournamentSetup.module.css";
+
+interface NameItem {
+  name?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+interface SwipeCardProps {
+  name: NameItem | null | undefined;
+  isSelected: boolean;
+  swipeDirection: "left" | "right" | null;
+  swipeProgress: number;
+  dragOffset: { x: number; y: number } | null | undefined;
+  isDragging: boolean;
+  isLongPressing: boolean;
+  showCatPictures: boolean;
+  imageSrc: string | null | undefined;
+  isAdmin: boolean;
+  gestureRef: RefObject<HTMLDivElement> | ((instance: HTMLDivElement | null) => void) | null | undefined;
+  onDragStart: (e: React.MouseEvent | React.TouchEvent) => void;
+  onDragMove: (e: React.MouseEvent | React.TouchEvent) => void;
+  onDragEnd: (e: React.MouseEvent | React.TouchEvent) => void;
+  stackIndex?: number;
+}
 
 function SwipeCard({
   name,
@@ -18,7 +43,7 @@ function SwipeCard({
   onDragMove,
   onDragEnd,
   stackIndex = 0,
-}) {
+}: SwipeCardProps) {
   const depth = Math.max(0, stackIndex);
   const isTopCard = depth === 0;
   const translateX = dragOffset?.x ?? 0;

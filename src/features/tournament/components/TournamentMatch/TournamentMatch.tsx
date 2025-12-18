@@ -12,6 +12,30 @@ import useMagneticPull from "../../hooks/useMagneticPull";
 import styles from "./FerrofluidMatch.module.css";
 import tournamentStyles from "../../Tournament.module.css";
 
+interface NameItem {
+  id?: string | number;
+  name?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+interface TournamentMatchProps {
+  currentMatch: {
+    left?: NameItem;
+    right?: NameItem;
+  };
+  selectedOption: "left" | "right" | "both" | "neither" | null;
+  isProcessing: boolean;
+  isTransitioning: boolean;
+  votingError?: unknown;
+  onNameCardClick: (option: "left" | "right") => void;
+  onVoteWithAnimation: (option: string) => void;
+  onVoteRetry: () => void;
+  onDismissError: () => void;
+  showCatPictures?: boolean;
+  imageList?: string[];
+}
+
 function TournamentMatch({
   currentMatch,
   selectedOption,
@@ -24,9 +48,9 @@ function TournamentMatch({
   onDismissError,
   showCatPictures = false,
   imageList = [],
-}) {
-  const leftOrbRef = useRef(null);
-  const rightOrbRef = useRef(null);
+}: TournamentMatchProps) {
+  const leftOrbRef = useRef<HTMLDivElement>(null);
+  const rightOrbRef = useRef<HTMLDivElement>(null);
   const isEnabled = !isProcessing && !isTransitioning;
 
   useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);

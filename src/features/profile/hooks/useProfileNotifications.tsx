@@ -23,7 +23,7 @@ export function useProfileNotifications() {
   } = useToast();
 
   const showSuccess = useCallback(
-    (message) => {
+    (message: string) => {
       devLog("✅", message);
       showSuccessToast(message, { duration: 5000 });
     },
@@ -31,7 +31,7 @@ export function useProfileNotifications() {
   );
 
   const showError = useCallback(
-    (message) => {
+    (message: string) => {
       devError("❌", message);
       showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
     },
@@ -39,7 +39,7 @@ export function useProfileNotifications() {
   );
 
   const showToast = useCallback(
-    (message, type = "info") => {
+    (message: string, type = "info") => {
       devLog(`📢 [${type}]`, message);
       showToastMessage({
         message,
@@ -58,6 +58,8 @@ export function useProfileNotifications() {
         removeToast={removeToast}
         position="top-right"
         maxToasts={NOTIFICATION.MAX_TOASTS}
+        onDismiss={() => {}}
+        message=""
       />
     );
   }, [toasts, removeToast]);

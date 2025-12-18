@@ -8,6 +8,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./MatchResult.module.css";
 
+interface MatchResultProps {
+  showMatchResult: boolean;
+  lastMatchResult: string | null;
+  roundNumber: number;
+  currentMatchNumber: number;
+  totalMatches: number;
+}
+
 /**
  * MatchResult component
  * @param {Object} props - Component props
@@ -24,7 +32,7 @@ function MatchResult({
   roundNumber,
   currentMatchNumber,
   totalMatches,
-}) {
+}: MatchResultProps) {
   if (!showMatchResult || !lastMatchResult) return null;
 
   return (

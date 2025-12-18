@@ -5,7 +5,43 @@
 
 import { GESTURE_THRESHOLDS } from "../../core/constants";
 
+interface ActiveTouch {
+  id: number;
+  startX: number;
+  startY: number;
+  startTime: number;
+  lastX: number;
+  lastY: number;
+  lastTime: number;
+  velocity: { x: number; y: number };
+  distance: number;
+  longPressTimer?: ReturnType<typeof setTimeout> | null;
+  initialPinchDistance?: number;
+  lastTapTime?: number;
+}
+
+interface GestureCallback {
+  type: string;
+  callback: (data: unknown) => void;
+  options: {
+    threshold: number;
+    preventDefault: boolean;
+    [key: string]: unknown;
+  };
+}
+
 class MobileGestures {
+  gestures: Map<string, unknown>;
+  activeTouches: Map<string, ActiveTouch>;
+  gestureCallbacks: Map<string, GestureCallback>;
+  isEnabled: boolean;
+  thresholds: {
+    swipe: number;
+    longPress: number;
+    doubleTap: number;
+    pinch: number;
+  };
+
   constructor() {
     this.gestures = new Map();
     this.activeTouches = new Map();
@@ -25,7 +61,7 @@ class MobileGestures {
    * @param {Function} callback - Callback function to execute
    * @param {Object} options - Gesture options
    */
-  register(gestureType, callback, options = {}) {
+  register(gestureType: string, callback: (data: unknown) => void, options: Record<string, unknown> = {}) {
     const gestureId = `${gestureType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     this.gestureCallbacks.set(gestureId, {
@@ -45,7 +81,7 @@ class MobileGestures {
    * Unregister a gesture handler
    * @param {string} gestureId - ID returned from register
    */
-  unregister(gestureId) {
+  unregister(gestureId: string) {
     this.gestureCallbacks.delete(gestureId);
   }
 
@@ -67,7 +103,7 @@ class MobileGestures {
    * Handle touch start events
    * @param {TouchEvent} event - Touch event
    */
-  handleTouchStart(event) {
+  handleTouchStart(event: TouchEvent) {
     if (!this.isEnabled) return;
 
     const touches = Array.from(event.touches);
@@ -101,7 +137,7 @@ class MobileGestures {
    * Handle touch move events
    * @param {TouchEvent} event - Touch event
    */
-  handleTouchMove(event) {
+  handleTouchMove(event: TouchEvent) {
     if (!this.isEnabled) return;
 
     const touches = Array.from(event.touches);
@@ -146,7 +182,7 @@ class MobileGestures {
    * Handle touch end events
    * @param {TouchEvent} event - Touch event
    */
-  handleTouchEnd(event) {
+  handleTouchEnd(event: TouchEvent) {
     if (!this.isEnabled) return;
 
     const touches = Array.from(event.touches);
@@ -173,19 +209,21 @@ class MobileGestures {
    * @param {Touch} touch - Touch object
    * @param {TouchEvent} event - Touch event
    */
-  handleSingleTouchStart(touch, event) {
+  handleSingleTouchStart(touch: Touch, event: TouchEvent) {
     // Start long press timer
     const longPressTimer = setTimeout(() => {
       this.triggerGesture("longPress", {
         touch,
         event,
-        duration: Date.now() - touch.startTime,
+        duration: Date.now() - (this.activeTouches.get(`${touch.identifier}_0`)?.startTime || Date.now()),
       });
     }, this.thresholds.longPress);
 
     // Store timer for cleanup
-    this.activeTouches.get(`${touch.identifier}_0`).longPressTimer =
-      longPressTimer;
+    const activeTouch = this.activeTouches.get(`${touch.identifier}_0`);
+    if (activeTouch) {
+      activeTouch.longPressTimer = longPressTimer;
+    }
   }
 
   /**
@@ -193,7 +231,7 @@ class MobileGestures {
    * @param {Touch} touch - Touch object
    * @param {TouchEvent} event - Touch event
    */
-  handleSingleTouchMove(touch, event) {
+  handleSingleTouchMove(touch: Touch, event: TouchEvent) {
     const activeTouch = this.activeTouches.get(`${touch.identifier}_0`);
     if (!activeTouch) return;
 
@@ -231,7 +269,7 @@ class MobileGestures {
    * @param {Touch} touch2 - Second touch
    * @returns {number} Distance in pixels
    */
-  calculateTouchDistance(touch1, touch2) {
+  calculateTouchDistance(touch1: Touch, touch2: Touch) {
     return Math.sqrt(
       Math.pow(touch2.clientX - touch1.clientX, 2) +
         Math.pow(touch2.clientY - touch1.clientY, 2),
@@ -243,17 +281,21 @@ class MobileGestures {
    * @param {Touch[]} touches - Array of touch objects
    * @param {TouchEvent} _event - Touch event
    */
-  handleMultiTouchStart(touches, _event) {
+  handleMultiTouchStart(touches: Touch[], _event: TouchEvent) {
     if (touches.length === 2) {
       const [touch1, touch2] = touches;
 
       const initialDistance = this.calculateTouchDistance(touch1, touch2);
 
       // Store initial pinch distance
-      this.activeTouches.get(`${touch1.identifier}_0`).initialPinchDistance =
-        initialDistance;
-      this.activeTouches.get(`${touch2.identifier}_1`).initialPinchDistance =
-        initialDistance;
+      const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
+      const activeTouch2 = this.activeTouches.get(`${touch2.identifier}_1`);
+      if (activeTouch1) {
+        activeTouch1.initialPinchDistance = initialDistance;
+      }
+      if (activeTouch2) {
+        activeTouch2.initialPinchDistance = initialDistance;
+      }
     }
   }
 
@@ -262,7 +304,7 @@ class MobileGestures {
    * @param {Touch[]} touches - Array of touch objects
    * @param {TouchEvent} event - Touch event
    */
-  handleMultiTouchMove(touches, event) {
+  handleMultiTouchMove(touches: Touch[], event: TouchEvent) {
     if (touches.length === 2) {
       const [touch1, touch2] = touches;
 
@@ -296,7 +338,7 @@ class MobileGestures {
    * @param {Touch} touch - Touch object
    * @param {TouchEvent} event - Touch event
    */
-  handleTouchEndForTouch(activeTouch, touch, event) {
+  handleTouchEndForTouch(activeTouch: ActiveTouch, touch: Touch, event: TouchEvent) {
     const duration = Date.now() - activeTouch.startTime;
 
     // Clear long press timer
@@ -319,7 +361,7 @@ class MobileGestures {
    * @param {Touch} touch - Touch object
    * @param {TouchEvent} event - Touch event
    */
-  handleTap(activeTouch, touch, event) {
+  handleTap(activeTouch: ActiveTouch, touch: Touch, event: TouchEvent) {
     const now = Date.now();
     const lastTap = activeTouch.lastTapTime || 0;
 
@@ -345,7 +387,7 @@ class MobileGestures {
    * Handle all touches ended
    * @param {TouchEvent} _event - Touch event
    */
-  handleAllTouchesEnded(_event) {
+  handleAllTouchesEnded(_event: TouchEvent) {
     this.triggerGesture("allTouchesEnded", {
       event: _event,
       touchCount: this.activeTouches.size,
@@ -357,7 +399,7 @@ class MobileGestures {
    * @param {number} angle - Angle in degrees
    * @returns {string} Direction (left, right, up, down)
    */
-  getSwipeDirection(angle) {
+  getSwipeDirection(angle: number): string {
     if (angle >= -45 && angle < 45) return "right";
     if (angle >= 45 && angle < 135) return "down";
     if (angle >= 135 || angle < -135) return "left";
@@ -369,11 +411,11 @@ class MobileGestures {
    * @param {string} gestureType - Type of gesture
    * @param {Object} data - Gesture data
    */
-  triggerGesture(gestureType, data) {
+  triggerGesture(gestureType: string, data: { event?: TouchEvent; [key: string]: unknown }) {
     this.gestureCallbacks.forEach((gesture, _gestureId) => {
       if (gesture.type === gestureType) {
         try {
-          if (gesture.options.preventDefault) {
+          if (gesture.options.preventDefault && data.event) {
             data.event.preventDefault();
           }
           gesture.callback(data);
@@ -393,9 +435,9 @@ class MobileGestures {
    * Add haptic feedback
    * @param {string} type - Type of haptic feedback (light, medium, heavy)
    */
-  addHapticFeedback(type = "light") {
+  addHapticFeedback(type: string = "light") {
     if ("vibrate" in navigator) {
-      const patterns = {
+      const patterns: Record<string, number[]> = {
         light: [10],
         medium: [20],
         heavy: [50],

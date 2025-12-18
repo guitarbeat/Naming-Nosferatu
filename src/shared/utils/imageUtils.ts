@@ -8,7 +8,7 @@
  * @param {File} file - Image file to load
  * @returns {Promise<HTMLImageElement>} Loaded image element
  */
-async function loadImageFromFile(file) {
+async function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -31,9 +31,9 @@ async function loadImageFromFile(file) {
  * @returns {Promise<File>} Compressed image as a File (webp) or original on failure
  */
 export async function compressImageFile(
-  file,
-  { maxWidth = 1600, maxHeight = 1600, quality = 0.8 } = {},
-) {
+  file: File,
+  { maxWidth = 1600, maxHeight = 1600, quality = 0.8 }: { maxWidth?: number; maxHeight?: number; quality?: number } = {},
+): Promise<File> {
   try {
     const img = await loadImageFromFile(file);
     const { width, height } = img;
@@ -49,9 +49,10 @@ export async function compressImageFile(
     canvas.width = targetW;
     canvas.height = targetH;
     const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return file;
     ctx.drawImage(img, 0, 0, targetW, targetH);
 
-    const blob = await new Promise((resolve) =>
+    const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(
         resolve,
         "image/webp",

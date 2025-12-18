@@ -7,13 +7,21 @@ import PropTypes from "prop-types";
 import Bracket from "../../../../shared/components/Bracket/Bracket";
 import styles from "../../Tournament.module.css";
 
+interface TournamentFooterProps {
+  showBracket: boolean;
+  showKeyboardHelp: boolean;
+  transformedMatches: unknown[];
+  onToggleBracket: () => void;
+  onToggleKeyboardHelp: () => void;
+}
+
 function TournamentFooter({
   showBracket,
   showKeyboardHelp,
   transformedMatches,
   onToggleBracket,
   onToggleKeyboardHelp,
-}) {
+}: TournamentFooterProps) {
   return (
     <>
       {/* Tournament Controls */}

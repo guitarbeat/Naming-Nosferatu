@@ -1,1 +1,1 @@
-export { default } from "./CatBackground";
+export { default } from "./CatBackground.jsx";

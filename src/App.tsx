@@ -14,7 +14,7 @@ import Error from "./shared/components/Error/Error";
 import Loading from "./shared/components/Loading/Loading";
 import { ScrollToTopButton } from "./shared/components/Button";
 import { AppNavbar } from "./shared/components/AppNavbar";
-import CatBackground from "./shared/components/CatBackground";
+import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 // * Performance monitoring

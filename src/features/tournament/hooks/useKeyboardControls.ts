@@ -1,20 +1,35 @@
-import { useEffect } from "react";
+import { useEffect, RefObject } from "react";
+
+interface KeyboardControlsOptions {
+  onSelectLeft?: () => void;
+  onSelectRight?: () => void;
+  onClearSelection?: () => void;
+  onToggleHelp?: () => void;
+  onUndo?: () => void;
+  onToggleCatPictures?: () => void;
+  onToggleMute?: () => void;
+}
+
+interface EventListener {
+  event: string;
+  handler: (event: KeyboardEvent) => void;
+}
 
 /**
  * Keyboard bindings for tournament interactions.
  * Provides lightweight defaults to keep UI responsive without the legacy hook.
  */
 export function useKeyboardControls(
-  selectedOption,
-  isProcessing,
-  isTransitioning,
-  isMuted,
-  handleVoteWithAnimation,
-  globalEventListenersRef,
-  options = {},
+  selectedOption: string | null,
+  isProcessing: boolean,
+  isTransitioning: boolean,
+  isMuted: boolean | undefined,
+  handleVoteWithAnimation: ((option: string) => void) | undefined,
+  globalEventListenersRef: RefObject<Set<EventListener>> | undefined,
+  options: KeyboardControlsOptions = {},
 ) {
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (isProcessing || isTransitioning) {
         return;
       }

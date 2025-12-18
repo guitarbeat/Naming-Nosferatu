@@ -66,12 +66,12 @@ function useUserSession({
   showToast,
 }: { showToast?: (props: { message: string; type: string }) => void } = {}) {
   const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const { user, userActions } = useAppStore();
 
   // Initialize user from localStorage on mount
   useEffect(() => {
-    let storedUserName = null;
+    let storedUserName: string | null = null;
     try {
       storedUserName = localStorage.getItem("catNamesUser");
     } catch (error) {

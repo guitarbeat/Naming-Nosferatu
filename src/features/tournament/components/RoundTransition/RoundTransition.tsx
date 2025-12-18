@@ -7,6 +7,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import styles from "./RoundTransition.module.css";
 
+interface RoundTransitionProps {
+  showRoundTransition: boolean;
+  nextRoundNumber: number | null;
+}
+
 /**
  * RoundTransition component
  * @param {Object} props - Component props
@@ -14,7 +19,7 @@ import styles from "./RoundTransition.module.css";
  * @param {number|null} props.nextRoundNumber - The next round number to display
  * @returns {JSX.Element|null} The round transition component or null
  */
-function RoundTransition({ showRoundTransition, nextRoundNumber }) {
+function RoundTransition({ showRoundTransition, nextRoundNumber }: RoundTransitionProps) {
   if (!showRoundTransition || !nextRoundNumber) return null;
 
   return (

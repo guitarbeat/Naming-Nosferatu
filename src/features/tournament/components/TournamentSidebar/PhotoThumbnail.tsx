@@ -7,8 +7,14 @@ import PropTypes from "prop-types";
 import { GALLERY_IMAGE_SIZES } from "../../constants";
 import styles from "../../TournamentSetup.module.css";
 
-const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
-  const elementRef = useRef(null);
+interface PhotoThumbnailProps {
+  image: string;
+  index: number;
+  onImageOpen: (image: string) => void;
+}
+
+const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps) => {
+  const elementRef = useRef<HTMLButtonElement>(null);
 
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
@@ -29,7 +35,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }) => {
     const element = elementRef.current;
     if (!element || imageError) return;
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const rect = element.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;

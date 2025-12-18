@@ -12,10 +12,10 @@ import { CAT_IMAGES } from "../constants";
  * Custom hook for loading gallery images from multiple sources
  * @returns {Object} Gallery images and management functions
  */
-export function useImageGallery({ isLightboxOpen }) {
-  const [galleryImages, setGalleryImages] = useState(CAT_IMAGES);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+export function useImageGallery({ isLightboxOpen }: { isLightboxOpen: boolean }) {
+  const [galleryImages, setGalleryImages] = useState<string[]>(CAT_IMAGES);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,10 +61,10 @@ export function useImageGallery({ isLightboxOpen }) {
         ]);
 
         // * Merge: supa first, then manifest, then built-ins
-        const merged = [...(supa || []), ...(manifest || []), ...CAT_IMAGES];
+        const merged: string[] = [...(supa || []), ...(manifest || []), ...CAT_IMAGES];
 
         // * Deduplicate by base name (ignore extension), prefer earlier entries
-        const deduped = deduplicateImages(merged);
+        const deduped: string[] = deduplicateImages(merged) as string[];
 
         if (!cancelled) {
           setGalleryImages(deduped);
@@ -88,15 +88,15 @@ export function useImageGallery({ isLightboxOpen }) {
     };
   }, [isLightboxOpen]);
 
-  const addImages = useCallback((newImages) => {
-    setGalleryImages((prev) => {
+  const addImages = useCallback((newImages: string[]) => {
+    setGalleryImages((prev: string[]) => {
       const merged = [...newImages, ...prev];
-      return deduplicateImages(merged);
+      return deduplicateImages(merged) as string[];
     });
   }, []);
 
   const imageMap = useMemo(() => {
-    return new Map(galleryImages.map((img, idx) => [img, idx]));
+    return new Map<string, number>(galleryImages.map((img, idx) => [img, idx]));
   }, [galleryImages]);
 
   return {

@@ -1,13 +1,21 @@
 import PropTypes from "prop-types";
 import styles from "../../TournamentSetup.module.css";
 
+interface SwipeControlsProps {
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+  onUndo: () => void;
+  currentIndex: number;
+  totalCount: number;
+}
+
 function SwipeControls({
   onSwipeLeft,
   onSwipeRight,
   onUndo,
   currentIndex,
   totalCount,
-}) {
+}: SwipeControlsProps) {
   return (
     <div
       className={styles.swipeButtons}

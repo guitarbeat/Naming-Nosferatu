@@ -10,7 +10,39 @@ import {
   applyNameFilters,
   mapFilterStatusToVisibility,
 } from "../../../../shared/utils/nameFilterUtils";
+import { NameItem } from "../../../../shared/propTypes";
 import styles from "../../TournamentSetup.module.css";
+
+interface NameSelectionProps {
+  selectedNames: NameItem[];
+  availableNames: NameItem[];
+  onToggleName: (name: NameItem) => void;
+  onStartTournament?: (names: NameItem[]) => void;
+  isAdmin?: boolean;
+  selectedCategory?: string;
+  searchTerm?: string;
+  sortBy?: string;
+  filterStatus?: "visible" | "hidden" | "all";
+  isSwipeMode?: boolean;
+  onToggleSwipeMode?: () => void;
+  showCatPictures?: boolean;
+  onToggleCatPictures?: () => void;
+  imageList?: string[];
+  SwipeableCards?: React.ComponentType<{
+    names: NameItem[];
+    selectedNames: NameItem[];
+    onToggleName: (name: NameItem) => void;
+    isAdmin?: boolean;
+    showCatPictures?: boolean;
+    imageList?: string[];
+    onStartTournament?: (names: NameItem[]) => void;
+  }>;
+  showSelectedOnly?: boolean;
+  onToggleShowSelected?: () => void;
+  analysisMode?: boolean;
+  onToggleVisibility?: (nameId: string | number) => void;
+  onDelete?: (name: NameItem) => void;
+}
 
 function NameSelection({
   selectedNames,
@@ -36,7 +68,7 @@ function NameSelection({
   // Admin handlers
   onToggleVisibility,
   onDelete,
-}) {
+}: NameSelectionProps) {
   // Build filter config
   const filters = useMemo(
     () => ({
@@ -50,7 +82,7 @@ function NameSelection({
 
   // Calculate filtered names for display count and swipe mode
   const filteredNames = useMemo(() => {
-    const visibility = mapFilterStatusToVisibility(filterStatus);
+    const visibility = mapFilterStatusToVisibility(filterStatus || "visible");
 
     let result = applyNameFilters(availableNames, {
       searchTerm,
@@ -62,7 +94,11 @@ function NameSelection({
 
     if (showSelectedOnly) {
       result = result.filter((name) =>
-        selectedNames.some((selected) => selected.id === name.id),
+        selectedNames.some((selected) => {
+          const nameId = name.id;
+          const selectedId = selected.id;
+          return nameId !== undefined && selectedId !== undefined && nameId === selectedId;
+        }),
       );
     }
 
@@ -86,7 +122,7 @@ function NameSelection({
         </div>
       )}
 
-      {isSwipeMode ? (
+      {isSwipeMode && SwipeableCards ? (
         <SwipeableCards
           names={filteredNames}
           selectedNames={selectedNames}

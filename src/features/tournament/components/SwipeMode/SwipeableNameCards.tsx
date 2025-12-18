@@ -8,9 +8,20 @@ import useMobileGestures from "./useMobileGestures";
 import { TIMING } from "../../../../core/constants";
 import { getRandomCatImage } from "../../utils";
 import { CAT_IMAGES } from "../../constants";
+import { NameItem } from "../../../../shared/propTypes";
 import SwipeCard from "./SwipeCard";
 import SwipeControls from "./SwipeControls";
 import styles from "../../TournamentSetup.module.css";
+
+interface SwipeableNameCardsProps {
+  names: NameItem[];
+  selectedNames: NameItem[];
+  onToggleName: (name: NameItem) => void;
+  isAdmin?: boolean;
+  showCatPictures?: boolean;
+  imageList?: string[];
+  onStartTournament?: (names: NameItem[]) => void;
+}
 
 function SwipeableNameCards({
   names,
@@ -20,24 +31,24 @@ function SwipeableNameCards({
   showCatPictures = false,
   imageList = CAT_IMAGES,
   onStartTournament,
-}) {
+}: SwipeableNameCardsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState(null);
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const [swipeProgress, setSwipeProgress] = useState(0);
   const [isLongPressing, setIsLongPressing] = useState(false);
 
   const currentName = names[currentIndex];
   const nextName = names[currentIndex + 1];
   const nextImageSrc =
-    showCatPictures && nextName
+    showCatPictures && nextName && imageList && imageList.length > 0
       ? getRandomCatImage(nextName.id, imageList)
       : null;
   const isSelected = selectedNames.some((n) => n.id === currentName?.id);
   const imageSrc =
-    showCatPictures && currentName
+    showCatPictures && currentName && imageList && imageList.length > 0
       ? getRandomCatImage(currentName.id, imageList)
       : null;
 
@@ -61,14 +72,14 @@ function SwipeableNameCards({
     },
   });
 
-  const handleDragStart = (e) => {
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     // * Prevent default to avoid text selection and scrolling
     e.preventDefault();
     e.stopPropagation();
 
-    const touch = e.touches ? e.touches[0] : e;
-    const startX = touch.clientX || touch.pageX;
-    const startY = touch.clientY || touch.pageY;
+    const touch = "touches" in e && e.touches ? e.touches[0] : e as React.MouseEvent;
+    const startX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
+    const startY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
 
     setDragStart({ x: startX, y: startY });
     setIsDragging(true);
@@ -77,16 +88,16 @@ function SwipeableNameCards({
     setDragOffset({ x: 0, y: 0 });
   };
 
-  const handleDragMove = (e) => {
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
 
     // * Prevent default to avoid scrolling
     e.preventDefault();
     e.stopPropagation();
 
-    const touch = e.touches ? e.touches[0] : e;
-    const currentX = touch.clientX || touch.pageX;
-    const currentY = touch.clientY || touch.pageY;
+    const touch = "touches" in e && e.touches ? e.touches[0] : e as React.MouseEvent;
+    const currentX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
+    const currentY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
     const deltaX = currentX - dragStart.x;
     const deltaY = currentY - dragStart.y;
 
@@ -104,7 +115,7 @@ function SwipeableNameCards({
     }
   };
 
-  const handleDragEnd = (e) => {
+  const handleDragEnd = (e?: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) {
       return;
     }
@@ -157,7 +168,7 @@ function SwipeableNameCards({
     }
   };
 
-  const handleSwipeButton = (direction) => {
+  const handleSwipeButton = (direction: "left" | "right") => {
     setSwipeDirection(direction);
     setSwipeProgress(1);
 

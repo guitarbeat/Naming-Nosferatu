@@ -3,7 +3,7 @@ const isBrowser = () => typeof window !== "undefined";
 const canUseMatchMedia = () =>
   isBrowser() && typeof window.matchMedia === "function";
 
-export const getMediaQueryList = (query) => {
+export const getMediaQueryList = (query: string): MediaQueryList | null => {
   if (!canUseMatchMedia()) {
     return null;
   }
@@ -18,7 +18,7 @@ export const getMediaQueryList = (query) => {
   }
 };
 
-export const attachMediaQueryListener = (mediaQueryList, listener) => {
+export const attachMediaQueryListener = (mediaQueryList: MediaQueryList | null, listener: (event: MediaQueryListEvent) => void): () => void => {
   if (!mediaQueryList || typeof listener !== "function") {
     return () => {};
   }

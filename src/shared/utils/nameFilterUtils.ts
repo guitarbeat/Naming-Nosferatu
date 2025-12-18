@@ -4,12 +4,35 @@
  * Single source of truth: names are either visible or hidden.
  */
 
+interface NameItem {
+  is_hidden?: boolean;
+  isHidden?: boolean;
+  name?: string;
+  description?: string;
+  categories?: string[];
+  avg_rating?: number;
+  wins?: number;
+  losses?: number;
+  popularity_score?: number;
+  created_at?: string;
+  [key: string]: unknown;
+}
+
+interface FilterOptions {
+  searchTerm?: string;
+  category?: string | null;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  visibility?: "visible" | "hidden" | "all";
+  isAdmin?: boolean;
+}
+
 /**
  * Check if a name is hidden
  * @param {Object} name - Name object
  * @returns {boolean} True if hidden
  */
-export function isNameHidden(name) {
+export function isNameHidden(name: NameItem | null | undefined): boolean {
   return name?.is_hidden === true || name?.isHidden === true;
 }
 
@@ -18,7 +41,7 @@ export function isNameHidden(name) {
  * @param {Array} names - Array of name objects
  * @returns {Array} Filtered array of visible names
  */
-export function getVisibleNames(names) {
+export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
   if (!Array.isArray(names)) return [];
   return names.filter((name) => !isNameHidden(name));
 }
@@ -28,7 +51,7 @@ export function getVisibleNames(names) {
  * @param {string} filterStatus - Filter status ("hidden" | "all" | "visible")
  * @returns {string} Visibility string ("hidden" | "all" | "visible")
  */
-export function mapFilterStatusToVisibility(filterStatus) {
+export function mapFilterStatusToVisibility(filterStatus: string): "hidden" | "all" | "visible" {
   if (filterStatus === "hidden") return "hidden";
   if (filterStatus === "all") return "all";
   return "visible"; // Default to visible
@@ -43,9 +66,9 @@ export function mapFilterStatusToVisibility(filterStatus) {
  * @returns {Array} Filtered names
  */
 function filterByVisibility(
-  names,
-  { visibility = "visible", isAdmin = false } = {},
-) {
+  names: NameItem[] | null | undefined,
+  { visibility = "visible", isAdmin = false }: { visibility?: "visible" | "hidden" | "all"; isAdmin?: boolean } = {},
+): NameItem[] {
   if (!Array.isArray(names)) return [];
 
   // Non-admins always see only visible names
@@ -77,7 +100,7 @@ function filterByVisibility(
  * @param {boolean} filters.isAdmin - Admin status
  * @returns {Array} Filtered and sorted names
  */
-export function applyNameFilters(names, filters = {}) {
+export function applyNameFilters(names: NameItem[] | null | undefined, filters: FilterOptions = {}): NameItem[] {
   const {
     searchTerm = "",
     category = null,
@@ -87,6 +110,9 @@ export function applyNameFilters(names, filters = {}) {
     isAdmin = false,
   } = filters;
 
+  if (!names || !Array.isArray(names)) {
+    return [];
+  }
   let result = [...names];
 
   // 1. Filter by visibility (most important - single source of truth)

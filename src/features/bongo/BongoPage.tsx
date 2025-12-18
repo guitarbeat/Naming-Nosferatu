@@ -14,7 +14,8 @@ const BongoPage: React.FC<BongoPageProps> = ({ isLoggedIn, userName }) => {
       <div className={styles.content}>
         <h1 className={styles.title}>Bongo Cat</h1>
         <div className={styles.catWrapper}>
-          <BongoCat size={300} personality="playful" enableSounds={true} />
+          {/* @ts-expect-error - BongoCat uses PropTypes, not TypeScript types */}
+          <BongoCat size={300} personality="playful" enableSounds={true} containerRef={null} />
         </div>
         {isLoggedIn && (
           <p className={styles.welcome}>

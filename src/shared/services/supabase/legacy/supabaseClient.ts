@@ -39,7 +39,7 @@ export const catNamesAPI = {
    * Get all names with descriptions and ratings
    * @param {boolean} includeHidden - If true, include hidden names (for admin views)
    */
-  async getNamesWithDescriptions(includeHidden = false) {
+  async getNamesWithDescriptions(includeHidden: boolean = false) {
     try {
       // * Get the Supabase client (reuses existing instance)
       const client = await resolveSupabaseClient();
@@ -390,7 +390,7 @@ export const catNamesAPI = {
    * @param {string} description - The description for the name
    * @param {string} [userName] - Optional user name to set context for RLS policies
    */
-  async addName(name, description = "", userName = null) {
+  async addName(name: string, description: string = "", userName: string | null = null) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -429,7 +429,7 @@ export const catNamesAPI = {
       }
       return {
         success: false,
-        error: error.message || "Unknown error occurred",
+        error: (error as { message?: string }).message || "Unknown error occurred",
       };
     }
   },
@@ -437,7 +437,7 @@ export const catNamesAPI = {
   /**
    * Remove a name option
    */
-  async removeName(name) {
+  async removeName(name: string) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -467,7 +467,7 @@ export const catNamesAPI = {
       }
       return {
         success: false,
-        error: error.message || "Unknown error occurred",
+        error: (error as { message?: string }).message || "Unknown error occurred",
       };
     }
   },
@@ -475,7 +475,7 @@ export const catNamesAPI = {
   /**
    * Get leaderboard data using optimized direct queries with covering indexes
    */
-  async getLeaderboard(limit = 50, categoryId = null, _minTournaments = 3) {
+  async getLeaderboard(limit: number | null = 50, categoryId: string | null = null, _minTournaments: number = 3) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -513,7 +513,12 @@ export const catNamesAPI = {
       }
 
       // Aggregate ratings by name_id
-      const nameStats = new Map();
+      const nameStats = new Map<string | number, {
+        totalRating: number;
+        count: number;
+        totalWins: number;
+        totalLosses: number;
+      }>();
       (ratingStats || []).forEach((r) => {
         if (!nameStats.has(r.name_id)) {
           nameStats.set(r.name_id, {
@@ -524,10 +529,12 @@ export const catNamesAPI = {
           });
         }
         const stats = nameStats.get(r.name_id);
-        stats.totalRating += Number(r.rating) || 1500;
-        stats.count += 1;
-        stats.totalWins += r.wins || 0;
-        stats.totalLosses += r.losses || 0;
+        if (stats) {
+          stats.totalRating += Number(r.rating) || 1500;
+          stats.count += 1;
+          stats.totalWins += r.wins || 0;
+          stats.totalLosses += r.losses || 0;
+        }
       });
 
       // Get name details from cat_name_options
@@ -591,7 +598,7 @@ export const catNamesAPI = {
    * @param {number} limit - Maximum number of results
    * @returns {Array} Names sorted by selection count
    */
-  async getSelectionPopularity(limit = 20) {
+  async getSelectionPopularity(limit: number | null = 20) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -610,14 +617,17 @@ export const catNamesAPI = {
       }
 
       // Aggregate selections by name
-      const selectionCounts = new Map();
+      const selectionCounts = new Map<string | number, { name_id: string | number; name: string; count: number }>();
 
       (data || []).forEach((row) => {
         const key = row.name_id;
         if (!selectionCounts.has(key)) {
           selectionCounts.set(key, { name_id: key, name: row.name, count: 0 });
         }
-        selectionCounts.get(key).count += 1;
+        const entry = selectionCounts.get(key);
+        if (entry) {
+          entry.count += 1;
+        }
       });
 
       // Convert to array and sort by count
@@ -652,9 +662,9 @@ export const catNamesAPI = {
    * @returns {Array} Names with full popularity metrics
    */
   async getPopularityAnalytics(
-    limit = 20,
-    userFilter = "all",
-    currentUserName = null,
+    limit: number | null = 20,
+    userFilter: string | null = "all",
+    currentUserName: string | null = null,
   ) {
     try {
       if (!(await isSupabaseAvailable())) {
@@ -698,18 +708,26 @@ export const catNamesAPI = {
       const names = namesResult.data || [];
 
       // Build selection stats
-      const selectionStats = new Map();
+      const selectionStats = new Map<string | number, { count: number; users: Set<string> }>();
       selections.forEach((s) => {
         if (!selectionStats.has(s.name_id)) {
-          selectionStats.set(s.name_id, { count: 0, users: new Set() });
+          selectionStats.set(s.name_id, { count: 0, users: new Set<string>() });
         }
         const stat = selectionStats.get(s.name_id);
-        stat.count += 1;
-        stat.users.add(s.user_name);
+        if (stat) {
+          stat.count += 1;
+          stat.users.add(s.user_name);
+        }
       });
 
       // Build rating stats
-      const ratingStats = new Map();
+      const ratingStats = new Map<string | number, {
+        totalRating: number;
+        count: number;
+        wins: number;
+        losses: number;
+        users: Set<string>;
+      }>();
       ratings.forEach((r) => {
         if (!ratingStats.has(r.name_id)) {
           ratingStats.set(r.name_id, {
@@ -717,15 +735,17 @@ export const catNamesAPI = {
             count: 0,
             wins: 0,
             losses: 0,
-            users: new Set(),
+            users: new Set<string>(),
           });
         }
         const stat = ratingStats.get(r.name_id);
-        stat.totalRating += Number(r.rating) || 1500;
-        stat.count += 1;
-        stat.wins += r.wins || 0;
-        stat.losses += r.losses || 0;
-        stat.users.add(r.user_name);
+        if (stat) {
+          stat.totalRating += Number(r.rating) || 1500;
+          stat.count += 1;
+          stat.wins += r.wins || 0;
+          stat.losses += r.losses || 0;
+          stat.users.add(r.user_name);
+        }
       });
 
       // Combine into popularity analytics
@@ -883,7 +903,7 @@ export const catNamesAPI = {
   /**
    * Get comprehensive user statistics using optimized database function
    */
-  async getUserStats(userName) {
+  async getUserStats(userName: string) {
     try {
       if (!(await isSupabaseAvailable())) {
         return null;
@@ -911,7 +931,7 @@ export const catNamesAPI = {
   /**
    * Get all names with user-specific ratings, statistics, and selection counts
    */
-  async getNamesWithUserRatings(userName) {
+  async getNamesWithUserRatings(userName: string) {
     try {
       if (!(await isSupabaseAvailable())) {
         console.warn("Supabase not available, using fallback names");
@@ -974,7 +994,7 @@ export const catNamesAPI = {
         .select("name_id");
 
       // Build selection count map
-      const selectionCounts = new Map();
+      const selectionCounts = new Map<string | number, number>();
       (selectionData || []).forEach((row) => {
         const count = selectionCounts.get(row.name_id) || 0;
         selectionCounts.set(row.name_id, count + 1);
@@ -1025,7 +1045,7 @@ export const catNamesAPI = {
    * Get meaningful user statistics for profile page (Fallback implementation)
    * @private
    */
-  async _getUserStatsFallback(userName) {
+  async _getUserStatsFallback(userName: string) {
     try {
       if (!(await isSupabaseAvailable())) {
         return {
@@ -1096,7 +1116,7 @@ export const catNamesAPI = {
       const uniqueNames = new Set(selections.map((s) => s.name_id)).size;
 
       // Find most selected name
-      const nameCounts = {};
+      const nameCounts: Record<string, number> = {};
       selections.forEach((s) => {
         nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
       });
@@ -1151,7 +1171,7 @@ export const catNamesAPI = {
   /**
    * Get Aaron's top names with his ratings
    */
-  async getAaronsTopNames(limit = 10) {
+  async getAaronsTopNames(limit: number = 10) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -1280,8 +1300,8 @@ export const catNamesAPI = {
       });
 
       // Group selections by date and name
-      const dateGroups = new Map();
-      const nameData = new Map();
+      const dateGroups = new Map<string, Map<string, { name: string; count: number }>>();
+      const nameData = new Map<string, { id: string; name: string; avgRating: number; totalSelections: number }>();
 
       (selections || []).forEach((s) => {
         const [date] = new Date(s.selected_at).toISOString().split("T");
@@ -1313,7 +1333,7 @@ export const catNamesAPI = {
       });
 
       // Generate time labels for the last N days
-      const timeLabels = [];
+      const timeLabels: string[] = [];
       const today = new Date();
       for (let i = periodCount - 1; i >= 0; i--) {
         const d = new Date(today);
@@ -1380,12 +1400,12 @@ export const catNamesAPI = {
 /**
  * Hidden Names Management
  */
-const isPermissionError = (error) => {
+const isPermissionError = (error: unknown) => {
   if (!error) return false;
 
-  const status = error.status ?? error.statusCode;
-  const code = typeof error.code === "string" ? error.code.toUpperCase() : "";
-  const message = error.message?.toLowerCase?.() ?? "";
+  const status = (error as { status?: number; statusCode?: number }).status ?? (error as { status?: number; statusCode?: number }).statusCode;
+  const code = typeof (error as { code?: string }).code === "string" ? (error as { code: string }).code.toUpperCase() : "";
+  const message = ((error as { message?: { toLowerCase?: () => string } }).message?.toLowerCase?.() ?? "") as string;
 
   if (status === 401 || status === 403) return true;
   if (status === 400 && message.includes("row-level security")) return true;
@@ -1408,7 +1428,7 @@ export const hiddenNamesAPI = {
   /**
    * Hide a name globally for all users (admin only).
    */
-  async hideName(userName, nameId) {
+  async hideName(userName: string, nameId: string | number) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1452,7 +1472,7 @@ export const hiddenNamesAPI = {
   /**
    * Unhide a name globally for all users (admin only).
    */
-  async unhideName(userName, nameId) {
+  async unhideName(userName: string, nameId: string | number) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1496,7 +1516,7 @@ export const hiddenNamesAPI = {
   /**
    * Hide multiple names globally (admin only)
    */
-  async hideNames(userName, nameIds) {
+  async hideNames(userName: string, nameIds: (string | number)[]) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1538,7 +1558,7 @@ export const hiddenNamesAPI = {
             );
           }
         } catch (error) {
-          const errorMsg = error.message || String(error);
+          const errorMsg = (error as { message?: string }).message || String(error);
           if (isDev) {
             console.error(
               `[hiddenNamesAPI.hideNames] Error hiding ${nameId}:`,
@@ -1586,7 +1606,7 @@ export const hiddenNamesAPI = {
   /**
    * Unhide multiple names globally (admin only)
    */
-  async unhideNames(userName, nameIds) {
+  async unhideNames(userName: string, nameIds: (string | number)[]) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1609,7 +1629,7 @@ export const hiddenNamesAPI = {
           });
           if (result.success) processed++;
         } catch (error) {
-          results.push({ nameId, success: false, error: error.message });
+          results.push({ nameId, success: false, error: (error as { message?: string }).message || String(error) });
         }
       }
 
@@ -1669,10 +1689,10 @@ export const tournamentsAPI = {
    * Note: This creates a tournament record. Individual selections are saved via saveTournamentSelections()
    */
   async createTournament(
-    userName,
-    tournamentName,
-    participantNames,
-    _tournamentData = {},
+    userName: string,
+    tournamentName: string,
+    participantNames: Array<{ id: string | number; name: string }>,
+    _tournamentData: Record<string, unknown> = {},
   ) {
     try {
       if (!(await isSupabaseAvailable())) {
@@ -1726,7 +1746,7 @@ export const tournamentsAPI = {
    * Note: Since tournament_selections is a per-selection table, we don't have a status field per tournament.
    * This function doesn't persist to the database.
    */
-  async updateTournamentStatus(tournamentId, status) {
+  async updateTournamentStatus(tournamentId: string, status: string) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1780,7 +1800,7 @@ export const tournamentsAPI = {
    * Get user tournaments from tournament_selections table
    * Groups selections by tournament_id to reconstruct tournament data
    */
-  async getUserTournaments(userName, _status = null) {
+  async getUserTournaments(userName: string, _status: string | null = null) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -1809,7 +1829,16 @@ export const tournamentsAPI = {
       }
 
       // Group selections by tournament_id to reconstruct tournaments
-      const tournamentMap = new Map();
+      const tournamentMap = new Map<string, {
+        id: string;
+        user_name: string;
+        tournament_name: string;
+        selected_names: string[];
+        participant_names: Array<{ id: string | number; name: string }>;
+        status: string;
+        created_at: string;
+        completed_at: string;
+      }>();
       (data || []).forEach((row) => {
         if (!tournamentMap.has(row.tournament_id)) {
           tournamentMap.set(row.tournament_id, {
@@ -1824,8 +1853,10 @@ export const tournamentsAPI = {
           });
         }
         const tournament = tournamentMap.get(row.tournament_id);
-        tournament.selected_names.push(row.name);
-        tournament.participant_names.push({ id: row.name_id, name: row.name });
+        if (tournament) {
+          tournament.selected_names.push(row.name);
+          tournament.participant_names.push({ id: row.name_id, name: row.name });
+        }
       });
 
       return Array.from(tournamentMap.values());
@@ -1844,7 +1875,7 @@ export const tournamentsAPI = {
    * @param {string} tournamentId - Optional tournament identifier
    * @returns {Object} Success status and selection count
    */
-  async saveTournamentSelections(userName, selectedNames, tournamentId = null) {
+  async saveTournamentSelections(userName: string, selectedNames: Array<{ id: string | number; name: string }>, tournamentId: string | null = null) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1911,7 +1942,7 @@ export const tournamentsAPI = {
    * @param {Array} ratings - Array of rating objects with name, rating, wins, losses
    * @returns {Object} Success status and count of saved ratings
    */
-  async saveTournamentRatings(userName, ratings) {
+  async saveTournamentRatings(userName: string, ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>) {
     try {
       if (!(await isSupabaseAvailable())) {
         return { success: false, error: "Supabase not configured" };
@@ -1962,7 +1993,7 @@ export const tournamentsAPI = {
       }
 
       // Create a map of name -> id
-      const nameToId = new Map(nameData.map((n) => [n.name, n.id]));
+      const nameToId = new Map<string, string | number>(nameData.map((n) => [n.name, n.id]));
 
       // Prepare upsert records
       const now = new Date().toISOString();
@@ -2029,7 +2060,7 @@ export const tournamentsAPI = {
       if (isDev) {
         console.error("Error saving tournament ratings:", error);
       }
-      return { success: false, error: error.message };
+      return { success: false, error: (error as { message?: string }).message || String(error) };
     }
   },
 };
@@ -2039,7 +2070,7 @@ export const tournamentsAPI = {
 /**
  * Delete a name with cascade (only if hidden)
  */
-export const deleteName = async (nameId) => {
+export const deleteName = async (nameId: string | number) => {
   try {
     if (!(await isSupabaseAvailable())) {
       return { success: false, error: "Supabase not configured" };
@@ -2103,7 +2134,7 @@ export const imagesAPI = {
    * Deduplicates by base filename (ignoring extension) and prefers smaller files
    * when Supabase returns sizes. Otherwise, prefers modern formats (avif > webp > jpg/jpeg > png > gif).
    */
-  async list(prefix = "", limit = 1000) {
+  async list(prefix: string = "", limit: number = 1000) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -2127,7 +2158,7 @@ export const imagesAPI = {
       const files = (data || []).filter((f) => f && f.name);
       if (!files.length) return [];
 
-      const rankByExt = (name) => {
+      const rankByExt = (name: string) => {
         const n = name.toLowerCase();
         if (n.endsWith(".avif")) return 1;
         if (n.endsWith(".webp")) return 2;
@@ -2137,7 +2168,7 @@ export const imagesAPI = {
         return 9;
       };
 
-      const pickSmaller = (a, b) => {
+      const pickSmaller = (a: { name: string; metadata?: { size?: number }; size?: number }, b: { name: string; metadata?: { size?: number }; size?: number }) => {
         const sizeA = a?.metadata?.size ?? a?.size;
         const sizeB = b?.metadata?.size ?? b?.size;
         if (typeof sizeA === "number" && typeof sizeB === "number") {
@@ -2147,7 +2178,7 @@ export const imagesAPI = {
         return rankByExt(a.name) <= rankByExt(b.name) ? a : b;
       };
 
-      const byBase = new Map();
+      const byBase = new Map<string, { name: string; metadata?: { size?: number }; size?: number }>();
       for (const f of files) {
         const base = f.name.replace(/\.[^.]+$/, "").toLowerCase();
         const current = byBase.get(base);
@@ -2155,7 +2186,7 @@ export const imagesAPI = {
       }
 
       // Map to public URLs
-      const toUrl = (name) => {
+      const toUrl = (name: string) => {
         const fullPath = prefix ? `${prefix}/${name}` : name;
         const { data: urlData } = client.storage
           .from("cat-images")
@@ -2175,13 +2206,13 @@ export const imagesAPI = {
   /**
    * Upload an image file to the `cat-images` bucket. Returns public URL.
    */
-  async upload(file, _userName = "anon", prefix = "") {
+  async upload(file: File, _userName: string = "anon", prefix: string = "") {
     const client = await resolveSupabaseClient();
     if (!client) {
       throw new Error("Supabase not configured");
     }
 
-    const safe = (file?.name || "image").replace(/[^a-zA-Z0-9._-]/g, "_");
+      const safe = ((file?.name || "image") as string).replace(/[^a-zA-Z0-9._-]/g, "_");
     // Store at bucket root to simplify listing (no recursion needed)
     const objectPath = `${prefix ? `${prefix}/` : ""}${Date.now()}-${safe}`;
     const { error } = await client.storage
@@ -2207,7 +2238,7 @@ export const adminAPI = {
    * @param {number} [options.limit=200] Maximum number of users to return
    * @returns {Promise<Array>} Array of user records with role metadata
    */
-  async listUsers({ searchTerm, limit = 200 } = {}) {
+  async listUsers({ searchTerm, limit = 200 }: { searchTerm?: string; limit?: number } = {}) {
     try {
       if (!(await isSupabaseAvailable())) {
         return [];
@@ -2255,12 +2286,15 @@ export const adminAPI = {
       }
 
       // Create a map of user_name -> roles
-      const roleMap = new Map();
+      const roleMap = new Map<string, Array<{ role: string }>>();
       (roles || []).forEach((r) => {
         if (!roleMap.has(r.user_name)) {
           roleMap.set(r.user_name, []);
         }
-        roleMap.get(r.user_name).push({ role: r.role });
+        const roleList = roleMap.get(r.user_name);
+        if (roleList) {
+          roleList.push({ role: r.role });
+        }
       });
 
       // Merge users with their roles

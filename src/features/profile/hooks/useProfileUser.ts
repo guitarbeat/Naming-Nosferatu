@@ -8,20 +8,29 @@ import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAdminStatus";
 import { adminAPI } from "../../../shared/services/supabase/api";
 
+interface UserWithRoles {
+  user_name: string;
+  user_roles?: {
+    role: string;
+  } | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 /**
  * * Hook for managing user state and admin functionality
  * @param {string} userName - Current user name
  * @returns {Object} User state and handlers
  */
-export function useProfileUser(userName) {
+export function useProfileUser(userName: string) {
   // * Use shared admin status hook
   const { isAdmin } = useAdminStatus(userName);
 
-  const [activeUser, setActiveUser] = useState(userName);
+  const [activeUser, setActiveUser] = useState<string | null>(userName);
   const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
-  const [availableUsers, setAvailableUsers] = useState([]);
+  const [availableUsers, setAvailableUsers] = useState<UserWithRoles[]>([]);
   const [userListLoading, setUserListLoading] = useState(false);
-  const [userListError, setUserListError] = useState(null);
+  const [userListError, setUserListError] = useState<unknown>(null);
 
   const canManageActiveUser = useMemo(
     () => isAdmin && activeUser === userName,
@@ -46,7 +55,7 @@ export function useProfileUser(userName) {
     availableUsers.forEach((user) => {
       if (!user?.user_name) return;
 
-      const badges = [];
+      const badges: string[] = [];
       // Get role from joined user_roles table
       const userRole = user.user_roles?.role;
       if (userRole && userRole !== "user") {
@@ -150,7 +159,7 @@ export function useProfileUser(userName) {
 
       const sortedUsers = Array.from(uniqueUsers.values()).sort((a, b) =>
         a.user_name.localeCompare(b.user_name),
-      );
+      ) as UserWithRoles[];
 
       setAvailableUsers(sortedUsers);
     } catch (error) {
@@ -158,7 +167,7 @@ export function useProfileUser(userName) {
         console.error("Error loading admin user list:", error);
       }
       setAvailableUsers([]);
-      setUserListError(error);
+      setUserListError(error as unknown);
     } finally {
       setUserListLoading(false);
     }

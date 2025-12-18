@@ -11,13 +11,46 @@ import {
 
 /**
  * * Hook for managing profile statistics
- * @param {string} activeUser - Active user name
+ * @param {string|null} activeUser - Active user name
  * @returns {Object} Stats state
  */
-export function useProfileStats(activeUser) {
-  const [stats, setStats] = useState(null);
+export function useProfileStats(activeUser: string | null) {
+  const [stats, setStats] = useState<{
+    avg_rating?: number;
+    hidden_count?: number;
+    total_losses?: number;
+    total_ratings?: number;
+    total_wins?: number;
+    win_rate?: number;
+    names_rated?: number;
+    active_ratings?: number;
+    hidden_ratings?: number;
+    avg_rating_given?: number;
+    total_tournaments?: number;
+    total_selections?: number;
+    unique_users?: number;
+    is_aggregate?: boolean;
+  } | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
-  const [selectionStats, setSelectionStats] = useState(null);
+  const [selectionStats, setSelectionStats] = useState<{
+    totalSelections: number;
+    totalTournaments: number;
+    avgSelectionsPerName: number;
+    mostSelectedName: string;
+    currentStreak: number;
+    maxStreak: number;
+    userRank: string;
+    uniqueUsers: number;
+    isAggregate: boolean;
+    insights: {
+      selectionPattern: string;
+      preferredCategories: string;
+      improvementTip: string;
+    };
+    nameSelectionCounts: Record<string, number>;
+    nameLastSelected: Record<string, string>;
+    nameSelectionFrequency: Record<string, number>;
+  } | null>(null);
   const isMountedRef = useRef(true);
 
   // * Load statistics using database-optimized function

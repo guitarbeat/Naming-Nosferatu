@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from "react";
 import PropTypes from "prop-types";
 import Error from "../Error/Error";
 import Loading from "../Loading/Loading";
-import Login from "../../features/auth/Login";
+import Login from "../../../features/auth/Login";
 import { useRouting } from "../../core/hooks/useRouting";
 // * Import components directly to maintain stability
 import Tournament from "../../features/tournament/Tournament";
@@ -11,6 +11,36 @@ import TournamentSetup from "../../features/tournament/TournamentSetup";
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../features/tournament/Dashboard"));
 const BongoPage = lazy(() => import("../../features/bongo/BongoPage"));
+
+import { TournamentName } from "../../../types/store";
+
+interface NameItem {
+  id?: string | number;
+  name?: string;
+  [key: string]: unknown;
+}
+
+interface TournamentState {
+  names: TournamentName[] | null;
+  ratings: Record<string, { rating: number }>;
+  isComplete: boolean;
+  isLoading: boolean;
+  voteHistory: unknown[];
+  currentView: string;
+}
+
+interface ViewRouterProps {
+  isLoggedIn: boolean;
+  onLogin: (userName: string) => void;
+  tournament: TournamentState;
+  userName?: string;
+  onStartNewTournament: () => void;
+  onUpdateRatings: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void | Promise<boolean>;
+  onTournamentSetup: (names?: import("../../../shared/propTypes").NameItem[]) => void;
+  onTournamentComplete: (finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>) => Promise<void>;
+  onVote: (vote: unknown) => void;
+  onOpenSuggestName?: () => void;
+}
 
 export default function ViewRouter({
   isLoggedIn,
@@ -23,7 +53,7 @@ export default function ViewRouter({
   onTournamentComplete,
   onVote,
   onOpenSuggestName,
-}) {
+}: ViewRouterProps) {
   const { isRoute, currentRoute } = useRouting();
 
   // Handle special routes first
@@ -44,11 +74,22 @@ export default function ViewRouter({
   }
 
   if (tournament.names === null) {
+    // Convert ratings from Record<string, { rating: number }> to Record<string, number>
+    const existingRatings = Object.fromEntries(
+      Object.entries(tournament.ratings).map(([key, value]) => [
+        key,
+        typeof value === "object" && value !== null && "rating" in value
+          ? value.rating
+          : typeof value === "number"
+            ? value
+            : 0,
+      ]),
+    );
     return (
       <TournamentSetup
         onStart={onTournamentSetup}
         userName={userName}
-        existingRatings={tournament.ratings}
+        existingRatings={existingRatings}
         onOpenSuggestName={onOpenSuggestName}
       />
     );
@@ -85,11 +126,32 @@ export default function ViewRouter({
         fallback={<Loading variant="spinner" text="Loading Dashboard..." />}
       >
         <Dashboard
-          personalRatings={hasPersonalData ? tournament.ratings : null}
+          personalRatings={
+            hasPersonalData
+              ? Object.fromEntries(
+                  Object.entries(tournament.ratings).map(([key, value]) => [
+                    key,
+                    typeof value === "object" && value !== null && "rating" in value
+                      ? value.rating
+                      : typeof value === "number"
+                        ? value
+                        : 0,
+                  ]),
+                )
+              : null
+          }
           currentTournamentNames={hasPersonalData ? tournament.names : null}
           voteHistory={hasPersonalData ? tournament.voteHistory : null}
           onStartNew={onStartNewTournament}
-          onUpdateRatings={onUpdateRatings}
+          onUpdateRatings={(ratings: Record<string, number>) => {
+            const convertedRatings = Object.fromEntries(
+              Object.entries(ratings).map(([key, value]) => [
+                key,
+                { rating: value },
+              ]),
+            );
+            return onUpdateRatings(convertedRatings);
+          }}
           userName={userName}
           mode={dashboardMode}
         />
@@ -101,8 +163,25 @@ export default function ViewRouter({
     <Error variant="boundary">
       <Tournament
         names={tournament.names}
-        existingRatings={tournament.ratings}
-        onComplete={onTournamentComplete}
+        existingRatings={Object.fromEntries(
+          Object.entries(tournament.ratings).map(([key, value]) => [
+            key,
+            typeof value === "object" && value !== null && "rating" in value
+              ? value.rating
+              : typeof value === "number"
+                ? value
+                : 0,
+          ]),
+        )}
+        onComplete={(ratings: Record<string, number>) => {
+          const convertedRatings = Object.fromEntries(
+            Object.entries(ratings).map(([key, value]) => [
+              key,
+              { rating: value },
+            ]),
+          );
+          return onTournamentComplete(convertedRatings);
+        }}
         userName={userName}
         onVote={onVote}
       />

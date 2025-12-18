@@ -12,7 +12,7 @@ export function clearTournamentCache() {
   if (typeof window === "undefined") return;
 
   try {
-    const keysToRemove = [];
+    const keysToRemove: string[] = [];
     for (let i = 0; i < window.localStorage.length; i++) {
       const key = window.localStorage.key(i);
       if (key && key.startsWith("tournament-")) {
