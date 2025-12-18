@@ -3,6 +3,20 @@ import { TournamentButton } from "@components";
 import { BinaryToggle } from "./components";
 import { styles } from "./styles";
 
+
+interface TournamentModeToolbarProps {
+  onToggleSwipeMode?: () => void;
+  isSwipeMode?: boolean;
+  onToggleCatPictures?: () => void;
+  showCatPictures?: boolean;
+  startTournamentButton?: {
+    onClick: () => void;
+    selectedCount: number;
+  };
+  mode?: string;
+  onOpenSuggestName?: () => void;
+}
+
 function TournamentModeToolbar({
   onToggleSwipeMode,
   isSwipeMode,
@@ -10,7 +24,8 @@ function TournamentModeToolbar({
   showCatPictures,
   startTournamentButton,
   mode,
-}) {
+  onOpenSuggestName,
+}: TournamentModeToolbarProps) {
   const selectedCount = startTournamentButton?.selectedCount ?? 0;
   const isReady = selectedCount >= 2;
   const countLabel =
@@ -26,7 +41,7 @@ function TournamentModeToolbar({
         <div className={styles.toggleStack}>
           {onToggleSwipeMode && (
             <BinaryToggle
-              isActive={isSwipeMode}
+              isActive={!!isSwipeMode}
               onClick={onToggleSwipeMode}
               activeLabel="Swipe"
               inactiveLabel="Tap"
@@ -37,7 +52,7 @@ function TournamentModeToolbar({
           )}
           {onToggleCatPictures && (
             <BinaryToggle
-              isActive={showCatPictures}
+              isActive={!!showCatPictures}
               onClick={onToggleCatPictures}
               activeLabel="Cats"
               inactiveLabel="Names"
@@ -47,6 +62,15 @@ function TournamentModeToolbar({
             />
           )}
         </div>
+      )}
+      {onOpenSuggestName && (
+        <button
+          className={styles.suggestButton}
+          onClick={onOpenSuggestName}
+          aria-label="Suggest a new name"
+        >
+          Suggest Name
+        </button>
       )}
       {startTournamentButton && (
         <TournamentButton
@@ -73,6 +97,7 @@ TournamentModeToolbar.propTypes = {
     selectedCount: PropTypes.number.isRequired,
   }),
   mode: PropTypes.string,
+  onOpenSuggestName: PropTypes.func,
 };
 
 export default TournamentModeToolbar;

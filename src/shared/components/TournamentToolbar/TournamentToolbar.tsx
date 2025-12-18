@@ -5,6 +5,30 @@ import TournamentModeToolbar from "./TournamentModeToolbar";
 import FilterModeToolbar from "./FilterModeToolbar";
 import "./TournamentToolbar.css";
 
+
+interface TournamentToolbarProps {
+  mode?: "tournament" | "profile" | "hybrid";
+  filters?: any;
+  onFilterChange?: (name: string, value: any) => void;
+  filteredCount?: number;
+  totalCount?: number;
+  categories?: string[];
+  showUserFilter?: boolean;
+  showSelectionFilter?: boolean;
+  userOptions?: { value: string; label: string }[] | null;
+  isSwipeMode?: boolean;
+  onToggleSwipeMode?: () => void;
+  showCatPictures?: boolean;
+  onToggleCatPictures?: () => void;
+  startTournamentButton?: {
+    onClick: () => void;
+    selectedCount: number;
+  };
+  analysisMode?: boolean;
+  onOpenSuggestName?: () => void;
+  className?: string;
+}
+
 function TournamentToolbar({
   mode = "tournament",
   filters = {},
@@ -23,7 +47,7 @@ function TournamentToolbar({
   analysisMode = false,
   onOpenSuggestName,
   className = "",
-}) {
+}: TournamentToolbarProps) {
   const isTournament = mode === "tournament";
   const isHybrid = mode === "hybrid";
   const showFilters = isHybrid || mode === "profile";
