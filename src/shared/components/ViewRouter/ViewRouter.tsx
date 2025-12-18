@@ -22,6 +22,7 @@ export default function ViewRouter({
   onTournamentSetup,
   onTournamentComplete,
   onVote,
+  onOpenSuggestName,
 }) {
   const { isRoute, currentRoute } = useRouting();
 
@@ -48,6 +49,7 @@ export default function ViewRouter({
         onStart={onTournamentSetup}
         userName={userName}
         existingRatings={tournament.ratings}
+        onOpenSuggestName={onOpenSuggestName}
       />
     );
   }
@@ -124,4 +126,5 @@ ViewRouter.propTypes = {
   onTournamentSetup: PropTypes.func.isRequired,
   onTournamentComplete: PropTypes.func.isRequired,
   onVote: PropTypes.func.isRequired,
+  onOpenSuggestName: PropTypes.func,
 };

@@ -6,7 +6,7 @@ export interface UserState {
 }
 
 export interface TournamentName {
-  id: string;
+  id: string | number;
   name: string;
   description?: string;
   rating?: number;

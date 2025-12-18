@@ -25,6 +25,10 @@ export function useTournamentHandlers({
   tournamentActions,
   navigateTo,
 }: UseTournamentHandlersProps) {
+  /**
+   * Handles the completion of a tournament.
+   * Saves ratings, updates state, and navigates to results.
+   */
   const handleTournamentComplete = useCallback(
     async (
       finalRatings: Record<
@@ -36,7 +40,7 @@ export function useTournamentHandlers({
         devLog("[App] handleTournamentComplete called with:", finalRatings);
 
         if (!userName) {
-          throw new Error("No user name available");
+          throw new Error("No user name available for saving results");
         }
 
         // * Convert ratings using utility functions
@@ -58,6 +62,7 @@ export function useTournamentHandlers({
             "[App] Failed to save ratings to database:",
             saveResult.error,
           );
+          // We continue even if save fails, to show results locally
         }
 
         // * Update store with new ratings
@@ -80,10 +85,17 @@ export function useTournamentHandlers({
     [userName, tournamentActions, navigateTo],
   );
 
+  /**
+   * Resets the tournament state to start a new one.
+   */
   const handleStartNewTournament = useCallback(() => {
     tournamentActions.resetTournament();
   }, [tournamentActions]);
 
+  /**
+   * Sets up the tournament with the provided names.
+   * Filters hidden names and initializes state.
+   */
   const handleTournamentSetup = useCallback(
     (names: Name[] | undefined) => {
       // * Clear tournament cache to ensure fresh data
@@ -118,6 +130,9 @@ export function useTournamentHandlers({
     [tournamentActions],
   );
 
+  /**
+   * Updates ratings during the tournament (e.g. after each match).
+   */
   const handleUpdateRatings = useCallback(
     async (
       adjustedRatings: Record<
@@ -136,7 +151,11 @@ export function useTournamentHandlers({
             ratingsArray,
           );
 
-          devLog("[App] Update ratings result:", saveResult);
+          if (!saveResult.success) {
+            devWarn("[App] Failed to auto-save ratings:", saveResult.error);
+          } else {
+            devLog("[App] Update ratings result:", saveResult);
+          }
         }
 
         // * Convert to object format for store
@@ -145,6 +164,8 @@ export function useTournamentHandlers({
         tournamentActions.setRatings(updatedRatings);
         return true;
       } catch (error) {
+        // Log but don't crash the app for auto-save errors
+        devError("[App] Error in handleUpdateRatings:", error);
         ErrorManager.handleError(error, "Rating Update", {
           isRetryable: true,
           affectsUserData: true,

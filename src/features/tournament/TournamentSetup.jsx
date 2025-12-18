@@ -403,10 +403,9 @@ TournamentNameGrid.propTypes = {
   analysisHandlersProps: PropTypes.object,
 };
 
-function TournamentSetupContent({
-  onStart,
   userName,
   enableAnalysisMode = false,
+  onOpenSuggestName,
 }) {
   // * Get current view from store
   const currentView = useAppStore((state) => state.tournament.currentView);
@@ -555,7 +554,9 @@ function TournamentSetupContent({
         <NameManagementView
           mode="tournament"
           userName={userName}
+          userName={userName}
           onStartTournament={onStart}
+          onOpenSuggestName={onOpenSuggestName}
           tournamentProps={{
             SwipeableCards: SwipeableNameCards,
             isAdmin,
@@ -627,6 +628,7 @@ TournamentSetupContent.propTypes = {
   onStart: PropTypes.func.isRequired,
   userName: PropTypes.string,
   enableAnalysisMode: PropTypes.bool,
+  onOpenSuggestName: PropTypes.func,
 };
 
 function TournamentSetup(props) {
@@ -643,6 +645,7 @@ TournamentSetup.propTypes = {
   onStart: PropTypes.func.isRequired,
   userName: PropTypes.string,
   enableAnalysisMode: PropTypes.bool,
+  onOpenSuggestName: PropTypes.func,
 };
 
 export default TournamentSetup;

@@ -49,7 +49,7 @@ interface NameMetadata {
   winRate?: number;
   rank?: number;
   description?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface CardNameProps {
@@ -65,7 +65,7 @@ interface CardNameProps {
   isAdmin?: boolean;
   isHidden?: boolean;
   _onToggleVisibility?: (id: string) => void;
-  _onDelete?: (name: any) => void;
+  _onDelete?: (name: unknown) => void;
   onSelectionChange?: (selected: boolean) => void;
   image?: string;
 }
@@ -158,15 +158,14 @@ function CardName({
 
     if (
       event.type === "click" ||
-      (event.type === "keydown" && 
+      (event.type === "keydown" &&
         ((event as React.KeyboardEvent).key === "Enter" || (event as React.KeyboardEvent).key === " "))
     ) {
       event.preventDefault();
 
       const rect = event.currentTarget.getBoundingClientRect();
-      const clientX = (event as React.MouseEvent).clientX;
-      const clientY = (event as React.MouseEvent).clientY;
-      
+      const { clientX, clientY } = event as React.MouseEvent;
+
       const x = clientX ? clientX - rect.left : rect.width / 2;
       const y = clientY ? clientY - rect.top : rect.height / 2;
 
@@ -228,8 +227,16 @@ function CardName({
         as={Component}
         ref={cardRef}
         className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
-        onClick={isInteractive ? (handleInteraction as any) : undefined}
-        onKeyDown={isInteractive ? (handleInteraction as any) : undefined}
+        onClick={
+          isInteractive
+            ? (handleInteraction as unknown as React.MouseEventHandler)
+            : undefined
+        }
+        onKeyDown={
+          isInteractive
+            ? (handleInteraction as unknown as React.KeyboardEventHandler)
+            : undefined
+        }
         onFocus={handleFocus}
         onBlur={handleBlur}
         // @ts-expect-error - Card props might not fully match HTML attributes

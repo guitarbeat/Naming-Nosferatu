@@ -257,6 +257,13 @@
     top: 5px;
     right: 5px;
     left: 5px;
+    gap: 6px;
+  }
+
+  .item {
+    top: 5px;
+    right: 5px;
+    left: 5px;
   }
 
   .content {
@@ -265,6 +272,11 @@
 
   .message {
     font-size: 0.85rem;
+  }
+
+  .hiddenCount {
+    padding: 6px 10px;
+    font-size: 0.8rem;
   }
 }
 

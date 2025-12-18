@@ -27,4 +27,5 @@ export const styles = {
   sortControls: "tournament-toolbar-sort-controls",
   sortOrderButton: "tournament-toolbar-sort-order-button",
   sortIcon: "tournament-toolbar-sort-icon",
+  suggestButton: "tournament-toolbar-suggest-button",
 };

@@ -12,7 +12,9 @@ import {
 import { cn } from "../../utils/classNameUtils";
 import styles from "./Card.module.css";
 
-type CardVariant = 
+// Force refresh
+
+type CardVariant =
   | "default" | "elevated" | "outlined" | "filled"
   | "primary" | "success" | "warning" | "info" | "danger" | "secondary";
 

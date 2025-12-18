@@ -195,7 +195,7 @@ function SwipeableNameCards({
       <div className={styles.swipeContainer}>
         <div className={styles.swipeCompletion}>
           <h3>All caught up!</h3>
-          <p>You've gone through all available names.</p>
+          <p>You&apos;ve gone through all available names.</p>
           {selectedNames.length >= 2 ? (
             <button
               className={styles.startTournamentButton}

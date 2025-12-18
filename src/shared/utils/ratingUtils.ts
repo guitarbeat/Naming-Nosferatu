@@ -13,13 +13,19 @@ interface RatingItem extends RatingData {
   name: string;
 }
 
+interface RatingDataInput {
+  rating: number;
+  wins?: number;
+  losses?: number;
+}
+
 /**
  * Converts ratings from object format to array format for API/database operations
- * @param {Record<string, RatingData | number> | RatingItem[]} ratings - Ratings in object format {name: {rating, wins, losses}} or array format
+ * @param {Record<string, RatingDataInput | number> | RatingItem[]} ratings - Ratings in object format {name: {rating, wins, losses}} or array format
  * @returns {RatingItem[]} Ratings array [{name, rating, wins, losses}, ...]
  */
 export function ratingsToArray(
-  ratings: Record<string, RatingData | number> | RatingItem[],
+  ratings: Record<string, RatingDataInput | number> | RatingItem[],
 ): RatingItem[] {
   if (Array.isArray(ratings)) {
     return ratings;
@@ -29,9 +35,12 @@ export function ratingsToArray(
   return Object.entries(ratings).map(([name, data]) => ({
     name,
     rating:
-      typeof data === "number" ? data : (data as RatingData)?.rating || 1500,
-    wins: typeof data === "object" ? (data as RatingData)?.wins || 0 : 0,
-    losses: typeof data === "object" ? (data as RatingData)?.losses || 0 : 0,
+      typeof data === "number"
+        ? data
+        : (data as RatingDataInput)?.rating || 1500,
+    wins: typeof data === "object" ? (data as RatingDataInput)?.wins || 0 : 0,
+    losses:
+      typeof data === "object" ? (data as RatingDataInput)?.losses || 0 : 0,
   }));
 }
 

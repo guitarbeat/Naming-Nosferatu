@@ -43,6 +43,7 @@ function TournamentToolbar({
           onToggleCatPictures={onToggleCatPictures}
           showCatPictures={showCatPictures}
           startTournamentButton={startTournamentButton}
+          onOpenSuggestName={onOpenSuggestName}
         />
       ) : (
         <FilterModeToolbar

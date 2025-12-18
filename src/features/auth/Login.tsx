@@ -6,7 +6,6 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import { generateFunName } from "../../shared/utils/nameGenerationUtils";
 import { validateUsername } from "../../shared/utils/validationUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
-import { NoiseBackground } from "../../shared/components";
 import styles from "./Login.module.css";
 
 const FALLBACK_CAT_FACT =
@@ -47,8 +46,9 @@ function useCatFact() {
         } else {
           throw new Error("Invalid response format from cat fact API");
         }
-      } catch (error: any) {
-        if (error.name === "AbortError" || error.name === "TimeoutError") {
+      } catch (error: unknown) {
+        const err = error as Error;
+        if (err.name === "AbortError" || err.name === "TimeoutError") {
           if (process.env.NODE_ENV === "development") {
             console.warn("Cat fact request timed out");
           }

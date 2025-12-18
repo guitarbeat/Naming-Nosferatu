@@ -68,6 +68,7 @@ export function NameManagementView({
   mode = "tournament",
   userName,
   onStartTournament,
+  onOpenSuggestName = () => {},
   extensions = {},
   tournamentProps = {},
   profileProps = {},
@@ -491,6 +492,7 @@ export function NameManagementView({
                 }
               : undefined
           }
+          onOpenSuggestName={onOpenSuggestName}
         />
       )}
       <NameManagementContext.Provider value={contextValue}>

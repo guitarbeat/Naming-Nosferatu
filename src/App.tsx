@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "./shared/components";
-import { AppNavbar } from "./shared/components/AppNavbar";
+
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 // * Performance monitoring
@@ -49,12 +49,7 @@ interface UserState {
 }
 
 interface TournamentState {
-  names: Array<{
-    id: string;
-    name: string;
-    description?: string;
-    rating?: number;
-  }> | null;
+  names: TournamentName[] | null;
   ratings: Record<string, { rating: number }>;
   isComplete: boolean;
   isLoading: boolean;
@@ -187,16 +182,7 @@ function App() {
 
   // * Memoize main content to prevent unnecessary re-renders
 
-  // * Handle opening photos view
-  const handleOpenPhotos = useCallback(() => {
-    if (currentView === "photos") {
-      tournamentActions.setView("tournament");
-      navigateTo("/");
-    } else {
-      tournamentActions.setView("photos");
-      navigateTo("/");
-    }
-  }, [currentView, tournamentActions, navigateTo]);
+
 
   // * Handle opening suggest name modal
   const handleOpenSuggestName = useCallback(() => {
@@ -208,55 +194,6 @@ function App() {
     setIsSuggestNameModalOpen(false);
   }, []);
 
-  // * Memoize navbar props to prevent unnecessary re-renders
-  const navbarProps = useMemo(
-    () => ({
-      view: currentView || "tournament",
-      setView: (view: string) => {
-        const nextView = view;
-        // * Toggle photos view: if clicking photos and already on photos, go back to tournament
-        if (nextView === "photos" && currentView === "photos") {
-          tournamentActions.setView("tournament");
-          navigateTo("/");
-        } else {
-          tournamentActions.setView(nextView);
-
-          // * Direct navigation for each view
-          if (nextView === "tournament") {
-            navigateTo("/");
-          } else if (nextView === "photos") {
-            // * Stay on same route, just change view state
-            // * ViewRouter will show TournamentSetup which handles photos view
-            navigateTo("/");
-          }
-        }
-      },
-      isLoggedIn: user.isLoggedIn,
-      userName: user.name,
-      isAdmin,
-      onLogout: handleLogout,
-      onStartNewTournament: handleStartNewTournament,
-      onOpenSuggestName: handleOpenSuggestName,
-      onOpenPhotos: handleOpenPhotos,
-      // * Pass breadcrumbs to navbar
-      currentView: currentView || "tournament",
-      currentRoute,
-      onNavigate: navigateTo,
-    }),
-    [
-      currentView,
-      tournamentActions,
-      user.isLoggedIn,
-      user.name,
-      isAdmin,
-      handleLogout,
-      handleStartNewTournament,
-      navigateTo,
-      handleOpenSuggestName,
-      handleOpenPhotos,
-      currentRoute,
-    ],
-  );
 
   // * Show loading screen while initializing user session from localStorage
   if (!isInitialized) {
@@ -277,7 +214,7 @@ function App() {
 
   return (
     <AppLayout
-      navbarProps={navbarProps}
+
       user={user}
       errors={errors}
       errorActions={errorActions}
@@ -292,6 +229,7 @@ function App() {
       uiActions={uiActions}
       isSuggestNameModalOpen={isSuggestNameModalOpen}
       onCloseSuggestName={handleCloseSuggestName}
+      onOpenSuggestName={handleOpenSuggestName}
     />
   );
 }
@@ -299,7 +237,7 @@ function App() {
 export default App;
 
 interface AppLayoutProps {
-  navbarProps: Record<string, unknown>;
+
   user: UserState;
   errors: { current: Error | null; history: unknown[] };
   errorActions: { clearError: () => void };
@@ -310,19 +248,22 @@ interface AppLayoutProps {
   };
   handleLogin: (userName: string) => Promise<boolean>;
   handleStartNewTournament: () => void;
-  handleUpdateRatings: (ratings: Record<string, unknown>) => void;
+  handleUpdateRatings: (
+    ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+  ) => Promise<boolean> | void;
   handleTournamentSetup: (names?: Name[]) => void;
   handleTournamentComplete: (
-    finalRatings: Record<string, unknown>,
+    finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
   ) => Promise<void>;
   isSuggestNameModalOpen: boolean;
   onCloseSuggestName: () => void;
+  onOpenSuggestName: () => void;
   ui: unknown;
   uiActions: unknown;
 }
 
 function AppLayout({
-  navbarProps,
+
   user,
   errors,
   errorActions,
@@ -335,6 +276,7 @@ function AppLayout({
   handleTournamentComplete,
   isSuggestNameModalOpen,
   onCloseSuggestName,
+  onOpenSuggestName,
 }: AppLayoutProps) {
   const { isLoggedIn } = user;
 
@@ -362,20 +304,7 @@ function AppLayout({
 
       {/* * Static cat-themed background - removed, using NoiseBackground in Tournament */}
 
-      {/* * Primary navigation lives in the navbar */}
-      <AppNavbar
-        view={navbarProps.view as string}
-        setView={navbarProps.setView as (view: string) => void}
-        isLoggedIn={navbarProps.isLoggedIn as boolean}
-        userName={navbarProps.userName as string}
-        isAdmin={navbarProps.isAdmin as boolean}
-        onLogout={navbarProps.onLogout as () => void}
-        onStartNewTournament={navbarProps.onStartNewTournament as () => void}
-        onOpenSuggestName={navbarProps.onOpenSuggestName as () => void}
-        onOpenPhotos={navbarProps.onOpenPhotos as () => void}
-        currentRoute={navbarProps.currentRoute as string}
-        onNavigate={navbarProps.onNavigate as (path: string) => void}
-      />
+
 
       <main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
         {errors.current && isLoggedIn && (
@@ -397,6 +326,7 @@ function AppLayout({
           onTournamentSetup={handleTournamentSetup}
           onTournamentComplete={handleTournamentComplete}
           onVote={(vote: unknown) => tournamentActions.addVote(vote)}
+          onOpenSuggestName={onOpenSuggestName}
         />
 
         {/* * Global loading overlay */}
