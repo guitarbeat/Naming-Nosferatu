@@ -99,7 +99,7 @@ interface StoreSlice {
 }
 
 function App() {
-  const { login, logout, isInitialized } = useUserSession();
+  const { login, isInitialized } = useUserSession();
   const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
   // * Initialize performance monitoring
@@ -139,8 +139,6 @@ function App() {
     isTournamentComplete: tournament.isComplete,
   });
 
-  // Get admin status from server-side validation
-  const { isAdmin } = user;
 
   // * Keyboard shortcuts - consolidated into custom hook
   useKeyboardShortcuts({
@@ -160,11 +158,6 @@ function App() {
     navigateTo,
   });
 
-  // * Handle logout
-  const handleLogout = useCallback(async () => {
-    logout(); // * This already calls userActions.logout() internally
-    tournamentActions.resetTournament();
-  }, [logout, tournamentActions]);
 
   // * Handle user login
   const handleLogin = useCallback(
@@ -179,9 +172,6 @@ function App() {
     },
     [login],
   );
-
-  // * Memoize main content to prevent unnecessary re-renders
-
 
 
   // * Handle opening suggest name modal
@@ -301,10 +291,6 @@ function AppLayout({
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
-
-      {/* * Static cat-themed background - removed, using NoiseBackground in Tournament */}
-
-
 
       <main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
         {errors.current && isLoggedIn && (

@@ -403,6 +403,8 @@ TournamentNameGrid.propTypes = {
   analysisHandlersProps: PropTypes.object,
 };
 
+function TournamentSetupContent({
+  onStart,
   userName,
   enableAnalysisMode = false,
   onOpenSuggestName,
@@ -553,7 +555,6 @@ TournamentNameGrid.propTypes = {
       <div className={styles.container}>
         <NameManagementView
           mode="tournament"
-          userName={userName}
           userName={userName}
           onStartTournament={onStart}
           onOpenSuggestName={onOpenSuggestName}

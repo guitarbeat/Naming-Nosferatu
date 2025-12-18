@@ -21,6 +21,7 @@ function TournamentToolbar({
   onToggleCatPictures,
   startTournamentButton,
   analysisMode = false,
+  onOpenSuggestName,
   className = "",
 }) {
   const isTournament = mode === "tournament";
@@ -99,6 +100,7 @@ TournamentToolbar.propTypes = {
     onClick: PropTypes.func.isRequired,
     selectedCount: PropTypes.number.isRequired,
   }),
+  onOpenSuggestName: PropTypes.func,
   className: PropTypes.string,
 };
 

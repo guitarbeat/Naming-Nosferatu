@@ -213,11 +213,35 @@
 }
 
 /* Stats Value Colors */
-.success .statsValue { background: linear-gradient(135deg, #16a34a, #22c55e); -webkit-text-fill-color: transparent; background-clip: text; }
-.warning .statsValue { background: linear-gradient(135deg, #d97706, #f59e0b); -webkit-text-fill-color: transparent; background-clip: text; }
-.info .statsValue { background: linear-gradient(135deg, #0891b2, #06b6d4); -webkit-text-fill-color: transparent; background-clip: text; }
-.danger .statsValue { background: linear-gradient(135deg, #dc2626, #ef4444); -webkit-text-fill-color: transparent; background-clip: text; }
-.secondary .statsValue { background: linear-gradient(135deg, #4b5563, #6b7280); -webkit-text-fill-color: transparent; background-clip: text; }
+.success .statsValue {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.warning .statsValue {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info .statsValue {
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.danger .statsValue {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.secondary .statsValue {
+  background: linear-gradient(135deg, #4b5563, #6b7280);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 .statsEmoji {
   margin-top: var(--spacing-icon-gap);
