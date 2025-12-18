@@ -5,7 +5,7 @@
  */
 
 // * Core UI Components
-import { Button, TournamentButton, ScrollToTopButton } from "./Button";
+import { Button, IconButton, TournamentButton, ScrollToTopButton } from "./Button";
 import Card from "./Card/Card";
 import Loading from "./Loading/Loading";
 import Error from "./Error/Error";
@@ -29,4 +29,4 @@ export { AnalysisBulkActions } from "./AnalysisPanel";
 export { default as NoiseBackground } from "./NoiseBackground/NoiseBackground";
 
 // * Named exports
-export { Button, TournamentButton, ScrollToTopButton, Card, Loading, Error, Toast, Bracket, };
+export { Button, IconButton, TournamentButton, ScrollToTopButton, Card, Loading, Error, Toast, Bracket, };

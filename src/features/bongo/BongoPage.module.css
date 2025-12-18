@@ -1,263 +1,42 @@
-/* BongoPage Styles - Hidden page for the BongoCat component */
-
-.bongoPageWrapper {
-  position: relative;
+.container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  overflow: hidden;
-}
-
-.backgroundContainer {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-}
-
-.animatedBackground {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #f5576c 75%,
-    #4facfe 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / 30%);
-  backdrop-filter: blur(2px);
-}
-
-.contentContainer {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 800px;
+  background-color: var(--background);
+  color: var(--foreground);
   padding: 2rem;
-  text-align: center;
 }
 
-.header {
-  margin-bottom: 3rem;
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  max-width: 800px;
+  width: 100%;
 }
 
 .title {
-  margin-bottom: 1rem;
   font-size: 3rem;
-  font-weight: 800;
-  color: #fff;
-  text-shadow: 0 4px 8px rgb(0 0 0 / 30%);
-  animation: titlePulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes titlePulse {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.05);
-  }
-}
-
-.subtitle {
+  font-weight: bold;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
-  font-size: 1.25rem;
-  line-height: 1.6;
-  color: rgb(255 255 255 / 90%);
 }
 
-.greeting {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffd700;
-  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
-}
-
-.bongoSection {
-  padding: 2rem;
-  margin-bottom: 3rem;
-  background: rgb(255 255 255 / 10%);
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgb(0 0 0 / 10%);
-  backdrop-filter: blur(10px);
-}
-
-.sectionTitle {
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
-}
-
-.instructions {
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-  line-height: 1.5;
-  color: rgb(255 255 255 / 80%);
-}
-
-.bongoContainer {
+.catWrapper {
   position: relative;
+  width: 100%;
+  height: 400px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  min-height: 300px;
-  padding: 2rem;
-  background: rgb(255 255 255 / 5%);
-  border: 2px dashed rgb(255 255 255 / 30%);
-  border-radius: 15px;
-  transition: all 0.3s ease;
+  align-items: center;
 }
 
-.bongoContainer:hover {
-  background: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 50%);
-  transform: translateY(-2px);
-}
-
-.infoSection {
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  background: rgb(255 255 255 / 8%);
-  border: 1px solid rgb(255 255 255 / 15%);
-  border-radius: 15px;
-  backdrop-filter: blur(5px);
-}
-
-.infoTitle {
-  margin-bottom: 1rem;
+.welcome {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
-  text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
-}
-
-.infoList {
-  max-width: 500px;
-  padding: 0;
-  margin: 0;
-  margin: 0 auto;
-  text-align: left;
-  list-style: none;
-}
-
-.infoList li {
-  position: relative;
-  padding-left: 1.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: rgb(255 255 255 / 80%);
-}
-
-.infoList li::before {
-  position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 1.1rem;
-  content: "🐾";
-}
-
-.footer {
-  margin-top: 2rem;
-}
-
-.footerText {
-  font-size: 1rem;
-  font-style: italic;
-  color: rgb(255 255 255 / 70%);
-}
-
-/* Responsive design */
-@media (width <= 768px) {
-  .contentContainer {
-    padding: 1rem;
-  }
-
-  .title {
-    font-size: 2.5rem;
-  }
-
-  .subtitle {
-    font-size: 1.1rem;
-  }
-
-  .bongoSection {
-    padding: 1.5rem;
-  }
-
-  .sectionTitle {
-    font-size: 1.75rem;
-  }
-
-  .bongoContainer {
-    min-height: 250px;
-    padding: 1.5rem;
-  }
-}
-
-@media (width <= 480px) {
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
-  }
-
-  .bongoSection {
-    padding: 1rem;
-  }
-
-  .sectionTitle {
-    font-size: 1.5rem;
-  }
-
-  .bongoContainer {
-    min-height: 200px;
-    padding: 1rem;
-  }
-}
-
-/* Animation for the page entrance */
-.bongoPageWrapper {
-  animation: pageFadeIn 0.8s ease-out;
-}
-
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  opacity: 0.8;
 }
