@@ -9,23 +9,31 @@ import { TIMING } from "../../../core/constants";
 import { LIGHTBOX_IMAGE_SIZES } from "../constants";
 import styles from "../TournamentSetup.module.css";
 
+interface LightboxProps {
+  images: string[];
+  currentIndex: number;
+  onClose: () => void;
+  onNavigate: (index: number) => void;
+  preloadImages?: string[];
+}
+
 function Lightbox({
   images,
   currentIndex,
   onClose,
   onNavigate,
   preloadImages = [],
-}) {
-  const closeBtnRef = useRef(null);
-  const transitionTimerRef = useRef(null);
+}: LightboxProps) {
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isTransitioningRef = useRef(false);
-  const [slideDirection, setSlideDirection] = useState(null);
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
   const touchEndRef = useRef({ x: 0, y: 0 });
   const minSwipeDistance = 50;
 
   const handleNavigate = useCallback(
-    (newIndex) => {
+    (newIndex: number) => {
       if (isTransitioningRef.current) return;
 
       isTransitioningRef.current = true;
@@ -44,7 +52,7 @@ function Lightbox({
 
       transitionTimerRef.current = setTimeout(() => {
         isTransitioningRef.current = false;
-      }, TIMING.LIGHTBOX_TRANSITION_DURATION_MS);
+      }, TIMING.LIGHTBOX_TRANSITION_DURATION_MS) as unknown as NodeJS.Timeout;
     },
     [currentIndex, onNavigate],
   );
@@ -60,16 +68,16 @@ function Lightbox({
   }, [currentIndex, handleNavigate, images.length]);
 
   // * Touch gesture handlers for mobile
-  const onTouchStart = useCallback((e) => {
-    const [touch] = e.targetTouches;
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const touch = e.targetTouches[0];
     if (touch) {
       touchStartRef.current = { x: touch.clientX, y: touch.clientY };
       touchEndRef.current = { x: 0, y: 0 };
     }
   }, []);
 
-  const onTouchMove = useCallback((e) => {
-    const [touch] = e.targetTouches;
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    const touch = e.targetTouches[0];
     if (touch) {
       touchEndRef.current = { x: touch.clientX, y: touch.clientY };
     }
@@ -106,7 +114,7 @@ function Lightbox({
   }, [handleNext, handlePrev, onClose]);
 
   useEffect(() => {
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowLeft") handlePrev();
       else if (e.key === "ArrowRight") handleNext();
@@ -154,7 +162,7 @@ function Lightbox({
       return;
     }
 
-    const links = [];
+    const links: HTMLLinkElement[] = [];
     preloadImages.forEach((imgUrl) => {
       if (imgUrl) {
         // * Use Image object for more reliable preloading
@@ -213,7 +221,7 @@ function Lightbox({
           className={`${styles.lightboxImageWrap} ${
             slideDirection
               ? styles[
-                  `slide${slideDirection.charAt(0).toUpperCase() + slideDirection.slice(1)}`
+                  `slide${slideDirection.charAt(0).toUpperCase() + slideDirection.slice(1)}` as keyof typeof styles
                 ]
               : ""
           }`}

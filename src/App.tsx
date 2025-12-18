@@ -11,7 +11,8 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
 import { Error, Loading, ScrollToTopButton } from "./shared/components";
-
+import { AppNavbar } from "./shared/components/AppNavbar";
+import CatBackground from "./shared/components/CatBackground";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 // * Performance monitoring
@@ -99,7 +100,7 @@ interface StoreSlice {
 }
 
 function App() {
-  const { login, isInitialized } = useUserSession();
+  const { login, logout, isInitialized } = useUserSession();
   const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
   // * Initialize performance monitoring
@@ -184,6 +185,24 @@ function App() {
     setIsSuggestNameModalOpen(false);
   }, []);
 
+  // * Handle logout
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigateTo("/login");
+  }, [logout, navigateTo]);
+
+  // * Handle opening photos view
+  const handleOpenPhotos = useCallback(() => {
+    const currentView = useAppStore.getState().tournament.currentView;
+    if (currentView === "photos") {
+      tournamentActions.setView("tournament");
+      navigateTo("/");
+    } else {
+      tournamentActions.setView("photos");
+      navigateTo("/");
+    }
+  }, [tournamentActions, navigateTo]);
+
 
   // * Show loading screen while initializing user session from localStorage
   if (!isInitialized) {
@@ -220,6 +239,8 @@ function App() {
       isSuggestNameModalOpen={isSuggestNameModalOpen}
       onCloseSuggestName={handleCloseSuggestName}
       onOpenSuggestName={handleOpenSuggestName}
+      handleLogout={handleLogout}
+      handleOpenPhotos={handleOpenPhotos}
     />
   );
 }
@@ -248,6 +269,8 @@ interface AppLayoutProps {
   isSuggestNameModalOpen: boolean;
   onCloseSuggestName: () => void;
   onOpenSuggestName: () => void;
+  handleLogout: () => Promise<void>;
+  handleOpenPhotos: () => void;
   ui: unknown;
   uiActions: unknown;
 }
@@ -267,8 +290,14 @@ function AppLayout({
   isSuggestNameModalOpen,
   onCloseSuggestName,
   onOpenSuggestName,
+  handleLogout,
+  handleOpenPhotos,
 }: AppLayoutProps) {
   const { isLoggedIn } = user;
+  const currentView = useAppStore(
+    (state: StoreSlice) => state.tournament.currentView,
+  );
+  const { currentRoute, navigateTo } = useRouting();
 
   const appClassName = useMemo(
     () => (!isLoggedIn ? "app app--login" : "app"),
@@ -291,6 +320,42 @@ function AppLayout({
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
+
+      {/* * Static cat-themed background */}
+      <CatBackground />
+
+      {/* * Primary navigation lives in the navbar */}
+      {isLoggedIn && (
+        <AppNavbar
+          view={currentView || "tournament"}
+          setView={(view: string) => {
+            const nextView = view;
+            // * Toggle photos view: if clicking photos and already on photos, go back to tournament
+            if (nextView === "photos" && currentView === "photos") {
+              tournamentActions.setView("tournament");
+              navigateTo("/");
+            } else {
+              tournamentActions.setView(nextView);
+
+              // * Direct navigation for each view
+              if (nextView === "tournament") {
+                navigateTo("/");
+              } else if (nextView === "photos") {
+                navigateTo("/");
+              }
+            }
+          }}
+          isLoggedIn={isLoggedIn}
+          userName={user.name}
+          isAdmin={user.isAdmin}
+          onLogout={handleLogout}
+          onStartNewTournament={handleStartNewTournament}
+          onOpenSuggestName={onOpenSuggestName}
+          onOpenPhotos={handleOpenPhotos}
+          currentRoute={currentRoute}
+          onNavigate={navigateTo}
+        />
+      )}
 
       <main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
         {errors.current && isLoggedIn && (

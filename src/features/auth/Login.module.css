@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
@@ -29,6 +29,7 @@
   border: 4px solid var(--ink);
   box-shadow: 15px 15px 0 var(--ink);
   transform: rotate(-1deg);
+  z-index: 1;
 }
 
 .cutOutCat {
@@ -50,6 +51,8 @@
   );
   border-bottom: 8px solid #555;
   animation: bobble 4s ease-in-out infinite;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .eye {

@@ -159,7 +159,8 @@ function getNextMatch(
 
   const findBestMatch = () => {
     try {
-      const nameList = names.map((n) => n?.name || "").filter(Boolean);
+      // Convert names to NameItem[] format for initializeSorterPairs
+      const nameList = names.filter((n) => n && n.name);
       const sorterAny = sorter as Record<string, unknown>;
       initializeSorterPairs(sorter, nameList);
 
@@ -174,7 +175,14 @@ function getNextMatch(
       const prefs = getPreferencesMap(sorter);
       const ratings = options.currentRatings || {};
       const history = options.history || [];
-      const comparisons = buildComparisonsMap(history);
+      // Convert MatchRecord[] to ComparisonHistory[] format
+      const comparisonHistory = history
+        .filter((h) => h.winner && h.loser)
+        .map((h) => ({
+          winner: h.winner as string,
+          loser: h.loser as string,
+        }));
+      const comparisons = buildComparisonsMap(comparisonHistory);
 
       let bestPair = null;
       let bestScore = Infinity;
@@ -191,12 +199,14 @@ function getNextMatch(
         const key = `${a}-${b}`;
         const reverseKey = `${b}-${a}`;
         if (prefs.has(key) || prefs.has(reverseKey)) continue;
+        const ratingA = ratings[a];
         const ra =
-          ratings[a]?.rating ??
-          (typeof ratings[a] === "number" ? ratings[a] : 1500);
+          (typeof ratingA === "object" && ratingA?.rating) ||
+          (typeof ratingA === "number" ? ratingA : 1500);
+        const ratingB = ratings[b];
         const rb =
-          ratings[b]?.rating ??
-          (typeof ratings[b] === "number" ? ratings[b] : 1500);
+          (typeof ratingB === "object" && ratingB?.rating) ||
+          (typeof ratingB === "number" ? ratingB : 1500);
         const diff = Math.abs(ra - rb);
         const ca = comparisons.get(a) || 0;
         const cb = comparisons.get(b) || 0;

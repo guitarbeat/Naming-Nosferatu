@@ -11,36 +11,27 @@ import {
 } from "../../../shared/services/supabase/api";
 import { devLog, devWarn, devError } from "../../../shared/utils/logger";
 import { clearAllCaches } from "../../../shared/utils/cacheUtils";
+import { NameItem, IdType } from "../../../shared/propTypes";
 
 /**
  * * Hook for managing name operations
- * @param {string} activeUser - Active user name
- * @param {boolean} canManageActiveUser - Whether user can manage active user
- * @param {Set} hiddenNames - Set of hidden name IDs
- * @param {Function} setHiddenNames - Function to set hidden names
- * @param {Function} setAllNames - Function to update all names
- * @param {Function} fetchNames - Function to refetch names
- * @param {Function} fetchSelectionStats - Function to refetch selection stats
- * @param {Function} showSuccess - Success notification function
- * @param {Function} showError - Error notification function
- * @returns {Object} Name operation handlers
  */
 export function useProfileNameOperations(
-  activeUser,
-  canManageActiveUser,
-  hiddenNames,
-  setHiddenNames,
-  setAllNames,
-  fetchNames,
-  fetchSelectionStats,
-  showSuccess,
-  showError,
+  activeUser: string,
+  canManageActiveUser: boolean,
+  hiddenNames: Set<IdType>,
+  setHiddenNames: (value: Set<IdType> | ((prev: Set<IdType>) => Set<IdType>)) => void,
+  setAllNames: (value: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void,
+  fetchNames: (userName: string) => void,
+  fetchSelectionStats: (userName: string) => void,
+  showSuccess: (message: string) => void,
+  showError: (message: string) => void,
 ) {
-  const [selectedNames, setSelectedNames] = useState(new Set());
+  const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 
   // * Handle name visibility toggle
   const handleToggleVisibility = useCallback(
-    async (nameId) => {
+    async (nameId: IdType) => {
       try {
         const currentlyHidden = hiddenNames.has(nameId);
 
@@ -71,7 +62,7 @@ export function useProfileNameOperations(
         );
 
         // Optimistic local update for instant UI feedback
-        setHiddenNames((prev) => {
+        setHiddenNames((prev: Set<IdType>) => {
           const next = new Set(prev);
           if (currentlyHidden) next.delete(nameId);
           else next.add(nameId);
@@ -79,7 +70,7 @@ export function useProfileNameOperations(
         });
 
         // Immediately reflect hidden state in local names collection
-        setAllNames((prev) =>
+        setAllNames((prev: NameItem[]) =>
           Array.isArray(prev)
             ? prev.map((n) =>
                 n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n,
@@ -122,7 +113,7 @@ export function useProfileNameOperations(
 
   // * Handle name deletion
   const handleDelete = useCallback(
-    async (name) => {
+    async (name: NameItem) => {
       try {
         const supabaseClient = await resolveSupabaseClient();
 
@@ -160,8 +151,8 @@ export function useProfileNameOperations(
   );
 
   // * Handle name selection
-  const handleSelectionChange = useCallback((nameId, selected) => {
-    setSelectedNames((prev) => {
+  const handleSelectionChange = useCallback((nameId: IdType, selected: boolean) => {
+    setSelectedNames((prev: Set<IdType>) => {
       const newSet = new Set(prev);
       if (selected) {
         newSet.add(nameId);
@@ -174,7 +165,12 @@ export function useProfileNameOperations(
 
   // * Helper for bulk operations
   const performBulkOperation = useCallback(
-    async (nameIds, operation, successMessage, isHide) => {
+    async (
+      nameIds: IdType[],
+      operation: (userName: string, nameIds: IdType[]) => Promise<{ success: boolean; processed: number; error?: string; results?: unknown[]; errors?: string[] }>,
+      successMessage: string,
+      isHide: boolean
+    ) => {
       devLog("[useProfileNameOperations] performBulkOperation called", {
         nameIds,
         nameIdsLength: nameIds?.length,
@@ -225,7 +221,7 @@ export function useProfileNameOperations(
           showSuccess(message);
 
           // Update local state optimistically
-          setHiddenNames((prev) => {
+          setHiddenNames((prev: Set<IdType>) => {
             const newSet = new Set(prev);
             nameIds.forEach((id) => {
               if (isHide) newSet.add(id);
@@ -279,14 +275,14 @@ export function useProfileNameOperations(
 
   // * Handle bulk hide operation
   const handleBulkHide = useCallback(
-    (nameIds) =>
+    (nameIds: IdType[]) =>
       performBulkOperation(nameIds, hiddenNamesAPI.hideNames, "Hidden", true),
     [performBulkOperation],
   );
 
   // * Handle bulk unhide operation
   const handleBulkUnhide = useCallback(
-    (nameIds) =>
+    (nameIds: IdType[]) =>
       performBulkOperation(
         nameIds,
         hiddenNamesAPI.unhideNames,

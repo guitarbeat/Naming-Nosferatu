@@ -19,14 +19,10 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 /**
  * * Generate all possible pairs from a list of names
- * @param {Array} nameList - Array of name strings
+ * @param {Array} nameList - Array of name items
  * @returns {Array} Array of [name1, name2] pairs
  */
-interface NameItem {
-  id: string;
-  name: string;
-  [key: string]: unknown;
-}
+import { NameItem } from "../propTypes";
 
 export function generatePairs(nameList: NameItem[]): [NameItem, NameItem][] {
   const pairs: [NameItem, NameItem][] = [];
@@ -48,11 +44,13 @@ interface ComparisonHistory {
   loser: string;
 }
 
-export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, boolean> {
-  const map = new Map<string, boolean>();
+export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, number> {
+  const map = new Map<string, number>();
   history.forEach(({ winner, loser }) => {
-    const key = `${winner}-${loser}`;
-    map.set(key, true);
+    const winnerCount = (map.get(winner) || 0) + 1;
+    const loserCount = (map.get(loser) || 0) + 1;
+    map.set(winner, winnerCount);
+    map.set(loser, loserCount);
   });
   return map;
 }

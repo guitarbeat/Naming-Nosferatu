@@ -4,6 +4,7 @@
  */
 
 import { generatePairs } from "./arrayUtils";
+import { NameItem } from "../propTypes";
 
 interface Sorter {
   _pairs?: Array<[unknown, unknown]>;
@@ -11,16 +12,10 @@ interface Sorter {
   preferences?: Map<string, unknown>;
 }
 
-interface NameItem {
-  id: string;
-  name: string;
-  [key: string]: unknown;
-}
-
 /**
  * * Initialize sorter pairs if not already done
  * @param sorter - The sorter object
- * @param nameList - Array of name strings
+ * @param nameList - Array of name items (NameItem from propTypes)
  */
 export function initializeSorterPairs(sorter: Sorter | null, nameList: NameItem[]): void {
   if (!sorter) {

@@ -1,15 +1,26 @@
 import React, { useId } from "react";
 import PropTypes from "prop-types";
-import { ToolbarGlass } from "./components";
-import TournamentModeToolbar from "./TournamentModeToolbar";
+import { ToolbarGlass, BinaryToggle } from "./components";
+import { TournamentButton } from "../Button";
 import FilterModeToolbar from "./FilterModeToolbar";
+import { styles } from "./styles";
 import "./TournamentToolbar.css";
 
+interface TournamentFilters {
+  searchTerm?: string;
+  category?: string;
+  sortBy?: string;
+  filterStatus?: string;
+  userFilter?: string;
+  selectionFilter?: string;
+  sortOrder?: string;
+  dateFilter?: string;
+}
 
 interface TournamentToolbarProps {
   mode?: "tournament" | "profile" | "hybrid";
-  filters?: any;
-  onFilterChange?: (name: string, value: any) => void;
+  filters?: TournamentFilters;
+  onFilterChange?: (name: string, value: string) => void;
   filteredCount?: number;
   totalCount?: number;
   categories?: string[];
@@ -54,6 +65,69 @@ function TournamentToolbar({
   const toolbarGlassId = useId();
   const glassId = `toolbar-glass-${toolbarGlassId.replace(/:/g, "-")}`;
 
+  // Tournament mode toolbar content
+  const renderTournamentMode = () => {
+    const selectedCount = startTournamentButton?.selectedCount ?? 0;
+    const isReady = selectedCount >= 2;
+    const countLabel =
+      selectedCount === 1 ? "1 selected name" : `${selectedCount} selected names`;
+
+    const buttonLabel = isReady
+      ? `Start the tournament with ${countLabel}`
+      : "Select at least 2 names to start";
+
+    return (
+      <div className={styles.unifiedContainer} data-mode={mode}>
+        {(onToggleSwipeMode || onToggleCatPictures) && (
+          <div className={styles.toggleStack}>
+            {onToggleSwipeMode && (
+              <BinaryToggle
+                isActive={!!isSwipeMode}
+                onClick={onToggleSwipeMode}
+                activeLabel="Swipe"
+                inactiveLabel="Tap"
+                ariaLabel={
+                  isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"
+                }
+              />
+            )}
+            {onToggleCatPictures && (
+              <BinaryToggle
+                isActive={!!showCatPictures}
+                onClick={onToggleCatPictures}
+                activeLabel="Cats"
+                inactiveLabel="Names"
+                ariaLabel={
+                  showCatPictures ? "Hide cat pictures" : "Show cat pictures"
+                }
+              />
+            )}
+          </div>
+        )}
+        {onOpenSuggestName && (
+          <button
+            className={styles.suggestButton}
+            onClick={onOpenSuggestName}
+            aria-label="Suggest a new name"
+          >
+            Suggest Name
+          </button>
+        )}
+        {startTournamentButton && (
+          <TournamentButton
+            onClick={startTournamentButton.onClick}
+            disabled={!isReady}
+            className={styles.startButton}
+            ariaLabel={buttonLabel}
+            startIcon={isReady ? undefined : null}
+          >
+            {buttonLabel}
+          </TournamentButton>
+        )}
+      </div>
+    );
+  };
+
   return (
     <ToolbarGlass
       mode={isTournament ? "tournament" : "filter"}
@@ -61,15 +135,7 @@ function TournamentToolbar({
       className={className}
     >
       {isTournament ? (
-        <TournamentModeToolbar
-          mode={mode}
-          onToggleSwipeMode={onToggleSwipeMode}
-          isSwipeMode={isSwipeMode}
-          onToggleCatPictures={onToggleCatPictures}
-          showCatPictures={showCatPictures}
-          startTournamentButton={startTournamentButton}
-          onOpenSuggestName={onOpenSuggestName}
-        />
+        renderTournamentMode()
       ) : (
         <FilterModeToolbar
           filters={filters}
