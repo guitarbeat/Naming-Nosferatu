@@ -8,6 +8,7 @@
 import { Button, IconButton, TournamentButton, ScrollToTopButton } from "./Button";
 import Card from "./Card/Card";
 import Loading from "./Loading/Loading";
+import CatImage from "./CatImage";
 import Error from "./Error/Error";
 import Toast from "./Toast/Toast";
 
@@ -29,4 +30,4 @@ export { AnalysisBulkActions } from "./AnalysisPanel";
 export { default as NoiseBackground } from "./NoiseBackground/NoiseBackground";
 
 // * Named exports
-export { Button, IconButton, TournamentButton, ScrollToTopButton, Card, Loading, Error, Toast, Bracket, };
+export { Button, IconButton, TournamentButton, ScrollToTopButton, Card, CatImage, Loading, Error, Toast, Bracket };

@@ -19,6 +19,7 @@ function SwipeableNameCards({
   isAdmin,
   showCatPictures = false,
   imageList = CAT_IMAGES,
+  onStartTournament,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -189,7 +190,29 @@ function SwipeableNameCards({
     setIsLongPressing(false);
   };
 
-  if (!currentName) return null;
+  if (!currentName) {
+    return (
+      <div className={styles.swipeContainer}>
+        <div className={styles.swipeCompletion}>
+          <h3>All caught up!</h3>
+          <p>You've gone through all available names.</p>
+          {selectedNames.length >= 2 ? (
+            <button
+              className={styles.startTournamentButton}
+              onClick={() => onStartTournament && onStartTournament(selectedNames)}
+            >
+              Start Tournament ({selectedNames.length} selected)
+            </button>
+          ) : (
+            <p>Select at least 2 names to start a tournament.</p>
+          )}
+          <button className={styles.undoButton} onClick={handleUndo}>
+            Undo Last Swipe
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.swipeContainer}>
@@ -253,6 +276,7 @@ SwipeableNameCards.propTypes = {
   isAdmin: PropTypes.bool,
   showCatPictures: PropTypes.bool,
   imageList: PropTypes.arrayOf(PropTypes.string),
+  onStartTournament: PropTypes.func,
 };
 
 export default SwipeableNameCards;

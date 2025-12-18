@@ -364,6 +364,7 @@ function TournamentNameGrid({
         selectedNames={context.selectedNames}
         availableNames={context.names}
         onToggleName={context.toggleName}
+        onStartTournament={context.onStartTournament}
         isAdmin={showAdminFeatures && isAdmin}
         selectedCategory={context.selectedCategory}
         searchTerm={context.searchTerm}

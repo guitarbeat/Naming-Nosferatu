@@ -34,28 +34,14 @@
 import React, { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import { TIMING } from "../../../core/constants";
+import Card from "../Card/Card";
 import CatImage from "../CatImage";
 import styles from "./NameCard.module.css";
 
-/**
- * NameCard Component
- * @param {Object} props
- * @param {string} props.name - The name to display in the card
- * @param {string} [props.description] - Optional description text
- * @param {boolean} [props.isSelected] - Whether the card is selected
- * @param {Function} [props.onClick] - Click handler function
- * @param {boolean} [props.disabled=false] - Whether the card is disabled
- * @param {string} [props.shortcutHint] - Keyboard shortcut hint
- * @param {string} [props.className=''] - Additional CSS classes
- * @param {('small'|'medium')} [props.size='medium'] - Card size variant
- * @param {Object} [props.metadata] - Optional metadata to display (rating, popularity, etc.)
- * @param {boolean} [props.isAdmin=false] - Whether to show admin controls
- * @param {boolean} [props.isHidden=false] - Whether the name is hidden
- * @param {Function} [props.onToggleVisibility] - Function to toggle name visibility
- * @param {Function} [props.onDelete] - Function to delete the name
- * @param {Function} [props.onSelectionChange] - Function to handle selection change
- */
+// ... imports ...
+
 function NameCard({
+  // ... props ...
   name,
   description,
   isSelected,
@@ -72,13 +58,14 @@ function NameCard({
   onSelectionChange,
   image,
 }) {
-  // Component logic here
+  // ... existing hooks ...
   const [rippleStyle, setRippleStyle] = useState({});
   const [isRippling, setIsRippling] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const cardRef = React.useRef(null);
 
+  // ... existing effects ...
   useEffect(() => {
     if (isRippling) {
       const timer = setTimeout(
@@ -207,12 +194,12 @@ function NameCard({
   };
 
   const cardClasses = [
-    styles.card,
+    styles.card, // Keep local styles for specific overrides
     styles[size],
     isSelected && styles.selected,
     disabled && styles.disabled,
     isHidden && styles.hidden,
-    image && styles.hasImage, // * Add special class for cards with images
+    image && styles.hasImage,
     className,
   ]
     .filter(Boolean)
@@ -225,7 +212,8 @@ function NameCard({
   return (
     <div className={styles.cardContainer}>
       {/* Main card content */}
-      <Component
+      <Card
+        as={Component}
         ref={cardRef}
         className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
         onClick={isInteractive ? handleInteraction : undefined}
@@ -241,6 +229,10 @@ function NameCard({
         aria-labelledby={`${getSafeId(name)}-title`}
         type={isInteractive ? "button" : undefined}
         role={!isInteractive ? "article" : undefined}
+        // Card specific props
+        variant={isSelected ? "primary" : "default"}
+        padding={size === "small" ? "small" : "medium"}
+        interactive={isInteractive}
       >
         {/* Cat image when provided */}
         {image && (
@@ -315,7 +307,7 @@ function NameCard({
             aria-hidden="true"
           />
         )}
-      </Component>
+      </Card>
 
       {/* Admin actions overlay removed - use bulk actions instead */}
 

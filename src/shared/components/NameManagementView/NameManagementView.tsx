@@ -362,6 +362,7 @@ export function NameManagementView({
       tournamentProps,
       mode,
       handleFilterChange,
+      onStartTournament,
     }),
     [
       names,
@@ -405,6 +406,7 @@ export function NameManagementView({
       setDateFilter,
       analysisMode,
       handleAnalysisModeToggle,
+      onStartTournament,
     ],
   );
 

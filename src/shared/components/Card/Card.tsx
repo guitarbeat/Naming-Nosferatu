@@ -9,16 +9,49 @@ import {
   DEFAULT_GLASS_CONFIG,
   resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
+import { cn } from "../../utils/classNameUtils";
 import styles from "./Card.module.css";
 
+type CardVariant = 
+  | "default" | "elevated" | "outlined" | "filled"
+  | "primary" | "success" | "warning" | "info" | "danger" | "secondary";
+
+type CardPadding = "none" | "small" | "medium" | "large" | "xl";
+type CardShadow = "none" | "small" | "medium" | "large" | "xl";
+type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+
+interface GlassConfig {
+  width?: number;
+  height?: number;
+  radius?: number;
+  scale?: number;
+  saturation?: number;
+  frost?: number;
+  inputBlur?: number;
+  outputBlur?: number;
+  id?: string;
+}
+
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  variant?: CardVariant;
+  padding?: CardPadding;
+  shadow?: CardShadow;
+  border?: boolean;
+  background?: CardBackground;
+  as?: React.ElementType;
+  liquidGlass?: boolean | GlassConfig;
+  interactive?: boolean;
+}
+
 const buildCardClasses = (
-  variant,
-  padding,
-  shadow,
-  border,
-  background,
-  liquidGlass,
-  className,
+  variant: CardVariant,
+  padding: CardPadding,
+  shadow: CardShadow,
+  border: boolean,
+  background: CardBackground,
+  liquidGlass: boolean | GlassConfig | undefined,
+  className: string,
 ) => {
   return [
     styles.card,
@@ -29,13 +62,20 @@ const buildCardClasses = (
     background !== "solid" && background !== "glass" && !liquidGlass
       ? styles[`background-${background}`]
       : "",
+    // Add color variant support
+    styles[variant], // This will pick up primary, success, etc. if defined
     className,
   ]
     .filter(Boolean)
     .join(" ");
 };
 
-const buildContentClasses = (variant, padding, shadow, border) => {
+const buildContentClasses = (
+  variant: CardVariant,
+  padding: CardPadding,
+  shadow: CardShadow,
+  border: boolean,
+) => {
   return [
     styles.card,
     styles[variant],
@@ -48,7 +88,7 @@ const buildContentClasses = (variant, padding, shadow, border) => {
 };
 
 const Card = memo(
-  React.forwardRef(
+  React.forwardRef<HTMLDivElement, CardProps>(
     (
       {
         children,
@@ -60,6 +100,8 @@ const Card = memo(
         background = "solid",
         as: Component = "div",
         liquidGlass,
+        interactive = false,
+        onClick,
         ...props
       },
       ref,
@@ -72,6 +114,12 @@ const Card = memo(
         background,
         liquidGlass,
         className,
+      );
+
+      const finalClasses = cn(
+        cardClasses,
+        interactive && styles.interactive,
+        onClick && styles.interactive
       );
 
       // * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
@@ -117,7 +165,12 @@ const Card = memo(
             style={{ width: "100%", height: "auto", ...props.style }}
             {...glassProps}
           >
-            <Component ref={ref} className={contentClasses} {...props}>
+            <Component
+              ref={ref}
+              className={contentClasses}
+              onClick={onClick}
+              {...props}
+            >
               {children}
             </Component>
           </LiquidGlass>
@@ -125,7 +178,12 @@ const Card = memo(
       }
 
       return (
-        <Component ref={ref} className={cardClasses} {...props}>
+        <Component
+          ref={ref}
+          className={finalClasses}
+          onClick={onClick}
+          {...props}
+        >
           {children}
         </Component>
       );
@@ -138,12 +196,17 @@ Card.displayName = "Card";
 Card.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-  variant: PropTypes.oneOf(["default", "elevated", "outlined", "filled"]),
+  variant: PropTypes.oneOf([
+    "default", "elevated", "outlined", "filled",
+    "primary", "success", "warning", "info", "danger", "secondary"
+  ]),
   padding: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
   shadow: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
   border: PropTypes.bool,
   background: PropTypes.oneOf(["solid", "glass", "gradient", "transparent"]),
   as: PropTypes.elementType,
+  interactive: PropTypes.bool,
+  onClick: PropTypes.func,
   liquidGlass: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.shape({
@@ -159,4 +222,76 @@ Card.propTypes = {
   ]),
 };
 
-export default Card;
+interface CardStatsProps extends CardProps {
+  title?: string;
+  label?: string;
+  value: string | number | React.ReactNode;
+  emoji?: React.ReactNode;
+  labelClassName?: string;
+  valueClassName?: string;
+  emojiClassName?: string;
+}
+
+/**
+ * Stats sub-component for displaying statistics
+ */
+const CardStats: React.FC<CardStatsProps> = ({
+  title,
+  label,
+  value,
+  emoji,
+  className = "",
+  labelClassName = "",
+  valueClassName = "",
+  emojiClassName = "",
+  ...props
+}) => {
+  const labelText = title || label || "Statistic";
+  const valueText = typeof value === "string" || typeof value === "number" ? value : "";
+  const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
+
+  return (
+    <Card
+      className={cn(styles.statsCard, className)}
+      role="status"
+      aria-label={ariaLabel}
+      {...props}
+    >
+      {title ? (
+        <h3 className={cn(styles.statsLabel, labelClassName)}>{title}</h3>
+      ) : (
+        <span className={cn(styles.statsLabel, labelClassName)}>
+          {label}
+        </span>
+      )}
+      <span className={cn(styles.statsValue, valueClassName)}>
+        {value}
+      </span>
+      {emoji && (
+        <span className={cn(styles.statsEmoji, emojiClassName)}>
+          {emoji}
+        </span>
+      )}
+    </Card>
+  );
+};
+
+CardStats.propTypes = {
+  title: PropTypes.string,
+  label: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.node,
+  ]).isRequired,
+  emoji: PropTypes.node,
+  className: PropTypes.string,
+  labelClassName: PropTypes.string,
+  valueClassName: PropTypes.string,
+  emojiClassName: PropTypes.string,
+};
+
+// Add sub-component to Card
+const CardWithStats = Object.assign(Card, { Stats: CardStats });
+
+export default CardWithStats;

@@ -16,6 +16,7 @@ function NameSelection({
   selectedNames,
   availableNames,
   onToggleName,
+  onStartTournament,
   isAdmin,
   // Filters
   selectedCategory,
@@ -93,6 +94,7 @@ function NameSelection({
           isAdmin={isAdmin}
           showCatPictures={showCatPictures}
           imageList={imageList}
+          onStartTournament={onStartTournament}
         />
       ) : (
         <NameGrid
@@ -117,6 +119,7 @@ NameSelection.propTypes = {
   selectedNames: PropTypes.arrayOf(PropTypes.object).isRequired,
   availableNames: PropTypes.arrayOf(PropTypes.object).isRequired,
   onToggleName: PropTypes.func.isRequired,
+  onStartTournament: PropTypes.func,
   isAdmin: PropTypes.bool,
   selectedCategory: PropTypes.string,
   searchTerm: PropTypes.string,
