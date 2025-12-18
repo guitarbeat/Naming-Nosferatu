@@ -12,10 +12,14 @@ declare global {
 // * Supports both VITE_ prefix (Vite) and direct SUPABASE_ prefix (Node/Vercel)
 const getEnvVar = (key: string): string | undefined => {
   // Try Vite env first (browser)
-  if (typeof import.meta !== "undefined" && import.meta.env) {
+  interface ImportMetaWithEnv {
+    env: Record<string, string | undefined>;
+  }
+  if (typeof import.meta !== "undefined" && (import.meta as unknown as ImportMetaWithEnv).env) {
     const viteKey = `VITE_${key}`;
-    if (import.meta.env[viteKey]) return import.meta.env[viteKey];
-    if (import.meta.env[key]) return import.meta.env[key];
+    if ((import.meta as unknown as ImportMetaWithEnv).env[viteKey])
+      return (import.meta as unknown as ImportMetaWithEnv).env[viteKey];
+    if ((import.meta as unknown as ImportMetaWithEnv).env[key]) return (import.meta as unknown as ImportMetaWithEnv).env[key];
   }
   // Try Node process env
   if (typeof process !== "undefined" && process.env) {
@@ -219,13 +223,13 @@ export const updateSupabaseUserContext = (userName: string | null): void => {
 
   // Update the headers for future requests
   // Note: This uses the internal API of the Supabase client
-  // @ts-ignore - accessing internal property
+  // @ts-expect-error - accessing internal property
   if (supabase.rest && supabase.rest.headers) {
     if (userName) {
-      // @ts-ignore
+      // @ts-expect-error - Accessing internal Supabase client headers to set user context for RLS
       supabase.rest.headers["x-user-name"] = userName;
     } else {
-      // @ts-ignore
+      // @ts-expect-error - Accessing internal Supabase client headers to clear user context
       delete supabase.rest.headers["x-user-name"];
     }
   }

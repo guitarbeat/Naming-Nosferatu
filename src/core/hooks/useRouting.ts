@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module useRouting
  * @description Simple URL-based routing hook for handling different routes
@@ -58,7 +57,7 @@ export function useRouting() {
     };
   }, []);
 
-  const sanitizeRoute = useCallback((route) => {
+  const sanitizeRoute = useCallback((route: string) => {
     if (!route) return "/";
 
     if (route.startsWith("http://") || route.startsWith("https://")) {
@@ -81,7 +80,7 @@ export function useRouting() {
   }, []);
 
   const navigateTo = useCallback(
-    (route, options = {}) => {
+    (route: string, options: { replace?: boolean } = {}) => {
       const sanitizedRoute = sanitizeRoute(route);
 
       if (typeof window === "undefined") {
@@ -109,7 +108,7 @@ export function useRouting() {
   );
 
   const isRoute = useCallback(
-    (route) => {
+    (route: string) => {
       const sanitizedRoute = sanitizeRoute(route);
       return currentRoute === sanitizedRoute;
     },

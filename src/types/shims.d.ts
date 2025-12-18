@@ -5,146 +5,102 @@ declare module "@utils/navigationUtils" {
 }
 
 declare module "@services/supabase/api" {
-  const api: any;
+  const api: unknown;
   export = api;
 }
 
 declare module "@services/errorManager" {
-  export const ErrorManager: any;
+  export const ErrorManager: unknown;
 }
 
 declare module "@utils/coreUtils" {
-  export const devLog: (...args: any[]) => void;
-  export function buildComparisonsMap(...args: any[]): any;
-  export function getPreferencesMap(...args: any[]): any;
-  export function initializeSorterPairs(...args: any[]): any;
-}
-
-declare module "@/shared/utils/authUtils" {
-  export const isUserAdmin: (...args: any[]) => any;
+  export const devLog: (...args: unknown[]) => void;
+  export function buildComparisonsMap(...args: unknown[]): unknown;
+  export function getPreferencesMap(...args: unknown[]): unknown;
+  export function initializeSorterPairs(...args: unknown[]): unknown;
 }
 
 declare module "@utils/logger" {
-  export const devLog: (...args: any[]) => void;
-  export const devWarn: (...args: any[]) => void;
-  export const devError: (...args: any[]) => void;
+  export const devLog: (...args: unknown[]) => void;
+  export const devWarn: (...args: unknown[]) => void;
+  export const devError: (...args: unknown[]) => void;
 }
 
 declare module "@utils/ratingUtils" {
-  export const ratingsToArray: (...args: any[]) => any;
-  export const ratingsToObject: (...args: any[]) => any;
+  export const ratingsToArray: (...args: unknown[]) => unknown;
+  export const ratingsToObject: (...args: unknown[]) => unknown;
 }
 
 declare module "@services/supabase/auth" {
-  const authApi: any;
+  const authApi: unknown;
   export = authApi;
 }
 
-declare module "../../features/tournament/PreferenceSorter" {
-  export const PreferenceSorter: any;
-}
-
-declare module "../../features/tournament/EloRating" {
-  const EloRating: any;
-  export default EloRating;
-}
-
-declare module "prop-types" {
-  const PropTypes: any;
-  export default PropTypes;
-}
-
 declare module "@components" {
-  export const Error: any;
-  export const Loading: any;
-  export const ScrollToTopButton: any;
+  export const Error: React.ComponentType<Record<string, unknown>>;
+  export const Loading: React.ComponentType<Record<string, unknown>>;
+  export const ScrollToTopButton: React.ComponentType<Record<string, unknown>>;
 }
 
 declare module "@components/*" {
-  const component: any;
+  const component: React.ComponentType<Record<string, unknown>>;
   export default component;
 }
 
 declare module "@hooks/*" {
-  const hook: any;
+  const hook: (...args: unknown[]) => unknown;
   export = hook;
 }
 
 declare module "@core/*" {
-  const mod: any;
+  const mod: unknown;
   export = mod;
 }
 
-declare module "./shared/components/NameSuggestionModal/NameSuggestionModal" {
-  const NameSuggestionModal: any;
-  export { NameSuggestionModal };
-}
-
-declare module "./shared/utils/performanceMonitor" {
-  export function initializePerformanceMonitoring(): void;
-  export function cleanupPerformanceMonitoring(): void;
-}
-
-declare module "./shared/utils/logger" {
-  export function devError(...args: any[]): void;
-  export function devWarn(...args: any[]): void;
-  export function devLog(...args: any[]): void;
-}
-
-declare module "@components/ViewRouter/ViewRouter" {
-  const ViewRouter: any;
-  export default ViewRouter;
-}
-
-declare module "@components/CatBackground/CatBackground" {
-  const CatBackground: any;
-  export default CatBackground;
-}
-
 declare module "@core/store/useAppStore" {
-  const useAppStore: any;
-  export const useAppStoreInitialization: any;
-  export const __resetMockState: any;
-  export const __setMockState: any;
+  const useAppStore: () => unknown;
+  export const useAppStoreInitialization: () => void;
+  export const __resetMockState: () => void;
+  export const __setMockState: (state: unknown) => void;
   export default useAppStore;
 }
 
-declare module "../../shared/components/BongoCat/constants" {
-  export const BONGO_TRACKS: any;
+declare module "*.module.css" {
+  const classes: { [key: string]: string };
+  export default classes;
 }
 
-declare module "../../shared/services/supabase/api" {
-  const api: any;
-  export = api;
+declare module "*.css" {
+  const content: string;
+  export default content;
 }
 
-declare module "../../shared/utils/coreUtils" {
-  export const devLog: (...args: any[]) => void;
-  export function buildComparisonsMap(...args: any[]): any;
-  export function getPreferencesMap(...args: any[]): any;
-  export function initializeSorterPairs(...args: any[]): any;
+declare module "*.svg" {
+  const content: string;
+  export default content;
 }
 
-declare module "../../shared/services/errorManager" {
-  export const ErrorManager: any;
+declare module "*.png" {
+  const content: string;
+  export default content;
 }
 
-declare module "../../features/tournament/constants" {
-  export const FALLBACK_NAMES: any[];
+declare module "*.jpg" {
+  const content: string;
+  export default content;
 }
 
-declare module "../LiquidGlass" {
-  const LiquidGlass: any;
-  export default LiquidGlass;
+declare module "*.jpeg" {
+  const content: string;
+  export default content;
 }
 
-declare module "../../hooks/useCollapsible" {
-  export function useCollapsible(
-    storageKey: string,
-    defaultCollapsed?: boolean,
-  ): { isCollapsed: boolean; toggleCollapsed: () => void };
+declare module "*.gif" {
+  const content: string;
+  export default content;
 }
 
-declare module "../../../core/constants" {
-  export const STORAGE_KEYS: Record<string, string>;
+declare module "*.webp" {
+  const content: string;
+  export default content;
 }

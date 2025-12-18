@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module useUserSession
  * @description Hook for managing user sessions with username-based authentication (no email/password)
@@ -11,17 +10,17 @@
 import { useState, useCallback, useEffect } from "react";
 import { resolveSupabaseClient } from "../../shared/services/supabase/client";
 import useAppStore from "../store/useAppStore";
-import { isUserAdmin } from "@/shared/utils/authUtils";
+import { isUserAdmin } from "../../shared/utils/authUtils";
 
 let canUseSetUserContext = true;
 
-const isRpcUnavailableError = (error) => {
-  if (!error) return false;
+const isRpcUnavailableError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+  const err = error as Record<string, unknown>;
 
-  const statusCode = typeof error.status === "number" ? error.status : null;
-  const errorCode =
-    typeof error.code === "string" ? error.code.toUpperCase() : "";
-  const message = error.message?.toLowerCase?.() ?? "";
+  const statusCode = typeof err.status === "number" ? err.status : null;
+  const errorCode = typeof err.code === "string" ? err.code.toUpperCase() : "";
+  const message = (err.message as string)?.toLowerCase?.() ?? "";
 
   return (
     statusCode === 404 ||
@@ -33,7 +32,10 @@ const isRpcUnavailableError = (error) => {
   );
 };
 
-const setSupabaseUserContext = async (activeSupabase, userName) => {
+const setSupabaseUserContext = async (
+  activeSupabase: unknown,
+  userName: string,
+) => {
   if (!canUseSetUserContext || !activeSupabase || !userName) {
     return;
   }
@@ -42,7 +44,8 @@ const setSupabaseUserContext = async (activeSupabase, userName) => {
     const trimmedName = userName.trim?.() ?? userName;
     if (!trimmedName) return;
 
-    await activeSupabase.rpc("set_user_context", {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (activeSupabase as any).rpc("set_user_context", {
       user_name_param: trimmedName,
     });
   } catch (error) {
@@ -59,8 +62,10 @@ const setSupabaseUserContext = async (activeSupabase, userName) => {
   }
 };
 
-function useUserSession({ showToast } = {}) {
-  const [error, setError] = useState(null);
+function useUserSession({
+  showToast,
+}: { showToast?: (props: { message: string; type: string }) => void } = {}) {
+  const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const { user, userActions } = useAppStore();
 
@@ -93,7 +98,7 @@ function useUserSession({ showToast } = {}) {
 
       // Check admin status server-side
       isUserAdmin(storedUserName)
-        .then((adminStatus) => {
+        .then((adminStatus: boolean) => {
           userActions.setAdminStatus(adminStatus);
         })
         .catch(() => {
@@ -109,7 +114,7 @@ function useUserSession({ showToast } = {}) {
    * @param {string} name - Raw username input
    * @returns {string} Normalized username
    */
-  const normalizeUsername = (name) => {
+  const normalizeUsername = (name: string) => {
     if (!name || typeof name !== "string") return "";
     const trimmed = name.trim();
     if (!trimmed) return "";
@@ -123,7 +128,7 @@ function useUserSession({ showToast } = {}) {
    * @param {string} userName - The user's chosen username
    */
   const login = useCallback(
-    async (userName) => {
+    async (userName: string) => {
       if (!userName || !userName.trim()) {
         setError("Username is required");
         return false;
@@ -166,7 +171,8 @@ function useUserSession({ showToast } = {}) {
         // Create user if doesn't exist using RPC function (bypasses RLS)
         if (!existingUser) {
           // * Use the create_user_account RPC function which bypasses RLS
-          const { error: rpcError } = await activeSupabase.rpc(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { error: rpcError } = await (activeSupabase as any).rpc(
             "create_user_account",
             {
               p_user_name: trimmedName,
@@ -248,17 +254,18 @@ function useUserSession({ showToast } = {}) {
         userActions.setAdminStatus(adminStatus);
 
         return true;
-      } catch (err) {
+      } catch (err: unknown) {
+        const error = err as Error;
         let errorMessage = "Failed to login";
 
         // Handle specific error types
-        if (err.message?.includes("fetch")) {
+        if (error.message?.includes("fetch")) {
           errorMessage =
             "Cannot connect to database. Please check your connection.";
-        } else if (err.message?.includes("JWT")) {
+        } else if (error.message?.includes("JWT")) {
           errorMessage = "Authentication error. Please try again.";
-        } else if (err.message) {
-          errorMessage = err.message;
+        } else if (error.message) {
+          errorMessage = error.message;
         }
 
         console.error("Login error:", errorMessage);
@@ -279,9 +286,10 @@ function useUserSession({ showToast } = {}) {
       localStorage.removeItem("catNamesUser");
       userActions.logout();
       return true;
-    } catch (err) {
-      console.error("Logout error:", err);
-      setError(err.message || "Failed to logout");
+    } catch (err: unknown) {
+      const error = err as Error;
+      console.error("Logout error:", error);
+      setError(error.message || "Failed to logout");
       return false;
     }
   }, [userActions]);

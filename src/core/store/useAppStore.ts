@@ -1,8 +1,8 @@
-// @ts-nocheck
-import { create } from "zustand";
+import { create, StateCreator } from "zustand";
 import { useEffect } from "react";
 import { siteSettingsAPI } from "../../shared/services/supabase/api";
 import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
+import { AppState, UserState, UIState } from "../../types/store";
 
 const LOG_ENDPOINT =
   typeof window !== "undefined"
@@ -10,7 +10,7 @@ const LOG_ENDPOINT =
     : null;
 
 // * Devtools middleware disabled entirely to avoid prod crashes
-const applyDevtools = (storeImpl) => {
+const applyDevtools = (storeImpl: StateCreator<AppState>) => {
   if (process.env.NODE_ENV === "development" && LOG_ENDPOINT) {
     fetch(LOG_ENDPOINT, {
       method: "POST",
@@ -29,7 +29,7 @@ const applyDevtools = (storeImpl) => {
   return storeImpl;
 };
 
-const getInitialThemeState = () => {
+const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
   if (typeof window !== "undefined") {
     try {
       const storedTheme = window.localStorage.getItem("theme");
@@ -49,8 +49,8 @@ const getInitialThemeState = () => {
   };
 };
 
-const getInitialUserState = () => {
-  const defaultState = {
+const getInitialUserState = (): UserState => {
+  const defaultState: UserState = {
     name: "",
     isLoggedIn: false,
     isAdmin: false,
@@ -86,7 +86,7 @@ const getInitialUserState = () => {
  */
 
 // * Store implementation
-const storeImpl = (set, get) => ({
+const storeImpl: StateCreator<AppState> = (set, get) => ({
   // * Tournament State
   tournament: {
     names: null,
@@ -126,12 +126,13 @@ const storeImpl = (set, get) => ({
       set((state) => ({
         tournament: {
           ...state.tournament,
-          names: names?.map((n) => ({
-            id: n.id,
-            name: n.name,
-            description: n.description,
-            rating: state.tournament.ratings[n.name]?.rating || 1500,
-          })),
+          names:
+            names?.map((n) => ({
+              id: n.id,
+              name: n.name,
+              description: n.description,
+              rating: state.tournament.ratings[n.name]?.rating || 1500,
+            })) || null,
         },
       })),
 
@@ -323,7 +324,6 @@ const storeImpl = (set, get) => ({
       })),
 
     setTheme: (newTheme) => {
-      const state = get();
       const isSystem = newTheme === "system";
 
       let resolvedTheme = newTheme;
@@ -349,7 +349,7 @@ const storeImpl = (set, get) => ({
         if (isSystem) {
           // Define the listener
           const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-          const listener = (e) => {
+          const listener = (e: MediaQueryListEvent) => {
             // Only update if preference is still system
             if (get().ui.themePreference === "system") {
               set((s) => ({
@@ -360,11 +360,6 @@ const storeImpl = (set, get) => ({
               }));
             }
           };
-          // Remove previous listener if possible?
-          // We can't easily remove anonymous listeners without storing reference.
-          // For now, we assume simple usage or relies on component effect for cleanup (useThemeSync).
-          // But the test expects the store to update.
-          // We can try adding it.
           mediaQuery.addEventListener("change", listener);
         }
       }
@@ -372,7 +367,7 @@ const storeImpl = (set, get) => ({
 
     initializeTheme: () => {
       if (typeof window !== "undefined") {
-        let storedTheme = localStorage.getItem("theme") || "dark";
+        const storedTheme = localStorage.getItem("theme") || "dark";
         get().uiActions.setTheme(storedTheme);
       }
     },
@@ -461,6 +456,7 @@ const storeImpl = (set, get) => ({
     getIsComplete: () => get().tournament.isComplete,
     getIsLoading: () => get().tournament.isLoading,
     getVoteHistory: () => get().tournament.voteHistory,
+    getVoteHistoryCount: () => get().tournament.voteHistory.length,
     getCurrentView: () => get().tournament.currentView,
     getUserName: () => get().user.name,
     getIsLoggedIn: () => get().user.isLoggedIn,
@@ -472,30 +468,29 @@ const storeImpl = (set, get) => ({
 });
 
 // * Create store without any devtools integration (safest for production)
-const useAppStore = create(
-  applyDevtools(storeImpl, {
-    name: "name-nosferatu-store",
-  }),
-);
+const useAppStore = create<AppState>()(applyDevtools(storeImpl));
+
 // #region agent log
-fetch(LOG_ENDPOINT, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    sessionId: "debug-session",
-    runId: "run1",
-    hypothesisId: "H2",
-    location: "useAppStore.js:store-created",
-    message: "store created",
-    data: { env: process.env.NODE_ENV },
-    timestamp: Date.now(),
-  }),
-}).catch(() => {});
+if (LOG_ENDPOINT) {
+  fetch(LOG_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sessionId: "debug-session",
+      runId: "run1",
+      hypothesisId: "H2",
+      location: "useAppStore.js:store-created",
+      message: "store created",
+      data: { env: process.env.NODE_ENV },
+      timestamp: Date.now(),
+    }),
+  }).catch(() => {});
+}
 // #endregion
 
 // * Hook to initialize store from localStorage
 export const useAppStoreInitialization = () => {
-  const { userActions, uiActions } = useAppStore();
+  const { userActions } = useAppStore();
 
   useEffect(() => {
     // * Initialize user state from localStorage on mount

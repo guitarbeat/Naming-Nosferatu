@@ -4,11 +4,11 @@ import { heroui } from "@heroui/react";
 export default {
   darkMode: ["class"],
   content: [
-    '../pages/**/*.{js,jsx}',
-    '../components/**/*.{js,jsx}',
-    '../app/**/*.{js,jsx}',
-    '../src/**/*.{js,jsx}',
-    '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
+    "../pages/**/*.{js,jsx}",
+    "../components/**/*.{js,jsx}",
+    "../app/**/*.{js,jsx}",
+    "../src/**/*.{js,jsx}",
+    "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   prefix: "",
   theme: {
@@ -21,13 +21,13 @@ export default {
     },
     extend: {
       colors: {
-        charcoal: 'hsl(var(--charcoal))',
-        'blue-gray': 'hsl(var(--blue-gray))',
-        mimosa: 'hsl(var(--mimosa))',
-        gold: 'hsl(var(--gold))',
-        'neon-cyan': 'hsl(var(--neon-cyan))',
-        'hot-pink': 'hsl(var(--hot-pink))',
-        'fire-red': 'hsl(var(--fire-red))',
+        charcoal: "hsl(var(--charcoal))",
+        "blue-gray": "hsl(var(--blue-gray))",
+        mimosa: "hsl(var(--mimosa))",
+        gold: "hsl(var(--gold))",
+        "neon-cyan": "hsl(var(--neon-cyan))",
+        "hot-pink": "hsl(var(--hot-pink))",
+        "fire-red": "hsl(var(--fire-red))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -84,4 +84,4 @@ export default {
     },
   },
   plugins: [heroui()],
-}
+};

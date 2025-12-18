@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module useNameData
  * @description Unified hook for fetching name data for both Tournament and Profile views.
@@ -16,6 +15,14 @@ import { ErrorManager } from "../../services/errorManager";
 import { FALLBACK_NAMES } from "../../../features/tournament/constants";
 import { TIMING } from "../../../core/constants";
 
+interface Name {
+  id: string;
+  name: string;
+  description?: string;
+  is_hidden?: boolean;
+  [key: string]: unknown;
+}
+
 /**
  * Unified hook for fetching name data
  * @param {Object} options
@@ -24,23 +31,29 @@ import { TIMING } from "../../../core/constants";
  * @param {boolean} options.enableErrorHandling - Whether to use ErrorManager (default: true)
  * @returns {Object} Name data state and handlers
  */
+interface UseNameDataProps {
+  userName: string | null;
+  mode?: "tournament" | "profile";
+  enableErrorHandling?: boolean;
+}
+
 export function useNameData({
   userName,
   mode = "tournament",
   enableErrorHandling = true,
-}) {
-  const [names, setNames] = useState([]);
-  const [hiddenIds, setHiddenIds] = useState(new Set());
+}: UseNameDataProps) {
+  const [names, setNames] = useState<Name[]>([]);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
   const isMountedRef = useRef(true);
-  const timeoutIdsRef = useRef([]);
+  const timeoutIdsRef = useRef<NodeJS.Timeout[]>([]);
 
-  const createTimeout = useCallback((ms, errorMsg) => {
-    let timeoutId = null;
+  const createTimeout = useCallback((ms: number, errorMsg: string) => {
+    let timeoutId: NodeJS.Timeout | null = null;
     const promise = new Promise((_, reject) => {
       timeoutId = setTimeout(() => reject(new Error(errorMsg)), ms);
-      timeoutIdsRef.current.push(timeoutId);
+      if (timeoutId) timeoutIdsRef.current.push(timeoutId);
     });
     return { promise, timeoutId };
   }, []);
@@ -99,7 +112,7 @@ export function useNameData({
         return;
       }
 
-      let namesData;
+      let namesData: Name[];
 
       if (mode === "tournament") {
         try {
@@ -107,7 +120,10 @@ export function useNameData({
             createTimeout(15000, "Data fetch timeout after 15 seconds");
 
           const fetchPromise = getNamesWithDescriptions(true);
-          namesData = await Promise.race([fetchPromise, fetchTimeout]);
+          namesData = (await Promise.race([
+            fetchPromise,
+            fetchTimeout,
+          ])) as Name[];
 
           if (fetchTimeoutId) {
             clearTimeout(fetchTimeoutId);
@@ -126,14 +142,15 @@ export function useNameData({
               );
             }
           }
-        } catch (timeoutError) {
+        } catch (timeoutError: unknown) {
           clearAllTimeouts();
-          if (timeoutError.message?.includes("timeout")) {
-            setNames(FALLBACK_NAMES);
+          const err = timeoutError as Error;
+          if (err.message?.includes("timeout")) {
+            setNames(FALLBACK_NAMES as Name[]);
             setIsLoading(false);
             if (enableErrorHandling) {
               ErrorManager.handleError(
-                timeoutError,
+                err,
                 "TournamentSetup - Data Fetch Timeout",
                 {
                   isRetryable: true,
@@ -144,7 +161,7 @@ export function useNameData({
             }
             return;
           }
-          throw timeoutError;
+          throw err;
         }
       } else {
         if (!userName) {
@@ -152,12 +169,14 @@ export function useNameData({
           return;
         }
 
-        namesData = await getNamesWithUserRatings(userName);
+        const rawData = await getNamesWithUserRatings(userName);
 
-        namesData = namesData.map((name) => ({
-          ...name,
-          owner: userName,
-        }));
+        namesData = rawData.map(
+          (name: { id: string; name: string; [key: string]: unknown }) => ({
+            ...name,
+            owner: userName,
+          }),
+        ) as Name[];
       }
 
       if (!isMountedRef.current) return;
@@ -168,11 +187,11 @@ export function useNameData({
 
       const hiddenIdsSet = new Set(
         namesData
-          .filter((name) => name.is_hidden === true)
-          .map((name) => name.id),
+          .filter((name: Name) => name.is_hidden === true)
+          .map((name: Name) => name.id),
       );
 
-      const sortedNames = [...namesData].sort((a, b) =>
+      const sortedNames = [...namesData].sort((a: Name, b: Name) =>
         (a?.name || "").localeCompare(b?.name || ""),
       );
 
@@ -219,21 +238,29 @@ export function useNameData({
     fetchNames();
   }, [fetchNames]);
 
-  const updateNames = useCallback((updater) => {
-    if (typeof updater === "function") {
-      setNames((prev) => updater(prev));
-    } else {
-      setNames(updater);
-    }
-  }, []);
+  const updateNames = useCallback(
+    (updater: Name[] | ((prev: Name[]) => Name[])) => {
+      if (typeof updater === "function") {
+        setNames((prev) => updater(prev));
+      } else {
+        setNames(updater);
+      }
+    },
+    [],
+  );
 
-  const updateHiddenIds = useCallback((updater) => {
-    if (typeof updater === "function") {
-      setHiddenIds((prev) => updater(prev));
-    } else {
-      setHiddenIds(updater instanceof Set ? updater : new Set(updater || []));
-    }
-  }, []);
+  const updateHiddenIds = useCallback(
+    (
+      updater: Set<string> | string[] | ((prev: Set<string>) => Set<string>),
+    ) => {
+      if (typeof updater === "function") {
+        setHiddenIds((prev) => updater(prev));
+      } else {
+        setHiddenIds(updater instanceof Set ? updater : new Set(updater || []));
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     isMountedRef.current = true;

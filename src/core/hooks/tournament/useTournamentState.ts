@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
 import {
@@ -7,12 +6,33 @@ import {
   initializeSorterPairs,
 } from "../../../shared/utils/coreUtils";
 
+import {
+  Name,
+  Match,
+  MatchRecord,
+  PersistentState,
+  TournamentState,
+} from "./types";
+
+interface UseTournamentStateProps {
+  names?: Name[];
+  existingRatings?: Record<
+    string,
+    { rating: number; wins?: number; losses?: number }
+  >;
+  updatePersistentState?: (
+    state:
+      | Partial<PersistentState>
+      | ((prev: PersistentState) => Partial<PersistentState>),
+  ) => void;
+}
+
 export function useTournamentState({
   names = [],
   existingRatings = {},
   updatePersistentState,
-}) {
-  const [tournamentState, setTournamentState] = useState({
+}: UseTournamentStateProps) {
+  const [tournamentState, setTournamentState] = useState<TournamentState>({
     currentMatch: null,
     isTransitioning: false,
     roundNumber: 1,
@@ -21,6 +41,7 @@ export function useTournamentState({
     canUndo: false,
     currentRatings: existingRatings,
     sorter: null,
+    isError: false,
   });
 
   // * Compute isError as a derived value to avoid setState in effect
@@ -28,9 +49,19 @@ export function useTournamentState({
     return !Array.isArray(names) || (names.length > 0 && names.length < 2);
   }, [names]);
 
-  const updateTournamentState = useCallback((updates) => {
-    setTournamentState((prev) => ({ ...prev, ...updates }));
-  }, []);
+  const updateTournamentState = useCallback(
+    (
+      updates:
+        | Partial<TournamentState>
+        | ((prev: TournamentState) => Partial<TournamentState>),
+    ) => {
+      setTournamentState((prev) => {
+        const delta = typeof updates === "function" ? updates(prev) : updates;
+        return { ...prev, ...delta };
+      });
+    },
+    [],
+  );
 
   const lastInitKeyRef = useRef("");
 
@@ -110,7 +141,18 @@ export function useTournamentState({
 }
 
 // * Internal function - not exported (only used within this file)
-function getNextMatch(names, sorter, _matchNumber, options = {}) {
+function getNextMatch(
+  names: Name[],
+  sorter: unknown,
+  _matchNumber: number,
+  options: {
+    currentRatings?: Record<
+      string,
+      { rating: number; wins?: number; losses?: number }
+    >;
+    history?: MatchRecord[];
+  } = {},
+): Match | null {
   if (!sorter || names.length <= 2) {
     return null;
   }
@@ -118,10 +160,14 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
   const findBestMatch = () => {
     try {
       const nameList = names.map((n) => n?.name || "").filter(Boolean);
+      const sorterAny = sorter as Record<string, unknown>;
       initializeSorterPairs(sorter, nameList);
 
       // * Ensure _pairs is initialized before accessing
-      if (!Array.isArray(sorter._pairs) || sorter._pairs.length === 0) {
+      if (
+        !Array.isArray(sorterAny._pairs) ||
+        (sorterAny._pairs as unknown[]).length === 0
+      ) {
         return null;
       }
 
@@ -133,9 +179,15 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
       let bestPair = null;
       let bestScore = Infinity;
       const pairIndex =
-        typeof sorter._pairIndex === "number" ? sorter._pairIndex : 0;
-      for (let idx = pairIndex; idx < sorter._pairs.length; idx++) {
-        const [a, b] = sorter._pairs[idx];
+        typeof sorterAny._pairIndex === "number"
+          ? (sorterAny._pairIndex as number)
+          : 0;
+      for (
+        let idx = pairIndex;
+        idx < (sorterAny._pairs as Array<[string, string]>).length;
+        idx++
+      ) {
+        const [a, b] = (sorterAny._pairs as Array<[string, string]>)[idx];
         const key = `${a}-${b}`;
         const reverseKey = `${b}-${a}`;
         if (prefs.has(key) || prefs.has(reverseKey)) continue;
@@ -158,14 +210,17 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
 
       if (bestPair) {
         const [a, b] = bestPair;
-        sorter._pairIndex = Math.max(
+        const sorterAny = sorter as Record<string, unknown>;
+        sorterAny._pairIndex = Math.max(
           0,
-          sorter._pairs.findIndex((p) => p[0] === a && p[1] === b),
+          (sorterAny._pairs as Array<[string, string]>).findIndex(
+            (p: [string, string]) => p[0] === a && p[1] === b,
+          ),
         );
         return {
-          left: names.find((n) => n?.name === a) || { name: a },
-          right: names.find((n) => n?.name === b) || { name: b },
-        };
+          left: names.find((n) => n?.name === a) || { name: a, id: a },
+          right: names.find((n) => n?.name === b) || { name: b, id: b },
+        } as Match;
       }
     } catch (e) {
       if (process.env.NODE_ENV === "development") {
@@ -180,9 +235,12 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
     if (match) return match;
   }
 
-  if (typeof sorter.getNextMatch === "function") {
+  const sorterAny = sorter as Record<string, unknown>;
+  if (typeof sorterAny.getNextMatch === "function") {
     try {
-      const nextMatch = sorter.getNextMatch();
+      const nextMatch = (
+        sorterAny.getNextMatch as () => { left: string; right: string } | null
+      )();
       if (nextMatch) {
         const leftName = names.find((n) => n?.name === nextMatch.left);
         const rightName = names.find((n) => n?.name === nextMatch.right);
@@ -190,7 +248,7 @@ function getNextMatch(names, sorter, _matchNumber, options = {}) {
         return {
           left: leftName || { name: nextMatch.left, id: nextMatch.left },
           right: rightName || { name: nextMatch.right, id: nextMatch.right },
-        };
+        } as Match;
       }
     } catch (error) {
       if (process.env.NODE_ENV === "development") {

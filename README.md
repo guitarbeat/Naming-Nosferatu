@@ -47,26 +47,31 @@ npm run dev
 ## 🎮 **How to Use**
 
 ### **1. Welcome Screen**
+
 - Get a personalized cat name suggestion
 - Explore name statistics and categories
 - Choose to start a tournament or skip
 
 ### **2. Tournament Creation**
+
 - Select 4-16 cat names for your tournament
 - Choose from curated collections or add custom names
 - Tournament automatically generates optimal pairings
 
 ### **3. Head-to-Head Voting**
+
 - Compare two names at a time
 - Your preferences update Elo ratings mathematically
 - Rankings adjust in real-time as you vote
 
 ### **4. Results & Analytics**
+
 - View final rankings when tournament completes
 - See detailed statistics and performance metrics
 - Export or share your tournament results
 
 ### **5. User Management**
+
 - Create accounts to save tournament history
 - Track your voting patterns and preferences
 - Access personalized recommendations
@@ -121,6 +126,7 @@ src/
 ### **Schema Optimizations (November 2025)**
 
 **Removed Columns:**
+
 - ❌ `cat_app_users.tournament_data` (migrated to `tournament_selections` table)
 - ❌ `cat_app_users.user_role` (migrated to `user_roles` table)
 - ❌ `cat_name_options.user_name` (names are global, not user-specific)
@@ -128,10 +134,12 @@ src/
 - ❌ `cat_name_options.total_tournaments` (calculated dynamically)
 
 **Removed Objects:**
+
 - ❌ `leaderboard_stats` materialized view (replaced with indexed queries)
 - ❌ `increment_selection` RPC function (no-op, unused)
 
 **Added Constraints:**
+
 - ✅ Unique constraint on `cat_name_ratings(user_name, name_id)` - prevents duplicate ratings
 - ✅ Check constraint on `cat_name_options.name` - length 1-100 characters
 - ✅ Check constraint on ratings - valid range validation
@@ -140,12 +148,14 @@ src/
 ### **Key Indexes**
 
 **Primary Indexes:**
+
 - `cat_app_users_pkey` - Primary key on user_name (573 scans)
 - `cat_name_options_pkey` - Primary key on id (653 scans)
 - `cat_name_ratings_pkey` - Composite primary key on (user_name, name_id) (125 scans)
 - `tournament_selections_pkey` - Primary key on id (3,125 scans)
 
 **Performance Indexes:**
+
 - `idx_ratings_leaderboard` - Covering index for leaderboard queries
 - `idx_ratings_user_stats` - Covering index for user statistics
 - `idx_tournament_user_recent` - Index for tournament history
@@ -168,13 +178,13 @@ src/
 ### **Supabase API Functions**
 
 ```javascript
-import { 
-  catNamesAPI, 
-  tournamentsAPI, 
+import {
+  catNamesAPI,
+  tournamentsAPI,
   adminAPI,
   siteSettingsAPI,
-  imagesAPI 
-} from '@/shared/services/supabase/api';
+  imagesAPI,
+} from "@/shared/services/supabase/api";
 
 // Get all cat names with descriptions
 const names = await catNamesAPI.getNamesWithDescriptions();
@@ -192,25 +202,23 @@ const tournaments = await tournamentsAPI.getUserTournaments(userName);
 ### **Custom Hooks**
 
 ```javascript
-import { useTournament } from '@/core/hooks/useTournament';
-import { useUserSession } from '@/core/hooks/useUserSession';
-import useAppStore from '@/core/store/useAppStore';
+import { useTournament } from "@/core/hooks/useTournament";
+import { useUserSession } from "@/core/hooks/useUserSession";
+import useAppStore from "@/core/store/useAppStore";
 
 // Tournament state management
 const tournament = useTournament({
   names,
   existingRatings,
-  onComplete: handleComplete
+  onComplete: handleComplete,
 });
 
 // User authentication
 const { isLoggedIn, user, login, logout } = useUserSession();
 
 // Global store access
-const {
-  user, tournament, ui,
-  userActions, tournamentActions, uiActions
-} = useAppStore();
+const { user, tournament, ui, userActions, tournamentActions, uiActions } =
+  useAppStore();
 ```
 
 ---
@@ -229,6 +237,7 @@ npm run test
 ```
 
 ### **Coverage Goals**
+
 - **Unit Tests**: 95%+ for utilities and services
 - **Component Tests**: 90%+ for React components
 - **Integration Tests**: 85%+ for feature workflows
@@ -237,8 +246,8 @@ npm run test
 
 ## 📈 **Performance Metrics**
 
-| Metric               | Current | Target | Status      |
-| -------------------- | ------- | ------ | ----------- |
+| Metric               | Current | Target | Status       |
+| -------------------- | ------- | ------ | ------------ |
 | **Bundle Size**      | 391KB   | <500KB | ✅ Excellent |
 | **Load Time**        | <800ms  | <1.5s  | ✅ Excellent |
 | **Lighthouse Score** | 95+     | >90    | ✅ Excellent |
@@ -263,6 +272,7 @@ SUPABASE_ANON_KEY=your-anon-key
 ```
 
 **Getting Your Supabase Credentials:**
+
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
 2. Select your project
 3. Navigate to Settings > API
@@ -375,21 +385,21 @@ npx vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ### **Typography Scale**
 
 ```css
---text-xs: 0.75rem;   /* 12px */
---text-sm: 0.875rem;  /* 14px */
---text-base: 1rem;    /* 16px */
---text-lg: 1.125rem;  /* 18px */
---text-xl: 1.25rem;   /* 20px */
---text-2xl: 1.5rem;   /* 24px */
+--text-xs: 0.75rem; /* 12px */
+--text-sm: 0.875rem; /* 14px */
+--text-base: 1rem; /* 16px */
+--text-lg: 1.125rem; /* 18px */
+--text-xl: 1.25rem; /* 20px */
+--text-2xl: 1.5rem; /* 24px */
 ```
 
 ### **Color Palette**
 
 ```css
---primary-gold: #e8bf76;    /* Brand accent */
---primary-blue: #3498db;   /* Primary actions */
---neutral-50: #f8f9fa;     /* Light backgrounds */
---neutral-900: #212529;    /* Dark text */
+--primary-gold: #e8bf76; /* Brand accent */
+--primary-blue: #3498db; /* Primary actions */
+--neutral-50: #f8f9fa; /* Light backgrounds */
+--neutral-900: #212529; /* Dark text */
 ```
 
 ---

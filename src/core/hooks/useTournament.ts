@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useMemo } from "react";
 import EloRating from "../../features/tournament/EloRating";
 import useAppStore from "../store/useAppStore";
@@ -6,6 +5,7 @@ import { useTournamentState } from "./tournament/useTournamentState";
 import { useTournamentPersistence } from "./tournament/useTournamentPersistence";
 import { useTournamentVoting } from "./tournament/useTournamentVoting";
 import { useTournamentProgress } from "./tournament/useTournamentProgress";
+import { Name } from "./tournament/types";
 
 /**
  * Custom hook for managing tournament state and logic
@@ -20,7 +20,22 @@ export function useTournament({
   names = [],
   existingRatings = {},
   onComplete,
-}) {
+}: {
+  names?: Name[];
+  existingRatings?: Record<
+    string,
+    { rating: number; wins?: number; losses?: number }
+  >;
+  onComplete?: (
+    results: Array<{
+      name: string;
+      id: string;
+      rating: number;
+      wins: number;
+      losses: number;
+    }>,
+  ) => void;
+} = {}) {
   // Single Elo instance
   const elo = useMemo(() => new EloRating(), []);
   const userName = useAppStore((state) => state.user.name);

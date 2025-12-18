@@ -1,23 +1,37 @@
-// @ts-nocheck
 import { useCallback } from "react";
-import { tournamentsAPI } from "@services/supabase/api";
-import { ErrorManager } from "@services/errorManager";
-import { devLog, devWarn, devError } from "@utils/logger";
-import { ratingsToArray, ratingsToObject } from "@utils/ratingUtils";
+import { tournamentsAPI } from "../../shared/services/supabase/api";
+import { ErrorManager } from "../../shared/services/errorManager";
+import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import {
+  ratingsToArray,
+  ratingsToObject,
+} from "../../shared/utils/ratingUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import { clearTournamentCache } from "../../shared/utils/cacheUtils";
+import { Name, TournamentActions } from "./tournament/types";
 
 /**
  * Custom hook for tournament-related handlers
  * Extracts tournament logic from App component for better organization
  */
+interface UseTournamentHandlersProps {
+  userName: string | null;
+  tournamentActions: TournamentActions;
+  navigateTo: (path: string) => void;
+}
+
 export function useTournamentHandlers({
   userName,
   tournamentActions,
   navigateTo,
-}) {
+}: UseTournamentHandlersProps) {
   const handleTournamentComplete = useCallback(
-    async (finalRatings) => {
+    async (
+      finalRatings: Record<
+        string,
+        { rating: number; wins?: number; losses?: number }
+      >,
+    ) => {
       try {
         devLog("[App] handleTournamentComplete called with:", finalRatings);
 
@@ -71,7 +85,7 @@ export function useTournamentHandlers({
   }, [tournamentActions]);
 
   const handleTournamentSetup = useCallback(
-    (names) => {
+    (names: Name[] | undefined) => {
       // * Clear tournament cache to ensure fresh data
       clearTournamentCache();
 
@@ -105,7 +119,12 @@ export function useTournamentHandlers({
   );
 
   const handleUpdateRatings = useCallback(
-    async (adjustedRatings) => {
+    async (
+      adjustedRatings: Record<
+        string,
+        { rating: number; wins?: number; losses?: number }
+      >,
+    ) => {
       try {
         // * Convert ratings using utility functions
         const ratingsArray = ratingsToArray(adjustedRatings);

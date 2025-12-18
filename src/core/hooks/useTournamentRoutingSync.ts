@@ -1,8 +1,16 @@
-// @ts-nocheck
 import { useEffect, useMemo, useRef } from "react";
-import { normalizeRoutePath } from "@utils/navigationUtils";
+import { normalizeRoutePath } from "../../shared/utils/navigationUtils";
 
 const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results"]);
+
+interface UseTournamentRoutingSyncProps {
+  currentRoute: string;
+  navigateTo: (path: string, options?: { replace?: boolean }) => void;
+  isLoggedIn: boolean;
+  currentView: string;
+  onViewChange: (view: string) => void;
+  isTournamentComplete: boolean;
+}
 
 export function useTournamentRoutingSync({
   currentRoute,
@@ -11,13 +19,13 @@ export function useTournamentRoutingSync({
   currentView,
   onViewChange,
   isTournamentComplete,
-}) {
+}: UseTournamentRoutingSyncProps) {
   const normalizedPath = useMemo(
     () => normalizeRoutePath(currentRoute),
     [currentRoute],
   );
 
-  const previousRouteRef = useRef(null);
+  const previousRouteRef = useRef<string | null>(null);
   const lastViewRef = useRef(currentView);
   const lastCompletionRef = useRef(isTournamentComplete);
 
@@ -101,7 +109,7 @@ export function useTournamentRoutingSync({
       return;
     }
 
-    const previousPath = normalizeRoutePath(previousRouteRef.current);
+    const previousPath = normalizeRoutePath(previousRouteRef.current || "");
     const pathChanged =
       previousRouteRef.current === null || previousPath !== normalizedPath;
 

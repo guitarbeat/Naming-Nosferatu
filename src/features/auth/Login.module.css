@@ -1,1205 +1,181 @@
 /* ===========================
-   CSS CUSTOM PROPERTIES
-   Single source of truth for repeated values
+   DIORAMA THEME
    =========================== */
-:root {
-  --login-color-text-light: #334155;
-  --login-color-text-dark: #e2e8f0;
-  --login-color-text-muted-light: #64748b;
-  --login-color-text-muted-dark: #cbd5e1;
-  --login-color-text-tertiary-light: #475569;
-  --login-color-accent: #e8bf76;
-  --login-rgb-slate-900: 15 23 42;
-  --login-rgb-slate-50: 241 245 249;
-  --login-rgb-slate-200: 226 232 240;
-  --login-rgb-slate-400: 148 163 184;
-}
 
-/* Additional global styles to ensure proper scrolling */
-:global(body.login-page),
-:global(html.login-page) {
-  height: 100vh;
-  height: 100dvh; /* * Use dynamic viewport height on mobile */
-  min-height: 100vh;
-  min-height: 100dvh;
-  overflow: hidden auto;
-}
-
-:global(body.login-page::-webkit-scrollbar) {
-  display: block;
-}
-
-/* Login Component - Premium Full-Width Hero Design */
 .loginWrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.5rem, 2.5vw, 1.5rem);
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh; /* * Use dynamic viewport height on mobile */
-  overflow-y: auto;
-  /* * Add padding-top to account for fixed navbar */
-  padding: clamp(5rem, 8vw, 7rem) 0 clamp(0.5rem, 2vw, 1rem);
-  margin: 0 auto;
-}
+  --bg-paper: #d2b48c;
+  --ink: #3c2f2f;
 
-.backgroundContainer {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
+  background: var(--bg-paper);
+  font-family: "Courier New", monospace;
   height: 100vh;
-  height: 100dvh; /* * Use dynamic viewport height on mobile */
-  min-height: 100vh;
-  min-height: 100dvh;
-  background: var(--background-color);
-}
-
-.backgroundImage {
-  width: 100%;
-  height: 100%;
-  min-height: 100vh;
-  object-fit: fill;
-  object-position: center;
-  opacity: 0.5;
-  filter: saturate(0.6) brightness(0.6);
-  transition:
-    opacity 0.5s ease,
-    filter 0.5s ease;
-}
-
-:root[data-theme="light"] .backgroundImage {
-  opacity: 0.25;
-  filter: saturate(0.7) brightness(0.95) contrast(0.95);
-}
-
-:root[data-theme="dark"] .backgroundImage {
-  opacity: 0.55;
-  filter: saturate(0.5) brightness(0.5) contrast(0.95);
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgb(var(--login-rgb-slate-900) / 60%) 0%,
-    rgb(var(--login-rgb-slate-900) / 45%) 50%,
-    rgb(var(--login-rgb-slate-900) / 50%) 100%
-  );
-  transition: background 0.5s ease;
-}
-
-:root[data-theme="light"] .overlay {
-  background: linear-gradient(
-    180deg,
-    rgb(var(--login-rgb-slate-200) / 40%) 0%,
-    rgb(var(--login-rgb-slate-200) / 30%) 50%,
-    rgb(var(--login-rgb-slate-200) / 35%) 100%
-  );
-}
-
-:root[data-theme="dark"] .overlay {
-  background: linear-gradient(
-    180deg,
-    rgb(2 6 23 / 65%) 0%,
-    rgb(var(--login-rgb-slate-900) / 50%) 50%,
-    rgb(var(--login-rgb-slate-900) / 55%) 100%
-  );
-}
-
-/* Centered Hero Container */
-.heroContainer {
-  position: relative;
-  z-index: 1;
   display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 3vw, 1.5rem);
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  max-width: 1200px;
-  min-height: auto;
-  padding: 0 clamp(1rem, 3vw, 1.5rem);
-  margin: 0 auto;
-}
-
-.heroContent {
-  display: flex;
-  flex: none;
-  flex-direction: column;
-  gap: clamp(0.5rem, 2vw, 1rem);
-  align-items: center;
-  width: min(clamp(32rem, 90vw, 48rem), 100%);
-  margin-inline: auto;
-  text-align: center;
-}
-
-.heroHighlights {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(clamp(12rem, 45vw, 14rem), 1fr)
-  );
-  gap: 1rem;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-
-.highlightItem {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.85rem 1rem;
-  text-align: left;
-  background: rgb(var(--login-rgb-slate-900) / 45%);
-  border: 1px solid rgb(var(--login-rgb-slate-400) / 30%);
-  border-radius: clamp(1rem, 3vw, 1.2rem);
-  box-shadow: 0 6px 24px rgb(var(--black-rgb), 0.2);
-  backdrop-filter: blur(12px);
-}
-
-:root[data-theme="light"] .highlightItem {
-  background: rgb(255 255 255 / 80%);
-  border-color: rgb(var(--login-rgb-slate-400) / 40%);
-  box-shadow: 0 10px 30px rgb(var(--login-rgb-slate-400) / 25%);
-}
-
-.highlightIcon {
-  font-size: 1.35rem;
-  filter: drop-shadow(0 2px 4px rgb(var(--black-rgb), 0.35));
-}
-
-.highlightText {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: var(--login-color-text-dark);
-}
-
-:root[data-theme="light"] .highlightText {
-  color: var(--login-color-text-light);
-}
-
-/* Form Card */
-/* * Note: LiquidGlass handles the glass effect, so backdrop-filter removed */
-.formCard {
-  width: clamp(320px, 90vw, 600px);
-  max-width: 100%;
-  min-height: auto;
-  overflow: visible;
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  border-radius: inherit;
-  position: relative;
-  z-index: 2;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  animation: cardFadeInScale 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
-  /* * Ensure cat's tail isn't clipped by any parent */
-  clip-path: none;
-}
-
-/* * Hover effects handled by LiquidGlass component */
-.formCard:hover {
-  transform: translateY(-2px);
-}
-
-.formCollapsed {
-  display: flex;
-  flex-direction: column;
-  gap: 1.75rem;
   align-items: center;
   justify-content: center;
-  max-width: 100%;
-  padding: clamp(1.75rem, 5vw, 2.25rem);
-  text-align: center;
-  cursor: pointer;
-  box-shadow: none;
-}
-
-.formCollapsed:hover {
-  border-color: var(--border-color);
-  box-shadow: 0 12px 32px rgb(var(--login-rgb-slate-900) / 18%);
-  transform: translateY(-2px);
-}
-
-.formCollapsed:focus-visible {
-  outline: 3px solid rgb(var(--login-rgb-slate-400) / 65%);
-  outline-offset: 6px;
-}
-
-.formExpanded {
-  max-width: 100%;
-  height: auto;
-  padding: clamp(2.5rem, 5vw, 3rem);
-  overflow: visible;
-  box-shadow: 0 28px 72px rgb(0 0 0 / 25%);
-}
-
-.collapsedContent {
+  overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
 }
 
-.collapsedContent::after {
-  display: none;
+.loginWrapper * {
+  box-sizing: border-box;
 }
 
-.collapsedDescription {
-  max-width: 28ch;
-  margin: 0;
-  font-size: clamp(1rem, 2.6vw, 1.15rem);
-  line-height: 1.6;
-  color: var(--text-secondary);
-  opacity: 1;
-  transition: color 0.3s ease;
-}
-
-.formCollapsed:hover .collapsedDescription {
-  color: var(--text-primary);
-}
-
-:root[data-theme="light"] .collapsedDescription {
-  color: var(--login-color-text-light);
-}
-
-.expandedContent {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 2.5vw, 1.25rem);
-  min-height: auto;
-  padding: 0;
-  overflow: visible;
-  /* * Ensure cat's tail isn't clipped */
-  clip-path: none;
-}
-
-/* Typography */
-.welcomeTitle {
-  margin: 0;
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
-  font-weight: 800;
-  line-height: 1.15;
-  color: var(--text-primary);
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  text-shadow:
-    0 4px 16px rgb(0 0 0 / 30%),
-    0 2px 8px rgb(0 0 0 / 20%);
-  transition:
-    color 0.3s ease,
-    text-shadow 0.3s ease;
-  animation: titleFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-}
-
-:root[data-theme="light"] .welcomeTitle {
-  color: var(--login-color-text-light);
-  text-shadow:
-    0 2px 12px rgb(0 0 0 / 8%),
-    0 1px 4px rgb(0 0 0 / 4%),
-    0 0 0 1px rgb(var(--login-rgb-slate-50) / 30%);
-}
-
-:root[data-theme="dark"] .welcomeTitle {
-  color: var(--login-color-text-dark);
-  text-shadow:
-    0 4px 20px rgb(0 0 0 / 50%),
-    0 2px 10px rgb(0 0 0 / 30%),
-    0 0 40px rgb(47 243 224 / 10%);
-}
-
-.welcomeText {
-  max-width: clamp(320px, 70vw, 500px);
-  margin: 0;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  text-align: center;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  transition:
-    color 0.3s ease,
-    text-shadow 0.3s ease;
-  animation: textFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
-}
-
-:root[data-theme="light"] .welcomeText {
-  color: var(--login-color-text-muted-light);
-  text-shadow: 0 1px 4px rgb(0 0 0 / 4%);
-}
-
-:root[data-theme="dark"] .welcomeText {
-  color: var(--login-color-text-dark);
-  text-shadow: 0 2px 10px rgb(0 0 0 / 30%);
-}
-
-/* Form Section */
-.catFact {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  padding: clamp(0.75rem, 2vw, 1rem);
-  margin: 0 0 clamp(0.75rem, 2.5vw, 1.25rem);
-  font-size: clamp(0.85rem, 2.2vw, 0.95rem);
-  font-style: italic;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  text-align: left;
-  background: transparent;
-  border-left: 3px solid var(--login-color-accent);
-  border-radius: 0;
-  transition:
-    border-color 0.3s ease,
-    color 0.3s ease;
-  animation: cardFadeInSlide 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
-}
-
-:root[data-theme="light"] .catFact,
-:root[data-theme="dark"] .catFact {
-  border-left-color: var(--login-color-accent);
-}
-
-:root[data-theme="light"] .catFact {
-  color: var(--login-color-text-muted-light);
-}
-
-:root[data-theme="dark"] .catFact {
-  color: var(--login-color-text-muted-dark);
-}
-
-.catFactIcon {
-  flex-shrink: 0;
-  font-size: clamp(1.25rem, 3.5vw, 1.5rem);
-  line-height: 1;
-}
-
-.loadingFact {
-  font-style: italic;
-  color: var(--text-tertiary);
-}
-
-.loadingDots {
-  animation: pulse 1.5s infinite;
-}
-
-.loginForm {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 2vw, 1.25rem);
-  width: 100%;
-}
-
-.inputWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.inputContainer {
+.scene {
   position: relative;
-  display: flex;
-  align-items: center;
-  overflow: visible;
+  width: 500px;
+  max-width: 95vw;
+  padding: 40px;
+  background: #e6ccac;
+  border: 4px solid var(--ink);
+  box-shadow: 15px 15px 0 var(--ink);
+  transform: rotate(-1deg);
+}
+
+.cutOutCat {
+  position: absolute;
+  top: -100px;
+  right: 20px;
+  width: 150px;
+  height: 150px;
+  background: #222;
+  clip-path: polygon(
+    20% 0%,
+    30% 20%,
+    70% 20%,
+    80% 0%,
+    100% 40%,
+    90% 100%,
+    10% 100%,
+    0% 40%
+  );
+  border-bottom: 8px solid #555;
+  animation: bobble 4s ease-in-out infinite;
+}
+
+.eye {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: yellow;
+  border-radius: 50%;
+  top: 40%;
+  left: 30%;
+  transition: transform 0.1s ease-out;
+}
+
+.eyeRight {
+  left: 60%;
+}
+
+.inputTray {
+  background: #c5a880;
+  border: 3px inset var(--ink);
+  padding: 10px;
+  margin: 20px 0;
 }
 
 .loginInput {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: var(--ink);
   width: 100%;
-  padding: clamp(0.625rem, 1.5vw, 0.875rem) clamp(2rem, 5vw, 2.5rem)
-    clamp(0.625rem, 1.5vw, 0.875rem) clamp(0.875rem, 2vw, 1.125rem);
-  font-size: clamp(0.875rem, 2.5vw, 0.95rem);
-  color: var(--text-primary);
-  background: var(--glass-bg-light);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    background 0.2s ease,
-    scale 0.2s ease;
-  animation: inputFadeIn 0.6s ease 0.8s both;
-}
-
-.loginInput:hover:not(:focus, .error) {
-  transform: scale(1.02);
-  box-shadow:
-    0 2px 8px rgb(0 0 0 / 10%),
-    0 4px 12px rgb(0 0 0 / 8%);
-}
-
-:root[data-theme="light"] .loginInput {
-  background: rgb(var(--login-rgb-slate-50) / 55%);
-  border-color: rgb(var(--login-rgb-slate-900) / 7%);
-}
-
-:root[data-theme="light"] .loginInput:hover:not(:focus, .error) {
-  background: rgb(var(--login-rgb-slate-50) / 60%);
-  border-color: rgb(var(--login-rgb-slate-900) / 12%);
-  box-shadow:
-    0 2px 8px rgb(var(--login-rgb-slate-900) / 6%),
-    0 4px 12px rgb(var(--login-rgb-slate-900) / 4%);
-}
-
-:root[data-theme="light"] .loginInput:focus {
-  background: rgb(var(--login-rgb-slate-50) / 70%);
-  border-color: var(--accent-color);
-  box-shadow:
-    0 0 0 3px rgb(232 191 118 / 15%),
-    0 4px 12px rgb(var(--login-rgb-slate-900) / 4%);
-}
-
-:root[data-theme="dark"] .loginInput {
-  background: rgb(var(--login-rgb-slate-900) / 50%);
-  border-color: rgb(255 255 255 / 12%);
-}
-
-:root[data-theme="dark"] .loginInput:hover:not(:focus, .error) {
-  background: rgb(var(--login-rgb-slate-900) / 55%);
-  border-color: rgb(255 255 255 / 18%);
-  box-shadow:
-    0 2px 8px rgb(0 0 0 / 15%),
-    0 4px 16px rgb(0 0 0 / 12%);
-}
-
-:root[data-theme="dark"] .loginInput:focus {
-  background: rgb(var(--login-rgb-slate-900) / 65%);
-  border-color: var(--accent-color);
-  box-shadow:
-    0 0 0 3px rgb(232 191 118 / 25%),
-    0 4px 16px rgb(0 0 0 / 30%);
+  outline: none;
+  text-transform: uppercase;
+  font-family: inherit;
+  text-align: center;
 }
 
 .loginInput::placeholder {
-  color: var(--muted-foreground);
+  color: rgb(60 47 47 / 50%);
 }
 
-.loginInput:focus {
-  outline: none;
-  background: var(--glass-bg);
-  border-color: var(--accent-color);
-  box-shadow:
-    0 0 0 3px rgb(232 191 118 / 20%),
-    0 4px 16px rgb(0 0 0 / 20%);
-  transform: translateY(-2px);
-}
-
-.loginInput.error {
-  outline: none;
-  border-color: var(--vibrant-error);
-  box-shadow: 0 0 0 3px rgb(var(--fire-red-rgb), 0.25);
-  animation: errorShake 0.4s ease-out;
-}
-
-.randomNameIndicator {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
+.leverBtn {
+  background: #bf4444;
+  border: 4px solid var(--ink);
+  color: white;
+  padding: 15px;
+  font-weight: bold;
+  width: 100%;
   cursor: pointer;
-  background: transparent;
-  border-radius: 50%;
-  transform: translateY(-50%);
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-  animation: diceSlideIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.9s both;
-}
-
-.randomNameIndicator:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-}
-
-.randomNameIndicator:hover:not([aria-disabled="true"]),
-.randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
-  background: rgb(232 191 118 / 18%);
-  animation: diceRoll 0.6s ease-out forwards;
-}
-
-.randomNameIndicator[aria-disabled="true"] {
-  pointer-events: none;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.diceIcon {
+  box-shadow: 0 6px 0 var(--ink);
+  transition: all 0.1s;
+  font-family: inherit;
   font-size: 1.2rem;
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 20%));
+  text-transform: uppercase;
 }
 
-.loginError {
-  margin-top: 0.5rem;
+.leverBtn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--ink);
 }
 
-/* Text Elements - Consolidated theme colors */
-.explainerText,
-.counterText {
-  margin: 0;
-  text-align: center;
-  color: var(--login-color-text-muted-dark);
-  transition: color 0.3s ease;
-}
-
-:root[data-theme="light"] .explainerText {
-  color: var(--login-color-text-light);
-}
-
-:root[data-theme="light"] .counterText {
-  color: var(--login-color-text-tertiary-light);
-}
-
-.explainerText {
-  margin-top: clamp(0.375rem, 1.5vw, 0.625rem);
-  font-size: clamp(0.75rem, 2vw, 0.85rem);
-  line-height: 1.4;
-}
-
-.counterText {
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
-  text-align: right;
-}
-
-/* Submit Button */
-.submitButton {
-  position: relative;
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 48px;
-  padding: 0.875rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: hsl(var(--foreground));
-  text-align: center;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  cursor: pointer;
-  background: linear-gradient(
-    135deg,
-    var(--button-primary-bg, var(--primary-600)),
-    var(--button-primary-hover, var(--primary-700))
-  );
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow:
-    0 4px 16px rgb(0 0 0 / 20%),
-    0 2px 8px rgb(0 0 0 / 15%),
-    0 0 20px rgb(var(--primary-rgb, 44, 62, 64) / 30%);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.submitButton::before {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  background: linear-gradient(
-    135deg,
-    rgb(255 255 255 / 10%),
-    transparent 50%,
-    rgb(255 255 255 / 5%)
-  );
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.submitButton:hover:not(:disabled) {
-  box-shadow:
-    0 8px 24px rgb(0 0 0 / 25%),
-    0 4px 12px rgb(0 0 0 / 20%),
-    0 0 30px rgb(var(--primary-rgb, 44, 62, 64) / 40%);
-  transform: translateY(-2px) scale(1.02);
-}
-
-.submitButton:hover:not(:disabled)::before {
-  opacity: 1;
-}
-
-.submitButton:active:not(:disabled) {
-  box-shadow:
-    0 2px 8px rgb(0 0 0 / 20%),
-    0 0 15px rgb(var(--primary-rgb, 44, 62, 64) / 25%);
-  transform: translateY(0) scale(1);
-}
-
-.submitButton:disabled {
+.leverBtn:disabled {
+  background: #888;
   cursor: not-allowed;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
-  opacity: 0.7;
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--ink);
 }
 
-.submitButton:focus-visible {
-  outline: 3px solid var(--accent-color, #e8bf76);
-  outline-offset: 3px;
+.catFactTape {
+  background: #fffde7;
+  padding: 5px 15px;
+  border: 2px dashed var(--ink);
+  transform: rotate(2deg);
+  margin-bottom: 20px;
+  font-size: 0.8rem;
+  color: var(--ink);
+  min-height: 2em;
 }
 
-.buttonText,
-.buttonIcon,
-.buttonSpinner {
-  position: relative;
-  z-index: 1;
-}
-
-.buttonIcon {
-  font-size: 1.2em;
-  line-height: 1;
-}
-
-.buttonSpinner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.spinnerIcon {
-  width: 100%;
-  height: 100%;
-  color: currentcolor;
-}
-
-.spinnerCircle {
-  opacity: 0.75;
-}
-
-/* ===========================
-   RESPONSIVE DESIGN
-   =========================== */
-@media (width <= 768px) {
-  .loginWrapper {
-    gap: clamp(0.5rem, 2vw, 1rem);
-    padding: clamp(0.5rem, 2vw, 1rem) 0;
-  }
-
-  .heroContainer {
-    gap: clamp(0.5rem, 2vw, 1rem);
-    min-height: auto;
-    padding: 0 1rem;
-  }
-
-  .heroContent {
-    gap: clamp(0.375rem, 1.5vw, 0.75rem);
-  }
-
-  .welcomeTitle {
-    font-size: clamp(1.25rem, 4vw, 2rem);
-  }
-
-  .welcomeText {
-    font-size: clamp(0.8rem, 2vw, 0.95rem);
-  }
-
-  .catFact {
-    padding: 0.85rem;
-    font-size: 0.9rem;
-  }
-
-  .catFactIcon {
-    justify-content: flex-start;
-    width: 36px;
-    height: 36px;
-  }
-
-  .heroHighlights {
-    grid-template-columns: 1fr;
-  }
-
-  .highlightItem {
-    align-items: flex-start;
-  }
-
-  .formCard {
-    max-width: 100%;
-  }
-
-  .formCollapsed {
-    max-width: 100%;
-    padding: 1.75rem;
-  }
-
-  .collapsedDescription {
-    max-width: none;
-  }
-
-  .catFact {
-    padding: 0.85rem;
-    font-size: 0.9rem;
-  }
-
-  .catFactIcon {
-    justify-content: flex-start;
-    width: 36px;
-    height: 36px;
-  }
-}
-
-@media (width <= 480px) {
-  .loginWrapper {
-    gap: clamp(0.5rem, 2vw, 0.75rem);
-    padding: clamp(0.5rem, 2vw, 0.75rem) 0;
-  }
-
-  .heroContainer {
-    gap: clamp(0.5rem, 2vw, 0.75rem);
-    min-height: auto;
-    padding: 0 0.75rem;
-  }
-
-  .formCard {
-    /* * Styles handled by LiquidGlass component */
-    width: 100%;
-  }
-
-  .formCollapsed {
-    padding: 1.25rem;
-  }
-
-  .heroContent {
-    gap: clamp(0.375rem, 1.5vw, 0.5rem);
-  }
-
-  .welcomeTitle {
-    font-size: clamp(1.125rem, 3.5vw, 1.5rem);
-    line-height: 1.1;
-    letter-spacing: 0.01em;
-  }
-
-  .welcomeText {
-    font-size: clamp(0.75rem, 2vw, 0.875rem);
-    line-height: 1.4;
-    max-width: 100%;
-  }
-
-  .loginForm {
-    gap: clamp(0.625rem, 1.5vw, 1rem);
-    max-width: 100%;
-  }
-
-  .catFact {
-    padding: clamp(0.5rem, 1.5vw, 0.625rem);
-    margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
-    font-size: clamp(0.75rem, 2vw, 0.85rem);
-  }
-
-  .loginInput {
-    min-height: 44px;
-  }
-
-  .submitButton {
-    min-height: 44px;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9375rem;
-  }
-}
-
-/* ===========================
-   ANIMATION KEYFRAMES
-   =========================== */
-@keyframes titleFadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes textFadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes cardFadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes cardFadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes inputFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes diceSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50%) translateX(20px) scale(0.8);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0) scale(1);
-  }
-}
-
-@keyframes diceRoll {
-  0% {
-    transform: translateY(-50%) scale(1.05) rotateZ(0deg);
-  }
-
-  50% {
-    transform: translateY(-50%) scale(1.1) rotateZ(45deg);
-  }
-
-  100% {
-    transform: translateY(-50%) scale(1.05) rotateZ(360deg);
-  }
-}
-
-@keyframes errorShake {
-  0% {
-    transform: translateX(0);
-  }
-
-  25% {
-    transform: translateX(-8px);
-  }
-
-  50% {
-    transform: translateX(8px);
-  }
-
-  75% {
-    transform: translateX(-4px);
-  }
-
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes typingDot {
-  0%,
-  80%,
-  100% {
-    opacity: 0.5;
-    transform: scale(0.8);
-  }
-
-  40% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes shimmer-sweep {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-  }
-
-  100% {
-    transform: translateX(100%) skewX(-15deg);
-  }
-}
-
-/* Accessibility: Respect prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .welcomeTitle,
-  .welcomeText,
-  .formCard,
-  .catFact,
-  .loginInput,
-  .randomNameIndicator,
-  .characterCounter {
-    transition: none;
-    animation: none;
-  }
-
-  .loginInput:focus {
-    transform: none;
-  }
-
-  .randomNameIndicator:hover:not([aria-disabled="true"]),
-  .randomNameIndicator:focus-visible:not([aria-disabled="true"]) {
-    transform: translateY(-50%);
-    animation: none;
-  }
-}
-
-/* ===========================
-   CAT COMPONENT STYLES
-   Single source of truth for all cat-related styling
-   =========================== */
-:global(.sour-gummy-100) {
-  font-family: "Sour Gummy", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 100;
-  font-style: normal;
-  font-variation-settings: "wdth" 100;
-}
-
-.catMouseDetector {
-  position: absolute;
-  top: clamp(-200px, -15vw, -100px);
-  left: 50%;
-  right: auto;
-  z-index: 10;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform: translateX(-50%);
-  overflow: visible;
-  /* * Ensure cat's tail isn't clipped */
-  clip-path: none;
-}
-
-:global(.mouse-detector) {
-  padding: 20px 30px 30px;
-}
-
-:global(.mouse-detector:hover .sleep-symbol) {
-  visibility: hidden;
-}
-
-:global(.mouse-detector:hover #lefteyelid) {
-  visibility: hidden;
-}
-
-:global(.cat) {
-  padding: 30px;
-  pointer-events: auto;
-}
-
-:global(.cat:hover) {
-  --righteyelid-visibility: hidden;
-}
-
-:global(.cat:hover #righteyelid) {
-  visibility: hidden;
-}
-
-:global(.sleep-symbol) {
-  margin-left: auto;
-  margin-right: auto;
-  font-weight: 600;
-  margin-bottom: -40px;
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 10px;
+  color: var(--ink);
   text-align: center;
-  width: fit-content;
-  position: relative;
-  z-index: 3;
 }
 
-:global(.sleep-symbol span) {
-  position: relative;
-  display: inline-block;
+.subtitle {
+  color: var(--ink);
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.rerollBtn {
+  margin-top: 15px;
+  text-align: center;
+  opacity: 0.7;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  width: 100%;
+}
+
+.rerollBtn:hover {
   opacity: 1;
-  transform: scale(1);
-  animation: sleep 4s ease-in-out infinite;
+  text-decoration: underline;
 }
 
-:global(.sleep-symbol span:nth-child(1)) {
-  animation-delay: 0s;
+.error {
+  color: #bf4444;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.8rem;
 }
 
-:global(.sleep-symbol span:nth-child(2)) {
-  animation-delay: 1s;
-  margin-left: -10px;
-}
-
-:global(.sleep-symbol span:nth-child(3)) {
-  animation-delay: 2s;
-  margin-left: -10px;
-}
-
-:global(.thecat) {
-  z-index: 2;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: -35px;
-  position: relative;
-  pointer-events: none;
-  display: flex;
-  justify-content: center;
-  overflow: visible;
-  /* * Ensure cat's tail isn't clipped */
-  clip-path: none;
-}
-
-:global(.thecat svg) {
-  overflow: visible;
-  clip-path: none;
-}
-
-@media (width <= 768px) {
-  .catMouseDetector {
-    top: clamp(-160px, -12vw, -80px);
-  }
-
-  :global(.mouse-detector) {
-    padding: clamp(10px, 2vw, 20px) clamp(15px, 3vw, 30px)
-      clamp(15px, 3vw, 30px);
-  }
-
-  :global(.cat) {
-    padding: clamp(15px, 3vw, 30px);
-  }
-
-  :global(.thecat) {
-    margin-bottom: clamp(-20px, -5vw, -35px);
-  }
-}
-
-@media (width <= 480px) {
-  .catMouseDetector {
-    top: clamp(-120px, -10vw, -60px);
-  }
-
-  :global(.mouse-detector) {
-    padding: 8px 12px 15px;
-  }
-
-  :global(.cat) {
-    padding: 15px;
-  }
-
-  :global(.thecat) {
-    margin-bottom: -20px;
-  }
-
-  :global(.sleep-symbol span:nth-child(2)),
-  :global(.sleep-symbol span:nth-child(3)) {
-    margin-left: -5px;
-  }
-}
-
-:global(#tail) {
-  visibility: visible;
-}
-
-:global(#longtail) {
-  visibility: hidden;
-}
-
-/* * Tail state changes on input interaction */
-:global(.cat-input-container:hover .cat #tail),
-:global(.cat-input-container:has(.cat-input:focus) .cat #tail) {
-  visibility: hidden;
-}
-
-:global(.cat-input-container:hover .cat #longtail),
-:global(.cat-input-container:has(.cat-input:focus) .cat #longtail) {
-  visibility: visible;
-}
-
-:global(.thecat #eyesdown) {
-  visibility: hidden;
-}
-
-/* Eye interactions - consolidated selectors */
-:global(.cat-input-container:hover .cat #eyesdown),
-:global(.cat-input-container:has(.cat-input:focus) .cat #eyesdown) {
-  visibility: visible;
-}
-
-:global(.cat-input-container:hover .cat #lefteyelid),
-:global(.cat-input-container:has(.cat-input:focus) .cat #lefteyelid),
-:global(.cat-input-container:hover .cat #righteyelid),
-:global(.cat-input-container:has(.cat-input:focus) .cat #righteyelid) {
-  visibility: hidden;
-}
-
-:global(.cat-input-container:hover .cat .sleep-symbol),
-:global(.cat-input-container:has(.cat-input:focus) .cat .sleep-symbol) {
-  visibility: hidden;
-}
-
-@keyframes sleep {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+@keyframes bobble {
+  0%,
+  100% {
+    transform: translateY(0) rotate(2deg);
   }
 
   50% {
-    opacity: 0.5;
-    transform: translate(-5px, -35px) scale(1.2);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(-60px) scale(1.5);
+    transform: translateY(-10px) rotate(-2deg);
   }
 }

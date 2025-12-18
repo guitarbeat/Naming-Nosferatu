@@ -78,8 +78,7 @@
     transparent 0deg 10deg,
     #000 10deg 20deg
   );
-  mask: radial-gradient(transparent 50%, black 70%);
-  -webkit-mask: radial-gradient(transparent 55%, black 70%);
+  mask: radial-gradient(transparent 55%, black 70%);
   opacity: 0.4;
   animation: rotateSpikes 20s linear infinite;
   pointer-events: none;
@@ -89,6 +88,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -98,7 +98,7 @@
 .fighterContent {
   text-align: center;
   z-index: 10;
-  filter: blur(0px) !important;
+  filter: blur(0) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,7 +115,7 @@
   height: 180px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(255 255 255 / 10%);
   position: relative;
   flex-shrink: 0;
 }
@@ -149,7 +149,7 @@
   margin: 0;
   text-align: center;
   line-height: 1.2;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 50%);
 }
 
 /* VS Text */
@@ -182,7 +182,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.1),
+    rgb(255 255 255 / 10%),
     transparent
   );
   top: 50%;
@@ -202,7 +202,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (width <= 1024px) {
   .battleStage {
     height: 500px;
   }
@@ -230,7 +230,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .battleStage {
     height: 400px;
   }

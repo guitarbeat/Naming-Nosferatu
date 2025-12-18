@@ -1,6 +1,28 @@
-// @ts-nocheck
 import { useCallback, useMemo } from "react";
 import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
+
+import { Name, MatchRecord, PersistentState, TournamentState } from "./types";
+
+interface UseTournamentProgressProps {
+  namesLength: number;
+  isTransitioning: boolean;
+  canUndo: boolean;
+  sorter: unknown;
+  currentMatchNumber: number;
+  roundNumber: number;
+  totalMatches: number;
+  persistentState: PersistentState;
+  updatePersistentState: (
+    state:
+      | Partial<PersistentState>
+      | ((prev: PersistentState) => Partial<PersistentState>),
+  ) => void;
+  updateTournamentState: (
+    state:
+      | Partial<TournamentState>
+      | ((prev: TournamentState) => Partial<TournamentState>),
+  ) => void;
+}
 
 export function useTournamentProgress({
   namesLength,
@@ -13,7 +35,7 @@ export function useTournamentProgress({
   persistentState,
   updatePersistentState,
   updateTournamentState,
-}) {
+}: UseTournamentProgressProps) {
   const handleUndo = useCallback(() => {
     if (
       isTransitioning ||
@@ -25,8 +47,9 @@ export function useTournamentProgress({
 
     updateTournamentState({ isTransitioning: true });
 
-    const lastVote =
-      persistentState.matchHistory[persistentState.matchHistory.length - 1];
+    const lastVote = persistentState.matchHistory[
+      persistentState.matchHistory.length - 1
+    ] as MatchRecord;
 
     if (!lastVote || !lastVote.match) {
       updateTournamentState({ isTransitioning: false });
@@ -42,28 +65,35 @@ export function useTournamentProgress({
       matchHistory: persistentState.matchHistory.slice(0, -1),
     });
 
-    if (sorter && typeof sorter.undoLastPreference === "function") {
-      sorter.undoLastPreference();
+    const sorterAny = sorter as Record<string, unknown>;
+    if (sorter && typeof sorterAny.undoLastPreference === "function") {
+      (sorterAny.undoLastPreference as () => void)();
     } else if (
       sorter &&
-      sorter.preferences instanceof Map &&
-      lastVote?.match?.left?.name &&
-      lastVote?.match?.right?.name
+      sorterAny.preferences instanceof Map &&
+      (lastVote?.match?.left as Name)?.name &&
+      (lastVote?.match?.right as Name)?.name
     ) {
       // * Use optional chaining for safety (already validated above, but defensive)
-      const leftName = lastVote.match.left?.name;
-      const rightName = lastVote.match.right?.name;
+      const leftName =
+        (lastVote.match.left as Name)?.name || (lastVote.match.left as string);
+      const rightName =
+        (lastVote.match.right as Name)?.name ||
+        (lastVote.match.right as string);
       if (!leftName || !rightName) {
         updateTournamentState({ isTransitioning: false });
         return;
       }
       const key = `${leftName}-${rightName}`;
       const reverseKey = `${rightName}-${leftName}`;
-      sorter.preferences.delete(key);
-      sorter.preferences.delete(reverseKey);
-      if (typeof sorter._pairIndex === "number") {
-        const newSorter = { ...sorter };
-        newSorter._pairIndex = Math.max(0, sorter._pairIndex - 1);
+      (sorterAny.preferences as Map<string, unknown>).delete(key);
+      (sorterAny.preferences as Map<string, unknown>).delete(reverseKey);
+      if (typeof sorterAny._pairIndex === "number") {
+        const newSorter = { ...sorterAny };
+        newSorter._pairIndex = Math.max(
+          0,
+          (sorterAny._pairIndex as number) - 1,
+        );
         updateTournamentState({ sorter: newSorter });
       }
     }
@@ -97,7 +127,7 @@ export function useTournamentProgress({
     }
 
     updateTournamentState({
-      canUndo: persistentState.matchHistory.length > 1,
+      canUndo: persistentState.matchHistory.length > 0,
     });
 
     setTimeout(() => {

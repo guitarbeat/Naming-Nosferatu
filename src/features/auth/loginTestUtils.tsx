@@ -1,8 +1,7 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { vi } from "vitest";
-// @ts-ignore - Login is a JSX file
 import Login from "./Login";
 
 export const mockCatFact = "Cats sleep 12-16 hours per day!";
@@ -28,8 +27,11 @@ export const resetFetchMock = () => {
   }
 };
 
-export async function renderLoginAndWait(props = {}) {
-  const utils = render(<Login {...props} />);
+export async function renderLoginAndWait(
+  props: { onLogin?: (name: string) => void } = {},
+) {
+  const defaultProps = { onLogin: vi.fn(), ...props };
+  const utils = render(<Login {...defaultProps} />);
   await screen.findByText(mockCatFact);
   return utils;
 }

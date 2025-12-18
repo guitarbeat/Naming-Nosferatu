@@ -18,23 +18,23 @@
     "baseUrl": "..",
     "types": ["vite/client", "node"],
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/shared/components/*"],
-      "@hooks/*": ["./src/core/hooks/*"],
-      "@utils/*": ["./src/shared/utils/*"],
-      "@services/*": ["./src/shared/services/*"],
-      "@styles/*": ["./src/shared/styles/*"],
-      "@features/*": ["./src/features/*"],
-      "@core/*": ["./src/core/*"]
+      "@/*": ["src/*"],
+      "@components": ["src/shared/components"],
+      "@components/*": ["src/shared/components/*"],
+      "@hooks": ["src/core/hooks"],
+      "@hooks/*": ["src/core/hooks/*"],
+      "@utils": ["src/shared/utils"],
+      "@utils/*": ["src/shared/utils/*"],
+      "@services": ["src/shared/services"],
+      "@services/*": ["src/shared/services/*"],
+      "@styles": ["src/shared/styles"],
+      "@styles/*": ["src/shared/styles/*"],
+      "@features": ["src/features"],
+      "@features/*": ["src/features/*"],
+      "@core": ["src/core"],
+      "@core/*": ["src/core/*"]
     }
   },
-  "include": [
-    "../src/**/*",
-    "../config/**/*"
-  ],
-  "exclude": [
-    "../node_modules",
-    "../build",
-    "../dist"
-  ]
+  "include": ["../src/**/*", "../config/**/*"],
+  "exclude": ["../node_modules", "../build", "../dist"]
 }

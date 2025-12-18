@@ -21,7 +21,7 @@ jobs:
     # * Only run for Dependabot PRs
     if: github.actor == 'dependabot[bot]'
     timeout-minutes: 10
-    
+
     steps:
       - name: Fetch Dependabot metadata
         id: metadata

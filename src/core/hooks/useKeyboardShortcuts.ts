@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @module useKeyboardShortcuts
  * @description Custom hook for handling global keyboard shortcuts
@@ -12,9 +11,17 @@ import { useEffect } from "react";
  * @param {Function} options.onAnalysisToggle - Callback for analysis mode toggle (Ctrl/Cmd+Shift+A)
  * @param {Function} options.navigateTo - Navigation function for analysis toggle
  */
-export function useKeyboardShortcuts({ onAnalysisToggle, navigateTo }) {
+interface UseKeyboardShortcutsProps {
+  onAnalysisToggle: () => void;
+  navigateTo: (path: string) => void;
+}
+
+export function useKeyboardShortcuts({
+  onAnalysisToggle,
+  navigateTo,
+}: UseKeyboardShortcutsProps) {
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
       if (
         (event.ctrlKey || event.metaKey) &&

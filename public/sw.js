@@ -19,7 +19,7 @@ self.addEventListener("install", (event) => {
       .open(STATIC_CACHE)
       .then((cache) => cache.addAll(STATIC_ASSETS))
       .catch(() => Promise.resolve())
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()),
   );
 });
 
@@ -38,12 +38,12 @@ self.addEventListener("activate", (event) => {
                 key.startsWith("harmonic-studio-") &&
                 key !== STATIC_CACHE &&
                 key !== RUNTIME_CACHE &&
-                key !== HTML_CACHE
+                key !== HTML_CACHE,
             )
-            .map((key) => caches.delete(key))
-        )
+            .map((key) => caches.delete(key)),
+        ),
       )
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -106,7 +106,7 @@ async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   if (cached) {
-    fetchAndUpdate(request, cache).catch(() => { });
+    fetchAndUpdate(request, cache).catch(() => {});
     return cached;
   }
   const response = await fetch(request);

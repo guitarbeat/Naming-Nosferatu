@@ -8,12 +8,9 @@
  */
 
 import { useCallback, useMemo, useState, useEffect } from "react";
-import PropTypes from "prop-types";
 // * Use path aliases for better tree shaking
-// * Import CatBackground directly (no lazy loading to prevent chunking issues)
-import CatBackground from "@components/CatBackground/CatBackground";
-import ViewRouter from "@components/ViewRouter/ViewRouter";
-import { Error, Loading, ScrollToTopButton } from "@components";
+import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
+import { Error, Loading, ScrollToTopButton } from "./shared/components";
 import { AppNavbar } from "./shared/components/AppNavbar";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
@@ -24,12 +21,14 @@ import {
 } from "./shared/utils/performanceMonitor";
 
 // * Core state and routing hooks
-import useUserSession from "@hooks/useUserSession";
-import { useRouting } from "@hooks/useRouting";
-import { useTournamentRoutingSync } from "@hooks/useTournamentRoutingSync";
+import useUserSession from "./core/hooks/useUserSession";
+import { useRouting } from "./core/hooks/useRouting";
+import { useTournamentRoutingSync } from "./core/hooks/useTournamentRoutingSync";
 import useAppStore, {
   useAppStoreInitialization,
-} from "@core/store/useAppStore";
+} from "./core/store/useAppStore";
+import { Name } from "./core/hooks/tournament/types";
+import { TournamentName } from "./types/store";
 import { devError } from "./shared/utils/logger";
 import { useKeyboardShortcuts } from "./core/hooks/useKeyboardShortcuts";
 import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
@@ -42,15 +41,67 @@ import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
  *
  * @returns {JSX.Element} Fully configured application layout.
  */
-type StoreSlice = {
-  user: any;
-  tournament: any;
-  ui: any;
-  errors: any;
-  tournamentActions: any;
-  uiActions: any;
-  errorActions: any;
-};
+interface UserState {
+  name: string;
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  preferences: Record<string, unknown>;
+}
+
+interface TournamentState {
+  names: Array<{
+    id: string;
+    name: string;
+    description?: string;
+    rating?: number;
+  }> | null;
+  ratings: Record<string, { rating: number }>;
+  isComplete: boolean;
+  isLoading: boolean;
+  voteHistory: unknown[];
+  currentView: string;
+}
+
+interface StoreSlice {
+  user: UserState;
+  tournament: TournamentState;
+  ui: {
+    theme: string;
+    themePreference: string;
+    showGlobalAnalytics: boolean;
+    showUserComparison: boolean;
+    matrixMode: boolean;
+  };
+  errors: {
+    current: Error | null;
+    history: unknown[];
+  };
+  tournamentActions: {
+    setNames: (names: TournamentName[] | null) => void;
+    setRatings: (ratings: Record<string, { rating: number }>) => void;
+    setComplete: (isComplete: boolean) => void;
+    setLoading: (isLoading: boolean) => void;
+    addVote: (vote: unknown) => void;
+    resetTournament: () => void;
+    setView: (view: string) => void;
+  };
+  uiActions: {
+    setMatrixMode: (enabled: boolean) => void;
+    setGlobalAnalytics: (show: boolean) => void;
+    setUserComparison: (show: boolean) => void;
+    setTheme: (theme: string) => void;
+    initializeTheme: () => void;
+  };
+  errorActions: {
+    setError: (error: Error | null) => void;
+    clearError: () => void;
+    logError: (
+      error: Error,
+      context: string,
+      metadata?: Record<string, unknown>,
+    ) => void;
+  };
+}
 
 function App() {
   const { login, logout, isInitialized } = useUserSession();
@@ -239,7 +290,6 @@ function App() {
       handleTournamentComplete={handleTournamentComplete}
       ui={ui}
       uiActions={uiActions}
-      isAdmin={isAdmin}
       isSuggestNameModalOpen={isSuggestNameModalOpen}
       onCloseSuggestName={handleCloseSuggestName}
     />
@@ -248,24 +298,28 @@ function App() {
 
 export default App;
 
-type AppLayoutProps = {
-  navbarProps: any;
-  user: any;
-  errors: any;
-  errorActions: any;
-  tournament: any;
-  tournamentActions: any;
-  handleLogin: (userName: string) => Promise<any>;
+interface AppLayoutProps {
+  navbarProps: Record<string, unknown>;
+  user: UserState;
+  errors: { current: Error | null; history: unknown[] };
+  errorActions: { clearError: () => void };
+  tournament: TournamentState;
+  tournamentActions: {
+    setView: (view: string) => void;
+    addVote: (vote: unknown) => void;
+  };
+  handleLogin: (userName: string) => Promise<boolean>;
   handleStartNewTournament: () => void;
-  handleUpdateRatings: (ratings: any) => void;
-  handleTournamentSetup: (names?: any) => void;
-  handleTournamentComplete: (finalRatings: any) => Promise<void>;
+  handleUpdateRatings: (ratings: Record<string, unknown>) => void;
+  handleTournamentSetup: (names?: Name[]) => void;
+  handleTournamentComplete: (
+    finalRatings: Record<string, unknown>,
+  ) => Promise<void>;
   isSuggestNameModalOpen: boolean;
   onCloseSuggestName: () => void;
-  ui: any;
-  uiActions: any;
-  isAdmin: boolean;
-};
+  ui: unknown;
+  uiActions: unknown;
+}
 
 function AppLayout({
   navbarProps,
@@ -281,7 +335,6 @@ function AppLayout({
   handleTournamentComplete,
   isSuggestNameModalOpen,
   onCloseSuggestName,
-  ui,
 }: AppLayoutProps) {
   const { isLoggedIn } = user;
 
@@ -307,11 +360,22 @@ function AppLayout({
         Skip to main content
       </a>
 
-      {/* * Static cat-themed background */}
-      <CatBackground />
+      {/* * Static cat-themed background - removed, using NoiseBackground in Tournament */}
 
       {/* * Primary navigation lives in the navbar */}
-      <AppNavbar {...navbarProps} />
+      <AppNavbar
+        view={navbarProps.view as string}
+        setView={navbarProps.setView as (view: string) => void}
+        isLoggedIn={navbarProps.isLoggedIn as boolean}
+        userName={navbarProps.userName as string}
+        isAdmin={navbarProps.isAdmin as boolean}
+        onLogout={navbarProps.onLogout as () => void}
+        onStartNewTournament={navbarProps.onStartNewTournament as () => void}
+        onOpenSuggestName={navbarProps.onOpenSuggestName as () => void}
+        onOpenPhotos={navbarProps.onOpenPhotos as () => void}
+        currentRoute={navbarProps.currentRoute as string}
+        onNavigate={navbarProps.onNavigate as (path: string) => void}
+      />
 
       <main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
         {errors.current && isLoggedIn && (
@@ -332,7 +396,7 @@ function AppLayout({
           onUpdateRatings={handleUpdateRatings}
           onTournamentSetup={handleTournamentSetup}
           onTournamentComplete={handleTournamentComplete}
-          onVote={(vote: any) => tournamentActions.addVote(vote)}
+          onVote={(vote: unknown) => tournamentActions.addVote(vote)}
         />
 
         {/* * Global loading overlay */}
@@ -356,36 +420,6 @@ function AppLayout({
     </div>
   );
 }
-
-AppLayout.propTypes = {
-  navbarProps: PropTypes.shape({}).isRequired,
-  user: PropTypes.shape({
-    isLoggedIn: PropTypes.bool.isRequired,
-    name: PropTypes.string,
-  }).isRequired,
-  errors: PropTypes.shape({
-    current: PropTypes.instanceOf(Error),
-  }).isRequired,
-  errorActions: PropTypes.shape({
-    clearError: PropTypes.func.isRequired,
-  }).isRequired,
-  tournament: PropTypes.shape({
-    isLoading: PropTypes.bool.isRequired,
-  }).isRequired,
-  tournamentActions: PropTypes.shape({
-    addVote: PropTypes.func.isRequired,
-  }).isRequired,
-  handleLogin: PropTypes.func.isRequired,
-  handleStartNewTournament: PropTypes.func.isRequired,
-  handleUpdateRatings: PropTypes.func.isRequired,
-  handleTournamentSetup: PropTypes.func.isRequired,
-  handleTournamentComplete: PropTypes.func.isRequired,
-  ui: PropTypes.shape({}).isRequired,
-  uiActions: PropTypes.shape({}).isRequired,
-  isAdmin: PropTypes.bool.isRequired,
-  isSuggestNameModalOpen: PropTypes.bool.isRequired,
-  onCloseSuggestName: PropTypes.func.isRequired,
-};
 
 // Test auto-deployment - Wed Oct 22 21:26:25 CDT 2025
 // Auto-deployment test 2 - Wed Oct 22 21:27:26 CDT 2025
