@@ -21,6 +21,17 @@ import styles from "./Form.module.css";
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element} FormField wrapper
  */
+interface FormFieldProps {
+  id?: string;
+  name?: string;
+  label?: string;
+  error?: string;
+  required?: boolean;
+  ariaDescribedBy?: string;
+  children: React.ReactElement;
+  className?: string;
+}
+
 const FormField = ({
   id,
   name,
@@ -30,7 +41,7 @@ const FormField = ({
   ariaDescribedBy = "",
   children,
   className = "",
-}) => {
+}: FormFieldProps) => {
   const generatedId = React.useId();
   const fieldId = id || `${name ? `${name}-field` : `field-${generatedId}`}`;
   const errorId = error ? `${fieldId}-error` : null;
@@ -45,12 +56,12 @@ const FormField = ({
           {required && <span className={styles.required}>*</span>}
         </label>
       )}
-      {React.cloneElement(children, {
+      {React.cloneElement(children as React.ReactElement<{ id?: string; "aria-invalid"?: boolean; "aria-describedby"?: string }>, {
         id: fieldId,
         "aria-invalid": !!error,
         "aria-describedby": describedBy,
       })}
-      {error && (
+      {error && errorId && (
         <div id={errorId} className={styles.errorText} role="alert">
           {error}
         </div>
@@ -90,6 +101,21 @@ FormField.displayName = "FormField";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} Input component
  */
+interface InputProps {
+  type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
+  name?: string;
+  value?: string | number | null;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  error?: string;
+  label?: string;
+  className?: string;
+  ariaDescribedBy?: string;
+}
+
 const Input = ({
   type = "text",
   name,
@@ -104,7 +130,7 @@ const Input = ({
   className = "",
   ariaDescribedBy = "",
   ...rest
-}) => {
+}: InputProps) => {
   const inputClasses = [
     styles.input,
     error && styles["input--error"],
@@ -116,6 +142,7 @@ const Input = ({
 
   return (
     <FormField
+      id={name}
       name={name}
       label={label}
       error={error}
@@ -125,7 +152,7 @@ const Input = ({
       <input
         type={type}
         name={name}
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
         onBlur={onBlur}
         placeholder={placeholder}
@@ -181,6 +208,27 @@ Input.displayName = "Input";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} Select component
  */
+interface SelectOption {
+  value: string | number;
+  label: string;
+  disabled?: boolean;
+}
+
+interface SelectProps {
+  name?: string;
+  value?: string | number | null;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
+  options?: SelectOption[];
+  disabled?: boolean;
+  required?: boolean;
+  error?: string;
+  label?: string;
+  placeholder?: string;
+  className?: string;
+  ariaDescribedBy?: string;
+}
+
 const Select = ({
   name,
   value,
@@ -195,7 +243,7 @@ const Select = ({
   className = "",
   ariaDescribedBy = "",
   ...rest
-}) => {
+}: SelectProps) => {
   const selectClasses = [
     styles.select,
     error && styles["select--error"],
@@ -207,6 +255,7 @@ const Select = ({
 
   return (
     <FormField
+      id={name}
       name={name}
       label={label}
       error={error}
@@ -215,7 +264,7 @@ const Select = ({
     >
       <select
         name={name}
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
         onBlur={onBlur}
         disabled={disabled}

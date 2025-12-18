@@ -5,7 +5,7 @@
  * * Uses the centralized client from client.ts
  */
 
-import { resolveSupabaseClient } from "../client";
+import { resolveSupabaseClient } from "./client";
 
 // * Development mode check (browser-compatible)
 const isDev =
@@ -225,9 +225,9 @@ export const catNamesAPI = {
 
       if (isDev) {
         console.log("Names query result:", {
-          totalNames: data?.length || 0,
+          totalNames: (data && Array.isArray(data) ? data.length : 0) || 0,
           hiddenNames: hiddenCount || 0,
-          hasActiveNames: data?.some((name) => name.is_active) || false,
+          hasActiveNames: (data && Array.isArray(data) ? data.some((name) => (name as { is_active?: boolean }).is_active) : false) || false,
         });
       }
 
@@ -367,15 +367,21 @@ export const catNamesAPI = {
       }
 
       // Process data to include default values (no user-specific data in this view)
-      return (data || []).map((item) => ({
-        ...item,
-        updated_at: null,
-        user_rating: null,
-        user_wins: 0,
-        user_losses: 0,
-        isHidden: false,
-        has_user_rating: false,
-      }));
+      if (!data || !Array.isArray(data)) {
+        return [];
+      }
+      return data.map((item) => {
+        const itemRecord = item as Record<string, unknown>;
+        return {
+          ...itemRecord,
+          updated_at: null,
+          user_rating: null,
+          user_wins: 0,
+          user_losses: 0,
+          isHidden: false,
+          has_user_rating: false,
+        };
+      });
     } catch (error) {
       if (isDev) {
         console.error("Error fetching names:", error);
@@ -397,6 +403,9 @@ export const catNamesAPI = {
       }
 
       const client = await resolveSupabaseClient();
+      if (!client) {
+        return { success: false, error: "Supabase not configured" };
+      }
 
       // * Set user context for RLS policies if userName is provided
       if (userName && userName.trim()) {
@@ -489,7 +498,7 @@ export const catNamesAPI = {
           "get_top_names_by_category",
           {
             p_category: categoryId,
-            p_limit: limit,
+            p_limit: limit ?? undefined,
           },
         );
 
@@ -1001,38 +1010,41 @@ export const catNamesAPI = {
       });
 
       // Process data to include user-specific ratings and selection counts
-      return (
-        data?.map((item) => {
-          // * Find user-specific rating data
-          const userRating = item.cat_name_ratings?.find(
-            (r) => r.user_name === userName,
+      if (!data || !Array.isArray(data)) {
+        return [];
+      }
+      return data.map((item) => {
+        // * Find user-specific rating data
+        const itemWithRatings = item as { cat_name_ratings?: Array<{ user_name: string; rating?: number | null; wins?: number | null; losses?: number | null; updated_at?: string | null }>; is_hidden?: boolean; name?: string; id?: string | number };
+        const userRating = itemWithRatings.cat_name_ratings?.find(
+          (r) => r.user_name === userName,
+        );
+
+        // * Global hidden status from cat_name_options.is_hidden
+        const isHidden = itemWithRatings.is_hidden === true;
+
+        // * Debug logging for hidden names
+        if (isDev && isHidden) {
+          console.log(
+            `🔍 Found globally hidden name: ${itemWithRatings.name} (${itemWithRatings.id})`,
+            { isHidden },
           );
+        }
 
-          // * Global hidden status from cat_name_options.is_hidden
-          const isHidden = item.is_hidden === true;
-
-          // * Debug logging for hidden names
-          if (isDev && isHidden) {
-            console.log(
-              `🔍 Found globally hidden name: ${item.name} (${item.id})`,
-              { isHidden },
-            );
-          }
-
-          return {
-            ...item,
-            popularity_score: 0, // Not tracked anymore
-            total_tournaments: 0, // Not tracked anymore
-            times_selected: selectionCounts.get(item.id) || 0,
-            user_rating: userRating?.rating || null,
-            user_wins: userRating?.wins || 0,
-            user_losses: userRating?.losses || 0,
-            isHidden,
-            updated_at: userRating?.updated_at || null,
-            has_user_rating: !!userRating?.rating,
-          };
-        }) || []
-      );
+        const itemRecord = item as Record<string, unknown>;
+        return {
+          ...itemRecord,
+          popularity_score: 0, // Not tracked anymore
+          total_tournaments: 0, // Not tracked anymore
+          times_selected: selectionCounts.get(itemWithRatings.id) || 0,
+          user_rating: userRating?.rating || null,
+          user_wins: userRating?.wins || 0,
+          user_losses: userRating?.losses || 0,
+          isHidden,
+          updated_at: userRating?.updated_at || null,
+          has_user_rating: !!userRating?.rating,
+        };
+      });
     } catch (error) {
       if (isDev) {
         console.error("Error fetching names with user ratings:", error);
@@ -1212,19 +1224,24 @@ export const catNamesAPI = {
       }
 
       // Process data to include Aaron's specific ratings
-      return (
-        data?.map((item) => ({
-          ...item,
+      if (!data || !Array.isArray(data)) {
+        return [];
+      }
+      return data.map((item) => {
+        const itemWithRatings = item as { cat_name_ratings?: Array<{ rating?: number | null; wins?: number | null; losses?: number | null; updated_at?: string | null }>; is_hidden?: boolean };
+        const itemRecord = item as Record<string, unknown>;
+        return {
+          ...itemRecord,
           popularity_score: 0, // Not tracked anymore
           total_tournaments: 0, // Not tracked anymore
-          user_rating: item.cat_name_ratings[0]?.rating || 0,
-          user_wins: item.cat_name_ratings[0]?.wins || 0,
-          user_losses: item.cat_name_ratings[0]?.losses || 0,
-          updated_at: item.cat_name_ratings[0]?.updated_at || null,
-          isHidden: item.is_hidden || false,
+          user_rating: itemWithRatings.cat_name_ratings?.[0]?.rating || 0,
+          user_wins: itemWithRatings.cat_name_ratings?.[0]?.wins || 0,
+          user_losses: itemWithRatings.cat_name_ratings?.[0]?.losses || 0,
+          updated_at: itemWithRatings.cat_name_ratings?.[0]?.updated_at || null,
+          isHidden: itemWithRatings.is_hidden || false,
           has_user_rating: true,
-        })) || []
-      );
+        };
+      });
     } catch (error) {
       if (isDev) {
         console.error("Error fetching Aaron's top names:", error);
@@ -1261,8 +1278,9 @@ export const catNamesAPI = {
         year: 365,
         all: periods,
       };
+      const dateFilterKey = options?.dateFilter as keyof typeof dateFilterPeriods | undefined;
       const requestedPeriods =
-        options?.periods ?? dateFilterPeriods[options?.dateFilter] ?? periods;
+        options?.periods ?? (dateFilterKey ? dateFilterPeriods[dateFilterKey] : undefined) ?? periods;
       const periodCount = Math.max(requestedPeriods, 2);
 
       // Get selection data grouped by date for the last N periods
@@ -1310,11 +1328,17 @@ export const catNamesAPI = {
           dateGroups.set(date, new Map());
         }
         const dayMap = dateGroups.get(date);
+        if (!dayMap) {
+          return;
+        }
 
         if (!dayMap.has(s.name_id)) {
           dayMap.set(s.name_id, { name: s.name, count: 0 });
         }
-        dayMap.get(s.name_id).count += 1;
+        const dayEntry = dayMap.get(s.name_id);
+        if (dayEntry) {
+          dayEntry.count += 1;
+        }
 
         // Track name metadata
         if (!nameData.has(s.name_id)) {
@@ -1329,7 +1353,10 @@ export const catNamesAPI = {
             totalSelections: 0,
           });
         }
-        nameData.get(s.name_id).totalSelections += 1;
+        const nameEntry = nameData.get(s.name_id);
+        if (nameEntry) {
+          nameEntry.totalSelections += 1;
+        }
       });
 
       // Generate time labels for the last N days
@@ -1444,7 +1471,8 @@ export const hiddenNamesAPI = {
       }
 
       // * Pass username to RPC for proper admin check (case-insensitive)
-      const { error } = await client.rpc("toggle_name_visibility", {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (client as any).rpc("toggle_name_visibility", {
         p_name_id: nameId,
         p_hide: true,
         p_user_name: userName,
@@ -1452,7 +1480,7 @@ export const hiddenNamesAPI = {
 
       if (error) {
         if (isPermissionError(error)) {
-          const permissionError = new Error("Only admins can hide names");
+          const permissionError = new Error("Only admins can hide names") as Error & { code?: string; originalError?: unknown };
           permissionError.code = "NOT_ADMIN";
           permissionError.originalError = error;
           throw permissionError;
@@ -1488,7 +1516,8 @@ export const hiddenNamesAPI = {
       }
 
       // * Pass username to RPC for proper admin check (case-insensitive)
-      const { error } = await client.rpc("toggle_name_visibility", {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (client as any).rpc("toggle_name_visibility", {
         p_name_id: nameId,
         p_hide: false,
         p_user_name: userName,
@@ -1496,7 +1525,7 @@ export const hiddenNamesAPI = {
 
       if (error) {
         if (isPermissionError(error)) {
-          const permissionError = new Error("Only admins can unhide names");
+          const permissionError = new Error("Only admins can unhide names") as Error & { code?: string; originalError?: unknown };
           permissionError.code = "NOT_ADMIN";
           permissionError.originalError = error;
           throw permissionError;
@@ -1534,9 +1563,15 @@ export const hiddenNamesAPI = {
         });
       }
 
-      const results = [];
+      interface HideResult {
+        nameId: string | number;
+        success: boolean;
+        scope?: string | null;
+        error?: string;
+      }
+      const results: HideResult[] = [];
       let processed = 0;
-      const errors = [];
+      const errors: string[] = [];
 
       for (const nameId of nameIds) {
         try {
@@ -1616,7 +1651,13 @@ export const hiddenNamesAPI = {
         return { success: true, processed: 0 };
       }
 
-      const results = [];
+      interface UnhideResult {
+        nameId: string | number;
+        success: boolean;
+        scope?: string | null;
+        error?: string;
+      }
+      const results: UnhideResult[] = [];
       let processed = 0;
 
       for (const nameId of nameIds) {
@@ -1791,7 +1832,7 @@ export const tournamentsAPI = {
       }
       return {
         success: false,
-        error: error.message || "Unknown error occurred",
+        error: (error as { message?: string }).message || "Unknown error occurred",
       };
     }
   },
@@ -1999,14 +2040,21 @@ export const tournamentsAPI = {
       const now = new Date().toISOString();
       const ratingRecords = ratings
         .filter((r) => nameToId.has(r.name))
-        .map((r) => ({
-          user_name: userName,
-          name_id: nameToId.get(r.name),
-          rating: Math.min(2400, Math.max(800, Math.round(r.rating))), // Clamp to valid Elo range
-          wins: r.wins || 0,
-          losses: r.losses || 0,
-          updated_at: now,
-        }));
+        .map((r) => {
+          const nameId = nameToId.get(r.name);
+          if (nameId === undefined) {
+            return null;
+          }
+          return {
+            user_name: userName,
+            name_id: nameId,
+            rating: Math.min(2400, Math.max(800, Math.round(r.rating))), // Clamp to valid Elo range
+            wins: r.wins || 0,
+            losses: r.losses || 0,
+            updated_at: now,
+          };
+        })
+        .filter((r): r is { user_name: string; name_id: string | number; rating: number; wins: number; losses: number; updated_at: string } => r !== null);
 
       if (ratingRecords.length === 0) {
         return { success: false, error: "No valid ratings to save" };
@@ -2028,10 +2076,14 @@ export const tournamentsAPI = {
       // Also update the global avg_rating on cat_name_options
       // Calculate new averages for each name
       for (const record of ratingRecords) {
+        const nameId = record.name_id;
+        if (nameId === undefined || nameId === null) {
+          continue;
+        }
         const { data: avgData } = await client
           .from("cat_name_ratings")
           .select("rating")
-          .eq("name_id", record.name_id);
+          .eq("name_id", String(nameId));
 
         if (avgData && avgData.length > 0) {
           const avgRating =
@@ -2041,7 +2093,7 @@ export const tournamentsAPI = {
           await client
             .from("cat_name_options")
             .update({ avg_rating: Math.round(avgRating) })
-            .eq("id", record.name_id);
+            .eq("id", String(nameId));
         }
       }
 
@@ -2102,17 +2154,18 @@ export const deleteName = async (nameId: string | number) => {
     const { data: nameWithHidden, error: hiddenError } = await client
       .from("cat_name_options")
       .select("is_hidden")
-      .eq("id", nameId)
+      .eq("id", String(nameId))
       .single();
 
     if (hiddenError) throw hiddenError;
-    if (!nameWithHidden?.is_hidden) {
+    if (!nameWithHidden || !(nameWithHidden as { is_hidden?: boolean }).is_hidden) {
       throw new Error("Cannot delete name that is not hidden");
     }
 
-    // Use transaction to delete
-    const { error } = await client.rpc("delete_name_cascade", {
-      target_name_id: nameId,
+    // Use transaction to delete - note: delete_name_cascade may not exist in all schemas
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (client as any).rpc("delete_name_cascade", {
+      target_name_id: String(nameId),
     });
 
     if (error) throw error;
@@ -2273,11 +2326,20 @@ export const adminAPI = {
       }
 
       // Fetch roles for these users
+      // Note: user_roles table may not exist in all schemas
       const userNames = users.map((u) => u.user_name);
-      const { data: roles, error: rolesError } = await client
-        .from("user_roles")
-        .select("user_name, role")
-        .in("user_name", userNames);
+      let roles: Array<{ user_name: string; role: string }> | null = null;
+      let rolesError: unknown = null;
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await (client as any).from("user_roles")
+          .select("user_name, role")
+          .in("user_name", userNames);
+        roles = result.data;
+        rolesError = result.error;
+      } catch (err) {
+        rolesError = err;
+      }
 
       if (rolesError) {
         console.error("Error fetching user roles:", rolesError);
@@ -2310,7 +2372,7 @@ export const adminAPI = {
 };
 
 // ===== SITE SETTINGS API =====
-export { siteSettingsAPI } from "./siteSettingsAPI";
+export { siteSettingsAPI } from "./legacy/siteSettingsAPI";
 
 // ===== CONVENIENCE EXPORTS =====
 

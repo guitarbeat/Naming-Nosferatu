@@ -144,7 +144,7 @@ function TournamentToolbar({
           totalCount={totalCount}
           categories={categories}
           showUserFilter={showUserFilter}
-          userOptions={userOptions}
+          userOptions={userOptions as Array<{ value: string; label: string }> | null | undefined}
           showSelectionFilter={showSelectionFilter}
           analysisMode={analysisMode}
           isHybrid={isHybrid}

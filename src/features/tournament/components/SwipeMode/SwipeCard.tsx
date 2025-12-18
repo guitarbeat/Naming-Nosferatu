@@ -19,11 +19,11 @@ interface SwipeCardProps {
   isLongPressing: boolean;
   showCatPictures: boolean;
   imageSrc: string | null | undefined;
-  isAdmin: boolean;
-  gestureRef: RefObject<HTMLDivElement> | ((instance: HTMLDivElement | null) => void) | null | undefined;
-  onDragStart: (e: React.MouseEvent | React.TouchEvent) => void;
-  onDragMove: (e: React.MouseEvent | React.TouchEvent) => void;
-  onDragEnd: (e: React.MouseEvent | React.TouchEvent) => void;
+  isAdmin?: boolean;
+  gestureRef?: RefObject<HTMLElement | null> | RefObject<HTMLDivElement> | ((instance: HTMLDivElement | null) => void) | null;
+  onDragStart?: (e: React.MouseEvent | React.TouchEvent) => void;
+  onDragMove?: (e: React.MouseEvent | React.TouchEvent) => void;
+  onDragEnd?: (e: React.MouseEvent | React.TouchEvent) => void;
   stackIndex?: number;
 }
 
@@ -80,7 +80,7 @@ function SwipeCard({
             ? "transform 240ms ease, opacity 240ms ease, filter 240ms ease"
             : "none",
         }}
-        ref={gestureRef}
+        ref={gestureRef as React.Ref<HTMLDivElement> | undefined}
         onMouseDown={onDragStart}
         onMouseMove={onDragMove}
         onMouseUp={onDragEnd}

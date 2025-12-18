@@ -34,8 +34,8 @@ function MetricExplainer({
   onClose,
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const triggerRef = React.useRef(null);
-  const popoverRef = React.useRef(null);
+  const triggerRef = React.useRef<HTMLDivElement | null>(null);
+  const popoverRef = React.useRef<HTMLDivElement | null>(null);
 
   // Use metricName to determine if we have a definition
   const hasDefinition = metricName && typeof metricName === "string";
@@ -49,18 +49,20 @@ function MetricExplainer({
   React.useEffect(() => {
     if (!isOpen) return;
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node | null;
       if (
         popoverRef.current &&
         triggerRef.current &&
-        !popoverRef.current.contains(event.target) &&
-        !triggerRef.current.contains(event.target)
+        target &&
+        !popoverRef.current.contains(target) &&
+        !triggerRef.current.contains(target)
       ) {
         handleClose();
       }
     };
 
-    const handleEscapeKey = (event) => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         handleClose();
       }
@@ -98,7 +100,7 @@ function MetricExplainer({
           }
         }}
         role="button"
-        tabIndex="0"
+        tabIndex={0}
         aria-expanded={isOpen}
         aria-label={`Show explanation for ${label}`}
         title={`Learn about ${label}`}
@@ -194,7 +196,7 @@ export function ColumnHeader({
 
       {/* Metric explanation icon */}
       {metricName && (
-        <MetricExplainer metricName={metricName} placement="bottom">
+        <MetricExplainer metricName={metricName} placement="bottom" onClose={() => {}}>
           <InfoIcon />
         </MetricExplainer>
       )}

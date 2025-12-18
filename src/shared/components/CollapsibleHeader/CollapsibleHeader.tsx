@@ -17,7 +17,7 @@ import "./CollapsibleHeader.css";
 /**
  * Chevron icon component - simple SVG for better control
  */
-const ChevronIcon = ({ isCollapsed }) => (
+const ChevronIcon = ({ isCollapsed }: { isCollapsed: boolean }) => (
   <svg
     className={`collapsible-chevron ${isCollapsed ? "collapsed" : ""}`}
     width="12"
@@ -56,6 +56,20 @@ ChevronIcon.propTypes = {
  * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
  * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
  */
+interface CollapsibleHeaderProps {
+  title: string;
+  icon?: string;
+  isCollapsed: boolean;
+  onToggle: () => void;
+  summary?: React.ReactNode;
+  actions?: React.ReactNode;
+  contentId?: string;
+  className?: string;
+  variant?: "default" | "compact";
+  toolbar?: React.ReactNode;
+  liquidGlass?: boolean | Record<string, unknown>;
+}
+
 export function CollapsibleHeader({
   title,
   icon,
@@ -68,7 +82,7 @@ export function CollapsibleHeader({
   variant = "default",
   toolbar,
   liquidGlass,
-}) {
+}: CollapsibleHeaderProps) {
   const shouldUseLiquidGlass = !!liquidGlass;
   const headerGlassId = useId();
   const resolvedContentId =
@@ -229,6 +243,20 @@ CollapsibleContent.propTypes = {
  * @param {React.ReactNode} props.toolbar - Optional toolbar to show below header when expanded
  * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
  */
+interface CollapsibleSectionProps {
+  title: string;
+  icon?: string;
+  summary?: React.ReactNode;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+  storageKey?: string | null;
+  defaultCollapsed?: boolean;
+  className?: string;
+  variant?: "default" | "compact";
+  toolbar?: React.ReactNode;
+  liquidGlass?: boolean | Record<string, unknown>;
+}
+
 export function CollapsibleSection({
   title,
   icon,
@@ -241,7 +269,7 @@ export function CollapsibleSection({
   variant = "default",
   toolbar,
   liquidGlass,
-}) {
+}: CollapsibleSectionProps) {
   const { isCollapsed, toggleCollapsed } = useCollapsible(
     storageKey,
     defaultCollapsed,

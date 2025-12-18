@@ -167,7 +167,7 @@ export function BumpChart({
   // Support both labels and timeLabels props for compatibility
   const chartLabels = labels || timeLabels;
   const [hoveredSeries, setHoveredSeries] = useState(null);
-  const svgRef = useRef(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
 
   const chartWidth = width;
   const chartHeight = height;
@@ -206,15 +206,16 @@ export function BumpChart({
     if (!animated || !svgRef.current) return;
 
     const svg = svgRef.current;
-    const lines = svg.querySelectorAll(".charts-bump-chart-line");
-    const points = svg.querySelectorAll(".charts-bump-chart-point");
-    const legends = svg.querySelectorAll(".charts-bump-chart-legend-item");
+    if (!svg) return;
+    const lines = svg.querySelectorAll(".charts-bump-chart-line") as NodeListOf<SVGPathElement>;
+    const points = svg.querySelectorAll(".charts-bump-chart-point") as NodeListOf<SVGCircleElement>;
+    const legends = svg.querySelectorAll(".charts-bump-chart-legend-item") as NodeListOf<HTMLElement>;
 
     // Animate lines
     lines.forEach((line, index) => {
       const length = line.getTotalLength();
-      line.style.strokeDasharray = length;
-      line.style.strokeDashoffset = length;
+      line.style.strokeDasharray = String(length);
+      line.style.strokeDashoffset = String(length);
 
       setTimeout(() => {
         line.style.transition = `stroke-dashoffset ${ANIMATION_CONFIG.lineDuration}ms ease-out`;

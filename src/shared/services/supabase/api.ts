@@ -15,6 +15,6 @@ export {
   getNamesWithDescriptions,
   getNamesWithUserRatings,
   getUserStats,
-} from "./legacy/supabaseClient";
+} from "./supabaseClient";
 
-export { imagesAPI } from "./legacy/supabaseClient";
+export { imagesAPI } from "./supabaseClient";

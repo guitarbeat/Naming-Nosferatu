@@ -150,12 +150,26 @@ const ToastItem = ({
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element|null} The toast container component or null if no toasts
  */
+interface ToastItem {
+  id: string;
+  message: string;
+  type: "success" | "error" | "info" | "warning";
+  duration: number;
+  autoDismiss: boolean;
+}
+
 const ToastContainer = ({
-  toasts = [],
+  toasts = [] as ToastItem[],
   removeToast,
   position = "top-right",
   maxToasts = 5,
   className = "",
+}: {
+  toasts?: ToastItem[];
+  removeToast?: (id: string) => void;
+  position?: string;
+  maxToasts?: number;
+  className?: string;
 }) => {
   const containerRef = useRef(null);
 

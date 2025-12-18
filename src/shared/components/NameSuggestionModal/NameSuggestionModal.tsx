@@ -27,9 +27,9 @@ export function NameSuggestionModal({ isOpen, onClose }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const successTimeoutRef = useRef(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMountedRef = useRef(true);
-  const nameInputRef = useRef(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
   const modalGlassId = useId();
 
   // * Get current user name from store for RLS context
@@ -103,13 +103,13 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 
       const nameValidation = validateCatName(trimmedName);
       if (!nameValidation.success) {
-        setError(nameValidation.error);
+        setError(nameValidation.error || "Invalid name");
         return;
       }
 
       const descriptionValidation = validateDescription(trimmedDescription);
       if (!descriptionValidation.success) {
-        setError(descriptionValidation.error);
+        setError(descriptionValidation.error || "Invalid description");
         return;
       }
 
@@ -123,9 +123,9 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         setIsSubmitting(true);
         // * Pass userName to set RLS context before inserting
         const res = await catNamesAPI.addName(
-          nameValidation.value,
-          descriptionValidation.value,
-          userName,
+          nameValidation.value || trimmedName,
+          descriptionValidation.value || trimmedDescription,
+          userName || "",
         );
 
         // * Check if component is still mounted before updating state
@@ -156,8 +156,9 @@ export function NameSuggestionModal({ isOpen, onClose }) {
         if (!isMountedRef.current) return;
 
         // * Show the actual error message from the API
+        const errorObj = err as { message?: string; error?: string } | null;
         const errorMessage =
-          err?.message || err?.error || "Failed to add name. Please try again.";
+          errorObj?.message || errorObj?.error || "Failed to add name. Please try again.";
         setError(errorMessage);
         ErrorManager.handleError(err, "Add Name Suggestion", {
           isRetryable: true,

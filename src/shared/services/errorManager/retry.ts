@@ -11,6 +11,12 @@ import { isRetryable } from "./errorFormatter";
  * * Circuit breaker implementation
  */
 export class CircuitBreaker {
+  failureThreshold: number;
+  resetTimeout: number;
+  failureCount: number;
+  lastFailureTime: number | null;
+  state: "CLOSED" | "OPEN" | "HALF_OPEN";
+
   constructor(failureThreshold = 5, resetTimeout = 60000) {
     this.failureThreshold = failureThreshold;
     this.resetTimeout = resetTimeout;
@@ -19,7 +25,7 @@ export class CircuitBreaker {
     this.state = "CLOSED"; // CLOSED, OPEN, HALF_OPEN
   }
 
-  async execute(fn) {
+  async execute<T>(fn: () => Promise<T>): Promise<T> {
     if (this.state === "OPEN") {
       if (this.shouldAttemptReset()) {
         this.state = "HALF_OPEN";
@@ -83,17 +89,29 @@ export class CircuitBreaker {
  * @param {Object} options - Retry options
  * @returns {Function} Wrapped function with retry logic
  */
-export function withRetry(operation, options = {}) {
+interface RetryOptions {
+  maxAttempts?: number;
+  baseDelay?: number;
+  backoffMultiplier?: number;
+  jitter?: number;
+  maxDelay?: number;
+  shouldRetry?: (error: unknown) => boolean;
+}
+
+export function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
+  operation: T,
+  options: RetryOptions = {}
+): T {
   const config = { ...RETRY_CONFIG, ...options };
   const {
     maxAttempts = config.maxAttempts,
     baseDelay = config.baseDelay,
     backoffMultiplier = config.backoffMultiplier,
     jitter = config.jitter,
-    shouldRetry = (error) => isRetryable(parseError(error), {}),
+    shouldRetry = (error: unknown) => isRetryable(parseError(error), {}),
   } = config;
 
-  return async (...args) => {
+  return (async (...args: Parameters<T>) => {
     let lastError;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -118,7 +136,7 @@ export function withRetry(operation, options = {}) {
     }
 
     throw lastError;
-  };
+  }) as T;
 }
 
 /**
@@ -127,13 +145,21 @@ export function withRetry(operation, options = {}) {
  * @param {Object} options - Options for retry and circuit breaker
  * @returns {Function} Wrapped function with retry and circuit breaker
  */
-export function createResilientFunction(fn, options = {}) {
+interface ResilientOptions extends RetryOptions {
+  failureThreshold?: number;
+  resetTimeout?: number;
+}
+
+export function createResilientFunction<T extends (...args: unknown[]) => Promise<unknown>>(
+  fn: T,
+  options: ResilientOptions = {}
+): T {
   const circuitBreaker = new CircuitBreaker(
     options.failureThreshold ?? 5,
     options.resetTimeout ?? 60000,
   );
 
-  return async (...args) => {
+  return (async (...args: Parameters<T>) => {
     return circuitBreaker.execute(() => withRetry(() => fn(...args), options));
-  };
+  }) as T;
 }

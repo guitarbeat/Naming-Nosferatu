@@ -10,10 +10,10 @@ import { isUserAdmin } from "../utils/authUtils";
  * @param {string} userName - User name to check
  * @returns {Object} { isAdmin, isLoading, error }
  */
-export function useAdminStatus(userName) {
+export function useAdminStatus(userName: string | null) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     let isMounted = true;

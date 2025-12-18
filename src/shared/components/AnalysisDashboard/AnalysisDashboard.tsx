@@ -44,19 +44,79 @@ export function AnalysisDashboard({
   isAdmin = false,
   onNameHidden,
 }) {
-  const [leaderboardData, setLeaderboardData] = useState(null);
-  const [selectionPopularity, setSelectionPopularity] = useState(null);
-  const [analyticsData, setAnalyticsData] = useState(null); // * Admin: full analytics
-  const [rankingHistory, setRankingHistory] = useState({
+  interface LeaderboardItem {
+    name_id: string;
+    name: string;
+    description: string | null;
+    category: string | null;
+    avg_rating: number;
+    total_ratings: number;
+    wins?: number;
+    losses?: number;
+    created_at: string | null;
+  }
+
+  interface SelectionPopularityItem {
+    name_id: string | number;
+    name: string;
+    times_selected: number;
+    created_at?: string | null;
+    date_submitted?: string | null;
+  }
+
+  interface RankingHistoryData {
+    data: Array<{
+      id: string;
+      name: string;
+      rankings: (number | null)[];
+      avgRating: number;
+      totalSelections: number;
+    }>;
+    timeLabels: string[];
+  }
+
+  interface PopularityAnalyticsItem {
+    name_id: string;
+    name: string;
+    description: string | null;
+    category: string | null;
+    times_selected: number;
+    unique_selectors: number;
+    avg_rating: number;
+    total_wins: number;
+    total_losses: number;
+    win_rate: number;
+    users_rated: number;
+    popularity_score: number;
+    created_at?: string | null;
+    date_submitted?: string | null;
+  }
+
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardItem[] | null>(null);
+  const [selectionPopularity, setSelectionPopularity] = useState<SelectionPopularityItem[] | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<PopularityAnalyticsItem[] | null>(null); // * Admin: full analytics
+  const [rankingHistory, setRankingHistory] = useState<RankingHistoryData>({
     data: [],
     timeLabels: [],
   });
   const [viewMode, setViewMode] = useState("chart"); // "chart" | "table" | "insights"
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState("rating"); // * Add sorting for admin
   const [sortDirection, setSortDirection] = useState("desc");
   const canHideNames = isAdmin && typeof onNameHidden === "function";
+
+  interface ConsolidatedName {
+    id: string;
+    name: string;
+    rating: number;
+    wins: number;
+    selected: number;
+    dateSubmitted: string | null;
+    insights?: string[];
+    ratingPercentile?: number;
+    selectedPercentile?: number;
+  }
 
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
@@ -65,9 +125,31 @@ export function AnalysisDashboard({
   );
 
   // * Get context for filtering (optional - only if available)
-  const toolbarContext = useNameManagementContextSafe();
-  const userFilter = toolbarContext?.filterConfig?.userFilter || "all";
-  const dateFilter = toolbarContext?.filterConfig?.dateFilter || "all";
+  const toolbarContext = useNameManagementContextSafe() as {
+    filterConfig?: { userFilter?: string; dateFilter?: string; selectionFilter?: string; [key: string]: unknown };
+    analysisMode?: boolean;
+    handleFilterChange?: (filters: Record<string, unknown>) => void;
+    setSearchTerm?: (term: string) => void;
+    setSelectedCategory?: (category: string | null) => void;
+    setSortBy?: (sortBy: string) => void;
+    setFilterStatus?: (status: string) => void;
+    setUserFilter?: (filter: string) => void;
+    setSelectionFilter?: (filter: string) => void;
+    setDateFilter?: (filter: string) => void;
+    setSortOrder?: (order: string) => void;
+    categories?: unknown[];
+    profileProps?: { showUserFilter?: boolean; selectionStats?: unknown; userOptions?: unknown[] };
+    selectedCount?: number;
+    showSelectedOnly?: boolean;
+    setShowSelectedOnly?: (show: boolean) => void;
+    isSwipeMode?: boolean;
+    setIsSwipeMode?: (mode: boolean) => void;
+    showCatPictures?: boolean;
+    setShowCatPictures?: (show: boolean) => void;
+  } | null;
+  const filterConfig = toolbarContext?.filterConfig;
+  const userFilter = filterConfig?.userFilter || "all";
+  const dateFilter = filterConfig?.dateFilter || "all";
 
   // * Map date filter to period count for ranking history
   const rankingPeriods = useMemo(() => {
@@ -105,8 +187,8 @@ export function AnalysisDashboard({
               historyPromise,
             ]);
           setAnalyticsData(analytics);
-          setLeaderboardData(leaderboard);
-          setSelectionPopularity(popularity);
+          setLeaderboardData(leaderboard as LeaderboardItem[]);
+          setSelectionPopularity(popularity as SelectionPopularityItem[]);
           setRankingHistory(history);
         } else {
           const [leaderboard, popularity, history] = await Promise.all([
@@ -114,8 +196,8 @@ export function AnalysisDashboard({
             catNamesAPI.getSelectionPopularity(null),
             historyPromise,
           ]);
-          setLeaderboardData(leaderboard);
-          setSelectionPopularity(popularity);
+          setLeaderboardData(leaderboard as LeaderboardItem[]);
+          setSelectionPopularity(popularity as SelectionPopularityItem[]);
           setRankingHistory(history);
         }
       } catch (err) {
@@ -148,18 +230,18 @@ export function AnalysisDashboard({
       }));
     }
 
-    const nameMap = new Map();
+    const nameMap = new Map<string, ConsolidatedName>();
 
     if (leaderboardData?.length) {
       leaderboardData.forEach((item) => {
-        if (item.avg_rating > 1500 || item.wins > 0) {
+        if (item.avg_rating > 1500 || (item.wins ?? 0) > 0) {
           nameMap.set(item.name_id, {
             id: item.name_id,
             name: item.name,
             rating: item.avg_rating || 1500,
-            wins: item.wins || 0,
+            wins: item.wins ?? 0,
             selected: 0,
-            dateSubmitted: item.created_at || item.date_submitted || null,
+            dateSubmitted: item.created_at || (item as { date_submitted?: string | null }).date_submitted || null,
           });
         }
       });
@@ -167,17 +249,17 @@ export function AnalysisDashboard({
 
     if (selectionPopularity?.length) {
       selectionPopularity.forEach((item) => {
-        const existing = nameMap.get(item.name_id);
+        const existing = nameMap.get(String(item.name_id));
         if (existing) {
           existing.selected = item.times_selected || 0;
         } else {
-          nameMap.set(item.name_id, {
-            id: item.name_id,
+          nameMap.set(String(item.name_id), {
+            id: String(item.name_id),
             name: item.name,
             rating: 1500,
             wins: 0,
             selected: item.times_selected || 0,
-            dateSubmitted: item.created_at || item.date_submitted || null,
+            dateSubmitted: item.created_at || (item as { date_submitted?: string | null }).date_submitted || null,
           });
         }
       });
@@ -260,8 +342,8 @@ export function AnalysisDashboard({
                 catNamesAPI.getLeaderboard(10),
                 catNamesAPI.getSelectionPopularity(10),
               ]);
-              setLeaderboardData(leaderboard);
-              setSelectionPopularity(popularity);
+              setLeaderboardData(leaderboard as LeaderboardItem[]);
+              setSelectionPopularity(popularity as SelectionPopularityItem[]);
             }
           } catch (err) {
             devError("Failed to refresh after hide:", err);
@@ -281,8 +363,8 @@ export function AnalysisDashboard({
             catNamesAPI.getLeaderboard(10),
             catNamesAPI.getSelectionPopularity(10),
           ]);
-          setLeaderboardData(leaderboard);
-          setSelectionPopularity(popularity);
+          setLeaderboardData(leaderboard as LeaderboardItem[]);
+          setSelectionPopularity(popularity as SelectionPopularityItem[]);
         }
       }
     },
@@ -297,14 +379,14 @@ export function AnalysisDashboard({
     ],
   );
 
-  const displayNames = useMemo(() => {
-    const filters = toolbarContext?.filterConfig || {};
-    let names = [];
+  const displayNames = useMemo((): ConsolidatedName[] => {
+    const filters = (toolbarContext?.filterConfig || {}) as { selectionFilter?: string; dateFilter?: string };
+    let names: ConsolidatedName[] = [];
 
     if (isAdmin && consolidatedNames.length > 0) {
       names = [...consolidatedNames];
     } else if (highlights?.topRated?.length) {
-      const highlightMap = new Map();
+      const highlightMap = new Map<string, ConsolidatedName>();
       highlights.topRated.forEach((item) => {
         highlightMap.set(item.id, {
           id: item.id,
@@ -312,6 +394,7 @@ export function AnalysisDashboard({
           rating: item.avg_rating || item.value || 1500,
           wins: 0,
           selected: 0,
+          dateSubmitted: null,
         });
       });
       if (highlights.mostWins?.length) {
@@ -368,7 +451,7 @@ export function AnalysisDashboard({
 
         names = names.filter((n) => {
           if (!n.dateSubmitted) return false;
-          const submittedDate = new Date(n.dateSubmitted);
+          const submittedDate = new Date(n.dateSubmitted as string);
           return submittedDate >= filterDate;
         });
       }
@@ -382,8 +465,8 @@ export function AnalysisDashboard({
 
         // Handle date sorting
         if (sortField === "dateSubmitted") {
-          aVal = aVal ? new Date(aVal).getTime() : 0;
-          bVal = bVal ? new Date(bVal).getTime() : 0;
+          aVal = aVal ? new Date(aVal as string).getTime() : 0;
+          bVal = bVal ? new Date(bVal as string).getTime() : 0;
         }
 
         // Handle string sorting
@@ -437,10 +520,10 @@ export function AnalysisDashboard({
   }, [displayNames]);
 
   // * Calculate percentiles and insights for each name
-  const namesWithInsights = useMemo(() => {
+  const namesWithInsights = useMemo((): Array<ConsolidatedName & { insights: string[]; ratingPercentile: number; selectedPercentile: number }> => {
     if (displayNames.length === 0) return [];
 
-    return displayNames.map((item) => {
+    return displayNames.map((item): ConsolidatedName & { insights: string[]; ratingPercentile: number; selectedPercentile: number } => {
       const ratingPercentile = calculatePercentile(
         item.rating,
         displayNames.map((n) => n.rating),
@@ -453,7 +536,7 @@ export function AnalysisDashboard({
       );
 
       // Determine insights/badges - focus on worst performers for removal
-      const insights = [];
+      const insights: string[] = [];
       // * Worst performers (for removal/hiding)
       if (ratingPercentile <= 10) insights.push("worst_rated");
       if (selectedPercentile <= 10 && item.selected === 0)
@@ -477,15 +560,15 @@ export function AnalysisDashboard({
         ...item,
         ratingPercentile,
         selectedPercentile,
-        insights,
-      };
+        insights: insights as string[],
+      } as ConsolidatedName & { insights: string[]; ratingPercentile: number; selectedPercentile: number };
     });
   }, [displayNames]);
 
   const insights = useMemo(() => {
     if (!summaryStats || displayNames.length === 0) return [];
 
-    const result = [];
+    const result: Array<{ type: string; message: string; icon: string }> = [];
 
     // * Focus on worst performers for removal/hiding
     const [worstRated] = displayNames
@@ -505,8 +588,8 @@ export function AnalysisDashboard({
         .filter((n) => n.dateSubmitted)
         .sort(
           (a, b) =>
-            new Date(a.dateSubmitted).getTime() -
-            new Date(b.dateSubmitted).getTime(),
+            new Date(a.dateSubmitted as string).getTime() -
+            new Date(b.dateSubmitted as string).getTime(),
         );
       if (oldestNeverSelected) {
         result.push({
@@ -562,50 +645,47 @@ export function AnalysisDashboard({
     toolbarContext && toolbarContext.analysisMode ? (
       <TournamentToolbar
         mode="hybrid"
-        filters={toolbarContext.filterConfig}
+        filters={toolbarContext.filterConfig as { searchTerm?: string; category?: string; sortBy?: string; filterStatus?: string; userFilter?: string; selectionFilter?: string; sortOrder?: string; dateFilter?: string }}
         onFilterChange={
-          toolbarContext.handleFilterChange ||
-          ((newFilters) => {
+          (toolbarContext.handleFilterChange as ((name: string, value: string) => void) | undefined) ||
+          ((name: string, value: string) => {
             // * Update context filters
-            if (newFilters.searchTerm !== undefined) {
-              toolbarContext.setSearchTerm(newFilters.searchTerm || "");
+            if (name === "searchTerm" && toolbarContext.setSearchTerm) {
+              toolbarContext.setSearchTerm(value);
             }
-            if (newFilters.category !== undefined) {
-              toolbarContext.setSelectedCategory(newFilters.category || null);
+            if (name === "category" && toolbarContext.setSelectedCategory) {
+              toolbarContext.setSelectedCategory(value || null);
             }
-            if (newFilters.sortBy !== undefined) {
-              toolbarContext.setSortBy(newFilters.sortBy || "alphabetical");
+            if (name === "sortBy" && toolbarContext.setSortBy) {
+              toolbarContext.setSortBy(value || "alphabetical");
             }
-            if (newFilters.filterStatus !== undefined) {
-              toolbarContext.setFilterStatus(newFilters.filterStatus);
+            if (name === "filterStatus" && toolbarContext.setFilterStatus) {
+              toolbarContext.setFilterStatus(value);
             }
-            if (newFilters.userFilter !== undefined) {
-              toolbarContext.setUserFilter(newFilters.userFilter);
+            if (name === "userFilter" && toolbarContext.setUserFilter) {
+              toolbarContext.setUserFilter(value);
             }
-            if (newFilters.selectionFilter !== undefined) {
-              toolbarContext.setSelectionFilter(newFilters.selectionFilter);
+            if (name === "selectionFilter" && toolbarContext.setSelectionFilter) {
+              toolbarContext.setSelectionFilter(value);
             }
-            if (newFilters.dateFilter !== undefined) {
-              toolbarContext.setDateFilter(newFilters.dateFilter);
+            if (name === "dateFilter" && toolbarContext.setDateFilter) {
+              toolbarContext.setDateFilter(value);
             }
-            if (newFilters.sortOrder !== undefined) {
-              toolbarContext.setSortOrder(newFilters.sortOrder);
+            if (name === "sortOrder" && toolbarContext.setSortOrder) {
+              toolbarContext.setSortOrder(value);
             }
           })
         }
-        categories={toolbarContext.categories || []}
+        categories={(toolbarContext.categories || []) as string[]}
         showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
         showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
-        userOptions={toolbarContext.profileProps?.userOptions || []}
+        userOptions={(toolbarContext.profileProps?.userOptions || []) as Array<{ value: string; label: string }> | null}
         filteredCount={displayNames.length}
         totalCount={consolidatedNames.length}
-        selectedCount={toolbarContext.selectedCount || 0}
-        showSelectedOnly={toolbarContext.showSelectedOnly || false}
-        onToggleShowSelected={toolbarContext.setShowSelectedOnly}
         isSwipeMode={toolbarContext.isSwipeMode || false}
-        onToggleSwipeMode={toolbarContext.setIsSwipeMode}
+        onToggleSwipeMode={toolbarContext.setIsSwipeMode ? () => toolbarContext.setIsSwipeMode?.(!toolbarContext.isSwipeMode) : undefined}
         showCatPictures={toolbarContext.showCatPictures || false}
-        onToggleCatPictures={toolbarContext.setShowCatPictures}
+        onToggleCatPictures={toolbarContext.setShowCatPictures ? () => toolbarContext.setShowCatPictures?.(!toolbarContext.showCatPictures) : undefined}
         analysisMode={true}
       />
     ) : null;
@@ -679,8 +759,9 @@ export function AnalysisDashboard({
               <div className="analysis-chart-container">
                 <BumpChart
                   data={filteredRankingData}
+                  labels={rankingHistory.timeLabels}
                   timeLabels={rankingHistory.timeLabels}
-                  maxDisplayed={displayNames.length}
+                  title=""
                   height={320}
                   showLegend={true}
                 />
@@ -965,7 +1046,7 @@ export function AnalysisDashboard({
                             </td>
                             {isAdmin && (
                               <td className="top-names-insights-cell">
-                                <PerformanceBadges types={item.insights} />
+                                <PerformanceBadges types={Array.isArray(item.insights) ? item.insights as string[] : []} />
                               </td>
                             )}
                             <td className="top-names-date-cell">

@@ -53,12 +53,12 @@ function LiquidGlass({
   style = {},
   ...props
 }) {
-  const containerRef = useRef(null);
-  const svgRef = useRef(null);
-  const filterRef = useRef(null);
-  const displacementImageRef = useRef(null);
-  const resizeTimeoutRef = useRef(null);
-  const isInitialMountRef = useRef(true);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const filterRef = useRef<SVGFilterElement | null>(null);
+  const displacementImageRef = useRef<HTMLDivElement | null>(null);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialMountRef = useRef<boolean>(true);
 
   // * Validate dimensions to prevent errors - memoized to avoid recalculation
   const validWidth = useMemo(() => Math.max(1, width), [width]);
@@ -128,24 +128,25 @@ function LiquidGlass({
     `;
 
     try {
+      if (!displacementImageRef.current || !filterRef.current) return;
       displacementImageRef.current.innerHTML = svgContent;
       const svgEl = displacementImageRef.current.querySelector(
         ".displacement-image",
-      );
+      ) as SVGElement | null;
       if (svgEl) {
         const serialized = new XMLSerializer().serializeToString(svgEl);
         const encoded = encodeURIComponent(serialized);
         const dataUri = `data:image/svg+xml,${encoded}`;
 
         // * Update feImage href
-        const feImage = filterRef.current.querySelector("feImage");
+        const feImage = filterRef.current.querySelector("feImage") as SVGFEImageElement | null;
         if (feImage) {
           feImage.setAttribute("href", dataUri);
         }
 
         // * Update all feDisplacementMap elements with x/y channel selectors (matching example pattern)
         const allDisplacementMaps =
-          filterRef.current.querySelectorAll("feDisplacementMap");
+          filterRef.current.querySelectorAll("feDisplacementMap") as NodeListOf<SVGFEDisplacementMapElement>;
         allDisplacementMaps.forEach((map) => {
           map.setAttribute("xChannelSelector", xChannel);
           map.setAttribute("yChannelSelector", yChannel);
@@ -180,29 +181,35 @@ function LiquidGlass({
     buildDisplacementImage();
 
     // * Update CSS variables
-    containerRef.current.style.setProperty("--width", `${validWidth}`);
-    containerRef.current.style.setProperty("--height", `${validHeight}`);
-    containerRef.current.style.setProperty("--radius", `${pillRadius}`);
-    containerRef.current.style.setProperty("--frost", `${frost}`);
-    containerRef.current.style.setProperty("--output-blur", `${outputBlur}`);
-    containerRef.current.style.setProperty("--saturation", `${saturation}`);
-    containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
+    if (containerRef.current) {
+      containerRef.current.style.setProperty("--width", `${validWidth}`);
+      containerRef.current.style.setProperty("--height", `${validHeight}`);
+      containerRef.current.style.setProperty("--radius", `${pillRadius}`);
+      containerRef.current.style.setProperty("--frost", `${frost}`);
+      containerRef.current.style.setProperty("--output-blur", `${outputBlur}`);
+      containerRef.current.style.setProperty("--saturation", `${saturation}`);
+      containerRef.current.style.setProperty("--filter-id", `url(#${id})`);
+    }
 
     // * Apply backdrop-filter with browser compatibility check
-    const backdropFilterValue = supportsBackdropFilterUrl
-      ? `url(#${id}) saturate(${saturation})` // * Chromium browsers: use url() filter for liquid glass effect
-      : `blur(8px) saturate(${saturation})`; // * Fallback for Firefox/WebKit: use blur + saturate
-    containerRef.current.style.setProperty(
-      "--backdrop-filter",
-      backdropFilterValue,
-    );
-    containerRef.current.style.backdropFilter = backdropFilterValue;
+    if (containerRef.current) {
+      const backdropFilterValue = supportsBackdropFilterUrl
+        ? `url(#${id}) saturate(${saturation})` // * Chromium browsers: use url() filter for liquid glass effect
+        : `blur(8px) saturate(${saturation})`; // * Fallback for Firefox/WebKit: use blur + saturate
+      containerRef.current.style.setProperty(
+        "--backdrop-filter",
+        backdropFilterValue,
+      );
+      containerRef.current.style.backdropFilter = backdropFilterValue;
+    }
+
+    if (!filterRef.current) return;
 
     // * Set base scale on all feDisplacementMap elements first (matching example pattern)
     const allDisplacementMaps =
-      filterRef.current.querySelectorAll("feDisplacementMap");
+      filterRef.current.querySelectorAll("feDisplacementMap") as NodeListOf<SVGFEDisplacementMapElement>;
     allDisplacementMaps.forEach((map) => {
-      map.setAttribute("scale", scale);
+      map.setAttribute("scale", String(scale));
     });
 
     // * Update chromatic aberration displacement scales using unique IDs
@@ -214,18 +221,18 @@ function LiquidGlass({
     ];
 
     channels.forEach(({ id: channelId, scale: channelScale }) => {
-      const channel = filterRef.current.querySelector(`#${channelId}`);
+      const channel = filterRef.current?.querySelector(`#${channelId}`) as SVGFEDisplacementMapElement | null;
       if (channel) {
-        channel.setAttribute("scale", channelScale);
+        channel.setAttribute("scale", String(channelScale));
       }
     });
 
     // * Update output blur (softens the chromatic aberration)
     const feGaussianBlur = filterRef.current.querySelector(
       `#${feGaussianBlurId}`,
-    );
+    ) as SVGFEGaussianBlurElement | null;
     if (feGaussianBlur) {
-      feGaussianBlur.setAttribute("stdDeviation", outputBlur);
+      feGaussianBlur.setAttribute("stdDeviation", String(outputBlur));
     }
   }, [
     buildDisplacementImage,
@@ -277,7 +284,7 @@ function LiquidGlass({
     if (!containerRef.current || !svgRef.current) return;
 
     // * Get filter element by ID since we can't use ref directly on SVG filter
-    const filterElement = svgRef.current.querySelector(`#${id}`);
+    const filterElement = svgRef.current.querySelector(`#${id}`) as SVGFilterElement | null;
     if (!filterElement) return;
 
     filterRef.current = filterElement;
@@ -340,10 +347,10 @@ function LiquidGlass({
       ref={containerRef}
       className={`liquid-glass ${className}`}
       style={{
-        width: style.width || `${validWidth}px`,
-        height: style.height || `${validHeight}px`,
-        ...style,
-      }}
+        width: (style as { width?: string | number })?.width || `${validWidth}px`,
+        height: (style as { height?: string | number })?.height || `${validHeight}px`,
+        ...(style as React.CSSProperties),
+      } as React.CSSProperties}
       {...props}
     >
       {children}

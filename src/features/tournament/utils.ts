@@ -30,8 +30,8 @@ export function getRandomCatImage(id: string | number, imageList: string[] = [])
  * @returns {string[]}
  */
 export function deduplicateImages(images: string[] = []): string[] {
-  const seen = new Set();
-  const unique = [];
+  const seen = new Set<string>();
+  const unique: string[] = [];
 
   for (const image of images) {
     if (typeof image !== "string" || image.length === 0) {

@@ -365,16 +365,18 @@ function CardName({
                   { key: "totalMatches", label: "Total Matches" },
                   { key: "winRate", label: "Win Rate", suffix: "%" },
                 ].map(
-                  ({ key, label, suffix }) =>
-                    metadata[key] !== undefined && (
+                  ({ key, label, suffix }) => {
+                    const value = metadata[key];
+                    return value !== undefined && value !== null ? (
                       <div key={key} className={styles.tooltipStat}>
                         <span className={styles.tooltipLabel}>{label}</span>
                         <span className={styles.tooltipValue}>
-                          {metadata[key]}
+                          {String(value)}
                           {suffix}
                         </span>
                       </div>
-                    ),
+                    ) : null;
+                  },
                 )}
               </div>
 

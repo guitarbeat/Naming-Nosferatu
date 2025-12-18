@@ -240,11 +240,8 @@ function SwipeableNameCards({
             isLongPressing={false}
             showCatPictures={showCatPictures}
             imageSrc={nextImageSrc}
-            isAdmin={isAdmin}
+            isAdmin={isAdmin ?? false}
             gestureRef={null}
-            onDragStart={undefined}
-            onDragMove={undefined}
-            onDragEnd={undefined}
             stackIndex={1}
           />
         ) : null}
@@ -260,7 +257,7 @@ function SwipeableNameCards({
           isLongPressing={isLongPressing}
           showCatPictures={showCatPictures}
           imageSrc={imageSrc}
-          isAdmin={isAdmin}
+          isAdmin={isAdmin ?? false}
           gestureRef={gestureRef}
           onDragStart={handleDragStart}
           onDragMove={handleDragMove}

@@ -64,10 +64,32 @@ export function useTournamentState(
   }, [names, namesIdentity]);
 
   // * Tournament hook
+  // Convert NameItem[] to Name[] and Record<string, number> to Record<string, { rating: number; wins?: number; losses?: number }>
+  const convertedNames: Array<{ id: string; name: string }> = randomizedNames.map((n) => ({
+    id: String(n.id || n.name || ""),
+    name: String(n.name || ""),
+  }));
+  const convertedRatings: Record<string, { rating: number; wins?: number; losses?: number }> = existingRatings
+    ? Object.fromEntries(
+        Object.entries(existingRatings).map(([key, value]) => [
+          key,
+          typeof value === "number" ? { rating: value } : value,
+        ]),
+      )
+    : {};
+  const convertedOnComplete = onComplete
+    ? (results: Array<{ name: string; id: string; rating: number; wins: number; losses: number }>) => {
+        const ratings = Object.fromEntries(
+          results.map((r) => [r.id, r.rating]),
+        );
+        onComplete(ratings);
+      }
+    : undefined;
+
   const tournament = useTournament({
-    names: randomizedNames,
-    existingRatings,
-    onComplete,
+    names: convertedNames,
+    existingRatings: convertedRatings,
+    onComplete: convertedOnComplete,
   });
 
   // * Reset state on error

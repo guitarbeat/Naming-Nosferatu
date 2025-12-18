@@ -183,7 +183,12 @@ function Bracket({ matches }) {
       const maxRound = Math.max(
         ...matches.map((m) => (typeof m.round === "number" ? m.round : 1)),
       );
-      const grouped = Array.from({ length: maxRound }, () => []);
+      interface Match {
+        id?: number;
+        round?: number;
+        [key: string]: unknown;
+      }
+      const grouped: Match[][] = Array.from({ length: maxRound }, () => []);
       matches.forEach((m) => {
         const idx = Math.max(1, Number(m.round) || 1) - 1;
         grouped[idx].push(m);
@@ -196,10 +201,15 @@ function Bracket({ matches }) {
     }
 
     // Fallback: heuristic grouping based on match id using log2
+    interface Match {
+      id?: number;
+      round?: number;
+      [key: string]: unknown;
+    }
     const totalRounds =
       matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
-    const rounds = Array(totalRounds)
-      .fill()
+    const rounds: Match[][] = Array(totalRounds)
+      .fill(null)
       .map(() => []);
 
     matches.forEach((match) => {

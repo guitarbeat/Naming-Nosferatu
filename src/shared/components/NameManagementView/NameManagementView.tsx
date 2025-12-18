@@ -17,18 +17,90 @@ import Loading from "../Loading/Loading";
 import ErrorComponent from "../Error/Error";
 import Button from "../Button/Button";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
+
+interface TournamentFilters {
+  searchTerm?: string;
+  category?: string;
+  sortBy?: string;
+  filterStatus?: string;
+  userFilter?: string;
+  selectionFilter?: string;
+  sortOrder?: string;
+  dateFilter?: string;
+}
 import { NameGrid } from "../NameGrid/NameGrid";
 import { AdminAnalytics } from "../AdminAnalytics";
 import { useNameData } from "./useNameData";
 import { useNameSelection } from "./useNameSelection";
+
+interface Name {
+  id: string;
+  name: string;
+  [key: string]: unknown;
+}
 import useAppStore from "../../../core/store/useAppStore";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { exportTournamentResultsToCSV } from "../../utils/exportUtils";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./NameManagementView.module.css";
 
+interface NameItem {
+  id: string | number;
+  name: string;
+  description?: string;
+  avg_rating?: number;
+  popularity_score?: number;
+  [key: string]: unknown;
+}
+
 // * Context for providing data to extensions
-const NameManagementContext = createContext(null);
+interface NameManagementContextType {
+  names: unknown[];
+  selectedNames: unknown;
+  toggleName: (nameOrId: unknown) => void;
+  toggleNameById: (nameId: string, selected: boolean) => void;
+  toggleNamesByIds: (nameIds: string[]) => void;
+  selectedCount: number;
+  hiddenIds: Set<string>;
+  filterConfig: Record<string, unknown>;
+  refetch: () => void;
+  setNames: (names: unknown[]) => void;
+  setHiddenIds: (ids: Set<string>) => void;
+  showSelectedOnly: boolean;
+  setShowSelectedOnly: (value: boolean) => void;
+  selectedCategory: string | null;
+  setSelectedCategory: (value: string | null) => void;
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+  sortBy: string;
+  setSortBy: (value: string) => void;
+  isSwipeMode: boolean;
+  setIsSwipeMode: (value: boolean) => void;
+  showCatPictures: boolean;
+  setShowCatPictures: (value: boolean) => void;
+  filterStatus: string;
+  setFilterStatus: (value: string) => void;
+  userFilter: string;
+  setUserFilter: (value: string) => void;
+  sortOrder: string;
+  setSortOrder: (value: string) => void;
+  selectionFilter: string;
+  setSelectionFilter: (value: string) => void;
+  dateFilter: string;
+  setDateFilter: (value: string) => void;
+  analysisMode: boolean;
+  setAnalysisMode: (value: boolean) => void;
+  categories: string[];
+  filteredCount: number;
+  totalCount: number;
+  profileProps: Record<string, unknown>;
+  tournamentProps: Record<string, unknown>;
+  mode: string;
+  handleFilterChange: (name: string, value: string) => void;
+  onStartTournament?: (selectedNames: unknown) => void;
+  [key: string]: unknown;
+}
+const NameManagementContext = createContext<NameManagementContextType | null>(null);
 
 /**
  * Safe hook to get NameManagementContext - returns null if not available
@@ -64,15 +136,56 @@ export function useNameManagementContextSafe() {
  * @param {Object} props.profileProps.selectionStats - Selection statistics
  * @param {Object} props.profileProps.highlights - Profile highlights
  */
+interface NameManagementViewExtensions {
+  header?: React.ReactNode | (() => React.ReactNode);
+  dashboard?: React.ReactNode | React.ComponentType | (() => React.ReactNode);
+  bulkActions?: React.ReactNode | React.ComponentType<{ onExport?: () => void }>;
+  navbar?: React.ReactNode | (() => React.ReactNode);
+  lightbox?: React.ReactNode | (() => React.ReactNode);
+  nameSuggestion?: React.ReactNode | (() => React.ReactNode);
+  nameGrid?: React.ReactNode | React.ReactElement | (() => React.ReactNode);
+}
+
+interface NameManagementViewTournamentProps {
+  categories?: string[];
+  SwipeableCards?: React.ComponentType;
+  isAdmin?: boolean;
+  imageList?: string[];
+  gridClassName?: string;
+}
+
+interface NameManagementViewProfileProps {
+  onToggleVisibility?: (id: string | number) => void;
+  onDelete?: (name: NameItem) => void;
+  hiddenIds?: Set<string>;
+  stats?: Record<string, unknown>;
+  selectionStats?: Record<string, unknown>;
+  highlights?: Record<string, unknown>;
+  isAdmin?: boolean;
+  showUserFilter?: boolean;
+  userOptions?: Array<{ value: string; label: string }>;
+  userFilter?: string;
+  setUserFilter?: (value: string) => void;
+}
+
 export function NameManagementView({
   mode = "tournament",
   userName,
   onStartTournament,
   onOpenSuggestName = () => {},
-  extensions = {},
-  tournamentProps = {},
-  profileProps = {},
+  extensions = {} as NameManagementViewExtensions,
+  tournamentProps = {} as NameManagementViewTournamentProps,
+  profileProps = {} as NameManagementViewProfileProps,
   className = "",
+}: {
+  mode?: "tournament" | "profile";
+  userName: string;
+  onStartTournament?: (selectedNames: unknown) => void;
+  onOpenSuggestName?: () => void;
+  extensions?: NameManagementViewExtensions;
+  tournamentProps?: NameManagementViewTournamentProps;
+  profileProps?: NameManagementViewProfileProps;
+  className?: string;
 }) {
   // * Unified data fetching
   const {
@@ -83,7 +196,7 @@ export function NameManagementView({
     refetch,
     setNames,
     setHiddenIds,
-  } = useNameData({ userName, mode });
+  } = useNameData({ userName, mode: mode as "tournament" | "profile" });
 
   // * Unified selection management
   const {
@@ -95,7 +208,7 @@ export function NameManagementView({
     selectedCount,
   } = useNameSelection({
     names,
-    mode,
+    mode: mode as "tournament" | "profile",
     userName,
   });
 
@@ -317,16 +430,16 @@ export function NameManagementView({
   // * Context value for extensions
   const contextValue = useMemo(
     () => ({
-      names,
-      selectedNames,
-      toggleName,
+      names: names as unknown[],
+      selectedNames: selectedNames as unknown,
+      toggleName: toggleName as (nameOrId: unknown) => void,
       toggleNameById,
       toggleNamesByIds,
       selectedCount,
       hiddenIds,
-      filterConfig,
+      filterConfig: filterConfig as Record<string, unknown>,
       refetch,
-      setNames,
+      setNames: setNames as (names: unknown[]) => void,
       setHiddenIds,
       // Tournament-specific
       showSelectedOnly,
@@ -344,8 +457,8 @@ export function NameManagementView({
       // Profile-specific
       filterStatus,
       setFilterStatus,
-      userFilter,
-      setUserFilter,
+      userFilter: userFilter as string,
+      setUserFilter: setUserFilter as (value: string) => void,
       sortOrder,
       setSortOrder,
       selectionFilter,
@@ -359,12 +472,12 @@ export function NameManagementView({
       categories: tournamentProps.categories || [],
       filteredCount,
       totalCount: names.length,
-      profileProps,
-      tournamentProps,
+      profileProps: profileProps as Record<string, unknown>,
+      tournamentProps: tournamentProps as Record<string, unknown>,
       mode,
       handleFilterChange,
       onStartTournament,
-    }),
+    } as NameManagementContextType),
     [
       names,
       selectedNames,
@@ -415,10 +528,10 @@ export function NameManagementView({
   const tournamentFilterConfig = useMemo(
     () => ({
       searchTerm,
-      category: selectedCategory,
+      category: selectedCategory || undefined,
       sortBy,
       sortOrder,
-    }),
+    } as { searchTerm?: string; category?: string; sortBy?: string; sortOrder?: string }),
     [searchTerm, selectedCategory, sortBy, sortOrder],
   );
 
@@ -434,7 +547,8 @@ export function NameManagementView({
         <div className={styles.header}>
           <h2>Error Loading Names</h2>
           <ErrorComponent
-            errors={errors.current ? [errors.current] : []}
+            variant="list"
+            error={errors.current ? [errors.current] : []}
             onRetry={() => window.location.reload()}
             onDismiss={clearError}
             onClearAll={clearErrors}
@@ -468,17 +582,14 @@ export function NameManagementView({
       {mode === "tournament" && !analysisMode && (
         <TournamentToolbar
           mode="tournament"
-          filters={tournamentFilterConfig}
-          onFilterChange={handleFilterChange}
+          filters={tournamentFilterConfig as TournamentFilters}
+          onFilterChange={handleFilterChange as (name: string, value: string) => void}
           categories={categories}
           showUserFilter={profileProps.showUserFilter}
           showSelectionFilter={!!profileProps.selectionStats}
-          userOptions={profileProps.userOptions}
+          userOptions={profileProps.userOptions as Array<{ value: string; label: string }> | null | undefined}
           filteredCount={names.length}
           totalCount={names.length}
-          selectedCount={selectedCount}
-          showSelectedOnly={showSelectedOnly}
-          onToggleShowSelected={() => setShowSelectedOnly(!showSelectedOnly)}
           isSwipeMode={isSwipeMode}
           onToggleSwipeMode={() => setIsSwipeMode(!isSwipeMode)}
           showCatPictures={showCatPictures}
@@ -525,7 +636,7 @@ export function NameManagementView({
                 {React.isValidElement(extensions.dashboard)
                   ? extensions.dashboard
                   : typeof extensions.dashboard === "function"
-                    ? React.createElement(extensions.dashboard)
+                    ? React.createElement(extensions.dashboard as React.ComponentType)
                     : extensions.dashboard}
               </section>
             )}
@@ -537,7 +648,7 @@ export function NameManagementView({
               aria-label="Admin analytics"
               data-section="admin-analytics"
             >
-              <AdminAnalytics isAdmin={tournamentProps.isAdmin} />
+              <AdminAnalytics isAdmin={tournamentProps.isAdmin || false} />
             </section>
           )}
 
@@ -550,13 +661,13 @@ export function NameManagementView({
               data-section="filters"
             >
               <TournamentToolbar
-                mode={mode}
-                filters={filterConfig}
-                onFilterChange={handleFilterChange}
+                mode={mode as "tournament" | "profile" | "hybrid"}
+                filters={filterConfig as TournamentFilters}
+                onFilterChange={handleFilterChange as (name: string, value: string) => void}
                 categories={categories}
                 showUserFilter={profileProps.showUserFilter}
                 showSelectionFilter={!!profileProps.selectionStats}
-                userOptions={profileProps.userOptions}
+                userOptions={profileProps.userOptions as Array<{ value: string; label: string }> | null | undefined}
                 filteredCount={filteredCount}
                 totalCount={names.length}
               />
@@ -671,8 +782,15 @@ export function NameManagementView({
               <NameGrid
                 names={displayNames}
                 selectedNames={selectedNames}
-                onToggleName={toggleName}
-                filters={filterConfig}
+                onToggleName={(name: NameItem) => {
+                  const nameObj: Name = {
+                    ...name,
+                    id: String(name.id),
+                    name: name.name || "",
+                  };
+                  toggleName(nameObj);
+                }}
+                filters={filterConfig as { searchTerm?: string; category?: string; sortBy?: string; sortOrder?: "asc" | "desc"; filterStatus?: "visible" | "hidden" | "all" }}
                 isAdmin={
                   mode === "profile" || (mode === "tournament" && analysisMode)
                     ? profileProps.isAdmin
@@ -688,7 +806,7 @@ export function NameManagementView({
                 onToggleVisibility={profileProps.onToggleVisibility}
                 onDelete={profileProps.onDelete}
                 className={
-                  mode === "tournament" ? tournamentProps.gridClassName : ""
+                  mode === "tournament" ? tournamentProps.gridClassName || "" : ""
                 }
               />
             ) : null}

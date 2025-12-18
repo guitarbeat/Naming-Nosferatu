@@ -171,8 +171,8 @@ export function useNameData({
 
         const rawData = await getNamesWithUserRatings(userName);
 
-        namesData = rawData.map(
-          (name: { id: string; name: string; [key: string]: unknown }) => ({
+        namesData = (rawData as Array<{ id: string; name: string; [key: string]: unknown }>).map(
+          (name) => ({
             ...name,
             owner: userName,
           }),

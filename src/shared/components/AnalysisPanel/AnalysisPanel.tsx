@@ -19,6 +19,15 @@ import { AnalysisHeader } from "./components/AnalysisHeader";
  * @param {React.ReactNode} props.toolbar - Optional toolbar component (e.g., TournamentToolbar)
  * @param {string} props.className - Additional CSS classes
  */
+interface AnalysisPanelProps {
+  children: React.ReactNode;
+  title?: string;
+  actions?: React.ReactNode;
+  showHeader?: boolean;
+  toolbar?: React.ReactNode;
+  className?: string;
+}
+
 export function AnalysisPanel({
   children,
   title,
@@ -26,10 +35,10 @@ export function AnalysisPanel({
   showHeader = true,
   toolbar,
   className = "",
-}) {
+}: AnalysisPanelProps) {
   return (
     <div className={`analysis-panel ${className}`}>
-      {showHeader && <AnalysisHeader title={title} actions={actions} />}
+      {showHeader && <AnalysisHeader title={title} actions={actions} showBadge={false} collapsible={false} />}
       {toolbar && <div className="analysis-panel-toolbar">{toolbar}</div>}
       {children}
     </div>

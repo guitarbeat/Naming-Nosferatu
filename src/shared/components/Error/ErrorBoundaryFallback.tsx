@@ -224,7 +224,7 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
     const errorMsg = diagnosticInfo.errorMessage.toLowerCase();
     const errorType = diagnosticInfo.errorType?.toLowerCase() || "";
     let fixCategory = "RUNTIME_ERROR";
-    let suggestedFixes = [];
+    let suggestedFixes: string[] = [];
 
     if (
       errorType.includes("network") ||
@@ -316,7 +316,7 @@ ${
     ? (diagnosticInfo.stackFrames as Array<{ file?: string; line?: number; column?: number; functionName?: string; function?: string }>)
         .map((frame, idx) =>
           frame
-            ? `${idx + 1}. **${frame.functionName || frame.function || "anonymous"}** in \`${frame.file?.split("/").pop() || "unknown"}\` (Line ${frame.line || "?"}, Col ${frame.column || frame.col || "?"})\n   Full path: \`${frame.file || "unknown"}\``
+            ? `${idx + 1}. **${frame.functionName || frame.function || "anonymous"}** in \`${frame.file?.split("/").pop() || "unknown"}\` (Line ${frame.line || "?"}, Col ${frame.column || "?"})\n   Full path: \`${frame.file || "unknown"}\``
             : "",
         )
         .filter(Boolean)

@@ -5,10 +5,15 @@ import Loading from "../Loading/Loading";
 import Login from "../../../features/auth/Login";
 import { useRouting } from "../../core/hooks/useRouting";
 // * Import components directly to maintain stability
+// * Import components directly to maintain stability
+// Note: These are .jsx files, so we need to import them without extensions
+// @ts-expect-error - Tournament is a .jsx file
 import Tournament from "../../features/tournament/Tournament";
+// @ts-expect-error - TournamentSetup is a .jsx file
 import TournamentSetup from "../../features/tournament/TournamentSetup";
 
 // * Lazy load heavy/hidden components
+// @ts-expect-error - Dashboard is a .jsx file
 const Dashboard = lazy(() => import("../../features/tournament/Dashboard"));
 const BongoPage = lazy(() => import("../../features/bongo/BongoPage"));
 
@@ -160,7 +165,7 @@ export default function ViewRouter({
   }
 
   return (
-    <Error variant="boundary">
+    <Error variant="boundary" error={null}>
       <Tournament
         names={tournament.names}
         existingRatings={Object.fromEntries(

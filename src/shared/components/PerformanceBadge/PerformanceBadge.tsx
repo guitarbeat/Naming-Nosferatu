@@ -19,12 +19,19 @@ import "./TrendIndicator.css";
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element}
  */
+interface PerformanceBadgeProps {
+  type: string;
+  label?: string;
+  variant?: "sm" | "md";
+  className?: string;
+}
+
 export function PerformanceBadge({
   type,
   label,
   variant = "md",
   className = "",
-}) {
+}: PerformanceBadgeProps) {
   const category = getInsightCategory(type);
 
   if (!category && !label) {

@@ -11,18 +11,33 @@ import { useState, useCallback } from "react";
  * @param {number} options.defaultDuration - Default toast duration in ms (default: 5000)
  * @returns {Object} Toast state and handlers
  */
-export function useToast(options = {}) {
+interface ToastItem {
+  id: string;
+  message: string;
+  type: "success" | "error" | "info" | "warning";
+  duration: number;
+  autoDismiss: boolean;
+}
+
+interface UseToastOptions {
+  maxToasts?: number;
+  defaultDuration?: number;
+}
+
+export function useToast(options: UseToastOptions = {}) {
   const { maxToasts = 5, defaultDuration = 5000 } = options;
 
-  const [toasts, setToasts] = useState([]);
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const showToast = useCallback(
-    (toast) => {
+    (toast: Partial<ToastItem>) => {
       const id = Math.random().toString(36).substr(2, 9);
-      const newToast = {
+      const newToast: ToastItem = {
         id,
-        ...toast,
+        message: toast.message || "",
+        type: toast.type || "info",
         duration: toast.duration || defaultDuration,
+        autoDismiss: toast.autoDismiss !== undefined ? toast.autoDismiss : true,
       };
 
       setToasts((prev) => {
@@ -35,7 +50,7 @@ export function useToast(options = {}) {
     [maxToasts, defaultDuration],
   );
 
-  const removeToast = useCallback((id) => {
+  const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 

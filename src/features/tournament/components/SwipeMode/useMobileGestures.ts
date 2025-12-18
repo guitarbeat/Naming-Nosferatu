@@ -64,11 +64,11 @@ function useMobileGestures(options: UseMobileGesturesOptions = {}) {
     if (enableSwipe && onSwipe) {
       const swipeId = mobileGestures.register(
         "swipe",
-        (data: GestureData) => {
+        (data: unknown) => {
           if (hapticFeedback) {
             mobileGestures.addHapticFeedback("light");
           }
-          onSwipe(data);
+          onSwipe(data as GestureData);
         },
         { preventDefault },
       );
@@ -78,11 +78,11 @@ function useMobileGestures(options: UseMobileGesturesOptions = {}) {
     if (enablePinch && onPinch) {
       const pinchId = mobileGestures.register(
         "pinch",
-        (data: GestureData) => {
+        (data: unknown) => {
           if (hapticFeedback) {
             mobileGestures.addHapticFeedback("medium");
           }
-          onPinch(data);
+          onPinch(data as GestureData);
         },
         { preventDefault },
       );
@@ -92,11 +92,11 @@ function useMobileGestures(options: UseMobileGesturesOptions = {}) {
     if (enableLongPress && onLongPress) {
       const longPressId = mobileGestures.register(
         "longPress",
-        (data: GestureData) => {
+        (data: unknown) => {
           if (hapticFeedback) {
             mobileGestures.addHapticFeedback("heavy");
           }
-          onLongPress(data);
+          onLongPress(data as GestureData);
         },
         { preventDefault },
       );
@@ -106,11 +106,11 @@ function useMobileGestures(options: UseMobileGesturesOptions = {}) {
     if (enableTap && onTap) {
       const tapId = mobileGestures.register(
         "tap",
-        (data: GestureData) => {
+        (data: unknown) => {
           if (hapticFeedback) {
             mobileGestures.addHapticFeedback("light");
           }
-          onTap(data);
+          onTap(data as GestureData);
         },
         { preventDefault },
       );
@@ -120,11 +120,11 @@ function useMobileGestures(options: UseMobileGesturesOptions = {}) {
     if (enableDoubleTap && onDoubleTap) {
       const doubleTapId = mobileGestures.register(
         "doubleTap",
-        (data: GestureData) => {
+        (data: unknown) => {
           if (hapticFeedback) {
             mobileGestures.addHapticFeedback("success");
           }
-          onDoubleTap(data);
+          onDoubleTap(data as GestureData);
         },
         { preventDefault },
       );

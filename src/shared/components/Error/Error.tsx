@@ -214,7 +214,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
               <div className={styles.listItemHeader}>
                 <div className={styles.listItemInfo}>
                   <span className={styles.listSeverityIcon}>
-                    {getSeverityIcon(error.severity)}
+                    {getSeverityIcon(error.severity || ERROR_SEVERITY.MEDIUM)}
                   </span>
                   <div style={{ flex: 1 }}>
                     <div className={styles.listMessage}>{error.message}</div>
@@ -572,10 +572,11 @@ class ErrorBoundary extends React.Component<
     }
 
     if (React.isValidElement(FallbackComponent)) {
-      return React.cloneElement(FallbackComponent as React.ReactElement<ErrorBoundaryFallbackProps>, {
-        error,
+      const fallbackElement = FallbackComponent as React.ReactElement<ErrorBoundaryFallbackProps>;
+      return React.cloneElement(fallbackElement, {
+        error: error as Error,
         resetErrorBoundary: this.resetErrorBoundary,
-      });
+      } as Partial<ErrorBoundaryFallbackProps>);
     }
 
     return null;

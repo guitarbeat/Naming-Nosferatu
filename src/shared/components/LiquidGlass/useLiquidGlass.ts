@@ -66,23 +66,29 @@ const PRESETS = {
  * @param {Object} initialConfig - Initial configuration overrides
  * @returns {Object} Configuration object with presets and update methods
  */
-export function useLiquidGlass(initialConfig = {}) {
+interface LiquidGlassConfig {
+  id?: string;
+  preset?: string;
+  [key: string]: unknown;
+}
+
+export function useLiquidGlass(initialConfig: LiquidGlassConfig = {}) {
   // * Generate unique ID for this instance to prevent conflicts
   const uniqueId = useId();
   const defaultId = `liquid-glass-${uniqueId.replace(/:/g, "-")}`;
 
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<LiquidGlassConfig>({
     ...PRESETS.dock,
     id: initialConfig.id || defaultId,
     ...initialConfig,
     preset: initialConfig.preset || "dock",
   });
 
-  const updateConfig = useCallback((updates) => {
+  const updateConfig = useCallback((updates: Partial<LiquidGlassConfig>) => {
     setConfig((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const setPreset = useCallback((presetName) => {
+  const setPreset = useCallback((presetName: keyof typeof PRESETS) => {
     if (PRESETS[presetName]) {
       setConfig((prev) => ({
         ...prev,

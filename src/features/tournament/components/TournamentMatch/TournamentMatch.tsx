@@ -48,7 +48,7 @@ function TournamentMatch({
   onDismissError,
   showCatPictures = false,
   imageList = [],
-}: TournamentMatchProps) {
+}: TournamentMatchProps): React.ReactElement {
   const leftOrbRef = useRef<HTMLDivElement>(null);
   const rightOrbRef = useRef<HTMLDivElement>(null);
   const isEnabled = !isProcessing && !isTransitioning;
@@ -100,6 +100,7 @@ function TournamentMatch({
       <div
         className={styles.battleStage}
         style={{ filter: "url(#tournament-ferro-goo)" }}
+        key="battle-stage"
       >
         <div className={styles.stageWrapper}>
           {/* Left Fighter Orb */}
@@ -215,7 +216,7 @@ function TournamentMatch({
       {votingError && (
         <Error
           variant="inline"
-          error={votingError}
+          error={votingError as Error}
           context="vote"
           position="below"
           onRetry={onVoteRetry}

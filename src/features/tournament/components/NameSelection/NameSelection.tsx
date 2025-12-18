@@ -29,13 +29,13 @@ interface NameSelectionProps {
   onToggleCatPictures?: () => void;
   imageList?: string[];
   SwipeableCards?: React.ComponentType<{
-    names: NameItem[];
-    selectedNames: NameItem[];
-    onToggleName: (name: NameItem) => void;
+    names: import("../../../../shared/propTypes").NameItem[];
+    selectedNames: import("../../../../shared/propTypes").NameItem[];
+    onToggleName: (name: import("../../../../shared/propTypes").NameItem) => void;
     isAdmin?: boolean;
     showCatPictures?: boolean;
     imageList?: string[];
-    onStartTournament?: (names: NameItem[]) => void;
+    onStartTournament?: (names: import("../../../../shared/propTypes").NameItem[]) => void;
   }>;
   showSelectedOnly?: boolean;
   onToggleShowSelected?: () => void;
@@ -124,13 +124,13 @@ function NameSelection({
 
       {isSwipeMode && SwipeableCards ? (
         <SwipeableCards
-          names={filteredNames}
-          selectedNames={selectedNames}
-          onToggleName={onToggleName}
+          names={filteredNames as import("../../../../shared/propTypes").NameItem[]}
+          selectedNames={selectedNames as import("../../../../shared/propTypes").NameItem[]}
+          onToggleName={onToggleName as (name: import("../../../../shared/propTypes").NameItem) => void}
           isAdmin={isAdmin}
           showCatPictures={showCatPictures}
           imageList={imageList}
-          onStartTournament={onStartTournament}
+          onStartTournament={onStartTournament as ((names: import("../../../../shared/propTypes").NameItem[]) => void) | undefined}
         />
       ) : (
         <NameGrid

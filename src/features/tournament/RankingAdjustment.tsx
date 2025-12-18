@@ -95,9 +95,9 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 
   useEffect(() => {
     isMountedRef.current = true;
-    let saveTimer = null;
-    let successTimer = null;
-    let errorTimer = null;
+    let saveTimer: ReturnType<typeof setTimeout> | null = null;
+    let successTimer: ReturnType<typeof setTimeout> | null = null;
+    let errorTimer: ReturnType<typeof setTimeout> | null = null;
 
     if (items && rankings && haveRankingsChanged(items, rankings)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect

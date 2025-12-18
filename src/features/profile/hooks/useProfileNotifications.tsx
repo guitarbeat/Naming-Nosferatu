@@ -39,7 +39,7 @@ export function useProfileNotifications() {
   );
 
   const showToast = useCallback(
-    (message: string, type = "info") => {
+    (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
       devLog(`📢 [${type}]`, message);
       showToastMessage({
         message,

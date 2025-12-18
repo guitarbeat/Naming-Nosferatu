@@ -157,10 +157,12 @@ export function applyNameFilters(names: NameItem[] | null | undefined, filters: 
         comparison = (a.losses || 0) - (b.losses || 0);
         break;
       case "winRate": {
-        const aWinRate =
-          a.wins && a.wins + a.losses > 0 ? a.wins / (a.wins + a.losses) : 0;
-        const bWinRate =
-          b.wins && b.wins + b.losses > 0 ? b.wins / (b.wins + b.losses) : 0;
+        const aWins = a.wins || 0;
+        const aLosses = a.losses || 0;
+        const bWins = b.wins || 0;
+        const bLosses = b.losses || 0;
+        const aWinRate = aWins + aLosses > 0 ? aWins / (aWins + aLosses) : 0;
+        const bWinRate = bWins + bLosses > 0 ? bWins / (bWins + bLosses) : 0;
         comparison = aWinRate - bWinRate;
         break;
       }

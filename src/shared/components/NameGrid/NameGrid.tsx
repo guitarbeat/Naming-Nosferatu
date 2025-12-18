@@ -90,7 +90,7 @@ export function NameGrid({
   );
 
   const processedNames = useMemo(() => {
-    const visibility = mapFilterStatusToVisibility(filters.filterStatus);
+    const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
 
     let result = applyNameFilters(names, {
       searchTerm: filters.searchTerm,
@@ -102,7 +102,10 @@ export function NameGrid({
     });
 
     if (showSelectedOnly && selectedSet.size > 0) {
-      result = result.filter((name) => selectedSet.has(name.id));
+      result = result.filter((name) => {
+        const nameId = name.id as string | number;
+        return selectedSet.has(nameId);
+      });
     }
 
     return result;
@@ -158,15 +161,17 @@ export function NameGrid({
       >
         <Masonry className={styles.masonry}>
           {processedNames.map((nameObj) => {
-            const cardImage = getCatImage(nameObj.id);
+            const nameId = nameObj.id as string | number;
+            const cardImage = getCatImage(nameId);
+            const nameItem: NameItem = nameObj as NameItem;
 
             return (
-              <div key={nameObj.id} className={styles.cardWrapper}>
+              <div key={String(nameId)} className={styles.cardWrapper}>
                 <Card.Name
-                  name={nameObj.name}
+                  name={nameObj.name || ""}
                   description={nameObj.description}
-                  isSelected={selectedSet.has(nameObj.id)}
-                  onClick={() => onToggleName?.(nameObj)}
+                  isSelected={selectedSet.has(nameId)}
+                  onClick={() => onToggleName?.(nameItem)}
                   image={cardImage}
                   metadata={
                     isAdmin
@@ -180,9 +185,9 @@ export function NameGrid({
                   isAdmin={isAdmin}
                   isHidden={isNameHidden(nameObj)}
                   _onToggleVisibility={
-                    isAdmin ? () => onToggleVisibility?.(nameObj.id) : undefined
+                    isAdmin ? () => onToggleVisibility?.(nameId) : undefined
                   }
-                  _onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
+                  _onDelete={isAdmin ? () => onDelete?.(nameItem) : undefined}
                   onSelectionChange={undefined}
                 />
               </div>

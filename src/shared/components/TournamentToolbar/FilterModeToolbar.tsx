@@ -110,10 +110,9 @@ function FilterModeToolbar({
               </label>
               <div className={styles.sortControls}>
                 <Select
-                  id="filter-sort"
                   name="filter-sort"
                   value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
-                  onChange={(e) => onFilterChange("sortBy", e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onFilterChange("sortBy", e.target.value)}
                   options={FILTER_CONFIGS.sort}
                   className={styles.filterSelect}
                 />

@@ -11,8 +11,12 @@ import { useEffect, useRef } from "react";
  * @param {React.RefObject} rightOrbRef - Ref to the right orb element
  * @param {boolean} enabled - Whether the effect is enabled
  */
-function useMagneticPull(leftOrbRef, rightOrbRef, enabled = true) {
-  const transformRef = useRef({ left: null, right: null });
+function useMagneticPull(
+  leftOrbRef: React.RefObject<HTMLElement | null>,
+  rightOrbRef: React.RefObject<HTMLElement | null>,
+  enabled = true,
+) {
+  const transformRef = useRef<{ left: string | null; right: string | null }>({ left: null, right: null });
 
   useEffect(() => {
     if (!enabled) return;
@@ -22,7 +26,7 @@ function useMagneticPull(leftOrbRef, rightOrbRef, enabled = true) {
 
     if (!leftOrb || !rightOrb) return;
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
       const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
 

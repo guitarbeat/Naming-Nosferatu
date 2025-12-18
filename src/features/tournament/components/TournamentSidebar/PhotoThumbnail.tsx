@@ -169,12 +169,21 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
   );
 });
 
-PhotoThumbnail.propTypes = {
+PhotoThumbnail.displayName = "PhotoThumbnail";
+
+// PropTypes for runtime validation (TypeScript handles compile-time)
+const PhotoThumbnailWithPropTypes = PhotoThumbnail as typeof PhotoThumbnail & {
+  propTypes?: {
+    image: typeof PropTypes.string;
+    index: typeof PropTypes.number;
+    onImageOpen: typeof PropTypes.func;
+  };
+};
+
+(PhotoThumbnailWithPropTypes as { propTypes: unknown }).propTypes = {
   image: PropTypes.string.isRequired,
   index: PropTypes.number.isRequired,
   onImageOpen: PropTypes.func.isRequired,
 };
-
-PhotoThumbnail.displayName = "PhotoThumbnail";
 
 export default PhotoThumbnail;

@@ -21,6 +21,19 @@ import { AnalysisBadge } from "./AnalysisBadge";
  * @param {string} props.contentId - ID of the controlled content for a11y
  * @param {string} props.className - Additional CSS classes
  */
+interface AnalysisHeaderProps {
+  title?: string;
+  actions?: React.ReactNode;
+  showBadge?: boolean;
+  collapsible?: boolean;
+  isCollapsed?: boolean;
+  onToggle?: () => void;
+  summary?: React.ReactNode;
+  icon?: string;
+  contentId?: string;
+  className?: string;
+}
+
 export function AnalysisHeader({
   title,
   actions,
@@ -32,7 +45,7 @@ export function AnalysisHeader({
   icon,
   contentId,
   className = "",
-}) {
+}: AnalysisHeaderProps) {
   const HeaderTag = collapsible ? "div" : "header";
   const headerClasses = collapsible
     ? `analysis-header analysis-header--collapsible ${className}`

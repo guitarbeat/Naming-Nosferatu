@@ -88,22 +88,36 @@ const BUTTON_VARIANTS = [
 ];
 const BUTTON_SIZES = ["small", "medium", "large"];
 
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+  children: React.ReactNode;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  loading?: boolean;
+  type?: "button" | "submit" | "reset";
+  className?: string;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  startIcon?: React.ReactNode | null;
+  endIcon?: React.ReactNode | null;
+  iconOnly?: boolean;
+}
+
 const Button = ({
   children,
   variant = "primary",
   size = "medium",
   disabled = false,
   loading = false,
-  type = "button",
+  type = "button" as const,
   className = "",
   onClick,
   startIcon = null,
   endIcon = null,
   iconOnly = false,
   ...rest
-}) => {
-  const shadcnVariant = variantMapping[variant] || "default";
-  let shadcnSize = sizeMapping[size] || "default";
+}: ButtonProps) => {
+  const shadcnVariant = (variantMapping[variant] || "default") as "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login";
+  let shadcnSize = (sizeMapping[size] || "default") as "default" | "sm" | "lg" | "icon";
 
   if (iconOnly) {
     shadcnSize = "icon";
@@ -166,6 +180,17 @@ Button.displayName = "Button";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} IconButton component
  */
+interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+  icon: React.ReactNode;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  loading?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+  ariaLabel: string;
+}
+
 const IconButton = ({
   icon,
   variant = "ghost",
@@ -176,7 +201,7 @@ const IconButton = ({
   className = "",
   ariaLabel,
   ...rest
-}) => {
+}: IconButtonProps) => {
   return (
     <Button
       variant={variant}
@@ -246,6 +271,19 @@ const PlusIcon = () => (
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} TournamentButton component
  */
+interface TournamentButtonProps {
+  children?: React.ReactNode;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  loading?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  className?: string;
+  startIcon?: React.ReactNode | null;
+  endIcon?: React.ReactNode;
+  ariaLabel?: string;
+}
+
 const TournamentButton = ({
   children = "Start New Tournament",
   variant = "primary",
@@ -258,8 +296,8 @@ const TournamentButton = ({
   endIcon,
   ariaLabel,
   ...rest
-}) => {
-  const { ["aria-label"]: ariaLabelFromRest, ...buttonProps } = rest;
+}: TournamentButtonProps) => {
+  const { ["aria-label"]: ariaLabelFromRest, ...buttonProps } = rest as { "aria-label"?: string; [key: string]: unknown };
   const computedLabel =
     ariaLabel ??
     ariaLabelFromRest ??
@@ -318,6 +356,16 @@ TournamentButton.displayName = "TournamentButton";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} CalendarButton component
  */
+interface CalendarButtonProps {
+  rankings: Array<{ id: string | number; name: string; rating?: number; is_hidden?: boolean }>;
+  userName: string;
+  className?: string;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
 const CalendarButton = ({
   rankings,
   userName,
@@ -326,10 +374,10 @@ const CalendarButton = ({
   size = "medium",
   disabled = false,
   ...rest
-}) => {
-  const { onClick: externalOnClick, ...buttonProps } = rest;
+}: CalendarButtonProps) => {
+  const { onClick: externalOnClick, ...buttonProps } = rest as { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void };
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (typeof externalOnClick === "function") {
       externalOnClick(event);
     }
@@ -378,7 +426,7 @@ const CalendarButton = ({
       onClick={handleClick}
       className={className}
       disabled={disabled}
-      startIcon={<span>📅</span>}
+      startIcon={<span>📅</span> as React.ReactNode}
       aria-label="Add to Google Calendar"
       title="Add to Google Calendar"
       {...buttonProps}
@@ -423,7 +471,7 @@ const ScrollToTopButton = ({ isLoggedIn, className = "" }) => {
       return undefined;
     }
 
-    let scrollTimeout = null;
+    let scrollTimeout: number | null = null;
 
     const checkScroll = () => {
       const threshold =

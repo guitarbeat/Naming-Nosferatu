@@ -104,10 +104,14 @@ function TournamentHeader({
               </button>
             )}
 
-            {selectedNames.length >= 2 && (
+            {selectedNames && selectedNames.length >= 2 && onStart && (
               <StartButton
-                selectedNames={selectedNames}
-                onStart={onStart}
+                selectedNames={selectedNames as import("../../../../shared/propTypes").NameItem[]}
+                onStart={(names: import("../../../../shared/propTypes").NameItem[]) => {
+                  if (onStart) {
+                    onStart(names as NameItem[]);
+                  }
+                }}
                 variant="header"
               />
             )}

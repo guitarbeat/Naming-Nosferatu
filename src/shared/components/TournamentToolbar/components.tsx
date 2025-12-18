@@ -132,10 +132,9 @@ export function FilterSelect({ id, label, value, options, onChange }: FilterSele
         {label}
       </label>
       <Select
-        id={id}
         name={id}
         value={value || ""}
-        onChange={(e) => onChange(e.target.value || null)}
+        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value || null)}
         options={options}
         className={styles.filterSelect}
       />

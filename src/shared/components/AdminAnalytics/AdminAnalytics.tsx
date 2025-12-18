@@ -50,13 +50,41 @@ PopularityRow.propTypes = {
  * Admin Analytics Dashboard Component
  * Shows comprehensive popularity metrics for all names
  */
+interface PopularityAnalyticsItem {
+  name_id: string;
+  name: string;
+  description: string | null;
+  category: string | null;
+  times_selected: number;
+  unique_selectors: number;
+  avg_rating: number;
+  total_wins: number;
+  total_losses: number;
+  win_rate: number;
+  users_rated: number;
+  popularity_score: number;
+  created_at: string | null;
+}
+
+interface SiteStats {
+  totalNames: number;
+  hiddenNames: number;
+  activeNames: number;
+  totalUsers: number;
+  totalRatings: number;
+  totalSelections: number;
+  avgRating: number;
+  neverSelectedCount: number;
+  neverSelectedNames: string[];
+}
+
 export function AdminAnalytics({ isAdmin = false }) {
-  const [analyticsData, setAnalyticsData] = useState(null);
-  const [_siteStats, setSiteStats] = useState(null);
+  const [analyticsData, setAnalyticsData] = useState<PopularityAnalyticsItem[] | null>(null);
+  const [_siteStats, setSiteStats] = useState<SiteStats | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [sortField, setSortField] = useState("avg_rating");
   const [sortDirection, setSortDirection] = useState("desc");
-  const [lastRefresh, setLastRefresh] = useState(null);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
 
   // Collapsed state with localStorage persistence
   const { isCollapsed, toggleCollapsed } = useCollapsible(
@@ -153,8 +181,11 @@ export function AdminAnalytics({ isAdmin = false }) {
         icon="📈"
         isCollapsed={isCollapsed}
         onToggle={toggleCollapsed}
+        summary={null}
         actions={headerActions}
         contentId="admin-analytics-content"
+        toolbar={null}
+        liquidGlass={false}
       />
 
       <CollapsibleContent

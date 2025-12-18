@@ -195,7 +195,12 @@ const Card = memo(
 
 Card.displayName = "Card";
 
-Card.propTypes = {
+// PropTypes for runtime validation (TypeScript handles compile-time)
+const CardWithPropTypes = Card as typeof Card & {
+  propTypes?: unknown;
+};
+
+(CardWithPropTypes as { propTypes: unknown }).propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
   variant: PropTypes.oneOf([

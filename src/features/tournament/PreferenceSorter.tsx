@@ -33,12 +33,21 @@
  */
 
 export class PreferenceSorter {
-  constructor(items) {
+  items: string[];
+  preferences: Map<string, number>;
+  currentRankings: string[];
+  ranks: string[];
+  rec: number[];
+  pairs: Array<[string, string]>;
+  currentIndex: number;
+  history: Array<{ a: string; b: string; value: number }>;
+
+  constructor(items: string[]) {
     if (!Array.isArray(items)) {
       throw new Error("PreferenceSorter requires an array of items");
     }
     this.items = items;
-    this.preferences = new Map();
+    this.preferences = new Map<string, number>();
     this.currentRankings = [...items];
     this.ranks = [];
     this.rec = new Array(items.length).fill(0);
@@ -53,14 +62,14 @@ export class PreferenceSorter {
     this.history = [];
   }
 
-  getName(item) {
+  getName(item: string | { name?: string } | null | undefined): string {
     if (item == null) {
       return "";
     }
     return typeof item === "string" ? item : item.name || "";
   }
 
-  addPreference(item1, item2, value) {
+  addPreference(item1: string | { name?: string }, item2: string | { name?: string }, value: number): void {
     const key = `${this.getName(item1)}-${this.getName(item2)}`;
     this.preferences.set(key, value);
     // Record history for undo support
@@ -71,27 +80,28 @@ export class PreferenceSorter {
     });
   }
 
-  getPreference(item1, item2) {
+  getPreference(item1: string | { name?: string }, item2: string | { name?: string }): number {
     const key = `${this.getName(item1)}-${this.getName(item2)}`;
     const reverseKey = `${this.getName(item2)}-${this.getName(item1)}`;
 
     if (this.preferences.has(key)) {
-      return this.preferences.get(key);
+      return this.preferences.get(key) ?? 0;
     } else if (this.preferences.has(reverseKey)) {
-      return -this.preferences.get(reverseKey);
+      const reverseValue = this.preferences.get(reverseKey);
+      return reverseValue !== undefined ? -reverseValue : 0;
     } else {
       return 0;
     }
   }
 
-  getCurrentRankings() {
+  getCurrentRankings(): string[] {
     if (this.ranks.length > 0) {
       return this.ranks;
     }
     return this.currentRankings;
   }
 
-  async sort(compareCallback) {
+  async sort(compareCallback: (a: string, b: string) => Promise<number> | number): Promise<void> {
     const n = this.items.length;
 
     if (!this.rec || this.rec.length !== n) {
@@ -99,10 +109,9 @@ export class PreferenceSorter {
     }
 
     await this.sortRecursive(0, n - 1, compareCallback);
-    return this.ranks;
   }
 
-  async sortRecursive(left, right, compareCallback) {
+  async sortRecursive(left: number, right: number, compareCallback: (a: string, b: string) => Promise<number> | number): Promise<void> {
     if (right - left < 1) {
       if (left === right && left >= 0 && left < this.items.length) {
         this.ranks.push(this.items[left]);
@@ -116,7 +125,7 @@ export class PreferenceSorter {
     await this.mergeSubGroups(left, mid, right, compareCallback);
   }
 
-  async mergeSubGroups(left, mid, right, compareCallback) {
+  async mergeSubGroups(left: number, mid: number, right: number, compareCallback: (a: string, b: string) => Promise<number> | number): Promise<void> {
     // Validate bounds
     if (
       left < 0 ||
@@ -136,7 +145,7 @@ export class PreferenceSorter {
 
     let i = left;
     let j = mid + 1;
-    const merged = [];
+    const merged: string[] = [];
 
     while (i <= mid && j <= right) {
       try {
@@ -186,7 +195,7 @@ export class PreferenceSorter {
   }
 
   // Return the next un-judged pair as a match { left, right }
-  getNextMatch() {
+  getNextMatch(): { left: string; right: string } | null {
     // Advance index to next pair we haven't judged yet
     while (this.currentIndex < this.pairs.length) {
       const [a, b] = this.pairs[this.currentIndex];
@@ -201,14 +210,15 @@ export class PreferenceSorter {
   }
 
   // Undo last added preference
-  undoLastPreference() {
+  undoLastPreference(): boolean {
     const last = this.history.pop();
-    if (!last) return;
+    if (!last) return false;
     const key = `${last.a}-${last.b}`;
     const reverseKey = `${last.b}-${last.a}`;
     this.preferences.delete(key);
     this.preferences.delete(reverseKey);
     // Step back at least one index to revisit the undone pair if needed
     this.currentIndex = Math.max(0, this.currentIndex - 1);
+    return true;
   }
 }
