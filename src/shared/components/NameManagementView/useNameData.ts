@@ -5,13 +5,13 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { resolveSupabaseClient } from "../../services/supabase/client";
+import { resolveSupabaseClient } from "../../services/supabase/supabaseClient";
 import {
   getNamesWithDescriptions,
   getNamesWithUserRatings,
 } from "../../services/supabase/api";
 import { devLog } from "../../utils/coreUtils";
-import { ErrorManager } from "../../services/errorManager";
+import { ErrorManager } from "../../services/errorManager/index";
 import { FALLBACK_NAMES } from "../../../features/tournament/constants";
 import { TIMING } from "../../../core/constants";
 
@@ -171,7 +171,7 @@ export function useNameData({
 
         const rawData = await getNamesWithUserRatings(userName);
 
-        namesData = (rawData as Array<{ id: string; name: string; [key: string]: unknown }>).map(
+        namesData = (rawData as Array<{ id: string; name: string;[key: string]: unknown }>).map(
           (name) => ({
             ...name,
             owner: userName,

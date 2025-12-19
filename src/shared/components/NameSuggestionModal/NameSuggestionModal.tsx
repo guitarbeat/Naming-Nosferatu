@@ -10,7 +10,7 @@ import {
   validateCatName,
   validateDescription,
 } from "../../utils/validationUtils";
-import { ErrorManager } from "../../services/errorManager";
+import { ErrorManager } from "../../services/errorManager/index";
 import useAppStore from "../../../core/store/useAppStore";
 import LiquidGlass from "../LiquidGlass";
 import "./NameSuggestionModal.css";

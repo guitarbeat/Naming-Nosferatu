@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
-import { createStandardizedError } from "../../services/errorManager";
+import { createStandardizedError } from "../../services/errorManager/index";
 import {
   getMediaQueryList,
   attachMediaQueryListener,

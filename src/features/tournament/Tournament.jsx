@@ -28,7 +28,7 @@ import { useToast } from "../../shared/hooks/useToast";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./constants";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
-import { getVisibleNames } from "../../shared/utils/nameFilterUtils";
+import { getVisibleNames } from "../../shared/utils/nameUtils";
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component

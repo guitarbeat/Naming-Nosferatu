@@ -13,11 +13,11 @@ import Error from "../../shared/components/Error/Error";
 import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard";
 import { AnalysisBulkActions } from "../../shared/components/AnalysisPanel";
 import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
-import { isNameHidden } from "../../shared/utils/nameFilterUtils";
 import {
+  isNameHidden,
   selectedNamesToSet,
   extractNameIds,
-} from "../../shared/utils/nameSelectionUtils";
+} from "../../shared/utils/nameUtils";
 import { useImageGallery } from "./hooks/useImageGallery";
 import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
 import { NameSelection } from "./components/NameSelection";

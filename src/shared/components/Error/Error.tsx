@@ -9,7 +9,7 @@ import {
   ERROR_SEVERITY,
   getSeverityClass,
   ErrorManager,
-} from "../../services/errorManager";
+} from "../../services/errorManager/index";
 
 interface AppError {
   message?: string;

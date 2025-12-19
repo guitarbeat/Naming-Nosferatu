@@ -13,8 +13,8 @@ import {
   applyNameFilters,
   isNameHidden,
   mapFilterStatusToVisibility,
-} from "../../utils/nameFilterUtils";
-import { selectedNamesToSet } from "../../utils/nameSelectionUtils";
+  selectedNamesToSet,
+} from "../../utils/nameUtils";
 import styles from "./NameGrid.module.css";
 
 interface NameItem {
