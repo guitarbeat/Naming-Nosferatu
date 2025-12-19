@@ -6,7 +6,7 @@
 import { useCallback } from "react";
 import { useToast } from "../../../shared/hooks/useToast";
 import Toast from "../../../shared/components/Toast/Toast";
-import { devLog, devError } from "../../../shared/utils/logger";
+import { devLog, devError } from "../../../shared/utils/coreUtils";
 import { NOTIFICATION } from "../../../core/constants";
 
 /**

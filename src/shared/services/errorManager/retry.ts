@@ -3,9 +3,7 @@
  * @description Retry logic and circuit breaker implementation.
  */
 
-import { RETRY_CONFIG } from "./constants";
-import { parseError } from "./errorParser";
-import { isRetryable } from "./errorFormatter";
+import { RETRY_CONFIG, parseError, isRetryable } from "./errorUtils";
 
 /**
  * * Circuit breaker implementation
@@ -159,7 +157,9 @@ export function createResilientFunction<T extends (...args: unknown[]) => Promis
     options.resetTimeout ?? 60000,
   );
 
+  const retryWrapped = withRetry(fn, options);
+
   return (async (...args: Parameters<T>) => {
-    return circuitBreaker.execute(() => withRetry(() => fn(...args), options));
+    return circuitBreaker.execute(() => retryWrapped(...args));
   }) as T;
 }

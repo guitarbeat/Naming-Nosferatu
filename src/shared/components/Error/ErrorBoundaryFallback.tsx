@@ -3,7 +3,7 @@ import { createStandardizedError } from "../../services/errorManager/index";
 import {
   getMediaQueryList,
   attachMediaQueryListener,
-} from "../../utils/mediaQueries";
+} from "../../utils/uiUtils";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./Error.module.css";
 

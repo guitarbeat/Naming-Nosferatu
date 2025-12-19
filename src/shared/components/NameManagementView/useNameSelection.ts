@@ -5,8 +5,10 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from "react";
-import { resolveSupabaseClient } from "../../services/supabase/supabaseClient";
-import { tournamentsAPI } from "../../services/supabase/api";
+import {
+  resolveSupabaseClient,
+  tournamentsAPI,
+} from "../../services/supabase/supabaseClient";
 import { devLog } from "../../utils/coreUtils";
 import { ErrorManager } from "../../services/errorManager/index";
 

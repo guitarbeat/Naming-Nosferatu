@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { getInsightCategory } from "../../utils/metricDefinitions";
+import { getInsightCategory } from "../../utils/metricsUtils";
 import "./PerformanceBadge.css";
 import "./TrendIndicator.css";
 

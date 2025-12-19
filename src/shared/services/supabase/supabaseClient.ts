@@ -483,7 +483,7 @@ export const catNamesAPI = {
         return [];
       }
       return data.map((item) => {
-        const itemRecord = item as Record<string, unknown>;
+        const itemRecord = item as any;
         return {
           ...itemRecord,
           updated_at: null,
@@ -762,7 +762,7 @@ export const catNamesAPI = {
       }
 
       return results.map((item) => ({
-        name_id: item.name_id,
+        name_id: String(item.name_id),
         name: item.name,
         times_selected: item.count,
       }));
@@ -1143,12 +1143,12 @@ export const catNamesAPI = {
           );
         }
 
-        const itemRecord = item as Record<string, unknown>;
+        const itemRecord = item as any;
         return {
           ...itemRecord,
           popularity_score: 0, // Not tracked anymore
           total_tournaments: 0, // Not tracked anymore
-          times_selected: selectionCounts.get(itemWithRatings.id) || 0,
+          times_selected: selectionCounts.get(String(itemWithRatings.id)) || 0,
           user_rating: userRating?.rating || null,
           user_wins: userRating?.wins || 0,
           user_losses: userRating?.losses || 0,
@@ -1341,7 +1341,7 @@ export const catNamesAPI = {
       }
       return data.map((item) => {
         const itemWithRatings = item as { cat_name_ratings?: Array<{ rating?: number | null; wins?: number | null; losses?: number | null; updated_at?: string | null }>; is_hidden?: boolean };
-        const itemRecord = item as Record<string, unknown>;
+        const itemRecord = item as any;
         return {
           ...itemRecord,
           popularity_score: 0, // Not tracked anymore
@@ -1807,8 +1807,7 @@ export const hiddenNamesAPI = {
       // Global hidden names are stored directly on cat_name_options
       const client = await resolveSupabaseClient();
       if (!client) return [];
-      const { data, error } = await client
-        .from("cat_name_options")
+      const { data, error } = await (client.from("cat_name_options") as any)
         .select("id, name, description, updated_at")
         .eq("is_hidden", true);
 
@@ -1858,7 +1857,7 @@ export const tournamentsAPI = {
       if (!client) {
         return { success: false, error: "Supabase not configured" };
       }
-      const { error: rpcError } = await client.rpc("create_user_account", {
+      const { error: rpcError } = await (client as any).rpc("create_user_account", {
         p_user_name: userName,
       });
 
@@ -2055,7 +2054,7 @@ export const tournamentsAPI = {
       // Insert individual selections into tournament_selections table
       const selectionRecords = selectedNames.map((nameObj) => ({
         user_name: userName,
-        name_id: nameObj.id,
+        name_id: String(nameObj.id),
         name: nameObj.name,
         tournament_id: finalTournamentId,
         selected_at: now,
@@ -2112,13 +2111,13 @@ export const tournamentsAPI = {
 
       // Ensure user account exists (required for FK constraint)
       try {
-        await client.rpc("create_user_account", {
+        await (client as any).rpc("create_user_account", {
           p_user_name: userName,
         });
       } catch (rpcError) {
         // Ignore error if user already exists
         if (isDev) {
-          console.log("User account check:", rpcError?.message || "exists");
+          console.log("User account check:", (rpcError as any)?.message || "exists");
         }
       }
 
@@ -2159,14 +2158,14 @@ export const tournamentsAPI = {
           }
           return {
             user_name: userName,
-            name_id: nameId,
+            name_id: String(nameId),
             rating: Math.min(2400, Math.max(800, Math.round(r.rating))), // Clamp to valid Elo range
             wins: r.wins || 0,
             losses: r.losses || 0,
             updated_at: now,
           };
         })
-        .filter((r): r is { user_name: string; name_id: string | number; rating: number; wins: number; losses: number; updated_at: string } => r !== null);
+        .filter((r): r is { user_name: string; name_id: string; rating: number; wins: number; losses: number; updated_at: string } => r !== null);
 
       if (ratingRecords.length === 0) {
         return { success: false, error: "No valid ratings to save" };
@@ -2249,7 +2248,7 @@ export const deleteName = async (nameId: string | number) => {
     const { data: nameData, error: nameError } = await client
       .from("cat_name_options")
       .select("name")
-      .eq("id", nameId)
+      .eq("id", String(nameId))
       .single();
 
     if (nameError?.code === "PGRST116") {
@@ -2263,8 +2262,8 @@ export const deleteName = async (nameId: string | number) => {
     }
 
     // Check if name is globally hidden (cat_name_options.is_hidden)
-    const { data: nameWithHidden, error: hiddenError } = await client
-      .from("cat_name_options")
+    const { data: nameWithHidden, error: hiddenError } = await (client
+      .from("cat_name_options") as any)
       .select("is_hidden")
       .eq("id", String(nameId))
       .single();
@@ -2483,8 +2482,120 @@ export const adminAPI = {
   },
 };
 
+interface CatChosenNameUpdate {
+  first_name: string;
+  middle_names?: string | string[];
+  last_name?: string;
+  greeting_text?: string;
+  show_banner?: boolean;
+}
+
 // ===== SITE SETTINGS API =====
-export { siteSettingsAPI } from "./legacy/siteSettingsAPI";
+/**
+ * Site Settings Management API
+ */
+export const siteSettingsAPI = {
+  /**
+   * Get cat's chosen name
+   * @returns {Promise<Object|null>} Cat name object or null
+   */
+  async getCatChosenName() {
+    try {
+      const client = await resolveSupabaseClient();
+      if (!client) return null;
+
+      const { data, error } = await client
+        .from("site_settings")
+        .select("value")
+        .eq("key", "cat_chosen_name")
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching cat chosen name:", error);
+        return null;
+      }
+
+      return data?.value || null;
+    } catch (error) {
+      console.error("Error in getCatChosenName:", error);
+      return null;
+    }
+  },
+
+  /**
+   * Update cat's chosen name (admin only - enforced by RLS)
+   * @param {CatChosenNameUpdate} nameData - Name object with first_name, middle_names, last_name, etc.
+   * @param {string} userName - Username making the update
+   * @returns {Promise<Object>} Success/error response
+   */
+  async updateCatChosenName(nameData: CatChosenNameUpdate, userName: string) {
+    try {
+      const client = await resolveSupabaseClient();
+      if (!client) return { success: false, error: "Supabase not configured" };
+
+      // Validate required field
+      if (!nameData.first_name || nameData.first_name.trim() === "") {
+        return { success: false, error: "First name is required" };
+      }
+
+      // Parse middle names if provided as string
+      let middleNames = nameData.middle_names || [];
+      if (typeof middleNames === "string") {
+        middleNames = middleNames
+          .split(",")
+          .map((n: string) => n.trim())
+          .filter((n: string) => n);
+      }
+
+      // Build display name
+      const nameParts = [
+        nameData.first_name.trim(),
+        ...middleNames,
+        nameData.last_name ? nameData.last_name.trim() : "",
+      ].filter(Boolean);
+
+      const displayName = nameParts.join(" ");
+
+      // Prepare value object
+      const value = {
+        first_name: nameData.first_name.trim(),
+        middle_names: middleNames,
+        last_name: nameData.last_name?.trim() || "",
+        greeting_text: nameData.greeting_text || "Hello! My name is",
+        display_name: displayName,
+        is_set: true,
+        show_banner: nameData.show_banner !== false,
+      };
+
+      // Update the setting (RLS will enforce admin-only)
+      const { data, error } = await client
+        .from("site_settings")
+        .update({
+          value,
+          updated_by: userName,
+        })
+        .eq("key", "cat_chosen_name")
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error updating cat chosen name:", error);
+        return {
+          success: false,
+          error: error.message || "Failed to update cat name",
+        };
+      }
+
+      return { success: true, data: data.value };
+    } catch (error) {
+      console.error("Error in updateCatChosenName:", error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
+  },
+};
 
 // ===== CONVENIENCE EXPORTS =====
 

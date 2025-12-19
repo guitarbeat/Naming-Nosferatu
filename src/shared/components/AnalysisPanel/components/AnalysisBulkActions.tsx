@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import PropTypes from "prop-types";
 import { AnalysisToolbar, AnalysisButton } from "./";
 import { exportNamesToCSV } from "../../../utils/exportUtils";
-import { devError } from "../../../utils/logger";
+import { devError } from "../../../utils/coreUtils";
 
 /**
  * Analysis Bulk Actions Component
@@ -40,6 +40,19 @@ export function AnalysisBulkActions({
   showActions = true,
   isAdmin = false,
   totalCount = 0,
+}: {
+  selectedCount: number;
+  onSelectAll: () => void;
+  onDeselectAll: () => void;
+  onBulkHide?: () => void;
+  onBulkUnhide?: () => void;
+  onExport?: () => void;
+  names?: any[];
+  selectedNames?: any[];
+  isAllSelected: boolean;
+  showActions?: boolean;
+  isAdmin?: boolean;
+  totalCount?: number;
 }) {
   const handleExport = useCallback(() => {
     if (onExport) {
@@ -48,9 +61,9 @@ export function AnalysisBulkActions({
     }
 
     const dataToExport =
-      selectedNames?.length > 0 ? selectedNames : names || [];
-    const fileName = selectedNames?.length > 0 ? "selected-names" : "all-names";
-    exportNamesToCSV(dataToExport, fileName);
+      (selectedNames?.length ?? 0) > 0 ? selectedNames : names || [];
+    const fileName = (selectedNames?.length ?? 0) > 0 ? "selected-names" : "all-names";
+    exportNamesToCSV(dataToExport as any[], fileName);
   }, [onExport, names, selectedNames]);
 
   const handleBulkHide = useCallback(() => {
@@ -76,7 +89,7 @@ export function AnalysisBulkActions({
   if (!showActions) return null;
 
   const hasExportData =
-    onExport || names?.length > 0 || selectedNames?.length > 0;
+    onExport || (names?.length ?? 0) > 0 || (selectedNames?.length ?? 0) > 0;
   const effectiveTotal = totalCount || names?.length || 0;
 
   return (
@@ -88,7 +101,7 @@ export function AnalysisBulkActions({
             <>
               <AnalysisButton
                 variant="danger"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
                   e.preventDefault();
                   e.stopPropagation();
                   handleBulkHide();

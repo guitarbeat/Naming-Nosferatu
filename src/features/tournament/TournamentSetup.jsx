@@ -24,11 +24,9 @@ import { NameSelection } from "./components/NameSelection";
 import { SwipeableNameCards } from "./components/SwipeMode";
 import Lightbox from "./components/Lightbox";
 import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
-import { useProfileStats } from "../profile/hooks/useProfileStats";
-import { useProfileNameOperations } from "../profile/hooks/useProfileNameOperations";
+import { useProfile } from "../profile/hooks/useProfile";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
-import { useProfileUser } from "../profile/hooks/useProfileUser";
-import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import { devLog, devWarn, devError } from "../../shared/utils/coreUtils";
 import { FILTER_OPTIONS } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
@@ -83,18 +81,12 @@ function AnalysisHandlersProvider({
   const { setHiddenNames, setAllNames, fetchNames } =
     useNameManagementCallbacks(context);
 
-  const { handleToggleVisibility, handleDelete } = useProfileNameOperations(
-    activeUser,
-    canManageActiveUser,
-    context?.hiddenIds ?? new Set(),
-    setHiddenNames,
-    setAllNames,
-    fetchNames,
-    fetchSelectionStats,
+  const { handleToggleVisibility, handleDelete } = useProfile(activeUser, {
     showSuccess,
     showError,
-    showToast,
-  );
+    fetchNames,
+    setAllNames,
+  });
 
   React.useEffect(() => {
     if (!context) return;
@@ -212,18 +204,12 @@ function AnalysisBulkActionsWrapper({
   const { setHiddenNames, setAllNames, fetchNames } =
     useNameManagementCallbacks(context);
 
-  const { handleBulkHide, handleBulkUnhide } = useProfileNameOperations(
-    activeUser,
-    canManageActiveUser,
-    context?.hiddenIds ?? new Set(),
-    setHiddenNames,
-    setAllNames,
-    fetchNames,
-    fetchSelectionStats,
+  const { handleBulkHide, handleBulkUnhide } = useProfile(activeUser, {
     showSuccess,
     showError,
-    showToast,
-  );
+    fetchNames,
+    setAllNames,
+  });
 
   const contextNames = context?.names;
   const contextFilterStatus = context?.filterStatus;
@@ -427,9 +413,10 @@ function TournamentSetupContent({
   } = useImageGallery({ isLightboxOpen: lightboxOpen });
   const { isAdmin } = useAdminStatus(userName);
 
-  // * Profile hooks for analysis mode
+  // * Profile hook for analysis mode
   const { showSuccess, showError, showToast, ToastContainer } =
     useProfileNotifications();
+
   const {
     isAdmin: profileIsAdmin,
     activeUser,
@@ -437,9 +424,13 @@ function TournamentSetupContent({
     userOptions,
     userFilter,
     setUserFilter,
-  } = useProfileUser(userName);
-  const { stats, selectionStats, fetchSelectionStats } =
-    useProfileStats(activeUser);
+    stats,
+    selectionStats,
+    fetchSelectionStats,
+  } = useProfile(userName, {
+    showSuccess,
+    showError,
+  });
 
   // * Check URL for analysis mode parameter
   const urlParams = new URLSearchParams(

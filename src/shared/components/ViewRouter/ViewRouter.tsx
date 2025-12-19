@@ -3,19 +3,19 @@ import PropTypes from "prop-types";
 import Error from "../Error/Error";
 import Loading from "../Loading/Loading";
 import Login from "../../../features/auth/Login";
-import { useRouting } from "../../core/hooks/useRouting";
+import { useRouting } from "../../../core/hooks/useRouting";
 // * Import components directly to maintain stability
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 // @ts-expect-error - Tournament is a .jsx file
-import Tournament from "../../features/tournament/Tournament";
+import Tournament from "../../../features/tournament/Tournament";
 // @ts-expect-error - TournamentSetup is a .jsx file
-import TournamentSetup from "../../features/tournament/TournamentSetup";
+import TournamentSetup from "../../../features/tournament/TournamentSetup";
 
 // * Lazy load heavy/hidden components
 // @ts-expect-error - Dashboard is a .jsx file
-const Dashboard = lazy(() => import("../../features/tournament/Dashboard"));
-const BongoPage = lazy(() => import("../../features/bongo/BongoPage"));
+const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
+const BongoPage = lazy(() => import("../../../features/bongo/BongoPage"));
 
 import { TournamentName } from "../../../types/store";
 

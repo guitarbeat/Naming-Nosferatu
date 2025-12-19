@@ -5,11 +5,11 @@
 
 import { useState, useCallback, useId, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { catNamesAPI } from "../../services/supabase/api";
+import { catNamesAPI } from "../../services/supabase/supabaseClient";
 import {
   validateCatName,
   validateDescription,
-} from "../../utils/validationUtils";
+} from "../../utils/coreUtils";
 import { ErrorManager } from "../../services/errorManager/index";
 import useAppStore from "../../../core/store/useAppStore";
 import LiquidGlass from "../LiquidGlass";

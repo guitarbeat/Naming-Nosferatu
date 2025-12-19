@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { Loader2 } from "lucide-react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { cn } from "../../utils/classNameUtils";
+import { cn } from "../../utils/uiUtils";
 
 // Shadcn button variants (inlined from ui/button.tsx)
 const buttonVariants = cva(
@@ -123,7 +123,7 @@ const Button = ({
     shadcnSize = "icon";
   }
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || loading) {
       event.preventDefault();
       return;
@@ -462,7 +462,7 @@ CalendarButton.displayName = "CalendarButton";
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element|null} ScrollToTopButton component or null
  */
-const ScrollToTopButton = ({ isLoggedIn, className = "" }) => {
+const ScrollToTopButton = ({ isLoggedIn, className = "" }: { isLoggedIn: boolean; className?: string }) => {
   const [showScrollTop, setShowScrollTop] = React.useState(false);
 
   React.useEffect(() => {

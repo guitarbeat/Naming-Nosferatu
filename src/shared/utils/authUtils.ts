@@ -3,7 +3,7 @@
  * @description Consolidated authentication utilities including constants, validation, error handling, and API functions
  */
 
-import { resolveSupabaseClient } from "../services/supabase/client";
+import { resolveSupabaseClient } from "../services/supabase/supabaseClient";
 
 // ============================================================================
 // Constants

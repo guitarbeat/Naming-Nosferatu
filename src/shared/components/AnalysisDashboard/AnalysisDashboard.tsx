@@ -13,17 +13,14 @@ import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { BumpChart } from "../Charts";
 import { PerformanceBadges } from "../PerformanceBadge";
 import { ColumnHeader } from "../ColumnHeader";
-import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/api";
+import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/supabaseClient";
 import { useCollapsible } from "../../hooks/useCollapsible";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { devError } from "../../utils/logger";
-import { clearAllCaches } from "../../utils/cacheUtils";
+import { devError, clearAllCaches, formatDate } from "../../utils/coreUtils";
 import { nameItemShape } from "../../propTypes";
-import { getRankDisplay } from "../../utils/displayUtils";
-import { formatDate } from "../../utils/timeUtils";
-import { calculatePercentile } from "../../utils/metricsUtils";
-import { getMetricLabel } from "../../utils/metricDefinitions";
+import { getRankDisplay } from "../../utils/uiUtils";
+import { calculatePercentile, getMetricLabel } from "../../utils/metricsUtils";
 import "./AnalysisDashboard.css";
 
 /**
@@ -95,6 +92,14 @@ export function AnalysisDashboard({
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardItem[] | null>(null);
   const [selectionPopularity, setSelectionPopularity] = useState<SelectionPopularityItem[] | null>(null);
   const [analyticsData, setAnalyticsData] = useState<PopularityAnalyticsItem[] | null>(null); // * Admin: full analytics
+  interface SiteStats {
+    totalNames: number;
+    activeNames: number;
+    hiddenNames: number;
+    totalUsers: number;
+    totalSelections: number;
+  }
+  const [siteStats, setSiteStats] = useState<SiteStats | null>(null);
   const [rankingHistory, setRankingHistory] = useState<RankingHistoryData>({
     data: [],
     timeLabels: [],
@@ -179,17 +184,19 @@ export function AnalysisDashboard({
           },
         );
         if (isAdmin) {
-          const [analytics, leaderboard, popularity, history] =
+          const [analytics, leaderboard, popularity, history, stats] =
             await Promise.all([
               catNamesAPI.getPopularityAnalytics(null, userFilter, userName),
               catNamesAPI.getLeaderboard(null),
               catNamesAPI.getSelectionPopularity(null),
               historyPromise,
+              catNamesAPI.getSiteStats(),
             ]);
           setAnalyticsData(analytics);
           setLeaderboardData(leaderboard as LeaderboardItem[]);
           setSelectionPopularity(popularity as SelectionPopularityItem[]);
           setRankingHistory(history);
+          setSiteStats(stats);
         } else {
           const [leaderboard, popularity, history] = await Promise.all([
             catNamesAPI.getLeaderboard(null),
@@ -1111,6 +1118,27 @@ export function AnalysisDashboard({
             {/* Insights View */}
             {viewMode === "insights" && (
               <div className="analysis-insights-panel">
+                {isAdmin && siteStats && (
+                  <div className="analysis-stats-summary analysis-stats-summary--admin">
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Total Names</div>
+                      <div className="analysis-stat-value">{siteStats.totalNames}</div>
+                      <div className="analysis-stat-subtext">
+                        {siteStats.activeNames} active / {siteStats.hiddenNames} hidden
+                      </div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Total Users</div>
+                      <div className="analysis-stat-value">{siteStats.totalUsers}</div>
+                      <div className="analysis-stat-subtext">Active participants</div>
+                    </div>
+                    <div className="analysis-stat-card">
+                      <div className="analysis-stat-label">Global Selections</div>
+                      <div className="analysis-stat-value">{siteStats.totalSelections}</div>
+                      <div className="analysis-stat-subtext">Across all tournaments</div>
+                    </div>
+                  </div>
+                )}
                 {summaryStats && !isAdmin && (
                   <div className="analysis-stats-summary">
                     <div className="analysis-stat-card">

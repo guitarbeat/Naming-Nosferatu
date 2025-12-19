@@ -3,7 +3,7 @@
  * @description Tournament-specific utility functions.
  */
 
-import { generatePairs } from "./arrayUtils";
+import { generatePairs } from "./coreUtils";
 import { NameItem } from "../propTypes";
 
 interface Sorter {

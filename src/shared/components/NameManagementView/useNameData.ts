@@ -5,11 +5,11 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { resolveSupabaseClient } from "../../services/supabase/supabaseClient";
 import {
+  resolveSupabaseClient,
   getNamesWithDescriptions,
   getNamesWithUserRatings,
-} from "../../services/supabase/api";
+} from "../../services/supabase/supabaseClient";
 import { devLog } from "../../utils/coreUtils";
 import { ErrorManager } from "../../services/errorManager/index";
 import { FALLBACK_NAMES } from "../../../features/tournament/constants";

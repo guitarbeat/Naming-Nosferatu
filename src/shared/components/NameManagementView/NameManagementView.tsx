@@ -29,7 +29,6 @@ interface TournamentFilters {
   dateFilter?: string;
 }
 import { NameGrid } from "../NameGrid/NameGrid";
-import { AdminAnalytics } from "../AdminAnalytics";
 import { useNameData } from "./useNameData";
 import { useNameSelection } from "./useNameSelection";
 
@@ -641,16 +640,7 @@ export function NameManagementView({
               </section>
             )}
 
-          {/* Admin Analytics - Merged into AnalysisDashboard, only show if dashboard not available */}
-          {analysisMode && tournamentProps.isAdmin && !extensions.dashboard && (
-            <section
-              className={styles.dashboardSection}
-              aria-label="Admin analytics"
-              data-section="admin-analytics"
-            >
-              <AdminAnalytics isAdmin={tournamentProps.isAdmin || false} />
-            </section>
-          )}
+          {/* Analysis mode is handled via extensions.dashboard (AnalysisDashboard) */}
 
           {/* Tournament Toolbar - Only for profile/hybrid mode (tournament mode filters are rendered above) */}
           {/* Note: In analysis mode, toolbar is integrated into CollapsibleHeader via dashboard extension */}

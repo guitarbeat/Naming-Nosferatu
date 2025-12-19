@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from "react";
-import { normalizeRoutePath } from "../../shared/utils/navigationUtils";
+import { normalizeRoutePath } from "../../shared/utils/uiUtils";
 
 const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results"]);
 

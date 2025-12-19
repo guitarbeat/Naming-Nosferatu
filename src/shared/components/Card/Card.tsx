@@ -9,7 +9,7 @@ import {
   DEFAULT_GLASS_CONFIG,
   resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
-import { cn } from "../../utils/classNameUtils";
+import { cn } from "../../utils/uiUtils";
 import styles from "./Card.module.css";
 
 // Force refresh

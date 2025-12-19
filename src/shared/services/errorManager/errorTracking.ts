@@ -1,309 +1,426 @@
 /**
- * @module errorManager/errorTracking
- * @description Error tracking and logging utilities.
+ * @module ErrorManager/errorTracking
+ * @description Error tracking, logging, diagnostics, and AI context building.
  */
 
-import { getGlobalScope } from "./helpers";
-import { ERROR_SEVERITY } from "./constants";
+import {
+  ERROR_SEVERITY,
+  getGlobalScope,
+  createHash,
+  generateErrorId,
+  ERROR_TYPES,
+  determineSeverity,
+  getUserFriendlyMessage,
+  isRetryable,
+  ParsedError,
+  FormattedError,
+} from "./errorUtils";
+
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface Diagnostics {
+  fingerprint: string;
+  stackFrames: Array<{
+    functionName?: string;
+    file?: string;
+    line?: number;
+    column?: number;
+    raw?: string;
+  }>;
+  environment: {
+    userAgent?: string;
+    language?: string;
+    online?: boolean;
+    platform?: string;
+    deviceMemory?: number;
+    timezone?: string;
+    viewport?: {
+      width?: number;
+      height?: number;
+    };
+    location?: string;
+    performance?: {
+      navigationStart?: number;
+      domComplete?: number;
+      firstPaint?: number;
+    };
+  };
+  debugHints: Array<{
+    title: string;
+    detail: string;
+  }>;
+  relatedIdentifiers: string[];
+}
+
+// ============================================================================
+// Diagnostics & AI Context
+// ============================================================================
 
 /**
- * * Safely converts a value to a string, handling objects, circular references, and primitives
- * @param {*} value - Value to convert to string
- * @returns {string} String representation of the value
+ * * Extracts stack frames from error stack trace
  */
-function safeStringify(value) {
-  if (value === null || value === undefined) {
-    return String(value);
+function extractStackFrames(stack?: string | null) {
+  if (!stack || typeof stack !== "string") {
+    return [];
   }
 
-  if (typeof value === "string") {
-    return value;
-  }
-
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-
-  if (typeof value === "object") {
-    try {
-      // Try JSON.stringify first (handles most cases)
-      return JSON.stringify(value, null, 2);
-    } catch (_err) {
-      // Handle circular references or other JSON errors
-      try {
-        // Try to get a basic representation
-        if (value.constructor && value.constructor.name) {
-          return `[${value.constructor.name}]`;
-        }
-        return "[Object]";
-      } catch {
-        return "[Unable to stringify object]";
+  return stack
+    .split("\n")
+    .slice(1)
+    .map((line) => line.trim())
+    .map((frame) => {
+      const stackRegex =
+        /at (?:(?<functionName>[^\s]+)\s+)?\(?(?<file>[^:]+):(?<line>\d+):(?<column>\d+)\)?/;
+      const match = frame.match(stackRegex);
+      if (!match || !match.groups) {
+        return { raw: frame };
       }
-    }
-  }
 
-  // Fallback for other types (symbols, functions, etc.)
+      return {
+        functionName: match.groups.functionName || "anonymous",
+        file: match.groups.file,
+        line: Number.parseInt(match.groups.line, 10),
+        column: Number.parseInt(match.groups.column, 10),
+      };
+    });
+}
+
+/**
+ * * Collects environment snapshot for error diagnostics
+ */
+function collectEnvironmentSnapshot() {
+  const GLOBAL_SCOPE = getGlobalScope();
+
   try {
-    return String(value);
-  } catch {
-    return "[Unable to convert to string]";
+    const { navigator = {}, location = {}, performance = {} } = GLOBAL_SCOPE;
+    const memory = navigator.deviceMemory ?? navigator.hardwareConcurrency;
+    const timing = performance?.timing || {};
+    const timezone = (() => {
+      try {
+        if (
+          typeof Intl !== "undefined" &&
+          typeof Intl.DateTimeFormat === "function"
+        ) {
+          return new Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+      } catch (_) {
+        return undefined;
+      }
+      return undefined;
+    })();
+
+    return {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      online: navigator.onLine,
+      platform: navigator.platform,
+      deviceMemory: memory,
+      timezone,
+      viewport: {
+        width: GLOBAL_SCOPE.innerWidth,
+        height: GLOBAL_SCOPE.innerHeight,
+      },
+      location: location.href,
+      performance: {
+        navigationStart: timing.navigationStart,
+        domComplete: timing.domComplete,
+        firstPaint:
+          performance?.getEntriesByName?.("first-paint")?.[0]?.startTime,
+      },
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Failed to collect environment snapshot:", error);
+    }
+    return {};
   }
 }
 
 /**
- * * Logs error information for debugging
- * @param {Object} formattedError - Formatted error object
- * @param {string} context - Error context
- * @param {Object} metadata - Error metadata
+ * * Derives debug hints based on error type and context
  */
-export function logError(formattedError, context, metadata) {
-  const logData = {
-    error: formattedError,
+function deriveDebugHints(
+  errorInfo: { type: string; cause?: unknown; stack?: string | null },
+  context: string,
+  metadata: Record<string, unknown>,
+  environment: Record<string, unknown>,
+) {
+  const hints: Array<{ title: string; detail: string }> = [];
+
+  if (errorInfo.cause) {
+    let causeDetail;
+    if (typeof errorInfo.cause === "string") {
+      causeDetail = errorInfo.cause;
+    } else {
+      try {
+        causeDetail = JSON.stringify(errorInfo.cause);
+      } catch (err: any) {
+        causeDetail = `Cause available but could not be stringified (${err.message})`;
+      }
+    }
+
+    hints.push({
+      title: "Root cause provided",
+      detail: causeDetail,
+    });
+  }
+
+  if (metadata?.request) {
+    const request = metadata.request as any;
+    hints.push({
+      title: "Network request context",
+      detail: `Request to ${request?.url || "unknown URL"} failed with status ${request?.status ?? "unknown"}`,
+    });
+  }
+
+  switch (errorInfo.type) {
+    case ERROR_TYPES.NETWORK:
+      hints.push({
+        title: "Connectivity check",
+        detail:
+          environment.online === false
+            ? "Navigator reports the client is offline."
+            : "Verify the network request payload and server availability.",
+      });
+      break;
+    case ERROR_TYPES.AUTH:
+      hints.push({
+        title: "Authentication hint",
+        detail: "Confirm that the session token is valid and has not expired.",
+      });
+      break;
+    case ERROR_TYPES.DATABASE:
+      hints.push({
+        title: "Database hint",
+        detail: "Check Supabase policies or stored procedures relevant to this operation.",
+      });
+      break;
+    case ERROR_TYPES.VALIDATION:
+      hints.push({
+        title: "Validation hint",
+        detail: "Compare the provided payload against the schema definition.",
+      });
+      break;
+    case ERROR_TYPES.RUNTIME:
+      hints.push({
+        title: "Runtime hint",
+        detail: "Inspect recent code changes for undefined variables or null references.",
+      });
+      break;
+  }
+
+  if (errorInfo.stack && metadata?.componentStack) {
+    hints.push({
+      title: "React component stack",
+      detail: metadata.componentStack as string,
+    });
+  }
+
+  return hints;
+}
+
+/**
+ * * Builds comprehensive diagnostics for an error
+ */
+export function buildDiagnostics(
+  errorInfo: {
+    stack?: string | null;
+    type: string;
+    name: string;
+    message: string;
+    cause?: unknown;
+  },
+  context: string,
+  metadata: Record<string, unknown>,
+): Diagnostics {
+  const environment = collectEnvironmentSnapshot() as any;
+  const stackFrames = extractStackFrames(errorInfo.stack);
+  const debugHints = deriveDebugHints(
+    errorInfo,
     context,
     metadata,
-    timestamp: new Date().toISOString(),
+    environment,
+  );
+
+  const source = {
+    type: errorInfo.type,
+    name: errorInfo.name,
+    message: errorInfo.message,
+    context,
+    metadata,
+    location: environment.location,
   };
+  const fingerprint = createHash(source);
 
-  // * Enhanced structured logging for development
-  if (process.env.NODE_ENV === "development") {
-    const isMobile =
-      typeof navigator !== "undefined" &&
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent,
-      );
+  const relatedIds = new Set<string>();
+  if (metadata?.userId) relatedIds.add(metadata.userId as string);
+  if (metadata?.sessionId) relatedIds.add(metadata.sessionId as string);
+  if ((metadata?.request as any)?.id) relatedIds.add((metadata.request as any).id);
 
-    try {
-      const errorType = safeStringify(formattedError?.type || "Unknown");
-      console.group(`🔴 Error [${errorType}]${isMobile ? " (Mobile)" : ""}`);
-      console.error("Context:", safeStringify(context));
-      console.error(
-        "Message:",
-        safeStringify(
-          formattedError?.userMessage ||
-            formattedError?.message ||
-            "No message",
-        ),
-      );
-      console.error(
-        "Severity:",
-        safeStringify(formattedError?.severity || "Unknown"),
-      );
-      console.error(
-        "Retryable:",
-        safeStringify(formattedError?.isRetryable ?? false),
-      );
-      if (formattedError?.metadata?.stack) {
-        console.error("Stack:", safeStringify(formattedError.metadata.stack));
-      }
-      if (logData.diagnostics?.debugHints?.length) {
-        console.group("Debug Hints");
-        logData.diagnostics.debugHints.forEach((hint, i) => {
-          console.log(
-            `${i + 1}. ${safeStringify(hint?.title || "Untitled")}:`,
-            safeStringify(hint?.detail || ""),
-          );
-        });
-        console.groupEnd();
-      }
-      console.groupEnd();
-    } catch (err) {
-      // * Fallback if even the logging fails
-      console.error("Failed to log error:", err);
-      console.error("Original error data:", {
-        hasFormattedError: !!formattedError,
-        hasContext: !!context,
-        contextType: typeof context,
-      });
+  return {
+    fingerprint,
+    stackFrames,
+    environment,
+    debugHints,
+    relatedIdentifiers: Array.from(relatedIds),
+  };
+}
+
+/**
+ * * Builds AI-friendly context string
+ */
+export function buildAIContext({ formattedError, diagnostics }: { formattedError: FormattedError, diagnostics: Diagnostics }) {
+  const baseInfo = [
+    `Error ID: ${formattedError.id || "unknown"}`,
+    `Type: ${formattedError.type}`,
+    `Severity: ${formattedError.severity}`,
+    `Context: ${formattedError.context}`,
+    `Message: ${formattedError.message}`,
+  ];
+
+  if ((formattedError as any).code) baseInfo.push(`Code: ${(formattedError as any).code}`);
+  if ((formattedError as any).status) baseInfo.push(`Status: ${(formattedError as any).status}`);
+
+  if (diagnostics?.debugHints?.length) {
+    baseInfo.push("Hints:");
+    diagnostics.debugHints.forEach((hint, index) => {
+      baseInfo.push(`  ${index + 1}. ${hint.title} - ${hint.detail}`);
+    });
+  }
+
+  if (diagnostics?.stackFrames?.length) {
+    baseInfo.push("Top stack frame:");
+    const [topFrame] = diagnostics.stackFrames;
+    if (topFrame?.raw) {
+      baseInfo.push(`  ${topFrame.raw}`);
+    } else {
+      baseInfo.push(`  ${topFrame.functionName} at ${topFrame.file}:${topFrame.line}:${topFrame.column}`);
     }
   }
 
-  // * Send to error tracking service in production
-  if (process.env.NODE_ENV === "production") {
+  baseInfo.push(`Fingerprint: ${diagnostics?.fingerprint}`);
+
+  return baseInfo.join("\n");
+}
+
+// ============================================================================
+// Logging & External Services
+// ============================================================================
+
+/**
+ * * Sends error data to external error tracking service
+ */
+function sendToErrorService(logData: any) {
+  const GLOBAL_SCOPE = getGlobalScope();
+  const { navigator = {}, location = {} } = GLOBAL_SCOPE;
+
+  const errorData = {
+    message: logData?.error?.message || "Unknown error",
+    level: logData?.error?.severity || ERROR_SEVERITY.MEDIUM,
+    timestamp: logData?.timestamp || new Date().toISOString(),
+    context: logData?.context || "Unknown",
+    metadata: logData?.metadata || {},
+    userAgent: navigator?.userAgent || "Unknown",
+    url: location?.href || "Unknown",
+    userId: getGlobalScope().localStorage?.getItem("catNamesUser") ?? null,
+    sessionId: (() => {
+      const storage = getGlobalScope().sessionStorage;
+      let sid = storage?.getItem("errorSessionId");
+      if (!sid) {
+        sid = `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+        storage?.setItem("errorSessionId", sid);
+      }
+      return sid;
+    })(),
+    buildVersion: "1.0.0",
+  };
+
+  // Sentry
+  try {
+    const sentry = GLOBAL_SCOPE.Sentry;
+    if (sentry?.captureException) {
+      const error = new Error(errorData.message);
+      error.name = errorData.context;
+      sentry.captureException(error, {
+        tags: { context: errorData.context, level: errorData.level, userId: errorData.userId },
+        extra: { ...errorData.metadata, url: errorData.url, sessionId: errorData.sessionId },
+      });
+    }
+  } catch (err) { console.warn("Sentry error:", err); }
+
+  // Custom
+  const errorEndpoint = process.env.REACT_APP_ERROR_ENDPOINT;
+  if (errorEndpoint) {
+    fetch(errorEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(errorData),
+    }).catch(() => { });
+  }
+}
+
+/**
+ * * Logs error information
+ */
+export function logError(formattedError: FormattedError, context: string, metadata: Record<string, unknown>) {
+  const logData = { error: formattedError, context, metadata, timestamp: new Date().toISOString() };
+
+  if (process.env.NODE_ENV === "development") {
+    const isMobile = typeof navigator !== "undefined" && /iPhone|iPad|Android/i.test(navigator.userAgent);
+    console.group(`🔴 Error [${formattedError?.type || "Unknown"}]${isMobile ? " (Mobile)" : ""}`);
+    console.error("Context:", context);
+    console.error("Message:", formattedError?.userMessage || formattedError?.message || "No message");
+    console.error("Severity:", formattedError?.severity || "Unknown");
+    console.error("Retryable:", formattedError?.isRetryable ?? false);
+    if (formattedError?.metadata?.stack) console.error("Stack:", formattedError.metadata.stack);
+
+    const diag = formattedError.diagnostics as Diagnostics;
+    if (diag?.debugHints?.length) {
+      console.group("Debug Hints");
+      diag.debugHints.forEach((h, i) => console.log(`${i + 1}. ${h.title}:`, h.detail));
+      console.groupEnd();
+    }
+    console.groupEnd();
+  } else {
     sendToErrorService(logData);
   }
 }
 
-/**
- * * Sends error data to external error tracking service
- * @param {Object} logData - Error log data to send
- */
-function sendToErrorService(logData) {
-  const GLOBAL_SCOPE = getGlobalScope();
+export function formatError(
+  errorInfo: ParsedError,
+  context: string,
+  metadata: Record<string, unknown>,
+): FormattedError {
+  const severity = determineSeverity(errorInfo, metadata);
+  const userMessage = getUserFriendlyMessage(errorInfo, context);
+  const retryable = isRetryable(errorInfo, metadata);
+  const diagnostics = buildDiagnostics(errorInfo, context, metadata);
 
-  try {
-    const { navigator = {}, location = {} } = GLOBAL_SCOPE;
-
-    const errorData = {
-      message: logData?.error?.message || "Unknown error",
-      level: logData?.error?.severity || ERROR_SEVERITY.MEDIUM,
-      timestamp: logData?.timestamp || new Date().toISOString(),
-      context: logData?.context || "Unknown",
-      metadata: logData?.metadata || {},
-      userAgent: navigator?.userAgent || "Unknown",
-      url: location?.href || "Unknown",
-      userId: getUserId(),
-      sessionId: getSessionId(),
-      buildVersion: process.env.REACT_APP_VERSION || "1.0.0",
-    };
-
-    // Send to multiple error tracking services
-    sendToSentry(errorData);
-    sendToCustomEndpoint(errorData);
-    sendToConsole(errorData);
-  } catch (err) {
-    // Don't let error tracking itself cause more errors
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Failed to send error to tracking service:", err);
-    }
-  }
-}
-
-/**
- * * Sends error to Sentry if available
- * @param {Object} errorData - Error data to send
- */
-function sendToSentry(errorData) {
-  const GLOBAL_SCOPE = getGlobalScope();
-
-  try {
-    const sentry = GLOBAL_SCOPE.Sentry;
-    if (sentry && typeof sentry.captureException === "function") {
-      const error = new Error(errorData.message);
-      error.name = errorData.context || "ApplicationError";
-
-      sentry.captureException(error, {
-        tags: {
-          context: errorData.context,
-          level: errorData.level,
-          userId: errorData.userId,
-        },
-        extra: {
-          ...errorData.metadata,
-          url: errorData.url,
-          userAgent: errorData.userAgent,
-          sessionId: errorData.sessionId,
-          buildVersion: errorData.buildVersion,
-        },
-        level: mapSeverityToSentryLevel(errorData.level),
-      });
-    }
-  } catch (err) {
-    console.warn("Failed to send to Sentry:", err);
-  }
-}
-
-/**
- * * Sends error to custom endpoint
- * @param {Object} errorData - Error data to send
- */
-function sendToCustomEndpoint(errorData) {
-  const GLOBAL_SCOPE = getGlobalScope();
-
-  try {
-    const errorEndpoint = process.env.REACT_APP_ERROR_ENDPOINT;
-    if (errorEndpoint) {
-      const fetchFn =
-        GLOBAL_SCOPE.fetch || (typeof fetch === "function" ? fetch : null);
-      fetchFn?.(errorEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Error-Source": "name-nosferatu",
-        },
-        body: (() => {
-          try {
-            return JSON.stringify(errorData);
-          } catch (err) {
-            // Handle circular references or other JSON.stringify errors
-            if (process.env.NODE_ENV === "development") {
-              console.warn("Failed to stringify error data:", err);
-            }
-            return JSON.stringify({
-              message: "Error data could not be serialized",
-              error: String(errorData?.message || errorData || "Unknown error"),
-            });
-          }
-        })(),
-      }).catch((err) => {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("Failed to send error to custom endpoint:", err);
-        }
-      });
-    }
-  } catch (err) {
-    console.warn("Failed to send to custom endpoint:", err);
-  }
-}
-
-/**
- * * Sends error to console for development
- * @param {Object} errorData - Error data to send
- */
-function sendToConsole(errorData) {
-  if (process.env.NODE_ENV === "development") {
-    const GLOBAL_SCOPE = getGlobalScope();
-
-    console.groupCollapsed("🚨 Error Tracking Service");
-    console.log("Error Data:", errorData);
-    console.log("Sentry Available:", !!GLOBAL_SCOPE.Sentry);
-    console.log(
-      "Custom Endpoint:",
-      process.env.REACT_APP_ERROR_ENDPOINT || "Not configured",
-    );
-    console.groupEnd();
-  }
-}
-
-/**
- * * Gets the current session ID for error tracking context
- * @returns {string} Session ID
- */
-function getSessionId() {
-  const GLOBAL_SCOPE = getGlobalScope();
-
-  try {
-    const storage = GLOBAL_SCOPE.sessionStorage;
-    let sessionId = storage?.getItem("errorSessionId");
-    if (!sessionId) {
-      sessionId = GLOBAL_SCOPE.crypto?.randomUUID
-        ? `session_${GLOBAL_SCOPE.crypto.randomUUID()}`
-        : `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
-      storage?.setItem("errorSessionId", sessionId);
-    }
-    return sessionId;
-  } catch {
-    if (GLOBAL_SCOPE.crypto?.randomUUID) {
-      return `session_${GLOBAL_SCOPE.crypto.randomUUID()}`;
-    }
-    return `session_${Date.now()}`;
-  }
-}
-
-/**
- * * Gets the current user ID for error tracking context
- * @returns {string|null} User ID or null if not available
- */
-function getUserId() {
-  const GLOBAL_SCOPE = getGlobalScope();
-
-  try {
-    return GLOBAL_SCOPE.localStorage?.getItem("catNamesUser") ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * * Maps internal severity levels to Sentry levels
- * @param {string} severity - Internal severity level
- * @returns {string} Sentry-compatible level
- */
-function mapSeverityToSentryLevel(severity) {
-  const mapping = {
-    [ERROR_SEVERITY.LOW]: "info",
-    [ERROR_SEVERITY.MEDIUM]: "warning",
-    [ERROR_SEVERITY.HIGH]: "error",
-    [ERROR_SEVERITY.CRITICAL]: "fatal",
+  const formatted: FormattedError = {
+    id: generateErrorId(),
+    message: errorInfo.message,
+    userMessage,
+    context,
+    type: errorInfo.type,
+    severity,
+    isRetryable: retryable,
+    timestamp: new Date().toISOString(),
+    metadata: {
+      ...metadata,
+      originalError: errorInfo,
+      stack: errorInfo.stack,
+    },
+    diagnostics,
+    aiContext: "",
+    stack: errorInfo.stack || null,
   };
-  return mapping[severity] || "error";
+
+  formatted.aiContext = buildAIContext({
+    formattedError: formatted,
+    diagnostics,
+  });
+
+  return formatted;
 }

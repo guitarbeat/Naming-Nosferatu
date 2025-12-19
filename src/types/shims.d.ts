@@ -15,20 +15,20 @@ declare module "@services/errorManager" {
 
 declare module "@utils/coreUtils" {
   export const devLog: (...args: unknown[]) => void;
+  export const devWarn: (...args: unknown[]) => void;
+  export const devError: (...args: unknown[]) => void;
   export function buildComparisonsMap(...args: unknown[]): unknown;
   export function getPreferencesMap(...args: unknown[]): unknown;
   export function initializeSorterPairs(...args: unknown[]): unknown;
-}
-
-declare module "@utils/logger" {
-  export const devLog: (...args: unknown[]) => void;
-  export const devWarn: (...args: unknown[]) => void;
-  export const devError: (...args: unknown[]) => void;
-}
-
-declare module "@utils/ratingUtils" {
   export const ratingsToArray: (...args: unknown[]) => unknown;
   export const ratingsToObject: (...args: unknown[]) => unknown;
+}
+
+declare module "@utils/uiUtils" {
+  export const isMobile: boolean;
+  export const isTablet: boolean;
+  export const isDesktop: boolean;
+  export const getRankDisplay: (rank: number) => string;
 }
 
 declare module "@services/supabase/auth" {

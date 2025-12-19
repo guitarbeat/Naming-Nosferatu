@@ -3,8 +3,10 @@
  * @description Custom hook for loading and managing the cat image gallery
  */
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
-import { imagesAPI } from "../../../shared/services/supabase/api";
+import {
+  resolveSupabaseClient,
+  imagesAPI,
+} from "../../../shared/services/supabase/supabaseClient";
 import { deduplicateImages } from "../utils";
 import { CAT_IMAGES } from "../constants";
 

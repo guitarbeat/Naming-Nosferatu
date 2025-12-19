@@ -32,7 +32,7 @@ import useAppStore, {
 } from "./core/store/useAppStore";
 import { Name } from "./core/hooks/tournament/types";
 import { TournamentName } from "./types/store";
-import { devError } from "./shared/utils/logger";
+import { devError } from "./shared/utils/coreUtils";
 import { useKeyboardShortcuts } from "./core/hooks/useKeyboardShortcuts";
 import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
 

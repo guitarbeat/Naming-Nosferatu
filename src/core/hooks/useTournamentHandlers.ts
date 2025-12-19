@@ -1,13 +1,13 @@
 import { useCallback } from "react";
 import { tournamentsAPI } from "../../shared/services/supabase/api";
 import { ErrorManager } from "../../shared/services/errorManager";
-import { devLog, devWarn, devError } from "../../shared/utils/logger";
+import { devLog, devWarn, devError } from "../../shared/utils/coreUtils";
 import {
   ratingsToArray,
   ratingsToObject,
-} from "../../shared/utils/ratingUtils";
+} from "../../shared/utils/metricsUtils";
 import { isNameHidden } from "../../shared/utils/nameFilterUtils";
-import { clearTournamentCache } from "../../shared/utils/cacheUtils";
+import { clearTournamentCache } from "../../shared/utils/coreUtils";
 import { Name, TournamentActions } from "./tournament/types";
 
 /**

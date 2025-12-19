@@ -4,7 +4,7 @@
  */
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { generateFunName } from "../../shared/utils/nameGenerationUtils";
-import { validateUsername } from "../../shared/utils/validationUtils";
+import { validateUsername } from "../../shared/utils/coreUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import styles from "./Login.module.css";
 

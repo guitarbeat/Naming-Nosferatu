@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { validateCatName } from "../../../shared/utils/validationUtils";
+import { validateCatName } from "../../../shared/utils/coreUtils";
 import { TournamentButton } from "../../../shared/components/Button";
 import { NameItem } from "../../../shared/propTypes";
 import styles from "../TournamentSetup.module.css";

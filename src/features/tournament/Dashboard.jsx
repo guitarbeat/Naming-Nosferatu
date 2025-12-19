@@ -20,10 +20,10 @@ import {
   CollapsibleContent,
 } from "../../shared/components/CollapsibleHeader";
 import { catNamesAPI } from "../../shared/services/supabase/api";
-import { devError } from "../../shared/utils/logger";
+import { devError } from "../../shared/utils/coreUtils";
 import { useToast } from "../../shared/hooks/useToast";
 import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
-import { getRankDisplay } from "../../shared/utils/displayUtils";
+import { getRankDisplay } from "../../shared/utils/uiUtils";
 import { calculatePercentile } from "../../shared/utils/metricsUtils";
 import styles from "./Dashboard.module.css";
 
