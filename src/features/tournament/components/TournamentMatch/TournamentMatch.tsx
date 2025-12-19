@@ -99,7 +99,7 @@ function TournamentMatch({
       {/* Battle Stage */}
       <div
         className={styles.battleStage}
-        style={{ filter: "url(#tournament-ferro-goo)" }}
+        style={{ filter: "url(#tournament-ferro-goo)" } as any}
         key="battle-stage"
       >
         <div className={styles.stageWrapper}>
@@ -213,7 +213,7 @@ function TournamentMatch({
       </div>
 
       {/* Voting Error Display */}
-      {votingError && (
+      {!!votingError && (
         <Error
           variant="inline"
           error={votingError as Error}

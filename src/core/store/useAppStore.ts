@@ -1,7 +1,6 @@
 import { create, StateCreator } from "zustand";
 import { useEffect } from "react";
-import { siteSettingsAPI } from "../../shared/services/supabase/api";
-import { updateSupabaseUserContext } from "../../shared/services/supabase/client";
+import { siteSettingsAPI, updateSupabaseUserContext } from "../../shared/services/supabase/supabaseClient";
 import { AppState, UserState, UIState } from "../../types/store";
 
 const LOG_ENDPOINT =
@@ -24,7 +23,7 @@ const applyDevtools = (storeImpl: StateCreator<AppState>) => {
         data: { env: process.env.NODE_ENV },
         timestamp: Date.now(),
       }),
-    }).catch(() => {});
+    }).catch(() => { });
   }
   return storeImpl;
 };
@@ -484,7 +483,7 @@ if (LOG_ENDPOINT) {
       data: { env: process.env.NODE_ENV },
       timestamp: Date.now(),
     }),
-  }).catch(() => {});
+  }).catch(() => { });
 }
 // #endregion
 

@@ -4,9 +4,8 @@
  */
 import { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { compressImageFile } from "../../../../shared/utils/coreUtils";
-import { imagesAPI } from "../../../../shared/services/supabase/api";
-import { devError } from "../../../../shared/utils/coreUtils";
+import { compressImageFile, devError } from "../../../../shared/utils/coreUtils";
+import { imagesAPI } from "../../../../shared/services/supabase/supabaseClient";
 import PhotoThumbnail from "./PhotoThumbnail";
 import styles from "../../TournamentSetup.module.css";
 

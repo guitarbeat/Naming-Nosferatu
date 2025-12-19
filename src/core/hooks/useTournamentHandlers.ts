@@ -1,14 +1,10 @@
 import { useCallback } from "react";
-import { tournamentsAPI } from "../../shared/services/supabase/api";
+import { tournamentsAPI } from "../../shared/services/supabase/supabaseClient";
 import { ErrorManager } from "../../shared/services/errorManager";
-import { devLog, devWarn, devError } from "../../shared/utils/coreUtils";
-import {
-  ratingsToArray,
-  ratingsToObject,
-} from "../../shared/utils/metricsUtils";
-import { isNameHidden } from "../../shared/utils/nameFilterUtils";
-import { clearTournamentCache } from "../../shared/utils/coreUtils";
+import { devLog, devWarn, devError, clearTournamentCache } from "../../shared/utils/coreUtils";
 import { Name, TournamentActions } from "./tournament/types";
+import { ratingsToArray, ratingsToObject } from "../../shared/utils/metricsUtils";
+import { isNameHidden } from "../../shared/utils/nameUtils";
 
 /**
  * Custom hook for tournament-related handlers

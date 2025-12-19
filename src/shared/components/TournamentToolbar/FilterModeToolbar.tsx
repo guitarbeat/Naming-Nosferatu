@@ -6,6 +6,20 @@ import { FILTER_CONFIGS } from "./filterConfigs";
 import { FilterSelect, SortOrderIcon } from "./components";
 import { styles } from "./styles";
 
+interface FilterModeToolbarProps {
+  filters: any;
+  onFilterChange?: (name: string, value: string) => void;
+  filteredCount: number;
+  totalCount: number;
+  categories: string[];
+  showUserFilter: boolean;
+  userOptions?: { value: string; label: string }[] | null;
+  showSelectionFilter: boolean;
+  analysisMode: boolean;
+  isHybrid: boolean;
+  showFilters: boolean;
+}
+
 function FilterModeToolbar({
   filters,
   onFilterChange,
@@ -18,7 +32,7 @@ function FilterModeToolbar({
   analysisMode,
   isHybrid,
   showFilters,
-}) {
+}: FilterModeToolbarProps) {
   const categoryOptions = useMemo(
     () =>
       categories.map((cat) => ({
@@ -53,7 +67,7 @@ function FilterModeToolbar({
             label="Category"
             value={filters.category}
             options={categoryOptions}
-            onChange={(value) => onFilterChange("category", value)}
+            onChange={(value) => onFilterChange?.("category", value as string)}
           />
         </div>
       )}
@@ -67,11 +81,11 @@ function FilterModeToolbar({
               value={filters.filterStatus || FILTER_OPTIONS.VISIBILITY.VISIBLE}
               options={FILTER_CONFIGS.visibility}
               onChange={(value) =>
-                onFilterChange(
+                onFilterChange?.(
                   "filterStatus",
-                  value === "active"
+                  (value === "active"
                     ? FILTER_OPTIONS.VISIBILITY.VISIBLE
-                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE,
+                    : value || FILTER_OPTIONS.VISIBILITY.VISIBLE) as string,
                 )
               }
             />
@@ -81,7 +95,7 @@ function FilterModeToolbar({
                 label="User"
                 value={filters.userFilter || FILTER_OPTIONS.USER.ALL}
                 options={userOptions || FILTER_CONFIGS.users}
-                onChange={(value) => onFilterChange("userFilter", value)}
+                onChange={(value) => onFilterChange?.("userFilter", value as string)}
               />
             )}
             {showSelectionFilter && (
@@ -90,7 +104,7 @@ function FilterModeToolbar({
                 label="Selection"
                 value={filters.selectionFilter || "all"}
                 options={FILTER_CONFIGS.selection}
-                onChange={(value) => onFilterChange("selectionFilter", value)}
+                onChange={(value) => onFilterChange?.("selectionFilter", value as string)}
               />
             )}
             {analysisMode && (
@@ -99,7 +113,7 @@ function FilterModeToolbar({
                 label="Date"
                 value={filters.dateFilter || "all"}
                 options={FILTER_CONFIGS.date}
-                onChange={(value) => onFilterChange("dateFilter", value)}
+                onChange={(value) => onFilterChange?.("dateFilter", value as string)}
               />
             )}
           </div>
@@ -112,18 +126,18 @@ function FilterModeToolbar({
                 <Select
                   name="filter-sort"
                   value={filters.sortBy || FILTER_OPTIONS.SORT.RATING}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onFilterChange("sortBy", e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onFilterChange?.("sortBy", e.target.value)}
                   options={FILTER_CONFIGS.sort}
                   className={styles.filterSelect}
                 />
                 <button
                   type="button"
                   onClick={() =>
-                    onFilterChange(
+                    onFilterChange?.(
                       "sortOrder",
-                      isAsc
+                      (isAsc
                         ? FILTER_OPTIONS.ORDER.DESC
-                        : FILTER_OPTIONS.ORDER.ASC,
+                        : FILTER_OPTIONS.ORDER.ASC) as string,
                     )
                   }
                   className={styles.sortOrderButton}

@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback, useEffect } from "react";
-import { resolveSupabaseClient } from "../../shared/services/supabase/client";
+import { resolveSupabaseClient } from "../../shared/services/supabase/supabaseClient";
 import useAppStore from "../store/useAppStore";
 import { isUserAdmin } from "../../shared/utils/authUtils";
 

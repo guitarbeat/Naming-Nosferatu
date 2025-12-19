@@ -68,6 +68,11 @@ PerformanceBadge.propTypes = {
 
 PerformanceBadge.displayName = "PerformanceBadge";
 
+interface PerformanceBadgesProps {
+  types?: string[];
+  className?: string;
+}
+
 /**
  * Multiple Performance Badges Component
  * Renders multiple badges in a container
@@ -77,7 +82,7 @@ PerformanceBadge.displayName = "PerformanceBadge";
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element}
  */
-export function PerformanceBadges({ types = [], className = "" }) {
+export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
   if (!types || types.length === 0) {
     return null;
   }

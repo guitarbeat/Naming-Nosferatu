@@ -204,7 +204,7 @@ const PawsContainer = ({
   pawsOffsetY,
   zIndex,
   isVisible,
-  _pawsVisibility,
+  pawsVisibility,
   display,
   styleVars,
   pawsPosition,

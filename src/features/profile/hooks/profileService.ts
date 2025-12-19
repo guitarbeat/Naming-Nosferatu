@@ -10,7 +10,7 @@ import {
     hiddenNamesAPI,
     adminAPI,
 } from "../../../shared/services/supabase/supabaseClient";
-import { devLog, devError } from "../../../shared/utils/coreUtils";
+import { devError } from "../../../shared/utils/coreUtils";
 
 // ============================================================================
 // Types
@@ -57,7 +57,7 @@ export interface UserWithRoles {
     user_name: string;
     user_roles?: {
         role: string;
-    } | null;
+    }[] | null;
     created_at?: string | null;
     updated_at?: string | null;
 }

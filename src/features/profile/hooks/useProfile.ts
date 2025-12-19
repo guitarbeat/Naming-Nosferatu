@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAdminStatus";
 import { NameItem, IdType } from "../../../shared/propTypes";
-import { clearAllCaches, devLog, devWarn, devError } from "../../../shared/utils/coreUtils";
+import { clearAllCaches, devLog, devError } from "../../../shared/utils/coreUtils";
 import {
     fetchUserStats,
     calculateSelectionStats,
@@ -201,8 +201,8 @@ export function useProfile(userName: string, {
 
         const unique = new Map();
         availableUsers.forEach(u => {
-            const role = u.user_roles?.role;
-            const badges = [];
+            const role = u.user_roles?.[0]?.role;
+            const badges: string[] = [];
             if (role && role !== "user") badges.push(role);
             if (u.user_name === userName) badges.push("you");
             const label = `${u.user_name}${badges.length ? ` (${badges.join(", ")})` : ""}`;
