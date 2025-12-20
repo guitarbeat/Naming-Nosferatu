@@ -256,4 +256,4 @@ TournamentMatch.propTypes = {
   imageList: PropTypes.array,
 };
 
-export default TournamentMatch;
+export default React.memo(TournamentMatch);

@@ -4,6 +4,7 @@
  * @author Aaron Lor
  */
 
+import React from "react";
 import PropTypes from "prop-types";
 import Card from "../../../../shared/components/Card";
 import { StartButton } from "../StartButton";
@@ -163,4 +164,4 @@ TournamentHeader.propTypes = {
   isAdmin: PropTypes.bool,
 };
 
-export default TournamentHeader;
+export default React.memo(TournamentHeader);

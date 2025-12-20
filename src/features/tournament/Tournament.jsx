@@ -366,6 +366,24 @@ function TournamentContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleDismissError = useCallback(() => {
+    setVotingError(null);
+  }, [setVotingError]);
+
+  // * Memoized callback for toggling cat pictures to prevent TournamentControls re-renders
+  const handleToggleCatPictures = useCallback(() => {
+    setShowCatPictures((prev) => !prev);
+  }, [setShowCatPictures]);
+
+  // * Memoized callback for toggling bracket view to prevent TournamentFooter re-renders
+  const handleToggleBracket = useCallback(() => {
+    setShowBracket((prev) => !prev);
+  }, [setShowBracket]);
+
+  const handleToggleKeyboardHelp = useCallback(() => {
+    setShowKeyboardHelp((prev) => !prev);
+  }, [setShowKeyboardHelp]);
+
   // * Keyboard controls
   useKeyboardControls(
     selectedOption,
@@ -375,7 +393,7 @@ function TournamentContent({
     handleVoteWithAnimation,
     globalEventListeners,
     {
-      onToggleHelp: () => setShowKeyboardHelp((v) => !v),
+      onToggleHelp: handleToggleKeyboardHelp,
       onUndo: () => {
         if (canUndoNow) {
           handleUndo();
@@ -394,7 +412,7 @@ function TournamentContent({
           setSelectedOption("right");
         }
       },
-      onToggleCatPictures: () => setShowCatPictures((v) => !v),
+      onToggleCatPictures: handleToggleCatPictures,
     }
   );
 
@@ -505,7 +523,7 @@ function TournamentContent({
         volume={audioManager.volume}
         onVolumeChange={audioManager.handleVolumeChange}
         showCatPictures={showCatPictures}
-        onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
+        onToggleCatPictures={handleToggleCatPictures}
       />
 
       {/* Undo banner */}
@@ -548,7 +566,7 @@ function TournamentContent({
           onNameCardClick={handleNameCardClick}
           onVoteWithAnimation={handleVoteWithAnimation}
           onVoteRetry={handleVoteRetry}
-          onDismissError={() => setVotingError(null)}
+          onDismissError={handleDismissError}
           showCatPictures={showCatPictures}
           imageList={CAT_IMAGES}
         />
@@ -558,8 +576,8 @@ function TournamentContent({
           showBracket={showBracket}
           showKeyboardHelp={showKeyboardHelp}
           transformedMatches={transformedMatches}
-          onToggleBracket={() => setShowBracket(!showBracket)}
-          onToggleKeyboardHelp={() => setShowKeyboardHelp(!showKeyboardHelp)}
+          onToggleBracket={handleToggleBracket}
+          onToggleKeyboardHelp={handleToggleKeyboardHelp}
         />
       </div>
 

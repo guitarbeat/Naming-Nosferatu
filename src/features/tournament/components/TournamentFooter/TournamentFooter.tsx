@@ -3,6 +3,7 @@
  * @description Footer component for tournament view with controls, keyboard help, and bracket view
  */
 
+import React from "react";
 import PropTypes from "prop-types";
 import Bracket from "../../../../shared/components/Bracket/Bracket";
 import styles from "../../Tournament.module.css";
@@ -114,4 +115,4 @@ TournamentFooter.propTypes = {
   onToggleKeyboardHelp: PropTypes.func.isRequired,
 };
 
-export default TournamentFooter;
+export default React.memo(TournamentFooter);
