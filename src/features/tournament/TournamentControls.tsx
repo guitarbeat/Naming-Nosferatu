@@ -286,4 +286,4 @@ TournamentControls.propTypes = {
   onToggleCatPictures: PropTypes.func,
 };
 
-export default TournamentControls;
+export default React.memo(TournamentControls);
