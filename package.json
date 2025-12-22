@@ -84,7 +84,7 @@
     "@typescript-eslint/parser": "^8.47.0",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitejs/plugin-react-swc": "^4.2.2",
-    "autoprefixer": "^10.4.22",
+    "autoprefixer": "^10.4.23",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "eslint": "^9.39.1",
     "eslint-plugin-react": "^7.37.5",
