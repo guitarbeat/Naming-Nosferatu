@@ -366,6 +366,16 @@ function TournamentContent({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // * Handle dismiss error
+  const handleDismissError = useCallback(() => {
+    setVotingError(null);
+  }, [setVotingError]);
+
+  // * Handle toggle cat pictures
+  const handleToggleCatPictures = useCallback(() => {
+    setShowCatPictures((prev) => !prev);
+  }, []);
+
   // * Keyboard controls
   useKeyboardControls(
     selectedOption,
@@ -394,7 +404,7 @@ function TournamentContent({
           setSelectedOption("right");
         }
       },
-      onToggleCatPictures: () => setShowCatPictures((v) => !v),
+      onToggleCatPictures: handleToggleCatPictures,
     }
   );
 
@@ -505,7 +515,7 @@ function TournamentContent({
         volume={audioManager.volume}
         onVolumeChange={audioManager.handleVolumeChange}
         showCatPictures={showCatPictures}
-        onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
+        onToggleCatPictures={handleToggleCatPictures}
       />
 
       {/* Undo banner */}
@@ -548,7 +558,7 @@ function TournamentContent({
           onNameCardClick={handleNameCardClick}
           onVoteWithAnimation={handleVoteWithAnimation}
           onVoteRetry={handleVoteRetry}
-          onDismissError={() => setVotingError(null)}
+          onDismissError={handleDismissError}
           showCatPictures={showCatPictures}
           imageList={CAT_IMAGES}
         />

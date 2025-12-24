@@ -3,7 +3,7 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import React, { useRef } from "react";
+import React, { useRef, memo } from "react";
 import PropTypes from "prop-types";
 import Error from "../../../../shared/components/Error/Error";
 import { Button } from "../../../../shared/components/Button";
@@ -256,4 +256,4 @@ TournamentMatch.propTypes = {
   imageList: PropTypes.array,
 };
 
-export default TournamentMatch;
+export default memo(TournamentMatch);

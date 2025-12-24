@@ -2,7 +2,7 @@
  * @module TournamentControls
  * @description Provides sound and game controls during a tournament.
  */
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import PropTypes from "prop-types";
 import {
   /**
@@ -286,4 +286,4 @@ TournamentControls.propTypes = {
   onToggleCatPictures: PropTypes.func,
 };
 
-export default TournamentControls;
+export default memo(TournamentControls);
