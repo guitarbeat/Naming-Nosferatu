@@ -195,6 +195,24 @@ export function determineSeverity(errorInfo: ParsedError, metadata: Record<strin
     }
 }
 
+/**
+ * * Get the CSS class for a given error severity
+ */
+export function getSeverityClass(severity: string, styles: Record<string, string>) {
+    switch (severity) {
+        case ERROR_SEVERITY.CRITICAL:
+            return styles.critical;
+        case ERROR_SEVERITY.HIGH:
+            return styles.high;
+        case ERROR_SEVERITY.MEDIUM:
+            return styles.medium;
+        case ERROR_SEVERITY.LOW:
+            return styles.low;
+        default:
+            return styles.medium;
+    }
+}
+
 export function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string {
     const contextMap: Record<string, string> = {
         "Tournament Completion": "Failed to complete tournament",

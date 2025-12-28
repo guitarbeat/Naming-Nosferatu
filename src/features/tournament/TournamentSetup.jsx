@@ -24,8 +24,8 @@ function extractNameIds(selectedNamesValue) {
 }
 import { useImageGallery } from "./hooks/useImageGallery";
 import { useAdminStatus } from "../../shared/hooks/useAppHooks";
-import { NameSelection } from "./components/NameSelection/NameSelection";
-import { SwipeableNameCards } from "./components/SwipeMode/SwipeableNameCards";
+import NameSelection from "./components/NameSelection/NameSelection";
+import SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
 import Lightbox from "./components/Lightbox";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useProfile } from "../profile/hooks/useProfile";

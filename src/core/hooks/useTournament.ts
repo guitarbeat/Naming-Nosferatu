@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useEffect, useRef, useState } from "react";
 import EloRating from "../../features/tournament/EloRating";
 import useAppStore from "../store/useAppStore";
-import useLocalStorage from "../useStorage";
+import useLocalStorage from "./useStorage";
 import { PreferenceSorter } from "../../features/tournament/PreferenceSorter";
 import {
   buildComparisonsMap,

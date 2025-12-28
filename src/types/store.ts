@@ -16,7 +16,7 @@ export interface TournamentName {
 
 interface TournamentState {
   names: TournamentName[] | null;
-  ratings: Record<string, { rating: number }>;
+  ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
   isComplete: boolean;
   isLoading: boolean;
   voteHistory: unknown[];
@@ -50,7 +50,7 @@ export interface AppState {
 
   tournamentActions: {
     setNames: (names: TournamentName[] | null) => void;
-    setRatings: (ratings: Record<string, { rating: number }>) => void;
+    setRatings: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
     setComplete: (isComplete: boolean) => void;
     setLoading: (isLoading: boolean) => void;
     addVote: (vote: unknown) => void;
@@ -91,7 +91,7 @@ export interface AppState {
 
   selectors: {
     getTournamentNames: () => TournamentName[] | null;
-    getRatings: () => Record<string, { rating: number }>;
+    getRatings: () => Record<string, { rating: number; wins?: number; losses?: number }>;
     getIsComplete: () => boolean;
     getIsLoading: () => boolean;
     getVoteHistory: () => unknown[];
