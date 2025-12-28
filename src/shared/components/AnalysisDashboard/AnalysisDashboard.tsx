@@ -17,10 +17,8 @@ import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/supabaseCli
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { devError, clearAllCaches, formatDate } from "../../utils/coreUtils";
 import { nameItemShape } from "../../propTypes";
-import { getRankDisplay } from "../../utils/coreUtils";
-import { calculatePercentile, getMetricLabel } from "../../utils/coreUtils";
+import { devError, clearAllCaches, formatDate, getRankDisplay, calculatePercentile, getMetricLabel } from "../../utils/coreUtils";
 import "./AnalysisDashboard.css";
 
 /**
@@ -33,6 +31,15 @@ import "./AnalysisDashboard.css";
  * @param {boolean} props.showGlobalLeaderboard - Whether to fetch global top names
  * @param {boolean} props.defaultCollapsed - Default collapsed state
  */
+interface AnalysisDashboardProps {
+  highlights?: { topRated?: any[]; mostWins?: any[] };
+  userName?: string | null;
+  showGlobalLeaderboard?: boolean;
+  defaultCollapsed?: boolean;
+  isAdmin?: boolean;
+  onNameHidden?: (id: string) => void;
+}
+
 export function AnalysisDashboard({
   highlights,
   userName,
@@ -40,7 +47,7 @@ export function AnalysisDashboard({
   defaultCollapsed = false,
   isAdmin = false,
   onNameHidden,
-}) {
+}: AnalysisDashboardProps) {
   interface LeaderboardItem {
     name_id: string;
     name: string;
@@ -121,6 +128,7 @@ export function AnalysisDashboard({
     insights?: string[];
     ratingPercentile?: number;
     selectedPercentile?: number;
+    [key: string]: any;
   }
 
   // Collapsed state with localStorage persistence
@@ -158,7 +166,7 @@ export function AnalysisDashboard({
 
   // * Map date filter to period count for ranking history
   const rankingPeriods = useMemo(() => {
-    const map = {
+    const map: Record<string, number> = {
       today: 2,
       week: 7,
       month: 30,
@@ -279,7 +287,7 @@ export function AnalysisDashboard({
   }, [leaderboardData, selectionPopularity, analyticsData, isAdmin]);
 
   const handleSort = useCallback(
-    (field) => {
+    (field: string) => {
       if (sortField === field) {
         setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
       } else {
@@ -291,7 +299,7 @@ export function AnalysisDashboard({
   );
 
   const renderSortIndicator = useCallback(
-    (field) => {
+    (field: string) => {
       if (sortField !== field) return null;
       return (
         <span className="sort-indicator">
@@ -303,7 +311,7 @@ export function AnalysisDashboard({
   );
 
   const handleHideName = useCallback(
-    async (nameId, _name) => {
+    async (nameId: string, _name: string) => {
       if (!isAdmin || !userName) {
         devError("[AnalysisDashboard] Cannot hide: not admin or no userName");
         return;
@@ -394,7 +402,7 @@ export function AnalysisDashboard({
       names = [...consolidatedNames];
     } else if (highlights?.topRated?.length) {
       const highlightMap = new Map<string, ConsolidatedName>();
-      highlights.topRated.forEach((item) => {
+      highlights.topRated.forEach((item: any) => {
         highlightMap.set(item.id, {
           id: item.id,
           name: item.name,
@@ -405,7 +413,7 @@ export function AnalysisDashboard({
         });
       });
       if (highlights.mostWins?.length) {
-        highlights.mostWins.forEach((item) => {
+        highlights.mostWins.forEach((item: any) => {
           const existing = highlightMap.get(item.id);
           if (existing) {
             existing.wins = item.value || 0;
@@ -689,10 +697,6 @@ export function AnalysisDashboard({
         userOptions={(toolbarContext.profileProps?.userOptions || []) as Array<{ value: string; label: string }> | null}
         filteredCount={displayNames.length}
         totalCount={consolidatedNames.length}
-        isSwipeMode={toolbarContext.isSwipeMode || false}
-        onToggleSwipeMode={toolbarContext.setIsSwipeMode ? () => toolbarContext.setIsSwipeMode?.(!toolbarContext.isSwipeMode) : undefined}
-        showCatPictures={toolbarContext.showCatPictures || false}
-        onToggleCatPictures={toolbarContext.setShowCatPictures ? () => toolbarContext.setShowCatPictures?.(!toolbarContext.showCatPictures) : undefined}
         analysisMode={true}
       />
     ) : null;

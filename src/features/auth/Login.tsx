@@ -3,8 +3,7 @@
  * @description User login component with retro diorama aesthetic.
  */
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { generateFunName } from "../../shared/utils/coreUtils";
-import { validateUsername } from "../../shared/utils/coreUtils";
+import { generateFunName, validateUsername } from "../../shared/utils/coreUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import styles from "./Login.module.css";
 

@@ -221,11 +221,13 @@ export function NameManagementView({
 
   // * Tournament mode: filter state
   const [showSelectedOnly, setShowSelectedOnly] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("alphabetical");
-  const [isSwipeMode, setIsSwipeMode] = useState(false);
-  const [showCatPictures, setShowCatPictures] = useState(false);
+  // * Get UI state and actions from store
+  const { ui, uiActions } = useAppStore();
+  const { isSwipeMode, showCatPictures } = ui;
+  const { setSwipeMode: setIsSwipeMode, setCatPictures: setShowCatPictures } = uiActions;
 
   // * Profile mode: filter state
   const [filterStatus, setFilterStatus] = useState(
@@ -254,7 +256,7 @@ export function NameManagementView({
 
   // * Sync analysis mode with URL
   const handleAnalysisModeToggle = useCallback(
-    (newValue) => {
+    (newValue: boolean) => {
       setAnalysisMode(newValue);
       const currentPath = window.location.pathname;
       const currentSearch = new URLSearchParams(window.location.search);
@@ -340,7 +342,7 @@ export function NameManagementView({
 
   // * Handle filter changes - new API: (name, value)
   const handleFilterChange = useCallback(
-    (name, value) => {
+    (name: string, value: string) => {
       // * Tournament mode with analysis mode: handle both filter sets
       if (mode === "tournament" && analysisMode) {
         switch (name) {
@@ -591,10 +593,6 @@ export function NameManagementView({
           userOptions={profileProps.userOptions as Array<{ value: string; label: string }> | null | undefined}
           filteredCount={names.length}
           totalCount={names.length}
-          isSwipeMode={isSwipeMode}
-          onToggleSwipeMode={() => setIsSwipeMode(!isSwipeMode)}
-          showCatPictures={showCatPictures}
-          onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
           analysisMode={false}
           startTournamentButton={
             selectedCount >= 2 && onStartTournament
@@ -687,23 +685,7 @@ export function NameManagementView({
               {/* View mode toggles - only show when not in analysis mode */}
               {!analysisMode && (
                 <>
-                  <Button
-                    variant={isSwipeMode ? "primary" : "secondary"}
-                    size="small"
-                    onClick={() => setIsSwipeMode(!isSwipeMode)}
-                    className={styles.actionButton}
-                  >
-                    {isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
-                  </Button>
-
-                  <Button
-                    variant={showCatPictures ? "primary" : "secondary"}
-                    size="small"
-                    onClick={() => setShowCatPictures(!showCatPictures)}
-                    className={styles.actionButton}
-                  >
-                    {showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
-                  </Button>
+                  {/* Toggles moved to AppNavbar */}
                 </>
               )}
 

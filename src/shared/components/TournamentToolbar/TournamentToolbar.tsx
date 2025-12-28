@@ -1,6 +1,6 @@
 import React, { useId } from "react";
 import PropTypes from "prop-types";
-import { ToolbarGlass, BinaryToggle, FilterModeToolbar } from "./ToolbarComponents";
+import { ToolbarGlass, FilterModeToolbar } from "./ToolbarComponents";
 import { TournamentButton } from "../Button/Button";
 import { styles } from "./config";
 import "./TournamentToolbar.css";
@@ -26,10 +26,6 @@ interface TournamentToolbarProps {
   showUserFilter?: boolean;
   showSelectionFilter?: boolean;
   userOptions?: { value: string; label: string }[] | null;
-  isSwipeMode?: boolean;
-  onToggleSwipeMode?: () => void;
-  showCatPictures?: boolean;
-  onToggleCatPictures?: () => void;
   startTournamentButton?: {
     onClick: () => void;
     selectedCount: number;
@@ -49,10 +45,6 @@ function TournamentToolbar({
   showUserFilter = false,
   showSelectionFilter = false,
   userOptions = null,
-  isSwipeMode,
-  onToggleSwipeMode,
-  showCatPictures,
-  onToggleCatPictures,
   startTournamentButton,
   analysisMode = false,
   onOpenSuggestName,
@@ -77,32 +69,7 @@ function TournamentToolbar({
 
     return (
       <div className={styles.unifiedContainer} data-mode={mode}>
-        {(onToggleSwipeMode || onToggleCatPictures) && (
-          <div className={styles.toggleStack}>
-            {onToggleSwipeMode && (
-              <BinaryToggle
-                isActive={!!isSwipeMode}
-                onClick={onToggleSwipeMode}
-                activeLabel="Swipe"
-                inactiveLabel="Tap"
-                ariaLabel={
-                  isSwipeMode ? "Switch to swipe mode" : "Switch to tap mode"
-                }
-              />
-            )}
-            {onToggleCatPictures && (
-              <BinaryToggle
-                isActive={!!showCatPictures}
-                onClick={onToggleCatPictures}
-                activeLabel="Cats"
-                inactiveLabel="Names"
-                ariaLabel={
-                  showCatPictures ? "Hide cat pictures" : "Show cat pictures"
-                }
-              />
-            )}
-          </div>
-        )}
+
         {onOpenSuggestName && (
           <button
             className={styles.suggestButton}
@@ -180,10 +147,6 @@ TournamentToolbar.propTypes = {
   showUserFilter: PropTypes.bool,
   showSelectionFilter: PropTypes.bool,
   userOptions: PropTypes.arrayOf(optionShape),
-  isSwipeMode: PropTypes.bool,
-  onToggleSwipeMode: PropTypes.func,
-  showCatPictures: PropTypes.bool,
-  onToggleCatPictures: PropTypes.func,
   analysisMode: PropTypes.bool,
   startTournamentButton: PropTypes.shape({
     onClick: PropTypes.func.isRequired,

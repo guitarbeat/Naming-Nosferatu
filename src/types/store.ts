@@ -29,6 +29,8 @@ export interface UIState {
   showGlobalAnalytics: boolean;
   showUserComparison: boolean;
   matrixMode: boolean;
+  isSwipeMode: boolean;
+  showCatPictures: boolean;
 }
 
 interface SiteSettingsState {
@@ -72,6 +74,8 @@ export interface AppState {
     setUserComparison: (show: boolean) => void;
     setTheme: (newTheme: string) => void;
     initializeTheme: () => void;
+    setSwipeMode: (enabled: boolean) => void;
+    setCatPictures: (show: boolean) => void;
   };
 
   errorActions: {

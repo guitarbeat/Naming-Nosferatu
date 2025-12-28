@@ -224,7 +224,7 @@ export function useTournament({
       const leftStats = { winsA: newRatings[leftName]?.wins || 0, lossesA: newRatings[leftName]?.losses || 0 };
       const rightStats = { winsB: newRatings[rightName]?.wins || 0, lossesB: newRatings[rightName]?.losses || 0 };
 
-      let outcome: string = voteType === "both" ? "both" : voteType === "neither" ? "none" : winner === "left" || voteType === "left" ? "left" : "right";
+      const outcome: string = voteType === "both" ? "both" : voteType === "neither" ? "none" : winner === "left" || voteType === "left" ? "left" : "right";
 
       const r = elo.calculateNewRatings(leftRating, rightRating, outcome, { ...leftStats, ...rightStats });
 
@@ -233,6 +233,7 @@ export function useTournament({
     }
 
     if (tState.sorter) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = tState.sorter as any;
       if (winnerName && loserName) {
         if (typeof s.recordPreference === "function") s.recordPreference(winnerName, loserName, 1);
@@ -312,6 +313,7 @@ export function useTournament({
     const newHistory = history.slice(0, -1);
     updatePersistentState({ matchHistory: newHistory });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const s = tState.sorter as any;
     if (s) {
       if (typeof s.undoLastPreference === "function") s.undoLastPreference();
@@ -321,6 +323,7 @@ export function useTournament({
         if (ln && rn) {
           s.preferences.delete(`${ln}-${rn}`);
           s.preferences.delete(`${rn}-${ln}`);
+          // eslint-disable-next-line react-hooks/immutability
           if (typeof s._pairIndex === "number") s._pairIndex = Math.max(0, s._pairIndex - 1);
         }
       }
@@ -398,6 +401,7 @@ function getNextMatch(
   const findBestMatch = () => {
     try {
       const nameList = names.filter((n) => n && n.name);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const s = sorter as any;
       initializeSorterPairs(sorter, nameList);
 
@@ -436,6 +440,7 @@ function getNextMatch(
 
       if (bestPair) {
         const [a, b] = bestPair;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         s._pairIndex = Math.max(0, s._pairs.findIndex((p: any) => p[0] === a && p[1] === b));
         return {
           left: names.find((n) => n?.name === a) || { name: a, id: a },
@@ -453,6 +458,7 @@ function getNextMatch(
     if (match) return match;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const s = sorter as any;
   if (typeof s.getNextMatch === "function") {
     try {

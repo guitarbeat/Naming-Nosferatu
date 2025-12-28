@@ -1,7 +1,7 @@
 /**
  * @module AppNavbar
- * @description Consolidated navigation bar component
- * All functionality in one file for simplicity
+ * @description Premium consolidated navigation bar component
+ * Features glassmorphism, smooth animations, and internal state management
  */
 
 import { useCallback, useEffect, useState, useRef, useMemo, useId, createContext } from "react";
@@ -9,7 +9,70 @@ import { Button } from "@heroui/react";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { STORAGE_KEYS } from "../../../core/constants";
+import useAppStore from "../../../core/store/useAppStore";
 import "./AppNavbar.css";
+
+// ============================================================================
+// INTERNAL COMPONENTS
+// ============================================================================
+
+interface NavbarToggleProps {
+  isActive: boolean;
+  onToggle: () => void;
+  leftLabel: string;
+  rightLabel: string;
+  ariaLabel: string;
+}
+
+function NavbarToggle({ isActive, onToggle, leftLabel, rightLabel, ariaLabel }: NavbarToggleProps) {
+  return (
+    <button
+      type="button"
+      className="navbar-toggle"
+      onClick={onToggle}
+      aria-label={ariaLabel}
+      aria-pressed={isActive}
+      data-active={isActive}
+    >
+      <div className="navbar-toggle__track">
+        <div className="navbar-toggle__pill" />
+      </div>
+      <div className="navbar-toggle__content">
+        <span className="navbar-toggle__label" data-active={!isActive}>
+          {leftLabel}
+        </span>
+        <span className="navbar-toggle__label" data-active={isActive}>
+          {rightLabel}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function ModeToggles({ isMobile = false }: { isMobile?: boolean }) {
+  const { ui, uiActions } = useAppStore();
+  const { isSwipeMode, showCatPictures } = ui;
+  const { setSwipeMode, setCatPictures } = uiActions;
+
+  return (
+    <div className={`app-navbar__toggles ${isMobile ? "app-navbar__toggles--mobile" : ""}`}>
+      <NavbarToggle
+        isActive={isSwipeMode}
+        onToggle={() => setSwipeMode(!isSwipeMode)}
+        leftLabel="Tap"
+        rightLabel="Swipe"
+        ariaLabel={isSwipeMode ? "Switch to tap mode" : "Switch to swipe mode"}
+      />
+      <NavbarToggle
+        isActive={showCatPictures}
+        onToggle={() => setCatPictures(!showCatPictures)}
+        leftLabel="Names"
+        rightLabel="Cats"
+        ariaLabel={showCatPictures ? "Show names" : "Show cat pictures"}
+      />
+    </div>
+  );
+}
 
 // ============================================================================
 // TYPES
@@ -251,11 +314,11 @@ function useNavbarDimensions(isCollapsed: boolean) {
   const navbarRef = useRef<HTMLElement>(null);
   const [dimensions, setDimensions] = useState<NavbarDimensions>(() => {
     if (typeof window === "undefined") {
-      return { width: 1920, height: 56 };
+      return { width: 1920, height: 64 };
     }
     return {
-      width: isCollapsed ? 64 : window.innerWidth,
-      height: 56,
+      width: isCollapsed ? 72 : window.innerWidth,
+      height: 64,
     };
   });
 
@@ -264,13 +327,11 @@ function useNavbarDimensions(isCollapsed: boolean) {
 
     function updateDimensions() {
       if (isCollapsed) {
-        // When collapsed, measure actual element size
         if (navbarRef.current) {
           const rect = navbarRef.current.getBoundingClientRect();
-          const newWidth = Math.max(rect.width, 64);
-          const newHeight = Math.max(rect.height, 56);
+          const newWidth = Math.max(rect.width, 72);
+          const newHeight = Math.max(rect.height, 64);
 
-          // Only update if dimensions actually changed
           setDimensions((prev) => {
             if (prev.width === newWidth && prev.height === newHeight) {
               return prev;
@@ -279,32 +340,26 @@ function useNavbarDimensions(isCollapsed: boolean) {
           });
         } else {
           setDimensions((prev) => {
-            if (prev.width === 64 && prev.height === 56) return prev;
-            return { width: 64, height: 56 };
+            if (prev.width === 72 && prev.height === 64) return prev;
+            return { width: 72, height: 64 };
           });
         }
       } else {
-        // When not collapsed, use viewport width (CSS handles actual sizing)
         const newWidth = window.innerWidth;
         setDimensions((prev) => {
-          if (prev.width === newWidth && prev.height === 56) {
-            return prev;
-          }
-          return { width: newWidth, height: 56 };
+          if (prev.width === newWidth) return prev;
+          return { width: newWidth, height: 64 };
         });
       }
     }
 
-    // Debounce resize events to prevent excessive updates
     let resizeTimeout: ReturnType<typeof setTimeout>;
     function handleResize() {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(updateDimensions, 150);
     }
 
-    // Initial measurement with slight delay to ensure DOM is ready
     const initTimeout = setTimeout(updateDimensions, 0);
-
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -378,7 +433,7 @@ function NavbarBrand({ isActive, onClick, ariaLabel }: { isActive: boolean; onCl
       aria-label={ariaLabel}
     >
       <span className="app-navbar__brand-text">Tournament</span>
-      <small>Daily bracket</small>
+      <span className="app-navbar__brand-subtext">Daily Bracket</span>
     </button>
   );
 }
@@ -422,9 +477,11 @@ function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onToggle: () 
       aria-controls="app-navbar-mobile-panel"
       onClick={onToggle}
     >
-      <span />
-      <span />
-      <span />
+      <div className="hamburger-icon">
+        <span />
+        <span />
+        <span />
+      </div>
     </button>
   );
 }
@@ -439,15 +496,12 @@ function UserDisplay({ userName, isAdmin = false }: { userName: string; isAdmin?
 
   return (
     <div className="navbar-user-display">
-      <div className="navbar-user-display__content">
-        <div className="navbar-user-display__text">
-          <span className="navbar-user-display__name">{truncatedUserName}</span>
-          {isAdmin && (
-            <span className="navbar-user-display__admin-label" aria-label="Admin">
-              Admin
-            </span>
-          )}
-        </div>
+      <div className="navbar-avatar-placeholder">
+        {userName.charAt(0).toUpperCase()}
+      </div>
+      <div className="navbar-user-info">
+        <span className="navbar-user-name">{truncatedUserName}</span>
+        {isAdmin && <span className="navbar-admin-badge">Admin</span>}
       </div>
     </div>
   );
@@ -473,18 +527,10 @@ function NavbarCollapseToggle({ isCollapsed, onToggle }: { isCollapsed: boolean;
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="app-navbar__collapse-icon"
+        className={`app-navbar__collapse-icon ${isCollapsed ? "collapsed" : ""}`}
         aria-hidden
       >
-        {isCollapsed ? (
-          <>
-            <path d="M9 18l6-6-6-6" />
-          </>
-        ) : (
-          <>
-            <path d="M15 18l-6-6 6-6" />
-          </>
-        )}
+        <path d="M15 18l-6-6 6-6" />
       </svg>
     </button>
   );
@@ -509,12 +555,12 @@ function NavbarActions({
       {onOpenSuggestName && (
         <Button
           onClick={onOpenSuggestName}
-          className="app-navbar__action-btn"
+          className="app-navbar__action-btn app-navbar__action-btn--suggest"
           aria-label="Suggest a name"
           title="Suggest a new cat name"
         >
           <SuggestIcon aria-hidden />
-          <span className="app-navbar__action-text">Suggest</span>
+          <span className="app-navbar__btn-text">Suggest</span>
         </Button>
       )}
       {isLoggedIn && (
@@ -522,10 +568,9 @@ function NavbarActions({
           onClick={onLogout}
           className="app-navbar__action-btn app-navbar__action-btn--logout"
           aria-label="Log out"
-          title="Log out of your account"
+          title="Log out"
         >
           <LogoutIcon aria-hidden />
-          <span className="app-navbar__action-text">Logout</span>
         </Button>
       )}
     </div>
@@ -577,13 +622,14 @@ function MobileMenu({
       className="app-navbar-mobile-panel"
       role="navigation"
       aria-label="Mobile navigation"
+      data-open={isOpen}
     >
       <div className="app-navbar-mobile-panel__content">
         <button
           ref={firstLinkRef}
           type="button"
           onClick={onHomeClick}
-          className="app-navbar__link app-navbar__link--mobile"
+          className="app-navbar__mobile-link"
           data-active={homeIsActive}
           aria-current={homeIsActive ? "page" : undefined}
           onKeyDown={(e) => handleKeyDown(e, true, navItems.length === 0)}
@@ -598,10 +644,16 @@ function MobileMenu({
               key={item.key}
               item={item}
               onClick={onNavClick}
-              className="app-navbar__link app-navbar__link--mobile"
+              className="app-navbar__mobile-link"
             />
           );
         })}
+        
+        <div className="app-navbar__mobile-separator" />
+        
+        <div className="app-navbar__mobile-toggles">
+          <ModeToggles isMobile />
+        </div>
       </div>
     </nav>
   );
@@ -711,42 +763,54 @@ export function AppNavbar({
     <NavbarProvider value={contextValue}>
       <LiquidGlass
         id={`navbar-glass-${navbarGlassId.replace(/:/g, "-")}`}
-        className={`app-navbar-glass app-navbar--horizontal ${isCollapsed ? "app-navbar-glass--collapsed" : ""}`}
+        className={`app-navbar-glass ${isCollapsed ? "collapsed" : ""}`}
         width={isCollapsed ? dimensions.width : (typeof window !== "undefined" ? window.innerWidth : 1920)}
         height={dimensions.height}
+        // Force re-render on collapse change
+        key={`glass-${isCollapsed}`}
         style={
           isCollapsed
             ? { width: "auto", maxWidth: "max-content", height: "auto", overflow: "visible" }
             : { width: "100%", height: "auto", overflow: "hidden" }
         }
-        data-orientation="horizontal"
+        radius={isCollapsed ? 24 : 0}
         data-collapsed={isCollapsed}
       >
         <header
           ref={navbarRef}
           id="app-navbar"
-          className={`app-navbar app-navbar--horizontal ${isCollapsed ? "app-navbar--collapsed" : ""}`}
+          className={`app-navbar ${isCollapsed ? "collapsed" : ""}`}
           role="banner"
-          data-orientation="horizontal"
           data-collapsed={isCollapsed}
         >
-          <NavbarCollapseToggle isCollapsed={isCollapsed} onToggle={toggleCollapse} />
+          <div className="app-navbar__left">
+             <NavbarCollapseToggle isCollapsed={isCollapsed} onToggle={toggleCollapse} />
+             <div className="app-navbar__brand-wrapper">
+                <NavbarBrand isActive={isHomeViewActive} onClick={handleHomeClick} ariaLabel="Go to Tournament home" />
+             </div>
+          </div>
 
-          <NavbarBrand isActive={isHomeViewActive} onClick={handleHomeClick} ariaLabel="Go to Tournament home" />
+          <div className="app-navbar__center">
+            {navItems.map((item) => (
+              <NavbarLink key={item.key} item={item} onClick={handleNavClick} />
+            ))}
+          </div>
 
-          {navItems.map((item) => (
-            <NavbarLink key={item.key} item={item} onClick={handleNavClick} />
-          ))}
+          <div className="app-navbar__right">
+             <div className="app-navbar__desktop-toggles">
+               <ModeToggles />
+             </div>
+             
+             <NavbarActions
+               isLoggedIn={isLoggedIn}
+               userName={userName}
+               isAdmin={isAdmin}
+               onLogout={handleLogout}
+               onOpenSuggestName={onOpenSuggestName}
+             />
 
-          <NavbarActions
-            isLoggedIn={isLoggedIn}
-            userName={userName}
-            isAdmin={isAdmin}
-            onLogout={handleLogout}
-            onOpenSuggestName={onOpenSuggestName}
-          />
-
-          <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
+             <MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
+          </div>
         </header>
       </LiquidGlass>
 

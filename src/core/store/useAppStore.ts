@@ -105,6 +105,8 @@ const storeImpl: StateCreator<AppState> = (set, get) => ({
     showGlobalAnalytics: false,
     showUserComparison: false,
     matrixMode: false,
+    isSwipeMode: false,
+    showCatPictures: false,
   },
 
   // * Site Settings State
@@ -311,6 +313,22 @@ const storeImpl: StateCreator<AppState> = (set, get) => ({
         ui: {
           ...state.ui,
           showGlobalAnalytics: show,
+        },
+      })),
+
+    setSwipeMode: (enabled) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          isSwipeMode: enabled,
+        },
+      })),
+
+    setCatPictures: (show) =>
+      set((state) => ({
+        ui: {
+          ...state.ui,
+          showCatPictures: show,
         },
       })),
 

@@ -7,7 +7,7 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import Card from "../Card/Card";
+
 import CardName from "../Card/components/CardName";
 import Loading from "../Loading/Loading";
 import {

@@ -798,6 +798,113 @@
   .app-navbar__mobile {
     display: none !important;
   }
+
+  /* Compact Toggle Styling for Desktop Navbar */
+  .app-navbar__desktop-toggles .tournament-toolbar-toggle-wrapper {
+    /* Override dimensions for compact fit */
+    --tt-toggle-switch-height-default: 32px;
+    --tt-toggle-thumb-size: 26px;
+    --tt-toggle-thumb-offset: 3px;
+    --tt-toggle-track-padding: 3px;
+    
+    /* Calculate translation based on new sizes: 100% width - thumb size - 2 * padding - 2 * offset */
+    /* Simpler calc: 100% - (thumb + padding) is not quite right for flex, but let's stick to the variable logic used in source */
+    /* Original: calc(100% - 45px). New thumb is 26px, padding 3px. */
+    /* Let's set a fixed translation since width is fixed in this context */
+    --tt-toggle-thumb-active-translate: calc(100% - 32px);
+
+    flex: 0 0 auto;
+    width: 130px; /* Fixed width for compactness */
+    min-width: 0;
+  }
+
+  .app-navbar__desktop-toggles .tournament-toolbar-toggle-switch {
+    border-width: 1.5px;
+    background: hsl(var(--background) / 40%);
+    box-shadow: inset 0 1px 2px hsl(var(--foreground) / 5%);
+  }
+  
+  .app-navbar__desktop-toggles .tournament-toolbar-toggle-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  /* Adjust thumb shadow for smaller size */
+  .app-navbar__desktop-toggles .tournament-toolbar-toggle-thumb {
+    box-shadow: 0 2px 4px hsl(var(--background) / 20%);
+    border-width: 1.5px;
+  }
+}
+
+/* ============================================================================
+   Toggle Styles
+   ============================================================================ */
+
+/* Toggle Container Styles */
+.app-navbar__desktop-toggles {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.app-navbar__toggles {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Make toggles smaller for navbar */
+.app-navbar__toggles .tournament-toolbar-toggle-wrapper {
+  flex: 0 0 auto;
+  min-width: 140px;
+}
+
+.app-navbar__toggles .tournament-toolbar-toggle-switch {
+  height: 36px; /* Smaller height for navbar */
+  padding: 2px;
+}
+
+.app-navbar__toggles .tournament-toolbar-toggle-thumb {
+  width: 28px;
+  height: 28px;
+  --tt-toggle-thumb-offset: 2px;
+  --tt-toggle-thumb-active-translate: calc(100% - 32px);
+}
+
+.app-navbar__toggles .tournament-toolbar-toggle-label {
+  font-size: 0.75rem;
+}
+
+/* Mobile Toggles */
+.app-navbar__mobile-toggles {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid hsl(var(--border) / 20%);
+}
+
+.app-navbar__mobile-toggles .app-navbar__toggles {
+  flex-direction: column;
+  width: 100%;
+}
+
+.app-navbar__mobile-toggles .tournament-toolbar-toggle-wrapper {
+  width: 100%;
+}
+
+/* Hide desktop toggles on smaller screens */
+@media (width <= 960px) {
+  .app-navbar__desktop-toggles {
+    display: none;
+  }
+}
+
+/* Show desktop toggles on larger screens */
+@media (width > 960px) {
+  .app-navbar__desktop-toggles {
+    display: flex;
+  }
 }
 
 @media (width <= 640px) {

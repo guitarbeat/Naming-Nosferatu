@@ -161,6 +161,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
         const nameLastSelected: Record<string, string> = {};
         const nameSelectionFrequency: Record<string, number> = {};
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         selections.forEach((s: any) => {
             if (s.name) nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
             if (s.name_id) {
