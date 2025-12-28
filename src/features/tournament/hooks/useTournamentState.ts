@@ -23,6 +23,7 @@ interface NameItem {
   [key: string]: unknown;
 }
 
+// ts-prune-ignore-next (used in Tournament)
 export function useTournamentState(
   names: NameItem[] | null | undefined,
   existingRatings: Record<string, number> | null | undefined,

@@ -3,15 +3,15 @@ import {
   buildComparisonsMap,
   getPreferencesMap,
   initializeSorterPairs,
+  calculateBracketRound,
 } from "../../../shared/utils/coreUtils";
-import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
 import {
-  Name,
+  NameItem,
   Match,
   MatchRecord,
   PersistentState,
   TournamentState,
-} from "./types";
+} from "../../../shared/propTypes";
 
 interface EloService {
   calculateNewRatings: (
@@ -41,7 +41,7 @@ interface TournamentActions {
  * @returns {Object} Vote handlers and rating getters
  */
 interface UseTournamentVotingProps {
-  names?: Name[];
+  names?: NameItem[];
   userName: string;
   currentMatch: Match | null;
   currentMatchNumber: number;
@@ -131,9 +131,9 @@ export function useTournamentVoting({
       updateTournamentState({ isTransitioning: true });
 
       const leftName =
-        (currentMatch.left as Name)?.name || (currentMatch.left as string);
+        (currentMatch.left as NameItem)?.name || (currentMatch.left as string);
       const rightName =
-        (currentMatch.right as Name)?.name || (currentMatch.right as string);
+        (currentMatch.right as NameItem)?.name || (currentMatch.right as string);
 
       // * Determine winner and loser based on vote type
       let winnerName, loserName;
@@ -326,7 +326,7 @@ export function useTournamentVoting({
 
 // * Internal function to get next match
 function getNextMatch(
-  names: Name[],
+  names: NameItem[],
   sorter: unknown,
   _matchNumber: number,
   options: {

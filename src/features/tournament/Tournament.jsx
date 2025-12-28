@@ -14,21 +14,26 @@ import React, {
 import PropTypes from "prop-types";
 import Loading from "../../shared/components/Loading/Loading";
 import Error from "../../shared/components/Error/Error";
-import { Button } from "../../shared/components/Button";
+import Button from "../../shared/components/Button/Button";
 import TournamentControls from "./TournamentControls";
-import TournamentHeader from "./components/TournamentHeader";
-import TournamentMatch from "./components/TournamentMatch";
-import TournamentFooter from "./components/TournamentFooter";
+import TournamentHeader from "./components/TournamentHeader/TournamentHeader";
+import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
+import TournamentFooter from "./components/TournamentFooter/TournamentFooter";
 import MatchResult from "./components/MatchResult/MatchResult";
 import RoundTransition from "./components/RoundTransition/RoundTransition";
-import { useAudioManager } from "./hooks/useAudioManager";
+import { useAudioManager, useKeyboardControls } from "./hooks/useTournamentInteractions";
 import { useTournamentState } from "./hooks/useTournamentState";
-import { useKeyboardControls } from "./hooks/useKeyboardControls";
-import { useToast } from "../../shared/hooks/useToast";
+import { useToast } from "../../shared/hooks/useAppHooks";
 import { TOURNAMENT_TIMING } from "../../core/constants";
-import { CAT_IMAGES } from "./constants";
-import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
-import { getVisibleNames } from "../../shared/utils/nameUtils";
+import { CAT_IMAGES } from "./config";
+import { calculateBracketRound } from "../../shared/utils/coreUtils";
+import { isNameHidden } from "../../shared/utils/nameUtils";
+
+// Inline getVisibleNames - simple utility only used here
+function getVisibleNames(names) {
+  if (!Array.isArray(names)) return [];
+  return names.filter((name) => !isNameHidden(name));
+}
 import styles from "./Tournament.module.css";
 
 // * Main tournament content component

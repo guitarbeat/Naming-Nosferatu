@@ -4,13 +4,10 @@
  */
 import { useState } from "react";
 import PropTypes from "prop-types";
-import useMobileGestures from "./useMobileGestures";
+import { useMobileGestures, SwipeCard, SwipeControls } from "./SwipeComponents";
 import { TIMING } from "../../../../core/constants";
-import { getRandomCatImage } from "../../utils";
-import { CAT_IMAGES } from "../../constants";
+import { getRandomCatImage, CAT_IMAGES } from "../../config";
 import { NameItem } from "../../../../shared/propTypes";
-import SwipeCard from "./SwipeCard";
-import SwipeControls from "./SwipeControls";
 import styles from "../../TournamentSetup.module.css";
 
 interface SwipeableNameCardsProps {

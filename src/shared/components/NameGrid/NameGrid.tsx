@@ -7,7 +7,8 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import Card from "../Card";
+import Card from "../Card/Card";
+import CardName from "../Card/components/CardName";
 import Loading from "../Loading/Loading";
 import {
   applyNameFilters,
@@ -167,7 +168,7 @@ export function NameGrid({
 
             return (
               <div key={String(nameId)} className={styles.cardWrapper}>
-                <Card.Name
+                <CardName
                   name={nameObj.name || ""}
                   description={nameObj.description}
                   isSelected={selectedSet.has(nameId)}

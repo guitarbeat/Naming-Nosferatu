@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useEffect } from "react";
-import useLocalStorage from "../useLocalStorage";
+import useLocalStorage from "../useStorage";
 
-import { Name, PersistentState } from "./types";
+import { NameItem, PersistentState } from "../../../shared/propTypes";
 
 const createDefaultPersistentState = (userName: string): PersistentState => ({
   matchHistory: [],
@@ -17,12 +17,12 @@ export function useTournamentPersistence({
   names = [],
   userName,
 }: {
-  names?: Name[];
+  names?: NameItem[];
   userName: string;
 }) {
   const tournamentId = useMemo(() => {
     const sortedNames = [...names]
-      .map((n: Name) => n.name || n)
+      .map((n: NameItem) => n.name || n)
       .sort()
       .join("-");
     const prefix = userName || "anonymous";

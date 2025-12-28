@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import LiquidGlass from "../LiquidGlass";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Toast.module.css";
 
 /**

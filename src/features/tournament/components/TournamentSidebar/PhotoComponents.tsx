@@ -1,11 +1,19 @@
 /**
- * @module TournamentSetup/components/PhotoThumbnail
- * @description Photo thumbnail with responsive image sources and 3D tilt effect
+ * @module TournamentSetup/components/PhotoComponents
+ * @description Consolidated photo gallery components
+ * Includes PhotoGallery and PhotoThumbnail components
  */
-import { useState, useCallback, memo, useRef, useEffect } from "react";
+
+import { useState, useCallback, memo, useRef, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
-import { GALLERY_IMAGE_SIZES } from "../../constants";
+import { devError, compressImageFile } from "../../../../shared/utils/coreUtils";
+import { imagesAPI } from "../../../../shared/services/supabase/supabaseClient";
+import { GALLERY_IMAGE_SIZES } from "../../config";
 import styles from "../../TournamentSetup.module.css";
+
+// ============================================================================
+// PhotoThumbnail Component
+// ============================================================================
 
 interface PhotoThumbnailProps {
   image: string;
@@ -186,4 +194,125 @@ const PhotoThumbnailWithPropTypes = PhotoThumbnail as typeof PhotoThumbnail & {
   onImageOpen: PropTypes.func.isRequired,
 };
 
+// ts-prune-ignore-next (used in PhotoGallery within this file)
 export default PhotoThumbnail;
+
+// ============================================================================
+// PhotoGallery Component
+// ============================================================================
+
+interface PhotoGalleryProps {
+  galleryImages?: string[];
+  showAllPhotos: boolean;
+  onShowAllPhotosToggle: () => void;
+  onImageOpen: (image: string) => void;
+  isAdmin: boolean;
+  userName?: string;
+  onImagesUploaded: (images: string[]) => void;
+}
+
+// ts-prune-ignore-next (used in TournamentSetup)
+export function PhotoGallery({
+  galleryImages = [],
+  showAllPhotos,
+  onShowAllPhotosToggle,
+  onImageOpen,
+  isAdmin,
+  userName,
+  onImagesUploaded,
+}: PhotoGalleryProps) {
+  // * Ensure galleryImages is always an array
+  const safeGalleryImages = useMemo(
+    () => (Array.isArray(galleryImages) ? galleryImages : []),
+    [galleryImages],
+  );
+
+  const displayImages = useMemo(
+    () => (showAllPhotos ? safeGalleryImages : safeGalleryImages.slice(0, 8)),
+    [safeGalleryImages, showAllPhotos],
+  );
+
+  const handleFileUpload = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      if (!files.length) return;
+
+      try {
+        const uploaded: string[] = [];
+        const uploadPromises = files.map(async (f) => {
+          try {
+            const compressed = await compressImageFile(f, {
+              maxWidth: 1600,
+              maxHeight: 1600,
+              quality: 0.8,
+            });
+            const url = await imagesAPI.upload(compressed, userName || "anonymous");
+            if (url) uploaded.push(url);
+          } catch (err) {
+            devError("PhotoGallery: Failed to upload image", err);
+          }
+        });
+
+        await Promise.all(uploadPromises);
+        if (uploaded.length > 0) {
+          onImagesUploaded(uploaded);
+        }
+      } catch (err) {
+        devError("PhotoGallery: Upload error", err);
+      }
+    },
+    [userName, onImagesUploaded],
+  );
+
+  return (
+    <div className={styles.photoGallery}>
+      <div className={styles.photoGalleryHeader}>
+        <h3 className={styles.photoGalleryTitle}>Cat Photos</h3>
+        {isAdmin && (
+          <label className={styles.photoUploadButton}>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+            📤 Upload
+          </label>
+        )}
+      </div>
+      <div className={styles.photoGrid}>
+        {displayImages.map((image, index) => (
+          <PhotoThumbnail
+            key={`${image}-${index}`}
+            image={image}
+            index={index}
+            onImageOpen={onImageOpen}
+          />
+        ))}
+      </div>
+      {safeGalleryImages.length > 8 && (
+        <button
+          type="button"
+          className={styles.showAllPhotosButton}
+          onClick={onShowAllPhotosToggle}
+        >
+          {showAllPhotos
+            ? "Show Less"
+            : `Show All ${safeGalleryImages.length} Photos`}
+        </button>
+      )}
+    </div>
+  );
+}
+
+PhotoGallery.propTypes = {
+  galleryImages: PropTypes.arrayOf(PropTypes.string),
+  showAllPhotos: PropTypes.bool.isRequired,
+  onShowAllPhotosToggle: PropTypes.func.isRequired,
+  onImageOpen: PropTypes.func.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  userName: PropTypes.string,
+  onImagesUploaded: PropTypes.func.isRequired,
+};
+

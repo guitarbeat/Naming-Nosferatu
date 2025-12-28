@@ -27,11 +27,13 @@ export interface NameItem {
     [key: string]: any;
 }
 
+// ts-prune-ignore-next (used in module - MatchRecord)
 export interface Match {
     left: NameItem | string;
     right: NameItem | string;
 }
 
+// ts-prune-ignore-next (used in module - PersistentState)
 export interface MatchRecord {
     match: Match;
     winner: string | null;
@@ -42,6 +44,7 @@ export interface MatchRecord {
     timestamp: number;
 }
 
+// ts-prune-ignore-next (used as type in tournament hooks)
 export interface PersistentState {
     matchHistory: MatchRecord[];
     currentRound: number;
@@ -52,6 +55,7 @@ export interface PersistentState {
     namesKey: string;
 }
 
+// ts-prune-ignore-next (used as type in App, ViewRouter, and tournament hooks)
 export interface TournamentState {
     currentMatch: Match | null;
     currentMatchNumber: number;
@@ -67,6 +71,7 @@ export interface TournamentState {
     sorter: unknown;
 }
 
+// ts-prune-ignore-next (used as type in tournament hooks)
 export interface TournamentActions {
     setRatings: (
         ratings: Record<string, { rating: number; wins?: number; losses?: number }>,

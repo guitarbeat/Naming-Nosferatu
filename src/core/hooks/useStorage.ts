@@ -1,10 +1,13 @@
 /**
- * @module useLocalStorage
- * @description Custom hook for managing localStorage with error handling and type safety.
- * Provides a React-friendly interface for localStorage operations.
+ * @module useStorage
+ * @description Storage hooks for localStorage management and collapsible state with persistence
  */
 
 import { useState, useCallback } from "react";
+
+// ============================================================================
+// LocalStorage Hook
+// ============================================================================
 
 /**
  * Custom hook for localStorage management
@@ -58,3 +61,41 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 
   return [storedValue, setValue];
 }
+
+// ============================================================================
+// Collapsible Hook
+// ============================================================================
+
+/**
+ * Hook for managing collapsible state with optional localStorage persistence
+ * @param {string} storageKey - Key for localStorage persistence (optional)
+ * @param {boolean} defaultValue - Default collapsed state
+ * @returns {Object} { isCollapsed, toggleCollapsed, setCollapsed }
+ */
+export function useCollapsible(
+  storageKey: string | null = null,
+  defaultValue: boolean = false,
+) {
+  // Use localStorage hook if storageKey provided, otherwise use local state
+  const [persistedValue, setPersistedValue] = useLocalStorage(
+    storageKey || "__unused__",
+    defaultValue,
+  );
+
+  const [localValue, setLocalValue] = useState(defaultValue);
+
+  // Use persisted value if storageKey is provided
+  const isCollapsed = storageKey ? persistedValue : localValue;
+  const setCollapsed = storageKey ? setPersistedValue : setLocalValue;
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev: boolean) => !prev);
+  }, [setCollapsed]);
+
+  return {
+    isCollapsed,
+    toggleCollapsed,
+    setCollapsed,
+  };
+}
+

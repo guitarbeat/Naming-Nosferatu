@@ -6,8 +6,8 @@
 
 import { useCallback, useEffect, useState, useRef, useMemo, useId, createContext } from "react";
 import { Button } from "@heroui/react";
-import LiquidGlass from "../LiquidGlass";
-import { useCollapsible } from "../../hooks/useCollapsible";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
+import { useCollapsible } from "../../../core/hooks/useStorage";
 import { STORAGE_KEYS } from "../../../core/constants";
 import "./AppNavbar.css";
 
@@ -377,7 +377,7 @@ function NavbarBrand({ isActive, onClick, ariaLabel }: { isActive: boolean; onCl
       aria-current={isActive ? "page" : undefined}
       aria-label={ariaLabel}
     >
-      Tournament
+      <span className="app-navbar__brand-text">Tournament</span>
       <small>Daily bracket</small>
     </button>
   );

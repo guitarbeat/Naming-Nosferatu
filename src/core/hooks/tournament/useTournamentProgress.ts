@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { calculateBracketRound } from "../../../shared/utils/tournamentUtils";
+import { calculateBracketRound } from "../../../shared/utils/coreUtils";
 
-import { Name, MatchRecord, PersistentState, TournamentState } from "./types";
+import { NameItem, MatchRecord, PersistentState, TournamentState } from "../../../shared/propTypes";
 
 interface UseTournamentProgressProps {
   namesLength: number;
@@ -71,14 +71,14 @@ export function useTournamentProgress({
     } else if (
       sorter &&
       sorterAny.preferences instanceof Map &&
-      (lastVote?.match?.left as Name)?.name &&
-      (lastVote?.match?.right as Name)?.name
+      (lastVote?.match?.left as NameItem)?.name &&
+      (lastVote?.match?.right as NameItem)?.name
     ) {
       // * Use optional chaining for safety (already validated above, but defensive)
       const leftName =
-        (lastVote.match.left as Name)?.name || (lastVote.match.left as string);
+        (lastVote.match.left as NameItem)?.name || (lastVote.match.left as string);
       const rightName =
-        (lastVote.match.right as Name)?.name ||
+        (lastVote.match.right as NameItem)?.name ||
         (lastVote.match.right as string);
       if (!leftName || !rightName) {
         updateTournamentState({ isTransitioning: false });

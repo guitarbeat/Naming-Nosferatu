@@ -22,8 +22,8 @@ import {
   MusicalNoteIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Button, IconButton } from "../../shared/components/Button";
-import LiquidGlass from "../../shared/components/LiquidGlass";
+import Button, { IconButton } from "../../shared/components/Button/Button";
+import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";
 import styles from "./Tournament.module.css";
 
 const TournamentControls = ({
@@ -286,4 +286,5 @@ TournamentControls.propTypes = {
   onToggleCatPictures: PropTypes.func,
 };
 
+// ts-prune-ignore-next (used in Tournament)
 export default TournamentControls;

@@ -12,7 +12,6 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
-    setupFiles: [pathResolve(projectRoot, "src/setupTests.ts")],
     globals: true,
     testTimeout: 10000,
     env: {

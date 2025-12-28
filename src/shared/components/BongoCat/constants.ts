@@ -81,7 +81,7 @@ export const PERSONALITY_MODES = {
  * Animation states for the cat
  * @type {Object<string, string>}
  */
-export const ANIMATION_STATES = {
+const _ANIMATION_STATES = {
   IDLE: "idle",
   TYPING_SLOW: "typing-slow",
   TYPING_FAST: "typing-fast",
@@ -95,7 +95,7 @@ export const ANIMATION_STATES = {
  * Typing speed thresholds (characters per second)
  * @type {Object<string, number>}
  */
-export const TYPING_SPEED_THRESHOLDS = {
+const _TYPING_SPEED_THRESHOLDS = {
   SLOW: 2, // Below 2 cps = slow
   FAST: 6, // Above 6 cps = fast
 };
@@ -104,7 +104,7 @@ export const TYPING_SPEED_THRESHOLDS = {
  * Milestone thresholds for celebration animations
  * @type {number[]}
  */
-export const MILESTONE_THRESHOLDS = [10, 25, 50, 100, 250, 500, 1000];
+const _MILESTONE_THRESHOLDS = [10, 25, 50, 100, 250, 500, 1000];
 
 /**
  * Default configuration

@@ -315,4 +315,4 @@ Select.propTypes = {
 
 Select.displayName = "Select";
 
-export { Input, Select, FormField };
+export { Select };

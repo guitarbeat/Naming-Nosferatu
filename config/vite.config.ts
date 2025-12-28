@@ -12,6 +12,7 @@ const projectRoot = path.resolve(__dirname, "..");
 
 const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...segments);
 
+// ts-prune-ignore-next (used by Vite build system)
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, projectRoot, "");
   const isProd = mode === "production";

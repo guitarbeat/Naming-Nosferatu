@@ -1,9 +1,8 @@
 import React, { useId } from "react";
 import PropTypes from "prop-types";
-import { ToolbarGlass, BinaryToggle } from "./components";
-import { TournamentButton } from "../Button";
-import FilterModeToolbar from "./FilterModeToolbar";
-import { styles } from "./styles";
+import { ToolbarGlass, BinaryToggle, FilterModeToolbar } from "./ToolbarComponents";
+import { TournamentButton } from "../Button/Button";
+import { styles } from "./config";
 import "./TournamentToolbar.css";
 
 interface TournamentFilters {
@@ -138,7 +137,7 @@ function TournamentToolbar({
         renderTournamentMode()
       ) : (
         <FilterModeToolbar
-          filters={filters}
+          filters={filters as TournamentFilters}
           onFilterChange={onFilterChange}
           filteredCount={filteredCount}
           totalCount={totalCount}

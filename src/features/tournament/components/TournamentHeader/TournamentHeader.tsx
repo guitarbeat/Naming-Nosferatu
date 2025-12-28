@@ -5,7 +5,7 @@
  */
 
 import PropTypes from "prop-types";
-import Card from "../../../../shared/components/Card";
+import Card from "../../../../shared/components/Card/Card";
 import { StartButton } from "../StartButton";
 import styles from "../../Tournament.module.css";
 import setupStyles from "../../TournamentSetup.module.css";

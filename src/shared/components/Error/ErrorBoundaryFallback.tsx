@@ -3,8 +3,8 @@ import { createStandardizedError } from "../../services/errorManager/index";
 import {
   getMediaQueryList,
   attachMediaQueryListener,
-} from "../../utils/uiUtils";
-import LiquidGlass from "../LiquidGlass";
+} from "../../utils/coreUtils";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
 
 const DEFAULT_MAX_RETRIES = 3;
@@ -178,9 +178,10 @@ const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 
   const handleCopyDiagnostics = async () => {
     // * Use parsed stack frames from diagnostics if available, otherwise parse manually
+    const stackFramesArray = Array.isArray(diagnosticInfo.stackFrames) ? diagnosticInfo.stackFrames : [];
     const parsedFrames =
-      diagnosticInfo.stackFrames.length > 0
-        ? (diagnosticInfo.stackFrames as Array<{ file?: string; line?: number; column?: number; functionName?: string }>)
+      stackFramesArray.length > 0
+        ? (stackFramesArray as Array<{ file?: string; line?: number; column?: number; functionName?: string }>)
             .slice(0, 5)
             .map((frame) => ({
               file: frame.file?.split("/").pop() || frame.file || "unknown",
@@ -342,7 +343,7 @@ ${
 
 ## Debug Hints
 ${
-  diagnosticInfo.debugHints.length > 0
+  (Array.isArray(diagnosticInfo.debugHints) && diagnosticInfo.debugHints.length > 0)
     ? (diagnosticInfo.debugHints as Array<{ title?: string; detail?: string }>)
         .map((hint) => `- **${hint.title}**: ${hint.detail}`)
         .join("\n")

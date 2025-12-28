@@ -24,12 +24,6 @@ declare module "@utils/coreUtils" {
   export const ratingsToObject: (...args: unknown[]) => unknown;
 }
 
-declare module "@utils/uiUtils" {
-  export const isMobile: boolean;
-  export const isTablet: boolean;
-  export const isDesktop: boolean;
-  export const getRankDisplay: (rank: number) => string;
-}
 
 declare module "@services/supabase/auth" {
   const authApi: unknown;

@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { tournamentsAPI } from "../../shared/services/supabase/supabaseClient";
 import { ErrorManager } from "../../shared/services/errorManager";
-import { devLog, devWarn, devError, clearTournamentCache } from "../../shared/utils/coreUtils";
-import { Name, TournamentActions } from "./tournament/types";
-import { ratingsToArray, ratingsToObject } from "../../shared/utils/metricsUtils";
+import { devLog, devWarn, devError, clearTournamentCache, ratingsToArray, ratingsToObject } from "../../shared/utils/coreUtils";
+import { NameItem, TournamentActions } from "../../shared/propTypes";
 import { isNameHidden } from "../../shared/utils/nameUtils";
 
 /**
@@ -93,7 +92,7 @@ export function useTournamentHandlers({
    * Filters hidden names and initializes state.
    */
   const handleTournamentSetup = useCallback(
-    (names: Name[] | undefined) => {
+    (names: NameItem[] | undefined) => {
       // * Clear tournament cache to ensure fresh data
       clearTournamentCache();
 

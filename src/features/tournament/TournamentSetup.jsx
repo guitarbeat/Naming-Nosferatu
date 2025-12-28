@@ -8,25 +8,28 @@ import PropTypes from "prop-types";
 import {
   NameManagementView,
   useNameManagementContextSafe,
-} from "../../shared/components/NameManagementView/NameManagementView";
+} from "../../shared/components/NameManagementView/NameManagementView.tsx";
 import Error from "../../shared/components/Error/Error";
-import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard";
-import { AnalysisBulkActions } from "../../shared/components/AnalysisPanel";
-import { exportTournamentResultsToCSV } from "../../shared/utils/exportUtils";
-import {
-  isNameHidden,
-  selectedNamesToSet,
-  extractNameIds,
-} from "../../shared/utils/nameUtils";
+import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard/AnalysisDashboard";
+import { AnalysisBulkActions } from "../../shared/components/AnalysisPanel/components/AnalysisBulkActions";
+import { exportTournamentResultsToCSV } from "../../shared/utils/coreUtils";
+import { isNameHidden, selectedNamesToSet } from "../../shared/utils/nameUtils";
+
+// Inline extractNameIds - simple utility only used here
+function extractNameIds(selectedNamesValue) {
+  if (Array.isArray(selectedNamesValue)) {
+    return selectedNamesValue.map((n) => n.id);
+  }
+  return Array.from(selectedNamesValue);
+}
 import { useImageGallery } from "./hooks/useImageGallery";
-import { useAdminStatus } from "../../shared/hooks/useAdminStatus";
-import { NameSelection } from "./components/NameSelection";
-import { SwipeableNameCards } from "./components/SwipeMode";
+import { useAdminStatus } from "../../shared/hooks/useAppHooks";
+import { NameSelection } from "./components/NameSelection/NameSelection";
+import { SwipeableNameCards } from "./components/SwipeMode/SwipeableNameCards";
 import Lightbox from "./components/Lightbox";
-import PhotoGallery from "./components/TournamentSidebar/PhotoGallery";
+import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useProfile } from "../profile/hooks/useProfile";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications.jsx";
-import { devLog, devWarn, devError } from "../../shared/utils/coreUtils";
 import { FILTER_OPTIONS } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
@@ -61,12 +64,12 @@ function useNameManagementCallbacks(context) {
 function AnalysisHandlersProvider({
   shouldEnableAnalysisMode,
   activeUser,
-  canManageActiveUser,
+  canManageActiveUser: _canManageActiveUser,
   handlersRef,
-  fetchSelectionStats,
+  fetchSelectionStats: _fetchSelectionStats,
   showSuccess,
   showError,
-  showToast,
+  showToast: _showToast,
 }) {
   const context = useNameManagementContextSafe();
 
@@ -78,7 +81,7 @@ function AnalysisHandlersProvider({
     }
   }, [shouldEnableAnalysisMode, context]);
 
-  const { setHiddenNames, setAllNames, fetchNames } =
+  const { setHiddenNames: _setHiddenNames, setAllNames, fetchNames } =
     useNameManagementCallbacks(context);
 
   const { handleToggleVisibility, handleDelete } = useProfile(activeUser, {
@@ -180,10 +183,10 @@ function AnalysisBulkActionsWrapper({
   activeUser,
   canManageActiveUser,
   isAdmin,
-  fetchSelectionStats,
+  fetchSelectionStats: _fetchSelectionStats,
   showSuccess,
   showError,
-  showToast,
+  showToast: _showToast,
 }) {
   const context = useNameManagementContextSafe();
 
@@ -201,7 +204,7 @@ function AnalysisBulkActionsWrapper({
     [selectedNamesValue],
   );
 
-  const { setHiddenNames, setAllNames, fetchNames } =
+  const { setHiddenNames: _setHiddenNames, setAllNames, fetchNames } =
     useNameManagementCallbacks(context);
 
   const { handleBulkHide, handleBulkUnhide } = useProfile(activeUser, {

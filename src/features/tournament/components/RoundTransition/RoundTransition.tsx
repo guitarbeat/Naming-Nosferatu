@@ -40,4 +40,5 @@ RoundTransition.propTypes = {
 
 RoundTransition.displayName = "RoundTransition";
 
+// ts-prune-ignore-next (used in Tournament)
 export default RoundTransition;

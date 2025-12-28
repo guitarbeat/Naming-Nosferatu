@@ -565,7 +565,7 @@ class ErrorBoundary extends React.Component<
     if (typeof FallbackComponent === "function") {
       return (
         <FallbackComponent
-          error={error as any}
+          error={error instanceof Error ? error : new Error(String(error))}
           resetErrorBoundary={this.resetErrorBoundary}
         />
       );

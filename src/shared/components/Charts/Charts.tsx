@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { TrendIndicator } from "../PerformanceBadge";
+import { TrendIndicator } from "../PerformanceBadge/PerformanceBadge";
 
 /**
  * BarChart Component
@@ -23,7 +23,7 @@ import { TrendIndicator } from "../PerformanceBadge";
  * @param {string} props.secondaryValueKey - Key for secondary value (default: "avg_rating")
  * @param {string} props.className - Additional CSS classes
  */
-export function BarChart({
+function BarChart({
   title,
   items,
   valueKey = "value",

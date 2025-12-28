@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
-import { useAdminStatus } from "../../../shared/hooks/useAdminStatus";
+import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import { NameItem, IdType } from "../../../shared/propTypes";
 import { clearAllCaches, devLog, devError } from "../../../shared/utils/coreUtils";
 import {
@@ -23,11 +23,12 @@ import {
 /**
  * * Unified hook for all profile functionality
  */
+// ts-prune-ignore-next (used in TournamentSetup)
 export function useProfile(userName: string, {
     showSuccess = (m: string) => devLog("Success:", m),
     showError = (m: string) => devError("Error:", m),
     fetchNames = (u: string) => devLog("Fetching names for:", u),
-    setAllNames = (val: any) => { },
+    setAllNames = (_val: NameItem[] | ((prev: NameItem[]) => NameItem[])) => { },
 } = {}) {
     // ==========================================================================
     // User State (from useProfileUser)
@@ -36,7 +37,7 @@ export function useProfile(userName: string, {
     const [activeUser, setActiveUser] = useState<string | null>(userName);
     const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
     const [availableUsers, setAvailableUsers] = useState<UserWithRoles[]>([]);
-    const [userListLoading, setUserListLoading] = useState(false);
+    const [_userListLoading, setUserListLoading] = useState(false);
 
     const canManageActiveUser = useMemo(
         () => isAdmin && activeUser === userName,
@@ -138,8 +139,9 @@ export function useProfile(userName: string, {
             });
             setAllNames((prev: NameItem[]) => prev.map(n => n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n));
             clearAllCaches();
-        } catch (e: any) {
-            showError(`Failed to update visibility: ${e.message}`);
+        } catch (e: unknown) {
+            const error = e instanceof Error ? e : new Error(String(e));
+            showError(`Failed to update visibility: ${error.message}`);
         }
     }, [canManageActiveUser, hiddenNames, userName, showSuccess, showError, setAllNames]);
 
@@ -150,8 +152,9 @@ export function useProfile(userName: string, {
             if (!success) throw new Error(error);
             showSuccess(`Deleted ${name.name}`);
             fetchNames(userName);
-        } catch (e: any) {
-            showError(`Failed to delete: ${e.message}`);
+        } catch (e: unknown) {
+            const error = e instanceof Error ? e : new Error(String(e));
+            showError(`Failed to delete: ${error.message}`);
         }
     }, [canManageActiveUser, userName, showSuccess, showError, fetchNames]);
 
@@ -183,8 +186,9 @@ export function useProfile(userName: string, {
             } else {
                 showError(result.error || "Operation failed");
             }
-        } catch (e: any) {
-            showError(`Bulk operation failed: ${e.message}`);
+        } catch (e: unknown) {
+            const error = e instanceof Error ? e : new Error(String(e));
+            showError(`Bulk operation failed: ${error.message}`);
         }
     }, [canManageActiveUser, selectedNames, userName, showSuccess, showError, fetchNames]);
 

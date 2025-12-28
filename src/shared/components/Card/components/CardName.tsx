@@ -35,7 +35,7 @@ import React, { useState, useEffect, memo } from "react";
 import PropTypes from "prop-types";
 import { TIMING } from "../../../../core/constants";
 import Card from "../Card";
-import CatImage from "../../CatImage";
+import CatImage from "../../CatImage/CatImage";
 import styles from "./CardName.module.css";
 
 interface NameMetadata {

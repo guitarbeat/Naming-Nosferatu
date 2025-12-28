@@ -16,18 +16,15 @@
 
 import React, { memo } from "react";
 import PropTypes from "prop-types";
-// @ts-expect-error - useBongoCat hook may not exist or may be in .js file
 import { useBongoCat } from "../../../core/hooks/useBongoCat";
 import { CAT_VARIANTS, PERSONALITY_MODES, DEFAULT_CONFIG } from "./constants";
 import {
   getEyeTransform,
   getPupilTransform,
   getConditionalEyeStyle,
-} from "./utils/eyeTransforms";
-import {
   getConditionalTransform,
   getConditionalTransformWithValue,
-} from "./utils/conditionalStyles";
+} from "./utils/styles";
 import styles from "./BongoCat.module.css";
 
 /**
@@ -204,7 +201,7 @@ const PawsContainer = ({
   pawsOffsetY,
   zIndex,
   isVisible,
-  pawsVisibility,
+  pawsVisibility: _pawsVisibility,
   display,
   styleVars,
   pawsPosition,

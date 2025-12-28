@@ -7,20 +7,20 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
-import { AnalysisPanel } from "../AnalysisPanel";
-import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader";
+import { AnalysisPanel } from "../AnalysisPanel/AnalysisPanel";
+import { CollapsibleHeader, CollapsibleContent } from "../CollapsibleHeader/CollapsibleHeader";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
-import { BumpChart } from "../Charts";
-import { PerformanceBadges } from "../PerformanceBadge";
-import { ColumnHeader } from "../ColumnHeader";
+import { BumpChart } from "../Charts/Charts";
+import { PerformanceBadges } from "../PerformanceBadge/PerformanceBadge";
+import { ColumnHeader } from "../ColumnHeader/ColumnHeader";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/supabaseClient";
-import { useCollapsible } from "../../hooks/useCollapsible";
+import { useCollapsible } from "../../../core/hooks/useStorage";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { devError, clearAllCaches, formatDate } from "../../utils/coreUtils";
 import { nameItemShape } from "../../propTypes";
-import { getRankDisplay } from "../../utils/uiUtils";
-import { calculatePercentile, getMetricLabel } from "../../utils/metricsUtils";
+import { getRankDisplay } from "../../utils/coreUtils";
+import { calculatePercentile, getMetricLabel } from "../../utils/coreUtils";
 import "./AnalysisDashboard.css";
 
 /**

@@ -28,7 +28,7 @@ export const getGlobalScope = (): any => GLOBAL_SCOPE;
  * @returns {Object} Frozen object
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const deepFreeze = (object: any) => {
+const deepFreeze = (object: any) => {
     if (object && typeof object === "object" && !Object.isFrozen(object)) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Object.values(object).forEach((value: any) => {
@@ -82,7 +82,7 @@ export const ERROR_SEVERITY = {
     CRITICAL: "critical",
 };
 
-export const USER_FRIENDLY_MESSAGES = {
+const USER_FRIENDLY_MESSAGES = {
     [ERROR_TYPES.NETWORK]: {
         [ERROR_SEVERITY.LOW]: "Connection is slow. Please try again.",
         [ERROR_SEVERITY.MEDIUM]: "Network issue. Check your connection and try again.",
@@ -245,7 +245,7 @@ export function parseError(error: unknown): ParsedError {
             name: error.name,
             stack: error.stack || null,
             type: determineErrorType(error),
-            cause: (error as any).cause || null,
+            cause: (error as { cause?: unknown }).cause || null,
         };
     }
 
@@ -296,7 +296,7 @@ export interface FormattedError {
     isRetryable: boolean;
     timestamp: string;
     metadata: Record<string, unknown>;
-    diagnostics: any; // Built later in errorTracking
+    diagnostics: Record<string, unknown>; // Built later in errorTracking
     aiContext: string; // Built later in errorTracking
     stack?: string | null;
 }
@@ -355,16 +355,14 @@ export function getUserFriendlyMessage(
         if (isOffline) {
             return "You appear to be offline. Please check your internet connection and try again.";
         }
-        return (
-            (USER_FRIENDLY_MESSAGES as any)[errorInfo.type]?.[severity] ||
-            `${contextMessage}. Please check your connection and try again.`
-        );
+        const messages = USER_FRIENDLY_MESSAGES as Record<string, Record<string, string>>;
+        return messages[errorInfo.type]?.[severity] ||
+            `${contextMessage}. Please check your connection and try again.`;
     }
 
-    return (
-        (USER_FRIENDLY_MESSAGES as any)[errorInfo.type]?.[severity] ||
-        `${contextMessage}. Please try again.`
-    );
+    const messages = USER_FRIENDLY_MESSAGES as Record<string, Record<string, string>>;
+    return messages[errorInfo.type]?.[severity] ||
+        `${contextMessage}. Please try again.`;
 }
 
 /**

@@ -4,7 +4,7 @@
  */
 
 import { useCallback } from "react";
-import { useToast } from "../../../shared/hooks/useToast";
+import { useToast } from "../../../shared/hooks/useAppHooks";
 import Toast from "../../../shared/components/Toast/Toast";
 import { devLog, devError } from "../../../shared/utils/coreUtils";
 import { NOTIFICATION } from "../../../core/constants";
@@ -13,6 +13,7 @@ import { NOTIFICATION } from "../../../core/constants";
  * * Hook for profile notification functions with toast UI
  * @returns {Object} Notification functions and Toast component
  */
+// ts-prune-ignore-next (used in TournamentSetup)
 export function useProfileNotifications() {
   const {
     toasts,

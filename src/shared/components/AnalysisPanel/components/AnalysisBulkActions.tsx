@@ -6,8 +6,8 @@
 
 import { useCallback } from "react";
 import PropTypes from "prop-types";
-import { AnalysisToolbar, AnalysisButton } from "./";
-import { exportNamesToCSV } from "../../../utils/exportUtils";
+import { AnalysisToolbar, AnalysisButton } from "./AnalysisComponents";
+import { exportNamesToCSV } from "../../../utils/coreUtils";
 import { devError } from "../../../utils/coreUtils";
 
 /**
@@ -27,6 +27,7 @@ import { devError } from "../../../utils/coreUtils";
  * @param {boolean} props.showActions - Whether to show the actions
  * @param {boolean} props.isAdmin - Whether user is admin (shows hide/unhide)
  */
+// ts-prune-ignore-next (used in AnalysisPanel)
 export function AnalysisBulkActions({
   selectedCount,
   onSelectAll,
@@ -47,8 +48,8 @@ export function AnalysisBulkActions({
   onBulkHide?: () => void;
   onBulkUnhide?: () => void;
   onExport?: () => void;
-  names?: any[];
-  selectedNames?: any[];
+  names?: Array<Record<string, unknown>>;
+  selectedNames?: Array<Record<string, unknown>>;
   isAllSelected: boolean;
   showActions?: boolean;
   isAdmin?: boolean;
@@ -63,7 +64,7 @@ export function AnalysisBulkActions({
     const dataToExport =
       (selectedNames?.length ?? 0) > 0 ? selectedNames : names || [];
     const fileName = (selectedNames?.length ?? 0) > 0 ? "selected-names" : "all-names";
-    exportNamesToCSV(dataToExport as any[], fileName);
+    exportNamesToCSV(dataToExport as Array<{ name: string; [key: string]: unknown }>, fileName);
   }, [onExport, names, selectedNames]);
 
   const handleBulkHide = useCallback(() => {

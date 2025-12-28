@@ -8,24 +8,101 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import RankingAdjustment from "./RankingAdjustment";
 import Bracket from "../../shared/components/Bracket/Bracket";
-import { CalendarButton } from "../../shared/components/Button";
-import StartTournamentButton from "../../shared/components/StartTournamentButton/StartTournamentButton";
-import StatsCard from "../../shared/components/StatsCard/StatsCard";
-import Card from "../../shared/components/Card";
+import Button, { TournamentButton } from "../../shared/components/Button/Button";
+import Card from "../../shared/components/Card/Card";
 import Toast from "../../shared/components/Toast/Toast";
-import { BumpChart } from "../../shared/components/Charts";
-import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
+import { BumpChart } from "../../shared/components/Charts/Charts";
+import { PerformanceBadges } from "../../shared/components/PerformanceBadge/PerformanceBadge";
 import {
   CollapsibleHeader,
   CollapsibleContent,
-} from "../../shared/components/CollapsibleHeader";
-import { catNamesAPI } from "../../shared/services/supabase/api";
-import { devError } from "../../shared/utils/coreUtils";
-import { useToast } from "../../shared/hooks/useToast";
-import { calculateBracketRound } from "../../shared/utils/tournamentUtils";
-import { getRankDisplay } from "../../shared/utils/uiUtils";
-import { calculatePercentile } from "../../shared/utils/metricsUtils";
+} from "../../shared/components/CollapsibleHeader/CollapsibleHeader";
+import { catNamesAPI } from "../../shared/services/supabase/supabaseClient";
+import { devError, calculatePercentile, calculateBracketRound, getRankDisplay } from "../../shared/utils/coreUtils";
+import { useToast } from "../../shared/hooks/useAppHooks";
 import styles from "./Dashboard.module.css";
+
+/**
+ * CalendarButton component - exports tournament results to Google Calendar
+ * Local component - only used in Dashboard
+ */
+function CalendarButton({
+  rankings,
+  userName,
+  className = "",
+  variant = "secondary",
+  size = "medium",
+  disabled = false,
+  ...rest
+}: {
+  rankings: Array<{ id: string | number; name: string; rating?: number; is_hidden?: boolean }>;
+  userName: string;
+  className?: string;
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
+  size?: "small" | "medium" | "large";
+  disabled?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
+  const { onClick: externalOnClick, ...buttonProps } = rest as { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void };
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (typeof externalOnClick === "function") {
+      externalOnClick(event);
+    }
+
+    if (event?.defaultPrevented) return;
+
+    // Filter out hidden names and sort by rating
+    const activeNames = rankings
+      .filter((name) => !name.is_hidden)
+      .sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
+
+    const winnerName = activeNames[0]?.name || "No winner yet";
+
+    const today = new Date();
+    const [startDateISO] = today.toISOString().split("T");
+    const startDate = startDateISO.replace(/-/g, "");
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 1);
+    const [endDateISO] = endDate.toISOString().split("T");
+    const endDateStr = endDateISO.replace(/-/g, "");
+
+    const text = `🐈‍⬛ ${winnerName}`;
+    const details = `Cat name rankings for ${userName}:\n\n${activeNames
+      .map(
+        (name, index) =>
+          `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+      )
+      .join("\n")}`;
+
+    const baseUrl = "https://calendar.google.com/calendar/render";
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text,
+      details,
+      dates: `${startDate}/${endDateStr}`,
+      ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+
+    window.open(`${baseUrl}?${params.toString()}`, "_blank");
+  };
+
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      onClick={handleClick}
+      className={className}
+      disabled={disabled}
+      startIcon={<span>📅</span> as React.ReactNode}
+      aria-label="Add to Google Calendar"
+      title="Add to Google Calendar"
+      {...buttonProps}
+    >
+      Add to Calendar
+    </Button>
+  );
+}
 
 /**
  * Unified Dashboard Component
@@ -367,25 +444,22 @@ function Dashboard({
       <>
         {personalRankings.length > 0 && (
           <div className={styles.statsGrid}>
-            <StatsCard
+            <Card.Stats
               title="Your Winner"
               value={personalRankings[0]?.name || "-"}
               emoji="🏆"
-              variant="primary"
               className={styles.statCard}
             />
-            <StatsCard
+            <Card.Stats
               title="Rating"
               value={personalRankings[0]?.rating || 1500}
               emoji="⭐"
-              variant="secondary"
               className={styles.statCard}
             />
-            <StatsCard
+            <Card.Stats
               title="Total Names"
               value={personalRankings.length}
               emoji="📝"
-              variant="tertiary"
               className={styles.statCard}
             />
           </div>
@@ -520,12 +594,12 @@ function Dashboard({
         {viewMode === "personal" ? renderPersonalView() : renderGlobalView()}
 
         <div className={styles.actions}>
-          <StartTournamentButton
+          <TournamentButton
             onClick={onStartNew}
             className={styles.startNewButton}
           >
             Start New Tournament
-          </StartTournamentButton>
+          </TournamentButton>
           {hasPersonalData && (
             <CalendarButton rankings={personalRankings} userName={userName} />
           )}

@@ -4,12 +4,12 @@
  */
 import React, { useId, memo } from "react";
 import PropTypes from "prop-types";
-import LiquidGlass from "../LiquidGlass";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import {
   DEFAULT_GLASS_CONFIG,
   resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
-import { cn } from "../../utils/uiUtils";
+import { cn } from "../../utils/coreUtils";
 import styles from "./Card.module.css";
 
 // Force refresh

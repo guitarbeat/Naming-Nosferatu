@@ -57,4 +57,5 @@ MatchResult.propTypes = {
 
 MatchResult.displayName = "MatchResult";
 
+// ts-prune-ignore-next (used in Tournament)
 export default MatchResult;

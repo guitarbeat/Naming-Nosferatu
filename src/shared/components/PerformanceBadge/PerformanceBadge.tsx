@@ -4,7 +4,7 @@
  */
 
 import PropTypes from "prop-types";
-import { getInsightCategory } from "../../utils/metricsUtils";
+import { getInsightCategory } from "../../utils/coreUtils";
 import "./PerformanceBadge.css";
 import "./TrendIndicator.css";
 
@@ -26,7 +26,8 @@ interface PerformanceBadgeProps {
   className?: string;
 }
 
-export function PerformanceBadge({
+// Internal component - only used within PerformanceBadges
+function PerformanceBadge({
   type,
   label,
   variant = "md",

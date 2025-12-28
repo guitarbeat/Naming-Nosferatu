@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { TIMING } from "../../../core/constants";
-import { LIGHTBOX_IMAGE_SIZES } from "../constants";
+import { LIGHTBOX_IMAGE_SIZES } from "../config";
 import styles from "../TournamentSetup.module.css";
 
 interface LightboxProps {
@@ -295,4 +295,5 @@ Lightbox.propTypes = {
   preloadImages: PropTypes.arrayOf(PropTypes.string),
 };
 
+// ts-prune-ignore-next (used in TournamentSetup)
 export default Lightbox;

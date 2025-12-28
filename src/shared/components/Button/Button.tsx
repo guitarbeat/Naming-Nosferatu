@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import { Loader2 } from "lucide-react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { cn } from "../../utils/uiUtils";
+import { cn } from "../../utils/coreUtils";
 
 // Shadcn button variants (inlined from ui/button.tsx)
 const buttonVariants = cva(
@@ -527,4 +527,5 @@ ScrollToTopButton.propTypes = {
 ScrollToTopButton.displayName = "ScrollToTopButton";
 
 export default memo(Button);
-export { IconButton, TournamentButton, CalendarButton, ScrollToTopButton };
+export { IconButton, TournamentButton, ScrollToTopButton };
+// CalendarButton moved to Dashboard.jsx as local component (only used there)

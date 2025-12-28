@@ -7,13 +7,13 @@ import {
   resolveSupabaseClient,
   imagesAPI,
 } from "../../../shared/services/supabase/supabaseClient";
-import { deduplicateImages } from "../utils";
-import { CAT_IMAGES } from "../constants";
+import { deduplicateImages, CAT_IMAGES } from "../config";
 
 /**
  * Custom hook for loading gallery images from multiple sources
  * @returns {Object} Gallery images and management functions
  */
+// ts-prune-ignore-next (used in TournamentSetup)
 export function useImageGallery({ isLightboxOpen }: { isLightboxOpen: boolean }) {
   const [galleryImages, setGalleryImages] = useState<string[]>(CAT_IMAGES);
   const [isLoading, setIsLoading] = useState<boolean>(true);

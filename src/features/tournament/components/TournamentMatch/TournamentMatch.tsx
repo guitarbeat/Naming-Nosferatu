@@ -6,9 +6,9 @@
 import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import Error from "../../../../shared/components/Error/Error";
-import { Button } from "../../../../shared/components/Button";
-import { getRandomCatImage } from "../../utils";
-import useMagneticPull from "../../hooks/useMagneticPull";
+import Button from "../../../../shared/components/Button/Button";
+import { getRandomCatImage } from "../../config";
+import useMagneticPull from "../../hooks/useTournamentInteractions";
 import styles from "./FerrofluidMatch.module.css";
 import tournamentStyles from "../../Tournament.module.css";
 
@@ -99,7 +99,7 @@ function TournamentMatch({
       {/* Battle Stage */}
       <div
         className={styles.battleStage}
-        style={{ filter: "url(#tournament-ferro-goo)" } as any}
+        style={{ filter: "url(#tournament-ferro-goo)" } as React.CSSProperties}
         key="battle-stage"
       >
         <div className={styles.stageWrapper}>

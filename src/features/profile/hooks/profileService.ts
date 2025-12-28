@@ -157,12 +157,12 @@ export async function calculateSelectionStats(userName: string | null): Promise<
         const nameLastSelected: Record<string, string> = {};
         const nameSelectionFrequency: Record<string, number> = {};
 
-        selections.forEach((s: any) => {
+        selections.forEach((s: { name?: string; name_id?: string; selected_at?: string }) => {
             if (s.name) nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
             if (s.name_id) {
                 nameSelectionCounts[s.name_id] = (nameSelectionCounts[s.name_id] || 0) + 1;
                 const selectedDate = s.selected_at ? new Date(s.selected_at) : null;
-                if (selectedDate && (!nameLastSelected[s.name_id] || selectedDate > new Date(nameLastSelected[s.name_id]))) {
+                if (selectedDate && s.selected_at && (!nameLastSelected[s.name_id] || selectedDate > new Date(nameLastSelected[s.name_id]))) {
                     nameLastSelected[s.name_id] = s.selected_at;
                 }
             }
@@ -173,7 +173,7 @@ export async function calculateSelectionStats(userName: string | null): Promise<
         });
 
         const mostSelectedName = Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || "N/A";
-        const sortedDates = selections.map((s: any) => new Date(s.selected_at || Date.now()).toDateString()).sort().filter((d, i, a) => i === 0 || d !== a[i - 1]);
+        const sortedDates = selections.map((s: { selected_at?: string }) => new Date(s.selected_at || Date.now()).toDateString()).sort().filter((d, i, a) => i === 0 || d !== a[i - 1]);
 
         let currentStreak = 0; let maxStreak = 0; let tempStreak = 0;
         for (let i = 0; i < sortedDates.length; i++) {
@@ -223,7 +223,7 @@ function generateSelectionPattern(total: number, unique: number) {
     return "You prefer focused, smaller tournaments";
 }
 
-async function generatePreferredCategories(selections: any[]) {
+async function generatePreferredCategories(selections: Array<{ name_id?: string | number }>) {
     try {
         const nameIds = selections.map((s) => String(s.name_id)).filter(Boolean);
         const supabaseClient = await resolveSupabaseClient();

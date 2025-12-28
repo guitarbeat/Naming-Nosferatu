@@ -34,19 +34,6 @@ export function selectedNamesToSet(
     return new Set(selectedNames.map((n) => n.id));
 }
 
-/**
- * Extract name IDs from selected names value (array or Set)
- * @param selectedNamesValue - Selected names as array or Set
- * @returns Array of name IDs
- */
-export function extractNameIds(
-    selectedNamesValue: NameItem[] | Set<string | number>,
-): (string | number)[] {
-    if (Array.isArray(selectedNamesValue)) {
-        return selectedNamesValue.map((n) => n.id);
-    }
-    return Array.from(selectedNamesValue);
-}
 
 // --- Generation Utils ---
 
@@ -106,13 +93,6 @@ export function isNameHidden(name: NameItem | null | undefined): boolean {
     return name?.is_hidden === true || name?.isHidden === true;
 }
 
-/**
- * Filter array of names to only visible ones
- */
-export function getVisibleNames(names: NameItem[] | null | undefined): NameItem[] {
-    if (!Array.isArray(names)) return [];
-    return names.filter((name) => !isNameHidden(name));
-}
 
 /**
  * Map filterStatus to visibility string

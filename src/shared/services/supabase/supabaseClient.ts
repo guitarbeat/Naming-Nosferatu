@@ -482,8 +482,8 @@ export const catNamesAPI = {
       if (!data || !Array.isArray(data)) {
         return [];
       }
-      return data.map((item) => {
-        const itemRecord = item as any;
+      return ((data as unknown) as Array<Record<string, unknown>>).map((item: Record<string, unknown>) => {
+        const itemRecord = item as Record<string, unknown>;
         return {
           ...itemRecord,
           updated_at: null,
@@ -1143,12 +1143,12 @@ export const catNamesAPI = {
           );
         }
 
-        const itemRecord = item as any;
+        const itemRecord = (item as unknown as Record<string, unknown>);
         return {
           ...itemRecord,
           popularity_score: 0, // Not tracked anymore
           total_tournaments: 0, // Not tracked anymore
-          times_selected: selectionCounts.get(String(itemWithRatings.id)) || 0,
+          times_selected: selectionCounts.get(String((itemWithRatings as { id?: string | number }).id)) || 0,
           user_rating: userRating?.rating || null,
           user_wins: userRating?.wins || 0,
           user_losses: userRating?.losses || 0,
@@ -1341,12 +1341,12 @@ export const catNamesAPI = {
       }
       return data.map((item) => {
         const itemWithRatings = item as { cat_name_ratings?: Array<{ rating?: number | null; wins?: number | null; losses?: number | null; updated_at?: string | null }>; is_hidden?: boolean };
-        const itemRecord = item as any;
+        const itemRecord = (item as unknown as Record<string, unknown>);
         return {
           ...itemRecord,
           popularity_score: 0, // Not tracked anymore
           total_tournaments: 0, // Not tracked anymore
-          user_rating: itemWithRatings.cat_name_ratings?.[0]?.rating || 0,
+          user_rating: (itemWithRatings as { cat_name_ratings?: Array<{ rating?: number | null }> }).cat_name_ratings?.[0]?.rating || 0,
           user_wins: itemWithRatings.cat_name_ratings?.[0]?.wins || 0,
           user_losses: itemWithRatings.cat_name_ratings?.[0]?.losses || 0,
           updated_at: itemWithRatings.cat_name_ratings?.[0]?.updated_at || null,
@@ -1807,14 +1807,14 @@ export const hiddenNamesAPI = {
       // Global hidden names are stored directly on cat_name_options
       const client = await resolveSupabaseClient();
       if (!client) return [];
-      const { data, error } = await (client.from("cat_name_options") as any)
+      const { data, error } = await client.from("cat_name_options")
         .select("id, name, description, updated_at")
         .eq("is_hidden", true);
 
       if (error) throw error;
 
       // Transform to match expected format
-      return (data || []).map((item) => ({
+      return ((data || []) as Array<{ id?: string; updated_at?: string | null; name?: string; description?: string | null }>).map((item: { id?: string; updated_at?: string | null; name?: string; description?: string | null }) => ({
         name_id: item.id,
         updated_at: item.updated_at,
         cat_name_options: {
@@ -1857,7 +1857,7 @@ export const tournamentsAPI = {
       if (!client) {
         return { success: false, error: "Supabase not configured" };
       }
-      const { error: rpcError } = await (client as any).rpc("create_user_account", {
+      const { error: rpcError } = await (client.rpc as unknown as (name: string, args?: Record<string, unknown>) => Promise<{ error?: unknown }>)("create_user_account", {
         p_user_name: userName,
       });
 
@@ -2111,13 +2111,14 @@ export const tournamentsAPI = {
 
       // Ensure user account exists (required for FK constraint)
       try {
-        await (client as any).rpc("create_user_account", {
+        await (client.rpc as unknown as (name: string, args?: Record<string, unknown>) => Promise<{ error?: unknown }>)("create_user_account", {
           p_user_name: userName,
         });
       } catch (rpcError) {
         // Ignore error if user already exists
         if (isDev) {
-          console.log("User account check:", (rpcError as any)?.message || "exists");
+          const error = rpcError instanceof Error ? rpcError : new Error(String(rpcError));
+          console.log("User account check:", error.message || "exists");
         }
       }
 
@@ -2262,8 +2263,8 @@ export const deleteName = async (nameId: string | number) => {
     }
 
     // Check if name is globally hidden (cat_name_options.is_hidden)
-    const { data: nameWithHidden, error: hiddenError } = await (client
-      .from("cat_name_options") as any)
+    const { data: nameWithHidden, error: hiddenError } = await client
+      .from("cat_name_options")
       .select("is_hidden")
       .eq("id", String(nameId))
       .single();

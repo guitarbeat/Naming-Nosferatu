@@ -20,7 +20,8 @@ import {
 // Types
 // ============================================================================
 
-export interface Diagnostics {
+// Internal type - only used within this file
+interface Diagnostics {
   fingerprint: string;
   stackFrames: Array<{
     functionName?: string;
@@ -156,8 +157,9 @@ function deriveDebugHints(
     } else {
       try {
         causeDetail = JSON.stringify(errorInfo.cause);
-      } catch (err: any) {
-        causeDetail = `Cause available but could not be stringified (${err.message})`;
+      } catch (err: unknown) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        causeDetail = `Cause available but could not be stringified (${error.message})`;
       }
     }
 
@@ -168,7 +170,7 @@ function deriveDebugHints(
   }
 
   if (metadata?.request) {
-    const request = metadata.request as any;
+    const request = metadata.request as { url?: string; status?: number | string };
     hints.push({
       title: "Network request context",
       detail: `Request to ${request?.url || "unknown URL"} failed with status ${request?.status ?? "unknown"}`,
@@ -223,8 +225,9 @@ function deriveDebugHints(
 
 /**
  * * Builds comprehensive diagnostics for an error
+ * Internal function - only used within this file
  */
-export function buildDiagnostics(
+function buildDiagnostics(
   errorInfo: {
     stack?: string | null;
     type: string;
@@ -235,7 +238,7 @@ export function buildDiagnostics(
   context: string,
   metadata: Record<string, unknown>,
 ): Diagnostics {
-  const environment = collectEnvironmentSnapshot() as any;
+  const environment = collectEnvironmentSnapshot() as Record<string, unknown>;
   const stackFrames = extractStackFrames(errorInfo.stack);
   const debugHints = deriveDebugHints(
     errorInfo,
@@ -257,7 +260,8 @@ export function buildDiagnostics(
   const relatedIds = new Set<string>();
   if (metadata?.userId) relatedIds.add(metadata.userId as string);
   if (metadata?.sessionId) relatedIds.add(metadata.sessionId as string);
-  if ((metadata?.request as any)?.id) relatedIds.add((metadata.request as any).id);
+  const request = metadata?.request as { id?: string } | undefined;
+  if (request?.id) relatedIds.add(request.id);
 
   return {
     fingerprint,
@@ -270,8 +274,9 @@ export function buildDiagnostics(
 
 /**
  * * Builds AI-friendly context string
+ * Internal function - only used within this file
  */
-export function buildAIContext({ formattedError, diagnostics }: { formattedError: FormattedError, diagnostics: Diagnostics }) {
+function buildAIContext({ formattedError, diagnostics }: { formattedError: FormattedError, diagnostics: Diagnostics }) {
   const baseInfo = [
     `Error ID: ${formattedError.id || "unknown"}`,
     `Type: ${formattedError.type}`,
@@ -280,8 +285,10 @@ export function buildAIContext({ formattedError, diagnostics }: { formattedError
     `Message: ${formattedError.message}`,
   ];
 
-  if ((formattedError as any).code) baseInfo.push(`Code: ${(formattedError as any).code}`);
-  if ((formattedError as any).status) baseInfo.push(`Status: ${(formattedError as any).status}`);
+  const errorWithCode = formattedError as FormattedError & { code?: string | number };
+  const errorWithStatus = formattedError as FormattedError & { status?: string | number };
+  if (errorWithCode.code) baseInfo.push(`Code: ${errorWithCode.code}`);
+  if (errorWithStatus.status) baseInfo.push(`Status: ${errorWithStatus.status}`);
 
   if (diagnostics?.debugHints?.length) {
     baseInfo.push("Hints:");
@@ -312,7 +319,7 @@ export function buildAIContext({ formattedError, diagnostics }: { formattedError
 /**
  * * Sends error data to external error tracking service
  */
-function sendToErrorService(logData: any) {
+function sendToErrorService(logData: { error?: { message?: string; severity?: string }; timestamp?: string; context?: string; metadata?: Record<string, unknown> }) {
   const GLOBAL_SCOPE = getGlobalScope();
   const { navigator = {}, location = {} } = GLOBAL_SCOPE;
 
@@ -376,7 +383,7 @@ export function logError(formattedError: FormattedError, context: string, metada
     console.error("Retryable:", formattedError?.isRetryable ?? false);
     if (formattedError?.metadata?.stack) console.error("Stack:", formattedError.metadata.stack);
 
-    const diag = formattedError.diagnostics as Diagnostics;
+    const diag = formattedError.diagnostics as unknown as Diagnostics;
     if (diag?.debugHints?.length) {
       console.group("Debug Hints");
       diag.debugHints.forEach((h, i) => console.log(`${i + 1}. ${h.title}:`, h.detail));
@@ -412,7 +419,7 @@ export function formatError(
       originalError: errorInfo,
       stack: errorInfo.stack,
     },
-    diagnostics,
+    diagnostics: diagnostics as unknown as Record<string, unknown>,
     aiContext: "",
     stack: errorInfo.stack || null,
   };

@@ -29,8 +29,7 @@ interface TournamentFilters {
   dateFilter?: string;
 }
 import { NameGrid } from "../NameGrid/NameGrid";
-import { useNameData } from "./useNameData";
-import { useNameSelection } from "./useNameSelection";
+import { useNameData, useNameSelection } from "./useNameManagement";
 
 interface Name {
   id: string;
@@ -39,7 +38,7 @@ interface Name {
 }
 import useAppStore from "../../../core/store/useAppStore";
 import { useRouting } from "../../../core/hooks/useRouting";
-import { exportTournamentResultsToCSV } from "../../utils/exportUtils";
+import { exportTournamentResultsToCSV } from "../../utils/coreUtils";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./NameManagementView.module.css";
 
@@ -167,6 +166,9 @@ interface NameManagementViewProfileProps {
   setUserFilter?: (value: string) => void;
 }
 
+// NameManagementView is only used in TournamentSetup.jsx (entry point)
+// Export required for import in TournamentSetup.jsx
+// ts-prune-ignore-next (used in TournamentSetup)
 export function NameManagementView({
   mode = "tournament",
   userName,

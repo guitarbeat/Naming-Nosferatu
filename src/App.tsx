@@ -12,28 +12,21 @@ import { useCallback, useMemo, useState, useEffect } from "react";
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
 import Error from "./shared/components/Error/Error";
 import Loading from "./shared/components/Loading/Loading";
-import { ScrollToTopButton } from "./shared/components/Button";
-import { AppNavbar } from "./shared/components/AppNavbar";
+import { ScrollToTopButton } from "./shared/components/Button/Button";
+import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
-// * Performance monitoring
-import {
-  initializePerformanceMonitoring,
-  cleanupPerformanceMonitoring,
-} from "./shared/utils/performanceMonitor";
 
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
-import { useRouting } from "./core/hooks/useRouting";
-import { useTournamentRoutingSync } from "./core/hooks/useTournamentRoutingSync";
+import { useRouting, useTournamentRoutingSync, useKeyboardShortcuts } from "./core/hooks/useRouting";
 import useAppStore, {
   useAppStoreInitialization,
 } from "./core/store/useAppStore";
-import { Name } from "./core/hooks/tournament/types";
+import { NameItem } from "./shared/propTypes";
 import { TournamentName } from "./types/store";
-import { devError } from "./shared/utils/coreUtils";
-import { useKeyboardShortcuts } from "./core/hooks/useKeyboardShortcuts";
+import { devError, initializePerformanceMonitoring, cleanupPerformanceMonitoring } from "./shared/utils/coreUtils";
 import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
 
 /**
@@ -264,7 +257,7 @@ interface AppLayoutProps {
   handleUpdateRatings: (
     ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
   ) => Promise<boolean> | void;
-  handleTournamentSetup: (names?: Name[]) => void;
+  handleTournamentSetup: (names?: NameItem[]) => void;
   handleTournamentComplete: (
     finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
   ) => Promise<void>;

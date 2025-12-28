@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import Card from "../../shared/components/Card";
+import Card from "../../shared/components/Card/Card";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { TIMING } from "../../core/constants";
 import "./RankingAdjustment.css";
@@ -328,4 +328,5 @@ RankingAdjustment.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };
 
+// ts-prune-ignore-next (used in Dashboard)
 export default RankingAdjustment;

@@ -12,7 +12,7 @@ import {
 } from "../../utils/coreUtils";
 import { ErrorManager } from "../../services/errorManager/index";
 import useAppStore from "../../../core/store/useAppStore";
-import LiquidGlass from "../LiquidGlass";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import "./NameSuggestionModal.css";
 
 /**

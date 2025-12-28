@@ -7,15 +7,15 @@ import {
 } from "../../../shared/utils/coreUtils";
 
 import {
-  Name,
+  NameItem,
   Match,
   MatchRecord,
   PersistentState,
   TournamentState,
-} from "./types";
+} from "../../../shared/propTypes";
 
 interface UseTournamentStateProps {
-  names?: Name[];
+  names?: NameItem[];
   existingRatings?: Record<
     string,
     { rating: number; wins?: number; losses?: number }
@@ -142,7 +142,7 @@ export function useTournamentState({
 
 // * Internal function - not exported (only used within this file)
 function getNextMatch(
-  names: Name[],
+  names: NameItem[],
   sorter: unknown,
   _matchNumber: number,
   options: {

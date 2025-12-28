@@ -6,12 +6,12 @@
 
 import { useId } from "react";
 import PropTypes from "prop-types";
-import LiquidGlass from "../LiquidGlass";
+import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import {
   HEADER_GLASS_CONFIG,
   resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
-import { useCollapsible } from "../../hooks/useCollapsible";
+import { useCollapsible } from "../../../core/hooks/useStorage";
 import "./CollapsibleHeader.css";
 
 /**
@@ -257,7 +257,7 @@ interface CollapsibleSectionProps {
   liquidGlass?: boolean | Record<string, unknown>;
 }
 
-export function CollapsibleSection({
+function CollapsibleSection({
   title,
   icon,
   summary,

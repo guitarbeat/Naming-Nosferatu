@@ -5,7 +5,7 @@
 
 import PropTypes from "prop-types";
 import { validateCatName } from "../../../shared/utils/coreUtils";
-import { TournamentButton } from "../../../shared/components/Button";
+import { TournamentButton } from "../../../shared/components/Button/Button";
 import { NameItem } from "../../../shared/propTypes";
 import styles from "../TournamentSetup.module.css";
 
@@ -78,5 +78,5 @@ StartButton.propTypes = {
   variant: PropTypes.oneOf(["default", "header"]),
 };
 
-export default StartButton;
+// Only export as named export - default export not used
 export { StartButton };

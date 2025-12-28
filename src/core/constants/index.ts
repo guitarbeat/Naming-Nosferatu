@@ -5,6 +5,7 @@
 
 // * Filter Options
 // * Simplified: names are either visible or hidden
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const FILTER_OPTIONS = {
   VISIBILITY: {
     ALL: "all",
@@ -31,6 +32,7 @@ export const FILTER_OPTIONS = {
 };
 
 // * Validation Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const VALIDATION = {
   MIN_NAME_LENGTH: 1,
   MAX_NAME_LENGTH: 50,
@@ -55,6 +57,7 @@ export const VALIDATION = {
 };
 
 // * Tournament Timing Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const TOURNAMENT_TIMING = {
   VOTE_COOLDOWN: 150, // Reduced from 300ms for faster voting
   UNDO_WINDOW_MS: 2000,
@@ -70,6 +73,7 @@ export const TOURNAMENT_TIMING = {
 };
 
 // * General Timing Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const TIMING = {
   // Network and API timeouts
   SUPABASE_CLIENT_TIMEOUT_MS: 10000,
@@ -90,6 +94,7 @@ export const TIMING = {
 };
 
 // * Toast and Notification Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const NOTIFICATION = {
   DEFAULT_DURATION_MS: 5000,
   ERROR_DURATION_MS: 7000,
@@ -98,6 +103,7 @@ export const NOTIFICATION = {
 };
 
 // * Elo Rating System Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const ELO_RATING = {
   DEFAULT_RATING: 1500,
   DEFAULT_K_FACTOR: 40,
@@ -121,6 +127,7 @@ export const ELO_RATING = {
 };
 
 // * Mobile Gesture Thresholds
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const GESTURE_THRESHOLDS = {
   SWIPE_DISTANCE_PX: 50,
   LONG_PRESS_DURATION_MS: 500,
@@ -131,6 +138,7 @@ export const GESTURE_THRESHOLDS = {
 };
 
 // * Local Storage Keys
+// ts-prune-ignore-next (used via barrel export from core/constants)
 export const STORAGE_KEYS = {
   USER: "catNamesUser",
   THEME: "catNamesTheme",

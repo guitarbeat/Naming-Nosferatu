@@ -5,7 +5,7 @@ import { useTournamentState } from "./tournament/useTournamentState";
 import { useTournamentPersistence } from "./tournament/useTournamentPersistence";
 import { useTournamentVoting } from "./tournament/useTournamentVoting";
 import { useTournamentProgress } from "./tournament/useTournamentProgress";
-import { Name } from "./tournament/types";
+import { NameItem } from "../../shared/propTypes";
 
 /**
  * Custom hook for managing tournament state and logic
@@ -21,7 +21,7 @@ export function useTournament({
   existingRatings = {},
   onComplete,
 }: {
-  names?: Name[];
+  names?: NameItem[];
   existingRatings?: Record<
     string,
     { rating: number; wins?: number; losses?: number }
