@@ -15,44 +15,44 @@ import { queryClient } from "../services/supabase/queryClient";
  * * Shuffles an array using the Fisher-Yates algorithm
  */
 export function shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }
 
 /**
  * * Generate all possible pairs from a list of names
  */
 export function generatePairs(nameList: NameItem[]): [NameItem, NameItem][] {
-    const pairs: [NameItem, NameItem][] = [];
-    for (let i = 0; i < nameList.length; i++) {
-        for (let j = i + 1; j < nameList.length; j++) {
-            pairs.push([nameList[i], nameList[j]]);
-        }
+  const pairs: [NameItem, NameItem][] = [];
+  for (let i = 0; i < nameList.length; i++) {
+    for (let j = i + 1; j < nameList.length; j++) {
+      pairs.push([nameList[i], nameList[j]]);
     }
-    return pairs;
+  }
+  return pairs;
 }
 
 interface ComparisonHistory {
-    winner: string;
-    loser: string;
+  winner: string;
+  loser: string;
 }
 
 /**
  * * Build a comparisons map from tournament history
  */
 export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, number> {
-    const map = new Map<string, number>();
-    history.forEach(({ winner, loser }) => {
-        const winnerCount = (map.get(winner) || 0) + 1;
-        const loserCount = (map.get(loser) || 0) + 1;
-        map.set(winner, winnerCount);
-        map.set(loser, loserCount);
-    });
-    return map;
+  const map = new Map<string, number>();
+  history.forEach(({ winner, loser }) => {
+    const winnerCount = (map.get(winner) || 0) + 1;
+    const loserCount = (map.get(loser) || 0) + 1;
+    map.set(winner, winnerCount);
+    map.set(loser, loserCount);
+  });
+  return map;
 }
 
 // ============================================================================
@@ -63,12 +63,12 @@ export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, n
  * Format a date to locale date string
  */
 export function formatDate(
-    date: Date | string | number,
-    options: Intl.DateTimeFormatOptions = {},
+  date: Date | string | number,
+  options: Intl.DateTimeFormatOptions = {},
 ) {
-    if (!date) return "";
-    const d = date instanceof Date ? date : new Date(date);
-    return d.toLocaleDateString(undefined, options);
+  if (!date) return "";
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleDateString(undefined, options);
 }
 
 // ============================================================================
@@ -76,50 +76,50 @@ export function formatDate(
 // ============================================================================
 
 interface ValidationResult {
-    success: boolean;
-    error?: string;
-    value?: string;
+  success: boolean;
+  error?: string;
+  value?: string;
 }
 
 export const validateUsername = (username: string): ValidationResult => {
-    if (!username || typeof username !== "string") {
-        return { success: false, error: "Username is required" };
-    }
-    const trimmed = username.trim();
-    if (trimmed.length < VALIDATION.MIN_USERNAME_LENGTH) {
-        return { success: false, error: `Username must be at least ${VALIDATION.MIN_USERNAME_LENGTH} characters long` };
-    }
-    if (trimmed.length > VALIDATION.MAX_USERNAME_LENGTH) {
-        return { success: false, error: `Username must be less than ${VALIDATION.MAX_USERNAME_LENGTH} characters` };
-    }
-    if (!VALIDATION.USERNAME_PATTERN_EXTENDED.test(trimmed)) {
-        return { success: false, error: "Username can only contain letters, numbers, spaces, hyphens, and underscores" };
-    }
-    return { success: true, value: trimmed };
+  if (!username || typeof username !== "string") {
+    return { success: false, error: "Username is required" };
+  }
+  const trimmed = username.trim();
+  if (trimmed.length < VALIDATION.MIN_USERNAME_LENGTH) {
+    return { success: false, error: `Username must be at least ${VALIDATION.MIN_USERNAME_LENGTH} characters long` };
+  }
+  if (trimmed.length > VALIDATION.MAX_USERNAME_LENGTH) {
+    return { success: false, error: `Username must be less than ${VALIDATION.MAX_USERNAME_LENGTH} characters` };
+  }
+  if (!VALIDATION.USERNAME_PATTERN_EXTENDED.test(trimmed)) {
+    return { success: false, error: "Username can only contain letters, numbers, spaces, hyphens, and underscores" };
+  }
+  return { success: true, value: trimmed };
 };
 
 export const validateCatName = (name: string): ValidationResult => {
-    if (!name || typeof name !== "string") return { success: false, error: "Cat name is required" };
-    const trimmed = name.trim();
-    if (trimmed.length < VALIDATION.MIN_CAT_NAME_LENGTH) {
-        return { success: false, error: `Cat name must be at least ${VALIDATION.MIN_CAT_NAME_LENGTH} character long` };
-    }
-    if (trimmed.length > VALIDATION.MAX_CAT_NAME_LENGTH) {
-        return { success: false, error: `Cat name must be less than ${VALIDATION.MAX_CAT_NAME_LENGTH} characters` };
-    }
-    return { success: true, value: trimmed };
+  if (!name || typeof name !== "string") return { success: false, error: "Cat name is required" };
+  const trimmed = name.trim();
+  if (trimmed.length < VALIDATION.MIN_CAT_NAME_LENGTH) {
+    return { success: false, error: `Cat name must be at least ${VALIDATION.MIN_CAT_NAME_LENGTH} character long` };
+  }
+  if (trimmed.length > VALIDATION.MAX_CAT_NAME_LENGTH) {
+    return { success: false, error: `Cat name must be less than ${VALIDATION.MAX_CAT_NAME_LENGTH} characters` };
+  }
+  return { success: true, value: trimmed };
 };
 
 export const validateDescription = (description: string): ValidationResult => {
-    if (!description || typeof description !== "string") return { success: false, error: "Description is required" };
-    const trimmed = description.trim();
-    if (trimmed.length < VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED) {
-        return { success: false, error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED} characters long` };
-    }
-    if (trimmed.length > VALIDATION.MAX_DESCRIPTION_LENGTH) {
-        return { success: false, error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters` };
-    }
-    return { success: true, value: trimmed };
+  if (!description || typeof description !== "string") return { success: false, error: "Description is required" };
+  const trimmed = description.trim();
+  if (trimmed.length < VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED) {
+    return { success: false, error: `Description must be at least ${VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED} characters long` };
+  }
+  if (trimmed.length > VALIDATION.MAX_DESCRIPTION_LENGTH) {
+    return { success: false, error: `Description must be less than ${VALIDATION.MAX_DESCRIPTION_LENGTH} characters` };
+  }
+  return { success: true, value: trimmed };
 };
 
 // ============================================================================
@@ -127,33 +127,33 @@ export const validateDescription = (description: string): ValidationResult => {
 // ============================================================================
 
 export function clearTournamentCache() {
-    if (typeof window === "undefined") return;
-    try {
-        const keysToRemove: string[] = [];
-        for (let i = 0; i < window.localStorage.length; i++) {
-            const key = window.localStorage.key(i);
-            if (key && key.startsWith("tournament-")) keysToRemove.push(key);
-        }
-        keysToRemove.forEach((key) => window.localStorage.removeItem(key));
-    } catch (error) {
-        if (process.env.NODE_ENV === "development") console.error("Error clearing tournament cache:", error);
+  if (typeof window === "undefined") return;
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < window.localStorage.length; i++) {
+      const key = window.localStorage.key(i);
+      if (key && key.startsWith("tournament-")) keysToRemove.push(key);
     }
+    keysToRemove.forEach((key) => window.localStorage.removeItem(key));
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") console.error("Error clearing tournament cache:", error);
+  }
 }
 
 export function clearAllCaches() {
-    clearTournamentCache();
-    try {
-        queryClient.invalidateQueries({ queryKey: ["names"] });
-        queryClient.invalidateQueries({ queryKey: ["catNames"] });
-        queryClient.invalidateQueries({ queryKey: ["hiddenNames"] });
-        queryClient.invalidateQueries({ queryKey: ["userRatings"] });
-        queryClient.removeQueries({ queryKey: ["names"] });
-        queryClient.removeQueries({ queryKey: ["catNames"] });
-        queryClient.removeQueries({ queryKey: ["hiddenNames"] });
-        queryClient.removeQueries({ queryKey: ["userRatings"] });
-    } catch (error) {
-        if (process.env.NODE_ENV === "development") console.error("Error clearing React Query cache:", error);
-    }
+  clearTournamentCache();
+  try {
+    queryClient.invalidateQueries({ queryKey: ["names"] });
+    queryClient.invalidateQueries({ queryKey: ["catNames"] });
+    queryClient.invalidateQueries({ queryKey: ["hiddenNames"] });
+    queryClient.invalidateQueries({ queryKey: ["userRatings"] });
+    queryClient.removeQueries({ queryKey: ["names"] });
+    queryClient.removeQueries({ queryKey: ["catNames"] });
+    queryClient.removeQueries({ queryKey: ["hiddenNames"] });
+    queryClient.removeQueries({ queryKey: ["userRatings"] });
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") console.error("Error clearing React Query cache:", error);
+  }
 }
 
 // ============================================================================
@@ -683,86 +683,86 @@ export function calculateBracketRound(namesCount: number, matchNumber: number): 
 // ============================================================================
 
 export function cn(...classes: (string | undefined | null | false)[]): string {
-    return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(" ");
 }
 
 export function getRankDisplay(rank: number): string {
-    if (rank === 1) return "🥇 1st";
-    if (rank === 2) return "🥈 2nd";
-    if (rank === 3) return "🥉 3rd";
-    if (rank <= 10) return `🏅 ${rank}th`;
-    return `${rank}th`;
+  if (rank === 1) return "🥇 1st";
+  if (rank === 2) return "🥈 2nd";
+  if (rank === 3) return "🥉 3rd";
+  if (rank <= 10) return `🏅 ${rank}th`;
+  return `${rank}th`;
 }
 
 export function normalizeRoutePath(routeValue: string): string {
-    if (!routeValue) return "/";
-    return routeValue.startsWith("/") ? routeValue : `/${routeValue}`;
+  if (!routeValue) return "/";
+  return routeValue.startsWith("/") ? routeValue : `/${routeValue}`;
 }
 
 const isBrowser = () => typeof window !== "undefined";
 const canUseMatchMedia = () => isBrowser() && typeof window.matchMedia === "function";
 
 export const getMediaQueryList = (query: string): MediaQueryList | null => {
-    if (!canUseMatchMedia()) return null;
-    try {
-        return window.matchMedia(query);
-    } catch (error) {
-        if (process.env.NODE_ENV === "development") console.warn("Invalid media query:", query, error);
-        return null;
-    }
+  if (!canUseMatchMedia()) return null;
+  try {
+    return window.matchMedia(query);
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") console.warn("Invalid media query:", query, error);
+    return null;
+  }
 };
 
 export const attachMediaQueryListener = (mediaQueryList: MediaQueryList | null, listener: (event: MediaQueryListEvent) => void): () => void => {
-    if (!mediaQueryList || typeof listener !== "function") return () => { };
-    if (typeof mediaQueryList.addEventListener === "function") {
-        mediaQueryList.addEventListener("change", listener);
-        return () => mediaQueryList.removeEventListener("change", listener);
-    }
-    if (typeof mediaQueryList.addListener === "function") {
-        mediaQueryList.addListener(listener);
-        return () => mediaQueryList.removeListener(listener);
-    }
-    return () => { };
+  if (!mediaQueryList || typeof listener !== "function") return () => { };
+  if (typeof mediaQueryList.addEventListener === "function") {
+    mediaQueryList.addEventListener("change", listener);
+    return () => mediaQueryList.removeEventListener("change", listener);
+  }
+  if (typeof mediaQueryList.addListener === "function") {
+    mediaQueryList.addListener(listener);
+    return () => mediaQueryList.removeListener(listener);
+  }
+  return () => { };
 };
 
 async function loadImageFromFile(file: File): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-        const url = URL.createObjectURL(file);
-        const img = new Image();
-        img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
-        img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
-        img.src = url;
-    });
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = (e) => { URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
 }
 
 export async function compressImageFile(
-    file: File,
-    { maxWidth = 1600, maxHeight = 1600, quality = 0.8 }: { maxWidth?: number; maxHeight?: number; quality?: number } = {},
+  file: File,
+  { maxWidth = 1600, maxHeight = 1600, quality = 0.8 }: { maxWidth?: number; maxHeight?: number; quality?: number } = {},
 ): Promise<File> {
-    try {
-        const img = await loadImageFromFile(file);
-        const { width, height } = img;
-        const scale = Math.min(maxWidth / width, maxHeight / height, 1);
-        const targetW = Math.round(width * scale);
-        const targetH = Math.round(height * scale);
+  try {
+    const img = await loadImageFromFile(file);
+    const { width, height } = img;
+    const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+    const targetW = Math.round(width * scale);
+    const targetH = Math.round(height * scale);
 
-        const canvas = document.createElement("canvas");
-        canvas.width = targetW;
-        canvas.height = targetH;
-        const ctx = canvas.getContext("2d", { alpha: true });
-        if (!ctx) return file;
-        ctx.drawImage(img, 0, 0, targetW, targetH);
+    const canvas = document.createElement("canvas");
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return file;
+    ctx.drawImage(img, 0, 0, targetW, targetH);
 
-        const blob = await new Promise<Blob | null>((resolve) =>
-            canvas.toBlob(resolve, "image/webp", Math.min(Math.max(quality, 0.1), 0.95))
-        );
-        if (!blob) return file;
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/webp", Math.min(Math.max(quality, 0.1), 0.95))
+    );
+    if (!blob) return file;
 
-        const base = file.name.replace(/\.[^.]+$/, "") || "image";
-        return new File([blob], `${base}.webp`, { type: "image/webp" });
-    } catch {
-        return file;
-    }
+    const base = file.name.replace(/\.[^.]+$/, "") || "image";
+    return new File([blob], `${base}.webp`, { type: "image/webp" });
+  } catch {
+    return file;
+  }
 }
 
 // ============================================================================
@@ -1302,4 +1302,159 @@ async function _hasRole(
 
 export async function isUserAdmin(userIdOrName: string): Promise<boolean> {
   return _hasRole(userIdOrName, USER_ROLES.ADMIN);
+}
+
+// ============================================================================
+// Name Utilities (from nameUtils.ts)
+// ============================================================================
+
+/**
+ * Converts an array of selected names to a Set of IDs for O(1) lookup.
+ * Handles both array of objects and existing Set.
+ */
+export function selectedNamesToSet(
+  selectedNames: NameItem[] | Set<string | number>,
+): Set<string | number> {
+  if (selectedNames instanceof Set) {
+    return selectedNames;
+  }
+  return new Set(selectedNames.map((n) => n.id));
+}
+
+// --- Generation Utils ---
+
+const FUNNY_PREFIXES = [
+  "Captain", "Dr.", "Professor", "Lord", "Lady", "Sir", "Duchess",
+  "Count", "Princess", "Chief", "Master", "Agent", "Detective", "Admiral"
+];
+
+const FUNNY_ADJECTIVES = [
+  "Whiskers", "Purrington", "Meowington", "Pawsome", "Fluffles", "Scratchy",
+  "Naptastic", "Furball", "Cattastic", "Pawdorable", "Whiskertron", "Purrfect"
+];
+
+/**
+ * Sanitize a generated name to remove invalid characters
+ */
+function sanitizeGeneratedName(value: string) {
+  return value
+    .replace(/[^a-zA-Z0-9 _-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Generate a fun random name
+ */
+export function generateFunName() {
+  let attempts = 0;
+  let generatedName = "";
+
+  while (!generatedName && attempts < 3) {
+    const prefix = FUNNY_PREFIXES[Math.floor(Math.random() * FUNNY_PREFIXES.length)];
+    const adjective = FUNNY_ADJECTIVES[Math.floor(Math.random() * FUNNY_ADJECTIVES.length)];
+
+    generatedName = sanitizeGeneratedName(`${prefix} ${adjective}`);
+    attempts += 1;
+  }
+
+  return generatedName || "Cat Judge";
+}
+
+// --- Filter Utils ---
+
+interface FilterOptions {
+  searchTerm?: string;
+  category?: string | null;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  visibility?: "visible" | "hidden" | "all";
+  isAdmin?: boolean;
+}
+
+/**
+ * Check if a name is hidden
+ */
+export function isNameHidden(name: NameItem | null | undefined): boolean {
+  return name?.is_hidden === true || name?.isHidden === true;
+}
+
+
+/**
+ * Map filterStatus to visibility string
+ */
+export function mapFilterStatusToVisibility(filterStatus: string): "hidden" | "all" | "visible" {
+  if (filterStatus === "hidden") return "hidden";
+  if (filterStatus === "all") return "all";
+  return "visible";
+}
+
+/**
+ * Internal visibility filter
+ */
+function filterByVisibility(
+  names: NameItem[] | null | undefined,
+  { visibility = "visible", isAdmin = false }: { visibility?: "visible" | "hidden" | "all"; isAdmin?: boolean } = {},
+): NameItem[] {
+  if (!Array.isArray(names)) return [];
+  if (!isAdmin) return names.filter((name) => !isNameHidden(name));
+
+  switch (visibility) {
+    case "hidden": return names.filter((name) => isNameHidden(name));
+    case "all": return names;
+    case "visible":
+    default: return names.filter((name) => !isNameHidden(name));
+  }
+}
+
+/**
+ * Apply all filters to names
+ */
+export function applyNameFilters(names: NameItem[] | null | undefined, filters: FilterOptions = {}): NameItem[] {
+  const {
+    searchTerm = "",
+    category = null,
+    sortBy = "rating",
+    sortOrder = "desc",
+    visibility = "visible",
+    isAdmin = false,
+  } = filters;
+
+  if (!names || !Array.isArray(names)) return [];
+  let result = filterByVisibility([...names], { visibility, isAdmin });
+
+  if (category) {
+    result = result.filter(n => n.categories && n.categories.includes(category));
+  }
+
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    result = result.filter(n =>
+      (n.name && n.name.toLowerCase().includes(term)) ||
+      (n.description && n.description.toLowerCase().includes(term))
+    );
+  }
+
+  const multiplier = sortOrder === "asc" ? 1 : -1;
+  result.sort((a, b) => {
+    let comp = 0;
+    switch (sortBy) {
+      case "rating": comp = (a.avg_rating || 1500) - (b.avg_rating || 1500); break;
+      case "name":
+      case "alphabetical": comp = (a.name || "").localeCompare(b.name || ""); break;
+      case "wins": comp = (a.wins || 0) - (b.wins || 0); break;
+      case "losses": comp = (a.losses || 0) - (b.losses || 0); break;
+      case "winRate": {
+        const aW = a.wins || 0, aL = a.losses || 0, bW = b.wins || 0, bL = b.losses || 0;
+        comp = (aW + aL > 0 ? aW / (aW + aL) : 0) - (bW + bL > 0 ? bW / (bW + bL) : 0);
+        break;
+      }
+      case "created": comp = (a.created_at ? new Date(a.created_at).getTime() : 0) - (b.created_at ? new Date(b.created_at).getTime() : 0); break;
+      case "popularity": comp = (a.popularity_score || 0) - (b.popularity_score || 0); break;
+      default: comp = (a.avg_rating || 1500) - (b.avg_rating || 1500);
+    }
+    return comp * multiplier;
+  });
+
+  return result;
 }

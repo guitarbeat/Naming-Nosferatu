@@ -51,8 +51,8 @@
     "check:deps": "knip --config config/knip.json",
     "check:deps:fix": "knip --config config/knip.json --fix",
     "check:all": "npm run lint && npm run check:css && npm run check:unused && npm run check:deps",
-    "tsr": "cd config && tsr -p tsconfig.json '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$' '../src/features/tournament/Dashboard\\.jsx$' '../src/features/bongo/BongoPage\\.tsx$' '../src/features/tournament/TournamentSetup\\.jsx$' '../src/features/tournament/components/TournamentHeader/TournamentHeader\\.tsx$' '../src/features/tournament/Tournament\\.jsx$'",
-    "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$' '../src/features/tournament/Dashboard\\.jsx$' '../src/features/bongo/BongoPage\\.tsx$' '../src/features/tournament/TournamentSetup\\.jsx$' '../src/features/tournament/components/TournamentHeader/TournamentHeader\\.tsx$' '../src/features/tournament/Tournament\\.jsx$'",
+    "tsr": "cd config && tsr -p tsconfig.json '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$' '../src/features/tournament/Dashboard\\.tsx$' '../src/features/bongo/BongoPage\\.tsx$' '../src/features/tournament/TournamentSetup\\.jsx$' '../src/features/tournament/components/TournamentHeader/TournamentHeader\\.tsx$' '../src/features/tournament/Tournament\\.jsx$'",
+    "tsr:write": "cd config && tsr -p tsconfig.json -w '../src/main\\.tsx$' '../src/shared/components/ViewRouter/ViewRouter\\.tsx$' '../src/setupTests\\.ts$' '../src/features/tournament/Dashboard\\.tsx$' '../src/features/bongo/BongoPage\\.tsx$' '../src/features/tournament/TournamentSetup\\.jsx$' '../src/features/tournament/components/TournamentHeader/TournamentHeader\\.tsx$' '../src/features/tournament/Tournament\\.jsx$'",
     "check:duplicates": "jscpd src --min-lines 5 --min-tokens 50 --format console",
     "check:duplicates:html": "jscpd src --min-lines 5 --min-tokens 50 --format html --output ./jscpd-report.html",
     "clean": "rm -rf build dist node_modules/.vite"

@@ -15,7 +15,7 @@ import {
   isNameHidden,
   mapFilterStatusToVisibility,
   selectedNamesToSet,
-} from "../../utils/nameUtils";
+} from "../../utils/coreUtils";
 import styles from "./NameGrid.module.css";
 
 interface NameItem {

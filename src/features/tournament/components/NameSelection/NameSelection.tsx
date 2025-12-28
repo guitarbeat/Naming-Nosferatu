@@ -9,7 +9,7 @@ import { NameGrid } from "../../../../shared/components/NameGrid/NameGrid";
 import {
   applyNameFilters,
   mapFilterStatusToVisibility,
-} from "../../../../shared/utils/nameUtils";
+} from "../../../../shared/utils/coreUtils";
 import { NameItem } from "../../../../shared/propTypes";
 import styles from "../../TournamentSetup.module.css";
 

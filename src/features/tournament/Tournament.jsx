@@ -27,7 +27,7 @@ import { useToast } from "../../shared/hooks/useAppHooks";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { CAT_IMAGES } from "./config";
 import { calculateBracketRound } from "../../shared/utils/coreUtils";
-import { isNameHidden } from "../../shared/utils/nameUtils";
+import { isNameHidden } from "../../shared/utils/coreUtils";
 
 // Inline getVisibleNames - simple utility only used here
 function getVisibleNames(names) {

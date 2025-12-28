@@ -13,7 +13,7 @@ import Error from "../../shared/components/Error/Error";
 import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard/AnalysisDashboard";
 import { AnalysisBulkActions } from "../../shared/components/AnalysisPanel/components/AnalysisBulkActions";
 import { exportTournamentResultsToCSV } from "../../shared/utils/coreUtils";
-import { isNameHidden, selectedNamesToSet } from "../../shared/utils/nameUtils";
+import { isNameHidden, selectedNamesToSet } from "../../shared/utils/coreUtils";
 
 // Inline extractNameIds - simple utility only used here
 function extractNameIds(selectedNamesValue) {
