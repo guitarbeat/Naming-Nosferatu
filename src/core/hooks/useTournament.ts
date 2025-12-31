@@ -6,7 +6,6 @@ import { PreferenceSorter } from "../../features/tournament/PreferenceSorter";
 import {
   buildComparisonsMap,
   getPreferencesMap,
-  initializeSorterPairs,
   calculateBracketRound,
 } from "../../shared/utils/coreUtils";
 import {
@@ -160,29 +159,36 @@ export function useTournament({
     const newSorter = new PreferenceSorter(nameStrings);
     const estimatedMatches = names.length > 1 ? names.length - 1 : 0;
 
-    updateTournamentState({
-      sorter: newSorter,
-      totalMatches: estimatedMatches,
-      currentMatchNumber: 1,
-      roundNumber: 1,
-      canUndo: false,
-      currentRatings: existingRatings,
-    });
+    // We can't update state directly here because it might cause a cascade.
+    // However, this effect runs when `names` changes, effectively resetting the tournament.
+    // We should probably just do it.
 
-    updatePersistentState({
-      matchHistory: [],
-      currentRound: 1,
-      currentMatch: 1,
-      totalMatches: estimatedMatches,
-      namesKey,
-    });
+    setTimeout(() => {
+      updateTournamentState({
+        sorter: newSorter,
+        totalMatches: estimatedMatches,
+        currentMatchNumber: 1,
+        roundNumber: 1,
+        canUndo: false,
+        currentRatings: existingRatings,
+      });
 
-    const first = getNextMatch(names, newSorter, 1, { currentRatings: existingRatings, history: [] });
-    if (first) {
-      updateTournamentState({ currentMatch: first });
-    } else if (names.length >= 2) {
-      updateTournamentState({ currentMatch: { left: names[0], right: names[1] } });
-    }
+      updatePersistentState({
+        matchHistory: [],
+        currentRound: 1,
+        currentMatch: 1,
+        totalMatches: estimatedMatches,
+        namesKey,
+      });
+
+      const first = getNextMatch(names, newSorter, 1, { currentRatings: existingRatings, history: [] });
+      if (first) {
+        updateTournamentState({ currentMatch: first });
+      } else if (names.length >= 2) {
+        updateTournamentState({ currentMatch: { left: names[0], right: names[1] } });
+      }
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [names, existingRatings, updateTournamentState, updatePersistentState]);
 
   // --- Voting Logic ---
@@ -323,8 +329,7 @@ export function useTournament({
         if (ln && rn) {
           s.preferences.delete(`${ln}-${rn}`);
           s.preferences.delete(`${rn}-${ln}`);
-          // eslint-disable-next-line react-hooks/immutability
-          if (typeof s._pairIndex === "number") s._pairIndex = Math.max(0, s._pairIndex - 1);
+          // no _pairIndex anymore
         }
       }
     }
@@ -400,14 +405,8 @@ function getNextMatch(
 
   const findBestMatch = () => {
     try {
-      const nameList = names.filter((n) => n && n.name);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const s = sorter as any;
-      initializeSorterPairs(sorter, nameList);
-
-      if (!Array.isArray(s._pairs) || s._pairs.length === 0) return null;
-
-      const prefs = getPreferencesMap(sorter);
+      const prefs = getPreferencesMap(sorter as any);
       const ratings = options.currentRatings || {};
       const history = options.history || [];
       const compHistory = history.filter((h) => h.winner && h.loser).map((h) => ({
@@ -416,32 +415,56 @@ function getNextMatch(
       }));
       const comparisons = buildComparisonsMap(compHistory);
 
+      // Sort names by rating (descending) to find close matchups efficiently
+      const sortedNames = [...names].sort((a, b) => {
+        const ra = ratings[a.name]?.rating || (typeof ratings[a.name] === 'number' ? ratings[a.name] : 1500);
+        const rb = ratings[b.name]?.rating || (typeof ratings[b.name] === 'number' ? ratings[b.name] : 1500);
+        // @ts-expect-error Types might be mixed number/object
+        return rb - ra;
+      });
+
       let bestPair: [string, string] | null = null;
       let bestScore = Infinity;
-      const pairIndex = typeof s._pairIndex === "number" ? s._pairIndex : 0;
 
-      for (let idx = pairIndex; idx < s._pairs.length; idx++) {
-        const [a, b] = s._pairs[idx];
-        if (prefs.has(`${a}-${b}`) || prefs.has(`${b}-${a}`)) continue;
+      // Scan neighbors window.
+      // K=5 means we check against 5 nearest neighbors in rating.
+      const K = 5;
 
-        const ra = ratings[a]?.rating || (typeof ratings[a] === "number" ? ratings[a] : 1500);
-        const rb = ratings[b]?.rating || (typeof ratings[b] === "number" ? ratings[b] : 1500);
-        const diff = Math.abs(ra - rb);
-        const ca = comparisons.get(a) || 0;
-        const cb = comparisons.get(b) || 0;
-        const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
-        const score = diff - 50 * uncScore;
+      for (let i = 0; i < sortedNames.length; i++) {
+        for (let j = 1; j <= K; j++) {
+          if (i + j >= sortedNames.length) break;
 
-        if (score < bestScore) {
-          bestScore = score;
-          bestPair = [a, b];
+          const n1 = sortedNames[i];
+          const n2 = sortedNames[i + j];
+          const a = n1.name;
+          const b = n2.name;
+
+          // Skip if already compared
+          if (prefs.has(`${a}-${b}`) || prefs.has(`${b}-${a}`)) continue;
+
+          // Calculate score
+          const ra = ratings[a]?.rating || (typeof ratings[a] === "number" ? ratings[a] : 1500);
+          const rb = ratings[b]?.rating || (typeof ratings[b] === "number" ? ratings[b] : 1500);
+          // @ts-expect-error Types might be mixed number/object
+          const diff = Math.abs(ra - rb);
+
+          const ca = comparisons.get(a) || 0;
+          const cb = comparisons.get(b) || 0;
+          const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
+
+          // Lower score is better.
+          // Minimize diff, Maximize uncertainty (minimize -uncScore)
+          const score = diff - 50 * uncScore;
+
+          if (score < bestScore) {
+            bestScore = score;
+            bestPair = [a, b];
+          }
         }
       }
 
       if (bestPair) {
         const [a, b] = bestPair;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        s._pairIndex = Math.max(0, s._pairs.findIndex((p: any) => p[0] === a && p[1] === b));
         return {
           left: names.find((n) => n?.name === a) || { name: a, id: a },
           right: names.find((n) => n?.name === b) || { name: b, id: b },
