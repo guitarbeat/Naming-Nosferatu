@@ -38,9 +38,32 @@ export class PreferenceSorter {
   currentRankings: string[];
   ranks: string[];
   rec: number[];
-  pairs: Array<[string, string]>;
-  currentIndex: number;
+  // Lazy iteration state
+  private _i: number;
+  private _j: number;
+
   history: Array<{ a: string; b: string; value: number }>;
+
+  // Expose currentIndex for compatibility, though it is virtual
+  get currentIndex(): number {
+    if (this._i >= this.items.length - 1) return (this.items.length * (this.items.length - 1)) / 2;
+
+    const n = this.items.length;
+    const previousRowsPairs = this._i * (n - 1) - (this._i * (this._i - 1)) / 2;
+    const currentRowsPairs = this._j - this._i - 1;
+    return previousRowsPairs + currentRowsPairs;
+  }
+
+  set currentIndex(val: number) {
+    if (val === 0) {
+      this._i = 0;
+      this._j = 1;
+      return;
+    }
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Setting currentIndex manually on PreferenceSorter is not fully supported in lazy mode except for 0.");
+    }
+  }
 
   constructor(items: string[]) {
     if (!Array.isArray(items)) {
@@ -51,14 +74,11 @@ export class PreferenceSorter {
     this.currentRankings = [...items];
     this.ranks = [];
     this.rec = new Array(items.length).fill(0);
-    // Pairwise comparison queue (simple, reliable fallback)
-    this.pairs = [];
-    for (let i = 0; i < items.length - 1; i++) {
-      for (let j = i + 1; j < items.length; j++) {
-        this.pairs.push([this.getName(items[i]), this.getName(items[j])]);
-      }
-    }
-    this.currentIndex = 0;
+
+    // Initialize lazy iteration state
+    this._i = 0;
+    this._j = 1;
+
     this.history = [];
   }
 
@@ -196,16 +216,35 @@ export class PreferenceSorter {
 
   // Return the next un-judged pair as a match { left, right }
   getNextMatch(): { left: string; right: string } | null {
-    // Advance index to next pair we haven't judged yet
-    while (this.currentIndex < this.pairs.length) {
-      const [a, b] = this.pairs[this.currentIndex];
+    const n = this.items.length;
+
+    // We use a temporary cursor to scan forward from current _i, _j
+    // But we want to persist the progress so we don't re-scan from 0,0 every time.
+    // So _i, _j should point to the *first potentially unjudged* pair.
+
+    while (this._i < n - 1) {
+      const a = this.getName(this.items[this._i]);
+      const b = this.getName(this.items[this._j]);
+
       const key = `${a}-${b}`;
       const reverseKey = `${b}-${a}`;
-      if (!this.preferences.has(key) && !this.preferences.has(reverseKey)) {
+
+      const hasPref = this.preferences.has(key) || this.preferences.has(reverseKey);
+
+      if (!hasPref) {
+        // Found an unjudged pair. Return it.
+        // Do NOT advance _i, _j yet. We want to return this pair until it is judged.
         return { left: a, right: b };
       }
-      this.currentIndex++;
+
+      // If judged, advance to check next pair
+      this._j++;
+      if (this._j >= n) {
+        this._i++;
+        this._j = this._i + 1;
+      }
     }
+
     return null;
   }
 
@@ -217,8 +256,30 @@ export class PreferenceSorter {
     const reverseKey = `${last.b}-${last.a}`;
     this.preferences.delete(key);
     this.preferences.delete(reverseKey);
-    // Step back at least one index to revisit the undone pair if needed
-    this.currentIndex = Math.max(0, this.currentIndex - 1);
+
+    // Step back indices to ensure we revisit this pair
+    const indexA = this.items.findIndex(item => this.getName(item) === last.a);
+    const indexB = this.items.findIndex(item => this.getName(item) === last.b);
+
+    if (indexA !== -1 && indexB !== -1) {
+      // Ensure i < j convention
+      if (indexA < indexB) {
+        this._i = indexA;
+        this._j = indexB;
+      } else {
+        this._i = indexB;
+        this._j = indexA;
+      }
+    } else {
+       // Fallback
+       if (this._j > this._i + 1) {
+         this._j--;
+       } else if (this._i > 0) {
+         this._i--;
+         this._j = this.items.length - 1;
+       }
+    }
+
     return true;
   }
 }

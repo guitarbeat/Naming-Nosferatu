@@ -648,9 +648,9 @@ function MobileMenu({
             />
           );
         })}
-        
+
         <div className="app-navbar__mobile-separator" />
-        
+
         <div className="app-navbar__mobile-toggles">
           <ModeToggles isMobile />
         </div>
@@ -800,7 +800,7 @@ export function AppNavbar({
              <div className="app-navbar__desktop-toggles">
                <ModeToggles />
              </div>
-             
+
              <NavbarActions
                isLoggedIn={isLoggedIn}
                userName={userName}
