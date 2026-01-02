@@ -201,12 +201,19 @@ CollapsibleHeader.propTypes = {
  * @param {React.ReactNode} props.children - Content
  * @param {string} props.className - Additional CSS classes
  */
+interface CollapsibleContentProps {
+	id?: string;
+	isCollapsed: boolean;
+	children: React.ReactNode;
+	className?: string;
+}
+
 export function CollapsibleContent({
 	id,
 	isCollapsed,
 	children,
 	className = "",
-}) {
+}: CollapsibleContentProps) {
 	const contentId = id;
 	return (
 		<div
@@ -257,7 +264,7 @@ interface CollapsibleSectionProps {
 	liquidGlass?: boolean | Record<string, unknown>;
 }
 
-function CollapsibleSection({
+export function CollapsibleSection({
 	title,
 	icon,
 	summary,

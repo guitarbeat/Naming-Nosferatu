@@ -10,7 +10,7 @@ const REQUEST_TIMEOUT_MS = 5000;
  * Hook to fetch and manage cat fact state
  */
 export function useCatFact() {
-	const [catFact, setCatFact] = useState("");
+	const [catFact, setCatFact] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchCatFact = async () => {
@@ -41,9 +41,7 @@ export function useCatFact() {
 			} catch (error: unknown) {
 				const err = error as Error;
 				if (err.name === "AbortError" || err.name === "TimeoutError") {
-					if (process.env.NODE_ENV === "development") {
-						console.warn("Cat fact request timed out");
-					}
+					// Silent fail for timeouts
 				} else {
 					ErrorManager.handleError(error, "Fetch Cat Fact", {
 						isRetryable: true,

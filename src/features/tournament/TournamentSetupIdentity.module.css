@@ -86,3 +86,43 @@
 .identitySaveBtn:hover {
 	filter: brightness(1.1);
 }
+
+/* Cat Fact Tape Section */
+.catFactSection {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-3) var(--space-4);
+	background: #fffde7;
+	border: 1px dashed var(--ink);
+	margin-top: calc(var(--space-2) * -1);
+	border-top: none;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--ink);
+	position: relative;
+	box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+.tapeDecorator {
+	width: 4px;
+	height: 100%;
+	background: var(--ink);
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.2;
+}
+
+.tapeLabel {
+	font-weight: 800;
+	color: var(--ink);
+	opacity: 0.6;
+	flex-shrink: 0;
+}
+
+.tapeContent {
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	line-height: 1.4;
+}

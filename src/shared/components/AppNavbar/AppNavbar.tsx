@@ -349,7 +349,7 @@ function useNavbarDimensions(isCollapsed: boolean) {
 		}
 		return {
 			width: isCollapsed ? 72 : window.innerWidth,
-			height: 64,
+			height: isCollapsed ? Math.round(window.innerHeight * 0.8) : 64,
 		};
 	});
 
@@ -361,7 +361,9 @@ function useNavbarDimensions(isCollapsed: boolean) {
 				if (navbarRef.current) {
 					const rect = navbarRef.current.getBoundingClientRect();
 					const newWidth = Math.max(rect.width, 72);
-					const newHeight = Math.max(rect.height, 64);
+					const newHeight = isCollapsed
+						? Math.round(window.innerHeight * 0.8)
+						: Math.max(rect.height, 64);
 
 					setDimensions((prev) => {
 						if (prev.width === newWidth && prev.height === newHeight) {

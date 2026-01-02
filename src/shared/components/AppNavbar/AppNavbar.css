@@ -6,22 +6,26 @@
 	z-index: 1000;
 	transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 	width: clamp(320px, 92vw, 1200px);
-	border-radius: var(--navbar-radius);
+	border-radius: 28px;
 	background: var(--nav-bg);
-	backdrop-filter: blur(20px) saturate(180%);
-	border: 1px solid var(--nav-border);
-	box-shadow: var(--nav-shadow);
+	backdrop-filter: blur(32px) saturate(180%);
+	-webkit-backdrop-filter: blur(32px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.24),
+		inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .app-navbar-glass.collapsed {
 	left: 1.5rem;
 	top: 50%;
 	transform: translateY(-50%);
-	width: var(--sidebar-width);
+	width: 72px;
 	height: 80vh;
 	display: flex;
 	align-items: center;
-	padding: 1rem 0;
+	padding: 1.5rem 0;
+	border-radius: 32px;
 }
 
 .app-navbar {
@@ -62,8 +66,12 @@
 }
 
 @keyframes scanline {
-	0% { transform: translateY(-100%) rotate(30deg); }
-	100% { transform: translateY(100%) rotate(30deg); }
+	0% {
+		transform: translateY(-100%) rotate(30deg);
+	}
+	100% {
+		transform: translateY(100%) rotate(30deg);
+	}
 }
 
 .app-navbar__brand-text {
@@ -81,7 +89,7 @@
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	text-transform: uppercase;
-	filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+	filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .app-navbar__link {
@@ -106,18 +114,29 @@
 	color: var(--nav-text);
 	background: rgba(255, 255, 255, 0.05);
 	transform: translateY(-2px);
-	box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .app-navbar__link[data-active="true"] {
 	color: var(--nav-highlight);
-	background: rgba(var(--neon-cyan-rgb), 0.1);
-	box-shadow: 
-		inset 0 0 0 1px rgba(var(--neon-cyan-rgb), 0.2),
-		0 0 15px -5px rgba(var(--neon-cyan-rgb), 0.3);
+	background: rgba(var(--neon-cyan-rgb), 0.12);
+	box-shadow:
+		inset 0 0 0 1px rgba(var(--neon-cyan-rgb), 0.3),
+		0 0 20px -5px rgba(var(--neon-cyan-rgb), 0.4);
 }
 
 .app-navbar.collapsed .app-navbar__link {
 	padding: 0.8rem;
 	border-radius: 12px;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+}
+
+.app-navbar.collapsed .app-navbar__link-text {
+	display: none;
+}
+
+.app-navbar.collapsed .app-navbar__link-icon {
+	margin: 0;
 }

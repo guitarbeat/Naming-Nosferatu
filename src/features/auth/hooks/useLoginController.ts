@@ -4,6 +4,7 @@ import {
 	generateFunName,
 	validateUsername,
 } from "../../../shared/utils/coreUtils";
+import { useCatFact } from "./useCatFact";
 
 /**
  * Hook to manage login form state and submission
@@ -14,6 +15,7 @@ export function useLoginController(
 	const [name, setName] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
+	const catFact = useCatFact();
 
 	const handleNameChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,8 +57,8 @@ export function useLoginController(
 				const error = err as Error;
 				setError(
 					formattedError.userMessage ||
-						error.message ||
-						"Unable to log in. Please check your connection and try again.",
+					error.message ||
+					"Unable to log in. Please check your connection and try again.",
 				);
 			} finally {
 				setIsLoading(false);
@@ -69,6 +71,22 @@ export function useLoginController(
 		setError("");
 	}, []);
 
+	const handleRandomName = useCallback(() => {
+		if (isLoading) return;
+		const funName = generateFunName();
+		setName(funName);
+		if (error) setError("");
+	}, [isLoading, error]);
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key === "Enter") {
+				void handleSubmit(e);
+			}
+		},
+		[handleSubmit],
+	);
+
 	return {
 		name,
 		setName,
@@ -76,6 +94,9 @@ export function useLoginController(
 		error,
 		handleNameChange,
 		handleSubmit,
+		handleRandomName,
+		handleKeyDown,
 		clearError,
+		catFact,
 	};
 }

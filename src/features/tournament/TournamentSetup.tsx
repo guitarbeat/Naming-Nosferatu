@@ -9,6 +9,7 @@ import Error from "../../shared/components/Error/Error";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { useAdminStatus } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
+import { useCatFact } from "../auth/hooks/useCatFact";
 import { useProfile } from "../profile/hooks/useProfile";
 import { useProfileNotifications } from "../profile/hooks/useProfileNotifications";
 import { AnalysisBulkActionsWrapper } from "./components/AnalysisBulkActionsWrapper";
@@ -45,6 +46,7 @@ function TournamentSetupContent({
 }: TournamentSetupProps) {
 	// * Get current view from store
 	const currentView = useAppStore((state) => state.tournament.currentView);
+	const catFact = useCatFact();
 
 	// * Name editing state
 	const [isEditingName, setIsEditingName] = useState(false);
@@ -102,7 +104,6 @@ function TournamentSetupContent({
 	const shouldEnableAnalysisMode =
 		enableAnalysisMode || urlParams.get("analysis") === "true";
 
-	// * Create handlers ref that will be populated by a component inside context
 	// * Create handlers ref that will be populated by a component inside context
 	const handlersRef = useRef<{
 		handleToggleVisibility: ((nameId: string | number) => void) | null;
@@ -228,10 +229,20 @@ function TournamentSetupContent({
 								onChange={(e) => setTempName(e.target.value)}
 								className={identityStyles.identityInput}
 								autoFocus
-								onBlur={() => {
-									// Optional: Cancel on blur if empty or desired
-									// setIsEditingName(false);
+								onKeyDown={(e) => {
+									if (e.key === "Escape") {
+										setTempName(userName);
+										setIsEditingName(false);
+									}
 								}}
+								onBlur={() => {
+									if (!tempName.trim()) {
+										setTempName(userName);
+									}
+									setIsEditingName(false);
+								}}
+								maxLength={30}
+								aria-label="Edit operator name"
 							/>
 							<button type="submit" className={identityStyles.identitySaveBtn}>
 								✓
@@ -249,6 +260,15 @@ function TournamentSetupContent({
 							</button>
 						</div>
 					)}
+				</div>
+
+				{/* Cat Fact Tape / System Feed */}
+				<div className={identityStyles.catFactSection}>
+					<div className={identityStyles.tapeDecorator} />
+					<span className={identityStyles.tapeLabel}>SYSTEM_FEED:</span>
+					<span className={identityStyles.tapeContent}>
+						{catFact ? catFact.toUpperCase() : "SYNCING FELINE DATABASE..."}
+					</span>
 				</div>
 
 				<NameManagementView
