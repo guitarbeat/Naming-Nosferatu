@@ -13,7 +13,7 @@ import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,
-} from "../../../shared/components/CollapsibleHeader/CollapsibleHeader";
+} from "../../../shared/components/Header/CollapsibleHeader";
 import { useToast } from "../../../shared/hooks/useAppHooks";
 import {
 	calculateBracketRound,

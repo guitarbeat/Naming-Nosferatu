@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useMemo } from "react";
 import { AnalysisDashboard } from "../../../shared/components/AnalysisDashboard/AnalysisDashboard";
-import { AnalysisBulkActions } from "../../../shared/components/AnalysisPanel/components/AnalysisBulkActions";
+import { AnalysisBulkActions } from "../../../shared/components/AnalysisDashboard/components/AnalysisBulkActions";
 import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/NameManagementView";
 import type { NameItem } from "../../../shared/propTypes";
 import {

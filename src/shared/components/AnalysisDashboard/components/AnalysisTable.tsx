@@ -5,7 +5,7 @@ import {
 	getMetricLabel,
 	getRankDisplay,
 } from "../../../utils/coreUtils";
-import { ColumnHeader } from "../../ColumnHeader/ColumnHeader";
+import { ColumnHeader } from "../../Header/ColumnHeader";
 import { PerformanceBadges } from "../../PerformanceBadge/PerformanceBadge";
 import type { SummaryStats } from "../types";
 import type { ConsolidatedName } from "../useAnalysisDisplayData";

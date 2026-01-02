@@ -6,8 +6,8 @@
  */
 
 import PropTypes from "prop-types";
-import "../../styles/analysis-mode.css";
-import { AnalysisHeader } from "./components/AnalysisComponents";
+import "../../../styles/analysis-mode.css";
+import { CollapsibleHeader } from "../../Header/CollapsibleHeader";
 
 /**
  * Primary Analysis Panel container
@@ -39,11 +39,10 @@ export function AnalysisPanel({
 	return (
 		<div className={`analysis-panel ${className}`}>
 			{showHeader && (
-				<AnalysisHeader
-					title={title}
+				<CollapsibleHeader
+					title={title || ""}
 					actions={actions}
-					showBadge={false}
-					collapsible={false}
+					variant="compact"
 				/>
 			)}
 			{toolbar && <div className="analysis-panel-toolbar">{toolbar}</div>}

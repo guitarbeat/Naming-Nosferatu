@@ -59,8 +59,8 @@ ChevronIcon.propTypes = {
 interface CollapsibleHeaderProps {
 	title: string;
 	icon?: string;
-	isCollapsed: boolean;
-	onToggle: () => void;
+	isCollapsed?: boolean;
+	onToggle?: () => void;
 	summary?: React.ReactNode;
 	actions?: React.ReactNode;
 	contentId?: string;
@@ -73,7 +73,7 @@ interface CollapsibleHeaderProps {
 export function CollapsibleHeader({
 	title,
 	icon,
-	isCollapsed,
+	isCollapsed = false,
 	onToggle,
 	summary,
 	actions,
@@ -84,6 +84,7 @@ export function CollapsibleHeader({
 	liquidGlass,
 }: CollapsibleHeaderProps) {
 	const shouldUseLiquidGlass = !!liquidGlass;
+	const isCollapsible = !!onToggle;
 	const headerGlassId = useId();
 	const resolvedContentId =
 		contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
@@ -91,40 +92,51 @@ export function CollapsibleHeader({
 	const headerContent = (
 		<>
 			<header
-				className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
+				className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${isCollapsible ? "collapsible-header--sortable" : ""} ${className}`}
 			>
-				<button
-					type="button"
-					className="collapsible-toggle"
-					onClick={onToggle}
-					aria-expanded={!isCollapsed}
-					aria-controls={resolvedContentId}
-					aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
-					title={isCollapsed ? title : undefined}
-				>
-					<ChevronIcon isCollapsed={isCollapsed} />
-					{icon && (
-						<span
-							className={
-								isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
-							}
-							aria-hidden="true"
-						>
-							{icon}
-						</span>
-					)}
-					{!isCollapsed && <span className="collapsible-title">{title}</span>}
-					{isCollapsed && summary && (
-						<span className="collapsible-summary">{summary}</span>
-					)}
-				</button>
-				{!isCollapsed && actions && (
+				{isCollapsible ? (
+					<button
+						type="button"
+						className="collapsible-toggle"
+						onClick={onToggle}
+						aria-expanded={!isCollapsed}
+						aria-controls={resolvedContentId}
+						aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+						title={isCollapsed ? title : undefined}
+					>
+						<ChevronIcon isCollapsed={isCollapsed} />
+						{icon && (
+							<span
+								className={
+									isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
+								}
+								aria-hidden="true"
+							>
+								{icon}
+							</span>
+						)}
+						{!isCollapsed && <span className="collapsible-title">{title}</span>}
+						{isCollapsed && summary && (
+							<span className="collapsible-summary">{summary}</span>
+						)}
+					</button>
+				) : (
+					<div className="collapsible-toggle static">
+						{icon && (
+							<span className="collapsible-icon" aria-hidden="true">
+								{icon}
+							</span>
+						)}
+						<span className="collapsible-title">{title}</span>
+					</div>
+				)}
+				{(isCollapsible ? !isCollapsed : true) && actions && (
 					<div className="collapsible-header-controls">
 						<div className="collapsible-actions">{actions}</div>
 					</div>
 				)}
 			</header>
-			{!isCollapsed && toolbar && (
+			{(isCollapsible ? !isCollapsed : true) && toolbar && (
 				<div className="collapsible-header-toolbar">{toolbar}</div>
 			)}
 		</>
