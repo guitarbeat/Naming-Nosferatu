@@ -222,18 +222,39 @@ export default function useMagneticPull(
 
     if (!leftOrb || !rightOrb) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-      const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+    let animationFrameId: number;
+    const mousePos = { x: 0, y: 0 };
+    let isDirty = false;
 
-      // Store transforms for click interaction
-      transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
-      transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
+    const updatePosition = () => {
+      if (!leftOrb || !rightOrb) return;
 
-      // Apply transforms
-      leftOrb.style.transform = transformRef.current.left;
-      rightOrb.style.transform = transformRef.current.right;
+      if (isDirty) {
+        const xAxis = (window.innerWidth / 2 - mousePos.x) / 40;
+        const yAxis = (window.innerHeight / 2 - mousePos.y) / 40;
+
+        // Store transforms for click interaction
+        transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
+        transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
+
+        // Apply transforms
+        leftOrb.style.transform = transformRef.current.left;
+        rightOrb.style.transform = transformRef.current.right;
+
+        isDirty = false;
+      }
+
+      animationFrameId = requestAnimationFrame(updatePosition);
     };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mousePos.x = e.pageX;
+      mousePos.y = e.pageY;
+      isDirty = true;
+    };
+
+    // Start animation loop
+    animationFrameId = requestAnimationFrame(updatePosition);
 
     const handleMouseDown = (orb, isLeft) => {
       if (!orb) return;
@@ -268,6 +289,7 @@ export default function useMagneticPull(
 
     // Cleanup function
     return () => {
+      cancelAnimationFrame(animationFrameId);
       document.removeEventListener("mousemove", handleMouseMove);
 
       leftOrb.removeEventListener("mousedown", leftMouseDown);
