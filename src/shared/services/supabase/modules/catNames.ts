@@ -788,7 +788,7 @@ export const catNamesAPI = {
 				}
 
 				return {
-					...item,
+					...(item as unknown as Record<string, unknown>),
 					popularity_score: 0,
 					total_tournaments: 0,
 					times_selected: selectionCounts.get(String(itemWithRatings.id)) || 0,

@@ -96,9 +96,9 @@ export function AnalysisDashboard({
 	// 2. Process Data
 	const { displayNames, summaryStats, namesWithInsights, generalInsights } =
 		useAnalysisDisplayData({
-			leaderboardData,
-			selectionPopularity,
-			analyticsData,
+			leaderboardData: leaderboardData ?? null,
+			selectionPopularity: selectionPopularity ?? null,
+			analyticsData: analyticsData ?? null,
 			isAdmin,
 			highlights,
 			filterConfig,
