@@ -2,11 +2,12 @@ import PropTypes from "prop-types";
 import { lazy, Suspense } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import Login from "../../../features/auth/Login";
+// import TournamentSetup from "../../../features/tournament/TournamentSetup";
+import ModernTournamentSetup from "../../../features/tournament/ModernTournamentSetup";
 // * Import components directly to maintain stability
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";
-import TournamentSetup from "../../../features/tournament/TournamentSetup";
 import Error from "../Error/Error";
 import Loading from "../Loading/Loading";
 
@@ -57,7 +58,7 @@ export default function ViewRouter({
 	onTournamentSetup,
 	onTournamentComplete,
 	onVote,
-	onOpenSuggestName,
+	onOpenSuggestName: _onOpenSuggestName,
 }: ViewRouterProps) {
 	const { isRoute, currentRoute } = useRouting();
 
@@ -80,7 +81,7 @@ export default function ViewRouter({
 
 	if (tournament.names === null) {
 		// Convert ratings from Record<string, { rating: number }> to Record<string, number>
-		const existingRatings = Object.fromEntries(
+		const _existingRatings = Object.fromEntries(
 			Object.entries(tournament.ratings).map(([key, value]) => [
 				key,
 				typeof value === "object" && value !== null && "rating" in value
@@ -91,12 +92,9 @@ export default function ViewRouter({
 			]),
 		);
 		return (
-			<TournamentSetup
+			<ModernTournamentSetup
 				onStart={onTournamentSetup as (selectedNames: unknown) => void}
 				userName={userName}
-				existingRatings={existingRatings}
-				onOpenSuggestName={onOpenSuggestName}
-				onNameChange={onLogin}
 			/>
 		);
 	}
