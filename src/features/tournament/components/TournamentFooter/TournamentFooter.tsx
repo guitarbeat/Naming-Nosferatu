@@ -3,8 +3,8 @@
  * @description Footer component for tournament view with controls, keyboard help, and bracket view
  */
 
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 import Bracket from "../../../../shared/components/Bracket/Bracket";
 import styles from "../../Tournament.module.css";
 

@@ -557,7 +557,6 @@
 	}
 }
 
-
 /* * Override grid layout for swipe mode */
 .cardsContainer:has(.swipeContainer) {
 	display: flex;
@@ -3313,7 +3312,6 @@
 		padding-inline: var(--space-4);
 	}
 
-
 	.swipeUndoButton {
 		grid-area: undo;
 		width: 100%;
@@ -3347,12 +3345,11 @@
 	}
 }
 
-
-	.photoToolbar {
-		flex-direction: column;
-		gap: var(--space-3);
-		align-items: stretch;
-	}
+.photoToolbar {
+	flex-direction: column;
+	gap: var(--space-3);
+	align-items: stretch;
+}
 
 @media (width <= 600px) {
 	.container {

@@ -51,7 +51,7 @@
 		80% 0%,
 		100% 40%,
 		90% 100%,
-		100% 100%, /* Fixed polygon for better fill on mobile */
+		100% 100% /* Fixed polygon for better fill on mobile */,
 		0% 100%,
 		0% 40%
 	);
@@ -284,4 +284,3 @@
 		font-size: 1.2rem;
 	}
 }
-

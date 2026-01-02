@@ -108,7 +108,9 @@ export function CollapsibleHeader({
 						{icon && (
 							<span
 								className={
-									isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
+									isCollapsed
+										? "collapsible-icon-collapsed"
+										: "collapsible-icon"
 								}
 								aria-hidden="true"
 							>

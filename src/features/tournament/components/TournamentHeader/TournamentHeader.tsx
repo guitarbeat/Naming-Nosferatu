@@ -4,12 +4,12 @@
  * @author Aaron Lor
  */
 
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 import Card from "../../../../shared/components/Card/Card";
-import { StartButton } from "../StartButton";
 import styles from "../../Tournament.module.css";
 import setupStyles from "../../TournamentSetup.module.css";
+import { StartButton } from "../StartButton";
 
 interface NameItem {
 	id?: string | number;

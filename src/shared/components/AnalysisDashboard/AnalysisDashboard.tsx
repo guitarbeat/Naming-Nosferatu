@@ -12,7 +12,6 @@ import { useCollapsible } from "../../../core/hooks/useStorage";
 import { nameItemShape } from "../../propTypes";
 import { hiddenNamesAPI } from "../../services/supabase/client";
 import { clearAllCaches, devError } from "../../utils/coreUtils";
-import { AnalysisPanel } from "./components/AnalysisPanel";
 import { BumpChart } from "../Charts/Charts";
 import {
 	CollapsibleContent,
@@ -20,6 +19,7 @@ import {
 } from "../Header/CollapsibleHeader";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
+import { AnalysisPanel } from "./components/AnalysisPanel";
 import "./AnalysisDashboard.css";
 import { AnalysisInsights } from "./components/AnalysisInsights";
 import { AnalysisTable } from "./components/AnalysisTable";

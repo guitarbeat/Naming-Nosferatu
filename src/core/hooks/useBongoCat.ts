@@ -59,7 +59,6 @@ export function useBongoCat({
 			return;
 		}
 
-
 		const updatePosition = () => {
 			if (!containerRef?.current) {
 				return;

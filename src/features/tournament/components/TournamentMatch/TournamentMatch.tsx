@@ -3,8 +3,8 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import React, { useRef } from "react";
 import PropTypes from "prop-types";
+import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
 import Error from "../../../../shared/components/Error/Error";
 import type { NameItem } from "../../../../shared/propTypes";

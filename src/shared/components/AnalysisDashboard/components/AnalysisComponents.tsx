@@ -35,8 +35,7 @@ export function AnalysisButton({
 	disabled?: boolean;
 	ariaLabel?: string;
 	className?: string;
-	[key: string]: any;
-}) {
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
 	return (
 		<button
 			type="button"
