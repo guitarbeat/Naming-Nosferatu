@@ -39,10 +39,12 @@ export const adminAPI = {
 			let roles: UserRole[] | null = null;
 			try {
 				const result = await client
+					// biome-ignore lint/suspicious/noExplicitAny: Temporary workaround for Supabase type inference on user_roles
 					.from("user_roles" as any)
 					.select("user_name, role")
 					.in("user_name", userNames);
 				roles =
+					// biome-ignore lint/suspicious/noExplicitAny: Safe cast for mapped data
 					(result.data as any[])?.map((r) => ({
 						user_name: r.user_name || "",
 						role: r.role || "user",

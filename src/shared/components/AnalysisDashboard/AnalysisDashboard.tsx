@@ -23,7 +23,7 @@ import { AnalysisPanel } from "./components/AnalysisPanel";
 import "./AnalysisDashboard.css";
 import { AnalysisInsights } from "./components/AnalysisInsights";
 import { AnalysisTable } from "./components/AnalysisTable";
-import type { HighlightItem, SummaryStats } from "./types";
+import type { HighlightItem } from "./types";
 import { useAnalysisData } from "./useAnalysisData";
 import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
 

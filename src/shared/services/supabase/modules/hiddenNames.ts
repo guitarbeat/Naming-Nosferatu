@@ -62,6 +62,7 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
+			// biome-ignore lint/suspicious/noExplicitAny: Workaround for RPC function overload identification
 			const { error } = await client.rpc("toggle_name_visibility" as any, {
 				p_name_id: String(nameId),
 				p_hide: true,
@@ -102,6 +103,7 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
+			// biome-ignore lint/suspicious/noExplicitAny: Workaround for RPC function overload identification
 			const { error } = await client.rpc("toggle_name_visibility" as any, {
 				p_name_id: String(nameId),
 				p_hide: false,
