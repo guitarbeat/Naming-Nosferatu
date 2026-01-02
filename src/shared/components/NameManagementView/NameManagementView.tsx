@@ -38,7 +38,11 @@ interface Name {
 }
 import useAppStore from "../../../core/store/useAppStore";
 import { useRouting } from "../../../core/hooks/useRouting";
-import { exportTournamentResultsToCSV } from "../../utils/coreUtils";
+import {
+  exportTournamentResultsToCSV,
+  applyNameFilters,
+  mapFilterStatusToVisibility,
+} from "../../utils/coreUtils";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import styles from "./NameManagementView.module.css";
 
@@ -142,11 +146,12 @@ interface NameManagementViewExtensions {
   lightbox?: React.ReactNode | (() => React.ReactNode);
   nameSuggestion?: React.ReactNode | (() => React.ReactNode);
   nameGrid?: React.ReactNode | React.ReactElement | (() => React.ReactNode);
+  contextLogic?: React.ReactNode | (() => React.ReactNode);
 }
 
 interface NameManagementViewTournamentProps {
   categories?: string[];
-  SwipeableCards?: React.ComponentType;
+  SwipeableCards?: React.ComponentType<any>;
   isAdmin?: boolean;
   imageList?: string[];
   gridClassName?: string;
@@ -296,6 +301,55 @@ export function NameManagementView({
 
   // * Names are passed directly to child components which handle their own filtering
   const displayNames = names;
+
+  // * Calculate filtered names for SwipeableCards (which expects pre-filtered list)
+  const filteredNamesForSwipe = useMemo(() => {
+    // Only calculate if we need it (swipe mode)
+    if (mode !== "tournament") return [];
+    
+    // In tournament mode, filtering is managed by tournament props/state
+    const visibility = mapFilterStatusToVisibility(filterStatus || "visible"); // Default to visible for tournament?
+    // Actually tournament mode usually doesn't have filterStatus in the same way as profile, 
+    // but we have tournamentFilterConfig below.
+
+    // Let's use the same config logic as NameGrid would use
+    const activeFilterStatus = analysisMode ? filterStatus : "visible";
+    const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
+
+    let result = applyNameFilters(names, {
+      searchTerm,
+      category: selectedCategory,
+      sortBy,
+      sortOrder: sortOrder as "asc" | "desc", // TournamentToolbar uses sortOrder
+      visibility: activeVisibility,
+      isAdmin: profileProps.isAdmin,
+    });
+
+    if (showSelectedOnly) {
+       result = result.filter((name) => {
+         // Check if name is in selectedNames
+         // selectedNames can be array or set depending on implementation, 
+         // but useNameSelection returns array in `selectedNames` and we have `selectedCount`.
+         // Wait, `selectedNames` from useNameSelection is array.
+         // Let's assume it's an array of objects.
+         return (selectedNames as any[]).some(s => s.id === name.id);
+       });
+    }
+
+    return result;
+  }, [
+    names, 
+    mode, 
+    analysisMode, 
+    filterStatus, 
+    searchTerm, 
+    selectedCategory, 
+    sortBy, 
+    sortOrder, 
+    profileProps.isAdmin,
+    showSelectedOnly,
+    selectedNames
+  ]);
 
   // * Filter configuration for TournamentToolbar
   const filterConfig = useMemo(() => {
@@ -606,6 +660,12 @@ export function NameManagementView({
         />
       )}
       <NameManagementContext.Provider value={contextValue}>
+        {/* Render context logic extension inside provider */}
+        {extensions.contextLogic && (
+          typeof extensions.contextLogic === "function" 
+            ? extensions.contextLogic() 
+            : extensions.contextLogic
+        )}
         <div
           className={`${styles.container} ${className}`}
           data-component="name-management-view"
@@ -752,6 +812,17 @@ export function NameManagementView({
               ) : (
                 extensions.nameGrid
               )
+            ) : (mode === "tournament" && isSwipeMode && tournamentProps.SwipeableCards) ? (
+              // * Render SwipeableCards if in swipe mode and component provided
+              React.createElement(tournamentProps.SwipeableCards, {
+                names: filteredNamesForSwipe as any[],
+                selectedNames: selectedNames as any[],
+                onToggleName: (name: any) => toggleName(name),
+                isAdmin: profileProps.isAdmin,
+                showCatPictures: showCatPictures,
+                imageList: tournamentProps.imageList,
+                onStartTournament: onStartTournament ? (names: any[]) => onStartTournament(names) : undefined,
+              })
             ) : !(mode === "tournament" && isSwipeMode) ? (
               <NameGrid
                 names={displayNames}

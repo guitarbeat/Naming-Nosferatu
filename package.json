@@ -73,6 +73,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-responsive-masonry": "^2.7.1",
+    "react-virtualized-auto-sizer": "^2.0.1",
+    "react-window": "^2.2.3",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
@@ -84,6 +86,8 @@
     "@types/prop-types": "^15.7.15",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
+    "@types/react-virtualized-auto-sizer": "^1.0.4",
+    "@types/react-window": "^1.8.8",
     "@typescript-eslint/eslint-plugin": "^8.50.0",
     "@typescript-eslint/parser": "^8.47.0",
     "@vitejs/plugin-react": "^5.1.1",

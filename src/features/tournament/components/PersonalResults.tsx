@@ -1,0 +1,361 @@
+/**
+ * @module PersonalResults
+ * @description Component that displays the user's personal tournament results.
+ */
+
+import React, { useState, useCallback, useMemo } from "react";
+import PropTypes from "prop-types";
+import RankingAdjustment from "../RankingAdjustment";
+import Bracket from "../../../shared/components/Bracket/Bracket";
+import Button, { TournamentButton } from "../../../shared/components/Button/Button";
+import Card from "../../../shared/components/Card/Card";
+import {
+  CollapsibleHeader,
+  CollapsibleContent,
+} from "../../../shared/components/CollapsibleHeader/CollapsibleHeader";
+import { devError, calculateBracketRound } from "../../../shared/utils/coreUtils";
+import { useToast } from "../../../shared/hooks/useAppHooks";
+import styles from "./PersonalResults.module.css";
+
+/**
+ * CalendarButton component - exports tournament results to Google Calendar
+ */
+function CalendarButton({
+  rankings,
+  userName,
+  className = "",
+  variant = "secondary",
+  size = "medium",
+  disabled = false,
+  ...rest
+}) {
+  const { onClick: externalOnClick, ...buttonProps } = rest;
+
+  const handleClick = (event) => {
+    if (typeof externalOnClick === "function") {
+      externalOnClick(event);
+    }
+
+    if (event?.defaultPrevented) return;
+
+    // Filter out hidden names and sort by rating
+    const activeNames = rankings
+      .filter((name) => !name.is_hidden)
+      .sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
+
+    const winnerName = activeNames[0]?.name || "No winner yet";
+
+    const today = new Date();
+    const [startDateISO] = today.toISOString().split("T");
+    const startDate = startDateISO.replace(/-/g, "");
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 1);
+    const [endDateISO] = endDate.toISOString().split("T");
+    const endDateStr = endDateISO.replace(/-/g, "");
+
+    const text = `🐈‍⬛ ${winnerName}`;
+    const details = `Cat name rankings for ${userName}:\n\n${activeNames
+      .map(
+        (name, index) =>
+          `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+      )
+      .join("\n")}`;
+
+    const baseUrl = "https://calendar.google.com/calendar/render";
+    const params = new URLSearchParams({
+      action: "TEMPLATE",
+      text,
+      details,
+      dates: `${startDate}/${endDateStr}`,
+      ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
+
+    window.open(`${baseUrl}?${params.toString()}`, "_blank");
+  };
+
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      onClick={handleClick}
+      className={className}
+      disabled={disabled}
+      startIcon={<span>📅</span>}
+      aria-label="Add to Google Calendar"
+      title="Add to Google Calendar"
+      {...buttonProps}
+    >
+      Add to Calendar
+    </Button>
+  );
+}
+
+CalendarButton.propTypes = {
+  rankings: PropTypes.array.isRequired,
+  userName: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  variant: PropTypes.string,
+  size: PropTypes.string,
+  disabled: PropTypes.bool,
+  onClick: PropTypes.func,
+};
+
+/**
+ * PersonalResults Component
+ */
+function PersonalResults({
+  personalRatings,
+  currentTournamentNames,
+  voteHistory,
+  onStartNew,
+  onUpdateRatings,
+  userName,
+}) {
+  const [personalRankings, setPersonalRankings] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showToast } = useToast();
+
+  const hasPersonalData =
+    personalRatings && Object.keys(personalRatings).length > 0;
+  const hasTournamentNames =
+    currentTournamentNames && currentTournamentNames.length > 0;
+
+  // * Process personal tournament rankings
+  const tournamentNameSet = useMemo(
+    () => new Set(currentTournamentNames?.map((n) => n.name) || []),
+    [currentTournamentNames],
+  );
+
+  const nameToIdMap = useMemo(
+    () =>
+      new Map(
+        (currentTournamentNames || [])
+          .filter((name) => name?.name)
+          .map(({ id, name }) => [name, id]),
+      ),
+    [currentTournamentNames],
+  );
+
+  React.useEffect(() => {
+    if (!hasPersonalData || !hasTournamentNames) {
+      setPersonalRankings([]);
+      return;
+    }
+
+    try {
+      const rankings = Object.entries(personalRatings || {})
+        .filter(([name]) => tournamentNameSet.has(name))
+        .map(([name, rating]) => ({
+          id: nameToIdMap.get(name),
+          name,
+          rating: Math.round(
+            typeof rating === "number" ? rating : rating?.rating || 1500,
+          ),
+          wins: typeof rating === "object" ? rating.wins || 0 : 0,
+          losses: typeof rating === "object" ? rating.losses || 0 : 0,
+          change: 0,
+          is_hidden: typeof rating === "object" ? rating.is_hidden : false,
+        }))
+        .sort((a, b) => b.rating - a.rating);
+
+      setPersonalRankings(rankings);
+    } catch (error) {
+      devError("Error processing personal rankings:", error);
+      setPersonalRankings([]);
+    }
+  }, [
+    personalRatings,
+    tournamentNameSet,
+    nameToIdMap,
+    hasPersonalData,
+    hasTournamentNames,
+  ]);
+
+  // * Calculate bracket matches for personal tournament
+  const bracketMatches = useMemo(() => {
+    if (!voteHistory || !voteHistory.length || !hasTournamentNames) {
+      return [];
+    }
+
+    const namesCount = currentTournamentNames?.length || 0;
+    return voteHistory
+      .filter(
+        (vote) =>
+          vote?.match?.left?.name &&
+          vote?.match?.right?.name &&
+          tournamentNameSet.has(vote.match.left.name) &&
+          tournamentNameSet.has(vote.match.right.name),
+      )
+      .map((vote, index) => {
+        const leftOutcome = vote?.match?.left?.outcome;
+        const rightOutcome = vote?.match?.right?.outcome;
+        let winner;
+
+        if (leftOutcome || rightOutcome) {
+          const leftWin = leftOutcome === "win";
+          const rightWin = rightOutcome === "win";
+          if (leftWin && rightWin) winner = 0;
+          else if (leftWin && !rightWin) winner = -1;
+          else if (!leftWin && rightWin) winner = 1;
+          else winner = 2;
+        } else if (typeof vote.result === "number") {
+          if (vote.result === -1) winner = -1;
+          else if (vote.result === 1) winner = 1;
+          else if (vote.result === 0.5) winner = 0;
+          else if (vote.result === 0) winner = 2;
+          else if (vote.result < -0.1) winner = -1;
+          else if (vote.result > 0.1) winner = 1;
+          else if (Math.abs(vote.result) <= 0.1) winner = 0;
+          else winner = 2;
+        } else {
+          winner = 2;
+        }
+
+        const matchNumber = vote?.matchNumber ?? index + 1;
+        const calculatedRound = calculateBracketRound(namesCount, matchNumber);
+
+        return {
+          id: matchNumber,
+          round: calculatedRound,
+          name1: vote?.match?.left?.name || "Unknown",
+          name2: vote?.match?.right?.name || "Unknown",
+          winner,
+        };
+      });
+  }, [
+    voteHistory,
+    tournamentNameSet,
+    currentTournamentNames,
+    hasTournamentNames,
+  ]);
+
+  // * Handle saving adjusted personal rankings
+  const handleSaveAdjustments = useCallback(
+    async (adjustedRankings) => {
+      try {
+        setIsLoading(true);
+
+        const updatedRankings = adjustedRankings.map((ranking) => {
+          const oldRanking = personalRankings.find(
+            (r) => r.name === ranking.name,
+          );
+          return {
+            ...ranking,
+            change: oldRanking ? ranking.rating - oldRanking.rating : 0,
+          };
+        });
+
+        const newRatings = updatedRankings.map(({ name, rating }) => {
+          const existingRating = personalRatings[name];
+          return {
+            name,
+            rating: Math.round(rating),
+            wins: existingRating?.wins || 0,
+            losses: existingRating?.losses || 0,
+          };
+        });
+
+        await onUpdateRatings(newRatings);
+        setPersonalRankings(updatedRankings);
+
+        showToast({
+          message: "Rankings updated successfully!",
+          type: "success",
+        });
+      } catch (error) {
+        devError("Failed to update rankings:", error);
+        showToast({
+          message: "Failed to update rankings. Please try again.",
+          type: "error",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [personalRankings, personalRatings, onUpdateRatings, showToast],
+  );
+
+  if (!hasPersonalData) {
+    return (
+      <div className={styles.emptyState}>
+        <p>Complete a tournament to see your personal results here!</p>
+        <div className={styles.actions}>
+          <TournamentButton
+            onClick={onStartNew}
+            className={styles.startNewButton}
+          >
+            Start New Tournament
+          </TournamentButton>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.personalResults}>
+      {personalRankings.length > 0 && (
+        <div className={styles.statsGrid}>
+          <Card.Stats
+            title="Your Winner"
+            value={personalRankings[0]?.name || "-"}
+            emoji="🏆"
+            className={styles.statCard}
+          />
+          <Card.Stats
+            title="Rating"
+            value={personalRankings[0]?.rating || 1500}
+            emoji="⭐"
+            className={styles.statCard}
+          />
+          <Card.Stats
+            title="Total Names"
+            value={personalRankings.length}
+            emoji="📝"
+            className={styles.statCard}
+          />
+        </div>
+      )}
+
+      <RankingAdjustment
+        rankings={personalRankings}
+        onSave={handleSaveAdjustments}
+        onCancel={onStartNew}
+      />
+
+      {bracketMatches.length > 0 && (
+        <CollapsibleHeader
+          title="Tournament Bracket"
+          defaultCollapsed={false}
+          className={styles.bracketSection}
+        >
+          <CollapsibleContent>
+            <Bracket matches={bracketMatches} />
+          </CollapsibleContent>
+        </CollapsibleHeader>
+      )}
+
+      <div className={styles.actions}>
+        <TournamentButton
+          onClick={onStartNew}
+          className={styles.startNewButton}
+        >
+          Start New Tournament
+        </TournamentButton>
+        {hasPersonalData && (
+          <CalendarButton rankings={personalRankings} userName={userName} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+PersonalResults.propTypes = {
+  personalRatings: PropTypes.object,
+  currentTournamentNames: PropTypes.array,
+  voteHistory: PropTypes.array,
+  onStartNew: PropTypes.func.isRequired,
+  onUpdateRatings: PropTypes.func,
+  userName: PropTypes.string.isRequired,
+};
+
+export default PersonalResults;

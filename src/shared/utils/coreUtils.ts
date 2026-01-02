@@ -289,6 +289,35 @@ export function exportNamesToCSV(names: ExportNameItem[], fileName = "cat-names-
   });
 }
 
+export type NameId = string | number;
+
+/**
+ * * Extract name IDs from selected names value
+ */
+export function extractNameIds(selectedNamesValue: string[] | NameItem[] | Set<string>): NameId[] {
+  if (Array.isArray(selectedNamesValue)) {
+    // Check if it's an array of objects with an ID or just strings
+    if (selectedNamesValue.length > 0 && typeof selectedNamesValue[0] === 'object' && 'id' in selectedNamesValue[0]) {
+      return (selectedNamesValue as NameItem[]).map((n) => n.id as NameId);
+    }
+    // Assume it's an array of strings if not objects
+    // (or empty array, which returns empty)
+    return selectedNamesValue as NameId[];
+  }
+  if (selectedNamesValue instanceof Set) {
+    return Array.from(selectedNamesValue) as NameId[];
+  }
+  return [];
+}
+
+/**
+ * * Filter out hidden names
+ */
+export function getVisibleNames(names: NameItem[]): NameItem[] {
+  if (!Array.isArray(names)) return [];
+  return names.filter((name) => !isNameHidden(name));
+}
+
 export function exportTournamentResultsToCSV(
   names: ExportNameItem[],
   fileName = "tournament-results"

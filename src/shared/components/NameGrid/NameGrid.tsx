@@ -1,12 +1,13 @@
 /**
  * @module NameGrid
- * @description Grid of name cards with filtering.
- * Simple: names have is_hidden property. That's it.
+ * @description Virtualized Grid of name cards.
+ * Optimized for performance with large datasets using react-window.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, CSSProperties } from "react";
 import PropTypes from "prop-types";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { FixedSizeGrid as Grid, GridChildComponentProps } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 import CardName from "../Card/components/CardName";
 import Loading from "../Loading/Loading";
@@ -49,6 +50,18 @@ interface NameGridProps {
   className?: string;
 }
 
+interface ItemData {
+  items: NameItem[];
+  columnCount: number;
+  selectedSet: Set<string | number>;
+  onToggleName?: (name: NameItem) => void;
+  isAdmin: boolean;
+  showCatPictures: boolean;
+  imageList: string[];
+  onToggleVisibility?: (id: string | number) => void;
+  onDelete?: (name: NameItem) => void;
+}
+
 export function NameGrid({
   names = [],
   selectedNames = [],
@@ -63,28 +76,6 @@ export function NameGrid({
   isLoading = false,
   className = "",
 }: NameGridProps) {
-  // * Responsive breakpoints for masonry layout
-  const columnsCountBreakPoints = {
-    350: 1,
-    480: 2,
-    600: 2,
-    768: 3,
-    1024: 4,
-    1440: 5,
-    1920: 6,
-  };
-
-  // * Responsive gutter sizes for different breakpoints
-  const gutterBreakpoints = {
-    350: "8px",
-    480: "10px",
-    600: "12px",
-    768: "12px",
-    1024: "12px",
-    1440: "16px",
-    1920: "16px",
-  };
-
   const selectedSet = useMemo(
     () => selectedNamesToSet(selectedNames),
     [selectedNames],
@@ -120,22 +111,93 @@ export function NameGrid({
     return imageList[Math.abs(hash) % imageList.length];
   };
 
+  // * Fixed dimensions for grid items
+  // * Adjusted to accommodate CardName content while maintaining grid consistency
+  const ROW_HEIGHT = 280; 
+  const MIN_COLUMN_WIDTH = 260;
+  const GUTTER_SIZE = 16;
+
+  const Cell = ({ columnIndex, rowIndex, style, data }: GridChildComponentProps<ItemData>) => {
+    const {
+      items,
+      columnCount,
+      selectedSet,
+      onToggleName,
+      isAdmin,
+      showCatPictures,
+      imageList,
+      onToggleVisibility,
+      onDelete,
+    } = data;
+
+    const index = rowIndex * columnCount + columnIndex;
+
+    // * Handle cases where the last row isn't full
+    if (index >= items.length) {
+      return null;
+    }
+
+    const nameObj = items[index];
+    const nameId = nameObj.id as string | number;
+    
+    // * Deterministic image selection
+    const cardImage = useMemo(() => {
+        if (!showCatPictures || !imageList.length) return undefined;
+        const hash = String(nameId)
+          .split("")
+          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return imageList[Math.abs(hash) % imageList.length];
+    }, [nameId, showCatPictures, imageList]);
+
+
+    const nameItem: NameItem = nameObj as NameItem;
+    const isHidden = isNameHidden(nameObj);
+
+    // * Adjust style to account for gutter
+    const itemStyle: CSSProperties = {
+      ...style,
+      left: Number(style.left) + GUTTER_SIZE,
+      top: Number(style.top) + GUTTER_SIZE,
+      width: Number(style.width) - GUTTER_SIZE,
+      height: Number(style.height) - GUTTER_SIZE,
+    };
+
+    return (
+      <div style={itemStyle}>
+        <CardName
+          name={nameObj.name || ""}
+          description={nameObj.description}
+          isSelected={selectedSet.has(nameId)}
+          onClick={() => onToggleName?.(nameItem)}
+          image={cardImage}
+          metadata={
+            isAdmin
+              ? {
+                  rating: nameObj.avg_rating || 1500,
+                  popularity: nameObj.popularity_score,
+                }
+              : undefined
+          }
+          className={isHidden ? styles.hiddenCard : ""}
+          isAdmin={isAdmin}
+          isHidden={isHidden}
+          _onToggleVisibility={
+            isAdmin ? () => onToggleVisibility?.(nameId) : undefined
+          }
+          _onDelete={isAdmin ? () => onDelete?.(nameItem) : undefined}
+          onSelectionChange={undefined}
+          size="medium" // * Enforce medium size for virtualization consistency
+        />
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className={`${styles.gridContainer} ${className}`}>
-        <ResponsiveMasonry
-          columnsCountBreakPoints={columnsCountBreakPoints}
-          gutterBreakpoints={gutterBreakpoints}
-          className={styles.masonryGrid}
-        >
-          <Masonry className={styles.masonry}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className={styles.cardWrapper}>
-                <Loading variant="skeleton" height={120} />
-              </div>
-            ))}
-          </Masonry>
-        </ResponsiveMasonry>
+         <div className={styles.loadingContainer}>
+           <Loading variant="spinner" text="Loading names..." />
+         </div>
       </div>
     );
   }
@@ -155,47 +217,40 @@ export function NameGrid({
 
   return (
     <div className={`${styles.gridContainer} ${className}`}>
-      <ResponsiveMasonry
-        columnsCountBreakPoints={columnsCountBreakPoints}
-        gutterBreakpoints={gutterBreakpoints}
-        className={styles.masonryGrid}
-      >
-        <Masonry className={styles.masonry}>
-          {processedNames.map((nameObj) => {
-            const nameId = nameObj.id as string | number;
-            const cardImage = getCatImage(nameId);
-            const nameItem: NameItem = nameObj as NameItem;
+      <AutoSizer>
+        {({ height, width }: { height: number; width: number }) => {
+            // * Calculate columns based on available width and minimum width
+            // * Ensure at least 1 column
+            const effectiveWidth = width - GUTTER_SIZE; // Subtract outer gutter
+            const columnCount = Math.max(1, Math.floor(effectiveWidth / MIN_COLUMN_WIDTH));
+            const columnWidth = effectiveWidth / columnCount;
+            const rowCount = Math.ceil(processedNames.length / columnCount);
 
             return (
-              <div key={String(nameId)} className={styles.cardWrapper}>
-                <CardName
-                  name={nameObj.name || ""}
-                  description={nameObj.description}
-                  isSelected={selectedSet.has(nameId)}
-                  onClick={() => onToggleName?.(nameItem)}
-                  image={cardImage}
-                  metadata={
-                    isAdmin
-                      ? {
-                          rating: nameObj.avg_rating || 1500,
-                          popularity: nameObj.popularity_score,
-                        }
-                      : undefined
-                  }
-                  className={isNameHidden(nameObj) ? styles.hiddenCard : ""}
-                  isAdmin={isAdmin}
-                  isHidden={isNameHidden(nameObj)}
-                  _onToggleVisibility={
-                    isAdmin ? () => onToggleVisibility?.(nameId) : undefined
-                  }
-                  _onDelete={isAdmin ? () => onDelete?.(nameItem) : undefined}
-                  onSelectionChange={undefined}
-                />
-              </div>
+                <Grid
+                    columnCount={columnCount}
+                    columnWidth={columnWidth}
+                    height={height}
+                    rowCount={rowCount}
+                    rowHeight={ROW_HEIGHT}
+                    width={width}
+                    itemData={{
+                        items: processedNames,
+                        columnCount,
+                        selectedSet,
+                        onToggleName,
+                        isAdmin,
+                        showCatPictures,
+                        imageList,
+                        onToggleVisibility,
+                        onDelete,
+                    }}
+                >
+                    {Cell}
+                </Grid>
             );
-          })}
-        </Masonry>
-      </ResponsiveMasonry>
+        }}
+      </AutoSizer>
     </div>
   );
 }
