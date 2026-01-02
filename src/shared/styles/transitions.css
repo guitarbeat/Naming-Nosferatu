@@ -1,20 +1,20 @@
 /* Transitions */
 :root {
-  --transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  --transition-theme: 0.3s ease;
+	--transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	--transition-theme: 0.3s ease;
 
-  /* Easing */
-  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
-  --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+	/* Easing */
+	--ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+	--ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
 
-  /* Animation Duration */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 350ms;
+	/* Animation Duration */
+	--duration-fast: 150ms;
+	--duration-normal: 250ms;
+	--duration-slow: 350ms;
 }

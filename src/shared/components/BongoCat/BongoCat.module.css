@@ -2,571 +2,571 @@
 
 /* Component-specific variables - scoped to avoid conflicts with global theme */
 .bongoCat {
-  --cat-bg: #000; /* Black cat */
-  --cat-outline: #222; /* Slightly lighter than black for contrast */
-  --toebean: #44262c; /* Brighter pink for visibility */
-  --linesize: 2px;
-  --scale: 0.22; /* Scale factor to make everything smaller */
-  --cat-size: 1;
+	--cat-bg: #000; /* Black cat */
+	--cat-outline: #222; /* Slightly lighter than black for contrast */
+	--toebean: #44262c; /* Brighter pink for visibility */
+	--linesize: 2px;
+	--scale: 0.22; /* Scale factor to make everything smaller */
+	--cat-size: 1;
 }
 
 /* Base Styles */
 .container {
-  position: relative;
-  top: -10px; /* Added to move the cat up slightly */
-  width: calc(80rem * var(--scale));
-  height: calc(80rem * var(--scale));
-  transform: scale(var(--cat-size));
+	position: relative;
+	top: -10px; /* Added to move the cat up slightly */
+	width: calc(80rem * var(--scale));
+	height: calc(80rem * var(--scale));
+	transform: scale(var(--cat-size));
 }
 
 /* Dynamic positioning classes to replace inline styles */
 .bongoContainer {
-  position: absolute;
-  left: 50%;
-  z-index: 10; /* Ensure BongoCat is above background but below content */
-  width: 180px;
-  max-width: 100%;
-  aspect-ratio: 1;
-  pointer-events: none;
-  transform: translateX(-50%);
-  transition:
-    top 0.2s ease-out,
-    opacity 0.3s ease;
+	position: absolute;
+	left: 50%;
+	z-index: 10; /* Ensure BongoCat is above background but below content */
+	width: 180px;
+	max-width: 100%;
+	aspect-ratio: 1;
+	pointer-events: none;
+	transform: translateX(-50%);
+	transition:
+		top 0.2s ease-out,
+		opacity 0.3s ease;
 }
 
 .bongoContainerPositioned {
-  position: absolute;
-  left: 50%;
-  z-index: 10; /* Ensure BongoCat is above background but below content */
-  width: 180px;
-  max-width: 100%;
-  aspect-ratio: 1;
-  pointer-events: none;
-  transform: translateX(-50%);
-  transition:
-    top 0.2s ease-out,
-    opacity 0.3s ease;
+	position: absolute;
+	left: 50%;
+	z-index: 10; /* Ensure BongoCat is above background but below content */
+	width: 180px;
+	max-width: 100%;
+	aspect-ratio: 1;
+	pointer-events: none;
+	transform: translateX(-50%);
+	transition:
+		top 0.2s ease-out,
+		opacity 0.3s ease;
 }
 
 .bongoContainerVisible {
-  visibility: visible;
-  opacity: 1;
+	visibility: visible;
+	opacity: 1;
 }
 
 .bongoContainerHidden {
-  visibility: hidden;
-  opacity: 0;
+	visibility: hidden;
+	opacity: 0;
 }
 
 .container * {
-  position: absolute;
+	position: absolute;
 }
 
 .hide {
-  display: none;
+	display: none;
 }
 
 .cat {
-  /* transform: rotate(15deg); */
-  top: calc(15rem * var(--scale));
-  left: calc(15rem * var(--scale));
-  transform-origin: center center;
+	/* transform: rotate(15deg); */
+	top: calc(15rem * var(--scale));
+	left: calc(15rem * var(--scale));
+	transform-origin: center center;
 }
 
 /* Tail */
 .tail {
-  position: absolute;
-  top: calc(50rem * var(--scale));
-  left: calc(35rem * var(--scale));
-  width: calc(8rem * var(--scale));
-  height: calc(25rem * var(--scale));
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50% 50% 0 0;
-  transform-origin: top center;
-  transition: transform 0.1s ease-out;
+	position: absolute;
+	top: calc(50rem * var(--scale));
+	left: calc(35rem * var(--scale));
+	width: calc(8rem * var(--scale));
+	height: calc(25rem * var(--scale));
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50% 50% 0 0;
+	transform-origin: top center;
+	transition: transform 0.1s ease-out;
 }
 
 .tail::after {
-  content: "";
-  position: absolute;
-  bottom: calc(-3rem * var(--scale));
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(6rem * var(--scale));
-  height: calc(6rem * var(--scale));
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
+	content: "";
+	position: absolute;
+	bottom: calc(-3rem * var(--scale));
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(6rem * var(--scale));
+	height: calc(6rem * var(--scale));
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
 }
 
 .head {
-  width: calc(70rem * var(--scale));
-  height: calc(60rem * var(--scale));
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
-  transform-origin: center center;
-  transition: transform 0.2s ease-out;
+	width: calc(70rem * var(--scale));
+	height: calc(60rem * var(--scale));
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
+	transform-origin: center center;
+	transition: transform 0.2s ease-out;
 }
 
 /* * Breathing animation for idle state */
 .head.idle {
-  animation: breathing 3s ease-in-out infinite;
+	animation: breathing 3s ease-in-out infinite;
 }
 
 @keyframes breathing {
-  0%,
-  100% {
-    transform: scale(1);
-  }
+	0%,
+	100% {
+		transform: scale(1);
+	}
 
-  50% {
-    transform: scale(1.02);
-  }
+	50% {
+		transform: scale(1.02);
+	}
 }
 
 /* Ears - Base styles */
 .ears .ear:first-child {
-  border-right: calc(7rem * var(--scale)) solid transparent;
-  border-left: calc(7rem * var(--scale)) solid transparent;
-  transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
-    rotate(-15deg);
-  transform-origin: bottom center;
-  transition: transform 0.15s ease-out;
+	border-right: calc(7rem * var(--scale)) solid transparent;
+	border-left: calc(7rem * var(--scale)) solid transparent;
+	transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
+		rotate(-15deg);
+	transform-origin: bottom center;
+	transition: transform 0.15s ease-out;
 }
 
 .ears .ear:last-child {
-  border-right: calc(9rem * var(--scale)) solid transparent;
-  border-left: calc(3rem * var(--scale)) solid transparent;
-  transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
-    rotate(33deg);
-  transform-origin: bottom center;
-  transition: transform 0.15s ease-out;
+	border-right: calc(9rem * var(--scale)) solid transparent;
+	border-left: calc(3rem * var(--scale)) solid transparent;
+	transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
+		rotate(33deg);
+	transform-origin: bottom center;
+	transition: transform 0.15s ease-out;
 }
 
 /* * Ear twitch animation */
 .ears.earTwitch .ear:first-child {
-  animation: earTwitchLeft 0.15s ease-out;
+	animation: earTwitchLeft 0.15s ease-out;
 }
 
 .ears.earTwitch .ear:last-child {
-  animation: earTwitchRight 0.15s ease-out;
+	animation: earTwitchRight 0.15s ease-out;
 }
 
 @keyframes earTwitchLeft {
-  0%,
-  100% {
-    transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
-      rotate(-15deg);
-  }
+	0%,
+	100% {
+		transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
+			rotate(-15deg);
+	}
 
-  50% {
-    transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
-      rotate(-25deg);
-  }
+	50% {
+		transform: translate(calc(17rem * var(--scale)), calc(-5rem * var(--scale)))
+			rotate(-25deg);
+	}
 }
 
 @keyframes earTwitchRight {
-  0%,
-  100% {
-    transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
-      rotate(33deg);
-  }
+	0%,
+	100% {
+		transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
+			rotate(33deg);
+	}
 
-  50% {
-    transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
-      rotate(43deg);
-  }
+	50% {
+		transform: translate(calc(53rem * var(--scale)), calc(-2rem * var(--scale)))
+			rotate(43deg);
+	}
 }
 
 /* Fill variant */
 .ears.fill .ear:first-child {
-  top: calc(1.2rem * var(--scale));
-  left: calc(0.4rem * var(--scale));
-  border-bottom: calc(8rem * var(--scale)) solid var(--cat-bg);
+	top: calc(1.2rem * var(--scale));
+	left: calc(0.4rem * var(--scale));
+	border-bottom: calc(8rem * var(--scale)) solid var(--cat-bg);
 }
 
 .ears.fill .ear:last-child {
-  top: calc(1.2rem * var(--scale));
-  left: calc(0.4rem * var(--scale));
-  border-bottom: calc(8rem * var(--scale)) solid var(--cat-bg);
+	top: calc(1.2rem * var(--scale));
+	left: calc(0.4rem * var(--scale));
+	border-bottom: calc(8rem * var(--scale)) solid var(--cat-bg);
 }
 
 /* Outline variant */
 .ears.outline .ear:first-child {
-  top: calc(1.2rem * var(--scale));
-  left: calc(0.4rem * var(--scale));
-  border-bottom: calc(8rem * var(--scale)) solid var(--cat-outline);
+	top: calc(1.2rem * var(--scale));
+	left: calc(0.4rem * var(--scale));
+	border-bottom: calc(8rem * var(--scale)) solid var(--cat-outline);
 }
 
 .ears.outline .ear:last-child {
-  top: calc(1.2rem * var(--scale));
-  left: calc(0.4rem * var(--scale));
-  border-bottom: calc(8rem * var(--scale)) solid var(--cat-outline);
+	top: calc(1.2rem * var(--scale));
+	left: calc(0.4rem * var(--scale));
+	border-bottom: calc(8rem * var(--scale)) solid var(--cat-outline);
 }
 
 /* Face */
 .face {
-  top: calc(20rem * var(--scale));
-  left: calc(15rem * var(--scale));
-  width: calc(40rem * var(--scale));
-  height: calc(30rem * var(--scale));
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
-  transition: transform 0.2s ease-out;
+	top: calc(20rem * var(--scale));
+	left: calc(15rem * var(--scale));
+	width: calc(40rem * var(--scale));
+	height: calc(30rem * var(--scale));
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
+	transition: transform 0.2s ease-out;
 }
 
 /* * Face animations for different states */
 .face.typing-fast {
-  animation: excitedFace 0.3s ease-out infinite;
+	animation: excitedFace 0.3s ease-out infinite;
 }
 
 @keyframes excitedFace {
-  0%,
-  100% {
-    transform: scale(1);
-  }
+	0%,
+	100% {
+		transform: scale(1);
+	}
 
-  50% {
-    transform: scale(1.05);
-  }
+	50% {
+		transform: scale(1.05);
+	}
 }
 
 .face.sleepy {
-  opacity: 0.9;
+	opacity: 0.9;
 }
 
 .face.celebrating {
-  animation: celebrateFace 0.5s ease-out;
+	animation: celebrateFace 0.5s ease-out;
 }
 
 @keyframes celebrateFace {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
+	0%,
+	100% {
+		transform: scale(1) rotate(0deg);
+	}
 
-  25% {
-    transform: scale(1.1) rotate(-5deg);
-  }
+	25% {
+		transform: scale(1.1) rotate(-5deg);
+	}
 
-  75% {
-    transform: scale(1.1) rotate(5deg);
-  }
+	75% {
+		transform: scale(1.1) rotate(5deg);
+	}
 }
 
 /* Eyes */
 .eyes {
-  top: calc(8rem * var(--scale));
-  left: calc(8rem * var(--scale));
-  width: calc(24rem * var(--scale));
-  height: calc(12rem * var(--scale));
+	top: calc(8rem * var(--scale));
+	left: calc(8rem * var(--scale));
+	width: calc(24rem * var(--scale));
+	height: calc(12rem * var(--scale));
 }
 
 .eye {
-  position: absolute;
-  top: 0;
-  width: calc(8rem * var(--scale));
-  height: calc(8rem * var(--scale));
-  background: white;
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
-  transition: transform 0.1s ease-out;
-  overflow: hidden;
+	position: absolute;
+	top: 0;
+	width: calc(8rem * var(--scale));
+	height: calc(8rem * var(--scale));
+	background: white;
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
+	transition: transform 0.1s ease-out;
+	overflow: hidden;
 }
 
 .eye:first-child {
-  left: 0;
+	left: 0;
 }
 
 .eye:last-child {
-  right: 0;
+	right: 0;
 }
 
 /* Eye pupils for tracking */
 .pupil {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: calc(4rem * var(--scale));
-  height: calc(4rem * var(--scale));
-  background: var(--cat-bg);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: transform 0.1s ease-out;
-  pointer-events: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: calc(4rem * var(--scale));
+	height: calc(4rem * var(--scale));
+	background: var(--cat-bg);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	transition: transform 0.1s ease-out;
+	pointer-events: none;
 }
 
 /* * Eye animations for different states */
 .eyes .eye.sleepy {
-  height: calc(2rem * var(--scale));
-  border-radius: 50% 50% 0 0;
-  animation: sleepyBlink 0.3s ease-out;
+	height: calc(2rem * var(--scale));
+	border-radius: 50% 50% 0 0;
+	animation: sleepyBlink 0.3s ease-out;
 }
 
 @keyframes sleepyBlink {
-  0%,
-  100% {
-    height: calc(8rem * var(--scale));
-  }
+	0%,
+	100% {
+		height: calc(8rem * var(--scale));
+	}
 
-  50% {
-    height: calc(2rem * var(--scale));
-  }
+	50% {
+		height: calc(2rem * var(--scale));
+	}
 }
 
 .eyes .eye.backspace {
-  animation: confusedBlink 0.5s ease-out;
+	animation: confusedBlink 0.5s ease-out;
 }
 
 @keyframes confusedBlink {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
+	0%,
+	100% {
+		transform: translate(0, 0);
+	}
 
-  25% {
-    transform: translate(calc(-1rem * var(--scale)), 0);
-  }
+	25% {
+		transform: translate(calc(-1rem * var(--scale)), 0);
+	}
 
-  75% {
-    transform: translate(calc(1rem * var(--scale)), 0);
-  }
+	75% {
+		transform: translate(calc(1rem * var(--scale)), 0);
+	}
 }
 
 .eyes .eye.celebrating {
-  animation: celebrateBlink 0.3s ease-out 3;
+	animation: celebrateBlink 0.3s ease-out 3;
 }
 
 @keyframes celebrateBlink {
-  0%,
-  100% {
-    transform: scale(1);
-  }
+	0%,
+	100% {
+		transform: scale(1);
+	}
 
-  50% {
-    transform: scale(1.2);
-  }
+	50% {
+		transform: scale(1.2);
+	}
 }
 
 /* Mouth */
 .mouth {
-  top: calc(18rem * var(--scale));
-  left: calc(12rem * var(--scale));
-  width: calc(16rem * var(--scale));
-  height: calc(8rem * var(--scale));
-  transition: transform 0.2s ease-out;
+	top: calc(18rem * var(--scale));
+	left: calc(12rem * var(--scale));
+	width: calc(16rem * var(--scale));
+	height: calc(8rem * var(--scale));
+	transition: transform 0.2s ease-out;
 }
 
 /* * Mouth expressions for different states */
 .mouth.sleepy {
-  transform: translateY(calc(2rem * var(--scale)));
+	transform: translateY(calc(2rem * var(--scale)));
 }
 
 .mouth.backspace {
-  animation: confusedMouth 0.5s ease-out;
+	animation: confusedMouth 0.5s ease-out;
 }
 
 @keyframes confusedMouth {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
+	0%,
+	100% {
+		transform: translateX(0);
+	}
 
-  25% {
-    transform: translateX(calc(-1rem * var(--scale)));
-  }
+	25% {
+		transform: translateX(calc(-1rem * var(--scale)));
+	}
 
-  75% {
-    transform: translateX(calc(1rem * var(--scale)));
-  }
+	75% {
+		transform: translateX(calc(1rem * var(--scale)));
+	}
 }
 
 .mouth.celebrating {
-  animation: celebrateMouth 0.3s ease-out 3;
+	animation: celebrateMouth 0.3s ease-out 3;
 }
 
 @keyframes celebrateMouth {
-  0%,
-  100% {
-    transform: scale(1);
-  }
+	0%,
+	100% {
+		transform: scale(1);
+	}
 
-  50% {
-    transform: scale(1.1);
-  }
+	50% {
+		transform: scale(1.1);
+	}
 }
 
 .uu {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-top: none;
-  border-radius: 0 0 50% 50%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-top: none;
+	border-radius: 0 0 50% 50%;
 }
 
 /* Paws */
 .paws {
-  position: absolute;
-  left: 50%;
-  display: flex;
-  gap: calc(2rem * var(--scale));
-  transform: translateX(-50%);
+	position: absolute;
+	left: 50%;
+	display: flex;
+	gap: calc(2rem * var(--scale));
+	transform: translateX(-50%);
 }
 
 .paws.up {
-  top: calc(65rem * var(--scale));
+	top: calc(65rem * var(--scale));
 }
 
 .paws.down {
-  top: calc(75rem * var(--scale));
+	top: calc(75rem * var(--scale));
 }
 
 .paw {
-  position: relative;
-  width: calc(12rem * var(--scale));
-  height: calc(12rem * var(--scale));
+	position: relative;
+	width: calc(12rem * var(--scale));
+	height: calc(12rem * var(--scale));
 }
 
 .palm {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--cat-bg);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: var(--cat-bg);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
 }
 
 .bean {
-  position: absolute;
-  width: calc(3rem * var(--scale));
-  height: calc(3rem * var(--scale));
-  background: var(--toebean);
-  border: var(--linesize) solid var(--cat-outline);
-  border-radius: 50%;
+	position: absolute;
+	width: calc(3rem * var(--scale));
+	height: calc(3rem * var(--scale));
+	background: var(--toebean);
+	border: var(--linesize) solid var(--cat-outline);
+	border-radius: 50%;
 }
 
 .bean:first-child {
-  top: calc(2rem * var(--scale));
-  left: calc(2rem * var(--scale));
+	top: calc(2rem * var(--scale));
+	left: calc(2rem * var(--scale));
 }
 
 .bean:nth-child(2) {
-  top: calc(2rem * var(--scale));
-  left: calc(5rem * var(--scale));
+	top: calc(2rem * var(--scale));
+	left: calc(5rem * var(--scale));
 }
 
 .bean:last-child {
-  top: calc(5rem * var(--scale));
-  left: calc(3.5rem * var(--scale));
+	top: calc(5rem * var(--scale));
+	left: calc(3.5rem * var(--scale));
 }
 
 /* Animation for paws */
 .paws.up .paw {
-  animation: pawUp 0.3s ease-out;
+	animation: pawUp 0.3s ease-out;
 }
 
 .paws.down .paw {
-  animation: pawDown 0.3s ease-out;
+	animation: pawDown 0.3s ease-out;
 }
 
 @keyframes pawUp {
-  0% {
-    transform: translateY(calc(10rem * var(--scale)));
-  }
+	0% {
+		transform: translateY(calc(10rem * var(--scale)));
+	}
 
-  100% {
-    transform: translateY(0);
-  }
+	100% {
+		transform: translateY(0);
+	}
 }
 
 @keyframes pawDown {
-  0% {
-    transform: translateY(calc(-10rem * var(--scale)));
-  }
+	0% {
+		transform: translateY(calc(-10rem * var(--scale)));
+	}
 
-  100% {
-    transform: translateY(0);
-  }
+	100% {
+		transform: translateY(0);
+	}
 }
 
 /* * Enhanced paw animations for fast typing */
 .paws.down.typing-fast .paw {
-  animation: pawDownFast 0.15s ease-out;
+	animation: pawDownFast 0.15s ease-out;
 }
 
 @keyframes pawDownFast {
-  0% {
-    transform: translateY(calc(-10rem * var(--scale))) scale(1);
-  }
+	0% {
+		transform: translateY(calc(-10rem * var(--scale))) scale(1);
+	}
 
-  50% {
-    transform: translateY(calc(-5rem * var(--scale))) scale(1.1);
-  }
+	50% {
+		transform: translateY(calc(-5rem * var(--scale))) scale(1.1);
+	}
 
-  100% {
-    transform: translateY(0) scale(1);
-  }
+	100% {
+		transform: translateY(0) scale(1);
+	}
 }
 
 /* Hover effects */
 .container:hover .head {
-  transform: scale(1.05);
-  transition: transform 0.2s ease;
+	transform: scale(1.05);
+	transition: transform 0.2s ease;
 }
 
 .container:hover .face {
-  transform: scale(1.05);
-  transition: transform 0.2s ease;
+	transform: scale(1.05);
+	transition: transform 0.2s ease;
 }
 
 /* * Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .head,
-  .face,
-  .tail,
-  .eye,
-  .pupil,
-  .ears .ear,
-  .mouth {
-    animation: none !important;
-    transition: none !important;
-  }
+	.head,
+	.face,
+	.tail,
+	.eye,
+	.pupil,
+	.ears .ear,
+	.mouth {
+		animation: none;
+		transition: none;
+	}
 
-  .head.idle {
-    animation: none !important;
-  }
+	.head.idle {
+		animation: none;
+	}
 }
 
 /* Responsive adjustments */
 @media (width <= 768px) {
-  .bongoContainer,
-  .bongoContainerPositioned {
-    width: 140px; /* Smaller on mobile */
-  }
+	.bongoContainer,
+	.bongoContainerPositioned {
+		width: 140px; /* Smaller on mobile */
+	}
 
-  .container {
-    transform: scale(calc(var(--cat-size) * 0.8)); /* Scale down on mobile */
-  }
+	.container {
+		transform: scale(calc(var(--cat-size) * 0.8)); /* Scale down on mobile */
+	}
 }
 
 @media (width <= 480px) {
-  .bongoContainer,
-  .bongoContainerPositioned {
-    width: 120px; /* Even smaller on small mobile */
-  }
+	.bongoContainer,
+	.bongoContainerPositioned {
+		width: 120px; /* Even smaller on small mobile */
+	}
 
-  .container {
-    transform: scale(
-      calc(var(--cat-size) * 0.7)
-    ); /* Scale down more on small mobile */
-  }
+	.container {
+		transform: scale(
+			calc(var(--cat-size) * 0.7)
+		); /* Scale down more on small mobile */
+	}
 }

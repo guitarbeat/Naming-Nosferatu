@@ -4,41 +4,41 @@
  * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
-import { useId } from "react";
 import PropTypes from "prop-types";
+import { useId } from "react";
+import { useCollapsible } from "../../../core/hooks/useStorage";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import {
-  HEADER_GLASS_CONFIG,
-  resolveGlassConfig,
+	HEADER_GLASS_CONFIG,
+	resolveGlassConfig,
 } from "../LiquidGlass/utils/glassConfig";
-import { useCollapsible } from "../../../core/hooks/useStorage";
 import "./CollapsibleHeader.css";
 
 /**
  * Chevron icon component - simple SVG for better control
  */
 const ChevronIcon = ({ isCollapsed }: { isCollapsed: boolean }) => (
-  <svg
-    className={`collapsible-chevron ${isCollapsed ? "collapsed" : ""}`}
-    width="12"
-    height="12"
-    viewBox="0 0 12 12"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M3 4.5L6 7.5L9 4.5"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
+	<svg
+		className={`collapsible-chevron ${isCollapsed ? "collapsed" : ""}`}
+		width="12"
+		height="12"
+		viewBox="0 0 12 12"
+		fill="none"
+		xmlns="http://www.w3.org/2000/svg"
+		aria-hidden="true"
+	>
+		<path
+			d="M3 4.5L6 7.5L9 4.5"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+	</svg>
 );
 
 ChevronIcon.propTypes = {
-  isCollapsed: PropTypes.bool.isRequired,
+	isCollapsed: PropTypes.bool.isRequired,
 };
 
 /**
@@ -57,140 +57,140 @@ ChevronIcon.propTypes = {
  * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
  */
 interface CollapsibleHeaderProps {
-  title: string;
-  icon?: string;
-  isCollapsed: boolean;
-  onToggle: () => void;
-  summary?: React.ReactNode;
-  actions?: React.ReactNode;
-  contentId?: string;
-  className?: string;
-  variant?: "default" | "compact";
-  toolbar?: React.ReactNode;
-  liquidGlass?: boolean | Record<string, unknown>;
+	title: string;
+	icon?: string;
+	isCollapsed: boolean;
+	onToggle: () => void;
+	summary?: React.ReactNode;
+	actions?: React.ReactNode;
+	contentId?: string;
+	className?: string;
+	variant?: "default" | "compact";
+	toolbar?: React.ReactNode;
+	liquidGlass?: boolean | Record<string, unknown>;
 }
 
 export function CollapsibleHeader({
-  title,
-  icon,
-  isCollapsed,
-  onToggle,
-  summary,
-  actions,
-  contentId,
-  className = "",
-  variant = "default",
-  toolbar,
-  liquidGlass,
+	title,
+	icon,
+	isCollapsed,
+	onToggle,
+	summary,
+	actions,
+	contentId,
+	className = "",
+	variant = "default",
+	toolbar,
+	liquidGlass,
 }: CollapsibleHeaderProps) {
-  const shouldUseLiquidGlass = !!liquidGlass;
-  const headerGlassId = useId();
-  const resolvedContentId =
-    contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
+	const shouldUseLiquidGlass = !!liquidGlass;
+	const headerGlassId = useId();
+	const resolvedContentId =
+		contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
 
-  const headerContent = (
-    <>
-      <header
-        className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
-      >
-        <button
-          type="button"
-          className="collapsible-toggle"
-          onClick={onToggle}
-          aria-expanded={!isCollapsed}
-          aria-controls={resolvedContentId}
-          aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
-          title={isCollapsed ? title : undefined}
-        >
-          <ChevronIcon isCollapsed={isCollapsed} />
-          {icon && (
-            <span
-              className={
-                isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
-              }
-              aria-hidden="true"
-            >
-              {icon}
-            </span>
-          )}
-          {!isCollapsed && <span className="collapsible-title">{title}</span>}
-          {isCollapsed && summary && (
-            <span className="collapsible-summary">{summary}</span>
-          )}
-        </button>
-        {!isCollapsed && actions && (
-          <div className="collapsible-header-controls">
-            <div className="collapsible-actions">{actions}</div>
-          </div>
-        )}
-      </header>
-      {!isCollapsed && toolbar && (
-        <div className="collapsible-header-toolbar">{toolbar}</div>
-      )}
-    </>
-  );
+	const headerContent = (
+		<>
+			<header
+				className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${className}`}
+			>
+				<button
+					type="button"
+					className="collapsible-toggle"
+					onClick={onToggle}
+					aria-expanded={!isCollapsed}
+					aria-controls={resolvedContentId}
+					aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+					title={isCollapsed ? title : undefined}
+				>
+					<ChevronIcon isCollapsed={isCollapsed} />
+					{icon && (
+						<span
+							className={
+								isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"
+							}
+							aria-hidden="true"
+						>
+							{icon}
+						</span>
+					)}
+					{!isCollapsed && <span className="collapsible-title">{title}</span>}
+					{isCollapsed && summary && (
+						<span className="collapsible-summary">{summary}</span>
+					)}
+				</button>
+				{!isCollapsed && actions && (
+					<div className="collapsible-header-controls">
+						<div className="collapsible-actions">{actions}</div>
+					</div>
+				)}
+			</header>
+			{!isCollapsed && toolbar && (
+				<div className="collapsible-header-toolbar">{toolbar}</div>
+			)}
+		</>
+	);
 
-  if (shouldUseLiquidGlass) {
-    const {
-      width,
-      height,
-      radius,
-      scale,
-      saturation,
-      frost,
-      inputBlur,
-      outputBlur,
-      id,
-      ...glassProps
-    } = resolveGlassConfig(liquidGlass, HEADER_GLASS_CONFIG);
+	if (shouldUseLiquidGlass) {
+		const {
+			width,
+			height,
+			radius,
+			scale,
+			saturation,
+			frost,
+			inputBlur,
+			outputBlur,
+			id,
+			...glassProps
+		} = resolveGlassConfig(liquidGlass, HEADER_GLASS_CONFIG);
 
-    return (
-      <LiquidGlass
-        id={id || `header-glass-${headerGlassId.replace(/:/g, "-")}`}
-        width={width}
-        height={height}
-        radius={radius}
-        scale={scale}
-        saturation={saturation}
-        frost={frost}
-        inputBlur={inputBlur}
-        outputBlur={outputBlur}
-        className={className}
-        style={{ width: "100%", height: "auto" }}
-        {...glassProps}
-      >
-        {headerContent}
-      </LiquidGlass>
-    );
-  }
+		return (
+			<LiquidGlass
+				id={id || `header-glass-${headerGlassId.replace(/:/g, "-")}`}
+				width={width}
+				height={height}
+				radius={radius}
+				scale={scale}
+				saturation={saturation}
+				frost={frost}
+				inputBlur={inputBlur}
+				outputBlur={outputBlur}
+				className={className}
+				style={{ width: "100%", height: "auto" }}
+				{...glassProps}
+			>
+				{headerContent}
+			</LiquidGlass>
+		);
+	}
 
-  return headerContent;
+	return headerContent;
 }
 
 CollapsibleHeader.propTypes = {
-  title: PropTypes.string.isRequired,
-  icon: PropTypes.string,
-  isCollapsed: PropTypes.bool.isRequired,
-  onToggle: PropTypes.func.isRequired,
-  summary: PropTypes.node,
-  actions: PropTypes.node,
-  contentId: PropTypes.string,
-  className: PropTypes.string,
-  variant: PropTypes.oneOf(["default", "compact"]),
-  toolbar: PropTypes.node,
-  liquidGlass: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      radius: PropTypes.number,
-      scale: PropTypes.number,
-      saturation: PropTypes.number,
-      frost: PropTypes.number,
-      inputBlur: PropTypes.number,
-      outputBlur: PropTypes.number,
-    }),
-  ]),
+	title: PropTypes.string.isRequired,
+	icon: PropTypes.string,
+	isCollapsed: PropTypes.bool.isRequired,
+	onToggle: PropTypes.func.isRequired,
+	summary: PropTypes.node,
+	actions: PropTypes.node,
+	contentId: PropTypes.string,
+	className: PropTypes.string,
+	variant: PropTypes.oneOf(["default", "compact"]),
+	toolbar: PropTypes.node,
+	liquidGlass: PropTypes.oneOfType([
+		PropTypes.bool,
+		PropTypes.shape({
+			width: PropTypes.number,
+			height: PropTypes.number,
+			radius: PropTypes.number,
+			scale: PropTypes.number,
+			saturation: PropTypes.number,
+			frost: PropTypes.number,
+			inputBlur: PropTypes.number,
+			outputBlur: PropTypes.number,
+		}),
+	]),
 };
 
 /**
@@ -202,27 +202,27 @@ CollapsibleHeader.propTypes = {
  * @param {string} props.className - Additional CSS classes
  */
 export function CollapsibleContent({
-  id,
-  isCollapsed,
-  children,
-  className = "",
+	id,
+	isCollapsed,
+	children,
+	className = "",
 }) {
-  const contentId = id;
-  return (
-    <div
-      id={contentId}
-      className={`collapsible-content ${isCollapsed ? "collapsed" : ""} ${className}`}
-    >
-      <div className="collapsible-content-inner">{children}</div>
-    </div>
-  );
+	const contentId = id;
+	return (
+		<div
+			id={contentId}
+			className={`collapsible-content ${isCollapsed ? "collapsed" : ""} ${className}`}
+		>
+			<div className="collapsible-content-inner">{children}</div>
+		</div>
+	);
 }
 
 CollapsibleContent.propTypes = {
-  id: PropTypes.string,
-  isCollapsed: PropTypes.bool.isRequired,
-  children: PropTypes.node.isRequired,
-  className: PropTypes.string,
+	id: PropTypes.string,
+	isCollapsed: PropTypes.bool.isRequired,
+	children: PropTypes.node.isRequired,
+	className: PropTypes.string,
 };
 
 /**
@@ -244,82 +244,82 @@ CollapsibleContent.propTypes = {
  * @param {boolean|Object} props.liquidGlass - Enable liquid glass effect (boolean or config object)
  */
 interface CollapsibleSectionProps {
-  title: string;
-  icon?: string;
-  summary?: React.ReactNode;
-  actions?: React.ReactNode;
-  children: React.ReactNode;
-  storageKey?: string | null;
-  defaultCollapsed?: boolean;
-  className?: string;
-  variant?: "default" | "compact";
-  toolbar?: React.ReactNode;
-  liquidGlass?: boolean | Record<string, unknown>;
+	title: string;
+	icon?: string;
+	summary?: React.ReactNode;
+	actions?: React.ReactNode;
+	children: React.ReactNode;
+	storageKey?: string | null;
+	defaultCollapsed?: boolean;
+	className?: string;
+	variant?: "default" | "compact";
+	toolbar?: React.ReactNode;
+	liquidGlass?: boolean | Record<string, unknown>;
 }
 
 function CollapsibleSection({
-  title,
-  icon,
-  summary,
-  actions,
-  children,
-  storageKey = null,
-  defaultCollapsed = false,
-  className = "",
-  variant = "default",
-  toolbar,
-  liquidGlass,
+	title,
+	icon,
+	summary,
+	actions,
+	children,
+	storageKey = null,
+	defaultCollapsed = false,
+	className = "",
+	variant = "default",
+	toolbar,
+	liquidGlass,
 }: CollapsibleSectionProps) {
-  const { isCollapsed, toggleCollapsed } = useCollapsible(
-    storageKey,
-    defaultCollapsed,
-  );
+	const { isCollapsed, toggleCollapsed } = useCollapsible(
+		storageKey,
+		defaultCollapsed,
+	);
 
-  const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;
+	const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;
 
-  return (
-    <div className={className}>
-      <CollapsibleHeader
-        title={title}
-        icon={icon}
-        isCollapsed={isCollapsed}
-        onToggle={toggleCollapsed}
-        summary={summary}
-        actions={actions}
-        contentId={contentId}
-        variant={variant}
-        toolbar={toolbar}
-        liquidGlass={liquidGlass}
-      />
-      <CollapsibleContent id={contentId} isCollapsed={isCollapsed}>
-        {children}
-      </CollapsibleContent>
-    </div>
-  );
+	return (
+		<div className={className}>
+			<CollapsibleHeader
+				title={title}
+				icon={icon}
+				isCollapsed={isCollapsed}
+				onToggle={toggleCollapsed}
+				summary={summary}
+				actions={actions}
+				contentId={contentId}
+				variant={variant}
+				toolbar={toolbar}
+				liquidGlass={liquidGlass}
+			/>
+			<CollapsibleContent id={contentId} isCollapsed={isCollapsed}>
+				{children}
+			</CollapsibleContent>
+		</div>
+	);
 }
 
 CollapsibleSection.propTypes = {
-  title: PropTypes.string.isRequired,
-  icon: PropTypes.string,
-  summary: PropTypes.node,
-  actions: PropTypes.node,
-  children: PropTypes.node.isRequired,
-  storageKey: PropTypes.string,
-  defaultCollapsed: PropTypes.bool,
-  className: PropTypes.string,
-  variant: PropTypes.oneOf(["default", "compact"]),
-  toolbar: PropTypes.node,
-  liquidGlass: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-      radius: PropTypes.number,
-      scale: PropTypes.number,
-      saturation: PropTypes.number,
-      frost: PropTypes.number,
-      inputBlur: PropTypes.number,
-      outputBlur: PropTypes.number,
-    }),
-  ]),
+	title: PropTypes.string.isRequired,
+	icon: PropTypes.string,
+	summary: PropTypes.node,
+	actions: PropTypes.node,
+	children: PropTypes.node.isRequired,
+	storageKey: PropTypes.string,
+	defaultCollapsed: PropTypes.bool,
+	className: PropTypes.string,
+	variant: PropTypes.oneOf(["default", "compact"]),
+	toolbar: PropTypes.node,
+	liquidGlass: PropTypes.oneOfType([
+		PropTypes.bool,
+		PropTypes.shape({
+			width: PropTypes.number,
+			height: PropTypes.number,
+			radius: PropTypes.number,
+			scale: PropTypes.number,
+			saturation: PropTypes.number,
+			frost: PropTypes.number,
+			inputBlur: PropTypes.number,
+			outputBlur: PropTypes.number,
+		}),
+	]),
 };

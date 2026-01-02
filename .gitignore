@@ -108,3 +108,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
+
+/src/generated/prisma

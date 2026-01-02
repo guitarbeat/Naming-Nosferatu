@@ -4,462 +4,461 @@
  */
 
 .collapsible-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--analysis-gap-md, 12px);
-  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
-  border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  transition:
-    background var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    padding var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    min-height var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    max-height var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
-  min-height: auto;
-  max-height: none;
-  overflow: visible;
-  cursor: pointer;
-  user-select: none;
-  position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--analysis-gap-md, 12px);
+	padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+	background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
+	border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+	transition:
+		background var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		padding var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		min-height var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		max-height var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		border-color var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
+	min-height: auto;
+	max-height: none;
+	overflow: visible;
+	cursor: pointer;
+	user-select: none;
+	position: relative;
 }
 
 .collapsible-header:hover {
-  background: rgb(47 243 224 / 4%);
-  border-color: rgb(47 243 224 / 30%);
+	background: rgb(47 243 224 / 4%);
+	border-color: rgb(47 243 224 / 30%);
 }
 
 .collapsible-header--default {
-  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
-    0 0;
+	border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
+		0 0;
 }
 
 .collapsible-header--compact {
-  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
-  border-radius: 0;
+	padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+	border-radius: 0;
 }
 
 /* Minimized collapsed state - simple compact design */
 .collapsible-header--collapsed {
-  padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
-  opacity: 0.8;
-  transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    background var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
+	padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+	opacity: 0.8;
+	transition:
+		opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+		background var(--analysis-duration-fast, 150ms)
+		var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover {
-  opacity: 1;
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
+	opacity: 1;
+	background: var(--analysis-surface-elevated, rgb(255 255 255 / 5%));
 }
 
 .collapsible-header--collapsed .collapsible-toggle {
-  gap: var(--analysis-gap-xs, 4px);
+	gap: var(--analysis-gap-xs, 4px);
 }
 
 .collapsible-header--collapsed .collapsible-chevron {
-  opacity: 0.8;
-  color: var(--text-secondary, rgb(255 255 255 / 70%));
+	opacity: 0.8;
+	color: var(--text-secondary, rgb(255 255 255 / 70%));
 }
 
 .collapsible-header--collapsed:hover .collapsible-chevron {
-  opacity: 1;
-  color: var(--analysis-accent, #2ff3e0);
+	opacity: 1;
+	color: var(--analysis-accent, #2ff3e0);
 }
 
 .collapsible-header--collapsed .collapsible-icon-collapsed {
-  opacity: 0.8;
+	opacity: 0.8;
 }
 
 .collapsible-header--collapsed:hover .collapsible-icon-collapsed {
-  opacity: 1;
+	opacity: 1;
 }
 
 /* Toggle button - simple and accessible */
 .collapsible-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm, 8px);
-  flex: 1;
-  padding: 0;
-  font-size: var(--analysis-text-body, 0.9375rem);
-  font-weight: var(--font-weight-semibold, 800);
-  letter-spacing: -0.02em;
-  color: var(--text-primary, #fff);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: color var(--analysis-duration-fast, 180ms)
-    cubic-bezier(0.2, 0.8, 0.2, 1);
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-sm, 8px);
+	flex: 1;
+	padding: 0;
+	font-size: var(--analysis-text-body, 0.9375rem);
+	font-weight: var(--font-weight-semibold, 800);
+	letter-spacing: -0.02em;
+	color: var(--text-primary, #fff);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	transition: color var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-toggle:hover {
-  color: var(--analysis-accent, #2ff3e0);
+	color: var(--analysis-accent, #2ff3e0);
 }
 
 .collapsible-toggle:focus-visible {
-  outline: 2px solid var(--analysis-accent, #2ff3e0);
-  outline-offset: 2px;
-  border-radius: var(--analysis-radius-sm, 4px);
+	outline: 2px solid var(--analysis-accent, #2ff3e0);
+	outline-offset: 2px;
+	border-radius: var(--analysis-radius-sm, 4px);
 }
 
 /* Chevron icon - clean SVG animation */
 .collapsible-chevron {
-  flex-shrink: 0;
-  width: 14px;
-  height: 14px;
-  color: var(--text-secondary, rgb(255 255 255 / 60%));
-  transition:
-    transform var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+	flex-shrink: 0;
+	width: 14px;
+	height: 14px;
+	color: var(--text-secondary, rgb(255 255 255 / 60%));
+	transition:
+		transform var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-chevron.collapsed {
-  transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 
 .collapsible-header:hover .collapsible-chevron {
-  color: var(--analysis-accent, #2ff3e0);
+	color: var(--analysis-accent, #2ff3e0);
 }
 
 /* Icon and title */
 .collapsible-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  background: rgb(47 243 224 / 10%);
-  border-radius: 8px;
-  color: var(--analysis-accent, #2ff3e0);
-  box-shadow: 0 0 15px rgb(47 243 224 / 15%);
-  font-size: 1.2rem;
-  line-height: 1;
-  transition:
-    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    background var(--analysis-duration-fast, 180ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    box-shadow var(--analysis-duration-fast, 180ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	background: rgb(47 243 224 / 10%);
+	border-radius: 8px;
+	color: var(--analysis-accent, #2ff3e0);
+	box-shadow: 0 0 15px rgb(47 243 224 / 15%);
+	font-size: 1.2rem;
+	line-height: 1;
+	transition:
+		opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+		background var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		box-shadow var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Collapsed icon - visible and interactive */
 .collapsible-icon-collapsed {
-  flex-shrink: 0;
-  font-size: 1em;
-  line-height: 1;
-  opacity: 0.8;
-  transition:
-    opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
-    transform var(--analysis-duration-fast, 150ms)
-      var(--analysis-ease, ease-out);
+	flex-shrink: 0;
+	font-size: 1em;
+	line-height: 1;
+	opacity: 0.8;
+	transition:
+		opacity var(--analysis-duration-fast, 150ms) var(--analysis-ease, ease-out),
+		transform var(--analysis-duration-fast, 150ms)
+		var(--analysis-ease, ease-out);
 }
 
 .collapsible-header--collapsed:hover .collapsible-icon-collapsed {
-  opacity: 1;
-  transform: scale(1.1);
+	opacity: 1;
+	transform: scale(1.1);
 }
 
 .collapsible-title {
-  flex-shrink: 0;
-  font-weight: var(--font-weight-semibold, 800);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  transition:
-    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    max-width var(--analysis-duration-fast, 180ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
+	flex-shrink: 0;
+	font-weight: var(--font-weight-semibold, 800);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	transition:
+		opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+		max-width var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Title in collapsed state - hidden in circle design */
 .collapsible-header--collapsed .collapsible-title {
-  display: none; /* Hide expanded title */
+	display: none; /* Hide expanded title */
 }
 
 /* Summary text when collapsed - hidden by default for minimal design */
 .collapsible-summary {
-  display: none;
+	display: none;
 }
 
 /* Only show summary if explicitly needed (can be enabled per use case) */
 .collapsible-header--show-summary .collapsible-summary {
-  display: inline-block;
-  margin-left: auto;
-  font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
-  font-size: 0.75rem;
-  color: var(--analysis-accent, #2ff3e0);
-  background: rgb(47 243 224 / 8%);
-  padding: 2px 8px;
-  border-radius: 4px;
-  opacity: 0.8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 40%;
-  transition:
-    opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    background var(--analysis-duration-fast, 180ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
+	display: inline-block;
+	margin-left: auto;
+	font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+	font-size: 0.75rem;
+	color: var(--analysis-accent, #2ff3e0);
+	background: rgb(47 243 224 / 8%);
+	padding: 2px 8px;
+	border-radius: 4px;
+	opacity: 0.8;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 40%;
+	transition:
+		opacity var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+		background var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-header:hover .collapsible-summary {
-  opacity: 1;
-  background: rgb(47 243 224 / 12%);
+	opacity: 1;
+	background: rgb(47 243 224 / 12%);
 }
 
 /* Header controls container - always show when expanded */
 .collapsible-header-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-xs, 4px);
-  flex-shrink: 0;
-  min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-xs, 4px);
+	flex-shrink: 0;
+	min-width: 0;
 }
 
 /* Actions container */
 .collapsible-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm, 8px);
-  flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-sm, 8px);
+	flex-shrink: 0;
 }
 
 /* Integrated toolbar below header */
 .collapsible-header-toolbar {
-  padding: 0;
-  margin: 0;
-  background: rgb(0 0 0 / 20%);
-  border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  border-radius: 0;
-  overflow: hidden;
+	padding: 0;
+	margin: 0;
+	background: rgb(0 0 0 / 20%);
+	border-bottom: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+	border-radius: 0;
+	overflow: hidden;
 }
 
 /* Remove default TournamentToolbar container styling when inside collapsible header toolbar */
 .collapsible-header-toolbar .filtersContainer {
-  padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
-  padding-bottom: var(--analysis-gap-sm, 8px);
-  margin: 0;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  backdrop-filter: none;
+	padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+	padding-bottom: var(--analysis-gap-sm, 8px);
+	margin: 0;
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	backdrop-filter: none;
 }
 
 /* When toolbar is present, header should have no bottom border */
 .collapsible-header:has(+ .collapsible-header-toolbar) {
-  border-bottom: none;
-  border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
-    0 0;
+	border-bottom: none;
+	border-radius: var(--analysis-radius-lg, 12px) var(--analysis-radius-lg, 12px)
+		0 0;
 }
 
 /* When inside analysis-panel, ensure proper integration */
 .analysis-panel .collapsible-header-toolbar {
-  background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
+	background: var(--analysis-surface-elevated, rgb(255 255 255 / 3%));
 }
 
 .analysis-panel .collapsible-header:has(+ .collapsible-header-toolbar) {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 /* * Better fit: Seamless visual connection between header and content */
 .analysis-panel:has(.collapsible-header) .collapsible-content {
-  background: var(--analysis-surface, transparent);
-  border-radius: 0 0 var(--analysis-radius-lg, 12px)
-    var(--analysis-radius-lg, 12px);
+	background: var(--analysis-surface, transparent);
+	border-radius: 0 0 var(--analysis-radius-lg, 12px)
+		var(--analysis-radius-lg, 12px);
 }
 
 /* * Better fit: Smooth border transition */
 .analysis-panel:has(.collapsible-header) .collapsible-content:not(.collapsed) {
-  border-top: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+	border-top: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
 }
 
 /* Collapsible content - improved grid animation with better fit */
 .collapsible-content {
-  display: grid;
-  grid-template-rows: 1fr;
-  overflow: hidden;
-  visibility: visible;
-  opacity: 1;
-  transition:
-    grid-template-rows var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    visibility 0s 0s,
-    max-height var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
-  margin: 0;
-  padding: 0;
-  max-height: 10000px; /* * Allow large content to expand naturally */
-  pointer-events: auto;
+	display: grid;
+	grid-template-rows: 1fr;
+	overflow: hidden;
+	visibility: visible;
+	opacity: 1;
+	transition:
+		grid-template-rows var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		visibility 0s 0s,
+		max-height var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
+	margin: 0;
+	padding: 0;
+	max-height: 10000px; /* * Allow large content to expand naturally */
+	pointer-events: auto;
 }
 
 .collapsible-content.collapsed {
-  grid-template-rows: 0fr;
-  opacity: 0;
-  visibility: hidden;
-  max-height: 0;
-  pointer-events: none;
-  transition:
-    grid-template-rows var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    opacity var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    visibility 0s var(--analysis-duration-normal, 320ms),
-    max-height var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1);
+	grid-template-rows: 0fr;
+	opacity: 0;
+	visibility: hidden;
+	max-height: 0;
+	pointer-events: none;
+	transition:
+		grid-template-rows var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		opacity var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		visibility 0s var(--analysis-duration-normal, 320ms),
+		max-height var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .collapsible-content-inner {
-  min-height: 0;
-  overflow: visible; /* * Allow content to scroll naturally */
-  padding: var(--analysis-gap-lg, 16px);
-  padding-top: var(--analysis-gap-md, 12px);
-  padding-bottom: var(--analysis-gap-lg, 16px);
-  margin: 0;
-  /* * Better fit: ensure content doesn't feel cramped */
-  max-width: 100%;
-  box-sizing: border-box;
+	min-height: 0;
+	overflow: visible; /* * Allow content to scroll naturally */
+	padding: var(--analysis-gap-lg, 16px);
+	padding-top: var(--analysis-gap-md, 12px);
+	padding-bottom: var(--analysis-gap-lg, 16px);
+	margin: 0;
+	/* * Better fit: ensure content doesn't feel cramped */
+	max-width: 100%;
+	box-sizing: border-box;
 }
 
 /* When inside analysis-panel with collapsible header, adjust padding */
-.analysis-panel:has(.collapsible-header)
-  .collapsible-content:not(.collapsed)
-  .collapsible-content-inner {
-  padding-top: var(--analysis-gap-md, 12px);
+.analysis-panel:has(.collapsible-header) .collapsible-content:not(.collapsed)
+	.collapsible-content-inner {
+	padding-top: var(--analysis-gap-md, 12px);
 }
 
 /* When collapsed, remove padding smoothly */
 .collapsible-content.collapsed .collapsible-content-inner {
-  padding: 0;
-  overflow: hidden;
+	padding: 0;
+	overflow: hidden;
 }
 
 /* * Better fit: Handle overflow for tables and long content */
 .collapsible-content-inner > * {
-  max-width: 100%;
-  overflow-x: auto;
+	max-width: 100%;
+	overflow-x: auto;
 }
 
 /* * Better fit: Ensure tables scroll horizontally when needed */
 .collapsible-content-inner table {
-  width: 100%;
-  min-width: fit-content;
+	width: 100%;
+	min-width: fit-content;
 }
 
 /* * Better fit: Smooth scrollbar styling */
 .collapsible-content-inner::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 .collapsible-content-inner::-webkit-scrollbar-track {
-  background: transparent;
+	background: transparent;
 }
 
 .collapsible-content-inner::-webkit-scrollbar-thumb {
-  background: var(--analysis-border, rgb(255 255 255 / 12%));
-  border-radius: 4px;
+	background: var(--analysis-border, rgb(255 255 255 / 12%));
+	border-radius: 4px;
 }
 
 .collapsible-content-inner::-webkit-scrollbar-thumb:hover {
-  background: var(--analysis-border, rgb(255 255 255 / 20%));
+	background: var(--analysis-border, rgb(255 255 255 / 20%));
 }
 
 /* Share chevron styles with AnalysisHeader */
 .analysis-header-chevron {
-  display: inline-flex;
-  font-size: 0.75em;
-  transition:
-    transform var(--analysis-duration-normal, 320ms)
-      cubic-bezier(0.2, 0.8, 0.2, 1),
-    color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
+	display: inline-flex;
+	font-size: 0.75em;
+	transition:
+		transform var(--analysis-duration-normal, 320ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1),
+		color var(--analysis-duration-fast, 180ms) cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .analysis-header-chevron.collapsed {
-  transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 
 .analysis-header-toggle {
-  display: flex;
-  align-items: center;
-  gap: var(--analysis-gap-sm, 8px);
-  flex: 1;
-  padding: var(--analysis-gap-xs, 4px) 0;
-  font-size: var(--analysis-text-body, 0.875rem);
-  font-weight: var(--font-weight-semibold, 600);
-  color: var(--text-primary, #fff);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  transition: color var(--analysis-duration-fast, 150ms)
-    var(--analysis-ease, ease-out);
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-sm, 8px);
+	flex: 1;
+	padding: var(--analysis-gap-xs, 4px) 0;
+	font-size: var(--analysis-text-body, 0.875rem);
+	font-weight: var(--font-weight-semibold, 600);
+	color: var(--text-primary, #fff);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	transition: color var(--analysis-duration-fast, 150ms)
+		var(--analysis-ease, ease-out);
 }
 
 .analysis-header-toggle:hover {
-  color: var(--analysis-accent, #2ff3e0);
+	color: var(--analysis-accent, #2ff3e0);
 }
 
 .analysis-header-toggle {
-  transition: color var(--analysis-duration-fast, 180ms)
-    cubic-bezier(0.2, 0.8, 0.2, 1);
+	transition: color var(--analysis-duration-fast, 180ms)
+		cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .analysis-header-summary {
-  margin-left: var(--analysis-gap-md, 12px);
-  padding-left: var(--analysis-gap-md, 12px);
-  border-left: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
-  font-size: var(--analysis-text-caption, 0.75rem);
-  font-weight: var(--font-weight-normal, 400);
-  color: var(--text-secondary, rgb(255 255 255 / 70%));
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+	margin-left: var(--analysis-gap-md, 12px);
+	padding-left: var(--analysis-gap-md, 12px);
+	border-left: 1px solid var(--analysis-border, rgb(255 255 255 / 8%));
+	font-size: var(--analysis-text-caption, 0.75rem);
+	font-weight: var(--font-weight-normal, 400);
+	color: var(--text-secondary, rgb(255 255 255 / 70%));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* Responsive and accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .collapsible-chevron,
-  .collapsible-content,
-  .analysis-header-chevron {
-    transition: none;
-  }
+	.collapsible-chevron,
+	.collapsible-content,
+	.analysis-header-chevron {
+		transition: none;
+	}
 }
 
 @media (width <= 600px) {
-  .collapsible-summary,
-  .analysis-header-summary {
-    display: none;
-  }
+	.collapsible-summary,
+	.analysis-header-summary {
+		display: none;
+	}
 
-  .collapsible-header {
-    padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
-  }
+	.collapsible-header {
+		padding: var(--analysis-gap-sm, 8px) var(--analysis-gap-md, 12px);
+	}
 
-  /* * Better fit: Optimize padding on mobile */
-  .collapsible-content-inner {
-    padding: var(--analysis-gap-md, 12px);
-    padding-top: var(--analysis-gap-sm, 8px);
-    padding-bottom: var(--analysis-gap-md, 12px);
-  }
+	/* * Better fit: Optimize padding on mobile */
+	.collapsible-content-inner {
+		padding: var(--analysis-gap-md, 12px);
+		padding-top: var(--analysis-gap-sm, 8px);
+		padding-bottom: var(--analysis-gap-md, 12px);
+	}
 
-  /* * Better fit: Ensure tables are scrollable on mobile */
-  .collapsible-content-inner table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+	/* * Better fit: Ensure tables are scrollable on mobile */
+	.collapsible-content-inner table {
+		display: block;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
 }

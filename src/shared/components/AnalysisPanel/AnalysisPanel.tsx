@@ -20,36 +20,43 @@ import { AnalysisHeader } from "./components/AnalysisComponents";
  * @param {string} props.className - Additional CSS classes
  */
 interface AnalysisPanelProps {
-  children: React.ReactNode;
-  title?: string;
-  actions?: React.ReactNode;
-  showHeader?: boolean;
-  toolbar?: React.ReactNode;
-  className?: string;
+	children: React.ReactNode;
+	title?: string;
+	actions?: React.ReactNode;
+	showHeader?: boolean;
+	toolbar?: React.ReactNode;
+	className?: string;
 }
 
 export function AnalysisPanel({
-  children,
-  title,
-  actions,
-  showHeader = true,
-  toolbar,
-  className = "",
+	children,
+	title,
+	actions,
+	showHeader = true,
+	toolbar,
+	className = "",
 }: AnalysisPanelProps) {
-  return (
-    <div className={`analysis-panel ${className}`}>
-      {showHeader && <AnalysisHeader title={title} actions={actions} showBadge={false} collapsible={false} />}
-      {toolbar && <div className="analysis-panel-toolbar">{toolbar}</div>}
-      {children}
-    </div>
-  );
+	return (
+		<div className={`analysis-panel ${className}`}>
+			{showHeader && (
+				<AnalysisHeader
+					title={title}
+					actions={actions}
+					showBadge={false}
+					collapsible={false}
+				/>
+			)}
+			{toolbar && <div className="analysis-panel-toolbar">{toolbar}</div>}
+			{children}
+		</div>
+	);
 }
 
 AnalysisPanel.propTypes = {
-  children: PropTypes.node.isRequired,
-  title: PropTypes.string,
-  actions: PropTypes.node,
-  showHeader: PropTypes.bool,
-  toolbar: PropTypes.node,
-  className: PropTypes.string,
+	children: PropTypes.node.isRequired,
+	title: PropTypes.string,
+	actions: PropTypes.node,
+	showHeader: PropTypes.bool,
+	toolbar: PropTypes.node,
+	className: PropTypes.string,
 };

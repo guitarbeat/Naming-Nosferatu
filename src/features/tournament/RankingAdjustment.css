@@ -1,424 +1,424 @@
 .ranking-adjustment {
-  position: relative;
-  z-index: var(--z-modal);
-  max-width: 800px;
-  margin: 0 auto;
-  animation: fadeScale var(--duration-normal) var(--ease-out-expo);
+	position: relative;
+	z-index: var(--z-modal);
+	max-width: 800px;
+	margin: 0 auto;
+	animation: fadeScale var(--duration-normal) var(--ease-out-expo);
 }
 
 .ranking-header {
-  position: relative;
-  padding: var(--space-6);
-  margin-bottom: var(--space-8);
-  text-align: center;
-  background: linear-gradient(
-    135deg,
-    var(--primary-600) 0%,
-    var(--primary-700) 100%
-  );
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+	position: relative;
+	padding: var(--space-6);
+	margin-bottom: var(--space-8);
+	text-align: center;
+	background: linear-gradient(
+		135deg,
+		var(--primary-600) 0%,
+		var(--primary-700) 100%
+	);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
 }
 
 .ranking-header h2 {
-  margin-bottom: var(--space-2);
-  font-family: var(--font-serif);
-  font-size: var(--text-4xl);
-  color: white;
-  text-align: center;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+	margin-bottom: var(--space-2);
+	font-family: var(--font-serif);
+	font-size: var(--text-4xl);
+	color: white;
+	text-align: center;
+	text-shadow: 0 2px 8px rgb(0 0 0 / 20%);
 }
 
 .instructions-card {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  gap: var(--space-6);
-  align-items: center;
-  margin-bottom: var(--space-6);
-  border: 2px solid var(--primary-200);
-  transition: all var(--duration-normal) var(--ease-out-expo);
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	gap: var(--space-6);
+	align-items: center;
+	margin-bottom: var(--space-6);
+	border: 2px solid var(--primary-200);
+	transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
 .instructions-card::before {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-  background: linear-gradient(45deg, var(--primary-color) 0%, transparent 20%);
-  border-radius: inherit;
-  opacity: 0.05;
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	content: "";
+	background: linear-gradient(45deg, var(--primary-color) 0%, transparent 20%);
+	border-radius: inherit;
+	opacity: 0.05;
 }
 
 .instruction-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  font-size: var(--text-2xl);
-  color: var(--primary-color);
-  background: var(--primary-light);
-  border: 2px solid var(--primary-color);
-  border-radius: var(--radius-lg);
-  animation: float 3s ease-in-out infinite;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	font-size: var(--text-2xl);
+	color: var(--primary-color);
+	background: var(--primary-light);
+	border: 2px solid var(--primary-color);
+	border-radius: var(--radius-lg);
+	animation: float 3s ease-in-out infinite;
 }
 
 .instruction-text {
-  flex: 1;
+	flex: 1;
 }
 
 .instruction-text h3 {
-  margin-bottom: var(--space-2);
-  font-family: var(--font-serif);
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--text-primary);
+	margin-bottom: var(--space-2);
+	font-family: var(--font-serif);
+	font-size: var(--text-xl);
+	font-weight: 600;
+	color: var(--text-primary);
 }
 
 .instruction-text p {
-  font-size: var(--text-base);
-  line-height: 1.6;
-  color: var(--text-secondary);
+	font-size: var(--text-base);
+	line-height: 1.6;
+	color: var(--text-secondary);
 }
 
 @media (width <= 768px) {
-  .ranking-adjustment {
-    margin: 0;
-  }
+	.ranking-adjustment {
+		margin: 0;
+	}
 
-  .ranking-header {
-    padding: var(--space-3);
-    margin-bottom: var(--space-4);
-  }
+	.ranking-header {
+		padding: var(--space-3);
+		margin-bottom: var(--space-4);
+	}
 
-  .ranking-header h2 {
-    font-size: var(--text-2xl);
-  }
+	.ranking-header h2 {
+		font-size: var(--text-2xl);
+	}
 
-  .instructions-card {
-    flex-direction: column;
-    gap: var(--space-3);
-    margin-bottom: var(--space-4);
-    text-align: center;
-  }
+	.instructions-card {
+		flex-direction: column;
+		gap: var(--space-3);
+		margin-bottom: var(--space-4);
+		text-align: center;
+	}
 
-  .instruction-icon {
-    width: 36px;
-    height: 36px;
-    font-size: var(--text-xl);
-  }
+	.instruction-icon {
+		width: 36px;
+		height: 36px;
+		font-size: var(--text-xl);
+	}
 
-  .instruction-text h3 {
-    font-size: var(--text-lg);
-  }
+	.instruction-text h3 {
+		font-size: var(--text-lg);
+	}
 
-  .instruction-text p {
-    font-size: var(--text-sm);
-  }
+	.instruction-text p {
+		font-size: var(--text-sm);
+	}
 
-  .rankings-grid {
-    border-width: 1px;
-  }
+	.rankings-grid {
+		border-width: 1px;
+	}
 
-  .rankings-header {
-    grid-template-columns: 50px 1fr 80px;
-    padding: var(--space-2);
-    font-size: var(--text-sm);
-  }
+	.rankings-header {
+		grid-template-columns: 50px 1fr 80px;
+		padding: var(--space-2);
+		font-size: var(--text-sm);
+	}
 
-  .ranking-card {
-    grid-template-columns: 50px 1fr 80px;
-    gap: var(--space-2);
-    padding: var(--space-2);
-    margin: var(--space-1);
-  }
+	.ranking-card {
+		grid-template-columns: 50px 1fr 80px;
+		gap: var(--space-2);
+		padding: var(--space-2);
+		margin: var(--space-1);
+	}
 
-  .rank-badge {
-    width: 32px;
-    height: 32px;
-    font-size: var(--text-base);
-  }
+	.rank-badge {
+		width: 32px;
+		height: 32px;
+		font-size: var(--text-base);
+	}
 
-  .name {
-    font-size: var(--text-base);
-  }
+	.name {
+		font-size: var(--text-base);
+	}
 
-  .stats {
-    flex-direction: column;
-    gap: var(--space-1);
-    font-size: var(--text-xs);
-  }
+	.stats {
+		flex-direction: column;
+		gap: var(--space-1);
+		font-size: var(--text-xs);
+	}
 
-  .drag-handle {
-    opacity: 0.5;
-  }
+	.drag-handle {
+		opacity: 0.5;
+	}
 
-  .adjustment-controls {
-    padding: var(--space-3);
-  }
+	.adjustment-controls {
+		padding: var(--space-3);
+	}
 
-  .back-button {
-    justify-content: center;
-    width: 100%;
-    font-size: var(--text-sm);
-  }
+	.back-button {
+		justify-content: center;
+		width: 100%;
+		font-size: var(--text-sm);
+	}
 }
 
 @media (width <= 480px) {
-  .ranking-card {
-    grid-template-columns: 40px 1fr 60px;
-  }
+	.ranking-card {
+		grid-template-columns: 40px 1fr 60px;
+	}
 
-  .rank-badge {
-    width: 28px;
-    height: 28px;
-    font-size: var(--text-sm);
-  }
+	.rank-badge {
+		width: 28px;
+		height: 28px;
+		font-size: var(--text-sm);
+	}
 
-  .stats {
-    display: none;
-  }
+	.stats {
+		display: none;
+	}
 
-  .drag-handle svg {
-    width: 20px;
-    height: 20px;
-  }
+	.drag-handle svg {
+		width: 20px;
+		height: 20px;
+	}
 }
 
 .rankings-grid {
-  overflow: hidden;
-  background: var(--card-background);
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+	overflow: hidden;
+	background: var(--card-background);
+	border: 2px solid var(--border-color);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-lg);
 }
 
 .rankings-header {
-  display: grid;
-  grid-template-columns: 80px 1fr 120px;
-  padding: var(--space-4);
-  font-weight: 600;
-  color: var(--text-primary);
-  background: var(--card-background);
-  border-bottom: 2px solid var(--card-border);
+	display: grid;
+	grid-template-columns: 80px 1fr 120px;
+	padding: var(--space-4);
+	font-weight: 600;
+	color: var(--text-primary);
+	background: var(--card-background);
+	border-bottom: 2px solid var(--card-border);
 }
 
 /* Dark mode adjustments - removed in favor of global theme tokens */
 
 .ranking-card {
-  display: grid;
-  grid-template-columns: 80px 1fr 120px;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  margin: var(--space-2);
-  cursor: grab;
-  background: var(--surface-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  transition: all var(--duration-normal) var(--ease-elastic);
+	display: grid;
+	grid-template-columns: 80px 1fr 120px;
+	gap: var(--space-4);
+	padding: var(--space-4);
+	margin: var(--space-2);
+	cursor: grab;
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-elastic);
 }
 
 .ranking-card:hover {
-  background: var(--primary-50);
-  border-color: var(--primary-400);
-  box-shadow: var(--shadow-md);
-  transform: scale(1.02);
+	background: var(--primary-50);
+	border-color: var(--primary-400);
+	box-shadow: var(--shadow-md);
+	transform: scale(1.02);
 }
 
 .ranking-card.dragging {
-  z-index: var(--z-elevate);
-  background: var(--primary-100);
-  box-shadow: var(--shadow-lg);
-  transform: scale(1.05);
+	z-index: var(--z-elevate);
+	background: var(--primary-100);
+	box-shadow: var(--shadow-lg);
+	transform: scale(1.05);
 }
 
 .rank-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--primary-700);
-  background: var(--primary-100);
-  border: 2px solid var(--primary-300);
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--duration-normal) var(--ease-elastic);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	font-size: var(--text-xl);
+	font-weight: 600;
+	color: var(--primary-700);
+	background: var(--primary-100);
+	border: 2px solid var(--primary-300);
+	border-radius: var(--radius-full);
+	box-shadow: var(--shadow-sm);
+	transition: all var(--duration-normal) var(--ease-elastic);
 }
 
 .ranking-card:hover .rank-badge {
-  background: var(--primary-200);
-  box-shadow: var(--shadow-md);
-  transform: scale(1.1) rotate(-5deg);
+	background: var(--primary-200);
+	box-shadow: var(--shadow-md);
+	transform: scale(1.1) rotate(-5deg);
 }
 
 .card-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
 }
 
 .name {
-  margin: 0;
-  font-size: var(--text-xl);
-  font-weight: 600;
-  color: var(--text-primary);
+	margin: 0;
+	font-size: var(--text-xl);
+	font-weight: 600;
+	color: var(--text-primary);
 }
 
 .stats {
-  display: flex;
-  gap: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+	display: flex;
+	gap: var(--space-4);
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
 }
 
 .stats .rating {
-  font-weight: 600;
-  color: var(--primary-500);
+	font-weight: 600;
+	color: var(--primary-500);
 }
 
 .stats .record {
-  font-weight: 500;
+	font-weight: 500;
 }
 
 .drag-handle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  opacity: 0;
-  transition: all var(--duration-normal) var(--ease-out-expo);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-secondary);
+	opacity: 0;
+	transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
 .ranking-card:hover .drag-handle {
-  color: var(--primary-500);
-  opacity: 1;
+	color: var(--primary-500);
+	opacity: 1;
 }
 
 .adjustment-controls {
-  display: flex;
-  gap: var(--space-3);
-  justify-content: center;
-  margin-top: var(--space-6);
+	display: flex;
+	gap: var(--space-3);
+	justify-content: center;
+	margin-top: var(--space-6);
 }
 
 .save-button {
-  composes: control-primary;
+	composes: control-primary;
 }
 
 .cancel-button {
-  composes: control-secondary;
+	composes: control-secondary;
 }
 
 .save-status {
-  position: absolute;
-  top: 50%;
-  right: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  font-size: var(--text-sm);
-  border-radius: var(--radius-full);
-  transform: translateY(-50%);
-  animation: slideInFromRight var(--duration-normal) var(--ease-out-expo);
+	position: absolute;
+	top: 50%;
+	right: var(--space-4);
+	padding: var(--space-2) var(--space-4);
+	font-size: var(--text-sm);
+	border-radius: var(--radius-full);
+	transform: translateY(-50%);
+	animation: slideInFromRight var(--duration-normal) var(--ease-out-expo);
 }
 
 .save-status.saving {
-  color: var(--primary-700);
-  background: var(--primary-100);
+	color: var(--primary-700);
+	background: var(--primary-100);
 }
 
 .save-status.success {
-  color: var(--success-700);
-  background: var(--success-100);
-  animation: glow 2s var(--ease-out-expo);
+	color: var(--success-700);
+	background: var(--success-100);
+	animation: glow 2s var(--ease-out-expo);
 }
 
 .save-status.error {
-  color: var(--error-700);
-  background: var(--error-100);
+	color: var(--error-700);
+	background: var(--error-100);
 }
 
 /* Base animations */
 @keyframes slideInFromRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
+	from {
+		opacity: 0;
+		transform: translateX(30px);
+	}
 
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
 }
 
 @keyframes glow {
-  0%,
-  100% {
-    box-shadow: 0 0 5px var(--primary-color);
-  }
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--primary-color);
+	}
 
-  50% {
-    box-shadow: 0 0 20px var(--primary-color);
-  }
+	50% {
+		box-shadow: 0 0 20px var(--primary-color);
+	}
 }
 
 /* Instructions card animations */
 .instructions-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
+	box-shadow: var(--shadow-lg);
+	transform: translateY(-2px);
 }
 
 /* Back button animations */
 .back-button {
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  padding: var(--space-2) var(--space-4);
-  color: var(--text-secondary);
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-md);
-  transition: all var(--duration-normal) var(--ease-elastic);
+	display: flex;
+	gap: var(--space-2);
+	align-items: center;
+	padding: var(--space-2) var(--space-4);
+	color: var(--text-secondary);
+	cursor: pointer;
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-md);
+	transition: all var(--duration-normal) var(--ease-elastic);
 }
 
 .back-button:hover {
-  color: var(--primary-color);
-  transform: translateX(-5px);
+	color: var(--primary-color);
+	transform: translateX(-5px);
 }
 
 .back-button svg {
-  transition: transform var(--duration-normal) var(--ease-elastic);
+	transition: transform var(--duration-normal) var(--ease-elastic);
 }
 
 .back-button:hover svg {
-  transform: translateX(-5px);
+	transform: translateX(-5px);
 }
 
 /* Responsive animations */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: var(--reduced-motion-duration, 0.01ms);
-    animation-duration: var(--reduced-motion-duration, 0.01ms);
-    animation-iteration-count: var(--reduced-motion-iteration, 1);
-    scroll-behavior: auto;
-  }
+	*,
+	*::before,
+	*::after {
+		transition-duration: var(--reduced-motion-duration, 0.01ms);
+		animation-duration: var(--reduced-motion-duration, 0.01ms);
+		animation-iteration-count: var(--reduced-motion-iteration, 1);
+		scroll-behavior: auto;
+	}
 }
 
 @keyframes fadeScale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
 
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 /* Dark mode adjustments - removed in favor of global theme tokens */

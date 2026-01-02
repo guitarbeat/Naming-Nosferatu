@@ -17,21 +17,21 @@ import PropTypes from "prop-types";
  * @param {string} props.className - Additional CSS classes
  */
 // ts-prune-ignore-next (used in AnalysisHeader within this file)
-export function AnalysisBadge({ text = "Analysis Mode", className = "" }) {
-  return (
-    <span
-      className={`analysis-badge ${className}`}
-      role="status"
-      aria-live="polite"
-    >
-      {text}
-    </span>
-  );
+function AnalysisBadge({ text = "Analysis Mode", className = "" }) {
+	return (
+		<span
+			className={`analysis-badge ${className}`}
+			role="status"
+			aria-live="polite"
+		>
+			{text}
+		</span>
+	);
 }
 
 AnalysisBadge.propTypes = {
-  text: PropTypes.string,
-  className: PropTypes.string,
+	text: PropTypes.string,
+	className: PropTypes.string,
 };
 
 // ============================================================================
@@ -49,35 +49,35 @@ AnalysisBadge.propTypes = {
  * @param {string} props.className - Additional CSS classes
  */
 export function AnalysisButton({
-  children,
-  variant = "default",
-  onClick,
-  disabled = false,
-  ariaLabel,
-  className = "",
-  ...props
+	children,
+	variant = "default",
+	onClick,
+	disabled = false,
+	ariaLabel,
+	className = "",
+	...props
 }) {
-  return (
-    <button
-      type="button"
-      className={`analysis-btn ${variant !== "default" ? `analysis-btn--${variant}` : ""} ${className}`}
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={ariaLabel}
-      {...props}
-    >
-      {children}
-    </button>
-  );
+	return (
+		<button
+			type="button"
+			className={`analysis-btn ${variant !== "default" ? `analysis-btn--${variant}` : ""} ${className}`}
+			onClick={onClick}
+			disabled={disabled}
+			aria-label={ariaLabel}
+			{...props}
+		>
+			{children}
+		</button>
+	);
 }
 
 AnalysisButton.propTypes = {
-  children: PropTypes.node.isRequired,
-  variant: PropTypes.oneOf(["default", "primary", "danger", "ghost"]),
-  onClick: PropTypes.func,
-  disabled: PropTypes.bool,
-  ariaLabel: PropTypes.string,
-  className: PropTypes.string,
+	children: PropTypes.node.isRequired,
+	variant: PropTypes.oneOf(["default", "primary", "danger", "ghost"]),
+	onClick: PropTypes.func,
+	disabled: PropTypes.bool,
+	ariaLabel: PropTypes.string,
+	className: PropTypes.string,
 };
 
 // ============================================================================
@@ -92,24 +92,24 @@ AnalysisButton.propTypes = {
  * @param {React.ReactNode} props.actions - Action buttons
  */
 export function AnalysisToolbar({ children, selectedCount = 0, actions }) {
-  return (
-    <div className="analysis-toolbar">
-      {selectedCount > 0 && (
-        <div className="analysis-selection-badge">
-          <span className="analysis-selection-count">{selectedCount}</span>
-          <span className="analysis-selection-label">selected</span>
-        </div>
-      )}
-      {children && <div className="analysis-toolbar-content">{children}</div>}
-      {actions && <div className="analysis-toolbar-actions">{actions}</div>}
-    </div>
-  );
+	return (
+		<div className="analysis-toolbar">
+			{selectedCount > 0 && (
+				<div className="analysis-selection-badge">
+					<span className="analysis-selection-count">{selectedCount}</span>
+					<span className="analysis-selection-label">selected</span>
+				</div>
+			)}
+			{children && <div className="analysis-toolbar-content">{children}</div>}
+			{actions && <div className="analysis-toolbar-actions">{actions}</div>}
+		</div>
+	);
 }
 
 AnalysisToolbar.propTypes = {
-  children: PropTypes.node,
-  selectedCount: PropTypes.number,
-  actions: PropTypes.node,
+	children: PropTypes.node,
+	selectedCount: PropTypes.number,
+	actions: PropTypes.node,
 };
 
 // ============================================================================
@@ -132,82 +132,81 @@ AnalysisToolbar.propTypes = {
  * @param {string} props.className - Additional CSS classes
  */
 interface AnalysisHeaderProps {
-  title?: string;
-  actions?: React.ReactNode;
-  showBadge?: boolean;
-  collapsible?: boolean;
-  isCollapsed?: boolean;
-  onToggle?: () => void;
-  summary?: React.ReactNode;
-  icon?: string;
-  contentId?: string;
-  className?: string;
+	title?: string;
+	actions?: React.ReactNode;
+	showBadge?: boolean;
+	collapsible?: boolean;
+	isCollapsed?: boolean;
+	onToggle?: () => void;
+	summary?: React.ReactNode;
+	icon?: string;
+	contentId?: string;
+	className?: string;
 }
 
 export function AnalysisHeader({
-  title,
-  actions,
-  showBadge = true,
-  collapsible = false,
-  isCollapsed,
-  onToggle,
-  summary,
-  icon,
-  contentId,
-  className = "",
+	title,
+	actions,
+	showBadge = true,
+	collapsible = false,
+	isCollapsed,
+	onToggle,
+	summary,
+	icon,
+	contentId,
+	className = "",
 }: AnalysisHeaderProps) {
-  const HeaderTag = collapsible ? "div" : "header";
-  const headerClasses = collapsible
-    ? `analysis-header analysis-header--collapsible ${className}`
-    : `analysis-header ${className}`;
+	const HeaderTag = collapsible ? "div" : "header";
+	const headerClasses = collapsible
+		? `analysis-header analysis-header--collapsible ${className}`
+		: `analysis-header ${className}`;
 
-  const content = (
-    <div className="analysis-header-content">
-      {icon && <span aria-hidden="true">{icon}</span>}
-      {showBadge && <AnalysisBadge />}
-      {title && <h2 className="analysis-title">{title}</h2>}
-      {collapsible && isCollapsed && summary && (
-        <span className="analysis-header-summary">{summary}</span>
-      )}
-    </div>
-  );
+	const content = (
+		<div className="analysis-header-content">
+			{icon && <span aria-hidden="true">{icon}</span>}
+			{showBadge && <AnalysisBadge />}
+			{title && <h2 className="analysis-title">{title}</h2>}
+			{collapsible && isCollapsed && summary && (
+				<span className="analysis-header-summary">{summary}</span>
+			)}
+		</div>
+	);
 
-  return (
-    <HeaderTag className={headerClasses}>
-      {collapsible ? (
-        <button
-          type="button"
-          className="analysis-header-toggle"
-          onClick={onToggle}
-          aria-expanded={!isCollapsed}
-          aria-controls={contentId}
-        >
-          <span
-            className={`analysis-header-chevron ${isCollapsed ? "collapsed" : ""}`}
-            aria-hidden="true"
-          >
-            ▼
-          </span>
-          {content}
-        </button>
-      ) : (
-        content
-      )}
-      {actions && <div className="analysis-header-actions">{actions}</div>}
-    </HeaderTag>
-  );
+	return (
+		<HeaderTag className={headerClasses}>
+			{collapsible ? (
+				<button
+					type="button"
+					className="analysis-header-toggle"
+					onClick={onToggle}
+					aria-expanded={!isCollapsed}
+					aria-controls={contentId}
+				>
+					<span
+						className={`analysis-header-chevron ${isCollapsed ? "collapsed" : ""}`}
+						aria-hidden="true"
+					>
+						▼
+					</span>
+					{content}
+				</button>
+			) : (
+				content
+			)}
+			{actions && <div className="analysis-header-actions">{actions}</div>}
+		</HeaderTag>
+	);
 }
 
 AnalysisHeader.propTypes = {
-  title: PropTypes.string,
-  actions: PropTypes.node,
-  showBadge: PropTypes.bool,
-  collapsible: PropTypes.bool,
-  isCollapsed: PropTypes.bool,
-  onToggle: PropTypes.func,
-  summary: PropTypes.node,
-  icon: PropTypes.string,
-  contentId: PropTypes.string,
-  className: PropTypes.string,
+	title: PropTypes.string,
+	actions: PropTypes.node,
+	showBadge: PropTypes.bool,
+	collapsible: PropTypes.bool,
+	isCollapsed: PropTypes.bool,
+	onToggle: PropTypes.func,
+	summary: PropTypes.node,
+	icon: PropTypes.string,
+	contentId: PropTypes.string,
+	className: PropTypes.string,
 };
-

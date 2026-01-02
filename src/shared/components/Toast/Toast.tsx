@@ -4,8 +4,8 @@
  * Supports both individual toast rendering and container management with multiple toasts.
  */
 
-import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Toast.module.css";
 
@@ -21,123 +21,121 @@ import styles from "./Toast.module.css";
  * @returns {JSX.Element|null} The toast component or null if not visible
  */
 const ToastItem = ({
-  message,
-  type = "info",
-  duration = 5000,
-  onDismiss,
-  autoDismiss = true,
-  className = "",
+	message,
+	type = "info",
+	duration = 5000,
+	onDismiss,
+	autoDismiss = true,
+	className = "",
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isExiting, setIsExiting] = useState(false);
-  const toastGlassId = useId();
+	const [isVisible, setIsVisible] = useState(true);
+	const [isExiting, setIsExiting] = useState(false);
+	const toastGlassId = useId();
 
-  const handleDismiss = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      onDismiss?.();
-    }, 300); // Match CSS transition duration
-  }, [onDismiss]);
+	const handleDismiss = useCallback(() => {
+		setIsExiting(true);
+		setTimeout(() => {
+			setIsVisible(false);
+			onDismiss?.();
+		}, 300); // Match CSS transition duration
+	}, [onDismiss]);
 
-  useEffect(() => {
-    if (autoDismiss && duration > 0) {
-      const timer = setTimeout(() => {
-        handleDismiss();
-      }, duration);
+	useEffect(() => {
+		if (autoDismiss && duration > 0) {
+			const timer = setTimeout(() => {
+				handleDismiss();
+			}, duration);
 
-      return () => clearTimeout(timer);
-    }
-  }, [autoDismiss, duration, handleDismiss]);
+			return () => clearTimeout(timer);
+		}
+	}, [autoDismiss, duration, handleDismiss]);
 
-  if (!isVisible) return null;
+	if (!isVisible) return null;
 
-  const getTypeIcon = () => {
-    switch (type) {
-      case "success":
-        return "✅";
-      case "error":
-        return "❌";
-      case "warning":
-        return "⚠️";
-      case "info":
-      default:
-        return "ℹ️";
-    }
-  };
+	const getTypeIcon = () => {
+		switch (type) {
+			case "success":
+				return "✅";
+			case "error":
+				return "❌";
+			case "warning":
+				return "⚠️";
+			default:
+				return "ℹ️";
+		}
+	};
 
-  const getTypeClass = () => {
-    switch (type) {
-      case "success":
-        return styles.success;
-      case "error":
-        return styles.error;
-      case "warning":
-        return styles.warning;
-      case "info":
-      default:
-        return styles.info;
-    }
-  };
+	const getTypeClass = () => {
+		switch (type) {
+			case "success":
+				return styles.success;
+			case "error":
+				return styles.error;
+			case "warning":
+				return styles.warning;
+			default:
+				return styles.info;
+		}
+	};
 
-  return (
-    <LiquidGlass
-      id={`toast-glass-${toastGlassId.replace(/:/g, "-")}`}
-      width={280}
-      height={60}
-      radius={10}
-      scale={-100}
-      saturation={1.0}
-      frost={0.02}
-      inputBlur={6}
-      outputBlur={0.4}
-      className={styles.toastGlass}
-      style={{
-        width: "auto",
-        height: "auto",
-        minWidth: "240px",
-        maxWidth: "320px",
-      }}
-    >
-      <div
-        className={`
+	return (
+		<LiquidGlass
+			id={`toast-glass-${toastGlassId.replace(/:/g, "-")}`}
+			width={280}
+			height={60}
+			radius={10}
+			scale={-100}
+			saturation={1.0}
+			frost={0.02}
+			inputBlur={6}
+			outputBlur={0.4}
+			className={styles.toastGlass}
+			style={{
+				width: "auto",
+				height: "auto",
+				minWidth: "240px",
+				maxWidth: "320px",
+			}}
+		>
+			<div
+				className={`
           ${styles.item}
           ${getTypeClass()}
           ${isExiting ? styles.exiting : ""}
           ${className}
         `}
-        role="alert"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        <div className={styles.content}>
-          <span className={styles.icon}>{getTypeIcon()}</span>
-          <span className={styles.message}>{message}</span>
-          <button
-            onClick={handleDismiss}
-            className={styles.dismissButton}
-            aria-label="Dismiss notification"
-            type="button"
-          >
-            ×
-          </button>
-        </div>
+				role="alert"
+				aria-live="polite"
+				aria-atomic="true"
+			>
+				<div className={styles.content}>
+					<span className={styles.icon}>{getTypeIcon()}</span>
+					<span className={styles.message}>{message}</span>
+					<button
+						onClick={handleDismiss}
+						className={styles.dismissButton}
+						aria-label="Dismiss notification"
+						type="button"
+					>
+						×
+					</button>
+				</div>
 
-        {/* Progress bar for auto-dismiss */}
-        {autoDismiss && (
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{
-                animationDuration: `${duration}ms`,
-                animationPlayState: isExiting ? "paused" : "running",
-              }}
-            />
-          </div>
-        )}
-      </div>
-    </LiquidGlass>
-  );
+				{/* Progress bar for auto-dismiss */}
+				{autoDismiss && (
+					<div className={styles.progressBar}>
+						<div
+							className={styles.progressFill}
+							style={{
+								animationDuration: `${duration}ms`,
+								animationPlayState: isExiting ? "paused" : "running",
+							}}
+						/>
+					</div>
+				)}
+			</div>
+		</LiquidGlass>
+	);
 };
 
 /**
@@ -151,90 +149,90 @@ const ToastItem = ({
  * @returns {JSX.Element|null} The toast container component or null if no toasts
  */
 interface IToastItem {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info" | "warning";
-  duration: number;
-  autoDismiss: boolean;
+	id: string;
+	message: string;
+	type: "success" | "error" | "info" | "warning";
+	duration: number;
+	autoDismiss: boolean;
 }
 
 const ToastContainer = ({
-  toasts = [] as IToastItem[],
-  removeToast,
-  position = "top-right",
-  maxToasts = 5,
-  className = "",
+	toasts = [] as IToastItem[],
+	removeToast,
+	position = "top-right",
+	maxToasts = 5,
+	className = "",
 }: {
-  toasts?: IToastItem[];
-  removeToast?: (id: string) => void;
-  position?: string;
-  maxToasts?: number;
-  className?: string;
+	toasts?: IToastItem[];
+	removeToast?: (id: string) => void;
+	position?: string;
+	maxToasts?: number;
+	className?: string;
 }) => {
-  const containerRef = useRef(null);
+	const containerRef = useRef(null);
 
-  // Limit the number of visible toasts
-  const visibleToasts = toasts.slice(0, maxToasts);
+	// Limit the number of visible toasts
+	const visibleToasts = toasts.slice(0, maxToasts);
 
-  const getPositionClass = () => {
-    switch (position) {
-      case "top-left":
-        return styles.topLeft;
-      case "top-center":
-        return styles.topCenter;
-      case "top-right":
-        return styles.topRight;
-      case "bottom-left":
-        return styles.bottomLeft;
-      case "bottom-center":
-        return styles.bottomCenter;
-      case "bottom-right":
-        return styles.bottomRight;
-      default:
-        return styles.topRight;
-    }
-  };
+	const getPositionClass = () => {
+		switch (position) {
+			case "top-left":
+				return styles.topLeft;
+			case "top-center":
+				return styles.topCenter;
+			case "top-right":
+				return styles.topRight;
+			case "bottom-left":
+				return styles.bottomLeft;
+			case "bottom-center":
+				return styles.bottomCenter;
+			case "bottom-right":
+				return styles.bottomRight;
+			default:
+				return styles.topRight;
+		}
+	};
 
-  const handleToastDismiss = useCallback(
-    (toastId) => {
-      removeToast?.(toastId);
-    },
-    [removeToast],
-  );
+	const handleToastDismiss = useCallback(
+		(toastId) => {
+			removeToast?.(toastId);
+		},
+		[removeToast],
+	);
 
-  if (toasts.length === 0) {
-    return null;
-  }
+	if (toasts.length === 0) {
+		return null;
+	}
 
-  return (
-    <div
-      ref={containerRef}
-      className={`${styles.container} ${getPositionClass()} ${className}`}
-      role="region"
-      aria-label="Notifications"
-      aria-live="polite"
-      aria-atomic="false"
-    >
-      {visibleToasts.map((toast) => (
-        <ToastItem
-          key={toast.id}
-          message={toast.message}
-          type={toast.type}
-          duration={toast.duration}
-          autoDismiss={toast.autoDismiss}
-          onDismiss={() => handleToastDismiss(toast.id)}
-          className={styles.toastItem}
-        />
-      ))}
+	return (
+		<div
+			ref={containerRef}
+			className={`${styles.container} ${getPositionClass()} ${className}`}
+			role="region"
+			aria-label="Notifications"
+			aria-live="polite"
+			aria-atomic="false"
+		>
+			{visibleToasts.map((toast) => (
+				<ToastItem
+					key={toast.id}
+					message={toast.message}
+					type={toast.type}
+					duration={toast.duration}
+					autoDismiss={toast.autoDismiss}
+					onDismiss={() => handleToastDismiss(toast.id)}
+					className={styles.toastItem}
+				/>
+			))}
 
-      {/* Show count of hidden toasts */}
-      {toasts.length > maxToasts && (
-        <div className={styles.hiddenCount}>
-          +{toasts.length - maxToasts} more
-        </div>
-      )}
-    </div>
-  );
+			{/* Show count of hidden toasts */}
+			{toasts.length > maxToasts && (
+				<div className={styles.hiddenCount}>
+					+{toasts.length - maxToasts} more
+				</div>
+			)}
+		</div>
+	);
 };
 
 /**
@@ -254,104 +252,104 @@ const ToastContainer = ({
  * @returns {JSX.Element|null} The appropriate toast component
  */
 const Toast = ({
-  variant = "item",
-  toasts,
-  onDismiss,
-  removeToast,
-  position = "top-right",
-  maxToasts = 5,
-  message,
-  type = "info",
-  duration = 5000,
-  autoDismiss = true,
-  className = "",
+	variant = "item",
+	toasts,
+	onDismiss,
+	removeToast,
+	position = "top-right",
+	maxToasts = 5,
+	message,
+	type = "info",
+	duration = 5000,
+	autoDismiss = true,
+	className = "",
 }) => {
-  if (variant === "container") {
-    return (
-      <ToastContainer
-        toasts={toasts}
-        removeToast={removeToast}
-        position={position}
-        maxToasts={maxToasts}
-        className={className}
-      />
-    );
-  }
+	if (variant === "container") {
+		return (
+			<ToastContainer
+				toasts={toasts}
+				removeToast={removeToast}
+				position={position}
+				maxToasts={maxToasts}
+				className={className}
+			/>
+		);
+	}
 
-  // Default to item variant
-  return (
-    <ToastItem
-      message={message}
-      type={type}
-      duration={duration}
-      onDismiss={onDismiss}
-      autoDismiss={autoDismiss}
-      className={className}
-    />
-  );
+	// Default to item variant
+	return (
+		<ToastItem
+			message={message}
+			type={type}
+			duration={duration}
+			onDismiss={onDismiss}
+			autoDismiss={autoDismiss}
+			className={className}
+		/>
+	);
 };
 
 // PropTypes
 Toast.propTypes = {
-  variant: PropTypes.oneOf(["item", "container"]),
-  toasts: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.shape({
-      id: PropTypes.string,
-      message: PropTypes.string,
-      type: PropTypes.oneOf(["success", "error", "info", "warning"]),
-      duration: PropTypes.number,
-      autoDismiss: PropTypes.bool,
-    }),
-  ]),
-  onDismiss: PropTypes.func,
-  removeToast: PropTypes.func,
-  position: PropTypes.oneOf([
-    "top-left",
-    "top-center",
-    "top-right",
-    "bottom-left",
-    "bottom-center",
-    "bottom-right",
-  ]),
-  maxToasts: PropTypes.number,
-  message: PropTypes.string,
-  type: PropTypes.oneOf(["success", "error", "info", "warning"]),
-  duration: PropTypes.number,
-  autoDismiss: PropTypes.bool,
-  className: PropTypes.string,
+	variant: PropTypes.oneOf(["item", "container"]),
+	toasts: PropTypes.oneOfType([
+		PropTypes.array,
+		PropTypes.shape({
+			id: PropTypes.string,
+			message: PropTypes.string,
+			type: PropTypes.oneOf(["success", "error", "info", "warning"]),
+			duration: PropTypes.number,
+			autoDismiss: PropTypes.bool,
+		}),
+	]),
+	onDismiss: PropTypes.func,
+	removeToast: PropTypes.func,
+	position: PropTypes.oneOf([
+		"top-left",
+		"top-center",
+		"top-right",
+		"bottom-left",
+		"bottom-center",
+		"bottom-right",
+	]),
+	maxToasts: PropTypes.number,
+	message: PropTypes.string,
+	type: PropTypes.oneOf(["success", "error", "info", "warning"]),
+	duration: PropTypes.number,
+	autoDismiss: PropTypes.bool,
+	className: PropTypes.string,
 };
 
 ToastItem.propTypes = {
-  message: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(["success", "error", "info", "warning"]),
-  duration: PropTypes.number,
-  onDismiss: PropTypes.func,
-  autoDismiss: PropTypes.bool,
-  className: PropTypes.string,
+	message: PropTypes.string.isRequired,
+	type: PropTypes.oneOf(["success", "error", "info", "warning"]),
+	duration: PropTypes.number,
+	onDismiss: PropTypes.func,
+	autoDismiss: PropTypes.bool,
+	className: PropTypes.string,
 };
 
 ToastContainer.propTypes = {
-  toasts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      message: PropTypes.string.isRequired,
-      type: PropTypes.oneOf(["success", "error", "info", "warning"]),
-      duration: PropTypes.number,
-      autoDismiss: PropTypes.bool,
-    }),
-  ),
-  removeToast: PropTypes.func.isRequired,
-  position: PropTypes.oneOf([
-    "top-left",
-    "top-center",
-    "top-right",
-    "bottom-left",
-    "bottom-center",
-    "bottom-right",
-  ]),
-  maxToasts: PropTypes.number,
-  className: PropTypes.string,
+	toasts: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.string.isRequired,
+			message: PropTypes.string.isRequired,
+			type: PropTypes.oneOf(["success", "error", "info", "warning"]),
+			duration: PropTypes.number,
+			autoDismiss: PropTypes.bool,
+		}),
+	),
+	removeToast: PropTypes.func.isRequired,
+	position: PropTypes.oneOf([
+		"top-left",
+		"top-center",
+		"top-right",
+		"bottom-left",
+		"bottom-center",
+		"bottom-right",
+	]),
+	maxToasts: PropTypes.number,
+	className: PropTypes.string,
 };
 
 Toast.displayName = "Toast";

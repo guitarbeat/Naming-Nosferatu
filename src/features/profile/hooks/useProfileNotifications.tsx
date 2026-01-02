@@ -4,10 +4,10 @@
  */
 
 import { useCallback } from "react";
-import { useToast } from "../../../shared/hooks/useAppHooks";
-import Toast from "../../../shared/components/Toast/Toast";
-import { devLog, devError } from "../../../shared/utils/coreUtils";
 import { NOTIFICATION } from "../../../core/constants";
+import Toast from "../../../shared/components/Toast/Toast";
+import { useToast } from "../../../shared/hooks/useAppHooks";
+import { devError, devLog } from "../../../shared/utils/coreUtils";
 
 /**
  * * Hook for profile notification functions with toast UI
@@ -15,55 +15,58 @@ import { NOTIFICATION } from "../../../core/constants";
  */
 // ts-prune-ignore-next (used in TournamentSetup)
 export function useProfileNotifications() {
-  const {
-    toasts,
-    showSuccess: showSuccessToast,
-    showError: showErrorToast,
-    showToast: showToastMessage,
-    removeToast,
-  } = useToast();
+	const {
+		toasts,
+		showSuccess: showSuccessToast,
+		showError: showErrorToast,
+		showToast: showToastMessage,
+		removeToast,
+	} = useToast();
 
-  const showSuccess = useCallback(
-    (message: string) => {
-      devLog("✅", message);
-      showSuccessToast(message, { duration: 5000 });
-    },
-    [showSuccessToast],
-  );
+	const showSuccess = useCallback(
+		(message: string) => {
+			devLog("✅", message);
+			showSuccessToast(message, { duration: 5000 });
+		},
+		[showSuccessToast],
+	);
 
-  const showError = useCallback(
-    (message: string) => {
-      devError("❌", message);
-      showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
-    },
-    [showErrorToast],
-  );
+	const showError = useCallback(
+		(message: string) => {
+			devError("❌", message);
+			showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
+		},
+		[showErrorToast],
+	);
 
-  const showToast = useCallback(
-    (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
-      devLog(`📢 [${type}]`, message);
-      showToastMessage({
-        message,
-        type,
-        duration: type === "error" ? 7000 : 5000,
-      });
-    },
-    [showToastMessage],
-  );
+	const showToast = useCallback(
+		(
+			message: string,
+			type: "success" | "error" | "info" | "warning" = "info",
+		) => {
+			devLog(`📢 [${type}]`, message);
+			showToastMessage({
+				message,
+				type,
+				duration: type === "error" ? 7000 : 5000,
+			});
+		},
+		[showToastMessage],
+	);
 
-  const ToastContainer = useCallback(() => {
-    return (
-      <Toast
-        variant="container"
-        toasts={toasts}
-        removeToast={removeToast}
-        position="top-right"
-        maxToasts={NOTIFICATION.MAX_TOASTS}
-        onDismiss={() => {}}
-        message=""
-      />
-    );
-  }, [toasts, removeToast]);
+	const ToastContainer = useCallback(() => {
+		return (
+			<Toast
+				variant="container"
+				toasts={toasts}
+				removeToast={removeToast}
+				position="top-right"
+				maxToasts={NOTIFICATION.MAX_TOASTS}
+				onDismiss={() => {}}
+				message=""
+			/>
+		);
+	}, [toasts, removeToast]);
 
-  return { showSuccess, showError, showToast, ToastContainer };
+	return { showSuccess, showError, showToast, ToastContainer };
 }

@@ -1,0 +1,103 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!!**/dist"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noStaticOnlyClass": "off"
+			},
+			"suspicious": {
+				"noShadowRestrictedNames": "off",
+				"noImplicitAnyLet": "off",
+				"noArrayIndexKey": "off",
+				"noUnknownAtRules": "off"
+			},
+			"a11y": {
+				"recommended": false
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "warn"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": [
+				"src/core/hooks/useUserSession.ts",
+				"src/features/tournament/RankingAdjustment.tsx",
+				"src/features/tournament/Tournament.tsx",
+				"src/features/tournament/components/AnalysisWrappers.tsx",
+				"src/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
+				"src/features/tournament/TournamentSetup.tsx",
+				"src/features/tournament/Dashboard.tsx",
+				"src/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
+				"src/shared/components/ViewRouter/ViewRouter.tsx",
+				"src/features/tournament/components/PersonalResults.tsx",
+				"src/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
+				"src/features/tournament/hooks/useTournamentSetupHooks.ts",
+				"src/shared/utils/coreUtils.ts",
+				"src/shared/components/Bracket/Bracket.tsx",
+				"src/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
+				"src/shared/components/Card/components/CardName.tsx",
+				"src/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
+				"src/shared/components/NameManagementView/NameManagementView.tsx",
+				"src/shared/components/NameGrid/NameGrid.tsx",
+				"src/shared/propTypes.ts",
+				"src/shared/services/errorManager/index.ts",
+				"src/shared/services/supabase/supabaseClient.ts"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
+				"src/features/tournament/TournamentSetup.module.css"
+			],
+			"linter": {
+				"rules": {
+					"complexity": {
+						"noImportantStyles": "off"
+					}
+				}
+			}
+		}
+	],
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
+}

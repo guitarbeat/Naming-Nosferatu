@@ -3,7 +3,7 @@
  * @description Routing hooks for URL-based navigation and tournament routing synchronization
  */
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { normalizeRoutePath } from "../../shared/utils/coreUtils";
 
 // ============================================================================
@@ -11,50 +11,50 @@ import { normalizeRoutePath } from "../../shared/utils/coreUtils";
 // ============================================================================
 
 interface UseKeyboardShortcutsProps {
-  onAnalysisToggle: () => void;
-  navigateTo: (path: string) => void;
+	onAnalysisToggle: () => void;
+	navigateTo: (path: string) => void;
 }
 
 export function useKeyboardShortcuts({
-  onAnalysisToggle,
-  navigateTo,
+	onAnalysisToggle,
+	navigateTo,
 }: UseKeyboardShortcutsProps) {
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
-      if (
-        (event.ctrlKey || event.metaKey) &&
-        event.shiftKey &&
-        event.key === "A"
-      ) {
-        event.preventDefault();
-        if (onAnalysisToggle) {
-          onAnalysisToggle();
-        } else if (navigateTo) {
-          // * Fallback: toggle via URL parameter
-          const currentPath = window.location.pathname;
-          const currentSearch = new URLSearchParams(window.location.search);
-          const isAnalysisMode = currentSearch.get("analysis") === "true";
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				event.shiftKey &&
+				event.key === "A"
+			) {
+				event.preventDefault();
+				if (onAnalysisToggle) {
+					onAnalysisToggle();
+				} else if (navigateTo) {
+					// * Fallback: toggle via URL parameter
+					const currentPath = window.location.pathname;
+					const currentSearch = new URLSearchParams(window.location.search);
+					const isAnalysisMode = currentSearch.get("analysis") === "true";
 
-          if (isAnalysisMode) {
-            currentSearch.delete("analysis");
-          } else {
-            currentSearch.set("analysis", "true");
-          }
+					if (isAnalysisMode) {
+						currentSearch.delete("analysis");
+					} else {
+						currentSearch.set("analysis", "true");
+					}
 
-          const newSearch = currentSearch.toString();
-          const newUrl = newSearch
-            ? `${currentPath}?${newSearch}`
-            : currentPath;
+					const newSearch = currentSearch.toString();
+					const newUrl = newSearch
+						? `${currentPath}?${newSearch}`
+						: currentPath;
 
-          navigateTo(newUrl);
-        }
-      }
-    };
+					navigateTo(newUrl);
+				}
+			}
+		};
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onAnalysisToggle, navigateTo]);
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [onAnalysisToggle, navigateTo]);
 }
 
 // ============================================================================
@@ -64,119 +64,119 @@ export function useKeyboardShortcuts({
 const ROUTE_CHANGE_EVENT = "app-routing-change";
 
 const getBrowserRoute = () =>
-  window.location.pathname + window.location.search + window.location.hash;
+	window.location.pathname + window.location.search + window.location.hash;
 
 const broadcastRouteChange = () => {
-  if (typeof window === "undefined") {
-    return;
-  }
+	if (typeof window === "undefined") {
+		return;
+	}
 
-  try {
-    window.dispatchEvent(new Event(ROUTE_CHANGE_EVENT));
-  } catch (_error) {
-    if (
-      typeof document !== "undefined" &&
-      typeof document.createEvent === "function"
-    ) {
-      const fallbackEvent = document.createEvent("Event");
-      fallbackEvent.initEvent(ROUTE_CHANGE_EVENT, false, false);
-      window.dispatchEvent(fallbackEvent);
-    }
-  }
+	try {
+		window.dispatchEvent(new Event(ROUTE_CHANGE_EVENT));
+	} catch (_error) {
+		if (
+			typeof document !== "undefined" &&
+			typeof document.createEvent === "function"
+		) {
+			const fallbackEvent = document.createEvent("Event");
+			fallbackEvent.initEvent(ROUTE_CHANGE_EVENT, false, false);
+			window.dispatchEvent(fallbackEvent);
+		}
+	}
 };
 
 export function useRouting() {
-  const [currentRoute, setCurrentRoute] = useState(() => {
-    if (typeof window !== "undefined") {
-      return getBrowserRoute();
-    }
-    return "/";
-  });
+	const [currentRoute, setCurrentRoute] = useState(() => {
+		if (typeof window !== "undefined") {
+			return getBrowserRoute();
+		}
+		return "/";
+	});
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return undefined;
+		}
 
-    const handleRouteChange = () => {
-      setCurrentRoute(getBrowserRoute());
-    };
+		const handleRouteChange = () => {
+			setCurrentRoute(getBrowserRoute());
+		};
 
-    // Listen for browser navigation (back/forward buttons)
-    window.addEventListener("popstate", handleRouteChange);
-    window.addEventListener("hashchange", handleRouteChange);
-    window.addEventListener(ROUTE_CHANGE_EVENT, handleRouteChange);
+		// Listen for browser navigation (back/forward buttons)
+		window.addEventListener("popstate", handleRouteChange);
+		window.addEventListener("hashchange", handleRouteChange);
+		window.addEventListener(ROUTE_CHANGE_EVENT, handleRouteChange);
 
-    return () => {
-      window.removeEventListener("popstate", handleRouteChange);
-      window.removeEventListener("hashchange", handleRouteChange);
-      window.removeEventListener(ROUTE_CHANGE_EVENT, handleRouteChange);
-    };
-  }, []);
+		return () => {
+			window.removeEventListener("popstate", handleRouteChange);
+			window.removeEventListener("hashchange", handleRouteChange);
+			window.removeEventListener(ROUTE_CHANGE_EVENT, handleRouteChange);
+		};
+	}, []);
 
-  const sanitizeRoute = useCallback((route: string) => {
-    if (!route) return "/";
+	const sanitizeRoute = useCallback((route: string) => {
+		if (!route) return "/";
 
-    if (route.startsWith("http://") || route.startsWith("https://")) {
-      try {
-        const { pathname, search, hash } = new URL(route);
-        return `${pathname}${search}${hash}` || "/";
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Invalid URL provided to navigateTo:", error);
-        }
-        return "/";
-      }
-    }
+		if (route.startsWith("http://") || route.startsWith("https://")) {
+			try {
+				const { pathname, search, hash } = new URL(route);
+				return `${pathname}${search}${hash}` || "/";
+			} catch (error) {
+				if (process.env.NODE_ENV === "development") {
+					console.error("Invalid URL provided to navigateTo:", error);
+				}
+				return "/";
+			}
+		}
 
-    if (route.startsWith("/")) {
-      return route;
-    }
+		if (route.startsWith("/")) {
+			return route;
+		}
 
-    return `/${route}`;
-  }, []);
+		return `/${route}`;
+	}, []);
 
-  const navigateTo = useCallback(
-    (route: string, options: { replace?: boolean } = {}) => {
-      const sanitizedRoute = sanitizeRoute(route);
+	const navigateTo = useCallback(
+		(route: string, options: { replace?: boolean } = {}) => {
+			const sanitizedRoute = sanitizeRoute(route);
 
-      if (typeof window === "undefined") {
-        setCurrentRoute(sanitizedRoute);
-        return;
-      }
+			if (typeof window === "undefined") {
+				setCurrentRoute(sanitizedRoute);
+				return;
+			}
 
-      const { replace = false } = options;
+			const { replace = false } = options;
 
-      const fullPath = sanitizedRoute;
+			const fullPath = sanitizedRoute;
 
-      if (getBrowserRoute() === fullPath) {
-        setCurrentRoute(fullPath);
-        broadcastRouteChange();
-        return;
-      }
+			if (getBrowserRoute() === fullPath) {
+				setCurrentRoute(fullPath);
+				broadcastRouteChange();
+				return;
+			}
 
-      const historyMethod = replace ? "replaceState" : "pushState";
+			const historyMethod = replace ? "replaceState" : "pushState";
 
-      window.history[historyMethod]({}, "", fullPath);
-      setCurrentRoute(fullPath);
-      broadcastRouteChange();
-    },
-    [sanitizeRoute],
-  );
+			window.history[historyMethod]({}, "", fullPath);
+			setCurrentRoute(fullPath);
+			broadcastRouteChange();
+		},
+		[sanitizeRoute],
+	);
 
-  const isRoute = useCallback(
-    (route: string) => {
-      const sanitizedRoute = sanitizeRoute(route);
-      return currentRoute === sanitizedRoute;
-    },
-    [currentRoute, sanitizeRoute],
-  );
+	const isRoute = useCallback(
+		(route: string) => {
+			const sanitizedRoute = sanitizeRoute(route);
+			return currentRoute === sanitizedRoute;
+		},
+		[currentRoute, sanitizeRoute],
+	);
 
-  return {
-    currentRoute,
-    navigateTo,
-    isRoute,
-  };
+	return {
+		currentRoute,
+		navigateTo,
+		isRoute,
+	};
 }
 
 // ============================================================================
@@ -186,136 +186,136 @@ export function useRouting() {
 const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results"]);
 
 interface UseTournamentRoutingSyncProps {
-  currentRoute: string;
-  navigateTo: (path: string, options?: { replace?: boolean }) => void;
-  isLoggedIn: boolean;
-  currentView: string;
-  onViewChange: (view: string) => void;
-  isTournamentComplete: boolean;
+	currentRoute: string;
+	navigateTo: (path: string, options?: { replace?: boolean }) => void;
+	isLoggedIn: boolean;
+	currentView: string;
+	onViewChange: (view: string) => void;
+	isTournamentComplete: boolean;
 }
 
 export function useTournamentRoutingSync({
-  currentRoute,
-  navigateTo,
-  isLoggedIn,
-  currentView,
-  onViewChange,
-  isTournamentComplete,
+	currentRoute,
+	navigateTo,
+	isLoggedIn,
+	currentView,
+	onViewChange,
+	isTournamentComplete,
 }: UseTournamentRoutingSyncProps) {
-  const normalizedPath = useMemo(
-    () => normalizeRoutePath(currentRoute),
-    [currentRoute],
-  );
+	const normalizedPath = useMemo(
+		() => normalizeRoutePath(currentRoute),
+		[currentRoute],
+	);
 
-  const previousRouteRef = useRef<string | null>(null);
-  const lastViewRef = useRef(currentView);
-  const lastCompletionRef = useRef(isTournamentComplete);
+	const previousRouteRef = useRef<string | null>(null);
+	const lastViewRef = useRef(currentView);
+	const lastCompletionRef = useRef(isTournamentComplete);
 
-  useEffect(() => {
-    if (!isLoggedIn || normalizedPath === "/bongo") {
-      lastViewRef.current = currentView;
-      lastCompletionRef.current = isTournamentComplete;
-      return;
-    }
+	useEffect(() => {
+		if (!isLoggedIn || normalizedPath === "/bongo") {
+			lastViewRef.current = currentView;
+			lastCompletionRef.current = isTournamentComplete;
+			return;
+		}
 
-    const completionChanged =
-      isTournamentComplete !== lastCompletionRef.current;
-    lastCompletionRef.current = isTournamentComplete;
+		const completionChanged =
+			isTournamentComplete !== lastCompletionRef.current;
+		lastCompletionRef.current = isTournamentComplete;
 
-    if (!completionChanged && currentView === lastViewRef.current) {
-      return;
-    }
+		if (!completionChanged && currentView === lastViewRef.current) {
+			return;
+		}
 
-    // * Store previous view before updating the ref
-    lastViewRef.current = currentView;
+		// * Store previous view before updating the ref
+		lastViewRef.current = currentView;
 
-    if (currentView === "profile") {
-      // Redirect profile view to tournament with analysis mode
-      const targetPath = "/tournament?analysis=true";
-      if (
-        normalizedPath !== "/tournament" ||
-        !currentRoute.includes("analysis=true")
-      ) {
-        navigateTo(targetPath);
-      }
-      return;
-    }
+		if (currentView === "profile") {
+			// Redirect profile view to tournament with analysis mode
+			const targetPath = "/tournament?analysis=true";
+			if (
+				normalizedPath !== "/tournament" ||
+				!currentRoute.includes("analysis=true")
+			) {
+				navigateTo(targetPath);
+			}
+			return;
+		}
 
-    // * Allow "photos" view to stay on tournament paths
-    if (currentView === "photos") {
-      if (!TOURNAMENT_PATHS.has(normalizedPath)) {
-        navigateTo("/");
-      }
-      return;
-    }
+		// * Allow "photos" view to stay on tournament paths
+		if (currentView === "photos") {
+			if (!TOURNAMENT_PATHS.has(normalizedPath)) {
+				navigateTo("/");
+			}
+			return;
+		}
 
-    if (isTournamentComplete && currentView === "tournament") {
-      if (normalizedPath !== "/results") {
-        navigateTo("/results");
-      }
-      return;
-    }
+		if (isTournamentComplete && currentView === "tournament") {
+			if (normalizedPath !== "/results") {
+				navigateTo("/results");
+			}
+			return;
+		}
 
-    if (!TOURNAMENT_PATHS.has(normalizedPath)) {
-      navigateTo("/tournament");
-    }
-  }, [
-    currentRoute,
-    currentView,
-    isLoggedIn,
-    isTournamentComplete,
-    navigateTo,
-    normalizedPath,
-  ]);
+		if (!TOURNAMENT_PATHS.has(normalizedPath)) {
+			navigateTo("/tournament");
+		}
+	}, [
+		currentRoute,
+		currentView,
+		isLoggedIn,
+		isTournamentComplete,
+		navigateTo,
+		normalizedPath,
+	]);
 
-  useEffect(() => {
-    if (normalizedPath === "/bongo") {
-      previousRouteRef.current = currentRoute;
-      return;
-    }
+	useEffect(() => {
+		if (normalizedPath === "/bongo") {
+			previousRouteRef.current = currentRoute;
+			return;
+		}
 
-    if (!isLoggedIn) {
-      if (normalizedPath !== "/login") {
-        navigateTo("/login", { replace: true });
-      }
-      previousRouteRef.current = currentRoute;
-      return;
-    }
+		if (!isLoggedIn) {
+			if (normalizedPath !== "/login") {
+				navigateTo("/login", { replace: true });
+			}
+			previousRouteRef.current = currentRoute;
+			return;
+		}
 
-    // Handle /profile route redirect to tournament with analysis mode
-    if (normalizedPath === "/profile" && currentView !== "profile") {
-      lastViewRef.current = "profile";
-      onViewChange("profile");
-      navigateTo("/tournament?analysis=true", { replace: true });
-      previousRouteRef.current = currentRoute;
-      return;
-    }
+		// Handle /profile route redirect to tournament with analysis mode
+		if (normalizedPath === "/profile" && currentView !== "profile") {
+			lastViewRef.current = "profile";
+			onViewChange("profile");
+			navigateTo("/tournament?analysis=true", { replace: true });
+			previousRouteRef.current = currentRoute;
+			return;
+		}
 
-    const previousPath = normalizeRoutePath(previousRouteRef.current || "");
-    const pathChanged =
-      previousRouteRef.current === null || previousPath !== normalizedPath;
+		const previousPath = normalizeRoutePath(previousRouteRef.current || "");
+		const pathChanged =
+			previousRouteRef.current === null || previousPath !== normalizedPath;
 
-    // * Allow "photos" view on tournament paths - don't reset it to "tournament"
-    const allowedTournamentViews = new Set(["tournament", "photos"]);
+		// * Allow "photos" view on tournament paths - don't reset it to "tournament"
+		const allowedTournamentViews = new Set(["tournament", "photos"]);
 
-    if (
-      pathChanged &&
-      TOURNAMENT_PATHS.has(normalizedPath) &&
-      !allowedTournamentViews.has(currentView)
-    ) {
-      lastViewRef.current = "tournament";
-      onViewChange("tournament");
-    }
+		if (
+			pathChanged &&
+			TOURNAMENT_PATHS.has(normalizedPath) &&
+			!allowedTournamentViews.has(currentView)
+		) {
+			lastViewRef.current = "tournament";
+			onViewChange("tournament");
+		}
 
-    previousRouteRef.current = currentRoute;
-  }, [
-    currentRoute,
-    currentView,
-    isLoggedIn,
-    navigateTo,
-    normalizedPath,
-    onViewChange,
-  ]);
+		previousRouteRef.current = currentRoute;
+	}, [
+		currentRoute,
+		currentView,
+		isLoggedIn,
+		navigateTo,
+		normalizedPath,
+		onViewChange,
+	]);
 
-  return normalizedPath;
+	return normalizedPath;
 }

@@ -1,89 +1,88 @@
-
 /* Identity Section -------------------------------------------------------- */
 
 .identitySection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--card-background);
-  border-bottom: 1px solid var(--border-color);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  letter-spacing: 0.05em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	padding: var(--space-4);
+	background: var(--card-background);
+	border-bottom: 1px solid var(--border-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	letter-spacing: 0.05em;
 }
 
 .identityLabel {
-  color: var(--text-secondary);
-  font-weight: 500;
-  text-transform: uppercase;
+	color: var(--text-secondary);
+	font-weight: 500;
+	text-transform: uppercase;
 }
 
 .identityDisplay {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
 }
 
 .identityName {
-  color: var(--text-primary);
-  font-weight: 700;
-  text-transform: uppercase;
+	color: var(--text-primary);
+	font-weight: 700;
+	text-transform: uppercase;
 }
 
 .identityEditBtn {
-  background: none;
-  border: none;
-  color: var(--accent-color);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  padding: var(--space-1) var(--space-2);
-  opacity: 0.7;
-  transition: opacity 0.2s;
+	background: none;
+	border: none;
+	color: var(--accent-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	cursor: pointer;
+	padding: var(--space-1) var(--space-2);
+	opacity: 0.7;
+	transition: opacity 0.2s;
 }
 
 .identityEditBtn:hover {
-  opacity: 1;
-  text-decoration: underline;
+	opacity: 1;
+	text-decoration: underline;
 }
 
 .identityForm {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
 }
 
 .identityInput {
-  background: var(--background);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  padding: var(--space-1) var(--space-2);
-  text-transform: uppercase;
-  width: 200px;
+	background: var(--background);
+	border: 1px solid var(--border-color);
+	color: var(--text-primary);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	padding: var(--space-1) var(--space-2);
+	text-transform: uppercase;
+	width: 200px;
 }
 
 .identityInput:focus {
-  outline: none;
-  border-color: var(--accent-color);
+	outline: none;
+	border-color: var(--accent-color);
 }
 
 .identitySaveBtn {
-  background: var(--accent-color);
-  color: var(--background);
-  border: none;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-weight: bold;
+	background: var(--accent-color);
+	color: var(--background);
+	border: none;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-weight: bold;
 }
 
 .identitySaveBtn:hover {
-  filter: brightness(1.1);
+	filter: brightness(1.1);
 }

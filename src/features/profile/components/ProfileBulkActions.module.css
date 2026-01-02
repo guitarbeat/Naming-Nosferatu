@@ -1,71 +1,71 @@
 /* ProfileBulkActions - Unified Design System */
 
 .bulkActionsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-component-gap);
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-component-padding);
-  background: var(--card-background);
-  border: var(--card-border-width) solid var(--border-color);
-  border-radius: var(--card-border-radius);
-  backdrop-filter: blur(8px);
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--spacing-component-gap);
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--spacing-component-padding);
+	background: var(--card-background);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--card-border-radius);
+	backdrop-filter: blur(8px);
 }
 
 .selectionInfo {
-  display: flex;
-  gap: var(--space-2);
-  align-items: baseline;
+	display: flex;
+	gap: var(--space-2);
+	align-items: baseline;
 }
 
 .count {
-  font-size: var(--text-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--primary-600);
-  line-height: var(--leading-tight);
+	font-size: var(--text-xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--primary-600);
+	line-height: var(--leading-tight);
 }
 
 .label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-secondary);
-  line-height: var(--leading-normal);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-secondary);
+	line-height: var(--leading-normal);
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	align-items: center;
 }
 
 /* Responsive Design */
 @media (width <= 768px) {
-  .bulkActionsContainer {
-    flex-direction: column;
-    align-items: stretch;
-  }
+	.bulkActionsContainer {
+		flex-direction: column;
+		align-items: stretch;
+	}
 
-  .actions {
-    justify-content: stretch;
-  }
+	.actions {
+		justify-content: stretch;
+	}
 
-  .actions button {
-    flex: 1;
-  }
+	.actions button {
+		flex: 1;
+	}
 }
 
 @media (width <= 480px) {
-  .bulkActionsContainer {
-    padding: var(--space-3);
-  }
+	.bulkActionsContainer {
+		padding: var(--space-3);
+	}
 
-  .actions {
-    flex-direction: column;
-  }
+	.actions {
+		flex-direction: column;
+	}
 
-  .actions button {
-    width: 100%;
-  }
+	.actions button {
+		width: 100%;
+	}
 }

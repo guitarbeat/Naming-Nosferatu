@@ -4,78 +4,82 @@
  */
 
 import PropTypes from "prop-types";
-import { validateCatName } from "../../../shared/utils/coreUtils";
 import { TournamentButton } from "../../../shared/components/Button/Button";
-import { NameItem } from "../../../shared/propTypes";
+import type { NameItem } from "../../../shared/propTypes";
+import { validateCatName } from "../../../shared/utils/coreUtils";
 import styles from "../TournamentSetup.module.css";
 
 interface StartButtonProps {
-  selectedNames: NameItem[];
-  onStart: (names: NameItem[]) => void;
-  variant?: "default" | "header";
+	selectedNames: NameItem[];
+	onStart: (names: NameItem[]) => void;
+	variant?: "default" | "header";
 }
 
-function StartButton({ selectedNames, onStart, variant = "default" }: StartButtonProps) {
-  const validateNames = (names: NameItem[]) => {
-    return names.every((nameObj: NameItem) => {
-      if (!nameObj || typeof nameObj !== "object" || !nameObj.id) {
-        return false;
-      }
+function StartButton({
+	selectedNames,
+	onStart,
+	variant = "default",
+}: StartButtonProps) {
+	const validateNames = (names: NameItem[]) => {
+		return names.every((nameObj: NameItem) => {
+			if (!nameObj || typeof nameObj !== "object" || !nameObj.id) {
+				return false;
+			}
 
-      // * Validate the name using our validation utility
-      const nameValidation = validateCatName(nameObj.name);
-      if (!nameValidation.success) {
-        console.warn(
-          "Invalid name detected:",
-          nameObj.name,
-          nameValidation.error,
-        );
-        return false;
-      }
+			// * Validate the name using our validation utility
+			const nameValidation = validateCatName(nameObj.name);
+			if (!nameValidation.success) {
+				console.warn(
+					"Invalid name detected:",
+					nameObj.name,
+					nameValidation.error,
+				);
+				return false;
+			}
 
-      return true;
-    });
-  };
+			return true;
+		});
+	};
 
-  const handleStart = () => {
-    if (!validateNames(selectedNames)) {
-      console.error("Invalid name objects detected:", selectedNames);
-      return;
-    }
+	const handleStart = () => {
+		if (!validateNames(selectedNames)) {
+			console.error("Invalid name objects detected:", selectedNames);
+			return;
+		}
 
-    onStart(selectedNames);
-  };
+		onStart(selectedNames);
+	};
 
-  const buttonText =
-    selectedNames.length < 2
-      ? `Need ${2 - selectedNames.length} More Name${selectedNames.length === 0 ? "s" : ""} 🎯`
-      : "Start Tournament! 🏆";
+	const buttonText =
+		selectedNames.length < 2
+			? `Need ${2 - selectedNames.length} More Name${selectedNames.length === 0 ? "s" : ""} 🎯`
+			: "Start Tournament! 🏆";
 
-  const buttonClass =
-    variant === "header" ? styles.startButtonHeader : styles.startButton;
-  const isReady = selectedNames.length >= 2;
+	const buttonClass =
+		variant === "header" ? styles.startButtonHeader : styles.startButton;
+	const isReady = selectedNames.length >= 2;
 
-  return (
-    <TournamentButton
-      onClick={handleStart}
-      className={buttonClass}
-      disabled={!isReady}
-      ariaLabel={
-        isReady ? "Start Tournament" : "Select at least 2 names to start"
-      }
-      size={variant === "header" ? "medium" : "large"}
-      startIcon={isReady ? undefined : null}
-      endIcon={undefined}
-    >
-      {buttonText}
-    </TournamentButton>
-  );
+	return (
+		<TournamentButton
+			onClick={handleStart}
+			className={buttonClass}
+			disabled={!isReady}
+			ariaLabel={
+				isReady ? "Start Tournament" : "Select at least 2 names to start"
+			}
+			size={variant === "header" ? "medium" : "large"}
+			startIcon={isReady ? undefined : null}
+			endIcon={undefined}
+		>
+			{buttonText}
+		</TournamentButton>
+	);
 }
 
 StartButton.propTypes = {
-  selectedNames: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onStart: PropTypes.func.isRequired,
-  variant: PropTypes.oneOf(["default", "header"]),
+	selectedNames: PropTypes.arrayOf(PropTypes.object).isRequired,
+	onStart: PropTypes.func.isRequired,
+	variant: PropTypes.oneOf(["default", "header"]),
 };
 
 // Only export as named export - default export not used
