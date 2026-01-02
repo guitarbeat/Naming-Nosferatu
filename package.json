@@ -42,7 +42,7 @@
     "lint:types": "tsc --noEmit --project config/tsconfig.json",
     "workflow:check": "npm run lint",
     "workflow:fix": "npm run lint:fix",
-    "check:css": "echo 'CSS analysis:' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\\\n').length,'→',r.css.split('\\\\n').length));\"",
+    "check:css": "echo 'CSS analysis:' && purgecss --css 'src/**/*.module.css' --content 'src/**/*.{js,jsx,ts,tsx}' --output ./purgecss-report && node -e \\\"const fs=require('fs'),postcss=require('postcss'),discard=require('postcss-discard-unused');postcss([discard({kf:1,ff:1})]).process(fs.readFileSync('src/shared/components/Error/Error.module.css','utf8')).then(r=>console.log('CSS lines:',fs.readFileSync('src/shared/components/Error/Error.module.css','utf8').split('\\\\\\\\n').length,'→',r.css.split('\\\\\\\\n').length));\\\"",
     "check:unused": "ts-prune --project config/tsconfig.json",
     "check:deps": "knip --config config/knip.json",
     "check:deps:fix": "knip --config config/knip.json --fix",
@@ -69,12 +69,8 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.25",
     "lovable-tagger": "^1.1.13",
-<<<<<<< HEAD
-    "lucide-react": "^0.561.0",
-    "neverthrow": "^8.2.0",
-=======
     "lucide-react": "^0.562.0",
->>>>>>> 1d73ff9523a76455eeb553415d782d4a8e4449ae
+    "neverthrow": "^8.2.0",
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
