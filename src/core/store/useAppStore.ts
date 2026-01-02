@@ -3,7 +3,7 @@ import { create, type StateCreator } from "zustand";
 import {
 	siteSettingsAPI,
 	updateSupabaseUserContext,
-} from "../../shared/services/supabase/supabaseClient";
+} from "../../shared/services/supabase/client";
 import type { AppState, UIState, UserState } from "../../types/store";
 
 const LOG_ENDPOINT =

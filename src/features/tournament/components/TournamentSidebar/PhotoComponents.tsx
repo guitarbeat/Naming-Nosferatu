@@ -5,7 +5,7 @@
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { imagesAPI } from "../../../../shared/services/supabase/supabaseClient";
+import { imagesAPI } from "../../../../shared/services/supabase/client";
 import {
 	compressImageFile,
 	devError,

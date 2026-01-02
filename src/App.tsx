@@ -13,7 +13,7 @@ import {
 	useRouting,
 	useTournamentRoutingSync,
 } from "./core/hooks/useRouting";
-import { useTournamentHandlers } from "./core/hooks/useTournamentHandlers";
+import { useTournamentHandlers } from "./core/hooks/useTournament";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, {
