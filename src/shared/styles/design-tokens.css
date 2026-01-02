@@ -318,3 +318,99 @@
 	--grid-row-unit: 20px; /* * Base row unit for flexible grid sizing */
 	--grid-min-column-width: 200px; /* * Minimum column width for responsive grids */
 }
+
+/* ==========================================================================
+   TYPOGRAPHY SYSTEM (merged from typography.css)
+   ========================================================================== */
+:root {
+	/* Responsive text sizes */
+	--text-responsive-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+	--text-responsive-sm: clamp(0.875rem, 1.75vw, 1rem);
+	--text-responsive-base: clamp(1rem, 2vw, 1.125rem);
+	--text-responsive-lg: clamp(1.125rem, 2.25vw, 1.25rem);
+	--text-responsive-xl: clamp(1.25rem, 2.5vw, 1.5rem);
+	--text-responsive-2xl: clamp(1.5rem, 3vw, 2rem);
+}
+
+/* ==========================================================================
+   TRANSITIONS SYSTEM (merged from transitions.css)
+   ========================================================================== */
+:root {
+	/* Legacy transition variables for backward compatibility */
+	--transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	--transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	--transition-theme: 0.3s ease;
+
+	/* Easing (legacy aliases) */
+	--ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+	--ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+	/* Animation Duration (legacy aliases) */
+	--duration-fast: 150ms;
+	--duration-normal: 250ms;
+	--duration-slow: 350ms;
+}
+
+/* ==========================================================================
+   GLASS SURFACES (merged from glass.css)
+   ========================================================================== */
+:root {
+	--glass-bg: rgb(15 23 42 / 40%);
+	--glass-bg-light: rgb(15 23 42 / 20%);
+	--glass-bg-strong: rgb(15 23 42 / 60%);
+	--glass-border: rgb(255 255 255 / 15%);
+	--glass-border-hover: rgb(255 255 255 / 25%);
+	--glass-shadow: 0 8px 32px rgb(0 0 0 / 40%);
+	--glass-shadow-colored:
+		0 8px 32px rgb(47 243 224 / 15%), 0 8px 16px rgb(250 38 160 / 10%);
+	--glass-blur: 20px;
+	--glass-blur-strong: 30px;
+}
+
+/* ==========================================================================
+   SHIMMER EFFECTS (merged from shimmer.css)
+   ========================================================================== */
+:root {
+	--glow-hue: 222deg;
+	--shadow-hue: 180deg;
+	--shimmer-inset: 40px;
+	--spring-easing: linear(
+		0,
+		0.002,
+		0.01 0.9%,
+		0.038 1.8%,
+		0.156,
+		0.312 5.8%,
+		0.789 11.1%,
+		1.015 14.2%,
+		1.096,
+		1.157,
+		1.199,
+		1.224 20.3%,
+		1.231,
+		1.231,
+		1.226,
+		1.214 24.6%,
+		1.176 26.9%,
+		1.057 32.6%,
+		1.007 35.5%,
+		0.984,
+		0.968,
+		0.956,
+		0.949 42%,
+		0.946 44.1%,
+		0.95 46.5%,
+		0.998 57.2%,
+		1.007,
+		1.011 63.3%,
+		1.012 68.3%,
+		0.998 84%,
+		1
+	);
+	--spring-duration: 1.33s;
+}

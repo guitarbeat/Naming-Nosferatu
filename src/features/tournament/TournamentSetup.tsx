@@ -7,8 +7,8 @@ import { useMemo } from "react";
 import Error from "../../shared/components/Error/Error";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { useCatFact } from "../auth/hooks/useCatFact";
-import { AnalysisBulkActionsWrapper } from "./components/AnalysisBulkActionsWrapper";
 import {
+	AnalysisBulkActionsWrapper,
 	AnalysisHandlersProvider,
 	createAnalysisDashboardWrapper,
 } from "./components/AnalysisWrappers";

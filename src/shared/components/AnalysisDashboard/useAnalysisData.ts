@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { catNamesAPI } from "../../services/supabase/supabaseClient";
+import { catNamesAPI } from "../../services/supabase/client";
 
 export function useAnalysisData({
 	userName,

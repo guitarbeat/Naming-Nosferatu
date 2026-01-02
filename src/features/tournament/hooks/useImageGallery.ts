@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	imagesAPI,
 	resolveSupabaseClient,
-} from "../../../shared/services/supabase/supabaseClient";
+} from "../../../shared/services/supabase/client";
 import { CAT_IMAGES, deduplicateImages } from "../config";
 
 const trySupabase = async () => {

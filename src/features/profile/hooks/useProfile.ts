@@ -13,7 +13,7 @@ import {
 	getUserStats,
 	hiddenNamesAPI,
 	resolveSupabaseClient,
-} from "../../../shared/services/supabase/supabaseClient";
+} from "../../../shared/services/supabase/client";
 import {
 	clearAllCaches,
 	devError,
