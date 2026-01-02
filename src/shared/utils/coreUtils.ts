@@ -870,7 +870,7 @@ export async function compressImageFile(
 // Authentication Utilities (from authUtils.ts)
 // ============================================================================
 
-import { resolveSupabaseClient } from "../services/supabase/supabaseClient";
+import { resolveSupabaseClient } from "../services/supabase/client";
 
 const USER_ROLES = {
 	USER: "user",

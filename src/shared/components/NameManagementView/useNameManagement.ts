@@ -12,7 +12,7 @@ import {
 	getNamesWithDescriptions,
 	getNamesWithUserRatings,
 	tournamentsAPI,
-} from "../../services/supabase/supabaseClient";
+} from "../../services/supabase/client";
 import { devLog } from "../../utils/coreUtils";
 
 // ============================================================================

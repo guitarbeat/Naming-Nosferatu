@@ -1,5 +1,22 @@
+/**
+ * @module supabaseClient
+ * @description Consolidated Supabase client with unified API for cat name tournament system.
+ * Combines all database operations, real-time subscriptions, and utility functions.
+ */
+
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
+
+// Re-export all modules
+export * from "./modules/admin";
+export * from "./modules/catNames";
+export * from "./modules/hiddenNames";
+export * from "./modules/images";
+export * from "./modules/settings";
+export * from "./modules/tournaments";
+
+// Re-export types
+export type { Database } from "./types";
 
 declare global {
 	interface Window {
@@ -141,3 +158,12 @@ export const isSupabaseAvailable = async () => {
 	}
 	return true;
 };
+
+// Convenience exports from catNamesAPI for backward compatibility
+import { catNamesAPI } from "./modules/catNames";
+
+export const {
+	getNamesWithDescriptions,
+	getNamesWithUserRatings,
+	getUserStats,
+} = catNamesAPI;

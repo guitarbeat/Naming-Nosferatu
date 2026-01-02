@@ -6,13 +6,9 @@
 @import url("./reset.css");
 @import url("./design-tokens.css");
 @import url("./colors.css");
-@import url("./typography.css");
 
-/* Effects & transitions */
-@import url("./transitions.css");
+/* Effects & transitions (shimmer, glass, transitions, typography now in design-tokens.css) */
 @import url("./animations.css");
-@import url("./shimmer.css");
-@import url("./glass.css");
 @import url("./interactions.css");
 
 /* Buttons & interactive elements */

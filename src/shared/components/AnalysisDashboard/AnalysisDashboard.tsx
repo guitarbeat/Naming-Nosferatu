@@ -10,7 +10,7 @@ import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { nameItemShape } from "../../propTypes";
-import { hiddenNamesAPI } from "../../services/supabase/supabaseClient";
+import { hiddenNamesAPI } from "../../services/supabase/client";
 import { clearAllCaches, devError } from "../../utils/coreUtils";
 import { AnalysisPanel } from "../AnalysisPanel/AnalysisPanel";
 import { BumpChart } from "../Charts/Charts";
