@@ -18,6 +18,12 @@ interface NameStats {
 }
 
 interface SelectionStats {
+	name_id: string | number;
+	name: string;
+	count: number;
+}
+
+interface AnalyticsSelectionStats {
 	count: number;
 	users: Set<string>;
 }
@@ -148,7 +154,7 @@ export const catNamesAPI = {
 				}));
 			}
 
-			return (data as NameItem[]).map((item) => ({
+			return (data as unknown as NameItem[]).map((item) => ({
 				...item,
 				updated_at: null,
 				user_rating: null,
@@ -302,10 +308,12 @@ export const catNamesAPI = {
 					});
 				}
 				const stats = nameStats.get(r.name_id);
-				stats.totalRating += Number(r.rating) || 1500;
-				stats.count += 1;
-				stats.totalWins += r.wins || 0;
-				stats.totalLosses += r.losses || 0;
+				if (stats) {
+					stats.totalRating += Number(r.rating) || 1500;
+					stats.count += 1;
+					stats.totalWins += r.wins || 0;
+					stats.totalLosses += r.losses || 0;
+				}
 			});
 
 			let query = client
@@ -383,7 +391,8 @@ export const catNamesAPI = {
 						count: 0,
 					});
 				}
-				selectionCounts.get(row.name_id).count += 1;
+				const sc = selectionCounts.get(row.name_id);
+				if (sc) sc.count += 1;
 			});
 
 			let results = Array.from(selectionCounts.values()).sort(
@@ -443,19 +452,23 @@ export const catNamesAPI = {
 					.eq("is_active", true)
 					.eq("is_hidden", false),
 			]);
-
 			const selections = selectionsResult.data || [];
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
-			const selectionStats = new Map<string | number, SelectionStats>();
+			const selectionStats = new Map<
+				string | number,
+				AnalyticsSelectionStats
+			>();
 			selections.forEach((s) => {
 				if (!selectionStats.has(s.name_id)) {
 					selectionStats.set(s.name_id, { count: 0, users: new Set<string>() });
 				}
 				const stat = selectionStats.get(s.name_id);
-				stat.count += 1;
-				stat.users.add(s.user_name);
+				if (stat) {
+					stat.count += 1;
+					stat.users.add(s.user_name);
+				}
 			});
 
 			const ratingStats = new Map<string | number, RatingStats>();
@@ -470,11 +483,13 @@ export const catNamesAPI = {
 					});
 				}
 				const stat = ratingStats.get(r.name_id);
-				stat.totalRating += Number(r.rating) || 1500;
-				stat.count += 1;
-				stat.wins += r.wins || 0;
-				stat.losses += r.losses || 0;
-				stat.users.add(r.user_name);
+				if (stat) {
+					stat.totalRating += Number(r.rating) || 1500;
+					stat.count += 1;
+					stat.wins += r.wins || 0;
+					stat.losses += r.losses || 0;
+					stat.users.add(r.user_name);
+				}
 			});
 
 			const analytics = names.map((name) => {
@@ -569,13 +584,11 @@ export const catNamesAPI = {
 			const totalSelections = selectionsResult.count || 0;
 
 			const ratings = ratingsResult.data || [];
-			const avgRating =
-				ratings.length > 0
-					? Math.round(
-						ratings.reduce((sum, r) => sum + Number(r.rating), 0) /
-						ratings.length,
-					)
-					: 1500;
+			let avgRating = 1500;
+			if (ratings.length > 0) {
+				const sum = ratings.reduce((s, r) => s + Number(r.rating), 0);
+				avgRating = Math.round(sum / ratings.length);
+			}
 
 			const { data: neverSelected } = await client
 				.from("cat_name_options")
@@ -667,29 +680,40 @@ export const catNamesAPI = {
 				.select("name_id, rating, wins");
 
 			const ratingMap = new Map<string, RatingInfo>();
-			(ratings || []).forEach((r: { name_id: string; rating?: number; wins?: number }) => {
-				const existing = ratingMap.get(r.name_id);
-				if (!existing || (r.rating && r.rating > existing.rating)) {
-					ratingMap.set(r.name_id, {
-						rating: r.rating || 1500,
-						wins: r.wins || 0,
-					});
-				}
-			});
+			(ratings || []).forEach(
+				(r: {
+					name_id: string;
+					rating: number | null;
+					wins: number | null;
+				}) => {
+					const existing = ratingMap.get(r.name_id);
+					if (!existing || (r.rating && r.rating > existing.rating)) {
+						ratingMap.set(r.name_id, {
+							rating: r.rating || 1500,
+							wins: r.wins || 0,
+						});
+					}
+				},
+			);
 
 			const dateGroups = new Map<
 				string,
 				Map<string, { name: string; count: number }>
 			>();
-			const nameData = new Map<string, { id: string; name: string; avgRating: number; totalSelections: number }>();
+			const nameData = new Map<
+				string,
+				{ id: string; name: string; avgRating: number; totalSelections: number }
+			>();
 
 			(selections || []).forEach((s) => {
 				const [date] = new Date(s.selected_at).toISOString().split("T");
 				if (!dateGroups.has(date)) dateGroups.set(date, new Map());
-				const dayMap = dateGroups.get(date)!;
+				const dayMap = dateGroups.get(date);
+				if (!dayMap) return;
 				if (!dayMap.has(s.name_id))
 					dayMap.set(s.name_id, { name: s.name, count: 0 });
-				dayMap.get(s.name_id)!.count += 1;
+				const dayData = dayMap.get(s.name_id);
+				if (dayData) dayData.count += 1;
 
 				if (!nameData.has(s.name_id)) {
 					const ratingInfo = ratingMap.get(s.name_id) || {
@@ -703,7 +727,8 @@ export const catNamesAPI = {
 						totalSelections: 0,
 					});
 				}
-				nameData.get(s.name_id).totalSelections += 1;
+				const ns = nameData.get(s.name_id);
+				if (ns) ns.totalSelections += 1;
 			});
 
 			const timeLabels: string[] = [];
@@ -826,7 +851,7 @@ export const catNamesAPI = {
 			if (!data || !Array.isArray(data)) return [];
 
 			return data.map((item) => {
-				const itemWithRatings = item as NameDataWithRatings;
+				const itemWithRatings = item as unknown as NameDataWithRatings;
 				const userRating = itemWithRatings.cat_name_ratings?.find(
 					(r) => r.user_name === userName,
 				);

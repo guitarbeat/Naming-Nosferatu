@@ -1,5 +1,16 @@
 import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
+interface TournamentDisplayData {
+	id: string;
+	user_name: string;
+	tournament_name: string;
+	selected_names: string[];
+	participant_names: Array<{ id: string | number; name: string }>;
+	status: string;
+	created_at: string;
+	completed_at: string;
+}
+
 export const tournamentsAPI = {
 	/**
 	 * Create a new tournament
@@ -17,7 +28,8 @@ export const tournamentsAPI = {
 			const client = await resolveSupabaseClient();
 			if (!client) return { success: false, error: "Supabase not configured" };
 
-			await (client.rpc as any)("create_user_account", {
+			// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
+			await (client as any).rpc("create_user_account", {
 				p_user_name: userName,
 			});
 
@@ -68,7 +80,7 @@ export const tournamentsAPI = {
 			if (isDev) console.error("Error updating tournament status:", error);
 			return {
 				success: false,
-				error: (error as any).message || "Unknown error occurred",
+				error: (error as Error).message || "Unknown error occurred",
 			};
 		}
 	},
@@ -96,7 +108,7 @@ export const tournamentsAPI = {
 				throw error;
 			}
 
-			const tournamentMap = new Map<string, any>();
+			const tournamentMap = new Map<string, TournamentDisplayData>();
 			(data || []).forEach((row) => {
 				if (!tournamentMap.has(row.tournament_id)) {
 					tournamentMap.set(row.tournament_id, {
@@ -111,8 +123,13 @@ export const tournamentsAPI = {
 					});
 				}
 				const tournament = tournamentMap.get(row.tournament_id);
-				tournament.selected_names.push(row.name);
-				tournament.participant_names.push({ id: row.name_id, name: row.name });
+				if (tournament) {
+					tournament.selected_names.push(row.name);
+					tournament.participant_names.push({
+						id: row.name_id,
+						name: row.name,
+					});
+				}
 			});
 
 			return Array.from(tournamentMap.values());
@@ -199,14 +216,15 @@ export const tournamentsAPI = {
 				return { success: false, error: "Supabase client unavailable" };
 
 			try {
-				await (client.rpc as any)("create_user_account", {
+				// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
+				await (client as any).rpc("create_user_account", {
 					p_user_name: userName,
 				});
 			} catch (rpcError) {
 				if (isDev)
 					console.log(
 						"User account check:",
-						(rpcError as any).message || "exists",
+						(rpcError as Error).message || "exists",
 					);
 			}
 
@@ -226,7 +244,7 @@ export const tournamentsAPI = {
 			if (nameError)
 				return { success: false, error: "Failed to fetch name IDs" };
 
-			const nameToId = new Map<string, any>(
+			const nameToId = new Map<string, string | number>(
 				nameData.map((n) => [n.name, n.id]),
 			);
 			const now = new Date().toISOString();
@@ -276,7 +294,10 @@ export const tournamentsAPI = {
 			};
 		} catch (error) {
 			if (isDev) console.error("Error saving tournament ratings:", error);
-			return { success: false, error: (error as any).message || String(error) };
+			return {
+				success: false,
+				error: (error as Error).message || String(error),
+			};
 		}
 	},
 };
@@ -289,7 +310,7 @@ export const deleteName = async (nameId: string | number) => {
 		const client = await resolveSupabaseClient();
 		if (!client) return { success: false, error: "Supabase not configured" };
 
-		const { data: nameData, error: nameError } = await client
+		const { error: nameError } = await client
 			.from("cat_name_options")
 			.select("name")
 			.eq("id", String(nameId))
@@ -322,6 +343,6 @@ export const deleteName = async (nameId: string | number) => {
 		return { success: true };
 	} catch (error) {
 		if (isDev) console.error("Error deleting name:", error);
-		return { success: false, error: (error as any).message || String(error) };
+		return { success: false, error: (error as Error).message || String(error) };
 	}
 };

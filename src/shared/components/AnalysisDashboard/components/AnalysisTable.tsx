@@ -7,8 +7,8 @@ import {
 } from "../../../utils/coreUtils";
 import { ColumnHeader } from "../../ColumnHeader/ColumnHeader";
 import { PerformanceBadges } from "../../PerformanceBadge/PerformanceBadge";
-import type { ConsolidatedName } from "../useAnalysisDisplayData";
 import type { SummaryStats } from "../types";
+import type { ConsolidatedName } from "../useAnalysisDisplayData";
 
 interface AnalysisTableProps {
 	names: ConsolidatedName[];

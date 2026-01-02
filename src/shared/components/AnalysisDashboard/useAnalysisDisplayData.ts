@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { calculatePercentile } from "../../utils/coreUtils";
 import type {
-	LeaderboardItem,
-	SelectionPopularityItem,
 	AnalyticsDataItem,
 	HighlightItem,
+	LeaderboardItem,
+	SelectionPopularityItem,
 } from "./types";
 
 export interface ConsolidatedName {
@@ -178,8 +178,16 @@ export function useAnalysisDisplayData({
 		// Apply sorting
 		if (sortField) {
 			names.sort((a, b) => {
-				let aVal = a[sortField as keyof ConsolidatedName] as string | number | null | undefined;
-				let bVal = b[sortField as keyof ConsolidatedName] as string | number | null | undefined;
+				let aVal = a[sortField as keyof ConsolidatedName] as
+					| string
+					| number
+					| null
+					| undefined;
+				let bVal = b[sortField as keyof ConsolidatedName] as
+					| string
+					| number
+					| null
+					| undefined;
 
 				if (sortField === "dateSubmitted") {
 					aVal = aVal ? new Date(aVal as string).getTime() : 0;

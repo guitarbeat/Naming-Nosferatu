@@ -1,13 +1,11 @@
 /**
  * @module NameGrid
- * @description Virtualized Grid of name cards.
- * Optimized for performance with large datasets using react-window.
+ * @description Responsive Grid of name cards.
+ * Optimized for layout stability and performance.
  */
 
 import PropTypes from "prop-types";
-import { type CSSProperties, useMemo } from "react";
-import { AutoSizer } from "react-virtualized-auto-sizer";
-import { type CellComponentProps, Grid } from "react-window";
+import { useMemo } from "react";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -49,25 +47,11 @@ interface NameGridProps {
 	className?: string;
 }
 
-interface ItemData {
-	items: NameItem[];
-	columnCount: number;
-	selectedSet: Set<string | number>;
-	onToggleName?: (name: NameItem) => void;
-	isAdmin: boolean;
-	showCatPictures: boolean;
-	imageList: string[];
-	onToggleVisibility?: (id: string | number) => void;
-	onDelete?: (name: NameItem) => void;
-}
-
-// * Cell component moved outside to satisfy react-window API
-const Cell = ({
-	columnIndex,
-	rowIndex,
-	style,
-	items,
-	columnCount,
+/**
+ * Individual Card wrapper with grid-specific styling
+ */
+const GridItem = ({
+	nameObj,
 	selectedSet,
 	onToggleName,
 	isAdmin,
@@ -75,11 +59,18 @@ const Cell = ({
 	imageList,
 	onToggleVisibility,
 	onDelete,
-}: CellComponentProps<ItemData>) => {
-	const index = rowIndex * columnCount + columnIndex;
-
-	const nameObj = items[index];
-	const nameId = nameObj ? (nameObj.id as string | number) : null;
+}: {
+	nameObj: NameItem;
+	selectedSet: Set<string | number>;
+	onToggleName?: (name: NameItem) => void;
+	isAdmin: boolean;
+	showCatPictures: boolean;
+	imageList: string[];
+	onToggleVisibility?: (id: string | number) => void;
+	onDelete?: (name: NameItem) => void;
+}) => {
+	const nameId = nameObj.id as string | number;
+	const isHidden = isNameHidden(nameObj);
 
 	// * Deterministic image selection
 	const cardImage = useMemo(() => {
@@ -91,31 +82,13 @@ const Cell = ({
 		return imageList[Math.abs(hash) % imageList.length];
 	}, [nameObj, showCatPictures, imageList]);
 
-	// * Handle cases where the last row isn't full
-	if (!nameObj) {
-		return <div style={style} />;
-	}
-
-	const nameItem: NameItem = nameObj as NameItem;
-	const isHidden = isNameHidden(nameObj);
-
-	// * Adjust style to account for gutter
-	const GUTTER_SIZE = 16;
-	const itemStyle: CSSProperties = {
-		...style,
-		left: Number(style.left) + GUTTER_SIZE,
-		top: Number(style.top) + GUTTER_SIZE,
-		width: Number(style.width) - GUTTER_SIZE,
-		height: Number(style.height) - GUTTER_SIZE,
-	};
-
 	return (
-		<div style={itemStyle}>
+		<div className={styles.gridItem}>
 			<CardName
 				name={nameObj.name || ""}
 				description={nameObj.description}
-				isSelected={nameId !== null && selectedSet.has(nameId)}
-				onClick={() => onToggleName?.(nameItem)}
+				isSelected={selectedSet.has(nameId)}
+				onClick={() => onToggleName?.(nameObj)}
 				image={cardImage}
 				metadata={
 					isAdmin
@@ -129,13 +102,11 @@ const Cell = ({
 				isAdmin={isAdmin}
 				isHidden={isHidden}
 				_onToggleVisibility={
-					isAdmin && nameId !== null
-						? () => onToggleVisibility?.(nameId)
-						: undefined
+					isAdmin ? () => onToggleVisibility?.(nameId) : undefined
 				}
-				_onDelete={isAdmin ? () => onDelete?.(nameItem) : undefined}
+				_onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
 				onSelectionChange={undefined}
-				size="medium" // * Enforce medium size for virtualization consistency
+				size="medium"
 			/>
 		</div>
 	);
@@ -184,11 +155,6 @@ export function NameGrid({
 		return result;
 	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
-	// * Fixed dimensions for grid items
-	const ROW_HEIGHT = 280;
-	const MIN_COLUMN_WIDTH = 260;
-	const GUTTER_SIZE = 16;
-
 	if (isLoading) {
 		return (
 			<div className={`${styles.gridContainer} ${className}`}>
@@ -214,42 +180,21 @@ export function NameGrid({
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<AutoSizer
-				renderProp={({ height, width }) => {
-					if (!height || !width) return null;
-
-					// * Calculate columns based on available width and minimum width
-					const effectiveWidth = width - GUTTER_SIZE;
-					const columnCount = Math.max(
-						1,
-						Math.floor(effectiveWidth / MIN_COLUMN_WIDTH),
-					);
-					const columnWidth = effectiveWidth / columnCount;
-					const rowCount = Math.ceil(processedNames.length / columnCount);
-
-					return (
-						<Grid
-							columnCount={columnCount}
-							columnWidth={columnWidth}
-							rowCount={rowCount}
-							rowHeight={ROW_HEIGHT}
-							style={{ height, width }}
-							cellComponent={Cell}
-							cellProps={{
-								items: processedNames,
-								columnCount,
-								selectedSet,
-								onToggleName,
-								isAdmin,
-								showCatPictures,
-								imageList,
-								onToggleVisibility,
-								onDelete,
-							}}
-						/>
-					);
-				}}
-			/>
+			<div className={styles.namesGrid}>
+				{processedNames.map((name) => (
+					<GridItem
+						key={name.id}
+						nameObj={name}
+						selectedSet={selectedSet}
+						onToggleName={onToggleName}
+						isAdmin={isAdmin}
+						showCatPictures={showCatPictures}
+						imageList={imageList}
+						onToggleVisibility={onToggleVisibility}
+						onDelete={onDelete}
+					/>
+				))}
+			</div>
 		</div>
 	);
 }
