@@ -39,10 +39,14 @@ export const adminAPI = {
 			let roles: UserRole[] | null = null;
 			try {
 				const result = await client
-					.from("user_roles")
+					.from("user_roles" as any)
 					.select("user_name, role")
 					.in("user_name", userNames);
-				roles = result.data;
+				roles =
+					(result.data as any[])?.map((r) => ({
+						user_name: r.user_name || "",
+						role: r.role || "user",
+					})) || null;
 			} catch (err) {
 				console.error("Error fetching user roles:", err);
 			}

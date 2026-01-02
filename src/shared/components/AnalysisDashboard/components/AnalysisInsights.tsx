@@ -21,13 +21,44 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 }) => {
 	const renderStatsSummary = () => {
 		if (!summaryStats) return null;
+
+		if (isAdmin) {
+			return (
+				<div className="analysis-stats-summary analysis-stats-summary--admin">
+					<div className="analysis-stat-card">
+						<div className="analysis-stat-label">Total Names</div>
+						<div className="analysis-stat-value">
+							{summaryStats.totalNames || 0}
+						</div>
+						<div className="analysis-stat-subtext">
+							{summaryStats.activeNames || 0} active
+						</div>
+					</div>
+					<div className="analysis-stat-card">
+						<div className="analysis-stat-label">Avg Rating</div>
+						<div className="analysis-stat-value">{summaryStats.avgRating}</div>
+						<div className="analysis-stat-subtext">Global Average</div>
+					</div>
+					<div className="analysis-stat-card">
+						<div className="analysis-stat-label">Total Votes</div>
+						<div className="analysis-stat-value">
+							{summaryStats.totalRatings || 0}
+						</div>
+						<div className="analysis-stat-subtext">
+							{summaryStats.totalSelections || 0} selections
+						</div>
+					</div>
+				</div>
+			);
+		}
+
 		return (
-			<div
-				className={`analysis-stats-summary ${isAdmin ? "analysis-stats-summary--admin" : ""}`}
-			>
+			<div className="analysis-stats-summary">
 				<div className="analysis-stat-card">
 					<div className="analysis-stat-label">Top Rating</div>
-					<div className="analysis-stat-value">{summaryStats.maxRating}</div>
+					<div className="analysis-stat-value">
+						{summaryStats.maxRating ?? 0}
+					</div>
 					<div className="analysis-stat-name">{summaryStats.topName?.name}</div>
 				</div>
 				<div className="analysis-stat-card">
@@ -40,10 +71,10 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 				<div className="analysis-stat-card">
 					<div className="analysis-stat-label">Total Selected</div>
 					<div className="analysis-stat-value">
-						{summaryStats.totalSelected}
+						{summaryStats.totalSelected ?? 0}
 					</div>
 					<div className="analysis-stat-subtext">
-						{summaryStats.maxSelected > 0
+						{(summaryStats.maxSelected ?? 0) > 0
 							? `Most: ${summaryStats.maxSelected}x`
 							: "No selections yet"}
 					</div>

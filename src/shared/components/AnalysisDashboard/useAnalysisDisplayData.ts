@@ -62,7 +62,7 @@ export function useAnalysisDisplayData({
 
 		if (leaderboardData?.length) {
 			leaderboardData.forEach((item) => {
-				if (item.avg_rating > 1500 || (item.wins ?? 0) > 0) {
+				if ((item.avg_rating || 0) > 1500 || (item.wins ?? 0) > 0) {
 					nameMap.set(item.name_id, {
 						id: item.name_id,
 						name: item.name,
@@ -200,9 +200,9 @@ export function useAnalysisDisplayData({
 						: aVal.localeCompare(bVal);
 				}
 
-				aVal = aVal ?? 0;
-				bVal = bVal ?? 0;
-				return sortDirection === "desc" ? bVal - aVal : aVal - bVal;
+				const aNum = Number(aVal) || 0;
+				const bNum = Number(bVal) || 0;
+				return sortDirection === "desc" ? bNum - aNum : aNum - bNum;
 			});
 		}
 

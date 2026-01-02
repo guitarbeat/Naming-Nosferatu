@@ -456,21 +456,21 @@ export type Database = {
 				Row: {
 					created_at: string | null;
 					id: string;
-					role: Database["public"]["Enums"]["app_role"];
+					role: "admin" | "user";
 					user_id: string | null;
 					user_name: string | null;
 				};
 				Insert: {
 					created_at?: string | null;
 					id?: string;
-					role: Database["public"]["Enums"]["app_role"];
+					role: "admin" | "user";
 					user_id?: string | null;
 					user_name?: string | null;
 				};
 				Update: {
 					created_at?: string | null;
 					id?: string;
-					role?: Database["public"]["Enums"]["app_role"];
+					role?: "admin" | "user";
 					user_id?: string | null;
 					user_name?: string | null;
 				};
@@ -495,7 +495,7 @@ export type Database = {
 			};
 			change_user_role: {
 				Args: {
-					new_role: Database["public"]["Enums"]["app_role"];
+					new_role: "admin" | "user";
 					target_user_id: string;
 				};
 				Returns: boolean;
@@ -527,7 +527,7 @@ export type Database = {
 					created_at: string;
 					display_name: string;
 					email: string;
-					role: Database["public"]["Enums"]["app_role"];
+					role: "admin" | "user";
 					user_id: string;
 					username: string;
 				}[];
@@ -535,7 +535,7 @@ export type Database = {
 			get_current_user_name: { Args: never; Returns: string };
 			get_current_user_role: {
 				Args: never;
-				Returns: Database["public"]["Enums"]["app_role"];
+				Returns: "admin" | "user";
 			};
 			get_existing_usernames: {
 				Args: never;
@@ -614,7 +614,7 @@ export type Database = {
 			has_role:
 				| {
 						Args: {
-							_role: Database["public"]["Enums"]["app_role"];
+							_role: "admin" | "user";
 							_user_id: string;
 						};
 						Returns: boolean;
@@ -622,7 +622,7 @@ export type Database = {
 				| { Args: { _role?: string; _user_name: string }; Returns: boolean }
 				| {
 						Args: {
-							p_role: Database["public"]["Enums"]["app_role"];
+							p_role: "admin" | "user";
 							p_user_name: string;
 						};
 						Returns: boolean;

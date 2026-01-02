@@ -42,8 +42,8 @@ interface HideResult {
 interface HiddenNameItem {
 	id: string;
 	name: string;
-	description: string;
-	updated_at: string;
+	description: string | null;
+	created_at: string;
 }
 
 export const hiddenNamesAPI = {
@@ -62,8 +62,8 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
-			const { error } = await client.rpc("toggle_name_visibility", {
-				p_name_id: nameId,
+			const { error } = await client.rpc("toggle_name_visibility" as any, {
+				p_name_id: String(nameId),
 				p_hide: true,
 				p_user_name: userName,
 			});
@@ -102,8 +102,8 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
-			const { error } = await client.rpc("toggle_name_visibility", {
-				p_name_id: nameId,
+			const { error } = await client.rpc("toggle_name_visibility" as any, {
+				p_name_id: String(nameId),
 				p_hide: false,
 				p_user_name: userName,
 			});
@@ -238,14 +238,14 @@ export const hiddenNamesAPI = {
 
 			const { data, error } = await client
 				.from("cat_name_options")
-				.select("id, name, description, updated_at")
+				.select("id, name, description, created_at")
 				.eq("is_hidden", true);
 
 			if (error) throw error;
 
 			return (data || []).map((item: HiddenNameItem) => ({
 				name_id: item.id,
-				updated_at: item.updated_at,
+				updated_at: item.created_at,
 				cat_name_options: {
 					id: item.id,
 					name: item.name,

@@ -139,17 +139,20 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 					{names.map((item, index) => {
 						const rank = index + 1;
 						const ratingPercent =
-							summaryStats && summaryStats.maxRating > 0
-								? Math.min((item.rating / summaryStats.maxRating) * 100, 100)
+							summaryStats && (summaryStats.maxRating ?? 0) > 0
+								? Math.min(
+										(item.rating / (summaryStats.maxRating ?? 1)) * 100,
+										100,
+									)
 								: 0;
 						const winsPercent =
-							summaryStats && summaryStats.maxWins > 0
-								? Math.min((item.wins / summaryStats.maxWins) * 100, 100)
+							summaryStats && (summaryStats.maxWins ?? 0) > 0
+								? Math.min((item.wins / (summaryStats.maxWins ?? 1)) * 100, 100)
 								: 0;
 						const selectedPercent =
-							summaryStats && summaryStats.maxSelected > 0
+							summaryStats && (summaryStats.maxSelected ?? 0) > 0
 								? Math.min(
-										(item.selected / summaryStats.maxSelected) * 100,
+										(item.selected / (summaryStats.maxSelected ?? 1)) * 100,
 										100,
 									)
 								: 0;

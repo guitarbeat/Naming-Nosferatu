@@ -13,12 +13,13 @@ export interface NameWithInsight {
 }
 
 export interface SummaryStats {
-	maxRating: number;
-	maxWins: number;
-	maxSelected: number;
+	maxRating?: number;
+	maxWins?: number;
+	maxSelected?: number;
 	avgRating: number;
-	avgWins: number;
-	totalSelected: number;
+	avgWins?: number;
+	totalSelected?: number; // User view
+	totalSelections?: number; // Admin view
 	topName?: {
 		id: string;
 		name: string;
@@ -27,6 +28,14 @@ export interface SummaryStats {
 		selected: number;
 		dateSubmitted: string | null;
 	};
+	// Admin specific
+	totalNames?: number;
+	hiddenNames?: number;
+	activeNames?: number;
+	totalUsers?: number;
+	totalRatings?: number;
+	neverSelectedCount?: number;
+	neverSelectedNames?: string[];
 }
 
 export interface LeaderboardItem {
@@ -34,16 +43,16 @@ export interface LeaderboardItem {
 	name: string;
 	avg_rating?: number;
 	wins?: number;
-	created_at?: string;
-	date_submitted?: string;
+	created_at?: string | null;
+	date_submitted?: string | null;
 }
 
 export interface SelectionPopularityItem {
 	name_id: string | number;
 	name: string;
 	times_selected?: number;
-	created_at?: string;
-	date_submitted?: string;
+	created_at?: string | null;
+	date_submitted?: string | null;
 }
 
 export interface AnalyticsDataItem {
@@ -52,8 +61,8 @@ export interface AnalyticsDataItem {
 	avg_rating?: number;
 	total_wins?: number;
 	times_selected?: number;
-	created_at?: string;
-	date_submitted?: string;
+	created_at?: string | null;
+	date_submitted?: string | null;
 }
 
 export interface HighlightItem {

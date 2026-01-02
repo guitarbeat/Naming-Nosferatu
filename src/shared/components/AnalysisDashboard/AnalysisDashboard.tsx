@@ -23,6 +23,7 @@ import { AnalysisPanel } from "./components/AnalysisPanel";
 import "./AnalysisDashboard.css";
 import { AnalysisInsights } from "./components/AnalysisInsights";
 import { AnalysisTable } from "./components/AnalysisTable";
+import type { HighlightItem, SummaryStats } from "./types";
 import { useAnalysisData } from "./useAnalysisData";
 import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
 
@@ -31,7 +32,7 @@ import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
  * Shows top performing names to help users choose a name for their cat
  */
 interface AnalysisDashboardProps {
-	highlights?: { topRated?: unknown[]; mostWins?: unknown[] };
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] };
 	userName?: string | null;
 	showGlobalLeaderboard?: boolean;
 	defaultCollapsed?: boolean;
@@ -251,7 +252,7 @@ export function AnalysisDashboard({
 						{viewMode === "insights" && (
 							<AnalysisInsights
 								namesWithInsights={namesWithInsights}
-								summaryStats={isAdmin ? siteStats : summaryStats}
+								summaryStats={isAdmin ? (siteStats ?? null) : summaryStats}
 								generalInsights={generalInsights}
 								isAdmin={isAdmin}
 								canHideNames={isAdmin && !!onNameHidden}

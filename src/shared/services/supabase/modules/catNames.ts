@@ -286,7 +286,10 @@ export const catNamesAPI = {
 					console.error("Error fetching category leaderboard:", categoryError);
 					return [];
 				}
-				return topNames || [];
+				return (topNames || []).map((item) => ({
+					...item,
+					name_id: item.id,
+				}));
 			}
 
 			const { data: ratingStats, error: ratingError } = await client
