@@ -11,6 +11,16 @@
 	font-family: var(--font-mono);
 	font-size: var(--text-sm);
 	letter-spacing: 0.05em;
+	flex-wrap: wrap; /* Allow wrapping on mobile */
+}
+
+@media (max-width: 480px) {
+	.identitySection {
+		padding: var(--space-3) var(--space-2);
+		flex-direction: column;
+		gap: var(--space-1);
+		text-align: center;
+	}
 }
 
 .identityLabel {
@@ -29,6 +39,10 @@
 	color: var(--text-primary);
 	font-weight: 700;
 	text-transform: uppercase;
+	max-width: 15ch;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .identityEditBtn {
@@ -52,6 +66,8 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-2);
+	width: 100%;
+	justify-content: center;
 }
 
 .identityInput {
@@ -62,7 +78,8 @@
 	font-size: var(--text-sm);
 	padding: var(--space-1) var(--space-2);
 	text-transform: uppercase;
-	width: 200px;
+	width: 100%;
+	max-width: 200px;
 }
 
 .identityInput:focus {
@@ -74,13 +91,15 @@
 	background: var(--accent-color);
 	color: var(--background);
 	border: none;
-	width: 24px;
-	height: 24px;
+	width: 28px;
+	height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
 	font-weight: bold;
+	border-radius: 4px;
+	flex-shrink: 0;
 }
 
 .identitySaveBtn:hover {
@@ -102,6 +121,15 @@
 	color: var(--ink);
 	position: relative;
 	box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+@media (max-width: 480px) {
+	.catFactSection {
+		padding: var(--space-2) var(--space-3);
+	}
+	.tapeLabel {
+		display: none; /* Hide label on tiny screens to save space */
+	}
 }
 
 .tapeDecorator {
@@ -126,3 +154,4 @@
 	letter-spacing: 0.02em;
 	line-height: 1.4;
 }
+

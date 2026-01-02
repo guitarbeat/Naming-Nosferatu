@@ -542,6 +542,22 @@
 	}
 }
 
+@media (width < 768px) {
+	.cardsContainer {
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: var(--space-2);
+		justify-content: center;
+	}
+}
+
+@media (width <= 340px) {
+	.cardsContainer {
+		grid-template-columns: 1fr;
+		padding-inline: var(--space-2);
+	}
+}
+
+
 /* * Override grid layout for swipe mode */
 .cardsContainer:has(.swipeContainer) {
 	display: flex;
@@ -3286,13 +3302,51 @@
 
 @media (width <= 768px) {
 	.swipeButtons {
-		flex-direction: column;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-areas:
+			"undo progress"
+			"reject accept";
 		gap: var(--space-3);
+		width: 100%;
+		max-width: 420px;
+		padding-inline: var(--space-4);
+	}
+
+
+	.swipeUndoButton {
+		grid-area: undo;
+		width: 100%;
+		min-width: 0;
+	}
+
+	.cardProgress {
+		grid-area: progress;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.swipeLeftButton {
+		grid-area: reject;
+		width: 100%;
+		min-width: 0;
+		padding-block: var(--space-4); /* Larger touch target */
+	}
+
+	.swipeRightButton {
+		grid-area: accept;
+		width: 100%;
+		min-width: 0;
+		padding-block: var(--space-4); /* Larger touch target */
 	}
 
 	.swipeButton {
-		width: 100%;
+		min-width: 0;
 	}
+}
+
 
 	.photoToolbar {
 		flex-direction: column;

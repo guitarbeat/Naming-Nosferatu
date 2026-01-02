@@ -39,13 +39,26 @@ export function useBongoCat({
 	const [tailAngle] = useState(0);
 	const [earTwitch] = useState(false);
 	const [containerZIndex, setContainerZIndex] = useState(1);
+	const [isMobile, setIsMobile] = useState(
+		typeof window !== "undefined" && window.innerWidth <= 640,
+	);
 
-	const catSize = size * 100;
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+
+		const mql = window.matchMedia("(max-width: 640px)");
+		const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+		mql.addEventListener("change", handler);
+		return () => mql.removeEventListener("change", handler);
+	}, []);
+
+	const catSize = (isMobile ? size * 0.7 : size) * 100;
 
 	useEffect(() => {
 		if (!containerRef?.current) {
 			return;
 		}
+
 
 		const updatePosition = () => {
 			if (!containerRef?.current) {

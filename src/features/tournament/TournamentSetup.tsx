@@ -3,15 +3,10 @@
  * @description Tournament setup wizard for selecting cat names and starting a tournament.
  * Thin wrapper around NameManagementView with tournament-specific layout and extensions.
  */
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import useAppStore from "../../core/store/useAppStore";
+import { useMemo } from "react";
 import Error from "../../shared/components/Error/Error";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
-import { useAdminStatus } from "../../shared/hooks/useAppHooks";
-import type { NameItem } from "../../shared/propTypes";
 import { useCatFact } from "../auth/hooks/useCatFact";
-import { useProfile } from "../profile/hooks/useProfile";
-import { useProfileNotifications } from "../profile/hooks/useProfileNotifications";
 import { AnalysisBulkActionsWrapper } from "./components/AnalysisBulkActionsWrapper";
 import {
 	AnalysisHandlersProvider,
@@ -20,7 +15,7 @@ import {
 import Lightbox from "./components/Lightbox";
 import SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
-import { useImageGallery } from "./hooks/useImageGallery";
+import { useTournamentController } from "./hooks/useTournamentController";
 import styles from "./TournamentSetup.module.css";
 import identityStyles from "./TournamentSetupIdentity.module.css";
 
@@ -44,46 +39,18 @@ function TournamentSetupContent({
 	onNameChange,
 	existingRatings: _existingRatings,
 }: TournamentSetupProps) {
-	// * Get current view from store
-	const currentView = useAppStore((state) => state.tournament.currentView);
-	const catFact = useCatFact();
-
-	// * Name editing state
-	const [isEditingName, setIsEditingName] = useState(false);
-	const [tempName, setTempName] = useState(userName);
-
-	// * Sync temp name when userName prop changes
-	React.useEffect(() => {
-		setTempName(userName);
-	}, [userName]);
-
-	const handleNameSubmit = (e?: React.FormEvent) => {
-		e?.preventDefault();
-		if (tempName.trim()) {
-			onNameChange?.(tempName.trim());
-			setIsEditingName(false);
-		}
-	};
-
-	// * Tournament-specific UI state (not managed by NameManagementView)
-	const [showAllPhotos, setShowAllPhotos] = useState(false);
-	const [lightboxOpen, setLightboxOpen] = useState(false);
-	const [lightboxIndex, setLightboxIndex] = useState(0);
-
 	const {
+		currentView,
+		isEditingName,
+		tempName,
+		setTempName,
+		showAllPhotos,
+		setShowAllPhotos,
+		lightboxOpen,
+		lightboxIndex,
 		galleryImages,
-		addImages,
-		isLoading: _imagesLoading,
-		imageMap: _imageMap,
-	} = useImageGallery({ isLightboxOpen: lightboxOpen });
-	const { isAdmin } = useAdminStatus(userName);
-
-	// * Profile hook for analysis mode
-	const { showSuccess, showError, showToast, ToastContainer } =
-		useProfileNotifications();
-
-	const {
-		isAdmin: profileIsAdmin,
+		isAdmin,
+		profileIsAdmin,
 		activeUser,
 		canManageActiveUser,
 		userOptions,
@@ -91,74 +58,27 @@ function TournamentSetupContent({
 		setUserFilter,
 		stats,
 		selectionStats,
+		shouldEnableAnalysisMode,
+		preloadImages,
+		handleNameSubmit,
+		toggleEditingName,
+		handleImageOpen,
+		handleImagesUploaded,
+		handleLightboxNavigate,
+		handleLightboxClose,
 		fetchSelectionStats,
-	} = useProfile(userName, {
 		showSuccess,
 		showError,
+		showToast,
+		handlersRef,
+		ToastContainer,
+	} = useTournamentController({
+		userName,
+		onNameChange,
+		enableAnalysisMode,
 	});
 
-	// * Check URL for analysis mode parameter
-	const urlParams = new URLSearchParams(
-		typeof window !== "undefined" ? window.location.search : "",
-	);
-	const shouldEnableAnalysisMode =
-		enableAnalysisMode || urlParams.get("analysis") === "true";
-
-	// * Create handlers ref that will be populated by a component inside context
-	const handlersRef = useRef<{
-		handleToggleVisibility: ((nameId: string | number) => void) | null;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		handleDelete: ((name: NameItem) => void) | null;
-	}>({
-		handleToggleVisibility: null,
-		handleDelete: null,
-	});
-
-	// * Lightbox handlers
-	const handleImageOpen = useCallback(
-		(image: string) => {
-			if (!galleryImages || !Array.isArray(galleryImages)) return;
-			const idx = galleryImages.indexOf(image);
-			if (idx !== -1) {
-				setLightboxIndex(idx);
-				setLightboxOpen(true);
-			}
-		},
-		[galleryImages],
-	);
-
-	const handleImagesUploaded = useCallback(
-		(uploaded: string[]) => {
-			addImages(uploaded);
-		},
-		[addImages],
-	);
-
-	const handleLightboxNavigate = useCallback((newIndex: number) => {
-		setLightboxIndex(newIndex);
-	}, []);
-
-	const handleLightboxClose = useCallback(() => {
-		setLightboxOpen(false);
-	}, []);
-
-	const preloadImages = useMemo(() => {
-		if (
-			!lightboxOpen ||
-			!galleryImages ||
-			!Array.isArray(galleryImages) ||
-			galleryImages.length === 0
-		)
-			return [];
-		const preload: string[] = [];
-		const prevIndex =
-			lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
-		const nextIndex =
-			lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
-		if (galleryImages[prevIndex]) preload.push(galleryImages[prevIndex]);
-		if (galleryImages[nextIndex]) preload.push(galleryImages[nextIndex]);
-		return preload;
-	}, [lightboxOpen, lightboxIndex, galleryImages]);
+	const catFact = useCatFact();
 
 	const photoGalleryProps = useMemo(
 		() => ({
@@ -173,6 +93,7 @@ function TournamentSetupContent({
 		[
 			galleryImages,
 			showAllPhotos,
+			setShowAllPhotos,
 			handleImageOpen,
 			isAdmin,
 			userName,
@@ -182,7 +103,6 @@ function TournamentSetupContent({
 
 	const lightboxElement = lightboxOpen &&
 		galleryImages &&
-		Array.isArray(galleryImages) &&
 		galleryImages.length > 0 && (
 			<Lightbox
 				images={galleryImages}
@@ -232,14 +152,14 @@ function TournamentSetupContent({
 								onKeyDown={(e) => {
 									if (e.key === "Escape") {
 										setTempName(userName);
-										setIsEditingName(false);
+										toggleEditingName(false);
 									}
 								}}
 								onBlur={() => {
 									if (!tempName.trim()) {
 										setTempName(userName);
 									}
-									setIsEditingName(false);
+									toggleEditingName(false);
 								}}
 								maxLength={30}
 								aria-label="Edit operator name"
@@ -253,7 +173,7 @@ function TournamentSetupContent({
 							<span className={identityStyles.identityName}>{userName}</span>
 							<button
 								className={identityStyles.identityEditBtn}
-								onClick={() => setIsEditingName(true)}
+								onClick={() => toggleEditingName(true)}
 								aria-label="Change Name"
 							>
 								[ EDIT ]
