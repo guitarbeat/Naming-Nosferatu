@@ -4,7 +4,6 @@
  */
 
 import React, { useRef } from "react";
-import PropTypes from "prop-types";
 import Error from "../../../../shared/components/Error/Error";
 import Button from "../../../../shared/components/Button/Button";
 import { getRandomCatImage } from "../../config";
@@ -230,30 +229,5 @@ function TournamentMatch({
     </div>
   );
 }
-
-TournamentMatch.propTypes = {
-  currentMatch: PropTypes.shape({
-    left: PropTypes.shape({
-      name: PropTypes.string,
-      description: PropTypes.string,
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    }),
-    right: PropTypes.shape({
-      name: PropTypes.string,
-      description: PropTypes.string,
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    }),
-  }).isRequired,
-  selectedOption: PropTypes.oneOf(["left", "right", "both", "neither", null]),
-  isProcessing: PropTypes.bool.isRequired,
-  isTransitioning: PropTypes.bool.isRequired,
-  votingError: PropTypes.object,
-  onNameCardClick: PropTypes.func.isRequired,
-  onVoteWithAnimation: PropTypes.func.isRequired,
-  onVoteRetry: PropTypes.func.isRequired,
-  onDismissError: PropTypes.func.isRequired,
-  showCatPictures: PropTypes.bool,
-  imageList: PropTypes.array,
-};
 
 export default TournamentMatch;

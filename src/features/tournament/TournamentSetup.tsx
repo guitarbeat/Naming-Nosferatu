@@ -17,6 +17,7 @@ import { useProfileNotifications } from "../profile/hooks/useProfileNotification
 import { useProfile } from "../profile/hooks/useProfile";
 import useAppStore from "../../core/store/useAppStore";
 import styles from "./TournamentSetup.module.css";
+import identityStyles from "./TournamentSetupIdentity.module.css";
 import { AnalysisHandlersProvider, createAnalysisDashboardWrapper } from "./components/AnalysisWrappers";
 import { AnalysisBulkActionsWrapper } from "./components/AnalysisBulkActionsWrapper";
 
@@ -28,6 +29,7 @@ interface TournamentSetupProps {
   userName?: string;
   enableAnalysisMode?: boolean;
   onOpenSuggestName?: () => void;
+  onNameChange?: (name: string) => void;
 }
 
 function TournamentSetupContent({
@@ -35,9 +37,27 @@ function TournamentSetupContent({
   userName = "",
   enableAnalysisMode = false,
   onOpenSuggestName,
+  onNameChange,
 }: TournamentSetupProps) {
   // * Get current view from store
   const currentView = useAppStore((state) => state.tournament.currentView);
+
+  // * Name editing state
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(userName);
+
+  // * Sync temp name when userName prop changes
+  React.useEffect(() => {
+    setTempName(userName);
+  }, [userName]);
+
+  const handleNameSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (tempName.trim()) {
+      onNameChange?.(tempName.trim());
+      setIsEditingName(false);
+    }
+  };
 
   // * Tournament-specific UI state (not managed by NameManagementView)
   const [showAllPhotos, setShowAllPhotos] = useState(false);
@@ -192,6 +212,38 @@ function TournamentSetupContent({
     <>
       <ToastContainer />
       <div className={styles.container}>
+        {/* Name Identity Section */}
+        <div className={identityStyles.identitySection}>
+          <div className={identityStyles.identityLabel}>OPERATOR IDENTITY:</div>
+          {isEditingName ? (
+            <form onSubmit={handleNameSubmit} className={identityStyles.identityForm}>
+              <input
+                type="text"
+                value={tempName}
+                onChange={(e) => setTempName(e.target.value)}
+                className={identityStyles.identityInput}
+                autoFocus
+                onBlur={() => {
+                  // Optional: Cancel on blur if empty or desired
+                  // setIsEditingName(false);
+                }}
+              />
+              <button type="submit" className={identityStyles.identitySaveBtn}>✓</button>
+            </form>
+          ) : (
+            <div className={identityStyles.identityDisplay}>
+              <span className={identityStyles.identityName}>{userName}</span>
+              <button 
+                className={identityStyles.identityEditBtn} 
+                onClick={() => setIsEditingName(true)}
+                aria-label="Change Name"
+              >
+                [ EDIT ]
+              </button>
+            </div>
+          )}
+        </div>
+
         <NameManagementView
           mode="tournament"
           userName={userName}

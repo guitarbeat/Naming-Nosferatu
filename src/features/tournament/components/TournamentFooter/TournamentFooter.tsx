@@ -3,7 +3,6 @@
  * @description Footer component for tournament view with controls, keyboard help, and bracket view
  */
 
-import PropTypes from "prop-types";
 import Bracket from "../../../../shared/components/Bracket/Bracket";
 import styles from "../../Tournament.module.css";
 
@@ -105,13 +104,5 @@ function TournamentFooter({
     </>
   );
 }
-
-TournamentFooter.propTypes = {
-  showBracket: PropTypes.bool.isRequired,
-  showKeyboardHelp: PropTypes.bool.isRequired,
-  transformedMatches: PropTypes.array.isRequired,
-  onToggleBracket: PropTypes.func.isRequired,
-  onToggleKeyboardHelp: PropTypes.func.isRequired,
-};
 
 export default TournamentFooter;

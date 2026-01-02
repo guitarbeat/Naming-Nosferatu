@@ -104,6 +104,26 @@ function useUserSession({
         .catch(() => {
           userActions.setAdminStatus(false);
         });
+    } else {
+      // * Auto-login as guest if no user found
+      import("../../shared/utils/coreUtils").then(({ generateFunName }) => {
+        const randomName = generateFunName();
+        // We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
+        // Actually, for better UX let's save it so refresh works. 
+        // If they want to be admin they can "re-login".
+        localStorage.setItem("catNamesUser", randomName);
+        userActions.login(randomName);
+
+        // Also need to set the supabase context for this new guest
+        (async () => {
+          try {
+            const activeSupabase = await resolveSupabaseClient();
+            await setSupabaseUserContext(activeSupabase, randomName);
+          } catch (error) {
+            // ignore
+          }
+        })();
+      });
     }
     setIsInitialized(true);
   }, [userActions]);

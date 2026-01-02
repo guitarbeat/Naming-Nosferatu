@@ -4,7 +4,6 @@
  */
 
 import React from "react";
-import PropTypes from "prop-types";
 import styles from "./RoundTransition.module.css";
 
 interface RoundTransitionProps {
@@ -32,11 +31,6 @@ function RoundTransition({ showRoundTransition, nextRoundNumber }: RoundTransiti
     </div>
   );
 }
-
-RoundTransition.propTypes = {
-  showRoundTransition: PropTypes.bool.isRequired,
-  nextRoundNumber: PropTypes.number,
-};
 
 RoundTransition.displayName = "RoundTransition";
 

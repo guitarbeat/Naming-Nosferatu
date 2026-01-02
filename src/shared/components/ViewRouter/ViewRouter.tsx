@@ -93,6 +93,7 @@ export default function ViewRouter({
         userName={userName}
         existingRatings={existingRatings}
         onOpenSuggestName={onOpenSuggestName}
+        onNameChange={onLogin}
       />
     );
   }

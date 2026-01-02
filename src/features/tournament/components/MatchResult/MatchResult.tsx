@@ -5,7 +5,6 @@
  */
 
 import React from "react";
-import PropTypes from "prop-types";
 import styles from "./MatchResult.module.css";
 
 interface MatchResultProps {
@@ -46,14 +45,6 @@ function MatchResult({
     </div>
   );
 }
-
-MatchResult.propTypes = {
-  showMatchResult: PropTypes.bool.isRequired,
-  lastMatchResult: PropTypes.string,
-  roundNumber: PropTypes.number.isRequired,
-  currentMatchNumber: PropTypes.number.isRequired,
-  totalMatches: PropTypes.number.isRequired,
-};
 
 MatchResult.displayName = "MatchResult";
 

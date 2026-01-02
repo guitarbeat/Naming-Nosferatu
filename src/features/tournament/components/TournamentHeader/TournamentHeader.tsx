@@ -4,7 +4,6 @@
  * @author Aaron Lor
  */
 
-import PropTypes from "prop-types";
 import Card from "../../../../shared/components/Card/Card";
 import { StartButton } from "../StartButton";
 import styles from "../../Tournament.module.css";
@@ -106,12 +105,10 @@ function TournamentHeader({
 
             {selectedNames && selectedNames.length >= 2 && onStart && (
               <StartButton
-                selectedNames={selectedNames as import("../../../../shared/propTypes").NameItem[]}
-                onStart={(names: import("../../../../shared/propTypes").NameItem[]) => {
-                  if (onStart) {
-                    onStart(names as NameItem[]);
-                  }
-                }}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                selectedNames={selectedNames as any}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onStart={onStart as any}
                 variant="header"
               />
             )}
@@ -146,21 +143,5 @@ function TournamentHeader({
     </Card>
   );
 }
-
-TournamentHeader.propTypes = {
-  roundNumber: PropTypes.number,
-  currentMatchNumber: PropTypes.number,
-  totalMatches: PropTypes.number,
-  progress: PropTypes.number,
-  selectedNames: PropTypes.arrayOf(PropTypes.object),
-  availableNames: PropTypes.arrayOf(PropTypes.object),
-  onSelectAll: PropTypes.func,
-  isSwipeMode: PropTypes.bool,
-  onSwipeModeToggle: PropTypes.func,
-  showCatPictures: PropTypes.bool,
-  onCatPicturesToggle: PropTypes.func,
-  onStart: PropTypes.func,
-  isAdmin: PropTypes.bool,
-};
 
 export default TournamentHeader;
