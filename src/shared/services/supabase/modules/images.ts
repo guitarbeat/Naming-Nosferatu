@@ -1,5 +1,11 @@
 import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
+interface FileObject {
+	name: string;
+	metadata?: { size?: number };
+	size?: number;
+}
+
 export const imagesAPI = {
 	/**
 	 * List images from the `cat-images` bucket.
@@ -36,7 +42,7 @@ export const imagesAPI = {
 				return 9;
 			};
 
-			const pickSmaller = (a: any, b: any) => {
+			const pickSmaller = (a: FileObject, b: FileObject) => {
 				const sizeA = a?.metadata?.size ?? a?.size;
 				const sizeB = b?.metadata?.size ?? b?.size;
 				if (typeof sizeA === "number" && typeof sizeB === "number")
@@ -44,7 +50,7 @@ export const imagesAPI = {
 				return rankByExt(a.name) <= rankByExt(b.name) ? a : b;
 			};
 
-			const byBase = new Map<string, any>();
+			const byBase = new Map<string, FileObject>();
 			for (const f of files) {
 				const base = f.name.replace(/\.[^.]+$/, "").toLowerCase();
 				const current = byBase.get(base);

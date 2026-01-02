@@ -27,6 +27,25 @@ const isPermissionError = (error: unknown) => {
 	return message.includes("only admins") || message.includes("permission");
 };
 
+interface PermissionError extends Error {
+	code: string;
+	originalError: unknown;
+}
+
+interface HideResult {
+	nameId: string | number;
+	success: boolean;
+	scope?: string | null;
+	error?: string;
+}
+
+interface HiddenNameItem {
+	id: string;
+	name: string;
+	description: string;
+	updated_at: string;
+}
+
 export const hiddenNamesAPI = {
 	/**
 	 * Hide a name globally for all users (admin only).
@@ -43,7 +62,7 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
-			const { error } = await (client as any).rpc("toggle_name_visibility", {
+			const { error } = await client.rpc("toggle_name_visibility", {
 				p_name_id: nameId,
 				p_hide: true,
 				p_user_name: userName,
@@ -53,7 +72,7 @@ export const hiddenNamesAPI = {
 				if (isPermissionError(error)) {
 					const permissionError = new Error(
 						"Only admins can hide names",
-					) as any;
+					) as PermissionError;
 					permissionError.code = "NOT_ADMIN";
 					permissionError.originalError = error;
 					throw permissionError;
@@ -83,7 +102,7 @@ export const hiddenNamesAPI = {
 			if (!client)
 				return { success: false, error: "Supabase client unavailable" };
 
-			const { error } = await (client as any).rpc("toggle_name_visibility", {
+			const { error } = await client.rpc("toggle_name_visibility", {
 				p_name_id: nameId,
 				p_hide: false,
 				p_user_name: userName,
@@ -93,7 +112,7 @@ export const hiddenNamesAPI = {
 				if (isPermissionError(error)) {
 					const permissionError = new Error(
 						"Only admins can unhide names",
-					) as any;
+					) as PermissionError;
 					permissionError.code = "NOT_ADMIN";
 					permissionError.originalError = error;
 					throw permissionError;
@@ -121,7 +140,7 @@ export const hiddenNamesAPI = {
 				return { success: false, error: "No names provided", processed: 0 };
 			}
 
-			const results: any[] = [];
+			const results: HideResult[] = [];
 			let processed = 0;
 			const errors: string[] = [];
 
@@ -131,15 +150,15 @@ export const hiddenNamesAPI = {
 					results.push({
 						nameId,
 						success: result.success,
-						scope: (result as any).scope || null,
+						scope: (result as { scope?: string }).scope || null,
 					});
 					if (result.success) processed++;
 					else
 						errors.push(
-							`Failed to hide ${nameId}: ${(result as any).error || "Unknown error"}`,
+							`Failed to hide ${nameId}: ${(result as { error?: string }).error || "Unknown error"}`,
 						);
 				} catch (error) {
-					const errorMsg = (error as any).message || String(error);
+					const errorMsg = (error as Error).message || String(error);
 					results.push({ nameId, success: false, error: errorMsg });
 					errors.push(`Failed to hide ${nameId}: ${errorMsg}`);
 				}
@@ -179,7 +198,7 @@ export const hiddenNamesAPI = {
 			if (!nameIds || nameIds.length === 0)
 				return { success: true, processed: 0 };
 
-			const results: any[] = [];
+			const results: HideResult[] = [];
 			let processed = 0;
 
 			for (const nameId of nameIds) {
@@ -188,14 +207,14 @@ export const hiddenNamesAPI = {
 					results.push({
 						nameId,
 						success: result.success,
-						scope: (result as any).scope || null,
+						scope: (result as { scope?: string }).scope || null,
 					});
 					if (result.success) processed++;
 				} catch (error) {
 					results.push({
 						nameId,
 						success: false,
-						error: (error as any).message || String(error),
+						error: (error as Error).message || String(error),
 					});
 				}
 			}
@@ -224,7 +243,7 @@ export const hiddenNamesAPI = {
 
 			if (error) throw error;
 
-			return (data || []).map((item: any) => ({
+			return (data || []).map((item: HiddenNameItem) => ({
 				name_id: item.id,
 				updated_at: item.updated_at,
 				cat_name_options: {

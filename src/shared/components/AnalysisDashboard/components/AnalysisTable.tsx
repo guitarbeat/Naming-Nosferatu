@@ -8,6 +8,7 @@ import {
 import { ColumnHeader } from "../../ColumnHeader/ColumnHeader";
 import { PerformanceBadges } from "../../PerformanceBadge/PerformanceBadge";
 import type { ConsolidatedName } from "../useAnalysisDisplayData";
+import type { SummaryStats } from "../types";
 
 interface AnalysisTableProps {
 	names: ConsolidatedName[];
@@ -17,7 +18,7 @@ interface AnalysisTableProps {
 	sortDirection: string;
 	onSort: (field: string) => void;
 	onHideName: (id: string, name: string) => Promise<void>;
-	summaryStats: any;
+	summaryStats: SummaryStats | null;
 }
 
 export const AnalysisTable: React.FC<AnalysisTableProps> = ({

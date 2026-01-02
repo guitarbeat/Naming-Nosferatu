@@ -1,5 +1,11 @@
 import { useMemo } from "react";
 import { calculatePercentile } from "../../utils/coreUtils";
+import type {
+	LeaderboardItem,
+	SelectionPopularityItem,
+	AnalyticsDataItem,
+	HighlightItem,
+} from "./types";
 
 export interface ConsolidatedName {
 	id: string;
@@ -15,11 +21,11 @@ export interface ConsolidatedName {
 }
 
 interface UseAnalysisDisplayDataProps {
-	leaderboardData: any[] | null;
-	selectionPopularity: any[] | null;
-	analyticsData: any[] | null;
+	leaderboardData: LeaderboardItem[] | null;
+	selectionPopularity: SelectionPopularityItem[] | null;
+	analyticsData: AnalyticsDataItem[] | null;
 	isAdmin: boolean;
-	highlights?: { topRated?: unknown[]; mostWins?: unknown[] };
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] };
 	filterConfig?: {
 		selectionFilter?: string;
 		dateFilter?: string;
@@ -101,7 +107,7 @@ export function useAnalysisDisplayData({
 			names = [...consolidatedNames];
 		} else if (highlights?.topRated?.length) {
 			const highlightMap = new Map<string, ConsolidatedName>();
-			highlights.topRated.forEach((item: any) => {
+			highlights.topRated.forEach((item) => {
 				highlightMap.set(item.id, {
 					id: item.id,
 					name: item.name,
@@ -112,7 +118,7 @@ export function useAnalysisDisplayData({
 				});
 			});
 			if (highlights.mostWins?.length) {
-				highlights.mostWins.forEach((item: any) => {
+				highlights.mostWins.forEach((item) => {
 					const existing = highlightMap.get(item.id);
 					if (existing) {
 						existing.wins = item.value || 0;
@@ -172,8 +178,8 @@ export function useAnalysisDisplayData({
 		// Apply sorting
 		if (sortField) {
 			names.sort((a, b) => {
-				let aVal = a[sortField as keyof ConsolidatedName] as any;
-				let bVal = b[sortField as keyof ConsolidatedName] as any;
+				let aVal = a[sortField as keyof ConsolidatedName] as string | number | null | undefined;
+				let bVal = b[sortField as keyof ConsolidatedName] as string | number | null | undefined;
 
 				if (sortField === "dateSubmitted") {
 					aVal = aVal ? new Date(aVal as string).getTime() : 0;

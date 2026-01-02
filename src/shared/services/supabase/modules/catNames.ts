@@ -1,5 +1,57 @@
 import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
+interface NameItem {
+	id: string;
+	name: string;
+	description?: string;
+	avg_rating?: number;
+	is_active: boolean;
+	is_hidden?: boolean;
+	created_at?: string;
+}
+
+interface NameStats {
+	totalRating: number;
+	count: number;
+	totalWins: number;
+	totalLosses: number;
+}
+
+interface SelectionStats {
+	count: number;
+	users: Set<string>;
+}
+
+interface RatingStats {
+	totalRating: number;
+	count: number;
+	wins: number;
+	losses: number;
+	users: Set<string>;
+}
+
+interface RatingInfo {
+	rating: number;
+	wins: number;
+}
+
+interface NameDataWithRatings {
+	id: string;
+	name: string;
+	description?: string;
+	avg_rating?: number;
+	is_active: boolean;
+	is_hidden?: boolean;
+	created_at?: string;
+	cat_name_ratings?: Array<{
+		user_name: string;
+		rating?: number;
+		wins?: number;
+		losses?: number;
+		updated_at?: string;
+	}>;
+}
+
 export const catNamesAPI = {
 	/**
 	 * Get all names with descriptions and ratings
@@ -96,7 +148,7 @@ export const catNamesAPI = {
 				}));
 			}
 
-			return (data as Array<any>).map((item) => ({
+			return (data as NameItem[]).map((item) => ({
 				...item,
 				updated_at: null,
 				user_rating: null,
@@ -239,7 +291,7 @@ export const catNamesAPI = {
 				console.error("Error fetching rating stats:", ratingError);
 			}
 
-			const nameStats = new Map<string | number, any>();
+			const nameStats = new Map<string | number, NameStats>();
 			(ratingStats || []).forEach((r) => {
 				if (!nameStats.has(r.name_id)) {
 					nameStats.set(r.name_id, {
@@ -322,7 +374,7 @@ export const catNamesAPI = {
 				return [];
 			}
 
-			const selectionCounts = new Map<string | number, any>();
+			const selectionCounts = new Map<string | number, SelectionStats>();
 			(data || []).forEach((row) => {
 				if (!selectionCounts.has(row.name_id)) {
 					selectionCounts.set(row.name_id, {
@@ -396,7 +448,7 @@ export const catNamesAPI = {
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
-			const selectionStats = new Map<string | number, any>();
+			const selectionStats = new Map<string | number, SelectionStats>();
 			selections.forEach((s) => {
 				if (!selectionStats.has(s.name_id)) {
 					selectionStats.set(s.name_id, { count: 0, users: new Set<string>() });
@@ -406,7 +458,7 @@ export const catNamesAPI = {
 				stat.users.add(s.user_name);
 			});
 
-			const ratingStats = new Map<string | number, any>();
+			const ratingStats = new Map<string | number, RatingStats>();
 			ratings.forEach((r) => {
 				if (!ratingStats.has(r.name_id)) {
 					ratingStats.set(r.name_id, {
@@ -614,8 +666,8 @@ export const catNamesAPI = {
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins");
 
-			const ratingMap = new Map<string, { rating: number; wins: number }>();
-			(ratings || []).forEach((r: any) => {
+			const ratingMap = new Map<string, RatingInfo>();
+			(ratings || []).forEach((r: { name_id: string; rating?: number; wins?: number }) => {
 				const existing = ratingMap.get(r.name_id);
 				if (!existing || (r.rating && r.rating > existing.rating)) {
 					ratingMap.set(r.name_id, {
@@ -629,7 +681,7 @@ export const catNamesAPI = {
 				string,
 				Map<string, { name: string; count: number }>
 			>();
-			const nameData = new Map<string, any>();
+			const nameData = new Map<string, { id: string; name: string; avgRating: number; totalSelections: number }>();
 
 			(selections || []).forEach((s) => {
 				const [date] = new Date(s.selected_at).toISOString().split("T");
@@ -774,9 +826,9 @@ export const catNamesAPI = {
 			if (!data || !Array.isArray(data)) return [];
 
 			return data.map((item) => {
-				const itemWithRatings = item as any;
+				const itemWithRatings = item as NameDataWithRatings;
 				const userRating = itemWithRatings.cat_name_ratings?.find(
-					(r: any) => r.user_name === userName,
+					(r) => r.user_name === userName,
 				);
 				const isHidden = itemWithRatings.is_hidden === true;
 

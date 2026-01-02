@@ -69,8 +69,12 @@
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.25",
     "lovable-tagger": "^1.1.13",
+<<<<<<< HEAD
     "lucide-react": "^0.561.0",
     "neverthrow": "^8.2.0",
+=======
+    "lucide-react": "^0.562.0",
+>>>>>>> 1d73ff9523a76455eeb553415d782d4a8e4449ae
     "prop-types": "^15.8.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -1,5 +1,10 @@
 import { isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
+interface UserRole {
+	user_name: string;
+	role: string;
+}
+
 export const adminAPI = {
 	/**
 	 * List application users
@@ -31,9 +36,9 @@ export const adminAPI = {
 			if (usersError || !users) return [];
 
 			const userNames = users.map((u) => u.user_name);
-			let roles: any[] | null = null;
+			let roles: UserRole[] | null = null;
 			try {
-				const result = await (client as any)
+				const result = await client
 					.from("user_roles")
 					.select("user_name, role")
 					.in("user_name", userNames);
@@ -42,7 +47,7 @@ export const adminAPI = {
 				console.error("Error fetching user roles:", err);
 			}
 
-			const roleMap = new Map<string, any[]>();
+			const roleMap = new Map<string, { role: string }[]>();
 			(roles || []).forEach((r) => {
 				if (!roleMap.has(r.user_name)) roleMap.set(r.user_name, []);
 				roleMap.get(r.user_name)?.push({ role: r.role });
