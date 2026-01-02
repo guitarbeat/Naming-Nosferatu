@@ -9,8 +9,8 @@ import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import type { IdType, NameItem } from "../../../shared/propTypes";
 import {
 	adminAPI,
+	catNamesAPI,
 	deleteName,
-	getUserStats,
 	hiddenNamesAPI,
 	resolveSupabaseClient,
 } from "../../../shared/services/supabase/client";
@@ -145,7 +145,7 @@ async function fetchUserStats(
 
 	if (!userName) return null;
 	try {
-		const dbStats = await getUserStats(userName);
+		const dbStats = await catNamesAPI.getUserStats(userName);
 		return dbStats || null;
 	} catch (error) {
 		devError("Error fetching user stats from DB:", error);

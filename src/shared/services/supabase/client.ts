@@ -159,11 +159,11 @@ export const isSupabaseAvailable = async () => {
 	return true;
 };
 
-// Convenience exports from catNamesAPI for backward compatibility
-import { catNamesAPI } from "./modules/catNames";
-
-export const {
-	getNamesWithDescriptions,
-	getNamesWithUserRatings,
-	getUserStats,
-} = catNamesAPI;
+// Convenience exports from catNamesAPI for backward compatibility - DEPRECATED
+// Please use catNamesAPI directly
+// import { catNamesAPI } from "./modules/catNames";
+// export const {
+// 	getNamesWithDescriptions,
+// 	getNamesWithUserRatings,
+// 	getUserStats,
+// } = catNamesAPI;

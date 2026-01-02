@@ -8,11 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FALLBACK_NAMES } from "../../../features/tournament/config";
 import { ErrorManager } from "../../services/errorManager/index";
-import {
-	getNamesWithDescriptions,
-	getNamesWithUserRatings,
-	tournamentsAPI,
-} from "../../services/supabase/client";
+import { catNamesAPI, tournamentsAPI } from "../../services/supabase/client";
 import { devLog } from "../../utils/coreUtils";
 
 // ============================================================================
@@ -56,10 +52,12 @@ export function useNameData({
 				let namesData: Name[];
 
 				if (mode === "tournament") {
-					namesData = (await getNamesWithDescriptions(true)) as Name[];
+					namesData = (await catNamesAPI.getNamesWithDescriptions(
+						true,
+					)) as Name[];
 				} else {
 					if (!userName) return [];
-					const rawData = await getNamesWithUserRatings(userName);
+					const rawData = await catNamesAPI.getNamesWithUserRatings(userName);
 					namesData = (
 						rawData as Array<{
 							id: string;
