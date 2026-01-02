@@ -3,8 +3,8 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import type React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
+import PropTypes from "prop-types";
 import Button from "../../../../shared/components/Button/Button";
 import Error from "../../../../shared/components/Error/Error";
 import type { NameItem } from "../../../../shared/propTypes";
@@ -224,4 +224,29 @@ function TournamentMatch({
 	);
 }
 
-export default TournamentMatch;
+TournamentMatch.propTypes = {
+	currentMatch: PropTypes.shape({
+		left: PropTypes.shape({
+			name: PropTypes.string,
+			description: PropTypes.string,
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		}),
+		right: PropTypes.shape({
+			name: PropTypes.string,
+			description: PropTypes.string,
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+		}),
+	}).isRequired,
+	selectedOption: PropTypes.oneOf(["left", "right", "both", "neither", null]),
+	isProcessing: PropTypes.bool.isRequired,
+	isTransitioning: PropTypes.bool.isRequired,
+	votingError: PropTypes.object,
+	onNameCardClick: PropTypes.func.isRequired,
+	onVoteWithAnimation: PropTypes.func.isRequired,
+	onVoteRetry: PropTypes.func.isRequired,
+	onDismissError: PropTypes.func.isRequired,
+	showCatPictures: PropTypes.bool,
+	imageList: PropTypes.array,
+};
+
+export default React.memo(TournamentMatch);

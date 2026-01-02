@@ -16,7 +16,7 @@ import {
 	SpeakerWaveIcon,
 	SpeakerXMarkIcon,
 } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import React, { useState } from "react";
 import Button, { IconButton } from "../../shared/components/Button/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";
 import styles from "./Tournament.module.css";
@@ -281,4 +281,4 @@ const TournamentControls = ({
 };
 
 // ts-prune-ignore-next (used in Tournament)
-export default TournamentControls;
+export default React.memo(TournamentControls);

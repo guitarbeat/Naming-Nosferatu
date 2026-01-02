@@ -4,10 +4,12 @@
  * @author Aaron Lor
  */
 
+import React from "react";
+import PropTypes from "prop-types";
 import Card from "../../../../shared/components/Card/Card";
+import { StartButton } from "../StartButton";
 import styles from "../../Tournament.module.css";
 import setupStyles from "../../TournamentSetup.module.css";
-import { StartButton } from "../StartButton";
 
 interface NameItem {
 	id?: string | number;
@@ -146,4 +148,20 @@ function TournamentHeader({
 	);
 }
 
-export default TournamentHeader;
+TournamentHeader.propTypes = {
+	roundNumber: PropTypes.number,
+	currentMatchNumber: PropTypes.number,
+	totalMatches: PropTypes.number,
+	progress: PropTypes.number,
+	selectedNames: PropTypes.arrayOf(PropTypes.object),
+	availableNames: PropTypes.arrayOf(PropTypes.object),
+	onSelectAll: PropTypes.func,
+	isSwipeMode: PropTypes.bool,
+	onSwipeModeToggle: PropTypes.func,
+	showCatPictures: PropTypes.bool,
+	onCatPicturesToggle: PropTypes.func,
+	onStart: PropTypes.func,
+	isAdmin: PropTypes.bool,
+};
+
+export default React.memo(TournamentHeader);
