@@ -1,3 +1,7 @@
+/**
+ * Build cache buster: 2026-01-02-v1
+ * Forces fresh dependency installation to resolve rollup native module issues
+ */
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
