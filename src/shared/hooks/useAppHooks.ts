@@ -3,7 +3,7 @@
  * @description Consolidated shared hooks for admin status and toast notifications
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { isUserAdmin } from "../utils/coreUtils";
 
 // ============================================================================
@@ -16,53 +16,53 @@ import { isUserAdmin } from "../utils/coreUtils";
  * @returns {Object} { isAdmin, isLoading, error }
  */
 export function useAdminStatus(userName: string | null) {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<unknown>(null);
 
-  useEffect(() => {
-    let isMounted = true;
+	useEffect(() => {
+		let isMounted = true;
 
-    const checkAdminStatus = async () => {
-      if (!userName) {
-        if (isMounted) {
-          setIsAdmin(false);
-          setIsLoading(false);
-        }
-        return;
-      }
+		const checkAdminStatus = async () => {
+			if (!userName) {
+				if (isMounted) {
+					setIsAdmin(false);
+					setIsLoading(false);
+				}
+				return;
+			}
 
-      setIsLoading(true);
-      setError(null);
+			setIsLoading(true);
+			setError(null);
 
-      try {
-        const adminStatus = await isUserAdmin(userName);
-        if (isMounted) {
-          setIsAdmin(adminStatus);
-        }
-      } catch (err) {
-        if (isMounted) {
-          if (process.env.NODE_ENV === "development") {
-            console.error("Error checking admin status:", err);
-          }
-          setIsAdmin(false);
-          setError(err);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
+			try {
+				const adminStatus = await isUserAdmin(userName);
+				if (isMounted) {
+					setIsAdmin(adminStatus);
+				}
+			} catch (err) {
+				if (isMounted) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error checking admin status:", err);
+					}
+					setIsAdmin(false);
+					setError(err);
+				}
+			} finally {
+				if (isMounted) {
+					setIsLoading(false);
+				}
+			}
+		};
 
-    checkAdminStatus();
+		checkAdminStatus();
 
-    return () => {
-      isMounted = false;
-    };
-  }, [userName]);
+		return () => {
+			isMounted = false;
+		};
+	}, [userName]);
 
-  return { isAdmin, isLoading, error };
+	return { isAdmin, isLoading, error };
 }
 
 // ============================================================================
@@ -70,16 +70,16 @@ export function useAdminStatus(userName: string | null) {
 // ============================================================================
 
 interface ToastItem {
-  id: string;
-  message: string;
-  type: "success" | "error" | "info" | "warning";
-  duration: number;
-  autoDismiss: boolean;
+	id: string;
+	message: string;
+	type: "success" | "error" | "info" | "warning";
+	duration: number;
+	autoDismiss: boolean;
 }
 
 interface UseToastOptions {
-  maxToasts?: number;
-  defaultDuration?: number;
+	maxToasts?: number;
+	defaultDuration?: number;
 }
 
 /**
@@ -90,76 +90,75 @@ interface UseToastOptions {
  * @returns {Object} Toast state and handlers
  */
 export function useToast(options: UseToastOptions = {}) {
-  const { maxToasts = 5, defaultDuration = 5000 } = options;
+	const { maxToasts = 5, defaultDuration = 5000 } = options;
 
-  const [toasts, setToasts] = useState<ToastItem[]>([]);
+	const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const showToast = useCallback(
-    (toast: Partial<ToastItem>) => {
-      const id = Math.random().toString(36).substr(2, 9);
-      const newToast: ToastItem = {
-        id,
-        message: toast.message || "",
-        type: toast.type || "info",
-        duration: toast.duration || defaultDuration,
-        autoDismiss: toast.autoDismiss !== undefined ? toast.autoDismiss : true,
-      };
+	const showToast = useCallback(
+		(toast: Partial<ToastItem>) => {
+			const id = Math.random().toString(36).substr(2, 9);
+			const newToast: ToastItem = {
+				id,
+				message: toast.message || "",
+				type: toast.type || "info",
+				duration: toast.duration || defaultDuration,
+				autoDismiss: toast.autoDismiss !== undefined ? toast.autoDismiss : true,
+			};
 
-      setToasts((prev) => {
-        const updated = [newToast, ...prev];
-        return updated.slice(0, maxToasts);
-      });
+			setToasts((prev) => {
+				const updated = [newToast, ...prev];
+				return updated.slice(0, maxToasts);
+			});
 
-      return id;
-    },
-    [maxToasts, defaultDuration],
-  );
+			return id;
+		},
+		[maxToasts, defaultDuration],
+	);
 
-  const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
+	const removeToast = useCallback((id: string) => {
+		setToasts((prev) => prev.filter((toast) => toast.id !== id));
+	}, []);
 
-  const clearToasts = useCallback(() => {
-    setToasts([]);
-  }, []);
+	const clearToasts = useCallback(() => {
+		setToasts([]);
+	}, []);
 
-  const showSuccess = useCallback(
-    (message, options = {}) => {
-      return showToast({ message, type: "success", ...options });
-    },
-    [showToast],
-  );
+	const showSuccess = useCallback(
+		(message, options = {}) => {
+			return showToast({ message, type: "success", ...options });
+		},
+		[showToast],
+	);
 
-  const showError = useCallback(
-    (message, options = {}) => {
-      return showToast({ message, type: "error", ...options });
-    },
-    [showToast],
-  );
+	const showError = useCallback(
+		(message, options = {}) => {
+			return showToast({ message, type: "error", ...options });
+		},
+		[showToast],
+	);
 
-  const showInfo = useCallback(
-    (message, options = {}) => {
-      return showToast({ message, type: "info", ...options });
-    },
-    [showToast],
-  );
+	const showInfo = useCallback(
+		(message, options = {}) => {
+			return showToast({ message, type: "info", ...options });
+		},
+		[showToast],
+	);
 
-  const showWarning = useCallback(
-    (message, options = {}) => {
-      return showToast({ message, type: "warning", ...options });
-    },
-    [showToast],
-  );
+	const showWarning = useCallback(
+		(message, options = {}) => {
+			return showToast({ message, type: "warning", ...options });
+		},
+		[showToast],
+	);
 
-  return {
-    toasts,
-    showToast,
-    removeToast,
-    clearToasts,
-    showSuccess,
-    showError,
-    showInfo,
-    showWarning,
-  };
+	return {
+		toasts,
+		showToast,
+		removeToast,
+		clearToasts,
+		showSuccess,
+		showError,
+		showInfo,
+		showWarning,
+	};
 }
-

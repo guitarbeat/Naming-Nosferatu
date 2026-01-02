@@ -14,18 +14,19 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import React, { memo } from "react";
 import PropTypes from "prop-types";
+import type React from "react";
+import { memo } from "react";
 import { useBongoCat } from "../../../core/hooks/useBongoCat";
-import { CAT_VARIANTS, PERSONALITY_MODES, DEFAULT_CONFIG } from "./constants";
-import {
-  getEyeTransform,
-  getPupilTransform,
-  getConditionalEyeStyle,
-  getConditionalTransform,
-  getConditionalTransformWithValue,
-} from "./utils/styles";
 import styles from "./BongoCat.module.css";
+import { CAT_VARIANTS, DEFAULT_CONFIG, PERSONALITY_MODES } from "./constants";
+import {
+	getConditionalEyeStyle,
+	getConditionalTransform,
+	getConditionalTransformWithValue,
+	getEyeTransform,
+	getPupilTransform,
+} from "./utils/styles";
 
 /**
  * Render the core cat body without paws.
@@ -39,105 +40,105 @@ import styles from "./BongoCat.module.css";
  * @returns {JSX.Element}
  */
 const CatBody = ({
-  animationState,
-  headTilt,
-  eyePosition,
-  tailAngle,
-  earTwitch,
-  reduceMotion,
+	animationState,
+	headTilt,
+	eyePosition,
+	tailAngle,
+	earTwitch,
+	reduceMotion,
 }) => (
-  <div className={styles.cat}>
-    {/* Tail */}
-    <div
-      className={`${styles.tail} ${styles[animationState] || ""}`}
-      style={getConditionalTransform(reduceMotion, `rotate(${tailAngle}deg)`)}
-    />
-    {/* Head with tilt */}
-    <div
-      className={`${styles.head} ${styles[animationState] || ""}`}
-      style={getConditionalTransformWithValue(
-        reduceMotion,
-        headTilt,
-        (tilt) => `rotate(${tilt}deg)`,
-      )}
-    />
-    {/* Ears with twitch */}
-    <div
-      className={`${styles.ears} ${styles.fill} ${earTwitch ? styles.earTwitch : ""}`}
-    >
-      <div className={styles.ear} />
-      <div className={styles.ear} />
-    </div>
-    <div
-      className={`${styles.ears} ${styles.outline} ${earTwitch ? styles.earTwitch : ""}`}
-    >
-      <div className={styles.ear} />
-      <div className={styles.ear} />
-    </div>
-    {/* Face */}
-    <div className={`${styles.face} ${styles[animationState] || ""}`}>
-      <div className={styles.eyes}>
-        <div
-          className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={getConditionalEyeStyle(
-            reduceMotion,
-            eyePosition,
-            getEyeTransform,
-          )}
-        >
-          <div
-            className={styles.pupil}
-            style={getConditionalEyeStyle(
-              reduceMotion,
-              eyePosition,
-              getPupilTransform,
-            )}
-          />
-        </div>
-        <div
-          className={`${styles.eye} ${styles[animationState] || ""}`}
-          style={getConditionalEyeStyle(
-            reduceMotion,
-            eyePosition,
-            getEyeTransform,
-          )}
-        >
-          <div
-            className={styles.pupil}
-            style={getConditionalEyeStyle(
-              reduceMotion,
-              eyePosition,
-              getPupilTransform,
-            )}
-          />
-        </div>
-      </div>
-      <div className={`${styles.mouth} ${styles[animationState] || ""}`}>
-        <div className={styles.uu} />
-      </div>
-    </div>
-  </div>
+	<div className={styles.cat}>
+		{/* Tail */}
+		<div
+			className={`${styles.tail} ${styles[animationState] || ""}`}
+			style={getConditionalTransform(reduceMotion, `rotate(${tailAngle}deg)`)}
+		/>
+		{/* Head with tilt */}
+		<div
+			className={`${styles.head} ${styles[animationState] || ""}`}
+			style={getConditionalTransformWithValue(
+				reduceMotion,
+				headTilt,
+				(tilt) => `rotate(${tilt}deg)`,
+			)}
+		/>
+		{/* Ears with twitch */}
+		<div
+			className={`${styles.ears} ${styles.fill} ${earTwitch ? styles.earTwitch : ""}`}
+		>
+			<div className={styles.ear} />
+			<div className={styles.ear} />
+		</div>
+		<div
+			className={`${styles.ears} ${styles.outline} ${earTwitch ? styles.earTwitch : ""}`}
+		>
+			<div className={styles.ear} />
+			<div className={styles.ear} />
+		</div>
+		{/* Face */}
+		<div className={`${styles.face} ${styles[animationState] || ""}`}>
+			<div className={styles.eyes}>
+				<div
+					className={`${styles.eye} ${styles[animationState] || ""}`}
+					style={getConditionalEyeStyle(
+						reduceMotion,
+						eyePosition,
+						getEyeTransform,
+					)}
+				>
+					<div
+						className={styles.pupil}
+						style={getConditionalEyeStyle(
+							reduceMotion,
+							eyePosition,
+							getPupilTransform,
+						)}
+					/>
+				</div>
+				<div
+					className={`${styles.eye} ${styles[animationState] || ""}`}
+					style={getConditionalEyeStyle(
+						reduceMotion,
+						eyePosition,
+						getEyeTransform,
+					)}
+				>
+					<div
+						className={styles.pupil}
+						style={getConditionalEyeStyle(
+							reduceMotion,
+							eyePosition,
+							getPupilTransform,
+						)}
+					/>
+				</div>
+			</div>
+			<div className={`${styles.mouth} ${styles[animationState] || ""}`}>
+				<div className={styles.uu} />
+			</div>
+		</div>
+	</div>
 );
 
 CatBody.propTypes = {
-  animationState: PropTypes.string,
-  headTilt: PropTypes.number,
-  eyePosition: PropTypes.shape({
-    x: PropTypes.number,
-    y: PropTypes.number,
-  }),
-  tailAngle: PropTypes.number,
-  earTwitch: PropTypes.bool,
-  reduceMotion: PropTypes.bool,
+	animationState: PropTypes.string,
+	headTilt: PropTypes.number,
+	eyePosition: PropTypes.shape({
+		x: PropTypes.number,
+		y: PropTypes.number,
+	}),
+	tailAngle: PropTypes.number,
+	earTwitch: PropTypes.bool,
+	reduceMotion: PropTypes.bool,
 };
 
 CatBody.defaultProps = {
-  animationState: "idle",
-  headTilt: 0,
-  eyePosition: { x: 0, y: 0 },
-  tailAngle: 0,
-  earTwitch: false,
-  reduceMotion: false,
+	animationState: "idle",
+	headTilt: 0,
+	eyePosition: { x: 0, y: 0 },
+	tailAngle: 0,
+	earTwitch: false,
+	reduceMotion: false,
 };
 
 /**
@@ -147,266 +148,266 @@ CatBody.defaultProps = {
  * @returns {JSX.Element}
  */
 const Paw = () => (
-  <div className={styles.paw}>
-    <div className={styles.palm} />
-    <div className={styles.bean} />
-    <div className={styles.bean} />
-    <div className={styles.bean} />
-  </div>
+	<div className={styles.paw}>
+		<div className={styles.palm} />
+		<div className={styles.bean} />
+		<div className={styles.bean} />
+		<div className={styles.bean} />
+	</div>
 );
 
 const Paws = ({ position, className = "", animationState = "" }) => (
-  <div
-    className={`${styles.paws} ${styles[position]} ${animationState ? styles[animationState] : ""} ${className}`.trim()}
-  >
-    {position === "up" ? (
-      <>
-        <Paw />
-        <Paw />
-      </>
-    ) : (
-      <>
-        <div className={styles.paw} />
-        <div className={styles.paw} />
-      </>
-    )}
-  </div>
+	<div
+		className={`${styles.paws} ${styles[position]} ${animationState ? styles[animationState] : ""} ${className}`.trim()}
+	>
+		{position === "up" ? (
+			<>
+				<Paw />
+				<Paw />
+			</>
+		) : (
+			<>
+				<div className={styles.paw} />
+				<div className={styles.paw} />
+			</>
+		)}
+	</div>
 );
 
 Paws.propTypes = {
-  position: PropTypes.oneOf(["up", "down"]).isRequired,
-  className: PropTypes.string,
-  animationState: PropTypes.string,
+	position: PropTypes.oneOf(["up", "down"]).isRequired,
+	className: PropTypes.string,
+	animationState: PropTypes.string,
 };
 
 Paws.propTypes = {
-  position: PropTypes.oneOf(["up", "down"]).isRequired,
-  className: PropTypes.string,
+	position: PropTypes.oneOf(["up", "down"]).isRequired,
+	className: PropTypes.string,
 };
 
 interface PawsContainerProps {
-  containerTop: number;
-  pawsOffsetY: number;
-  zIndex: number;
-  isVisible: boolean;
-  pawsVisibility: string;
-  display: string;
-  styleVars: React.CSSProperties;
-  pawsPosition: "up" | "down";
-  animationState?: string;
+	containerTop: number;
+	pawsOffsetY: number;
+	zIndex: number;
+	isVisible: boolean;
+	pawsVisibility: string;
+	display: string;
+	styleVars: React.CSSProperties;
+	pawsPosition: "up" | "down";
+	animationState?: string;
 }
 
 const PawsContainer = ({
-  containerTop,
-  pawsOffsetY,
-  zIndex,
-  isVisible,
-  pawsVisibility: _pawsVisibility,
-  display,
-  styleVars,
-  pawsPosition,
-  animationState,
+	containerTop,
+	pawsOffsetY,
+	zIndex,
+	isVisible,
+	pawsVisibility: _pawsVisibility,
+	display,
+	styleVars,
+	pawsPosition,
+	animationState,
 }: PawsContainerProps) => (
-  <div
-    className={`${styles.bongoContainer} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
-    style={{
-      top: `${containerTop + pawsOffsetY}px`,
-      zIndex,
-      display,
-    }}
-  >
-    <div className={styles.container} style={styleVars}>
-      <Paws position={pawsPosition} animationState={animationState} />
-    </div>
-  </div>
+	<div
+		className={`${styles.bongoContainer} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
+		style={{
+			top: `${containerTop + pawsOffsetY}px`,
+			zIndex,
+			display,
+		}}
+	>
+		<div className={styles.container} style={styleVars}>
+			<Paws position={pawsPosition} animationState={animationState} />
+		</div>
+	</div>
 );
 
 PawsContainer.propTypes = {
-  containerTop: PropTypes.number.isRequired,
-  pawsOffsetY: PropTypes.number.isRequired,
-  zIndex: PropTypes.number.isRequired,
-  isVisible: PropTypes.bool.isRequired,
-  pawsVisibility: PropTypes.string.isRequired,
-  display: PropTypes.string.isRequired,
-  styleVars: PropTypes.object.isRequired,
-  pawsPosition: PropTypes.oneOf(["up", "down"]).isRequired,
-  animationState: PropTypes.string,
+	containerTop: PropTypes.number.isRequired,
+	pawsOffsetY: PropTypes.number.isRequired,
+	zIndex: PropTypes.number.isRequired,
+	isVisible: PropTypes.bool.isRequired,
+	pawsVisibility: PropTypes.string.isRequired,
+	display: PropTypes.string.isRequired,
+	styleVars: PropTypes.object.isRequired,
+	pawsPosition: PropTypes.oneOf(["up", "down"]).isRequired,
+	animationState: PropTypes.string,
 };
 
 interface BongoCatProps {
-  size?: number;
-  color?: string;
-  variant?: string;
-  personality?: string;
-  reduceMotion?: boolean;
-  enableSounds?: boolean;
-  onBongo?: () => void;
-  containerRef?: React.RefObject<HTMLElement> | null;
+	size?: number;
+	color?: string;
+	variant?: string;
+	personality?: string;
+	reduceMotion?: boolean;
+	enableSounds?: boolean;
+	onBongo?: () => void;
+	containerRef?: React.RefObject<HTMLElement> | null;
 }
 
 const BongoCat = memo(
-  ({
-    size = DEFAULT_CONFIG.size,
-    color = "#000",
-    variant = DEFAULT_CONFIG.variant,
-    personality = DEFAULT_CONFIG.personality,
-    reduceMotion = DEFAULT_CONFIG.reduceMotion,
-    enableSounds = DEFAULT_CONFIG.enableSounds,
-    onBongo,
-    containerRef,
-  }: BongoCatProps) => {
-    const {
-      isPawsDown,
-      containerTop,
-      catSize,
-      isVisible,
-      containerZIndex,
-      animationState,
-      headTilt,
-      eyePosition,
-      tailAngle,
-      earTwitch,
-    } = useBongoCat({
-      containerRef,
-      size,
-      onBongo,
-      personality,
-      reduceMotion,
-      enableSounds,
-    });
+	({
+		size = DEFAULT_CONFIG.size,
+		color = "#000",
+		variant = DEFAULT_CONFIG.variant,
+		personality = DEFAULT_CONFIG.personality,
+		reduceMotion = DEFAULT_CONFIG.reduceMotion,
+		enableSounds = DEFAULT_CONFIG.enableSounds,
+		onBongo,
+		containerRef,
+	}: BongoCatProps) => {
+		const {
+			isPawsDown,
+			containerTop,
+			catSize,
+			isVisible,
+			containerZIndex,
+			animationState,
+			headTilt,
+			eyePosition,
+			tailAngle,
+			earTwitch,
+		} = useBongoCat({
+			containerRef,
+			size,
+			onBongo,
+			personality,
+			reduceMotion,
+			enableSounds,
+		});
 
-    // * Use variant colors if provided, otherwise use color prop
-    const catVariant = CAT_VARIANTS[variant] || {
-      bg: color,
-      outline: color === "#000" ? "#222" : color === "#fff" ? "#eee" : color,
-      toebean: "#44262c",
-    };
+		// * Use variant colors if provided, otherwise use color prop
+		const catVariant = CAT_VARIANTS[variant] || {
+			bg: color,
+			outline: color === "#000" ? "#222" : color === "#fff" ? "#eee" : color,
+			toebean: "#44262c",
+		};
 
-    const styleVars: React.CSSProperties = {
-      "--cat-bg": catVariant.bg,
-      "--cat-outline": catVariant.outline,
-      "--toebean": catVariant.toebean,
-      "--cat-size": String(catSize),
-    } as React.CSSProperties;
+		const styleVars: React.CSSProperties = {
+			"--cat-bg": catVariant.bg,
+			"--cat-outline": catVariant.outline,
+			"--toebean": catVariant.toebean,
+			"--cat-size": String(catSize),
+		} as React.CSSProperties;
 
-    // If no containerRef is provided, just render the cat without positioning
-    if (!containerRef) {
-      return (
-        <div
-          className={styles.container}
-          style={styleVars}
-          role="img"
-          aria-label="Bongo cat animation"
-        >
-          <CatBody
-            animationState={animationState}
-            headTilt={headTilt}
-            eyePosition={eyePosition}
-            tailAngle={tailAngle}
-            earTwitch={earTwitch}
-            reduceMotion={reduceMotion}
-          />
-          <Paws
-            position="up"
-            className={isPawsDown ? styles.hide : ""}
-            animationState={animationState}
-          />
-          <Paws
-            position="down"
-            className={isPawsDown ? "" : styles.hide}
-            animationState={animationState}
-          />
-        </div>
-      );
-    }
+		// If no containerRef is provided, just render the cat without positioning
+		if (!containerRef) {
+			return (
+				<div
+					className={styles.container}
+					style={styleVars}
+					role="img"
+					aria-label="Bongo cat animation"
+				>
+					<CatBody
+						animationState={animationState}
+						headTilt={headTilt}
+						eyePosition={eyePosition}
+						tailAngle={tailAngle}
+						earTwitch={earTwitch}
+						reduceMotion={reduceMotion}
+					/>
+					<Paws
+						position="up"
+						className={isPawsDown ? styles.hide : ""}
+						animationState={animationState}
+					/>
+					<Paws
+						position="down"
+						className={isPawsDown ? "" : styles.hide}
+						animationState={animationState}
+					/>
+				</div>
+			);
+		}
 
-    // Calculate z-index values
-    const catBodyZIndex = Math.max(0, containerZIndex - 1);
-    const upPawsZIndex = catBodyZIndex; // Up paws behind container (same as body)
-    const downPawsZIndex = 9999; // Down paws above container with high z-index
+		// Calculate z-index values
+		const catBodyZIndex = Math.max(0, containerZIndex - 1);
+		const upPawsZIndex = catBodyZIndex; // Up paws behind container (same as body)
+		const downPawsZIndex = 9999; // Down paws above container with high z-index
 
-    // Further adjust the paws position for the most natural cutoff effect
-    // Make pawsOffsetY responsive to screen width
-    const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
-    const pawsOffsetY = isMobile ? -10 : -20; // Much smaller offset on mobile to bring paws forward
+		// Further adjust the paws position for the most natural cutoff effect
+		// Make pawsOffsetY responsive to screen width
+		const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+		const pawsOffsetY = isMobile ? -10 : -20; // Much smaller offset on mobile to bring paws forward
 
-    // Adjust visibility management to ensure a clean cutoff
-    const pawsVisibility = isVisible ? "visible" : "hidden";
+		// Adjust visibility management to ensure a clean cutoff
+		const pawsVisibility = isVisible ? "visible" : "hidden";
 
-    // Render the positioned cat when containerRef is provided
-    return (
-      <>
-        {/* Base cat body with lower z-index */}
-        <div
-          className={`${styles.bongoContainerPositioned} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
-          style={{
-            top: `${containerTop}px`,
-            zIndex: catBodyZIndex,
-          }}
-        >
-          <div
-            className={styles.container}
-            style={styleVars}
-            role="img"
-            aria-label="Bongo cat animation"
-          >
-            <CatBody
-              animationState={animationState}
-              headTilt={headTilt}
-              eyePosition={eyePosition}
-              tailAngle={tailAngle}
-              earTwitch={earTwitch}
-              reduceMotion={reduceMotion}
-            />
-          </div>
-        </div>
+		// Render the positioned cat when containerRef is provided
+		return (
+			<>
+				{/* Base cat body with lower z-index */}
+				<div
+					className={`${styles.bongoContainerPositioned} ${isVisible ? styles.bongoContainerVisible : styles.bongoContainerHidden}`}
+					style={{
+						top: `${containerTop}px`,
+						zIndex: catBodyZIndex,
+					}}
+				>
+					<div
+						className={styles.container}
+						style={styleVars}
+						role="img"
+						aria-label="Bongo cat animation"
+					>
+						<CatBody
+							animationState={animationState}
+							headTilt={headTilt}
+							eyePosition={eyePosition}
+							tailAngle={tailAngle}
+							earTwitch={earTwitch}
+							reduceMotion={reduceMotion}
+						/>
+					</div>
+				</div>
 
-        {/* Up paws - behind container (same z-index as body) */}
-        <PawsContainer
-          containerTop={containerTop}
-          pawsOffsetY={pawsOffsetY}
-          zIndex={upPawsZIndex}
-          isVisible={isVisible}
-          pawsVisibility={pawsVisibility}
-          display={isPawsDown ? "none" : "block"}
-          styleVars={styleVars}
-          pawsPosition="up"
-          animationState={animationState}
-        />
+				{/* Up paws - behind container (same z-index as body) */}
+				<PawsContainer
+					containerTop={containerTop}
+					pawsOffsetY={pawsOffsetY}
+					zIndex={upPawsZIndex}
+					isVisible={isVisible}
+					pawsVisibility={pawsVisibility}
+					display={isPawsDown ? "none" : "block"}
+					styleVars={styleVars}
+					pawsPosition="up"
+					animationState={animationState}
+				/>
 
-        {/* Down paws - above container with high z-index */}
-        <PawsContainer
-          containerTop={containerTop}
-          pawsOffsetY={pawsOffsetY}
-          zIndex={downPawsZIndex}
-          isVisible={isVisible}
-          pawsVisibility={pawsVisibility}
-          display={isPawsDown ? "block" : "none"}
-          styleVars={styleVars}
-          pawsPosition="down"
-          animationState={animationState}
-        />
-      </>
-    );
-  },
+				{/* Down paws - above container with high z-index */}
+				<PawsContainer
+					containerTop={containerTop}
+					pawsOffsetY={pawsOffsetY}
+					zIndex={downPawsZIndex}
+					isVisible={isVisible}
+					pawsVisibility={pawsVisibility}
+					display={isPawsDown ? "block" : "none"}
+					styleVars={styleVars}
+					pawsPosition="down"
+					animationState={animationState}
+				/>
+			</>
+		);
+	},
 );
 
 BongoCat.displayName = "BongoCat";
 
 // PropTypes for runtime validation (TypeScript handles compile-time)
 const BongoCatWithPropTypes = BongoCat as typeof BongoCat & {
-  propTypes?: unknown;
+	propTypes?: unknown;
 };
 
 (BongoCatWithPropTypes as { propTypes: unknown }).propTypes = {
-  size: PropTypes.number,
-  color: PropTypes.string,
-  variant: PropTypes.oneOf(Object.keys(CAT_VARIANTS)),
-  personality: PropTypes.oneOf(Object.keys(PERSONALITY_MODES)),
-  reduceMotion: PropTypes.bool,
-  enableSounds: PropTypes.bool,
-  onBongo: PropTypes.func,
-  containerRef: PropTypes.object,
+	size: PropTypes.number,
+	color: PropTypes.string,
+	variant: PropTypes.oneOf(Object.keys(CAT_VARIANTS)),
+	personality: PropTypes.oneOf(Object.keys(PERSONALITY_MODES)),
+	reduceMotion: PropTypes.bool,
+	enableSounds: PropTypes.bool,
+	onBongo: PropTypes.func,
+	containerRef: PropTypes.object,
 };
 
 export default BongoCat;

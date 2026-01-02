@@ -14,8 +14,11 @@
  * @param {string} transform - Transform string
  * @returns {Object} Style object
  */
-export function getConditionalTransform(reduceMotion: boolean, transform: string) {
-  return !reduceMotion ? { transform } : {};
+export function getConditionalTransform(
+	reduceMotion: boolean,
+	transform: string,
+) {
+	return !reduceMotion ? { transform } : {};
 }
 
 /**
@@ -26,11 +29,11 @@ export function getConditionalTransform(reduceMotion: boolean, transform: string
  * @returns {Object} Style object
  */
 export function getConditionalTransformWithValue(
-  reduceMotion: boolean,
-  value: number,
-  getTransform: (value: number) => string,
+	reduceMotion: boolean,
+	value: number,
+	getTransform: (value: number) => string,
 ) {
-  return !reduceMotion && value !== 0 ? { transform: getTransform(value) } : {};
+	return !reduceMotion && value !== 0 ? { transform: getTransform(value) } : {};
 }
 
 // ============================================================================
@@ -38,8 +41,8 @@ export function getConditionalTransformWithValue(
 // ============================================================================
 
 interface EyePosition {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 
 /**
@@ -48,7 +51,7 @@ interface EyePosition {
  * @returns {string} Transform string
  */
 export function getEyeTransform(eyePosition: EyePosition): string {
-  return `translate(${eyePosition.x}px, ${eyePosition.y}px)`;
+	return `translate(${eyePosition.x}px, ${eyePosition.y}px)`;
 }
 
 /**
@@ -57,8 +60,11 @@ export function getEyeTransform(eyePosition: EyePosition): string {
  * @param {number} multiplier - Multiplier for eye position (default: 0.5)
  * @returns {string} Transform string
  */
-export function getPupilTransform(eyePosition: EyePosition, multiplier = 0.5): string {
-  return `translate(calc(-50% + ${eyePosition.x * multiplier}px), calc(-50% + ${eyePosition.y * multiplier}px))`;
+export function getPupilTransform(
+	eyePosition: EyePosition,
+	multiplier = 0.5,
+): string {
+	return `translate(calc(-50% + ${eyePosition.x * multiplier}px), calc(-50% + ${eyePosition.y * multiplier}px))`;
 }
 
 /**
@@ -69,14 +75,13 @@ export function getPupilTransform(eyePosition: EyePosition, multiplier = 0.5): s
  * @returns {Object} Style object
  */
 export function getConditionalEyeStyle(
-  reduceMotion: boolean,
-  eyePosition: EyePosition,
-  getTransform: (position: EyePosition) => string,
+	reduceMotion: boolean,
+	eyePosition: EyePosition,
+	getTransform: (position: EyePosition) => string,
 ) {
-  return !reduceMotion
-    ? {
-        transform: getTransform(eyePosition),
-      }
-    : {};
+	return !reduceMotion
+		? {
+				transform: getTransform(eyePosition),
+			}
+		: {};
 }
-

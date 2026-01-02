@@ -4,16 +4,14 @@
  * Shows which name won or if the match was skipped.
  */
 
-import React from "react";
-import PropTypes from "prop-types";
 import styles from "./MatchResult.module.css";
 
 interface MatchResultProps {
-  showMatchResult: boolean;
-  lastMatchResult: string | null;
-  roundNumber: number;
-  currentMatchNumber: number;
-  totalMatches: number;
+	showMatchResult: boolean;
+	lastMatchResult: string | null;
+	roundNumber: number;
+	currentMatchNumber: number;
+	totalMatches: number;
 }
 
 /**
@@ -27,33 +25,25 @@ interface MatchResultProps {
  * @returns {JSX.Element|null} The match result component or null
  */
 function MatchResult({
-  showMatchResult,
-  lastMatchResult,
-  roundNumber,
-  currentMatchNumber,
-  totalMatches,
+	showMatchResult,
+	lastMatchResult,
+	roundNumber,
+	currentMatchNumber,
+	totalMatches,
 }: MatchResultProps) {
-  if (!showMatchResult || !lastMatchResult) return null;
+	if (!showMatchResult || !lastMatchResult) return null;
 
-  return (
-    <div className={styles.matchResult} role="status" aria-live="polite">
-      <div className={styles.resultContent}>
-        <span className={styles.resultMessage}>{lastMatchResult}</span>
-        <span className={styles.tournamentProgress}>
-          Round {roundNumber} - Match {currentMatchNumber} of {totalMatches}
-        </span>
-      </div>
-    </div>
-  );
+	return (
+		<div className={styles.matchResult} role="status" aria-live="polite">
+			<div className={styles.resultContent}>
+				<span className={styles.resultMessage}>{lastMatchResult}</span>
+				<span className={styles.tournamentProgress}>
+					Round {roundNumber} - Match {currentMatchNumber} of {totalMatches}
+				</span>
+			</div>
+		</div>
+	);
 }
-
-MatchResult.propTypes = {
-  showMatchResult: PropTypes.bool.isRequired,
-  lastMatchResult: PropTypes.string,
-  roundNumber: PropTypes.number.isRequired,
-  currentMatchNumber: PropTypes.number.isRequired,
-  totalMatches: PropTypes.number.isRequired,
-};
 
 MatchResult.displayName = "MatchResult";
 

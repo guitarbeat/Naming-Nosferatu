@@ -3,182 +3,285 @@
    =========================== */
 
 .loginWrapper {
-  --bg-paper: #d2b48c;
-  --ink: #3c2f2f;
+	--bg-paper: #d2b48c;
+	--ink: #3c2f2f;
+	--shadow-color: rgba(60, 47, 47, 0.2);
 
-  background: transparent;
-  font-family: "Courier New", monospace;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  position: relative;
+	background: transparent;
+	font-family: "Courier New", monospace;
+	height: 100vh;
+	height: 100dvh; /* Modern viewport height for mobile */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	position: relative;
 }
 
 .loginWrapper * {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .scene {
-  position: relative;
-  width: 500px;
-  max-width: 95vw;
-  padding: 40px;
-  background: #e6ccac;
-  border: 4px solid var(--ink);
-  box-shadow: 15px 15px 0 var(--ink);
-  transform: rotate(-1deg);
-  z-index: 1;
+	position: relative;
+	width: 500px;
+	max-width: 95vw;
+	padding: 40px;
+	background: #e6ccac;
+	border: 4px solid var(--ink);
+	box-shadow:
+		15px 15px 0 var(--ink),
+		inset 0 0 40px var(--shadow-color);
+	transform: rotate(-1deg);
+	z-index: 1;
+	transition: transform 0.3s ease;
 }
 
 .cutOutCat {
-  position: absolute;
-  top: -100px;
-  right: 20px;
-  width: 150px;
-  height: 150px;
-  background: #222;
-  clip-path: polygon(
-    20% 0%,
-    30% 20%,
-    70% 20%,
-    80% 0%,
-    100% 40%,
-    90% 100%,
-    10% 100%,
-    0% 40%
-  );
-  border-bottom: 8px solid #555;
-  animation: bobble 4s ease-in-out infinite;
-  z-index: 10;
-  pointer-events: none;
+	position: absolute;
+	top: -100px;
+	right: 20px;
+	width: 150px;
+	height: 150px;
+	background: #222;
+	clip-path: polygon(
+		20% 0%,
+		30% 20%,
+		70% 20%,
+		80% 0%,
+		100% 40%,
+		90% 100%,
+		100% 100%, /* Fixed polygon for better fill on mobile */
+		0% 100%,
+		0% 40%
+	);
+	border-bottom: 8px solid #555;
+	animation: bobble 4s ease-in-out infinite;
+	z-index: 10;
+	pointer-events: none;
+	filter: drop-shadow(5px 5px 0 var(--shadow-color));
 }
 
 .eye {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: yellow;
-  border-radius: 50%;
-  top: 40%;
-  left: 30%;
-  transition: transform 0.1s ease-out;
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background: #fbbf24;
+	border-radius: 50%;
+	top: 40%;
+	left: 30%;
+	box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .eyeRight {
-  left: 60%;
+	left: 60%;
 }
 
 .inputTray {
-  background: #c5a880;
-  border: 3px inset var(--ink);
-  padding: 10px;
-  margin: 20px 0;
+	background: #c5a880;
+	border: 3px inset var(--ink);
+	padding: 10px;
+	margin: 20px 0;
+	box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .loginInput {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  color: var(--ink);
-  width: 100%;
-  outline: none;
-  text-transform: uppercase;
-  font-family: inherit;
-  text-align: center;
+	background: transparent;
+	border: none;
+	font-size: 24px;
+	color: var(--ink);
+	width: 100%;
+	outline: none;
+	text-transform: uppercase;
+	font-family: inherit;
+	text-align: center;
+	font-weight: bold;
 }
 
 .loginInput::placeholder {
-  color: rgb(60 47 47 / 50%);
+	color: rgb(60 47 47 / 50%);
+	font-weight: normal;
 }
 
 .leverBtn {
-  background: #bf4444;
-  border: 4px solid var(--ink);
-  color: white;
-  padding: 15px;
-  font-weight: bold;
-  width: 100%;
-  cursor: pointer;
-  box-shadow: 0 6px 0 var(--ink);
-  transition: all 0.1s;
-  font-family: inherit;
-  font-size: 1.2rem;
-  text-transform: uppercase;
+	background: #bf4444;
+	border: 4px solid var(--ink);
+	color: white;
+	padding: 15px;
+	font-weight: bold;
+	width: 100%;
+	cursor: pointer;
+	box-shadow: 0 6px 0 var(--ink);
+	transition:
+		transform 0.1s,
+		box-shadow 0.1s;
+	font-family: inherit;
+	font-size: 1.2rem;
+	text-transform: uppercase;
+	position: relative;
+	overflow: hidden;
+	-webkit-tap-highlight-color: transparent; /* Fix mobile tap bubble */
 }
 
 .leverBtn:active {
-  transform: translateY(4px);
-  box-shadow: 0 2px 0 var(--ink);
+	transform: translateY(4px);
+	box-shadow: 0 2px 0 var(--ink);
 }
 
 .leverBtn:disabled {
-  background: #888;
-  cursor: not-allowed;
-  transform: translateY(4px);
-  box-shadow: 0 2px 0 var(--ink);
+	background: #888;
+	cursor: not-allowed;
+	transform: translateY(4px);
+	box-shadow: 0 2px 0 var(--ink);
+}
+
+/* Texture overlay for button */
+.leverBtn::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image: linear-gradient(
+		45deg,
+		rgba(255, 255, 255, 0.1) 25%,
+		transparent 25%,
+		transparent 50%,
+		rgba(255, 255, 255, 0.1) 50%,
+		rgba(255, 255, 255, 0.1) 75%,
+		transparent 75%,
+		transparent
+	);
+	background-size: 4px 4px;
+	pointer-events: none;
 }
 
 .catFactTape {
-  background: #fffde7;
-  padding: 5px 15px;
-  border: 2px dashed var(--ink);
-  transform: rotate(2deg);
-  margin-bottom: 20px;
-  font-size: 0.8rem;
-  color: var(--ink);
-  min-height: 2em;
+	background: #fffde7;
+	padding: 8px 15px;
+	border: 2px dashed var(--ink);
+	transform: rotate(1deg);
+	margin-bottom: 25px;
+	font-size: 0.85rem;
+	color: var(--ink);
+	min-height: 2.5em;
+	box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-weight: 500;
 }
 
 .title {
-  margin: 0;
-  font-size: 1.5rem;
-  border-bottom: 3px solid var(--ink);
-  padding-bottom: 10px;
-  color: var(--ink);
-  text-align: center;
+	margin: 0;
+	font-size: 2rem;
+	border-bottom: 4px solid var(--ink);
+	padding-bottom: 15px;
+	color: var(--ink);
+	text-align: center;
+	text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.3);
+	letter-spacing: -1px;
 }
 
 .subtitle {
-  color: var(--ink);
-  text-align: center;
-  margin-top: 10px;
-  font-size: 0.9rem;
+	color: var(--ink);
+	text-align: center;
+	margin-top: 15px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	opacity: 0.9;
 }
 
 .rerollBtn {
-  margin-top: 15px;
-  text-align: center;
-  opacity: 0.7;
-  cursor: pointer;
-  color: var(--ink);
-  font-size: 0.9rem;
-  background: none;
-  border: none;
-  width: 100%;
+	margin-top: 20px;
+	text-align: center;
+	opacity: 0.8;
+	cursor: pointer;
+	color: var(--ink);
+	font-size: 0.9rem;
+	background: none;
+	border: none;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: inherit;
+	font-weight: 600;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .rerollBtn:hover {
-  opacity: 1;
-  text-decoration: underline;
+	opacity: 1;
+	text-decoration: none;
 }
 
 .error {
-  color: #bf4444;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
-  font-size: 0.8rem;
+	color: #bf4444;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 15px;
+	font-size: 0.9rem;
+	border: 2px solid #bf4444;
+	padding: 8px;
+	background: rgba(191, 68, 68, 0.1);
 }
 
 @keyframes bobble {
-  0%,
-  100% {
-    transform: translateY(0) rotate(2deg);
-  }
+	0%,
+	100% {
+		transform: translateY(0) rotate(2deg);
+	}
 
-  50% {
-    transform: translateY(-10px) rotate(-2deg);
-  }
+	50% {
+		transform: translateY(-8px) rotate(-2deg);
+	}
 }
+
+/* Mobile responsiveness adjustments */
+@media (max-width: 600px) {
+	.scene {
+		width: 92vw;
+		padding: 25px 20px;
+		transform: rotate(0deg); /* Straighten for mobile space efficiency */
+	}
+
+	.title {
+		font-size: 1.4rem;
+		padding-bottom: 10px;
+	}
+
+	.catFactTape {
+		font-size: 0.75rem;
+		padding: 6px 10px;
+		margin-bottom: 15px;
+		transform: rotate(0deg);
+	}
+
+	.cutOutCat {
+		width: 90px;
+		height: 90px;
+		top: -55px;
+		right: 15px;
+	}
+
+	.eye {
+		width: 7px;
+		height: 7px;
+	}
+
+	.loginInput {
+		font-size: 20px;
+	}
+}
+
+@media (max-width: 360px) {
+	.scene {
+		padding: 20px 15px;
+	}
+	.title {
+		font-size: 1.2rem;
+	}
+}
+

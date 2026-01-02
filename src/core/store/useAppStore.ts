@@ -1,81 +1,84 @@
-import { create, StateCreator } from "zustand";
 import { useEffect } from "react";
-import { siteSettingsAPI, updateSupabaseUserContext } from "../../shared/services/supabase/supabaseClient";
-import { AppState, UserState, UIState } from "../../types/store";
+import { create, type StateCreator } from "zustand";
+import {
+	siteSettingsAPI,
+	updateSupabaseUserContext,
+} from "../../shared/services/supabase/supabaseClient";
+import type { AppState, UIState, UserState } from "../../types/store";
 
 const LOG_ENDPOINT =
-  typeof window !== "undefined"
-    ? `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`
-    : null;
+	typeof window !== "undefined"
+		? `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`
+		: null;
 
 // * Devtools middleware disabled entirely to avoid prod crashes
 const applyDevtools = (storeImpl: StateCreator<AppState>) => {
-  if (process.env.NODE_ENV === "development" && LOG_ENDPOINT) {
-    fetch(LOG_ENDPOINT, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sessionId: "debug-session",
-        runId: "run1",
-        hypothesisId: "H2",
-        location: "useAppStore.js:applyDevtools",
-        message: "applyDevtools invoked",
-        data: { env: process.env.NODE_ENV },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => { });
-  }
-  return storeImpl;
+	if (process.env.NODE_ENV === "development" && LOG_ENDPOINT) {
+		fetch(LOG_ENDPOINT, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				sessionId: "debug-session",
+				runId: "run1",
+				hypothesisId: "H2",
+				location: "useAppStore.js:applyDevtools",
+				message: "applyDevtools invoked",
+				data: { env: process.env.NODE_ENV },
+				timestamp: Date.now(),
+			}),
+		}).catch(() => {});
+	}
+	return storeImpl;
 };
 
 const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
-  if (typeof window !== "undefined") {
-    try {
-      const storedTheme = window.localStorage.getItem("theme");
-      if (storedTheme && ["light", "dark", "system"].includes(storedTheme)) {
-        return {
-          theme: storedTheme,
-          themePreference: storedTheme,
-        };
-      }
-    } catch (e) {
-      console.warn("Failed to read theme from localStorage", e);
-    }
-  }
-  return {
-    theme: "dark",
-    themePreference: "dark",
-  };
+	if (typeof window !== "undefined") {
+		try {
+			const storedTheme = window.localStorage.getItem("theme");
+			if (storedTheme && ["light", "dark", "system"].includes(storedTheme)) {
+				return {
+					theme: storedTheme,
+					themePreference: storedTheme,
+				};
+			}
+		} catch (e) {
+			console.warn("Failed to read theme from localStorage", e);
+		}
+	}
+	return {
+		theme: "dark",
+		themePreference: "dark",
+	};
 };
 
 const getInitialUserState = (): UserState => {
-  const defaultState: UserState = {
-    name: "",
-    isLoggedIn: false,
-    isAdmin: false,
-    preferences: {},
-  };
+	const defaultState: UserState = {
+		name: "",
+		isLoggedIn: false,
+		isAdmin: false,
+		preferences: {},
+	};
 
-  if (typeof window === "undefined") {
-    return defaultState;
-  }
+	if (typeof window === "undefined") {
+		return defaultState;
+	}
 
-  try {
-    const storedUser = window.localStorage.getItem("catNamesUser");
-    if (storedUser && storedUser.trim()) {
-      return {
-        ...defaultState,
-        name: storedUser.trim(),
-        isLoggedIn: true,
-      };
-    }
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Unable to read stored user from localStorage:", error);
-    }
-  }
+	try {
+		const storedUser = window.localStorage.getItem("catNamesUser");
+		if (storedUser?.trim()) {
+			return {
+				...defaultState,
+				name: storedUser.trim(),
+				isLoggedIn: true,
+			};
+		}
+	} catch (error) {
+		if (process.env.NODE_ENV === "development") {
+			console.warn("Unable to read stored user from localStorage:", error);
+		}
+	}
 
-  return defaultState;
+	return defaultState;
 };
 
 /**
@@ -86,402 +89,402 @@ const getInitialUserState = (): UserState => {
 
 // * Store implementation
 const storeImpl: StateCreator<AppState> = (set, get) => ({
-  // * Tournament State
-  tournament: {
-    names: null,
-    ratings: {},
-    isComplete: false,
-    isLoading: false,
-    voteHistory: [],
-    currentView: "tournament",
-  },
+	// * Tournament State
+	tournament: {
+		names: null,
+		ratings: {},
+		isComplete: false,
+		isLoading: false,
+		voteHistory: [],
+		currentView: "tournament",
+	},
 
-  // * User State
-  user: getInitialUserState(),
+	// * User State
+	user: getInitialUserState(),
 
-  // * UI State
-  ui: {
-    ...getInitialThemeState(),
-    showGlobalAnalytics: false,
-    showUserComparison: false,
-    matrixMode: false,
-    isSwipeMode: false,
-    showCatPictures: false,
-  },
+	// * UI State
+	ui: {
+		...getInitialThemeState(),
+		showGlobalAnalytics: false,
+		showUserComparison: false,
+		matrixMode: false,
+		isSwipeMode: false,
+		showCatPictures: false,
+	},
 
-  // * Site Settings State
-  siteSettings: {
-    catChosenName: null,
-    isLoaded: false,
-  },
+	// * Site Settings State
+	siteSettings: {
+		catChosenName: null,
+		isLoaded: false,
+	},
 
-  // * Error State
-  errors: {
-    current: null,
-    history: [],
-  },
+	// * Error State
+	errors: {
+		current: null,
+		history: [],
+	},
 
-  // * Tournament Actions
-  tournamentActions: {
-    setNames: (names) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          names:
-            names?.map((n) => ({
-              id: n.id,
-              name: n.name,
-              description: n.description,
-              rating: state.tournament.ratings[n.name]?.rating || 1500,
-            })) || null,
-        },
-      })),
+	// * Tournament Actions
+	tournamentActions: {
+		setNames: (names) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					names:
+						names?.map((n) => ({
+							id: n.id,
+							name: n.name,
+							description: n.description,
+							rating: state.tournament.ratings[n.name]?.rating || 1500,
+						})) || null,
+				},
+			})),
 
-    setRatings: (ratings) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          ratings: { ...state.tournament.ratings, ...ratings },
-        },
-      })),
+		setRatings: (ratings) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					ratings: { ...state.tournament.ratings, ...ratings },
+				},
+			})),
 
-    setComplete: (isComplete) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          isComplete,
-        },
-      })),
+		setComplete: (isComplete) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					isComplete,
+				},
+			})),
 
-    setLoading: (isLoading) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          isLoading,
-        },
-      })),
+		setLoading: (isLoading) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					isLoading,
+				},
+			})),
 
-    addVote: (vote) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          voteHistory: [...state.tournament.voteHistory, vote],
-        },
-      })),
+		addVote: (vote) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					voteHistory: [...state.tournament.voteHistory, vote],
+				},
+			})),
 
-    resetTournament: () =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          names: null,
-          isComplete: false,
-          voteHistory: [],
-          isLoading: false, // * Explicitly set loading to false to prevent flashing
-          currentView: "tournament", // * Reset view to allow starting new tournament
-        },
-      })),
+		resetTournament: () =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					names: null,
+					isComplete: false,
+					voteHistory: [],
+					isLoading: false, // * Explicitly set loading to false to prevent flashing
+					currentView: "tournament", // * Reset view to allow starting new tournament
+				},
+			})),
 
-    setView: (view) =>
-      set((state) => ({
-        tournament: {
-          ...state.tournament,
-          currentView: view,
-        },
-      })),
-  },
+		setView: (view) =>
+			set((state) => ({
+				tournament: {
+					...state.tournament,
+					currentView: view,
+				},
+			})),
+	},
 
-  // * User Actions
-  userActions: {
-    setUser: (userData) =>
-      set((state) => {
-        const newUser = {
-          ...state.user,
-          ...userData,
-        };
-        // * Persist to localStorage
-        try {
-          if (newUser.name) {
-            localStorage.setItem("catNamesUser", newUser.name);
-          } else {
-            localStorage.removeItem("catNamesUser");
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.error("Error updating localStorage:", error);
-          }
-        }
-        return {
-          user: newUser,
-        };
-      }),
+	// * User Actions
+	userActions: {
+		setUser: (userData) =>
+			set((state) => {
+				const newUser = {
+					...state.user,
+					...userData,
+				};
+				// * Persist to localStorage
+				try {
+					if (newUser.name) {
+						localStorage.setItem("catNamesUser", newUser.name);
+					} else {
+						localStorage.removeItem("catNamesUser");
+					}
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error updating localStorage:", error);
+					}
+				}
+				return {
+					user: newUser,
+				};
+			}),
 
-    login: (userName) =>
-      set((state) => {
-        const newUser = {
-          ...state.user,
-          name: userName,
-          isLoggedIn: true,
-        };
-        // * Persist to localStorage
-        try {
-          localStorage.setItem("catNamesUser", userName);
-          // Update Supabase client headers for RLS policies
-          updateSupabaseUserContext(userName);
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.error("Error updating localStorage:", error);
-          }
-        }
-        return {
-          user: newUser,
-        };
-      }),
+		login: (userName) =>
+			set((state) => {
+				const newUser = {
+					...state.user,
+					name: userName,
+					isLoggedIn: true,
+				};
+				// * Persist to localStorage
+				try {
+					localStorage.setItem("catNamesUser", userName);
+					// Update Supabase client headers for RLS policies
+					updateSupabaseUserContext(userName);
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error updating localStorage:", error);
+					}
+				}
+				return {
+					user: newUser,
+				};
+			}),
 
-    logout: () =>
-      set((state) => {
-        // * Clear localStorage
-        try {
-          localStorage.removeItem("catNamesUser");
-          // Clear Supabase client headers
-          updateSupabaseUserContext(null);
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.error("Error clearing localStorage:", error);
-          }
-        }
-        return {
-          user: {
-            ...state.user,
-            name: "",
-            isLoggedIn: false,
-            isAdmin: false,
-          },
-          tournament: {
-            ...state.tournament,
-            names: null,
-            isComplete: false,
-            voteHistory: [],
-          },
-        };
-      }),
+		logout: () =>
+			set((state) => {
+				// * Clear localStorage
+				try {
+					localStorage.removeItem("catNamesUser");
+					// Clear Supabase client headers
+					updateSupabaseUserContext(null);
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error clearing localStorage:", error);
+					}
+				}
+				return {
+					user: {
+						...state.user,
+						name: "",
+						isLoggedIn: false,
+						isAdmin: false,
+					},
+					tournament: {
+						...state.tournament,
+						names: null,
+						isComplete: false,
+						voteHistory: [],
+					},
+				};
+			}),
 
-    setAdminStatus: (isAdmin) =>
-      set((state) => ({
-        user: {
-          ...state.user,
-          isAdmin,
-        },
-      })),
+		setAdminStatus: (isAdmin) =>
+			set((state) => ({
+				user: {
+					...state.user,
+					isAdmin,
+				},
+			})),
 
-    // * Initialize user from localStorage
-    initializeFromStorage: () =>
-      set((state) => {
-        try {
-          const storedUser = localStorage.getItem("catNamesUser");
-          if (storedUser && state.user.name !== storedUser) {
-            // Update Supabase client headers for RLS policies
-            updateSupabaseUserContext(storedUser);
-            return {
-              user: {
-                ...state.user,
-                name: storedUser,
-                isLoggedIn: true,
-              },
-            };
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.error("Error reading from localStorage:", error);
-          }
-        }
-        return state;
-      }),
-  },
+		// * Initialize user from localStorage
+		initializeFromStorage: () =>
+			set((state) => {
+				try {
+					const storedUser = localStorage.getItem("catNamesUser");
+					if (storedUser && state.user.name !== storedUser) {
+						// Update Supabase client headers for RLS policies
+						updateSupabaseUserContext(storedUser);
+						return {
+							user: {
+								...state.user,
+								name: storedUser,
+								isLoggedIn: true,
+							},
+						};
+					}
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error reading from localStorage:", error);
+					}
+				}
+				return state;
+			}),
+	},
 
-  // * UI Actions
-  uiActions: {
-    setMatrixMode: (enabled) =>
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          matrixMode: enabled,
-        },
-      })),
+	// * UI Actions
+	uiActions: {
+		setMatrixMode: (enabled) =>
+			set((state) => ({
+				ui: {
+					...state.ui,
+					matrixMode: enabled,
+				},
+			})),
 
-    setGlobalAnalytics: (show) =>
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          showGlobalAnalytics: show,
-        },
-      })),
+		setGlobalAnalytics: (show) =>
+			set((state) => ({
+				ui: {
+					...state.ui,
+					showGlobalAnalytics: show,
+				},
+			})),
 
-    setSwipeMode: (enabled) =>
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          isSwipeMode: enabled,
-        },
-      })),
+		setSwipeMode: (enabled) =>
+			set((state) => ({
+				ui: {
+					...state.ui,
+					isSwipeMode: enabled,
+				},
+			})),
 
-    setCatPictures: (show) =>
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          showCatPictures: show,
-        },
-      })),
+		setCatPictures: (show) =>
+			set((state) => ({
+				ui: {
+					...state.ui,
+					showCatPictures: show,
+				},
+			})),
 
-    setUserComparison: (show) =>
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          showUserComparison: show,
-        },
-      })),
+		setUserComparison: (show) =>
+			set((state) => ({
+				ui: {
+					...state.ui,
+					showUserComparison: show,
+				},
+			})),
 
-    setTheme: (newTheme) => {
-      const isSystem = newTheme === "system";
+		setTheme: (newTheme) => {
+			const isSystem = newTheme === "system";
 
-      let resolvedTheme = newTheme;
-      if (isSystem && typeof window !== "undefined" && window.matchMedia) {
-        resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)")
-          .matches
-          ? "dark"
-          : "light";
-      }
+			let resolvedTheme = newTheme;
+			if (isSystem && typeof window !== "undefined" && window.matchMedia) {
+				resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)")
+					.matches
+					? "dark"
+					: "light";
+			}
 
-      set((state) => ({
-        ui: {
-          ...state.ui,
-          theme: resolvedTheme,
-          themePreference: newTheme,
-        },
-      }));
+			set((state) => ({
+				ui: {
+					...state.ui,
+					theme: resolvedTheme,
+					themePreference: newTheme,
+				},
+			}));
 
-      if (typeof window !== "undefined") {
-        localStorage.setItem("theme", newTheme);
+			if (typeof window !== "undefined") {
+				localStorage.setItem("theme", newTheme);
 
-        // Handle system theme listener
-        if (isSystem) {
-          // Define the listener
-          const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-          const listener = (e: MediaQueryListEvent) => {
-            // Only update if preference is still system
-            if (get().ui.themePreference === "system") {
-              set((s) => ({
-                ui: {
-                  ...s.ui,
-                  theme: e.matches ? "dark" : "light",
-                },
-              }));
-            }
-          };
-          mediaQuery.addEventListener("change", listener);
-        }
-      }
-    },
+				// Handle system theme listener
+				if (isSystem) {
+					// Define the listener
+					const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+					const listener = (e: MediaQueryListEvent) => {
+						// Only update if preference is still system
+						if (get().ui.themePreference === "system") {
+							set((s) => ({
+								ui: {
+									...s.ui,
+									theme: e.matches ? "dark" : "light",
+								},
+							}));
+						}
+					};
+					mediaQuery.addEventListener("change", listener);
+				}
+			}
+		},
 
-    initializeTheme: () => {
-      if (typeof window !== "undefined") {
-        const storedTheme = localStorage.getItem("theme") || "dark";
-        get().uiActions.setTheme(storedTheme);
-      }
-    },
-  },
+		initializeTheme: () => {
+			if (typeof window !== "undefined") {
+				const storedTheme = localStorage.getItem("theme") || "dark";
+				get().uiActions.setTheme(storedTheme);
+			}
+		},
+	},
 
-  // * Error Actions
-  errorActions: {
-    setError: (error) =>
-      set((state) => ({
-        errors: {
-          current: error,
-          history: error
-            ? [...state.errors.history, error]
-            : state.errors.history,
-        },
-      })),
+	// * Error Actions
+	errorActions: {
+		setError: (error) =>
+			set((state) => ({
+				errors: {
+					current: error,
+					history: error
+						? [...state.errors.history, error]
+						: state.errors.history,
+				},
+			})),
 
-    clearError: () =>
-      set((state) => ({
-        errors: {
-          ...state.errors,
-          current: null,
-        },
-      })),
+		clearError: () =>
+			set((state) => ({
+				errors: {
+					...state.errors,
+					current: null,
+				},
+			})),
 
-    logError: (error, context, metadata = {}) => {
-      const errorLog = {
-        error,
-        context,
-        metadata,
-        timestamp: new Date().toISOString(),
-      };
+		logError: (error, context, metadata = {}) => {
+			const errorLog = {
+				error,
+				context,
+				metadata,
+				timestamp: new Date().toISOString(),
+			};
 
-      set((state) => ({
-        errors: {
-          ...state.errors,
-          history: [...state.errors.history, errorLog],
-        },
-      }));
+			set((state) => ({
+				errors: {
+					...state.errors,
+					history: [...state.errors.history, errorLog],
+				},
+			}));
 
-      // * Log to console for development
-      if (process.env.NODE_ENV === "development") {
-        console.error("Error logged:", errorLog);
-      }
-    },
-  },
+			// * Log to console for development
+			if (process.env.NODE_ENV === "development") {
+				console.error("Error logged:", errorLog);
+			}
+		},
+	},
 
-  // * Site Settings Actions
-  siteSettingsActions: {
-    loadCatChosenName: async () => {
-      try {
-        const data = await siteSettingsAPI.getCatChosenName();
-        set((state) => ({
-          siteSettings: {
-            ...state.siteSettings,
-            catChosenName: data,
-            isLoaded: true,
-          },
-        }));
-        return data;
-      } catch (error) {
-        console.error("Error loading cat chosen name:", error);
-        set((state) => ({
-          siteSettings: {
-            ...state.siteSettings,
-            isLoaded: true,
-          },
-        }));
-        return null;
-      }
-    },
+	// * Site Settings Actions
+	siteSettingsActions: {
+		loadCatChosenName: async () => {
+			try {
+				const data = await siteSettingsAPI.getCatChosenName();
+				set((state) => ({
+					siteSettings: {
+						...state.siteSettings,
+						catChosenName: data,
+						isLoaded: true,
+					},
+				}));
+				return data;
+			} catch (error) {
+				console.error("Error loading cat chosen name:", error);
+				set((state) => ({
+					siteSettings: {
+						...state.siteSettings,
+						isLoaded: true,
+					},
+				}));
+				return null;
+			}
+		},
 
-    updateCatChosenName: (nameData) =>
-      set((state) => ({
-        siteSettings: {
-          ...state.siteSettings,
-          catChosenName: nameData,
-        },
-      })),
-  },
+		updateCatChosenName: (nameData) =>
+			set((state) => ({
+				siteSettings: {
+					...state.siteSettings,
+					catChosenName: nameData,
+				},
+			})),
+	},
 
-  // * Computed Selectors
-  selectors: {
-    getTournamentNames: () => get().tournament.names,
-    getRatings: () => get().tournament.ratings,
-    getIsComplete: () => get().tournament.isComplete,
-    getIsLoading: () => get().tournament.isLoading,
-    getVoteHistory: () => get().tournament.voteHistory,
-    getVoteHistoryCount: () => get().tournament.voteHistory.length,
-    getCurrentView: () => get().tournament.currentView,
-    getUserName: () => get().user.name,
-    getIsLoggedIn: () => get().user.isLoggedIn,
-    getIsAdmin: () => get().user.isAdmin,
-    getTheme: () => get().ui.theme,
+	// * Computed Selectors
+	selectors: {
+		getTournamentNames: () => get().tournament.names,
+		getRatings: () => get().tournament.ratings,
+		getIsComplete: () => get().tournament.isComplete,
+		getIsLoading: () => get().tournament.isLoading,
+		getVoteHistory: () => get().tournament.voteHistory,
+		getVoteHistoryCount: () => get().tournament.voteHistory.length,
+		getCurrentView: () => get().tournament.currentView,
+		getUserName: () => get().user.name,
+		getIsLoggedIn: () => get().user.isLoggedIn,
+		getIsAdmin: () => get().user.isAdmin,
+		getTheme: () => get().ui.theme,
 
-    getCurrentError: () => get().errors.current,
-  },
+		getCurrentError: () => get().errors.current,
+	},
 });
 
 // * Create store without any devtools integration (safest for production)
@@ -489,30 +492,30 @@ const useAppStore = create<AppState>()(applyDevtools(storeImpl));
 
 // #region agent log
 if (LOG_ENDPOINT) {
-  fetch(LOG_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sessionId: "debug-session",
-      runId: "run1",
-      hypothesisId: "H2",
-      location: "useAppStore.js:store-created",
-      message: "store created",
-      data: { env: process.env.NODE_ENV },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => { });
+	fetch(LOG_ENDPOINT, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			sessionId: "debug-session",
+			runId: "run1",
+			hypothesisId: "H2",
+			location: "useAppStore.js:store-created",
+			message: "store created",
+			data: { env: process.env.NODE_ENV },
+			timestamp: Date.now(),
+		}),
+	}).catch(() => {});
 }
 // #endregion
 
 // * Hook to initialize store from localStorage
 export const useAppStoreInitialization = () => {
-  const { userActions } = useAppStore();
+	const { userActions } = useAppStore();
 
-  useEffect(() => {
-    // * Initialize user state from localStorage on mount
-    userActions.initializeFromStorage();
-  }, [userActions]);
+	useEffect(() => {
+		// * Initialize user state from localStorage on mount
+		userActions.initializeFromStorage();
+	}, [userActions]);
 };
 
 export default useAppStore;

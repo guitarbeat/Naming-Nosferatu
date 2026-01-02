@@ -1,0 +1,157 @@
+/* Identity Section -------------------------------------------------------- */
+
+.identitySection {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	padding: var(--space-4);
+	background: var(--card-background);
+	border-bottom: 1px solid var(--border-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	letter-spacing: 0.05em;
+	flex-wrap: wrap; /* Allow wrapping on mobile */
+}
+
+@media (max-width: 480px) {
+	.identitySection {
+		padding: var(--space-3) var(--space-2);
+		flex-direction: column;
+		gap: var(--space-1);
+		text-align: center;
+	}
+}
+
+.identityLabel {
+	color: var(--text-secondary);
+	font-weight: 500;
+	text-transform: uppercase;
+}
+
+.identityDisplay {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+}
+
+.identityName {
+	color: var(--text-primary);
+	font-weight: 700;
+	text-transform: uppercase;
+	max-width: 15ch;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.identityEditBtn {
+	background: none;
+	border: none;
+	color: var(--accent-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	cursor: pointer;
+	padding: var(--space-1) var(--space-2);
+	opacity: 0.7;
+	transition: opacity 0.2s;
+}
+
+.identityEditBtn:hover {
+	opacity: 1;
+	text-decoration: underline;
+}
+
+.identityForm {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	width: 100%;
+	justify-content: center;
+}
+
+.identityInput {
+	background: var(--background);
+	border: 1px solid var(--border-color);
+	color: var(--text-primary);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	padding: var(--space-1) var(--space-2);
+	text-transform: uppercase;
+	width: 100%;
+	max-width: 200px;
+}
+
+.identityInput:focus {
+	outline: none;
+	border-color: var(--accent-color);
+}
+
+.identitySaveBtn {
+	background: var(--accent-color);
+	color: var(--background);
+	border: none;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-weight: bold;
+	border-radius: 4px;
+	flex-shrink: 0;
+}
+
+.identitySaveBtn:hover {
+	filter: brightness(1.1);
+}
+
+/* Cat Fact Tape Section */
+.catFactSection {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-3) var(--space-4);
+	background: #fffde7;
+	border: 1px dashed var(--ink);
+	margin-top: calc(var(--space-2) * -1);
+	border-top: none;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--ink);
+	position: relative;
+	box-shadow: 2px 2px 0 var(--shadow-color);
+}
+
+@media (max-width: 480px) {
+	.catFactSection {
+		padding: var(--space-2) var(--space-3);
+	}
+	.tapeLabel {
+		display: none; /* Hide label on tiny screens to save space */
+	}
+}
+
+.tapeDecorator {
+	width: 4px;
+	height: 100%;
+	background: var(--ink);
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.2;
+}
+
+.tapeLabel {
+	font-weight: 800;
+	color: var(--ink);
+	opacity: 0.6;
+	flex-shrink: 0;
+}
+
+.tapeContent {
+	font-weight: 500;
+	letter-spacing: 0.02em;
+	line-height: 1.4;
+}
+
