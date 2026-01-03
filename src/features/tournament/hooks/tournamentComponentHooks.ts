@@ -4,7 +4,7 @@
  * Handles randomized names, selected options, transitions, and UI visibility states.
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/useTournament";
 
@@ -81,28 +81,28 @@ export function useTournamentState(
 		string,
 		{ rating: number; wins?: number; losses?: number }
 	> = existingRatings
-		? Object.fromEntries(
+			? Object.fromEntries(
 				Object.entries(existingRatings).map(([key, value]) => [
 					key,
 					typeof value === "number" ? { rating: value } : value,
 				]),
 			)
-		: {};
+			: {};
 	const convertedOnComplete = onComplete
 		? (
-				results: Array<{
-					name: string;
-					id: string;
-					rating: number;
-					wins: number;
-					losses: number;
-				}>,
-			) => {
-				const ratings = Object.fromEntries(
-					results.map((r) => [r.id, r.rating]),
-				);
-				onComplete(ratings);
-			}
+			results: Array<{
+				name: string;
+				id: string;
+				rating: number;
+				wins: number;
+				losses: number;
+			}>,
+		) => {
+			const ratings = Object.fromEntries(
+				results.map((r) => [r.id, r.rating]),
+			);
+			onComplete(ratings);
+		}
 		: undefined;
 
 	const tournament = useTournament({
@@ -177,14 +177,7 @@ export function useTournamentState(
  * @description Consolidated tournament interaction hooks for audio, keyboard, magnetic pull, and image gallery
  */
 
-import {
-	type RefObject,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+// useTournamentInteractions hooks - uses imports from top of file
 
 // ============================================================================
 // Audio Manager Hook

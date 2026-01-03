@@ -61,7 +61,7 @@ export interface NameDataWithRatings {
 	updated_at?: string;
 }
 
-import { isDev, resolveSupabaseClient } from "../../client";
+import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 import type { NameItem } from "./types";
 
 export const coreAPI = {
@@ -257,17 +257,7 @@ export const coreAPI = {
 	},
 };
 
-import {
-	isDev,
-	isSupabaseAvailable,
-	resolveSupabaseClient,
-} from "../../client";
-import type {
-	AnalyticsSelectionStats,
-	RatingInfo,
-	RatingStats,
-	SelectionStats,
-} from "./types";
+// analyticsAPI - uses imports from top of file
 
 interface SelectionRow {
 	name_id: string | number;
@@ -641,12 +631,7 @@ export const analyticsAPI = {
 	},
 };
 
-import {
-	isDev,
-	isSupabaseAvailable,
-	resolveSupabaseClient,
-} from "../../client";
-import type { NameStats } from "./types";
+// leaderboardAPI - uses imports from top of file
 
 export const leaderboardAPI = {
 	/**
@@ -766,11 +751,7 @@ export const leaderboardAPI = {
 	},
 };
 
-import {
-	isDev,
-	isSupabaseAvailable,
-	resolveSupabaseClient,
-} from "../../client";
+// statsAPI - uses imports from top of file
 
 export const statsAPI = {
 	/**
@@ -901,8 +882,8 @@ export const statsAPI = {
 			// Define interface for the join result shape
 			interface JoinResult {
 				cat_name_ratings?:
-					| { rating: number; wins: number; losses: number }
-					| { rating: number; wins: number; losses: number }[];
+				| { rating: number; wins: number; losses: number }
+				| { rating: number; wins: number; losses: number }[];
 				is_hidden?: boolean;
 				[key: string]: unknown;
 			}
@@ -967,9 +948,9 @@ export const statsAPI = {
 				avgUserRating:
 					ratings.length > 0
 						? Math.round(
-								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-									ratings.length,
-							)
+							ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+							ratings.length,
+						)
 						: 1500,
 			};
 		} catch (error) {
@@ -979,4 +960,11 @@ export const statsAPI = {
 			return null;
 		}
 	},
+};
+// Combine all APIs into a single catNamesAPI object for backward compatibility
+export const catNamesAPI = {
+	...coreAPI,
+	...analyticsAPI,
+	...leaderboardAPI,
+	...statsAPI,
 };

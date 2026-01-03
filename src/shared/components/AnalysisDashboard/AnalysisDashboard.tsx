@@ -10,8 +10,12 @@ import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { nameItemShape } from "../../propTypes";
-import { hiddenNamesAPI } from "../../services/supabase/client";
-import { clearAllCaches } from "../../utils/core";
+import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/client";
+import {
+	calculatePercentile,
+	clearAllCaches,
+	devError,
+} from "../../utils/core";
 import { BumpChart } from "../Charts/Charts";
 import {
 	CollapsibleContent,
@@ -21,7 +25,12 @@ import { useNameManagementContextSafe } from "../NameManagementView/NameManageme
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisUI";
 import styles from "./AnalysisUI.module.css";
-import type { HighlightItem } from "./types";
+import type {
+	AnalyticsDataItem,
+	HighlightItem,
+	LeaderboardItem,
+	SelectionPopularityItem,
+} from "./types";
 
 /**
  * Analysis Dashboard Component
@@ -275,7 +284,6 @@ AnalysisDashboard.propTypes = {
 };
 
 // useAnalysisData hook - uses imports from top of file
-import { catNamesAPI } from "../../services/supabase/client";
 
 export function useAnalysisData({
 	userName,
@@ -367,12 +375,6 @@ export function useAnalysisData({
 }
 
 // useAnalysisDisplayData hook - uses imports from top of file
-import type {
-	AnalyticsDataItem,
-	HighlightItem,
-	LeaderboardItem,
-	SelectionPopularityItem,
-} from "./types";
 
 export interface ConsolidatedName {
 	id: string;

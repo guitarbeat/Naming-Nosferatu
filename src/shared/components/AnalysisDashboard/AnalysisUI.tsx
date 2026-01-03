@@ -10,7 +10,7 @@ import {
 	formatDate,
 	getMetricLabel,
 	getRankDisplay,
-} from "../../../utils/core";
+} from "../../utils/core";
 import { CollapsibleHeader } from "../Header/CollapsibleHeader";
 import { PerformanceBadges } from "../PerformanceBadge/PerformanceBadge";
 import type { ConsolidatedName } from "./AnalysisDashboard";

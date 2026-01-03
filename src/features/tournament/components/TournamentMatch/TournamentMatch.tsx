@@ -8,8 +8,8 @@ import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import type { NameItem } from "../../../../shared/propTypes";
-import { getRandomCatImage } from "../../config";
-import useMagneticPull from "../../hooks/useTournamentInteractions";
+import { getRandomCatImage } from "../../tournamentUtils";
+import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import tournamentStyles from "../../Tournament.module.css";
 import styles from "./FerrofluidMatch.module.css";
 

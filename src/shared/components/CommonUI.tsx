@@ -16,8 +16,8 @@ import {
 } from "react";
 
 // Imports for Error components
-import { createStandardizedError } from "../../services/errorManager/index";
-import { attachMediaQueryListener, getMediaQueryList } from "../../utils/core";
+import { createStandardizedError } from "../services/errorManager";
+import { attachMediaQueryListener, getMediaQueryList } from "../utils/core";
 import LiquidGlass from "./LiquidGlass/LiquidGlass";
 
 import styles from "./CommonUI.module.css";
@@ -760,7 +760,7 @@ class ErrorBoundary extends React.Component<
 	}
 }
 
-export const Error: React.FC<ErrorProps> = ({
+export const ErrorComponent: React.FC<ErrorProps> = ({
 	variant = "inline",
 	error,
 	onRetry,
@@ -802,4 +802,4 @@ export const Error: React.FC<ErrorProps> = ({
 	);
 };
 
-Error.displayName = "Error";
+ErrorComponent.displayName = "ErrorComponent";
