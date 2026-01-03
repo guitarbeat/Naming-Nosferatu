@@ -10,18 +10,16 @@ import ErrorComponent from "../Error/Error";
 import Loading from "../Loading/Loading";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
-// Context
-import { NameManagementProvider } from "./context/NameManagementContext";
-// Hook
-import { useNameManagementView } from "./hooks/useNameManagementViewState";
 import styles from "./NameManagementView.module.css";
-// Types
-import type {
-	NameItem,
-	NameManagementViewExtensions,
-	TournamentFilters,
-	UseNameManagementViewProps,
-} from "./types";
+// Consolidated imports
+import {
+	type NameItem,
+	NameManagementProvider,
+	type NameManagementViewExtensions,
+	type TournamentFilters,
+	type UseNameManagementViewProps,
+	useNameManagementView,
+} from "./nameManagementCore";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string;

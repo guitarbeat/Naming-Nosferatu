@@ -6,8 +6,8 @@
 import { Button } from "@heroui/react";
 import React, { useEffect, useRef } from "react";
 import styles from "./AppNavbar.module.css";
-import { NavbarContext, useNavbarContext } from "./navbarCore"; // Import from core
 import type { BuildNavItemsContext, NavItem } from "./navbarCore";
+import { NavbarContext } from "./navbarCore"; // Import from core
 
 // --- ICONS ---
 

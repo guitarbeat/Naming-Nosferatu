@@ -4,7 +4,7 @@
  * Includes AnalysisPanel, AnalysisInsights, AnalysisTable, and ColumnHeader.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import type React from "react";
 import {
 	devError,
 	formatDate,
@@ -13,12 +13,11 @@ import {
 } from "../../../utils/core";
 import { CollapsibleHeader } from "../Header/CollapsibleHeader";
 import { PerformanceBadges } from "../PerformanceBadge/PerformanceBadge";
-import type { ConsolidatedName } from "./useAnalysisDisplayData";
+import styles from "./AnalysisUI.module.css";
 
 // Import types
 import type { NameWithInsight, SummaryStats } from "./types";
-
-import styles from "./AnalysisUI.module.css";
+import type { ConsolidatedName } from "./useAnalysisDisplayData";
 
 /* ========================================= */
 /*             COLUMN HEADER                 */
@@ -201,9 +200,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 			<div className={styles.statsSummary}>
 				<div className={styles.statCard}>
 					<div className={styles.statLabel}>Top Rating</div>
-					<div className={styles.statValue}>
-						{summaryStats.maxRating ?? 0}
-					</div>
+					<div className={styles.statValue}>{summaryStats.maxRating ?? 0}</div>
 					<div className={styles.statName}>{summaryStats.topName?.name}</div>
 				</div>
 				<div className={styles.statCard}>
@@ -422,7 +419,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 		);
 	};
 
-	const handleSort = (field: string, direction: "asc" | "desc") => {
+	const handleSort = (field: string, _direction: "asc" | "desc") => {
 		// onSort expects just field, direction is managed by parent usually or we pass it
 		// But in original code, onSort(field) toggles logic.
 		// AnalysisTable props says onSort: (field: string) => void.

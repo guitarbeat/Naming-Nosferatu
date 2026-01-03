@@ -1,3 +1,332 @@
+import type { NameItem } from "../../../shared/propTypes";
+import type { AppState } from "../../../types/store";
+
+export interface UseTournamentProps {
+	names?: NameItem[];
+	existingRatings?: Record<
+		string,
+		{ rating: number; wins?: number; losses?: number }
+	>;
+	onComplete?: (
+		results: Array<{
+			name: string;
+			id: string;
+			rating: number;
+			wins: number;
+			losses: number;
+		}>,
+	) => void;
+}
+
+export interface UseTournamentHandlersProps {
+	userName: string | null;
+	tournamentActions: AppState["tournamentActions"];
+	navigateTo: (path: string) => void;
+}
+
+import type { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
+import type { Match, MatchRecord, NameItem } from "../../../shared/propTypes";
+import {
+	buildComparisonsMap,
+	getPreferencesMap,
+	initializeSorterPairs,
+} from "../../../shared/utils/core";
+
+export function getNextMatch(
+	names: NameItem[],
+	sorter: unknown,
+	_matchNumber: number,
+	options: {
+		currentRatings?: Record<
+			string,
+			{ rating: number; wins?: number; losses?: number }
+		>;
+		history?: MatchRecord[];
+	} = {},
+): Match | null {
+	if (!sorter || names.length <= 2) return null;
+
+	const findBestMatch = () => {
+		try {
+			const nameList = names.filter((n) => n?.name);
+			const s = sorter as PreferenceSorter;
+			initializeSorterPairs(sorter, nameList);
+
+			if (!Array.isArray(s.pairs) || s.pairs.length === 0) return null;
+
+			const prefs = getPreferencesMap(sorter);
+			const ratings = options.currentRatings || {};
+			const history = options.history || [];
+			const compHistory = history
+				.filter((h) => h.winner && h.loser)
+				.map((h) => ({
+					winner: h.winner as string,
+					loser: h.loser as string,
+				}));
+			const comparisons = buildComparisonsMap(compHistory);
+
+			let bestPair: [string, string] | null = null;
+			let bestScore = Infinity;
+			const pairIndex = typeof s.currentIndex === "number" ? s.currentIndex : 0;
+
+			for (let idx = pairIndex; idx < s.pairs.length; idx++) {
+				const [a, b] = s.pairs[idx];
+				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) continue;
+
+				const ra =
+					ratings[a]?.rating ||
+					(typeof ratings[a] === "number"
+						? (ratings[a] as unknown as number)
+						: 1500);
+				const rb =
+					ratings[b]?.rating ||
+					(typeof ratings[b] === "number"
+						? (ratings[b] as unknown as number)
+						: 1500);
+				const diff = Math.abs(ra - rb);
+				const ca = comparisons.get(a) || 0;
+				const cb = comparisons.get(b) || 0;
+				const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
+				const score = diff - 50 * uncScore;
+
+				if (score < bestScore) {
+					bestScore = score;
+					bestPair = [a, b];
+				}
+			}
+
+			if (bestPair) {
+				const [a, b] = bestPair;
+				s.currentIndex = Math.max(
+					0,
+					s.pairs.findIndex((p: [string, string]) => p[0] === a && p[1] === b),
+				);
+				return {
+					left: names.find((n) => n?.name === a) || { name: a, id: a },
+					right: names.find((n) => n?.name === b) || { name: b, id: b },
+				} as Match;
+			}
+		} catch (e) {
+			if (process.env.NODE_ENV === "development")
+				console.warn("Adaptive next-match selection failed:", e);
+		}
+		return null;
+	};
+
+	if (options && (options.currentRatings || options.history)) {
+		const match = findBestMatch();
+		if (match) return match;
+	}
+
+	const s = sorter as PreferenceSorter;
+	if (typeof s.getNextMatch === "function") {
+		try {
+			const nm = s.getNextMatch();
+			if (nm) {
+				return {
+					left: names.find((n) => n?.name === nm.left) || {
+						name: nm.left,
+						id: nm.left,
+					},
+					right: names.find((n) => n?.name === nm.right) || {
+						name: nm.right,
+						id: nm.right,
+					},
+				} as Match;
+			}
+		} catch (error) {
+			if (process.env.NODE_ENV === "development")
+				console.warn("Could not get next match from sorter:", error);
+		}
+	}
+
+	return findBestMatch();
+}
+
+import { useCallback } from "react";
+import type { NameItem } from "../../../shared/propTypes";
+import { ErrorManager } from "../../../shared/services/errorManager";
+import { tournamentsAPI } from "../../../shared/services/supabase/client";
+import {
+	clearTournamentCache,
+	devError,
+	devLog,
+	devWarn,
+	isNameHidden,
+	ratingsToArray,
+	ratingsToObject,
+} from "../../../shared/utils/core";
+import type { UseTournamentHandlersProps } from "./types";
+
+/**
+ * Custom hook for tournament-related handlers
+ * Extracts tournament logic from App component for better organization
+ */
+export function useTournamentHandlers({
+	userName,
+	tournamentActions,
+	navigateTo,
+}: UseTournamentHandlersProps) {
+	/**
+	 * Handles the completion of a tournament.
+	 * Saves ratings, updates state, and navigates to results.
+	 */
+	const handleTournamentComplete = useCallback(
+		async (
+			finalRatings: Record<
+				string,
+				{ rating: number; wins?: number; losses?: number }
+			>,
+		) => {
+			try {
+				devLog("[App] handleTournamentComplete called with:", finalRatings);
+
+				if (!userName) {
+					throw new Error("No user name available for saving results");
+				}
+
+				// * Convert ratings using utility functions
+				const ratingsArray = ratingsToArray(finalRatings);
+				const updatedRatings = ratingsToObject(ratingsArray);
+
+				devLog("[App] Ratings to save:", ratingsArray);
+
+				// * Save ratings to database
+				const saveResult = await tournamentsAPI.saveTournamentRatings(
+					userName,
+					ratingsArray,
+				);
+
+				devLog("[App] Save ratings result:", saveResult);
+
+				if (!saveResult.success) {
+					devWarn(
+						"[App] Failed to save ratings to database:",
+						saveResult.error,
+					);
+					// We continue even if save fails, to show results locally
+				}
+
+				// * Update store with new ratings
+				tournamentActions.setRatings(updatedRatings);
+				tournamentActions.setComplete(true);
+
+				devLog("[App] Tournament marked as complete, navigating to /results");
+
+				// * Navigate to results page
+				navigateTo("/results");
+			} catch (error) {
+				devError("[App] Error in handleTournamentComplete:", error);
+				ErrorManager.handleError(error, "Tournament Completion", {
+					isRetryable: true,
+					affectsUserData: true,
+					isCritical: false,
+				});
+			}
+		},
+		[userName, tournamentActions, navigateTo],
+	);
+
+	/**
+	 * Resets the tournament state to start a new one.
+	 */
+	const handleStartNewTournament = useCallback(() => {
+		tournamentActions.resetTournament();
+	}, [tournamentActions]);
+
+	/**
+	 * Sets up the tournament with the provided names.
+	 * Filters hidden names and initializes state.
+	 */
+	const handleTournamentSetup = useCallback(
+		(names: NameItem[] | undefined) => {
+			// * Clear tournament cache to ensure fresh data
+			clearTournamentCache();
+
+			// * Reset tournament state and set loading
+			tournamentActions.resetTournament();
+			tournamentActions.setLoading(true);
+
+			// * Filter out hidden names before starting tournament
+			const processedNames = Array.isArray(names)
+				? names.filter((name) => !isNameHidden(name))
+				: [];
+
+			if (processedNames.length === 0) {
+				devWarn(
+					"[App] No visible names available after filtering hidden names",
+				);
+				tournamentActions.setLoading(false);
+				return;
+			}
+
+			tournamentActions.setNames(processedNames);
+			// Ensure we are on the tournament view after starting
+			tournamentActions.setView("tournament");
+
+			// * Use setTimeout to ensure the loading state is visible and prevent flashing
+			setTimeout(() => {
+				tournamentActions.setLoading(false);
+			}, 100);
+		},
+		[tournamentActions],
+	);
+
+	/**
+	 * Updates ratings during the tournament (e.g. after each match).
+	 */
+	const handleUpdateRatings = useCallback(
+		async (
+			adjustedRatings: Record<
+				string,
+				{ rating: number; wins?: number; losses?: number }
+			>,
+		) => {
+			try {
+				// * Convert ratings using utility functions
+				const ratingsArray = ratingsToArray(adjustedRatings);
+
+				// * Save ratings to database
+				if (userName) {
+					const saveResult = await tournamentsAPI.saveTournamentRatings(
+						userName,
+						ratingsArray,
+					);
+
+					if (!saveResult.success) {
+						devWarn("[App] Failed to auto-save ratings:", saveResult.error);
+					} else {
+						devLog("[App] Update ratings result:", saveResult);
+					}
+				}
+
+				// * Convert to object format for store
+				const updatedRatings = ratingsToObject(ratingsArray);
+
+				tournamentActions.setRatings(updatedRatings);
+				return true;
+			} catch (error) {
+				// Log but don't crash the app for auto-save errors
+				devError("[App] Error in handleUpdateRatings:", error);
+				ErrorManager.handleError(error, "Rating Update", {
+					isRetryable: true,
+					affectsUserData: true,
+					isCritical: false,
+				});
+				throw error;
+			}
+		},
+		[tournamentActions, userName],
+	);
+
+	return {
+		handleTournamentComplete,
+		handleStartNewTournament,
+		handleTournamentSetup,
+		handleUpdateRatings,
+	};
+}
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import EloRating from "../../../features/tournament/EloRating";
 import { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";

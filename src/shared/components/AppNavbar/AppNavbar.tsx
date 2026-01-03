@@ -2,6 +2,7 @@ import { memo, useMemo } from "react";
 import "./AppNavbar.css";
 import styles from "./AppNavbar.module.css";
 import {
+	buildNavItems,
 	MobileMenu,
 	MobileMenuToggle,
 	ModeToggles,
@@ -9,11 +10,10 @@ import {
 	NavbarBrand,
 	NavbarCollapseToggle,
 	NavbarLink,
-	buildNavItems,
 } from "./NavbarUI";
 import {
-	NavbarProvider,
 	type AppNavbarProps,
+	NavbarProvider,
 	useAnalysisMode,
 	useMobileMenu,
 	useNavbarCollapse,
@@ -101,10 +101,7 @@ export const AppNavbar = memo(function AppNavbar({
 		closeMobileMenu();
 	};
 
-	const handleNavClick = (item: {
-		key: string;
-		onClick?: () => void;
-	}) => {
+	const handleNavClick = (item: { key: string; onClick?: () => void }) => {
 		if (item.onClick) {
 			item.onClick();
 		}
