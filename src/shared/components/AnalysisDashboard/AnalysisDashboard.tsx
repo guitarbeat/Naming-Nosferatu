@@ -274,7 +274,7 @@ AnalysisDashboard.propTypes = {
 	defaultCollapsed: PropTypes.bool,
 };
 
-import { useQuery } from "@tanstack/react-query";
+// useAnalysisData hook - uses imports from top of file
 import { catNamesAPI } from "../../services/supabase/client";
 
 export function useAnalysisData({
@@ -366,7 +366,7 @@ export function useAnalysisData({
 	};
 }
 
-import { useMemo } from "react";
+// useAnalysisDisplayData hook - uses imports from top of file
 import type {
 	AnalyticsDataItem,
 	HighlightItem,

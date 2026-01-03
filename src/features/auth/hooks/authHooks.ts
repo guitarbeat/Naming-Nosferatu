@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ErrorManager } from "../../../shared/services/errorManager";
+import { generateFunName, validateUsername } from "../../../shared/utils/core";
 
 const FALLBACK_CAT_FACT =
 	"Cats are amazing creatures with unique personalities!";
@@ -101,10 +102,7 @@ export function useEyeTracking({
 	return eyePosition;
 }
 
-import { useCallback, useState } from "react";
-import { ErrorManager } from "../../../shared/services/errorManager";
-import { generateFunName, validateUsername } from "../../../shared/utils/core";
-import { useCatFact } from "./useCatFact";
+// useLoginController hook - uses imports from top of file
 
 /**
  * Hook to manage login form state and submission
