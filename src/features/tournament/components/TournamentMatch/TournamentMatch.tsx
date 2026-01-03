@@ -6,7 +6,7 @@
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
-import Error from "../../../../shared/components/Error/Error";
+import { Error } from "../../../../shared/components/CommonUI";
 import type { NameItem } from "../../../../shared/propTypes";
 import { getRandomCatImage } from "../../config";
 import useMagneticPull from "../../hooks/useTournamentInteractions";

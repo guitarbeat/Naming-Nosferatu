@@ -22,8 +22,7 @@ import useAppStore, {
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
-import Error from "./shared/components/Error/Error";
-import Loading from "./shared/components/Loading/Loading";
+import { Error, Loading } from "./shared/components/CommonUI";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
