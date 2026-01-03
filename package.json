@@ -67,8 +67,8 @@
     "lucide-react": "^0.562.0",
     "neverthrow": "^8.2.0",
     "prop-types": "^15.8.1",
-    "react": "^19.2.2",
-    "react-dom": "^19.2.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "ts-pattern": "^5.9.0",
     "zod": "^4.3.4",
     "zustand": "^5.0.9"
