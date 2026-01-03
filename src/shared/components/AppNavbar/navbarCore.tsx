@@ -7,17 +7,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
-import { AnalysisIcon, PhotosIcon } from "./components/Icons"; // Will likely move to NavbarUI, but need to resolve circularity or just move icons to UI and use strings here?
-// Actually, buildNavItems uses Icons. Let's keep buildNavItems here but maybe pass Icons or just import them from UI later.
-// For now, I'll assume Icons will be in NavbarUI.ts, but `navbarCore.ts` shouldn't depend on `NavbarUI.tsx` if possible.
-// Better: Move Icons to `navbarCore.ts` OR just keep them in UI and import them.
-// Let's import them from where they WILL be, or keep them separate?
-// Simplest: keep Icons in `NavbarUI.tsx` and import them here.
-// But `NavbarUI.tsx` doesn't exist yet.
-// I will temporarily import from `./components/Icons` and fix it later or move Icons here?
-// Icons are UI. `navbarCore` is logic.
-// `buildNavItems` returns objects with Icon components.
-// I'll keep `buildNavItems` here.
 
 // --- TYPES ---
 
@@ -249,14 +238,3 @@ export const useNavbarDimensions = (_isCollapsed: boolean) => {
 
     return dimensions;
 };
-
-// --- UTILS ---
-// Copied from utils.ts, but we need icons.
-// To avoid circular dependency with NavbarUI (which will have icons),
-// we might need to move Icons HERE or inject them.
-// I'll move Icons logic to NavbarUI and just keep helpers here if they don't need UI components.
-// buildNavItems DOES need UI components (Icons).
-// So `buildNavItems` should probably reside in NavbarUI.ts or close to Icons.
-// But `AppNavbar.tsx` calls it.
-// I will move `buildNavItems` to `NavbarUI.tsx` as well, or keep it here and import Icons later.
-// For now, I'll export a placeholder or interface.
