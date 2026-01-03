@@ -1,7 +1,9 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { PreferenceSorter } from "../../features/tournament/PreferenceSorter";
-import { EloRating } from "../../features/tournament/tournamentUtils";
+import {
+	EloRating,
+	PreferenceSorter,
+} from "../../features/tournament/tournamentUtils";
 import type {
 	Match,
 	MatchRecord,

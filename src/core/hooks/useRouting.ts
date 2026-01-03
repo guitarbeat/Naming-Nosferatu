@@ -4,6 +4,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { normalizeRoutePath } from "../../shared/utils/core";
 
 // ============================================================================
 // Keyboard Shortcuts Hook

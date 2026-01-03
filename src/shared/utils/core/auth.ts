@@ -496,7 +496,8 @@ async function _hasRole(
 			for (const payload of rpcPayloads) {
 				const { data, error } = await activeSupabase.rpc(
 					"has_role",
-					payload as any,
+					// biome-ignore lint/suspicious/noExplicitAny: has_role has multiple overloads, type system can't infer correct one
+					payload as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 				);
 
 				if (!error) {

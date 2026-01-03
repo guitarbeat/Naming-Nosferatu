@@ -3,8 +3,7 @@
  * @description Consolidated UI components (Loading, Toast, Error) using shared styles.
  */
 
-import type React from "react";
-import {
+import React, {
 	memo,
 	Suspense,
 	useCallback,
@@ -662,10 +661,10 @@ interface ErrorListProps {
 
 const ErrorList: React.FC<ErrorListProps> = ({
 	errors = [],
-	onRetry,
+	onRetry: _onRetry,
 	onDismiss,
 	onClearAll,
-	showDetails,
+	showDetails: _showDetails,
 	className,
 }) => {
 	// Simplified for consolidation
@@ -707,7 +706,7 @@ interface ErrorInlineProps {
 
 const ErrorInline: React.FC<ErrorInlineProps> = ({
 	error,
-	context = "general",
+	context: _context = "general",
 	className = "",
 }) => {
 	if (!error) return null;
@@ -804,3 +803,6 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 };
 
 ErrorComponent.displayName = "ErrorComponent";
+
+// Alias for backward compatibility
+export const Error = ErrorComponent;

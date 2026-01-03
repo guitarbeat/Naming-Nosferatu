@@ -4,7 +4,7 @@
  * Includes Header, Footer, MatchResult, and RoundTransition.
  */
 
-import React, { memo } from "react";
+import { memo } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Card from "../../../shared/components/Card/Card";
 import styles from "../Tournament.module.css";
@@ -196,8 +196,10 @@ export const TournamentFooter = memo(function TournamentFooter({
 					role="complementary"
 					aria-label="Tournament bracket history"
 				>
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					<Bracket matches={transformedMatches as any} />
+					<Bracket
+						// biome-ignore lint/suspicious/noExplicitAny: Bracket component expects specific match type that transformedMatches doesn't match exactly
+						matches={transformedMatches as any}
+					/>
 				</div>
 			)}
 		</>

@@ -1783,6 +1783,7 @@
 }
 
 /* stylelint-disable-next-line block-no-empty */
+/* biome-ignore lint/suspicious/noEmptyBlock: Placeholder for future styles */
 .inlineMedium {
 }
 
