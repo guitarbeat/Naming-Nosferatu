@@ -155,8 +155,8 @@ export function useLoginController(
 				const error = err as Error;
 				setError(
 					formattedError.userMessage ||
-					error.message ||
-					"Unable to log in. Please check your connection and try again.",
+						error.message ||
+						"Unable to log in. Please check your connection and try again.",
 				);
 			} finally {
 				setIsLoading(false);

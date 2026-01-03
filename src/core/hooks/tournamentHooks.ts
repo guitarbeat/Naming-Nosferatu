@@ -1,7 +1,7 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EloRating } from "../../features/tournament/tournamentUtils";
 import type { PreferenceSorter } from "../../features/tournament/PreferenceSorter";
+import { EloRating } from "../../features/tournament/tournamentUtils";
 import type {
 	Match,
 	MatchRecord,
@@ -761,7 +761,7 @@ export function useTournament({
 	if (tState.isError) {
 		return {
 			currentMatch: null,
-			handleVote: () => { },
+			handleVote: () => {},
 			progress: 0,
 			roundNumber: 0,
 			currentMatchNumber: 0,

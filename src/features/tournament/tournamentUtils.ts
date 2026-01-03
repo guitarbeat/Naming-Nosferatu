@@ -141,6 +141,7 @@ class EloRating {
 	}
 }
 
+export { EloRating };
 export default EloRating;
 /**
  * @module PreferenceSorter

@@ -18,9 +18,8 @@ import {
 // Imports for Error components
 import { createStandardizedError } from "../services/errorManager";
 import { attachMediaQueryListener, getMediaQueryList } from "../utils/core";
-import LiquidGlass from "./LiquidGlass/LiquidGlass";
-
 import styles from "./CommonUI.module.css";
+import LiquidGlass from "./LiquidGlass/LiquidGlass";
 
 /* ========================================= */
 /*            LOADING COMPONENT              */
@@ -588,7 +587,9 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 							{canRetry ? "Try Again" : "Reload"}
 						</button>
 						<button
-							onClick={() => (window.location.href = "/")}
+							onClick={() => {
+								window.location.href = "/";
+							}}
 							className={styles.boundaryHomeButton}
 						>
 							Home

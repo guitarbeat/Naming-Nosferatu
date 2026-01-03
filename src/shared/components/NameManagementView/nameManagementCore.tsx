@@ -19,13 +19,13 @@ import {
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
-import { FALLBACK_NAMES } from "../../../features/tournament/config";
+import { FALLBACK_NAMES } from "../../../features/tournament/tournamentUtils";
+import { ErrorManager } from "../../services/errorManager/index";
+import { catNamesAPI, tournamentsAPI } from "../../services/supabase/client";
 import {
 	applyNameFilters,
 	mapFilterStatusToVisibility,
-} from "../../../utils/core";
-import { ErrorManager } from "../../services/errorManager/index";
-import { catNamesAPI, tournamentsAPI } from "../../services/supabase/client";
+} from "../../utils/core";
 
 // ============================================================================
 // TYPES

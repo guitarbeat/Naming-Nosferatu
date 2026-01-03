@@ -62,7 +62,6 @@ export interface NameDataWithRatings {
 }
 
 import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
-import type { NameItem } from "./types";
 
 export const coreAPI = {
 	/**
@@ -882,8 +881,8 @@ export const statsAPI = {
 			// Define interface for the join result shape
 			interface JoinResult {
 				cat_name_ratings?:
-				| { rating: number; wins: number; losses: number }
-				| { rating: number; wins: number; losses: number }[];
+					| { rating: number; wins: number; losses: number }
+					| { rating: number; wins: number; losses: number }[];
 				is_hidden?: boolean;
 				[key: string]: unknown;
 			}
@@ -948,9 +947,9 @@ export const statsAPI = {
 				avgUserRating:
 					ratings.length > 0
 						? Math.round(
-							ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-							ratings.length,
-						)
+								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+									ratings.length,
+							)
 						: 1500,
 			};
 		} catch (error) {
