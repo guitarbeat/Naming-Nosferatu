@@ -352,7 +352,7 @@ const getRoleSourceOrder = (state: ClientState | undefined) => {
 
 	const preferred =
 		state.preferredRoleSource &&
-		!state.disabledSources.has(state.preferredRoleSource)
+			!state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -494,7 +494,7 @@ async function _hasRole(
 			let lastRpcError = null;
 
 			for (const payload of rpcPayloads) {
-				const { data, error } = await activeSupabase.rpc("has_role", payload);
+				const { data, error } = await activeSupabase.rpc("has_role", payload as any);
 
 				if (!error) {
 					return data === true;

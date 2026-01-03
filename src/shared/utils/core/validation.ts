@@ -12,11 +12,11 @@ export function validateUsername(username: string): ValidationResult {
 	}
 
 	const trimmed = username.trim();
-	if (trimmed.length < (VALIDATION.USER_MIN_LENGTH || 2)) {
+	if (trimmed.length < (VALIDATION.MIN_USERNAME_LENGTH || 2)) {
 		return { success: false, error: "Username too short" };
 	}
 
-	if (trimmed.length > (VALIDATION.USER_MAX_LENGTH || 20)) {
+	if (trimmed.length > (VALIDATION.MAX_USERNAME_LENGTH || 20)) {
 		return { success: false, error: "Username too long" };
 	}
 
@@ -40,7 +40,7 @@ export function validateCatName(name: string): ValidationResult {
 		return { success: false, error: "Name is too short" };
 	}
 
-	if (trimmed.length > (VALIDATION.NAME_MAX_LENGTH || 50)) {
+	if (trimmed.length > (VALIDATION.MAX_CAT_NAME_LENGTH || 50)) {
 		return { success: false, error: "Name is too long" };
 	}
 
@@ -50,10 +50,10 @@ export function validateCatName(name: string): ValidationResult {
 export function validateDescription(description: string): ValidationResult {
 	const trimmed = (description || "").trim();
 
-	if (trimmed.length > (VALIDATION.DESC_MAX_LENGTH || 200)) {
+	if (trimmed.length > (VALIDATION.MAX_DESCRIPTION_LENGTH || 200)) {
 		return {
 			success: false,
-			error: `Description must be under ${VALIDATION.DESC_MAX_LENGTH || 200} characters`,
+			error: `Description must be under ${VALIDATION.MAX_DESCRIPTION_LENGTH || 200} characters`,
 		};
 	}
 

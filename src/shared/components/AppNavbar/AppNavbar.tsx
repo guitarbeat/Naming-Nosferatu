@@ -1,14 +1,6 @@
-/**
- * @module AppNavbar
- * @description Premium consolidated navigation bar component
- * Features glassmorphism, smooth animations, and internal state management
- */
-
-import React, { useCallback, useId, useMemo } from "react";
-import LiquidGlass from "../LiquidGlass/LiquidGlass";
+import { memo, useMemo } from "react";
 import "./AppNavbar.css";
-
-// Components
+import styles from "./AppNavbar.module.css";
 import {
 	MobileMenu,
 	MobileMenuToggle,
@@ -17,88 +9,39 @@ import {
 	NavbarBrand,
 	NavbarCollapseToggle,
 	NavbarLink,
-} from "./components";
-
-// Context
-import { NavbarProvider } from "./context/NavbarContext";
-import { useNavbarDimensions } from "./hooks/useNavbarDimensions";
-// Hooks
+	buildNavItems,
+} from "./NavbarUI";
 import {
+	NavbarProvider,
+	type AppNavbarProps,
 	useAnalysisMode,
 	useMobileMenu,
 	useNavbarCollapse,
+	useNavbarDimensions,
 	useToggleAnalysis,
-} from "./hooks/useNavbarLogic";
-// Types
-import type { AppNavbarProps, NavItem } from "./types";
+} from "./navbarCore";
 
-// Utils
-import { buildNavItems } from "./utils";
-
-export function AppNavbar({
+export const AppNavbar = memo(function AppNavbar({
 	view,
 	setView,
 	isLoggedIn,
 	userName,
 	isAdmin,
 	onLogout,
+	// onStartNewTournament,
 	onOpenSuggestName,
 	onOpenPhotos,
+	onNavigate,
 }: AppNavbarProps) {
-	const navbarGlassId = useId();
-	const { isCollapsed, toggle: toggleCollapse } = useNavbarCollapse(false);
-	const {
-		isMobileMenuOpen,
-		toggle: toggleMobileMenu,
-		close: closeMobileMenu,
-	} = useMobileMenu();
-
+	// Hooks
+	const { isCollapsed, toggle: toggleCollapse } = useNavbarCollapse();
+	const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } =
+		useMobileMenu();
 	const { isAnalysisMode, setIsAnalysisMode } = useAnalysisMode();
 	const toggleAnalysis = useToggleAnalysis(isAnalysisMode, setIsAnalysisMode);
-	const dimensions = useNavbarDimensions(isCollapsed);
+	useNavbarDimensions(isCollapsed);
 
-	const navItems = useMemo(
-		() =>
-			buildNavItems({
-				view,
-				isAnalysisMode,
-				onOpenPhotos,
-				onToggleAnalysis: toggleAnalysis,
-			}),
-		[view, isAnalysisMode, onOpenPhotos, toggleAnalysis],
-	);
-
-	const createHandler = useCallback(
-		<T extends unknown[]>(fn?: (...args: T) => void) => {
-			return (...args: T) => {
-				closeMobileMenu();
-				void Promise.resolve(fn?.(...args));
-			};
-		},
-		[closeMobileMenu],
-	);
-
-	const handleNavClick = useCallback(
-		(item: NavItem) => {
-			closeMobileMenu();
-			if (typeof item.onClick === "function") {
-				void Promise.resolve(item.onClick());
-				return;
-			}
-			setView(item.key);
-		},
-		[closeMobileMenu, setView],
-	);
-
-	const handleHomeClick = useCallback(() => {
-		closeMobileMenu();
-		setView("tournament");
-	}, [closeMobileMenu, setView]);
-
-	const handleLogout = createHandler(onLogout);
-
-	const isHomeViewActive = view === "tournament" && !isAnalysisMode;
-
+	// Context Value
 	const contextValue = useMemo(
 		() => ({
 			view,
@@ -115,7 +58,7 @@ export function AppNavbar({
 			isLoggedIn,
 			userName,
 			isAdmin,
-			onLogout: handleLogout,
+			onLogout,
 		}),
 		[
 			view,
@@ -132,65 +75,80 @@ export function AppNavbar({
 			isLoggedIn,
 			userName,
 			isAdmin,
-			handleLogout,
+			onLogout,
 		],
 	);
 
+	// Navigation Items
+	const navItems = useMemo(
+		() =>
+			buildNavItems({
+				view,
+				isAnalysisMode,
+				onOpenPhotos,
+				onToggleAnalysis: toggleAnalysis,
+			}),
+		[view, isAnalysisMode, onOpenPhotos, toggleAnalysis],
+	);
+
+	const handleHomeClick = () => {
+		if (onNavigate) {
+			onNavigate("/");
+		}
+		if (isAnalysisMode) {
+			toggleAnalysis();
+		}
+		closeMobileMenu();
+	};
+
+	const handleNavClick = (item: {
+		key: string;
+		onClick?: () => void;
+	}) => {
+		if (item.onClick) {
+			item.onClick();
+		}
+		closeMobileMenu();
+	};
+
+	const headerClass = `${styles.appNavbar} ${isCollapsed ? styles.collapsed : ""} ${isMobileMenuOpen ? styles.mobileOpen : ""}`;
+
 	return (
 		<NavbarProvider value={contextValue}>
-			<LiquidGlass
-				id={`navbar-glass-${navbarGlassId.replace(/:/g, "-")}`}
-				className={`app-navbar-glass ${isCollapsed ? "collapsed" : ""}`}
-				width={
-					isCollapsed
-						? dimensions.width
-						: typeof window !== "undefined"
-							? window.innerWidth
-							: 1920
-				}
-				height={dimensions.height}
-				key={`glass-${isCollapsed}`}
-				style={
-					isCollapsed
-						? {
-								width: "auto",
-								maxWidth: "max-content",
-								height: "auto",
-								overflow: "visible",
-							}
-						: { width: "100%", height: "auto", overflow: "hidden" }
-				}
-				radius={isCollapsed ? 24 : 0}
+			<header
+				id="app-navbar"
+				className={headerClass}
 				data-collapsed={isCollapsed}
 			>
-				<header
-					id="app-navbar"
-					className={`app-navbar ${isCollapsed ? "collapsed" : ""}`}
-					role="banner"
-					data-collapsed={isCollapsed}
-				>
-					<div className="app-navbar__left">
-						<NavbarCollapseToggle
-							isCollapsed={isCollapsed}
-							onToggle={toggleCollapse}
+				<div className={styles.container}>
+					{/* Left: Brand/Logo */}
+					<div className={styles.leftSection}>
+						<NavbarBrand
+							isActive={view === "tournament" && !isAnalysisMode}
+							onClick={handleHomeClick}
+							ariaLabel="Go to Tournament Dashboard"
 						/>
-						<div className="app-navbar__brand-wrapper">
-							<NavbarBrand
-								isActive={isHomeViewActive}
-								onClick={handleHomeClick}
-								ariaLabel="Go to Tournament home"
-							/>
-						</div>
 					</div>
 
-					<div className="app-navbar__center">
+					{/* Center: Navigation Links */}
+					<nav
+						className={styles.centerSection}
+						role="navigation"
+						aria-label="Main navigation"
+					>
 						{navItems.map((item) => (
-							<NavbarLink key={item.key} item={item} onClick={handleNavClick} />
+							<NavbarLink
+								key={item.key}
+								item={item}
+								onClick={handleNavClick}
+								className={styles.navLink}
+							/>
 						))}
-					</div>
+					</nav>
 
-					<div className="app-navbar__right">
-						<div className="app-navbar__desktop-toggles">
+					{/* Right: Actions & Toggles */}
+					<div className={styles.rightSection}>
+						<div className={styles.desktopOnly}>
 							<ModeToggles />
 						</div>
 
@@ -198,27 +156,35 @@ export function AppNavbar({
 							isLoggedIn={isLoggedIn}
 							userName={userName}
 							isAdmin={isAdmin}
-							onLogout={handleLogout}
+							onLogout={onLogout}
 							onOpenSuggestName={onOpenSuggestName}
 						/>
 
-						<MobileMenuToggle
-							isOpen={isMobileMenuOpen}
-							onToggle={toggleMobileMenu}
-						/>
-					</div>
-				</header>
-			</LiquidGlass>
+						<div className={styles.mobileOnly}>
+							<MobileMenuToggle
+								isOpen={isMobileMenuOpen}
+								onToggle={toggleMobileMenu}
+							/>
+						</div>
 
-			<MobileMenu
-				isOpen={isMobileMenuOpen}
-				navItems={navItems}
-				homeIsActive={isHomeViewActive}
-				onHomeClick={handleHomeClick}
-				onNavClick={handleNavClick}
-			/>
+						<div className={styles.collapseToggleWrapper}>
+							<NavbarCollapseToggle
+								isCollapsed={isCollapsed}
+								onToggle={toggleCollapse}
+							/>
+						</div>
+					</div>
+				</div>
+
+				{/* Mobile Menu Overlay */}
+				<MobileMenu
+					isOpen={isMobileMenuOpen}
+					navItems={navItems}
+					homeIsActive={view === "tournament" && !isAnalysisMode}
+					onHomeClick={handleHomeClick}
+					onNavClick={handleNavClick}
+				/>
+			</header>
 		</NavbarProvider>
 	);
-}
-
-export default React.memo(AppNavbar);
+});

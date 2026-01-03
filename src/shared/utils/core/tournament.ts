@@ -1,5 +1,5 @@
 import type { NameItem } from "../../propTypes";
-import { generatePairs } from "./array";
+import { generatePairs } from ".";
 
 export interface Sorter {
 	_pairs?: Array<[unknown, unknown]>;

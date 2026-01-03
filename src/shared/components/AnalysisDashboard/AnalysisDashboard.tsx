@@ -19,10 +19,8 @@ import {
 } from "../Header/CollapsibleHeader";
 import { useNameManagementContextSafe } from "../NameManagementView/NameManagementView";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
-import { AnalysisPanel } from "./components/AnalysisPanel";
-import "./AnalysisDashboard.css";
-import { AnalysisInsights } from "./components/AnalysisInsights";
-import { AnalysisTable } from "./components/AnalysisTable";
+import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisUI";
+import styles from "./AnalysisUI.module.css";
 import type { HighlightItem } from "./types";
 import { useAnalysisData } from "./useAnalysisData";
 import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
@@ -194,23 +192,23 @@ export function AnalysisDashboard({
 				isCollapsed={isCollapsed}
 			>
 				{isLoading ? (
-					<div className="analysis-loading" role="status">
+					<div className={styles.loading} role="status">
 						Loading top names...
 					</div>
 				) : error ? (
-					<div className="analysis-error" role="alert">
+					<div className={styles.error} role="alert">
 						Failed to load top names.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className="analysis-empty">No names available yet.</div>
+					<div className={styles.empty}>No names available yet.</div>
 				) : (
 					<>
-						<div className="analysis-view-toggle">
+						<div className={styles.viewToggle}>
 							{["chart", "table", "insights"].map((mode) => (
 								<button
 									key={mode}
 									type="button"
-									className={`analysis-view-btn ${viewMode === mode ? "active" : ""}`}
+									className={`${styles.viewBtn} ${viewMode === mode ? styles.active : ""}`}
 									onClick={() => setViewMode(mode)}
 									aria-pressed={viewMode === mode}
 								>
@@ -224,7 +222,7 @@ export function AnalysisDashboard({
 						</div>
 
 						{viewMode === "chart" && rankingHistory && (
-							<div className="analysis-chart-container">
+							<div className={styles.chartContainer}>
 								<BumpChart
 									data={filteredRankingData}
 									labels={rankingHistory.timeLabels}

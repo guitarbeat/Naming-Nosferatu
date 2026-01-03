@@ -14,7 +14,7 @@ export interface ExportNameItem {
 	isHidden?: boolean;
 }
 
-export type FieldAccessor<T> = keyof T | ((item: T) => unknown);
+export type FieldAccessor<T> = keyof T | ((item: T, index: number) => unknown);
 
 export interface ExportOptions<T> {
 	fileName?: string;
@@ -55,10 +55,11 @@ export function arrayToCSV<T>(
 	headers: string[],
 	fields: FieldAccessor<T>[],
 ): string {
-	const rows = data.map((item) =>
+	const rows = data.map((item, index) =>
 		fields
 			.map((field) => {
-				const value = typeof field === "function" ? field(item) : item[field];
+				const value =
+					typeof field === "function" ? field(item, index) : item[field];
 				return escapeCSVValue(value);
 			})
 			.join(","),
