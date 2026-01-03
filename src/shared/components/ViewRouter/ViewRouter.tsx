@@ -2,9 +2,7 @@ import PropTypes from "prop-types";
 import { lazy, Suspense } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import Login from "../../../features/auth/Login";
-// import TournamentSetup from "../../../features/tournament/TournamentSetup";
 import ModernTournamentSetup from "../../../features/tournament/ModernTournamentSetup";
-// * Import components directly to maintain stability
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";

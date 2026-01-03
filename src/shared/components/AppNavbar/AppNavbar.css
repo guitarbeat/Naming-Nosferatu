@@ -209,4 +209,7 @@
 	.navbar-user-display {
 		gap: 0;
 	}
+	.app-navbar__desktop-toggles {
+		display: none;
+	}
 }

@@ -37,13 +37,13 @@ export default defineConfig(({ mode }) => {
       }),
       mode === "development" && componentTagger(),
       mode === "production" &&
-        visualizer({
-          filename: "stats.html",
-          open: false,
-          gzipSize: true,
-          brotliSize: true,
-          template: "treemap",
-        }),
+      visualizer({
+        filename: "stats.html",
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+        template: "treemap",
+      }),
     ].filter(Boolean),
     envPrefix: ["VITE_", "SUPABASE_"],
     // * Ensure proper base path for production builds
@@ -70,9 +70,14 @@ export default defineConfig(({ mode }) => {
       dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
     },
     server: {
-      host: "::",
+      host: true,
       port: 8080,
-      hmr: { overlay: false },
+      strictPort: true,
+      hmr: {
+        clientPort: 8080,
+        port: 8080,
+        overlay: false
+      },
     },
     preview: {
       host: true,

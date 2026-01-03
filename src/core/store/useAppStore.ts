@@ -6,28 +6,8 @@ import {
 } from "../../shared/services/supabase/client";
 import type { AppState, UIState, UserState } from "../../types/store";
 
-const LOG_ENDPOINT =
-	typeof window !== "undefined"
-		? `http://${window.location.hostname}:7242/ingest/1f557b52-909f-4217-87a5-26efd857b93b`
-		: null;
-
 // * Devtools middleware disabled entirely to avoid prod crashes
 const applyDevtools = (storeImpl: StateCreator<AppState>) => {
-	if (process.env.NODE_ENV === "development" && LOG_ENDPOINT) {
-		fetch(LOG_ENDPOINT, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				sessionId: "debug-session",
-				runId: "run1",
-				hypothesisId: "H2",
-				location: "useAppStore.js:applyDevtools",
-				message: "applyDevtools invoked",
-				data: { env: process.env.NODE_ENV },
-				timestamp: Date.now(),
-			}),
-		}).catch(() => {});
-	}
 	return storeImpl;
 };
 
@@ -489,24 +469,6 @@ const storeImpl: StateCreator<AppState> = (set, get) => ({
 
 // * Create store without any devtools integration (safest for production)
 const useAppStore = create<AppState>()(applyDevtools(storeImpl));
-
-// #region agent log
-if (LOG_ENDPOINT) {
-	fetch(LOG_ENDPOINT, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			sessionId: "debug-session",
-			runId: "run1",
-			hypothesisId: "H2",
-			location: "useAppStore.js:store-created",
-			message: "store created",
-			data: { env: process.env.NODE_ENV },
-			timestamp: Date.now(),
-		}),
-	}).catch(() => {});
-}
-// #endregion
 
 // * Hook to initialize store from localStorage
 export const useAppStoreInitialization = () => {

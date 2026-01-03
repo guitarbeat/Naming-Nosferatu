@@ -1,0 +1,70 @@
+.toggleContainer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.toggleWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: clamp(160px, 30vw, 200px);
+	height: 36px;
+	padding: 4px;
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	backdrop-filter: blur(8px);
+	cursor: pointer;
+	transition: all 0.3s ease;
+	overflow: hidden;
+}
+
+.toggleWrapper:hover {
+	background: rgba(255, 255, 255, 0.15);
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.toggleWrapper:focus-visible {
+	outline: 2px solid var(--nav-highlight);
+	outline-offset: 2px;
+}
+
+.toggleSlider {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	bottom: 4px;
+	width: calc(50% - 4px);
+	border-radius: 16px;
+	background: rgba(255, 255, 255, 0.2);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	z-index: 1;
+}
+
+.toggleSlider.active {
+	transform: translateX(100%);
+	background: var(--nav-highlight, #00f0ff);
+	box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+
+.toggleLabel {
+	position: relative;
+	z-index: 2;
+	flex: 1;
+	text-align: center;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.6);
+	transition: color 0.3s ease;
+	user-select: none;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.toggleLabel.active {
+	color: #fff;
+	text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}

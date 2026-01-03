@@ -1,6 +1,6 @@
 /**
  * @module Tournament/components/TournamentHeader
- * @description Header for tournament view showing setup controls or progress.
+ * @description Header for tournament view showing progress.
  * @author Aaron Lor
  */
 
@@ -8,29 +8,12 @@ import PropTypes from "prop-types";
 import React from "react";
 import Card from "../../../../shared/components/Card/Card";
 import styles from "../../Tournament.module.css";
-import setupStyles from "../../TournamentSetup.module.css";
-import { StartButton } from "../StartButton";
-
-interface NameItem {
-	id?: string | number;
-	name?: string;
-	[key: string]: unknown;
-}
 
 interface TournamentHeaderProps {
 	roundNumber?: number;
 	currentMatchNumber?: number;
 	totalMatches?: number;
 	progress?: number;
-	selectedNames?: NameItem[];
-	availableNames?: NameItem[];
-	onSelectAll?: () => void;
-	isSwipeMode?: boolean;
-	onSwipeModeToggle?: () => void;
-	showCatPictures?: boolean;
-	onCatPicturesToggle?: () => void;
-	onStart?: (names: NameItem[]) => void;
-	isAdmin?: boolean;
 }
 
 function TournamentHeader({
@@ -38,90 +21,7 @@ function TournamentHeader({
 	currentMatchNumber,
 	totalMatches,
 	progress,
-	selectedNames,
-	availableNames,
-	onSelectAll,
-	isSwipeMode,
-	onSwipeModeToggle,
-	showCatPictures,
-	onCatPicturesToggle,
-	onStart,
-	isAdmin,
 }: TournamentHeaderProps) {
-	const isSetupMode = selectedNames !== undefined;
-
-	if (isSetupMode) {
-		return (
-			<div className={setupStyles.panelHeader}>
-				<div className={setupStyles.headerRow}>
-					<div className={setupStyles.headerActions}>
-						{isAdmin && (
-							<button
-								className={setupStyles.selectAllButton}
-								onClick={onSelectAll}
-								type="button"
-								aria-label={
-									availableNames &&
-									selectedNames.length === availableNames.length
-										? "Clear all selections"
-										: "Select all names"
-								}
-							>
-								{availableNames &&
-								selectedNames.length === availableNames.length
-									? "✨ Start Fresh"
-									: "🎲 Select All"}
-							</button>
-						)}
-
-						{onSwipeModeToggle && (
-							<button
-								onClick={onSwipeModeToggle}
-								className={`${setupStyles.headerActionButton} ${setupStyles.swipeModeToggleButton} ${
-									isSwipeMode ? setupStyles.headerActionButtonActive : ""
-								}`}
-								type="button"
-								aria-label={
-									isSwipeMode ? "Switch to card mode" : "Switch to swipe mode"
-								}
-							>
-								{isSwipeMode ? "🎯 Cards" : "💫 Swipe"}
-							</button>
-						)}
-
-						{onCatPicturesToggle && (
-							<button
-								onClick={onCatPicturesToggle}
-								className={`${setupStyles.headerActionButton} ${setupStyles.catPicturesToggleButton} ${
-									showCatPictures ? setupStyles.headerActionButtonActive : ""
-								}`}
-								type="button"
-								aria-label={
-									showCatPictures
-										? "Hide cat pictures"
-										: "Show cat pictures on cards"
-								}
-								title="Add random cat pictures to make it more like Tinder! 🐱"
-							>
-								{showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
-							</button>
-						)}
-
-						{selectedNames && selectedNames.length >= 2 && onStart && (
-							<StartButton
-								// eslint-disable-next-line @typescript-eslint/no-explicit-any
-								selectedNames={selectedNames as any}
-								// eslint-disable-next-line @typescript-eslint/no-explicit-any
-								onStart={onStart as any}
-								variant="header"
-							/>
-						)}
-					</div>
-				</div>
-			</div>
-		);
-	}
-
 	return (
 		<Card
 			className={styles.progressInfo}
@@ -153,15 +53,6 @@ TournamentHeader.propTypes = {
 	currentMatchNumber: PropTypes.number,
 	totalMatches: PropTypes.number,
 	progress: PropTypes.number,
-	selectedNames: PropTypes.arrayOf(PropTypes.object),
-	availableNames: PropTypes.arrayOf(PropTypes.object),
-	onSelectAll: PropTypes.func,
-	isSwipeMode: PropTypes.bool,
-	onSwipeModeToggle: PropTypes.func,
-	showCatPictures: PropTypes.bool,
-	onCatPicturesToggle: PropTypes.func,
-	onStart: PropTypes.func,
-	isAdmin: PropTypes.bool,
 };
 
 export default React.memo(TournamentHeader);

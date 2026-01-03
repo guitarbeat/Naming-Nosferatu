@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Centralized stylesheet imports for the entire application.
  * The order matters – keep foundational layers before utilities and themes.
  */

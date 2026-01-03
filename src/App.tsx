@@ -147,6 +147,18 @@ function App() {
 		onAnalysisToggle: () => {},
 	});
 
+	// * Theme synchronization
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			document.documentElement.setAttribute("data-theme", ui.theme);
+			if (ui.theme === "dark") {
+				document.documentElement.classList.add("dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+			}
+		}
+	}, [ui.theme]);
+
 	// * Tournament handlers extracted to custom hook
 	const {
 		handleTournamentComplete,
