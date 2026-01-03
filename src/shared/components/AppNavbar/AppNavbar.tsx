@@ -21,12 +21,14 @@ import {
 
 // Context
 import { NavbarProvider } from "./context/NavbarContext";
-
-// Hooks
-import { useAnalysisMode, useToggleAnalysis } from "./hooks/useAnalysisMode";
-import { useMobileMenu } from "./hooks/useMobileMenu";
-import { useNavbarCollapse } from "./hooks/useNavbarCollapse";
 import { useNavbarDimensions } from "./hooks/useNavbarDimensions";
+// Hooks
+import {
+	useAnalysisMode,
+	useMobileMenu,
+	useNavbarCollapse,
+	useToggleAnalysis,
+} from "./hooks/useNavbarLogic";
 // Types
 import type { AppNavbarProps, NavItem } from "./types";
 

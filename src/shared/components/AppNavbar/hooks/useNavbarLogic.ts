@@ -1,5 +1,57 @@
 import { useCallback, useEffect, useState } from "react";
+import { STORAGE_KEYS } from "../../../../core/constants";
+import { useCollapsible } from "../../../../core/hooks/useStorage";
 
+// --- useNavbarCollapse ---
+export function useNavbarCollapse(defaultCollapsed = false) {
+	const { isCollapsed, toggleCollapsed } = useCollapsible(
+		STORAGE_KEYS.NAVBAR_COLLAPSED,
+		defaultCollapsed,
+	);
+	return { isCollapsed, toggle: toggleCollapsed };
+}
+
+// --- useMobileMenu ---
+export const useMobileMenu = () => {
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+	const toggleMobileMenu = useCallback(() => {
+		setIsMobileMenuOpen((prev) => !prev);
+	}, []);
+
+	const closeMobileMenu = useCallback(() => {
+		setIsMobileMenuOpen(false);
+	}, []);
+
+	useEffect(() => {
+		const handleEscapeKey = (event: KeyboardEvent) => {
+			if (event.key === "Escape") {
+				closeMobileMenu();
+			}
+		};
+
+		if (isMobileMenuOpen) {
+			document.addEventListener("keydown", handleEscapeKey);
+			// Prevent scrolling when menu is open
+			document.body.style.overflow = "hidden";
+		} else {
+			document.body.style.overflow = "";
+		}
+
+		return () => {
+			document.removeEventListener("keydown", handleEscapeKey);
+			document.body.style.overflow = "";
+		};
+	}, [isMobileMenuOpen, closeMobileMenu]);
+
+	return {
+		isMobileMenuOpen,
+		toggleMobileMenu,
+		closeMobileMenu,
+	};
+};
+
+// --- useAnalysisMode ---
 const ANALYSIS_QUERY_PARAM = "analysis";
 
 export const useAnalysisMode = () => {
