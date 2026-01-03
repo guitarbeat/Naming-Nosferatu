@@ -8,12 +8,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
 // Re-export all modules
-export * from "./modules/admin";
-export * from "./modules/catNames";
-export * from "./modules/hiddenNames";
-export * from "./modules/images";
-export * from "./modules/settings";
-export * from "./modules/tournaments";
+export * from "./modules/cat-names";
+export * from "./modules/general";
 
 // Re-export types
 export type { Database } from "./types";

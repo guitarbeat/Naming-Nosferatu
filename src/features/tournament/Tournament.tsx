@@ -11,10 +11,12 @@ import Error from "../../shared/components/Error/Error";
 import Loading from "../../shared/components/Loading/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
-import MatchResult from "./components/MatchResult/MatchResult";
-import RoundTransition from "./components/RoundTransition/RoundTransition";
-import TournamentFooter from "./components/TournamentFooter/TournamentFooter";
-import TournamentHeader from "./components/TournamentHeader/TournamentHeader";
+import {
+	MatchResult,
+	RoundTransition,
+	TournamentFooter,
+	TournamentHeader,
+} from "./components/TournamentUI";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import { CAT_IMAGES } from "./config";
 import type { EventListener } from "./hooks/useTournamentInteractions";
