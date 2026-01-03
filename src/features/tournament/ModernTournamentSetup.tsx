@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
-import { cn } from "../../shared/utils/coreUtils";
+import { cn } from "../../shared/utils/core";
 import { type CatName, TournamentService } from "./services/tournamentService";
 import { useTournamentStore } from "./stores/tournamentStore";
 

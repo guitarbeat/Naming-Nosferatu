@@ -5,7 +5,7 @@ import useAppStore from "../../../core/store/useAppStore";
 import {
 	applyNameFilters,
 	mapFilterStatusToVisibility,
-} from "../../utils/coreUtils";
+} from "../../../utils/core";
 import type {
 	NameItem,
 	TournamentFilters,

@@ -5,7 +5,6 @@
  */
 
 import React, { useEffect, useMemo, useState } from "react";
-import { exportTournamentResultsToCSV } from "../../utils/coreUtils";
 import Button from "../Button/Button";
 import ErrorComponent from "../Error/Error";
 import Loading from "../Loading/Loading";

@@ -1,9 +1,6 @@
 import { useCallback, useState } from "react";
 import { ErrorManager } from "../../../shared/services/errorManager";
-import {
-	generateFunName,
-	validateUsername,
-} from "../../../shared/utils/coreUtils";
+import { generateFunName, validateUsername } from "../../../shared/utils/core";
 import { useCatFact } from "./useCatFact";
 
 /**

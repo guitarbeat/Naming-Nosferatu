@@ -1,5 +1,4 @@
 import type React from "react";
-import { devError } from "../../../utils/coreUtils";
 import type { NameWithInsight, SummaryStats } from "../types";
 
 interface AnalysisInsightsProps {

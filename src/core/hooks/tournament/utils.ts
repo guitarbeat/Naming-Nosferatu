@@ -4,7 +4,7 @@ import {
 	buildComparisonsMap,
 	getPreferencesMap,
 	initializeSorterPairs,
-} from "../../../shared/utils/coreUtils";
+} from "../../../shared/utils/core";
 
 export function getNextMatch(
 	names: NameItem[],
@@ -45,7 +45,7 @@ export function getNextMatch(
 
 			for (let idx = pairIndex; idx < s.pairs.length; idx++) {
 				const [a, b] = s.pairs[idx];
-				if (prefs.has(`${a}-${b}`) || prefs.has(`${b}-${a}`)) continue;
+				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) continue;
 
 				const ra =
 					ratings[a]?.rating ||

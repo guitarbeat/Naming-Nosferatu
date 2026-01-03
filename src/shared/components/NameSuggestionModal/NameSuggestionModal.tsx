@@ -8,7 +8,6 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import useAppStore from "../../../core/store/useAppStore";
 import { ErrorManager } from "../../services/errorManager/index";
 import { catNamesAPI } from "../../services/supabase/client";
-import { validateCatName, validateDescription } from "../../utils/coreUtils";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import "./NameSuggestionModal.css";
 

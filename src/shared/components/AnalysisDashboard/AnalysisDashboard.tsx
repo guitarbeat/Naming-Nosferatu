@@ -11,7 +11,7 @@ import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { nameItemShape } from "../../propTypes";
 import { hiddenNamesAPI } from "../../services/supabase/client";
-import { clearAllCaches, devError } from "../../utils/coreUtils";
+import { clearAllCaches } from "../../utils/core";
 import { BumpChart } from "../Charts/Charts";
 import {
 	CollapsibleContent,

@@ -13,17 +13,6 @@ declare module "@services/errorManager" {
 	export const ErrorManager: unknown;
 }
 
-declare module "@utils/coreUtils" {
-	export const devLog: (...args: unknown[]) => void;
-	export const devWarn: (...args: unknown[]) => void;
-	export const devError: (...args: unknown[]) => void;
-	export function buildComparisonsMap(...args: unknown[]): unknown;
-	export function getPreferencesMap(...args: unknown[]): unknown;
-	export function initializeSorterPairs(...args: unknown[]): unknown;
-	export const ratingsToArray: (...args: unknown[]) => unknown;
-	export const ratingsToObject: (...args: unknown[]) => unknown;
-}
-
 declare module "@services/supabase/auth" {
 	const authApi: unknown;
 	export = authApi;

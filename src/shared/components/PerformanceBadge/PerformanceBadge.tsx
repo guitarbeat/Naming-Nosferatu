@@ -4,7 +4,6 @@
  */
 
 import PropTypes from "prop-types";
-import { getInsightCategory } from "../../utils/coreUtils";
 import "./PerformanceBadge.css";
 import "./TrendIndicator.css";
 

@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { calculatePercentile } from "../../utils/coreUtils";
 import type {
 	AnalyticsDataItem,
 	HighlightItem,
@@ -292,7 +291,7 @@ export function useAnalysisDisplayData({
 		if (worstRated && worstRated.rating < 1500) {
 			result.push({
 				type: "warning",
-				message: `${worstRated.name} has the lowest rating (${worstRated.rating}) - consider hiding`,
+				message: `${worstRated.name} has the lowest rating(${worstRated.rating}) - consider hiding`,
 				icon: "⚠️",
 			});
 		}
@@ -311,7 +310,7 @@ export function useAnalysisDisplayData({
 		if (summaryStats.topName) {
 			result.push({
 				type: "info",
-				message: `${summaryStats.topName.name} leads with a rating of ${summaryStats.topName.rating}`,
+				message: `${summaryStats.topName.name} leads with a rating of ${summaryStats.topName.rating} `,
 				icon: "🏆",
 			});
 		}

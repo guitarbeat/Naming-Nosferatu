@@ -10,7 +10,7 @@ import { cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import PropTypes from "prop-types";
 import React, { forwardRef, memo } from "react";
-import { cn } from "../../utils/coreUtils";
+import { cn } from "../../utils/core";
 
 // Shadcn button variants (inlined from ui/button.tsx)
 const buttonVariants = cva(

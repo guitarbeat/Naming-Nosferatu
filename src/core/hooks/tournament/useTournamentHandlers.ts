@@ -10,7 +10,7 @@ import {
 	isNameHidden,
 	ratingsToArray,
 	ratingsToObject,
-} from "../../../shared/utils/coreUtils";
+} from "../../../shared/utils/core";
 import type { UseTournamentHandlersProps } from "./types";
 
 /**

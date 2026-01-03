@@ -7,7 +7,6 @@ import type {
 	PersistentState,
 	TournamentState,
 } from "../../../shared/propTypes";
-import { calculateBracketRound } from "../../../shared/utils/coreUtils";
 import useAppStore from "../../store/useAppStore";
 import useLocalStorage from "../useStorage";
 import type { UseTournamentProps } from "./types";

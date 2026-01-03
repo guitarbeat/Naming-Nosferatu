@@ -32,7 +32,7 @@ import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
-} from "./shared/utils/coreUtils";
+} from "./shared/utils/core";
 import type { TournamentName } from "./types/store";
 
 /**

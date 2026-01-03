@@ -9,7 +9,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FALLBACK_NAMES } from "../../../features/tournament/config";
 import { ErrorManager } from "../../services/errorManager/index";
 import { catNamesAPI, tournamentsAPI } from "../../services/supabase/client";
-import { devLog } from "../../utils/coreUtils";
 
 // ============================================================================
 // Types

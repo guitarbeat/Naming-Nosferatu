@@ -11,10 +11,6 @@ import Error from "../../shared/components/Error/Error";
 import Loading from "../../shared/components/Loading/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
-import {
-	calculateBracketRound,
-	getVisibleNames,
-} from "../../shared/utils/coreUtils";
 import MatchResult from "./components/MatchResult/MatchResult";
 import RoundTransition from "./components/RoundTransition/RoundTransition";
 import TournamentFooter from "./components/TournamentFooter/TournamentFooter";

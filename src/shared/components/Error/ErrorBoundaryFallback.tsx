@@ -1,10 +1,7 @@
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createStandardizedError } from "../../services/errorManager/index";
-import {
-	attachMediaQueryListener,
-	getMediaQueryList,
-} from "../../utils/coreUtils";
+import { attachMediaQueryListener, getMediaQueryList } from "../../utils/core";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
 

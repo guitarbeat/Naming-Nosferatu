@@ -7,7 +7,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/useTournament";
-import { shuffleArray } from "../../../shared/utils/coreUtils";
 
 /**
  * Custom hook for tournament state management

@@ -15,10 +15,7 @@ import {
 	CollapsibleHeader,
 } from "../../../shared/components/Header/CollapsibleHeader";
 import { useToast } from "../../../shared/hooks/useAppHooks";
-import {
-	calculateBracketRound,
-	devError,
-} from "../../../shared/utils/coreUtils";
+import { calculateBracketRound, devError } from "../../../shared/utils/core";
 import RankingAdjustment from "../RankingAdjustment";
 import styles from "./PersonalResults.module.css";
 

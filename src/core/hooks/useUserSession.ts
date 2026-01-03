@@ -9,7 +9,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { resolveSupabaseClient } from "../../shared/services/supabase/client";
-import { isUserAdmin } from "../../shared/utils/coreUtils";
 import useAppStore from "../store/useAppStore";
 
 let canUseSetUserContext = true;

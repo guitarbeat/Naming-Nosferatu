@@ -11,7 +11,7 @@ import {
 	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
-} from "../../utils/coreUtils";
+} from "../../utils/core";
 import CardName from "../Card/components/CardName";
 import Loading from "../Loading/Loading";
 import styles from "./NameGrid.module.css";

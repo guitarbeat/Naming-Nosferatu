@@ -4,7 +4,7 @@ import {
 	formatDate,
 	getMetricLabel,
 	getRankDisplay,
-} from "../../../utils/coreUtils";
+} from "../../../../utils/core";
 import { ColumnHeader } from "../../Header/ColumnHeader";
 import { PerformanceBadges } from "../../PerformanceBadge/PerformanceBadge";
 import type { SummaryStats } from "../types";
@@ -169,7 +169,6 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 									{isAdmin ? (
 										<div className="metric-with-insight">
 											<span
-												className="top-names-rating"
 												aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
 											>
 												{item.rating}
