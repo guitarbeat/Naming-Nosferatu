@@ -17,15 +17,15 @@ import {
 	TournamentFooter,
 	TournamentHeader,
 } from "./components/TournamentUI";
-import { CAT_IMAGES } from "./config";
-import type { EventListener } from "./hooks/useTournamentInteractions";
+import type { EventListener } from "./hooks/tournamentComponentHooks";
 import {
 	useAudioManager,
 	useKeyboardControls,
-} from "./hooks/useTournamentInteractions";
-import { useTournamentState } from "./hooks/useTournamentState";
+	useTournamentState,
+} from "./hooks/tournamentComponentHooks";
 import styles from "./Tournament.module.css";
 import TournamentControls from "./TournamentControls";
+import { CAT_IMAGES } from "./tournamentUtils";
 
 interface VoteData {
 	match: {

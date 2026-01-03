@@ -13,11 +13,10 @@ import {
 } from "../../../utils/core";
 import { CollapsibleHeader } from "../Header/CollapsibleHeader";
 import { PerformanceBadges } from "../PerformanceBadge/PerformanceBadge";
+import type { ConsolidatedName } from "./AnalysisDashboard";
 import styles from "./AnalysisUI.module.css";
-
 // Import types
 import type { NameWithInsight, SummaryStats } from "./types";
-import type { ConsolidatedName } from "./useAnalysisDisplayData";
 
 /* ========================================= */
 /*             COLUMN HEADER                 */

@@ -466,4 +466,40 @@ function LiquidGlass({
 	);
 }
 
+// Glass configuration presets and utilities
+export const DEFAULT_GLASS_CONFIG = {
+	width: 240,
+	height: 110,
+	radius: 42,
+	scale: -110,
+	saturation: 1.08,
+	frost: 0.12,
+	inputBlur: 14,
+	outputBlur: 0.9,
+};
+
+export const HEADER_GLASS_CONFIG = {
+	width: 800,
+	height: 60,
+	radius: 12,
+	scale: -90,
+	saturation: 1.05,
+	frost: 0.06,
+	inputBlur: 10,
+	outputBlur: 0.6,
+};
+
+export function resolveGlassConfig(
+	liquidGlass: boolean | Record<string, unknown> | undefined,
+	defaultConfig: Record<string, unknown>,
+): Record<string, unknown> {
+	if (typeof liquidGlass === "boolean") {
+		return defaultConfig;
+	}
+	if (typeof liquidGlass === "object" && liquidGlass !== null) {
+		return { ...defaultConfig, ...liquidGlass };
+	}
+	return defaultConfig;
+}
+
 export default LiquidGlass;

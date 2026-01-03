@@ -6,8 +6,7 @@ import ModernTournamentSetup from "../../../features/tournament/ModernTournament
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";
-import Error from "../Error/Error";
-import Loading from "../Loading/Loading";
+import { ErrorComponent, Loading } from "../CommonUI";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
@@ -158,7 +157,7 @@ export default function ViewRouter({
 	}
 
 	return (
-		<Error variant="boundary" error={null}>
+		<ErrorComponent variant="boundary" error={null}>
 			<Tournament
 				names={tournament.names}
 				existingRatings={Object.fromEntries(
@@ -183,7 +182,7 @@ export default function ViewRouter({
 				userName={userName}
 				onVote={onVote}
 			/>
-		</Error>
+		</ErrorComponent>
 	);
 }
 

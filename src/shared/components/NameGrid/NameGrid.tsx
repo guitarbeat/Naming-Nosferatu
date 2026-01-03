@@ -13,7 +13,7 @@ import {
 	selectedNamesToSet,
 } from "../../utils/core";
 import CardName from "../Card/components/CardName";
-import Loading from "../Loading/Loading";
+import { Loading } from "../CommonUI";
 import styles from "./NameGrid.module.css";
 
 interface NameItem {

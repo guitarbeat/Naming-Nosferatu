@@ -6,8 +6,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Button from "../Button/Button";
-import ErrorComponent from "../Error/Error";
-import Loading from "../Loading/Loading";
+import { ErrorComponent, Loading } from "../CommonUI";
 import { NameGrid } from "../NameGrid/NameGrid";
 import { TournamentToolbar } from "../TournamentToolbar/TournamentToolbar";
 import styles from "./NameManagementView.module.css";

@@ -1,6 +1,33 @@
-import type { NameItem } from "../../../shared/propTypes";
-import type { AppState } from "../../../types/store";
+// Consolidated imports from all merged files
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import EloRating from "../../features/tournament/EloRating";
+import type { PreferenceSorter } from "../../features/tournament/PreferenceSorter";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentState,
+} from "../../shared/propTypes";
+import { ErrorManager } from "../../shared/services/errorManager";
+import { tournamentsAPI } from "../../shared/services/supabase/client";
+import {
+	buildComparisonsMap,
+	clearTournamentCache,
+	devError,
+	devLog,
+	devWarn,
+	getPreferencesMap,
+	initializeSorterPairs,
+	isNameHidden,
+	ratingsToArray,
+	ratingsToObject,
+} from "../../shared/utils/core";
+import type { AppState } from "../../types/store";
+import useAppStore from "../store/useAppStore";
+import useLocalStorage from "./useStorage";
 
+// Types
 export interface UseTournamentProps {
 	names?: NameItem[];
 	existingRatings?: Record<
@@ -24,13 +51,7 @@ export interface UseTournamentHandlersProps {
 	navigateTo: (path: string) => void;
 }
 
-import type { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
-import type { Match, MatchRecord, NameItem } from "../../../shared/propTypes";
-import {
-	buildComparisonsMap,
-	getPreferencesMap,
-	initializeSorterPairs,
-} from "../../../shared/utils/core";
+// Utility functions
 
 export function getNextMatch(
 	names: NameItem[],
@@ -142,21 +163,6 @@ export function getNextMatch(
 
 	return findBestMatch();
 }
-
-import { useCallback } from "react";
-import type { NameItem } from "../../../shared/propTypes";
-import { ErrorManager } from "../../../shared/services/errorManager";
-import { tournamentsAPI } from "../../../shared/services/supabase/client";
-import {
-	clearTournamentCache,
-	devError,
-	devLog,
-	devWarn,
-	isNameHidden,
-	ratingsToArray,
-	ratingsToObject,
-} from "../../../shared/utils/core";
-import type { UseTournamentHandlersProps } from "./types";
 
 /**
  * Custom hook for tournament-related handlers
@@ -327,19 +333,7 @@ export function useTournamentHandlers({
 	};
 }
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import EloRating from "../../../features/tournament/EloRating";
-import { PreferenceSorter } from "../../../features/tournament/PreferenceSorter";
-import type {
-	MatchRecord,
-	NameItem,
-	PersistentState,
-	TournamentState,
-} from "../../../shared/propTypes";
-import useAppStore from "../../store/useAppStore";
-import useLocalStorage from "../useStorage";
-import type { UseTournamentProps } from "./types";
-import { getNextMatch } from "./utils";
+// useTournament function - uses imports from top of file
 
 const createDefaultPersistentState = (userName: string): PersistentState => ({
 	matchHistory: [],

@@ -6,8 +6,7 @@
 import { motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useRef } from "react";
-import { useEyeTracking } from "./hooks/useEyeTracking";
-import { useLoginController } from "./hooks/useLoginController";
+import { useEyeTracking, useLoginController } from "./hooks/authHooks";
 import styles from "./Login.module.css";
 
 function Login({ onLogin }: { onLogin: (name: string) => void }) {

@@ -7,10 +7,9 @@ import PropTypes from "prop-types";
 import React, { memo, useId } from "react";
 import { cn } from "../../utils/core";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import {
-	DEFAULT_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../LiquidGlass/utils/glassConfig";
+
+} from "../LiquidGlass/LiquidGlass";
+
 import styles from "./Card.module.css";
 
 // Force refresh

@@ -8,10 +8,8 @@ import PropTypes from "prop-types";
 import { useId } from "react";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import {
-	HEADER_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../LiquidGlass/utils/glassConfig";
+
+} from "../LiquidGlass/LiquidGlass";
 import "./CollapsibleHeader.css";
 
 /**
