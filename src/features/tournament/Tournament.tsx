@@ -463,6 +463,30 @@ function TournamentContent({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [setVotingError]);
 
+	// * Memoized handlers to prevent re-renders
+	const handleDismissError = useCallback(() => {
+		setVotingError(null);
+	}, [setVotingError]);
+
+	const handleToggleBracket = useCallback(() => {
+		setShowBracket((prev) => !prev);
+	}, [setShowBracket]);
+
+	const handleToggleKeyboardHelp = useCallback(() => {
+		setShowKeyboardHelp((prev) => !prev);
+	}, [setShowKeyboardHelp]);
+
+	const handleToggleCatPictures = useCallback(() => {
+		setShowCatPictures((prev) => !prev);
+	}, []);
+
+	const handleVolumeChange = useCallback(
+		(type: "music" | "effects", value: number) => {
+			audioManager.handleVolumeChange(type, value);
+		},
+		[audioManager],
+	);
+
 	// * Keyboard controls
 	useKeyboardControls(
 		selectedOption,
@@ -472,7 +496,7 @@ function TournamentContent({
 		handleVoteWithAnimation,
 		globalEventListeners,
 		{
-			onToggleHelp: () => setShowKeyboardHelp((v) => !v),
+			onToggleHelp: handleToggleKeyboardHelp,
 			onUndo: () => {
 				if (canUndoNow) {
 					if (handleUndo) handleUndo();
@@ -490,7 +514,7 @@ function TournamentContent({
 					setSelectedOption("right");
 				}
 			},
-			onToggleCatPictures: () => setShowCatPictures((v) => !v),
+			onToggleCatPictures: handleToggleCatPictures,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any,
 	);
@@ -603,11 +627,9 @@ function TournamentContent({
 						? { music: audioManager.volume, effects: audioManager.volume }
 						: audioManager.volume
 				}
-				onVolumeChange={(type, value) =>
-					audioManager.handleVolumeChange(type, value)
-				}
+				onVolumeChange={handleVolumeChange}
 				showCatPictures={showCatPictures}
-				onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
+				onToggleCatPictures={handleToggleCatPictures}
 			/>
 
 			{/* Undo banner */}
@@ -650,7 +672,7 @@ function TournamentContent({
 					onNameCardClick={handleNameCardClick}
 					onVoteWithAnimation={handleVoteWithAnimation}
 					onVoteRetry={handleVoteRetry}
-					onDismissError={() => setVotingError(null)}
+					onDismissError={handleDismissError}
 					showCatPictures={showCatPictures}
 					imageList={CAT_IMAGES}
 				/>
@@ -660,8 +682,8 @@ function TournamentContent({
 					showBracket={showBracket}
 					showKeyboardHelp={showKeyboardHelp}
 					transformedMatches={transformedMatches}
-					onToggleBracket={() => setShowBracket(!showBracket)}
-					onToggleKeyboardHelp={() => setShowKeyboardHelp(!showKeyboardHelp)}
+					onToggleBracket={handleToggleBracket}
+					onToggleKeyboardHelp={handleToggleKeyboardHelp}
 				/>
 			</div>
 
