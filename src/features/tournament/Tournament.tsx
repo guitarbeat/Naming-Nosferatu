@@ -10,6 +10,10 @@ import Button from "../../shared/components/Button/Button";
 import { Error, Loading } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
+import {
+	calculateBracketRound,
+	getVisibleNames,
+} from "../../shared/utils/core";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
 	MatchResult,

@@ -416,6 +416,90 @@
 }
 
 /* ==========================================================================
+   Toggle Components
+   ========================================================================== */
+
+.tournament-toolbar-toggle-stack {
+	display: flex;
+	align-items: center;
+	gap: var(--tt-gap-small);
+	flex-wrap: wrap;
+}
+
+.tournament-toolbar-toggle-wrapper {
+	flex: 0 0 auto;
+}
+
+.tournament-toolbar-toggle-switch {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	height: var(--tt-toggle-switch-height-default);
+	padding: var(--tt-toggle-track-padding);
+	border: var(--tt-border-toggle-inactive);
+	border-radius: var(--tt-radius-pill);
+	background: var(--tt-surface);
+	cursor: pointer;
+	transition: all var(--transition-base);
+	box-shadow: var(--tt-shadow-toggle-inactive);
+}
+
+.tournament-toolbar-toggle-switch:hover {
+	border: var(--tt-border-toggle-hover);
+	box-shadow: var(--tt-shadow-toggle-inactive);
+}
+
+.tournament-toolbar-toggle-switch-active {
+	border: var(--tt-border-toggle-active);
+	box-shadow: var(--tt-shadow-toggle-active);
+}
+
+.tournament-toolbar-toggle-switch-active:hover {
+	border: var(--tt-border-toggle-active-hover);
+	box-shadow: var(--tt-shadow-toggle-active-hover);
+}
+
+.tournament-toolbar-toggle-thumb {
+	position: absolute;
+	left: var(--tt-toggle-thumb-offset);
+	width: var(--tt-toggle-thumb-size);
+	height: var(--tt-toggle-thumb-size);
+	border-radius: 50%;
+	background: var(--tt-surface-strong);
+	box-shadow: var(--tt-shadow-thumb-inactive);
+	transition:
+		transform var(--transition-base),
+		box-shadow var(--transition-base);
+	z-index: 1;
+}
+
+.tournament-toolbar-toggle-switch-active .tournament-toolbar-toggle-thumb {
+	transform: translateX(var(--tt-toggle-thumb-active-translate));
+	box-shadow: var(--tt-shadow-thumb-active);
+}
+
+.tournament-toolbar-toggle-label {
+	flex: 1;
+	text-align: center;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tt-letter-spacing-label);
+	color: var(--text-secondary);
+	text-shadow: var(--tt-text-shadow-label-inactive);
+	transition:
+		color var(--transition-base),
+		text-shadow var(--transition-base);
+	z-index: 0;
+}
+
+.tournament-toolbar-toggle-switch-active .tournament-toolbar-toggle-label {
+	color: var(--text-primary);
+	text-shadow: var(--tt-text-shadow-label-active);
+}
+
+/* ==========================================================================
    Filter Components
    ========================================================================== */
 

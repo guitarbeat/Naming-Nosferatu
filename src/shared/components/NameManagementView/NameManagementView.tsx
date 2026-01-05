@@ -289,19 +289,13 @@ export function NameManagementView({
 								onToggleName: toggleName,
 								onRateName: (name, rating) => {
 									console.log("Rate", name, rating);
-								}, // Dummy handler or add to hook?
+								},
 								isAdmin: !!profileProps.isAdmin,
-								isSelectionMode: false, // Dummy
-								// These props are not in SwipeableCardsProps?
-								// showCatPictures: showCatPictures,
-								// imageList: tournamentProps.imageList,
-								// onStartTournament: onStartTournament ...
-								// Wait, SwipeableCardsProps validation might fail if I pass extra props not in interface?
-								// React generic components usually accept extra props but TS is strict.
-								// I will cast to any to be safe on this dynamic rendering for now, OR valid SwipeableCardsProps.
-								// But previously I defined SwipeableCardsProps in types.ts.
-								// I'll stick to what I defined.
-							} as any)
+								isSelectionMode: false,
+								showCatPictures: showCatPictures,
+								imageList: tournamentProps.imageList,
+								onStartTournament: onStartTournament,
+							})
 						) : (
 							<NameGrid
 								names={names}

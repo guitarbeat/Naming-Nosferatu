@@ -31,7 +31,7 @@ export const useTournamentStore = create<TournamentState>()(
 		// Initial State
 		availableNames: [],
 		selectedNames: new Set(),
-		operatorIdentity: "Guest Operator",
+		operatorIdentity: "Guest",
 		isLoading: false,
 		error: null,
 		isSidebarOpen: true,

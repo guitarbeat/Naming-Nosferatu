@@ -15,6 +15,7 @@ import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
 	buildComparisonsMap,
+	calculateBracketRound,
 	clearTournamentCache,
 	devError,
 	devLog,

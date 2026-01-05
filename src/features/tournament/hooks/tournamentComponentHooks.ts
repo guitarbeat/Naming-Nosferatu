@@ -14,6 +14,7 @@ import {
 } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/useTournament";
+import { shuffleArray } from "../../../shared/utils/core";
 
 /**
  * Custom hook for tournament state management

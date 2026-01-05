@@ -19,14 +19,15 @@ import { useTournamentStore } from "./stores/tournamentStore";
 
 // --- Components ---
 
-const OperatorBar = () => {
-	const { operatorIdentity, setOperatorIdentity } = useTournamentStore();
+const UserBar = () => {
+	const { operatorIdentity: userName, setOperatorIdentity: setUserName } =
+		useTournamentStore();
 	const [isEditing, setIsEditing] = React.useState(false);
-	const [tempName, setTempName] = React.useState(operatorIdentity);
+	const [tempName, setTempName] = React.useState(userName);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		setOperatorIdentity(tempName);
+		setUserName(tempName);
 		setIsEditing(false);
 	};
 
@@ -42,7 +43,7 @@ const OperatorBar = () => {
 				</div>
 				<div className="flex flex-col">
 					<span className="text-[10px] uppercase tracking-wider text-slate-400">
-						Operator Identity
+						Your Name
 					</span>
 					{isEditing ? (
 						<form onSubmit={handleSubmit} className="flex gap-2 items-center">
@@ -59,7 +60,7 @@ const OperatorBar = () => {
 							className="flex items-center gap-2 cursor-pointer group"
 							onClick={() => setIsEditing(true)}
 						>
-							<span className="text-white font-mono">{operatorIdentity}</span>
+							<span className="text-white font-mono">{userName}</span>
 							<span className="text-[10px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
 								[EDIT]
 							</span>
@@ -88,10 +89,10 @@ const SystemFeed = () => {
 				transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
 				className="whitespace-nowrap flex gap-8 text-[10px] font-mono text-amber-200/70"
 			>
-				<span>SYSTEM_FEED: INITIATING NAME PROTOCOL...</span>
-				<span>Scanning database for optimal feline designations {"//"}</span>
-				<span>Awaiting operator input...</span>
-				<span>Did you know? Cats spend 70% of their lives sleeping.</span>
+				<span>Welcome! Let's find the perfect name for your cat 🐱</span>
+				<span>Browse through our collection of wonderful names...</span>
+				<span>Select your favorites to start the tournament!</span>
+				<span>Did you know? Cats spend 70% of their lives sleeping. 😴</span>
 			</motion.div>
 		</div>
 	);
@@ -184,8 +185,8 @@ export default function ModernTournamentSetup({
 		setSearchQuery,
 		selectAll,
 		clearSelections,
-		setOperatorIdentity,
-		operatorIdentity,
+		setOperatorIdentity: setUserName,
+		operatorIdentity: storeUserName,
 	} = store;
 
 	// -- Data Fetching --
@@ -208,10 +209,10 @@ export default function ModernTournamentSetup({
 	}, [activeNames, setAvailableNames]);
 
 	useEffect(() => {
-		if (userName && userName !== operatorIdentity) {
-			setOperatorIdentity(userName);
+		if (userName && userName !== storeUserName) {
+			setUserName(userName);
 		}
-	}, [userName, operatorIdentity, setOperatorIdentity]); // Only run when userName prop changes
+	}, [userName, storeUserName, setUserName]); // Only run when userName prop changes
 
 	const handleStart = () => {
 		// Map selected IDs back to objects for the parent component
@@ -269,7 +270,7 @@ export default function ModernTournamentSetup({
 			{/* lov-tagger hook for interactivity */}
 			<div data-lovable-component="ModernTournamentSetup" />
 
-			<OperatorBar />
+			<UserBar />
 			<SystemFeed />
 
 			<main className="container mx-auto px-4 py-6 max-w-7xl">

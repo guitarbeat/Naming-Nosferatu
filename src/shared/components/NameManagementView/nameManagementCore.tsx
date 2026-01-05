@@ -77,15 +77,21 @@ export interface NameManagementViewExtensions {
 	nameSuggestion?: React.ReactNode | (() => React.ReactNode);
 	nameGrid?: React.ReactNode | React.ReactElement | (() => React.ReactNode);
 	contextLogic?: React.ReactNode | (() => React.ReactNode);
+	bulkActions?:
+		| React.ReactNode
+		| ((props: { onExport?: () => void }) => React.ReactNode);
 }
 
 export interface SwipeableCardsProps {
 	names: NameItem[];
 	selectedNames: NameItem[];
 	onToggleName: (name: NameItem) => void;
-	onRateName: (name: NameItem, rating: number) => void;
-	isAdmin: boolean;
-	isSelectionMode: boolean;
+	onRateName?: (name: NameItem, rating: number) => void;
+	isAdmin?: boolean;
+	isSelectionMode?: boolean;
+	showCatPictures?: boolean;
+	imageList?: string[];
+	onStartTournament?: (names: NameItem[]) => void;
 }
 
 export interface NameManagementViewTournamentProps {

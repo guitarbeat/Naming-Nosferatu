@@ -7,6 +7,7 @@
 import PropTypes from "prop-types";
 import React, { useId, useMemo } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
+import useAppStore from "../../../core/store/useAppStore";
 import { TournamentButton } from "../Button/Button";
 import { Select } from "../Form/Form";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
@@ -454,6 +455,12 @@ function TournamentToolbar({
 	const toolbarGlassId = useId();
 	const glassId = `toolbar-glass-${toolbarGlassId.replace(/:/g, "-")}`;
 
+	// Get swipe mode and cat pictures state from store
+	const { isSwipeMode, showCatPictures } = useAppStore((state) => state.ui);
+	const { setSwipeMode, setCatPictures } = useAppStore(
+		(state) => state.uiActions,
+	);
+
 	// Tournament mode toolbar content
 	const renderTournamentMode = () => {
 		const selectedCount = startTournamentButton?.selectedCount ?? 0;
@@ -469,6 +476,42 @@ function TournamentToolbar({
 
 		return (
 			<div className={styles.unifiedContainer} data-mode={mode}>
+				<div className={styles.toggleStack}>
+					<div className={styles.toggleWrapper}>
+						<button
+							type="button"
+							onClick={() => setSwipeMode(!isSwipeMode)}
+							className={`${styles.toggleSwitch} ${isSwipeMode ? styles.toggleSwitchActive : ""}`}
+							aria-pressed={isSwipeMode}
+							aria-label={
+								isSwipeMode ? "Disable swipe mode" : "Enable swipe mode"
+							}
+							title={isSwipeMode ? "Swipe mode: On" : "Swipe mode: Off"}
+						>
+							<span className={styles.toggleThumb} />
+							<span className={styles.toggleLabel}>
+								{isSwipeMode ? "Swipe Mode" : "Grid Mode"}
+							</span>
+						</button>
+					</div>
+					<div className={styles.toggleWrapper}>
+						<button
+							type="button"
+							onClick={() => setCatPictures(!showCatPictures)}
+							className={`${styles.toggleSwitch} ${showCatPictures ? styles.toggleSwitchActive : ""}`}
+							aria-pressed={showCatPictures}
+							aria-label={
+								showCatPictures ? "Hide cat pictures" : "Show cat pictures"
+							}
+							title={showCatPictures ? "Cat pictures: On" : "Cat pictures: Off"}
+						>
+							<span className={styles.toggleThumb} />
+							<span className={styles.toggleLabel}>
+								🐱 {showCatPictures ? "Cats On" : "Cats Off"}
+							</span>
+						</button>
+					</div>
+				</div>
 				{startTournamentButton && (
 					<TournamentButton
 						onClick={startTournamentButton.onClick}
