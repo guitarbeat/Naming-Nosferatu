@@ -745,12 +745,14 @@ class ErrorBoundary extends React.Component<
 	render() {
 		if (this.state.error) {
 			const Fallback = this.props.FallbackComponent;
+			// Use globalThis.Error to avoid conflict with exported Error alias
+			const NativeError = globalThis.Error;
 			return (
 				<Fallback
 					error={
-						this.state.error instanceof Error
+						this.state.error instanceof NativeError
 							? this.state.error
-							: new Error(String(this.state.error))
+							: new NativeError(String(this.state.error))
 					}
 					resetErrorBoundary={this.reset}
 				/>
