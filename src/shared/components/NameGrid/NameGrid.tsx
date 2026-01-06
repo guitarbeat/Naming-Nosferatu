@@ -17,7 +17,6 @@ import CardName from "../Card/components/CardName";
 import { Loading } from "../CommonUI";
 import styles from "./NameGrid.module.css";
 
-
 interface NameGridProps {
 	names: NameItem[];
 	selectedNames?: NameItem[] | Set<string | number>;

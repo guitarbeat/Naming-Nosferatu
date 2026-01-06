@@ -41,6 +41,7 @@ interface GlassConfig {
 	inputBlur?: number;
 	outputBlur?: number;
 	id?: string;
+	[key: string]: unknown;
 }
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -139,18 +140,22 @@ const Card = memo(
 			const glassId = useId();
 
 			if (shouldUseLiquidGlass) {
+				const glassConfig = resolveGlassConfig(
+					liquidGlass,
+					DEFAULT_GLASS_CONFIG,
+				) as GlassConfig;
 				const {
-					width,
-					height,
-					radius,
-					scale,
-					saturation,
-					frost,
-					inputBlur,
-					outputBlur,
+					width = 240,
+					height = 110,
+					radius = 42,
+					scale = -110,
+					saturation = 1.08,
+					frost = 0.12,
+					inputBlur = 14,
+					outputBlur = 0.9,
 					id,
 					...glassProps
-				} = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG);
+				} = glassConfig;
 
 				// * Separate wrapper classes (for LiquidGlass) from content classes
 				const wrapperClasses = [className].filter(Boolean).join(" ");

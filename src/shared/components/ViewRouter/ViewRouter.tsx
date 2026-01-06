@@ -10,7 +10,6 @@ import { ErrorComponent, Loading } from "../CommonUI";
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
 
-
 import type { TournamentName } from "../../../types/store";
 
 interface TournamentState {
@@ -56,8 +55,7 @@ export default function ViewRouter({
 	onVote,
 	onOpenSuggestName,
 }: ViewRouterProps) {
-	const { isRoute, currentRoute } = useRouting();
-
+	const { currentRoute } = useRouting();
 
 	if (!isLoggedIn || tournament.names === null) {
 		// Convert ratings from Record<string, { rating: number }> to Record<string, number>

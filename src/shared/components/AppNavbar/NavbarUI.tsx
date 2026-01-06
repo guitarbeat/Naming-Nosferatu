@@ -16,10 +16,7 @@ export interface IconProps {
 	"aria-hidden"?: boolean;
 }
 
-const Icon = ({
-	children,
-	...props
-}: React.PropsWithChildren<IconProps>) => (
+const Icon = ({ children, ...props }: React.PropsWithChildren<IconProps>) => (
 	<svg
 		viewBox="0 0 24 24"
 		fill="none"

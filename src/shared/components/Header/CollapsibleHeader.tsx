@@ -144,18 +144,34 @@ export function CollapsibleHeader({
 	);
 
 	if (shouldUseLiquidGlass) {
+		type GlassConfigType = {
+			width?: number;
+			height?: number;
+			radius?: number;
+			scale?: number;
+			saturation?: number;
+			frost?: number;
+			inputBlur?: number;
+			outputBlur?: number;
+			id?: string;
+			[key: string]: unknown;
+		};
+		const glassConfig = resolveGlassConfig(
+			liquidGlass,
+			HEADER_GLASS_CONFIG,
+		) as GlassConfigType;
 		const {
-			width,
-			height,
-			radius,
-			scale,
-			saturation,
-			frost,
-			inputBlur,
-			outputBlur,
+			width = 800,
+			height = 60,
+			radius = 12,
+			scale = -90,
+			saturation = 1.05,
+			frost = 0.06,
+			inputBlur = 10,
+			outputBlur = 0.6,
 			id,
 			...glassProps
-		} = resolveGlassConfig(liquidGlass, HEADER_GLASS_CONFIG);
+		} = glassConfig;
 
 		return (
 			<LiquidGlass

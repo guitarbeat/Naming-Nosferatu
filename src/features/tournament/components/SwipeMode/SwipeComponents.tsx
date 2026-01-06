@@ -14,7 +14,6 @@ import styles from "../../TournamentSetup.module.css";
 // Types
 // ============================================================================
 
-
 interface GestureData {
 	type: string;
 	x?: number;

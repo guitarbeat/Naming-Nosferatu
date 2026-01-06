@@ -352,7 +352,7 @@ const getRoleSourceOrder = (state: ClientState | undefined) => {
 
 	const preferred =
 		state.preferredRoleSource &&
-			!state.disabledSources.has(state.preferredRoleSource)
+		!state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -405,7 +405,8 @@ const fetchRoleFromSource = async (
 	const trimmedUserName = userName.trim?.() ?? userName;
 
 	if (source === "user_roles") {
-		const { data, error } = await activeSupabase
+		// user_roles table exists in DB but may not be in auto-generated types
+		const { data, error } = await (activeSupabase as SupabaseClient)
 			.from("user_roles")
 			.select("role")
 			.eq("user_name", trimmedUserName)
@@ -413,7 +414,13 @@ const fetchRoleFromSource = async (
 			.limit(1)
 			.maybeSingle();
 
-		return handleRoleResponse(data, error, source, state, "role");
+		return handleRoleResponse(
+			data as Record<string, unknown> | null,
+			error,
+			source,
+			state,
+			"role",
+		);
 	}
 
 	return { role: null, handled: true };

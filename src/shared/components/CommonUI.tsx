@@ -732,11 +732,11 @@ class ErrorBoundary extends React.Component<
 		onReset?: () => void;
 		children?: React.ReactNode;
 	},
-	{ error: unknown }
+	{ error: Error | null }
 > {
-	state = { error: null };
+	state: { error: Error | null } = { error: null };
 	static getDerivedStateFromError(error: unknown) {
-		return { error };
+		return { error: error instanceof Error ? error : new Error(String(error)) };
 	}
 	reset = () => {
 		this.setState({ error: null });
@@ -745,17 +745,8 @@ class ErrorBoundary extends React.Component<
 	render() {
 		if (this.state.error) {
 			const Fallback = this.props.FallbackComponent;
-			// Use globalThis.Error to avoid conflict with exported Error alias
-			const NativeError = globalThis.Error;
 			return (
-				<Fallback
-					error={
-						this.state.error instanceof NativeError
-							? this.state.error
-							: new NativeError(String(this.state.error))
-					}
-					resetErrorBoundary={this.reset}
-				/>
+				<Fallback error={this.state.error} resetErrorBoundary={this.reset} />
 			);
 		}
 		return this.props.children;

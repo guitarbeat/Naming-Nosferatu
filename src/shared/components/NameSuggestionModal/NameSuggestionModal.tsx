@@ -11,6 +11,33 @@ import { catNamesAPI } from "../../services/supabase/client";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import "./NameSuggestionModal.css";
 
+// Validation helpers
+const validateCatName = (name: string) => {
+	const trimmed = name.trim();
+	if (!trimmed) return { success: false, error: "Name is required" };
+	if (trimmed.length < 2)
+		return { success: false, error: "Name must be at least 2 characters" };
+	if (trimmed.length > 50)
+		return { success: false, error: "Name must be 50 characters or less" };
+	return { success: true, value: trimmed };
+};
+
+const validateDescription = (description: string) => {
+	const trimmed = description.trim();
+	if (!trimmed) return { success: false, error: "Description is required" };
+	if (trimmed.length < 5)
+		return {
+			success: false,
+			error: "Description must be at least 5 characters",
+		};
+	if (trimmed.length > 500)
+		return {
+			success: false,
+			error: "Description must be 500 characters or less",
+		};
+	return { success: true, value: trimmed };
+};
+
 /**
  * Modal component for suggesting new cat names
  * @param {Object} props

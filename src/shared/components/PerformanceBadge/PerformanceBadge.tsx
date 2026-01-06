@@ -7,6 +7,42 @@ import PropTypes from "prop-types";
 import "./PerformanceBadge.css";
 import "./TrendIndicator.css";
 
+// Insight category lookup
+const INSIGHT_CATEGORIES: Record<
+	string,
+	{ label: string; icon: string; description: string }
+> = {
+	top_rated: {
+		label: "Top Rated",
+		icon: "⭐",
+		description: "Among the highest rated names",
+	},
+	trending_up: {
+		label: "Trending",
+		icon: "📈",
+		description: "Rising in popularity",
+	},
+	trending_down: {
+		label: "Declining",
+		icon: "📉",
+		description: "Decreasing in popularity",
+	},
+	new: { label: "New", icon: "✨", description: "Recently added" },
+	undefeated: {
+		label: "Undefeated",
+		icon: "🏆",
+		description: "Has never lost a matchup",
+	},
+	popular: { label: "Popular", icon: "❤️", description: "Frequently selected" },
+	underdog: {
+		label: "Underdog",
+		icon: "🐕",
+		description: "Low rating but gaining traction",
+	},
+};
+
+const getInsightCategory = (type: string) => INSIGHT_CATEGORIES[type] || null;
+
 /**
  * PerformanceBadge Component
  * Displays visual badge indicating achievement or status

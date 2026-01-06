@@ -56,16 +56,19 @@ export interface TournamentFilters {
 export interface NameManagementContextType {
 	names: NameItem[];
 	selectedNames: NameItem[];
-	toggleName: (name: NameItem) => void;
+	toggleName: (name: NameItem | string) => void;
 	toggleNameById: (nameId: string, selected: boolean) => void;
 	toggleNamesByIds: (nameIds: string[], shouldSelect?: boolean) => void;
 	selectAll: () => void;
 	clearSelection: () => void;
-	isSelected: (nameOrId: NameItem | string | number) => boolean;
+	isSelected: (nameOrId: NameItem | string) => boolean;
 	selectedCount: number;
 	totalCount: number;
 	mode: string;
-	handleFilterChange: (name: string, value: string) => void;
+	handleFilterChange: (
+		key: keyof TournamentFilters,
+		value: string | number | boolean,
+	) => void;
 	onStartTournament?: (selectedNames: NameItem[]) => void;
 }
 
@@ -77,6 +80,7 @@ export interface NameManagementViewExtensions {
 	nameSuggestion?: React.ReactNode | (() => React.ReactNode);
 	nameGrid?: React.ReactNode | React.ReactElement | (() => React.ReactNode);
 	contextLogic?: React.ReactNode | (() => React.ReactNode);
+	navbar?: React.ReactNode | (() => React.ReactNode);
 	bulkActions?:
 		| React.ReactNode
 		| ((props: { onExport?: () => void }) => React.ReactNode);
@@ -133,7 +137,11 @@ export interface UseNameManagementViewResult {
 	// Data
 	names: NameItem[];
 	isLoading: boolean;
+	isError: boolean;
 	error: Error | null;
+	dataError: Error | null;
+	refetch: () => void;
+	clearErrors: () => void;
 
 	// Name Selection
 	selectedNames: NameItem[];
@@ -421,7 +429,7 @@ export function useNameSelection({
 	const toggleName = useCallback(
 		(nameOrId: NameItem | string) => {
 			const id = typeof nameOrId === "string" ? nameOrId : String(nameOrId.id);
-			
+
 			setSelectedIds((prev) => {
 				const newSet = new Set(prev);
 				if (newSet.has(id)) {
@@ -433,14 +441,17 @@ export function useNameSelection({
 				// For tournament mode, we still want to schedule the save with full objects
 				if (mode === "tournament") {
 					const updatedList = names.filter((n) => newSet.has(String(n.id)));
-					
-					if (Date.now() - lastLogTsRef.current > 1000 && process.env.NODE_ENV === "development") {
+
+					if (
+						Date.now() - lastLogTsRef.current > 1000 &&
+						process.env.NODE_ENV === "development"
+					) {
 						console.log("🎮 TournamentSetup: Selection updated", updatedList);
 						lastLogTsRef.current = Date.now();
 					}
 					scheduleSave(updatedList);
 				}
-				
+
 				return newSet;
 			});
 		},
@@ -462,7 +473,7 @@ export function useNameSelection({
 					const updatedList = names.filter((n) => newSet.has(String(n.id)));
 					scheduleSave(updatedList);
 				}
-				
+
 				return newSet;
 			});
 		},
@@ -475,7 +486,7 @@ export function useNameSelection({
 
 			setSelectedIds((prev) => {
 				const newSet = new Set(prev);
-				nameIds.forEach(id => {
+				nameIds.forEach((id) => {
 					if (shouldSelect) {
 						newSet.add(String(id));
 					} else {
@@ -487,7 +498,7 @@ export function useNameSelection({
 					const updatedList = names.filter((n) => newSet.has(String(n.id)));
 					scheduleSave(updatedList);
 				}
-				
+
 				return newSet;
 			});
 		},
@@ -501,7 +512,7 @@ export function useNameSelection({
 				if (mode === "tournament") scheduleSave([]);
 				return new Set();
 			}
-			
+
 			const newSet = new Set(names.map((n) => String(n.id)));
 			if (mode === "tournament") scheduleSave(names);
 			return newSet;
@@ -523,7 +534,7 @@ export function useNameSelection({
 
 	return {
 		selectedNames, // Array of NameItem for backward sync
-		selectedIds,   // Set of strings for efficient lookups
+		selectedIds, // Set of strings for efficient lookups
 		setSelectedIds,
 		toggleName,
 		toggleNameById,
@@ -534,7 +545,6 @@ export function useNameSelection({
 		selectedCount,
 	};
 }
-
 
 // ============================================================================
 // HOOKS - Name Management View State
@@ -551,10 +561,12 @@ export function useNameManagementView({
 		names,
 		isLoading,
 		error: dataError,
+		refetch,
 	} = useNameData({ userName, mode });
 
 	const {
 		selectedNames,
+		selectedIds,
 		toggleName,
 		toggleNameById,
 		toggleNamesByIds,
@@ -568,8 +580,9 @@ export function useNameManagementView({
 		userName,
 	});
 
-	const { errors, ui, uiActions } = useAppStore();
+	const { errors, ui, errorActions } = useAppStore();
 	const isError = mode === "tournament" && (!!errors.current || !!dataError);
+	const clearErrors = errorActions?.clearError ?? (() => {});
 
 	const [showSelectedOnly, setShowSelectedOnly] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -577,7 +590,6 @@ export function useNameManagementView({
 	const [sortBy, setSortBy] = useState("alphabetical");
 
 	const { isSwipeMode, showCatPictures } = ui;
-	const { setSwipeMode: setIsSwipeMode } = uiActions;
 
 	const [filterStatus, setFilterStatus] = useState(
 		FILTER_OPTIONS.VISIBILITY.VISIBLE,
@@ -810,7 +822,11 @@ export function useNameManagementView({
 	return {
 		names,
 		isLoading,
+		isError,
 		error: isError ? (dataError as Error) : null,
+		dataError: dataError as Error | null,
+		refetch,
+		clearErrors,
 
 		selectedNames,
 		selectedIds,
@@ -844,7 +860,6 @@ export function useNameManagementView({
 		setDateFilter,
 
 		isSwipeMode,
-		setIsSwipeMode,
 		showCatPictures,
 
 		activeTab,

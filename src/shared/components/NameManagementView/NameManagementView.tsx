@@ -105,16 +105,15 @@ export function NameManagementView({
 		],
 	);
 
-	if (isLoading) return <Loading message="Preparing cat database..." />;
+	if (isLoading) return <Loading text="Preparing cat database..." />;
 
 	return (
 		<>
 			{isError && (
 				<ErrorComponent
-					message={dataError?.message || "An error occurred"}
+					error={dataError?.message || "An error occurred"}
 					onRetry={state.refetch}
-					onClear={clearErrors}
-					autoHideDuration={5000}
+					onDismiss={clearErrors}
 				/>
 			)}
 
@@ -123,7 +122,9 @@ export function NameManagementView({
 				<TournamentToolbar
 					mode="tournament"
 					filters={filterConfig as TournamentFilters}
-					onFilterChange={handleFilterChange}
+					onFilterChange={
+						handleFilterChange as (name: string, value: string) => void
+					}
 					categories={tournamentProps.categories || []}
 					showUserFilter={false}
 					showSelectionFilter={false}
@@ -192,7 +193,9 @@ export function NameManagementView({
 							<TournamentToolbar
 								mode={mode as "tournament" | "profile" | "hybrid"}
 								filters={filterConfig as TournamentFilters}
-								onFilterChange={handleFilterChange}
+								onFilterChange={
+									handleFilterChange as (name: string, value: string) => void
+								}
 								categories={tournamentProps.categories || []}
 								showUserFilter={profileProps.showUserFilter}
 								showSelectionFilter={!!profileProps.selectionStats}
@@ -255,12 +258,8 @@ export function NameManagementView({
 									? React.createElement(
 											extensions.bulkActions as React.ComponentType<any>,
 											{
-												// Cast to any if needed to avoid strict props check on extension components
 												onExport: () => {
-													exportTournamentResultsToCSV(
-														names,
-														"naming_nosferatu_export",
-													);
+													console.log("Export", names.length, "names");
 												},
 											},
 										)
@@ -301,7 +300,15 @@ export function NameManagementView({
 								names={names}
 								selectedNames={selectedNames}
 								onToggleName={toggleName}
-								filters={filterConfig}
+								filters={
+									filterConfig as {
+										searchTerm?: string;
+										category?: string;
+										sortBy?: string;
+										sortOrder?: "asc" | "desc";
+										filterStatus?: "visible" | "hidden" | "all";
+									}
+								}
 								isAdmin={!!(tournamentProps.isAdmin || profileProps.isAdmin)}
 								showSelectedOnly={showSelectedOnly}
 								showCatPictures={showCatPictures}

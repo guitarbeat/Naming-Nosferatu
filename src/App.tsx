@@ -8,12 +8,12 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 import {
 	useKeyboardShortcuts,
 	useRouting,
 	useTournamentRoutingSync,
 } from "./core/hooks/useRouting";
-import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, {

@@ -173,7 +173,13 @@ function CombinedLoginTournamentSetupContent({
 					</div>
 
 					<div className={loginStyles.catFactTape}>
-						{loginCatFact ? <span><strong>Fun Fact:</strong> {loginCatFact}</span> : "PREPARING FELINE WISDOM..."}
+						{loginCatFact ? (
+							<span>
+								<strong>Fun Fact:</strong> {loginCatFact}
+							</span>
+						) : (
+							"PREPARING FELINE WISDOM..."
+						)}
 					</div>
 
 					<h1 className={loginStyles.title}>Welcome, Purr-spective Judge!</h1>

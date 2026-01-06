@@ -554,28 +554,28 @@ const analyticsAPI = {
 
 			(selections || []).forEach((item) => {
 				const s = item as unknown as SelectionRow;
+				const nameId = String(s.name_id);
 				const [date] = new Date(s.selected_at).toISOString().split("T");
 				if (!dateGroups.has(date)) dateGroups.set(date, new Map());
 				const dayMap = dateGroups.get(date);
 				if (!dayMap) return;
-				if (!dayMap.has(s.name_id))
-					dayMap.set(s.name_id, { name: s.name, count: 0 });
-				const dayData = dayMap.get(s.name_id);
+				if (!dayMap.has(nameId)) dayMap.set(nameId, { name: s.name, count: 0 });
+				const dayData = dayMap.get(nameId);
 				if (dayData) dayData.count += 1;
 
-				if (!nameData.has(s.name_id)) {
-					const ratingInfo = ratingMap.get(s.name_id) || {
+				if (!nameData.has(nameId)) {
+					const ratingInfo = ratingMap.get(nameId) || {
 						rating: 1500,
 						wins: 0,
 					};
-					nameData.set(s.name_id, {
-						id: s.name_id,
+					nameData.set(nameId, {
+						id: nameId,
 						name: s.name,
 						avgRating: ratingInfo.rating,
 						totalSelections: 0,
 					});
 				}
-				const ns = nameData.get(s.name_id);
+				const ns = nameData.get(nameId);
 				if (ns) ns.totalSelections += 1;
 			});
 
@@ -881,8 +881,8 @@ const statsAPI = {
 			// Define interface for the join result shape
 			interface JoinResult {
 				cat_name_ratings?:
-				| { rating: number; wins: number; losses: number }
-				| { rating: number; wins: number; losses: number }[];
+					| { rating: number; wins: number; losses: number }
+					| { rating: number; wins: number; losses: number }[];
 				is_hidden?: boolean;
 				[key: string]: unknown;
 			}
@@ -947,9 +947,9 @@ const statsAPI = {
 				avgUserRating:
 					ratings.length > 0
 						? Math.round(
-							ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-							ratings.length,
-						)
+								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+									ratings.length,
+							)
 						: 1500,
 			};
 		} catch (error) {

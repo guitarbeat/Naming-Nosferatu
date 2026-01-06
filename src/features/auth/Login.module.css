@@ -15,8 +15,12 @@
 	--cat-yellow: hsl(45, 100%, 65%);
 
 	background: var(--bg-warm);
-	background-image: 
-		radial-gradient(circle at 50% 50%, hsla(34, 45%, 80%, 0.5) 0%, transparent 80%),
+	background-image:
+		radial-gradient(
+			circle at 50% 50%,
+			hsla(34, 45%, 80%, 0.5) 0%,
+			transparent 80%
+		),
 		url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 	font-family: "Courier New", Courier, monospace;
 	height: 100vh;
@@ -38,15 +42,19 @@
 	max-width: 92vw;
 	padding: 48px 40px;
 	background: var(--paper-base);
-	background-image: linear-gradient(135deg, var(--paper-base) 0%, var(--paper-accent) 100%);
+	background-image: linear-gradient(
+		135deg,
+		var(--paper-base) 0%,
+		var(--paper-accent) 100%
+	);
 	border: 3px solid var(--ink);
-	
+
 	/* Multi-layered shadow for hand-crafted depth */
 	box-shadow:
 		12px 12px 0 var(--ink),
 		24px 24px 48px var(--shadow-color),
 		inset 0 0 60px hsla(0, 0%, 0%, 0.05);
-	
+
 	transform: rotate(-0.5deg);
 	z-index: 1;
 	transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -77,14 +85,14 @@
 	height: 140px;
 	background: var(--ink);
 	clip-path: polygon(
-		25% 0%, 
-		35% 25%, 
-		65% 25%, 
-		75% 0%, 
-		95% 45%, 
-		85% 95%, 
-		100% 100%, 
-		0% 100%, 
+		25% 0%,
+		35% 25%,
+		65% 25%,
+		75% 0%,
+		95% 45%,
+		85% 95%,
+		100% 100%,
+		0% 100%,
 		15% 45%
 	);
 	border-bottom: 6px solid hsla(0, 0%, 20%, 0.5);
@@ -102,7 +110,7 @@
 	border-radius: 50%;
 	top: 45%;
 	left: 32%;
-	box-shadow: 
+	box-shadow:
 		inset 2px 2px 3px rgba(0, 0, 0, 0.3),
 		0 0 10px hsla(45, 100%, 65%, 0.4);
 	transition: transform 0.1s ease-out;
@@ -152,8 +160,14 @@
 	background: hsla(0, 0%, 0%, 0.1);
 	top: -5px;
 }
-.catFactTape::before { left: 10%; transform: rotate(-5deg); }
-.catFactTape::after { right: 10%; transform: rotate(5deg); }
+.catFactTape::before {
+	left: 10%;
+	transform: rotate(-5deg);
+}
+.catFactTape::after {
+	right: 10%;
+	transform: rotate(5deg);
+}
 
 .title {
 	margin: 0;
@@ -190,8 +204,8 @@
 .inputTray:focus-within {
 	background: hsla(0, 0%, 0%, 0.02);
 	transform: translateY(-2px) scale(1.01);
-	box-shadow: 
-		inset 4px 4px 0 var(--shadow-color), 
+	box-shadow:
+		inset 4px 4px 0 var(--shadow-color),
 		0 8px 24px hsla(0, 0%, 0%, 0.1);
 	border-color: var(--accent-red);
 }
@@ -321,14 +335,28 @@
 }
 
 @keyframes shake {
-	10%, 90% { transform: translate3d(-1px, 0, 0); }
-	20%, 80% { transform: translate3d(2px, 0, 0); }
-	30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-	40%, 60% { transform: translate3d(4px, 0, 0); }
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
 }
 
 @keyframes fluidBobble {
-	0%, 100% {
+	0%,
+	100% {
 		transform: translateY(0) rotate(1.5deg) scaleX(1);
 	}
 	25% {
