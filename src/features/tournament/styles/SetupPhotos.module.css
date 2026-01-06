@@ -190,7 +190,7 @@
 }
 
 @media (width <= 768px) {
-    .photoToolbar {
+	.photoToolbar {
 		flex-direction: column;
 		gap: var(--space-2);
 		align-items: stretch;
@@ -199,10 +199,10 @@
 	.photoUploadRow {
 		justify-content: center;
 		width: 100%;
-        flex-wrap: wrap; 
+		flex-wrap: wrap;
 	}
-    
-    .photoGrid {
+
+	.photoGrid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: var(--card-gap);
 		grid-auto-rows: 20px;
@@ -215,12 +215,12 @@
 }
 
 @media (width <= 480px) {
-    .photoGrid {
+	.photoGrid {
 		grid-template-columns: minmax(0, 1fr);
 		margin-inline: auto;
 	}
-    
-    .photoThumbnail {
+
+	.photoThumbnail {
 		aspect-ratio: 4 / 3;
 	}
 }
@@ -281,7 +281,7 @@
 }
 
 @media (width <= 768px) {
-    .photoUploadButton,
+	.photoUploadButton,
 	.photoMoreButton {
 		width: 100%;
 	}
@@ -302,8 +302,14 @@
 }
 
 @keyframes fadeIn {
-	from { opacity: 0; backdrop-filter: blur(0); }
-	to { opacity: 1; backdrop-filter: blur(4px); }
+	from {
+		opacity: 0;
+		backdrop-filter: blur(0);
+	}
+	to {
+		opacity: 1;
+		backdrop-filter: blur(4px);
+	}
 }
 
 .lightboxContent {
@@ -324,8 +330,14 @@
 }
 
 @keyframes contentEnter {
-	from { opacity: 0; transform: scale(0.95); }
-	to { opacity: 1; transform: scale(1); }
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 .lightboxImageWrap {
@@ -339,8 +351,14 @@
 }
 
 @keyframes imageEnter {
-	from { opacity: 0; transform: scale(0.9); }
-	to { opacity: 1; transform: scale(1); }
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 .lightboxImage {

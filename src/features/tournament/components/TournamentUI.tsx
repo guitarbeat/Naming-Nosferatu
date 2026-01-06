@@ -7,7 +7,8 @@
 import { memo } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Card from "../../../shared/components/Card/Card";
-import styles from "../Tournament.module.css";
+import styles from "../styles/TournamentControls.module.css";
+import progressStyles from "../styles/TournamentProgress.module.css";
 
 // --- Types ---
 
@@ -49,7 +50,7 @@ export const TournamentHeader = memo(function TournamentHeader({
 }: TournamentHeaderProps) {
 	return (
 		<Card
-			className={styles.progressInfo}
+			className={progressStyles.progressInfo}
 			background="glass"
 			padding="none"
 			shadow="medium"
@@ -57,14 +58,14 @@ export const TournamentHeader = memo(function TournamentHeader({
 			aria-live="polite"
 			aria-atomic="true"
 		>
-			<div className={styles.roundInfo}>
-				<span className={styles.roundNumber}>Round {roundNumber}</span>
-				<span className={styles.matchCount}>
+			<div className={progressStyles.roundInfo}>
+				<span className={progressStyles.roundNumber}>Round {roundNumber}</span>
+				<span className={progressStyles.matchCount}>
 					Match {currentMatchNumber} of {totalMatches}
 				</span>
 			</div>
 			<div
-				className={styles.percentageInfo}
+				className={progressStyles.percentageInfo}
 				aria-label={`Tournament is ${progress}% complete`}
 			>
 				{progress}% Complete
@@ -83,10 +84,14 @@ export const MatchResult = memo(function MatchResult({
 	if (!showMatchResult || !lastMatchResult) return null;
 
 	return (
-		<div className={styles.matchResult} role="status" aria-live="polite">
-			<div className={styles.resultContent}>
-				<span className={styles.resultMessage}>{lastMatchResult}</span>
-				<span className={styles.tournamentProgress}>
+		<div
+			className={progressStyles.matchResult}
+			role="status"
+			aria-live="polite"
+		>
+			<div className={progressStyles.resultContent}>
+				<span className={progressStyles.resultMessage}>{lastMatchResult}</span>
+				<span className={progressStyles.tournamentProgress}>
 					Round {roundNumber} - Match {currentMatchNumber} of {totalMatches}
 				</span>
 			</div>
@@ -101,11 +106,15 @@ export const RoundTransition = memo(function RoundTransition({
 	if (!showRoundTransition || !nextRoundNumber) return null;
 
 	return (
-		<div className={styles.roundTransition} role="status" aria-live="polite">
-			<div className={styles.transitionContent}>
-				<div className={styles.roundIcon}>🏆</div>
-				<h2 className={styles.roundTitle}>Round {nextRoundNumber}</h2>
-				<p className={styles.roundSubtitle}>Tournament continues...</p>
+		<div
+			className={progressStyles.roundTransition}
+			role="status"
+			aria-live="polite"
+		>
+			<div className={progressStyles.transitionContent}>
+				<div className={progressStyles.roundIcon}>🏆</div>
+				<h2 className={progressStyles.roundTitle}>Round {nextRoundNumber}</h2>
+				<p className={progressStyles.roundSubtitle}>Tournament continues...</p>
 			</div>
 		</div>
 	);

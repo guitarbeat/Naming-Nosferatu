@@ -122,8 +122,6 @@ export function NameManagementView({
 		],
 	);
 
-
-
 	const renderContent = () => {
 		// 1. Dashboard Mode (Analysis or Profile Dashboard via extension)
 		if (analysisMode && extensions.dashboard) {

@@ -27,7 +27,10 @@ import {
 	useKeyboardControls,
 	useTournamentState,
 } from "./hooks/tournamentComponentHooks";
-import styles from "./Tournament.module.css";
+import errorStyles from "./styles/TournamentError.module.css";
+import layoutStyles from "./styles/TournamentLayout.module.css";
+import undoStyles from "./styles/TournamentUndo.module.css";
+// import styles from "./Tournament.module.css"; // Removed
 import TournamentControls from "./TournamentControls";
 import { CAT_IMAGES } from "./tournamentUtils";
 
@@ -570,12 +573,12 @@ function TournamentContent({
 	// * Error state
 	if (isError) {
 		return (
-			<div className={styles.errorContainer}>
+			<div className={errorStyles.errorContainer}>
 				<h3>Tournament Error</h3>
 				<p>There was an error with the tournament. Please try again.</p>
 				<button
 					onClick={() => window.location.reload()}
-					className={styles.retryButton}
+					className={errorStyles.retryButton}
 				>
 					Restart Tournament
 				</button>
@@ -586,7 +589,7 @@ function TournamentContent({
 	// * Loading state
 	if (!visibleNames.length || !randomizedNames.length || !currentMatch) {
 		return (
-			<div className={styles.tournamentContainer}>
+			<div className={layoutStyles.tournamentContainer}>
 				<Loading variant="spinner" />
 				<p style={{ textAlign: "center", marginTop: "1rem" }}>
 					{!visibleNames.length
@@ -600,7 +603,7 @@ function TournamentContent({
 	}
 
 	return (
-		<div className={styles.tournament} role="main" aria-live="polite">
+		<div className={layoutStyles.tournament} role="main" aria-live="polite">
 			{/* Noise Background */}
 
 			{/* Progress Information */}
@@ -635,10 +638,10 @@ function TournamentContent({
 
 			{/* Undo banner */}
 			{canUndoNow && (
-				<div className={styles.undoBanner} role="status" aria-live="polite">
+				<div className={undoStyles.undoBanner} role="status" aria-live="polite">
 					<span>
 						Vote recorded.
-						<span className={styles.undoTimer} aria-hidden="true">
+						<span className={undoStyles.undoTimer} aria-hidden="true">
 							{` ${(undoRemainingMs / 1000).toFixed(1)}s`}
 						</span>
 					</span>
@@ -649,7 +652,7 @@ function TournamentContent({
 							handleUndo();
 							setUndoExpiresAt(null);
 						}}
-						className={styles.undoButton}
+						className={undoStyles.undoButton}
 						aria-label="Undo last vote (Esc)"
 					>
 						Undo (Esc)
@@ -659,7 +662,7 @@ function TournamentContent({
 
 			{/* Main Tournament Layout */}
 			<div
-				className={styles.tournamentLayout}
+				className={layoutStyles.tournamentLayout}
 				role="main"
 				aria-label="Tournament voting interface"
 			>

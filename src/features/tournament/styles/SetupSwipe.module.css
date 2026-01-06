@@ -186,8 +186,12 @@
 }
 
 @keyframes longPressPulse {
-	0% { box-shadow: 0 8px 30px rgb(0 0 0 / 20%); }
-	100% { box-shadow: 0 12px 40px rgb(232 191 118 / 40%); }
+	0% {
+		box-shadow: 0 8px 30px rgb(0 0 0 / 20%);
+	}
+	100% {
+		box-shadow: 0 12px 40px rgb(232 191 118 / 40%);
+	}
 }
 
 .swipeCardContent {
@@ -205,8 +209,12 @@
 	scrollbar-color: var(--border-color, rgb(148 163 184 / 30%)) transparent;
 }
 
-.swipeCardContent::-webkit-scrollbar { width: 6px; }
-.swipeCardContent::-webkit-scrollbar-track { background: transparent; }
+.swipeCardContent::-webkit-scrollbar {
+	width: 6px;
+}
+.swipeCardContent::-webkit-scrollbar-track {
+	background: transparent;
+}
 .swipeCardContent::-webkit-scrollbar-thumb {
 	background: var(--border-color, rgb(148 163 184 / 30%));
 	border-radius: 3px;
@@ -252,7 +260,9 @@
 	border-radius: inherit;
 }
 
-.swipeOverlay.active { opacity: 1; }
+.swipeOverlay.active {
+	opacity: 1;
+}
 
 .swipeRight {
 	background: linear-gradient(

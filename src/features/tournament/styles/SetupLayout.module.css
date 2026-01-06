@@ -32,18 +32,18 @@
 }
 
 .stickyControls {
-    position: sticky;
-    top: 56px;
-    z-index: 90;
-    background: hsl(var(--background) / 98%);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid hsl(var(--border) / 40%);
-    padding: var(--space-3);
-    margin: 0 calc(var(--space-4) * -1) var(--space-3);
-    transition: all 0.3s ease;
+	position: sticky;
+	top: 56px;
+	z-index: 90;
+	background: hsl(var(--background) / 98%);
+	backdrop-filter: blur(16px);
+	border-bottom: 1px solid hsl(var(--border) / 40%);
+	padding: var(--space-3);
+	margin: 0 calc(var(--space-4) * -1) var(--space-3);
+	transition: all 0.3s ease;
 }
 
 .stickyControls.isStuck {
-    box-shadow: 0 2px 12px hsl(var(--background) / 20%);
-    border-radius: 0;
+	box-shadow: 0 2px 12px hsl(var(--background) / 20%);
+	border-radius: 0;
 }

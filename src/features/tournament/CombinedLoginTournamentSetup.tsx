@@ -248,7 +248,9 @@ function CombinedLoginTournamentSetupContent({
 		return (
 			<>
 				<ToastContainer />
-				<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
+				<div
+					className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}
+				>
 					<div className={photoStyles.photosViewContent}>
 						<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
 						<p className={photoStyles.photosViewSubtitle}>

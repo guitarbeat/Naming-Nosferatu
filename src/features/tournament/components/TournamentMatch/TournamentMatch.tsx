@@ -9,7 +9,9 @@ import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import type { NameItem } from "../../../../shared/propTypes";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
-import tournamentStyles from "../../Tournament.module.css";
+import controlsStyles from "../../styles/TournamentControls.module.css";
+import errorStyles from "../../styles/TournamentError.module.css";
+import tournamentStyles from "../../styles/TournamentMatch.module.css";
 import { getRandomCatImage } from "../../tournamentUtils";
 import styles from "./FerrofluidMatch.module.css";
 
@@ -172,7 +174,7 @@ function TournamentMatch({
 
 			{/* Extra Voting Options */}
 			<div
-				className={tournamentStyles.extraOptions}
+				className={controlsStyles.extraOptions}
 				role="group"
 				aria-label="Additional voting options"
 			>
@@ -180,12 +182,12 @@ function TournamentMatch({
 					onClick={() => onVoteWithAnimation("both")}
 					disabled={isProcessing || isTransitioning}
 					variant={selectedOption === "both" ? "primary" : "secondary"}
-					className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "both" ? tournamentStyles.selected : ""}`}
+					className={`${controlsStyles.extraOptionsButton} ${selectedOption === "both" ? controlsStyles.selected : ""}`}
 					aria-pressed={selectedOption === "both"}
 					aria-label="Vote for both names (Press Up arrow key)"
 				>
 					I Like Both!{" "}
-					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
+					<span className={controlsStyles.shortcutHint} aria-hidden="true">
 						(↑ Up)
 					</span>
 				</Button>
@@ -194,12 +196,12 @@ function TournamentMatch({
 					onClick={() => onVoteWithAnimation("neither")}
 					disabled={isProcessing || isTransitioning}
 					variant={selectedOption === "neither" ? "primary" : "secondary"}
-					className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "neither" ? tournamentStyles.selected : ""}`}
+					className={`${controlsStyles.extraOptionsButton} ${selectedOption === "neither" ? controlsStyles.selected : ""}`}
 					aria-pressed={selectedOption === "neither"}
 					aria-label="Skip this match (Press Down arrow key)"
 				>
 					Skip{" "}
-					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
+					<span className={controlsStyles.shortcutHint} aria-hidden="true">
 						(↓ Down)
 					</span>
 				</Button>
@@ -217,7 +219,7 @@ function TournamentMatch({
 					showRetry={true}
 					showDismiss={true}
 					size="medium"
-					className={tournamentStyles.votingError}
+					className={errorStyles.votingError}
 				/>
 			)}
 		</div>

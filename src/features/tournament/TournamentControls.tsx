@@ -19,7 +19,8 @@ import {
 import React, { useState } from "react";
 import Button, { IconButton } from "../../shared/components/Button/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";
-import styles from "./Tournament.module.css";
+import styles from "./styles/TournamentControls.module.css";
+import layoutStyles from "./styles/TournamentLayout.module.css";
 
 interface TournamentControlsProps {
 	onEndEarly: () => void;
@@ -239,35 +240,38 @@ const TournamentControls = ({
 				{showConfirmation && (
 					<>
 						<div
-							className={styles.modalBackdrop}
+							className={layoutStyles.modalBackdrop}
 							onClick={() => setShowConfirmation(false)}
 							aria-hidden="true"
 						/>
 						<div
-							className={styles.modal}
+							className={layoutStyles.modal}
 							role="dialog"
 							aria-labelledby="confirm-end-title"
 							aria-describedby="confirm-end-description"
 						>
-							<h2 id="confirm-end-title" className={styles.modalTitle}>
+							<h2 id="confirm-end-title" className={layoutStyles.modalTitle}>
 								End Tournament?
 							</h2>
-							<p id="confirm-end-description" className={styles.modalText}>
+							<p
+								id="confirm-end-description"
+								className={layoutStyles.modalText}
+							>
 								Are you sure you want to end the tournament early?
 							</p>
-							<div className={styles.modalActions}>
+							<div className={layoutStyles.modalActions}>
 								<Button
 									onClick={handleEndConfirm}
 									variant="danger"
 									autoFocus
-									className={styles.confirmButton}
+									className={layoutStyles.confirmButton}
 								>
 									Yes, End Tournament
 								</Button>
 								<Button
 									onClick={() => setShowConfirmation(false)}
 									variant="secondary"
-									className={styles.cancelButton}
+									className={layoutStyles.cancelButton}
 								>
 									Cancel
 								</Button>

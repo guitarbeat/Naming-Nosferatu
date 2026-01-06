@@ -53,12 +53,12 @@
 		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 		gap: var(--space-3);
 		padding: var(--space-2);
-        justify-content: center;
+		justify-content: center;
 	}
 }
 
 @media (width <= 600px) {
-    .cardsContainer {
+	.cardsContainer {
 		grid-template-columns: 1fr;
 		gap: var(--space-2);
 	}
@@ -110,12 +110,24 @@
 	animation: cardFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
 }
 
-.cardsContainer > *:nth-child(1) { animation-delay: 0.05s; }
-.cardsContainer > *:nth-child(2) { animation-delay: 0.1s; }
-.cardsContainer > *:nth-child(3) { animation-delay: 0.15s; }
-.cardsContainer > *:nth-child(4) { animation-delay: 0.2s; }
-.cardsContainer > *:nth-child(5) { animation-delay: 0.25s; }
-.cardsContainer > *:nth-child(n + 6) { animation-delay: 0.3s; }
+.cardsContainer > *:nth-child(1) {
+	animation-delay: 0.05s;
+}
+.cardsContainer > *:nth-child(2) {
+	animation-delay: 0.1s;
+}
+.cardsContainer > *:nth-child(3) {
+	animation-delay: 0.15s;
+}
+.cardsContainer > *:nth-child(4) {
+	animation-delay: 0.2s;
+}
+.cardsContainer > *:nth-child(5) {
+	animation-delay: 0.25s;
+}
+.cardsContainer > *:nth-child(n + 6) {
+	animation-delay: 0.3s;
+}
 
 .nameCount {
 	padding-block: var(--space-3);
@@ -145,8 +157,8 @@
 
 .nameStats {
 	display: flex;
-    gap: var(--space-3);
-    align-items: center;
+	gap: var(--space-3);
+	align-items: center;
 	flex-wrap: wrap;
 	justify-content: center;
 	padding-top: var(--space-3);
@@ -154,11 +166,11 @@
 }
 
 .statItem {
-    /* copy surfaceCard */
+	/* copy surfaceCard */
 	background: var(--surface-color);
 	border: 1px solid var(--border-color);
 	border-radius: var(--radius-lg);
-    
+
 	padding: var(--space-2) var(--space-3);
 	font-size: var(--text-sm);
 	color: var(--text-secondary);

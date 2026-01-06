@@ -145,7 +145,7 @@
 }
 
 .selectionPanel {
-    /* Using composes won't work well across files for composed classes defined locally in standard CSS Modules unless we import them.
+	/* Using composes won't work well across files for composed classes defined locally in standard CSS Modules unless we import them.
        For refactoring safety, I'll copy the styles or rely on global classes if appropriate, but here I'll just copy the "elevatedCard" and "stack" styles 
        or assume simple composition isn't needed if I redefine properties.
        Actually, standard CSS modules composition from other files works like `composes: className from "./other.css"`.
@@ -156,12 +156,12 @@
 	padding: var(--space-3);
 	display: flex;
 	flex-direction: column;
-    gap: var(--space-4); /* was stackGapXl */
-    
-    /* elevatedCard styles */
-    background: var(--surface-color);
+	gap: var(--space-4); /* was stackGapXl */
+
+	/* elevatedCard styles */
+	background: var(--surface-color);
 	border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
+	box-shadow: var(--shadow-lg);
 	min-width: 0;
 }
 
@@ -191,30 +191,30 @@
 	.headerRow {
 		justify-content: center;
 		text-align: center;
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-3);
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--space-3);
 	}
-    
-    .panelHeader {
-        padding: var(--space-4); /* was space-3 in one media query */
-    }
+
+	.panelHeader {
+		padding: var(--space-4); /* was space-3 in one media query */
+	}
 }
 
 .headerActions {
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-    flex-wrap: wrap;
+	display: flex;
+	gap: var(--space-3);
+	align-items: center;
+	flex-wrap: wrap;
 	justify-content: center;
 	min-height: 48px;
 }
 
 @media (width <= 768px) {
-    .headerActions {
-        flex-wrap: wrap;
-        min-height: 60px;
-    }
+	.headerActions {
+		flex-wrap: wrap;
+		min-height: 60px;
+	}
 }
 
 /* Header Action Button - Copied logic */
@@ -289,7 +289,7 @@
 }
 
 .headerActionButtonActive {
-    composes: headerActionButton;
+	composes: headerActionButton;
 	font-weight: 700;
 	color: var(--charcoal);
 	text-shadow: none;
@@ -333,8 +333,8 @@
 }
 
 .selectAllButton {
-    /* Using buttonInverted logic directly */
-    display: inline-flex;
+	/* Using buttonInverted logic directly */
+	display: inline-flex;
 	gap: var(--spacing-icon-gap);
 	align-items: center;
 	justify-content: center;
@@ -347,11 +347,11 @@
 	border-radius: var(--button-border-radius);
 	transition: var(--transition-base);
 	min-height: var(--button-height-md);
-    
+
 	color: var(--button-text-light, white);
 	background: var(--button-secondary-bg, #2a2a2a);
 	border-color: #444;
-    
+
 	min-width: fit-content;
 	padding-block: var(--space-3);
 	white-space: nowrap;
@@ -374,7 +374,7 @@
 }
 
 @media (width <= 768px) {
-    .selectAllButton {
-        width: 100%;
-    }
+	.selectAllButton {
+		width: 100%;
+	}
 }
