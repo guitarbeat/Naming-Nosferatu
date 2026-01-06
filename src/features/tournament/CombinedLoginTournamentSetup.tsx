@@ -112,6 +112,13 @@ function CombinedLoginTournamentSetupContent({
 		ToastContainer,
 	} = tournamentController;
 
+	const greeting = useMemo(() => {
+		const hour = new Date().getHours();
+		if (hour < 12) return "Good morning";
+		if (hour < 18) return "Good afternoon";
+		return "Good evening";
+	}, []);
+
 	const catFact = useCatFact();
 
 	const photoGalleryProps = useMemo(
@@ -166,19 +173,19 @@ function CombinedLoginTournamentSetupContent({
 					</div>
 
 					<div className={loginStyles.catFactTape}>
-						{loginCatFact ? `FACT: ${loginCatFact}` : "LOADING FELINE DATA..."}
+						{loginCatFact ? <span><strong>Fun Fact:</strong> {loginCatFact}</span> : "PREPARING FELINE WISDOM..."}
 					</div>
 
-					<h1 className={loginStyles.title}>JUDGE REGISTRY</h1>
+					<h1 className={loginStyles.title}>Welcome, Purr-spective Judge!</h1>
 					<p className={loginStyles.subtitle}>
-						DEPOSIT NAME BELOW TO EVALUATE FELINES
+						{greeting}, please enter your name to begin the assessment.
 					</p>
 
 					<div className={loginStyles.inputTray}>
 						<input
 							type="text"
 							className={loginStyles.loginInput}
-							placeholder="TYPE NAME HERE..."
+							placeholder="YOUR NAME HERE..."
 							value={name}
 							onChange={handleNameChange}
 							onKeyDown={handleKeyDown}
@@ -202,7 +209,7 @@ function CombinedLoginTournamentSetupContent({
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
 					>
-						{isLoginLoading ? "ENGAGING..." : "ENGAGE TOURNAMENT"}
+						{isLoginLoading ? "PREPARING STAGE..." : "STEP INSIDE"}
 					</motion.button>
 
 					<motion.button
