@@ -63,7 +63,7 @@ export interface NameDataWithRatings {
 
 import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
-export const coreAPI = {
+const coreAPI = {
 	/**
 	 * Get all names with descriptions and ratings
 	 * @param {boolean} includeHidden - If true, include hidden names (for admin views)
@@ -282,7 +282,7 @@ interface NameRow {
 	created_at: string;
 }
 
-export const analyticsAPI = {
+const analyticsAPI = {
 	/**
 	 * Get selection popularity
 	 */
@@ -632,7 +632,7 @@ export const analyticsAPI = {
 
 // leaderboardAPI - uses imports from top of file
 
-export const leaderboardAPI = {
+const leaderboardAPI = {
 	/**
 	 * Get leaderboard data
 	 */
@@ -752,7 +752,7 @@ export const leaderboardAPI = {
 
 // statsAPI - uses imports from top of file
 
-export const statsAPI = {
+const statsAPI = {
 	/**
 	 * Get global site statistics
 	 */
@@ -881,8 +881,8 @@ export const statsAPI = {
 			// Define interface for the join result shape
 			interface JoinResult {
 				cat_name_ratings?:
-					| { rating: number; wins: number; losses: number }
-					| { rating: number; wins: number; losses: number }[];
+				| { rating: number; wins: number; losses: number }
+				| { rating: number; wins: number; losses: number }[];
 				is_hidden?: boolean;
 				[key: string]: unknown;
 			}
@@ -947,9 +947,9 @@ export const statsAPI = {
 				avgUserRating:
 					ratings.length > 0
 						? Math.round(
-								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-									ratings.length,
-							)
+							ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
+							ratings.length,
+						)
 						: 1500,
 			};
 		} catch (error) {

@@ -111,3 +111,5 @@ __pycache__/
 
 /src/generated/prisma
 stats.html
+stats.html
+stats.json

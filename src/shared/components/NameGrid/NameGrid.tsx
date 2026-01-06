@@ -6,6 +6,7 @@
 
 import PropTypes from "prop-types";
 import { useMemo } from "react";
+import type { NameItem } from "../../propTypes";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -16,15 +17,6 @@ import CardName from "../Card/components/CardName";
 import { Loading } from "../CommonUI";
 import styles from "./NameGrid.module.css";
 
-interface NameItem {
-	id: string | number;
-	name: string;
-	description?: string;
-	avg_rating?: number;
-	popularity_score?: number;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	[key: string]: any;
-}
 
 interface NameGridProps {
 	names: NameItem[];

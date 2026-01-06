@@ -2,13 +2,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveSupabaseClient } from "../../services/supabase/client";
 import type { Database } from "../../services/supabase/types";
 
-export const USER_ROLES = {
+const USER_ROLES = {
 	USER: "user",
 	MODERATOR: "moderator",
 	ADMIN: "admin",
 } as const;
 
-export const ROLE_SOURCES = ["user_roles"] as const;
+const ROLE_SOURCES = ["user_roles"] as const;
 
 const ROLE_PRIORITY = {
 	[USER_ROLES.USER]: 0,
@@ -16,10 +16,10 @@ const ROLE_PRIORITY = {
 	[USER_ROLES.ADMIN]: 2,
 };
 
-export const normalizeRole = (role: string | null | undefined): string | null =>
+const normalizeRole = (role: string | null | undefined): string | null =>
 	role?.toLowerCase?.() ?? null;
 
-export const compareRoles = (
+const compareRoles = (
 	currentRole: string | null | undefined,
 	requiredRole: string | null | undefined,
 ): boolean => {
@@ -33,7 +33,7 @@ export const compareRoles = (
 	return current >= required;
 };
 
-export const normalizeStatusCode = (value: unknown): number | null => {
+const normalizeStatusCode = (value: unknown): number | null => {
 	if (typeof value === "number" && Number.isFinite(value)) {
 		return value;
 	}
@@ -74,7 +74,7 @@ interface ErrorWithStatus {
 	responseText?: unknown;
 }
 
-export const extractErrorMetadata = (error: unknown) => {
+const extractErrorMetadata = (error: unknown) => {
 	const statuses = new Set<number>();
 	const codes = new Set<string>();
 	const messages = new Set<string>();
@@ -203,7 +203,7 @@ export const extractErrorMetadata = (error: unknown) => {
 	};
 };
 
-export const isMissingResourceError = (error: unknown): boolean => {
+const isMissingResourceError = (error: unknown): boolean => {
 	if (!error) return false;
 	const { statuses, codes, messages } = extractErrorMetadata(error);
 
@@ -254,7 +254,7 @@ export const isMissingResourceError = (error: unknown): boolean => {
 	);
 };
 
-export const isRpcParameterMismatchError = (error: unknown): boolean => {
+const isRpcParameterMismatchError = (error: unknown): boolean => {
 	if (!error) return false;
 
 	const { codes, messages } = extractErrorMetadata(error);
@@ -280,7 +280,7 @@ export const isRpcParameterMismatchError = (error: unknown): boolean => {
 	);
 };
 
-export const isUuid = (value: unknown): boolean =>
+const isUuid = (value: unknown): boolean =>
 	typeof value === "string" &&
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
 		value,
@@ -352,7 +352,7 @@ const getRoleSourceOrder = (state: ClientState | undefined) => {
 
 	const preferred =
 		state.preferredRoleSource &&
-		!state.disabledSources.has(state.preferredRoleSource)
+			!state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 

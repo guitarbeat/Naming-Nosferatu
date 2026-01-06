@@ -9,7 +9,7 @@ import { ErrorComponent, Loading } from "../CommonUI";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
-const BongoPage = lazy(() => import("../../../features/bongo/BongoPage"));
+
 
 import type { TournamentName } from "../../../types/store";
 
@@ -58,18 +58,6 @@ export default function ViewRouter({
 }: ViewRouterProps) {
 	const { isRoute, currentRoute } = useRouting();
 
-	// Handle special routes first
-	// NOTE: The /bongo route is intentionally hidden and only accessible via direct URL
-	// There is no navigation link to this page - users must manually type /bongo in the URL
-	if (isRoute("/bongo")) {
-		return (
-			<Suspense
-				fallback={<Loading variant="spinner" text="Loading Bongo..." />}
-			>
-				<BongoPage isLoggedIn={isLoggedIn} userName={userName} />
-			</Suspense>
-		);
-	}
 
 	if (!isLoggedIn || tournament.names === null) {
 		// Convert ratings from Record<string, { rating: number }> to Record<string, number>

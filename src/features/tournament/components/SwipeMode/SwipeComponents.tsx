@@ -6,6 +6,7 @@
 
 import clsx from "clsx";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
+import type { NameItem } from "../../../../shared/propTypes";
 import mobileGestures from "../../../../shared/utils/mobileGestures";
 import styles from "../../TournamentSetup.module.css";
 
@@ -13,11 +14,6 @@ import styles from "../../TournamentSetup.module.css";
 // Types
 // ============================================================================
 
-interface NameItem {
-	name?: string;
-	description?: string;
-	[key: string]: unknown;
-}
 
 interface GestureData {
 	type: string;

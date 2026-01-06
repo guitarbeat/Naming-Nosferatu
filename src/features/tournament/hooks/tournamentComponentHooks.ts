@@ -13,7 +13,8 @@ import {
 	useState,
 } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
-import { useTournament } from "../../../core/hooks/useTournament";
+import { useTournament } from "../../../core/hooks/tournamentHooks";
+import type { NameItem } from "../../../shared/propTypes";
 import { shuffleArray } from "../../../shared/utils/core";
 
 /**
@@ -24,11 +25,7 @@ import { shuffleArray } from "../../../shared/utils/core";
  * @param {Function} _onVote - Vote callback (unused but kept for API compatibility)
  * @returns {Object} Tournament state and handlers
  */
-interface NameItem {
-	id?: string | number;
-	name?: string;
-	[key: string]: unknown;
-}
+
 
 // ts-prune-ignore-next (used in Tournament)
 export function useTournamentState(
@@ -89,28 +86,28 @@ export function useTournamentState(
 		string,
 		{ rating: number; wins?: number; losses?: number }
 	> = existingRatings
-		? Object.fromEntries(
+			? Object.fromEntries(
 				Object.entries(existingRatings).map(([key, value]) => [
 					key,
 					typeof value === "number" ? { rating: value } : value,
 				]),
 			)
-		: {};
+			: {};
 	const convertedOnComplete = onComplete
 		? (
-				results: Array<{
-					name: string;
-					id: string;
-					rating: number;
-					wins: number;
-					losses: number;
-				}>,
-			) => {
-				const ratings = Object.fromEntries(
-					results.map((r) => [r.id, r.rating]),
-				);
-				onComplete(ratings);
-			}
+			results: Array<{
+				name: string;
+				id: string;
+				rating: number;
+				wins: number;
+				losses: number;
+			}>,
+		) => {
+			const ratings = Object.fromEntries(
+				results.map((r) => [r.id, r.rating]),
+			);
+			onComplete(ratings);
+		}
 		: undefined;
 
 	const tournament = useTournament({

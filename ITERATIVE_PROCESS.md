@@ -6,6 +6,7 @@ This workflow can be automated using the provided scripts:
 
 - **Quick check**: `npm run workflow:check` - Returns exit code 0 if clean, non-zero if issues found
 - **Full automation**: `./workflow.sh` - Runs complete workflow with error reporting
+- **Dead code analysis**: `npx knip` - Find unused files, exports, and dependencies
 - **CI/CD friendly**: All commands return proper exit codes for pipeline integration
 
 ## Workflow Steps
@@ -44,7 +45,29 @@ npm run lint:types || {
 }
 ```
 
-### 3. Auto-Fix Attempts
+### 3. Dead Code Analysis
+
+**Command**: `npx knip`  
+**Exit Code**:
+- `0` = No unused code found
+- `1` = Unused files, exports, or dependencies found
+
+**What Knip Detects**:
+- Unused files (not imported anywhere)
+- Unused exports (exported but never imported)
+- Unused dependencies (in package.json but not used)
+- Duplicate exports (same thing exported with multiple names)
+
+**Focused Commands**:
+```bash
+npx knip --files        # Only check for unused files
+npx knip --exports      # Only check for unused exports
+npx knip --dependencies # Only check for unused dependencies
+```
+
+**Configuration**: See `knip.json` for project-specific settings.
+
+### 4. Auto-Fix Attempts
 
 **Command**: `npm run lint:fix`  
 **Exit Code**: 
@@ -58,11 +81,24 @@ npm run lint:types || {
 npm run lint:fix && npm run lint
 ```
 
-### 4. Usability Tests (On Request Only)
+### 5. Build Verification
+
+**Command**: `npm run build`  
+**Exit Code**:
+- `0` = Build successful
+- `1` = Build failed
+
+**Rule**: Run build after significant changes to catch:
+- Missing imports
+- Tree-shaking issues
+- Bundle size regressions
+
+### 6. Usability Tests (On Request Only)
 
 **Prerequisites**: 
 - Lint must pass: `npm run lint` returns exit code 0
 - TypeScript must be clean: `npm run lint:types` returns exit code 0
+- Build must pass: `npm run build` returns exit code 0
 
 **Manual Steps** (not automatable):
 1. Select two names
@@ -73,7 +109,7 @@ npm run lint:fix && npm run lint
 
 **Automation Check**:
 ```bash
-npm run lint && npm run lint:types && echo "✅ Ready for usability testing"
+npm run lint && npm run build && echo "✅ Ready for usability testing"
 ```
 
 ## Error Handling
@@ -93,6 +129,14 @@ if ! npm run lint; then
   exit 1
 fi
 ```
+
+### If Knip Finds Unused Code
+
+**Response**:
+1. Review the list of unused files/exports
+2. Verify they're truly unused (not dynamically imported)
+3. Delete unused files or remove unused exports
+4. Re-run `npx knip` to confirm
 
 ### If Usability Test Requested While Lint Fails
 
@@ -114,19 +158,30 @@ Complete workflow automation:
 
 ### Exit Codes
 - `0` = Success
-- `1` = Lint/TypeScript errors
+- `1` = Lint/TypeScript/Knip errors
 - `2` = Script error
 
 ## CI/CD Integration
 
 ```yaml
 # Example GitHub Actions
-- name: Check workflow
-  run: npm run workflow:check
-
-# Or with auto-fix attempt
-- name: Lint and fix
-  run: |
-    npm run lint:fix || true
-    npm run workflow:check
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: npx knip
 ```
+
+## Recommended Workflow Order
+
+1. **Before coding**: `npx knip` — Know what's unused before adding more
+2. **After changes**: `npm run lint:fix && npm run lint`
+3. **Before commit**: `npm run build && npx knip`
+4. **Before PR**: Full `./workflow.sh` check

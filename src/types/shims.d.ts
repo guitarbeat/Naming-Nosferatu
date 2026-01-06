@@ -4,20 +4,6 @@ declare module "@utils/navigationUtils" {
 	export function getRouteForView(view: string): string;
 }
 
-declare module "@services/supabase/api" {
-	const api: unknown;
-	export = api;
-}
-
-declare module "@services/errorManager" {
-	export const ErrorManager: unknown;
-}
-
-declare module "@services/supabase/auth" {
-	const authApi: unknown;
-	export = authApi;
-}
-
 declare module "@components" {
 	export const Error: React.ComponentType<Record<string, unknown>>;
 	export const Loading: React.ComponentType<Record<string, unknown>>;

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": ["src/main.tsx"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": [
+    "config/**",
+    "public/**",
+    "src/types/shims.d.ts",
+    "**/*.d.ts"
+  ],
+  "ignoreDependencies": [
+    "@heroui/react",
+    "@tanstack/react-query",
+    "framer-motion"
+  ]
+}

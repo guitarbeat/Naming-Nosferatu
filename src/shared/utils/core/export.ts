@@ -23,7 +23,7 @@ export interface ExportOptions<T> {
 	includeDate?: boolean;
 }
 
-export function downloadBlob(blob: Blob, fileName: string): void {
+function downloadBlob(blob: Blob, fileName: string): void {
 	const url = window.URL.createObjectURL(blob);
 	const link = document.createElement("a");
 	link.href = url;
@@ -34,11 +34,11 @@ export function downloadBlob(blob: Blob, fileName: string): void {
 	window.URL.revokeObjectURL(url);
 }
 
-export function getDateString(): string {
+function getDateString(): string {
 	return new Date().toISOString().split("T")[0];
 }
 
-export function escapeCSVValue(value: unknown): string {
+function escapeCSVValue(value: unknown): string {
 	const stringValue = String(value ?? "");
 	if (
 		stringValue.includes(",") ||
@@ -50,7 +50,7 @@ export function escapeCSVValue(value: unknown): string {
 	return stringValue;
 }
 
-export function arrayToCSV<T>(
+function arrayToCSV<T>(
 	data: T[],
 	headers: string[],
 	fields: FieldAccessor<T>[],
