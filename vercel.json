@@ -15,6 +15,10 @@
     {
       "source": "/((?!api/|assets/).*)",
       "destination": "/index.html"
+    },
+    {
+      "source": "/api/submit-name.html",
+      "destination": "/api/submit-name.html"
     }
   ],
   "headers": [
