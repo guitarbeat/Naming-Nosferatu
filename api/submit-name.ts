@@ -18,14 +18,54 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 	res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+	res.setHeader("X-API-Version", "1.0");
 
 	// Handle preflight requests
 	if (req.method === "OPTIONS") {
 		return res.status(200).end();
 	}
 
-	// GET endpoint: Show usage instructions
+	// GET endpoint: Show usage instructions or check if name exists
 	if (req.method === "GET") {
+		// If 'name' query param provided, check if it exists
+		if (req.query.name) {
+			const checkName = String(req.query.name || "").trim();
+			if (checkName.length === 0) {
+				return res.status(400).json({ error: "Name parameter cannot be empty" });
+			}
+			
+			if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+				return res.status(500).json({
+					error: "Server configuration error. Supabase credentials not found.",
+				});
+			}
+			
+			try {
+				const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+				const { data: existingName, error: checkError } = await supabase
+					.from("cat_name_options")
+					.select("id, name, description, is_active, is_hidden")
+					.ilike("name", checkName)
+					.maybeSingle();
+				
+				if (checkError) {
+					return res.status(500).json({ error: "Error checking name", details: checkError.message });
+				}
+				
+				return res.status(200).json({
+					exists: !!existingName,
+					name: checkName,
+					data: existingName || null,
+				});
+			} catch (err) {
+				return res.status(500).json({
+					error: "Internal server error",
+					message: err instanceof Error ? err.message : "Unknown error",
+				});
+			}
+		}
+		
+		// Otherwise show usage instructions
 		return res.status(200).json({
 			message: "Cat Name Submission API",
 			description: "Submit cat names to the Name Nosferatu database",
@@ -60,9 +100,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				},
 			},
 			validation: {
-				name: "Required, 1-100 characters",
+				name: "Required, 1-100 characters (case-insensitive duplicate checking)",
 				description: "Optional, max 500 characters",
 				userName: "Optional, for attribution",
+			},
+			endpoints: {
+				check: "GET /api/submit-name?name=rococo - Check if a name exists",
+				submit: "POST /api/submit-name - Submit a new name",
+				docs: "GET /api/submit-name - View this documentation",
 			},
 			response: {
 				success: {
@@ -115,9 +160,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 	}
 
 	const trimmedDescription = description?.trim() || "";
+	
+	// Validate description length (max 500 characters)
+	if (trimmedDescription.length > 500) {
+		return res.status(400).json({
+			error: "Description must be 500 characters or less.",
+			received: trimmedDescription.length,
+			max: 500,
+		});
+	}
 
 	try {
 		const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+		
+		// Check for case-insensitive duplicate before inserting
+		const { data: existingName } = await supabase
+			.from("cat_name_options")
+			.select("id, name")
+			.ilike("name", trimmedName)
+			.maybeSingle();
+		
+		if (existingName) {
+			return res.status(409).json({
+				error: "A similar name already exists.",
+				existing: existingName.name,
+				submitted: trimmedName,
+				hint: "Names are case-insensitive. This name may already be in the database.",
+				existingId: existingName.id,
+			});
+		}
 
 		if (userName?.trim()) {
 			try {
@@ -160,6 +231,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			success: true,
 			data,
 			message: `Name "${trimmedName}" submitted successfully!`,
+			timestamp: new Date().toISOString(),
 		});
 	} catch (err) {
 		console.error("Unexpected error:", err);
