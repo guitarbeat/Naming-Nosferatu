@@ -13,6 +13,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    setupFiles: [pathResolve(projectRoot, "src/setupTests.ts")],
     testTimeout: 10000,
     env: {
       VITE_SUPABASE_URL: "https://test.supabase.co",

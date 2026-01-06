@@ -6,7 +6,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../core/constants";
-import Button from "../../shared/components/Button/Button";
 import { Error, Loading } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
@@ -21,6 +20,7 @@ import {
 	TournamentFooter,
 	TournamentHeader,
 } from "./components/TournamentUI";
+import { UndoBanner } from "./components/UndoBanner";
 import type { EventListener } from "./hooks/tournamentComponentHooks";
 import {
 	useAudioManager,
@@ -156,36 +156,10 @@ function TournamentContent({
 
 	// * Undo window
 	const [undoExpiresAt, setUndoExpiresAt] = useState<number | null>(null);
-	const [undoRemainingMs, setUndoRemainingMs] = useState(0);
-	const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
+	const canUndoNow = !!undoExpiresAt;
 
 	// * Show cat pictures toggle
 	const [showCatPictures, setShowCatPictures] = useState(true);
-
-	useEffect(() => {
-		if (!undoExpiresAt) {
-			setUndoRemainingMs(0);
-			return;
-		}
-
-		// * Update immediately
-		const updateRemaining = () => {
-			const remaining = Math.max(0, undoExpiresAt - Date.now());
-			setUndoRemainingMs(remaining);
-			return remaining;
-		};
-
-		updateRemaining();
-
-		const id = setInterval(() => {
-			const remaining = updateRemaining();
-			if (remaining <= 0) {
-				setUndoExpiresAt(null);
-			}
-		}, TOURNAMENT_TIMING.UNDO_UPDATE_INTERVAL);
-
-		return () => clearInterval(id);
-	}, [undoExpiresAt]);
 
 	// * Refs for timeout cleanup
 	const matchResultTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -612,27 +586,15 @@ function TournamentContent({
 			/>
 
 			{/* Undo banner */}
-			{canUndoNow && (
-				<div className={styles.undoBanner} role="status" aria-live="polite">
-					<span>
-						Vote recorded.
-						<span className={styles.undoTimer} aria-hidden="true">
-							{` ${(undoRemainingMs / 1000).toFixed(1)}s`}
-						</span>
-					</span>
-					<Button
-						variant="primary"
-						size="small"
-						onClick={() => {
-							handleUndo();
-							setUndoExpiresAt(null);
-						}}
-						className={styles.undoButton}
-						aria-label="Undo last vote (Esc)"
-					>
-						Undo (Esc)
-					</Button>
-				</div>
+			{undoExpiresAt && (
+				<UndoBanner
+					undoExpiresAt={undoExpiresAt}
+					onUndo={() => {
+						handleUndo();
+						setUndoExpiresAt(null);
+					}}
+					onExpire={() => setUndoExpiresAt(null)}
+				/>
 			)}
 
 			{/* Main Tournament Layout */}
