@@ -154,41 +154,43 @@
 	/* Shadow Definitions */
 	--tt-shadow-container:
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-massive)
-		hsl(var(--background) / var(--tt-opacity-shadow-strong)), 0
-		var(--tt-shadow-blur-small) var(--tt-shadow-blur-stronger)
-		hsl(var(--background) / var(--tt-opacity-shadow-medium)), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--background) / var(--tt-opacity-shadow-strong)),
+		0 var(--tt-shadow-blur-small) var(--tt-shadow-blur-stronger)
+		hsl(var(--background) / var(--tt-opacity-shadow-medium)),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-soft));
 	--tt-shadow-button-default:
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-hugest)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger)), 0
-		var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
-		hsl(var(--hot-pink) / var(--tt-opacity-shadow-strong)), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger)),
+		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
+		hsl(var(--hot-pink) / var(--tt-opacity-shadow-strong)),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
 	--tt-shadow-button-hover:
 		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
-		hsl(var(--neon-cyan) / 50%), 0 var(--tt-shadow-blur-stronger)
-		var(--tt-shadow-blur-huge) hsl(var(--hot-pink) / 42%), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--neon-cyan) / 50%),
+		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-huge)
+		hsl(var(--hot-pink) / 42%),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-stronger));
 	--tt-shadow-button-active:
 		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
-		hsl(var(--neon-cyan) / 36%), 0 var(--tt-shadow-blur-medium)
-		var(--tt-shadow-blur-large) hsl(var(--hot-pink) / 30%), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--neon-cyan) / 36%),
+		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
+		hsl(var(--hot-pink) / 30%),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
 	--tt-shadow-toggle-inactive:
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-small)
 		var(--tt-shadow-blur-medium)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong)), 0
-		var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
-		hsl(var(--background) / var(--tt-opacity-shadow-stronger)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
+		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong)),
+		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
+		hsl(var(--background) / var(--tt-opacity-shadow-stronger)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-spread-tiny)
 		hsl(var(--border) / var(--tt-opacity-shadow-strong));
 	--tt-shadow-toggle-active:
@@ -215,10 +217,10 @@
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
 	--tt-shadow-thumb-inactive:
 		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)), 0
-		var(--tt-shadow-offset-small) var(--tt-shadow-blur-strong)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium)), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-strong)
+		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium)),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-small)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
 	--tt-shadow-thumb-active:
@@ -234,58 +236,58 @@
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-soft));
 	--tt-shadow-label-inactive:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
+		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
 		hsl(var(--background) / var(--tt-opacity-shadow-strong));
 	--tt-shadow-label-hover:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
-		hsl(var(--background) / 50%), 0 var(--tt-shadow-offset-none)
-		var(--tt-shadow-blur-strong)
+		hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 	--tt-shadow-label-active:
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)), 0
-		var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
 		hsl(var(--background) / 50%);
 	--tt-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-strong)
+		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-stronger));
 	--tt-shadow-focus:
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-blur-strong)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
+		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-offset-small)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)), 0
-		var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger));
 
 	/* Text Shadow Definitions */
 	--tt-text-shadow-label-inactive:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
+		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
 		hsl(var(--background) / var(--tt-opacity-shadow-strong));
 	--tt-text-shadow-label-hover:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
-		hsl(var(--background) / 50%), 0 var(--tt-shadow-offset-none)
-		var(--tt-shadow-blur-strong)
+		hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 	--tt-text-shadow-label-active:
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)), 0
-		var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
+		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
 		hsl(var(--background) / 50%);
 	--tt-text-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)), 0
-		var(--tt-shadow-offset-none) var(--tt-shadow-strong)
+		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-stronger));
 }
 
@@ -294,10 +296,10 @@
 	--tt-surface-strong: hsl(var(--card) / 100%);
 	--tt-shadow-container:
 		0 var(--tt-shadow-blur-large) var(--tt-shadow-blur-massive)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)), 0
-		var(--tt-shadow-strong) var(--tt-shadow-blur-large)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-soft)), inset
-		var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
+		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
+		0 var(--tt-shadow-strong) var(--tt-shadow-blur-large)
+		hsl(var(--foreground) / var(--tt-opacity-shadow-soft)),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-none)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 }

@@ -1,0 +1,335 @@
+/* Error Component Styles - Extracted from CommonUI.module.css */
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	white-space: nowrap;
+	border-width: 0;
+	clip-path: inset(0);
+}
+
+.boundary {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100dvh;
+	padding: clamp(1rem, 4vw, 2rem);
+	padding: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
+	overflow: hidden auto;
+	font-family: var(
+		--font-sans,
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		Roboto,
+		sans-serif
+	);
+	background: var(--gradient-mesh);
+	-webkit-overflow-scrolling: touch;
+}
+
+.boundaryGlass {
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.boundaryContent {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	padding: clamp(var(--space-6), 5vw, var(--space-12));
+	text-align: center;
+	outline: none;
+	background: transparent;
+	border: none;
+	border-radius: inherit;
+	transition: var(--transition-base);
+}
+
+.boundaryContent:focus-visible {
+	outline: 2px solid var(--neon-cyan);
+	outline-offset: 4px;
+}
+
+.boundaryContentNoMotion {
+	transition: none;
+}
+
+.boundaryContentSmallMobile {
+	max-width: 100%;
+	padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.boundaryContentMobile {
+	padding: clamp(1.25rem, 4.5vw, 2rem);
+}
+
+.boundaryContentTablet {
+	max-width: 700px;
+	padding: clamp(2rem, 5vw, 2.5rem);
+}
+
+.boundaryIcon {
+	margin-bottom: clamp(1rem, 3vw, 1.5rem);
+	font-size: clamp(3rem, 10vw, 4rem);
+	line-height: 1;
+	filter: drop-shadow(0 0 10px rgb(47 243 224 / 50%));
+	animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+	0%,
+	20%,
+	50%,
+	80%,
+	100% {
+		transform: translateY(0);
+	}
+
+	40% {
+		transform: translateY(-10px);
+	}
+
+	60% {
+		transform: translateY(-5px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boundaryIcon {
+		animation: none;
+	}
+}
+
+.boundaryTitle {
+	margin-bottom: clamp(var(--space-3), 2vw, var(--space-4));
+	font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+	font-weight: var(--font-weight-bold);
+	line-height: var(--leading-tight);
+	color: var(--text-primary);
+	overflow-wrap: break-word;
+	text-shadow: var(--text-shadow-sm);
+	background: var(--gradient-primary);
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.boundaryActions {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: clamp(0.75rem, 2vw, 1rem);
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+.boundaryRetryButton,
+.boundaryHomeButton,
+.boundaryCopyButton {
+	position: relative;
+	display: inline-flex;
+	gap: 0.5rem;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--mobile-touch-target-min, 48px);
+	padding: clamp(0.75rem, 2vw, 0.875rem) clamp(1rem, 3vw, 1.5rem);
+	overflow: hidden;
+	font-size: clamp(0.875rem, 2.5vw, 0.9375rem);
+	font-weight: 500;
+	touch-action: manipulation;
+	cursor: pointer;
+	border: none;
+	border-radius: clamp(6px, 1.5vw, 8px);
+	transition: all 0.3s ease;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.boundaryRetryButton:focus-visible,
+.boundaryHomeButton:focus-visible,
+.boundaryCopyButton:focus-visible {
+	outline: 2px solid var(--neon-cyan);
+	outline-offset: 2px;
+}
+
+.boundaryRetryButton {
+	color: white;
+	background: var(--neon-cyan);
+}
+
+.boundaryRetryButton:hover:not(:active) {
+	background: var(--neon-cyan-600);
+	transform: translateY(-2px) scale(1.02);
+}
+
+.boundaryHomeButton {
+	color: white;
+	background: var(--fire-red);
+}
+
+.boundaryHomeButton:hover:not(:active) {
+	background: var(--fire-red-600);
+	transform: translateY(-2px) scale(1.02);
+}
+
+.boundaryCopyButton {
+	color: var(--text-primary);
+	background: rgb(47 243 224 / 15%);
+	border: 2px solid rgb(47 243 224 / 30%);
+}
+
+.boundaryCopyButton:hover:not(:active) {
+	background: rgb(47 243 224 / 25%);
+	border-color: rgb(47 243 224 / 50%);
+	transform: translateY(-2px);
+}
+
+.boundaryDetails {
+	padding: clamp(1rem, 3vw, 1.5rem);
+	margin-top: clamp(1.5rem, 4vw, 2rem);
+	text-align: left;
+	background: rgb(0 0 0 / 20%);
+	border: 1px solid var(--glass-border);
+	border-radius: clamp(8px, 2vw, 12px);
+}
+
+.boundaryDetails summary {
+	padding: 0.5rem;
+	font-size: clamp(0.9375rem, 2.5vw, 1rem);
+	font-weight: 600;
+	color: var(--text-primary);
+	cursor: pointer;
+	user-select: none;
+	border-radius: 4px;
+}
+
+.boundaryErrorStack {
+	max-height: 400px;
+	padding: 1rem;
+	margin-top: 1rem;
+	overflow: auto;
+	font-family: var(--font-mono, monospace);
+	font-size: 0.75rem;
+	line-height: 1.6;
+	color: var(--text-secondary);
+	white-space: pre-wrap;
+	word-break: break-word;
+	background: rgb(0 0 0 / 30%);
+	border-radius: 8px;
+}
+
+/* Error List Styles */
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	background: var(--error-50, #fef2f2);
+	border: 1px solid var(--error-200, #fecaca);
+	border-radius: var(--radius-lg);
+}
+
+.listItems {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+.listItem {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-3);
+	background: white;
+	border-radius: var(--radius-md);
+}
+
+.listMessage {
+	flex: 1;
+	color: var(--error-700, #b91c1c);
+	font-size: var(--text-sm);
+}
+
+.listClearAllButton,
+.listDismissButton {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	font-weight: 500;
+	cursor: pointer;
+	border-radius: var(--radius-md);
+	transition: var(--transition-base);
+}
+
+.listClearAllButton {
+	align-self: flex-end;
+	color: var(--error-700);
+	background: transparent;
+	border: 1px solid var(--error-300);
+}
+
+.listClearAllButton:hover {
+	background: var(--error-100);
+}
+
+.listDismissButton {
+	color: var(--error-600);
+	background: transparent;
+	border: none;
+}
+
+.listDismissButton:hover {
+	color: var(--error-800);
+}
+
+/* Error Inline Styles */
+.inline {
+	display: flex;
+	align-items: center;
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-md);
+}
+
+.inlineGeneral {
+	background: var(--error-50, #fef2f2);
+	border: 1px solid var(--error-200, #fecaca);
+}
+
+.inlineContent {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.inlineIcon {
+	flex-shrink: 0;
+	font-size: 1.25em;
+}
+
+.inlineMessage {
+	color: var(--error-700, #b91c1c);
+	font-size: var(--text-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boundaryRetryButton,
+	.boundaryHomeButton,
+	.boundaryCopyButton {
+		transition: none;
+	}
+
+	.boundaryRetryButton:hover,
+	.boundaryHomeButton:hover,
+	.boundaryCopyButton:hover {
+		transform: none;
+	}
+}

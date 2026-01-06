@@ -152,8 +152,8 @@ export function useLoginController(
 				const error = err as Error;
 				setGlobalError(
 					formattedError.userMessage ||
-						error.message ||
-						"Unable to log in. Please check your connection and try again.",
+					error.message ||
+					"Unable to log in. Please check your connection and try again.",
 				);
 				throw err; // Re-throw to let the hook know submission failed
 			}
@@ -163,6 +163,7 @@ export function useLoginController(
 	const {
 		values,
 		errors,
+		touched,
 		isSubmitting,
 		handleChange,
 		handleBlur,
@@ -201,7 +202,9 @@ export function useLoginController(
 		setName: (val: string) => setValues({ name: val }),
 		isLoading: isSubmitting,
 		error: errors.name || globalError,
+		touched: touched.name,
 		handleNameChange,
+		handleBlur,
 		handleSubmit,
 		handleRandomName,
 		handleKeyDown,

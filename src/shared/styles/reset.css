@@ -153,8 +153,9 @@ a:focus-visible {
 	--navbar-border: hsl(0deg 0% 0%);
 	--navbar-ring: hsl(0deg 0% 0%);
 	--font-sans:
-		"Space Grotesk", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont,
-		"Segoe UI", roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
+		"Space Grotesk", ui-sans-serif, system-ui, -apple-system,
+		blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial,
+		"Noto Sans", sans-serif;
 	--font-serif: ui-serif, georgia, cambria, "Times New Roman", times, serif;
 	--font-mono:
 		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas,

@@ -1,0 +1,5 @@
+// Modern pages
+export { default as HomePage } from './HomePage';
+export { default as TournamentPage } from './TournamentPage';
+export { default as ProfilePage } from './ProfilePage';
+export { default as LoginPage } from './LoginPage';

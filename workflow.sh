@@ -35,8 +35,8 @@ command_exists() {
 }
 
 # Check prerequisites
-if ! command_exists npm; then
-    print_error "npm is not installed or not in PATH"
+if ! command_exists pnpm; then
+    print_error "pnpm is not installed or not in PATH"
     exit 2
 fi
 
@@ -52,7 +52,7 @@ echo "🔍 Running iterative workflow check..."
 if [ "$AUTO_FIX" = true ]; then
     echo ""
     echo "🔧 Attempting auto-fixes..."
-    if npm run lint:fix; then
+    if pnpm run lint:fix; then
         print_status "Auto-fixes applied"
     else
         print_warning "Some issues could not be auto-fixed"
@@ -60,39 +60,26 @@ if [ "$AUTO_FIX" = true ]; then
     echo ""
 fi
 
-# Step 2: Check TypeScript first (blocking)
-echo "📘 Checking TypeScript..."
-if npm run lint:types; then
-    print_status "TypeScript check passed"
+# Step 2: Run comprehensive checks
+echo "📘 Running linting and type checks..."
+if pnpm run lint; then
+    print_status "All lint checks passed"
 else
-    print_error "TypeScript errors found (BLOCKING)"
+    print_error "Lint errors found (BLOCKING)"
     echo ""
-    echo "TypeScript errors must be resolved before proceeding."
+    echo "Run './workflow.sh --fix' to attempt auto-fixes, or fix manually."
     exit 1
 fi
 
-# Step 3: Check ESLint
+# Step 3: Run dependency and unused code checks
 echo ""
-echo "📝 Checking ESLint..."
-if npm run lint:eslint; then
-    print_status "ESLint check passed"
+echo "🔍 Checking dependencies and unused code..."
+if pnpm run check; then
+    print_status "Dependency and unused code checks passed"
 else
-    print_error "ESLint errors found"
+    print_warning "Some dependency or unused code issues found"
     echo ""
-    echo "Run 'npm run lint:eslint:fix' to attempt auto-fixes, or fix manually."
-    exit 1
-fi
-
-# Step 4: Check Stylelint
-echo ""
-echo "🎨 Checking Stylelint..."
-if npm run lint:style; then
-    print_status "Stylelint check passed"
-else
-    print_error "Stylelint errors found"
-    echo ""
-    echo "Run 'npm run lint:style:fix' to attempt auto-fixes, or fix manually."
-    exit 1
+    echo "Review the output above and fix manually if needed."
 fi
 
 # All checks passed

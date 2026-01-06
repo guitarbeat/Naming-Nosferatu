@@ -1,0 +1,272 @@
+/* Toast Component Styles - Extracted from CommonUI.module.css */
+
+.toastGlass {
+	pointer-events: auto;
+	transform: translateX(100%);
+	transition: var(--transition-base);
+	animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toastGlass.exiting {
+	opacity: 0;
+	transform: translateX(100%);
+}
+
+.toastItem {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: 2;
+	pointer-events: auto;
+	background: transparent;
+	border-left: var(--card-border-width) solid;
+	border-radius: inherit;
+}
+
+.toastItem.exiting {
+	opacity: 0;
+	transform: translateX(100%);
+}
+
+.success {
+	color: var(--success-700, #15803d);
+	background: var(--success-50, #f0fdf4);
+	border-left-color: var(--success-500, #22c55e);
+}
+
+.error {
+	color: var(--error-700, #b91c1c);
+	background: var(--error-50, #fef2f2);
+	border-left-color: var(--error-500, #ef4444);
+}
+
+.warning {
+	color: var(--warning-700, #a16207);
+	background: var(--warning-50, #fffbeb);
+	border-left-color: var(--warning-500, #f59e0b);
+}
+
+.info {
+	color: var(--secondary-700, #1d4ed8);
+	background: var(--secondary-50, #eff6ff);
+	border-left-color: var(--secondary-500, #3b82f6);
+}
+
+.toastContent {
+	position: relative;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	padding: 12px 14px;
+}
+
+.icon {
+	flex-shrink: 0;
+	font-size: 1.2em;
+}
+
+.message {
+	flex: 1;
+	font-size: 0.875rem;
+	font-weight: var(--font-weight-medium, 500);
+	line-height: 1.4;
+}
+
+.dismissButton {
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	font-size: 1.2em;
+	font-weight: bold;
+	color: inherit;
+	cursor: pointer;
+	background: rgb(255 255 255 / 80%);
+	border: 1px solid currentcolor;
+	border-radius: 4px;
+	transition: all 0.1s ease;
+}
+
+.dismissButton:hover {
+	background: rgb(255 255 255 / 100%);
+	transform: scale(1.15);
+	transition: all 0.1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.dismissButton:active {
+	transform: scale(0.95);
+}
+
+.dismissButton:focus,
+.dismissButton:focus-visible {
+	outline: 2px solid currentcolor;
+	outline-offset: 2px;
+}
+
+.progressBar {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 3px;
+	overflow: hidden;
+	background: rgb(0 0 0 / 10%);
+	border-radius: 0 0 8px 8px;
+}
+
+.progressFill {
+	height: 100%;
+	background: currentcolor;
+	opacity: 0.6;
+	transform-origin: left;
+	animation: progressShrink linear forwards;
+}
+
+@keyframes progressShrink {
+	from {
+		transform: scaleX(1);
+	}
+
+	to {
+		transform: scaleX(0);
+	}
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateX(100%) scale(0.98);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+.toastContainer {
+	position: fixed;
+	z-index: 999;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-height: calc(100vh - 24px);
+	overflow-y: auto;
+	pointer-events: none;
+	scrollbar-width: thin;
+	scrollbar-color: rgb(255 255 255 / 20%) transparent;
+}
+
+.topLeft {
+	top: 12px;
+	left: 12px;
+}
+
+.topCenter {
+	top: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.topRight {
+	top: 12px;
+	right: 12px;
+}
+
+.bottomLeft {
+	bottom: 12px;
+	left: 12px;
+}
+
+.bottomCenter {
+	bottom: 12px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.bottomRight {
+	right: 12px;
+	bottom: 12px;
+}
+
+.toastContainerItem {
+	margin: 0;
+	pointer-events: auto;
+}
+
+.hiddenCount {
+	align-self: center;
+	padding: 8px 12px;
+	margin-top: 5px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--text-primary, #374151);
+	text-align: center;
+	pointer-events: none;
+	background: var(--overlay-dark, rgb(0 0 0 / 80%));
+	border-radius: 20px;
+}
+
+@media (width <= 768px) {
+	.toastContainer {
+		top: 10px;
+		right: 10px;
+		left: 10px;
+		min-width: auto;
+		max-width: none;
+		gap: 8px;
+		max-height: calc(100vh - 20px);
+	}
+
+	.topLeft,
+	.topRight,
+	.topCenter {
+		top: 10px;
+		right: 10px;
+		left: 10px;
+		transform: none;
+	}
+
+	.bottomLeft,
+	.bottomRight,
+	.bottomCenter {
+		right: 10px;
+		bottom: 10px;
+		left: 10px;
+		transform: none;
+	}
+
+	.toastContent {
+		gap: 8px;
+		padding: 12px;
+	}
+
+	.message {
+		font-size: 0.9rem;
+	}
+
+	.dismissButton {
+		width: 20px;
+		height: 20px;
+		font-size: 1em;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.toastGlass,
+	.toastItem,
+	.toastContainer {
+		transition: none;
+		animation: none;
+	}
+
+	.progressFill {
+		animation: none;
+	}
+
+	.dismissButton:hover {
+		transform: none;
+	}
+}

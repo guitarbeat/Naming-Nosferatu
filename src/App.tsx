@@ -23,10 +23,13 @@ import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
+import { ErrorBoundary } from "./shared/components/ErrorBoundary";
+import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
 import type { NameItem } from "./shared/propTypes";
+import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
@@ -103,10 +106,14 @@ function App() {
 	const { login, logout, isInitialized } = useUserSession();
 	const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
-	// * Initialize performance monitoring
+	// * Initialize performance monitoring and global error handling
 	useEffect(() => {
 		initializePerformanceMonitoring();
-		return () => cleanupPerformanceMonitoring();
+		const cleanup = ErrorManager.setupGlobalErrorHandling();
+		return () => {
+			cleanupPerformanceMonitoring();
+			cleanup();
+		};
 	}, []);
 
 	// * Initialize store from localStorage
@@ -215,15 +222,7 @@ function App() {
 	// * Show loading screen while initializing user session from localStorage
 	if (!isInitialized) {
 		return (
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					height: "100vh",
-					width: "100vw",
-				}}
-			>
+			<div className="fullScreenCenter">
 				<Loading variant="spinner" text="Loading..." />
 			</div>
 		);
@@ -323,14 +322,17 @@ function AppLayout({
 	);
 
 	return (
-		<div className={appClassName} style={layoutStyle}>
-			{/* * Skip link for keyboard navigation */}
-			<a href="#main-content" className="skip-link">
-				Skip to main content
-			</a>
+		<ErrorBoundary context="Main Application Layout">
+			<div className={appClassName} style={layoutStyle}>
+				<OfflineIndicator />
+				
+				{/* * Skip link for keyboard navigation */}
+				<a href="#main-content" className="skip-link">
+					Skip to main content
+				</a>
 
-			{/* * Static cat-themed background */}
-			<CatBackground />
+				{/* * Static cat-themed background */}
+				<CatBackground />
 
 			{/* * Primary navigation lives in the navbar */}
 			{isLoggedIn && (
@@ -407,7 +409,8 @@ function AppLayout({
 				/>
 			</main>
 		</div>
-	);
+	</ErrorBoundary>
+);
 }
 
 // Test auto-deployment - Wed Oct 22 21:26:25 CDT 2025

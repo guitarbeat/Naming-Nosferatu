@@ -71,11 +71,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 8080,
+      port: serverPort,
       strictPort: true,
       hmr: {
-        clientPort: 8080,
-        port: 8080,
+        clientPort: serverPort,
+        port: serverPort,
         overlay: false
       },
     },

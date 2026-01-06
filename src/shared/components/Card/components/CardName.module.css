@@ -725,7 +725,8 @@
 			circle at 30% 25%,
 			rgb(var(--cat-image-accent-rgb, 100 116 139) / 55%) 0%,
 			rgb(15 23 42 / 90%) 70%
-		), var(--surface-color); /* Neutral background for letterboxing */
+		),
+		var(--surface-color); /* Neutral background for letterboxing */
 
 	border-radius: 0; /* * Sharp edges to match card */
 	box-shadow: 0 6px 20px rgb(15 23 42 / 35%);

@@ -62,8 +62,10 @@ function CombinedLoginTournamentSetupContent({
 		handleSubmit: handleLoginSubmit,
 		handleRandomName,
 		handleKeyDown,
+		handleBlur: handleLoginBlur,
 		catFact: loginCatFact,
 		nameSchema,
+		touched: nameTouched,
 	} = useLoginController(async (name: string): Promise<void> => {
 		await onLogin(name);
 	});
@@ -194,20 +196,17 @@ function CombinedLoginTournamentSetupContent({
 							placeholder="YOUR NAME HERE..."
 							value={name}
 							onChange={handleNameChange}
+							onBlur={() => handleLoginBlur("name")}
 							onKeyDown={handleKeyDown}
 							disabled={isLoginLoading}
 							autoFocus
 							maxLength={30}
 							aria-label="Enter your name to register as a judge"
 							schema={nameSchema}
+							externalError={loginError}
+							externalTouched={nameTouched}
 						/>
 					</div>
-
-					{loginError && !nameSchema.safeParse(name).success && (
-						<div className={loginStyles.error} role="alert">
-							{loginError}
-						</div>
-					)}
 
 					<motion.button
 						className={loginStyles.leverBtn}

@@ -155,11 +155,5 @@ export const isSupabaseAvailable = async () => {
 	return true;
 };
 
-// Convenience exports from catNamesAPI for backward compatibility - DEPRECATED
-// Please use catNamesAPI directly
-// import { catNamesAPI } from "./modules/catNames";
-// export const {
-// 	getNamesWithDescriptions,
-// 	getNamesWithUserRatings,
-// 	getUserStats,
-// } = catNamesAPI;
+// Re-export client for modern usage
+export { resolveSupabaseClient as supabase };

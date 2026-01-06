@@ -102,14 +102,6 @@ verification/*.jpeg
 !verification/verify_button_style.py
 .internal-docs/
 scripts/data
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-/src/generated/prisma
-stats.html
 stats.html
 stats.json
+jscpd-report.html
