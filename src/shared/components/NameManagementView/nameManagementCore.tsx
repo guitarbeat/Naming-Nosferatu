@@ -137,11 +137,16 @@ export interface UseNameManagementViewResult {
 
 	// Name Selection
 	selectedNames: NameItem[];
+	selectedIds: Set<string>;
 	isSelectionMode: boolean;
-	toggleName: (name: NameItem) => void;
+	toggleName: (name: NameItem | string) => void;
+	toggleNameById: (nameId: string, selected: boolean) => void;
+	toggleNamesByIds: (nameIds: string[], shouldSelect?: boolean) => void;
 	setIsSelectionMode: Dispatch<SetStateAction<boolean>>;
 	clearSelection: () => void;
 	selectAll: () => void;
+	isSelected: (nameOrId: NameItem | string) => boolean;
+	selectedCount: number;
 
 	// Filter State
 	searchQuery: string;
@@ -347,9 +352,8 @@ export function useNameSelection({
 	userName,
 	enableAutoSave = true,
 }: UseNameSelectionProps) {
-	const [selectedNames, setSelectedNames] = useState<NameItem[] | Set<string>>(
-		mode === "tournament" ? [] : new Set<string>(),
-	);
+	// Unify state to always use a Set of IDs (strings)
+	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const lastSavedHashRef = useRef("");
@@ -362,6 +366,13 @@ export function useNameSelection({
 			}
 		};
 	}, []);
+
+	// Derive the selectedNames array for components that expect it
+	const selectedNames = useMemo(() => {
+		return names.filter((n) => selectedIds.has(String(n.id)));
+	}, [names, selectedIds]);
+
+	const selectedCount = selectedIds.size;
 
 	const { mutate: saveTournamentSelections } = useMutation({
 		mutationFn: async (namesToSave: NameItem[]) => {
@@ -409,184 +420,111 @@ export function useNameSelection({
 
 	const toggleName = useCallback(
 		(nameOrId: NameItem | string) => {
-			if (mode === "tournament") {
-				setSelectedNames((prev) => {
-					const prevArray = prev as NameItem[];
-					const nameObj = nameOrId as NameItem;
-					const newSelectedNames = prevArray.some(
-						(n: NameItem) => n.id === nameObj.id,
-					)
-						? prevArray.filter((n: NameItem) => n.id !== nameObj.id)
-						: [...prevArray, nameObj];
+			const id = typeof nameOrId === "string" ? nameOrId : String(nameOrId.id);
+			
+			setSelectedIds((prev) => {
+				const newSet = new Set(prev);
+				if (newSet.has(id)) {
+					newSet.delete(id);
+				} else {
+					newSet.add(id);
+				}
 
-					if (
-						Date.now() - lastLogTsRef.current > 1000 &&
-						process.env.NODE_ENV === "development"
-					) {
-						console.log(
-							"🎮 TournamentSetup: Selected names updated",
-							newSelectedNames,
-						);
+				// For tournament mode, we still want to schedule the save with full objects
+				if (mode === "tournament") {
+					const updatedList = names.filter((n) => newSet.has(String(n.id)));
+					
+					if (Date.now() - lastLogTsRef.current > 1000 && process.env.NODE_ENV === "development") {
+						console.log("🎮 TournamentSetup: Selection updated", updatedList);
 						lastLogTsRef.current = Date.now();
 					}
-
-					scheduleSave(newSelectedNames);
-					return newSelectedNames;
-				});
-			} else {
-				setSelectedNames((prev) => {
-					const newSet = new Set(prev as Set<string>);
-					const id = typeof nameOrId === "string" ? nameOrId : nameOrId.id;
-					if (newSet.has(id)) {
-						newSet.delete(id);
-					} else {
-						newSet.add(id);
-					}
-					return newSet;
-				});
-			}
+					scheduleSave(updatedList);
+				}
+				
+				return newSet;
+			});
 		},
-		[mode, scheduleSave],
+		[mode, names, scheduleSave],
 	);
 
 	const toggleNameById = useCallback(
 		(nameId: string, selected: boolean) => {
-			if (mode === "tournament") {
-				const nameObj = (names as NameItem[]).find((n) => n.id === nameId);
-				if (nameObj) {
-					if (selected) {
-						setSelectedNames((prev) => {
-							const prevArray = prev as NameItem[];
-							if (prevArray.some((n: NameItem) => n.id === nameId)) return prev;
-							const newSelectedNames = [...prevArray, nameObj];
-							scheduleSave(newSelectedNames);
-							return newSelectedNames;
-						});
-					} else {
-						setSelectedNames((prev) => {
-							const prevArray = prev as NameItem[];
-							const newSelectedNames = prevArray.filter(
-								(n: NameItem) => n.id !== nameId,
-							);
-							scheduleSave(newSelectedNames);
-							return newSelectedNames;
-						});
-					}
+			const id = String(nameId);
+			setSelectedIds((prev) => {
+				const newSet = new Set(prev);
+				if (selected) {
+					newSet.add(id);
+				} else {
+					newSet.delete(id);
 				}
-			} else {
-				setSelectedNames((prev) => {
-					const newSet = new Set(prev as Set<string>);
-					if (selected) {
-						newSet.add(nameId);
-					} else {
-						newSet.delete(nameId);
-					}
-					return newSet;
-				});
-			}
+
+				if (mode === "tournament") {
+					const updatedList = names.filter((n) => newSet.has(String(n.id)));
+					scheduleSave(updatedList);
+				}
+				
+				return newSet;
+			});
 		},
 		[mode, names, scheduleSave],
 	);
 
 	const toggleNamesByIds = useCallback(
 		(nameIds: string[] = [], shouldSelect = true) => {
-			if (!Array.isArray(nameIds) || nameIds.length === 0) {
-				return;
-			}
-			const idSet = new Set(nameIds);
-			if (mode === "tournament") {
-				setSelectedNames((prev) => {
-					const prevArray = prev as NameItem[];
+			if (!Array.isArray(nameIds) || nameIds.length === 0) return;
+
+			setSelectedIds((prev) => {
+				const newSet = new Set(prev);
+				nameIds.forEach(id => {
 					if (shouldSelect) {
-						const additions = (names as NameItem[]).filter(
-							(name: NameItem) =>
-								idSet.has(name.id) &&
-								!prevArray.some(
-									(selected: NameItem) => selected.id === name.id,
-								),
-						);
-						if (additions.length === 0) return prev;
-						const updated = [...prevArray, ...additions];
-						scheduleSave(updated);
-						return updated;
-					}
-					const updated = prevArray.filter(
-						(name: NameItem) => !idSet.has(name.id),
-					);
-					if (updated.length === prevArray.length) return prev;
-					scheduleSave(updated);
-					return updated;
-				});
-			} else {
-				setSelectedNames((prev) => {
-					const updated = new Set(prev as Set<string>);
-					if (shouldSelect) {
-						idSet.forEach((id) => {
-							updated.add(id);
-						});
+						newSet.add(String(id));
 					} else {
-						idSet.forEach((id) => {
-							updated.delete(id);
-						});
+						newSet.delete(String(id));
 					}
-					return updated;
 				});
-			}
+
+				if (mode === "tournament") {
+					const updatedList = names.filter((n) => newSet.has(String(n.id)));
+					scheduleSave(updatedList);
+				}
+				
+				return newSet;
+			});
 		},
 		[mode, names, scheduleSave],
 	);
 
 	const selectAll = useCallback(() => {
-		if (mode === "tournament") {
-			setSelectedNames((prev) => {
-				const prevArray = prev as NameItem[];
-				const allSelected = prevArray.length === names.length;
-				return allSelected ? [] : [...names];
-			});
-		} else {
-			setSelectedNames((prev) => {
-				const prevSet = prev as Set<string>;
-				const allSelected = names.every((name: NameItem) =>
-					prevSet.has(name.id),
-				);
-				if (allSelected) {
-					return new Set<string>();
-				}
-				return new Set<string>(names.map((name: NameItem) => name.id));
-			});
-		}
-	}, [mode, names]);
+		setSelectedIds((prev) => {
+			const allSelected = prev.size === names.length;
+			if (allSelected) {
+				if (mode === "tournament") scheduleSave([]);
+				return new Set();
+			}
+			
+			const newSet = new Set(names.map((n) => String(n.id)));
+			if (mode === "tournament") scheduleSave(names);
+			return newSet;
+		});
+	}, [mode, names, scheduleSave]);
 
 	const clearSelection = useCallback(() => {
-		if (mode === "tournament") {
-			setSelectedNames([]);
-		} else {
-			setSelectedNames(new Set<string>());
-		}
-	}, [mode]);
+		setSelectedIds(new Set());
+		if (mode === "tournament") scheduleSave([]);
+	}, [mode, scheduleSave]);
 
 	const isSelected = useCallback(
 		(nameOrId: NameItem | string) => {
-			if (mode === "tournament") {
-				const nameObj = nameOrId as NameItem;
-				return (selectedNames as NameItem[]).some(
-					(n: NameItem) => n.id === nameObj.id,
-				);
-			}
-			const id = typeof nameOrId === "string" ? nameOrId : nameOrId.id;
-			return (selectedNames as Set<string>).has(id);
+			const id = typeof nameOrId === "string" ? nameOrId : String(nameOrId.id);
+			return selectedIds.has(id);
 		},
-		[mode, selectedNames],
+		[selectedIds],
 	);
 
-	const selectedCount =
-		mode === "tournament"
-			? (selectedNames as NameItem[]).length
-			: (selectedNames as Set<string>).size;
-
 	return {
-		selectedNames,
-		setSelectedNames,
+		selectedNames, // Array of NameItem for backward sync
+		selectedIds,   // Set of strings for efficient lookups
+		setSelectedIds,
 		toggleName,
 		toggleNameById,
 		toggleNamesByIds,
@@ -596,6 +534,7 @@ export function useNameSelection({
 		selectedCount,
 	};
 }
+
 
 // ============================================================================
 // HOOKS - Name Management View State
@@ -874,6 +813,7 @@ export function useNameManagementView({
 		error: isError ? (dataError as Error) : null,
 
 		selectedNames,
+		selectedIds,
 		isSelectionMode: false,
 		setIsSelectionMode: () => {},
 		toggleName,
@@ -881,6 +821,8 @@ export function useNameManagementView({
 		toggleNamesByIds,
 		clearSelection,
 		selectAll: _selectAll,
+		isSelected,
+		selectedCount,
 
 		searchQuery: searchTerm,
 		setSearchQuery: setSearchTerm,
