@@ -31,21 +31,15 @@ export const container = new ServiceContainer();
 
 // Service registration
 export const registerServices = () => {
-	container.register("apiClient", () =>
-		import("./api/ApiClient").then((m) => new m.ApiClient()),
-	);
+	container.register("apiClient", () => import("./api/ApiClient").then((m) => new m.ApiClient()));
 	container.register("tournamentService", () =>
-		import("./tournament/TournamentService").then(
-			(m) => new m.TournamentService(),
-		),
+		import("./tournament/TournamentService").then((m) => new m.TournamentService()),
 	);
 	container.register("userService", () =>
 		import("./user/UserService").then((m) => new m.UserService()),
 	);
 	container.register("analyticsService", () =>
-		import("./analytics/AnalyticsService").then(
-			(m) => new m.AnalyticsService(),
-		),
+		import("./analytics/AnalyticsService").then((m) => new m.AnalyticsService()),
 	);
 };
 

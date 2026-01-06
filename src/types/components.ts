@@ -17,8 +17,14 @@ export interface NameItem {
 	name: string;
 	value?: IdType;
 	description?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden?: boolean;
 	rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	avg_rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	popularity_score?: number;
+	category?: string;
 	wins?: number;
 	losses?: number;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,10 +61,7 @@ export interface TournamentState {
 	currentMatchNumber: number;
 	roundNumber: number;
 	totalMatches: number;
-	currentRatings: Record<
-		string,
-		{ rating: number; wins?: number; losses?: number }
-	>;
+	currentRatings: Record<string, { rating: number; wins?: number; losses?: number }>;
 	isTransitioning: boolean;
 	isError: boolean;
 	canUndo: boolean;
@@ -66,9 +69,7 @@ export interface TournamentState {
 }
 
 export interface TournamentActions {
-	setRatings: (
-		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
-	) => void;
+	setRatings: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
 	setComplete: (complete: boolean) => void;
 	resetTournament: () => void;
 	setLoading: (loading: boolean) => void;
@@ -82,4 +83,32 @@ export interface BracketMatch {
 	name2?: string;
 	winner?: number;
 	round?: number;
+}
+
+export interface VoteData {
+	match: {
+		left: {
+			name: string;
+			id: string | number | null;
+			description: string;
+			outcome: string;
+		};
+		right: {
+			name: string;
+			id: string | number | null;
+			description: string;
+			outcome: string;
+		};
+	};
+	result: number;
+	ratings: Record<string, number>;
+	timestamp: string;
+}
+
+export interface TournamentProps {
+	names: NameItem[];
+	existingRatings?: Record<string, number>;
+	onComplete: (ratings: Record<string, number>) => void;
+	userName?: string;
+	onVote?: (voteData: VoteData) => Promise<void> | void;
 }

@@ -17,10 +17,7 @@
 
 	/* Navbar offset calculations */
 	--app-navbar-offset-base: clamp(6rem, 16vw, 7.75rem);
-	--app-navbar-offset: calc(
-		var(--app-navbar-offset-base) +
-		env(safe-area-inset-top)
-	);
+	--app-navbar-offset: calc(var(--app-navbar-offset-base) + env(safe-area-inset-top));
 }
 
 /* ============================================================================
@@ -43,7 +40,7 @@
 	box-shadow: none;
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	position: relative;
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 /* ============================================================================
@@ -56,9 +53,8 @@
 	--app-main-bottom-padding: clamp(2rem, 4vw, 3rem);
 
 	/* Horizontal navbar on top - use padding-top, no left padding */
-	padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem))
-		var(--app-main-side-padding) var(--app-main-bottom-padding)
-		var(--app-main-side-padding);
+	padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) var(--app-main-side-padding)
+		var(--app-main-bottom-padding) var(--app-main-side-padding);
 }
 
 /* ============================================================================
@@ -130,7 +126,7 @@
 .app-header,
 .app-main-wrapper {
 	position: relative;
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 /* ============================================================================
@@ -139,8 +135,8 @@
 
 @media (width <= 768px) {
 	.app-main-wrapper:not(.app-main-wrapper--login) {
-		padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem)
-			clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem);
+		padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem) clamp(2rem, 5vw, 3rem)
+			clamp(1rem, 4vw, 2rem);
 	}
 
 	.app-main-wrapper--login {
@@ -164,10 +160,10 @@
 .global-loading-overlay {
 	position: fixed;
 	inset: 0;
-	z-index: 9999;
+	z-index: var(--z-modal);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgb(0 0 0 / 60%);
+	background: var(--overlay-dark);
 	backdrop-filter: blur(8px);
 }

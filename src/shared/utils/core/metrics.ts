@@ -5,25 +5,30 @@ export interface InsightCategory {
 	color: string;
 }
 
+// Category keys use snake_case to match insight tag strings used throughout the codebase
 const INSIGHT_CATEGORIES: Record<string, InsightCategory> = {
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	top_rated: {
 		label: "Top Rated",
 		description: "In the top 10% by rating",
 		icon: "⭐",
 		color: "var(--color-gold, #f59e0b)",
 	},
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_up: {
 		label: "Trending Up",
 		description: "Gaining popularity",
 		icon: "📈",
 		color: "var(--color-success, #22c55e)",
 	},
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_down: {
 		label: "Trending Down",
 		description: "Losing popularity",
 		icon: "📉",
 		color: "var(--color-danger, #ef4444)",
 	},
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	most_selected: {
 		label: "Most Selected",
 		description: "One of the top selections",
@@ -56,16 +61,17 @@ const INSIGHT_CATEGORIES: Record<string, InsightCategory> = {
 	},
 };
 
-export function getInsightCategory(
-	categoryKey: string,
-): InsightCategory | null {
+export function getInsightCategory(categoryKey: string): InsightCategory | null {
 	return INSIGHT_CATEGORIES[categoryKey] || null;
 }
 
+// Metric keys match database field names and internal metric identifiers
 const METRIC_LABELS: Record<string, string> = {
 	rating: "Rating",
+	// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
 	total_wins: "Wins",
 	selected: "Selected",
+	// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
 	avg_rating: "Avg Rating",
 	wins: "Wins",
 	dateSubmitted: "Date Added",
@@ -80,10 +86,14 @@ export function calculatePercentile(
 	allValues: number[],
 	higherIsBetter = true,
 ): number {
-	if (!allValues || allValues.length === 0) return 50;
+	if (!allValues || allValues.length === 0) {
+		return 50;
+	}
 
 	const validValues = allValues.filter((v) => v != null && !Number.isNaN(v));
-	if (validValues.length === 0) return 50;
+	if (validValues.length === 0) {
+		return 50;
+	}
 
 	const sorted = [...validValues].sort((a, b) => a - b);
 
@@ -121,19 +131,13 @@ export function ratingsToArray(
 
 	return Object.entries(ratings).map(([name, data]) => ({
 		name,
-		rating:
-			typeof data === "number"
-				? data
-				: (data as RatingDataInput)?.rating || 1500,
+		rating: typeof data === "number" ? data : (data as RatingDataInput)?.rating || 1500,
 		wins: typeof data === "object" ? (data as RatingDataInput)?.wins || 0 : 0,
-		losses:
-			typeof data === "object" ? (data as RatingDataInput)?.losses || 0 : 0,
+		losses: typeof data === "object" ? (data as RatingDataInput)?.losses || 0 : 0,
 	}));
 }
 
-export function ratingsToObject(
-	ratingsArray: RatingItem[],
-): Record<string, RatingData> {
+export function ratingsToObject(ratingsArray: RatingItem[]): Record<string, RatingData> {
 	if (!Array.isArray(ratingsArray)) {
 		return {};
 	}

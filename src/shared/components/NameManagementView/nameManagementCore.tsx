@@ -5,26 +5,57 @@
  */
 
 import type React from "react";
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
-import {
-	applyNameFilters,
-	mapFilterStatusToVisibility,
-} from "../../utils/core";
-import type {
-	NameItem,
-	TournamentFilters,
-	UseNameManagementViewProps,
-} from "./shared/types";
+import type { NameItem } from "../../../types/components";
+import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils/core";
+import type { TournamentFilters, UseNameManagementViewProps } from "./shared/types";
+
+// Re-export NameItem for convenience
+export type { NameItem };
+
+import type React from "react";
+import type { NameItem } from "../../../types/components";
 import { useNameData } from "./shared/useNameData";
 import { useNameSelection } from "./shared/useNameSelection";
 
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+/**
+ * Extension points for customizing NameManagementView behavior
+ */
+export interface NameManagementViewExtensions {
+	header?: React.ReactNode | (() => React.ReactNode);
+	dashboard?: React.ReactNode | (() => React.ReactNode) | React.ComponentType;
+	bulkActions?: (props: { onExport?: () => void }) => React.ReactNode;
+	contextLogic?: React.ReactNode | (() => React.ReactNode);
+	nameGrid?: React.ReactNode;
+	navbar?: React.ReactNode | (() => React.ReactNode);
+}
+
+/**
+ * Props specific to Profile mode
+ */
+export interface NameManagementViewProfileProps {
+	showUserFilter?: boolean;
+	selectionStats?: {
+		total: number;
+		selected: number;
+		visible: number;
+		hidden: number;
+	};
+	userOptions?: Array<{ value: string; label: string }>;
+	isAdmin?: boolean;
+	onToggleVisibility?: (nameId: string) => Promise<void>;
+	onDelete?: (name: NameItem) => Promise<void>;
+}
+
 // Context Definition
-const NameManagementContext = createContext<UseNameManagementViewResult | null>(
-	null,
-);
+export const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);
 
 export function NameManagementProvider({
 	children,
@@ -33,29 +64,21 @@ export function NameManagementProvider({
 	children: React.ReactNode;
 	value: UseNameManagementViewResult;
 }) {
-	return (
-		<NameManagementContext.Provider value={value}>
-			{children}
-		</NameManagementContext.Provider>
-	);
+	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
 }
 
 export function useNameManagementContextSafe() {
 	const context = useContext(NameManagementContext);
 	if (!context) {
-		throw new Error(
-			"useNameManagementContextSafe must be used within NameManagementProvider",
-		);
+		throw new Error("useNameManagementContextSafe must be used within NameManagementProvider");
 	}
 	return context;
 }
 
 // Type for the hook return value
-export type UseNameManagementViewResult = ReturnType<
-	typeof useNameManagementView
->;
+export type UseNameManagementViewResult = ReturnType<typeof useNameManagementView>;
 
-export type { NameItem, TournamentFilters, UseNameManagementViewProps };
+export type { TournamentFilters, UseNameManagementViewProps };
 
 // ============================================================================
 // HOOKS - Name Management View State
@@ -68,12 +91,7 @@ export function useNameManagementView({
 	analysisMode,
 	setAnalysisMode,
 }: UseNameManagementViewProps): UseNameManagementViewResult {
-	const {
-		names,
-		isLoading,
-		error: dataError,
-		refetch,
-	} = useNameData({ userName, mode });
+	const { names, isLoading, error: dataError, refetch } = useNameData({ userName, mode });
 
 	const {
 		selectedNames,
@@ -93,7 +111,11 @@ export function useNameManagementView({
 
 	const { errors, ui, errorActions } = useAppStore();
 	const isError = mode === "tournament" && (!!errors.current || !!dataError);
-	const clearErrors = errorActions?.clearError ?? (() => {});
+	const clearErrors =
+		errorActions?.clearError ??
+		(() => {
+			// Intentional no-op: fallback when errorActions not available
+		});
 
 	const [showSelectedOnly, setShowSelectedOnly] = useState(false);
 	const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -102,23 +124,16 @@ export function useNameManagementView({
 
 	const { isSwipeMode, showCatPictures } = ui;
 
-	const [filterStatus, setFilterStatus] = useState(
-		FILTER_OPTIONS.VISIBILITY.VISIBLE,
-	);
+	const [filterStatus, setFilterStatus] = useState(FILTER_OPTIONS.VISIBILITY.VISIBLE);
 	const [localUserFilter, setLocalUserFilter] = useState("all");
-	const userFilter =
-		(profileProps.userFilter as "all" | "user" | "other") ?? localUserFilter;
+	const userFilter = (profileProps.userFilter as "all" | "user" | "other") ?? localUserFilter;
 	const setUserFilter =
 		(profileProps.setUserFilter as React.Dispatch<
 			React.SetStateAction<"all" | "user" | "other">
 		>) ?? setLocalUserFilter;
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-	const [selectionFilter, setSelectionFilter] = useState<
-		"all" | "selected" | "unselected"
-	>("all");
-	const [dateFilter, setDateFilter] = useState<
-		"all" | "today" | "week" | "month"
-	>("all");
+	const [selectionFilter, setSelectionFilter] = useState<"all" | "selected" | "unselected">("all");
+	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [activeTab, setActiveTab] = useState("manage");
 
 	const { navigateTo } = useRouting();
@@ -126,7 +141,9 @@ export function useNameManagementView({
 	const handleAnalysisModeToggle = useCallback(() => {
 		const newValue = !analysisMode;
 		setAnalysisMode(newValue);
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 		const currentPath = window.location.pathname;
 		const currentSearch = new URLSearchParams(window.location.search);
 
@@ -142,7 +159,9 @@ export function useNameManagementView({
 	}, [navigateTo, setAnalysisMode, analysisMode]);
 
 	const filteredNamesForSwipe = useMemo(() => {
-		if (mode !== "tournament") return [];
+		if (mode !== "tournament") {
+			return [];
+		}
 		const activeFilterStatus = analysisMode ? filterStatus : "visible";
 		const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
 
@@ -156,9 +175,7 @@ export function useNameManagementView({
 		});
 
 		if (showSelectedOnly) {
-			result = result.filter((name) =>
-				selectedNames.some((s: NameItem) => s.id === name.id),
-			);
+			result = result.filter((name) => selectedNames.some((s: NameItem) => s.id === name.id));
 		}
 
 		return result;
@@ -177,8 +194,7 @@ export function useNameManagementView({
 	]);
 
 	const filteredNames = useMemo(() => {
-		const activeFilterStatus =
-			mode === "tournament" && !analysisMode ? "visible" : filterStatus;
+		const activeFilterStatus = mode === "tournament" && !analysisMode ? "visible" : filterStatus;
 		const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
 
 		let result = applyNameFilters(names, {
@@ -264,14 +280,10 @@ export function useNameManagementView({
 						setUserFilter(String(value) as "all" | "user" | "other");
 						break;
 					case "selectionFilter":
-						setSelectionFilter(
-							String(value) as "all" | "selected" | "unselected",
-						);
+						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
 						break;
 					case "dateFilter":
-						setDateFilter(
-							(String(value) as "all" | "today" | "week" | "month") || "all",
-						);
+						setDateFilter((String(value) as "all" | "today" | "week" | "month") || "all");
 						break;
 					case "sortOrder":
 						setSortOrder(String(value) as "asc" | "desc");
@@ -298,9 +310,7 @@ export function useNameManagementView({
 						setUserFilter(String(value) as "all" | "user" | "other");
 						break;
 					case "selectionFilter":
-						setSelectionFilter(
-							String(value) as "all" | "selected" | "unselected",
-						);
+						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
 						break;
 					case "sortBy":
 						setSortBy(String(value) || "alphabetical");
@@ -325,9 +335,9 @@ export function useNameManagementView({
 	);
 
 	const uniqueCategories = useMemo(() => {
-		return Array.from(
-			new Set(names.map((n: NameItem) => n.category || "Uncategorized")),
-		).filter(Boolean) as string[];
+		return Array.from(new Set(names.map((n: NameItem) => n.category || "Uncategorized"))).filter(
+			Boolean,
+		) as string[];
 	}, [names]);
 
 	return {
@@ -342,7 +352,9 @@ export function useNameManagementView({
 		selectedNames,
 		selectedIds,
 		isSelectionMode: false,
-		setIsSelectionMode: () => {},
+		setIsSelectionMode: () => {
+			// Intentional no-op: selection mode not used in this context
+		},
 		toggleName,
 		toggleNameById,
 		toggleNamesByIds,

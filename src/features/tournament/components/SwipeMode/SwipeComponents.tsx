@@ -167,12 +167,12 @@ export function useMobileGestures(options: UseMobileGesturesOptions = {}) {
 
 	useEffect(() => {
 		const element = elementRef.current;
-		if (!element) return;
+		if (!element) {
+			return;
+		}
 
-		const handleTouchStart = (e: TouchEvent) =>
-			mobileGestures.handleTouchStart(e);
-		const handleTouchMove = (e: TouchEvent) =>
-			mobileGestures.handleTouchMove(e);
+		const handleTouchStart = (e: TouchEvent) => mobileGestures.handleTouchStart(e);
+		const handleTouchMove = (e: TouchEvent) => mobileGestures.handleTouchMove(e);
 		const handleTouchEnd = (e: TouchEvent) => mobileGestures.handleTouchEnd(e);
 
 		element.addEventListener("touchstart", handleTouchStart, {
@@ -317,9 +317,7 @@ export function SwipeCard({
 					{name?.description ? (
 						<p className={styles.swipeCardDescription}>{name.description}</p>
 					) : null}
-					{isAdmin ? (
-						<span className={styles.swipeCardAdminBadge}>Admin</span>
-					) : null}
+					{isAdmin ? <span className={styles.swipeCardAdminBadge}>Admin</span> : null}
 				</div>
 			</div>
 		</div>
@@ -346,11 +344,7 @@ export function SwipeControls({
 	totalCount,
 }: SwipeControlsProps) {
 	return (
-		<div
-			className={styles.swipeButtons}
-			role="group"
-			aria-label="Swipe controls"
-		>
+		<div className={styles.swipeButtons} role="group" aria-label="Swipe controls">
 			<button
 				type="button"
 				className={`${styles.swipeButton} ${styles.swipeUndoButton}`}

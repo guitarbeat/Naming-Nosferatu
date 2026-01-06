@@ -1,19 +1,8 @@
 /**
  * @module types
  * @description Local types for NameManagementView.
- * TODO: Consolidate with src/types/components.ts in future pass.
+ * Note: NameItem is now consolidated in src/types/components.ts
  */
-
-export interface NameItem {
-	id: string | number;
-	name: string;
-	description?: string;
-	avg_rating?: number;
-	popularity_score?: number;
-	is_hidden?: boolean;
-	category?: string;
-	[key: string]: unknown;
-}
 
 export interface TournamentFilters {
 	searchTerm?: string;

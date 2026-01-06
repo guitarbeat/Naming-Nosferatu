@@ -33,13 +33,12 @@ function BarChart({
 	secondaryValueKey = "avg_rating",
 	className = "",
 }) {
-	if (!items || items.length === 0) return null;
+	if (!items || items.length === 0) {
+		return null;
+	}
 
 	const displayItems = items.slice(0, maxItems);
-	const maxValue = Math.max(
-		...displayItems.map((item) => item[valueKey] || 0),
-		1,
-	);
+	const maxValue = Math.max(...displayItems.map((item) => item[valueKey] || 0), 1);
 
 	return (
 		<div className={`charts-bar-chart ${className}`}>
@@ -59,9 +58,7 @@ function BarChart({
 							>
 								<span className="charts-bar-chart-value">
 									{item[valueKey]}
-									{showSecondaryValue &&
-										item[secondaryValueKey] &&
-										` (${item[secondaryValueKey]})`}
+									{showSecondaryValue && item[secondaryValueKey] && ` (${item[secondaryValueKey]})`}
 								</span>
 							</div>
 						</div>
@@ -95,12 +92,12 @@ const ANIMATION_CONFIG = {
 
 // Vibrant color palette for the lines (using flux colors from CSS)
 const COLORS = [
-	"var(--chart-flux-cyan, #00f2ff)",
-	"var(--chart-flux-magenta, #ff00ea)",
-	"var(--chart-flux-orange, #ff4d00)",
-	"var(--chart-flux-amber, #ffaa00)",
-	"var(--chart-flux-purple, #a855f7)",
-	"var(--chart-flux-green, #10b981)",
+	"var(--chart-flux-cyan, var(--color-neon-cyan))",
+	"var(--chart-flux-magenta, var(--color-hot-pink))",
+	"var(--chart-flux-orange, var(--color-fire-red))",
+	"var(--chart-flux-amber, var(--color-warning))",
+	"var(--chart-flux-purple, var(--color-purple, rgb(168 85 247)))",
+	"var(--chart-flux-green, var(--color-success))",
 	"hsl(220, 70%, 50%)",
 	"hsl(160, 60%, 45%)",
 	"hsl(280, 65%, 60%)",
@@ -111,7 +108,9 @@ const COLORS = [
  * Generate SVG path for a bump chart line (smooth curves)
  */
 function generatePath(points, chartWidth, _chartHeight, padding, rankToY) {
-	if (!points || points.length < 2) return "";
+	if (!points || points.length < 2) {
+		return "";
+	}
 
 	const xStep = (chartWidth - padding * 2) / (points.length - 1);
 
@@ -174,7 +173,9 @@ export function BumpChart({
 	const legendHeight = showLegend ? 40 : 0;
 
 	const processedData = useMemo(() => {
-		if (!data || data.length === 0) return [];
+		if (!data || data.length === 0) {
+			return [];
+		}
 
 		return data.map((series, index) => ({
 			...series,
@@ -195,23 +196,25 @@ export function BumpChart({
 	);
 
 	const xPositions = useMemo(() => {
-		if (!chartLabels || chartLabels.length === 0) return [];
+		if (!chartLabels || chartLabels.length === 0) {
+			return [];
+		}
 		const step = (chartWidth - padding * 2) / (chartLabels.length - 1);
 		return chartLabels.map((_, i) => padding + i * step);
 	}, [chartWidth, chartLabels]);
 
 	// Animation logic
 	useEffect(() => {
-		if (!animated || !svgRef.current) return;
+		if (!animated || !svgRef.current) {
+			return;
+		}
 
 		const svg = svgRef.current;
-		if (!svg) return;
-		const lines = svg.querySelectorAll(
-			".charts-bump-chart-line",
-		) as NodeListOf<SVGPathElement>;
-		const points = svg.querySelectorAll(
-			".charts-bump-chart-point",
-		) as NodeListOf<SVGCircleElement>;
+		if (!svg) {
+			return;
+		}
+		const lines = svg.querySelectorAll(".charts-bump-chart-line") as NodeListOf<SVGPathElement>;
+		const points = svg.querySelectorAll(".charts-bump-chart-point") as NodeListOf<SVGCircleElement>;
 		const legends = svg.querySelectorAll(
 			".charts-bump-chart-legend-item",
 		) as NodeListOf<HTMLElement>;
@@ -235,8 +238,7 @@ export function BumpChart({
 
 			setTimeout(
 				() => {
-					point.style.transition =
-						"opacity 300ms ease-out, transform 300ms ease-out";
+					point.style.transition = "opacity 300ms ease-out, transform 300ms ease-out";
 					point.style.opacity = "1";
 					point.style.transform = "scale(1)";
 				},
@@ -275,16 +277,11 @@ export function BumpChart({
 			>
 				{/* Grid lines */}
 				<defs>
-					<pattern
-						id="grid"
-						width="40"
-						height="40"
-						patternUnits="userSpaceOnUse"
-					>
+					<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
 						<path
 							d="M 40 0 L 0 0 0 40"
 							fill="none"
-							stroke="var(--border-color, #e5e5e5)"
+							stroke="var(--border-color, var(--color-neutral-200))"
 							strokeWidth="0.5"
 							opacity="0.3"
 						/>
@@ -324,13 +321,7 @@ export function BumpChart({
 
 				{/* Lines and points */}
 				{processedData.map((series) => {
-					const path = generatePath(
-						series.rankings,
-						chartWidth,
-						chartHeight,
-						padding,
-						rankToY,
-					);
+					const path = generatePath(series.rankings, chartWidth, chartHeight, padding, rankToY);
 					const isHovered = hoveredSeries === series.id;
 
 					return (
@@ -383,22 +374,16 @@ export function BumpChart({
 								className="charts-bump-chart-legend-color"
 								style={{ backgroundColor: series.color }}
 							/>
-							<span className="charts-bump-chart-legend-label">
-								{series.name}
-							</span>
+							<span className="charts-bump-chart-legend-label">{series.name}</span>
 							{showTrends && series.rankings.length >= 2 && (
 								<TrendIndicator
 									direction={
-										series.rankings[series.rankings.length - 1] <
-										series.rankings[0]
-											? "up"
-											: "down"
+										series.rankings[series.rankings.length - 1] < series.rankings[0] ? "up" : "down"
 									}
 									percentChange={Math.abs(
-										series.rankings[series.rankings.length - 1] -
-											series.rankings[0],
+										series.rankings[series.rankings.length - 1] - series.rankings[0],
 									)}
-									compact
+									compact={true}
 								/>
 							)}
 						</div>

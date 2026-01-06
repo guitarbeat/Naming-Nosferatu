@@ -30,11 +30,11 @@ export function useNameData({
 				let namesData: NameItem[];
 
 				if (mode === "tournament") {
-					namesData = (await catNamesAPI.getNamesWithDescriptions(
-						true,
-					)) as NameItem[];
+					namesData = (await catNamesAPI.getNamesWithDescriptions(true)) as NameItem[];
 				} else {
-					if (!userName) return [];
+					if (!userName) {
+						return [];
+					}
 					const rawData = await catNamesAPI.getNamesWithUserRatings(userName);
 					namesData = (
 						rawData as Array<{
@@ -68,7 +68,9 @@ export function useNameData({
 					);
 				}
 				// Return fallback names for tournament mode on error
-				if (mode === "tournament") return FALLBACK_NAMES as NameItem[];
+				if (mode === "tournament") {
+					return FALLBACK_NAMES as NameItem[];
+				}
 				throw err;
 			}
 		},
@@ -78,20 +80,15 @@ export function useNameData({
 
 	const hiddenIds = useMemo(() => {
 		return new Set(
-			names
-				.filter((name: NameItem) => name.is_hidden === true)
-				.map((name: NameItem) => name.id),
+			names.filter((name: NameItem) => name.is_hidden === true).map((name: NameItem) => name.id),
 		);
 	}, [names]);
 
 	const updateNames = useCallback(
 		(updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
-			queryClient.setQueryData(
-				["names", mode, userName],
-				(old: NameItem[] = []) => {
-					return typeof updater === "function" ? updater(old) : updater;
-				},
-			);
+			queryClient.setQueryData(["names", mode, userName], (old: NameItem[] = []) => {
+				return typeof updater === "function" ? updater(old) : updater;
+			});
 		},
 		[queryClient, mode, userName],
 	);

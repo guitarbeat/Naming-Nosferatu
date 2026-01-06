@@ -8,45 +8,42 @@
 // Internal Helpers & Scope
 // ============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const GLOBAL_SCOPE: any =
-	typeof globalThis !== "undefined"
-		? globalThis
-		: typeof window !== "undefined"
-			? window
-			: {};
+type GlobalScope = typeof globalThis | typeof window | Record<string, unknown>;
+
+const GLOBAL_SCOPE: GlobalScope =
+	typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : {};
 
 /**
  * * Get the global scope object
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getGlobalScope = (): any => GLOBAL_SCOPE;
+function getGlobalScope(): GlobalScope {
+	return GLOBAL_SCOPE;
+}
 
 /**
  * * Deep freeze an object to prevent mutations
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const deepFreeze = (object: any) => {
+function deepFreeze<T>(object: T): Readonly<T> {
 	if (object && typeof object === "object" && !Object.isFrozen(object)) {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		Object.values(object).forEach((value: any) => {
+		Object.values(object as Record<string, unknown>).forEach((value) => {
 			if (typeof value === "object" && value !== null) {
 				deepFreeze(value);
 			}
 		});
 		Object.freeze(object);
 	}
-	return object;
-};
+	return object as Readonly<T>;
+}
 
 /**
  * * Create a hash from a value
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createHash = (value: any) => {
+function createHash(value: unknown): string {
 	const stringValue = typeof value === "string" ? value : JSON.stringify(value);
 	let hash = 0;
-	if (!stringValue) return "hash_0";
+	if (!stringValue) {
+		return "hash_0";
+	}
 	for (let index = 0; index < stringValue.length; index += 1) {
 		hash = (hash << 5) - hash + stringValue.charCodeAt(index);
 		hash |= 0;
@@ -58,63 +55,70 @@ const createHash = (value: any) => {
 // Constants
 // ============================================================================
 
+// Constants use UPPER_CASE keys (intentional for error type constants)
 const ERROR_TYPES = {
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	NETWORK: "network",
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	VALIDATION: "validation",
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	AUTH: "auth",
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	DATABASE: "database",
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	RUNTIME: "runtime",
+	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	UNKNOWN: "unknown",
 };
 
+// Constants use UPPER_CASE keys (intentional for severity constants)
 export const ERROR_SEVERITY = {
+	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	LOW: "low",
+	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	MEDIUM: "medium",
+	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	HIGH: "high",
+	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	CRITICAL: "critical",
 };
 
 const USER_FRIENDLY_MESSAGES = {
 	[ERROR_TYPES.NETWORK]: {
 		[ERROR_SEVERITY.LOW]: "Connection is slow. Please try again.",
-		[ERROR_SEVERITY.MEDIUM]:
-			"Network issue. Check your connection and try again.",
-		[ERROR_SEVERITY.HIGH]: "Can't connect to the server. Try again soon.",
-		[ERROR_SEVERITY.CRITICAL]: "Service unavailable. Please try again later.",
+		[ERROR_SEVERITY.MEDIUM]: "Having trouble connecting. Check your internet and try again.",
+		[ERROR_SEVERITY.HIGH]: "Can't connect right now. Please try again in a moment.",
+		[ERROR_SEVERITY.CRITICAL]: "Service is temporarily unavailable. Please try again later.",
 	},
 	[ERROR_TYPES.AUTH]: {
-		[ERROR_SEVERITY.LOW]: "Please log in again.",
-		[ERROR_SEVERITY.MEDIUM]: "Session expired. Please log in again.",
-		[ERROR_SEVERITY.HIGH]: "Sign-in failed. Check your credentials.",
-		[ERROR_SEVERITY.CRITICAL]: "Account access issue. Please contact support.",
+		[ERROR_SEVERITY.LOW]: "Please log in again to continue.",
+		[ERROR_SEVERITY.MEDIUM]: "Your session expired. Please log in again.",
+		[ERROR_SEVERITY.HIGH]: "Sign-in failed. Please check your credentials and try again.",
+		[ERROR_SEVERITY.CRITICAL]: "Unable to access your account. Please contact support if this continues.",
 	},
 	[ERROR_TYPES.DATABASE]: {
-		[ERROR_SEVERITY.LOW]: "Data is loading slowly. Please try again.",
-		[ERROR_SEVERITY.MEDIUM]: "Can't load data. Please refresh.",
-		[ERROR_SEVERITY.HIGH]: "Data access error. Try again later.",
-		[ERROR_SEVERITY.CRITICAL]:
-			"Database connection issue. Please try again later.",
+		[ERROR_SEVERITY.LOW]: "Data is loading slowly. Please wait a moment.",
+		[ERROR_SEVERITY.MEDIUM]: "Having trouble loading data. Please refresh the page.",
+		[ERROR_SEVERITY.HIGH]: "Unable to load data right now. Please try again later.",
+		[ERROR_SEVERITY.CRITICAL]: "Data service is temporarily unavailable. Please try again later.",
 	},
 	[ERROR_TYPES.VALIDATION]: {
 		[ERROR_SEVERITY.LOW]: "Please check your input and try again.",
-		[ERROR_SEVERITY.MEDIUM]: "Invalid input. Please review and try again.",
-		[ERROR_SEVERITY.HIGH]: "Validation failed. Please check your data.",
-		[ERROR_SEVERITY.CRITICAL]:
-			"Critical validation error. Please contact support.",
+		[ERROR_SEVERITY.MEDIUM]: "There's an issue with your input. Please review and try again.",
+		[ERROR_SEVERITY.HIGH]: "Invalid information entered. Please check your data and try again.",
+		[ERROR_SEVERITY.CRITICAL]: "Unable to process your request. Please contact support if this continues.",
 	},
 	[ERROR_TYPES.RUNTIME]: {
 		[ERROR_SEVERITY.LOW]: "Something went wrong. Please try again.",
-		[ERROR_SEVERITY.MEDIUM]: "An error occurred. Please refresh.",
-		[ERROR_SEVERITY.HIGH]: "App error. Please try again later.",
-		[ERROR_SEVERITY.CRITICAL]:
-			"Critical application error. Please contact support.",
+		[ERROR_SEVERITY.MEDIUM]: "An error occurred. Please refresh the page and try again.",
+		[ERROR_SEVERITY.HIGH]: "Something went wrong. Please try again in a moment.",
+		[ERROR_SEVERITY.CRITICAL]: "We're experiencing technical difficulties. Please try again later or contact support.",
 	},
 	[ERROR_TYPES.UNKNOWN]: {
 		[ERROR_SEVERITY.LOW]: "Something unexpected happened. Please try again.",
-		[ERROR_SEVERITY.MEDIUM]: "Unexpected error. Please try again.",
-		[ERROR_SEVERITY.HIGH]: "Unexpected error. Try again later.",
-		[ERROR_SEVERITY.CRITICAL]:
-			"Critical unexpected error. Please contact support.",
+		[ERROR_SEVERITY.MEDIUM]: "An unexpected error occurred. Please try again.",
+		[ERROR_SEVERITY.HIGH]: "Something went wrong. Please try again later.",
+		[ERROR_SEVERITY.CRITICAL]: "We encountered an unexpected issue. Please try again later or contact support.",
 	},
 };
 
@@ -161,48 +165,56 @@ export interface FormattedError {
 }
 
 function generateErrorId() {
-	if (GLOBAL_SCOPE.crypto?.randomUUID)
+	if (GLOBAL_SCOPE.crypto?.randomUUID) {
 		return `error_${GLOBAL_SCOPE.crypto.randomUUID()}`;
+	}
 	return `error_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 }
 
 function determineErrorType(error: unknown): string {
 	const err = error as Record<string, unknown>;
-	if (typeof navigator !== "undefined" && !navigator.onLine)
+	if (typeof navigator !== "undefined" && !navigator.onLine) {
 		return ERROR_TYPES.NETWORK;
-	if (err.code === "PGRST301" || err.code === "PGRST302")
+	}
+	if (err.code === "PGRST301" || err.code === "PGRST302") {
 		return ERROR_TYPES.AUTH;
-	if (err.code === "PGRST116" || err.code === "PGRST117")
+	}
+	if (err.code === "PGRST116" || err.code === "PGRST117") {
 		return ERROR_TYPES.VALIDATION;
+	}
 	if (
 		err.code === "NETWORK_ERROR" ||
 		err.name === "NetworkError" ||
 		(err.name === "TypeError" && (err.message as string)?.includes("fetch"))
-	)
+	) {
 		return ERROR_TYPES.NETWORK;
+	}
 	if (
 		err.name === "TimeoutError" ||
 		(err.name === "AbortError" && (err.message as string)?.includes("timeout"))
-	)
+	) {
 		return ERROR_TYPES.NETWORK;
-	if (err.status === 0 || err.status === 500) return ERROR_TYPES.NETWORK;
+	}
+	if (err.status === 0 || err.status === 500) {
+		return ERROR_TYPES.NETWORK;
+	}
 	if (
 		(err.message as string)?.includes("database") ||
 		(err.message as string)?.includes("supabase")
-	)
+	) {
 		return ERROR_TYPES.DATABASE;
-	if (err.name === "TypeError" || err.name === "ReferenceError")
+	}
+	if (err.name === "TypeError" || err.name === "ReferenceError") {
 		return ERROR_TYPES.RUNTIME;
-	if (
-		err.code === "VALIDATION_ERROR" ||
-		(err.message as string)?.includes("validation")
-	)
+	}
+	if (err.code === "VALIDATION_ERROR" || (err.message as string)?.includes("validation")) {
 		return ERROR_TYPES.VALIDATION;
+	}
 	return ERROR_TYPES.UNKNOWN;
 }
 
 function parseError(error: unknown): ParsedError {
-	if (error instanceof Error)
+	if (error instanceof Error) {
 		return {
 			message: error.message,
 			name: error.name,
@@ -210,13 +222,15 @@ function parseError(error: unknown): ParsedError {
 			type: determineErrorType(error),
 			cause: (error as unknown as { cause: unknown }).cause || null,
 		};
-	if (typeof error === "string")
+	}
+	if (typeof error === "string") {
 		return {
 			message: error,
 			name: "StringError",
 			stack: null,
 			type: ERROR_TYPES.UNKNOWN,
 		};
+	}
 	if (error && typeof error === "object") {
 		const o = error as Record<string, unknown>;
 		return {
@@ -237,12 +251,13 @@ function parseError(error: unknown): ParsedError {
 	};
 }
 
-function determineSeverity(
-	errorInfo: ParsedError,
-	metadata: Record<string, unknown>,
-): string {
-	if (metadata.isCritical) return ERROR_SEVERITY.CRITICAL;
-	if (metadata.affectsUserData) return ERROR_SEVERITY.HIGH;
+function determineSeverity(errorInfo: ParsedError, metadata: Record<string, unknown>): string {
+	if (metadata.isCritical) {
+		return ERROR_SEVERITY.CRITICAL;
+	}
+	if (metadata.affectsUserData) {
+		return ERROR_SEVERITY.HIGH;
+	}
 	switch (errorInfo.type) {
 		case ERROR_TYPES.AUTH:
 			return ERROR_SEVERITY.HIGH;
@@ -260,10 +275,7 @@ function determineSeverity(
 /**
  * * Get the CSS class for a given error severity
  */
-export function getSeverityClass(
-	severity: string,
-	styles: Record<string, string>,
-) {
+export function getSeverityClass(severity: string, styles: Record<string, string>) {
 	switch (severity) {
 		case ERROR_SEVERITY.CRITICAL:
 			return styles.critical;
@@ -278,47 +290,40 @@ export function getSeverityClass(
 	}
 }
 
-function getUserFriendlyMessage(
-	errorInfo: ParsedError,
-	context: string,
-): string {
+function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string {
 	const contextMap: Record<string, string> = {
-		"Tournament Completion": "Failed to complete tournament",
-		"Tournament Setup": "Failed to set up tournament",
-		"Rating Update": "Failed to update ratings",
-		Login: "Failed to log in",
-		"Profile Load": "Failed to load profile",
+		"Tournament Completion": "Unable to complete tournament",
+		"Tournament Setup": "Unable to set up tournament",
+		"Rating Update": "Unable to update ratings",
+		// biome-ignore lint/style/useNamingConvention: Error message key, PascalCase for consistency with other keys
+		Login: "Unable to log in",
+		"Profile Load": "Unable to load profile",
+		"Save Rankings": "Unable to save rankings",
+		"vote": "Unable to submit vote",
 	};
 	const contextMessage = contextMap[context] || "An error occurred";
 	const severity = determineSeverity(errorInfo, {});
-	const messages = USER_FRIENDLY_MESSAGES as Record<
-		string,
-		Record<string, string>
-	>;
+	const messages = USER_FRIENDLY_MESSAGES as Record<string, Record<string, string>>;
 	if (
 		errorInfo.type === ERROR_TYPES.NETWORK &&
 		typeof navigator !== "undefined" &&
 		!navigator.onLine
 	) {
-		return "You appear to be offline. Please check your internet connection and try again.";
+		return "You're currently offline. Please check your internet connection and try again.";
 	}
-	return (
-		messages[errorInfo.type]?.[severity] ||
-		`${contextMessage}. Please try again.`
-	);
+	return messages[errorInfo.type]?.[severity] || `${contextMessage}. Please try again.`;
 }
 
-function isRetryable(
-	errorInfo: ParsedError,
-	metadata: Record<string, unknown>,
-): boolean {
-	if (metadata.isRetryable === false) return false;
-	if (metadata.isRetryable === true) return true;
-	if (
-		errorInfo.type === ERROR_TYPES.NETWORK ||
-		errorInfo.type === ERROR_TYPES.DATABASE
-	)
+function isRetryable(errorInfo: ParsedError, metadata: Record<string, unknown>): boolean {
+	if (metadata.isRetryable === false) {
+		return false;
+	}
+	if (metadata.isRetryable === true) {
 		return true;
+	}
+	if (errorInfo.type === ERROR_TYPES.NETWORK || errorInfo.type === ERROR_TYPES.DATABASE) {
+		return true;
+	}
 	return false;
 }
 
@@ -342,23 +347,30 @@ function collectEnvironmentSnapshot() {
 	}
 }
 
+interface DebugHint {
+	title: string;
+	detail: string;
+}
+
 function deriveDebugHints(
 	errorInfo: ParsedError,
 	_context: string,
 	_metadata: Record<string, unknown>,
 	environment: Record<string, unknown>,
-) {
-	const hints: any[] = [];
-	if (errorInfo.cause)
+): DebugHint[] {
+	const hints: DebugHint[] = [];
+	if (errorInfo.cause) {
 		hints.push({
 			title: "Root cause provided",
 			detail: String(errorInfo.cause),
 		});
-	if (errorInfo.type === ERROR_TYPES.NETWORK)
+	}
+	if (errorInfo.type === ERROR_TYPES.NETWORK) {
 		hints.push({
 			title: "Connectivity check",
 			detail: environment.online === false ? "Offline" : "Check server",
 		});
+	}
 	return hints;
 }
 
@@ -368,12 +380,7 @@ function buildDiagnostics(
 	metadata: Record<string, unknown>,
 ): Record<string, unknown> {
 	const environment = collectEnvironmentSnapshot();
-	const debugHints = deriveDebugHints(
-		errorInfo,
-		context,
-		metadata,
-		environment,
-	);
+	const debugHints = deriveDebugHints(errorInfo, context, metadata, environment);
 	return {
 		fingerprint: createHash({
 			type: errorInfo.type,
@@ -385,11 +392,17 @@ function buildDiagnostics(
 	};
 }
 
-function buildAIContext(f: FormattedError, d: any) {
+function buildAIContext(f: FormattedError, d: { fingerprint: string }): string {
 	return `ID: ${f.id}\nType: ${f.type}\nSeverity: ${f.severity}\nContext: ${f.context}\nMessage: ${f.message}\nFingerprint: ${d.fingerprint}`;
 }
 
-function sendToErrorService(logData: any) {
+interface ErrorServiceLogData {
+	error: FormattedError;
+	context: string;
+	metadata: Record<string, unknown>;
+}
+
+function sendToErrorService(logData: ErrorServiceLogData): void {
 	const g = getGlobalScope();
 	const sentry = g.Sentry;
 	if (sentry?.captureException) {
@@ -457,12 +470,12 @@ class CircuitBreaker {
 		this.resetTimeout = timeout;
 	}
 	async execute<T>(fn: () => Promise<T>): Promise<T> {
-		if (
-			this.state === "OPEN" &&
-			Date.now() - (this.lastFailureTime || 0) >= this.resetTimeout
-		)
+		if (this.state === "OPEN" && Date.now() - (this.lastFailureTime || 0) >= this.resetTimeout) {
 			this.state = "HALF_OPEN";
-		if (this.state === "OPEN") throw new Error("Circuit breaker is OPEN");
+		}
+		if (this.state === "OPEN") {
+			throw new Error("Circuit breaker is OPEN");
+		}
 		try {
 			const r = await fn();
 			this.failureCount = 0;
@@ -471,7 +484,9 @@ class CircuitBreaker {
 		} catch (e) {
 			this.failureCount++;
 			this.lastFailureTime = Date.now();
-			if (this.failureCount >= this.failureThreshold) this.state = "OPEN";
+			if (this.failureCount >= this.failureThreshold) {
+				this.state = "OPEN";
+			}
 			throw e;
 		}
 	}
@@ -492,7 +507,9 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 				return await operation(...args);
 			} catch (e) {
 				lastErr = e;
-				if (a === maxAttempts || !isRetryable(parseError(e), {})) throw e;
+				if (a === maxAttempts || !isRetryable(parseError(e), {})) {
+					throw e;
+				}
 				await new Promise((r) => setTimeout(r, baseDelay * 2 ** (a - 1)));
 			}
 		}
@@ -500,9 +517,7 @@ function withRetry<T extends (...args: unknown[]) => Promise<unknown>>(
 	}) as T;
 }
 
-function createResilientFunction<
-	T extends (...args: unknown[]) => Promise<unknown>,
->(
+function createResilientFunction<T extends (...args: unknown[]) => Promise<unknown>>(
 	fn: T,
 	options: {
 		threshold?: number;
@@ -513,8 +528,7 @@ function createResilientFunction<
 ): T {
 	const cb = new CircuitBreaker(options.threshold, options.timeout);
 	const retried = withRetry(fn, options);
-	return (async (...args: unknown[]) =>
-		cb.execute(() => retried(...args))) as T;
+	return (async (...args: unknown[]) => cb.execute(() => retried(...args))) as T;
 }
 
 // ============================================================================
@@ -534,16 +548,23 @@ export class ErrorManager {
 	}
 	static parseError = parseError;
 	static withRetry = withRetry;
+	// biome-ignore lint/style/useNamingConvention: Class name, PascalCase is appropriate
 	static CircuitBreaker = CircuitBreaker;
 	static createResilientFunction = createResilientFunction;
 
 	static setupGlobalErrorHandling(): () => void {
 		const g = getGlobalScope();
-		if (!g.addEventListener) return () => {};
-		const h = (e: any) =>
-			ErrorManager.handleError(e.reason || e.error, "Global", {
+		if (!g.addEventListener) {
+			return () => {
+				// Intentional no-op: addEventListener not available
+			};
+		}
+		const h = (e: ErrorEvent | PromiseRejectionEvent) => {
+			const error = "reason" in e ? e.reason : e.error;
+			ErrorManager.handleError(error, "Global", {
 				isCritical: true,
 			});
+		};
 		g.addEventListener("unhandledrejection", h);
 		g.addEventListener("error", h);
 		return () => {
@@ -556,5 +577,5 @@ export class ErrorManager {
 export const createStandardizedError = (
 	error: unknown,
 	context: string = "Unknown",
-	metadata: any = {},
-) => ErrorManager.handleError(error, context, metadata);
+	metadata: Record<string, unknown> = {},
+): FormattedError => ErrorManager.handleError(error, context, metadata);

@@ -1,5 +1,5 @@
 import type React from "react";
-import styles from "./AnalysisUI.module.css";
+import styles from "./ColumnHeader.module.css";
 
 interface ColumnHeaderProps {
 	label: string;
@@ -21,16 +21,14 @@ export const ColumnHeader: React.FC<ColumnHeaderProps> = ({
 	className = "",
 }) => {
 	const handleSort = () => {
-		if (!sortable || !onSort || !metricName) return;
+		if (!sortable || !onSort || !metricName) {
+			return;
+		}
 		const newDirection = sorted && sortDirection === "desc" ? "asc" : "desc";
 		onSort(metricName, newDirection);
 	};
 
-	const headerClass = [
-		styles.columnHeaderButton,
-		sorted ? styles.sorted : "",
-		className,
-	]
+	const headerClass = [styles.columnHeaderButton, sorted ? styles.sorted : "", className]
 		.filter(Boolean)
 		.join(" ");
 
@@ -72,9 +70,7 @@ export const ColumnHeader: React.FC<ColumnHeaderProps> = ({
 		<button
 			className={headerClass}
 			onClick={handleSort}
-			aria-sort={
-				sorted ? (sortDirection === "asc" ? "ascending" : "descending") : "none"
-			}
+			aria-sort={sorted ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}
 			type="button"
 		>
 			{content}

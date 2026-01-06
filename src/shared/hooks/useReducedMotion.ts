@@ -14,13 +14,12 @@ export function useReducedMotion(): boolean {
 
 	useEffect(() => {
 		const mediaQuery = getMediaQueryList("(prefers-reduced-motion: reduce)");
-		if (!mediaQuery) return;
-		const cleanup = attachMediaQueryListener(
-			mediaQuery,
-			(e: MediaQueryListEvent) => {
-				setPrefersReducedMotion(e.matches);
-			},
-		);
+		if (!mediaQuery) {
+			return;
+		}
+		const cleanup = attachMediaQueryListener(mediaQuery, (e: MediaQueryListEvent) => {
+			setPrefersReducedMotion(e.matches);
+		});
 		return cleanup;
 	}, []);
 

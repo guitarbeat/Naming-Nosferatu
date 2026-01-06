@@ -50,7 +50,9 @@ export const ToastItem: React.FC<ToastItemProps> = ({
 		}
 	}, [autoDismiss, duration, handleDismiss]);
 
-	if (!isVisible) return null;
+	if (!isVisible) {
+		return null;
+	}
 
 	const getTypeIcon = () => {
 		switch (type) {
@@ -198,7 +200,9 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 		[removeToast],
 	);
 
-	if (toasts.length === 0) return null;
+	if (toasts.length === 0) {
+		return null;
+	}
 
 	return (
 		<div
@@ -221,9 +225,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 			))}
 
 			{toasts.length > maxToasts && (
-				<div className={styles.hiddenCount}>
-					+{toasts.length - maxToasts} more
-				</div>
+				<div className={styles.hiddenCount}>+{toasts.length - maxToasts} more</div>
 			)}
 		</div>
 	);

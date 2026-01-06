@@ -4,42 +4,49 @@
 
 This workflow can be automated using the provided scripts:
 
-- **Quick check**: `npm run workflow:check` - Returns exit code 0 if clean, non-zero if issues found
+- **Quick check**: `pnpm run check` - Returns exit code 0 if clean, non-zero if issues found
 - **Full automation**: `./workflow.sh` - Runs complete workflow with error reporting
-- **Dead code analysis**: `npx knip` - Find unused files, exports, and dependencies
+- **Dead code analysis**: `pnpm run check:deps` or `pnpm exec knip` - Find unused files, exports, and dependencies
 - **CI/CD friendly**: All commands return proper exit codes for pipeline integration
 
 ## Workflow Steps
 
 ### 1. Lint Check (Required After Each Change)
 
-**Command**: `npm run lint`  
+**Command**: `pnpm run lint`  
 **Exit Code**: 
 - `0` = Success (all checks passed)
 - `1` = Failure (errors found)
 
+**What it checks**:
+- Biome linter for `src/` and `scripts/` directories
+- TypeScript type checking for `src/`, `config/`, and `scripts/`
+
 **Priority Order**:
-1. TypeScript errors (blocking) - `npm run lint:types`
-2. ESLint errors - `npm run lint:eslint`
-3. Stylelint errors - `npm run lint:style`
+1. TypeScript errors (blocking) - `pnpm run lint:types`
+2. Biome linting errors - `pnpm run lint:biome`
 
 **Automation**:
 ```bash
-npm run lint || exit 1
+pnpm run lint || exit 1
 ```
 
 ### 2. TypeScript Validation (Blocking)
 
-**Command**: `npm run lint:types`  
+**Command**: `pnpm run lint:types`  
 **Exit Code**: 
 - `0` = No TypeScript errors
 - `1` = TypeScript errors found (BLOCKING)
+
+**What it checks**:
+- TypeScript compilation for `src/`, `config/`, and `scripts/` directories
+- Strict mode enabled with enhanced type safety rules
 
 **Rule**: Do not proceed to UI/browser checks until TypeScript errors are cleared.
 
 **Automation**:
 ```bash
-npm run lint:types || {
+pnpm run lint:types || {
   echo "❌ TypeScript errors found - blocking"
   exit 1
 }
@@ -47,43 +54,47 @@ npm run lint:types || {
 
 ### 3. Dead Code Analysis
 
-**Command**: `npx knip`  
+**Command**: `pnpm run check:deps` or `pnpm exec knip`  
 **Exit Code**:
 - `0` = No unused code found
 - `1` = Unused files, exports, or dependencies found
 
 **What Knip Detects**:
-- Unused files (not imported anywhere)
+- Unused files (not imported anywhere) in `src/`, `config/`, and `scripts/`
 - Unused exports (exported but never imported)
 - Unused dependencies (in package.json but not used)
 - Duplicate exports (same thing exported with multiple names)
 
 **Focused Commands**:
 ```bash
-npx knip --files        # Only check for unused files
-npx knip --exports      # Only check for unused exports
-npx knip --dependencies # Only check for unused dependencies
+pnpm exec knip --files        # Only check for unused files
+pnpm exec knip --exports      # Only check for unused exports
+pnpm exec knip --dependencies # Only check for unused dependencies
 ```
 
-**Configuration**: See `knip.json` for project-specific settings.
+**Configuration**: See `config/knip.json` for project-specific settings (includes `scripts/` directory).
 
 ### 4. Auto-Fix Attempts
 
-**Command**: `npm run lint:fix`  
+**Command**: `pnpm run lint:fix`  
 **Exit Code**: 
 - `0` = Fixes applied (or no fixes needed)
 - `1` = Some issues could not be auto-fixed
 
-**Note**: Run this before manual fixes. Re-run `npm run lint` after to verify.
+**What it fixes**:
+- Biome auto-fixable issues in `src/` and `scripts/` directories
+- Formatting, unused imports, and other auto-correctable problems
+
+**Note**: Run this before manual fixes. Re-run `pnpm run lint` after to verify.
 
 **Automation**:
 ```bash
-npm run lint:fix && npm run lint
+pnpm run lint:fix && pnpm run lint
 ```
 
 ### 5. Build Verification
 
-**Command**: `npm run build`  
+**Command**: `pnpm run build`  
 **Exit Code**:
 - `0` = Build successful
 - `1` = Build failed
@@ -96,9 +107,9 @@ npm run lint:fix && npm run lint
 ### 6. Usability Tests (On Request Only)
 
 **Prerequisites**: 
-- Lint must pass: `npm run lint` returns exit code 0
-- TypeScript must be clean: `npm run lint:types` returns exit code 0
-- Build must pass: `npm run build` returns exit code 0
+- Lint must pass: `pnpm run lint` returns exit code 0
+- TypeScript must be clean: `pnpm run lint:types` returns exit code 0
+- Build must pass: `pnpm run build` returns exit code 0
 
 **Manual Steps** (not automatable):
 1. Select two names
@@ -109,7 +120,7 @@ npm run lint:fix && npm run lint
 
 **Automation Check**:
 ```bash
-npm run lint && npm run build && echo "✅ Ready for usability testing"
+pnpm run lint && pnpm run build && echo "✅ Ready for usability testing"
 ```
 
 ## Error Handling
@@ -117,14 +128,14 @@ npm run lint && npm run build && echo "✅ Ready for usability testing"
 ### If Lint Fails
 
 **Automation Response**:
-1. Capture output: `npm run lint 2>&1 | tee lint-errors.log`
+1. Capture output: `pnpm run lint 2>&1 | tee lint-errors.log`
 2. Report failing files and diagnostics
 3. Exit with code 1 to stop workflow
 4. Apply minimal fixes, then re-run
 
 **Script Example**:
 ```bash
-if ! npm run lint; then
+if ! pnpm run lint; then
   echo "❌ Lint failed - see lint-errors.log"
   exit 1
 fi
@@ -136,19 +147,19 @@ fi
 1. Review the list of unused files/exports
 2. Verify they're truly unused (not dynamically imported)
 3. Delete unused files or remove unused exports
-4. Re-run `npx knip` to confirm
+4. Re-run `pnpm exec knip` to confirm
 
 ### If Usability Test Requested While Lint Fails
 
 **Automation Response**:
-1. Check lint status first: `npm run workflow:check`
+1. Check lint status first: `pnpm run check`
 2. If exit code != 0, report blocking issues
 3. Do not proceed to browser tests
 4. Return exit code 1
 
 ## Automation Scripts
 
-### `npm run workflow:check`
+### `pnpm run check`
 Quick validation that returns exit code 0 only if all checks pass.
 
 ### `./workflow.sh [--fix]`
@@ -173,16 +184,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run lint
-      - run: pnpm run check:limits
+      - run: pnpm run lint          # Biome + TypeScript (src + scripts)
+      - run: pnpm run check:limits  # File size limits (src + scripts)
       - run: pnpm run build
-      - run: npx knip
+      - run: pnpm run check:deps   # Knip dead code detection
 ```
 
 ## Recommended Workflow Order
 
-1. **Before coding**: `npx knip` — Know what's unused before adding more
-2. **After changes**: `npm run lint:fix && npm run lint`
-3. **Before commit**: `npm run build && npx knip`
+1. **Before coding**: `pnpm run check:deps` — Know what's unused before adding more
+2. **After changes**: `pnpm run lint:fix && pnpm run lint`
+3. **Before commit**: `pnpm run build && pnpm run check:deps`
 4. **Before PR**: Full `./workflow.sh` check

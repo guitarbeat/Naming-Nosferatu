@@ -35,26 +35,38 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
 		}
 	}, [isOnline, showWhenOnline, justCameOnline]);
 
-	if (!showIndicator) return null;
+	if (!showIndicator) {
+		return null;
+	}
 
 	const getStatusMessage = () => {
-		if (!isOnline) return "You are offline";
-		if (justCameOnline) return "Back online";
-		if (isSlowConnection) return "Slow connection detected";
+		if (!isOnline) {
+			return "You are offline";
+		}
+		if (justCameOnline) {
+			return "Back online";
+		}
+		if (isSlowConnection) {
+			return "Slow connection detected";
+		}
 		return "Connected";
 	};
 
 	const getStatusClass = () => {
-		if (!isOnline) return styles.offline;
-		if (justCameOnline) return styles.online;
-		if (isSlowConnection) return styles.slow;
+		if (!isOnline) {
+			return styles.offline;
+		}
+		if (justCameOnline) {
+			return styles.online;
+		}
+		if (isSlowConnection) {
+			return styles.slow;
+		}
 		return styles.online;
 	};
 
 	return (
-		<div
-			className={`${styles.indicator} ${styles[position]} ${getStatusClass()}`}
-		>
+		<div className={`${styles.indicator} ${styles[position]} ${getStatusClass()}`}>
 			<div className={styles.content}>
 				<span className={styles.dot} />
 				<span className={styles.message}>{getStatusMessage()}</span>

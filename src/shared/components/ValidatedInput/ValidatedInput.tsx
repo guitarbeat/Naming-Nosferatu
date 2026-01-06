@@ -4,8 +4,7 @@ import { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import styles from "./ValidatedInput.module.css";
 
-interface ValidatedInputProps
-	extends React.InputHTMLAttributes<HTMLInputElement> {
+interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
 	schema?: z.ZodSchema;
 	onValidationChange?: (isValid: boolean) => void;
@@ -40,14 +39,16 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 
 		const validate = useCallback(
 			(val: string) => {
-				if (!schema) return;
+				if (!schema) {
+					return;
+				}
 
 				const result = schema.safeParse(val);
 				if (result.success) {
 					setError(null);
 					onValidationChange?.(true);
 				} else {
-					setError(result.error.issues[0]?.message || "Invalid input");
+					setError(result.error.issues[0]?.message || "Please check your input");
 					onValidationChange?.(false);
 				}
 				setIsValidating(false);
@@ -56,7 +57,9 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 		);
 
 		useEffect(() => {
-			if (!isTouched || !schema) return;
+			if (!isTouched || !schema) {
+				return;
+			}
 
 			setIsValidating(true);
 			const timer = setTimeout(() => {
@@ -78,15 +81,11 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 		};
 
 		const currentError = externalError !== undefined ? externalError : error;
-		const currentTouched =
-			externalTouched !== undefined ? externalTouched : isTouched;
+		const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
 
 		const hasError = currentTouched && currentError && !isValidating;
 		const isSuccess =
-			currentTouched &&
-			!currentError &&
-			!isValidating &&
-			String(value || "").length > 0;
+			currentTouched && !currentError && !isValidating && String(value || "").length > 0;
 
 		return (
 			<div className={`${styles.container} ${className}`}>

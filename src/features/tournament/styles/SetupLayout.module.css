@@ -33,17 +33,17 @@
 
 .stickyControls {
 	position: sticky;
-	top: 56px;
-	z-index: 90;
-	background: hsl(var(--background) / 98%);
-	backdrop-filter: blur(16px);
-	border-bottom: 1px solid hsl(var(--border) / 40%);
+	top: 56px; /* Keep fixed for header height */
+	z-index: var(--z-sticky);
+	background: var(--glass-bg-strong);
+	backdrop-filter: blur(var(--glass-blur));
+	border-bottom: 1px solid var(--glass-border);
 	padding: var(--space-3);
 	margin: 0 calc(var(--space-4) * -1) var(--space-3);
-	transition: all 0.3s ease;
+	transition: var(--transition-base);
 }
 
 .stickyControls.isStuck {
-	box-shadow: 0 2px 12px hsl(var(--background) / 20%);
+	box-shadow: var(--shadow-md);
 	border-radius: 0;
 }

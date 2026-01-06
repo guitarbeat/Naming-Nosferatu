@@ -4,8 +4,12 @@
  * Includes AnalysisHandlersProvider, AnalysisDashboardWrapper, and AnalysisBulkActionsWrapper
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import {
+	NameManagementContext,
+	type UseNameManagementViewResult,
+	useNameManagementContextSafe,
+} from "../../../shared/components/NameManagementView/nameManagementCore";
 import type { NameItem } from "../../../shared/propTypes";
 import {
 	devError,
@@ -17,8 +21,18 @@ import {
 	selectedNamesToSet,
 } from "../../../shared/utils/core";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
+import type { HighlightItem, SummaryStats } from "../../analytics/types";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
+import { Button } from "../../../shared/components/Button/Button";
+
+// Re-export SelectionStats type from useProfile for use in this file
+type SelectionStats = ReturnType<typeof useProfile>["selectionStats"];
+
+interface AnalysisHandlers {
+	handleToggleVisibility?: (nameId: string) => Promise<void>;
+	handleDelete?: (name: NameItem) => Promise<void>;
+}
 
 // ============================================================================
 // AnalysisHandlersProvider
@@ -28,7 +42,7 @@ interface AnalysisHandlersProviderProps {
 	shouldEnableAnalysisMode: boolean;
 	activeUser: string | null;
 	canManageActiveUser: boolean;
-	handlersRef: React.MutableRefObject<any>;
+	handlersRef: React.MutableRefObject<AnalysisHandlers>;
 	fetchSelectionStats?: () => void;
 	showSuccess: (msg: string) => void;
 	showError: (msg: string) => void;
@@ -46,32 +60,27 @@ export function AnalysisHandlersProvider({
 	showSuccess,
 	showError,
 }: AnalysisHandlersProviderProps) {
-	const context = useNameManagementContextSafe();
+	// Use useContext directly instead of useNameManagementContextSafe to avoid throwing
+	// if context is not available yet (e.g., during initial render)
+	const context = useContext(NameManagementContext);
 
 	// * Initialize analysis mode from URL or prop
-	useEffect(() => {
-		if (!context) return;
-
-		const ctx = context as any;
-		if (shouldEnableAnalysisMode && !ctx.analysisMode) {
-			ctx.setAnalysisMode(true);
-		}
-	}, [shouldEnableAnalysisMode, context]);
+	// Note: analysisMode is managed by the parent component (NameManagementView)
+	// This component doesn't need to set it directly
 
 	const { setAllNames, fetchNames } = useNameManagementCallbacks(context);
 
-	const { handleToggleVisibility, handleDelete } = useProfile(
-		activeUser || "",
-		{
-			showSuccess,
-			showError,
-			fetchNames,
-			setAllNames,
-		},
-	);
+	const { handleToggleVisibility, handleDelete } = useProfile(activeUser || "", {
+		showSuccess,
+		showError,
+		fetchNames,
+		setAllNames,
+	});
 
-	React.useEffect(() => {
-		if (!context) return;
+	useEffect(() => {
+		if (!context) {
+			return;
+		}
 		handlersRef.current.handleToggleVisibility = handleToggleVisibility;
 		handlersRef.current.handleDelete = handleDelete;
 	}, [context, handleToggleVisibility, handleDelete, handlersRef]);
@@ -88,9 +97,9 @@ export function AnalysisHandlersProvider({
 // ============================================================================
 
 interface AnalysisDashboardWrapperProps {
-	stats: any;
-	selectionStats: any;
-	highlights?: any;
+	stats: SummaryStats | null;
+	selectionStats: SelectionStats | null;
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] } | undefined;
 	isAdmin?: boolean;
 	activeUser?: string;
 	onNameHidden?: () => void;
@@ -109,7 +118,9 @@ function AnalysisDashboardWrapper({
 	onNameHidden,
 }: AnalysisDashboardWrapperProps) {
 	// * Only render if stats are available
-	if (!stats) return null;
+	if (!stats) {
+		return null;
+	}
 
 	return (
 		<AnalysisDashboard
@@ -126,8 +137,8 @@ function AnalysisDashboardWrapper({
  * This creates a component function that can use hooks properly
  */
 export const createAnalysisDashboardWrapper = (
-	stats: any,
-	selectionStats: any,
+	stats: SummaryStats | null,
+	selectionStats: SelectionStats | null,
 	isAdmin: boolean,
 	activeUser: string | undefined,
 	onNameHidden: (() => void) | undefined,
@@ -140,11 +151,7 @@ export const createAnalysisDashboardWrapper = (
 			onNameHidden ||
 			(() => {
 				// refetch is not available on context, use fetchNames if available
-				if (
-					context &&
-					"fetchNames" in context &&
-					typeof context.fetchNames === "function"
-				) {
+				if (context && "fetchNames" in context && typeof context.fetchNames === "function") {
 					context.fetchNames();
 				}
 			});
@@ -159,6 +166,88 @@ export const createAnalysisDashboardWrapper = (
 		);
 	};
 };
+
+// ============================================================================
+// AnalysisBulkActions Component
+// ============================================================================
+
+interface AnalysisBulkActionsProps {
+	selectedCount: number;
+	onSelectAll: () => void;
+	onDeselectAll: () => void;
+	onBulkHide: () => void;
+	onBulkUnhide: () => void;
+	onExport?: () => void;
+	isAllSelected: boolean;
+	showActions: boolean;
+	isAdmin: boolean;
+	totalCount: number;
+}
+
+function AnalysisBulkActions({
+	selectedCount,
+	onSelectAll,
+	onDeselectAll,
+	onBulkHide,
+	onBulkUnhide,
+	onExport,
+	isAllSelected,
+	showActions,
+	isAdmin,
+	totalCount,
+}: AnalysisBulkActionsProps) {
+	if (!showActions) {
+		return null;
+	}
+
+	return (
+		<div
+			style={{
+				display: "flex",
+				gap: "var(--space-2)",
+				alignItems: "center",
+				flexWrap: "wrap",
+				padding: "var(--space-3)",
+			}}
+		>
+			<span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
+				{selectedCount} of {totalCount} selected
+			</span>
+			<Button
+				variant="secondary"
+				size="small"
+				onClick={isAllSelected ? onDeselectAll : onSelectAll}
+			>
+				{isAllSelected ? "Deselect All" : "Select All"}
+			</Button>
+			{isAdmin && (
+				<>
+					<Button
+						variant="secondary"
+						size="small"
+						onClick={onBulkHide}
+						disabled={selectedCount === 0}
+					>
+						Hide Selected
+					</Button>
+					<Button
+						variant="secondary"
+						size="small"
+						onClick={onBulkUnhide}
+						disabled={selectedCount === 0}
+					>
+						Unhide Selected
+					</Button>
+				</>
+			)}
+			{onExport && (
+				<Button variant="secondary" size="small" onClick={onExport}>
+					Export CSV
+				</Button>
+			)}
+		</div>
+	);
+}
 
 // ============================================================================
 // AnalysisBulkActionsWrapper
@@ -185,7 +274,7 @@ export function AnalysisBulkActionsWrapper({
 	const context = useNameManagementContextSafe();
 
 	const selectedCount = context?.selectedCount ?? 0;
-	const selectedNamesValue = context?.selectedNames as any;
+	const selectedNamesValue = context?.selectedNames;
 	// * Keep both Set format for selection logic and original array for bulk operations
 	const selectedNamesSet = useMemo(
 		() => selectedNamesToSet(selectedNamesValue),
@@ -207,11 +296,13 @@ export function AnalysisBulkActionsWrapper({
 		setAllNames,
 	});
 
-	const contextNames = context?.names as NameItem[] | undefined;
-	const contextFilterStatus = (context as any)?.filterStatus;
+	const contextNames = context?.names;
+	const contextFilterStatus = context?.filterStatus;
 
 	const filteredAndSortedNames = useMemo(() => {
-		if (!contextNames || contextNames.length === 0) return [];
+		if (!contextNames || contextNames.length === 0) {
+			return [];
+		}
 		let filtered = [...contextNames];
 
 		// Use shared isNameHidden utility for consistent visibility check
@@ -235,8 +326,8 @@ export function AnalysisBulkActionsWrapper({
 			return;
 		}
 		const shouldSelect = !allVisibleSelected;
-		if ((context as any)?.toggleNamesByIds) {
-			(context as any).toggleNamesByIds(visibleNameIds, shouldSelect);
+		if (context?.toggleNamesByIds) {
+			context.toggleNamesByIds(visibleNameIds, shouldSelect);
 			return;
 		}
 		visibleNameIds.forEach((id) => {
@@ -245,10 +336,7 @@ export function AnalysisBulkActionsWrapper({
 	}, [allVisibleSelected, filteredAndSortedNames, context]);
 
 	const handleExport = useCallback(() => {
-		exportTournamentResultsToCSV(
-			filteredAndSortedNames as any,
-			"naming_nosferatu_export",
-		);
+		exportTournamentResultsToCSV(filteredAndSortedNames, "naming_nosferatu_export");
 	}, [filteredAndSortedNames]);
 
 	if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
@@ -273,7 +361,7 @@ export function AnalysisBulkActionsWrapper({
 						"[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
 						selectedCount,
 					);
-					showError("No names selected");
+					showError("Please select at least one name to continue");
 					return;
 				}
 
@@ -281,17 +369,22 @@ export function AnalysisBulkActionsWrapper({
 					handleBulkHide(selectedNamesArray as string[]);
 				} catch (error) {
 					devError("[TournamentSetup] Error calling handleBulkHide:", error);
-					showError(
-						`Failed to hide names: ${(error as any).message || "Unknown error"}`,
-					);
+					const errorMessage = error instanceof Error ? error.message : "Unknown error";
+					showError(`Unable to hide names: ${errorMessage}`);
 				}
 			}}
 			onBulkUnhide={() => {
 				if (selectedNamesArray.length === 0) {
-					showError("No names selected");
+					showError("Please select at least one name to continue");
 					return;
 				}
-				handleBulkUnhide(selectedNamesArray as string[]);
+				try {
+					handleBulkUnhide(selectedNamesArray as string[]);
+				} catch (error) {
+					devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
+					const errorMessage = error instanceof Error ? error.message : "Unknown error";
+					showError(`Unable to unhide names: ${errorMessage}`);
+				}
 			}}
 			onExport={handleExport}
 			isAllSelected={allVisibleSelected}

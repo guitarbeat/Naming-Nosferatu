@@ -3,6 +3,7 @@
  * @description Drag-and-drop interface for manually reordering name rankings.
  */
 
+import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
@@ -11,33 +12,51 @@ import Card from "../../shared/components/Card/Card";
 import { ErrorManager } from "../../shared/services/errorManager";
 import "./RankingAdjustment.css";
 
+interface RankingItem {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins?: number;
+	losses?: number;
+}
+
+interface RankingAdjustmentProps {
+	rankings: RankingItem[];
+	onSave: (rankings: RankingItem[]) => Promise<void>;
+	onCancel: () => void;
+}
+
 // Helper function to check if rankings have actually changed
-const haveRankingsChanged = (newItems: any[], oldRankings: any[]) => {
+function haveRankingsChanged(
+	newItems: RankingItem[],
+	oldRankings: RankingItem[],
+): boolean {
 	if (newItems.length !== oldRankings.length) {
 		return true;
 	}
 	return newItems.some((item, index) => {
-		return (
-			item.name !== oldRankings[index].name ||
-			item.rating !== oldRankings[index].rating
-		);
+		return item.name !== oldRankings[index]?.name || item.rating !== oldRankings[index]?.rating;
 	});
-};
+}
 
-function RankingAdjustment({ rankings, onSave, onCancel }) {
+function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProps) {
 	const [items, setItems] = useState(rankings || []);
 	const [saveStatus, setSaveStatus] = useState("");
 	const [isDragging, setIsDragging] = useState(false);
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const isMountedRef = useRef(true);
 
 	useEffect(() => {
+		// Don't overwrite user's manual changes if they haven't been saved yet
+		if (hasUnsavedChanges) {
+			return;
+		}
+
 		// Sort rankings by rating first, then by win percentage if ratings are equal
 		const sortedRankings = [...rankings].sort((a, b) => {
 			// Calculate win percentages
-			const aWinPercent =
-				(a.wins || 0) / Math.max((a.wins || 0) + (a.losses || 0), 1);
-			const bWinPercent =
-				(b.wins || 0) / Math.max((b.wins || 0) + (b.losses || 0), 1);
+			const aWinPercent = (a.wins || 0) / Math.max((a.wins || 0) + (a.losses || 0), 1);
+			const bWinPercent = (b.wins || 0) / Math.max((b.wins || 0) + (b.losses || 0), 1);
 
 			// If ratings differ by more than 10 points, sort by rating
 			if (Math.abs(a.rating - b.rating) > 10) {
@@ -57,9 +76,12 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 			// Finally, sort by rating
 			return b.rating - a.rating;
 		});
-		// eslint-disable-next-line react-hooks/set-state-in-effect
-		setItems(sortedRankings);
-	}, [rankings]);
+		// Only update if rankings actually changed
+		if (haveRankingsChanged(sortedRankings, items)) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setItems(sortedRankings);
+		}
+	}, [rankings, hasUnsavedChanges, items]);
 
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -73,7 +95,10 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 			saveTimer = setTimeout(() => {
 				onSave(items)
 					.then(() => {
-						if (!isMountedRef.current) return;
+						if (!isMountedRef.current) {
+							return;
+						}
+						setHasUnsavedChanges(false);
 						setSaveStatus("success");
 						successTimer = setTimeout(() => {
 							if (isMountedRef.current) {
@@ -82,7 +107,9 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 						}, 2000);
 					})
 					.catch((error) => {
-						if (!isMountedRef.current) return;
+						if (!isMountedRef.current) {
+							return;
+						}
 						// * Use ErrorManager for consistent error handling
 						ErrorManager.handleError(error, "Save Rankings", {
 							isRetryable: true,
@@ -106,9 +133,15 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 
 		return () => {
 			isMountedRef.current = false;
-			if (saveTimer) clearTimeout(saveTimer);
-			if (successTimer) clearTimeout(successTimer);
-			if (errorTimer) clearTimeout(errorTimer);
+			if (saveTimer) {
+				clearTimeout(saveTimer);
+			}
+			if (successTimer) {
+				clearTimeout(successTimer);
+			}
+			if (errorTimer) {
+				clearTimeout(errorTimer);
+			}
 		};
 	}, [items, rankings, onSave]);
 
@@ -116,7 +149,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 		setIsDragging(true);
 	};
 
-	const handleDragEnd = (result) => {
+	const handleDragEnd = (result: DropResult) => {
 		setIsDragging(false);
 		if (!result.destination || !items || !Array.isArray(items)) {
 			return;
@@ -128,20 +161,18 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 
 		// Enhanced rating calculation with better wins/losses preservation
 		const adjustedItems = newItems.map((item, index) => {
-			const originalItem = items.find(
-				(original) => original.name === item.name,
-			);
+			const originalItem = items.find((original) => original.id === item.id || original.name === item.name);
 			return {
 				...item,
-				rating: Math.round(
-					1000 + (1000 * (newItems.length - index)) / newItems.length,
-				),
+				id: originalItem?.id ?? item.id ?? item.name,
+				rating: Math.round(1000 + (1000 * (newItems.length - index)) / newItems.length),
 				// Explicitly preserve wins and losses from the original item
 				wins: originalItem?.wins ?? 0,
 				losses: originalItem?.losses ?? 0,
 			};
 		});
 
+		setHasUnsavedChanges(true);
 		setItems(adjustedItems);
 	};
 
@@ -162,8 +193,8 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 			case "error":
 				return (
 					<div className="save-status error" role="alert" aria-live="assertive">
-						Failed to save changes. Your changes are still visible but not
-						saved. Please try again or refresh the page.
+						Unable to save changes. Your changes are still visible but not saved. Please try again
+						or refresh the page.
 					</div>
 				);
 			default:
@@ -171,10 +202,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 		}
 	};
 
-	const containerClasses = [
-		"ranking-adjustment",
-		isDragging ? "is-dragging" : "",
-	]
+	const containerClasses = ["ranking-adjustment", isDragging ? "is-dragging" : ""]
 		.filter(Boolean)
 		.join(" ");
 
@@ -197,8 +225,8 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 				<div className="instruction-text">
 					<h3>How to Adjust Rankings</h3>
 					<p>
-						Drag and drop names to reorder them. Names at the top will receive
-						higher ratings. Your changes are saved automatically.
+						Drag and drop names to reorder them. Names at the top will receive higher ratings. Your
+						changes are saved automatically.
 					</p>
 				</div>
 			</Card>
@@ -210,10 +238,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 					<div className="rating-header">Rating</div>
 				</div>
 
-				<DragDropContext
-					onDragStart={handleDragStart}
-					onDragEnd={handleDragEnd}
-				>
+				<DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
 					<Droppable droppableId="rankings">
 						{(provided, snapshot) => (
 							<div
@@ -222,11 +247,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 								className={`rankings-list ${snapshot.isDraggingOver ? "dragging-over" : ""}`}
 							>
 								{items.map((item, index) => (
-									<Draggable
-										key={item.name}
-										draggableId={item.name}
-										index={index}
-									>
+									<Draggable key={item.id ?? item.name} draggableId={String(item.id ?? item.name)} index={index}>
 										{(provided, snapshot) => (
 											<div
 												ref={provided.innerRef}
@@ -238,9 +259,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }) {
 												<div className="card-content">
 													<h3 className="name">{item.name}</h3>
 													<div className="stats">
-														<span className="rating">
-															Rating: {Math.round(item.rating)}
-														</span>
+														<span className="rating">Rating: {Math.round(item.rating)}</span>
 														<span className="record">
 															W: {item.wins || 0} L: {item.losses || 0}
 														</span>

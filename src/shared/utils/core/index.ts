@@ -9,31 +9,27 @@ export * from "./ui";
 export * from "./validation";
 
 // Imports for consolidated utils
+import { STORAGE_KEYS } from "../../../core/constants";
 import type { NameItem } from "../../propTypes";
 import { queryClient } from "../../services/supabase/queryClient";
 
 // --- logger.ts ---
 const isDev = import.meta.env?.DEV || process.env.NODE_ENV === "development";
 
-export const noop = (..._args: unknown[]) => {};
+export const noop = (..._args: unknown[]) => {
+	// Intentional no-op function
+};
 
-export const devLog = isDev
-	? (...args: unknown[]) => console.log("[DEV]", ...args)
-	: noop;
-export const devWarn = isDev
-	? (...args: unknown[]) => console.warn("[DEV]", ...args)
-	: noop;
-export const devError = isDev
-	? (...args: unknown[]) => console.error("[DEV]", ...args)
-	: noop;
+export const devLog = isDev ? (...args: unknown[]) => console.log("[DEV]", ...args) : noop;
+export const devWarn = isDev ? (...args: unknown[]) => console.warn("[DEV]", ...args) : noop;
+export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", ...args) : noop;
 
 // --- time.ts ---
-export function formatDate(
-	date: Date | string | number,
-	options: Intl.DateTimeFormatOptions = {},
-) {
+export function formatDate(date: Date | string | number, options: Intl.DateTimeFormatOptions = {}) {
 	const d = new Date(date);
-	if (Number.isNaN(d.getTime())) return "Invalid Date";
+	if (Number.isNaN(d.getTime())) {
+		return "Invalid Date";
+	}
 	return d.toLocaleDateString(undefined, {
 		year: "numeric",
 		month: "short",
@@ -57,7 +53,7 @@ export function clearTournamentCache() {
 export function clearAllCaches() {
 	try {
 		queryClient.clear();
-		localStorage.removeItem("tournament-storage");
+		localStorage.removeItem(STORAGE_KEYS.TOURNAMENT);
 		return true;
 	} catch (error) {
 		console.error("Error clearing all caches:", error);
@@ -93,9 +89,7 @@ export interface ComparisonHistory {
 }
 
 // * Build a comparisons map from tournament history
-export function buildComparisonsMap(
-	history: ComparisonHistory[],
-): Map<string, number> {
+export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, number> {
 	const comparisons = new Map<string, number>();
 
 	for (const { winner, loser } of history) {

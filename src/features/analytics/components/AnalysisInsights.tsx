@@ -1,7 +1,8 @@
 import type React from "react";
 import { devError } from "../../../shared/utils/core";
 import type { NameWithInsight, SummaryStats } from "../types";
-import styles from "./AnalysisUI.module.css";
+import styles from "./AnalysisInsights.module.css";
+import statsStyles from "./AnalysisStats.module.css";
 
 interface AnalysisInsightsProps {
 	namesWithInsights: NameWithInsight[];
@@ -21,31 +22,27 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	onHideName,
 }) => {
 	const renderStatsSummary = () => {
-		if (!summaryStats) return null;
+		if (!summaryStats) {
+			return null;
+		}
 
 		if (isAdmin) {
 			return (
-				<div className={styles.statsSummary}>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Total Names</div>
-						<div className={styles.statValue}>
-							{summaryStats.totalNames || 0}
-						</div>
-						<div className={styles.statSubtext}>
-							{summaryStats.activeNames || 0} active
-						</div>
+				<div className={statsStyles.statsSummary}>
+					<div className={statsStyles.statCard}>
+						<div className={statsStyles.statLabel}>Total Names</div>
+						<div className={statsStyles.statValue}>{summaryStats.totalNames || 0}</div>
+						<div className={statsStyles.statSubtext}>{summaryStats.activeNames || 0} active</div>
 					</div>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Avg Rating</div>
-						<div className={styles.statValue}>{summaryStats.avgRating}</div>
-						<div className={styles.statSubtext}>Global Average</div>
+					<div className={statsStyles.statCard}>
+						<div className={statsStyles.statLabel}>Avg Rating</div>
+						<div className={statsStyles.statValue}>{summaryStats.avgRating}</div>
+						<div className={statsStyles.statSubtext}>Global Average</div>
 					</div>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Total Votes</div>
-						<div className={styles.statValue}>
-							{summaryStats.totalRatings || 0}
-						</div>
-						<div className={styles.statSubtext}>
+					<div className={statsStyles.statCard}>
+						<div className={statsStyles.statLabel}>Total Votes</div>
+						<div className={statsStyles.statValue}>{summaryStats.totalRatings || 0}</div>
+						<div className={statsStyles.statSubtext}>
 							{summaryStats.totalSelections || 0} selections
 						</div>
 					</div>
@@ -54,25 +51,21 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 		}
 
 		return (
-			<div className={styles.statsSummary}>
-				<div className={styles.statCard}>
-					<div className={styles.statLabel}>Top Rating</div>
-					<div className={styles.statValue}>{summaryStats.maxRating ?? 0}</div>
-					<div className={styles.statName}>{summaryStats.topName?.name}</div>
+			<div className={statsStyles.statsSummary}>
+				<div className={statsStyles.statCard}>
+					<div className={statsStyles.statLabel}>Top Rating</div>
+					<div className={statsStyles.statValue}>{summaryStats.maxRating ?? 0}</div>
+					<div className={statsStyles.statName}>{summaryStats.topName?.name}</div>
 				</div>
-				<div className={styles.statCard}>
-					<div className={styles.statLabel}>Avg Rating</div>
-					<div className={styles.statValue}>{summaryStats.avgRating}</div>
-					<div className={styles.statSubtext}>
-						Across {namesWithInsights.length} names
-					</div>
+				<div className={statsStyles.statCard}>
+					<div className={statsStyles.statLabel}>Avg Rating</div>
+					<div className={statsStyles.statValue}>{summaryStats.avgRating}</div>
+					<div className={statsStyles.statSubtext}>Across {namesWithInsights.length} names</div>
 				</div>
-				<div className={styles.statCard}>
-					<div className={styles.statLabel}>Total Selected</div>
-					<div className={styles.statValue}>
-						{summaryStats.totalSelected ?? 0}
-					</div>
-					<div className={styles.statSubtext}>
+				<div className={statsStyles.statCard}>
+					<div className={statsStyles.statLabel}>Total Selected</div>
+					<div className={statsStyles.statValue}>{summaryStats.totalSelected ?? 0}</div>
+					<div className={statsStyles.statSubtext}>
 						{(summaryStats.maxSelected ?? 0) > 0
 							? `Most: ${summaryStats.maxSelected}x`
 							: "No selections yet"}
@@ -83,14 +76,13 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	};
 
 	const renderGeneralInsights = () => {
-		if (generalInsights.length === 0 || isAdmin) return null;
+		if (generalInsights.length === 0 || isAdmin) {
+			return null;
+		}
 		return (
 			<div className={styles.insights}>
 				{generalInsights.map((insight, idx) => (
-					<div
-						key={idx}
-						className={`${styles.insight} ${styles[insight.type] || styles.info}`}
-					>
+					<div key={idx} className={`${styles.insight} ${styles[insight.type] || styles.info}`}>
 						<span className={styles.insightIcon} aria-hidden="true">
 							{insight.icon}
 						</span>
@@ -102,17 +94,14 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	};
 
 	const renderActionableInsights = () => {
-		const highPriorityTags = [
-			"worst_rated",
-			"never_selected",
-			"inactive",
-			"poor_performer",
-		];
+		const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
 		const lowPerformers = namesWithInsights.filter((n) =>
 			n.insights.some((i: string) => highPriorityTags.includes(i)),
 		);
 
-		if (lowPerformers.length === 0) return null;
+		if (lowPerformers.length === 0) {
+			return null;
+		}
 
 		return (
 			<div className={styles.insightsSection}>
@@ -120,10 +109,14 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 				<div className={styles.insightCards}>
 					{lowPerformers
 						.sort((a, b) => {
+							// Priority keys match insight tag strings (snake_case required for consistency)
 							const priority: Record<string, number> = {
 								inactive: 0,
+								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								never_selected: 1,
+								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								worst_rated: 2,
+								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								poor_performer: 3,
 							};
 							const getP = (item: NameWithInsight) =>
@@ -134,15 +127,14 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 								);
 							const pA = getP(a);
 							const pB = getP(b);
-							if (pA !== pB) return pA - pB;
+							if (pA !== pB) {
+								return pA - pB;
+							}
 							return a.rating - b.rating;
 						})
 						.slice(0, 12)
 						.map((n) => (
-							<div
-								key={n.id}
-								className={`${styles.insightCard} ${styles.warning}`}
-							>
+							<div key={n.id} className={`${styles.insightCard} ${styles.warning}`}>
 								<div className={styles.cardHeader}>
 									<div className={styles.cardName}>{n.name}</div>
 									{canHideNames && (
@@ -155,10 +147,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 												try {
 													await onHideName(n.id, n.name);
 												} catch (error) {
-													devError(
-														"[AnalysisDashboard] Failed to hide name:",
-														error,
-													);
+													devError("[AnalysisDashboard] Failed to hide name:", error);
 												}
 											}}
 											aria-label={`Hide ${n.name}`}
@@ -177,10 +166,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 									{n.insights
 										.filter((i: string) => highPriorityTags.includes(i))
 										.map((tag: string) => (
-											<span
-												key={tag}
-												className={`${styles.tag} ${styles.warning}`}
-											>
+											<span key={tag} className={`${styles.tag} ${styles.warning}`}>
 												{tag.replace("_", " ")}
 											</span>
 										))}
@@ -193,17 +179,14 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 	};
 
 	const renderPositiveInsights = () => {
-		const positiveTags = [
-			"top_rated",
-			"most_selected",
-			"underrated",
-			"undefeated",
-		];
+		const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
 		const topPerformers = namesWithInsights.filter((n) =>
 			n.insights.some((i: string) => positiveTags.includes(i)),
 		);
 
-		if (topPerformers.length === 0) return null;
+		if (topPerformers.length === 0) {
+			return null;
+		}
 
 		return (
 			<div className={styles.insightsSection}>

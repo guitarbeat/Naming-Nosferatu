@@ -58,19 +58,16 @@ export const useUnifiedError = (options: UseUnifiedErrorOptions = {}) => {
 		[context, onError, showToast],
 	);
 
-	const handleValidationError = useCallback(
-		(field: string, message: string) => {
-			setErrorState((prev) => ({
-				...prev,
-				validationErrors: [
-					...prev.validationErrors.filter((e) => e.field !== field),
-					{ field, message },
-				],
-				hasError: true,
-			}));
-		},
-		[],
-	);
+	const handleValidationError = useCallback((field: string, message: string) => {
+		setErrorState((prev) => ({
+			...prev,
+			validationErrors: [
+				...prev.validationErrors.filter((e) => e.field !== field),
+				{ field, message },
+			],
+			hasError: true,
+		}));
+	}, []);
 
 	const clearError = useCallback(() => {
 		setErrorState({
@@ -86,8 +83,7 @@ export const useUnifiedError = (options: UseUnifiedErrorOptions = {}) => {
 			...prev,
 			validationErrors: prev.validationErrors.filter((e) => e.field !== field),
 			hasError:
-				prev.error !== null ||
-				prev.validationErrors.filter((e) => e.field !== field).length > 0,
+				prev.error !== null || prev.validationErrors.filter((e) => e.field !== field).length > 0,
 		}));
 	}, []);
 
@@ -124,7 +120,6 @@ export const useUnifiedError = (options: UseUnifiedErrorOptions = {}) => {
 		executeWithErrorHandling,
 		getFieldError: (field: string) =>
 			errorState.validationErrors.find((e) => e.field === field)?.message,
-		hasFieldError: (field: string) =>
-			errorState.validationErrors.some((e) => e.field === field),
+		hasFieldError: (field: string) => errorState.validationErrors.some((e) => e.field === field),
 	};
 };

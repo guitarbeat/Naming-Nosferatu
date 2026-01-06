@@ -157,41 +157,31 @@
 		hsl(var(--background) / var(--tt-opacity-shadow-strong)),
 		0 var(--tt-shadow-blur-small) var(--tt-shadow-blur-stronger)
 		hsl(var(--background) / var(--tt-opacity-shadow-medium)),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-none)
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-soft));
 	--tt-shadow-button-default:
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-hugest)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger)),
 		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
 		hsl(var(--hot-pink) / var(--tt-opacity-shadow-strong)),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-none)
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
 	--tt-shadow-button-hover:
-		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
-		hsl(var(--neon-cyan) / 50%),
-		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-huge)
-		hsl(var(--hot-pink) / 42%),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-none)
+		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive) hsl(var(--neon-cyan) / 50%),
+		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-huge) hsl(var(--hot-pink) / 42%),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-stronger));
 	--tt-shadow-button-active:
-		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
-		hsl(var(--neon-cyan) / 36%),
-		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
-		hsl(var(--hot-pink) / 30%),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-none)
+		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest) hsl(var(--neon-cyan) / 36%),
+		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large) hsl(var(--hot-pink) / 30%),
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
 	--tt-shadow-toggle-inactive:
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-small)
-		var(--tt-shadow-blur-medium)
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong)),
 		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
 		hsl(var(--background) / var(--tt-opacity-shadow-stronger)),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
-		var(--tt-shadow-spread-tiny)
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-spread-tiny)
 		hsl(var(--border) / var(--tt-opacity-shadow-strong));
 	--tt-shadow-toggle-active:
 		0 var(--tt-shadow-blur-large) var(--tt-shadow-blur-hugest)
@@ -220,8 +210,7 @@
 		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-strong)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium)),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-small)
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
 	--tt-shadow-thumb-active:
 		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-largest)
@@ -240,8 +229,7 @@
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
 		hsl(var(--background) / var(--tt-opacity-shadow-strong));
 	--tt-shadow-label-hover:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
-		hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong) hsl(var(--background) / 50%),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 	--tt-shadow-label-active:
@@ -249,19 +237,16 @@
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / 50%);
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small) hsl(var(--background) / 50%);
 	--tt-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-stronger));
 	--tt-shadow-focus:
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
-		var(--tt-shadow-blur-strong)
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
-		var(--tt-shadow-offset-small)
+		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-offset-small)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger));
@@ -273,8 +258,7 @@
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
 		hsl(var(--background) / var(--tt-opacity-shadow-strong));
 	--tt-text-shadow-label-hover:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
-		hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong) hsl(var(--background) / 50%),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 	--tt-text-shadow-label-active:
@@ -282,8 +266,7 @@
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
 		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / 50%);
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small) hsl(var(--background) / 50%);
 	--tt-text-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
@@ -299,8 +282,7 @@
 		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
 		0 var(--tt-shadow-strong) var(--tt-shadow-blur-large)
 		hsl(var(--foreground) / var(--tt-opacity-shadow-soft)),
-		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
-		var(--tt-shadow-offset-none)
+		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
 		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
 }
 
@@ -340,6 +322,34 @@
    Start Tournament Button
    ========================================================================== */
 
+.tournament-toolbar-start-button-wrapper {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--tt-gap-tiny);
+	width: 100%;
+}
+
+.tournament-toolbar-start-button-hint {
+	font-size: var(--text-xs);
+	color: var(--text-tertiary);
+	text-align: center;
+	font-weight: var(--font-weight-medium);
+	animation: fadeIn var(--duration-normal) var(--ease-enter);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 .tournament-toolbar-start-button {
 	position: relative;
 	display: inline-flex;
@@ -353,9 +363,9 @@
 	text-transform: uppercase;
 	color: white;
 	background:
-		linear-gradient(135deg, rgb(12 74 110 / 65%), rgb(30 41 59 / 55%)),
-		radial-gradient(circle at 20% 20%, rgb(165 243 252 / 25%), transparent 40%);
-	border: 1px solid rgb(255 255 255 / 22%);
+		linear-gradient(135deg, hsl(var(--secondary-800) / 65%), hsl(var(--secondary-700) / 55%)),
+		radial-gradient(circle at 20% 20%, hsl(var(--neon-cyan) / 25%), transparent 40%);
+	border: 1px solid hsl(var(--foreground) / 22%);
 	border-radius: 999px;
 	cursor: pointer;
 	transition:
@@ -363,26 +373,26 @@
 		box-shadow var(--transition-base),
 		filter var(--transition-base);
 	box-shadow:
-		0 10px 30px rgb(12 74 110 / 30%),
-		0 6px 18px rgb(59 130 246 / 18%),
-		inset 0 1px 0 rgb(255 255 255 / 35%);
+		0 10px 30px hsl(var(--secondary-800) / 30%),
+		0 6px 18px hsl(var(--primary-600) / 18%),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 35%, transparent);
 }
 
 .tournament-toolbar-start-button:hover {
 	transform: var(--tt-transform-hover-lift);
 	box-shadow:
-		0 16px 40px rgb(12 74 110 / 36%),
-		0 8px 20px rgb(59 130 246 / 22%),
-		inset 0 1px 0 rgb(255 255 255 / 45%);
+		0 16px 40px hsl(var(--secondary-800) / 36%),
+		0 8px 20px hsl(var(--primary-600) / 22%),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 45%, transparent);
 	filter: brightness(1.03);
 }
 
 .tournament-toolbar-start-button:active {
 	transform: var(--tt-transform-active-reset);
 	box-shadow:
-		0 12px 28px rgb(12 74 110 / 28%),
-		0 6px 16px rgb(59 130 246 / 18%),
-		inset 0 1px 0 rgb(255 255 255 / 35%);
+		0 12px 28px hsl(var(--secondary-800) / 28%),
+		0 6px 16px hsl(var(--primary-600) / 18%),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 35%, transparent);
 }
 
 .tournament-toolbar-start-button:disabled {
@@ -406,15 +416,15 @@
 	border: 1px solid var(--border-color);
 	border-radius: 999px;
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: var(--transition-base);
 	margin-right: var(--space-2);
 }
 
 .tournament-toolbar-suggest-button:hover {
 	border-color: var(--neon-cyan);
 	background: var(--card-hover);
-	transform: translateY(-2px);
-	box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+	transform: var(--transform-hover-lift);
+	box-shadow: var(--shadow-md);
 }
 
 /* ==========================================================================
@@ -474,7 +484,7 @@
 	transition:
 		transform var(--transition-base),
 		box-shadow var(--transition-base);
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 .tournament-toolbar-toggle-switch-active .tournament-toolbar-toggle-thumb {
@@ -493,7 +503,7 @@
 	transition:
 		color var(--transition-base),
 		text-shadow var(--transition-base);
-	z-index: 0;
+	z-index: var(--z-0);
 }
 
 .tournament-toolbar-toggle-switch-active .tournament-toolbar-toggle-label {
@@ -565,8 +575,7 @@
 
 .tournament-toolbar-filter-select,
 .tournament-toolbar-sort-order-button {
-	padding: calc(var(--input-padding-y) * var(--tt-input-padding-multiplier))
-		var(--input-padding-x);
+	padding: calc(var(--input-padding-y) * var(--tt-input-padding-multiplier)) var(--input-padding-x);
 	font-size: var(--text-sm);
 	color: var(--text-primary);
 	background: var(--surface-color);
@@ -608,8 +617,8 @@
 }
 
 .tournament-toolbar-sort-icon {
-	width: 16px;
-	height: 16px;
+	width: var(--space-4);
+	height: var(--space-4);
 	color: currentcolor;
 }
 
@@ -691,28 +700,24 @@
 	background: transparent;
 	border: none;
 	box-shadow: none;
-	color: #0f172a;
+	color: var(--color-neutral-900);
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch {
-	border-color: rgb(148 163 184 / 90%);
-	background: linear-gradient(
-		180deg,
-		rgb(226 232 240 / 90%),
-		rgb(209 213 219 / 90%)
-	);
+	border-color: color-mix(in srgb, var(--color-neutral-400) 90%, transparent);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--color-neutral-200) 90%, transparent), color-mix(in srgb, var(--color-neutral-300) 90%, transparent));
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch::before {
 	background: linear-gradient(
 		var(--tt-gradient-angle),
-		rgb(14 165 233 / 35%),
-		rgb(236 72 153 / 35%)
+		color-mix(in srgb, var(--color-info) 35%, transparent),
+		color-mix(in srgb, var(--color-hot-pink) 35%, transparent)
 	);
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-label {
-	color: #0f172a;
+	color: var(--color-neutral-900);
 	text-shadow: none;
 }
 
@@ -720,23 +725,23 @@
 	background: transparent;
 	border: none;
 	box-shadow: none;
-	color: #e2e8f0;
+	color: var(--color-neutral-200);
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch {
-	border-color: rgb(255 255 255 / 18%);
-	background: linear-gradient(180deg, rgb(24 33 52 / 90%), rgb(16 24 40 / 90%));
+	border-color: color-mix(in srgb, var(--color-neutral-50) 18%, transparent);
+	background: linear-gradient(180deg, color-mix(in srgb, var(--color-neutral-800) 90%, transparent), color-mix(in srgb, var(--color-neutral-900) 90%, transparent));
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch::before {
 	background: linear-gradient(
 		var(--tt-gradient-angle),
-		rgb(47 243 224 / 40%),
-		rgb(250 38 160 / 35%)
+		color-mix(in srgb, var(--color-neon-cyan) 40%, transparent),
+		color-mix(in srgb, var(--color-hot-pink) 35%, transparent)
 	);
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-label {
-	color: #e2e8f0;
+	color: var(--color-neutral-200);
 	text-shadow: none;
 }

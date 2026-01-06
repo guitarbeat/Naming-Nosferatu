@@ -15,18 +15,11 @@ interface UseKeyboardShortcutsProps {
 	navigateTo: (path: string) => void;
 }
 
-export function useKeyboardShortcuts({
-	onAnalysisToggle,
-	navigateTo,
-}: UseKeyboardShortcutsProps) {
+export function useKeyboardShortcuts({ onAnalysisToggle, navigateTo }: UseKeyboardShortcutsProps) {
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			// * Analysis Mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
-			if (
-				(event.ctrlKey || event.metaKey) &&
-				event.shiftKey &&
-				event.key === "A"
-			) {
+			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
 				event.preventDefault();
 				if (onAnalysisToggle) {
 					onAnalysisToggle();
@@ -43,9 +36,7 @@ export function useKeyboardShortcuts({
 					}
 
 					const newSearch = currentSearch.toString();
-					const newUrl = newSearch
-						? `${currentPath}?${newSearch}`
-						: currentPath;
+					const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
 
 					navigateTo(newUrl);
 				}
@@ -74,10 +65,7 @@ const broadcastRouteChange = () => {
 	try {
 		window.dispatchEvent(new Event(ROUTE_CHANGE_EVENT));
 	} catch (_error) {
-		if (
-			typeof document !== "undefined" &&
-			typeof document.createEvent === "function"
-		) {
+		if (typeof document !== "undefined" && typeof document.createEvent === "function") {
 			const fallbackEvent = document.createEvent("Event");
 			fallbackEvent.initEvent(ROUTE_CHANGE_EVENT, false, false);
 			window.dispatchEvent(fallbackEvent);
@@ -115,7 +103,9 @@ export function useRouting() {
 	}, []);
 
 	const sanitizeRoute = useCallback((route: string) => {
-		if (!route) return "/";
+		if (!route) {
+			return "/";
+		}
 
 		if (route.startsWith("http://") || route.startsWith("https://")) {
 			try {
@@ -202,10 +192,7 @@ export function useTournamentRoutingSync({
 	onViewChange,
 	isTournamentComplete,
 }: UseTournamentRoutingSyncProps) {
-	const normalizedPath = useMemo(
-		() => normalizeRoutePath(currentRoute),
-		[currentRoute],
-	);
+	const normalizedPath = useMemo(() => normalizeRoutePath(currentRoute), [currentRoute]);
 
 	const previousRouteRef = useRef<string | null>(null);
 	const lastViewRef = useRef(currentView);
@@ -218,8 +205,7 @@ export function useTournamentRoutingSync({
 			return;
 		}
 
-		const completionChanged =
-			isTournamentComplete !== lastCompletionRef.current;
+		const completionChanged = isTournamentComplete !== lastCompletionRef.current;
 		lastCompletionRef.current = isTournamentComplete;
 
 		if (!completionChanged && currentView === lastViewRef.current) {
@@ -232,10 +218,7 @@ export function useTournamentRoutingSync({
 		if (currentView === "profile") {
 			// Redirect profile view to tournament with analysis mode
 			const targetPath = "/tournament?analysis=true";
-			if (
-				normalizedPath !== "/tournament" ||
-				!currentRoute.includes("analysis=true")
-			) {
+			if (normalizedPath !== "/tournament" || !currentRoute.includes("analysis=true")) {
 				navigateTo(targetPath);
 			}
 			return;
@@ -259,14 +242,7 @@ export function useTournamentRoutingSync({
 		if (!TOURNAMENT_PATHS.has(normalizedPath)) {
 			navigateTo("/tournament");
 		}
-	}, [
-		currentRoute,
-		currentView,
-		isLoggedIn,
-		isTournamentComplete,
-		navigateTo,
-		normalizedPath,
-	]);
+	}, [currentRoute, currentView, isLoggedIn, isTournamentComplete, navigateTo, normalizedPath]);
 
 	useEffect(() => {
 		if (normalizedPath === "/bongo") {
@@ -292,8 +268,7 @@ export function useTournamentRoutingSync({
 		}
 
 		const previousPath = normalizeRoutePath(previousRouteRef.current || "");
-		const pathChanged =
-			previousRouteRef.current === null || previousPath !== normalizedPath;
+		const pathChanged = previousRouteRef.current === null || previousPath !== normalizedPath;
 
 		// * Allow "photos" view on tournament paths - don't reset it to "tournament"
 		const allowedTournamentViews = new Set(["tournament", "photos"]);
@@ -308,14 +283,7 @@ export function useTournamentRoutingSync({
 		}
 
 		previousRouteRef.current = currentRoute;
-	}, [
-		currentRoute,
-		currentView,
-		isLoggedIn,
-		navigateTo,
-		normalizedPath,
-		onViewChange,
-	]);
+	}, [currentRoute, currentView, isLoggedIn, navigateTo, normalizedPath, onViewChange]);
 
 	return normalizedPath;
 }

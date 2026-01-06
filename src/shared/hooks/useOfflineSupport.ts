@@ -11,12 +11,12 @@ interface OfflineQueueItem {
 
 export const useOfflineSupport = () => {
 	const [isOnline, setIsOnline] = useState(navigator.onLine);
-	const [queuedOperations, setQueuedOperations] = useState<OfflineQueueItem[]>(
-		[],
-	);
+	const [queuedOperations, setQueuedOperations] = useState<OfflineQueueItem[]>([]);
 
 	const processQueue = useCallback(async () => {
-		if (!isOnline || queuedOperations.length === 0) return;
+		if (!isOnline || queuedOperations.length === 0) {
+			return;
+		}
 
 		const processedIds: string[] = [];
 
@@ -26,17 +26,12 @@ export const useOfflineSupport = () => {
 				processedIds.push(item.id);
 				console.log(`✅ Processed offline operation: ${item.context}`);
 			} catch (error) {
-				console.warn(
-					`❌ Failed to process offline operation: ${item.context}`,
-					error,
-				);
+				console.warn(`❌ Failed to process offline operation: ${item.context}`, error);
 
 				// Retry logic
 				if (item.retryCount < 3) {
 					setQueuedOperations((prev) =>
-						prev.map((op) =>
-							op.id === item.id ? { ...op, retryCount: op.retryCount + 1 } : op,
-						),
+						prev.map((op) => (op.id === item.id ? { ...op, retryCount: op.retryCount + 1 } : op)),
 					);
 				} else {
 					// Remove after max retries
@@ -82,10 +77,7 @@ export const useOfflineSupport = () => {
 		};
 	}, []); // Remove processQueue dependency to avoid infinite loop
 
-	const queueOperation = (
-		operation: () => Promise<unknown>,
-		context: string,
-	): string => {
+	const queueOperation = (operation: () => Promise<unknown>, context: string): string => {
 		const id = `op_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 		const queueItem: OfflineQueueItem = {
 			id,

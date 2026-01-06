@@ -14,21 +14,21 @@ import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/Header/CollapsibleHeader";
-import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
+import {
+	type UseNameManagementViewResult,
+	useNameManagementContextSafe,
+} from "../../../shared/components/NameManagementView/nameManagementCore";
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";
 import { clearAllCaches, devError } from "../../../shared/utils/core";
 import { useAnalysisData } from "../hooks/useAnalysisData";
 import { useAnalysisDisplayData } from "../hooks/useAnalysisDisplayData";
-import type {
-	AnalysisDashboardProps,
-	AnalyticsDataItem,
-	LeaderboardItem,
-} from "../types";
+import type { AnalysisDashboardProps, AnalyticsDataItem, LeaderboardItem } from "../types";
 import { AnalysisInsights } from "./AnalysisInsights";
 import { AnalysisPanel } from "./AnalysisPanel";
+import panelStyles from "./AnalysisPanel.module.css";
 import { AnalysisTable } from "./AnalysisTable";
-import styles from "./AnalysisUI.module.css";
+import viewToggleStyles from "./AnalysisViewToggle.module.css";
 
 /**
  * Common ID type - can be string or number
@@ -63,8 +63,7 @@ export function AnalysisDashboard({
 	);
 
 	// Get context for filtering
-	// biome-ignore lint/suspicious/noExplicitAny: Context type is complex, using any for migration
-	const toolbarContext = useNameManagementContextSafe() as any;
+	const toolbarContext = useNameManagementContextSafe();
 	const filterConfig = toolbarContext?.filterConfig;
 	const userFilter = filterConfig?.userFilter || "all";
 	const dateFilter = filterConfig?.dateFilter || "all";
@@ -100,8 +99,8 @@ export function AnalysisDashboard({
 	});
 
 	// 2. Process Data
-	const { displayNames, summaryStats, namesWithInsights, generalInsights } =
-		useAnalysisDisplayData({
+	const { displayNames, summaryStats, namesWithInsights, generalInsights } = useAnalysisDisplayData(
+		{
 			leaderboardData: (leaderboardData ?? null) as LeaderboardItem[] | null,
 			selectionPopularity: selectionPopularity ?? null,
 			analyticsData: (analyticsData ?? null) as AnalyticsDataItem[] | null,
@@ -110,7 +109,8 @@ export function AnalysisDashboard({
 			filterConfig,
 			sortField,
 			sortDirection,
-		});
+		},
+	);
 
 	const handleSort = useCallback(
 		(field: string) => {
@@ -126,11 +126,15 @@ export function AnalysisDashboard({
 
 	const handleHideName = useCallback(
 		async (nameId: string | number, _name: string) => {
-			if (!isAdmin || !userName) return;
+			if (!isAdmin || !userName) {
+				return;
+			}
 			try {
 				await hiddenNamesAPI.hideName(userName, String(nameId));
 				clearAllCaches();
-				if (onNameHidden) onNameHidden(String(nameId));
+				if (onNameHidden) {
+					onNameHidden(String(nameId));
+				}
 				refetch();
 			} catch (error) {
 				devError("[AnalysisDashboard] Error hiding name:", error);
@@ -140,14 +144,19 @@ export function AnalysisDashboard({
 	);
 
 	const filteredRankingData = useMemo(() => {
-		if (!rankingHistory?.data?.length) return [];
+		if (!rankingHistory?.data?.length) {
+			return [];
+		}
 		const allowedIds = new Set(displayNames.map((n) => n.id));
-		if (allowedIds.size === 0) return rankingHistory.data;
-		// biome-ignore lint/suspicious/noExplicitAny: Legacy data structure
-		return rankingHistory.data.filter((entry: any) => allowedIds.has(entry.id));
+		if (allowedIds.size === 0) {
+			return rankingHistory.data;
+		}
+		return rankingHistory.data.filter((entry) => allowedIds.has(entry.id));
 	}, [rankingHistory?.data, displayNames]);
 
-	if (!showGlobalLeaderboard && !highlights) return null;
+	if (!showGlobalLeaderboard && !highlights) {
+		return null;
+	}
 
 	const toolbar = toolbarContext?.analysisMode ? (
 		<TournamentToolbar
@@ -156,22 +165,30 @@ export function AnalysisDashboard({
 			onFilterChange={
 				toolbarContext.handleFilterChange ||
 				((name: string, value: string) => {
-					if (name === "searchTerm" && toolbarContext.setSearchTerm)
+					if (name === "searchTerm" && toolbarContext.setSearchTerm) {
 						toolbarContext.setSearchTerm(value);
-					if (name === "category" && toolbarContext.setSelectedCategory)
+					}
+					if (name === "category" && toolbarContext.setSelectedCategory) {
 						toolbarContext.setSelectedCategory(value || null);
-					if (name === "sortBy" && toolbarContext.setSortBy)
+					}
+					if (name === "sortBy" && toolbarContext.setSortBy) {
 						toolbarContext.setSortBy(value || "alphabetical");
-					if (name === "filterStatus" && toolbarContext.setFilterStatus)
+					}
+					if (name === "filterStatus" && toolbarContext.setFilterStatus) {
 						toolbarContext.setFilterStatus(value);
-					if (name === "userFilter" && toolbarContext.setUserFilter)
+					}
+					if (name === "userFilter" && toolbarContext.setUserFilter) {
 						toolbarContext.setUserFilter(value);
-					if (name === "selectionFilter" && toolbarContext.setSelectionFilter)
+					}
+					if (name === "selectionFilter" && toolbarContext.setSelectionFilter) {
 						toolbarContext.setSelectionFilter(value);
-					if (name === "dateFilter" && toolbarContext.setDateFilter)
+					}
+					if (name === "dateFilter" && toolbarContext.setDateFilter) {
 						toolbarContext.setDateFilter(value);
-					if (name === "sortOrder" && toolbarContext.setSortOrder)
+					}
+					if (name === "sortOrder" && toolbarContext.setSortOrder) {
 						toolbarContext.setSortOrder(value);
+					}
 				})
 			}
 			categories={toolbarContext.categories || []}
@@ -195,28 +212,25 @@ export function AnalysisDashboard({
 				toolbar={toolbar}
 			/>
 
-			<CollapsibleContent
-				id="analysis-dashboard-content"
-				isCollapsed={isCollapsed}
-			>
+			<CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
 				{isLoading ? (
-					<div className={styles.loading} role="status">
+					<div className={panelStyles.loading} role="status">
 						Loading top names...
 					</div>
 				) : error ? (
-					<div className={styles.error} role="alert">
-						Failed to load top names.
+					<div className={panelStyles.error} role="alert">
+						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className={styles.empty}>No names available yet.</div>
+					<div className={panelStyles.empty}>No names available yet. Start a tournament to see results here!</div>
 				) : (
 					<>
-						<div className={styles.viewToggle}>
+						<div className={viewToggleStyles.viewToggle}>
 							{["chart", "table", "insights"].map((mode) => (
 								<button
 									key={mode}
 									type="button"
-									className={`${styles.viewBtn} ${viewMode === mode ? styles.active : ""}`}
+									className={`${viewToggleStyles.viewBtn} ${viewMode === mode ? viewToggleStyles.active : ""}`}
 									onClick={() => setViewMode(mode)}
 									aria-pressed={viewMode === mode}
 								>
@@ -230,7 +244,7 @@ export function AnalysisDashboard({
 						</div>
 
 						{viewMode === "chart" && rankingHistory && (
-							<div className={styles.chartContainer}>
+							<div className={viewToggleStyles.chartContainer}>
 								<BumpChart
 									data={filteredRankingData}
 									labels={rankingHistory.timeLabels}

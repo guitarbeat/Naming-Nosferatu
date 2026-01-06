@@ -20,7 +20,9 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	const validateField = useCallback(
 		(name: keyof T, value: unknown) => {
 			const fieldSchema = schema.shape[name] as unknown as z.ZodTypeAny;
-			if (!fieldSchema) return;
+			if (!fieldSchema) {
+				return;
+			}
 
 			const result = fieldSchema.safeParse(value);
 			if (result.success) {
@@ -33,7 +35,7 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 			} else {
 				setErrors((prev) => ({
 					...prev,
-					[name]: result.error.issues[0]?.message || "Invalid input",
+					[name]: result.error.issues[0]?.message || "Please check your input",
 				}));
 				return false;
 			}

@@ -1,4 +1,5 @@
 import type { StateCreator } from "zustand";
+import { STORAGE_KEYS } from "../../../core/constants";
 import { updateSupabaseUserContext } from "../../../shared/services/supabase/client";
 import type { AppState, UserState } from "../../../types/store";
 
@@ -15,7 +16,7 @@ const getInitialUserState = (): UserState => {
 	}
 
 	try {
-		const storedUser = window.localStorage.getItem("catNamesUser");
+		const storedUser = window.localStorage.getItem(STORAGE_KEYS.USER);
 		if (storedUser?.trim()) {
 			return {
 				...defaultState,
@@ -50,9 +51,9 @@ export const createUserSlice: StateCreator<
 				// * Persist to localStorage
 				try {
 					if (newUser.name) {
-						localStorage.setItem("catNamesUser", newUser.name);
+						localStorage.setItem(STORAGE_KEYS.USER, newUser.name);
 					} else {
-						localStorage.removeItem("catNamesUser");
+						localStorage.removeItem(STORAGE_KEYS.USER);
 					}
 				} catch (error) {
 					if (process.env.NODE_ENV === "development") {
@@ -73,7 +74,7 @@ export const createUserSlice: StateCreator<
 				};
 				// * Persist to localStorage
 				try {
-					localStorage.setItem("catNamesUser", userName);
+					localStorage.setItem(STORAGE_KEYS.USER, userName);
 					// Update Supabase client headers for RLS policies
 					updateSupabaseUserContext(userName);
 				} catch (error) {
@@ -90,7 +91,7 @@ export const createUserSlice: StateCreator<
 			set((state) => {
 				// * Clear localStorage
 				try {
-					localStorage.removeItem("catNamesUser");
+					localStorage.removeItem(STORAGE_KEYS.USER);
 					// Clear Supabase client headers
 					updateSupabaseUserContext(null);
 				} catch (error) {
@@ -126,7 +127,7 @@ export const createUserSlice: StateCreator<
 		initializeFromStorage: () =>
 			set((state) => {
 				try {
-					const storedUser = localStorage.getItem("catNamesUser");
+					const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 					if (storedUser && state.user.name !== storedUser) {
 						// Update Supabase client headers for RLS policies
 						updateSupabaseUserContext(storedUser);

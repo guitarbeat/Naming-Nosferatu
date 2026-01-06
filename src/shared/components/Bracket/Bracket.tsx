@@ -47,12 +47,19 @@ import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import styles from "./Bracket.module.css";
 
+// Constants use UPPER_CASE keys (intentional for match result constants)
 const MatchResult = {
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	PENDING: "pending",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	FIRST_WIN: "first",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SECOND_WIN: "second",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	BOTH_ADVANCE: "both",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SKIPPED: "skip",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	NEITHER: "neither",
 } as const;
 
@@ -67,13 +74,7 @@ interface MatchData {
 	[key: string]: unknown;
 }
 
-function Match({
-	match,
-	isLastRound,
-}: {
-	match: MatchData;
-	isLastRound: boolean;
-}) {
+function Match({ match, isLastRound }: { match: MatchData; isLastRound: boolean }) {
 	const status = useMemo((): MatchStatus => {
 		if (!match.winner && match.winner !== 0) {
 			return MatchResult.PENDING;
@@ -205,9 +206,7 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 		// If caller provides explicit round numbers, group by them.
 		const hasExplicitRounds = matches.some((m) => typeof m.round === "number");
 		if (hasExplicitRounds) {
-			const maxRound = Math.max(
-				...matches.map((m) => (typeof m.round === "number" ? m.round : 1)),
-			);
+			const maxRound = Math.max(...matches.map((m) => (typeof m.round === "number" ? m.round : 1)));
 			interface Match {
 				id?: number;
 				round?: number;
@@ -231,8 +230,7 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			round?: number;
 			[key: string]: unknown;
 		}
-		const totalRounds =
-			matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
+		const totalRounds = matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
 		const rounds: Match[][] = Array(totalRounds)
 			.fill(null)
 			.map(() => []);

@@ -3,7 +3,7 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
@@ -48,13 +48,31 @@ function TournamentMatch({
 }: TournamentMatchProps): React.ReactElement {
 	const leftOrbRef = useRef<HTMLDivElement>(null);
 	const rightOrbRef = useRef<HTMLDivElement>(null);
+	const [showVoteConfirmation, setShowVoteConfirmation] = React.useState<"left" | "right" | null>(
+		null,
+	);
 	const isEnabled = !isProcessing && !isTransitioning;
+
+	// Show vote confirmation checkmark
+	React.useEffect(() => {
+		if (selectedOption === "left" || selectedOption === "right") {
+			setShowVoteConfirmation(selectedOption);
+			const timer = setTimeout(() => {
+				setShowVoteConfirmation(null);
+			}, 800);
+			return () => clearTimeout(timer);
+		}
+	}, [selectedOption]);
 
 	useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);
 
 	const getDetails = (item?: NameItem | string) => {
-		if (!item) return { name: "Unknown", id: null };
-		if (typeof item === "string") return { name: item, id: item };
+		if (!item) {
+			return { name: "Unknown", id: null };
+		}
+		if (typeof item === "string") {
+			return { name: item, id: item };
+		}
 		return { name: item.name || "Unknown", id: item.id || null };
 	};
 
@@ -62,14 +80,10 @@ function TournamentMatch({
 	const rightDetails = getDetails(currentMatch.right);
 
 	const leftImage =
-		showCatPictures && leftDetails.id
-			? getRandomCatImage(leftDetails.id, imageList)
-			: undefined;
+		showCatPictures && leftDetails.id ? getRandomCatImage(leftDetails.id, imageList) : undefined;
 
 	const rightImage =
-		showCatPictures && rightDetails.id
-			? getRandomCatImage(rightDetails.id, imageList)
-			: undefined;
+		showCatPictures && rightDetails.id ? getRandomCatImage(rightDetails.id, imageList) : undefined;
 
 	return (
 		<div
@@ -79,18 +93,10 @@ function TournamentMatch({
 			aria-busy={isTransitioning || isProcessing}
 		>
 			{/* SVG Filter Definition */}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				version="1.1"
-				className={styles.ferroFilter}
-			>
+			<svg xmlns="http://www.w3.org/2000/svg" version="1.1" className={styles.ferroFilter}>
 				<defs>
 					<filter id="tournament-ferro-goo">
-						<feGaussianBlur
-							in="SourceGraphic"
-							stdDeviation="12"
-							result="blur"
-						/>
+						<feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
 						<feColorMatrix
 							in="blur"
 							mode="matrix"
@@ -112,13 +118,13 @@ function TournamentMatch({
 					{/* Left Fighter Orb */}
 					<motion.div
 						ref={leftOrbRef}
-						layout
+						layout={true}
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
 						whileHover={isEnabled ? { scale: 1.02 } : {}}
 						whileTap={isEnabled ? { scale: 0.98 } : {}}
 						transition={{ duration: 0.2, ease: "easeOut" }}
-						className={`${styles.fighterOrb} ${selectedOption === "left" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
+						className={`${styles.fighterOrb} ${selectedOption === "left" ? styles.selected : ""} ${isEnabled ? "" : styles.disabled}`}
 						role="button"
 						tabIndex={isEnabled ? 0 : -1}
 						aria-label={`Select ${leftDetails.name}`}
@@ -145,6 +151,20 @@ function TournamentMatch({
 							)}
 							<h3 className={styles.nameText}>{leftDetails.name}</h3>
 						</div>
+						<AnimatePresence>
+							{showVoteConfirmation === "left" && (
+								<motion.div
+									initial={{ opacity: 0, scale: 0 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
+									transition={{ duration: 0.3, ease: "easeOut" }}
+									className={styles.voteCheckmark}
+									aria-label="Vote confirmed"
+								>
+									✓
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</motion.div>
 
 					{/* VS Text */}
@@ -155,13 +175,13 @@ function TournamentMatch({
 					{/* Right Fighter Orb */}
 					<motion.div
 						ref={rightOrbRef}
-						layout
+						layout={true}
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
 						whileHover={isEnabled ? { scale: 1.02 } : {}}
 						whileTap={isEnabled ? { scale: 0.98 } : {}}
 						transition={{ duration: 0.2, ease: "easeOut" }}
-						className={`${styles.fighterOrb} ${styles.right} ${selectedOption === "right" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
+						className={`${styles.fighterOrb} ${styles.right} ${selectedOption === "right" ? styles.selected : ""} ${isEnabled ? "" : styles.disabled}`}
 						role="button"
 						tabIndex={isEnabled ? 0 : -1}
 						aria-label={`Select ${rightDetails.name}`}
@@ -188,6 +208,20 @@ function TournamentMatch({
 							)}
 							<h3 className={styles.nameText}>{rightDetails.name}</h3>
 						</div>
+						<AnimatePresence>
+							{showVoteConfirmation === "right" && (
+								<motion.div
+									initial={{ opacity: 0, scale: 0 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
+									transition={{ duration: 0.3, ease: "easeOut" }}
+									className={styles.voteCheckmark}
+									aria-label="Vote confirmed"
+								>
+									✓
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</motion.div>
 
 					{/* Magnetic Line */}

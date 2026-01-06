@@ -31,14 +31,14 @@
 	position: relative;
 	width: 320px;
 	height: 320px;
-	background: #0a0a0a;
+	background: var(--color-neutral-900);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 	cursor: pointer;
-	z-index: 2;
+	z-index: var(--z-10);
 	will-change: transform;
 }
 
@@ -48,11 +48,11 @@
 	inset: -2px;
 	background: linear-gradient(
 		135deg,
-		#2ff3e0 0%,
-		#fa26a0 25%,
-		#f51720 50%,
-		#fa26a0 75%,
-		#2ff3e0 100%
+		var(--color-neon-cyan) 0%,
+		var(--color-hot-pink) 25%,
+		var(--color-fire-red) 50%,
+		var(--color-hot-pink) 75%,
+		var(--color-neon-cyan) 100%
 	);
 	border-radius: 50%;
 	opacity: 0.3;
@@ -73,12 +73,8 @@
 .spikes {
 	position: absolute;
 	inset: -20px;
-	background: repeating-conic-gradient(
-		from 0deg,
-		transparent 0deg 10deg,
-		#000 10deg 20deg
-	);
-	mask: radial-gradient(transparent 55%, black 70%);
+	background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, var(--color-neutral-900) 10deg 20deg);
+	mask: radial-gradient(transparent 55%, var(--color-neutral-900) 70%);
 	opacity: 0.4;
 	animation: rotateSpikes 20s linear infinite;
 	pointer-events: none;
@@ -97,8 +93,8 @@
 /* Fighter Content */
 .fighterContent {
 	text-align: center;
-	z-index: 10;
-	filter: blur(0) !important;
+	z-index: var(--z-10);
+	filter: blur(0);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -111,11 +107,11 @@
 
 /* Avatar/Image Wrapper */
 .avatarWrap {
-	width: 180px;
-	height: 180px;
-	border-radius: 50%;
+	width: var(--space-45, 180px);
+	height: var(--space-45, 180px);
+	border-radius: var(--radius-full);
 	overflow: hidden;
-	border: 1px solid rgb(255 255 255 / 10%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
 	position: relative;
 	flex-shrink: 0;
 }
@@ -126,8 +122,8 @@
 	object-fit: cover;
 	filter: grayscale(100%) contrast(1.2);
 	transition:
-		transform 0.5s ease,
-		filter 0.5s ease;
+		var(--transition-transform),
+		filter var(--duration-slower) var(--ease-standard);
 }
 
 .fighterOrb:hover .avatarWrap img {
@@ -142,14 +138,14 @@
 
 /* Name Text */
 .nameText {
-	font-size: 2rem;
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	color: white;
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--color-neutral-50);
 	margin: 0;
 	text-align: center;
-	line-height: 1.2;
-	text-shadow: 0 2px 8px rgb(0 0 0 / 50%);
+	line-height: var(--leading-tight);
+	text-shadow: var(--text-shadow-lg);
 }
 
 /* VS Text */
@@ -158,16 +154,16 @@
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	z-index: 5;
+	z-index: var(--z-10);
 	mix-blend-mode: difference;
 	pointer-events: none;
 }
 
 .vsText {
-	font-size: 10rem;
-	font-weight: 900;
-	letter-spacing: -0.05em;
-	color: white;
+	font-size: clamp(var(--text-4xl), 10vw, var(--text-5xl));
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--color-neutral-50);
 	font-style: italic;
 	opacity: 0.8;
 	pointer-events: none;
@@ -179,12 +175,7 @@
 	position: absolute;
 	height: 1px;
 	width: 100%;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		rgb(255 255 255 / 10%),
-		transparent
-	);
+	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-neutral-50) 10%, transparent), transparent);
 	top: 50%;
 	left: 0;
 	pointer-events: none;
@@ -193,11 +184,11 @@
 /* Hover Effects */
 @media (hover: hover) and (pointer: fine) {
 	.fighterOrb:not(.disabled):hover {
-		transform: translateX(40px) scale(1.05);
+		transform: translateX(var(--space-10)) var(--transform-hover-scale);
 	}
 
 	.fighterOrb.right:not(.disabled):hover {
-		transform: translateX(-40px) scale(1.05);
+		transform: translateX(calc(var(--space-10) * -1)) var(--transform-hover-scale);
 	}
 }
 
@@ -264,6 +255,45 @@
 
 	.fighterOrb.right:not(.disabled):hover {
 		transform: translateY(-20px) scale(1.05);
+	}
+}
+
+/* Vote Confirmation Checkmark */
+.voteCheckmark {
+	position: absolute;
+	top: var(--space-5);
+	right: var(--space-5);
+	z-index: var(--z-20);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 60px;
+	height: 60px;
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--color-success);
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 20%, transparent), color-mix(in srgb, var(--color-success) 15%, transparent));
+	border: 3px solid var(--color-success);
+	border-radius: var(--radius-full);
+	box-shadow:
+		0 0 20px color-mix(in srgb, var(--color-success) 50%, transparent),
+		var(--shadow-md),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	backdrop-filter: blur(var(--glass-blur));
+	animation: checkmarkPulse var(--duration-slower) var(--ease-out);
+}
+
+@keyframes checkmarkPulse {
+	0% {
+		transform: scale(0);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
 	}
 }
 

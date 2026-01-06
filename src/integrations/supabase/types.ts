@@ -1,15 +1,20 @@
-export type Json =
-	| string
-	| number
-	| boolean
-	| null
-	| { [key: string]: Json | undefined }
-	| Json[];
+/**
+ * Auto-generated Supabase types file.
+ * All snake_case field names match database column names exactly and cannot be changed.
+ * This file is generated from the database schema and should not be manually edited.
+ *
+ * Note: Naming convention warnings are expected and intentional for this file.
+ */
+/* biome-ignore-file lint/style/useNamingConvention: Generated Supabase types must match database schema exactly */
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
 	// Allows to automatically instantiate createClient with right options
 	// instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+	// biome-ignore lint/style/useNamingConvention: Internal Supabase type, PascalCase required
 	__InternalSupabase: {
+		// biome-ignore lint/style/useNamingConvention: Internal Supabase type, PascalCase required
 		PostgrestVersion: "12.2.3 (519615d)";
 	};
 	public: {
@@ -680,10 +685,7 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<
-	keyof Database,
-	"public"
->];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
 	DefaultSchemaTableNameOrOptions extends
@@ -704,10 +706,8 @@ export type Tables<
 		}
 		? R
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])
-		? (DefaultSchema["Tables"] &
-				DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+		? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
 				Row: infer R;
 			}
 			? R

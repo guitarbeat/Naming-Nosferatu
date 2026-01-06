@@ -37,8 +37,7 @@ export function useAnalysisData({
 	// 3. Popularity Analytics (Admin only)
 	const analyticsQuery = useQuery({
 		queryKey: ["popularityAnalytics", userFilter, userName],
-		queryFn: () =>
-			catNamesAPI.getPopularityAnalytics(null, userFilter, userName),
+		queryFn: () => catNamesAPI.getPopularityAnalytics(null, userFilter, userName),
 		enabled: enabled && isAdmin,
 		staleTime: 1000 * 60 * 5,
 	});

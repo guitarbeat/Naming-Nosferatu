@@ -5,13 +5,7 @@
  */
 
 import type React from "react";
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 
@@ -67,7 +61,7 @@ export interface BuildNavItemsContext {
 	view: ViewType;
 	isAnalysisMode: boolean;
 	onOpenPhotos?: () => void;
-	onToggleAnalysis: () => void;
+	onToggleAnalysis?: () => void;
 }
 
 // --- CONTEXT ---
@@ -81,9 +75,7 @@ export const NavbarProvider = ({
 	value: NavbarContextValue;
 	children: React.ReactNode;
 }) => {
-	return (
-		<NavbarContext.Provider value={value}> {children} </NavbarContext.Provider>
-	);
+	return <NavbarContext.Provider value={value}>{children}</NavbarContext.Provider>;
 };
 
 export const useNavbarContext = () => {
@@ -152,19 +144,23 @@ export const useAnalysisMode = () => {
 	const [isAnalysisMode, setIsAnalysisMode] = useState(false);
 
 	const checkAnalysisModeFromUrl = useCallback(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 		const params = new URLSearchParams(window.location.search);
 		const isAnalysis = params.get(ANALYSIS_QUERY_PARAM) === "true";
-		if (isAnalysis !== isAnalysisMode) {
-			setIsAnalysisMode(isAnalysis);
-		}
-	}, [isAnalysisMode]);
+		setIsAnalysisMode((prev) => {
+			if (isAnalysis !== prev) {
+				return isAnalysis;
+			}
+			return prev;
+		});
+	}, []);
 
 	useEffect(() => {
 		checkAnalysisModeFromUrl();
 		window.addEventListener("popstate", checkAnalysisModeFromUrl);
-		return () =>
-			window.removeEventListener("popstate", checkAnalysisModeFromUrl);
+		return () => window.removeEventListener("popstate", checkAnalysisModeFromUrl);
 	}, [checkAnalysisModeFromUrl]);
 
 	return { isAnalysisMode, setIsAnalysisMode };
@@ -198,14 +194,16 @@ export interface NavbarDimensions {
 	height: number;
 }
 
-export const useNavbarDimensions = (_isCollapsed: boolean) => {
+export const useNavbarDimensions = (isCollapsed: boolean) => {
 	const [dimensions, setDimensions] = useState<NavbarDimensions>({
 		width: 0,
 		height: 0,
 	});
 
 	const updateDimensions = useCallback(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		const navbarElement = document.getElementById("app-navbar");
 		if (navbarElement) {
@@ -216,21 +214,15 @@ export const useNavbarDimensions = (_isCollapsed: boolean) => {
 			});
 
 			// Update CSS variable for the rest of the app to use
-			document.documentElement.style.setProperty(
-				"--navbar-height",
-				`${rect.height}px`,
-			);
-			document.documentElement.style.setProperty(
-				"--navbar-width",
-				`${rect.width}px`,
-			);
+			document.documentElement.style.setProperty("--navbar-height", `${rect.height}px`);
+			document.documentElement.style.setProperty("--navbar-width", `${rect.width}px`);
 		}
 	}, []);
 
 	useEffect(() => {
 		updateDimensions();
-		// Also update after transition ends
-		const timeout = setTimeout(updateDimensions, 400);
+		// Also update after transition ends (duration-slower is 500ms, add buffer)
+		const timeout = setTimeout(updateDimensions, 600);
 
 		const handleResize = () => {
 			updateDimensions();
@@ -241,7 +233,7 @@ export const useNavbarDimensions = (_isCollapsed: boolean) => {
 			window.removeEventListener("resize", handleResize);
 			clearTimeout(timeout);
 		};
-	}, [updateDimensions]);
+	}, [updateDimensions, isCollapsed]);
 
 	return dimensions;
 };

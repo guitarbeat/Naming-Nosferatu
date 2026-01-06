@@ -149,6 +149,8 @@
 	--z-modal: 300;
 	--z-popover: 400;
 	--z-toast: 500;
+	--z-modal-backdrop: 1050;
+	--z-max: 10000; /* For skip links and critical overlays */
 }
 
 /* ==========================================================================
@@ -180,41 +182,40 @@
    ========================================================================== */
 :root {
 	/* * Elevation shadows - consistent depth */
-	--shadow-xs: 0 1px 2px rgb(0 0 0 / 5%);
-	--shadow-sm: 0 2px 4px rgb(0 0 0 / 8%);
-	--shadow-md: 0 4px 8px rgb(0 0 0 / 10%);
-	--shadow-lg: 0 8px 16px rgb(0 0 0 / 12%);
-	--shadow-xl: 0 16px 32px rgb(0 0 0 / 15%);
+	--shadow-xs: 0 1px 2px var(--overlay-light);
+	--shadow-sm: 0 2px 4px var(--overlay-light);
+	--shadow-md: 0 4px 8px var(--overlay-light);
+	--shadow-lg: 0 8px 16px var(--overlay-light);
+	--shadow-xl: 0 16px 32px var(--overlay-medium);
 
 	/* * Colored shadows - use sparingly */
-	--shadow-cyan: 0 4px 16px rgb(47 243 224 / 15%);
-	--shadow-pink: 0 4px 16px rgb(250 38 160 / 15%);
-	--shadow-gradient:
-		0 8px 24px rgb(47 243 224 / 12%), 0 4px 12px rgb(250 38 160 / 10%);
+	--shadow-cyan: 0 4px 16px var(--overlay-cyan-medium);
+	--shadow-pink: 0 4px 16px var(--overlay-pink-medium);
+	--shadow-gradient: 0 8px 24px var(--overlay-cyan), 0 4px 12px var(--overlay-pink);
 
 	/* * Legacy shadow variables (from effects.css) */
-	--shadow-color: rgb(0 0 0 / 40%);
-	--shadow-color-light: rgb(0 0 0 / 15%);
-	--shadow-color-medium: rgb(0 0 0 / 25%);
-	--shadow-color-strong: rgb(0 0 0 / 35%);
+	--shadow-color: var(--overlay-dark);
+	--shadow-color-light: var(--overlay-light);
+	--shadow-color-medium: var(--overlay-medium);
+	--shadow-color-strong: var(--overlay-dark);
 
 	/* * Text shadows */
-	--text-shadow-sm: 0 2px 8px rgb(0 0 0 / 20%);
-	--text-shadow-lg: 0 2px 12px rgb(0 0 0 / 40%);
+	--text-shadow-sm: 0 2px 8px var(--overlay-light);
+	--text-shadow-lg: 0 2px 12px var(--overlay-medium);
 
 	/* * Overlay colors */
-	--overlay-light: rgb(0 0 0 / 25%);
-	--overlay-medium: rgb(0 0 0 / 40%);
-	--overlay-dark: rgb(0 0 0 / 55%);
-	--overlay-darker: rgb(0 0 0 / 65%);
+	--overlay-light: color-mix(in srgb, var(--color-neutral-900) 25%, transparent);
+	--overlay-medium: color-mix(in srgb, var(--color-neutral-900) 40%, transparent);
+	--overlay-dark: color-mix(in srgb, var(--color-neutral-900) 55%, transparent);
+	--overlay-darker: color-mix(in srgb, var(--color-neutral-900) 65%, transparent);
 
 	/* * Vibrant overlay options */
-	--overlay-cyan: rgb(47 243 224 / 10%);
-	--overlay-pink: rgb(250 38 160 / 10%);
-	--overlay-red: rgb(245 23 32 / 10%);
-	--overlay-cyan-medium: rgb(47 243 224 / 20%);
-	--overlay-pink-medium: rgb(250 38 160 / 20%);
-	--overlay-red-medium: rgb(245 23 32 / 20%);
+	--overlay-cyan: color-mix(in srgb, var(--color-neon-cyan) 10%, transparent);
+	--overlay-pink: color-mix(in srgb, var(--color-hot-pink) 10%, transparent);
+	--overlay-red: color-mix(in srgb, var(--color-fire-red) 10%, transparent);
+	--overlay-cyan-medium: color-mix(in srgb, var(--color-neon-cyan) 20%, transparent);
+	--overlay-pink-medium: color-mix(in srgb, var(--color-hot-pink) 20%, transparent);
+	--overlay-red-medium: color-mix(in srgb, var(--color-fire-red) 20%, transparent);
 }
 
 /* ==========================================================================
@@ -233,7 +234,7 @@
 	--focus-ring:
 		0 0 0 var(--focus-ring-width) var(--focus-ring-color),
 		0 0 0 calc(var(--focus-ring-width) + var(--focus-ring-offset))
-		rgb(var(--focus-ring-color) / 20%);
+		color-mix(in srgb, var(--focus-ring-color) 20%, transparent);
 }
 
 /* ==========================================================================
@@ -275,8 +276,7 @@
 	--button-loading-opacity: 0.7;
 	--button-hover-transform: translateY(-2px) scale(1.02);
 	--button-active-transform: translateY(-1px) scale(1.01);
-	--button-hover-shadow:
-		0 8px 25px rgb(0 0 0 / 20%), 0 4px 12px rgb(0 0 0 / 15%);
+	--button-hover-shadow: 0 8px 25px var(--overlay-dark), 0 4px 12px var(--overlay-medium);
 	--button-transition: all var(--duration-normal) var(--ease-out);
 	--button-transition-fast: transform var(--duration-fast) var(--ease-out);
 	/* * Specialized button patterns */
@@ -288,8 +288,8 @@
 	--icon-button-small: 32px;
 	--icon-button-medium: 40px;
 	--icon-button-large: 48px;
-	--swipe-button-shadow: 0 6px 18px rgb(220 38 38 / 25%);
-	--swipe-button-hover-shadow: 0 10px 24px rgb(220 38 38 / 35%);
+	--swipe-button-shadow: 0 6px 18px var(--overlay-red-medium);
+	--swipe-button-hover-shadow: 0 10px 24px color-mix(in srgb, var(--color-error) 35%, transparent);
 	--sound-toggle-size: 40px;
 	--sound-toggle-active-transform: scale(1.1);
 

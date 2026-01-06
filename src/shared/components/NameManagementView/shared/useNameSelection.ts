@@ -41,7 +41,9 @@ export function useNameSelection({
 
 	const { mutate: saveTournamentSelections } = useMutation({
 		mutationFn: async (namesToSave: NameItem[]) => {
-			if (mode !== "tournament" || !userName) return;
+			if (mode !== "tournament" || !userName) {
+				return;
+			}
 			const tournamentId = `selection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 			const result = await tournamentsAPI.saveTournamentSelections(
 				userName,
@@ -64,17 +66,25 @@ export function useNameSelection({
 
 	const scheduleSave = useCallback(
 		(namesToSave: NameItem[]) => {
-			if (mode !== "tournament" || !enableAutoSave || !userName) return;
-			if (!Array.isArray(namesToSave) || namesToSave.length === 0) return;
+			if (mode !== "tournament" || !enableAutoSave || !userName) {
+				return;
+			}
+			if (!Array.isArray(namesToSave) || namesToSave.length === 0) {
+				return;
+			}
 
 			const hash = namesToSave
 				.map((n) => n.id || n.name)
 				.sort()
 				.join(",");
 
-			if (hash === lastSavedHashRef.current) return;
+			if (hash === lastSavedHashRef.current) {
+				return;
+			}
 
-			if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+			if (saveTimeoutRef.current) {
+				clearTimeout(saveTimeoutRef.current);
+			}
 			saveTimeoutRef.current = setTimeout(() => {
 				lastSavedHashRef.current = hash;
 				saveTournamentSelections(namesToSave);
@@ -99,10 +109,7 @@ export function useNameSelection({
 				if (mode === "tournament") {
 					const updatedList = names.filter((n) => newSet.has(String(n.id)));
 
-					if (
-						Date.now() - lastLogTsRef.current > 1000 &&
-						process.env.NODE_ENV === "development"
-					) {
+					if (Date.now() - lastLogTsRef.current > 1000 && process.env.NODE_ENV === "development") {
 						console.log("🎮 TournamentSetup: Selection updated", updatedList);
 						lastLogTsRef.current = Date.now();
 					}
@@ -139,7 +146,9 @@ export function useNameSelection({
 
 	const toggleNamesByIds = useCallback(
 		(nameIds: string[] = [], shouldSelect = true) => {
-			if (!Array.isArray(nameIds) || nameIds.length === 0) return;
+			if (!Array.isArray(nameIds) || nameIds.length === 0) {
+				return;
+			}
 
 			setSelectedIds((prev) => {
 				const newSet = new Set(prev);
@@ -166,19 +175,25 @@ export function useNameSelection({
 		setSelectedIds((prev) => {
 			const allSelected = prev.size === names.length;
 			if (allSelected) {
-				if (mode === "tournament") scheduleSave([]);
+				if (mode === "tournament") {
+					scheduleSave([]);
+				}
 				return new Set();
 			}
 
 			const newSet = new Set(names.map((n) => String(n.id)));
-			if (mode === "tournament") scheduleSave(names);
+			if (mode === "tournament") {
+				scheduleSave(names);
+			}
 			return newSet;
 		});
 	}, [mode, names, scheduleSave]);
 
 	const clearSelection = useCallback(() => {
 		setSelectedIds(new Set());
-		if (mode === "tournament") scheduleSave([]);
+		if (mode === "tournament") {
+			scheduleSave([]);
+		}
 	}, [mode, scheduleSave]);
 
 	const isSelected = useCallback(

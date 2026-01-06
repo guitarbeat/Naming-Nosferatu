@@ -81,11 +81,7 @@ const TournamentControls = ({
 			className={styles.tournamentControlsGlass}
 			style={{ width: "100%", height: "auto", padding: 0 }}
 		>
-			<div
-				className={styles.tournamentControls}
-				role="toolbar"
-				aria-label="Tournament controls"
-			>
+			<div className={styles.tournamentControls} role="toolbar" aria-label="Tournament controls">
 				<div className={styles.soundControls}>
 					<IconButton
 						onClick={audioError ? onRetryAudio : onToggleMute}
@@ -97,9 +93,7 @@ const TournamentControls = ({
 							)
 						}
 						variant={audioError ? "danger" : "ghost"}
-						ariaLabel={
-							isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"
-						}
+						ariaLabel={isMuted ? "Unmute tournament sounds" : "Mute tournament sounds"}
 						aria-pressed={isMuted}
 						disabled={isTransitioning}
 						title={isMuted ? "Unmute" : "Mute"}
@@ -112,9 +106,7 @@ const TournamentControls = ({
 							onMouseEnter={() => setShowVolume(true)}
 							onMouseLeave={() => setShowVolume(false)}
 						>
-							<div
-								className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}
-							>
+							<div className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}>
 								<label className={styles.volumeLabel}>
 									🎵
 									<input
@@ -123,9 +115,7 @@ const TournamentControls = ({
 										max="1"
 										step="0.1"
 										value={volume.music}
-										onChange={(e) =>
-											onVolumeChange("music", parseFloat(e.target.value))
-										}
+										onChange={(e) => onVolumeChange("music", parseFloat(e.target.value))}
 										className={styles.volumeSlider}
 									/>
 								</label>
@@ -137,9 +127,7 @@ const TournamentControls = ({
 										max="1"
 										step="0.1"
 										value={volume.effects}
-										onChange={(e) =>
-											onVolumeChange("effects", parseFloat(e.target.value))
-										}
+										onChange={(e) => onVolumeChange("effects", parseFloat(e.target.value))}
 										className={styles.volumeSlider}
 									/>
 								</label>
@@ -150,16 +138,12 @@ const TournamentControls = ({
 					{!isMuted && (
 						<IconButton
 							onClick={onNextTrack}
-							icon={
-								<MusicalNoteIcon className={styles.icon} aria-hidden="true" />
-							}
+							icon={<MusicalNoteIcon className={styles.icon} aria-hidden="true" />}
 							variant="ghost"
 							ariaLabel="Next track"
 							disabled={isTransitioning}
 							title={
-								trackInfo
-									? `Now Playing: ${trackInfo.name}\nClick for next track`
-									: "Next track"
+								trackInfo ? `Now Playing: ${trackInfo.name}\nClick for next track` : "Next track"
 							}
 							className={styles.soundToggleButton}
 						/>
@@ -178,9 +162,7 @@ const TournamentControls = ({
 							aria-pressed={isShuffle}
 							disabled={isTransitioning}
 							title={
-								isShuffle
-									? "Shuffle: On (toggle to turn off)"
-									: "Shuffle: Off (toggle to turn on)"
+								isShuffle ? "Shuffle: On (toggle to turn off)" : "Shuffle: Off (toggle to turn on)"
 							}
 							className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`}
 						/>
@@ -194,9 +176,7 @@ const TournamentControls = ({
 							</span>
 						}
 						variant="ghost"
-						ariaLabel={
-							showCatPictures ? "Hide cat pictures" : "Show cat pictures"
-						}
+						ariaLabel={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 						aria-pressed={showCatPictures}
 						disabled={isTransitioning}
 						title={showCatPictures ? "🐱 Hide Cats" : "🐱 Show Cats"}
@@ -206,12 +186,7 @@ const TournamentControls = ({
 					{audioError && (
 						<IconButton
 							onClick={onRetryAudio}
-							icon={
-								<ExclamationCircleIcon
-									className={styles.icon}
-									aria-hidden="true"
-								/>
-							}
+							icon={<ExclamationCircleIcon className={styles.icon} aria-hidden="true" />}
 							variant="danger"
 							ariaLabel="Retry playing audio"
 							title={audioError}
@@ -253,17 +228,14 @@ const TournamentControls = ({
 							<h2 id="confirm-end-title" className={layoutStyles.modalTitle}>
 								End Tournament?
 							</h2>
-							<p
-								id="confirm-end-description"
-								className={layoutStyles.modalText}
-							>
-								Are you sure you want to end the tournament early?
+							<p id="confirm-end-description" className={layoutStyles.modalText}>
+								Are you sure you want to end the tournament early? Your progress will be saved, but you won't be able to continue voting.
 							</p>
 							<div className={layoutStyles.modalActions}>
 								<Button
 									onClick={handleEndConfirm}
 									variant="danger"
-									autoFocus
+									autoFocus={true}
 									className={layoutStyles.confirmButton}
 								>
 									Yes, End Tournament

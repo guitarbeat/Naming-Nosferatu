@@ -29,7 +29,9 @@ export function NameManagementView({
 	mode = "tournament", // Default mode
 	userName,
 	onStartTournament,
-	onOpenSuggestName = () => {},
+	onOpenSuggestName = () => {
+		// Intentional no-op: optional callback
+	},
 	extensions = {},
 	tournamentProps = {},
 	profileProps = {},
@@ -40,7 +42,9 @@ export function NameManagementView({
 	const { showToast } = useToast();
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 		const params = new URLSearchParams(window.location.search);
 		setAnalysisMode(params.get("analysis") === "true");
 	}, []);
@@ -131,18 +135,14 @@ export function NameManagementView({
 				>
 					{extensions.header && (
 						<div className={styles.headerSection}>
-							{typeof extensions.header === "function"
-								? extensions.header()
-								: extensions.header}
+							{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 						</div>
 					)}
 					<section className={styles.dashboardSection}>
 						{React.isValidElement(extensions.dashboard)
 							? extensions.dashboard
 							: typeof extensions.dashboard === "function"
-								? React.createElement(
-										extensions.dashboard as React.ComponentType,
-									)
+								? React.createElement(extensions.dashboard as React.ComponentType)
 								: extensions.dashboard}
 					</section>
 				</div>

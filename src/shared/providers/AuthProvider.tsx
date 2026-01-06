@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { createContext, useContext } from "react";
 import { supabase } from "../services/supabase/client";
+import { isUserAdmin } from "../utils/core/auth";
 
 interface User {
 	id: string;
@@ -53,7 +54,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			const {
 				data: { user },
 			} = await supabase.auth.getUser();
-			if (!user) return null;
+			if (!user) {
+				return null;
+			}
 
 			// Get user profile data
 			const { data: profile } = await supabase
@@ -62,11 +65,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				.eq("user_name", user.email)
 				.single();
 
+			const userName = profile?.user_name || user.email || "";
+			const isAdmin = userName ? await isUserAdmin(userName) : false;
+
 			return {
 				id: user.id,
-				name: profile?.user_name || user.email || "",
+				name: userName,
 				email: user.email,
-				isAdmin: false, // TODO: Check admin status
+				isAdmin,
 			};
 		},
 		staleTime: Infinity,
@@ -78,7 +84,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				email,
 				password,
 			});
-			if (error) throw error;
+			if (error) {
+				throw error;
+			}
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["auth"] });
@@ -88,7 +96,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const logoutMutation = useMutation({
 		mutationFn: async () => {
 			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
+			if (error) {
+				throw error;
+			}
 		},
 		onSuccess: () => {
 			queryClient.clear();
@@ -104,7 +114,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 					data: { name },
 				},
 			});
-			if (error) throw error;
+			if (error) {
+				throw error;
+			}
 		},
 	});
 

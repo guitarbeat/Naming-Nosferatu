@@ -1,12 +1,7 @@
 import type React from "react";
 import styles from "./Loading.module.css";
 
-export type LoadingVariant =
-	| "spinner"
-	| "dots"
-	| "pulse"
-	| "skeleton"
-	| "overlay";
+export type LoadingVariant = "spinner" | "dots" | "pulse" | "skeleton" | "overlay";
 export type LoadingSize = "small" | "medium" | "large";
 
 interface LoadingProps {

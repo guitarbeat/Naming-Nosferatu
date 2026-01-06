@@ -4,10 +4,7 @@ import Button from "../../Button/Button";
 import { NameGrid } from "../../NameGrid/NameGrid";
 import { TournamentToolbar } from "../../TournamentToolbar/TournamentToolbar";
 import styles from "../NameManagementView.module.css";
-import type {
-	NameManagementViewExtensions,
-	TournamentFilters,
-} from "../nameManagementCore";
+import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 
 interface TournamentModeProps {
 	analysisMode: boolean;
@@ -31,6 +28,7 @@ interface TournamentModeProps {
 	isLoading: boolean;
 	isAdmin?: boolean;
 	imageList?: string[];
+	// biome-ignore lint/style/useNamingConvention: Component prop, PascalCase is appropriate
 	SwipeableCards?: React.ComponentType<unknown>;
 }
 
@@ -58,7 +56,9 @@ export function TournamentMode({
 	imageList,
 	SwipeableCards,
 }: TournamentModeProps) {
-	if (analysisMode) return null;
+	if (analysisMode) {
+		return null;
+	}
 
 	return (
 		<>
@@ -87,9 +87,7 @@ export function TournamentMode({
 				{/* Header Extension */}
 				{extensions.header && (
 					<div className={styles.headerSection}>
-						{typeof extensions.header === "function"
-							? extensions.header()
-							: extensions.header}
+						{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 					</div>
 				)}
 
@@ -103,7 +101,7 @@ export function TournamentMode({
 								onClick={() => setShowSelectedOnly(!showSelectedOnly)}
 								className={styles.actionButton}
 							>
-								{showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
+								{showSelectedOnly ? "👁️ Show All Names" : "👀 Show Selected Only"}
 							</Button>
 						)}
 					</nav>
@@ -123,15 +121,18 @@ export function TournamentMode({
 							<div
 								className={styles.progressFill}
 								style={{
-									width: `${Math.max(
-										(selectedCount / Math.max(names.length, 1)) * 100,
-										5,
-									)}%`,
+									width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 5)}%`,
 								}}
 							/>
 						</div>
 						<span className={styles.progressText}>
 							{selectedCount} of {names.length} names selected
+							{selectedCount < 2 && (
+								<span className={styles.progressHint} role="status" aria-live="polite">
+									{" "}
+									(Need {2 - selectedCount} more to start tournament)
+								</span>
+							)}
 						</span>
 					</div>
 				)}

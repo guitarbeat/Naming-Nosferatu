@@ -1,88 +1,96 @@
 /* Undo Banner */
 .undoBanner {
 	position: fixed;
-	bottom: 20px;
+	bottom: var(--space-5);
 	left: 50%;
-	z-index: 999;
+	z-index: var(--z-toast);
 	display: flex;
 	gap: var(--space-3);
 	align-items: center;
 	padding: var(--space-3) var(--space-4);
-	font-size: 0.9375rem;
-	font-weight: 500;
-	color: var(--text-primary, #fff);
-	background: var(--analysis-surface-elevated, rgb(255 255 255 / 10%));
-	border: 1.5px solid var(--analysis-border, rgb(255 255 255 / 20%));
-	border-radius: 16px;
-	box-shadow:
-		0 8px 24px rgb(0 0 0 / 25%),
-		0 0 0 1px var(--analysis-border, rgb(255 255 255 / 12%)),
-		inset 0 1px 0 rgb(255 255 255 / 15%);
-	backdrop-filter: blur(16px) saturate(120%);
+	font-size: var(--text-base);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-primary);
+	background: var(--glass-bg);
+	border: var(--card-border-width) solid var(--glass-border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--glass-shadow), var(--shadow-lg);
+	backdrop-filter: blur(var(--glass-blur)) saturate(120%);
 	transform: translateX(-50%);
-	animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-	transition: all 0.2s ease;
+	animation: slideUp var(--duration-normal) var(--ease-out-expo);
+	transition: var(--transition-base);
+}
+
+.undoBannerContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	align-items: flex-start;
+}
+
+.undoFirstTimeHint {
+	font-size: var(--text-xs);
+	color: var(--color-neon-cyan);
+	font-weight: var(--font-weight-normal);
+	opacity: 0.9;
+	animation: fadeInHint var(--duration-slow) var(--ease-enter) 0.2s both;
+}
+
+@keyframes fadeInHint {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--space-1) * -1));
+	}
+	to {
+		opacity: 0.9;
+		transform: translateX(0);
+	}
 }
 
 .undoBanner:hover {
-	background: var(--analysis-surface-elevated, rgb(255 255 255 / 14%));
-	border-color: var(--analysis-border, rgb(255 255 255 / 30%));
-	box-shadow:
-		0 12px 32px rgb(0 0 0 / 30%),
-		0 0 0 1px var(--analysis-border, rgb(255 255 255 / 18%));
+	background: var(--glass-bg-strong);
+	border-color: var(--glass-border-hover);
+	box-shadow: var(--glass-shadow-colored), var(--shadow-xl);
+	transform: translateX(-50%) var(--transform-hover-lift);
 }
 
 .undoButton {
-	padding: 8px 14px;
-	font-size: 0.875rem;
-	font-weight: 600;
-	color: var(--text-primary, #fff);
+	padding: var(--space-2) var(--space-4);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
 	cursor: pointer;
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 20%, transparent),
-		color-mix(in srgb, hsl(var(--hot-pink)) 15%, transparent)
-	);
-	border: 1.5px solid var(--analysis-accent, #2ff3e0);
-	border-radius: var(--radius-md, 8px);
-	box-shadow: 0 2px 8px
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 25%, transparent);
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	background: linear-gradient(135deg, var(--overlay-cyan), var(--overlay-pink));
+	border: var(--button-border-width) solid var(--color-neon-cyan);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-cyan);
+	transition: var(--transition-base);
 }
 
 .undoButton:hover {
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 30%, transparent),
-		color-mix(in srgb, hsl(var(--hot-pink)) 25%, transparent)
-	);
-	border-color: var(--analysis-accent, #2ff3e0);
-	box-shadow:
-		0 4px 12px
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 35%, transparent),
-		0 0 0 2px
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 20%, transparent);
-	transform: translateY(-1px);
+	background: linear-gradient(135deg, var(--overlay-cyan-medium), var(--overlay-pink-medium));
+	border-color: var(--color-neon-cyan);
+	box-shadow: var(--shadow-cyan), var(--shadow-md);
+	transform: var(--transform-hover-lift);
 }
 
 .undoButton:active {
-	transform: translateY(0);
-	box-shadow: 0 2px 6px
-		color-mix(in srgb, var(--analysis-accent, #2ff3e0) 20%, transparent);
+	transform: var(--transform-active-press);
+	box-shadow: var(--shadow-sm);
 }
 
 .undoTimer {
-	margin-left: 6px;
-	font-size: var(--text-sm, 0.875rem);
-	font-weight: 600;
-	font-family: var(--font-mono, monospace);
-	color: var(--analysis-accent, #2ff3e0);
+	margin-left: var(--space-2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	font-family: var(--font-mono);
+	color: var(--color-neon-cyan);
 }
 
 @keyframes slideUp {
 	from {
 		opacity: 0;
-		transform: translateY(10px);
+		transform: translateY(var(--space-3));
 	}
 	to {
 		opacity: 1;

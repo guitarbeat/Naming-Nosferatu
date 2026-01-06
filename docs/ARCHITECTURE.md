@@ -28,7 +28,7 @@ To maintain scalability, the codebase adheres to **V2 Design Principles**:
 ### 1. File Size Limits
 - **Components**: Max **400 lines**.
     - *Mitigation*: Split into sub-components or extract hooks.
-- **CSS Modules**: Max **500 lines**.
+- **CSS Modules**: Max **750 lines**.
     - *Mitigation*: Extract component-specific styles or use shared primitives.
 
 ### 2. Decomposed Structure

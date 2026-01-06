@@ -18,7 +18,17 @@ const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...
 
 // ts-prune-ignore-next (used by Vite build system)
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, projectRoot, "");
+  // Load env files, gracefully handle permission errors
+  let env: Record<string, string> = {};
+  try {
+    env = loadEnv(mode, projectRoot, "");
+  } catch (error) {
+    // If .env files can't be read (permission issues), continue with empty env
+    // Environment variables from system/CI will still be available
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("Could not load .env files, continuing with system environment variables");
+    }
+  }
   const isProd = mode === "production";
 
   const serverPort = Number(env.VITE_PORT) || 5173;

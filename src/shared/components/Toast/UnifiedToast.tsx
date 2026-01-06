@@ -58,13 +58,10 @@ export const Toast: React.FC<ToastProps> = (props) => {
 		return styles[props.variant || "info"];
 	};
 
-	const showRetry =
-		props.variant === "error" && "error" in props && props.error.isRetryable;
+	const showRetry = props.variant === "error" && "error" in props && props.error.isRetryable;
 
 	return (
-		<div
-			className={`${styles.toast} ${getVariantClass()} ${isVisible ? styles.visible : ""}`}
-		>
+		<div className={`${styles.toast} ${getVariantClass()} ${isVisible ? styles.visible : ""}`}>
 			<div className={styles.content}>
 				<div className={styles.message}>{props.message}</div>
 				{showRetry && (

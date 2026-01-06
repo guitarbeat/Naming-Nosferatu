@@ -121,7 +121,7 @@
 		min-height: var(--mobile-touch-target-min);
 		touch-action: manipulation;
 		cursor: pointer;
-		-webkit-tap-highlight-color: rgb(0 0 0 / 10%);
+		-webkit-tap-highlight-color: var(--overlay-light);
 	}
 
 	/* Form inputs should have minimum height for touch */

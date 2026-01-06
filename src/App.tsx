@@ -16,9 +16,7 @@ import {
 } from "./core/hooks/useRouting";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
-import useAppStore, {
-	useAppStoreInitialization,
-} from "./core/store/useAppStore";
+import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
@@ -28,6 +26,7 @@ import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/Nam
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
+import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
@@ -35,7 +34,7 @@ import {
 	initializePerformanceMonitoring,
 } from "./shared/utils/core";
 import type { NameItem } from "./types/components";
-import type { TournamentName } from "./types/store";
+import type { AppState } from "./types/store";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -45,62 +44,6 @@ import type { TournamentName } from "./types/store";
  *
  * @returns {JSX.Element} Fully configured application layout.
  */
-interface UserState {
-	name: string;
-	isLoggedIn: boolean;
-	isAdmin: boolean;
-	preferences: Record<string, unknown>;
-}
-
-interface TournamentState {
-	names: TournamentName[] | null;
-	ratings: Record<string, { rating: number }>;
-	isComplete: boolean;
-	isLoading: boolean;
-	voteHistory: unknown[];
-	currentView: string;
-}
-
-interface StoreSlice {
-	user: UserState;
-	tournament: TournamentState;
-	ui: {
-		theme: string;
-		themePreference: string;
-		showGlobalAnalytics: boolean;
-		showUserComparison: boolean;
-		matrixMode: boolean;
-	};
-	errors: {
-		current: Error | null;
-		history: unknown[];
-	};
-	tournamentActions: {
-		setNames: (names: TournamentName[] | null) => void;
-		setRatings: (ratings: Record<string, { rating: number }>) => void;
-		setComplete: (isComplete: boolean) => void;
-		setLoading: (isLoading: boolean) => void;
-		addVote: (vote: unknown) => void;
-		resetTournament: () => void;
-		setView: (view: string) => void;
-	};
-	uiActions: {
-		setMatrixMode: (enabled: boolean) => void;
-		setGlobalAnalytics: (show: boolean) => void;
-		setUserComparison: (show: boolean) => void;
-		setTheme: (theme: string) => void;
-		initializeTheme: () => void;
-	};
-	errorActions: {
-		setError: (error: Error | null) => void;
-		clearError: () => void;
-		logError: (
-			error: Error,
-			context: string,
-			metadata?: Record<string, unknown>,
-		) => void;
-	};
-}
 
 function App() {
 	const { login, logout, isInitialized } = useUserSession();
@@ -120,20 +63,11 @@ function App() {
 	useAppStoreInitialization();
 
 	// * Centralized store
-	const {
-		user,
-		tournament,
-		ui,
-		errors,
-		tournamentActions,
-		uiActions,
-		errorActions,
-	} = useAppStore() as StoreSlice;
+	const { user, tournament, ui, errors, tournamentActions, uiActions, errorActions } =
+		useAppStore();
 
 	// * Explicitly select currentView to ensure re-renders when it changes
-	const currentView = useAppStore(
-		(state: StoreSlice) => state.tournament.currentView,
-	);
+	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
 
 	// * Simple URL routing helpers
 	const { currentRoute, navigateTo } = useRouting();
@@ -150,7 +84,9 @@ function App() {
 	// * Keyboard shortcuts - consolidated into custom hook
 	useKeyboardShortcuts({
 		navigateTo,
-		onAnalysisToggle: () => {},
+		onAnalysisToggle: () => {
+			// Intentional no-op: analysis toggle handled elsewhere
+		},
 	});
 
 	// * Theme synchronization
@@ -229,39 +165,38 @@ function App() {
 	}
 
 	return (
-		<AppLayout
-			user={user}
-			errors={errors}
-			errorActions={errorActions}
-			tournament={tournament}
-			tournamentActions={tournamentActions}
-			handleLogin={handleLogin}
-			handleStartNewTournament={handleStartNewTournament}
-			handleUpdateRatings={handleUpdateRatings}
-			handleTournamentSetup={handleTournamentSetup}
-			handleTournamentComplete={handleTournamentComplete}
-			ui={ui}
-			uiActions={uiActions}
-			isSuggestNameModalOpen={isSuggestNameModalOpen}
-			onCloseSuggestName={handleCloseSuggestName}
-			onOpenSuggestName={handleOpenSuggestName}
-			handleLogout={handleLogout}
-			handleOpenPhotos={handleOpenPhotos}
-		/>
+		<ToastProvider>
+			<AppLayout
+				user={user}
+				errors={errors}
+				errorActions={errorActions}
+				tournament={tournament}
+				tournamentActions={tournamentActions}
+				handleLogin={handleLogin}
+				handleStartNewTournament={handleStartNewTournament}
+				handleUpdateRatings={handleUpdateRatings}
+				handleTournamentSetup={handleTournamentSetup}
+				handleTournamentComplete={handleTournamentComplete}
+				ui={ui}
+				uiActions={uiActions}
+				isSuggestNameModalOpen={isSuggestNameModalOpen}
+				onCloseSuggestName={handleCloseSuggestName}
+				onOpenSuggestName={handleOpenSuggestName}
+				handleLogout={handleLogout}
+				handleOpenPhotos={handleOpenPhotos}
+			/>
+		</ToastProvider>
 	);
 }
 
 export default App;
 
 interface AppLayoutProps {
-	user: UserState;
-	errors: { current: Error | null; history: unknown[] };
-	errorActions: { clearError: () => void };
-	tournament: TournamentState;
-	tournamentActions: {
-		setView: (view: string) => void;
-		addVote: (vote: unknown) => void;
-	};
+	user: AppState["user"];
+	errors: AppState["errors"];
+	errorActions: AppState["errorActions"];
+	tournament: AppState["tournament"];
+	tournamentActions: AppState["tournamentActions"];
 	handleLogin: (userName: string) => Promise<boolean>;
 	handleStartNewTournament: () => void;
 	handleUpdateRatings: (
@@ -269,18 +204,15 @@ interface AppLayoutProps {
 	) => Promise<boolean> | undefined;
 	handleTournamentSetup: (names?: NameItem[]) => void;
 	handleTournamentComplete: (
-		finalRatings: Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>,
+		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	isSuggestNameModalOpen: boolean;
 	onCloseSuggestName: () => void;
 	onOpenSuggestName: () => void;
 	handleLogout: () => Promise<void>;
 	handleOpenPhotos: () => void;
-	ui: unknown;
-	uiActions: unknown;
+	ui: AppState["ui"];
+	uiActions: AppState["uiActions"];
 }
 
 function AppLayout({
@@ -301,23 +233,16 @@ function AppLayout({
 	handleOpenPhotos,
 }: AppLayoutProps) {
 	const { isLoggedIn } = user;
-	const currentView = useAppStore(
-		(state: StoreSlice) => state.tournament.currentView,
-	);
+	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
 	const { currentRoute, navigateTo } = useRouting();
 
-	const appClassName = useMemo(
-		() => (!isLoggedIn ? "app app--login" : "app"),
-		[isLoggedIn],
-	);
+	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
 	const layoutStyle = useMemo(() => ({}), []);
 
 	const mainWrapperClassName = useMemo(
 		() =>
-			["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
-				.filter(Boolean)
-				.join(" "),
+			["app-main-wrapper", isLoggedIn ? "" : "app-main-wrapper--login"].filter(Boolean).join(" "),
 		[isLoggedIn],
 	);
 
@@ -403,10 +328,7 @@ function AppLayout({
 					)}
 
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
-					<NameSuggestionModal
-						isOpen={isSuggestNameModalOpen}
-						onClose={onCloseSuggestName}
-					/>
+					<NameSuggestionModal isOpen={isSuggestNameModalOpen} onClose={onCloseSuggestName} />
 				</main>
 			</div>
 		</ErrorBoundary>

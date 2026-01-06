@@ -2,12 +2,18 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { resolveSupabaseClient } from "../../services/supabase/client";
 import type { Database } from "../../services/supabase/types";
 
+// Constants use UPPER_CASE keys (intentional for role constants)
 const USER_ROLES = {
+	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	USER: "user",
+	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	MODERATOR: "moderator",
+	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	ADMIN: "admin",
 } as const;
 
+// Database table name - snake_case required
+// biome-ignore lint/style/useNamingConvention: Database table name must match exactly
 const ROLE_SOURCES = ["user_roles"] as const;
 
 const ROLE_PRIORITY = {
@@ -23,9 +29,7 @@ const compareRoles = (
 	currentRole: string | null | undefined,
 	requiredRole: string | null | undefined,
 ): boolean => {
-	const current =
-		ROLE_PRIORITY[normalizeRole(currentRole) as keyof typeof ROLE_PRIORITY] ??
-		-1;
+	const current = ROLE_PRIORITY[normalizeRole(currentRole) as keyof typeof ROLE_PRIORITY] ?? -1;
 	const required =
 		ROLE_PRIORITY[normalizeRole(requiredRole) as keyof typeof ROLE_PRIORITY] ??
 		Number.POSITIVE_INFINITY;
@@ -48,9 +52,14 @@ const normalizeStatusCode = (value: unknown): number | null => {
 	return null;
 };
 
+/**
+ * Error object structure matching various error sources (HTTP, database, etc.)
+ * Snake_case fields match actual error object properties from different sources
+ */
 interface ErrorWithStatus {
 	status?: unknown;
 	statusCode?: unknown;
+	// biome-ignore lint/style/useNamingConvention: Matches HTTP error object structure
 	status_code?: unknown;
 	responseStatus?: unknown;
 	statusText?: unknown;
@@ -61,9 +70,11 @@ interface ErrorWithStatus {
 	code?: unknown;
 	sqlState?: unknown;
 	message?: unknown;
-	// Common error properties
+	// Common error properties - snake_case matches actual error object structures
+	// biome-ignore lint/style/useNamingConvention: Matches error object structure from various sources
 	error_description?: unknown;
 	errorMessage?: unknown;
+	// biome-ignore lint/style/useNamingConvention: Matches error object structure from various sources
 	error_message?: unknown;
 	hint?: unknown;
 	details?: unknown;
@@ -157,7 +168,9 @@ const extractErrorMetadata = (error: unknown) => {
 		];
 
 		for (const candidate of candidateCodes) {
-			if (candidate == null) continue;
+			if (candidate == null) {
+				continue;
+			}
 			const normalized = String(candidate).trim().toUpperCase();
 			if (normalized) {
 				codes.add(normalized);
@@ -204,7 +217,9 @@ const extractErrorMetadata = (error: unknown) => {
 };
 
 const isMissingResourceError = (error: unknown): boolean => {
-	if (!error) return false;
+	if (!error) {
+		return false;
+	}
 	const { statuses, codes, messages } = extractErrorMetadata(error);
 
 	const normalizedStatuses = statuses
@@ -215,9 +230,7 @@ const isMissingResourceError = (error: unknown): boolean => {
 		.map((value) => String(value).trim().toUpperCase())
 		.filter((value) => value.length > 0);
 
-	const statusIndicatesMissing = normalizedStatuses.some(
-		(value) => value === 404 || value === 410,
-	);
+	const statusIndicatesMissing = normalizedStatuses.some((value) => value === 404 || value === 410);
 
 	const knownMissingCodes = new Set([
 		"404",
@@ -230,9 +243,7 @@ const isMissingResourceError = (error: unknown): boolean => {
 		"42883",
 	]);
 
-	const codeIndicatesMissing = normalizedCodes.some((value) =>
-		knownMissingCodes.has(value),
-	);
+	const codeIndicatesMissing = normalizedCodes.some((value) => knownMissingCodes.has(value));
 
 	const missingMessagePatterns = [
 		"does not exist",
@@ -249,13 +260,13 @@ const isMissingResourceError = (error: unknown): boolean => {
 		missingMessagePatterns.some((pattern) => message.includes(pattern)),
 	);
 
-	return (
-		statusIndicatesMissing || codeIndicatesMissing || messageIndicatesMissing
-	);
+	return statusIndicatesMissing || codeIndicatesMissing || messageIndicatesMissing;
 };
 
 const isRpcParameterMismatchError = (error: unknown): boolean => {
-	if (!error) return false;
+	if (!error) {
+		return false;
+	}
 
 	const { codes, messages } = extractErrorMetadata(error);
 
@@ -282,9 +293,7 @@ const isRpcParameterMismatchError = (error: unknown): boolean => {
 
 const isUuid = (value: unknown): boolean =>
 	typeof value === "string" &&
-	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-		value,
-	);
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
 interface ClientState {
 	canUseRoleRpc: boolean;
@@ -317,26 +326,23 @@ const getClientState = (client: object | null) => {
 	return state;
 };
 
-const markSourceSuccessful = (
-	state: ClientState | undefined,
-	source: string,
-) => {
-	if (!state) return;
+const markSourceSuccessful = (state: ClientState | undefined, source: string) => {
+	if (!state) {
+		return;
+	}
 	state.disabledSources.delete(source);
 	state.preferredRoleSource = source;
 };
 
-const markSourceUnavailable = (
-	state: ClientState | undefined,
-	source: string,
-) => {
-	if (!state) return;
+const markSourceUnavailable = (state: ClientState | undefined, source: string) => {
+	if (!state) {
+		return;
+	}
 	state.disabledSources.add(source);
 
 	if (state.preferredRoleSource === source) {
 		const fallback = ROLE_SOURCES.find(
-			(candidate) =>
-				candidate !== source && !state.disabledSources.has(candidate),
+			(candidate) => candidate !== source && !state.disabledSources.has(candidate),
 		);
 
 		if (fallback) {
@@ -346,13 +352,14 @@ const markSourceUnavailable = (
 };
 
 const getRoleSourceOrder = (state: ClientState | undefined) => {
-	if (!state) return [...ROLE_SOURCES];
+	if (!state) {
+		return [...ROLE_SOURCES];
+	}
 
 	const orderedSources = new Set();
 
 	const preferred =
-		state.preferredRoleSource &&
-		!state.disabledSources.has(state.preferredRoleSource)
+		state.preferredRoleSource && !state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
@@ -400,7 +407,9 @@ const fetchRoleFromSource = async (
 	source: string,
 	state: ClientState | undefined,
 ) => {
-	if (!activeSupabase) return { role: null, handled: true };
+	if (!activeSupabase) {
+		return { role: null, handled: true };
+	}
 
 	const trimmedUserName = userName.trim?.() ?? userName;
 
@@ -414,33 +423,19 @@ const fetchRoleFromSource = async (
 			.limit(1)
 			.maybeSingle();
 
-		return handleRoleResponse(
-			data as Record<string, unknown> | null,
-			error,
-			source,
-			state,
-			"role",
-		);
+		return handleRoleResponse(data as Record<string, unknown> | null, error, source, state, "role");
 	}
 
 	return { role: null, handled: true };
 };
 
-const fetchUserRole = async (
-	activeSupabase: SupabaseClient<Database> | null,
-	userName: string,
-) => {
+const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, userName: string) => {
 	const state = getClientState(activeSupabase);
 	const sources = getRoleSourceOrder(state);
 
 	for (const source of sources) {
 		try {
-			const result = await fetchRoleFromSource(
-				activeSupabase,
-				userName,
-				source as string,
-				state,
-			);
+			const result = await fetchRoleFromSource(activeSupabase, userName, source as string, state);
 			if (result?.handled) {
 				continue;
 			}
@@ -449,10 +444,7 @@ const fetchUserRole = async (
 			}
 		} catch (error) {
 			if (process.env.NODE_ENV === "development") {
-				console.error(
-					`Error fetching user role from Supabase source "${source}":`,
-					error,
-				);
+				console.error(`Error fetching user role from Supabase source "${source}":`, error);
 			}
 		}
 	}
@@ -460,19 +452,16 @@ const fetchUserRole = async (
 	return null;
 };
 
-async function _hasRole(
-	userName: string,
-	requiredRole: string,
-): Promise<boolean> {
-	if (!userName || !requiredRole) return false;
+async function _hasRole(userName: string, requiredRole: string): Promise<boolean> {
+	if (!userName || !requiredRole) {
+		return false;
+	}
 
 	const activeSupabase = await resolveSupabaseClient();
 
 	if (!activeSupabase) {
 		if (process.env.NODE_ENV === "development") {
-			console.warn(
-				"Supabase client is not configured. Role check will default to false.",
-			);
+			console.warn("Supabase client is not configured. Role check will default to false.");
 		}
 		return false;
 	}
@@ -488,11 +477,13 @@ async function _hasRole(
 
 		if (state?.canUseRoleRpc) {
 			const rpcPayloads: Record<string, string>[] = [
+				// biome-ignore lint/style/useNamingConvention: RPC parameter names must match database function signature
 				{ _user_name: trimmedUserName, _role: normalizedRequiredRole },
 			];
 
 			if (isUuid(trimmedUserName)) {
 				rpcPayloads.push({
+					// biome-ignore lint/style/useNamingConvention: RPC parameter names must match database function signature
 					_user_id: trimmedUserName,
 					_role: normalizedRequiredRole,
 				});

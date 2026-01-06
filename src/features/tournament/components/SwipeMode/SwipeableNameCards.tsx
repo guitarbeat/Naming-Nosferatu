@@ -32,9 +32,7 @@ function SwipeableNameCards({
 	const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 	const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 	const [isDragging, setIsDragging] = useState(false);
-	const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(
-		null,
-	);
+	const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
 	const [swipeProgress, setSwipeProgress] = useState(0);
 	const [isLongPressing, setIsLongPressing] = useState(false);
 
@@ -56,7 +54,9 @@ function SwipeableNameCards({
 		enableSwipe: false, // * Disabled - using manual drag handlers instead
 		enableLongPress: true,
 		enableDoubleTap: true,
-		onSwipe: () => {}, // * Placeholder - swipe disabled
+		onSwipe: () => {
+			// Intentional no-op: swipe disabled in this mode
+		},
 		onLongPress: () => {
 			setIsLongPressing(true);
 			addHapticFeedback("heavy");
@@ -75,12 +75,9 @@ function SwipeableNameCards({
 		e.preventDefault();
 		e.stopPropagation();
 
-		const touch =
-			"touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const startX =
-			"clientX" in touch ? touch.clientX : (touch as Touch).clientX;
-		const startY =
-			"clientY" in touch ? touch.clientY : (touch as Touch).clientY;
+		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
+		const startX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
+		const startY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
 
 		setDragStart({ x: startX, y: startY });
 		setIsDragging(true);
@@ -90,18 +87,17 @@ function SwipeableNameCards({
 	};
 
 	const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
-		if (!isDragging) return;
+		if (!isDragging) {
+			return;
+		}
 
 		// * Prevent default to avoid scrolling
 		e.preventDefault();
 		e.stopPropagation();
 
-		const touch =
-			"touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const currentX =
-			"clientX" in touch ? touch.clientX : (touch as Touch).clientX;
-		const currentY =
-			"clientY" in touch ? touch.clientY : (touch as Touch).clientY;
+		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
+		const currentX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
+		const currentY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
 		const deltaX = currentX - dragStart.x;
 		const deltaY = currentY - dragStart.y;
 

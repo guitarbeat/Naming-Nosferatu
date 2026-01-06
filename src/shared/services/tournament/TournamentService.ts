@@ -16,10 +16,7 @@ export interface CreateTournamentData {
 }
 
 export class TournamentService {
-	async createTournament(
-		data: CreateTournamentData,
-		userId: string,
-	): Promise<Tournament> {
+	async createTournament(data: CreateTournamentData, userId: string): Promise<Tournament> {
 		const tournament: Tournament = {
 			id: crypto.randomUUID(),
 			name: data.name,
@@ -38,7 +35,9 @@ export class TournamentService {
 		// Save to database (simplified)
 		const { error } = await supabase.from("tournaments").insert([tournament]);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return tournament;
 	}
 
@@ -49,14 +48,25 @@ export class TournamentService {
 			.eq("userId", userId)
 			.order("createdAt", { ascending: false });
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data || [];
 	}
 
-	async updateTournament(
-		id: string,
-		updates: Partial<Tournament>,
-	): Promise<Tournament> {
+	async getTournament(id: string): Promise<Tournament | null> {
+		const { data, error } = await supabase.from("tournaments").select("*").eq("id", id).single();
+
+		if (error) {
+			if (error.code === "PGRST116") {
+				return null;
+			}
+			throw error;
+		}
+		return data;
+	}
+
+	async updateTournament(id: string, updates: Partial<Tournament>): Promise<Tournament> {
 		const { data, error } = await supabase
 			.from("tournaments")
 			.update(updates)
@@ -64,30 +74,26 @@ export class TournamentService {
 			.select()
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 		return data;
 	}
 
 	async deleteTournament(id: string): Promise<void> {
 		const { error } = await supabase.from("tournaments").delete().eq("id", id);
 
-		if (error) throw error;
+		if (error) {
+			throw error;
+		}
 	}
 
-	calculateEloRating(
-		winnerRating: number,
-		loserRating: number,
-		kFactor = 32,
-	): [number, number] {
+	calculateEloRating(winnerRating: number, loserRating: number, kFactor = 32): [number, number] {
 		const expectedWinner = 1 / (1 + 10 ** ((loserRating - winnerRating) / 400));
 		const expectedLoser = 1 / (1 + 10 ** ((winnerRating - loserRating) / 400));
 
-		const newWinnerRating = Math.round(
-			winnerRating + kFactor * (1 - expectedWinner),
-		);
-		const newLoserRating = Math.round(
-			loserRating + kFactor * (0 - expectedLoser),
-		);
+		const newWinnerRating = Math.round(winnerRating + kFactor * (1 - expectedWinner));
+		const newLoserRating = Math.round(loserRating + kFactor * (0 - expectedLoser));
 
 		return [newWinnerRating, newLoserRating];
 	}

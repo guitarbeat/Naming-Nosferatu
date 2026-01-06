@@ -45,8 +45,7 @@ const FormField = ({
 	const generatedId = React.useId();
 	const fieldId = id || `${name ? `${name}-field` : `field-${generatedId}`}`;
 	const errorId = error ? `${fieldId}-error` : null;
-	const describedBy =
-		[ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
+	const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
 
 	return (
 		<div className={`${styles.inputGroup} ${className}`.trim()}>
@@ -173,15 +172,7 @@ const Input = ({
 };
 
 Input.propTypes = {
-	type: PropTypes.oneOf([
-		"text",
-		"email",
-		"password",
-		"number",
-		"tel",
-		"url",
-		"search",
-	]),
+	type: PropTypes.oneOf(["text", "email", "password", "number", "tel", "url", "search"]),
 	name: PropTypes.string,
 	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	onChange: PropTypes.func,
@@ -246,7 +237,7 @@ const Select = ({
 	required = false,
 	error = "",
 	label,
-	placeholder = "Select an option",
+	placeholder = "Choose an option",
 	className = "",
 	ariaDescribedBy = "",
 	...rest
@@ -280,16 +271,12 @@ const Select = ({
 				{...rest}
 			>
 				{placeholder && (
-					<option value="" disabled>
+					<option value="" disabled={true}>
 						{placeholder}
 					</option>
 				)}
 				{options.map((option) => (
-					<option
-						key={option.value}
-						value={option.value}
-						disabled={option.disabled}
-					>
+					<option key={option.value} value={option.value} disabled={option.disabled}>
 						{option.label}
 					</option>
 				))}
@@ -305,8 +292,7 @@ Select.propTypes = {
 	onBlur: PropTypes.func,
 	options: PropTypes.arrayOf(
 		PropTypes.shape({
-			value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-				.isRequired,
+			value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 			label: PropTypes.string.isRequired,
 			disabled: PropTypes.bool,
 		}),

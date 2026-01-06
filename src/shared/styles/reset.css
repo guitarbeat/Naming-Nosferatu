@@ -86,7 +86,7 @@ img {
 	outline: 3px solid var(--accent-color);
 	outline-offset: 3px;
 	border-radius: 4px;
-	box-shadow: 0 0 0 3px rgb(232 191 118 / 30%);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 /* Focus styles for interactive elements */
@@ -98,7 +98,7 @@ a:focus-visible {
 	outline: 3px solid var(--accent-color);
 	outline-offset: 3px;
 	border-radius: 4px;
-	box-shadow: 0 0 0 3px rgb(232 191 118 / 30%);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
 /* Skip link for keyboard navigation */
@@ -106,7 +106,7 @@ a:focus-visible {
 	position: absolute;
 	top: -40px;
 	left: 6px;
-	z-index: 10000;
+	z-index: var(--z-max);
 	padding: 8px;
 	font-weight: 600;
 	color: var(--text-primary);
@@ -153,22 +153,21 @@ a:focus-visible {
 	--navbar-border: hsl(0deg 0% 0%);
 	--navbar-ring: hsl(0deg 0% 0%);
 	--font-sans:
-		"Space Grotesk", ui-sans-serif, system-ui, -apple-system,
-		blinkmacsystemfont, "Segoe UI", roboto, "Helvetica Neue", arial,
-		"Noto Sans", sans-serif;
+		"Space Grotesk", ui-sans-serif, system-ui, -apple-system, blinkmacsystemfont, "Segoe UI",
+		roboto, "Helvetica Neue", arial, "Noto Sans", sans-serif;
 	--font-serif: ui-serif, georgia, cambria, "Times New Roman", times, serif;
 	--font-mono:
-		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas,
-		"Liberation Mono", "Courier New", monospace;
+		"Space Mono", ui-monospace, sfmono-regular, menlo, monaco, consolas, "Liberation Mono",
+		"Courier New", monospace;
 	--radius: 0rem;
-	--shadow-2xs: 1px 1px 0px 0px #000;
-	--shadow-xs: 2px 2px 0px 0px #000;
-	--shadow-sm: 3px 3px 0px 0px #000;
-	--shadow: 5px 5px 0px 0px #000;
-	--shadow-md: 8px 8px 0px 0px #000;
-	--shadow-lg: 12px 12px 0px 0px #000;
-	--shadow-xl: 16px 16px 0px 0px #000;
-	--shadow-2xl: 24px 24px 0px 0px #000;
+	--shadow-2xs: 1px 1px 0px 0px var(--color-neutral-900);
+	--shadow-xs: 2px 2px 0px 0px var(--color-neutral-900);
+	--shadow-sm: 3px 3px 0px 0px var(--color-neutral-900);
+	--shadow: 5px 5px 0px 0px var(--color-neutral-900);
+	--shadow-md: 8px 8px 0px 0px var(--color-neutral-900);
+	--shadow-lg: 12px 12px 0px 0px var(--color-neutral-900);
+	--shadow-xl: 16px 16px 0px 0px var(--color-neutral-900);
+	--shadow-2xl: 24px 24px 0px 0px var(--color-neutral-900);
 	--tracking-normal: 0em;
 	--spacing: 0.25rem;
 }
@@ -207,14 +206,14 @@ a:focus-visible {
 	--navbar-border: hsl(0deg 0% 100%);
 	--navbar-ring: hsl(0deg 0% 100%);
 	--radius: 0rem;
-	--shadow-2xs: 1px 1px 0px 0px #fff;
-	--shadow-xs: 2px 2px 0px 0px #fff;
-	--shadow-sm: 3px 3px 0px 0px #fff;
-	--shadow: 5px 5px 0px 0px #fff;
-	--shadow-md: 8px 8px 0px 0px #fff;
-	--shadow-lg: 12px 12px 0px 0px #fff;
-	--shadow-xl: 16px 16px 0px 0px #fff;
-	--shadow-2xl: 24px 24px 0px 0px #fff;
+	--shadow-2xs: 1px 1px 0px 0px var(--color-neutral-50);
+	--shadow-xs: 2px 2px 0px 0px var(--color-neutral-50);
+	--shadow-sm: 3px 3px 0px 0px var(--color-neutral-50);
+	--shadow: 5px 5px 0px 0px var(--color-neutral-50);
+	--shadow-md: 8px 8px 0px 0px var(--color-neutral-50);
+	--shadow-lg: 12px 12px 0px 0px var(--color-neutral-50);
+	--shadow-xl: 16px 16px 0px 0px var(--color-neutral-50);
+	--shadow-2xl: 24px 24px 0px 0px var(--color-neutral-50);
 }
 
 @theme inline {

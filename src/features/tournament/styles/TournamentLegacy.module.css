@@ -11,19 +11,19 @@
 .nameContainer {
 	position: relative;
 	flex: 1 1 320px;
-	min-width: clamp(220px, 40vw, 520px);
-	max-width: 520px;
+	min-width: clamp(220px, 40vw, var(--grid-min-column-width, 520px));
+	max-width: var(--grid-min-column-width, 520px);
 	transition:
-		transform var(--duration-normal) var(--ease-out),
+		var(--transition-transform),
 		filter var(--duration-normal) var(--ease-out);
-	animation: fadeInSlide 0.5s ease-out;
-	z-index: 1;
+	animation: fadeInSlide var(--duration-slower) var(--ease-out);
+	z-index: var(--z-elevate);
 }
 
 .nameContainer.selected {
-	transform: scale(1.03);
+	transform: var(--transform-hover-scale);
 	filter: brightness(1.05);
-	z-index: 2;
+	z-index: var(--z-10);
 }
 
 .nameContainer.loading {
@@ -37,50 +37,42 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: clamp(36px, 7vw, 52px);
-	height: clamp(36px, 7vw, 52px);
-	background: linear-gradient(
-		135deg,
-		var(--primary-500, #3b82f6),
-		var(--primary-400, #60a5fa)
-	);
-	border: var(--card-border-width) solid rgb(59 130 246 / 30%);
+	width: clamp(var(--space-9), 7vw, var(--space-13));
+	height: clamp(var(--space-9), 7vw, var(--space-13));
+	background: linear-gradient(135deg, var(--color-info), color-mix(in srgb, var(--color-info) 80%, white));
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-info) 30%, transparent);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-md);
 	transition: var(--transition-base);
-	z-index: 1;
+	z-index: var(--z-elevate);
 	flex-shrink: 0;
 }
 
 .vsSection::before {
 	position: absolute;
-	inset: -2px;
+	inset: calc(var(--space-1) * -1);
 	border-radius: inherit;
-	padding: 2px;
-	background: linear-gradient(
-		135deg,
-		rgb(59 130 246 / 40%),
-		rgb(96 165 250 / 40%)
-	);
+	padding: var(--space-1);
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 40%, transparent), color-mix(in srgb, var(--color-info) 40%, transparent));
 	mask:
-		linear-gradient(#fff 0 0) content-box,
-		linear-gradient(#fff 0 0);
+		linear-gradient(var(--color-neutral-50) 0 0) content-box,
+		linear-gradient(var(--color-neutral-50) 0 0);
 	mask-composite: xor;
 	mask-composite: exclude;
 	content: "";
 	opacity: 0;
-	transition: opacity var(--duration-normal) var(--ease-out);
+	transition: var(--transition-opacity);
 }
 
 .vsText {
 	position: relative;
 	font-size: clamp(var(--text-sm), 2vw, var(--text-base));
 	font-weight: var(--font-weight-bold);
-	color: #fff;
+	color: var(--color-neutral-50);
 	text-transform: uppercase;
 	letter-spacing: var(--tracking-wider);
-	text-shadow: var(--shadow-sm);
-	z-index: 1;
+	text-shadow: var(--text-shadow-sm);
+	z-index: var(--z-elevate);
 	line-height: var(--leading-tight);
 }
 
@@ -93,8 +85,8 @@
 		gap: var(--space-12);
 	}
 	.vsSection {
-		width: 100px;
-		height: 100px;
+		width: var(--space-25, 100px);
+		height: var(--space-25, 100px);
 	}
 	.vsText {
 		font-size: var(--text-2xl);
@@ -110,8 +102,8 @@
 		gap: var(--space-16);
 	}
 	.vsSection {
-		width: 120px;
-		height: 120px;
+		width: var(--space-30, 120px);
+		height: var(--space-30, 120px);
 	}
 	.vsText {
 		font-size: var(--text-3xl);
@@ -128,8 +120,8 @@
 		max-width: 100%;
 	}
 	.vsSection {
-		width: 60px;
-		height: 60px;
+		width: var(--space-15, 60px);
+		height: var(--space-15, 60px);
 		margin: var(--space-2) 0;
 	}
 	.vsText {
@@ -140,7 +132,7 @@
 @keyframes fadeInSlide {
 	from {
 		opacity: 0;
-		transform: translateY(10px);
+		transform: translateY(var(--space-2));
 	}
 	to {
 		opacity: 1;

@@ -181,8 +181,8 @@
 
 .checkboxInput,
 .radioInput {
-	width: 16px;
-	height: 16px;
+	width: var(--size-checkbox);
+	height: var(--size-checkbox);
 	margin: 0;
 	cursor: pointer;
 }
@@ -257,19 +257,19 @@
 @media (prefers-contrast: more) {
 	.input,
 	.select {
-		border-width: 2px;
+		border-width: var(--card-border-width);
 	}
 
 	.input:focus,
 	.select:focus {
 		box-shadow:
-			0 0 0 2px var(--background-color),
-			0 0 0 4px var(--accent-color);
+			var(--focus-ring),
+			var(--focus-ring-outline);
 	}
 
 	.input--error,
 	.select--error {
-		border-width: 3px;
+		border-width: var(--border-width-lg);
 	}
 }
 

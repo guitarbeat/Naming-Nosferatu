@@ -9,11 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { ErrorComponent as Error } from "../../shared/components/CommonUI";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
-import {
-	useCatFact,
-	useEyeTracking,
-	useLoginController,
-} from "../auth/hooks/authHooks";
+import { useCatFact, useEyeTracking, useLoginController } from "../auth/hooks/authHooks";
 import loginStyles from "../auth/Login.module.css";
 import {
 	AnalysisBulkActionsWrapper,
@@ -119,8 +115,12 @@ function CombinedLoginTournamentSetupContent({
 
 	const greeting = useMemo(() => {
 		const hour = new Date().getHours();
-		if (hour < 12) return "Good morning";
-		if (hour < 18) return "Good afternoon";
+		if (hour < 12) {
+			return "Good morning";
+		}
+		if (hour < 18) {
+			return "Good afternoon";
+		}
 		return "Good evening";
 	}, []);
 
@@ -147,17 +147,15 @@ function CombinedLoginTournamentSetupContent({
 		],
 	);
 
-	const lightboxElement = lightboxOpen &&
-		galleryImages &&
-		galleryImages.length > 0 && (
-			<Lightbox
-				images={galleryImages}
-				currentIndex={lightboxIndex}
-				onClose={handleLightboxClose}
-				onNavigate={handleLightboxNavigate}
-				preloadImages={preloadImages}
-			/>
-		);
+	const lightboxElement = lightboxOpen && galleryImages && galleryImages.length > 0 && (
+		<Lightbox
+			images={galleryImages}
+			currentIndex={lightboxIndex}
+			onClose={handleLightboxClose}
+			onNavigate={handleLightboxNavigate}
+			preloadImages={preloadImages}
+		/>
+	);
 
 	// Show login screen when not logged in
 	if (!isLoggedIn) {
@@ -189,7 +187,7 @@ function CombinedLoginTournamentSetupContent({
 
 					<h1 className={loginStyles.title}>Welcome, Purr-spective Judge!</h1>
 					<p className={loginStyles.subtitle}>
-						{greeting}, please enter your name to begin the assessment.
+						{greeting}, please enter your name to get started.
 					</p>
 
 					<div className={loginStyles.inputTray}>
@@ -201,7 +199,7 @@ function CombinedLoginTournamentSetupContent({
 							onBlur={() => handleLoginBlur("name")}
 							onKeyDown={handleKeyDown}
 							disabled={isLoginLoading}
-							autoFocus
+							autoFocus={true}
 							maxLength={30}
 							aria-label="Enter your name to register as a judge"
 							schema={nameSchema}
@@ -248,14 +246,10 @@ function CombinedLoginTournamentSetupContent({
 		return (
 			<>
 				<ToastContainer />
-				<div
-					className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}
-				>
+				<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
 					<div className={photoStyles.photosViewContent}>
 						<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
-						<p className={photoStyles.photosViewSubtitle}>
-							Click any photo to view full size
-						</p>
+						<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
 						<PhotoGallery {...photoGalleryProps} />
 					</div>
 				</div>
@@ -271,15 +265,12 @@ function CombinedLoginTournamentSetupContent({
 				{/* Name Identity Section */}
 				<div className={identityStyles.identitySection}>
 					{isEditingName ? (
-						<form
-							onSubmit={handleNameSubmit}
-							className={identityStyles.identityForm}
-						>
+						<form onSubmit={handleNameSubmit} className={identityStyles.identityForm}>
 							<ValidatedInput
 								type="text"
 								value={tempName}
 								onChange={(e) => setTempName(e.target.value)}
-								autoFocus
+								autoFocus={true}
 								onKeyDown={(e) => {
 									if (e.key === "Escape") {
 										setTempName(userName);
@@ -318,7 +309,6 @@ function CombinedLoginTournamentSetupContent({
 				{/* Cat Fact Tape / System Feed */}
 				<div className={identityStyles.catFactSection}>
 					<div className={identityStyles.tapeDecorator} />
-					<span className={identityStyles.tapeLabel}>SYSTEM_FEED:</span>
 					<span className={identityStyles.tapeContent}>
 						{catFact ? catFact.toUpperCase() : "SYNCING FELINE DATABASE..."}
 					</span>
@@ -332,6 +322,7 @@ function CombinedLoginTournamentSetupContent({
 					analysisMode={analysisMode}
 					setAnalysisMode={setAnalysisMode}
 					tournamentProps={{
+						// biome-ignore lint/style/useNamingConvention: Component reference prop, PascalCase is appropriate for JSX
 						SwipeableCards: SwipeableNameCards,
 						isAdmin,
 						imageList: galleryImages || [],
@@ -343,14 +334,11 @@ function CombinedLoginTournamentSetupContent({
 						userOptions: userOptions ?? undefined,
 						userFilter,
 						setUserFilter,
-						stats: stats
-							? (stats as unknown as Record<string, unknown>)
-							: undefined,
+						stats: stats ? (stats as unknown as Record<string, unknown>) : undefined,
 						selectionStats: selectionStats
 							? (selectionStats as unknown as Record<string, unknown>)
 							: undefined,
-						onToggleVisibility: (nameId) =>
-							handlersRef.current.handleToggleVisibility?.(nameId),
+						onToggleVisibility: (nameId) => handlersRef.current.handleToggleVisibility?.(nameId),
 						onDelete: (name) => handlersRef.current.handleDelete?.(name),
 					}}
 					extensions={{
@@ -393,9 +381,7 @@ function CombinedLoginTournamentSetupContent({
 	);
 }
 
-function CombinedLoginTournamentSetup(
-	props: CombinedLoginTournamentSetupProps,
-) {
+function CombinedLoginTournamentSetup(props: CombinedLoginTournamentSetupProps) {
 	return (
 		<ErrorBoundary variant="boundary">
 			<CombinedLoginTournamentSetupContent {...props} />

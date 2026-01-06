@@ -53,10 +53,7 @@ export interface AppState {
 	tournamentActions: {
 		setNames: (names: TournamentName[] | null) => void;
 		setRatings: (
-			ratings: Record<
-				string,
-				{ rating: number; wins?: number; losses?: number }
-			>,
+			ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 		) => void;
 		setComplete: (isComplete: boolean) => void;
 		setLoading: (isLoading: boolean) => void;
@@ -86,11 +83,7 @@ export interface AppState {
 	errorActions: {
 		setError: (error: Error | null) => void;
 		clearError: () => void;
-		logError: (
-			error: Error,
-			context: string,
-			metadata?: Record<string, unknown>,
-		) => void;
+		logError: (error: Error, context: string, metadata?: Record<string, unknown>) => void;
 	};
 
 	siteSettingsActions: {
@@ -100,10 +93,7 @@ export interface AppState {
 
 	selectors: {
 		getTournamentNames: () => TournamentName[] | null;
-		getRatings: () => Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>;
+		getRatings: () => Record<string, { rating: number; wins?: number; losses?: number }>;
 		getIsComplete: () => boolean;
 		getIsLoading: () => boolean;
 		getVoteHistory: () => unknown[];

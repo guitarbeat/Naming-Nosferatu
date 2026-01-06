@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-import { VALIDATION } from "../../../core/constants";
+import { STORAGE_KEYS, VALIDATION } from "../../../core/constants";
 import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
 import { ErrorManager } from "../../../shared/services/errorManager";
 import { generateFunName } from "../../../shared/utils/core";
 
-const FALLBACK_CAT_FACT =
-	"Cats are amazing creatures with unique personalities!";
+const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
 const CAT_FACT_API_URL = "https://catfact.ninja/fact";
 const REQUEST_TIMEOUT_MS = 5000;
 
@@ -19,10 +18,7 @@ export function useCatFact() {
 	useEffect(() => {
 		const fetchCatFact = async () => {
 			const controller = new AbortController();
-			const timeoutId = setTimeout(
-				() => controller.abort(),
-				REQUEST_TIMEOUT_MS,
-			);
+			const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
 			try {
 				const response = await fetch(CAT_FACT_API_URL, {
@@ -113,23 +109,15 @@ export function useEyeTracking({
 const LoginFormSchema = z.object({
 	name: z
 		.string()
-		.min(
-			VALIDATION.MIN_USERNAME_LENGTH || 2,
-			"Name must be at least 2 characters",
-		)
-		.max(
-			VALIDATION.MAX_USERNAME_LENGTH || 30,
-			"Name must be under 30 characters",
-		)
+		.min(VALIDATION.MIN_USERNAME_LENGTH || 2, "Name must be at least 2 characters")
+		.max(VALIDATION.MAX_USERNAME_LENGTH || 30, "Name must be under 30 characters")
 		.regex(/^[a-zA-Z0-9_-]+$/, "Only letters, numbers, - and _ are allowed"),
 });
 
 /**
  * Hook to manage login form state and submission
  */
-export function useLoginController(
-	onLogin: (name: string) => Promise<void> | void,
-) {
+export function useLoginController(onLogin: (name: string) => Promise<void> | void) {
 	const [globalError, setGlobalError] = useState("");
 	const catFact = useCatFact();
 
@@ -184,7 +172,7 @@ export function useLoginController(
 		try {
 			// Basic localStorage check - in a real app this might simpler or more complex
 			// depending on the auth system. Since this is a simple name-based login:
-			const savedUser = localStorage.getItem("user-storage");
+			const savedUser = localStorage.getItem(STORAGE_KEYS.USER_STORAGE);
 			if (savedUser) {
 				const parsed = JSON.parse(savedUser);
 				// Assuming the zustand persist structure: { state: { user: { name: "..." } } }
@@ -199,10 +187,14 @@ export function useLoginController(
 	}, [setValues, values.name]); // Run once on mount if name is missing
 
 	const handleRandomName = useCallback(() => {
-		if (isSubmitting) return;
+		if (isSubmitting) {
+			return;
+		}
 		const funName = generateFunName();
 		setValues({ name: funName });
-		if (globalError) setGlobalError("");
+		if (globalError) {
+			setGlobalError("");
+		}
 	}, [isSubmitting, globalError, setValues]);
 
 	const handleKeyDown = useCallback(

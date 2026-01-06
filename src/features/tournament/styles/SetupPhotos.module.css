@@ -15,7 +15,7 @@
 	max-width: 100%;
 	background: hsl(var(--card) / 95%);
 	backdrop-filter: blur(12px);
-	border: 1px solid hsl(var(--border) / 50%);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-md);
 	padding: var(--space-5);
@@ -78,7 +78,7 @@
 	font-size: var(--text-sm);
 	background: hsl(var(--card) / 30%);
 	border-radius: var(--radius-md);
-	border: 1px dashed hsl(var(--border) / 40%);
+	border: var(--card-border-width) dashed var(--border-color);
 }
 
 .photosViewContent .emptyGallery {
@@ -98,14 +98,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: linear-gradient(
-		180deg,
-		rgb(0 0 0 / 0%) 0%,
-		rgb(0 0 0 / 55%) 100%
-	);
+	background: linear-gradient(180deg, transparent 0%, var(--overlay-dark) 100%);
 	opacity: 0;
 	pointer-events: none;
-	z-index: 1;
+	z-index: var(--z-elevate);
 	transition: opacity var(--duration-normal) var(--ease-out);
 }
 
@@ -116,8 +112,8 @@
 
 .photoIcon {
 	font-size: var(--text-2xl);
-	color: white;
-	text-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+	color: var(--color-neutral-50);
+	text-shadow: var(--text-shadow-lg);
 }
 
 .photoThumbButton {
@@ -130,8 +126,8 @@
 }
 
 .photoThumbButton:focus-visible {
-	outline: 2px solid var(--primary-color);
-	outline-offset: 2px;
+	outline: var(--focus-ring-width) solid var(--primary-color);
+	outline-offset: var(--focus-ring-offset);
 }
 
 .galleryHeader {
@@ -140,11 +136,11 @@
 	justify-content: space-between;
 	margin-bottom: var(--space-4);
 	padding-bottom: var(--space-3);
-	border-bottom: 2px solid hsl(var(--border) / 50%);
+	border-bottom: var(--card-border-width) solid var(--border-color);
 }
 
 .photosViewContent .galleryHeader {
-	border-bottom: 2px solid hsl(var(--border) / 50%);
+	border-bottom: var(--card-border-width) solid var(--border-color);
 	margin-bottom: var(--space-5);
 }
 
@@ -159,8 +155,8 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 32px;
-	height: 32px;
+	min-width: var(--space-8);
+	height: var(--space-8);
 	padding: 0 var(--space-2);
 	background: var(--primary-color);
 	color: white;
@@ -239,18 +235,18 @@
 	border: none;
 	border-radius: var(--radius-md);
 	transition: all var(--duration-normal) var(--ease-out);
-	box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+	box-shadow: var(--shadow-sm);
 }
 
 .photoUploadButton:hover {
 	background: color-mix(in srgb, var(--primary-color) 85%, black);
-	box-shadow: 0 4px 12px rgb(0 0 0 / 18%);
+	box-shadow: var(--shadow-md);
 	transform: translateY(-1px);
 }
 
 .photoUploadButton:active {
 	transform: translateY(0);
-	box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+	box-shadow: var(--shadow-xs);
 }
 
 .photoMoreButton {
@@ -263,7 +259,7 @@
 	font-weight: 600;
 	color: var(--text-primary);
 	background: var(--card-background);
-	border: 1.5px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-md);
 	transition: all var(--duration-normal) var(--ease-out);
 	cursor: pointer;
@@ -272,7 +268,7 @@
 .photoMoreButton:hover {
 	border-color: var(--primary-color);
 	background: color-mix(in srgb, var(--primary-color) 8%, transparent);
-	box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+	box-shadow: var(--shadow-sm);
 	transform: translateY(-1px);
 }
 
@@ -295,9 +291,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgb(0 0 0 / 80%);
-	backdrop-filter: blur(4px);
-	animation: fadeIn 0.3s ease-out;
+	background: var(--overlay-dark);
+	backdrop-filter: blur(var(--glass-blur));
+	animation: fadeIn var(--duration-normal) var(--ease-out);
 	pointer-events: auto;
 }
 
@@ -324,7 +320,7 @@
 	height: fit-content;
 	max-width: 100vw;
 	max-height: 100vh;
-	animation: contentEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: contentEnter var(--duration-normal) var(--ease-standard);
 	user-select: none;
 	overflow: hidden;
 }
@@ -347,7 +343,7 @@
 	justify-content: center;
 	max-width: min(92vw, 1200px);
 	max-height: 80vh;
-	animation: imageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: imageEnter var(--duration-slow) var(--ease-standard);
 }
 
 @keyframes imageEnter {
@@ -367,7 +363,7 @@
 	object-fit: contain;
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-xl);
-	animation: imageZoom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+	animation: imageZoom var(--duration-slow) var(--ease-standard);
 	display: block;
 	pointer-events: none;
 }

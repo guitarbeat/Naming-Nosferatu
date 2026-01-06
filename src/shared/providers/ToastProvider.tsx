@@ -22,10 +22,7 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-	const [currentToast, setCurrentToast] = useState<Omit<
-		ToastProps,
-		"onClose"
-	> | null>(null);
+	const [currentToast, setCurrentToast] = useState<Omit<ToastProps, "onClose"> | null>(null);
 
 	const showToast = useCallback((props: Omit<ToastProps, "onClose">) => {
 		setCurrentToast(props);

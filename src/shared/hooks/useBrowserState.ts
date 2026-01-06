@@ -15,12 +15,9 @@ export const useBrowserState = (): BrowserState => {
 	const [browserState, setBrowserState] = useState<BrowserState>(() => ({
 		isMobile: typeof window !== "undefined" ? window.innerWidth <= 768 : false,
 		isTablet:
-			typeof window !== "undefined"
-				? window.innerWidth > 768 && window.innerWidth <= 1024
-				: false,
+			typeof window !== "undefined" ? window.innerWidth > 768 && window.innerWidth <= 1024 : false,
 		isDesktop: typeof window !== "undefined" ? window.innerWidth > 1024 : true,
-		isSmallMobile:
-			typeof window !== "undefined" ? window.innerWidth <= 480 : false,
+		isSmallMobile: typeof window !== "undefined" ? window.innerWidth <= 480 : false,
 		prefersReducedMotion:
 			typeof window !== "undefined"
 				? window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -31,7 +28,9 @@ export const useBrowserState = (): BrowserState => {
 	}));
 
 	useEffect(() => {
-		if (typeof window === "undefined") return;
+		if (typeof window === "undefined") {
+			return;
+		}
 
 		// biome-ignore lint/suspicious/noExplicitAny: Experimental Network Information API
 		const connection = (navigator as any).connection;
@@ -48,8 +47,7 @@ export const useBrowserState = (): BrowserState => {
 				prefersReducedMotion: motionQuery.matches,
 				isOnline: navigator.onLine,
 				isSlowConnection: connection
-					? connection.effectiveType === "2g" ||
-						connection.effectiveType === "slow-2g"
+					? connection.effectiveType === "2g" || connection.effectiveType === "slow-2g"
 					: false,
 				connectionType: connection ? connection.effectiveType : "unknown",
 			});

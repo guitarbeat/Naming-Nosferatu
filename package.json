@@ -46,6 +46,9 @@
     "check:limits": "node scripts/enforce-limits.js",
     "check:deps": "knip --config config/knip.json",
     "check:deps:fix": "knip --config config/knip.json --fix",
+    "check:outdated": "pnpm outdated",
+    "check:audit": "pnpm audit",
+    "update:check": "pnpm outdated --format table",
     "clean": "rm -rf build dist node_modules/.vite stats.html",
     "vercel:dev": "vercel dev"
   },

@@ -22,7 +22,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 	}
 
 	if (!isAuthenticated) {
-		return <Navigate to="/login" replace />;
+		return <Navigate to="/login" replace={true} />;
 	}
 
 	return <>{children}</>;
@@ -60,7 +60,7 @@ export const AppRouter: React.FC = () => {
 							</ProtectedRoute>
 						}
 					/>
-					<Route path="*" element={<Navigate to="/" replace />} />
+					<Route path="*" element={<Navigate to="/" replace={true} />} />
 				</Routes>
 			</Suspense>
 		</BrowserRouter>

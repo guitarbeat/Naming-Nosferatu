@@ -1,187 +1,17 @@
-import { Button, Card, CardBody, Chip, Input, Progress } from "@heroui/react";
+import { Button, Input, Progress } from "@heroui/react";
 
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 
-import {
-	Cat,
-	ChevronRight,
-	Filter,
-	RotateCcw,
-	Search,
-	Sparkles,
-	Trophy,
-	User,
-} from "lucide-react";
+import { Cat, ChevronRight, Filter, RotateCcw, Search } from "lucide-react";
 
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
 // import { ComponentTagger } from "lovable-tagger";
+import { useMasonryLayout } from "../../shared/hooks/useMasonryLayout";
+import { NameCard, OperatorBar, SystemFeed } from "./components/ModernTournamentSetup";
 import { TournamentService } from "./services/tournamentService";
 import { useTournamentStore } from "./stores/tournamentStore";
-
-// --- Components ---
-
-const OperatorBar = () => {
-	const { operatorIdentity, setOperatorIdentity } = useTournamentStore();
-	const [isEditing, setIsEditing] = React.useState(false);
-	const [tempName, setTempName] = React.useState(operatorIdentity);
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		setOperatorIdentity(tempName);
-		setIsEditing(false);
-	};
-
-	return (
-		<motion.div
-			initial={{ opacity: 0, y: -20 }}
-			animate={{ opacity: 1, y: 0 }}
-			className="bg-slate-900 border-b border-white/10 p-4 flex items-center justify-between"
-		>
-			<div className="flex items-center gap-3">
-				<div className="bg-purple-500/20 p-2 rounded-lg">
-					<User className="w-5 h-5 text-purple-400" />
-				</div>
-				<div className="flex flex-col">
-					<span className="text-[10px] uppercase tracking-wider text-slate-400">
-						Operator Identity
-					</span>
-					{isEditing ? (
-						<form onSubmit={handleSubmit} className="flex gap-2 items-center">
-							<input
-								autoFocus
-								value={tempName}
-								onChange={(e) => setTempName(e.target.value)}
-								onBlur={handleSubmit}
-								className="bg-transparent border-b border-purple-500 text-white focus:outline-none text-sm font-mono"
-							/>
-						</form>
-					) : (
-						<div
-							className="flex items-center gap-2 cursor-pointer group"
-							onClick={() => setIsEditing(true)}
-						>
-							<span className="text-white font-mono">{operatorIdentity}</span>
-							<span className="text-[10px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">
-								[EDIT]
-							</span>
-						</div>
-					)}
-				</div>
-			</div>
-			<Chip
-				variant="flat"
-				color="secondary"
-				startContent={<Sparkles size={12} />}
-				classNames={{ base: "bg-purple-900/30 border border-purple-500/20" }}
-			>
-				<span className="text-xs">System Online</span>
-			</Chip>
-		</motion.div>
-	);
-};
-
-const SystemFeed = () => {
-	const prefersReducedMotion =
-		typeof window !== "undefined" &&
-		window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-	return (
-		<div className="bg-amber-900/10 border-y border-amber-500/10 py-2 px-4 overflow-hidden relative">
-			<div className="absolute top-0 left-0 w-1 h-full bg-amber-500/50" />
-			<motion.div
-				animate={
-					prefersReducedMotion
-						? {}
-						: {
-								x: ["100%", "-100%"],
-							}
-				}
-				transition={
-					prefersReducedMotion
-						? {}
-						: {
-								repeat: Infinity,
-								duration: 20,
-								ease: "linear",
-							}
-				}
-				className="whitespace-nowrap flex gap-8 text-[10px] font-mono text-amber-200/70"
-			>
-				<span>SYSTEM_FEED: INITIATING NAME PROTOCOL...</span>
-				<span>Scanning database for optimal feline designations {/*  */}</span>
-				<span>Awaiting operator input...</span>
-				<span>Did you know? Cats spend 70% of their lives sleeping.</span>
-			</motion.div>
-		</div>
-	);
-};
-
-const NameCard = ({
-	cat,
-	isSelected,
-	onToggle,
-}: {
-	cat: import("./services/tournamentService").CatName;
-	isSelected: boolean;
-	onToggle: () => void;
-}) => {
-	return (
-		<motion.div
-			layout
-			initial={{ opacity: 0, scale: 0.9 }}
-			animate={{ opacity: 1, scale: 1 }}
-			whileHover={{ scale: 1.02 }}
-			whileTap={{ scale: 0.98 }}
-		>
-			<Card
-				isPressable
-				onPress={onToggle}
-				className={`w-full h-full min-h-[140px] border transition-all duration-200 ${
-					isSelected
-						? "border-purple-500 bg-purple-900/20 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
-						: "border-white/5 bg-slate-900/50 hover:bg-slate-800/50 hover:border-white/10"
-				}`}
-			>
-				<CardBody className="flex flex-col justify-between p-4">
-					<div>
-						<div className="flex justify-between items-start mb-2">
-							<h3
-								className={`text-lg font-bold font-mono ${
-									isSelected ? "text-purple-300" : "text-slate-200"
-								}`}
-							>
-								{cat.name.toUpperCase()}
-							</h3>
-							{isSelected && (
-								<motion.div
-									initial={{ scale: 0 }}
-									animate={{ scale: 1 }}
-									className="bg-purple-500 rounded-full p-1"
-								>
-									<Trophy size={10} className="text-white" />
-								</motion.div>
-							)}
-						</div>
-						{cat.description && (
-							<p className="text-xs text-slate-400 line-clamp-3">
-								{cat.description}
-							</p>
-						)}
-					</div>
-					<div className="mt-4 flex gap-2">
-						{cat.avg_rating && (
-							<div className="text-[10px] bg-slate-800 px-2 py-1 rounded text-slate-400">
-								RAT: {Math.round(cat.avg_rating)}
-							</div>
-						)}
-					</div>
-				</CardBody>
-			</Card>
-		</motion.div>
-	);
-};
 
 // --- Props ---
 interface ModernTournamentSetupProps {
@@ -189,10 +19,7 @@ interface ModernTournamentSetupProps {
 	userName?: string;
 }
 
-export default function ModernTournamentSetup({
-	onStart,
-	userName,
-}: ModernTournamentSetupProps) {
+export default function ModernTournamentSetup({ onStart, userName }: ModernTournamentSetupProps) {
 	const store = useTournamentStore();
 	const {
 		availableNames,
@@ -234,24 +61,28 @@ export default function ModernTournamentSetup({
 
 	const handleStart = () => {
 		// Map selected IDs back to objects for the parent component
-		const selectedObjects = availableNames.filter((n) =>
-			selectedNames.has(n.id),
-		);
+		const selectedObjects = availableNames.filter((n) => selectedNames.has(n.id));
 		onStart(selectedObjects);
 	};
 
 	// -- Derived State --
 	const filteredNames = React.useMemo(() => {
-		if (!searchQuery) return availableNames;
-		return availableNames.filter((n) =>
-			n.name.toLowerCase().includes(searchQuery.toLowerCase()),
-		);
+		if (!searchQuery) {
+			return availableNames;
+		}
+		return availableNames.filter((n) => n.name.toLowerCase().includes(searchQuery.toLowerCase()));
 	}, [availableNames, searchQuery]);
 
 	const progress =
-		availableNames.length > 0
-			? (selectedNames.size / availableNames.length) * 100
-			: 0;
+		availableNames.length > 0 ? (selectedNames.size / availableNames.length) * 100 : 0;
+
+	const { containerRef, setItemRef, positions, columnHeights } = useMasonryLayout<HTMLDivElement>(
+		filteredNames.length,
+		{
+			minColumnWidth: 180,
+			gap: 16,
+		},
+	);
 
 	// -- Render State Matching --
 	const content = match({ isQueryLoading, count: filteredNames.length })
@@ -269,22 +100,45 @@ export default function ModernTournamentSetup({
 			</div>
 		))
 		.otherwise(() => (
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-20">
+			<div
+				ref={containerRef}
+				className="relative pb-20"
+				style={{
+					minHeight: columnHeights.length > 0 ? `${Math.max(...columnHeights)}px` : "auto",
+				}}
+			>
 				<AnimatePresence>
-					{filteredNames.map((cat) => (
-						<NameCard
-							key={cat.id}
-							cat={cat}
-							isSelected={selectedNames.has(cat.id)}
-							onToggle={() => toggleNameSelection(cat.id)}
-						/>
-					))}
+					{filteredNames.map((cat, index) => {
+						const position = positions[index];
+						return (
+							<div
+								key={cat.id}
+								ref={setItemRef(index)}
+								className="w-[180px] sm:w-[160px] md:w-[180px] lg:w-[190px] xl:w-[200px]"
+								style={
+									position
+										? {
+												position: "absolute",
+												top: `${position.top}px`,
+												left: `${position.left}px`,
+											}
+										: { position: "relative" }
+								}
+							>
+								<NameCard
+									cat={cat}
+									isSelected={selectedNames.has(cat.id)}
+									onToggle={() => toggleNameSelection(cat.id)}
+								/>
+							</div>
+						);
+					})}
 				</AnimatePresence>
 			</div>
 		));
 
 	return (
-		<div className="min-h-screen bg-[#050b16] text-slate-200 font-sans selection:bg-purple-500/30">
+		<div className="min-h-screen" style={{ backgroundColor: 'var(--color-neutral-900)', color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)' }}>
 			{/* lov-tagger hook for interactivity */}
 			<div data-lovable-component="ModernTournamentSetup" />
 
@@ -293,11 +147,11 @@ export default function ModernTournamentSetup({
 
 			<main className="container mx-auto px-4 py-6 max-w-7xl">
 				{/* Toolbar */}
-				<div className="sticky top-0 z-10 bg-[#050b16]/90 backdrop-blur-xl pb-6 pt-2 space-y-4">
+				<div className="sticky top-0 z-10 backdrop-blur-xl pb-6 pt-2 space-y-4" style={{ backgroundColor: 'color-mix(in srgb, var(--color-neutral-900) 90%, transparent)' }}>
 					<div className="flex flex-col md:flex-row gap-4 justify-between items-end md:items-center">
 						<div className="w-full md:w-96">
 							<Input
-								isClearable
+								isClearable={true}
 								radius="lg"
 								classNames={{
 									input: [

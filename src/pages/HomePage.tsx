@@ -2,10 +2,7 @@ import type React from "react";
 import { CreateTournamentForm } from "../features/tournament/components/CreateTournamentForm";
 import { TournamentList } from "../features/tournament/components/TournamentList";
 import { Loading } from "../shared/components/Loading";
-import {
-	useCreateTournament,
-	useTournaments,
-} from "../shared/hooks/useTournament";
+import { useCreateTournament, useTournaments } from "../shared/hooks/useTournament";
 import { useAuth } from "../shared/providers/AuthProvider";
 
 const HomePage: React.FC = () => {
@@ -20,8 +17,8 @@ const HomePage: React.FC = () => {
 	if (error) {
 		return (
 			<div className="error-state">
-				<h2>Failed to load tournaments</h2>
-				<p>Please try refreshing the page.</p>
+				<h2>Unable to load tournaments</h2>
+				<p>Please try refreshing the page. If the problem continues, check your connection.</p>
 			</div>
 		);
 	}

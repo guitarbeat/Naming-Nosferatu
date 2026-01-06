@@ -90,10 +90,7 @@
 /* Unified Mosaic Grid - for cards, photos, and other variable-size items */
 .grid-mosaic {
 	display: grid;
-	grid-template-columns: repeat(
-			auto-fit,
-			minmax(var(--grid-min-column-width), 1fr)
-		);
+	grid-template-columns: repeat(auto-fit, minmax(var(--grid-min-column-width), 1fr));
 	grid-auto-rows: var(--grid-row-unit);
 	grid-auto-flow: row dense;
 	gap: var(--grid-gap-mosaic);
@@ -223,22 +220,22 @@
 @keyframes pulse {
 	0% {
 		box-shadow:
-			0 0 15px rgb(250 38 160 / 50%),
-			0 0 15px rgb(47 243 224 / 50%);
+			0 0 15px color-mix(in srgb, var(--color-hot-pink) 50%, transparent),
+			0 0 15px color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
 		transform: scale(1);
 	}
 
 	50% {
 		box-shadow:
-			0 0 25px rgb(250 38 160 / 70%),
-			0 0 25px rgb(47 243 224 / 70%);
+			0 0 25px color-mix(in srgb, var(--color-hot-pink) 70%, transparent),
+			0 0 25px color-mix(in srgb, var(--color-neon-cyan) 70%, transparent);
 		transform: scale(1.05);
 	}
 
 	100% {
 		box-shadow:
-			0 0 15px rgb(250 38 160 / 50%),
-			0 0 15px rgb(47 243 224 / 50%);
+			0 0 15px color-mix(in srgb, var(--color-hot-pink) 50%, transparent),
+			0 0 15px color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
 		transform: scale(1);
 	}
 }
@@ -389,7 +386,7 @@
 	background: linear-gradient(135deg, var(--primary-600), var(--primary-800));
 	border: none;
 	border-radius: var(--radius-full);
-	box-shadow: 0 16px 35px rgb(15 23 42 / 35%);
+	box-shadow: 0 16px 35px var(--overlay-dark);
 	opacity: 0;
 	transform: translate3d(0, var(--space-4), 0) scale(0.95);
 	transition:
@@ -407,7 +404,7 @@
 
 .scroll-to-top:hover,
 .scroll-to-top:focus-visible {
-	box-shadow: 0 20px 40px rgb(15 23 42 / 45%);
+	box-shadow: 0 20px 40px var(--overlay-darker);
 	transform: translate3d(0, -4px, 0) scale(1.02);
 }
 
@@ -417,7 +414,7 @@
 }
 
 .scroll-to-top:active {
-	box-shadow: 0 8px 18px rgb(15 23 42 / 30%);
+	box-shadow: 0 8px 18px var(--overlay-medium);
 	transform: translate3d(0, 2px, 0) scale(0.96);
 }
 

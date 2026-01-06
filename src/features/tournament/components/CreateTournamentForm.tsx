@@ -6,14 +6,8 @@ import { z } from "zod";
 import type { CreateTournamentData } from "../../../shared/services/tournament/TournamentService";
 
 const createTournamentSchema = z.object({
-	name: z
-		.string()
-		.min(1, "Tournament name is required")
-		.max(50, "Name too long"),
-	names: z
-		.array(z.string())
-		.min(4, "At least 4 names required")
-		.max(16, "Maximum 16 names"),
+	name: z.string().min(1, "Tournament name is required").max(50, "Name too long"),
+	names: z.array(z.string()).min(4, "At least 4 names required").max(16, "Maximum 16 names"),
 });
 
 interface CreateTournamentFormProps {
@@ -94,11 +88,7 @@ export const CreateTournamentForm: React.FC<CreateTournamentFormProps> = ({
 					{names.map((name, index) => (
 						<div key={index} className="name-tag">
 							<span>{name}</span>
-							<button
-								type="button"
-								onClick={() => removeName(index)}
-								disabled={isLoading}
-							>
+							<button type="button" onClick={() => removeName(index)} disabled={isLoading}>
 								×
 							</button>
 						</div>

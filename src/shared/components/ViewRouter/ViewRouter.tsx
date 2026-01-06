@@ -30,14 +30,9 @@ interface ViewRouterProps {
 	onUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => undefined | Promise<boolean>;
-	onTournamentSetup: (
-		names?: import("../../../shared/propTypes").NameItem[],
-	) => void;
+	onTournamentSetup: (names?: import("../../../shared/propTypes").NameItem[]) => void;
 	onTournamentComplete: (
-		finalRatings: Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>,
+		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	onVote: (vote: unknown) => void;
 	onOpenSuggestName?: () => void;
@@ -87,8 +82,7 @@ export default function ViewRouter({
 		typeof window !== "undefined"
 			? window.location.pathname
 			: currentRoute.split("?")[0].split("#")[0];
-	const shouldShowDashboard =
-		currentPath === "/results" || currentPath === "/analysis";
+	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
 
 	if (shouldShowDashboard) {
 		const hasPersonalData = tournament.isComplete && tournament.names !== null;
@@ -101,25 +95,17 @@ export default function ViewRouter({
 		const isAnalysisMode = urlParams.get("analysis") === "true";
 
 		// * Determine mode: if analysis=true, show global only; if /results, show personal (or both if has data)
-		const dashboardMode = isAnalysisMode
-			? "global"
-			: hasPersonalData
-				? "personal"
-				: "global";
+		const dashboardMode = isAnalysisMode ? "global" : hasPersonalData ? "personal" : "global";
 
 		return (
-			<Suspense
-				fallback={<Loading variant="spinner" text="Loading Dashboard..." />}
-			>
+			<Suspense fallback={<Loading variant="spinner" text="Loading Dashboard..." />}>
 				<Dashboard
 					personalRatings={
 						hasPersonalData
 							? Object.fromEntries(
 									Object.entries(tournament.ratings).map(([key, value]) => [
 										key,
-										typeof value === "object" &&
-										value !== null &&
-										"rating" in value
+										typeof value === "object" && value !== null && "rating" in value
 											? (value as any).rating
 											: typeof value === "number"
 												? value
@@ -128,9 +114,7 @@ export default function ViewRouter({
 								)
 							: undefined
 					}
-					currentTournamentNames={
-						hasPersonalData ? tournament.names : undefined
-					}
+					currentTournamentNames={hasPersonalData ? tournament.names : undefined}
 					voteHistory={hasPersonalData ? tournament.voteHistory : undefined}
 					onStartNew={onStartNewTournament}
 					onUpdateRatings={onUpdateRatings as any}
@@ -157,10 +141,7 @@ export default function ViewRouter({
 				)}
 				onComplete={(ratings: Record<string, number>) => {
 					const convertedRatings = Object.fromEntries(
-						Object.entries(ratings).map(([key, value]) => [
-							key,
-							{ rating: value },
-						]),
+						Object.entries(ratings).map(([key, value]) => [key, { rating: value }]),
 					);
 					return onTournamentComplete(convertedRatings);
 				}}

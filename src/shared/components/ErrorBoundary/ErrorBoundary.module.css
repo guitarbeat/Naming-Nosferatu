@@ -2,67 +2,67 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 200px;
-	padding: 2rem;
-	background: var(--error-bg, #fef2f2);
-	border: 1px solid var(--error-border, #fecaca);
-	border-radius: 8px;
-	margin: 1rem 0;
+	min-height: var(--space-50); /* Keep fixed for consistent error display */
+	padding: var(--space-8);
+	background: color-mix(in srgb, var(--color-error) 5%, transparent);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 20%, transparent);
+	border-radius: var(--radius-md);
+	margin: var(--space-4) 0;
 }
 
 .errorContent {
 	text-align: center;
-	max-width: 500px;
+	max-width: var(--max-width-content); /* Keep fixed for readability */
 }
 
 .errorContent h2 {
-	color: var(--error-text, #dc2626);
-	margin-bottom: 1rem;
-	font-size: 1.5rem;
+	color: var(--color-error);
+	margin-bottom: var(--space-4);
+	font-size: var(--text-2xl);
 }
 
 .errorContent p {
-	color: var(--text-secondary, #6b7280);
-	margin-bottom: 1rem;
-	line-height: 1.5;
+	color: var(--text-secondary);
+	margin-bottom: var(--space-4);
+	line-height: var(--leading-normal);
 }
 
 .errorDetails {
 	text-align: left;
-	margin: 1rem 0;
-	padding: 1rem;
-	background: var(--bg-secondary, #f9fafb);
-	border-radius: 4px;
-	font-size: 0.875rem;
+	margin: var(--space-4) 0;
+	padding: var(--space-4);
+	background: var(--glass-bg-light);
+	border-radius: var(--radius-sm);
+	font-size: var(--text-sm);
 }
 
 .errorDetails summary {
 	cursor: pointer;
-	font-weight: 500;
-	margin-bottom: 0.5rem;
+	font-weight: var(--font-weight-medium);
+	margin-bottom: var(--space-2);
 }
 
 .errorDetails p {
-	margin: 0.25rem 0;
-	font-family: monospace;
+	margin: var(--space-1) 0;
+	font-family: var(--font-mono);
 }
 
 .retryButton {
-	background: var(--primary-color, #3b82f6);
-	color: white;
+	background: var(--color-info);
+	color: var(--color-neutral-50);
 	border: none;
-	padding: 0.75rem 1.5rem;
-	border-radius: 6px;
+	padding: var(--space-3) var(--space-6);
+	border-radius: var(--radius-md);
 	cursor: pointer;
-	font-weight: 500;
-	transition: background-color 0.2s;
+	font-weight: var(--font-weight-medium);
+	transition: var(--transition-base);
 }
 
 .retryButton:hover {
-	background: var(--primary-hover, #2563eb);
+	background: color-mix(in srgb, var(--color-info) 90%, var(--color-neutral-900));
 }
 
 .retryButton:focus {
-	outline: 2px solid var(--primary-color, #3b82f6);
-	outline-offset: 2px;
+	outline: var(--focus-ring-width) solid var(--color-info);
+	outline-offset: var(--focus-ring-offset);
 }

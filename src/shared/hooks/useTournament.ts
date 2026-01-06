@@ -23,10 +23,7 @@ export const useTournaments = () => {
 export const useTournament = (id: string) => {
 	return useQuery({
 		queryKey: ["tournament", id],
-		queryFn: async () => {
-			const tournaments = await tournamentService.getTournaments(""); // TODO: Fix this
-			return tournaments.find((t) => t.id === id) || null;
-		},
+		queryFn: () => tournamentService.getTournament(id),
 		enabled: !!id,
 	});
 };
@@ -37,8 +34,7 @@ export const useCreateTournament = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (data: CreateTournamentData) =>
-			tournamentService.createTournament(data, user?.id),
+		mutationFn: (data: CreateTournamentData) => tournamentService.createTournament(data, user?.id),
 		onSuccess: (tournament) => {
 			queryClient.invalidateQueries({ queryKey: ["tournaments"] });
 			showToast({
@@ -48,7 +44,7 @@ export const useCreateTournament = () => {
 		},
 		onError: (error: Error) => {
 			showToast({
-				message: error.message || "Failed to create tournament",
+				message: error.message || "Unable to create tournament. Please try again.",
 				variant: "error",
 			});
 		},
@@ -60,13 +56,8 @@ export const useUpdateTournament = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: ({
-			id,
-			updates,
-		}: {
-			id: string;
-			updates: Partial<Tournament>;
-		}) => tournamentService.updateTournament(id, updates),
+		mutationFn: ({ id, updates }: { id: string; updates: Partial<Tournament> }) =>
+			tournamentService.updateTournament(id, updates),
 		onSuccess: (tournament) => {
 			queryClient.invalidateQueries({ queryKey: ["tournaments"] });
 			queryClient.invalidateQueries({
@@ -79,7 +70,7 @@ export const useUpdateTournament = () => {
 		},
 		onError: (error: Error) => {
 			showToast({
-				message: error.message || "Failed to update tournament",
+				message: error.message || "Unable to update tournament. Please try again.",
 				variant: "error",
 			});
 		},
@@ -101,7 +92,7 @@ export const useDeleteTournament = () => {
 		},
 		onError: (error: Error) => {
 			showToast({
-				message: error.message || "Failed to delete tournament",
+				message: error.message || "Unable to delete tournament. Please try again.",
 				variant: "error",
 			});
 		},

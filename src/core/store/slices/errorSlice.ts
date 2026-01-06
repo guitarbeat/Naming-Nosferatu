@@ -17,9 +17,7 @@ export const createErrorSlice: StateCreator<
 			set((state) => ({
 				errors: {
 					current: error,
-					history: error
-						? [...state.errors.history, error]
-						: state.errors.history,
+					history: error ? [...state.errors.history, error] : state.errors.history,
 				},
 			})),
 

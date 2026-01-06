@@ -1,5 +1,6 @@
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
+import { STORAGE_KEYS } from "../../core/constants";
 
 interface ThemeContextValue {
 	theme: "light" | "dark" | "auto";
@@ -23,7 +24,7 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 	const [theme, setTheme] = useState<"light" | "dark" | "auto">(() => {
-		const saved = localStorage.getItem("theme");
+		const saved = localStorage.getItem(STORAGE_KEYS.THEME);
 		return (saved as "light" | "dark" | "auto") || "auto";
 	});
 
@@ -32,9 +33,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 	useEffect(() => {
 		const updateActualTheme = () => {
 			if (theme === "auto") {
-				const prefersDark = window.matchMedia(
-					"(prefers-color-scheme: dark)",
-				).matches;
+				const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 				setActualTheme(prefersDark ? "dark" : "light");
 			} else {
 				setActualTheme(theme);
@@ -52,7 +51,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
 	useEffect(() => {
 		document.documentElement.classList.toggle("dark", actualTheme === "dark");
-		localStorage.setItem("theme", theme);
+		localStorage.setItem(STORAGE_KEYS.THEME, theme);
 	}, [theme, actualTheme]);
 
 	const handleSetTheme = (newTheme: "light" | "dark" | "auto") => {
@@ -60,9 +59,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 	};
 
 	return (
-		<ThemeContext.Provider
-			value={{ theme, actualTheme, setTheme: handleSetTheme }}
-		>
+		<ThemeContext.Provider value={{ theme, actualTheme, setTheme: handleSetTheme }}>
 			{children}
 		</ThemeContext.Provider>
 	);

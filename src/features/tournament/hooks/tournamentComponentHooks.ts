@@ -4,14 +4,7 @@
  * Handles randomized names, selected options, transitions, and UI visibility states.
  */
 
-import {
-	type RefObject,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/tournamentHooks";
 import type { NameItem } from "../../../shared/propTypes";
@@ -43,8 +36,7 @@ export function useTournamentState(
 	const [showMatchResult, setShowMatchResult] = useState<boolean>(false);
 	const [showBracket, setShowBracket] = useState<boolean>(false);
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
-	const [showRoundTransition, setShowRoundTransition] =
-		useState<boolean>(false);
+	const [showRoundTransition, setShowRoundTransition] = useState<boolean>(false);
 	const [nextRoundNumber, setNextRoundNumber] = useState<number | null>(null);
 	const [votingError, setVotingError] = useState<unknown>(null);
 
@@ -53,18 +45,17 @@ export function useTournamentState(
 	// * Set up randomized names
 	// Shuffle only when the identity set (ids) changes, not on shallow changes
 	const namesIdentity = useMemo(
-		() =>
-			Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : "",
+		() => (Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : ""),
 		[names],
 	);
 	useEffect(() => {
 		if (Array.isArray(names) && names.length > 0) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setRandomizedNames((prev) => {
-				const prevIds = Array.isArray(prev)
-					? prev.map((n) => n.id || n.name).join(",")
-					: "";
-				if (prevIds === namesIdentity) return prev; // no reshuffle
+				const prevIds = Array.isArray(prev) ? prev.map((n) => n.id || n.name).join(",") : "";
+				if (prevIds === namesIdentity) {
+					return prev; // no reshuffle
+				}
 				return shuffleArray([...names]);
 			});
 		}
@@ -81,17 +72,15 @@ export function useTournamentState(
 		name: String(n.name || ""),
 		description: n.description as string | undefined, // Pass description through
 	}));
-	const convertedRatings: Record<
-		string,
-		{ rating: number; wins?: number; losses?: number }
-	> = existingRatings
-		? Object.fromEntries(
-				Object.entries(existingRatings).map(([key, value]) => [
-					key,
-					typeof value === "number" ? { rating: value } : value,
-				]),
-			)
-		: {};
+	const convertedRatings: Record<string, { rating: number; wins?: number; losses?: number }> =
+		existingRatings
+			? Object.fromEntries(
+					Object.entries(existingRatings).map(([key, value]) => [
+						key,
+						typeof value === "number" ? { rating: value } : value,
+					]),
+				)
+			: {};
 	const convertedOnComplete = onComplete
 		? (
 				results: Array<{
@@ -102,10 +91,23 @@ export function useTournamentState(
 					losses: number;
 				}>,
 			) => {
+				// Convert results to format expected by onComplete
+				// onComplete expects Record<string, number> but we need to preserve wins/losses
+				// So we pass Record<string, { rating: number; wins: number; losses: number }>
+				// The actual onComplete handler (handleTournamentComplete) expects this format
 				const ratings = Object.fromEntries(
-					results.map((r) => [r.id, r.rating]),
+					results.map((r) => [
+						r.name, // Use name as key, not id, to match what ratingsToArray expects
+						{
+							rating: r.rating,
+							wins: r.wins,
+							losses: r.losses,
+						},
+					]),
 				);
-				onComplete(ratings);
+				// Type assertion needed because TournamentProps.onComplete is Record<string, number>
+				// but handleTournamentComplete actually accepts the extended format
+				onComplete(ratings as unknown as Record<string, number>);
 			}
 		: undefined;
 
@@ -200,7 +202,9 @@ export function useAudioManager() {
 	const [volume, setVolume] = useState(0.2);
 
 	const trackInfo = useMemo(() => {
-		if (!currentTrack) return null;
+		if (!currentTrack) {
+			return null;
+		}
 		return { title: currentTrack, artist: "ambient", duration: 0 };
 	}, [currentTrack]);
 
@@ -356,10 +360,7 @@ export function useKeyboardControls(
 			window.removeEventListener("keydown", handleKeyDown);
 			if (listenersSet?.delete) {
 				listenersSet.forEach((listener) => {
-					if (
-						listener?.event === "keydown" &&
-						listener?.handler === handleKeyDown
-					) {
+					if (listener?.event === "keydown" && listener?.handler === handleKeyDown) {
 						listenersSet.delete(listener);
 					}
 				});
@@ -397,19 +398,25 @@ export default function useMagneticPull(
 	});
 
 	useEffect(() => {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 
 		const leftOrb = leftOrbRef.current;
 		const rightOrb = rightOrbRef.current;
 
-		if (!leftOrb || !rightOrb) return;
+		if (!leftOrb || !rightOrb) {
+			return;
+		}
 
 		let animationFrameId: number;
 		const mousePos = { x: 0, y: 0 };
 		let isDirty = false;
 
 		const updatePosition = () => {
-			if (!leftOrb || !rightOrb) return;
+			if (!leftOrb || !rightOrb) {
+				return;
+			}
 
 			if (isDirty) {
 				const xAxis = (window.innerWidth / 2 - mousePos.x) / 40;
@@ -439,18 +446,20 @@ export default function useMagneticPull(
 		animationFrameId = requestAnimationFrame(updatePosition);
 
 		const handleMouseDown = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) return;
+			if (!orb) {
+				return;
+			}
 			orb.style.transition = "transform 0.1s ease";
-			const currentTransform =
-				transformRef.current[isLeft ? "left" : "right"] || "";
+			const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
 			orb.style.transform = `${currentTransform} scale(0.9)`;
 		};
 
 		const handleMouseUp = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) return;
+			if (!orb) {
+				return;
+			}
 			orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-			const currentTransform =
-				transformRef.current[isLeft ? "left" : "right"] || "";
+			const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
 			orb.style.transform = currentTransform;
 		};
 
@@ -501,16 +510,12 @@ interface UseTournamentVoteProps {
 	isTransitioning: boolean;
 	isError: boolean;
 	currentMatch: { left?: unknown; right?: unknown } | null;
-	handleVote: (
-		option: "left" | "right" | "both" | "neither",
-	) => Promise<unknown>;
+	handleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown>;
 	onVote?: (voteData: unknown) => Promise<void> | void;
 	audioManager: { playSound: () => void };
 	setIsProcessing: (value: boolean) => void;
 	setIsTransitioning: (value: boolean) => void;
-	setSelectedOption: (
-		value: "left" | "right" | "both" | "neither" | null,
-	) => void;
+	setSelectedOption: (value: "left" | "right" | "both" | "neither" | null) => void;
 	setVotingError: (error: unknown) => void;
 	setLastMatchResult: (message: string | null) => void;
 	setShowMatchResult: (show: boolean) => void;
@@ -599,24 +604,21 @@ export function useTournamentVote({
 			// Start undo window
 			setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
 		},
-		[
-			currentMatch,
-			showSuccess,
-			setLastMatchResult,
-			setShowMatchResult,
-			setUndoExpiresAt,
-		],
+		[currentMatch, showSuccess, setLastMatchResult, setShowMatchResult, setUndoExpiresAt],
 	);
 
 	// Handle vote with animation
 	const handleVoteWithAnimation = useCallback(
 		async (option: "left" | "right" | "both" | "neither") => {
-			if (isProcessing || isTransitioning || isError) return;
+			if (isProcessing || isTransitioning || isError) {
+				return;
+			}
 
 			// Rate limiting check
 			const now = Date.now();
-			if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN)
+			if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN) {
 				return;
+			}
 			lastVoteTimeRef.current = now;
 
 			try {
@@ -639,10 +641,7 @@ export function useTournamentVote({
 					rawRatings as Record<string, unknown>,
 				).reduce(
 					(acc, [key, value]) => {
-						acc[key] =
-							typeof value === "number"
-								? value
-								: (value as { rating: number }).rating;
+						acc[key] = typeof value === "number" ? value : (value as { rating: number }).rating;
 						return acc;
 					},
 					{} as Record<string, number>,
@@ -651,9 +650,12 @@ export function useTournamentVote({
 				if (onVote && currentMatch) {
 					// Helper to safely get properties from NameItem | string
 					const getNameData = (item: unknown) => {
-						if (!item) return { name: "Unknown", id: null, description: "" };
-						if (typeof item === "string")
+						if (!item) {
+							return { name: "Unknown", id: null, description: "" };
+						}
+						if (typeof item === "string") {
 							return { name: item, id: item, description: "" };
+						}
 						const obj = item as {
 							name?: string;
 							id?: unknown;
@@ -704,14 +706,7 @@ export function useTournamentVote({
 								outcome: rightOutcome,
 							},
 						},
-						result:
-							option === "left"
-								? -1
-								: option === "right"
-									? 1
-									: option === "both"
-										? 0.5
-										: 0,
+						result: option === "left" ? -1 : option === "right" ? 1 : option === "both" ? 0.5 : 0,
 						ratings: updatedRatings,
 						timestamp: new Date().toISOString(),
 					};
@@ -737,13 +732,13 @@ export function useTournamentVote({
 					console.error("Error handling vote:", error);
 				}
 				setVotingError({
-					message: "Failed to submit vote. Please try again.",
+					message: "Unable to submit vote. Please try again.",
 					severity: "MEDIUM",
 					isRetryable: true,
 					originalError: error,
 				});
 
-				showError("Failed to submit vote. Please try again.", {
+				showError("Unable to submit vote. Please try again.", {
 					duration: TOURNAMENT_TIMING.TOAST_ERROR_DURATION,
 				});
 				setIsProcessing(false);

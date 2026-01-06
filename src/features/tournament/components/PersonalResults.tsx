@@ -6,9 +6,7 @@
 import PropTypes from "prop-types";
 import React, { useCallback, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
-import Button, {
-	TournamentButton,
-} from "../../../shared/components/Button/Button";
+import Button, { TournamentButton } from "../../../shared/components/Button/Button";
 import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
@@ -29,6 +27,7 @@ interface Ranking {
 	wins: number;
 	losses: number;
 	change: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden: boolean;
 }
 
@@ -62,7 +61,9 @@ function CalendarButton({
 			externalOnClick(event);
 		}
 
-		if (event?.defaultPrevented) return;
+		if (event?.defaultPrevented) {
+			return;
+		}
 
 		// Filter out hidden names and sort by rating
 		const activeNames = rankings
@@ -82,8 +83,7 @@ function CalendarButton({
 		const text = `🐈‍⬛ ${winnerName}`;
 		const details = `Cat name rankings for ${userName}:\n\n${activeNames
 			.map(
-				(name, index) =>
-					`${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+				(name, index) => `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
 			)
 			.join("\n")}`;
 
@@ -130,7 +130,12 @@ CalendarButton.propTypes = {
 interface PersonalResultsProps {
 	personalRatings: Record<
 		string,
-		| { rating?: number; wins?: number; losses?: number; is_hidden?: boolean }
+		| {
+				rating?: number;
+				wins?: number;
+				losses?: number /* biome-ignore lint/style/useNamingConvention: Database column names must match exactly */;
+				is_hidden?: boolean;
+		  }
 		| number
 	>;
 	currentTournamentNames: { id: string | number; name: string }[];
@@ -156,10 +161,8 @@ function PersonalResults({
 
 	const { showToast } = useToast();
 
-	const hasPersonalData =
-		personalRatings && Object.keys(personalRatings).length > 0;
-	const hasTournamentNames =
-		currentTournamentNames && currentTournamentNames.length > 0;
+	const hasPersonalData = personalRatings && Object.keys(personalRatings).length > 0;
+	const hasTournamentNames = currentTournamentNames && currentTournamentNames.length > 0;
 
 	// * Process personal tournament rankings
 	const tournamentNameSet = useMemo(
@@ -191,12 +194,11 @@ function PersonalResults({
 					return {
 						id: nameToIdMap.get(name),
 						name,
-						rating: Math.round(
-							typeof rating === "number" ? rating : ratingObj?.rating || 1500,
-						),
+						rating: Math.round(typeof rating === "number" ? rating : ratingObj?.rating || 1500),
 						wins: ratingObj?.wins || 0,
 						losses: ratingObj?.losses || 0,
 						change: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						is_hidden: ratingObj?.is_hidden || false,
 					};
 				})
@@ -207,13 +209,7 @@ function PersonalResults({
 			devError("Error processing personal rankings:", error);
 			setPersonalRankings([]);
 		}
-	}, [
-		personalRatings,
-		tournamentNameSet,
-		nameToIdMap,
-		hasPersonalData,
-		hasTournamentNames,
-	]);
+	}, [personalRatings, tournamentNameSet, nameToIdMap, hasPersonalData, hasTournamentNames]);
 	// * Calculate bracket matches for personal tournament
 	const bracketMatches = useMemo(() => {
 		if (!voteHistory || !voteHistory.length || !hasTournamentNames) {
@@ -240,19 +236,33 @@ function PersonalResults({
 				if (leftOutcome || rightOutcome) {
 					const leftWin = leftOutcome === "win";
 					const rightWin = rightOutcome === "win";
-					if (leftWin && rightWin) winner = 0;
-					else if (leftWin && !rightWin) winner = -1;
-					else if (!leftWin && rightWin) winner = 1;
-					else winner = 2;
+					if (leftWin && rightWin) {
+						winner = 0;
+					} else if (leftWin && !rightWin) {
+						winner = -1;
+					} else if (!leftWin && rightWin) {
+						winner = 1;
+					} else {
+						winner = 2;
+					}
 				} else if (typeof vote.result === "number") {
-					if (vote.result === -1) winner = -1;
-					else if (vote.result === 1) winner = 1;
-					else if (vote.result === 0.5) winner = 0;
-					else if (vote.result === 0) winner = 2;
-					else if (vote.result < -0.1) winner = -1;
-					else if (vote.result > 0.1) winner = 1;
-					else if (Math.abs(vote.result) <= 0.1) winner = 0;
-					else winner = 2;
+					if (vote.result === -1) {
+						winner = -1;
+					} else if (vote.result === 1) {
+						winner = 1;
+					} else if (vote.result === 0.5) {
+						winner = 0;
+					} else if (vote.result === 0) {
+						winner = 2;
+					} else if (vote.result < -0.1) {
+						winner = -1;
+					} else if (vote.result > 0.1) {
+						winner = 1;
+					} else if (Math.abs(vote.result) <= 0.1) {
+						winner = 0;
+					} else {
+						winner = 2;
+					}
 				} else {
 					winner = 2;
 				}
@@ -268,21 +278,14 @@ function PersonalResults({
 					winner,
 				};
 			});
-	}, [
-		voteHistory,
-		tournamentNameSet,
-		currentTournamentNames,
-		hasTournamentNames,
-	]);
+	}, [voteHistory, tournamentNameSet, currentTournamentNames, hasTournamentNames]);
 
 	// * Handle saving adjusted personal rankings
 	const handleSaveAdjustments = useCallback(
 		async (adjustedRankings) => {
 			try {
 				const updatedRankings = adjustedRankings.map((ranking: Ranking) => {
-					const oldRanking = personalRankings.find(
-						(r) => r.name === ranking.name,
-					);
+					const oldRanking = personalRankings.find((r) => r.name === ranking.name);
 					return {
 						...ranking,
 						change: oldRanking ? ranking.rating - oldRanking.rating : 0,
@@ -312,7 +315,7 @@ function PersonalResults({
 			} catch (error) {
 				devError("Failed to update rankings:", error);
 				showToast({
-					message: "Failed to update rankings. Please try again.",
+					message: "Unable to update rankings. Please try again.",
 					type: "error",
 				});
 			}
@@ -325,10 +328,7 @@ function PersonalResults({
 			<div className={styles.emptyState}>
 				<p>Complete a tournament to see your personal results here!</p>
 				<div className={styles.actions}>
-					<TournamentButton
-						onClick={onStartNew}
-						className={styles.startNewButton}
-					>
+					<TournamentButton onClick={onStartNew} className={styles.startNewButton}>
 						Start New Tournament
 					</TournamentButton>
 				</div>
@@ -336,8 +336,58 @@ function PersonalResults({
 		);
 	}
 
+	const getRatingLabel = (rating: number) => {
+		if (rating >= 1800) {
+			return "Top Tier";
+		}
+		if (rating >= 1600) {
+			return "Great";
+		}
+		if (rating >= 1400) {
+			return "Good";
+		}
+		return "Fair";
+	};
+
+	const topThreeNames = useMemo(() => {
+		return personalRankings
+			.filter((r) => !r.is_hidden)
+			.slice(0, 3)
+			.map((ranking, index) => ({
+				...ranking,
+				position: index + 1,
+				ratingLabel: getRatingLabel(ranking.rating),
+			}));
+	}, [personalRankings, getRatingLabel]);
+
 	return (
 		<div className={styles.personalResults}>
+			{/* Top 3 Summary Card */}
+			{topThreeNames.length > 0 && (
+				<Card background="glass" padding="large" shadow="medium" className={styles.topThreeCard}>
+					<h3 className={styles.topThreeTitle}>Your Top 3 Names</h3>
+					<div className={styles.topThreeList}>
+						{topThreeNames.map((name, index) => (
+							<div key={name.id || name.name} className={styles.topThreeItem}>
+								<div className={styles.topThreePosition}>
+									<span className={styles.positionBadge}>{name.position}</span>
+									<span className={styles.positionMedal}>
+										{index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+									</span>
+								</div>
+								<div className={styles.topThreeDetails}>
+									<span className={styles.topThreeName}>{name.name}</span>
+									<div className={styles.topThreeMeta}>
+										<span className={styles.ratingLabel}>{name.ratingLabel}</span>
+										<span className={styles.ratingValue}>({name.rating})</span>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</Card>
+			)}
+
 			{personalRankings.length > 0 && (
 				<div className={styles.statsGrid}>
 					<Card.Stats
@@ -349,7 +399,7 @@ function PersonalResults({
 						{null}
 					</Card.Stats>
 					<Card.Stats
-						title="Rating"
+						title="Top Name Score"
 						value={personalRankings[0]?.rating || 1500}
 						emoji="⭐"
 						className={styles.statCard}
@@ -381,25 +431,17 @@ function PersonalResults({
 						onToggle={() => setIsBracketCollapsed(!isBracketCollapsed)}
 						className={styles.bracketHeader}
 					/>
-					<CollapsibleContent
-						isCollapsed={isBracketCollapsed}
-						id="personal-bracket-content"
-					>
+					<CollapsibleContent isCollapsed={isBracketCollapsed} id="personal-bracket-content">
 						<Bracket matches={bracketMatches} />
 					</CollapsibleContent>
 				</div>
 			)}
 
 			<div className={styles.actions}>
-				<TournamentButton
-					onClick={onStartNew}
-					className={styles.startNewButton}
-				>
+				<TournamentButton onClick={onStartNew} className={styles.startNewButton}>
 					Start New Tournament
 				</TournamentButton>
-				{hasPersonalData && (
-					<CalendarButton rankings={personalRankings} userName={userName} />
-				)}
+				{hasPersonalData && <CalendarButton rankings={personalRankings} userName={userName} />}
 			</div>
 		</div>
 	);

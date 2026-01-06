@@ -1,11 +1,10 @@
 import { HeroUIProvider } from "@heroui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import { queryClient } from "./shared/services/supabase/queryClient";
 import "@styles/index.css";
-
-const queryClient = new QueryClient();
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {

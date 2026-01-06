@@ -7,10 +7,7 @@
 import PropTypes from "prop-types";
 import { useId } from "react";
 import { useCollapsible } from "../../../core/hooks/useStorage";
-import LiquidGlass, {
-	HEADER_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../LiquidGlass/LiquidGlass";
+import LiquidGlass, { HEADER_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass/LiquidGlass";
 import "./CollapsibleHeader.css";
 
 /**
@@ -85,8 +82,7 @@ export function CollapsibleHeader({
 	const shouldUseLiquidGlass = !!liquidGlass;
 	const isCollapsible = !!onToggle;
 	const headerGlassId = useId();
-	const resolvedContentId =
-		contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
+	const resolvedContentId = contentId || `collapsible-content-${headerGlassId.replace(/:/g, "-")}`;
 
 	const headerContent = (
 		<>
@@ -106,20 +102,14 @@ export function CollapsibleHeader({
 						<ChevronIcon isCollapsed={isCollapsed} />
 						{icon && (
 							<span
-								className={
-									isCollapsed
-										? "collapsible-icon-collapsed"
-										: "collapsible-icon"
-								}
+								className={isCollapsed ? "collapsible-icon-collapsed" : "collapsible-icon"}
 								aria-hidden="true"
 							>
 								{icon}
 							</span>
 						)}
 						{!isCollapsed && <span className="collapsible-title">{title}</span>}
-						{isCollapsed && summary && (
-							<span className="collapsible-summary">{summary}</span>
-						)}
+						{isCollapsed && summary && <span className="collapsible-summary">{summary}</span>}
 					</button>
 				) : (
 					<div className="collapsible-toggle static">
@@ -156,10 +146,7 @@ export function CollapsibleHeader({
 			id?: string;
 			[key: string]: unknown;
 		};
-		const glassConfig = resolveGlassConfig(
-			liquidGlass,
-			HEADER_GLASS_CONFIG,
-		) as GlassConfigType;
+		const glassConfig = resolveGlassConfig(liquidGlass, HEADER_GLASS_CONFIG) as GlassConfigType;
 		const {
 			width = 800,
 			height = 60,
@@ -306,10 +293,7 @@ export function CollapsibleSection({
 	toolbar,
 	liquidGlass,
 }: CollapsibleSectionProps) {
-	const { isCollapsed, toggleCollapsed } = useCollapsible(
-		storageKey,
-		defaultCollapsed,
-	);
+	const { isCollapsed, toggleCollapsed } = useCollapsible(storageKey, defaultCollapsed);
 
 	const contentId = `collapsible-${title?.toLowerCase().replace(/\s+/g, "-") || "section"}-content`;
 

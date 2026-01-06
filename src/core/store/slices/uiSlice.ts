@@ -1,10 +1,11 @@
 import type { StateCreator } from "zustand";
+import { STORAGE_KEYS } from "../../../core/constants";
 import type { AppState, UIState } from "../../../types/store";
 
 const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	if (typeof window !== "undefined") {
 		try {
-			const storedTheme = window.localStorage.getItem("theme");
+			const storedTheme = window.localStorage.getItem(STORAGE_KEYS.THEME);
 			if (storedTheme && ["light", "dark", "system"].includes(storedTheme)) {
 				return {
 					theme: storedTheme,
@@ -21,12 +22,10 @@ const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	};
 };
 
-export const createUISlice: StateCreator<
-	AppState,
-	[],
-	[],
-	Pick<AppState, "ui" | "uiActions">
-> = (set, get) => ({
+export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" | "uiActions">> = (
+	set,
+	get,
+) => ({
 	ui: {
 		...getInitialThemeState(),
 		showGlobalAnalytics: false,
@@ -82,8 +81,7 @@ export const createUISlice: StateCreator<
 
 			let resolvedTheme = newTheme;
 			if (isSystem && typeof window !== "undefined" && window.matchMedia) {
-				resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)")
-					.matches
+				resolvedTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
 					? "dark"
 					: "light";
 			}
@@ -97,7 +95,7 @@ export const createUISlice: StateCreator<
 			}));
 
 			if (typeof window !== "undefined") {
-				localStorage.setItem("theme", newTheme);
+				localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
 
 				// Handle system theme listener
 				if (isSystem) {
@@ -121,7 +119,7 @@ export const createUISlice: StateCreator<
 
 		initializeTheme: () => {
 			if (typeof window !== "undefined") {
-				const storedTheme = localStorage.getItem("theme") || "dark";
+				const storedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || "dark";
 				get().uiActions.setTheme(storedTheme);
 			}
 		},

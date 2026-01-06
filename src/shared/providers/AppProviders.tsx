@@ -16,8 +16,9 @@ const queryClient = new QueryClient({
 					typeof error === "object" &&
 					"status" in error &&
 					(error as { status: number }).status === 404
-				)
+				) {
 					return false;
+				}
 				return failureCount < 3;
 			},
 		},

@@ -1,14 +1,10 @@
 import type React from "react";
 import { PerformanceBadges } from "../../../shared/components/PerformanceBadge/PerformanceBadge";
-import {
-	devError,
-	formatDate,
-	getMetricLabel,
-	getRankDisplay,
-} from "../../../shared/utils/core";
+import { devError, formatDate, getMetricLabel, getRankDisplay } from "../../../shared/utils/core";
 import type { ConsolidatedName, SummaryStats } from "../types";
-import styles from "./AnalysisUI.module.css";
+import styles from "./AnalysisTable.module.css";
 import { ColumnHeader } from "./ColumnHeader";
+import columnHeaderStyles from "./ColumnHeader.module.css";
 
 interface AnalysisTableProps {
 	names: ConsolidatedName[];
@@ -32,12 +28,10 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 	summaryStats,
 }) => {
 	const renderSortIndicator = (field: string) => {
-		if (sortField !== field) return null;
-		return (
-			<span className={styles.sortIndicator}>
-				{sortDirection === "desc" ? "↓" : "↑"}
-			</span>
-		);
+		if (sortField !== field) {
+			return null;
+		}
+		return <span className={styles.sortIndicator}>{sortDirection === "desc" ? "↓" : "↑"}</span>;
 	};
 
 	const handleSort = (field: string, _direction: "asc" | "desc") => {
@@ -119,7 +113,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						</th>
 						{isAdmin && (
 							<th scope="col">
-								<span className={styles.columnHeaderLabel}>Insights</span>
+								<span className={columnHeaderStyles.columnHeaderLabel}>Insights</span>
 							</th>
 						)}
 						<th
@@ -149,10 +143,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						const rank = index + 1;
 						const ratingPercent =
 							summaryStats && (summaryStats.maxRating ?? 0) > 0
-								? Math.min(
-										(item.rating / (summaryStats.maxRating ?? 1)) * 100,
-										100,
-									)
+								? Math.min((item.rating / (summaryStats.maxRating ?? 1)) * 100, 100)
 								: 0;
 						const winsPercent =
 							summaryStats && (summaryStats.maxWins ?? 0) > 0
@@ -160,10 +151,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 								: 0;
 						const selectedPercent =
 							summaryStats && (summaryStats.maxSelected ?? 0) > 0
-								? Math.min(
-										(item.selected / (summaryStats.maxSelected ?? 1)) * 100,
-										100,
-									)
+								? Math.min((item.selected / (summaryStats.maxSelected ?? 1)) * 100, 100)
 								: 0;
 
 						return (
@@ -194,10 +182,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 										</div>
 									) : (
 										<div className={styles.metricWithBar}>
-											<span
-												className={styles.metricValue}
-												aria-label={`Rating: ${item.rating}`}
-											>
+											<span className={styles.metricValue} aria-label={`Rating: ${item.rating}`}>
 												{item.rating}
 											</span>
 											<div className={styles.metricBar}>
@@ -212,18 +197,12 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 								</td>
 								<td className={styles.colWins}>
 									{isAdmin ? (
-										<span
-											className={styles.metricValue}
-											aria-label={`Wins: ${item.wins}`}
-										>
+										<span className={styles.metricValue} aria-label={`Wins: ${item.wins}`}>
 											{item.wins}
 										</span>
 									) : (
 										<div className={styles.metricWithBar}>
-											<span
-												className={styles.metricValue}
-												aria-label={`Wins: ${item.wins}`}
-											>
+											<span className={styles.metricValue} aria-label={`Wins: ${item.wins}`}>
 												{item.wins}
 											</span>
 											<div className={styles.metricBar}>
@@ -276,11 +255,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 								{isAdmin && (
 									<td>
 										<PerformanceBadges
-											types={
-												Array.isArray(item.insights)
-													? (item.insights as string[])
-													: []
-											}
+											types={Array.isArray(item.insights) ? (item.insights as string[]) : []}
 										/>
 									</td>
 								)}
@@ -302,10 +277,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 											})}
 										</span>
 									) : (
-										<span
-											className={styles.dateUnknown}
-											aria-label="Date unknown"
-										>
+										<span className={styles.dateUnknown} aria-label="Date unknown">
 											—
 										</span>
 									)}
@@ -321,10 +293,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 												try {
 													await onHideName(item.id, item.name);
 												} catch (error) {
-													devError(
-														"[AnalysisDashboard] Failed to hide name:",
-														error,
-													);
+													devError("[AnalysisDashboard] Failed to hide name:", error);
 												}
 											}}
 											aria-label={`Hide ${item.name}`}

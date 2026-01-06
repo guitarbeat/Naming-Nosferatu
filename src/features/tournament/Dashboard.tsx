@@ -46,11 +46,14 @@ function Dashboard({
 	const [isPending, startTransition] = useTransition();
 	// * Initialize view mode based on prop: "personal" shows personal, "global" shows global, "both" defaults to personal if data exists
 	const [viewMode, setViewMode] = useState(() => {
-		if (mode === "personal") return "personal";
-		if (mode === "global") return "global";
+		if (mode === "personal") {
+			return "personal";
+		}
+		if (mode === "global") {
+			return "global";
+		}
 		// * For "both" mode, default to personal if data exists, otherwise global
-		const hasPersonalData =
-			personalRatings && Object.keys(personalRatings).length > 0;
+		const hasPersonalData = personalRatings && Object.keys(personalRatings).length > 0;
 		return hasPersonalData ? "personal" : "global";
 	});
 
@@ -76,17 +79,16 @@ function Dashboard({
 	});
 
 	// * Check if user has personal tournament data
-	const hasPersonalData =
-		personalRatings && Object.keys(personalRatings).length > 0;
+	const hasPersonalData = personalRatings && Object.keys(personalRatings).length > 0;
 
 	// * Render view mode toggle
 	const renderViewModeToggle = () => {
-		if (mode !== "both") return null;
+		if (mode !== "both") {
+			return null;
+		}
 
 		return (
-			<div
-				className={`${styles.viewModeToggle} ${isPending ? styles.pending : ""}`}
-			>
+			<div className={`${styles.viewModeToggle} ${isPending ? styles.pending : ""}`}>
 				<button
 					type="button"
 					className={`${styles.viewModeBtn} ${viewMode === "personal" ? styles.active : ""}`}
@@ -117,9 +119,7 @@ function Dashboard({
 				shadow="medium"
 			>
 				<h2 className={styles.title}>
-					{viewMode === "personal"
-						? "My Tournament Results"
-						: "Global Leaderboard"}
+					{viewMode === "personal" ? "My Tournament Results" : "Global Leaderboard"}
 				</h2>
 				<p className={styles.subtitle}>
 					Welcome back, <span className={styles.userName}>{userName}</span>!
@@ -153,7 +153,9 @@ function Dashboard({
 				position="bottom-right"
 				maxToasts={1}
 				message=""
-				onDismiss={() => {}}
+				onDismiss={() => {
+					// Intentional no-op: dismiss handled by component
+				}}
 			/>
 		</div>
 	);

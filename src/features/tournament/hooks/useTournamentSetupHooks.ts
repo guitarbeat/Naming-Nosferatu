@@ -1,12 +1,10 @@
 import { useCallback } from "react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type NameManagementContextType = any; // Todo: Import proper type from NameManagementView
+import type { UseNameManagementViewResult } from "../../../shared/components/NameManagementView/nameManagementCore";
 
 /**
  * Shared hook for context callbacks
  */
-export function useNameManagementCallbacks(context: NameManagementContextType) {
+export function useNameManagementCallbacks(context: UseNameManagementViewResult | null) {
 	const setHiddenNames = useCallback(
 		(updater: unknown) => {
 			context?.setHiddenIds?.(updater);

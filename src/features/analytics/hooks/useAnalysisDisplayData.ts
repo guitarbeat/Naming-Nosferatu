@@ -82,7 +82,9 @@ export function useAnalysisDisplayData({
 		}
 
 		return Array.from(nameMap.values()).sort((a, b) => {
-			if (b.rating !== a.rating) return b.rating - a.rating;
+			if (b.rating !== a.rating) {
+				return b.rating - a.rating;
+			}
 			return b.wins - a.wins;
 		});
 	}, [leaderboardData, selectionPopularity, analyticsData, isAdmin]);
@@ -120,10 +122,7 @@ export function useAnalysisDisplayData({
 
 		// Apply filters
 		if (filterConfig) {
-			if (
-				filterConfig.selectionFilter &&
-				filterConfig.selectionFilter !== "all"
-			) {
+			if (filterConfig.selectionFilter && filterConfig.selectionFilter !== "all") {
 				if (filterConfig.selectionFilter === "selected") {
 					names = names.filter((n) => n.selected > 0);
 				} else if (filterConfig.selectionFilter === "never_selected") {
@@ -137,11 +136,7 @@ export function useAnalysisDisplayData({
 
 				switch (filterConfig.dateFilter) {
 					case "today":
-						filterDate = new Date(
-							now.getFullYear(),
-							now.getMonth(),
-							now.getDate(),
-						);
+						filterDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 						break;
 					case "week":
 						filterDate = new Date(now);
@@ -156,7 +151,9 @@ export function useAnalysisDisplayData({
 				}
 
 				names = names.filter((n) => {
-					if (!n.dateSubmitted) return false;
+					if (!n.dateSubmitted) {
+						return false;
+					}
 					const submittedDate = new Date(n.dateSubmitted as string);
 					return submittedDate >= filterDate;
 				});
@@ -166,16 +163,8 @@ export function useAnalysisDisplayData({
 		// Apply sorting
 		if (sortField) {
 			names.sort((a, b) => {
-				let aVal = a[sortField as keyof ConsolidatedName] as
-					| string
-					| number
-					| null
-					| undefined;
-				let bVal = b[sortField as keyof ConsolidatedName] as
-					| string
-					| number
-					| null
-					| undefined;
+				let aVal = a[sortField as keyof ConsolidatedName] as string | number | null | undefined;
+				let bVal = b[sortField as keyof ConsolidatedName] as string | number | null | undefined;
 
 				if (sortField === "dateSubmitted") {
 					aVal = aVal ? new Date(aVal as string).getTime() : 0;
@@ -183,9 +172,7 @@ export function useAnalysisDisplayData({
 				}
 
 				if (typeof aVal === "string" && typeof bVal === "string") {
-					return sortDirection === "desc"
-						? bVal.localeCompare(aVal)
-						: aVal.localeCompare(bVal);
+					return sortDirection === "desc" ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
 				}
 
 				const aNum = Number(aVal) || 0;
@@ -195,26 +182,19 @@ export function useAnalysisDisplayData({
 		}
 
 		return names;
-	}, [
-		highlights,
-		consolidatedNames,
-		isAdmin,
-		sortField,
-		sortDirection,
-		filterConfig,
-	]);
+	}, [highlights, consolidatedNames, isAdmin, sortField, sortDirection, filterConfig]);
 
 	// 3. Summary Stats
 	const summaryStats = useMemo(() => {
-		if (displayNames.length === 0) return null;
+		if (displayNames.length === 0) {
+			return null;
+		}
 
 		const maxRating = Math.max(...displayNames.map((n) => n.rating));
 		const maxWins = Math.max(...displayNames.map((n) => n.wins));
 		const maxSelected = Math.max(...displayNames.map((n) => n.selected));
-		const avgRating =
-			displayNames.reduce((sum, n) => sum + n.rating, 0) / displayNames.length;
-		const avgWins =
-			displayNames.reduce((sum, n) => sum + n.wins, 0) / displayNames.length;
+		const avgRating = displayNames.reduce((sum, n) => sum + n.rating, 0) / displayNames.length;
+		const avgWins = displayNames.reduce((sum, n) => sum + n.wins, 0) / displayNames.length;
 		const totalSelected = displayNames.reduce((sum, n) => sum + n.selected, 0);
 
 		return {
@@ -230,35 +210,40 @@ export function useAnalysisDisplayData({
 
 	// 4. Insights & Percentiles
 	const namesWithInsights = useMemo(() => {
-		if (displayNames.length === 0) return [];
+		if (displayNames.length === 0) {
+			return [];
+		}
 
 		const ratings = displayNames.map((n) => n.rating);
 		const selectedCounts = displayNames.map((n) => n.selected);
 
 		return displayNames.map((item) => {
 			const ratingPercentile = calculatePercentile(item.rating, ratings, true);
-			const selectedPercentile = calculatePercentile(
-				item.selected,
-				selectedCounts,
-				true,
-			);
+			const selectedPercentile = calculatePercentile(item.selected, selectedCounts, true);
 
 			const insights: string[] = [];
-			if (ratingPercentile <= 10) insights.push("worst_rated");
-			if (selectedPercentile <= 10 && item.selected === 0)
+			if (ratingPercentile <= 10) {
+				insights.push("worst_rated");
+			}
+			if (selectedPercentile <= 10 && item.selected === 0) {
 				insights.push("never_selected");
-			if (item.selected === 0 && item.wins === 0 && item.rating <= 1500)
+			}
+			if (item.selected === 0 && item.wins === 0 && item.rating <= 1500) {
 				insights.push("inactive");
-			if (ratingPercentile <= 20 && selectedPercentile <= 20)
+			}
+			if (ratingPercentile <= 20 && selectedPercentile <= 20) {
 				insights.push("poor_performer");
-			if (ratingPercentile >= 90) insights.push("top_rated");
-			if (selectedPercentile >= 90) insights.push("most_selected");
-			if (ratingPercentile >= 70 && selectedPercentile < 50)
+			}
+			if (ratingPercentile >= 90) {
+				insights.push("top_rated");
+			}
+			if (selectedPercentile >= 90) {
+				insights.push("most_selected");
+			}
+			if (ratingPercentile >= 70 && selectedPercentile < 50) {
 				insights.push("underrated");
-			if (
-				item.wins > 0 &&
-				!displayNames.find((n) => n.id !== item.id && n.wins > 0)
-			) {
+			}
+			if (item.wins > 0 && !displayNames.find((n) => n.id !== item.id && n.wins > 0)) {
 				insights.push("undefeated");
 			}
 
@@ -272,7 +257,9 @@ export function useAnalysisDisplayData({
 	}, [displayNames]);
 
 	const generalInsights = useMemo(() => {
-		if (!summaryStats || displayNames.length === 0) return [];
+		if (!summaryStats || displayNames.length === 0) {
+			return [];
+		}
 
 		const result: Array<{ type: string; message: string; icon: string }> = [];
 
@@ -285,9 +272,7 @@ export function useAnalysisDisplayData({
 			});
 		}
 
-		const neverSelectedCount = displayNames.filter(
-			(n) => n.selected === 0,
-		).length;
+		const neverSelectedCount = displayNames.filter((n) => n.selected === 0).length;
 		if (neverSelectedCount > 0) {
 			result.push({
 				type: "warning",

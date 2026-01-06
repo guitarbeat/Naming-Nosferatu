@@ -38,7 +38,9 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 		// Suspense variant
 		if (variant === "suspense") {
-			if (!children) return null;
+			if (!children) {
+				return null;
+			}
 
 			const fallback = (
 				<div
@@ -48,16 +50,12 @@ export const Loading: React.FC<LoadingProps> = memo(
 						<video
 							src={randomAsset}
 							className={styles.loadingGif}
-							autoPlay
-							muted
-							loop
+							autoPlay={true}
+							muted={true}
+							loop={true}
 						/>
 					) : (
-						<img
-							src={randomAsset}
-							alt="Loading..."
-							className={styles.loadingGif}
-						/>
+						<img src={randomAsset} alt="Loading..." className={styles.loadingGif} />
 					)}
 					{text && <p className={styles.loadingText}>{text}</p>}
 					<span className={styles.srOnly}>Loading...</span>
@@ -99,16 +97,12 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<video
 						src={randomAsset}
 						className={styles.loadingGif}
-						autoPlay
-						muted
-						loop
+						autoPlay={true}
+						muted={true}
+						loop={true}
 					/>
 				) : (
-					<img
-						src={randomAsset}
-						alt="Loading..."
-						className={styles.loadingGif}
-					/>
+					<img src={randomAsset} alt="Loading..." className={styles.loadingGif} />
 				)}
 				{text && <p className={styles.loadingText}>{text}</p>}
 				<span className={styles.srOnly}>Loading...</span>

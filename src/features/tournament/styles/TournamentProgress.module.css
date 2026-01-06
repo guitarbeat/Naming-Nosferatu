@@ -9,12 +9,8 @@
 	max-width: 100%;
 	padding: clamp(var(--space-2), 1.5vw, var(--space-3));
 	margin-bottom: clamp(var(--space-2), 1.5vw, var(--space-4));
-	background: linear-gradient(
-		135deg,
-		rgb(255 255 255 / 8%) 0%,
-		rgb(255 255 255 / 4%) 100%
-	);
-	border: var(--card-border-width) solid rgb(255 255 255 / 15%);
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
 	border-radius: var(--card-border-radius);
 	box-shadow: var(--shadow-lg);
 	backdrop-filter: blur(20px);
@@ -28,11 +24,7 @@
 	inset: 0;
 	pointer-events: none;
 	content: "";
-	background: radial-gradient(
-		circle at 50% 0%,
-		rgb(255 255 255 / 8%) 0%,
-		transparent 50%
-	);
+	background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, transparent 50%);
 	opacity: 0.6;
 }
 
@@ -49,7 +41,7 @@
 	flex-flow: row wrap;
 	align-items: center;
 	gap: var(--space-3);
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 .roundNumber {
@@ -75,31 +67,22 @@
 
 .percentageInfo {
 	position: relative;
-	padding: clamp(var(--space-2), 1.5vw, var(--space-3))
-		clamp(var(--space-4), 2.5vw, var(--space-5));
+	padding: clamp(var(--space-2), 1.5vw, var(--space-3)) clamp(var(--space-4), 2.5vw, var(--space-5));
 	font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
 	font-weight: var(--font-weight-bold);
 	color: var(--primary-600);
-	background: linear-gradient(
-		135deg,
-		rgb(59 130 246 / 12%) 0%,
-		rgb(59 130 246 / 8%) 100%
-	);
-	border: var(--card-border-width) solid rgb(59 130 246 / 25%);
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 12%, transparent) 0%, color-mix(in srgb, var(--color-info) 8%, transparent) 100%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-info) 25%, transparent);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-md);
 	transition: var(--transition-base);
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.percentageInfo:hover {
-		background: linear-gradient(
-			135deg,
-			rgb(59 130 246 / 15%) 0%,
-			rgb(59 130 246 / 10%) 100%
-		);
-		border-color: rgb(59 130 246 / 30%);
+		background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 15%, transparent) 0%, color-mix(in srgb, var(--color-info) 10%, transparent) 100%);
+		border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 		box-shadow: var(--shadow-lg);
 		transform: var(--transform-hover-scale);
 	}
@@ -114,12 +97,12 @@
 	max-width: 350px;
 	padding: var(--space-4) var(--space-6);
 	font-size: var(--text-lg);
-	color: white;
-	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-	border: 2px solid var(--primary-300);
+	color: var(--color-neutral-50);
+	background: linear-gradient(135deg, var(--primary-500, var(--color-info)), var(--primary-600, var(--color-info)));
+	border: var(--card-border-width) solid var(--primary-300, var(--color-info));
 	border-radius: var(--radius-lg);
-	box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-	animation: slideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	box-shadow: var(--shadow-md);
+	animation: slideUp var(--duration-slow) var(--ease-elastic);
 }
 
 .resultContent {
@@ -155,7 +138,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgb(0 0 0 / 80%);
+	background: var(--overlay-dark);
 	backdrop-filter: blur(8px);
 	animation: fadeIn 0.3s ease-out;
 }
@@ -171,7 +154,7 @@
 	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 	border: 3px solid var(--primary-300);
 	border-radius: var(--radius-xl);
-	box-shadow: 0 8px 32px rgb(0 0 0 / 30%);
+	box-shadow: var(--shadow-xl);
 	animation: scaleIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -184,7 +167,7 @@
 	margin: 0;
 	font-size: var(--text-3xl);
 	font-weight: 700;
-	text-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+	text-shadow: var(--text-shadow-sm);
 }
 
 .roundSubtitle {

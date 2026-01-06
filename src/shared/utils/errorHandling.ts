@@ -50,11 +50,7 @@ export class ApiClient {
 
 	// Simple API methods without resilient wrapper for now
 	async get<T>(endpoint: string, context?: string): Promise<T> {
-		return this.makeRequest<T>(
-			endpoint,
-			{ method: "GET" },
-			context || `GET ${endpoint}`,
-		);
+		return this.makeRequest<T>(endpoint, { method: "GET" }, context || `GET ${endpoint}`);
 	}
 
 	async post<T>(endpoint: string, data: unknown, context?: string): Promise<T> {
@@ -80,19 +76,12 @@ export class ApiClient {
 	}
 
 	async delete<T>(endpoint: string, context?: string): Promise<T> {
-		return this.makeRequest<T>(
-			endpoint,
-			{ method: "DELETE" },
-			context || `DELETE ${endpoint}`,
-		);
+		return this.makeRequest<T>(endpoint, { method: "DELETE" }, context || `DELETE ${endpoint}`);
 	}
 }
 
 // Validation utilities with error handling
-export const validateInput = (
-	value: unknown,
-	rules: ValidationRule[],
-): ValidationResult => {
+export const validateInput = (value: unknown, rules: ValidationRule[]): ValidationResult => {
 	const errors: string[] = [];
 
 	for (const rule of rules) {
@@ -126,13 +115,13 @@ export const validationRules = {
 	minLength: (min: number, message?: string): ValidationRule => ({
 		name: "minLength",
 		validator: (value) => typeof value === "string" && value.length >= min,
-		message: message || `Must be at least ${min} characters`,
+		message: message || `Please enter at least ${min} characters`,
 	}),
 
 	maxLength: (max: number, message?: string): ValidationRule => ({
 		name: "maxLength",
 		validator: (value) => typeof value === "string" && value.length <= max,
-		message: message || `Must be no more than ${max} characters`,
+		message: message || `Please enter no more than ${max} characters`,
 	}),
 
 	email: (message = "Please enter a valid email address"): ValidationRule => ({
@@ -160,11 +149,7 @@ interface ValidationResult {
 // Graceful degradation utilities
 export const gracefulDegradation = {
 	// Fallback for when features aren't available
-	withFallback: <T>(
-		primaryFn: () => T,
-		fallbackFn: () => T,
-		context: string,
-	): T => {
+	withFallback: <T>(primaryFn: () => T, fallbackFn: () => T, context: string): T => {
 		try {
 			return primaryFn();
 		} catch (error) {

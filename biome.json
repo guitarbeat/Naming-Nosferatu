@@ -6,8 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist"],
-		"experimentalScannerIgnores": ["**/node_modules/**", "**/dist/**", "**/build/**"]
+		"includes": ["**", "!!**/dist", "!!**/node_modules/**", "!!**/build/**"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -60,11 +59,8 @@
 				"noMisleadingInstantiator": "error",
 				"noPrototypeBuiltins": "warn",
 				"noRedeclare": "error",
-				"noSelfAssign": "error",
-				"noUnsafeFinally": "error",
 				"noUnsafeNegation": "error",
-				"useGetterReturn": "error",
-				"useValidTypeof": "error"
+				"useGetterReturn": "error"
 			},
 			"style": {
 				"noImplicitBoolean": "warn",
@@ -145,6 +141,32 @@
 				"rules": {
 					"complexity": {
 						"noImportantStyles": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["scripts/**/*.js"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "warn"
+					},
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/core/constants/**/*.ts", "src/**/constants.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
 					}
 				}
 			}

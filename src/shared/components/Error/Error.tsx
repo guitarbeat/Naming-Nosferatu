@@ -123,11 +123,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 				id="error-boundary-glass-filter"
 				style={{ width: "100%", maxWidth: "600px", height: "auto" }}
 			>
-				<div
-					ref={mainContentRef}
-					className={boundaryContentClassName}
-					tabIndex={-1}
-				>
+				<div ref={mainContentRef} className={boundaryContentClassName} tabIndex={-1}>
 					<div className={styles.boundaryIcon} aria-hidden="true">
 						🐱
 					</div>
@@ -151,10 +147,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 						>
 							Home
 						</button>
-						<button
-							onClick={handleCopyDiagnostics}
-							className={styles.boundaryCopyButton}
-						>
+						<button onClick={handleCopyDiagnostics} className={styles.boundaryCopyButton}>
 							{copied ? "Copied!" : "Copy Diagnostics"}
 						</button>
 					</div>
@@ -162,9 +155,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 					{process.env.NODE_ENV === "development" && error && (
 						<details className={styles.boundaryDetails}>
 							<summary>Error Details</summary>
-							<pre className={styles.boundaryErrorStack}>
-								{error.toString()}
-							</pre>
+							<pre className={styles.boundaryErrorStack}>{error.toString()}</pre>
 						</details>
 					)}
 				</div>
@@ -224,7 +215,9 @@ const ErrorList: React.FC<ErrorListProps> = ({
 	showDetails: _showDetails,
 	className,
 }) => {
-	if (!errors.length) return null;
+	if (!errors.length) {
+		return null;
+	}
 	return (
 		<div className={`${styles.list} ${className}`}>
 			{onClearAll && (
@@ -240,10 +233,7 @@ const ErrorList: React.FC<ErrorListProps> = ({
 							{(err as any).message || String(err)}
 						</div>
 						{onDismiss && (
-							<button
-								onClick={() => onDismiss(i)}
-								className={styles.listDismissButton}
-							>
+							<button onClick={() => onDismiss(i)} className={styles.listDismissButton}>
 								×
 							</button>
 						)}
@@ -265,14 +255,12 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	context: _context = "general",
 	className = "",
 }) => {
-	if (!error) return null;
-	const msg =
-		typeof error === "string" ? error : (error as AppError).message || "Error";
+	if (!error) {
+		return null;
+	}
+	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
-		<div
-			className={`${styles.inline} ${styles.inlineGeneral} ${className}`}
-			role="alert"
-		>
+		<div className={`${styles.inline} ${styles.inlineGeneral} ${className}`} role="alert">
 			<div className={styles.inlineContent}>
 				<span className={styles.inlineIcon}>⚠️</span>
 				<span className={styles.inlineMessage}>{msg}</span>
@@ -284,6 +272,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 // ErrorBoundary Wrapper Class
 class ErrorBoundary extends React.Component<
 	{
+		// biome-ignore lint/style/useNamingConvention: Component prop, PascalCase is appropriate
 		FallbackComponent: React.ComponentType<ErrorBoundaryFallbackProps>;
 		onReset?: () => void;
 		children?: React.ReactNode;
@@ -295,8 +284,7 @@ class ErrorBoundary extends React.Component<
 		// Use globalThis.Error to avoid conflict with exported Error alias
 		const NativeError = globalThis.Error;
 		return {
-			error:
-				error instanceof NativeError ? error : new NativeError(String(error)),
+			error: error instanceof NativeError ? error : new NativeError(String(error)),
 		};
 	}
 	reset = () => {
@@ -306,9 +294,7 @@ class ErrorBoundary extends React.Component<
 	render() {
 		if (this.state.error) {
 			const Fallback = this.props.FallbackComponent;
-			return (
-				<Fallback error={this.state.error} resetErrorBoundary={this.reset} />
-			);
+			return <Fallback error={this.state.error} resetErrorBoundary={this.reset} />;
 		}
 		return this.props.children;
 	}
@@ -326,10 +312,7 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 }) => {
 	if (variant === "boundary") {
 		return (
-			<ErrorBoundary
-				FallbackComponent={ErrorBoundaryFallback}
-				onReset={onRetry as () => void}
-			>
+			<ErrorBoundary FallbackComponent={ErrorBoundaryFallback} onReset={onRetry as () => void}>
 				{children}
 			</ErrorBoundary>
 		);

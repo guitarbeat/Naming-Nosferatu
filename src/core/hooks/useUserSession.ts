@@ -8,6 +8,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { STORAGE_KEYS } from "../../core/constants";
 import { resolveSupabaseClient } from "../../shared/services/supabase/client";
 import { isUserAdmin } from "../../shared/utils/core";
 import useAppStore from "../store/useAppStore";
@@ -15,7 +16,9 @@ import useAppStore from "../store/useAppStore";
 let canUseSetUserContext = true;
 
 const isRpcUnavailableError = (error: unknown) => {
-	if (!error || typeof error !== "object") return false;
+	if (!error || typeof error !== "object") {
+		return false;
+	}
 	const err = error as Record<string, unknown>;
 
 	const statusCode = typeof err.status === "number" ? err.status : null;
@@ -32,20 +35,21 @@ const isRpcUnavailableError = (error: unknown) => {
 	);
 };
 
-const setSupabaseUserContext = async (
-	activeSupabase: unknown,
-	userName: string,
-) => {
+const setSupabaseUserContext = async (activeSupabase: unknown, userName: string) => {
 	if (!canUseSetUserContext || !activeSupabase || !userName) {
 		return;
 	}
 
 	try {
 		const trimmedName = userName.trim?.() ?? userName;
-		if (!trimmedName) return;
+		if (!trimmedName) {
+			return;
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// RPC parameter names must match database function signature (snake_case required)
 		await (activeSupabase as any).rpc("set_user_context", {
+			// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 			user_name_param: trimmedName,
 		});
 	} catch (error) {
@@ -69,9 +73,13 @@ const setSupabaseUserContext = async (
  * @returns {string} Normalized username
  */
 const normalizeUsername = (name: string) => {
-	if (!name || typeof name !== "string") return "";
+	if (!name || typeof name !== "string") {
+		return "";
+	}
 	const trimmed = name.trim();
-	if (!trimmed) return "";
+	if (!trimmed) {
+		return "";
+	}
 	// Capitalize first letter, lowercase the rest
 	return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
 };
@@ -89,7 +97,7 @@ function useUserSession({
 	useEffect(() => {
 		let storedUserName: string | null = null;
 		try {
-			storedUserName = localStorage.getItem("catNamesUser");
+			storedUserName = localStorage.getItem(STORAGE_KEYS.USER);
 		} catch (error) {
 			// localStorage might not be available (private browsing, etc.)
 			if (process.env.NODE_ENV === "development") {
@@ -127,7 +135,7 @@ function useUserSession({
 				// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
 				// Actually, for better UX let's save it so refresh works.
 				// If they want to be admin they can "re-login".
-				localStorage.setItem("catNamesUser", randomName);
+				localStorage.setItem(STORAGE_KEYS.USER, randomName);
 				userActions.login(randomName);
 
 				// Also need to set the supabase context for this new guest
@@ -163,11 +171,9 @@ function useUserSession({
 				const activeSupabase = await resolveSupabaseClient();
 
 				if (!activeSupabase) {
-					console.warn(
-						"Supabase client is not configured. Proceeding with local-only login.",
-					);
+					console.warn("Supabase client is not configured. Proceeding with local-only login.");
 
-					localStorage.setItem("catNamesUser", trimmedName);
+					localStorage.setItem(STORAGE_KEYS.USER, trimmedName);
 					userActions.login(trimmedName);
 					return true;
 				}
@@ -184,26 +190,29 @@ function useUserSession({
 
 				if (fetchError) {
 					console.error("Error fetching user:", fetchError);
-					const errorMessage =
-						fetchError.message || "Cannot verify existing user";
+					const errorMessage = fetchError.message || "Cannot verify existing user";
 					showToast?.({ message: errorMessage, type: "error" });
 					throw fetchError;
 				}
 
 				// Create user if doesn't exist using RPC function (bypasses RLS)
-				if (!existingUser) {
+				if (existingUser) {
+					showToast?.({ message: "Logging in...", type: "info" });
+				} else {
 					// * Use the create_user_account RPC function which bypasses RLS
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					const { error: rpcError } = await (activeSupabase as any).rpc(
-						"create_user_account",
-						{
-							p_user_name: trimmedName,
-							p_preferences: {
-								sound_enabled: true,
-								theme_preference: "dark",
-							},
+					// RPC parameter names must match database function signature (snake_case required)
+					const { error: rpcError } = await (activeSupabase as any).rpc("create_user_account", {
+						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
+						p_user_name: trimmedName,
+						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
+						p_preferences: {
+							// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+							sound_enabled: true,
+							// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+							theme_preference: "dark",
 						},
-					);
+					});
 
 					if (rpcError) {
 						// * Check if this is a duplicate key error (race condition)
@@ -236,21 +245,16 @@ function useUserSession({
 								showToast?.({ message: "Logging in...", type: "info" });
 							} else {
 								// * Unexpected: duplicate key error but user doesn't exist
-								const errorMessage =
-									rpcError.message || "Failed to create user account";
+								const errorMessage = rpcError.message || "Failed to create user account";
 								if (process.env.NODE_ENV === "development") {
-									console.error(
-										"Duplicate key error but user not found:",
-										errorMessage,
-									);
+									console.error("Duplicate key error but user not found:", errorMessage);
 								}
 								showToast?.({ message: errorMessage, type: "error" });
 								throw rpcError;
 							}
 						} else {
 							// * Not a duplicate key error - this is a real error
-							const errorMessage =
-								rpcError.message || "Failed to create user account";
+							const errorMessage = rpcError.message || "Failed to create user account";
 							if (process.env.NODE_ENV === "development") {
 								console.error("Error creating user:", errorMessage, rpcError);
 							}
@@ -263,8 +267,6 @@ function useUserSession({
 							type: "success",
 						});
 					}
-				} else {
-					showToast?.({ message: "Logging in...", type: "info" });
 				}
 
 				// Store username and update state
@@ -282,8 +284,7 @@ function useUserSession({
 
 				// Handle specific error types
 				if (error.message?.includes("fetch")) {
-					errorMessage =
-						"Cannot connect to database. Please check your connection.";
+					errorMessage = "Cannot connect to database. Please check your connection.";
 				} else if (error.message?.includes("JWT")) {
 					errorMessage = "Authentication error. Please try again.";
 				} else if (error.message) {
@@ -305,7 +306,7 @@ function useUserSession({
 	const logout = useCallback(async () => {
 		try {
 			setError(null);
-			localStorage.removeItem("catNamesUser");
+			localStorage.removeItem(STORAGE_KEYS.USER);
 			userActions.logout();
 			return true;
 		} catch (err: unknown) {

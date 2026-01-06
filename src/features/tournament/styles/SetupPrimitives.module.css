@@ -38,7 +38,7 @@
 
 .surfaceCard {
 	background: var(--surface-color);
-	border: 1px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
 }
 
@@ -83,7 +83,7 @@
 
 .buttonPrimary {
 	composes: buttonBase;
-	color: var(--button-text-light, white);
+	color: var(--button-text-light, var(--color-neutral-50));
 	background: var(--button-primary-bg, var(--primary-color));
 }
 
@@ -108,13 +108,13 @@
 
 .buttonInverted {
 	composes: buttonBase;
-	color: var(--button-text-light, white);
-	background: var(--button-secondary-bg, #2a2a2a);
-	border-color: #444;
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-secondary-bg, var(--glass-bg-strong));
+	border-color: var(--glass-border);
 }
 
 .buttonInverted:hover:not(:disabled) {
-	background: var(--button-secondary-hover, #333);
+	background: var(--button-secondary-hover, var(--glass-bg));
 	border-color: var(--border-color);
 	box-shadow: var(--shadow-md);
 	transform: var(--transform-hover-lift);

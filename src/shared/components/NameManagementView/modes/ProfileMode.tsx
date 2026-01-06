@@ -37,9 +37,7 @@ export function ProfileMode({
 			{/* Header Extension */}
 			{extensions.header && (
 				<div className={styles.headerSection}>
-					{typeof extensions.header === "function"
-						? extensions.header()
-						: extensions.header}
+					{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 				</div>
 			)}
 
@@ -73,14 +71,11 @@ export function ProfileMode({
 			{extensions.bulkActions && (
 				<section className={styles.bulkActionsSection}>
 					{typeof extensions.bulkActions === "function"
-						? React.createElement(
-								extensions.bulkActions as React.ComponentType<unknown>,
-								{
-									onExport: () => {
-										console.log("Export", names.length, "names");
-									},
+						? React.createElement(extensions.bulkActions as React.ComponentType<unknown>, {
+								onExport: () => {
+									console.log("Export", names.length, "names");
 								},
-							)
+							})
 						: null}
 				</section>
 			)}
@@ -102,9 +97,7 @@ export function ProfileMode({
 			{/* Navbar Extension */}
 			{extensions.navbar && (
 				<div className={styles.navbarSection}>
-					{typeof extensions.navbar === "function"
-						? extensions.navbar()
-						: extensions.navbar}
+					{typeof extensions.navbar === "function" ? extensions.navbar() : extensions.navbar}
 				</div>
 			)}
 		</div>

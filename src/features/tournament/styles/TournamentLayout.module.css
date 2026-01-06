@@ -9,12 +9,11 @@
 	width: 100%;
 	max-width: 100%;
 	min-height: calc(100vh - clamp(var(--space-4), 3vw, var(--space-8)));
-	padding: clamp(var(--space-2), 2vw, var(--space-4))
-		clamp(var(--space-3), 3vw, var(--space-6));
+	padding: clamp(var(--space-2), 2vw, var(--space-4)) clamp(var(--space-3), 3vw, var(--space-6));
 	margin: 0 auto;
 	overflow-x: hidden;
 	isolation: isolate;
-	animation: fadeIn 0.4s ease-out;
+	animation: fadeIn var(--duration-slow) var(--ease-out);
 }
 
 .tournamentLayout {
@@ -62,7 +61,7 @@
 	animation: fadeIn var(--duration-normal) var(--ease-out);
 	position: fixed;
 	inset: 0;
-	background: rgb(0 0 0 / 50%);
+	background: var(--overlay-dark);
 	backdrop-filter: blur(4px);
 	z-index: calc(var(--z-modal) - 1);
 }
@@ -95,11 +94,11 @@
 	min-height: 42px;
 	padding: var(--space-2) var(--space-5);
 	font-weight: 700;
-	color: var(--button-text-light, #fff);
+	color: var(--button-text-light, white);
 	background: linear-gradient(135deg, var(--error-600), var(--error-700));
 	border: 1px solid var(--error-500);
 	border-radius: var(--radius-full);
-	box-shadow: 0 6px 18px rgb(220 38 38 / 25%);
+	box-shadow: 0 6px 18px var(--overlay-red-medium);
 	transition: all var(--duration-normal) var(--ease-out);
 }
 
@@ -122,19 +121,19 @@
 .confirmButton:hover {
 	background: linear-gradient(135deg, var(--error-700), var(--error-800));
 	border-color: var(--error-600);
-	transform: translateY(-1px);
+	transform: translateY(calc(var(--space-1) * -1));
 }
 
 .cancelButton:hover {
 	background: var(--card-hover);
 	border-color: var(--primary-300);
-	transform: translateY(-1px);
+	transform: translateY(calc(var(--space-1) * -1));
 }
 
 .confirmButton:focus-visible,
 .cancelButton:focus-visible {
-	outline: 3px solid var(--primary-color);
-	outline-offset: 2px;
+	outline: var(--focus-ring-width) solid var(--primary-color);
+	outline-offset: var(--focus-ring-offset);
 }
 
 @keyframes fadeIn {

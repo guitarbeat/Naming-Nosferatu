@@ -6,7 +6,7 @@
 	font-weight: var(--font-weight-bold);
 	color: var(--text-primary);
 	line-height: var(--leading-tight);
-	letter-spacing: -0.02em;
+	letter-spacing: var(--tracking-tight);
 }
 
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
@@ -14,28 +14,23 @@
 	.tournamentTitle {
 		background: linear-gradient(
 			135deg,
-			rgb(var(--neon-cyan-rgb), 0.9) 0%,
-			rgb(var(--hot-pink-rgb), 0.8) 50%,
-			#f8fafc 100%
+			var(--color-neon-cyan) 0%,
+			var(--color-hot-pink) 50%,
+			var(--color-neutral-50) 100%
 		);
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
-		filter: drop-shadow(0 2px 4px rgb(var(--neon-cyan-rgb), 0.3));
+		filter: drop-shadow(var(--text-shadow-sm));
 	}
 }
 
 /* Light mode gradient */
 :global(:root[data-theme="light"]) .tournamentTitle {
-	background: linear-gradient(
-		135deg,
-		#0f172a 0%,
-		#1e293b 40%,
-		#334155 100%
-	);
+	background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-neutral-800) 40%, var(--color-neutral-700) 100%);
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
 	filter: none;
-	color: #0f172a;
+	color: var(--color-neutral-900);
 }
 
 /* Fallback */
@@ -45,7 +40,7 @@
 	}
 
 	:global(:root[data-theme="light"]) .tournamentTitle {
-		color: #0f172a;
+		color: var(--color-neutral-900);
 	}
 }
 
@@ -63,8 +58,8 @@
 	align-items: flex-start;
 	justify-content: space-between;
 	padding-bottom: var(--space-4);
-	border-bottom: 1px solid var(--border-color);
-	animation: slideDown 0.3s ease-out;
+	border-bottom: var(--card-border-width) solid var(--border-color);
+	animation: slideDown var(--duration-normal) var(--ease-out);
 	flex-shrink: 0;
 }
 
@@ -88,17 +83,15 @@
 	line-height: 1.4;
 	color: var(--text-primary);
 	background: var(--card-background);
-	border: 2px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
-	transition:
-		border-color 0.2s ease,
-		box-shadow 0.2s ease;
+	transition: var(--transition-base);
 }
 
 .headerSearchInput:focus {
 	outline: none;
 	border-color: var(--accent-color);
-	box-shadow: 0 0 0 3px var(--accent-color-alpha);
+	box-shadow: var(--focus-ring);
 }
 
 .headerSearchInput::placeholder {
@@ -116,10 +109,10 @@
 	font-size: var(--text-sm);
 	color: var(--text-primary);
 	background: var(--card-background);
-	border: 1px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-md);
 	cursor: pointer;
-	transition: border-color 0.2s ease;
+	transition: var(--transition-color);
 	min-width: 120px;
 }
 
@@ -130,13 +123,13 @@
 .headerFilterSelect:focus {
 	outline: none;
 	border-color: var(--accent-color);
-	box-shadow: 0 0 0 2px var(--accent-color-alpha);
+	box-shadow: var(--focus-ring);
 }
 
 @keyframes slideDown {
 	from {
 		opacity: 0;
-		transform: translateY(-10px);
+		transform: translateY(calc(var(--space-2) * -1));
 	}
 	to {
 		opacity: 1;
@@ -160,7 +153,7 @@
 
 	/* elevatedCard styles */
 	background: var(--surface-color);
-	border: 1px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	box-shadow: var(--shadow-lg);
 	min-width: 0;
 }
@@ -169,13 +162,13 @@
 	box-sizing: border-box;
 	width: 100%;
 	padding: var(--space-5) var(--space-6) var(--space-4);
-	background: linear-gradient(
-		135deg,
-		rgb(var(--primary-rgb) / 6%) 0%,
-		rgb(var(--primary-rgb) / 2%) 3%,
-		transparent 60%
-	);
-	border-bottom: 1px solid var(--border-color);
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-info) 6%, transparent) 0%,
+			color-mix(in srgb, var(--color-info) 2%, transparent) 3%,
+			transparent 60%
+		);
+	border-bottom: var(--card-border-width) solid var(--border-color);
 }
 
 .headerRow {
@@ -230,23 +223,22 @@
 	font-size: var(--text-sm);
 	font-weight: 600;
 	color: var(--text-primary);
-	letter-spacing: 0.025em;
+	letter-spacing: var(--tracking-normal);
 	white-space: nowrap;
-	text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+	text-shadow: var(--text-shadow-sm);
 	cursor: pointer;
 	user-select: none;
 	background: var(--glass-bg);
 	background-image:
-		linear-gradient(var(--card-background), var(--card-background)),
-		var(--gradient-primary);
+		linear-gradient(var(--card-background), var(--card-background)), var(--gradient-primary);
 	background-clip: padding-box;
 	background-origin: border-box;
-	border: 2px solid transparent;
+	border: var(--card-border-width) solid transparent;
 	border-radius: var(--radius-xl);
 	box-shadow:
-		0 4px 12px rgb(0 0 0 / 15%),
-		0 2px 4px rgb(0 0 0 / 10%),
-		inset 0 1px 0 rgb(255 255 255 / 10%);
+		var(--shadow-md),
+		var(--shadow-sm),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
 	backdrop-filter: blur(12px);
 	transition: all var(--duration-normal) var(--ease-out);
 }
@@ -258,23 +250,16 @@
 	width: 100%;
 	height: 100%;
 	content: "";
-	background: linear-gradient(
-		90deg,
-		transparent,
-		rgb(255 255 255 / 10%),
-		transparent
-	);
+		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-neutral-50) 10%, transparent), transparent);
 	transition: left var(--duration-slow) var(--ease-out);
 }
 
 .headerActionButton:hover:not(:disabled) {
-	background-image:
-		linear-gradient(var(--card-hover), var(--card-hover)),
-		var(--gradient-vibrant);
+	background-image: linear-gradient(var(--card-hover), var(--card-hover)), var(--gradient-vibrant);
 	border-color: var(--neon-cyan-100);
 	box-shadow:
-		0 8px 25px rgb(0 0 0 / 20%),
-		0 4px 12px rgb(0 0 0 / 15%),
+		var(--shadow-xl),
+		var(--shadow-md),
 		var(--glow-cyan);
 	transform: translateY(-2px) scale(1.02);
 }
@@ -294,23 +279,21 @@
 	color: var(--charcoal);
 	text-shadow: none;
 	background-image:
-		linear-gradient(var(--accent-color), var(--highlight-color)),
-		var(--gradient-vibrant);
+		linear-gradient(var(--accent-color), var(--highlight-color)), var(--gradient-vibrant);
 	border-color: var(--mimosa);
 	box-shadow:
-		0 6px 20px rgb(232 191 118 / 40%),
-		0 3px 8px rgb(241 164 56 / 30%),
+		var(--shadow-lg),
+		var(--shadow-md),
 		var(--glow-pink);
 	transform: translateY(-1px);
 }
 
 .headerActionButtonActive:hover:not(:disabled) {
 	background-image:
-		linear-gradient(var(--highlight-color), var(--accent-color)),
-		var(--gradient-vibrant);
+		linear-gradient(var(--highlight-color), var(--accent-color)), var(--gradient-vibrant);
 	box-shadow:
-		0 10px 30px rgb(232 191 118 / 50%),
-		0 5px 15px rgb(241 164 56 / 40%),
+		var(--shadow-xl),
+		var(--shadow-lg),
 		var(--glow-vibrant);
 	transform: translateY(-3px) scale(1.03);
 }
@@ -325,11 +308,11 @@
 }
 
 .headerActionButton:focus-visible {
-	outline: 3px solid var(--accent-color);
-	outline-offset: 3px;
+	outline: var(--focus-ring-width) solid var(--accent-color);
+	outline-offset: var(--space-1);
 	box-shadow:
-		0 0 0 3px rgb(232 191 118 / 30%),
-		0 4px 12px rgb(0 0 0 / 15%);
+		var(--focus-ring),
+		var(--shadow-md);
 }
 
 .selectAllButton {
@@ -348,9 +331,9 @@
 	transition: var(--transition-base);
 	min-height: var(--button-height-md);
 
-	color: var(--button-text-light, white);
-	background: var(--button-secondary-bg, #2a2a2a);
-	border-color: #444;
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-secondary-bg, var(--color-neutral-800));
+	border-color: var(--color-neutral-600);
 
 	min-width: fit-content;
 	padding-block: var(--space-3);
@@ -358,19 +341,19 @@
 }
 
 :global(:root[data-theme="light"]) .selectAllButton {
-	color: #fff;
-	background: #1f2937;
-	border-color: #0f172a;
+	color: var(--color-neutral-50);
+	background: var(--color-neutral-800);
+	border-color: var(--color-neutral-900);
 }
 
 :global(:root[data-theme="light"]) .selectAllButton:hover:not(:disabled) {
-	background: #111827;
-	border-color: #0b1220;
+	background: var(--color-neutral-900);
+	border-color: var(--color-neutral-900);
 }
 
 .selectAllButton:focus-visible {
-	outline: 3px solid #111827;
-	outline-offset: 2px;
+	outline: var(--focus-ring-width) solid var(--color-neutral-900);
+	outline-offset: var(--focus-ring-offset);
 }
 
 @media (width <= 768px) {

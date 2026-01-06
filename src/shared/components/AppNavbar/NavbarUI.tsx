@@ -81,11 +81,9 @@ export function buildNavItems(context: BuildNavItemsContext): NavItem[] {
 			label: "Analysis Mode",
 			shortLabel: "Analysis",
 			icon: AnalysisIcon,
-			ariaLabel: isAnalysisMode
-				? "Disable analysis mode"
-				: "Enable analysis mode",
+			ariaLabel: isAnalysisMode ? "Disable analysis mode" : "Enable analysis mode",
 			isActive: Boolean(isAnalysisMode),
-			onClick: () => onToggleAnalysis(),
+			onClick: () => onToggleAnalysis?.(),
 		},
 	];
 }
@@ -95,25 +93,17 @@ export function buildNavItems(context: BuildNavItemsContext): NavItem[] {
 // UserDisplay
 const MAX_NAME_LENGTH = 18;
 
-function UserDisplay({
-	userName,
-	isAdmin = false,
-}: {
-	userName: string;
-	isAdmin?: boolean;
-}) {
-	if (!userName) return null;
+function UserDisplay({ userName, isAdmin = false }: { userName: string; isAdmin?: boolean }) {
+	if (!userName) {
+		return null;
+	}
 
 	const truncatedUserName =
-		userName.length > MAX_NAME_LENGTH
-			? `${userName.substring(0, MAX_NAME_LENGTH)}...`
-			: userName;
+		userName.length > MAX_NAME_LENGTH ? `${userName.substring(0, MAX_NAME_LENGTH)}...` : userName;
 
 	return (
 		<div className="navbar-user-display">
-			<div className="navbar-avatar-placeholder">
-				{userName.charAt(0).toUpperCase()}
-			</div>
+			<div className="navbar-avatar-placeholder">{userName.charAt(0).toUpperCase()}</div>
 			<div className="navbar-user-info">
 				<span className="navbar-user-name">{truncatedUserName}</span>
 				{isAdmin && <span className="navbar-admin-badge">Admin</span>}
@@ -138,9 +128,7 @@ export function NavbarActions({
 }) {
 	return (
 		<div className="app-navbar__actions">
-			{isLoggedIn && userName && (
-				<UserDisplay userName={userName} isAdmin={isAdmin} />
-			)}
+			{isLoggedIn && userName && <UserDisplay userName={userName} isAdmin={isAdmin} />}
 			{onOpenSuggestName && (
 				<Button
 					onClick={onOpenSuggestName}
@@ -148,7 +136,7 @@ export function NavbarActions({
 					aria-label="Suggest a name"
 					title="Suggest a new cat name"
 				>
-					<SuggestIcon aria-hidden />
+					<SuggestIcon aria-hidden={true} />
 					<span className="app-navbar__btn-text">Suggest</span>
 				</Button>
 			)}
@@ -159,7 +147,7 @@ export function NavbarActions({
 					aria-label="Log out"
 					title="Log out"
 				>
-					<LogoutIcon aria-hidden />
+					<LogoutIcon aria-hidden={true} />
 				</Button>
 			)}
 		</div>
@@ -190,17 +178,11 @@ const NavbarToggle = ({
 				aria-label={ariaLabel}
 				aria-pressed={isActive}
 			>
-				<div
-					className={`${styles.toggleSlider} ${isActive ? styles.active : ""}`}
-				/>
-				<span
-					className={`${styles.toggleLabel} ${!isActive ? styles.active : ""}`}
-				>
+				<div className={`${styles.toggleSlider} ${isActive ? styles.active : ""}`} />
+				<span className={`${styles.toggleLabel} ${isActive ? "" : styles.active}`}>
 					{leftLabel}
 				</span>
-				<span
-					className={`${styles.toggleLabel} ${isActive ? styles.active : ""}`}
-				>
+				<span className={`${styles.toggleLabel} ${isActive ? styles.active : ""}`}>
 					{rightLabel}
 				</span>
 			</button>
@@ -212,11 +194,15 @@ const NavbarToggle = ({
 export const ModeToggles = ({ isMobile = false }: { isMobile?: boolean }) => {
 	// Need to access context without hooking errors if possible, or just expect it to be wrapped
 	const context = React.useContext(NavbarContext);
-	if (!context) return null; // Or throw
+	if (!context) {
+		return null; // Or throw
+	}
 
 	const { isAnalysisMode, toggleAnalysis, isCollapsed } = context;
 
-	if (isCollapsed && !isMobile) return null;
+	if (isCollapsed && !isMobile) {
+		return null;
+	}
 
 	return (
 		<div className="mode-toggles">
@@ -257,13 +243,7 @@ export function NavbarBrand({
 }
 
 // MobileMenuToggle
-export function MobileMenuToggle({
-	isOpen,
-	onToggle,
-}: {
-	isOpen: boolean;
-	onToggle: () => void;
-}) {
+export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onToggle: () => void }) {
 	return (
 		<button
 			type="button"
@@ -310,7 +290,7 @@ export function NavbarCollapseToggle({
 				strokeLinecap="round"
 				strokeLinejoin="round"
 				className={`app-navbar__collapse-icon ${isCollapsed ? "collapsed" : ""}`}
-				aria-hidden
+				aria-hidden={true}
 			>
 				<path d="M15 18l-6-6 6-6" />
 			</svg>
@@ -319,38 +299,35 @@ export function NavbarCollapseToggle({
 }
 
 // NavbarLink
-export function NavbarLink({
-	item,
-	onClick,
-	className = "app-navbar__link",
-	showIcon = true,
-}: {
-	item: NavItem;
-	onClick: (item: NavItem) => void;
-	className?: string;
-	showIcon?: boolean;
-}) {
+export const NavbarLink = React.forwardRef<
+	HTMLButtonElement,
+	{
+		item: NavItem;
+		onClick: (item: NavItem) => void;
+		className?: string;
+		showIcon?: boolean;
+		onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
+	}
+>(function NavbarLink({ item, onClick, className = "app-navbar__link", showIcon = true, onKeyDown }, ref) {
 	const Icon = item.icon;
 
 	return (
 		<button
+			ref={ref}
 			type="button"
 			onClick={() => onClick(item)}
+			onKeyDown={onKeyDown}
 			className={className}
 			data-active={item.isActive}
 			aria-current={item.isActive ? "page" : undefined}
 			aria-label={item.ariaLabel || item.label}
 			title={item.label}
 		>
-			{showIcon && Icon && (
-				<Icon className="app-navbar__link-icon" aria-hidden />
-			)}
-			<span className="app-navbar__link-text">
-				{item.shortLabel || item.label}
-			</span>
+			{showIcon && Icon && <Icon className="app-navbar__link-icon" aria-hidden={true} />}
+			<span className="app-navbar__link-text">{item.shortLabel || item.label}</span>
 		</button>
 	);
-}
+});
 
 // MobileMenu
 export function MobileMenu({
@@ -375,11 +352,7 @@ export function MobileMenu({
 		}
 	}, [isOpen]);
 
-	const handleKeyDown = (
-		event: React.KeyboardEvent,
-		isFirst: boolean,
-		isLast: boolean,
-	) => {
+	const handleKeyDown = (event: React.KeyboardEvent, isFirst: boolean, isLast: boolean) => {
 		if (event.key === "Tab") {
 			if (event.shiftKey && isFirst) {
 				event.preventDefault();
@@ -391,7 +364,9 @@ export function MobileMenu({
 		}
 	};
 
-	if (!isOpen) return null;
+	if (!isOpen) {
+		return null;
+	}
 
 	return (
 		<nav
@@ -403,7 +378,14 @@ export function MobileMenu({
 		>
 			<div className="app-navbar-mobile-panel__content">
 				<button
-					ref={firstLinkRef}
+					ref={(el) => {
+						if (el) {
+							firstLinkRef.current = el;
+							if (navItems.length === 0) {
+								lastLinkRef.current = el;
+							}
+						}
+					}}
 					type="button"
 					onClick={onHomeClick}
 					className="app-navbar__mobile-link"
@@ -415,20 +397,22 @@ export function MobileMenu({
 				</button>
 
 				{navItems.map((item, index) => {
-					const _isLast = index === navItems.length - 1;
+					const isLast = index === navItems.length - 1;
 					return (
 						<NavbarLink
 							key={item.key}
 							item={item}
 							onClick={onNavClick}
 							className="app-navbar__mobile-link"
+							onKeyDown={(e) => handleKeyDown(e, false, isLast)}
+							ref={isLast ? lastLinkRef : undefined}
 						/>
 					);
 				})}
 
 				<div className="app-navbar__mobile-separator" />
 				<div className="app-navbar__mobile-toggles">
-					<ModeToggles isMobile />
+					<ModeToggles isMobile={true} />
 				</div>
 			</div>
 		</nav>

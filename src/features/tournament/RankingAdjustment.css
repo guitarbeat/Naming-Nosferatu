@@ -12,11 +12,7 @@
 	padding-top: var(--space-8);
 	margin-bottom: var(--space-8);
 	text-align: center;
-	background: linear-gradient(
-		135deg,
-		var(--primary-600) 0%,
-		var(--primary-700) 100%
-	);
+	background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
 }
@@ -25,9 +21,9 @@
 	margin-bottom: var(--space-2);
 	font-family: var(--font-serif);
 	font-size: var(--text-4xl);
-	color: white;
+	color: var(--color-neutral-50);
 	text-align: center;
-	text-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+	text-shadow: var(--text-shadow-sm);
 }
 
 .instructions-card {
@@ -37,7 +33,7 @@
 	gap: var(--space-6);
 	align-items: center;
 	margin-bottom: var(--space-6);
-	border: 2px solid var(--primary-200);
+	border: var(--card-border-width) solid var(--primary-200);
 	transition: all var(--duration-normal) var(--ease-out-expo);
 }
 
@@ -55,12 +51,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 48px;
-	height: 48px;
+	width: var(--space-12);
+	height: var(--space-12);
 	font-size: var(--text-2xl);
 	color: var(--primary-color);
 	background: var(--primary-light);
-	border: 2px solid var(--primary-color);
+	border: var(--card-border-width) solid var(--primary-color);
 	border-radius: var(--radius-lg);
 	animation: float 3s ease-in-out infinite;
 }
@@ -105,8 +101,8 @@
 	}
 
 	.instruction-icon {
-		width: 36px;
-		height: 36px;
+		width: var(--space-9);
+		height: var(--space-9);
 		font-size: var(--text-xl);
 	}
 
@@ -136,8 +132,8 @@
 	}
 
 	.rank-badge {
-		width: 32px;
-		height: 32px;
+		width: var(--space-8);
+		height: var(--space-8);
 		font-size: var(--text-base);
 	}
 
@@ -172,8 +168,8 @@
 	}
 
 	.rank-badge {
-		width: 28px;
-		height: 28px;
+		width: var(--space-7);
+		height: var(--space-7);
 		font-size: var(--text-sm);
 	}
 
@@ -182,15 +178,15 @@
 	}
 
 	.drag-handle svg {
-		width: 20px;
-		height: 20px;
+		width: var(--space-5);
+		height: var(--space-5);
 	}
 }
 
 .rankings-grid {
 	overflow: hidden;
 	background: var(--card-background);
-	border: 2px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-xl);
 	box-shadow: var(--shadow-lg);
 }
@@ -202,7 +198,7 @@
 	font-weight: 600;
 	color: var(--text-primary);
 	background: var(--card-background);
-	border-bottom: 2px solid var(--card-border);
+	border-bottom: var(--card-border-width) solid var(--card-border);
 }
 
 /* Dark mode adjustments - removed in favor of global theme tokens */
@@ -215,7 +211,7 @@
 	margin: var(--space-2);
 	cursor: grab;
 	background: var(--surface-color);
-	border: 1px solid var(--border-color);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
 	transition: all var(--duration-normal) var(--ease-elastic);
 }
@@ -244,7 +240,7 @@
 	font-weight: 600;
 	color: var(--primary-700);
 	background: var(--primary-100);
-	border: 2px solid var(--primary-300);
+	border: var(--card-border-width) solid var(--primary-300);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-sm);
 	transition: all var(--duration-normal) var(--ease-elastic);
@@ -321,7 +317,7 @@
 	padding: var(--space-2) var(--space-4);
 	font-size: var(--text-sm);
 	border-radius: var(--radius-full);
-	z-index: 10;
+	z-index: var(--z-10);
 	animation: slideInFromRight var(--duration-normal) var(--ease-out-expo);
 }
 
@@ -345,7 +341,7 @@
 @keyframes slideInFromRight {
 	from {
 		opacity: 0;
-		transform: translateX(30px);
+		transform: translateX(var(--space-7));
 	}
 
 	to {
@@ -368,7 +364,7 @@
 /* Instructions card animations */
 .instructions-card:hover {
 	box-shadow: var(--shadow-lg);
-	transform: translateY(-2px);
+	transform: translateY(calc(var(--space-1) * -1));
 }
 
 /* Back button animations */
@@ -387,7 +383,7 @@
 
 .back-button:hover {
 	color: var(--primary-color);
-	transform: translateX(-5px);
+	transform: translateX(calc(var(--space-1) * -1));
 }
 
 .back-button svg {
@@ -395,7 +391,7 @@
 }
 
 .back-button:hover svg {
-	transform: translateX(-5px);
+	transform: translateX(calc(var(--space-1) * -1));
 }
 
 /* Responsive animations */
