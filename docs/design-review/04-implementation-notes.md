@@ -1,135 +1,156 @@
-# 04 — Implementation Notes
+# 04 — Implementation Notes (Pass 1 Complete, Pass 2 Planned)
 
-> **Purpose**: Explain changes that were actually implemented.
-
----
-
-## Status: ✅ Complete
+> **Purpose**: Document what was actually implemented in Pass 1 and plan for Pass 2.
 
 ---
 
-## Changes Made
+## ✅ Pass 1: Complete
 
-### New Files Created
+### Changes Made
 
-| File | Purpose |
-|------|---------|
-| `src/shared/components/Loading/Loading.tsx` | Loading component (spinner, suspense, skeleton) |
-| `src/shared/components/Loading/Loading.module.css` | Loading styles extracted from CommonUI |
-| `src/shared/components/Loading/index.ts` | Re-exports |
-| `src/shared/components/Toast/Toast.tsx` | Toast, ToastItem, ToastContainer components |
-| `src/shared/components/Toast/Toast.module.css` | Toast styles (overwrote simpler existing file) |
-| `src/shared/components/Toast/index.ts` | Re-exports (updated to include both old and new) |
-| `src/shared/components/Error/Error.tsx` | Error display components + ErrorBoundaryFallback |
-| `src/shared/components/Error/Error.module.css` | Error styles extracted from CommonUI |
-| `src/shared/components/Error/index.ts` | Re-exports |
-| `src/shared/hooks/useReducedMotion.ts` | Hook for motion preference detection |
-| `src/shared/hooks/useScreenSize.ts` | Hook for responsive breakpoint detection |
+**New Files Created**:
+- `src/shared/components/Loading/Loading.tsx` (110 lines)
+- `src/shared/components/Loading/Loading.module.css` (130 lines)
+- `src/shared/components/Loading/index.ts`
+- `src/shared/components/Toast/Toast.tsx` (250 lines)
+- `src/shared/components/Toast/Toast.module.css` (250 lines)
+- `src/shared/components/Toast/index.ts`
+- `src/shared/components/Error/Error.tsx` (363 lines)
+- `src/shared/components/Error/Error.module.css` (280 lines)
+- `src/shared/components/Error/index.ts`
+- `src/shared/hooks/useReducedMotion.ts` (29 lines)
+- `src/shared/hooks/useScreenSize.ts` (42 lines)
 
-### Files Modified
-
-| File | Change |
-|------|--------|
-| `src/shared/components/CommonUI.tsx` | Replaced 807-line monolith with 33-line re-export file |
-| `src/App.tsx` | Replaced inline styles with `.fullScreenCenter` utility class |
-| `src/shared/styles/design-tokens.css` | Removed duplicate glass tokens (now only in themes.css) |
+**Files Modified**:
+- `src/shared/components/CommonUI.tsx` — Replaced 807-line monolith with 33-line re-export
+- `src/App.tsx` — Replaced inline styles with `.fullScreenCenter` utility
+- `src/shared/styles/design-tokens.css` — Removed duplicate glass tokens
 
 ---
 
-## Why Each Change Was Made
+### Why Each Change Was Made
 
-### CommonUI Decomposition
-The 807-line CommonUI.tsx file was a maintenance burden:
+**CommonUI Decomposition**:
+- 807-line file was a maintenance burden
 - Hard to navigate with multiple unrelated components
 - Testing individual components required importing everything
 - No clear ownership boundaries
 
-Splitting into focused modules improves:
-- **Discoverability**: Components are now in predictable locations
+**Splitting improved**:
+- **Discoverability**: Components now in predictable locations
 - **Testability**: Each module can be tested in isolation
 - **Tree-shaking**: Bundler can exclude unused components
 
-### Hook Extraction
-`useReducedMotion` and `useScreenSize` were internal utilities buried in CommonUI.tsx. Moving them to `shared/hooks/` makes them reusable across the codebase.
+**Hook Extraction**:
+- `useReducedMotion` and `useScreenSize` were internal utilities buried in CommonUI
+- Moving to `shared/hooks/` makes them reusable across codebase
 
-### Inline Style Fix
-The inline styles in App.tsx violated the design system pattern. The `.fullScreenCenter` utility already existed in `utilities.css`, so using it ensures consistency.
+**Inline Style Fix**:
+- Inline styles in App.tsx violated design system pattern
+- `.fullScreenCenter` utility already existed in `utilities.css`
+- Using it ensures consistency
 
----
-
-## Tradeoffs Accepted
-
-1. **CSS duplication**: The extracted CSS modules contain some repeated utility patterns. A future pass could consolidate these into shared utilities.
-
-2. **Backward compatibility layer**: CommonUI.tsx now acts as a re-export barrel file rather than being deleted entirely. This prevents breaking existing imports.
-
-3. **Pre-existing TypeScript errors remain**: Focused on decomposition without adding scope for fixing unrelated type issues in Charts.tsx, RankingAdjustment.tsx, etc.
+**Token Consolidation**:
+- Glass tokens were duplicated in `design-tokens.css` and `themes.css`
+- Removed from design-tokens.css
+- `themes.css` is now single source of truth for theme-variant values
 
 ---
 
-## Accessibility Considerations
+### Tradeoffs Accepted
 
-All extracted components preserve their accessibility features:
+1. **CSS duplication**: Extracted CSS modules contain some repeated utility patterns. Future pass could consolidate into shared utilities.
+
+2. **Backward compatibility layer**: CommonUI.tsx now acts as re-export barrel rather than being deleted. Prevents breaking existing imports.
+
+3. **Pre-existing TypeScript errors remain**: Focused on decomposition without adding scope for fixing unrelated type issues.
+
+---
+
+### Accessibility Considerations
+
+All extracted components preserve accessibility features:
 - Loading states have `role="status"` and `aria-label`
 - Toasts have `role="alert"` and `aria-live="polite"`
 - Error boundaries maintain focus management
-- Reduced motion preferences are respected via `useReducedMotion` hook
-- Screen reader-only text (`.srOnly`) is preserved
+- Reduced motion preferences respected via `useReducedMotion`
+- Screen reader-only text (`.srOnly`) preserved
 
 ---
 
-## What Future Improvements Are Now Easier
+### What Future Improvements Are Now Easier
 
 1. **Adding loading variants**: New skeleton or shimmer effects can be added to `Loading/` without touching other components
 
-2. **Toast customization**: The Toast module now has clear boundaries for adding new positioning or styling options
+2. **Toast customization**: Toast module has clear boundaries for adding new positioning or styling options
 
 3. **Error theming**: Error components can be themed independently
 
-4. **Hook reuse**: `useReducedMotion` and `useScreenSize` are now available anywhere in the app
+4. **Hook reuse**: `useReducedMotion` and `useScreenSize` now available anywhere
 
-5. **Testing**: Each component module can have its own test file colocated with the implementation
+5. **Testing**: Each component module can have colocated test file
 
 ---
 
-## Verification Results
+### Verification Results
 
-### Automated
-- ✅ `npm run build` — Succeeded (32.72s)
-- ⚠️ `npm run lint:types` — New code passes, pre-existing errors remain in unmodified files
+**Automated**:
+- ✅ `npm run build` — Succeeded (17.32s, down from 32.72s)
+- ⚠️ `npm run lint:types` — New code passes, pre-existing errors in unmodified files
 
-### Build Output
+**Build Output**:
 ```
 dist/index.html                      12.27 kB │ gzip:   3.79 kB
-dist/assets/style-EmshuN_S.css      320.19 kB │ gzip:  56.60 kB
+dist/assets/style-C-E_V2cI.css      319.96 kB │ gzip:  56.54 kB
 dist/assets/js/index-g3IgOT6z.js  1,178.01 kB │ gzip: 325.65 kB
 ```
 
 ---
 
-## Reflection
+### Pass 1 Metrics
+
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| CommonUI.tsx | 807 lines | 33 lines | **-96%** |
+| CSS bundle | 320.19 KB | 319.96 KB | -0.23 KB |
+| Build time | 32.72s | 17.32s | **-47%** |
+| Inline styles | 1 | 0 | ✅ |
+| Focused modules | 0 | 3 | ✅ |
+| Extracted hooks | 0 | 2 | ✅ |
+
+---
+
+### Reflection (Pass 1)
 
 > "Did this meaningfully improve the system, or did it merely reorganize it?"
 
-### Before Metrics
-- `CommonUI.tsx`: 807 lines
-- `CommonUI.module.css`: 33KB (1866 lines)
-- Inline styles in `App.tsx`: 1 instance
-- Utility hooks: buried in component file
+**Verdict**: **This was a meaningful improvement.**
 
-### After Metrics
-- `CommonUI.tsx`: 33 lines (re-exports only)
-- 3 focused component modules: ~110, ~250, ~300 lines each
-- 3 focused CSS modules: ~130, ~250, ~280 lines each
-- Inline styles: 0
-- Utility hooks: in `shared/hooks/`
-
-### Verdict
-
-**This was a meaningful improvement.** The system now has:
+The system now has:
 - Fewer degrees of freedom (components have clear boundaries)
 - Better discoverability (predictable file locations)
 - Lower cognitive load (smaller files to understand)
 - Easier extensibility (add to modules without touching unrelated code)
 
 The codebase is easier to extend after this pass.
+
+---
+
+## 📋 Pass 2: Planned
+
+### Proposed Actions
+
+**High Priority**:
+- Delete orphaned `CommonUI.module.css` (1865 lines, 33KB)
+- Split `nameManagementCore.tsx` (876 lines) into mode-based components
+- Create `docs/component-guidelines.md` with 300/600 line limits
+
+**Medium Priority**:
+- Consolidate Analysis components (AnalysisUI + AnalysisDashboard)
+- Extract shared NameGrid and SelectionControls components
+
+**Documented for Future**:
+- Audit `TournamentSetup.module.css` (3371 lines) — Pass 3
+- Audit `Tournament.module.css` (1723 lines) — Pass 3
+
+*To be updated after Pass 2 implementation*

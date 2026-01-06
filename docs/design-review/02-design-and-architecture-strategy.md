@@ -1,110 +1,89 @@
-# 02 — Design and Architecture Strategy
+# 02 — Design and Architecture Strategy (Pass 2)
 
-> **Purpose**: Define the improvement strategy before touching code.
+> **Purpose**: Define the improvement strategy for Pass 2, building on Pass 1 success.
 
 ---
 
 ## What Stays the Same (Explicitly Preserved)
 
-These decisions are intentional and will **not** be changed in this pass:
+These decisions from Pass 1 remain unchanged:
 
 | Decision | Rationale |
 |----------|-----------|
-| **TailwindCSS + CSS Modules hybrid** | Provides both utility-first speed and scoped component styles |
-| **Zustand for global state** | Lightweight, performant, well-integrated |
-| **HeroUI component library** | Used for select components; not enough value to migrate away |
-| **design-tokens.css as source of truth** | Well-structured token system worth preserving |
-| **Framer Motion for animations** | Mature library, deeply integrated |
-| **Supabase backend** | Core dependency, out of scope for this pass |
-| **File naming conventions** | PascalCase for components, camelCase for utilities |
+| **Component decomposition pattern** | Loading/, Toast/, Error/ structure proven successful |
+| **Token consolidation** | Glass tokens in themes.css working well |
+| **TailwindCSS + CSS Modules hybrid** | No reason to change |
+| **Zustand + TanStack Query** | State management is solid |
+| **300-line component guideline** | Validated by Pass 1 success |
 
 ---
 
 ## What Evolves (Patterns to Be Tightened)
 
-### 1. CSS Token Usage
-**Current**: Tokens exist but large CSS files contain many ad-hoc values
+### 1. Dead Code Elimination
+**Current**: Orphaned files exist after refactoring  
 **Evolution**: 
-- All color, spacing, and typography values should reference tokens
-- Theme-specific tokens should only appear in `themes.css`
-- Component CSS should only use semantic tokens
+- Delete unused CSS files immediately after decomposition
+- Verify no imports before deletion
+- Update build to catch orphaned files
 
-### 2. Component File Structure
-**Current**: Mix of flat files and directory structures
+### 2. Component Size Enforcement
+**Current**: Guidelines exist but not enforced  
 **Evolution**:
-```
-ComponentName/
-├── ComponentName.tsx         # Main component
-├── ComponentName.module.css  # Scoped styles
-├── index.ts                  # Re-export
-└── ComponentName.test.tsx    # (future: tests)
-```
+- Split components over 600 lines (hard limit)
+- Target 300 lines as soft limit
+- Use mode-based decomposition for multi-mode components
 
-### 3. CommonUI Decomposition
-**Current**: 807-line monolith with Loading, Toast, Error, hooks
+### 3. CSS Module Organization
+**Current**: Some modules are 3000+ lines  
 **Evolution**:
-- Extract into focused modules within existing folder structure
-- Each component gets its own directory
-- Shared hooks move to `shared/hooks/`
-
-### 4. Type Definitions
-**Current**: Types scattered across `propTypes.ts`, `types/`, and inline
-**Evolution**:
-- All shared types in `src/types/`
-- Component-specific types co-located with component
-- Remove `propTypes.ts` if it only contains TypeScript interfaces
+- Audit large CSS files for dead code
+- Extract component-specific styles to co-located modules
+- Maximum 500 lines per CSS module (new guideline)
 
 ---
 
 ## Constraints to Introduce
 
-### Spacing Constraint
-> All margin, padding, and gap values MUST use `--space-*` tokens.
+### Component Size Constraint (Strengthened)
+> Components over 600 lines MUST be split.
 
-**Enforcement**: Lint rule (future) or code review
-**Allowed values**: `--space-0` through `--space-48`
-**Exception**: None in new code
+**Enforcement**: Code review + documentation  
+**Target**: 300 lines (soft), 600 lines (hard)  
+**Exception**: None for new code
 
-### Typography Constraint
-> All font-size values MUST use `--text-*` tokens.
+### CSS Module Size Constraint (New)
+> CSS modules over 500 lines should be audited and split.
 
-**Allowed values**: `--text-xs` through `--text-5xl`, `--text-responsive-*` for fluid sizing
-**Exception**: None in new code
+**Rationale**: 500 lines ≈ 10KB, manageable in one screen  
+**Exception**: Generated or vendor CSS only
 
-### Color Constraint
-> All color values MUST reference color tokens.
+### Dead Code Removal Policy (New)
+> After refactoring, orphaned files must be deleted in same PR.
 
-**Allowed values**:
-- Semantic: `--text-primary`, `--text-secondary`, `--border-color`, `--surface-*`
-- Brand: `--neon-cyan`, `--hot-pink`, `--fire-red`
-- Status: `--color-success`, `--color-error`, `--color-warning`
-
-**Exception**: `transparent`, `currentColor`, `inherit`
-
-### Component Boundary Constraint
-> Components with more than 300 lines should be split.
-
-**Rationale**: 300 lines is a reasonable threshold for maintainability
-**Exception**: Complex data visualization components
+**Rationale**: Prevents accumulation of unused code  
+**Verification**: Check for imports before deletion
 
 ---
 
 ## Design Principles Guiding Decisions
 
-### 1. Clarity over Cleverness
-Prefer explicit, readable code over abstractions that obscure intent.
+### 1. Delete Aggressively
+If code is unused, delete it immediately. Don't wait for "someday."
 
-### 2. Reduce Degrees of Freedom
-Fewer choices = more consistency. Token system exists to constrain decisions.
+### 2. Mode-Based Decomposition
+When a component handles multiple modes, split by mode:
+- `nameManagementCore.tsx` → `TournamentMode.tsx`, `ProfileMode.tsx`, `AnalysisMode.tsx`
 
-### 3. Colocation over Centralization
-Styles, types, and tests should live near the code they support.
+### 3. Co-locate Related Code
+Analysis components should live together:
+- `AnalysisDashboard/` (consolidated directory)
 
-### 4. Delete Before Abstract
-If code is unused or duplicated, remove it. Only abstract when three or more instances exist.
+### 4. Enforce Limits with Tools
+Guidelines without enforcement drift. Add linting or build checks.
 
-### 5. Accessibility is Non-Negotiable
-Focus states, touch targets, and screen reader support are not optional.
+### 5. Measure Twice, Cut Once
+For large CSS files, audit before splitting to avoid creating more problems.
 
 ---
 
@@ -112,23 +91,68 @@ Focus states, touch targets, and screen reader support are not optional.
 
 | Topic | Why Not Now |
 |-------|-------------|
-| **Test coverage** | Requires dedicated effort; this pass focuses on structural clarity |
-| **Bundle optimization** | Already at 391KB (excellent); no immediate need |
-| **Supabase schema changes** | Backend is out of scope |
-| **HeroUI replacement** | Low ROI; components work fine |
-| **Animation refactoring** | Framer Motion integration is stable |
-| **Dark mode fixes** | Theme system works; only token organization changes |
-| **New features** | This is a refinement pass, not feature work |
+| **TournamentSetup.module.css audit** | Requires deep understanding of tournament flow; defer to Pass 3 |
+| **Test coverage** | Separate initiative, not design refinement |
+| **HeroUI replacement** | No value, works fine |
+| **Bundle optimization** | Already excellent (319KB) |
+| **TODO comment resolution** | Individual tasks, not system-level |
 
 ---
 
-## Success Criteria
+## Success Criteria (Pass 2)
 
 After this pass, the codebase should:
 
-1. ✅ Have no CSS files over 25KB
-2. ✅ Have no component files over 400 lines
-3. ✅ Use tokens exclusively (no hardcoded colors, spacing, or font sizes in new/modified code)
-4. ✅ Follow consistent folder structure for shared components
-5. ✅ Have clear type definition locations
-6. ✅ Be easier to navigate for new contributors
+1. ✅ Have no orphaned CSS files
+2. ✅ Have no components over 600 lines
+3. ✅ Have clear mode-based component boundaries
+4. ✅ Have analysis functionality consolidated
+5. ✅ Be easier to navigate than after Pass 1
+
+---
+
+## Specific Actions for Pass 2
+
+### Immediate (Do Now)
+1. **Delete CommonUI.module.css** — Orphaned, 33KB waste
+2. **Split nameManagementCore.tsx** — 876 lines, clear mode boundaries
+
+### Next (Plan)
+3. **Consolidate Analysis components** — Improve discoverability
+4. **Document component size guideline** — Prevent future drift
+
+### Future (Pass 3)
+5. **Audit TournamentSetup.module.css** — Requires domain knowledge
+6. **Audit Tournament.module.css** — Secondary priority
+
+---
+
+## Risk Mitigation
+
+### Risk: Breaking imports when deleting CommonUI.module.css
+**Mitigation**: Grep for imports first, verify build passes
+
+### Risk: Splitting nameManagementCore breaks functionality
+**Mitigation**: Keep same public API, only internal structure changes
+
+### Risk: Analysis consolidation creates new monolith
+**Mitigation**: Use clear sub-modules, not one giant file
+
+---
+
+## Comparison to Pass 1 Strategy
+
+### What Worked ✅
+- Component decomposition (CommonUI → 3 modules)
+- Token consolidation (single source of truth)
+- Inline style fixes (utility classes)
+
+### What We Learned 🎓
+- Decomposition reveals orphaned files (need cleanup policy)
+- Component size guidelines need enforcement
+- Large CSS files persist (need dedicated audit pass)
+
+### What We're Applying 🔧
+- Immediate cleanup after refactoring
+- Stronger size constraints
+- Mode-based decomposition pattern

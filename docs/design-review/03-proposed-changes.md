@@ -1,178 +1,127 @@
-# 03 — Proposed Changes
+# 03 — Proposed Changes (Pass 2)
 
-> **Purpose**: Describe proposed changes at a conceptual level. No code. This is a plan, not an implementation.
-
----
-
-## Component-Level Changes
-
-### 1. Decompose CommonUI.tsx
-
-**Before**: Single 807-line file containing:
-- `Loading` component (spinner, suspense, skeleton variants)
-- `ToastItem` and `ToastContainer` components
-- `Toast` unified component
-- `ErrorBoundaryFallback` component
-- `Error`, `ErrorList`, `ErrorInline` components
-- Utility hooks (`useReducedMotion`, `useScreenSize`)
-
-**After**: Extract into focused modules:
-
-```
-shared/components/
-├── Loading/
-│   ├── Loading.tsx          # Loading variants
-│   ├── Loading.module.css   # Extracted from CommonUI.module.css
-│   └── index.ts
-├── Toast/
-│   ├── Toast.tsx            # Unified toast system
-│   ├── ToastItem.tsx        # Individual toast item
-│   ├── ToastContainer.tsx   # Toast stack container
-│   ├── Toast.module.css     # Extracted styles
-│   └── index.ts
-├── Error/
-│   ├── Error.tsx            # Error display variants
-│   ├── ErrorBoundaryFallback.tsx
-│   ├── Error.module.css     # Extracted styles
-│   └── index.ts
-```
-
-**Hooks Relocation**:
-```
-shared/hooks/
-├── useReducedMotion.ts      # Moved from CommonUI.tsx
-├── useScreenSize.ts         # Moved from CommonUI.tsx
-```
+> **Purpose**: Describe proposed changes at a conceptual level for Pass 2.
 
 ---
 
-### 2. Split CommonUI.module.css
+## ✅ Pass 1 Changes (Completed)
 
-**Before**: 33KB monolithic CSS file
-
-**After**: Distributed across component directories:
-- `Loading/Loading.module.css` (loading spinner, skeleton, overlay styles)
-- `Toast/Toast.module.css` (toast positioning, animations, variants)
-- `Error/Error.module.css` (error display, retry buttons, lists)
-
-**Estimated size reduction**: 33KB → 3 files × ~5-8KB each
+- Decomposed CommonUI.tsx into Loading/, Toast/, Error/ modules
+- Extracted hooks to shared/hooks/
+- Consolidated glass tokens in themes.css
+- Fixed inline styles in App.tsx
+- Build time improved 47% (32.72s → 17.32s)
 
 ---
 
-### 3. Consolidate Type Definitions
+## Immediate Actions (Pass 2)
 
-**Before**:
-- `src/shared/propTypes.ts` (2.4KB)
-- `src/types/store.ts`
-- Inline types in `App.tsx` (lines 48-103)
+### 1. Delete Orphaned CommonUI.module.css
 
-**After**:
-- `src/types/store.ts` — all Zustand store types
-- `src/types/common.ts` — shared component prop types
-- Inline types in `App.tsx` → import from `types/`
-- Delete `propTypes.ts` if redundant
+**Current State**:
+```
+src/shared/components/
+├── CommonUI.tsx (33 lines, re-exports only)
+├── CommonUI.module.css (1865 lines, 33KB) ← UNUSED
+├── Loading/Loading.module.css (130 lines) ← Extracted styles
+├── Toast/Toast.module.css (250 lines) ← Extracted styles
+└── Error/Error.module.css (280 lines) ← Extracted styles
+```
+
+**Proposed Change**:
+```
+src/shared/components/
+├── CommonUI.tsx (33 lines, re-exports only)
+├── Loading/Loading.module.css (130 lines)
+├── Toast/Toast.module.css (250 lines)
+└── Error/Error.module.css (280 lines)
+```
+
+**Rationale**: File is completely orphaned after Pass 1 decomposition. No imports reference it.
+
+**Risk**: None (verified no imports exist)
 
 ---
 
-### 4. Fix Inline Styles in App.tsx
+### 2. Split nameManagementCore.tsx by Mode
 
-**Before**:
-```tsx
-<div style={{
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: "100vh",
-  width: "100vw",
-}}>
+**Current State**:
+- Single file: 876 lines
+- Handles 3 modes: Tournament, Profile, Analysis
+- Mixed concerns, hard to test
+
+**Proposed Structure**:
+```
+src/shared/components/NameManagementView/
+├── NameManagementView.tsx (orchestrator, ~150 lines)
+├── modes/
+│   ├── TournamentMode.tsx (~300 lines)
+│   ├── ProfileMode.tsx (~250 lines)
+│   └── AnalysisMode.tsx (~200 lines)
+├── shared/
+│   ├── NameGrid.tsx (shared grid logic)
+│   └── SelectionControls.tsx (shared controls)
+└── nameManagementCore.tsx (DEPRECATED, re-exports for compatibility)
 ```
 
-**After**:
-```tsx
-<div className="fullScreenCenter">
-```
+**Before/After**:
+| Metric | Before | After |
+|--------|--------|-------|
+| Largest file | 876 lines | ~300 lines |
+| Testability | Monolithic | Mode-isolated |
+| Discoverability | One file | Clear mode separation |
 
-Uses existing `.fullScreenCenter` class from `utilities.css`.
+**Rationale**: 
+- Each mode has distinct logic and UI
+- Current code already has mode-based conditionals
+- Easier to test individual modes
 
 ---
 
-## Styling and Token Changes
+## Secondary Actions (Pass 2)
 
-### 1. Theme Token Consolidation
+### 3. Consolidate Analysis Components
 
-**Before**: Glass tokens defined in both files
-- `design-tokens.css` lines 362-373: base glass values
-- `themes.css` lines 61-70, 157-167: theme-specific overrides
-
-**After**: Clear separation
-- `design-tokens.css`: Remove glass tokens (they're theme-dependent)
-- `themes.css`: Single source of truth for all theme-variant tokens
-
-**Pattern**:
-```css
-/* design-tokens.css - NO theme-dependent values */
-:root {
-  --glass-blur: 20px;  /* Only universal defaults */
-}
-
-/* themes.css - ALL theme variations */
-:root[data-theme="light"] {
-  --glass-bg: rgb(241 245 249 / 60%);
-  --glass-border: rgb(15 23 42 / 7%);
-}
-:root[data-theme="dark"] {
-  --glass-bg: rgb(15 23 42 / 55%);
-  --glass-border: rgb(255 255 255 / 12%);
-}
+**Current State**:
 ```
+src/shared/components/
+├── AnalysisDashboard/
+│   ├── AnalysisDashboard.tsx (698 lines)
+│   ├── AnalysisUI.tsx (722 lines)
+│   └── components/
+│       └── AnalysisBulkActions.tsx
+```
+
+**Proposed Structure**:
+```
+src/shared/components/AnalysisDashboard/
+├── AnalysisDashboard.tsx (orchestrator, ~200 lines)
+├── components/
+│   ├── AnalysisCharts.tsx (~300 lines)
+│   ├── AnalysisStats.tsx (~250 lines)
+│   ├── AnalysisBulkActions.tsx (existing)
+│   └── AnalysisFilters.tsx (~150 lines)
+└── AnalysisUI.tsx (DEPRECATED, re-exports for compatibility)
+```
+
+**Rationale**:
+- Related functionality scattered across large files
+- Clear sub-components already exist conceptually
+- Improves discoverability
 
 ---
 
-### 2. Audit Large CSS Files (Document Only)
+### 4. Document Component Size Guidelines
 
-**Not implementing in this pass**, but documenting for future:
+**Create**: `docs/component-guidelines.md`
 
-| File | Current Size | Action |
-|------|--------------|--------|
-| `TournamentSetup.module.css` | 67KB | Audit for dead code |
-| `Tournament.module.css` | 35KB | Audit for dead code |
+**Content**:
+- Soft limit: 300 lines
+- Hard limit: 600 lines
+- When to split: Multiple modes, distinct concerns
+- How to split: Mode-based, feature-based, or UI/logic separation
 
-These files require careful analysis to identify unused selectors. This is documented for a separate cleanup pass.
-
----
-
-## File and Folder Reorganizations
-
-### 1. Remove CommonUI.tsx After Extraction
-
-**Before**:
-```
-shared/components/
-├── CommonUI.tsx              # 807 lines
-├── CommonUI.module.css       # 33KB
-├── ErrorBoundary/            # Separate from CommonUI
-```
-
-**After**:
-```
-shared/components/
-├── Loading/                  # Extracted
-├── Toast/                    # Extracted
-├── Error/                    # Extracted (merged with ErrorBoundary/)
-├── ErrorBoundary/            # Keep (class component boundary)
-```
-
----
-
-### 2. Verify ErrorBoundary Relationship
-
-`ErrorBoundary/` directory already exists. Confirm relationship:
-- `ErrorBoundary/ErrorBoundary.tsx` — React error boundary (class component)
-- `CommonUI.tsx` → `ErrorBoundaryFallback` — Fallback UI component
-
-**Decision**: Keep both:
-- `ErrorBoundary/` for the class component boundary
-- `Error/` for error display components (including fallback)
+**Rationale**: Prevent future drift, codify learnings from Pass 1 and 2
 
 ---
 
@@ -180,38 +129,58 @@ shared/components/
 
 | Area | Status |
 |------|--------|
-| Tournament feature files | Untouched (too large for this pass) |
-| Supabase integration | Untouched |
-| `TournamentSetup.module.css` | Documented only, not refactored |
-| `Tournament.module.css` | Documented only, not refactored |
-| Test files | Out of scope |
-| HeroUI components | Untouched |
-| Animation system | Untouched |
+| TournamentSetup.module.css (3371 lines) | Documented for Pass 3 audit |
+| Tournament.module.css (1723 lines) | Documented for Pass 3 audit |
+| Test coverage | Out of scope |
+| TODO comments | Individual tasks, not system-level |
+| Button.tsx (562 lines) | Under 600-line hard limit |
 
 ---
 
 ## Migration Strategy
 
-### Phase 1: Extract Components
-1. Create new directories (`Loading/`, `Toast/`, `Error/`)
-2. Move code into new files
-3. Extract relevant CSS into new module files
-4. Add `index.ts` re-exports
+### Phase 1: Delete Orphaned CSS
+1. Verify no imports: `grep -r "CommonUI.module.css" src/`
+2. Delete file
+3. Run build to confirm
+4. Commit immediately
 
-### Phase 2: Update Imports
-1. Update `App.tsx` imports
-2. Update any other files importing from `CommonUI`
-3. Run type checker to catch missing imports
+### Phase 2: Split nameManagementCore
+1. Create `modes/` directory
+2. Extract TournamentMode logic
+3. Extract ProfileMode logic
+4. Extract AnalysisMode logic
+5. Update NameManagementView to use modes
+6. Keep nameManagementCore.tsx as re-export for compatibility
+7. Update imports gradually
+8. Run tests (when they exist)
 
-### Phase 3: Cleanup
-1. Delete `CommonUI.tsx` if fully emptied
-2. Delete `CommonUI.module.css` if fully extracted
-3. Run build to verify no breaking changes
+### Phase 3: Consolidate Analysis
+1. Create component sub-modules
+2. Extract chart logic to AnalysisCharts
+3. Extract stats logic to AnalysisStats
+4. Extract filters to AnalysisFilters
+5. Update AnalysisDashboard to orchestrate
+6. Keep AnalysisUI.tsx as re-export
+7. Verify functionality
 
-### Phase 4: Token Consolidation
-1. Remove duplicate glass tokens from `design-tokens.css`
-2. Verify themes still work correctly
-3. Run visual inspection
+### Phase 4: Documentation
+1. Create component-guidelines.md
+2. Document 300/600 line limits
+3. Document mode-based splitting pattern
+4. Add examples from Pass 1 and 2
+
+---
+
+## Success Metrics
+
+| Metric | Current | Target |
+|--------|---------|--------|
+| Orphaned files | 1 (33KB) | 0 |
+| Components >600 lines | 2 | 0 |
+| Largest component | 876 lines | <400 lines |
+| Analysis file count | 2 large | 4-5 focused |
+| Documented guidelines | 0 | 1 |
 
 ---
 
@@ -219,7 +188,7 @@ shared/components/
 
 | Change | Risk | Mitigation |
 |--------|------|------------|
-| CommonUI decomposition | Medium (import paths change) | Grep for all imports before deletion |
-| Token consolidation | Low (theme testing) | Manual visual inspection of light/dark modes |
-| Type consolidation | Low (TypeScript catches issues) | Run `npm run lint:types` |
-| Inline style fix | Very Low | One-line change using existing utility |
+| Delete CommonUI.module.css | Very Low | Verified no imports |
+| Split nameManagementCore | Medium | Keep re-export for compatibility |
+| Consolidate Analysis | Medium | Gradual extraction, test each step |
+| Add guidelines | Very Low | Documentation only |
