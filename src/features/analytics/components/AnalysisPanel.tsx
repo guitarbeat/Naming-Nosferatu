@@ -1,6 +1,6 @@
 import type React from "react";
 import { CollapsibleHeader } from "../../../shared/components/Header/CollapsibleHeader";
-import styles from "./AnalysisUI.module.css";
+import styles from "./AnalysisPanel.module.css";
 
 interface AnalysisPanelProps {
 	children: React.ReactNode;
@@ -21,13 +21,7 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 }) => {
 	return (
 		<div className={`${styles.insightsPanel} ${className}`}>
-			{showHeader && (
-				<CollapsibleHeader
-					title={title || ""}
-					actions={actions}
-					variant="compact"
-				/>
-			)}
+			{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
 			{toolbar && <div className={styles.viewToggle}>{toolbar}</div>}
 			{children}
 		</div>
