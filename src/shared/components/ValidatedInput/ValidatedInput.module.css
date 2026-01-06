@@ -1,0 +1,102 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 100%;
+	position: relative;
+}
+
+.inputWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.input {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	color: white;
+	font-size: 1rem;
+	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	outline: none;
+}
+
+.input:focus {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.3);
+	box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+.inputError {
+	border-color: rgba(255, 87, 87, 0.5) !important;
+	background: rgba(255, 87, 87, 0.05) !important;
+}
+
+.inputError:focus {
+	box-shadow: 0 0 0 4px rgba(255, 87, 87, 0.1) !important;
+}
+
+.inputSuccess {
+	border-color: rgba(76, 175, 80, 0.5) !important;
+}
+
+.errorContainer {
+	overflow: hidden;
+	height: auto;
+}
+
+.errorMessage {
+	color: #ff5757;
+	font-size: 0.85rem;
+	margin: 0;
+	display: block;
+	font-weight: 500;
+	text-shadow: 0 0 10px rgba(255, 87, 87, 0.2);
+}
+
+.feedbackIcon {
+	position: absolute;
+	right: 1rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	font-size: 1.2rem;
+}
+
+.shake {
+	animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}
+
+/* Variant specifically for Login screen to match existing look */
+:global(.loginInput) {
+	/* This ensures the global class can be overridden/extended if needed */
+}
+
+.inputWrapper :global(.loginInput) {
+	/* Inherit shared validated input styles but keep login specific look */
+}

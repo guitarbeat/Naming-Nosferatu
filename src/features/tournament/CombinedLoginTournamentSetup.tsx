@@ -8,6 +8,7 @@ import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { ErrorComponent as Error } from "../../shared/components/CommonUI";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
+import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
 import {
 	useCatFact,
 	useEyeTracking,
@@ -62,6 +63,7 @@ function CombinedLoginTournamentSetupContent({
 		handleRandomName,
 		handleKeyDown,
 		catFact: loginCatFact,
+		nameSchema,
 	} = useLoginController(async (name: string): Promise<void> => {
 		await onLogin(name);
 	});
@@ -187,9 +189,8 @@ function CombinedLoginTournamentSetupContent({
 					</p>
 
 					<div className={loginStyles.inputTray}>
-						<input
+						<ValidatedInput
 							type="text"
-							className={loginStyles.loginInput}
 							placeholder="YOUR NAME HERE..."
 							value={name}
 							onChange={handleNameChange}
@@ -198,10 +199,11 @@ function CombinedLoginTournamentSetupContent({
 							autoFocus
 							maxLength={30}
 							aria-label="Enter your name to register as a judge"
+							schema={nameSchema}
 						/>
 					</div>
 
-					{loginError && (
+					{loginError && !nameSchema.safeParse(name).success && (
 						<div className={loginStyles.error} role="alert">
 							{loginError}
 						</div>
@@ -270,11 +272,10 @@ function CombinedLoginTournamentSetupContent({
 							onSubmit={handleNameSubmit}
 							className={identityStyles.identityForm}
 						>
-							<input
+							<ValidatedInput
 								type="text"
 								value={tempName}
 								onChange={(e) => setTempName(e.target.value)}
-								className={identityStyles.identityInput}
 								autoFocus
 								onKeyDown={(e) => {
 									if (e.key === "Escape") {
@@ -290,6 +291,8 @@ function CombinedLoginTournamentSetupContent({
 								}}
 								maxLength={30}
 								aria-label="Edit name"
+								schema={nameSchema}
+								className={identityStyles.identityInputWrapper}
 							/>
 							<button type="submit" className={identityStyles.identitySaveBtn}>
 								✓

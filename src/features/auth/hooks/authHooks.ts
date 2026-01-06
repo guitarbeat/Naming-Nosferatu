@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { z } from "zod";
+import { VALIDATION } from "../../../core/constants";
+import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
 import { ErrorManager } from "../../../shared/services/errorManager";
-import { generateFunName, validateUsername } from "../../../shared/utils/core";
+import { generateFunName } from "../../../shared/utils/core";
 
 const FALLBACK_CAT_FACT =
 	"Cats are amazing creatures with unique personalities!";
@@ -105,46 +108,40 @@ export function useEyeTracking({
 // useLoginController hook - uses imports from top of file
 
 /**
+ * Schema for login form validation
+ */
+const LoginFormSchema = z.object({
+	name: z
+		.string()
+		.min(
+			VALIDATION.MIN_USERNAME_LENGTH || 2,
+			"Name must be at least 2 characters",
+		)
+		.max(
+			VALIDATION.MAX_USERNAME_LENGTH || 30,
+			"Name must be under 30 characters",
+		)
+		.regex(/^[a-zA-Z0-9_-]+$/, "Only letters, numbers, - and _ are allowed"),
+});
+
+type LoginFormValues = z.infer<typeof LoginFormSchema>;
+
+/**
  * Hook to manage login form state and submission
  */
 export function useLoginController(
 	onLogin: (name: string) => Promise<void> | void,
 ) {
-	const [name, setName] = useState("");
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState("");
+	const [globalError, setGlobalError] = useState("");
 	const catFact = useCatFact();
 
-	const handleNameChange = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			setName(e.target.value);
-			if (error) {
-				setError("");
-			}
-		},
-		[error],
-	);
-
-	const handleSubmit = useCallback(
-		async (e: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
-			e.preventDefault();
-
-			if (isLoading) {
-				return;
-			}
-
-			const finalName = name.trim() || generateFunName();
-
-			const validation = validateUsername(finalName);
-			if (!validation.success) {
-				setError(validation.error || "Invalid username");
-				return;
-			}
-
+	const form = useValidatedForm<typeof LoginFormSchema.shape>({
+		schema: LoginFormSchema,
+		initialValues: { name: "" },
+		onSubmit: async (values) => {
 			try {
-				setIsLoading(true);
-				setError("");
-				await onLogin(validation.value || finalName);
+				setGlobalError("");
+				await onLogin(values.name);
 			} catch (err) {
 				const formattedError = ErrorManager.handleError(err, "User Login", {
 					isRetryable: true,
@@ -153,48 +150,64 @@ export function useLoginController(
 				});
 
 				const error = err as Error;
-				setError(
+				setGlobalError(
 					formattedError.userMessage ||
 						error.message ||
 						"Unable to log in. Please check your connection and try again.",
 				);
-			} finally {
-				setIsLoading(false);
+				throw err; // Re-throw to let the hook know submission failed
 			}
 		},
-		[name, isLoading, onLogin],
+	});
+
+	const {
+		values,
+		errors,
+		isSubmitting,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		setValues,
+	} = form;
+
+	const handleNameChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			handleChange("name", e.target.value);
+			if (globalError) {
+				setGlobalError("");
+			}
+		},
+		[handleChange, globalError],
 	);
 
-	const clearError = useCallback(() => {
-		setError("");
-	}, []);
-
 	const handleRandomName = useCallback(() => {
-		if (isLoading) return;
+		if (isSubmitting) return;
 		const funName = generateFunName();
-		setName(funName);
-		if (error) setError("");
-	}, [isLoading, error]);
+		setValues({ name: funName });
+		if (globalError) setGlobalError("");
+	}, [isSubmitting, globalError, setValues]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent) => {
 			if (e.key === "Enter") {
-				void handleSubmit(e);
+				void handleSubmit();
 			}
 		},
 		[handleSubmit],
 	);
 
 	return {
-		name,
-		setName,
-		isLoading,
-		error,
+		name: values.name,
+		setName: (val: string) => setValues({ name: val }),
+		isLoading: isSubmitting,
+		error: errors.name || globalError,
 		handleNameChange,
 		handleSubmit,
 		handleRandomName,
 		handleKeyDown,
-		clearError,
+		clearError: () => setGlobalError(""),
 		catFact,
+		// Expose schema for the input component
+		nameSchema: LoginFormSchema.shape.name,
 	};
 }
