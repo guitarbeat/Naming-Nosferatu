@@ -75,3 +75,11 @@ export interface TournamentActions {
 	setNames: (names: NameItem[]) => void;
 	setView: (view: string) => void;
 }
+
+export interface BracketMatch {
+	id: number;
+	name1: string;
+	name2?: string;
+	winner?: number;
+	round?: number;
+}

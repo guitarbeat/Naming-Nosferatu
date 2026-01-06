@@ -3,7 +3,7 @@
  * @description A generic empty state component to provide feedback when no data is available.
  */
 
-import React from "react";
+import type React from "react";
 import styles from "./EmptyState.module.css";
 
 export interface EmptyStateProps {

@@ -3,6 +3,7 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
+import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
@@ -109,8 +110,14 @@ function TournamentMatch({
 			>
 				<div className={styles.stageWrapper}>
 					{/* Left Fighter Orb */}
-					<div
+					<motion.div
 						ref={leftOrbRef}
+						layout
+						initial={{ opacity: 0, scale: 0.9 }}
+						animate={{ opacity: 1, scale: 1 }}
+						whileHover={isEnabled ? { scale: 1.02 } : {}}
+						whileTap={isEnabled ? { scale: 0.98 } : {}}
+						transition={{ duration: 0.2, ease: "easeOut" }}
 						className={`${styles.fighterOrb} ${selectedOption === "left" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
 						role="button"
 						tabIndex={isEnabled ? 0 : -1}
@@ -127,13 +134,18 @@ function TournamentMatch({
 						<div className={styles.spikes} aria-hidden="true" />
 						<div className={styles.fighterContent}>
 							{leftImage && (
-								<div className={styles.avatarWrap}>
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.1 }}
+									className={styles.avatarWrap}
+								>
 									<img src={leftImage} alt={leftDetails.name} />
-								</div>
+								</motion.div>
 							)}
 							<h3 className={styles.nameText}>{leftDetails.name}</h3>
 						</div>
-					</div>
+					</motion.div>
 
 					{/* VS Text */}
 					<div className={styles.vsCore} aria-hidden="true">
@@ -141,8 +153,14 @@ function TournamentMatch({
 					</div>
 
 					{/* Right Fighter Orb */}
-					<div
+					<motion.div
 						ref={rightOrbRef}
+						layout
+						initial={{ opacity: 0, scale: 0.9 }}
+						animate={{ opacity: 1, scale: 1 }}
+						whileHover={isEnabled ? { scale: 1.02 } : {}}
+						whileTap={isEnabled ? { scale: 0.98 } : {}}
+						transition={{ duration: 0.2, ease: "easeOut" }}
 						className={`${styles.fighterOrb} ${styles.right} ${selectedOption === "right" ? styles.selected : ""} ${!isEnabled ? styles.disabled : ""}`}
 						role="button"
 						tabIndex={isEnabled ? 0 : -1}
@@ -159,13 +177,18 @@ function TournamentMatch({
 						<div className={styles.spikes} aria-hidden="true" />
 						<div className={styles.fighterContent}>
 							{rightImage && (
-								<div className={styles.avatarWrap}>
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.1 }}
+									className={styles.avatarWrap}
+								>
 									<img src={rightImage} alt={rightDetails.name} />
-								</div>
+								</motion.div>
 							)}
 							<h3 className={styles.nameText}>{rightDetails.name}</h3>
 						</div>
-					</div>
+					</motion.div>
 
 					{/* Magnetic Line */}
 					<div className={styles.magneticLine} aria-hidden="true" />

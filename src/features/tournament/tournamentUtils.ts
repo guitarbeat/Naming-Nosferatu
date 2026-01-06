@@ -30,7 +30,7 @@ interface EloStats {
 	lossesB?: number;
 }
 
-class EloRating {
+export class EloRating {
 	defaultRating: number;
 	kFactor: number;
 	minRating: number;
@@ -141,8 +141,6 @@ class EloRating {
 	}
 }
 
-export { EloRating };
-export default EloRating;
 /**
  * @module PreferenceSorter
  * @description A class that implements a merge sort algorithm with custom comparisons

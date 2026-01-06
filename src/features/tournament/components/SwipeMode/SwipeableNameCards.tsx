@@ -5,8 +5,8 @@
 import { useState } from "react";
 import { TIMING } from "../../../../core/constants";
 import type { NameItem } from "../../../../shared/propTypes";
-import { CAT_IMAGES, getRandomCatImage } from "../../tournamentUtils";
 import styles from "../../styles/SetupSwipe.module.css";
+import { CAT_IMAGES, getRandomCatImage } from "../../tournamentUtils";
 import { SwipeCard, SwipeControls, useMobileGestures } from "./SwipeComponents";
 
 interface SwipeableNameCardsProps {

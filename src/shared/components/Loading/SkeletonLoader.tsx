@@ -3,7 +3,7 @@
  * @description Reusable skeleton loading component with multiple variants.
  */
 
-import React from "react";
+import type React from "react";
 import styles from "./SkeletonLoader.module.css";
 
 export interface SkeletonLoaderProps {

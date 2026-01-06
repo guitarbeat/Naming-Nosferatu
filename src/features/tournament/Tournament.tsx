@@ -13,7 +13,7 @@ import {
 	calculateBracketRound,
 	getVisibleNames,
 } from "../../shared/utils/core";
-import type { NameItem } from "../../types/components";
+import type { BracketMatch, NameItem } from "../../types/components";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
 	MatchResult,
@@ -26,6 +26,7 @@ import {
 	useAudioManager,
 	useKeyboardControls,
 	useTournamentState,
+	useTournamentVote,
 } from "./hooks/tournamentComponentHooks";
 import errorStyles from "./styles/TournamentError.module.css";
 import layoutStyles from "./styles/TournamentLayout.module.css";
@@ -154,266 +155,57 @@ function TournamentContent({
 		}
 	}
 
-	// * Rate limiting for voting
-	const lastVoteTimeRef = useRef(0);
-
-	// * Undo window
+	// * Undo window - optimized to use CSS animation and single timeout
 	const [undoExpiresAt, setUndoExpiresAt] = useState<number | null>(null);
-	const [undoRemainingMs, setUndoRemainingMs] = useState(0);
-	const canUndoNow = !!undoExpiresAt && undoRemainingMs > 0;
+	const [undoStartTime, setUndoStartTime] = useState<number | null>(null);
+	const canUndoNow = !!undoExpiresAt && !!undoStartTime;
 
 	// * Show cat pictures toggle
 	const [showCatPictures, setShowCatPictures] = useState(true);
 
 	useEffect(() => {
 		if (!undoExpiresAt) {
-			setUndoRemainingMs(0);
+			setUndoStartTime(null);
 			return;
 		}
 
-		// * Update immediately
-		const updateRemaining = () => {
-			const remaining = Math.max(0, undoExpiresAt - Date.now());
-			setUndoRemainingMs(remaining);
-			return remaining;
-		};
+		// Set start time for CSS animation
+		setUndoStartTime(Date.now());
 
-		updateRemaining();
+		// Single timeout for logic cleanup
+		const timeoutId = setTimeout(() => {
+			setUndoExpiresAt(null);
+			setUndoStartTime(null);
+		}, TOURNAMENT_TIMING.UNDO_WINDOW_MS);
 
-		const id = setInterval(() => {
-			const remaining = updateRemaining();
-			if (remaining <= 0) {
-				setUndoExpiresAt(null);
-			}
-		}, TOURNAMENT_TIMING.UNDO_UPDATE_INTERVAL);
-
-		return () => clearInterval(id);
+		return () => clearTimeout(timeoutId);
 	}, [undoExpiresAt]);
 
-	// * Refs for timeout cleanup
-	const matchResultTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-
-	// * Cleanup match result timers on unmount
-	useEffect(() => {
-		return () => {
-			matchResultTimersRef.current.forEach((timer) => {
-				clearTimeout(timer);
-			});
-			matchResultTimersRef.current = [];
-		};
-	}, []);
-
-	// * Update match result
-	const updateMatchResult = useCallback(
-		(option: string) => {
-			let resultMessage = "";
-			if (option === "both") {
-				const leftName =
-					typeof currentMatch?.left === "string"
-						? currentMatch.left
-						: currentMatch?.left?.name || "Unknown";
-				const rightName =
-					typeof currentMatch?.right === "string"
-						? currentMatch.right
-						: currentMatch?.right?.name || "Unknown";
-				resultMessage = `Both "${leftName}" and "${rightName}" advance!`;
-			} else if (option === "left") {
-				const leftName =
-					typeof currentMatch?.left === "string"
-						? currentMatch.left
-						: currentMatch?.left?.name || "Unknown";
-				resultMessage = `"${leftName}" wins this round!`;
-			} else if (option === "right") {
-				const rightName =
-					typeof currentMatch?.right === "string"
-						? currentMatch.right
-						: currentMatch?.right?.name || "Unknown";
-				resultMessage = `"${rightName}" wins this round!`;
-			} else if (option === "neither") {
-				resultMessage = "Match skipped";
-			}
-
-			setLastMatchResult(resultMessage);
-			const showTimer = setTimeout(
-				() => setShowMatchResult(true),
-				TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY,
-			);
-			const hideTimer = setTimeout(
-				() => setShowMatchResult(false),
-				TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY,
-			);
-			matchResultTimersRef.current.push(showTimer, hideTimer);
-			showSuccess("Vote recorded successfully!", {
-				duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION,
-			}); // TOAST_SUCCESS_DURATION is undefined in constants? No, assuming it exists.
-			// Start undo window
-			setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
-		},
-		// * setState functions (setUndoExpiresAt, setSelectedOption) are stable and don't need to be in dependencies
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[currentMatch, showSuccess, setLastMatchResult, setShowMatchResult],
-	);
-
-	// * Handle vote with animation
-	const handleVoteWithAnimation = useCallback(
-		async (option: string) => {
-			if (isProcessing || isTransitioning || isError) return;
-
-			// Rate limiting check
-			const now = Date.now();
-			if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN)
-				return;
-			lastVoteTimeRef.current = now;
-
-			try {
-				setIsProcessing(true);
-				setIsTransitioning(true);
-
-				audioManager.playSound();
-				updateMatchResult(option);
-
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				const rawRatings = await handleVote(option as any);
-
-				if (!rawRatings) {
-					setIsProcessing(false);
-					setIsTransitioning(false);
-					return;
-				}
-
-				// Transform complex ratings to simple number map if necessary
-				const updatedRatings: Record<string, number> = Object.entries(
-					rawRatings,
-				).reduce(
-					(acc, [key, value]) => {
-						acc[key] = typeof value === "number" ? value : value.rating;
-						return acc;
-					},
-					{} as Record<string, number>,
-				);
-
-				if (onVote && currentMatch) {
-					// Helper to safely get properties from NameItem | string
-					const getNameData = (item: NameItem | string | undefined) => {
-						if (!item) return { name: "Unknown", id: null, description: "" };
-						if (typeof item === "string")
-							return { name: item, id: item, description: "" };
-						return {
-							name: item.name || "Unknown",
-							id: item.id || null,
-							description: item.description || "",
-						};
-					};
-
-					const leftData = getNameData(currentMatch.left);
-					const rightData = getNameData(currentMatch.right);
-
-					let leftOutcome = "skip";
-					let rightOutcome = "skip";
-
-					switch (option) {
-						case "left":
-							leftOutcome = "win";
-							rightOutcome = "loss";
-							break;
-						case "right":
-							leftOutcome = "loss";
-							rightOutcome = "win";
-							break;
-						case "both":
-							leftOutcome = "win";
-							rightOutcome = "win";
-							break;
-						case "neither":
-							break;
-					}
-
-					const voteData: VoteData = {
-						match: {
-							left: {
-								name: leftData.name,
-								id: leftData.id,
-								description: leftData.description,
-								outcome: leftOutcome,
-							},
-							right: {
-								name: rightData.name,
-								id: rightData.id,
-								description: rightData.description,
-								outcome: rightOutcome,
-							},
-						},
-						result:
-							option === "left"
-								? -1
-								: option === "right"
-									? 1
-									: option === "both"
-										? 0.5
-										: 0,
-						ratings: updatedRatings,
-						timestamp: new Date().toISOString(),
-					};
-
-					await onVote(voteData);
-				}
-
-				setSelectedOption(null);
-				await new Promise((resolve) =>
-					setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM),
-				);
-				setIsProcessing(false);
-				await new Promise((resolve) =>
-					setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT),
-				);
-				setIsTransitioning(false);
-			} catch (error) {
-				// Reset state on error
-				setIsProcessing(false);
-				setIsTransitioning(false);
-				setSelectedOption(null);
-				if (process.env.NODE_ENV === "development") {
-					console.error("Error handling vote:", error);
-				}
-				setVotingError({
-					message: "Failed to submit vote. Please try again.",
-					severity: "MEDIUM",
-					isRetryable: true,
-					originalError: error,
-				});
-
-				showError("Failed to submit vote. Please try again.", {
-					duration: TOURNAMENT_TIMING.TOAST_ERROR_DURATION,
-				});
-				setIsProcessing(false);
-				setIsTransitioning(false);
-			}
-		},
-		// * setState functions (setIsProcessing, setIsTransitioning, setSelectedOption, setVotingError) are stable
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[
-			isProcessing,
-			isTransitioning,
-			isError,
-			audioManager,
-			updateMatchResult,
-			handleVote,
-			onVote,
-			currentMatch,
-			showError,
-			setIsProcessing,
-			setIsTransitioning,
-			setSelectedOption,
-			setVotingError,
-		],
-	);
+	// * Voting hook - encapsulates voting logic, rate limiting, and match result updates
+	const { handleVoteWithAnimation } = useTournamentVote({
+		isProcessing,
+		isTransitioning,
+		isError,
+		currentMatch,
+		handleVote,
+		onVote,
+		audioManager,
+		setIsProcessing,
+		setIsTransitioning,
+		setSelectedOption,
+		setVotingError,
+		setLastMatchResult,
+		setShowMatchResult,
+		setUndoExpiresAt,
+		showSuccess,
+		showError,
+	});
 
 	// * Handle name card click
 	const handleNameCardClick = useCallback(
-		(option: string) => {
+		(option: "left" | "right") => {
 			if (isProcessing || isTransitioning) return;
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			setSelectedOption(option as any);
+			setSelectedOption(option);
 			handleVoteWithAnimation(option);
 		},
 		// * setState function (setSelectedOption) is stable and doesn't need to be in dependencies
@@ -505,6 +297,7 @@ function TournamentContent({
 				if (canUndoNow) {
 					if (handleUndo) handleUndo();
 					setUndoExpiresAt(null);
+					setUndoStartTime(null);
 				}
 			},
 			onClearSelection: () => setSelectedOption(null),
@@ -519,16 +312,14 @@ function TournamentContent({
 				}
 			},
 			onToggleCatPictures: handleToggleCatPictures,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} as any,
+		},
 	);
 
 	// * Transform match history for bracket
-	const transformedMatches = useMemo(() => {
+	const transformedMatches = useMemo((): BracketMatch[] => {
 		if (!visibleNames || visibleNames.length === 0) return [];
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return matchHistory.map((vote: any, index: number) => {
+		return matchHistory.map((vote, index: number) => {
 			// Prefer explicit win flags if available
 			const leftWon = vote?.match?.left?.won === true;
 			const rightWon = vote?.match?.right?.won === true;
@@ -560,13 +351,14 @@ function TournamentContent({
 				matchNumber,
 			);
 
-			return {
+			const bracketMatch: BracketMatch = {
 				id: matchNumber,
 				round: calculatedRound,
 				name1: vote?.match?.left?.name || "Unknown",
 				name2: vote?.match?.right?.name || "Unknown",
 				winner,
 			};
+			return bracketMatch;
 		});
 	}, [matchHistory, visibleNames]);
 
@@ -637,12 +429,21 @@ function TournamentContent({
 			/>
 
 			{/* Undo banner */}
-			{canUndoNow && (
+			{canUndoNow && undoStartTime && (
 				<div className={undoStyles.undoBanner} role="status" aria-live="polite">
 					<span>
 						Vote recorded.
-						<span className={undoStyles.undoTimer} aria-hidden="true">
-							{` ${(undoRemainingMs / 1000).toFixed(1)}s`}
+						<span
+							className={undoStyles.undoTimer}
+							aria-hidden="true"
+							style={{
+								animation: `undoProgress ${TOURNAMENT_TIMING.UNDO_WINDOW_MS}ms linear forwards`,
+							}}
+						>
+							{" "}
+							{undoExpiresAt && undoStartTime
+								? `${((undoExpiresAt - Date.now()) / 1000).toFixed(1)}s`
+								: "0.0s"}
 						</span>
 					</span>
 					<Button
@@ -651,6 +452,7 @@ function TournamentContent({
 						onClick={() => {
 							handleUndo();
 							setUndoExpiresAt(null);
+							setUndoStartTime(null);
 						}}
 						className={undoStyles.undoButton}
 						aria-label="Undo last vote (Esc)"

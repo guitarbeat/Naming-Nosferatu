@@ -31,9 +31,9 @@
 		#0f172a 0%,
 		#1e293b 40%,
 		#334155 100%
-	) !important;
-	background-clip: text !important;
-	-webkit-text-fill-color: transparent !important;
+	);
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
 	filter: none;
 	color: #0f172a;
 }

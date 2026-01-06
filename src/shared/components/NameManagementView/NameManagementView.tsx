@@ -5,11 +5,11 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ErrorComponent, Loading } from "../CommonUI";
+import { useToast } from "../../providers";
+import { ErrorComponent } from "../CommonUI";
 import { ProfileMode } from "./modes/ProfileMode";
 import { TournamentMode } from "./modes/TournamentMode";
 import styles from "./NameManagementView.module.css";
-// Consolidated imports
 import {
 	type NameItem,
 	NameManagementProvider,
@@ -17,7 +17,6 @@ import {
 	type UseNameManagementViewProps,
 	useNameManagementView,
 } from "./nameManagementCore";
-import { useToast } from "../../providers";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
@@ -57,7 +56,6 @@ export function NameManagementView({
 
 	const {
 		names,
-		isLoading,
 		isError,
 		dataError,
 		selectedNames,
@@ -118,7 +116,7 @@ export function NameManagementView({
 			selectedCount,
 			mode,
 			handleFilterChange,
-			onStartTournament,
+			handleStartTournament,
 		],
 	);
 
