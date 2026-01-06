@@ -58,7 +58,8 @@ This document defines **rules**. Rules have consequences. If a rule can't be enf
 | `TournamentSetup.module.css` | 3371 | Audit + split |
 | `Tournament.module.css` | 1723 | Audit + split |
 | `CommonUI.module.css` | 1865 | **DELETE** (unused) |
-| `analysis-mode.css` | 1307 | Audit + split |
+| `CardName.module.css` | 1048 | Audit + split |
+| `AnalysisUI.module.css` | 825 | Audit + split |
 
 ---
 
