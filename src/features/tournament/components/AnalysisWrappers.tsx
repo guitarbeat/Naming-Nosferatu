@@ -5,8 +5,6 @@
  */
 
 import React, { useCallback, useEffect, useMemo } from "react";
-import { AnalysisDashboard } from "../../../shared/components/AnalysisDashboard/AnalysisDashboard";
-import { AnalysisBulkActions } from "../../../shared/components/AnalysisDashboard/components/AnalysisBulkActions";
 import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
 import type { NameItem } from "../../../shared/propTypes";
 import {
@@ -18,6 +16,7 @@ import {
 	isNameHidden,
 	selectedNamesToSet,
 } from "../../../shared/utils/core";
+import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
 

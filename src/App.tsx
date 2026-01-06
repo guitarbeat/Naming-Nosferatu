@@ -24,17 +24,17 @@ import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
-import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
+import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
-import type { NameItem } from "./types/components";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
 } from "./shared/utils/core";
+import type { NameItem } from "./types/components";
 import type { TournamentName } from "./types/store";
 
 /**
@@ -325,7 +325,7 @@ function AppLayout({
 		<ErrorBoundary context="Main Application Layout">
 			<div className={appClassName} style={layoutStyle}>
 				<OfflineIndicator />
-				
+
 				{/* * Skip link for keyboard navigation */}
 				<a href="#main-content" className="skip-link">
 					Skip to main content
@@ -334,83 +334,83 @@ function AppLayout({
 				{/* * Static cat-themed background */}
 				<CatBackground />
 
-			{/* * Primary navigation lives in the navbar */}
-			{isLoggedIn && (
-				<AppNavbar
-					view={currentView || "tournament"}
-					setView={(view: string) => {
-						const nextView = view;
-						// * Toggle photos view: if clicking photos and already on photos, go back to tournament
-						if (nextView === "photos" && currentView === "photos") {
-							tournamentActions.setView("tournament");
-							navigateTo("/");
-						} else {
-							tournamentActions.setView(nextView);
+				{/* * Primary navigation lives in the navbar */}
+				{isLoggedIn && (
+					<AppNavbar
+						view={currentView || "tournament"}
+						setView={(view: string) => {
+							const nextView = view;
+							// * Toggle photos view: if clicking photos and already on photos, go back to tournament
+							if (nextView === "photos" && currentView === "photos") {
+								tournamentActions.setView("tournament");
+								navigateTo("/");
+							} else {
+								tournamentActions.setView(nextView);
 
-							// * Direct navigation for each view
-							if (nextView === "tournament") {
-								navigateTo("/");
-							} else if (nextView === "photos") {
-								navigateTo("/");
+								// * Direct navigation for each view
+								if (nextView === "tournament") {
+									navigateTo("/");
+								} else if (nextView === "photos") {
+									navigateTo("/");
+								}
 							}
-						}
-					}}
-					isLoggedIn={isLoggedIn}
-					userName={user.name}
-					isAdmin={user.isAdmin}
-					onLogout={handleLogout}
-					onStartNewTournament={handleStartNewTournament}
-					onOpenSuggestName={onOpenSuggestName}
-					onOpenPhotos={handleOpenPhotos}
-					currentRoute={currentRoute}
-					onNavigate={navigateTo}
-				/>
-			)}
-
-			<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
-				{errors.current && isLoggedIn && (
-					<Error
-						variant="list"
-						error={errors.current}
-						onDismiss={() => errorActions.clearError()}
-						onRetry={() => window.location.reload()}
+						}}
+						isLoggedIn={isLoggedIn}
+						userName={user.name}
+						isAdmin={user.isAdmin}
+						onLogout={handleLogout}
+						onStartNewTournament={handleStartNewTournament}
+						onOpenSuggestName={onOpenSuggestName}
+						onOpenPhotos={handleOpenPhotos}
+						currentRoute={currentRoute}
+						onNavigate={navigateTo}
 					/>
 				)}
 
-				<ViewRouter
-					isLoggedIn={isLoggedIn}
-					onLogin={handleLogin}
-					tournament={tournament}
-					userName={user.name}
-					onStartNewTournament={handleStartNewTournament}
-					onUpdateRatings={handleUpdateRatings}
-					onTournamentSetup={handleTournamentSetup}
-					onTournamentComplete={handleTournamentComplete}
-					onVote={(vote: unknown) => tournamentActions.addVote(vote)}
-					onOpenSuggestName={onOpenSuggestName}
-				/>
+				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
+					{errors.current && isLoggedIn && (
+						<Error
+							variant="list"
+							error={errors.current}
+							onDismiss={() => errorActions.clearError()}
+							onRetry={() => window.location.reload()}
+						/>
+					)}
 
-				{/* * Global loading overlay */}
-				{tournament.isLoading && (
-					<div
-						className="global-loading-overlay"
-						role="status"
-						aria-live="polite"
-						aria-busy="true"
-					>
-						<Loading variant="spinner" text="Initializing Tournament..." />
-					</div>
-				)}
+					<ViewRouter
+						isLoggedIn={isLoggedIn}
+						onLogin={handleLogin}
+						tournament={tournament}
+						userName={user.name}
+						onStartNewTournament={handleStartNewTournament}
+						onUpdateRatings={handleUpdateRatings}
+						onTournamentSetup={handleTournamentSetup}
+						onTournamentComplete={handleTournamentComplete}
+						onVote={(vote: unknown) => tournamentActions.addVote(vote)}
+						onOpenSuggestName={onOpenSuggestName}
+					/>
 
-				<ScrollToTopButton isLoggedIn={isLoggedIn} />
-				<NameSuggestionModal
-					isOpen={isSuggestNameModalOpen}
-					onClose={onCloseSuggestName}
-				/>
-			</main>
-		</div>
-	</ErrorBoundary>
-);
+					{/* * Global loading overlay */}
+					{tournament.isLoading && (
+						<div
+							className="global-loading-overlay"
+							role="status"
+							aria-live="polite"
+							aria-busy="true"
+						>
+							<Loading variant="spinner" text="Initializing Tournament..." />
+						</div>
+					)}
+
+					<ScrollToTopButton isLoggedIn={isLoggedIn} />
+					<NameSuggestionModal
+						isOpen={isSuggestNameModalOpen}
+						onClose={onCloseSuggestName}
+					/>
+				</main>
+			</div>
+		</ErrorBoundary>
+	);
 }
 
 // Test auto-deployment - Wed Oct 22 21:26:25 CDT 2025

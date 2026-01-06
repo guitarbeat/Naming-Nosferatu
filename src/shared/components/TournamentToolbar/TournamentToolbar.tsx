@@ -451,7 +451,13 @@ function TournamentToolbar({
 
 	const isTournament = mode === "tournament";
 	const isHybrid = mode === "hybrid";
-	const showFilters = isHybrid || mode === "profile";
+	// * Progressive Disclosure: In tournament mode, filters are hidden by default
+	const [showFiltersInTournament, setShowFiltersInTournament] =
+		React.useState(false);
+
+	const showFilters =
+		isHybrid || mode === "profile" || (isTournament && showFiltersInTournament);
+
 	const toolbarGlassId = useId();
 	const glassId = `toolbar-glass-${toolbarGlassId.replace(/:/g, "-")}`;
 
@@ -511,7 +517,29 @@ function TournamentToolbar({
 							</span>
 						</button>
 					</div>
+
+					{/* Progressive Disclosure: Filter Toggle */}
+					<div className={styles.toggleWrapper}>
+						<button
+							type="button"
+							onClick={() =>
+								setShowFiltersInTournament(!showFiltersInTournament)
+							}
+							className={`${styles.toggleSwitch} ${showFiltersInTournament ? styles.toggleSwitchActive : ""}`}
+							aria-pressed={showFiltersInTournament}
+							aria-label={
+								showFiltersInTournament ? "Hide filters" : "Show filters"
+							}
+							title="Toggle search and filters"
+						>
+							<span className={styles.toggleThumb} />
+							<span className={styles.toggleLabel}>
+								🔍 {showFiltersInTournament ? "Hide Filters" : "Filter/Sort"}
+							</span>
+						</button>
+					</div>
 				</div>
+
 				{startTournamentButton && (
 					<TournamentButton
 						onClick={startTournamentButton.onClick}
@@ -528,29 +556,61 @@ function TournamentToolbar({
 	};
 
 	return (
-		<ToolbarGlass
-			mode={isTournament ? "tournament" : "filter"}
-			id={glassId}
-			className={className}
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				gap: "16px",
+				width: "100%",
+			}}
 		>
-			{isTournament ? (
-				renderTournamentMode()
-			) : (
-				<FilterModeToolbar
-					filters={filters}
-					onFilterChange={onFilterChange}
-					filteredCount={filteredCount}
-					totalCount={totalCount}
-					categories={categories}
-					showUserFilter={showUserFilter}
-					userOptions={userOptions}
-					showSelectionFilter={showSelectionFilter}
-					analysisMode={analysisMode}
-					isHybrid={isHybrid}
-					showFilters={showFilters}
-				/>
+			<ToolbarGlass
+				mode={isTournament ? "tournament" : "filter"}
+				id={glassId}
+				className={className}
+			>
+				{isTournament ? (
+					renderTournamentMode()
+				) : (
+					<FilterModeToolbar
+						filters={filters}
+						onFilterChange={onFilterChange}
+						filteredCount={filteredCount}
+						totalCount={totalCount}
+						categories={categories}
+						showUserFilter={showUserFilter}
+						userOptions={userOptions}
+						showSelectionFilter={showSelectionFilter}
+						analysisMode={analysisMode}
+						isHybrid={isHybrid}
+						showFilters={showFilters}
+					/>
+				)}
+			</ToolbarGlass>
+
+			{/* Render Filter Toolbar below main toolbar when toggled in Tournament Mode */}
+			{isTournament && showFiltersInTournament && (
+				<ToolbarGlass
+					mode="filter"
+					id={`${glassId}-filters`}
+					className={className}
+				>
+					<FilterModeToolbar
+						filters={filters}
+						onFilterChange={onFilterChange}
+						filteredCount={filteredCount}
+						totalCount={totalCount}
+						categories={categories}
+						// * Field Reduction: Hide complex filters in tournament mode
+						showUserFilter={false}
+						showSelectionFilter={false}
+						analysisMode={false} // Force simple mode
+						isHybrid={true} // Use hybrid layout for compact view
+						showFilters={true}
+					/>
+				</ToolbarGlass>
 			)}
-		</ToolbarGlass>
+		</div>
 	);
 }
 

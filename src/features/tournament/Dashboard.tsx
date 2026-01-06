@@ -6,10 +6,10 @@
 
 import PropTypes from "prop-types";
 import React, { useEffect, useState, useTransition } from "react";
-import { AnalysisDashboard } from "../../shared/components/AnalysisDashboard/AnalysisDashboard";
 import Card from "../../shared/components/Card/Card";
 import { Toast } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
+import { AnalysisDashboard } from "../analytics/components/AnalysisDashboard";
 import PersonalResults from "./components/PersonalResults";
 import styles from "./Dashboard.module.css";
 

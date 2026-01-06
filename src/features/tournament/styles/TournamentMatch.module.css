@@ -1,0 +1,59 @@
+/* Matchup & Voting Area */
+.matchup {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(var(--space-2), 1.5vw, var(--space-4));
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 100%;
+	min-height: auto;
+	padding: clamp(var(--space-3), 1.5vw, var(--space-5));
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	backdrop-filter: none;
+	transition: var(--transition-base);
+	will-change: transform, box-shadow;
+	overflow: visible;
+}
+
+.matchup::before {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	content: "";
+	background: radial-gradient(
+		circle at 50% 50%,
+		rgb(255 255 255 / 5%) 0%,
+		transparent 70%
+	);
+	opacity: 0.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.matchup:hover {
+		box-shadow: var(--shadow-xl);
+		transform: var(--transform-hover-lift);
+	}
+}
+
+@media (width >= 1920px) {
+	.matchup {
+		max-width: 100%;
+	}
+}
+
+@media (width >= 2560px) {
+	.matchup {
+		max-width: 2200px;
+	}
+}
+
+@media (width <= 768px) {
+	.matchup {
+		padding: var(--space-4);
+	}
+}

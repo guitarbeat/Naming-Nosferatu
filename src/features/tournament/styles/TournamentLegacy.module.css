@@ -1,0 +1,149 @@
+/* Legacy / Unused Styles */
+.namesRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: clamp(var(--space-2), 1.5vw, var(--space-3));
+	align-items: stretch;
+	justify-content: center;
+	width: 100%;
+}
+
+.nameContainer {
+	position: relative;
+	flex: 1 1 320px;
+	min-width: clamp(220px, 40vw, 520px);
+	max-width: 520px;
+	transition:
+		transform var(--duration-normal) var(--ease-out),
+		filter var(--duration-normal) var(--ease-out);
+	animation: fadeInSlide 0.5s ease-out;
+	z-index: 1;
+}
+
+.nameContainer.selected {
+	transform: scale(1.03);
+	filter: brightness(1.05);
+	z-index: 2;
+}
+
+.nameContainer.loading {
+	pointer-events: none;
+	opacity: 0.6;
+	filter: blur(2px);
+}
+
+.vsSection {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: clamp(36px, 7vw, 52px);
+	height: clamp(36px, 7vw, 52px);
+	background: linear-gradient(
+		135deg,
+		var(--primary-500, #3b82f6),
+		var(--primary-400, #60a5fa)
+	);
+	border: var(--card-border-width) solid rgb(59 130 246 / 30%);
+	border-radius: var(--radius-full);
+	box-shadow: var(--shadow-md);
+	transition: var(--transition-base);
+	z-index: 1;
+	flex-shrink: 0;
+}
+
+.vsSection::before {
+	position: absolute;
+	inset: -2px;
+	border-radius: inherit;
+	padding: 2px;
+	background: linear-gradient(
+		135deg,
+		rgb(59 130 246 / 40%),
+		rgb(96 165 250 / 40%)
+	);
+	mask:
+		linear-gradient(#fff 0 0) content-box,
+		linear-gradient(#fff 0 0);
+	mask-composite: xor;
+	mask-composite: exclude;
+	content: "";
+	opacity: 0;
+	transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.vsText {
+	position: relative;
+	font-size: clamp(var(--text-sm), 2vw, var(--text-base));
+	font-weight: var(--font-weight-bold);
+	color: #fff;
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	text-shadow: var(--shadow-sm);
+	z-index: 1;
+	line-height: var(--leading-tight);
+}
+
+@media (width >= 1920px) {
+	.nameContainer {
+		min-width: 400px;
+		max-width: 600px;
+	}
+	.namesRow {
+		gap: var(--space-12);
+	}
+	.vsSection {
+		width: 100px;
+		height: 100px;
+	}
+	.vsText {
+		font-size: var(--text-2xl);
+	}
+}
+
+@media (width >= 2560px) {
+	.nameContainer {
+		min-width: 500px;
+		max-width: 700px;
+	}
+	.namesRow {
+		gap: var(--space-16);
+	}
+	.vsSection {
+		width: 120px;
+		height: 120px;
+	}
+	.vsText {
+		font-size: var(--text-3xl);
+	}
+}
+
+@media (width <= 768px) {
+	.namesRow {
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+	.nameContainer {
+		width: 100%;
+		max-width: 100%;
+	}
+	.vsSection {
+		width: 60px;
+		height: 60px;
+		margin: var(--space-2) 0;
+	}
+	.vsText {
+		font-size: var(--text-base);
+	}
+}
+
+@keyframes fadeInSlide {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

@@ -4,13 +4,6 @@ import {
 	EloRating,
 	PreferenceSorter,
 } from "../../features/tournament/tournamentUtils";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	PersistentState,
-	TournamentState,
-} from "../../types/components";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
@@ -26,6 +19,13 @@ import {
 	ratingsToArray,
 	ratingsToObject,
 } from "../../shared/utils/core";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentState,
+} from "../../types/components";
 import type { AppState } from "../../types/store";
 import useAppStore from "../store/useAppStore";
 import useLocalStorage from "./useStorage";
@@ -764,7 +764,7 @@ export function useTournament({
 	if (tState.isError) {
 		return {
 			currentMatch: null,
-			handleVote: () => { },
+			handleVote: () => {},
 			progress: 0,
 			roundNumber: 0,
 			currentMatchNumber: 0,

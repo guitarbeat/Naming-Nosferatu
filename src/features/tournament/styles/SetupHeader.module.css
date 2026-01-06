@@ -1,0 +1,380 @@
+/* Header styles */
+
+.tournamentTitle {
+	margin: 0 0 var(--space-2) 0;
+	font-size: var(--text-3xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	line-height: var(--leading-tight);
+	letter-spacing: -0.02em;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+	/* Dark mode gradient (default) */
+	.tournamentTitle {
+		background: linear-gradient(
+			135deg,
+			rgb(var(--neon-cyan-rgb), 0.9) 0%,
+			rgb(var(--hot-pink-rgb), 0.8) 50%,
+			#f8fafc 100%
+		);
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		filter: drop-shadow(0 2px 4px rgb(var(--neon-cyan-rgb), 0.3));
+	}
+}
+
+/* Light mode gradient */
+:global(:root[data-theme="light"]) .tournamentTitle {
+	background: linear-gradient(
+		135deg,
+		#0f172a 0%,
+		#1e293b 40%,
+		#334155 100%
+	) !important;
+	background-clip: text !important;
+	-webkit-text-fill-color: transparent !important;
+	filter: none;
+	color: #0f172a;
+}
+
+/* Fallback */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+	.tournamentTitle {
+		color: var(--text-primary);
+	}
+
+	:global(:root[data-theme="light"]) .tournamentTitle {
+		color: #0f172a;
+	}
+}
+
+.tournamentSubtitle {
+	margin: 0;
+	font-size: var(--text-sm);
+	line-height: 1.5;
+	color: var(--text-primary-light, var(--text-secondary));
+}
+
+.tournamentHeaderTop {
+	display: flex;
+	flex-flow: row wrap;
+	gap: var(--space-4);
+	align-items: flex-start;
+	justify-content: space-between;
+	padding-bottom: var(--space-4);
+	border-bottom: 1px solid var(--border-color);
+	animation: slideDown 0.3s ease-out;
+	flex-shrink: 0;
+}
+
+.tournamentTitleSection {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.headerSearchBar {
+	display: flex;
+	gap: var(--space-2);
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.headerSearchInput {
+	flex: 1 1 300px;
+	min-width: 200px;
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-base);
+	line-height: 1.4;
+	color: var(--text-primary);
+	background: var(--card-background);
+	border: 2px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.headerSearchInput:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	box-shadow: 0 0 0 3px var(--accent-color-alpha);
+}
+
+.headerSearchInput::placeholder {
+	color: var(--text-tertiary);
+}
+
+.headerFilters {
+	display: flex;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+}
+
+.headerFilterSelect {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	color: var(--text-primary);
+	background: var(--card-background);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+	min-width: 120px;
+}
+
+.headerFilterSelect:hover {
+	border-color: var(--accent-color);
+}
+
+.headerFilterSelect:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	box-shadow: 0 0 0 2px var(--accent-color-alpha);
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.selectionPanel {
+    /* Using composes won't work well across files for composed classes defined locally in standard CSS Modules unless we import them.
+       For refactoring safety, I'll copy the styles or rely on global classes if appropriate, but here I'll just copy the "elevatedCard" and "stack" styles 
+       or assume simple composition isn't needed if I redefine properties.
+       Actually, standard CSS modules composition from other files works like `composes: className from "./other.css"`.
+       Let's try that pattern if possible, or just duplicate for "stack" and "elevatedCard" to be safe and clean.
+    */
+	background: var(--card-background);
+	border-radius: var(--radius-lg);
+	padding: var(--space-3);
+	display: flex;
+	flex-direction: column;
+    gap: var(--space-4); /* was stackGapXl */
+    
+    /* elevatedCard styles */
+    background: var(--surface-color);
+	border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+	min-width: 0;
+}
+
+.panelHeader {
+	box-sizing: border-box;
+	width: 100%;
+	padding: var(--space-5) var(--space-6) var(--space-4);
+	background: linear-gradient(
+		135deg,
+		rgb(var(--primary-rgb) / 6%) 0%,
+		rgb(var(--primary-rgb) / 2%) 3%,
+		transparent 60%
+	);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.headerRow {
+	display: flex;
+	gap: var(--space-4);
+	align-items: center; /* changed from cluster */
+	flex-wrap: wrap; /* changed from clusterWrap */
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+@media (width <= 768px) {
+	.headerRow {
+		justify-content: center;
+		text-align: center;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-3);
+	}
+    
+    .panelHeader {
+        padding: var(--space-4); /* was space-3 in one media query */
+    }
+}
+
+.headerActions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    flex-wrap: wrap;
+	justify-content: center;
+	min-height: 48px;
+}
+
+@media (width <= 768px) {
+    .headerActions {
+        flex-wrap: wrap;
+        min-height: 60px;
+    }
+}
+
+/* Header Action Button - Copied logic */
+.headerActionButton {
+	position: relative;
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: var(--space-3) var(--space-4);
+	overflow: hidden;
+	font-size: var(--text-sm);
+	font-weight: 600;
+	color: var(--text-primary);
+	letter-spacing: 0.025em;
+	white-space: nowrap;
+	text-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+	cursor: pointer;
+	user-select: none;
+	background: var(--glass-bg);
+	background-image:
+		linear-gradient(var(--card-background), var(--card-background)),
+		var(--gradient-primary);
+	background-clip: padding-box;
+	background-origin: border-box;
+	border: 2px solid transparent;
+	border-radius: var(--radius-xl);
+	box-shadow:
+		0 4px 12px rgb(0 0 0 / 15%),
+		0 2px 4px rgb(0 0 0 / 10%),
+		inset 0 1px 0 rgb(255 255 255 / 10%);
+	backdrop-filter: blur(12px);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.headerActionButton::before {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgb(255 255 255 / 10%),
+		transparent
+	);
+	transition: left var(--duration-slow) var(--ease-out);
+}
+
+.headerActionButton:hover:not(:disabled) {
+	background-image:
+		linear-gradient(var(--card-hover), var(--card-hover)),
+		var(--gradient-vibrant);
+	border-color: var(--neon-cyan-100);
+	box-shadow:
+		0 8px 25px rgb(0 0 0 / 20%),
+		0 4px 12px rgb(0 0 0 / 15%),
+		var(--glow-cyan);
+	transform: translateY(-2px) scale(1.02);
+}
+
+.headerActionButton:hover:not(:disabled)::before {
+	left: 100%;
+}
+
+.headerActionButton:active:not(:disabled) {
+	transform: translateY(-1px) scale(1.01);
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.headerActionButtonActive {
+    composes: headerActionButton;
+	font-weight: 700;
+	color: var(--charcoal);
+	text-shadow: none;
+	background-image:
+		linear-gradient(var(--accent-color), var(--highlight-color)),
+		var(--gradient-vibrant);
+	border-color: var(--mimosa);
+	box-shadow:
+		0 6px 20px rgb(232 191 118 / 40%),
+		0 3px 8px rgb(241 164 56 / 30%),
+		var(--glow-pink);
+	transform: translateY(-1px);
+}
+
+.headerActionButtonActive:hover:not(:disabled) {
+	background-image:
+		linear-gradient(var(--highlight-color), var(--accent-color)),
+		var(--gradient-vibrant);
+	box-shadow:
+		0 10px 30px rgb(232 191 118 / 50%),
+		0 5px 15px rgb(241 164 56 / 40%),
+		var(--glow-vibrant);
+	transform: translateY(-3px) scale(1.03);
+}
+
+.headerActionButton:disabled {
+	color: var(--text-tertiary);
+	cursor: not-allowed;
+	background: var(--glass-bg-light);
+	box-shadow: none;
+	opacity: 0.5;
+	transform: none;
+}
+
+.headerActionButton:focus-visible {
+	outline: 3px solid var(--accent-color);
+	outline-offset: 3px;
+	box-shadow:
+		0 0 0 3px rgb(232 191 118 / 30%),
+		0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.selectAllButton {
+    /* Using buttonInverted logic directly */
+    display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y-md) var(--button-padding-x-md);
+	font-size: var(--text-sm);
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+    
+	color: var(--button-text-light, white);
+	background: var(--button-secondary-bg, #2a2a2a);
+	border-color: #444;
+    
+	min-width: fit-content;
+	padding-block: var(--space-3);
+	white-space: nowrap;
+}
+
+:global(:root[data-theme="light"]) .selectAllButton {
+	color: #fff;
+	background: #1f2937;
+	border-color: #0f172a;
+}
+
+:global(:root[data-theme="light"]) .selectAllButton:hover:not(:disabled) {
+	background: #111827;
+	border-color: #0b1220;
+}
+
+.selectAllButton:focus-visible {
+	outline: 3px solid #111827;
+	outline-offset: 2px;
+}
+
+@media (width <= 768px) {
+    .selectAllButton {
+        width: 100%;
+    }
+}

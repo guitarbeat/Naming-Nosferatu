@@ -54,7 +54,7 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	const handleBlur = useCallback(
 		(name: keyof T) => {
 			setTouched((prev) => ({ ...prev, [name]: true }));
-			validateField(name, (values as any)[name]);
+			validateField(name, (values as Record<string, unknown>)[name as string]);
 		},
 		[values, validateField],
 	);

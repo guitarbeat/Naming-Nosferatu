@@ -24,7 +24,9 @@ import Lightbox from "./components/Lightbox";
 import SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
-import styles from "./TournamentSetup.module.css";
+import cardStyles from "./styles/SetupCards.module.css";
+import layoutStyles from "./styles/SetupLayout.module.css";
+import photoStyles from "./styles/SetupPhotos.module.css";
 import identityStyles from "./TournamentSetupIdentity.module.css";
 
 const ErrorBoundary = Error;
@@ -246,10 +248,10 @@ function CombinedLoginTournamentSetupContent({
 		return (
 			<>
 				<ToastContainer />
-				<div className={`${styles.container} ${styles.photosViewContainer}`}>
-					<div className={styles.photosViewContent}>
-						<h2 className={styles.photosViewTitle}>Photo Gallery</h2>
-						<p className={styles.photosViewSubtitle}>
+				<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
+					<div className={photoStyles.photosViewContent}>
+						<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
+						<p className={photoStyles.photosViewSubtitle}>
 							Click any photo to view full size
 						</p>
 						<PhotoGallery {...photoGalleryProps} />
@@ -263,7 +265,7 @@ function CombinedLoginTournamentSetupContent({
 	return (
 		<>
 			<ToastContainer />
-			<div className={styles.container}>
+			<div className={layoutStyles.container}>
 				{/* Name Identity Section */}
 				<div className={identityStyles.identitySection}>
 					{isEditingName ? (
@@ -331,7 +333,7 @@ function CombinedLoginTournamentSetupContent({
 						SwipeableCards: SwipeableNameCards,
 						isAdmin,
 						imageList: galleryImages || [],
-						gridClassName: styles.cardsContainer,
+						gridClassName: cardStyles.cardsContainer,
 					}}
 					profileProps={{
 						isAdmin: canManageActiveUser,

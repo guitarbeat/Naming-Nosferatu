@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
-import { useCallback, useEffect, useId, useState, forwardRef } from "react";
+import type React from "react";
+import { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 import styles from "./ValidatedInput.module.css";
 

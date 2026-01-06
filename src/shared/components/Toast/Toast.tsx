@@ -3,7 +3,8 @@
  * @description Toast notification components with multiple variants and positioning.
  */
 
-import React, { useCallback, useEffect, useId, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useId, useState } from "react";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Toast.module.css";
 

@@ -3,10 +3,10 @@
  * @description Error display components with multiple variants.
  */
 
-import React, { useMemo, useRef, useState, useEffect } from "react";
-import { createStandardizedError } from "../../services/errorManager";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useScreenSize } from "../../hooks/useScreenSize";
+import { createStandardizedError } from "../../services/errorManager";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
 
@@ -346,13 +346,7 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 			/>
 		);
 	}
-	return (
-		<ErrorInline
-			error={error}
-			context={context}
-			className={className}
-		/>
-	);
+	return <ErrorInline error={error} context={context} className={className} />;
 };
 
 ErrorComponent.displayName = "ErrorComponent";

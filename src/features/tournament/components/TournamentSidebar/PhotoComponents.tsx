@@ -7,8 +7,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { imagesAPI } from "../../../../shared/services/supabase/client";
 import { compressImageFile, devError } from "../../../../shared/utils/core";
-import styles from "./PhotoGallery.module.css";
 import { GALLERY_IMAGE_SIZES } from "../../tournamentUtils";
+import styles from "./PhotoGallery.module.css";
 
 // ============================================================================
 // PhotoThumbnail Component

@@ -3,7 +3,8 @@
  * @description Loading component with spinner, suspense, and skeleton variants.
  */
 
-import React, { memo, Suspense, useMemo } from "react";
+import type React from "react";
+import { memo, Suspense, useMemo } from "react";
 import styles from "./Loading.module.css";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];

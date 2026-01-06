@@ -1,8 +1,8 @@
 export {
-    Error,
-    ErrorComponent,
-    ErrorBoundaryFallback,
-    type ErrorProps,
-    type ErrorBoundaryFallbackProps,
+	default,
+	Error,
+	ErrorBoundaryFallback,
+	type ErrorBoundaryFallbackProps,
+	ErrorComponent,
+	type ErrorProps,
 } from "./Error";
-export { default } from "./Error";

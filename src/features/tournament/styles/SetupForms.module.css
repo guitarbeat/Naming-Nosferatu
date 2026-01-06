@@ -1,0 +1,183 @@
+/* Form Styles */
+
+.suggestionCard {
+	text-align: center;
+}
+
+.suggestionIntro {
+	margin: var(--space-2) 0 var(--space-4);
+	color: var(--text-secondary);
+}
+
+.suggestionForm {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.formGroup {
+	text-align: left;
+}
+
+.formGroup label {
+	display: block;
+	margin-bottom: var(--space-2);
+	font-weight: 500;
+}
+
+.formGroup input,
+.formGroup textarea {
+	width: 100%;
+	padding: var(--space-2);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+	outline: none;
+	border-color: var(--primary-400);
+	box-shadow: 0 0 0 2px rgb(var(--primary-rgb) / 20%);
+}
+
+.formGroup textarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+/* Base submit button style */
+.submitButton {
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: var(--space-3) var(--space-4);
+	margin-top: var(--space-2);
+	font-size: var(--text-base);
+	font-weight: 500;
+	color: var(--button-text-light, white);
+	cursor: pointer;
+	background: var(--button-primary-bg, var(--primary-color));
+	border: none;
+	border-radius: var(--radius-md);
+	transition: var(--transition-all);
+}
+
+.submitButton:hover:not(:disabled) {
+	background: var(--button-primary-hover, var(--primary-dark));
+	box-shadow: var(--shadow-md);
+	transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.suggestionTitle {
+	margin: 0 0 var(--space-2);
+	font-size: var(--text-lg);
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.suggestionDescription {
+	margin: 0 0 var(--space-4);
+	color: var(--text-secondary);
+}
+
+.suggestionButton {
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: var(--space-3) var(--space-4);
+	margin-top: var(--space-2);
+	font-size: var(--text-base);
+	font-weight: 600;
+	color: var(--button-text-light, white);
+	cursor: pointer;
+	background: var(--button-primary-bg, var(--primary-color));
+	border: none;
+	border-radius: var(--radius-md);
+	transition: var(--transition-all);
+}
+
+.suggestionButton:hover:not(:disabled) {
+	background: var(--button-primary-hover, var(--primary-dark));
+	box-shadow: var(--shadow-md);
+	transform: translateY(-1px);
+}
+
+.suggestionButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.formLabel {
+	display: block;
+	margin-bottom: var(--space-2);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.formInput,
+.formTextarea {
+	width: 100%;
+	padding: var(--space-3);
+	font-size: var(--text-base);
+	line-height: 1.5;
+	color: var(--text-primary);
+	background: var(--input-background, var(--surface-color));
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	transition: var(--transition-all);
+}
+
+.formInput:focus,
+.formTextarea:focus {
+	outline: none;
+	border-color: var(--primary-400);
+	box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 20%);
+}
+
+.formInput:disabled,
+.formTextarea:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.formTextarea {
+	min-height: 100px;
+	resize: vertical;
+}
+
+.formError {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	color: var(--error-color);
+	background: var(--error-bg, rgb(239 68 68 / 10%));
+	border: 1px solid var(--error-color);
+	border-radius: var(--radius-md);
+}
+
+.formSuccess {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	color: var(--success-color);
+	background: var(--success-bg, rgb(16 185 129 / 10%));
+	border: 1px solid var(--success-color);
+	border-radius: var(--radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.formGroup input,
+	.formGroup textarea {
+		transition: none;
+	}
+}

@@ -3,12 +3,11 @@
 ## Application Roadmap
 
 ### ✅ Completed Milestones
+### ✅ Completed Milestones
 - **Pass 1: "Stop the Bleeding"**: Removed orphaned CSS, consolidated types, decomposed `CommonUI`.
 - **Pass 2: "Split Violations"**: Split `nameManagementCore.tsx` and `useAppStore.ts`. Decoupled `TournamentSetup.module.css`. enforced file limits.
-
-### 🚧 Current Priorities (Pass 3 & 4)
-- **Linting & Tooling**: Integrate `scripts/enforce-limits.js` into CI/CD.
-- **Documentation**: Standardize feature development workflows.
+- **Pass 3: "Linting & Tooling"**: Migrated CI to `pnpm` and integrated `check:limits` and `lint` into the workflow.
+- **Pass 4: "Documentation"**: Standardized feature development workflows in `FEATURE_WORKFLOW.md`.
 
 ### 🔮 Future Goals
 - **Analysis Consolidation**: Refactor `AnalysisUI` and `AnalysisDashboard` (currently ~1400 lines combined) into a unified, modular feature.

@@ -492,7 +492,16 @@ npm run test -- --clearCache
 
 ---
 
-## 📚 **Contributing**
+## 📚 **Documentation**
+
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Development Guide](docs/DEVELOPMENT.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Error Handling Strategy](docs/ERROR_HANDLING.md)
+
+---
+
+## 🤝 **Contributing**
 
 ### **Development Setup**
 

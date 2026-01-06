@@ -1,12 +1,12 @@
-import React from 'react';
+import type React from "react";
 
 const ProfilePage: React.FC = () => {
-  return (
-    <div>
-      <h1>Profile Page</h1>
-      <p>Modern profile page coming soon...</p>
-    </div>
-  );
+	return (
+		<div>
+			<h1>Profile Page</h1>
+			<p>Modern profile page coming soon...</p>
+		</div>
+	);
 };
 
 export default ProfilePage;

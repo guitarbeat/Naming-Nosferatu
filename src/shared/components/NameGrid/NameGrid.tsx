@@ -14,7 +14,8 @@ import {
 	selectedNamesToSet,
 } from "../../utils/core";
 import CardName from "../Card/components/CardName";
-import { Loading } from "../CommonUI";
+import EmptyState from "../EmptyState/EmptyState";
+import SkeletonLoader from "../Loading/SkeletonLoader";
 import styles from "./NameGrid.module.css";
 
 interface NameGridProps {
@@ -149,8 +150,12 @@ export function NameGrid({
 	if (isLoading) {
 		return (
 			<div className={`${styles.gridContainer} ${className}`}>
-				<div className={styles.loadingContainer}>
-					<Loading variant="spinner" text="Loading names..." />
+				<div className={styles.namesGrid}>
+					{Array.from({ length: 8 }).map((_, i) => (
+						<div key={`skeleton-${i}`} className={styles.gridItem}>
+							<SkeletonLoader variant="card" height={260} />
+						</div>
+					))}
 				</div>
 			</div>
 		);
@@ -158,32 +163,50 @@ export function NameGrid({
 
 	if (processedNames.length === 0) {
 		return (
-			<div className={styles.emptyState}>
-				<h3 className={styles.emptyTitle}>No names found</h3>
-				<p className={styles.emptyMessage}>
-					{showSelectedOnly
-						? "No names selected."
-						: "Try adjusting your filters."}
-				</p>
+			<div className={`${styles.gridContainer} ${className}`}>
+				<EmptyState
+					title="No names found"
+					description={
+						showSelectedOnly
+							? "You haven't selected any names yet. Go back to browse mode to pick some favorites!"
+							: "Try adjusting your filters or search terms to find what you're looking for."
+					}
+					icon={showSelectedOnly ? "🕸️" : "🔍"}
+					action={
+						showSelectedOnly ? (
+							<button
+								type="button"
+								className={styles.resetButton}
+								onClick={() => {
+									// This relies on the parent checking 'showSelectedOnly' and providing a reset
+									// or we can just guide the user textually
+								}}
+							>
+								{/* Action handled by description hint for now */}
+							</button>
+						) : undefined
+					}
+				/>
 			</div>
 		);
 	}
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<div className={styles.namesGrid}>
+			<div className={styles.namesGrid} role="list">
 				{processedNames.map((name) => (
-					<GridItem
-						key={name.id}
-						nameObj={name}
-						selectedSet={selectedSet}
-						onToggleName={onToggleName}
-						isAdmin={isAdmin}
-						showCatPictures={showCatPictures}
-						imageList={imageList}
-						onToggleVisibility={onToggleVisibility}
-						onDelete={onDelete}
-					/>
+					<div key={name.id} role="listitem" className={styles.gridItemWrapper}>
+						<GridItem
+							nameObj={name}
+							selectedSet={selectedSet}
+							onToggleName={onToggleName}
+							isAdmin={isAdmin}
+							showCatPictures={showCatPictures}
+							imageList={imageList}
+							onToggleVisibility={onToggleVisibility}
+							onDelete={onDelete}
+						/>
+					</div>
 				))}
 			</div>
 		</div>

@@ -33,8 +33,8 @@ const SuggestionSchema = z.object({
 	description: z
 		.string()
 		.min(
-			VALIDATION.MIN_DESCRIPTION_LENGTH_EXTENDED || 10,
-			"Description must be at least 10 characters",
+			5, // * Low-Friction Validation: Relaxed from 10 to 5
+			"Description can be short!",
 		)
 		.max(
 			VALIDATION.MAX_DESCRIPTION_LENGTH || 500,
@@ -278,7 +278,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 									if (globalError) setGlobalError("");
 								}}
 								onBlur={() => handleBlur("description")}
-								placeholder="A brief description of why this name is special"
+								placeholder="Why is this name special? (e.g. 'He looks like a vampire!')"
 								className={`name-suggestion-form-textarea ${touched.description && errors.description ? "input-error" : ""}`}
 								disabled={isSubmitting}
 								maxLength={500}

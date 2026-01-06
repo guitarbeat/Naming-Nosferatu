@@ -1,0 +1,207 @@
+/* Lightbox - Transitions already improved in SetupPhotos, ensuring full coverage here if used separately or cleaning up duplication where needed */
+
+/* 
+ * NOTE: Lightbox styles were included in SetupPhotos.module.css as well to keep image-related styles together.
+ * If splitting further, we'd put the overlay and content styles here.
+ * For now, I will include only unique lightbox styles if any, or rely on SetupPhotos.
+ * SetupPhotos has `lightboxOverlay` etc.
+ */
+ 
+/* Intentionally empty or minimal if consolidated in SetupPhotos, 
+   but for completeness I will move the strictly Overlay/Lightbox specific classes here if I edit the other file.
+   However, given I already wrote them to SetupPhotos, let's stick with that plan unless I refactor SetupPhotos too.
+   To follow the plan of <500 lines, SetupPhotos is getting big with Lightbox included.
+   Let's create this file with the content and remove it from SetupPhotos in a subsequent step if needed.
+   Actually, I'll put the *full* lightbox styles here so I can remove them from SetupPhotos later.
+*/
+
+.lightboxOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: calc(var(--z-modal) + 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgb(0 0 0 / 92%);
+	backdrop-filter: blur(20px) saturate(150%);
+	animation: lightboxFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	pointer-events: auto;
+}
+
+@keyframes lightboxFadeIn {
+	from {
+		opacity: 0;
+		backdrop-filter: blur(0) saturate(100%);
+	}
+	to {
+		opacity: 1;
+		backdrop-filter: blur(20px) saturate(150%);
+	}
+}
+
+.lightboxContent {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	max-width: 95vw;
+	max-height: 95vh;
+	animation: lightboxScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes lightboxScaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.lightboxImageWrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 90vw;
+	max-height: 85vh;
+	animation: imageSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes imageSlideIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.lightboxImageWrap.slideLeft {
+	animation: slideFromLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lightboxImageWrap.slideRight {
+	animation: slideFromRight 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideFromLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-60px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+@keyframes slideFromRight {
+	from {
+		opacity: 0;
+		transform: translateX(60px) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+.lightboxImage {
+	max-width: 90vw;
+	max-height: 85vh;
+	object-fit: contain;
+	border-radius: var(--radius-lg);
+	box-shadow: 0 25px 80px rgb(0 0 0 / 60%);
+}
+
+.lightboxNav {
+    position: absolute;
+	top: 50%;
+	z-index: calc(var(--z-modal) + 2);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 52px;
+	padding: 0;
+	font-size: 1.75rem;
+	line-height: 1;
+	color: rgb(var(--white-rgb));
+	cursor: pointer;
+	background: rgb(var(--black-rgb), 0.6);
+	border: 2px solid rgb(var(--white-rgb), 0.3);
+	border-radius: var(--radius-full);
+	transform: translateY(-50%);
+	transition: var(--transition-all);
+	text-align: center;
+	vertical-align: middle;
+}
+
+.lightboxNav:hover {
+	background: rgb(var(--black-rgb), 0.8);
+	border-color: rgb(var(--white-rgb), 0.6);
+	transform: translateY(-50%) scale(1.15);
+}
+
+.lightboxNav.left { left: var(--space-4); }
+.lightboxNav.right { right: var(--space-4); }
+
+.lightboxClose {
+	position: absolute;
+	top: var(--space-4);
+	right: var(--space-4);
+	z-index: calc(var(--z-modal) + 2);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	font-size: 1.75rem;
+	line-height: 1;
+	color: rgb(var(--white-rgb));
+	cursor: pointer;
+	background: rgb(var(--black-rgb), 0.6);
+	border: 2px solid rgb(var(--white-rgb), 0.3);
+	border-radius: var(--radius-full);
+	transition: var(--transition-all);
+}
+
+.lightboxClose:hover {
+	background: rgb(var(--black-rgb), 0.8);
+	border-color: rgb(var(--white-rgb), 0.6);
+	transform: scale(1.1);
+}
+
+.lightboxCounter {
+	position: absolute;
+	bottom: var(--space-4);
+	left: 50%;
+	padding: var(--space-1) var(--space-3);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	color: rgb(var(--white-rgb));
+	background: rgb(0 0 0 / 60%);
+	backdrop-filter: blur(4px);
+	border-radius: var(--radius-full);
+	transform: translateX(-50%);
+	z-index: calc(var(--z-modal) + 3);
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+@media (width <= 768px) {
+    .lightboxContent { padding: var(--space-4); }
+    .lightboxImageWrap { max-width: min(94vw, 720px); max-height: 70vh; }
+    .lightboxNav { width: 40px; height: 40px; font-size: var(--text-xl); }
+    .lightboxNav.left { left: var(--space-3); }
+    .lightboxNav.right { right: var(--space-3); }
+    .lightboxClose { top: var(--space-3); right: var(--space-3); width: 38px; height: 38px; font-size: var(--text-xl); }
+    .lightboxCounter { bottom: var(--space-3); padding: var(--space-1) var(--space-2); font-size: var(--text-xs); }
+}

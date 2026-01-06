@@ -7,6 +7,7 @@
 - pnpm >= 9
 
 ### Commands
+### Commands
 ```bash
 pnpm install          # Install dependencies
 pnpm run dev          # Start development server
@@ -27,7 +28,8 @@ If you hit a limit, **refactor**:
 3.  **Split CSS**: Create specific CSS modules for sub-components.
 
 ### Folder Structure
-See [Feature Template](./feature-template.md) for the standard directory structure of new features.
+### Folder Structure
+See [Feature Workflow](./FEATURE_WORKFLOW.md) for the standard directory structure of new features.
 
 ### State Management
 - **Local State**: Use `useState` for UI-only state.
@@ -45,3 +47,10 @@ See [Feature Template](./feature-template.md) for the standard directory structu
 2.  Implement changes following V2 principles.
 3.  Run `pnpm run check` to verify types and limits.
 4.  Submit PR.
+
+## Further Reading
+## Further Reading
+- [Feature Workflow Guide](./FEATURE_WORKFLOW.md) (Standard for new features)
+- [Workflow & Automation Details](./WORKFLOW.md)
+- [Architecture Overview](./ARCHITECTURE.md)
+

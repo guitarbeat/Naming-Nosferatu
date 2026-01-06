@@ -4,10 +4,10 @@
  * Provides a consistent interface with mode-specific extensions.
  */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorComponent, Loading } from "../CommonUI";
-import { TournamentMode } from "./modes/TournamentMode";
 import { ProfileMode } from "./modes/ProfileMode";
+import { TournamentMode } from "./modes/TournamentMode";
 import styles from "./NameManagementView.module.css";
 // Consolidated imports
 import {
@@ -17,6 +17,7 @@ import {
 	type UseNameManagementViewProps,
 	useNameManagementView,
 } from "./nameManagementCore";
+import { useToast } from "../../providers";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
@@ -37,6 +38,7 @@ export function NameManagementView({
 }: NameManagementViewProps) {
 	// * Sync analysis mode with URL
 	const [analysisMode, setAnalysisMode] = useState(false);
+	const { showToast } = useToast();
 
 	useEffect(() => {
 		if (typeof window === "undefined") return;
@@ -64,6 +66,30 @@ export function NameManagementView({
 		handleFilterChange,
 	} = state;
 
+	// * Feedback Side Effects
+	useEffect(() => {
+		if (isError && dataError) {
+			showToast({
+				message: dataError.message || "An error occurred while loading data",
+				type: "error",
+			});
+		}
+	}, [isError, dataError, showToast]);
+
+	const handleStartTournament = useCallback(
+		(namesToStart: NameItem[]) => {
+			if (onStartTournament) {
+				showToast({
+					message: "Starting tournament...",
+					type: "success",
+					duration: 2000,
+				});
+				onStartTournament(namesToStart);
+			}
+		},
+		[onStartTournament, showToast],
+	);
+
 	const contextValue = useMemo(
 		() => ({
 			names,
@@ -78,7 +104,7 @@ export function NameManagementView({
 			totalCount: names.length,
 			mode: mode || "tournament",
 			handleFilterChange,
-			onStartTournament,
+			onStartTournament: handleStartTournament,
 		}),
 		[
 			names,
@@ -96,7 +122,7 @@ export function NameManagementView({
 		],
 	);
 
-	if (isLoading) return <Loading text="Preparing cat database..." />;
+
 
 	const renderContent = () => {
 		// 1. Dashboard Mode (Analysis or Profile Dashboard via extension)
@@ -118,7 +144,9 @@ export function NameManagementView({
 						{React.isValidElement(extensions.dashboard)
 							? extensions.dashboard
 							: typeof extensions.dashboard === "function"
-								? React.createElement(extensions.dashboard as React.ComponentType)
+								? React.createElement(
+										extensions.dashboard as React.ComponentType,
+									)
 								: extensions.dashboard}
 					</section>
 				</div>
@@ -132,7 +160,7 @@ export function NameManagementView({
 					{...state}
 					// Pass specific props that might not be in state
 					categories={tournamentProps.categories}
-					onStartTournament={onStartTournament}
+					onStartTournament={handleStartTournament}
 					onOpenSuggestName={onOpenSuggestName}
 					extensions={extensions}
 					isAdmin={profileProps.isAdmin || tournamentProps.isAdmin}

@@ -363,7 +363,7 @@
 	/* Theme-independent glass values */
 	--glass-blur: 20px;
 	--glass-blur-strong: 30px;
-	
+
 	/* Note: Theme-variant glass tokens (bg, border, shadow) are defined in themes.css */
 }
 

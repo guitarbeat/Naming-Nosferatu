@@ -1,9 +1,13 @@
 import React from "react";
+import type { NameItem } from "../../../../types/components";
 import Button from "../../Button/Button";
 import { NameGrid } from "../../NameGrid/NameGrid";
 import { TournamentToolbar } from "../../TournamentToolbar/TournamentToolbar";
-import { NameManagementViewExtensions, TournamentFilters, useNameManagementContext } from "../nameManagementCore";
 import styles from "../NameManagementView.module.css";
+import type {
+	NameManagementViewExtensions,
+	TournamentFilters,
+} from "../nameManagementCore";
 
 interface TournamentModeProps {
 	analysisMode: boolean;
@@ -13,21 +17,21 @@ interface TournamentModeProps {
 	totalCount: number;
 	filteredCount: number;
 	selectedCount: number;
-	onStartTournament?: (selectedNames: any[]) => void;
+	onStartTournament?: (selectedNames: NameItem[]) => void;
 	onOpenSuggestName: () => void;
-	selectedNames: any[];
+	selectedNames: NameItem[];
 	showSelectedOnly: boolean;
 	setShowSelectedOnly: (show: boolean) => void;
-	names: any[];
+	names: NameItem[];
 	extensions: NameManagementViewExtensions;
 	isSwipeMode: boolean;
 	showCatPictures: boolean;
-	filteredNamesForSwipe: any[];
-	toggleName: (name: any) => void;
+	filteredNamesForSwipe: NameItem[];
+	toggleName: (name: NameItem) => void;
 	isLoading: boolean;
 	isAdmin?: boolean;
 	imageList?: string[];
-	SwipeableCards?: React.ComponentType<any>;
+	SwipeableCards?: React.ComponentType<unknown>;
 }
 
 export function TournamentMode({
@@ -107,7 +111,14 @@ export function TournamentMode({
 
 				{/* Progress Bar */}
 				{!extensions.nameGrid && (
-					<div className={styles.progressSection}>
+					<div
+						className={styles.progressSection}
+						role="progressbar"
+						aria-valuenow={selectedCount}
+						aria-valuemin={0}
+						aria-valuemax={names.length}
+						aria-label="Selection Progress"
+					>
 						<div className={styles.progressBar}>
 							<div
 								className={styles.progressFill}
@@ -133,12 +144,12 @@ export function TournamentMode({
 						) : (
 							extensions.nameGrid
 						)
-					) : isSwipeMode && SwipeableCards ? (
+					) : isSwipeMode && SwipeableCards && !isLoading ? (
 						React.createElement(SwipeableCards, {
 							names: filteredNamesForSwipe,
 							selectedNames: selectedNames,
 							onToggleName: toggleName,
-							onRateName: (name: any, rating: number) => {
+							onRateName: (name: NameItem, rating: number) => {
 								console.log("Rate", name, rating);
 							},
 							isAdmin: !!isAdmin,

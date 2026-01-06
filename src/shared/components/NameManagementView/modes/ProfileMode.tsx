@@ -1,18 +1,23 @@
 import React from "react";
+import type { NameItem } from "../../../../types/components";
 import { NameGrid } from "../../NameGrid/NameGrid";
 import { TournamentToolbar } from "../../TournamentToolbar/TournamentToolbar";
-import { NameManagementViewExtensions, NameManagementViewProfileProps, TournamentFilters } from "../nameManagementCore";
 import styles from "../NameManagementView.module.css";
+import type {
+	NameManagementViewExtensions,
+	NameManagementViewProfileProps,
+	TournamentFilters,
+} from "../nameManagementCore";
 
 interface ProfileModeProps {
 	filterConfig: TournamentFilters;
 	handleFilterChange: (name: string, value: string) => void;
-	names: any[];
+	names: NameItem[];
 	isLoading: boolean;
 	extensions: NameManagementViewExtensions;
 	profileProps: NameManagementViewProfileProps;
-	selectedNames: any[];
-	toggleName: (name: any) => void;
+	selectedNames: NameItem[];
+	toggleName: (name: NameItem) => void;
 	categories?: string[];
 }
 
@@ -69,7 +74,7 @@ export function ProfileMode({
 				<section className={styles.bulkActionsSection}>
 					{typeof extensions.bulkActions === "function"
 						? React.createElement(
-								extensions.bulkActions as React.ComponentType<any>,
+								extensions.bulkActions as React.ComponentType<unknown>,
 								{
 									onExport: () => {
 										console.log("Export", names.length, "names");

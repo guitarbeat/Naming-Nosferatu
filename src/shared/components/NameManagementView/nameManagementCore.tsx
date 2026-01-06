@@ -4,34 +4,58 @@
  * Includes Types, Context, and Hooks for name data and selection management.
  */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type React from "react";
-import type { Dispatch, SetStateAction } from "react";
-import {
-	createContext,
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
-import { FALLBACK_NAMES } from "../../../features/tournament/tournamentUtils";
-import { ErrorManager } from "../../services/errorManager/index";
-import { catNamesAPI, tournamentsAPI } from "../../services/supabase/client";
 import {
 	applyNameFilters,
 	mapFilterStatusToVisibility,
 } from "../../utils/core";
-
-import { NameItem, TournamentFilters } from "./shared/types";
+import type {
+	NameItem,
+	TournamentFilters,
+	UseNameManagementViewProps,
+} from "./shared/types";
 import { useNameData } from "./shared/useNameData";
 import { useNameSelection } from "./shared/useNameSelection";
 
-export type { NameItem, TournamentFilters };
+// Context Definition
+const NameManagementContext = createContext<UseNameManagementViewResult | null>(
+	null,
+);
+
+export function NameManagementProvider({
+	children,
+	value,
+}: {
+	children: React.ReactNode;
+	value: UseNameManagementViewResult;
+}) {
+	return (
+		<NameManagementContext.Provider value={value}>
+			{children}
+		</NameManagementContext.Provider>
+	);
+}
+
+export function useNameManagementContextSafe() {
+	const context = useContext(NameManagementContext);
+	if (!context) {
+		throw new Error(
+			"useNameManagementContextSafe must be used within NameManagementProvider",
+		);
+	}
+	return context;
+}
+
+// Type for the hook return value
+export type UseNameManagementViewResult = ReturnType<
+	typeof useNameManagementView
+>;
+
+export type { NameItem, TournamentFilters, UseNameManagementViewProps };
 
 // ============================================================================
 // HOOKS - Name Management View State

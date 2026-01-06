@@ -1,149 +1,149 @@
-import { StateCreator } from "zustand";
-import { AppState, UserState } from "../../../types/store";
+import type { StateCreator } from "zustand";
 import { updateSupabaseUserContext } from "../../../shared/services/supabase/client";
+import type { AppState, UserState } from "../../../types/store";
 
 const getInitialUserState = (): UserState => {
-    const defaultState: UserState = {
-        name: "",
-        isLoggedIn: false,
-        isAdmin: false,
-        preferences: {},
-    };
+	const defaultState: UserState = {
+		name: "",
+		isLoggedIn: false,
+		isAdmin: false,
+		preferences: {},
+	};
 
-    if (typeof window === "undefined") {
-        return defaultState;
-    }
+	if (typeof window === "undefined") {
+		return defaultState;
+	}
 
-    try {
-        const storedUser = window.localStorage.getItem("catNamesUser");
-        if (storedUser?.trim()) {
-            return {
-                ...defaultState,
-                name: storedUser.trim(),
-                isLoggedIn: true,
-            };
-        }
-    } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-            console.warn("Unable to read stored user from localStorage:", error);
-        }
-    }
+	try {
+		const storedUser = window.localStorage.getItem("catNamesUser");
+		if (storedUser?.trim()) {
+			return {
+				...defaultState,
+				name: storedUser.trim(),
+				isLoggedIn: true,
+			};
+		}
+	} catch (error) {
+		if (process.env.NODE_ENV === "development") {
+			console.warn("Unable to read stored user from localStorage:", error);
+		}
+	}
 
-    return defaultState;
+	return defaultState;
 };
 
 export const createUserSlice: StateCreator<
-    AppState,
-    [],
-    [],
-    Pick<AppState, "user" | "userActions">
-> = (set, get) => ({
-    user: getInitialUserState(),
+	AppState,
+	[],
+	[],
+	Pick<AppState, "user" | "userActions">
+> = (set, _get) => ({
+	user: getInitialUserState(),
 
-    userActions: {
-        setUser: (userData) =>
-            set((state) => {
-                const newUser = {
-                    ...state.user,
-                    ...userData,
-                };
-                // * Persist to localStorage
-                try {
-                    if (newUser.name) {
-                        localStorage.setItem("catNamesUser", newUser.name);
-                    } else {
-                        localStorage.removeItem("catNamesUser");
-                    }
-                } catch (error) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Error updating localStorage:", error);
-                    }
-                }
-                return {
-                    user: newUser,
-                };
-            }),
+	userActions: {
+		setUser: (userData) =>
+			set((state) => {
+				const newUser = {
+					...state.user,
+					...userData,
+				};
+				// * Persist to localStorage
+				try {
+					if (newUser.name) {
+						localStorage.setItem("catNamesUser", newUser.name);
+					} else {
+						localStorage.removeItem("catNamesUser");
+					}
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error updating localStorage:", error);
+					}
+				}
+				return {
+					user: newUser,
+				};
+			}),
 
-        login: (userName) =>
-            set((state) => {
-                const newUser = {
-                    ...state.user,
-                    name: userName,
-                    isLoggedIn: true,
-                };
-                // * Persist to localStorage
-                try {
-                    localStorage.setItem("catNamesUser", userName);
-                    // Update Supabase client headers for RLS policies
-                    updateSupabaseUserContext(userName);
-                } catch (error) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Error updating localStorage:", error);
-                    }
-                }
-                return {
-                    user: newUser,
-                };
-            }),
+		login: (userName) =>
+			set((state) => {
+				const newUser = {
+					...state.user,
+					name: userName,
+					isLoggedIn: true,
+				};
+				// * Persist to localStorage
+				try {
+					localStorage.setItem("catNamesUser", userName);
+					// Update Supabase client headers for RLS policies
+					updateSupabaseUserContext(userName);
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error updating localStorage:", error);
+					}
+				}
+				return {
+					user: newUser,
+				};
+			}),
 
-        logout: () =>
-            set((state) => {
-                // * Clear localStorage
-                try {
-                    localStorage.removeItem("catNamesUser");
-                    // Clear Supabase client headers
-                    updateSupabaseUserContext(null);
-                } catch (error) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Error clearing localStorage:", error);
-                    }
-                }
-                return {
-                    user: {
-                        ...state.user,
-                        name: "",
-                        isLoggedIn: false,
-                        isAdmin: false,
-                    },
-                    tournament: {
-                        ...state.tournament,
-                        names: null,
-                        isComplete: false,
-                        voteHistory: [],
-                    },
-                };
-            }),
+		logout: () =>
+			set((state) => {
+				// * Clear localStorage
+				try {
+					localStorage.removeItem("catNamesUser");
+					// Clear Supabase client headers
+					updateSupabaseUserContext(null);
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error clearing localStorage:", error);
+					}
+				}
+				return {
+					user: {
+						...state.user,
+						name: "",
+						isLoggedIn: false,
+						isAdmin: false,
+					},
+					tournament: {
+						...state.tournament,
+						names: null,
+						isComplete: false,
+						voteHistory: [],
+					},
+				};
+			}),
 
-        setAdminStatus: (isAdmin) =>
-            set((state) => ({
-                user: {
-                    ...state.user,
-                    isAdmin,
-                },
-            })),
+		setAdminStatus: (isAdmin) =>
+			set((state) => ({
+				user: {
+					...state.user,
+					isAdmin,
+				},
+			})),
 
-        // * Initialize user from localStorage
-        initializeFromStorage: () =>
-            set((state) => {
-                try {
-                    const storedUser = localStorage.getItem("catNamesUser");
-                    if (storedUser && state.user.name !== storedUser) {
-                        // Update Supabase client headers for RLS policies
-                        updateSupabaseUserContext(storedUser);
-                        return {
-                            user: {
-                                ...state.user,
-                                name: storedUser,
-                                isLoggedIn: true,
-                            },
-                        };
-                    }
-                } catch (error) {
-                    if (process.env.NODE_ENV === "development") {
-                        console.error("Error reading from localStorage:", error);
-                    }
-                }
-                return state;
-            }),
-    },
+		// * Initialize user from localStorage
+		initializeFromStorage: () =>
+			set((state) => {
+				try {
+					const storedUser = localStorage.getItem("catNamesUser");
+					if (storedUser && state.user.name !== storedUser) {
+						// Update Supabase client headers for RLS policies
+						updateSupabaseUserContext(storedUser);
+						return {
+							user: {
+								...state.user,
+								name: storedUser,
+								isLoggedIn: true,
+							},
+						};
+					}
+				} catch (error) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error reading from localStorage:", error);
+					}
+				}
+				return state;
+			}),
+	},
 });

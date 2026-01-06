@@ -71,3 +71,25 @@ export interface HighlightItem {
 	value?: number;
 	avg_rating?: number;
 }
+
+export interface ConsolidatedName {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins: number;
+	selected: number;
+	dateSubmitted: string | null;
+	insights?: string[];
+	ratingPercentile?: number;
+	selectedPercentile?: number;
+	[key: string]: unknown;
+}
+
+export interface AnalysisDashboardProps {
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] };
+	userName?: string | null;
+	showGlobalLeaderboard?: boolean;
+	defaultCollapsed?: boolean;
+	isAdmin?: boolean;
+	onNameHidden?: (id: string) => void;
+}

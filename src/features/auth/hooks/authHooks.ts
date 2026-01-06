@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "../../../core/constants";
 import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
@@ -124,8 +124,6 @@ const LoginFormSchema = z.object({
 		.regex(/^[a-zA-Z0-9_-]+$/, "Only letters, numbers, - and _ are allowed"),
 });
 
-type LoginFormValues = z.infer<typeof LoginFormSchema>;
-
 /**
  * Hook to manage login form state and submission
  */
@@ -152,8 +150,8 @@ export function useLoginController(
 				const error = err as Error;
 				setGlobalError(
 					formattedError.userMessage ||
-					error.message ||
-					"Unable to log in. Please check your connection and try again.",
+						error.message ||
+						"Unable to log in. Please check your connection and try again.",
 				);
 				throw err; // Re-throw to let the hook know submission failed
 			}
@@ -180,6 +178,25 @@ export function useLoginController(
 		},
 		[handleChange, globalError],
 	);
+
+	// * Smart Default: Check for saved username on mount
+	useEffect(() => {
+		try {
+			// Basic localStorage check - in a real app this might simpler or more complex
+			// depending on the auth system. Since this is a simple name-based login:
+			const savedUser = localStorage.getItem("user-storage");
+			if (savedUser) {
+				const parsed = JSON.parse(savedUser);
+				// Assuming the zustand persist structure: { state: { user: { name: "..." } } }
+				const name = parsed?.state?.user?.name;
+				if (name && typeof name === "string" && !values.name) {
+					setValues({ name });
+				}
+			}
+		} catch (_e) {
+			// Ignore storage errors
+		}
+	}, [setValues, values.name]); // Run once on mount if name is missing
 
 	const handleRandomName = useCallback(() => {
 		if (isSubmitting) return;
