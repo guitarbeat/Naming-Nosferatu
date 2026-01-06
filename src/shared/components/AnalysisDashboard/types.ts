@@ -1,7 +1,7 @@
 // Shared types for Analysis Dashboard components
 
 export interface NameWithInsight {
-	id: string;
+	id: string | number;
 	name: string;
 	rating: number;
 	wins: number;
@@ -21,7 +21,7 @@ export interface SummaryStats {
 	totalSelected?: number; // User view
 	totalSelections?: number; // Admin view
 	topName?: {
-		id: string;
+		id: string | number;
 		name: string;
 		rating: number;
 		wins: number;
@@ -39,7 +39,7 @@ export interface SummaryStats {
 }
 
 export interface LeaderboardItem {
-	name_id: string;
+	name_id: string | number;
 	name: string;
 	avg_rating?: number;
 	wins?: number;
@@ -56,7 +56,7 @@ export interface SelectionPopularityItem {
 }
 
 export interface AnalyticsDataItem {
-	name_id: string;
+	name_id: string | number;
 	name: string;
 	avg_rating?: number;
 	total_wins?: number;

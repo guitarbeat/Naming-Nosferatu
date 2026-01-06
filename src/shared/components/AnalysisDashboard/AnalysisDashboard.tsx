@@ -103,9 +103,9 @@ export function AnalysisDashboard({
 	// 2. Process Data
 	const { displayNames, summaryStats, namesWithInsights, generalInsights } =
 		useAnalysisDisplayData({
-			leaderboardData: leaderboardData ?? null,
+			leaderboardData: (leaderboardData ?? null) as LeaderboardItem[] | null,
 			selectionPopularity: selectionPopularity ?? null,
-			analyticsData: analyticsData ?? null,
+			analyticsData: (analyticsData ?? null) as AnalyticsDataItem[] | null,
 			isAdmin,
 			highlights,
 			filterConfig,
@@ -126,12 +126,12 @@ export function AnalysisDashboard({
 	);
 
 	const handleHideName = useCallback(
-		async (nameId: string, _name: string) => {
+		async (nameId: string | number, _name: string) => {
 			if (!isAdmin || !userName) return;
 			try {
-				await hiddenNamesAPI.hideName(userName, nameId);
+				await hiddenNamesAPI.hideName(userName, String(nameId));
 				clearAllCaches();
-				if (onNameHidden) onNameHidden(nameId);
+				if (onNameHidden) onNameHidden(String(nameId));
 				refetch();
 			} catch (error) {
 				devError("[AnalysisDashboard] Error hiding name:", error);
@@ -378,7 +378,7 @@ export function useAnalysisData({
 // useAnalysisDisplayData hook - uses imports from top of file
 
 export interface ConsolidatedName {
-	id: string;
+	id: string | number;
 	name: string;
 	rating: number;
 	wins: number;
@@ -433,7 +433,7 @@ export function useAnalysisDisplayData({
 		if (leaderboardData?.length) {
 			leaderboardData.forEach((item) => {
 				if ((item.avg_rating || 0) > 1500 || (item.wins ?? 0) > 0) {
-					nameMap.set(item.name_id, {
+					nameMap.set(String(item.name_id), {
 						id: item.name_id,
 						name: item.name,
 						rating: item.avg_rating || 1500,

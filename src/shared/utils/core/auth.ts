@@ -498,7 +498,8 @@ async function _hasRole(
 				});
 			}
 
-			let lastRpcError = null;
+			// biome-ignore lint/suspicious/noExplicitAny: PostgrestError type varies
+			let lastRpcError: any = null;
 
 			for (const payload of rpcPayloads) {
 				const { data, error } = await activeSupabase.rpc(

@@ -62,9 +62,8 @@ function CombinedLoginTournamentSetupContent({
 		handleRandomName,
 		handleKeyDown,
 		catFact: loginCatFact,
-	} = useLoginController(async (name: string) => {
-		const success = await onLogin(name);
-		return success;
+	} = useLoginController(async (name: string): Promise<void> => {
+		await onLogin(name);
 	});
 
 	// Track eye position for login screen

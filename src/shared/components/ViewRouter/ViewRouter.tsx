@@ -71,7 +71,7 @@ export default function ViewRouter({
 		);
 		return (
 			<CombinedLoginTournamentSetup
-				onLogin={onLogin}
+				onLogin={onLogin as (name: string) => Promise<boolean>}
 				onStart={onTournamentSetup as (selectedNames: unknown) => void}
 				userName={userName}
 				isLoggedIn={isLoggedIn}

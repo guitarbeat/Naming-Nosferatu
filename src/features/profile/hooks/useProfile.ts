@@ -142,7 +142,7 @@ async function fetchUserStats(
 	if (!userName) return null;
 	try {
 		const dbStats = await catNamesAPI.getUserStats(userName);
-		return dbStats || null;
+		return (dbStats as UserStats) || null;
 	} catch (error) {
 		devError("Error fetching user stats from DB:", error);
 		return null;

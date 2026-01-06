@@ -736,7 +736,12 @@ class ErrorBoundary extends React.Component<
 > {
 	state: { error: Error | null } = { error: null };
 	static getDerivedStateFromError(error: unknown) {
-		return { error: error instanceof Error ? error : new Error(String(error)) };
+		// Use globalThis.Error to avoid conflict with exported Error alias
+		const NativeError = globalThis.Error;
+		return {
+			error:
+				error instanceof NativeError ? error : new NativeError(String(error)),
+		};
 	}
 	reset = () => {
 		this.setState({ error: null });

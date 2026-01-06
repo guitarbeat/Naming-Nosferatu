@@ -151,7 +151,7 @@ interface AnalysisInsightsProps {
 	generalInsights: Array<{ type: string; message: string; icon: string }>;
 	isAdmin: boolean;
 	canHideNames: boolean;
-	onHideName: (id: string, name: string) => Promise<void>;
+	onHideName: (id: string | number, name: string) => Promise<void>;
 }
 
 export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
@@ -395,7 +395,7 @@ interface AnalysisTableProps {
 	sortField: string;
 	sortDirection: string;
 	onSort: (field: string) => void;
-	onHideName: (id: string, name: string) => Promise<void>;
+	onHideName: (id: string | number, name: string) => Promise<void>;
 	summaryStats: SummaryStats | null;
 }
 
