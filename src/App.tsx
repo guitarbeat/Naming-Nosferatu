@@ -28,7 +28,7 @@ import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
-import type { NameItem } from "./shared/propTypes";
+import type { NameItem } from "./types/components";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,

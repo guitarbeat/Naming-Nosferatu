@@ -10,8 +10,21 @@ import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
-import { nameItemShape } from "../../propTypes";
 import { catNamesAPI, hiddenNamesAPI } from "../../services/supabase/client";
+
+/**
+ * Common ID type - can be string or number
+ */
+const idType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
+
+/**
+ * Name item shape - used in rankings, highlights, charts
+ */
+const nameItemShape = PropTypes.shape({
+	id: idType,
+	name: PropTypes.string.isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+});
 import {
 	calculatePercentile,
 	clearAllCaches,

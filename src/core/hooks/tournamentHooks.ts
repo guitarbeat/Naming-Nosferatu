@@ -10,7 +10,7 @@ import type {
 	NameItem,
 	PersistentState,
 	TournamentState,
-} from "../../shared/propTypes";
+} from "../../types/components";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
@@ -764,7 +764,7 @@ export function useTournament({
 	if (tState.isError) {
 		return {
 			currentMatch: null,
-			handleVote: () => {},
+			handleVote: () => { },
 			progress: 0,
 			roundNumber: 0,
 			currentMatchNumber: 0,

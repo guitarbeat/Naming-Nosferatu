@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { TIMING } from "../../../../core/constants";
 import type { NameItem } from "../../../../shared/propTypes";
-import styles from "../../TournamentSetup.module.css";
+import styles from "./SwipeableCards.module.css";
 import { CAT_IMAGES, getRandomCatImage } from "../../tournamentUtils";
 import { SwipeCard, SwipeControls, useMobileGestures } from "./SwipeComponents";
 

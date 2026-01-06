@@ -9,7 +9,7 @@ import { TOURNAMENT_TIMING } from "../../core/constants";
 import Button from "../../shared/components/Button/Button";
 import { Error, Loading } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
-import type { NameItem } from "../../shared/propTypes";
+import type { NameItem } from "../../types/components";
 import {
 	calculateBracketRound,
 	getVisibleNames,
