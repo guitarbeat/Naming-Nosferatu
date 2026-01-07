@@ -333,6 +333,10 @@
 /* Interactive Mode */
 .interactive {
 	cursor: pointer;
+	transition:
+		transform var(--duration-normal) var(--ease-standard),
+		box-shadow var(--duration-normal) var(--ease-standard),
+		border-color var(--duration-fast) var(--ease-standard);
 }
 
 .interactive:hover {
@@ -346,6 +350,15 @@
 .interactive:active {
 	transform: translateY(-2px) scale(1.005);
 	transition-duration: var(--duration-fast);
+}
+
+.interactive:focus-visible {
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--focus-ring-offset);
+	box-shadow:
+		var(--shadow-lg),
+		0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 15%, transparent);
+	border-color: color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
 }
 
 /* Selection state for cards */
