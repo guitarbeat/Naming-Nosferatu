@@ -99,10 +99,12 @@ export function MobileMenu({
 
 	return (
 		<nav
+			ref={panelRef}
 			id="app-navbar-mobile-panel"
 			className="app-navbar-mobile-panel"
 			role="navigation"
-			aria-label="Mobile navigation"
+			aria-label="Mobile navigation menu"
+			aria-modal="true"
 			data-open={isOpen}
 		>
 			<div className="app-navbar-mobile-panel__content">
@@ -121,6 +123,7 @@ export function MobileMenu({
 					data-active={homeIsActive}
 					aria-current={homeIsActive ? "page" : undefined}
 					onKeyDown={(e) => handleKeyDown(e, true, navItems.length === 0)}
+					title="Go to tournament home"
 				>
 					<span className="app-navbar__link-text">Tournament</span>
 				</button>
@@ -139,7 +142,7 @@ export function MobileMenu({
 					);
 				})}
 
-				<div className="app-navbar__mobile-separator" />
+				<div className="app-navbar__mobile-separator" aria-hidden="true" />
 				<div className="app-navbar__mobile-toggles">
 					<ModeToggles isMobile={true} />
 				</div>
