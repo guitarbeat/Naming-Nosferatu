@@ -300,6 +300,167 @@
 	}
 }
 
+/* Hamburger Menu Icon */
+.hamburger-icon {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+}
+
+.hamburger-icon span {
+	width: 100%;
+	height: 2px;
+	background: var(--nav-text);
+	border-radius: var(--radius-xs);
+	transition: all var(--duration-normal) var(--ease-standard);
+	transform-origin: center;
+}
+
+.app-navbar__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: var(--space-2);
+	border-radius: var(--radius-md);
+	transition: var(--transition-base);
+}
+
+.app-navbar__toggle:hover {
+	background: color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+}
+
+.app-navbar__toggle:focus-visible {
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--focus-ring-offset);
+}
+
+.app-navbar__toggle[aria-expanded="true"] .hamburger-icon span:nth-child(1) {
+	transform: rotate(45deg) translateY(calc(var(--space-2) + 1px));
+}
+
+.app-navbar__toggle[aria-expanded="true"] .hamburger-icon span:nth-child(2) {
+	opacity: 0;
+}
+
+.app-navbar__toggle[aria-expanded="true"] .hamburger-icon span:nth-child(3) {
+	transform: rotate(-45deg) translateY(calc(var(--space-2) * -1 - 1px));
+}
+
+/* Mobile Menu Panel */
+.app-navbar-mobile-panel {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	z-index: var(--z-modal);
+	background: var(--nav-bg);
+	backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity var(--duration-normal) var(--ease-standard),
+		visibility var(--duration-normal) var(--ease-standard);
+	padding-top: var(--navbar-height, 80px);
+}
+
+.app-navbar-mobile-panel[data-open="true"] {
+	opacity: 1;
+	visibility: visible;
+}
+
+.app-navbar-mobile-panel__content {
+	display: flex;
+	flex-direction: column;
+	padding: var(--space-6);
+	gap: var(--space-4);
+	overflow-y: auto;
+	flex: 1;
+	animation: slideUp var(--duration-normal) var(--ease-enter);
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-6));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.app-navbar__mobile-link {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-lg);
+	color: var(--nav-text-muted);
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--text-base);
+	cursor: pointer;
+	transition: var(--transition-base);
+	text-align: left;
+	min-height: var(--button-base-height);
+	touch-action: manipulation;
+}
+
+.app-navbar__mobile-link:hover {
+	color: var(--nav-text);
+	background: var(--glass-bg-light);
+	transform: var(--transform-hover-lift);
+}
+
+.app-navbar__mobile-link:active {
+	transform: var(--transform-active-press);
+}
+
+.app-navbar__mobile-link:focus-visible {
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--focus-ring-offset);
+}
+
+.app-navbar__mobile-link[data-active="true"] {
+	color: var(--nav-highlight);
+	background: var(--overlay-cyan-medium);
+	box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 40%, transparent);
+}
+
+.app-navbar__link-text {
+	flex: 1;
+	white-space: nowrap;
+}
+
+.app-navbar__link-icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--icon-button-small);
+	height: var(--icon-button-small);
+}
+
+.app-navbar__mobile-separator {
+	height: 1px;
+	background: color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	margin: var(--space-4) 0;
+}
+
+.app-navbar__mobile-toggles {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	padding-top: var(--space-4);
+}
+
 /* User Display Adjustments */
 @media (width <= 640px) {
 	.navbar-user-info {
@@ -309,6 +470,13 @@
 		gap: 0;
 	}
 	.app-navbar__desktop-toggles {
+		display: none;
+	}
+}
+
+/* Ensure mobile menu panel is hidden on larger screens */
+@media (width > 640px) {
+	.app-navbar-mobile-panel {
 		display: none;
 	}
 }
