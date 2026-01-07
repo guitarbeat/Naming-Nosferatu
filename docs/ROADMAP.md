@@ -43,6 +43,16 @@ The following files were identified as deprecated and have been removed/consolid
 - `CommonUI.css` (Decomposed into shared components)
 - `TournamentSetup.module.css` (Divided into Modes)
 
+### ✅ Recent Cleanup (Jan 7, 2026)
+- **Lint Status**: 0 Errors, 0 Warnings.
+- **Type Check**: 100% Pass.
+- **Build Status**: Success (Production Build).
+- **Consolidated Files**:
+    - `CombinedLoginTournamentSetup` -> `TournamentSetup`
+    - Removed `ModernTournamentSetup` folder.
+    - Simplified CSS Module names (removed 6+ redundant prefixes).
+
+
 ---
 
 ## 🧹 Cleanup Checklist

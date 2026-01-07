@@ -508,7 +508,7 @@
 }
 
 /* Responsive Design */
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.catSpinner {
 		padding: var(--space-3);
 		gap: var(--space-2);

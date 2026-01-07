@@ -211,7 +211,7 @@
 	border-radius: var(--radius-full);
 }
 
-@media (width <= var(--breakpoint-md)) {
+@media (width <= 768px) {
 	.toastContainer {
 		top: var(--space-2);
 		right: var(--space-2);

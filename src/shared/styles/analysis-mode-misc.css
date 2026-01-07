@@ -189,7 +189,7 @@
 	background: var(--analysis-surface-elevated);
 }
 
-@media (width <= var(--breakpoint-md)) {
+@media (width <= 768px) {
 	.analysis-panel {
 		padding: var(--analysis-gap-md);
 		border-radius: var(--analysis-radius-lg);
@@ -223,7 +223,7 @@
 	}
 }
 
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.analysis-stats {
 		grid-template-columns: repeat(3, 1fr);
 	}
@@ -478,7 +478,7 @@
 }
 
 /* Responsive summary */
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.analysis-dashboard-summary {
 		display: none;
 	}

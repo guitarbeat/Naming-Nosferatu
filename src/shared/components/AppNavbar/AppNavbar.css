@@ -22,7 +22,7 @@
 }
 
 /* Mobile: Bottom-fixed tab bar layout */
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.app-navbar-glass {
 		top: auto;
 		bottom: var(--space-4);
@@ -44,7 +44,7 @@
 	}
 }
 
-@media (width > var(--breakpoint-sm)) {
+@media (width > 640px) {
 	.app-navbar-glass.collapsed {
 		left: var(--space-6);
 		top: 50%;
@@ -131,7 +131,7 @@
 
 /* .app-navbar__nav-link uses .app-navbar__link styles - no separate class needed */
 
-@media (width > var(--breakpoint-sm)) {
+@media (width > 640px) {
 	.app-navbar__desktop-only {
 		display: block;
 	}
@@ -142,7 +142,7 @@
 }
 
 /* Mobile: Bottom-fixed tab bar layout */
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.app-navbar {
 		top: auto;
 		bottom: var(--space-4);
@@ -166,7 +166,7 @@
 	}
 }
 
-@media (width > var(--breakpoint-sm)) {
+@media (width > 640px) {
 	.app-navbar.collapsed {
 		left: var(--space-6);
 		top: 50%;
@@ -223,7 +223,7 @@
 	position: relative;
 }
 
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.app-navbar__brand-text {
 		font-size: var(--text-lg);
 	}
@@ -252,7 +252,7 @@
 	text-shadow: var(--text-shadow-sm);
 }
 
-@media (width <= var(--breakpoint-md)) {
+@media (width <= 768px) {
 	.app-navbar__link {
 		padding: var(--space-2) var(--space-3);
 		font-size: var(--text-xs);
@@ -282,7 +282,7 @@
 		var(--text-shadow-sm);
 }
 
-@media (width > var(--breakpoint-sm)) {
+@media (width > 640px) {
 	.app-navbar.collapsed .app-navbar__link {
 		padding: var(--space-3);
 		border-radius: var(--radius-lg);
@@ -301,7 +301,7 @@
 }
 
 /* User Display Adjustments */
-@media (width <= var(--breakpoint-sm)) {
+@media (width <= 640px) {
 	.navbar-user-info {
 		display: none;
 	}
