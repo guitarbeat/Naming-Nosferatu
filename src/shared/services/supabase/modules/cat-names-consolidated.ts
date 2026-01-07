@@ -962,8 +962,8 @@ const statsAPI = {
 			interface JoinResult {
 				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				cat_name_ratings?:
-				| { rating: number; wins: number; losses: number }
-				| { rating: number; wins: number; losses: number }[];
+					| { rating: number; wins: number; losses: number }
+					| { rating: number; wins: number; losses: number }[];
 				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				is_hidden?: boolean;
 				[key: string]: unknown;

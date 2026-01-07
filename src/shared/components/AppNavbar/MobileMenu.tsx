@@ -38,7 +38,7 @@ export function MobileMenu({
 }) {
 	const firstLinkRef = useRef<HTMLButtonElement>(null);
 	const lastLinkRef = useRef<HTMLButtonElement>(null);
-	const panelRef = useRef<HTMLNavElement>(null);
+	const panelRef = useRef<HTMLElement>(null);
 
 	// Focus management and body scroll locking
 	useEffect(() => {
