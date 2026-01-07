@@ -166,13 +166,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 											>
 												{item.rating}
 											</span>
-											<span
-												style={{
-													fontSize: "0.7em",
-													marginLeft: "4px",
-													opacity: 0.7,
-												}}
-											>
+											<span className={styles.percentileLabel}>
 												{item.ratingPercentile}%ile
 											</span>
 										</div>
@@ -220,13 +214,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 											>
 												{item.selected}
 											</span>
-											<span
-												style={{
-													fontSize: "0.7em",
-													marginLeft: "4px",
-													opacity: 0.7,
-												}}
-											>
+											<span className={styles.percentileLabel}>
 												{item.selectedPercentile}%ile
 											</span>
 										</div>
