@@ -8,10 +8,10 @@ export interface TournamentFilters {
 	searchTerm?: string;
 	category?: string;
 	sortBy?: string;
-	filterStatus?: string;
+	filterStatus?: "all" | "visible" | "hidden";
 	userFilter?: string;
 	selectionFilter?: string;
-	sortOrder?: string;
+	sortOrder?: "asc" | "desc";
 	dateFilter?: string;
 }
 

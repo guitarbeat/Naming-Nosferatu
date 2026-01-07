@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
 		return { hasError: true, error, errorId: null };
 	}
 
-	componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+	override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
 		const { onError, context = "React Component" } = this.props;
 
 		const formattedError = ErrorManager.handleError(error, context, {
@@ -75,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
 		this.setState({ hasError: false, error: null, errorId: null });
 	};
 
-	render() {
+	override render() {
 		if (this.state.hasError) {
 			const FallbackComponent = this.props.fallback || DefaultErrorFallback;
 			return (

@@ -1,33 +1,35 @@
-import type React from "react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import "./LiquidGlass.css";
+
+interface LiquidGlassProps {
+	children: React.ReactNode;
+	className?: string;
+	width?: number;
+	height?: number;
+	radius?: number;
+	scale?: number;
+	saturation?: number;
+	frost?: number;
+	alpha?: number;
+	lightness?: number;
+	inputBlur?: number;
+	outputBlur?: number;
+	border?: number;
+	blend?: string;
+	xChannel?: string;
+	yChannel?: string;
+	chromaticR?: number;
+	chromaticG?: number;
+	chromaticB?: number;
+	id?: string;
+	showCrosshair?: boolean;
+	style?: React.CSSProperties;
+	[key: string]: unknown;
+}
 
 /**
  * LiquidGlass component - Creates a liquid glass refraction effect using SVG filters
  * Based on: https://codepen.io/jh3y/pen/EajLxJV
- *
- * @param {Object} props
- * @param {React.ReactNode} props.children - Content to render inside glass
- * @param {string} props.className - Additional CSS classes
- * @param {number} props.width - Width of the glass effect
- * @param {number} props.height - Height of the glass effect
- * @param {number} props.radius - Border radius in pixels
- * @param {number} props.scale - Displacement scale (-180 default)
- * @param {number} props.saturation - Color saturation multiplier (1 = normal)
- * @param {number} props.frost - Frost overlay opacity (0-1)
- * @param {number} props.alpha - Displacement map alpha (0-1)
- * @param {number} props.lightness - Displacement map lightness (0-100)
- * @param {number} props.inputBlur - Input blur for displacement image
- * @param {number} props.outputBlur - Output blur for final effect
- * @param {number} props.border - Border width as fraction of size (0-1)
- * @param {string} props.blend - Blend mode for gradient mixing
- * @param {string} props.xChannel - X displacement channel (R/G/B)
- * @param {string} props.yChannel - Y displacement channel (R/G/B)
- * @param {number} props.chromaticR - Red channel offset
- * @param {number} props.chromaticG - Green channel offset
- * @param {number} props.chromaticB - Blue channel offset
- * @param {string} props.id - Unique filter ID
- * @param {boolean} props.showCrosshair - Show crosshair pattern overlay (default: false)
  */
 function LiquidGlass({
 	children,
@@ -53,7 +55,7 @@ function LiquidGlass({
 	showCrosshair = false,
 	style = {},
 	...props
-}) {
+}: LiquidGlassProps) {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const svgRef = useRef<SVGSVGElement | null>(null);
 	const filterRef = useRef<SVGFilterElement | null>(null);

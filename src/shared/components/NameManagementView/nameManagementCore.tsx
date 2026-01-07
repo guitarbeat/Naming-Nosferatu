@@ -69,7 +69,38 @@ export function useNameManagementContextSafe() {
 }
 
 // Type for the hook return value
-export type UseNameManagementViewResult = ReturnType<typeof useNameManagementView>;
+export interface UseNameManagementViewResult {
+	// Core data
+	names: NameItem[];
+	isLoading: boolean;
+	error: unknown;
+
+	// Selection state
+	selectedNames: Set<string | number>;
+	selectedCount: number;
+
+	// Filtering and sorting
+	filters: TournamentFilters;
+	setFilters: (filters: Partial<TournamentFilters>) => void;
+	sortedNames: NameItem[];
+	filteredNames: NameItem[];
+
+	// Actions
+	toggleName: (id: string | number) => void;
+	selectAll: () => void;
+	clearSelection: () => void;
+	toggleVisibility: (id: string | number) => Promise<void>;
+	deleteName: (name: NameItem) => Promise<void>;
+
+	// Extensions
+	extensions: NameManagementViewExtensions;
+
+	// Utility functions
+	hasSelection: boolean;
+	allSelected: boolean;
+	someSelected: boolean;
+	visibleCount: number;
+}
 
 export type { TournamentFilters, UseNameManagementViewProps, NameItem };
 
@@ -83,8 +114,13 @@ export function useNameManagementView({
 	profileProps = {},
 	analysisMode,
 	setAnalysisMode,
-}: UseNameManagementViewProps): UseNameManagementViewResult {
-	const { names, isLoading, error: dataError, refetch } = useNameData({ userName, mode });
+}: UseNameManagementViewProps) {
+	const {
+		names,
+		isLoading,
+		error: dataError,
+		refetch,
+	} = useNameData({ userName: userName ?? null, mode });
 
 	const {
 		selectedNames,
@@ -99,7 +135,7 @@ export function useNameManagementView({
 	} = useNameSelection({
 		names,
 		mode,
-		userName,
+		userName: userName ?? null,
 	});
 
 	const { errors, ui, errorActions } = useAppStore();

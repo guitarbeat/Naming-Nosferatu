@@ -156,40 +156,41 @@ export function useTournamentState(
 	}, [tournament.roundNumber]);
 
 	// Adapter function to convert tournament handleVote to expected signature
-	const adaptedHandleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown> = useCallback(
-		async (option: "left" | "right" | "both" | "neither"): Promise<unknown> => {
-			if (!tournament.handleVote) {
-				return undefined;
-			}
+	const adaptedHandleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown> =
+		useCallback(
+			async (option: "left" | "right" | "both" | "neither"): Promise<unknown> => {
+				if (!tournament.handleVote) {
+					return undefined;
+				}
 
-			// Convert option to winner/voteType format expected by core hook
-			let winner: string;
-			let voteType: string;
+				// Convert option to winner/voteType format expected by core hook
+				let winner: string;
+				let voteType: string;
 
-			switch (option) {
-				case "left":
-					winner = "left";
-					voteType = "normal";
-					break;
-				case "right":
-					winner = "right";
-					voteType = "normal";
-					break;
-				case "both":
-					winner = "both";
-					voteType = "both";
-					break;
-				case "neither":
-					winner = "neither";
-					voteType = "neither";
-					break;
-			}
+				switch (option) {
+					case "left":
+						winner = "left";
+						voteType = "normal";
+						break;
+					case "right":
+						winner = "right";
+						voteType = "normal";
+						break;
+					case "both":
+						winner = "both";
+						voteType = "both";
+						break;
+					case "neither":
+						winner = "neither";
+						voteType = "neither";
+						break;
+				}
 
-			// Call the core handleVote function and return as Promise<unknown>
-			return tournament.handleVote(winner, voteType);
-		},
-		[tournament.handleVote],
-	);
+				// Call the core handleVote function and return as Promise<unknown>
+				return tournament.handleVote(winner, voteType);
+			},
+			[tournament.handleVote],
+		);
 
 	return {
 		randomizedNames,

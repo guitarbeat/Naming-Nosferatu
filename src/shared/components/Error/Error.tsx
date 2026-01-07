@@ -3,9 +3,8 @@
  * @description Error display components with multiple variants.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useBrowserState } from "../../hooks/useBrowserState";
-import { createStandardizedError } from "../../services/errorManager";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
 
@@ -43,7 +42,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 		const announcement = document.createElement("div");
 		announcement.setAttribute("role", "alert");
 		announcement.setAttribute("aria-live", "assertive");
-		announcement.className = styles.srOnly;
+		announcement.className = styles.srOnly || "sr-only";
 		announcement.textContent = "An error has occurred.";
 		document.body.appendChild(announcement);
 		return () => {
@@ -52,16 +51,6 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 			}
 		};
 	}, []);
-
-	const standardizedError = useMemo(
-		() =>
-			createStandardizedError(error, "React Component Error", {
-				isRetryable: true,
-				affectsUserData: false,
-				isCritical: false,
-			}),
-		[error],
-	);
 
 	const canRetry = retryCount < DEFAULT_MAX_RETRIES;
 
@@ -273,7 +262,7 @@ class ErrorBoundary extends React.Component<
 	{ error: Error | null }
 > {
 	override state: { error: Error | null } = { error: null };
-	static override getDerivedStateFromError(error: unknown) {
+	static getDerivedStateFromError(error: unknown) {
 		// Use globalThis.Error to avoid conflict with exported Error alias
 		const NativeError = globalThis.Error;
 		return {
@@ -284,7 +273,7 @@ class ErrorBoundary extends React.Component<
 		this.setState({ error: null });
 		this.props.onReset?.();
 	};
-	render() {
+	override render() {
 		if (this.state.error) {
 			const Fallback = this.props.FallbackComponent;
 			return <Fallback error={this.state.error} resetErrorBoundary={this.reset} />;
