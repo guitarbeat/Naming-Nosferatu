@@ -18,6 +18,8 @@ import {
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
+import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
+import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
@@ -259,6 +261,9 @@ function AppLayout({
 				{/* * Static cat-themed background */}
 				<CatBackground />
 
+                {/* * Mobile Bottom Navigation */}
+                {isLoggedIn && <BottomNav />}
+
 				{/* * Primary navigation lives in the navbar */}
 				{isLoggedIn && (
 					<AppNavbar
@@ -291,6 +296,8 @@ function AppLayout({
 						onNavigate={navigateTo}
 					/>
 				)}
+
+                {isLoggedIn && <Breadcrumbs />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && isLoggedIn && (

@@ -6,9 +6,19 @@
 	padding: var(--space-6);
 	text-align: center;
 	max-width: 400px;
+	width: 90%; /* Responsive width */
 	margin: var(--space-8) auto;
 	box-shadow: var(--shadow-md);
 }
+
+@media (max-width: 600px) {
+	.errorContainer {
+		width: 95vw;
+		padding: var(--space-4);
+		margin: var(--space-4) auto;
+	}
+}
+
 
 .errorContainer h3 {
 	color: var(--error-600);

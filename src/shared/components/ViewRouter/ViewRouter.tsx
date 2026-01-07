@@ -10,6 +10,7 @@ import { ErrorComponent, Loading } from "../CommonUI";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
+const GalleryView = lazy(() => import("../../../features/gallery/GalleryView"));
 
 import type { TournamentName } from "../../../types/store";
 
@@ -83,6 +84,15 @@ export default function ViewRouter({
 		typeof window !== "undefined" && window.location && window.location.pathname
 			? window.location.pathname
 			: currentRoute.split("?")[0]?.split("#")[0] || "/";
+            
+	if (currentPath === "/gallery") {
+		return (
+			<Suspense fallback={<Loading variant="spinner" text="Loading Gallery..." />}>
+				<GalleryView />
+			</Suspense>
+		);
+	}
+
 	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
 
 	if (shouldShowDashboard) {

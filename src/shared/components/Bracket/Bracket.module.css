@@ -82,6 +82,13 @@
 	scroll-snap-align: start;
 }
 
+@media (max-width: 768px) {
+	.round {
+		min-width: 180px;
+	}
+}
+
+
 /* First round specific styles */
 .round:first-child {
 	margin-right: var(--space-4);

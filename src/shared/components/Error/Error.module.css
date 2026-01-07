@@ -19,7 +19,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 100dvh;
+	min-height: 100vh;
+	min-height: 100dvh; /* Modern viewport height for mobile */
 	padding: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
 		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
 		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom))
@@ -58,6 +59,13 @@
 .boundaryContentNoMotion {
 	transition: none;
 }
+
+@media (width <= 480px) {
+	.boundaryContent {
+		padding: var(--space-4);
+	}
+}
+
 
 .boundaryContentSmallMobile {
 	max-width: 100%;

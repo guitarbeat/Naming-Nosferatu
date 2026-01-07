@@ -24,8 +24,8 @@
 /* Mobile: Bottom-fixed tab bar layout */
 @media (width <= 640px) {
 	.app-navbar-glass {
-		top: auto;
-		bottom: var(--space-4);
+		top: var(--space-4);
+		bottom: auto;
 		border-radius: var(--radius-xl);
 		width: 95vw;
 		padding: var(--space-2);
@@ -153,8 +153,8 @@
 /* Mobile: Bottom-fixed tab bar layout */
 @media (width <= 640px) {
 	.app-navbar {
-		top: auto;
-		bottom: var(--space-4);
+		top: var(--space-4);
+		bottom: auto;
 		border-radius: var(--radius-xl);
 		width: 95vw;
 		padding: var(--space-2);
@@ -603,9 +603,132 @@
 	}
 }
 
-/* Ensure mobile menu panel is hidden on larger screens */
-@media (width > 640px) {
 	.app-navbar-mobile-panel {
 		display: none;
 	}
+}
+
+/* Bottom Nav Styles */
+.bottom-nav {
+	display: none;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(20, 20, 23, 0.95);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	z-index: 1000;
+	padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-nav__container {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	height: 60px;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.bottom-nav__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.5);
+	padding: 4px 8px;
+	position: relative;
+	flex: 1;
+	height: 100%;
+	cursor: pointer;
+	transition: color 0.2s ease;
+}
+
+.bottom-nav__item.active {
+	color: #fff;
+}
+
+.bottom-nav__icon {
+	width: 24px;
+	height: 24px;
+	margin-bottom: 2px;
+}
+
+.bottom-nav__label {
+	font-size: 10px;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+}
+
+.bottom-nav__indicator {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 32px;
+	height: 2px;
+	background: var(--color-primary, #abebc6);
+	border-radius: 0 0 2px 2px;
+}
+
+@media (max-width: 768px) {
+	.bottom-nav {
+		display: block;
+	}
+	
+	/* Hide desktop nav elements on mobile when bottom nav is present */
+    .app-navbar__center-section {
+        display: none;
+    }
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    padding: var(--space-2) var(--space-6);
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--nav-text-muted);
+}
+
+.breadcrumbs__list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-2);
+}
+
+.breadcrumbs__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.breadcrumbs__link {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--nav-text-muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.breadcrumbs__link:hover {
+    color: var(--nav-highlight);
+    text-decoration: underline;
+}
+
+.breadcrumbs__separator {
+    color: var(--glass-border);
+}
+
+.breadcrumbs__current {
+    color: var(--nav-text);
+    font-weight: 500;
 }

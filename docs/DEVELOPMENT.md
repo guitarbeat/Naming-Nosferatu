@@ -92,6 +92,37 @@ Working with AI agents works best in small, verifiable cycles:
 
 ---
 
+## 🗑️ Dead Code Analysis
+
+### Identified Dead Code (Last Updated: 2026-01-07)
+
+#### Test Files
+- **`test/test-supabase-credentials.js`**: Security validation script that appears to be a one-time verification tool. No references found in package.json scripts or CI/CD. Consider removing if security fix is verified.
+
+#### Potentially Unused Components
+- **`src/shared/components/Navigation/Breadcrumbs.tsx`**: While imported in `App.tsx`, this component may not be actively used in the UI. Review if breadcrumb navigation is actually displayed to users.
+
+#### Commented Code Patterns
+- **Tournament.tsx**: Contains intentional no-op comment for unused hook parameter
+- **NameManagementView.tsx**: Has `className` prop marked as potentially unused
+- **NavbarConfig.ts**: Contains legacy view support fallback that may be removable
+
+#### Maintenance Notes
+- All exports are marked with `// ts-prune-ignore-next` comments to prevent false positives from automated dead code detection
+- The codebase appears well-maintained with minimal actual dead code
+- Most "unused" code is either:
+  - Intentionally kept for API compatibility
+  - Part of planned features
+  - Required by external systems (Vite, testing frameworks)
+
+### Dead Code Prevention
+- Use `pnpm run check` to catch unused imports
+- Review `// ts-prune-ignore-next` comments periodically
+- Remove TODO/FIXME comments after addressing issues
+- Consider using tools like `ts-prune` or `knip` for automated detection
+
+---
+
 ## 📂 Directory Structure
 - `src/core/`: Global singletons (Store, API clients).
 - `src/features/`: Domain-specific modules (Auth, Tournament, Profile).
