@@ -38,11 +38,47 @@ export function MobileMenu({
 }) {
 	const firstLinkRef = useRef<HTMLButtonElement>(null);
 	const lastLinkRef = useRef<HTMLButtonElement>(null);
+	const panelRef = useRef<HTMLNavElement>(null);
 
+	// Focus management and body scroll locking
 	useEffect(() => {
-		if (isOpen && firstLinkRef.current) {
-			firstLinkRef.current.focus();
+		if (isOpen) {
+			// Lock body scroll
+			document.body.style.overflow = "hidden";
+
+			// Trap focus within menu
+			if (firstLinkRef.current) {
+				firstLinkRef.current.focus();
+			}
+		} else {
+			// Restore body scroll
+			document.body.style.overflow = "";
 		}
+
+		return () => {
+			document.body.style.overflow = "";
+		};
+	}, [isOpen]);
+
+	// Handle escape key to close menu
+	useEffect(() => {
+		const handleEscapeKey = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && isOpen) {
+				// Close menu via context - we'll dispatch through the panel
+				const toggleButton = document.querySelector(
+					'.app-navbar__toggle[aria-expanded="true"]',
+				) as HTMLButtonElement;
+				toggleButton?.click();
+			}
+		};
+
+		if (isOpen) {
+			document.addEventListener("keydown", handleEscapeKey);
+		}
+
+		return () => {
+			document.removeEventListener("keydown", handleEscapeKey);
+		};
 	}, [isOpen]);
 
 	const handleKeyDown = (event: React.KeyboardEvent, isFirst: boolean, isLast: boolean) => {
