@@ -16,7 +16,7 @@ import {
 	selectedNamesToSet,
 } from "../../utils/core";
 import CardName from "../Card/components/CardName";
-import EmptyState from "../EmptyState/EmptyState";
+import { EmptyState } from "../EmptyState/EmptyState";
 import { CatSpinner } from "../Loading";
 import styles from "./NameGrid.module.css";
 

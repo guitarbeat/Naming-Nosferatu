@@ -319,4 +319,4 @@ ErrorComponent.displayName = "ErrorComponent";
 // Alias for backward compatibility
 export const Error = ErrorComponent;
 
-export default ErrorComponent;
+

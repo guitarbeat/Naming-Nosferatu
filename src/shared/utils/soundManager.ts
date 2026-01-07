@@ -102,4 +102,4 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 	}
 };
 
-export default soundManager;
+

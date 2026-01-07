@@ -1,5 +1,5 @@
 export {
-	default,
+
 	Error,
 	ErrorBoundaryFallback,
 	type ErrorBoundaryFallbackProps,

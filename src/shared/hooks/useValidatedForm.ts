@@ -1,4 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback } from "react";
+import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 interface FormOptions<T extends z.ZodRawShape> {
@@ -12,112 +14,79 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	initialValues,
 	onSubmit,
 }: FormOptions<T>) {
-	const [values, setValues] = useState<z.infer<z.ZodObject<T>>>(initialValues);
-	const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
-	const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const {
+		handleSubmit: rshHandleSubmit,
+		formState: { errors, touchedFields, isSubmitting, isValid },
+		setValue,
+		trigger,
+		watch,
+		reset,
+	} = useForm({
+		resolver: zodResolver(schema),
+		defaultValues: initialValues as any,
+		mode: "onChange",
+	});
 
-	const validateField = useCallback(
-		(name: keyof T, value: unknown) => {
-			const fieldSchema = schema.shape[name] as unknown as z.ZodTypeAny;
-			if (!fieldSchema) {
-				return;
-			}
+	const values = watch();
 
-			const result = fieldSchema.safeParse(value);
-			if (result.success) {
-				setErrors((prev) => {
-					const next = { ...prev };
-					delete next[name];
-					return next;
-				});
-				return true;
-			} else {
-				setErrors((prev) => ({
-					...prev,
-					[name]: result.error.issues[0]?.message || "Please check your input",
-				}));
-				return false;
-			}
-		},
-		[schema],
-	);
-
+	// Backward compatibility wrapper for handleChange
 	const handleChange = useCallback(
 		(name: keyof T, value: unknown) => {
-			setValues((prev) => ({ ...prev, [name]: value }));
-			if (touched[name]) {
-				validateField(name, value);
-			}
+			setValue(name as any, value, {
+				shouldValidate: true,
+				shouldDirty: true,
+				shouldTouch: true,
+			});
 		},
-		[touched, validateField],
+		[setValue],
 	);
 
+	// Backward compatibility wrapper for handleBlur
 	const handleBlur = useCallback(
 		(name: keyof T) => {
-			setTouched((prev) => ({ ...prev, [name]: true }));
-			validateField(name, (values as Record<string, unknown>)[name as string]);
+			trigger(name as any);
 		},
-		[values, validateField],
+		[trigger],
 	);
 
-	const isValid = useMemo(() => {
-		const result = schema.safeParse(values);
-		return result.success;
-	}, [schema, values]);
+	// Wrapped onSubmit to match expected signature
+	const handleFormSubmit = rshHandleSubmit(async (data) => {
+		await onSubmit(data);
+	});
 
-	const handleSubmit = useCallback(
-		async (e?: React.FormEvent) => {
-			e?.preventDefault();
-
-			// Mark all as touched
-			const allTouched = Object.keys(schema.shape).reduce(
-				(acc, key) => {
-					acc[key as keyof T] = true;
-					return acc;
-				},
-				{} as Partial<Record<keyof T, boolean>>,
-			);
-			setTouched(allTouched);
-
-			const result = schema.safeParse(values);
-			if (!result.success) {
-				const newErrors: Partial<Record<keyof T, string>> = {};
-				result.error.issues.forEach((err) => {
-					if (err.path[0]) {
-						newErrors[err.path[0] as keyof T] = err.message;
-					}
-				});
-				setErrors(newErrors);
-				return;
-			}
-
-			try {
-				setIsSubmitting(true);
-				await onSubmit(result.data);
-			} finally {
-				setIsSubmitting(false);
-			}
+	const setValues = useCallback(
+		(newValues: Partial<z.infer<z.ZodObject<T>>>) => {
+			Object.entries(newValues).forEach(([key, val]) => {
+				setValue(key as any, val);
+			});
 		},
-		[schema, values, onSubmit],
+		[setValue],
 	);
 
-	const reset = useCallback(() => {
-		setValues(initialValues);
-		setErrors({});
-		setTouched({});
-		setIsSubmitting(false);
-	}, [initialValues]);
+	// Map RHF errors to simple string map for backward compatibility
+	const formattedErrors = Object.keys(errors).reduce(
+		(acc, key) => {
+			const error = errors[key as keyof T];
+			if (error && typeof error === "object" && "message" in error) {
+				acc[key as keyof T] = error.message as string;
+			}
+			return acc;
+		},
+		{} as Partial<Record<keyof T, string>>,
+	);
 
 	return {
 		values,
-		errors,
-		touched,
+		errors: formattedErrors,
+		touched: touchedFields as Partial<Record<keyof T, boolean>>,
 		isSubmitting,
 		isValid,
 		handleChange,
 		handleBlur,
-		handleSubmit,
+		handleSubmit: (e?: React.FormEvent) => {
+			if (e) e.preventDefault();
+			return handleFormSubmit(e);
+		},
 		reset,
 		setValues,
 	};
