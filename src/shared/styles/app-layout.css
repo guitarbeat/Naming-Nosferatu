@@ -104,7 +104,7 @@
 }
 
 /* Desktop: vertical navbar for login page */
-@media (width >= var(--breakpoint-xl)) {
+@media (width > 960px) {
 	.app--login .app-navbar-glass {
 		right: auto;
 		bottom: 0;
