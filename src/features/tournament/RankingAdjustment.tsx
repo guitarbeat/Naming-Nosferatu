@@ -27,10 +27,7 @@ interface RankingAdjustmentProps {
 }
 
 // Helper function to check if rankings have actually changed
-function haveRankingsChanged(
-	newItems: RankingItem[],
-	oldRankings: RankingItem[],
-): boolean {
+function haveRankingsChanged(newItems: RankingItem[], oldRankings: RankingItem[]): boolean {
 	if (newItems.length !== oldRankings.length) {
 		return true;
 	}
@@ -161,7 +158,9 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 
 		// Enhanced rating calculation with better wins/losses preservation
 		const adjustedItems = newItems.map((item, index) => {
-			const originalItem = items.find((original) => original.id === item.id || original.name === item.name);
+			const originalItem = items.find(
+				(original) => original.id === item.id || original.name === item.name,
+			);
 			return {
 				...item,
 				id: originalItem?.id ?? item.id ?? item.name,
@@ -247,7 +246,11 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 								className={`rankings-list ${snapshot.isDraggingOver ? "dragging-over" : ""}`}
 							>
 								{items.map((item, index) => (
-									<Draggable key={item.id ?? item.name} draggableId={String(item.id ?? item.name)} index={index}>
+									<Draggable
+										key={item.id ?? item.name}
+										draggableId={String(item.id ?? item.name)}
+										index={index}
+									>
 										{(provided, snapshot) => (
 											<div
 												ref={provided.innerRef}

@@ -186,9 +186,7 @@ function CombinedLoginTournamentSetupContent({
 					</div>
 
 					<h1 className={loginStyles.title}>Welcome, Purr-spective Judge!</h1>
-					<p className={loginStyles.subtitle}>
-						{greeting}, please enter your name to get started.
-					</p>
+					<p className={loginStyles.subtitle}>{greeting}, please enter your name to get started.</p>
 
 					<div className={loginStyles.inputTray}>
 						<ValidatedInput

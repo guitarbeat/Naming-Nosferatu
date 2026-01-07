@@ -31,7 +31,8 @@
 	padding: var(--analysis-gap-xs, var(--space-1)) var(--analysis-gap-sm, var(--space-2));
 	padding-bottom: var(--analysis-gap-sm, var(--space-2));
 	text-align: left;
-	border-bottom: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 10%, transparent));
+	border-bottom: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 10%, transparent));
 	position: sticky;
 	top: 0;
 	z-index: var(--z-10);
@@ -50,7 +51,8 @@
 
 .table td {
 	padding: var(--analysis-gap-xs, 4px) var(--analysis-gap-sm, 8px);
-	border-bottom: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 6%, transparent));
+	border-bottom: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 6%, transparent));
 	color: var(--text-primary, var(--color-neutral-50));
 	vertical-align: middle;
 	transition: background var(--analysis-duration-fast) var(--analysis-ease);
@@ -67,7 +69,10 @@
 }
 
 .tableRow:hover {
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 6%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent)
+	);
 }
 
 .tableRow:nth-child(even) {
@@ -75,7 +80,10 @@
 }
 
 .tableRow:nth-child(even):hover {
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 6%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent)
+	);
 }
 
 /* Actions column */

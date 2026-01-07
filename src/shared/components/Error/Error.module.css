@@ -20,8 +20,7 @@
 	align-items: center;
 	justify-content: center;
 	min-height: 100dvh;
-	padding:
-		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
+	padding: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
 		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
 		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom))
 		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
@@ -113,7 +112,9 @@
 	line-height: var(--leading-tight);
 	color: var(--text-primary);
 	overflow-wrap: break-word;
-	text-shadow: var(--text-shadow-lg), 0 0 20px var(--overlay-cyan-medium);
+	text-shadow:
+		var(--text-shadow-lg),
+		0 0 20px var(--overlay-cyan-medium);
 	background: var(--gradient-primary);
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -185,7 +186,8 @@
 .boundaryCopyButton {
 	color: var(--text-primary);
 	background: var(--overlay-cyan-medium);
-	border: var(--button-border-width) solid color-mix(in srgb, var(--color-neon-cyan) 60%, transparent);
+	border: var(--button-border-width) solid
+		color-mix(in srgb, var(--color-neon-cyan) 60%, transparent);
 	box-shadow: var(--shadow-sm);
 }
 

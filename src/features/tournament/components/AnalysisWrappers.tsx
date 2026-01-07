@@ -4,10 +4,11 @@
  * Includes AnalysisHandlersProvider, AnalysisDashboardWrapper, and AnalysisBulkActionsWrapper
  */
 
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import type React from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
+import { Button } from "../../../shared/components/Button/Button";
 import {
 	NameManagementContext,
-	type UseNameManagementViewResult,
 	useNameManagementContextSafe,
 } from "../../../shared/components/NameManagementView/nameManagementCore";
 import type { NameItem } from "../../../shared/propTypes";
@@ -24,7 +25,6 @@ import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard"
 import type { HighlightItem, SummaryStats } from "../../analytics/types";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
-import { Button } from "../../../shared/components/Button/Button";
 
 // Re-export SelectionStats type from useProfile for use in this file
 type SelectionStats = ReturnType<typeof useProfile>["selectionStats"];
@@ -39,7 +39,6 @@ interface AnalysisHandlers {
 // ============================================================================
 
 interface AnalysisHandlersProviderProps {
-	shouldEnableAnalysisMode: boolean;
 	activeUser: string | null;
 	canManageActiveUser: boolean;
 	handlersRef: React.MutableRefObject<AnalysisHandlers>;
@@ -53,7 +52,6 @@ interface AnalysisHandlersProviderProps {
  * Component that creates handlers inside context and initializes analysis mode
  */
 export function AnalysisHandlersProvider({
-	shouldEnableAnalysisMode,
 	activeUser,
 	handlersRef,
 	fetchSelectionStats: _fetchSelectionStats,

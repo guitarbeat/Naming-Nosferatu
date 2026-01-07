@@ -4,7 +4,8 @@
  */
 
 import PropTypes from "prop-types";
-import React, { useCallback, useMemo, useState } from "react";
+import type React from "react";
+import { useCallback, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button, { TournamentButton } from "../../../shared/components/Button/Button";
 import Card from "../../../shared/components/Card/Card";
@@ -323,6 +324,30 @@ function PersonalResults({
 		[personalRankings, personalRatings, onUpdateRatings, showToast],
 	);
 
+	const getRatingLabel = useCallback((rating: number) => {
+		if (rating >= 1800) {
+			return "Top Tier";
+		}
+		if (rating >= 1600) {
+			return "Great";
+		}
+		if (rating >= 1400) {
+			return "Good";
+		}
+		return "Fair";
+	}, []);
+
+	const topThreeNames = useMemo(() => {
+		return personalRankings
+			.filter((r) => !r.is_hidden)
+			.slice(0, 3)
+			.map((ranking, index) => ({
+				...ranking,
+				position: index + 1,
+				ratingLabel: getRatingLabel(ranking.rating),
+			}));
+	}, [personalRankings, getRatingLabel]);
+
 	if (!hasPersonalData) {
 		return (
 			<div className={styles.emptyState}>
@@ -335,30 +360,6 @@ function PersonalResults({
 			</div>
 		);
 	}
-
-	const getRatingLabel = (rating: number) => {
-		if (rating >= 1800) {
-			return "Top Tier";
-		}
-		if (rating >= 1600) {
-			return "Great";
-		}
-		if (rating >= 1400) {
-			return "Good";
-		}
-		return "Fair";
-	};
-
-	const topThreeNames = useMemo(() => {
-		return personalRankings
-			.filter((r) => !r.is_hidden)
-			.slice(0, 3)
-			.map((ranking, index) => ({
-				...ranking,
-				position: index + 1,
-				ratingLabel: getRatingLabel(ranking.rating),
-			}));
-	}, [personalRankings, getRatingLabel]);
 
 	return (
 		<div className={styles.personalResults}>

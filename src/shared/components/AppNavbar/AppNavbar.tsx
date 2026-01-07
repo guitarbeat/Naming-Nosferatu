@@ -122,7 +122,11 @@ export const AppNavbar = memo(function AppNavbar({
 					</div>
 
 					{/* Center: Navigation Links */}
-					<nav className="app-navbar__center-section" role="navigation" aria-label="Main navigation">
+					<nav
+						className="app-navbar__center-section"
+						role="navigation"
+						aria-label="Main navigation"
+					>
 						{navItems.map((item) => (
 							<NavbarLink
 								key={item.key}

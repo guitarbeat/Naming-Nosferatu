@@ -149,9 +149,7 @@
 			var(--glass-bg-strong, rgb(15 23 42 / 80%)) 80%,
 			rgb(6 11 22 / 90%)
 		);
-		box-shadow:
-			var(--shadow-lg),
-			var(--shadow-sm);
+		box-shadow: var(--shadow-lg), var(--shadow-sm);
 	}
 
 	.app-navbar-glass.liquid-glass::before {
@@ -186,6 +184,7 @@
 }
 
 .liquid-glass-button:focus-visible {
-	outline: var(--focus-ring-width) solid color-mix(in srgb, var(--color-neutral-50) 75%, transparent);
+	outline: var(--focus-ring-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 75%, transparent);
 	outline-offset: var(--space-1);
 }

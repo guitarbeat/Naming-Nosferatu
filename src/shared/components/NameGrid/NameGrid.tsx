@@ -6,6 +6,7 @@
 
 import PropTypes from "prop-types";
 import { useMemo } from "react";
+import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import type { NameItem } from "../../propTypes";
 import {
 	applyNameFilters,
@@ -13,7 +14,6 @@ import {
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "../../utils/core";
-import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import CardName from "../Card/components/CardName";
 import EmptyState from "../EmptyState/EmptyState";
 import SkeletonLoader from "../Loading/SkeletonLoader";
@@ -200,8 +200,7 @@ export function NameGrid({
 				className={styles.namesGrid}
 				role="list"
 				style={{
-					minHeight:
-						columnHeights.length > 0 ? `${Math.max(...columnHeights)}px` : "auto",
+					minHeight: columnHeights.length > 0 ? `${Math.max(...columnHeights)}px` : "auto",
 				}}
 			>
 				{processedNames.map((name, index) => {

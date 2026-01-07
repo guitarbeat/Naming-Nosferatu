@@ -5,7 +5,7 @@
  *
  * Note: Naming convention warnings are expected and intentional for this file.
  */
-/* biome-ignore-file lint/style/useNamingConvention: Generated Supabase types must match database schema exactly */
+/* biome-ignore lint/style/useNamingConvention: Generated Supabase types must match database schema exactly */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 

@@ -14,10 +14,7 @@ import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/Header/CollapsibleHeader";
-import {
-	type UseNameManagementViewResult,
-	useNameManagementContextSafe,
-} from "../../../shared/components/NameManagementView/nameManagementCore";
+import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";
 import { clearAllCaches, devError } from "../../../shared/utils/core";
@@ -222,7 +219,9 @@ export function AnalysisDashboard({
 						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className={panelStyles.empty}>No names available yet. Start a tournament to see results here!</div>
+					<div className={panelStyles.empty}>
+						No names available yet. Start a tournament to see results here!
+					</div>
 				) : (
 					<>
 						<div className={viewToggleStyles.viewToggle}>

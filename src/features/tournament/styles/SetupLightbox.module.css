@@ -136,7 +136,8 @@
 	color: var(--color-neutral-50);
 	cursor: pointer;
 	background: color-mix(in srgb, var(--color-neutral-900) 60%, transparent);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
 	border-radius: var(--radius-full);
 	transform: translateY(-50%);
 	transition: var(--transition-all);
@@ -172,7 +173,8 @@
 	color: var(--color-neutral-50);
 	cursor: pointer;
 	background: color-mix(in srgb, var(--color-neutral-900) 60%, transparent);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
 	border-radius: var(--radius-full);
 	transition: var(--transition-all);
 }

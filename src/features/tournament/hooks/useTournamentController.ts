@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import useAppStore from "../../../core/store/useAppStore";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../../shared/propTypes";

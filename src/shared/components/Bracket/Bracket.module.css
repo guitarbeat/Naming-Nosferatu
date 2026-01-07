@@ -13,22 +13,23 @@
 		linear-gradient(var(--analysis-surface, transparent), var(--analysis-surface, transparent)),
 		repeating-linear-gradient(
 			to right,
-		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 0,
-		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 1px,
+			var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 0,
+			var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 1px,
 			transparent 1px,
 			transparent 50px
 		),
 		repeating-linear-gradient(
 			to bottom,
-		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 0,
-		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 1px,
+			var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 0,
+			var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 4%, transparent)) 1px,
 			transparent 1px,
 			transparent 30px
 		);
 	border-radius: var(--radius-lg);
 	background-blend-mode: normal, multiply, multiply;
 	-webkit-overflow-scrolling: touch;
-	border: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	border: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
 }
 
 /* Scroll edge hints */
@@ -93,8 +94,12 @@
 	padding: var(--space-3) var(--space-4);
 	margin-bottom: var(--space-4);
 	text-align: center;
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
-	border: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 12%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 8%, transparent)
+	);
+	border: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 12%, transparent));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-sm);
 	backdrop-filter: blur(var(--glass-blur)) saturate(120%);
@@ -102,8 +107,14 @@
 }
 
 .roundHeader:hover {
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 12%, transparent));
-	border-color: var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 20%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent)
+	);
+	border-color: var(
+		--analysis-border,
+		color-mix(in srgb, var(--color-neutral-50) 20%, transparent)
+	);
 }
 
 .roundTitle {
@@ -169,8 +180,12 @@
 	z-index: var(--z-10);
 	width: 100%;
 	padding: var(--space-4);
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 6%, transparent));
-	border: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 12%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent)
+	);
+	border: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 12%, transparent));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-xs);
 	transition: var(--transition-base);
@@ -179,9 +194,7 @@
 .matchContent:hover {
 	border-color: var(--analysis-accent, var(--color-neon-cyan));
 	background: var(--analysis-surface-elevated, var(--glass-bg-light));
-	box-shadow:
-		var(--shadow-md),
-		var(--focus-ring);
+	box-shadow: var(--shadow-md), var(--focus-ring);
 	transform: translateY(calc(var(--space-1) * -1));
 }
 
@@ -213,7 +226,8 @@
 		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 8%, transparent)
 	);
 	border-color: var(--analysis-accent, var(--color-neon-cyan));
-	box-shadow: 0 2px 8px color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 20%, transparent);
+	box-shadow: 0 2px 8px
+		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 20%, transparent);
 }
 
 .playerLoser {
@@ -272,13 +286,15 @@
 	background: color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 20%, transparent);
 	border: 1.5px solid var(--analysis-accent, var(--color-neon-cyan));
 	border-radius: var(--radius-full);
-	box-shadow: 0 2px 6px color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 30%, transparent);
+	box-shadow: 0 2px 6px
+		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 30%, transparent);
 	transition: all 0.2s ease;
 }
 
 .winnerBadge:hover {
 	transform: scale(1.1);
-	box-shadow: 0 4px 10px color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 40%, transparent);
+	box-shadow: 0 4px 10px
+		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 40%, transparent);
 }
 
 .tieBadge {

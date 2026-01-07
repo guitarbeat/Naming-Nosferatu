@@ -94,7 +94,9 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 
 				const errorObj = err as { message?: string; error?: string } | null;
 				const errorMessage =
-					errorObj?.message || errorObj?.error || "Unable to submit your suggestion. Please try again.";
+					errorObj?.message ||
+					errorObj?.error ||
+					"Unable to submit your suggestion. Please try again.";
 				setGlobalError(errorMessage);
 				showError(errorMessage);
 

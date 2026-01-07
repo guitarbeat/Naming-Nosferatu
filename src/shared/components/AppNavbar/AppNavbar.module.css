@@ -14,7 +14,8 @@
 	padding: var(--space-1);
 	border-radius: var(--radius-xl);
 	background: color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	backdrop-filter: blur(var(--glass-blur));
 	cursor: pointer;
 	transition: var(--transition-base);

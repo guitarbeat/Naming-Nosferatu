@@ -12,8 +12,16 @@
 /* * Subtle grid background when analysis mode is active */
 body:has(.analysis-mode-banner) {
 	background-image:
-		linear-gradient(to right, var(--analysis-border) var(--card-border-width), transparent var(--card-border-width)),
-		linear-gradient(to bottom, var(--analysis-border) var(--card-border-width), transparent var(--card-border-width));
+		linear-gradient(
+			to right,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		),
+		linear-gradient(
+			to bottom,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		);
 	background-size: var(--space-10) var(--space-10);
 	background-attachment: fixed;
 	/* * Smooth background transition */

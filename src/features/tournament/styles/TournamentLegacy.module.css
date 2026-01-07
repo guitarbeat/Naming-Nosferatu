@@ -39,7 +39,11 @@
 	justify-content: center;
 	width: clamp(var(--space-9), 7vw, var(--space-13));
 	height: clamp(var(--space-9), 7vw, var(--space-13));
-	background: linear-gradient(135deg, var(--color-info), color-mix(in srgb, var(--color-info) 80%, white));
+	background: linear-gradient(
+		135deg,
+		var(--color-info),
+		color-mix(in srgb, var(--color-info) 80%, white)
+	);
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-info) 30%, transparent);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-md);
@@ -53,7 +57,11 @@
 	inset: calc(var(--space-1) * -1);
 	border-radius: inherit;
 	padding: var(--space-1);
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 40%, transparent), color-mix(in srgb, var(--color-info) 40%, transparent));
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 40%, transparent),
+		color-mix(in srgb, var(--color-info) 40%, transparent)
+	);
 	mask:
 		linear-gradient(var(--color-neutral-50) 0 0) content-box,
 		linear-gradient(var(--color-neutral-50) 0 0);

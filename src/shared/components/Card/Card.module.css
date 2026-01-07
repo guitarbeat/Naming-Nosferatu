@@ -34,37 +34,65 @@
 
 /* Color Variants (migrated from StatsCard) */
 .primary {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 10%, transparent) 0%, color-mix(in srgb, var(--color-info) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-info) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-info) 20%, transparent);
 }
 
 .primary:hover {
 	border-color: color-mix(in srgb, var(--color-info) 25%, transparent);
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 12%, transparent) 0%, color-mix(in srgb, var(--color-info) 6%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 12%, transparent) 0%,
+		color-mix(in srgb, var(--color-info) 6%, transparent) 100%
+	);
 }
 
 .success {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 10%, transparent) 0%, color-mix(in srgb, var(--color-success) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-success) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-success) 20%, transparent);
 }
 
 .warning {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-warning) 10%, transparent) 0%, color-mix(in srgb, var(--color-warning) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-warning) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-warning) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-warning) 20%, transparent);
 }
 
 .info {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 10%, transparent) 0%, color-mix(in srgb, var(--color-info) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-info) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-info) 20%, transparent);
 }
 
 .danger {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-error) 10%, transparent) 0%, color-mix(in srgb, var(--color-error) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-error) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-error) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-error) 20%, transparent);
 }
 
 .secondary {
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-500) 10%, transparent) 0%, color-mix(in srgb, var(--color-neutral-500) 5%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-500) 10%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-500) 5%, transparent) 100%
+	);
 	border-color: color-mix(in srgb, var(--color-neutral-500) 20%, transparent);
 }
 
@@ -153,22 +181,52 @@
 
 /* Stats Color Accents */
 .primary::before {
-	background: linear-gradient(90deg, var(--color-info), color-mix(in srgb, var(--color-info) 90%, var(--color-neutral-50)), color-mix(in srgb, var(--color-info) 80%, var(--color-neutral-900)));
+	background: linear-gradient(
+		90deg,
+		var(--color-info),
+		color-mix(in srgb, var(--color-info) 90%, var(--color-neutral-50)),
+		color-mix(in srgb, var(--color-info) 80%, var(--color-neutral-900))
+	);
 }
 .success::before {
-	background: linear-gradient(90deg, var(--color-success), color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-50)), color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-900)));
+	background: linear-gradient(
+		90deg,
+		var(--color-success),
+		color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-50)),
+		color-mix(in srgb, var(--color-success) 80%, var(--color-neutral-900))
+	);
 }
 .warning::before {
-	background: linear-gradient(90deg, var(--color-warning), color-mix(in srgb, var(--color-warning) 90%, var(--color-neutral-50)), color-mix(in srgb, var(--color-warning) 80%, var(--color-neutral-900)));
+	background: linear-gradient(
+		90deg,
+		var(--color-warning),
+		color-mix(in srgb, var(--color-warning) 90%, var(--color-neutral-50)),
+		color-mix(in srgb, var(--color-warning) 80%, var(--color-neutral-900))
+	);
 }
 .info::before {
-	background: linear-gradient(90deg, var(--color-neon-cyan), color-mix(in srgb, var(--color-neon-cyan) 90%, var(--color-neutral-50)), color-mix(in srgb, var(--color-neon-cyan) 80%, var(--color-neutral-900)));
+	background: linear-gradient(
+		90deg,
+		var(--color-neon-cyan),
+		color-mix(in srgb, var(--color-neon-cyan) 90%, var(--color-neutral-50)),
+		color-mix(in srgb, var(--color-neon-cyan) 80%, var(--color-neutral-900))
+	);
 }
 .danger::before {
-	background: linear-gradient(90deg, var(--color-error), color-mix(in srgb, var(--color-error) 90%, var(--color-neutral-50)), color-mix(in srgb, var(--color-error) 80%, var(--color-neutral-900)));
+	background: linear-gradient(
+		90deg,
+		var(--color-error),
+		color-mix(in srgb, var(--color-error) 90%, var(--color-neutral-50)),
+		color-mix(in srgb, var(--color-error) 80%, var(--color-neutral-900))
+	);
 }
 .secondary::before {
-	background: linear-gradient(90deg, var(--color-neutral-500), var(--color-neutral-400), var(--color-neutral-600));
+	background: linear-gradient(
+		90deg,
+		var(--color-neutral-500),
+		var(--color-neutral-400),
+		var(--color-neutral-600)
+	);
 }
 
 .statsLabel {
@@ -198,25 +256,41 @@
 
 /* Stats Value Colors */
 .success .statsValue {
-	background: linear-gradient(135deg, var(--color-success), color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-50)));
+	background: linear-gradient(
+		135deg,
+		var(--color-success),
+		color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-50))
+	);
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 }
 
 .warning .statsValue {
-	background: linear-gradient(135deg, var(--color-warning), color-mix(in srgb, var(--color-warning) 90%, var(--color-neutral-50)));
+	background: linear-gradient(
+		135deg,
+		var(--color-warning),
+		color-mix(in srgb, var(--color-warning) 90%, var(--color-neutral-50))
+	);
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 }
 
 .info .statsValue {
-	background: linear-gradient(135deg, var(--color-neon-cyan), color-mix(in srgb, var(--color-neon-cyan) 90%, var(--color-neutral-50)));
+	background: linear-gradient(
+		135deg,
+		var(--color-neon-cyan),
+		color-mix(in srgb, var(--color-neon-cyan) 90%, var(--color-neutral-50))
+	);
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 }
 
 .danger .statsValue {
-	background: linear-gradient(135deg, var(--color-error), color-mix(in srgb, var(--color-error) 90%, var(--color-neutral-50)));
+	background: linear-gradient(
+		135deg,
+		var(--color-error),
+		color-mix(in srgb, var(--color-error) 90%, var(--color-neutral-50))
+	);
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 }

@@ -705,7 +705,11 @@
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch {
 	border-color: color-mix(in srgb, var(--color-neutral-400) 90%, transparent);
-	background: linear-gradient(180deg, color-mix(in srgb, var(--color-neutral-200) 90%, transparent), color-mix(in srgb, var(--color-neutral-300) 90%, transparent));
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--color-neutral-200) 90%, transparent),
+		color-mix(in srgb, var(--color-neutral-300) 90%, transparent)
+	);
 }
 
 :root[data-theme="light"] .tournament-toolbar-toggle-switch::before {
@@ -730,7 +734,11 @@
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch {
 	border-color: color-mix(in srgb, var(--color-neutral-50) 18%, transparent);
-	background: linear-gradient(180deg, color-mix(in srgb, var(--color-neutral-800) 90%, transparent), color-mix(in srgb, var(--color-neutral-900) 90%, transparent));
+	background: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--color-neutral-800) 90%, transparent),
+		color-mix(in srgb, var(--color-neutral-900) 90%, transparent)
+	);
 }
 
 :root[data-theme="dark"] .tournament-toolbar-toggle-switch::before {

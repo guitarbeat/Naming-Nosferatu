@@ -189,11 +189,7 @@
 	left: -50%;
 	width: 200%;
 	height: 200%;
-	background: linear-gradient(
-		transparent 0%,
-		var(--glass-border) 50%,
-		transparent 100%
-	);
+	background: linear-gradient(transparent 0%, var(--glass-border) 50%, transparent 100%);
 	transform: rotate(30deg);
 	pointer-events: none;
 	animation: scanline 8s linear infinite;
@@ -213,7 +209,12 @@
 	font-size: var(--text-xl);
 	font-weight: var(--font-weight-bold);
 	letter-spacing: var(--tracking-tight);
-	background: linear-gradient(135deg, var(--color-neutral-50) 0%, var(--nav-highlight) 50%, var(--nav-accent) 100%);
+	background: linear-gradient(
+		135deg,
+		var(--color-neutral-50) 0%,
+		var(--nav-highlight) 50%,
+		var(--nav-accent) 100%
+	);
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -263,7 +264,7 @@
 	color: var(--nav-text);
 	background: var(--glass-bg-light);
 	transform: var(--transform-hover-lift);
-	box-shadow: 
+	box-shadow:
 		var(--shadow-md),
 		0 0 16px var(--overlay-cyan);
 	text-shadow: var(--text-shadow-sm);
@@ -276,7 +277,7 @@
 		inset 0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 40%, transparent),
 		0 0 24px -2px var(--overlay-cyan-medium),
 		var(--shadow-md);
-	text-shadow: 
+	text-shadow:
 		0 0 8px var(--overlay-cyan-medium),
 		var(--text-shadow-sm);
 }

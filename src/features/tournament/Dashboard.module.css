@@ -105,8 +105,8 @@
 	.statsGrid:hover {
 		transform: translateY(-1px);
 		box-shadow:
-		var(--shadow-xl),
-		inset 0 1px 0 var(--glass-border);
+			var(--shadow-xl),
+			inset 0 1px 0 var(--glass-border);
 	}
 }
 
@@ -185,21 +185,21 @@
 	0%,
 	100% {
 		box-shadow:
-		var(--shadow-lg),
-		var(--shadow-md),
+			var(--shadow-lg),
+			var(--shadow-md),
 			inset 0 1px 0 var(--glass-bg-strong);
 	}
 
 	50% {
 		box-shadow:
-		var(--shadow-xl),
-		var(--shadow-lg),
+			var(--shadow-xl),
+			var(--shadow-lg),
 			inset 0 1px 0 var(--glass-bg-strong);
 	}
 }
 
 .tip {
-		max-width: var(--max-width-content);
+	max-width: var(--max-width-content);
 	margin: 0;
 	font-size: var(--text-sm);
 	line-height: 1.7;
@@ -232,8 +232,13 @@
 	padding: var(--space-8);
 	margin: var(--space-8) 0;
 	overflow-x: auto;
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	border-radius: var(--radius-2xl);
 	backdrop-filter: blur(var(--glass-blur));
 	box-shadow:

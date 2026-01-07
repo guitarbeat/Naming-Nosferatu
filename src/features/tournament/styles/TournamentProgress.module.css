@@ -9,8 +9,13 @@
 	max-width: 100%;
 	padding: clamp(var(--space-2), 1.5vw, var(--space-3));
 	margin-bottom: clamp(var(--space-2), 1.5vw, var(--space-4));
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
 	border-radius: var(--card-border-radius);
 	box-shadow: var(--shadow-lg);
 	backdrop-filter: blur(20px);
@@ -24,7 +29,11 @@
 	inset: 0;
 	pointer-events: none;
 	content: "";
-	background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, transparent 50%);
+	background: radial-gradient(
+		circle at 50% 0%,
+		color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%,
+		transparent 50%
+	);
 	opacity: 0.6;
 }
 
@@ -71,7 +80,11 @@
 	font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
 	font-weight: var(--font-weight-bold);
 	color: var(--primary-600);
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 12%, transparent) 0%, color-mix(in srgb, var(--color-info) 8%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 12%, transparent) 0%,
+		color-mix(in srgb, var(--color-info) 8%, transparent) 100%
+	);
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-info) 25%, transparent);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-md);
@@ -81,7 +94,11 @@
 
 @media (hover: hover) and (pointer: fine) {
 	.percentageInfo:hover {
-		background: linear-gradient(135deg, color-mix(in srgb, var(--color-info) 15%, transparent) 0%, color-mix(in srgb, var(--color-info) 10%, transparent) 100%);
+		background: linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-info) 15%, transparent) 0%,
+			color-mix(in srgb, var(--color-info) 10%, transparent) 100%
+		);
 		border-color: color-mix(in srgb, var(--color-info) 30%, transparent);
 		box-shadow: var(--shadow-lg);
 		transform: var(--transform-hover-scale);
@@ -98,7 +115,11 @@
 	padding: var(--space-4) var(--space-6);
 	font-size: var(--text-lg);
 	color: var(--color-neutral-50);
-	background: linear-gradient(135deg, var(--primary-500, var(--color-info)), var(--primary-600, var(--color-info)));
+	background: linear-gradient(
+		135deg,
+		var(--primary-500, var(--color-info)),
+		var(--primary-600, var(--color-info))
+	);
 	border: var(--card-border-width) solid var(--primary-300, var(--color-info));
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-md);

@@ -299,8 +299,13 @@
 .keyboardHelp {
 	padding: var(--space-5);
 	margin-top: var(--space-4);
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	border-radius: var(--radius-xl);
 	box-shadow:
 		var(--shadow-md),
@@ -348,12 +353,21 @@
 	padding: var(--space-6);
 	margin-top: var(--space-4);
 	overflow-x: auto;
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%
+	);
 	background-image:
-		linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%),
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%,
+			color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%
+		),
 		radial-gradient(1000px 60px at 50% 0, var(--overlay-light), transparent),
 		radial-gradient(1000px 60px at 50% 100%, var(--overlay-light), transparent);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	border-radius: var(--radius-xl);
 	box-shadow:
 		var(--shadow-md),
@@ -521,8 +535,13 @@
 	color: var(--text-primary);
 	letter-spacing: var(--tracking-normal);
 	cursor: pointer;
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
 	border-radius: var(--radius-full);
 	box-shadow: var(--shadow-md);
 	backdrop-filter: blur(16px);
@@ -535,7 +554,11 @@
 	inset: 0;
 	pointer-events: none;
 	content: "";
-		background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-neutral-50) 10%, transparent) 0%, transparent 70%);
+	background: radial-gradient(
+		circle at 50% 50%,
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent) 0%,
+		transparent 70%
+	);
 	opacity: 0;
 	transition: opacity var(--duration-normal) var(--ease-out);
 }
@@ -571,7 +594,11 @@
 
 .extraOptionsButton.selected {
 	color: var(--color-neutral-50);
-	background: linear-gradient(135deg, var(--primary-500, var(--color-info)), var(--primary-400, var(--color-info)));
+	background: linear-gradient(
+		135deg,
+		var(--primary-500, var(--color-info)),
+		var(--primary-400, var(--color-info))
+	);
 	border-color: transparent;
 	box-shadow:
 		var(--shadow-xl),
@@ -580,7 +607,11 @@
 
 .extraOptionsButton.selected::before {
 	opacity: 1;
-		background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-neutral-50) 20%, transparent) 0%, transparent 70%);
+	background: radial-gradient(
+		circle at 50% 50%,
+		color-mix(in srgb, var(--color-neutral-50) 20%, transparent) 0%,
+		transparent 70%
+	);
 }
 
 .shortcutHint {

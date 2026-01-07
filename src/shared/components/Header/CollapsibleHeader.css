@@ -9,8 +9,12 @@
 	justify-content: space-between;
 	gap: var(--analysis-gap-md, 12px);
 	padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 3%, transparent));
-	border-bottom: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent)
+	);
+	border-bottom: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
 	transition:
 		background var(--analysis-duration-normal, 320ms) cubic-bezier(0.2, 0.8, 0.2, 1),
 		padding var(--analysis-duration-normal, 320ms) cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -51,7 +55,10 @@
 
 .collapsible-header--collapsed:hover {
 	opacity: 1;
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 5%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 5%, transparent)
+	);
 }
 
 .collapsible-header--collapsed .collapsible-toggle {
@@ -226,7 +233,8 @@
 	padding: 0;
 	margin: 0;
 	background: var(--overlay-medium);
-	border-bottom: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	border-bottom: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
 	border-radius: 0;
 	overflow: hidden;
 }
@@ -250,7 +258,10 @@
 
 /* When inside analysis-panel, ensure proper integration */
 .analysis-panel .collapsible-header-toolbar {
-	background: var(--analysis-surface-elevated, color-mix(in srgb, var(--color-neutral-50) 3%, transparent));
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent)
+	);
 }
 
 .analysis-panel .collapsible-header:has(+ .collapsible-header-toolbar) {
@@ -265,7 +276,8 @@
 
 /* * Better fit: Smooth border transition */
 .analysis-panel:has(.collapsible-header) .collapsible-content:not(.collapsed) {
-	border-top: var(--card-border-width) solid var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	border-top: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
 }
 
 /* Collapsible content - improved grid animation with better fit */

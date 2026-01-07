@@ -37,7 +37,11 @@
 	inset: 0;
 	pointer-events: none;
 	content: "";
-	background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--color-neutral-50) 5%, transparent) 0%, transparent 50%);
+	background: radial-gradient(
+		circle at 50% 0%,
+		color-mix(in srgb, var(--color-neutral-50) 5%, transparent) 0%,
+		transparent 50%
+	);
 	opacity: 0.6;
 }
 
@@ -90,8 +94,13 @@
 	gap: var(--space-4);
 	padding: var(--space-4);
 	margin: var(--space-4) auto;
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 8%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 4%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
 	border-radius: var(--radius-xl);
 	backdrop-filter: blur(var(--glass-blur));
 	box-shadow:
@@ -232,8 +241,13 @@
 	padding: var(--space-8);
 	margin: var(--space-8) 0;
 	overflow-x: auto;
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%, color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%);
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-50) 6%, transparent) 0%,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 100%
+	);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	border-radius: 24px;
 	backdrop-filter: blur(12px);
 	box-shadow:

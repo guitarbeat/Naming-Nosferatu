@@ -82,7 +82,6 @@
 	padding: 0;
 }
 
-
 .cardsContainer > *:hover {
 	transform: var(--transform-hover-scale);
 	z-index: var(--z-10);

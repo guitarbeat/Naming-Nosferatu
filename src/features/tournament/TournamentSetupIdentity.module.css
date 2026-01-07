@@ -114,7 +114,7 @@
 	padding: clamp(var(--space-3), 2vw, var(--space-4)) clamp(var(--space-4), 3vw, var(--space-5));
 	background: var(--glass-bg-strong);
 	/* Scanline effect for terminal aesthetic (inspired by legacy CRT styling) */
-	background-image: 
+	background-image:
 		var(--glass-bg-strong),
 		repeating-linear-gradient(
 			0deg,
@@ -131,7 +131,7 @@
 	font-size: clamp(var(--text-xs), 2vw, var(--text-sm));
 	color: var(--text-primary);
 	position: relative;
-	box-shadow: 
+	box-shadow:
 		var(--shadow-md),
 		0 0 20px var(--overlay-cyan-medium),
 		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
@@ -239,7 +239,7 @@
 	color: var(--color-neon-cyan);
 	opacity: 1;
 	flex-shrink: 0;
-	text-shadow: 
+	text-shadow:
 		0 0 8px var(--overlay-cyan-medium),
 		0 0 16px var(--overlay-cyan);
 	letter-spacing: var(--tracking-wider);
@@ -250,16 +250,17 @@
 
 /* Pulsing glow animation for label */
 @keyframes pulse-glow {
-	0%, 100% {
-		text-shadow: 
+	0%,
+	100% {
+		text-shadow:
 			0 0 8px var(--overlay-cyan-medium),
 			0 0 16px var(--overlay-cyan);
 	}
 	50% {
-		text-shadow: 
+		text-shadow:
 			0 0 12px var(--overlay-cyan-medium),
-		0 0 24px var(--overlay-cyan),
-		0 0 32px var(--overlay-cyan);
+			0 0 24px var(--overlay-cyan),
+			0 0 32px var(--overlay-cyan);
 	}
 }
 
@@ -268,7 +269,7 @@
 	letter-spacing: var(--tracking-normal);
 	line-height: var(--leading-normal);
 	color: var(--text-primary);
-	text-shadow: 
+	text-shadow:
 		var(--text-shadow-sm),
 		0 0 2px var(--overlay-cyan);
 	position: relative;

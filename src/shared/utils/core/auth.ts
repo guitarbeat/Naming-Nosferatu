@@ -13,7 +13,6 @@ const USER_ROLES = {
 } as const;
 
 // Database table name - snake_case required
-// biome-ignore lint/style/useNamingConvention: Database table name must match exactly
 const ROLE_SOURCES = ["user_roles"] as const;
 
 const ROLE_PRIORITY = {

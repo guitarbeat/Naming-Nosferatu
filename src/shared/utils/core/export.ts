@@ -143,10 +143,12 @@ export function exportTournamentResultsToCSV(
 		return {
 			name: nameItem.name,
 			rating: nameItem.rating || 0,
+			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
 			avg_rating: nameItem.rating || 0,
 			wins: nameItem.wins || 0,
 			losses: nameItem.losses || 0,
 			isHidden: nameItem.isHidden || false,
+			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
 			is_hidden: nameItem.is_hidden || false,
 		};
 	});

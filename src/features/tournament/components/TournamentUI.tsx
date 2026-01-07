@@ -232,7 +232,8 @@ export const ProgressMilestone = memo(function ProgressMilestone({
 						fontWeight: "var(--font-weight-bold)",
 						borderRadius: "var(--radius-full)",
 						boxShadow: "var(--shadow-xl)",
-						background: "linear-gradient(135deg, var(--color-success), color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-900)))",
+						background:
+							"linear-gradient(135deg, var(--color-success), color-mix(in srgb, var(--color-success) 90%, var(--color-neutral-900)))",
 						borderColor: "var(--color-success)",
 					}}
 					role="status"

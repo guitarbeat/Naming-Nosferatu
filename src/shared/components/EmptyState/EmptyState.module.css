@@ -28,7 +28,7 @@
 
 .description {
 	font-size: var(--text-base);
-		max-width: var(--max-width-content); /* Keep fixed for readability */
+	max-width: var(--max-width-content); /* Keep fixed for readability */
 	margin-bottom: var(--space-6);
 	line-height: var(--leading-normal);
 }

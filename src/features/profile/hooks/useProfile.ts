@@ -527,7 +527,9 @@ export function useProfile(
 					throw new Error(error);
 				}
 
-				showSuccess(currentlyHidden ? `"${name.name}" is now visible` : `"${name.name}" is now hidden`);
+				showSuccess(
+					currentlyHidden ? `"${name.name}" is now visible` : `"${name.name}" is now hidden`,
+				);
 				setHiddenNames((prev) => {
 					const next = new Set(prev);
 					if (currentlyHidden) {
@@ -596,7 +598,9 @@ export function useProfile(
 					? await hiddenNamesAPI.hideNames(userName, ids)
 					: await hiddenNamesAPI.unhideNames(userName, ids);
 				if (result.success && (result.processed ?? 0) > 0) {
-					showSuccess(`Successfully ${isHide ? "hidden" : "unhidden"} ${result.processed} ${result.processed === 1 ? "name" : "names"}`);
+					showSuccess(
+						`Successfully ${isHide ? "hidden" : "unhidden"} ${result.processed} ${result.processed === 1 ? "name" : "names"}`,
+					);
 					setHiddenNames((prev) => {
 						const next = new Set(prev);
 						ids.forEach((id) => {

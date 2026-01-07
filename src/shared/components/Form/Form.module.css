@@ -262,9 +262,7 @@
 
 	.input:focus,
 	.select:focus {
-		box-shadow:
-			var(--focus-ring),
-			var(--focus-ring-outline);
+		box-shadow: var(--focus-ring), var(--focus-ring-outline);
 	}
 
 	.input--error,

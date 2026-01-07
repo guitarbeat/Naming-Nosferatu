@@ -229,7 +229,8 @@ const TournamentControls = ({
 								End Tournament?
 							</h2>
 							<p id="confirm-end-description" className={layoutStyles.modalText}>
-								Are you sure you want to end the tournament early? Your progress will be saved, but you won't be able to continue voting.
+								Are you sure you want to end the tournament early? Your progress will be saved, but
+								you won't be able to continue voting.
 							</p>
 							<div className={layoutStyles.modalActions}>
 								<Button

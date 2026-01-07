@@ -45,8 +45,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 		// Calculate number of columns based on container width and min column width
 		const calculatedColumnCount =
-			columnCount ||
-			Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
+			columnCount || Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
 
 		// Initialize column heights
 		const heights = new Array(calculatedColumnCount).fill(0);
@@ -112,7 +111,6 @@ export function useMasonryLayout<T extends HTMLElement>(
 			resizeObserver.disconnect();
 		};
 	}, [calculateLayout]);
-
 
 	// Set item ref callback
 	const setItemRef = useCallback(

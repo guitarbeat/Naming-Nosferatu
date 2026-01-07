@@ -138,7 +138,14 @@ export default function ModernTournamentSetup({ onStart, userName }: ModernTourn
 		));
 
 	return (
-		<div className="min-h-screen" style={{ backgroundColor: 'var(--color-neutral-900)', color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)' }}>
+		<div
+			className="min-h-screen"
+			style={{
+				backgroundColor: "var(--color-neutral-900)",
+				color: "var(--text-secondary)",
+				fontFamily: "var(--font-sans)",
+			}}
+		>
 			{/* lov-tagger hook for interactivity */}
 			<div data-lovable-component="ModernTournamentSetup" />
 
@@ -147,7 +154,12 @@ export default function ModernTournamentSetup({ onStart, userName }: ModernTourn
 
 			<main className="container mx-auto px-4 py-6 max-w-7xl">
 				{/* Toolbar */}
-				<div className="sticky top-0 z-10 backdrop-blur-xl pb-6 pt-2 space-y-4" style={{ backgroundColor: 'color-mix(in srgb, var(--color-neutral-900) 90%, transparent)' }}>
+				<div
+					className="sticky top-0 z-10 backdrop-blur-xl pb-6 pt-2 space-y-4"
+					style={{
+						backgroundColor: "color-mix(in srgb, var(--color-neutral-900) 90%, transparent)",
+					}}
+				>
 					<div className="flex flex-col md:flex-row gap-4 justify-between items-end md:items-center">
 						<div className="w-full md:w-96">
 							<Input

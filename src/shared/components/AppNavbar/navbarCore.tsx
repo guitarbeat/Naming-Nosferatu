@@ -194,7 +194,7 @@ export interface NavbarDimensions {
 	height: number;
 }
 
-export const useNavbarDimensions = (isCollapsed: boolean) => {
+export const useNavbarDimensions = (_isCollapsed: boolean) => {
 	const [dimensions, setDimensions] = useState<NavbarDimensions>({
 		width: 0,
 		height: 0,
@@ -233,7 +233,7 @@ export const useNavbarDimensions = (isCollapsed: boolean) => {
 			window.removeEventListener("resize", handleResize);
 			clearTimeout(timeout);
 		};
-	}, [updateDimensions, isCollapsed]);
+	}, [updateDimensions]);
 
 	return dimensions;
 };

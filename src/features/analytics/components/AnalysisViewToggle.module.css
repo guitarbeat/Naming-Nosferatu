@@ -5,11 +5,7 @@
 	gap: var(--space-2, 0.5rem);
 	margin-bottom: var(--space-4, 1rem);
 	padding: var(--space-1);
-	background: linear-gradient(
-		135deg,
-		var(--overlay-cyan) 0%,
-		var(--overlay-pink) 100%
-	);
+	background: linear-gradient(135deg, var(--overlay-cyan) 0%, var(--overlay-pink) 100%);
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neon-cyan) 20%, transparent);
 	border-radius: var(--radius-xl);
 	width: 100%;

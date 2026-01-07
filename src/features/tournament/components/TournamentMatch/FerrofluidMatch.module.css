@@ -73,7 +73,11 @@
 .spikes {
 	position: absolute;
 	inset: -20px;
-	background: repeating-conic-gradient(from 0deg, transparent 0deg 10deg, var(--color-neutral-900) 10deg 20deg);
+	background: repeating-conic-gradient(
+		from 0deg,
+		transparent 0deg 10deg,
+		var(--color-neutral-900) 10deg 20deg
+	);
 	mask: radial-gradient(transparent 55%, var(--color-neutral-900) 70%);
 	opacity: 0.4;
 	animation: rotateSpikes 20s linear infinite;
@@ -111,7 +115,8 @@
 	height: var(--space-45, 180px);
 	border-radius: var(--radius-full);
 	overflow: hidden;
-	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
 	position: relative;
 	flex-shrink: 0;
 }
@@ -175,7 +180,12 @@
 	position: absolute;
 	height: 1px;
 	width: 100%;
-	background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--color-neutral-50) 10%, transparent), transparent);
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent),
+		transparent
+	);
 	top: 50%;
 	left: 0;
 	pointer-events: none;
@@ -272,7 +282,11 @@
 	font-size: var(--text-2xl);
 	font-weight: var(--font-weight-bold);
 	color: var(--color-success);
-	background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 20%, transparent), color-mix(in srgb, var(--color-success) 15%, transparent));
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 20%, transparent),
+		color-mix(in srgb, var(--color-success) 15%, transparent)
+	);
 	border: 3px solid var(--color-success);
 	border-radius: var(--radius-full);
 	box-shadow:
