@@ -121,7 +121,8 @@
 .app-navbar__right-section {
 	display: flex;
 	align-items: center;
-	gap: var(--space-2);
+	gap: clamp(4px, 1vw, 12px);
+	flex-shrink: 0;
 }
 
 .app-navbar__desktop-only {
