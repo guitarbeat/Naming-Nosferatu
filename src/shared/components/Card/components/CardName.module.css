@@ -438,19 +438,14 @@
 	/* * Transform transitions are handled by tilt effect */
 }
 
+/* Selection styles handled by Framer Motion animations in NameGrid */
 .selected {
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--color-warning) 12%, transparent),
-		color-mix(in srgb, var(--color-warning) 10%, transparent)
-	);
 	border: var(--card-border-width) solid var(--accent-color, var(--color-warning));
 }
 
 .selected .name {
 	color: var(--accent-color, var(--color-warning));
 	text-shadow: var(--text-shadow-lg);
-	/* * Transform removed to avoid conflicts with tilt effect */
 }
 
 .selected:hover {

@@ -51,6 +51,7 @@ function TournamentMatch({
 	const [showVoteConfirmation, setShowVoteConfirmation] = React.useState<"left" | "right" | null>(
 		null,
 	);
+	const [ripples, setRipples] = React.useState<{ id: string; side: "left" | "right" }[]>([]);
 	const isEnabled = !isProcessing && !isTransitioning;
 
 	// Show vote confirmation checkmark
@@ -65,6 +66,17 @@ function TournamentMatch({
 	}, [selectedOption]);
 
 	useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);
+
+	// Handle ripple effects on click
+	const createRipple = React.useCallback((side: "left" | "right") => {
+		const rippleId = `${side}-${Date.now()}`;
+		setRipples(prev => [...prev, { id: rippleId, side }]);
+
+		// Remove ripple after animation completes
+		setTimeout(() => {
+			setRipples(prev => prev.filter(ripple => ripple.id !== rippleId));
+		}, 800);
+	}, []);
 
 	const getDetails = (item?: NameItem | string) => {
 		if (!item) {
@@ -129,15 +141,36 @@ function TournamentMatch({
 						tabIndex={isEnabled ? 0 : -1}
 						aria-label={`Select ${leftDetails.name}`}
 						aria-pressed={selectedOption === "left"}
-						onClick={() => isEnabled && onNameCardClick("left")}
+						onClick={() => {
+							if (isEnabled) {
+								createRipple("left");
+								onNameCardClick("left");
+							}
+						}}
 						onKeyDown={(e) => {
 							if (isEnabled && (e.key === "Enter" || e.key === " ")) {
 								e.preventDefault();
+								createRipple("left");
 								onNameCardClick("left");
 							}
 						}}
 					>
 						<div className={styles.spikes} aria-hidden="true" />
+						{/* Ripple Effects */}
+						<AnimatePresence>
+							{ripples
+								.filter(ripple => ripple.side === "left")
+								.map(ripple => (
+									<motion.div
+										key={ripple.id}
+										className={styles.ripple}
+										initial={{ scale: 0, opacity: 1 }}
+										animate={{ scale: 2.5, opacity: 0 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.8, ease: "easeOut" }}
+									/>
+								))}
+						</AnimatePresence>
 						<div className={styles.fighterContent}>
 							{leftImage && (
 								<motion.div
@@ -154,10 +187,31 @@ function TournamentMatch({
 						<AnimatePresence>
 							{showVoteConfirmation === "left" && (
 								<motion.div
-									initial={{ opacity: 0, scale: 0 }}
-									animate={{ opacity: 1, scale: 1 }}
-									exit={{ opacity: 0, scale: 0.8 }}
-									transition={{ duration: 0.3, ease: "easeOut" }}
+									initial={{
+										opacity: 0,
+										scale: 0,
+										rotate: -180,
+										y: -20
+									}}
+									animate={{
+										opacity: 1,
+										scale: 1,
+										rotate: 0,
+										y: 0
+									}}
+									exit={{
+										opacity: 0,
+										scale: 0.8,
+										rotate: 180,
+										y: 20,
+										transition: { duration: 0.4 }
+									}}
+									transition={{
+										duration: 0.6,
+										type: "spring",
+										stiffness: 300,
+										damping: 20
+									}}
 									className={styles.voteCheckmark}
 									aria-label="Vote confirmed"
 								>
@@ -186,15 +240,36 @@ function TournamentMatch({
 						tabIndex={isEnabled ? 0 : -1}
 						aria-label={`Select ${rightDetails.name}`}
 						aria-pressed={selectedOption === "right"}
-						onClick={() => isEnabled && onNameCardClick("right")}
+						onClick={() => {
+							if (isEnabled) {
+								createRipple("right");
+								onNameCardClick("right");
+							}
+						}}
 						onKeyDown={(e) => {
 							if (isEnabled && (e.key === "Enter" || e.key === " ")) {
 								e.preventDefault();
+								createRipple("right");
 								onNameCardClick("right");
 							}
 						}}
 					>
 						<div className={styles.spikes} aria-hidden="true" />
+						{/* Ripple Effects */}
+						<AnimatePresence>
+							{ripples
+								.filter(ripple => ripple.side === "right")
+								.map(ripple => (
+									<motion.div
+										key={ripple.id}
+										className={styles.ripple}
+										initial={{ scale: 0, opacity: 1 }}
+										animate={{ scale: 2.5, opacity: 0 }}
+										exit={{ opacity: 0 }}
+										transition={{ duration: 0.8, ease: "easeOut" }}
+									/>
+								))}
+						</AnimatePresence>
 						<div className={styles.fighterContent}>
 							{rightImage && (
 								<motion.div
@@ -211,10 +286,31 @@ function TournamentMatch({
 						<AnimatePresence>
 							{showVoteConfirmation === "right" && (
 								<motion.div
-									initial={{ opacity: 0, scale: 0 }}
-									animate={{ opacity: 1, scale: 1 }}
-									exit={{ opacity: 0, scale: 0.8 }}
-									transition={{ duration: 0.3, ease: "easeOut" }}
+									initial={{
+										opacity: 0,
+										scale: 0,
+										rotate: -180,
+										y: -20
+									}}
+									animate={{
+										opacity: 1,
+										scale: 1,
+										rotate: 0,
+										y: 0
+									}}
+									exit={{
+										opacity: 0,
+										scale: 0.8,
+										rotate: 180,
+										y: 20,
+										transition: { duration: 0.4 }
+									}}
+									transition={{
+										duration: 0.6,
+										type: "spring",
+										stiffness: 300,
+										damping: 20
+									}}
 									className={styles.voteCheckmark}
 									aria-label="Vote confirmed"
 								>

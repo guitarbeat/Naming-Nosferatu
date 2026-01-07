@@ -5,6 +5,7 @@
  */
 
 import PropTypes from "prop-types";
+import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import type { NameItem } from "../../propTypes";
@@ -52,6 +53,7 @@ const GridItem = ({
 	imageList,
 	onToggleVisibility,
 	onDelete,
+	index,
 }: {
 	nameObj: NameItem;
 	selectedSet: Set<string | number>;
@@ -61,9 +63,11 @@ const GridItem = ({
 	imageList: string[];
 	onToggleVisibility?: (id: string | number) => void;
 	onDelete?: (name: NameItem) => void;
+	index: number;
 }) => {
 	const nameId = nameObj.id as string | number;
 	const isHidden = isNameHidden(nameObj);
+	const isSelected = selectedSet.has(nameId);
 
 	// * Deterministic image selection
 	const cardImage = useMemo(() => {
@@ -76,11 +80,52 @@ const GridItem = ({
 	}, [nameObj, showCatPictures, imageList]);
 
 	return (
-		<div className={styles.gridItem}>
+		<motion.div
+			className={styles.gridItem}
+			initial={{
+				opacity: 0,
+				y: 20,
+				scale: 0.9
+			}}
+			animate={{
+				opacity: 1,
+				y: 0,
+				scale: isSelected ? 1.05 : 1,
+				boxShadow: isSelected
+					? "0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1)"
+					: "0 2px 8px rgba(0, 0, 0, 0.08)"
+			}}
+			transition={{
+				duration: 0.4,
+				delay: Math.min(index * 0.05, 1.5), // Staggered entrance, max 1.5s delay
+				type: "spring",
+				stiffness: 200,
+				damping: 20,
+				boxShadow: { duration: 0.3, ease: "easeOut" },
+				scale: { duration: 0.3, type: "spring", stiffness: 300, damping: 25 }
+			}}
+			whileHover={{
+				y: -8,
+				scale: isSelected ? 1.07 : 1.02,
+				boxShadow: "0 12px 30px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.15)",
+				transition: {
+					duration: 0.2,
+					type: "spring",
+					stiffness: 300,
+					damping: 25
+				}
+			}}
+			whileTap={{
+				scale: 0.95,
+				transition: { duration: 0.1 }
+			}}
+			layout={true}
+			key={`grid-item-${nameId}-${isSelected ? 'selected' : 'unselected'}`}
+		>
 			<CardName
 				name={nameObj.name || ""}
 				description={nameObj.description}
-				isSelected={selectedSet.has(nameId)}
+				isSelected={isSelected}
 				onClick={() => onToggleName?.(nameObj)}
 				image={cardImage}
 				metadata={
@@ -99,7 +144,7 @@ const GridItem = ({
 				onSelectionChange={undefined}
 				size="medium"
 			/>
-		</div>
+		</motion.div>
 	);
 };
 
@@ -206,7 +251,7 @@ export function NameGrid({
 				{processedNames.map((name, index) => {
 					const position = positions[index];
 					return (
-						<div
+						<motion.div
 							key={name.id}
 							ref={setItemRef(index)}
 							role="listitem"
@@ -220,6 +265,10 @@ export function NameGrid({
 										}
 									: { position: "relative" }
 							}
+							layout={true}
+							transition={{
+								layout: { duration: 0.3, ease: "easeOut" }
+							}}
 						>
 							<GridItem
 								nameObj={name}
@@ -230,8 +279,9 @@ export function NameGrid({
 								imageList={imageList}
 								onToggleVisibility={onToggleVisibility}
 								onDelete={onDelete}
+								index={index}
 							/>
-						</div>
+						</motion.div>
 					);
 				})}
 			</div>
