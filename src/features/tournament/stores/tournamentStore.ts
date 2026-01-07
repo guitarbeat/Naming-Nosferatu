@@ -1,11 +1,15 @@
+/**
+ * TournamentStore - Zustand store for tournament setup state
+ */
+
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import type { CatName } from "../services/tournamentService";
 
 interface TournamentStoreState {
-	// Available names for selection
+	// Available names from database
 	availableNames: CatName[];
-	// Selected name IDs
+	// Set of selected name IDs
 	selectedNames: Set<string>;
 	// Search query for filtering
 	searchQuery: string;
@@ -27,7 +31,7 @@ type TournamentStore = TournamentStoreState & TournamentStoreActions;
 
 const initialState: TournamentStoreState = {
 	availableNames: [],
-	selectedNames: new Set(),
+	selectedNames: new Set<string>(),
 	searchQuery: "",
 	operatorIdentity: "Anonymous",
 };

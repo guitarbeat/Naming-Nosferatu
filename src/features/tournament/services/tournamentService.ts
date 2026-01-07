@@ -1,10 +1,20 @@
-import { catNamesAPI } from "../../../shared/services/supabase/client";
-import type { NameItem } from "../../../shared/services/supabase/modules/cat-names-consolidated";
+/**
+ * TournamentService - Handles tournament-related data fetching
+ * Uses the consolidated cat-names API from shared services
+ */
 
-// Type alias for consistency
-export type CatName = NameItem;
+import { catNamesAPI } from "../../../shared/services/supabase/modules/cat-names-consolidated";
 
-// Result type for operations that can fail
+export interface CatName {
+	id: string;
+	name: string;
+	description?: string;
+	avg_rating?: number;
+	is_active: boolean;
+	is_hidden?: boolean;
+	created_at?: string;
+}
+
 interface Result<T, E = { message: string }> {
 	isOk(): this is OkResult<T>;
 	isErr(): this is ErrResult<E>;
