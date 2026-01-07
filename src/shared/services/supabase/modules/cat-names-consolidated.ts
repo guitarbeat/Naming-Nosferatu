@@ -146,7 +146,8 @@ const coreAPI = {
 					is_hidden
 				`)
 				.eq("is_active", true)
-				.order("avg_rating", { ascending: false });
+				.order("avg_rating", { ascending: false })
+				.limit(1000);
 
 			if (!includeHidden) {
 				query = query.eq("is_hidden", false);
@@ -961,8 +962,8 @@ const statsAPI = {
 			interface JoinResult {
 				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				cat_name_ratings?:
-					| { rating: number; wins: number; losses: number }
-					| { rating: number; wins: number; losses: number }[];
+				| { rating: number; wins: number; losses: number }
+				| { rating: number; wins: number; losses: number }[];
 				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				is_hidden?: boolean;
 				[key: string]: unknown;
