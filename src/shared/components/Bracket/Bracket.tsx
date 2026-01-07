@@ -215,7 +215,8 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			const grouped: Match[][] = Array.from({ length: maxRound }, () => []);
 			matches.forEach((m) => {
 				const idx = Math.max(1, Number(m.round) || 1) - 1;
-				grouped[idx].push(m);
+				// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays
+				grouped[idx]!.push(m);
 			});
 			// Sort within each round by id if present
 			grouped.forEach((round) => {
@@ -239,7 +240,8 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			if (match?.id != null && match.id > 0) {
 				const roundIndex = Math.floor(Math.log2(match.id));
 				if (roundIndex >= 0 && roundIndex < totalRounds) {
-					rounds[roundIndex].push(match);
+					// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays and bounds checked
+					rounds[roundIndex]!.push(match);
 				}
 			}
 		});

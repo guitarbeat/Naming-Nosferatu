@@ -8,7 +8,7 @@ import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } fro
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/tournamentHooks";
 import { shuffleArray } from "../../../shared/utils/core";
-import type { NameItem } from "../../../types/components";
+import type { NameItem, VoteData } from "../../../types/components";
 
 /**
  * Custom hook for tournament state management
@@ -155,6 +155,42 @@ export function useTournamentState(
 		return undefined;
 	}, [tournament.roundNumber]);
 
+	// Adapter function to convert tournament handleVote to expected signature
+	const adaptedHandleVote = useCallback(
+		async (option: "left" | "right" | "both" | "neither"): Promise<unknown> => {
+			if (!tournament.handleVote) {
+				return undefined;
+			}
+
+			// Convert option to winner/voteType format expected by core hook
+			let winner: string;
+			let voteType: string;
+
+			switch (option) {
+				case "left":
+					winner = "left";
+					voteType = "normal";
+					break;
+				case "right":
+					winner = "right";
+					voteType = "normal";
+					break;
+				case "both":
+					winner = "both";
+					voteType = "both";
+					break;
+				case "neither":
+					winner = "neither";
+					voteType = "neither";
+					break;
+			}
+
+			// Call the core handleVote function and return as Promise<unknown>
+			return tournament.handleVote(winner, voteType);
+		},
+		[tournament.handleVote],
+	);
+
 	return {
 		randomizedNames,
 		selectedOption,
@@ -175,6 +211,7 @@ export function useTournamentState(
 		nextRoundNumber,
 		votingError,
 		setVotingError,
+		handleVote: adaptedHandleVote,
 		tournament,
 	};
 }
@@ -512,7 +549,7 @@ interface UseTournamentVoteProps {
 	isError: boolean;
 	currentMatch: { left?: unknown; right?: unknown } | null;
 	handleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown>;
-	onVote?: (voteData: unknown) => Promise<void> | void;
+	onVote?: (voteData: VoteData) => Promise<void> | void;
 	audioManager: { playAudioTrack: () => void };
 	setIsProcessing: (value: boolean) => void;
 	setIsTransitioning: (value: boolean) => void;
@@ -652,7 +689,7 @@ export function useTournamentVote({
 					// Helper to safely get properties from NameItem | string
 					const getNameData = (item: unknown) => {
 						if (!item) {
-							return { name: "Unknown", id: null, description: "" };
+							return { name: "Unknown", id: null as string | number | null, description: "" };
 						}
 						if (typeof item === "string") {
 							return { name: item, id: item, description: "" };
@@ -662,9 +699,17 @@ export function useTournamentVote({
 							id?: unknown;
 							description?: string;
 						};
+						let id: string | number | null = null;
+						if (obj.id === null || obj.id === undefined) {
+							id = null;
+						} else if (typeof obj.id === "string" || typeof obj.id === "number") {
+							id = obj.id;
+						} else if (obj.id && typeof obj.id === "object" && "toString" in obj.id) {
+							id = String(obj.id);
+						}
 						return {
 							name: obj.name || "Unknown",
-							id: obj.id || null,
+							id,
 							description: obj.description || "",
 						};
 					};

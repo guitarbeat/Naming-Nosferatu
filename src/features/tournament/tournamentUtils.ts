@@ -328,10 +328,12 @@ export class PreferenceSorter {
 		}
 
 		while (i <= mid) {
-			merged.push(this.items[i++]);
+			// biome-ignore lint/style/noNonNullAssertion: Loop condition ensures valid index
+			merged.push(this.items[i++]!);
 		}
 		while (j <= right) {
-			merged.push(this.items[j++]);
+			// biome-ignore lint/style/noNonNullAssertion: Loop condition ensures valid index
+			merged.push(this.items[j++]!);
 		}
 
 		for (let k = 0; k < merged.length; k++) {

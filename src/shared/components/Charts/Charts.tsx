@@ -57,12 +57,12 @@ function BarChart({
 			{title && <h3 className="charts-bar-chart-title">{title}</h3>}
 			<div className="charts-bar-chart-bars">
 				{displayItems.map((item, index) => (
-					<div key={item.id || index} className="charts-bar-chart-row">
+					<div key={String(item.id || index)} className="charts-bar-chart-row">
 						<div
 							className="charts-bar-chart-label"
 							title={String(item[labelKey as keyof typeof item] || "")}
 						>
-							{item[labelKey as keyof typeof item]}
+							{String(item[labelKey as keyof typeof item] || "")}
 						</div>
 						<div className="charts-bar-chart-bar-container">
 							<div
@@ -72,10 +72,10 @@ function BarChart({
 								}}
 							>
 								<span className="charts-bar-chart-value">
-									{item[valueKey as keyof typeof item]}
-									{showSecondaryValue &&
-										item[secondaryValueKey as keyof typeof item] &&
-										` (${item[secondaryValueKey as keyof typeof item]})`}
+									{String(item[valueKey as keyof typeof item] || "")}
+									{showSecondaryValue && item[secondaryValueKey as keyof typeof item]
+										? ` (${String(item[secondaryValueKey as keyof typeof item] || "")})`
+										: ""}
 								</span>
 							</div>
 						</div>
@@ -215,15 +215,20 @@ export function BumpChart({
 	const padding = 60;
 	const legendHeight = showLegend ? 40 : 0;
 
-	const processedData = useMemo(() => {
+	const processedData = useMemo((): Array<{
+		id: string;
+		name: string;
+		rankings: number[];
+		color: string;
+	}> => {
 		if (!data || data.length === 0) {
 			return [];
 		}
 
 		return data.map((series, index) => ({
 			...series,
-			color: COLORS[index % COLORS.length],
-			id: series.id || `series-${index}`,
+			color: COLORS[index % COLORS.length] || "var(--color-neutral-400)",
+			id: (series as any).id || `series-${index}`,
 			name: series.name || `Series ${index + 1}`,
 			rankings: series.rankings || [],
 		}));

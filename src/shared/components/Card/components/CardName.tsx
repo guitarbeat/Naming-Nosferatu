@@ -82,8 +82,8 @@ function CardName({
 	metadata,
 	isAdmin = false,
 	isHidden = false,
-	_onToggleVisibility,
-	_onDelete,
+	_onToggleVisibility, // @ts-ignore - kept for API compatibility
+	_onDelete, // @ts-ignore - kept for API compatibility
 	onSelectionChange,
 	image,
 }: CardNameProps) {
@@ -98,6 +98,7 @@ function CardName({
 			const timer = setTimeout(() => setIsRippling(false), TIMING.RIPPLE_ANIMATION_DURATION_MS);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [isRippling]);
 
 	const hasMetadata =

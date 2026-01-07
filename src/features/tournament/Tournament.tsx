@@ -159,6 +159,15 @@ function TournamentContent({
 		showError,
 	});
 
+	// * Async wrapper for UI components that expect Promise<void>
+	const handleVoteSync = useCallback(
+		async (option: string): Promise<void> => {
+			// UI components can wait for completion
+			await handleVoteWithAnimation(option as "left" | "right" | "both" | "neither");
+		},
+		[handleVoteWithAnimation],
+	);
+
 	// * Handle name card click
 	const handleNameCardClick = useCallback(
 		(option: "left" | "right") => {
@@ -166,7 +175,10 @@ function TournamentContent({
 				return;
 			}
 			setSelectedOption(option);
-			handleVoteWithAnimation(option);
+			// Fire and forget - UI doesn't need to wait for vote completion
+			handleVoteWithAnimation(option).catch((error) => {
+				console.error("Vote failed:", error);
+			});
 		},
 		// * setState function (setSelectedOption) is stable and doesn't need to be in dependencies
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -205,7 +217,7 @@ function TournamentContent({
 		isProcessing,
 		isTransitioning,
 		audioManager.isMuted,
-		handleVoteWithAnimation,
+		handleVoteSync,
 		globalEventListeners,
 		{
 			onToggleHelp: handleToggleKeyboardHelp,
@@ -314,7 +326,7 @@ function TournamentContent({
 					isTransitioning={isTransitioning}
 					votingError={votingError}
 					onNameCardClick={handleNameCardClick}
-					onVoteWithAnimation={handleVoteWithAnimation}
+					onVoteWithAnimation={handleVoteSync}
 					onVoteRetry={handleVoteRetry}
 					onDismissError={handleDismissError}
 					showCatPictures={showCatPictures}

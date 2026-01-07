@@ -1,10 +1,10 @@
+import Button from "@components/Button/Button";
 import { Input, Progress } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 import { Cat, Filter, RotateCcw, Search } from "lucide-react";
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
-import Button from "@components/Button/Button";
 // import { ComponentTagger } from "lovable-tagger";
 import { useMasonryLayout } from "../../shared/hooks/useMasonryLayout";
 import { NameCard, OperatorBar, SystemFeed } from "./components/ModernTournamentSetup";
