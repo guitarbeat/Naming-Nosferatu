@@ -4,8 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { useScreenSize } from "../../hooks/useScreenSize";
+import { useReducedMotion, useScreenSize } from "../../hooks/useBrowserState";
 import { createStandardizedError } from "../../services/errorManager";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
