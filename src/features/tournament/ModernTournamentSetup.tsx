@@ -1,10 +1,10 @@
 import { Input, Progress } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
-import { Cat, ChevronRight, Filter, RotateCcw, Search } from "lucide-react";
+import { Cat, Filter, RotateCcw, Search } from "lucide-react";
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
-import Button from "../../../shared/components/Button/Button.tsx";
+import Button from "@components/Button/Button";
 // import { ComponentTagger } from "lovable-tagger";
 import { useMasonryLayout } from "../../shared/hooks/useMasonryLayout";
 import { NameCard, OperatorBar, SystemFeed } from "./components/ModernTournamentSetup";
@@ -194,32 +194,29 @@ export default function ModernTournamentSetup({ onStart, userName }: ModernTourn
 
 						<div className="flex gap-2">
 							<Button
-								size="sm"
-								variant="flat"
-								color="default"
-								startContent={<Filter size={16} />}
+								size="small"
+								variant="secondary"
+								startIcon={<Filter size={16} />}
 								className="text-slate-300"
-								onPress={selectAll}
+								onClick={selectAll}
 							>
 								Select All
 							</Button>
 							<Button
-								size="sm"
-								variant="flat"
-								color="danger"
-								startContent={<RotateCcw size={16} />}
-								onPress={clearSelections}
-								isDisabled={selectedNames.size === 0}
+								size="small"
+								variant="danger"
+								startIcon={<RotateCcw size={16} />}
+								onClick={clearSelections}
+								disabled={selectedNames.size === 0}
 							>
 								Clear
 							</Button>
 							<Button
-								size="sm"
-								color="secondary"
-								endContent={<ChevronRight size={16} />}
+								size="small"
+								variant="primary"
 								className="font-bold shadow-[0_0_20px_rgba(168,85,247,0.4)]"
-								onPress={handleStart}
-								isDisabled={selectedNames.size < 2}
+								onClick={handleStart}
+								disabled={selectedNames.size < 2}
 							>
 								Start Tournament
 							</Button>

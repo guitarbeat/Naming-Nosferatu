@@ -21,7 +21,7 @@ export interface CatName {
 
 interface Result<T, E = { message: string }> {
 	isOk(): this is OkResult<T>;
-	isErr(): this is ErrResult<E>;
+	isErr(): this is ErrResult<T, E>;
 	value?: T;
 	error?: E;
 }
@@ -30,7 +30,7 @@ interface OkResult<T> extends Result<T> {
 	value: T;
 }
 
-interface ErrResult<E> extends Result<unknown, E> {
+interface ErrResult<T, E> extends Result<T, E> {
 	error: E;
 }
 
@@ -39,19 +39,19 @@ function ok<T>(value: T): OkResult<T> {
 		isOk(): this is OkResult<T> {
 			return true;
 		},
-		isErr(): this is ErrResult<{ message: string }> {
+		isErr(): this is ErrResult<T, { message: string }> {
 			return false;
 		},
 		value,
 	};
 }
 
-function err<E = { message: string }>(error: E): ErrResult<E> {
+function err<T, E = { message: string }>(error: E): ErrResult<T, E> {
 	return {
-		isOk(): this is OkResult<unknown> {
+		isOk(): this is OkResult<T> {
 			return false;
 		},
-		isErr(): this is ErrResult<E> {
+		isErr(): this is ErrResult<T, E> {
 			return true;
 		},
 		error,
@@ -95,8 +95,18 @@ export const TournamentService = {
 	): Promise<Result<CatName>> {
 		try {
 			const result = await catNamesAPI.addName(name, description, userName);
-			if (result.success) {
-				return ok(result.data);
+			if (result.success && result.data) {
+				// Transform the API response to match CatName interface
+				const catName: CatName = {
+					id: result.data.id,
+					name: result.data.name,
+					description: result.data.description || undefined,
+					avg_rating: result.data.avg_rating || undefined,
+					is_active: result.data.is_active || false,
+					is_hidden: false, // Default for new names
+					created_at: result.data.created_at,
+				};
+				return ok(catName);
 			}
 			return err({ message: result.error || "Failed to add name" });
 		} catch (error) {

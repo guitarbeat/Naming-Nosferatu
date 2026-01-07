@@ -9,7 +9,7 @@ import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import { playSound } from "../../../../shared/utils/soundManager";
-import type { NameItem } from "../../../types/components.ts";
+import type { NameItem } from "@/types/components";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import controlsStyles from "../../styles/TournamentControls.module.css";
 import errorStyles from "../../styles/TournamentError.module.css";
