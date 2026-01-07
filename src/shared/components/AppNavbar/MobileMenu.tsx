@@ -12,8 +12,9 @@ export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onTogg
 			aria-expanded={isOpen}
 			aria-controls="app-navbar-mobile-panel"
 			onClick={onToggle}
+			title={isOpen ? "Close menu" : "Open menu"}
 		>
-			<div className="hamburger-icon">
+			<div className="hamburger-icon" aria-hidden="true">
 				<span />
 				<span />
 				<span />
