@@ -12,7 +12,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, "..");
+const projectRoot = __dirname;
 
 const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...segments);
 

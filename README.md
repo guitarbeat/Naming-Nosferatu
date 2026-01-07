@@ -335,11 +335,11 @@ If you prefer to run Supabase locally:
 
 ```bash
 pnpm run dev         # Vite dev server with HMR
-pnpm run build       # Vite production build (config/vite.config.ts)
+pnpm run build       # Vite production build (vite.config.ts)
 pnpm run preview     # Vite preview of the built app
 # Direct Vite CLI (optional)
-pnpm exec vite build --config config/vite.config.ts
-pnpm exec vite preview --config config/vite.config.ts
+pnpm exec vite build --config vite.config.ts
+pnpm exec vite preview --config vite.config.ts
 pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```
 

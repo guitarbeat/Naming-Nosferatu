@@ -31,10 +31,10 @@
     "pnpm": ">=9.0.0"
   },
   "scripts": {
-    "dev": "vite --config config/vite.config.ts",
-    "build": "vite build --config config/vite.config.ts --outDir dist",
-    "build:dev": "vite build --config config/vite.config.ts --mode development --outDir dist",
-    "preview": "vite preview --config config/vite.config.ts",
+    "dev": "vite --config vite.config.ts",
+    "build": "vite build --config vite.config.ts --outDir dist",
+    "build:dev": "vite build --config vite.config.ts --mode development --outDir dist",
+    "preview": "vite preview --config vite.config.ts",
     "test": "vitest run --config config/vitest.config.mjs",
     "lint": "pnpm run lint:biome && pnpm run lint:types",
     "lint:biome": "biome check src scripts",
