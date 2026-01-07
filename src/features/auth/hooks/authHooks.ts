@@ -4,6 +4,7 @@ import { STORAGE_KEYS, VALIDATION } from "../../../core/constants";
 import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
 import { ErrorManager } from "../../../shared/services/errorManager";
 import { generateFunName } from "../../../shared/utils/core";
+import { playSound } from "../../../shared/utils/soundManager";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
 const CAT_FACT_API_URL = "https://catfact.ninja/fact";
@@ -128,6 +129,8 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 			try {
 				setGlobalError("");
 				await onLogin(values.name);
+				// Play success sound for login
+				playSound("level-up");
 			} catch (err) {
 				const formattedError = ErrorManager.handleError(err, "User Login", {
 					isRetryable: true,
@@ -195,6 +198,8 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 		if (globalError) {
 			setGlobalError("");
 		}
+		// Play surprise sound for random name generation
+		playSound("surprise");
 	}, [isSubmitting, globalError, setValues]);
 
 	const handleKeyDown = useCallback(

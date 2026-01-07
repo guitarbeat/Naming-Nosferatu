@@ -17,7 +17,7 @@ import {
 } from "../../utils/core";
 import CardName from "../Card/components/CardName";
 import EmptyState from "../EmptyState/EmptyState";
-import SkeletonLoader from "../Loading/SkeletonLoader";
+import { CatSpinner } from "../Loading";
 import styles from "./NameGrid.module.css";
 
 interface NameGridProps {
@@ -199,8 +199,13 @@ export function NameGrid({
 			<div className={`${styles.gridContainer} ${className}`}>
 				<div className={styles.namesGrid}>
 					{Array.from({ length: 8 }).map((_, i) => (
-						<div key={`skeleton-${i}`} className={styles.gridItem}>
-							<SkeletonLoader variant="card" height={260} />
+						<div key={`spinner-${i}`} className={styles.gridItem}>
+							<CatSpinner
+								size="medium"
+								variant={["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit"}
+								color={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
+								text="Loading cat names..."
+							/>
 						</div>
 					))}
 				</div>

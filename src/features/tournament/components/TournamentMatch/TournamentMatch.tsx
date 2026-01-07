@@ -10,6 +10,7 @@ import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import type { NameItem } from "../../../../shared/propTypes";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
+import { playSound } from "../../../../shared/utils/soundManager";
 import controlsStyles from "../../styles/TournamentControls.module.css";
 import errorStyles from "../../styles/TournamentError.module.css";
 import tournamentStyles from "../../styles/TournamentMatch.module.css";
@@ -58,6 +59,8 @@ function TournamentMatch({
 	React.useEffect(() => {
 		if (selectedOption === "left" || selectedOption === "right") {
 			setShowVoteConfirmation(selectedOption);
+			// Play vote confirmation sound
+			playSound("wow");
 			const timer = setTimeout(() => {
 				setShowVoteConfirmation(null);
 			}, 800);
@@ -144,6 +147,7 @@ function TournamentMatch({
 						onClick={() => {
 							if (isEnabled) {
 								createRipple("left");
+								playSound("gameboy-pluck");
 								onNameCardClick("left");
 							}
 						}}
@@ -151,6 +155,7 @@ function TournamentMatch({
 							if (isEnabled && (e.key === "Enter" || e.key === " ")) {
 								e.preventDefault();
 								createRipple("left");
+								playSound("gameboy-pluck");
 								onNameCardClick("left");
 							}
 						}}
@@ -243,6 +248,7 @@ function TournamentMatch({
 						onClick={() => {
 							if (isEnabled) {
 								createRipple("right");
+								playSound("gameboy-pluck");
 								onNameCardClick("right");
 							}
 						}}
@@ -250,6 +256,7 @@ function TournamentMatch({
 							if (isEnabled && (e.key === "Enter" || e.key === " ")) {
 								e.preventDefault();
 								createRipple("right");
+								playSound("gameboy-pluck");
 								onNameCardClick("right");
 							}
 						}}

@@ -208,7 +208,7 @@ export function useAudioManager() {
 		return { title: currentTrack, artist: "ambient", duration: 0 };
 	}, [currentTrack]);
 
-	const playSound = useCallback(() => {
+	const playAudioTrack = useCallback(() => {
 		// Placeholder: wire to real audio if assets are added.
 	}, []);
 
@@ -239,7 +239,7 @@ export function useAudioManager() {
 	);
 
 	return {
-		playSound,
+		playAudioTrack,
 		isMuted,
 		handleToggleMute,
 		handleNextTrack,
@@ -512,7 +512,7 @@ interface UseTournamentVoteProps {
 	currentMatch: { left?: unknown; right?: unknown } | null;
 	handleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown>;
 	onVote?: (voteData: unknown) => Promise<void> | void;
-	audioManager: { playSound: () => void };
+	audioManager: { playAudioTrack: () => void };
 	setIsProcessing: (value: boolean) => void;
 	setIsTransitioning: (value: boolean) => void;
 	setSelectedOption: (value: "left" | "right" | "both" | "neither" | null) => void;
@@ -625,7 +625,7 @@ export function useTournamentVote({
 				setIsProcessing(true);
 				setIsTransitioning(true);
 
-				audioManager.playSound();
+				audioManager.playAudioTrack();
 				updateMatchResult(option);
 
 				const rawRatings = await handleVote(option);

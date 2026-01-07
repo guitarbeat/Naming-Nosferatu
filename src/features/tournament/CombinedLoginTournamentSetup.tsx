@@ -3,7 +3,7 @@
  * @description Combined login and tournament setup component.
  * Shows login screen when not logged in, transitions to tournament setup after login.
  */
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { ErrorComponent as Error } from "../../shared/components/CommonUI";
@@ -157,10 +157,23 @@ function CombinedLoginTournamentSetupContent({
 		/>
 	);
 
-	// Show login screen when not logged in
-	if (!isLoggedIn) {
-		return (
-			<div className={loginStyles.loginWrapper}>
+	// Page transition wrapper with AnimatePresence
+	return (
+		<AnimatePresence mode="wait">
+			{/* Login screen */}
+			{!isLoggedIn && (
+				<motion.div
+					key="login"
+					className={loginStyles.loginWrapper}
+					initial={{ opacity: 0, scale: 0.95 }}
+					animate={{ opacity: 1, scale: 1 }}
+					exit={{
+						opacity: 0,
+						scale: 1.05,
+						transition: { duration: 0.3, ease: "easeInOut" }
+					}}
+					transition={{ duration: 0.4, ease: "easeOut" }}
+				>
 				<div className={loginStyles.scene}>
 					{/* Cat with staggered entrance */}
 					<motion.div
@@ -330,16 +343,24 @@ function CombinedLoginTournamentSetupContent({
 						[ RE-ROLL IDENTITY 🎲 ]
 					</motion.button>
 				</div>
-			</div>
-		);
-	}
+			</motion.div>
+			)}
 
-	// Show tournament setup when logged in
-	if (currentView === "photos") {
-		return (
-			<>
-				<ToastContainer />
-				<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
+			{/* Photos view */}
+			{isLoggedIn && currentView === "photos" && (
+				<motion.div
+					key="photos"
+					initial={{ opacity: 0, x: 100 }}
+					animate={{ opacity: 1, x: 0 }}
+					exit={{
+						opacity: 0,
+						x: -100,
+						transition: { duration: 0.3, ease: "easeInOut" }
+					}}
+					transition={{ duration: 0.4, ease: "easeOut" }}
+				>
+					<ToastContainer />
+					<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
 					<div className={photoStyles.photosViewContent}>
 						<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
 						<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
@@ -347,14 +368,24 @@ function CombinedLoginTournamentSetupContent({
 					</div>
 				</div>
 				{lightboxElement}
-			</>
-		);
-	}
+				</motion.div>
+			)}
 
-	return (
-		<>
-			<ToastContainer />
-			<div className={layoutStyles.container}>
+			{/* Tournament setup view */}
+			{isLoggedIn && currentView !== "photos" && (
+				<motion.div
+					key="tournament-setup"
+					initial={{ opacity: 0, x: 100 }}
+					animate={{ opacity: 1, x: 0 }}
+					exit={{
+						opacity: 0,
+						x: -100,
+						transition: { duration: 0.3, ease: "easeInOut" }
+					}}
+					transition={{ duration: 0.4, ease: "easeOut" }}
+				>
+					<ToastContainer />
+					<div className={layoutStyles.container}>
 				{/* Name Identity Section */}
 				<div className={identityStyles.identitySection}>
 					{isEditingName ? (
@@ -470,7 +501,9 @@ function CombinedLoginTournamentSetupContent({
 				/>
 				{lightboxElement}
 			</div>
-		</>
+		</motion.div>
+			)}
+		</AnimatePresence>
 	);
 }
 
