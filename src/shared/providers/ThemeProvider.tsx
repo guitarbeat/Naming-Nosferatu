@@ -47,6 +47,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 			mediaQuery.addEventListener("change", updateActualTheme);
 			return () => mediaQuery.removeEventListener("change", updateActualTheme);
 		}
+
+		return undefined;
 	}, [theme]);
 
 	useEffect(() => {

@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react";
 import { FALLBACK_NAMES } from "../../../../features/tournament/tournamentUtils";
 import { ErrorManager } from "../../../services/errorManager/index";
 import { catNamesAPI } from "../../../services/supabase/client";
-import type { NameItem } from "./types";
+import type { NameItem } from "../../../types/components";
 
 interface UseNameDataProps {
 	userName: string | null;

@@ -112,7 +112,7 @@ function CardName({
 	useEffect(() => {
 		const card = cardRef.current;
 		if (!card || disabled || !hasMetadata) {
-			return;
+			return undefined;
 		}
 
 		const handleMouseMove = (e: MouseEvent) => {

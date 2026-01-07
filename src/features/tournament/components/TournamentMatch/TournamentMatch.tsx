@@ -6,7 +6,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
-import type { NameItem } from "../../../../../types/components";
+import type { NameItem } from "../../../types/components";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import { playSound } from "../../../../shared/utils/soundManager";
@@ -66,6 +66,7 @@ function TournamentMatch({
 			}, 800);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [selectedOption]);
 
 	useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);

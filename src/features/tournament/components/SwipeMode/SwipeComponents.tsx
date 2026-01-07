@@ -6,7 +6,7 @@
 
 import clsx from "clsx";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
-import type { NameItem } from "../../../../../../types/components";
+import type { NameItem } from "../../../../types/components";
 import mobileGestures from "../../../../shared/utils/mobileGestures";
 import styles from "../../styles/SetupSwipe.module.css";
 
@@ -268,9 +268,9 @@ export function SwipeCard({
 	const shouldAnimateStack = !isDragging && !isLongPressing;
 
 	const cardClassName = clsx(styles.swipeCard, {
-		[styles.withCatPictures]: showCatPictures,
-		[styles.selected]: isSelected,
-		[styles.longPressing]: isLongPressing,
+		[String(styles.withCatPictures)]: showCatPictures,
+		[String(styles.selected)]: isSelected,
+		[String(styles.longPressing)]: isLongPressing,
 	});
 
 	return (

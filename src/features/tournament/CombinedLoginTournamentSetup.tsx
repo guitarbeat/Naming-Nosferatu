@@ -18,10 +18,10 @@ import {
 	createAnalysisDashboardWrapper,
 } from "./components/AnalysisWrappers";
 import Lightbox from "./components/Lightbox";
-import SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
+import _SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
-import cardStyles from "./styles/SetupCards.module.css";
+import _cardStyles from "./styles/SetupCards.module.css";
 import layoutStyles from "./styles/SetupLayout.module.css";
 import photoStyles from "./styles/SetupPhotos.module.css";
 import identityStyles from "./TournamentSetupIdentity.module.css";
@@ -41,11 +41,11 @@ interface CombinedLoginTournamentSetupProps {
 
 function CombinedLoginTournamentSetupContent({
 	onLogin,
-	onStart,
+	onStart: _onStart,
 	userName = "",
 	isLoggedIn,
 	enableAnalysisMode = false,
-	onOpenSuggestName,
+	onOpenSuggestName: _onOpenSuggestName,
 	onNameChange,
 	existingRatings: _existingRatings,
 }: CombinedLoginTournamentSetupProps) {
@@ -90,12 +90,8 @@ function CombinedLoginTournamentSetupContent({
 		lightboxIndex,
 		galleryImages,
 		isAdmin,
-		profileIsAdmin,
 		activeUser,
 		canManageActiveUser,
-		userOptions,
-		userFilter,
-		setUserFilter,
 		stats,
 		selectionStats,
 		preloadImages,
@@ -441,31 +437,8 @@ function CombinedLoginTournamentSetupContent({
 						<NameManagementView
 							mode="tournament"
 							userName={userName}
-							onStartTournament={onStart}
-							onOpenSuggestName={onOpenSuggestName}
 							analysisMode={analysisMode}
 							setAnalysisMode={setAnalysisMode}
-							tournamentProps={{
-								// biome-ignore lint/style/useNamingConvention: Component reference prop, PascalCase is appropriate for JSX
-								SwipeableCards: SwipeableNameCards,
-								isAdmin,
-								imageList: galleryImages || [],
-								gridClassName: cardStyles.cardsContainer,
-							}}
-							profileProps={{
-								isAdmin: canManageActiveUser,
-								showUserFilter: profileIsAdmin,
-								userOptions: userOptions ?? undefined,
-								userFilter,
-								setUserFilter,
-								stats: stats ? (stats as unknown as Record<string, unknown>) : undefined,
-								selectionStats: selectionStats
-									? (selectionStats as unknown as Record<string, unknown>)
-									: undefined,
-								onToggleVisibility: (nameId: string) =>
-									handlersRef.current.handleToggleVisibility?.(nameId),
-								onDelete: (name: NameItem) => handlersRef.current.handleDelete?.(name),
-							}}
 							extensions={{
 								dashboard: createAnalysisDashboardWrapper(
 									// biome-ignore lint/suspicious/noExplicitAny: Type conversion between UserStats and SummaryStats

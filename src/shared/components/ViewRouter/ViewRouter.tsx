@@ -30,7 +30,7 @@ interface ViewRouterProps {
 	onUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => undefined | Promise<boolean>;
-	onTournamentSetup: (names?: import("../../../shared/propTypes").NameItem[]) => void;
+	onTournamentSetup: (names?: import("../../../types/components").NameItem[]) => void;
 	onTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;

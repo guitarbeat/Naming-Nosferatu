@@ -8,6 +8,14 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button, { TournamentButton } from "../../../shared/components/Button/Button";
+
+interface RankingItem {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins?: number;
+	losses?: number;
+}
 import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
@@ -91,12 +99,12 @@ function CalendarButton({
 		const winnerName = activeNames[0]?.name || "No winner yet";
 
 		const today = new Date();
-		const [startDateISO] = today.toISOString().split("T");
-		const startDate = startDateISO.replace(/-/g, "");
+		const startDateISO = today.toISOString().split("T")[0];
+		const startDate = startDateISO?.replace(/-/g, "") || "";
 		const endDate = new Date(today);
 		endDate.setDate(endDate.getDate() + 1);
-		const [endDateISO] = endDate.toISOString().split("T");
-		const endDateStr = endDateISO.replace(/-/g, "");
+		const endDateISO = endDate.toISOString().split("T")[0];
+		const endDateStr = endDateISO?.replace(/-/g, "") || "";
 
 		const text = `🐈‍⬛ ${winnerName}`;
 		const details = `Cat name rankings for ${userName}:\n\n${activeNames
@@ -120,7 +128,7 @@ function CalendarButton({
 	return (
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		<Button
-			variant={variant}
+			variant={variant as "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login"}
 			size={size}
 			onClick={handleClick}
 			className={className}
@@ -175,6 +183,13 @@ function PersonalResults({
 	userName,
 }: PersonalResultsProps) {
 	const [personalRankings, setPersonalRankings] = useState<Ranking[]>([]);
+	const rankingsForAdjustment: RankingItem[] = personalRankings.map(r => ({
+		id: r.id || r.name,
+		name: r.name,
+		rating: r.rating,
+		wins: r.wins,
+		losses: r.losses,
+	}));
 	const [isBracketCollapsed, setIsBracketCollapsed] = useState(false);
 
 	const { showToast } = useToast();
@@ -284,7 +299,7 @@ function PersonalResults({
 					winner = 2;
 				}
 
-				const matchNumber = vote?.matchNumber ?? index + 1;
+				const matchNumber = index + 1;
 				const calculatedRound = calculateBracketRound(namesCount, matchNumber);
 
 				return {
@@ -434,7 +449,7 @@ function PersonalResults({
 			)}
 
 			<RankingAdjustment
-				rankings={personalRankings}
+				rankings={rankingsForAdjustment}
 				onSave={handleSaveAdjustments}
 				onCancel={onStartNew}
 			/>

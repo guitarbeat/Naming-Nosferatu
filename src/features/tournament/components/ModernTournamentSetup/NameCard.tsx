@@ -26,9 +26,8 @@ export function NameCard({ cat, isSelected, onToggle }: NameCardProps) {
 			whileTap={{ scale: 0.98 }}
 		>
 			<Card
-				isPressable={true}
-				onPress={onToggle}
-				className={`w-full h-full min-h-[140px] border transition-all duration-200 ${
+				onClick={onToggle}
+				className={`w-full h-full min-h-[140px] border transition-all duration-200 cursor-pointer ${
 					isSelected
 						? "border-purple-500 bg-purple-900/20 shadow-[0_0_15px_rgba(168,85,247,0.2)]"
 						: "border-white/5 bg-slate-900/50 hover:bg-slate-800/50 hover:border-white/10"

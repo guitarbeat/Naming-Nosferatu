@@ -8,6 +8,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
+import type { NameItem } from "../../../types/components";
 import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils/core";
 import type { TournamentFilters, UseNameManagementViewProps } from "./shared/types";
 import { useNameData } from "./shared/useNameData";
@@ -70,7 +71,7 @@ export function useNameManagementContextSafe() {
 // Type for the hook return value
 export type UseNameManagementViewResult = ReturnType<typeof useNameManagementView>;
 
-export type { TournamentFilters, UseNameManagementViewProps };
+export type { TournamentFilters, UseNameManagementViewProps, NameItem };
 
 // ============================================================================
 // HOOKS - Name Management View State

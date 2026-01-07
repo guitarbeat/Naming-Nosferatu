@@ -3,7 +3,7 @@
  * @description Swipeable card interface for name selection
  */
 import { useState } from "react";
-import type { NameItem } from "../../../../../../types/components";
+import type { NameItem } from "../../../../types/components";
 import { TIMING } from "../../../../core/constants";
 import styles from "../../styles/SetupSwipe.module.css";
 import { CAT_IMAGES, getRandomCatImage } from "../../tournamentUtils";
@@ -65,8 +65,10 @@ function SwipeableNameCards({
 		},
 		onDoubleTap: () => {
 			// Double tap to toggle selection
-			onToggleName(currentName);
-			addHapticFeedback("success");
+			if (currentName) {
+				onToggleName(currentName);
+				addHapticFeedback("success");
+			}
 		},
 	});
 
@@ -76,8 +78,8 @@ function SwipeableNameCards({
 		e.stopPropagation();
 
 		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const startX = "clientX" in touch ? touch.clientX : ((touch as Touch)?.clientX ?? 0);
-		const startY = "clientY" in touch ? touch.clientY : ((touch as Touch)?.clientY ?? 0);
+		const startX = touch && "clientX" in touch ? touch.clientX : 0;
+		const startY = touch && "clientY" in touch ? touch.clientY : 0;
 
 		setDragStart({ x: startX, y: startY });
 		setIsDragging(true);
@@ -96,8 +98,8 @@ function SwipeableNameCards({
 		e.stopPropagation();
 
 		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const currentX = "clientX" in touch ? touch.clientX : ((touch as Touch)?.clientX ?? 0);
-		const currentY = "clientY" in touch ? touch.clientY : ((touch as Touch)?.clientY ?? 0);
+		const currentX = touch && "clientX" in touch ? touch.clientX : 0;
+		const currentY = touch && "clientY" in touch ? touch.clientY : 0;
 		const deltaX = currentX - dragStart.x;
 		const deltaY = currentY - dragStart.y;
 
@@ -139,12 +141,12 @@ function SwipeableNameCards({
 			// Process selection based on swipe direction
 			if (capturedSwipeDirection === "right") {
 				// Swipe right = select/like (add to tournament)
-				if (!capturedIsSelected) {
+				if (!capturedIsSelected && capturedCurrentName) {
 					onToggleName(capturedCurrentName);
 				}
 			} else if (capturedSwipeDirection === "left") {
 				// Swipe left = pass (remove from tournament if selected)
-				if (capturedIsSelected) {
+				if (capturedIsSelected && capturedCurrentName) {
 					onToggleName(capturedCurrentName);
 				}
 			}
@@ -175,12 +177,12 @@ function SwipeableNameCards({
 		setTimeout(() => {
 			if (direction === "right") {
 				// Right button = select/like (add to tournament)
-				if (!isSelected) {
+				if (!isSelected && currentName) {
 					onToggleName(currentName);
 				}
 			} else if (direction === "left") {
 				// Left button = pass (remove from tournament if selected)
-				if (isSelected) {
+				if (isSelected && currentName) {
 					onToggleName(currentName);
 				}
 			}

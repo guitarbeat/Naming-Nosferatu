@@ -257,7 +257,8 @@ export class PreferenceSorter {
 	): Promise<void> {
 		if (right - left < 1) {
 			if (left === right && left >= 0 && left < this.items.length) {
-				this.ranks.push(this.items[left]);
+				// biome-ignore lint/style/noNonNullAssertion: Array bounds already checked above
+				this.ranks.push(this.items[left]!);
 			}
 			return;
 		}
@@ -300,18 +301,25 @@ export class PreferenceSorter {
 					});
 					break;
 				}
-				const result = await compareCallback(this.items[i], this.items[j]);
+				// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+				const result = await compareCallback(this.items[i]!, this.items[j]!);
 
 				if (result <= -0.5) {
-					merged.push(this.items[i++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
 				} else if (result >= 0.5) {
-					merged.push(this.items[j++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
 				} else if (result < 0) {
-					merged.push(this.items[i++]);
-					merged.push(this.items[j++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
 				} else {
-					merged.push(this.items[j++]);
-					merged.push(this.items[i++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
 				}
 			} catch (error) {
 				console.error("Comparison failed:", error);
@@ -327,8 +335,10 @@ export class PreferenceSorter {
 		}
 
 		for (let k = 0; k < merged.length; k++) {
-			this.items[left + k] = merged[k];
-			this.currentRankings[left + k] = merged[k];
+			// biome-ignore lint/style/noNonNullAssertion: Array access within bounds of merged.length
+			this.items[left + k] = merged[k]!;
+			// biome-ignore lint/style/noNonNullAssertion: Array access within bounds of merged.length
+			this.currentRankings[left + k] = merged[k]!;
 		}
 
 		if (left === 0 && right === this.items.length - 1) {
@@ -340,7 +350,12 @@ export class PreferenceSorter {
 	getNextMatch(): { left: string; right: string } | null {
 		// Advance index to next pair we haven't judged yet
 		while (this.currentIndex < this.pairs.length) {
-			const [a, b] = this.pairs[this.currentIndex];
+			const pair = this.pairs[this.currentIndex];
+			if (!pair) {
+				this.currentIndex++;
+				continue;
+			}
+			const [a, b] = pair;
 			const key = `${a}-${b}`;
 			const reverseKey = `${b}-${a}`;
 			if (!this.preferences.has(key) && !this.preferences.has(reverseKey)) {

@@ -48,6 +48,7 @@ export const ToastItem: React.FC<ToastItemProps> = ({
 			}, duration);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [autoDismiss, duration, handleDismiss]);
 
 	if (!isVisible) {

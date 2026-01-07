@@ -38,6 +38,8 @@ export const Toast: React.FC<ToastProps> = (props) => {
 
 			return () => clearTimeout(timer);
 		}
+
+		return undefined;
 	}, [props.autoClose, props.duration, props.onClose]);
 
 	const getVariantClass = () => {

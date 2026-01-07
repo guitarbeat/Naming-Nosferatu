@@ -9,9 +9,13 @@ export interface CatName {
 	id: string;
 	name: string;
 	description?: string;
+	// biome-ignore lint/style/useNamingConvention: Database field must match Supabase schema
 	avg_rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database field must match Supabase schema
 	is_active: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database field must match Supabase schema
 	is_hidden?: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database field must match Supabase schema
 	created_at?: string;
 }
 

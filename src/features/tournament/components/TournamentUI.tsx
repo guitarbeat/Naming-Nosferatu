@@ -4,18 +4,11 @@
  * Includes Header, Footer, MatchResult, and RoundTransition.
  */
 
-import Button from "../../../shared/components/Button/Button";
-import Card from "../../../shared/components/Card/Card";
-
-const CardBody = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-	<div className={className} {...props}>
-		{children}
-	</div>
-);
-
+import React, { useEffect, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
-import React, { memo } from "react";
+import Button from "../../../shared/components/Button/Button";
+import Card from "../../../shared/components/Card/Card";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import type { BracketMatch } from "../../../types/components";
 import { KeyboardHelp } from "./TournamentUI/KeyboardHelp";
@@ -217,6 +210,7 @@ export const ProgressMilestone = memo(function ProgressMilestone({
 			}, 2500);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [progress, hasShown50, hasShown80]);
 
 	if (!showMilestone) {
@@ -278,6 +272,7 @@ export const TournamentFooter = memo(function TournamentFooter({
 			}, 3000);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [hasSeenBracketHint, transformedMatches.length, showBracket]);
 
 	const handleBracketToggle = () => {

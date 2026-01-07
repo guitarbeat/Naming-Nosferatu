@@ -1,13 +1,3 @@
-// Simple Chip replacement
-const Chip = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-	<span
-		className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary ${className || ""}`}
-		{...props}
-	>
-		{children}
-	</span>
-);
-
 import { motion } from "framer-motion";
 import { Sparkles, User } from "lucide-react";
 import React from "react";
@@ -61,14 +51,12 @@ export function OperatorBar() {
 					)}
 				</div>
 			</div>
-			<Chip
-				variant="flat"
-				color="secondary"
-				startContent={<Sparkles size={12} />}
-				classNames={{ base: "bg-purple-900/30 border border-purple-500/20" }}
+			<div
+				className="bg-purple-900/30 border border-purple-500/20 rounded px-2 py-1 inline-flex items-center gap-1"
 			>
+				<Sparkles size={12} />
 				<span className="text-xs">System Online</span>
-			</Chip>
+			</div>
 		</motion.div>
 	);
 }

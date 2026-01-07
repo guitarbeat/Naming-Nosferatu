@@ -39,7 +39,7 @@ const SuggestionSchema = z.object({
  * @param {boolean} props.isOpen - Whether the modal is open
  * @param {Function} props.onClose - Function to close the modal
  */
-export function NameSuggestionModal({ isOpen, onClose }) {
+export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
 	const [globalError, setGlobalError] = useState("");
 	const [success, setSuccess] = useState("");
 	const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);

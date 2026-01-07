@@ -78,7 +78,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 	}, [imageError]);
 
 	const handleClick = useCallback(
-		(e) => {
+		(e: React.MouseEvent) => {
 			// * Prevent event propagation to avoid triggering parent handlers
 			e.preventDefault();
 			e.stopPropagation();
