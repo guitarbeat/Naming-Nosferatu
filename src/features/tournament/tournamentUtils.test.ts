@@ -1,6 +1,6 @@
 
 import { describe, it, expect } from 'vitest';
-import { EloRating, getRandomCatImage, deduplicateImages } from './tournamentUtils';
+import { EloRating, getRandomCatImage, deduplicateImages, PreferenceSorter } from './tournamentUtils';
 import { ELO_RATING } from '../../core/constants';
 
 describe('EloRating', () => {
@@ -71,11 +71,46 @@ describe('Utils', () => {
         });
     });
 
-    describe('PreferenceSorter', () => {
-        const { PreferenceSorter } = jest.requireActual('./tournamentUtils');
-        // We can't import class directly if it wasn't exported in original create,
-        // but based on previous file view, it IS exported.
-        // Let's use the imported one from top of file if possible, or re-import.
-    });
 
+    describe('PreferenceSorter', () => {
+        const items = ['Apple', 'Banana', 'Cherry'];
+
+        it('should initialize with all pairs generated', () => {
+            const sorter = new PreferenceSorter(items);
+            // for 3 items: (A,B), (A,C), (B,C) -> 3 pairs
+            expect(sorter.pairs.length).toBe(3);
+            expect(sorter.currentIndex).toBe(0);
+        });
+
+        it('should return next match correctly', () => {
+            const sorter = new PreferenceSorter(items);
+            const match = sorter.getNextMatch();
+            expect(match).not.toBeNull();
+            expect(match?.left).toBe('Apple');
+            expect(match?.right).toBe('Banana');
+        });
+
+        it('should advance to next match after checking preference', () => {
+            const sorter = new PreferenceSorter(items);
+            // Mock that we judged the first one
+            sorter.addPreference('Apple', 'Banana', 1);
+
+            // getNextMatch should skip the judged one
+            const match = sorter.getNextMatch();
+            expect(match?.left).toBe('Apple');
+            expect(match?.right).toBe('Cherry');
+        });
+
+        it('should record history for undo', () => {
+            const sorter = new PreferenceSorter(items);
+            sorter.addPreference('Apple', 'Banana', 1);
+            expect(sorter.history.length).toBe(1);
+
+            const success = sorter.undoLastPreference();
+            expect(success).toBe(true);
+            expect(sorter.history.length).toBe(0);
+            expect(sorter.getPreference('Apple', 'Banana')).toBe(0);
+        });
+    });
 });
+

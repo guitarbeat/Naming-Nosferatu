@@ -18,7 +18,7 @@
     },
     {
       "source": "/api/submit-name.html",
-      "destination": "/api/submit-name.html"
+      "destination": "/api/submit-form.html"
     }
   ],
   "headers": [
