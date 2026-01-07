@@ -6,7 +6,7 @@
 
 import clsx from "clsx";
 import { type RefObject, useCallback, useEffect, useRef } from "react";
-import type { NameItem } from "../../../../shared/propTypes";
+import type { NameItem } from "../../../../../../types/components";
 import mobileGestures from "../../../../shared/utils/mobileGestures";
 import styles from "../../styles/SetupSwipe.module.css";
 

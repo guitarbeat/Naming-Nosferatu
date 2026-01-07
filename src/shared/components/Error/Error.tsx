@@ -4,8 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { useScreenSize } from "../../hooks/useScreenSize";
+import { useBrowserState } from "../../hooks/useBrowserState";
 import { createStandardizedError } from "../../services/errorManager";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
 import styles from "./Error.module.css";
@@ -30,8 +29,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 	const [retryCount, setRetryCount] = useState(0);
 	const [copied, setCopied] = useState(false);
 	const [_isDetailsOpen, _setIsDetailsOpen] = useState(false);
-	const prefersReducedMotion = useReducedMotion();
-	const screenSize = useScreenSize();
+	const { prefersReducedMotion, ...screenSize } = useBrowserState();
 	const mainContentRef = useRef<HTMLDivElement>(null);
 	const retryButtonRef = useRef<HTMLButtonElement>(null);
 	const _announcementRef = useRef<HTMLDivElement | null>(null);

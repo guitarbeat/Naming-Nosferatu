@@ -1,4 +1,4 @@
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../../types/components";
 import { generatePairs } from ".";
 
 export interface Sorter {

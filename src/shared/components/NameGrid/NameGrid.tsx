@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../types/components";
 import {
 	applyNameFilters,
 	isNameHidden,

@@ -10,7 +10,7 @@ export * from "./validation";
 
 // Imports for consolidated utils
 import { STORAGE_KEYS } from "../../../core/constants";
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../../types/components";
 import { queryClient } from "../../services/supabase/queryClient";
 
 // --- logger.ts ---

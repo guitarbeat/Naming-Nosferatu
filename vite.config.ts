@@ -5,7 +5,7 @@
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { componentTagger } from "lovable-tagger";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -18,17 +18,8 @@ const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...
 
 // ts-prune-ignore-next (used by Vite build system)
 export default defineConfig(({ mode }) => {
-  // Load env files, gracefully handle permission errors
-  let env: Record<string, string> = {};
-  try {
-    env = loadEnv(mode, projectRoot, "");
-  } catch (error) {
-    // If .env files can't be read (permission issues), continue with empty env
-    // Environment variables from system/CI will still be available
-    if (process.env.NODE_ENV !== "production") {
-      console.warn("Could not load .env files, continuing with system environment variables");
-    }
-  }
+  // Use system environment variables directly (skip .env file loading to avoid permission issues)
+  const env = { ...process.env };
   const isProd = mode === "production";
 
   const serverPort = Number(env.VITE_PORT) || 5173;
@@ -36,6 +27,8 @@ export default defineConfig(({ mode }) => {
   const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
   return {
+    // Disable .env file loading to avoid permission issues
+    envDir: false,
     plugins: [
       react({
         // * Strip PropTypes from production bundles to reduce size

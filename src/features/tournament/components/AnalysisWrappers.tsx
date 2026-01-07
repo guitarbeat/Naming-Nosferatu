@@ -11,7 +11,7 @@ import {
 	NameManagementContext,
 	useNameManagementContextSafe,
 } from "../../../shared/components/NameManagementView/nameManagementCore";
-import type { NameItem } from "../../../shared/propTypes";
+import type { NameItem } from "../../../types/components";
 import {
 	devError,
 	devLog,

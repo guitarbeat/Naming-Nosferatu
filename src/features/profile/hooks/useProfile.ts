@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
-import type { IdType, NameItem } from "../../../shared/propTypes";
+import type { IdType, NameItem } from "../../../types/components";
 import {
 	adminAPI,
 	catNamesAPI,

@@ -2,7 +2,7 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAppStore from "../../../core/store/useAppStore";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
-import type { NameItem } from "../../../shared/propTypes";
+import type { NameItem } from "../../../types/components";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useProfileNotifications } from "../../profile/hooks/useProfileNotifications";
 import { useImageGallery } from "./useImageGallery";

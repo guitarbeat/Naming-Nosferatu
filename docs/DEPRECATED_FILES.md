@@ -284,7 +284,7 @@ These documentation files may contain outdated information or be duplicates:
 
 #### ✅ Completed (2025-01-07)
 
-All documentation consolidation has been completed. See `docs/DOCUMENTATION_CONSOLIDATION_COMPLETE.md` for details.
+All documentation consolidation has been completed. See the "Documentation Consolidation Status" section in `docs/MAINTAINABILITY_REVIEW.md` for details.
 
 **Consolidation Summary:**
 - **Before:** 29 documentation files
@@ -293,7 +293,9 @@ All documentation consolidation has been completed. See `docs/DOCUMENTATION_CONS
 - **Archived:** 10+ files moved to `docs/archive/`
 
 **Consolidated Files:**
-- **Styling:** 6 files → 2 files (`STYLING_GUIDE.md` + `STYLING_UX_REVIEW_PROGRESS.md`)
+- **Styling:** 6 files → 1 file (`STYLING_GUIDE.md` - fully consolidated)
+- **Workflow:** 3 files → 1 file (`DEVELOPMENT.md` - includes feature and iterative workflows)
+- **Reviews:** 3 files → 1 file (`MAINTAINABILITY_REVIEW.md` - includes TypeScript and documentation consolidation)
 - **Legacy:** 2 files → 1 file (`LEGACY_MIGRATION.md`)
 - **Schema:** 2 files → 1 file (`SCHEMA_VERIFICATION.md` with summary)
 - **Usability:** 2 files → 1 file (`USABILITY_GUIDE.md`)
@@ -308,25 +310,20 @@ All documentation consolidation has been completed. See `docs/DOCUMENTATION_CONS
 - `ARCHITECTURE.md` - System design
 - `NAMING_CONVENTIONS.md` - Coding standards
 
-**Development (2):**
-- `FEATURE_WORKFLOW.md` - Feature development
-- `WORKFLOW.md` - Iterative workflow
-
-**Code Quality (7):**
-- `MAINTAINABILITY_REVIEW.md` - Code quality analysis
+**Code Quality (6):**
+- `MAINTAINABILITY_REVIEW.md` - Code quality analysis (includes TypeScript and docs consolidation)
 - `STYLING_GUIDE.md` - Comprehensive styling guide
-- `STYLING_UX_REVIEW_PROGRESS.md` - Styling progress tracker
 - `LEGACY_MIGRATION.md` - Legacy code migration
 - `USABILITY_GUIDE.md` - Usability guide
-- `TYPESCRIPT_REVIEW.md` - TypeScript review
 - `BUGS.md` - Bug tracking
 
 **Planning & Reference (2):**
 - `ROADMAP.md` - Project roadmap
 - `SCHEMA_VERIFICATION.md` - Database schema verification
 
-**Meta (1):**
-- `DOCUMENTATION_CONSOLIDATION_COMPLETE.md` - Consolidation details
+**Specialized (2):**
+- `COPY.md` - Copy and content guidelines
+- `LIQUID_GLASS_COMPONENT.md` - Component documentation
 
 #### Archived Files
 

@@ -6,7 +6,7 @@
 - **Pass 1: "Stop the Bleeding"**: Removed orphaned CSS, consolidated types, decomposed `CommonUI`.
 - **Pass 2: "Split Violations"**: Split `nameManagementCore.tsx` and `useAppStore.ts`. Decoupled `TournamentSetup.module.css`. enforced file limits.
 - **Pass 3: "Linting & Tooling"**: Migrated CI to `pnpm` and integrated `check:limits` and `lint` into the workflow.
-- **Pass 4: "Documentation"**: Standardized feature development workflows in `FEATURE_WORKFLOW.md`.
+- **Pass 4: "Documentation"**: Standardized feature development workflows in `DEVELOPMENT.md` (consolidated workflow guides).
 - **Pass 5: "Tournament Refactoring"**: Refactored `TournamentUI.tsx` to use HeroUI/Tailwind, extracted `useTournamentVote` hook, optimized undo timer, added framer-motion animations, improved type safety with `BracketMatch` interface, and unified design system.
 - **Pass 6: "Code Quality Improvements"**: 
   - Fixed all TODO comments (admin status check, tournament fetching, type consolidation)

@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
-import type { NameItem } from "../../../../shared/propTypes";
+import type { NameItem } from "../../../../../types/components";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import { playSound } from "../../../../shared/utils/soundManager";
 import controlsStyles from "../../styles/TournamentControls.module.css";
