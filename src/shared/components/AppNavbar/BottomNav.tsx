@@ -15,6 +15,9 @@ export function BottomNav() {
 	if (!items.length) return null;
 
 	const handleNavClick = (route?: string) => {
+		if (navigator.vibrate) {
+			navigator.vibrate(10);
+		}
 		if (route) navigateTo(route);
 	};
 

@@ -20,6 +20,8 @@ import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
+import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
+import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
@@ -297,6 +299,7 @@ function AppLayout({
 					/>
 				)}
 
+                {isLoggedIn && <SubNavigation />}
                 {isLoggedIn && <Breadcrumbs />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
@@ -309,20 +312,22 @@ function AppLayout({
 						/>
 					)}
 
-					<ViewRouter
-						isLoggedIn={isLoggedIn}
-						onLogin={handleLogin}
-						tournament={tournament}
-						userName={user.name}
-						onStartNewTournament={handleStartNewTournament}
-						onUpdateRatings={handleUpdateRatings}
-						onTournamentSetup={handleTournamentSetup}
-						onTournamentComplete={handleTournamentComplete}
-						onVote={(vote: unknown) =>
-							tournamentActions.addVote(vote as import("./types/components").VoteData)
-						}
-						onOpenSuggestName={onOpenSuggestName}
-					/>
+					<SwipeNavigation>
+						<ViewRouter
+							isLoggedIn={isLoggedIn}
+							onLogin={handleLogin}
+							tournament={tournament}
+							userName={user.name}
+							onStartNewTournament={handleStartNewTournament}
+							onUpdateRatings={handleUpdateRatings}
+							onTournamentSetup={handleTournamentSetup}
+							onTournamentComplete={handleTournamentComplete}
+							onVote={(vote: unknown) =>
+								tournamentActions.addVote(vote as import("./types/components").VoteData)
+							}
+							onOpenSuggestName={onOpenSuggestName}
+						/>
+					</SwipeNavigation>
 
 					{/* * Global loading overlay */}
 					{tournament.isLoading && (

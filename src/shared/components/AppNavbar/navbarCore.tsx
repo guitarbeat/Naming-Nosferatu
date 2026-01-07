@@ -16,13 +16,14 @@ export type ViewType = string;
 export interface NavItem {
 	key: string;
 	label: string;
-	shortLabel?: string;
+
 	icon?: React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
 	className?: string;
 	"aria-hidden"?: boolean;
 	ariaLabel?: string;
 	isActive: boolean;
 	onClick?: () => void;
+	children?: NavItem[];
 }
 
 export interface AppNavbarProps {

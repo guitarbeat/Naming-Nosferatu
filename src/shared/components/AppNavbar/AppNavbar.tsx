@@ -1,10 +1,11 @@
 import { memo, useMemo } from "react";
+import { AnimatePresence } from "framer-motion";
 import "./AppNavbar.css";
 import {
 	buildNavItems,
 	MobileMenu,
 	MobileMenuToggle,
-	ModeToggles,
+
 	NavbarActions,
 	NavbarBrand,
 	NavbarCollapseToggle,
@@ -95,9 +96,6 @@ export const AppNavbar = memo(function AppNavbar({
 		if (onNavigate) {
 			onNavigate("/");
 		}
-		if (isAnalysisMode) {
-			toggleAnalysis();
-		}
 		closeMobileMenu();
 	};
 
@@ -117,7 +115,7 @@ export const AppNavbar = memo(function AppNavbar({
 					{/* Left: Brand/Logo */}
 					<div className="app-navbar__left-section">
 						<NavbarBrand
-							isActive={view === "tournament" && !isAnalysisMode}
+							isActive={view === "tournament"}
 							onClick={handleHomeClick}
 							ariaLabel="Go to Tournament Dashboard"
 						/>
@@ -164,13 +162,17 @@ export const AppNavbar = memo(function AppNavbar({
 				</div>
 
 				{/* Mobile Menu Overlay */}
-				<MobileMenu
-					isOpen={isMobileMenuOpen}
-					navItems={navItems}
-					homeIsActive={view === "tournament" && !isAnalysisMode}
-					onHomeClick={handleHomeClick}
-					onNavClick={handleNavClick}
-				/>
+				<AnimatePresence>
+					{isMobileMenuOpen && (
+						<MobileMenu
+							isOpen={isMobileMenuOpen}
+							navItems={navItems}
+							homeIsActive={view === "tournament" && !isAnalysisMode}
+							onHomeClick={handleHomeClick}
+							onNavClick={handleNavClick}
+						/>
+					)}
+				</AnimatePresence>
 			</header>
 		</NavbarProvider>
 	);

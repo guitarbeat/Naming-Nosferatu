@@ -105,8 +105,10 @@ export default function ViewRouter({
 				: new URLSearchParams();
 		const isAnalysisMode = urlParams.get("analysis") === "true";
 
-		// * Determine mode: if analysis=true, show global only; if /results, show personal (or both if has data)
-		const dashboardMode = isAnalysisMode ? "global" : hasPersonalData ? "personal" : "global";
+		// * Determine mode: if analysis path or analysis=true param, show global only
+		// * If /results, show personal (or both/global depending on having data)
+		const isGlobalAnalysis = currentPath === "/analysis" || isAnalysisMode;
+		const dashboardMode = isGlobalAnalysis ? "global" : hasPersonalData ? "personal" : "global";
 
 		return (
 			<Suspense fallback={<Loading variant="spinner" text="Loading Dashboard..." />}>
