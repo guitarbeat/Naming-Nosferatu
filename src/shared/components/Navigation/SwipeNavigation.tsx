@@ -36,14 +36,14 @@ export function SwipeNavigation({ children }: SwipeNavigationProps) {
 		const nextIndex = currentIndex + direction;
 
 		if (nextIndex >= 0 && nextIndex < navItems.length) {
-            const nextItem = navItems[nextIndex];
-            if (nextItem.route) {
-                // Add haptic feedback
-                if (navigator.vibrate) {
-                    navigator.vibrate(10);
-                }
-                navigateTo(nextItem.route);
-            }
+			const nextItem = navItems[nextIndex];
+			if (nextItem?.route) {
+				// Add haptic feedback
+				if (navigator.vibrate) {
+					navigator.vibrate(10);
+				}
+				navigateTo(nextItem.route);
+			}
 		}
 	};
 

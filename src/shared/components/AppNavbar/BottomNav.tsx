@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom"; // Assuming react-router or we use our own navigation
 import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import { useRouting } from "../../../core/hooks/useRouting";
 import "./AppNavbar.css"; // Reuse existing styles or create new
@@ -30,9 +29,9 @@ export function BottomNav() {
 		>
 			<nav className="bottom-nav__container" role="navigation" aria-label="Mobile navigation">
 				{items.map((item) => {
-					const isActive = item.route === "/" 
+					const isActive = item?.route === "/" 
                         ? currentRoute === "/" 
-                        : currentRoute.startsWith(item.route || "");
+                        : currentRoute.startsWith(item?.route || "");
                         
 					return (
 						<button

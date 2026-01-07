@@ -5,7 +5,7 @@ import {
 	buildNavItems,
 	MobileMenu,
 	MobileMenuToggle,
-
+	ModeToggles,
 	NavbarActions,
 	NavbarBrand,
 	NavbarCollapseToggle,

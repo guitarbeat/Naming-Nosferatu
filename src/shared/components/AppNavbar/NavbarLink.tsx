@@ -10,7 +10,7 @@ export const NavbarLink = React.forwardRef<
 		showIcon?: boolean;
 		onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 	}
->(function NavbarLink(
+> = React.forwardRef(function NavbarLinkInner(
 	{ item, onClick, className = "app-navbar__link", showIcon = true, onKeyDown },
 	ref,
 ) {
