@@ -9,6 +9,7 @@ The following files have been consolidated and archived:
 
 ### Styling Documentation (Merged into `STYLING_GUIDE.md`)
 - `STYLING_UX_REVIEW.md` - Original comprehensive styling review (base content)
+- `STYLING_UX_REVIEW_PROGRESS.md` - Progress tracking and completion status
 - `STYLING_IMPROVEMENTS.md` - Legacy code review focused on TournamentLegacy and SetupLegacy files
 - `COMPREHENSIVE_STYLING_IMPROVEMENTS.md` - Implementation report showing 6/68 files fixed
 - `SHARED_COMPONENTS_STYLING_IMPROVEMENTS.md` - Specific improvements to shared components
@@ -30,18 +31,18 @@ The following files have been consolidated and archived:
 - `BUG_REVIEW.md` - Recent bug review from styling improvements session (if archived)
 
 ### General Improvements (Merged into `MAINTAINABILITY_REVIEW.md`)
-- `IMPROVEMENTS.md` - General improvements list (now included as "Recent Fixes & Improvements" section)
+- `IMPROVEMENTS.md` - General improvements list (consolidated into maintainability review)
 
 ## New Consolidated Files
 
 All content from these archived files has been merged into:
 
-- `docs/STYLING_GUIDE.md` - Comprehensive styling guide
-- `docs/STYLING_UX_REVIEW_PROGRESS.md` - Styling progress tracking
+- `docs/STYLING_GUIDE.md` - Comprehensive styling guide (includes progress tracking)
+- `docs/DEVELOPMENT.md` - Development guide (includes feature workflow and iterative workflow)
+- `docs/MAINTAINABILITY_REVIEW.md` - Code quality review (includes TypeScript issues and documentation consolidation status)
 - `docs/LEGACY_MIGRATION.md` - Legacy code migration guide
 - `docs/USABILITY_GUIDE.md` - Usability recommendations and features catalog
 - `docs/SCHEMA_VERIFICATION.md` - Database schema verification (updated with summary)
-- `docs/MAINTAINABILITY_REVIEW.md` - Code quality review (updated with improvements section)
 - `docs/BUGS.md` - Bug catalog, fixes, and issue tracking
 
 ## Why Archived?
@@ -65,6 +66,6 @@ If you need to restore any of these files, they can be moved back to `docs/`, bu
 
 ---
 
-**Total Files Archived:** 10+ files (exact count may vary based on additional consolidations)
+**Total Files Archived:** 9 files (consolidated into 5 active documentation files)
 
 **Note:** Some files like `FINAL_COMPLETION_STATUS.md`, `USABILITY_IMPROVEMENTS.md`, and `BUG_REVIEW.md` may have been directly consolidated without archiving, or archived separately.

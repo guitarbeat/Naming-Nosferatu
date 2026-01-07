@@ -11,7 +11,6 @@ import {
 	NameManagementContext,
 	useNameManagementContextSafe,
 } from "../../../shared/components/NameManagementView/nameManagementCore";
-import type { NameItem } from "../../../types/components";
 import {
 	devError,
 	devLog,
@@ -21,6 +20,7 @@ import {
 	isNameHidden,
 	selectedNamesToSet,
 } from "../../../shared/utils/core";
+import type { NameItem } from "../../../types/components";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import type { HighlightItem, SummaryStats } from "../../analytics/types";
 import { type SelectionStats, useProfile } from "../../profile/hooks/useProfile";

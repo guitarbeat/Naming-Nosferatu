@@ -112,7 +112,7 @@ export function useRouting() {
 				const { pathname, search, hash } = new URL(route);
 				return `${pathname}${search}${hash}` || "/";
 			} catch (error) {
-				if (process.env.NODE_ENV === "development") {
+				if (import.meta.env.DEV) {
 					console.error("Invalid URL provided to navigateTo:", error);
 				}
 				return "/";

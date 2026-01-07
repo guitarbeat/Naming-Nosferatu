@@ -4,7 +4,15 @@
  * Includes Header, Footer, MatchResult, and RoundTransition.
  */
 
-import { Button, Card, CardBody } from "@heroui/react";
+import Button from "../../../shared/components/Button/Button";
+import Card from "../../../shared/components/Card/Card";
+
+const CardBody = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+	<div className={className} {...props}>
+		{children}
+	</div>
+);
+
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
 import React, { memo } from "react";

@@ -6,7 +6,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
-import type { IdType, NameItem } from "../../../types/components";
 import {
 	adminAPI,
 	catNamesAPI,
@@ -15,6 +14,7 @@ import {
 	resolveSupabaseClient,
 } from "../../../shared/services/supabase/client";
 import { clearAllCaches, devError, devLog } from "../../../shared/utils/core";
+import type { IdType, NameItem } from "../../../types/components";
 
 // ============================================================================
 // Internal Types

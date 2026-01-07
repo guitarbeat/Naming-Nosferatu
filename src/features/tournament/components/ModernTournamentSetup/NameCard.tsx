@@ -1,4 +1,11 @@
-import { Card, CardBody } from "@heroui/react";
+import Card from "../../../../shared/components/Card/Card";
+
+const CardBody = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+	<div className={className} {...props}>
+		{children}
+	</div>
+);
+
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import type { CatName } from "../../services/tournamentService";

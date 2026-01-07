@@ -32,7 +32,7 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 					})()
 				: initialValue;
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.error(`Error reading localStorage key "${key}":`, error);
 			}
 			return initialValue;
@@ -49,7 +49,7 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 					window.localStorage.setItem(key, JSON.stringify(valueToStore));
 				}
 			} catch (error) {
-				if (process.env.NODE_ENV === "development") {
+				if (import.meta.env.DEV) {
 					console.error(`Error setting localStorage key "${key}":`, error);
 				}
 			}

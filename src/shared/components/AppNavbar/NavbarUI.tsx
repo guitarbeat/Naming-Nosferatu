@@ -3,8 +3,8 @@
  * @description Consolidated UI components for AppNavbar.
  */
 
-import { Button } from "@heroui/react";
 import React, { useEffect, useRef } from "react";
+import Button from "../Button/Button";
 import styles from "./AppNavbar.module.css";
 import type { BuildNavItemsContext, NavItem } from "./navbarCore";
 import { NavbarContext } from "./navbarCore"; // Import from core

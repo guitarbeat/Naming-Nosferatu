@@ -4,8 +4,8 @@
  * Optimized for layout stability and performance.
  */
 
-import PropTypes from "prop-types";
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
 import { useMemo } from "react";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import type { NameItem } from "../../types/components";
@@ -85,7 +85,7 @@ const GridItem = ({
 			initial={{
 				opacity: 0,
 				y: 20,
-				scale: 0.9
+				scale: 0.9,
 			}}
 			animate={{
 				opacity: 1,
@@ -93,7 +93,7 @@ const GridItem = ({
 				scale: isSelected ? 1.05 : 1,
 				boxShadow: isSelected
 					? "0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1)"
-					: "0 2px 8px rgba(0, 0, 0, 0.08)"
+					: "0 2px 8px rgba(0, 0, 0, 0.08)",
 			}}
 			transition={{
 				duration: 0.4,
@@ -102,7 +102,7 @@ const GridItem = ({
 				stiffness: 200,
 				damping: 20,
 				boxShadow: { duration: 0.3, ease: "easeOut" },
-				scale: { duration: 0.3, type: "spring", stiffness: 300, damping: 25 }
+				scale: { duration: 0.3, type: "spring", stiffness: 300, damping: 25 },
 			}}
 			whileHover={{
 				y: -8,
@@ -112,15 +112,15 @@ const GridItem = ({
 					duration: 0.2,
 					type: "spring",
 					stiffness: 300,
-					damping: 25
-				}
+					damping: 25,
+				},
 			}}
 			whileTap={{
 				scale: 0.95,
-				transition: { duration: 0.1 }
+				transition: { duration: 0.1 },
 			}}
 			layout={true}
-			key={`grid-item-${nameId}-${isSelected ? 'selected' : 'unselected'}`}
+			key={`grid-item-${nameId}-${isSelected ? "selected" : "unselected"}`}
 		>
 			<CardName
 				name={nameObj.name || ""}
@@ -202,7 +202,15 @@ export function NameGrid({
 						<div key={`spinner-${i}`} className={styles.gridItem}>
 							<CatSpinner
 								size="medium"
-								variant={["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit"}
+								variant={
+									["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as
+										| "paw"
+										| "tail"
+										| "bounce"
+										| "spin"
+										| "heartbeat"
+										| "orbit"
+								}
 								color={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
 								text="Loading cat names..."
 							/>
@@ -272,7 +280,7 @@ export function NameGrid({
 							}
 							layout={true}
 							transition={{
-								layout: { duration: 0.3, ease: "easeOut" }
+								layout: { duration: 0.3, ease: "easeOut" },
 							}}
 						>
 							<GridItem

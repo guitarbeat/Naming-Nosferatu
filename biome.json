@@ -135,7 +135,8 @@
 		{
 			"includes": [
 				"src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
-				"src/features/tournament/TournamentSetup.module.css"
+				"src/features/tournament/TournamentSetup.module.css",
+				"src/shared/styles/animations.css"
 			],
 			"linter": {
 				"rules": {

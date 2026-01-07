@@ -6,11 +6,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
+import type { NameItem } from "../../../../../types/components";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
-import type { NameItem } from "../../../../../types/components";
-import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import { playSound } from "../../../../shared/utils/soundManager";
+import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import controlsStyles from "../../styles/TournamentControls.module.css";
 import errorStyles from "../../styles/TournamentError.module.css";
 import tournamentStyles from "../../styles/TournamentMatch.module.css";
@@ -73,11 +73,11 @@ function TournamentMatch({
 	// Handle ripple effects on click
 	const createRipple = React.useCallback((side: "left" | "right") => {
 		const rippleId = `${side}-${Date.now()}`;
-		setRipples(prev => [...prev, { id: rippleId, side }]);
+		setRipples((prev) => [...prev, { id: rippleId, side }]);
 
 		// Remove ripple after animation completes
 		setTimeout(() => {
-			setRipples(prev => prev.filter(ripple => ripple.id !== rippleId));
+			setRipples((prev) => prev.filter((ripple) => ripple.id !== rippleId));
 		}, 800);
 	}, []);
 
@@ -164,8 +164,8 @@ function TournamentMatch({
 						{/* Ripple Effects */}
 						<AnimatePresence>
 							{ripples
-								.filter(ripple => ripple.side === "left")
-								.map(ripple => (
+								.filter((ripple) => ripple.side === "left")
+								.map((ripple) => (
 									<motion.div
 										key={ripple.id}
 										className={styles.ripple}
@@ -196,26 +196,26 @@ function TournamentMatch({
 										opacity: 0,
 										scale: 0,
 										rotate: -180,
-										y: -20
+										y: -20,
 									}}
 									animate={{
 										opacity: 1,
 										scale: 1,
 										rotate: 0,
-										y: 0
+										y: 0,
 									}}
 									exit={{
 										opacity: 0,
 										scale: 0.8,
 										rotate: 180,
 										y: 20,
-										transition: { duration: 0.4 }
+										transition: { duration: 0.4 },
 									}}
 									transition={{
 										duration: 0.6,
 										type: "spring",
 										stiffness: 300,
-										damping: 20
+										damping: 20,
 									}}
 									className={styles.voteCheckmark}
 									aria-label="Vote confirmed"
@@ -265,8 +265,8 @@ function TournamentMatch({
 						{/* Ripple Effects */}
 						<AnimatePresence>
 							{ripples
-								.filter(ripple => ripple.side === "right")
-								.map(ripple => (
+								.filter((ripple) => ripple.side === "right")
+								.map((ripple) => (
 									<motion.div
 										key={ripple.id}
 										className={styles.ripple}
@@ -297,26 +297,26 @@ function TournamentMatch({
 										opacity: 0,
 										scale: 0,
 										rotate: -180,
-										y: -20
+										y: -20,
 									}}
 									animate={{
 										opacity: 1,
 										scale: 1,
 										rotate: 0,
-										y: 0
+										y: 0,
 									}}
 									exit={{
 										opacity: 0,
 										scale: 0.8,
 										rotate: 180,
 										y: 20,
-										transition: { duration: 0.4 }
+										transition: { duration: 0.4 },
 									}}
 									transition={{
 										duration: 0.6,
 										type: "spring",
 										stiffness: 300,
-										damping: 20
+										damping: 20,
 									}}
 									className={styles.voteCheckmark}
 									aria-label="Vote confirmed"

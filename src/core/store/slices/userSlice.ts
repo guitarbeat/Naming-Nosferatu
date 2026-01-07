@@ -25,7 +25,7 @@ const getInitialUserState = (): UserState => {
 			};
 		}
 	} catch (error) {
-		if (process.env.NODE_ENV === "development") {
+		if (import.meta.env.DEV) {
 			console.warn("Unable to read stored user from localStorage:", error);
 		}
 	}
@@ -56,7 +56,7 @@ export const createUserSlice: StateCreator<
 						localStorage.removeItem(STORAGE_KEYS.USER);
 					}
 				} catch (error) {
-					if (process.env.NODE_ENV === "development") {
+					if (import.meta.env.DEV) {
 						console.error("Error updating localStorage:", error);
 					}
 				}
@@ -78,7 +78,7 @@ export const createUserSlice: StateCreator<
 					// Update Supabase client headers for RLS policies
 					updateSupabaseUserContext(userName);
 				} catch (error) {
-					if (process.env.NODE_ENV === "development") {
+					if (import.meta.env.DEV) {
 						console.error("Error updating localStorage:", error);
 					}
 				}
@@ -95,7 +95,7 @@ export const createUserSlice: StateCreator<
 					// Clear Supabase client headers
 					updateSupabaseUserContext(null);
 				} catch (error) {
-					if (process.env.NODE_ENV === "development") {
+					if (import.meta.env.DEV) {
 						console.error("Error clearing localStorage:", error);
 					}
 				}
@@ -140,7 +140,7 @@ export const createUserSlice: StateCreator<
 						};
 					}
 				} catch (error) {
-					if (process.env.NODE_ENV === "development") {
+					if (import.meta.env.DEV) {
 						console.error("Error reading from localStorage:", error);
 					}
 				}

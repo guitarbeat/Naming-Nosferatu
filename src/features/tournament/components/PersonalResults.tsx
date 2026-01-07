@@ -5,7 +5,7 @@
 
 import PropTypes from "prop-types";
 import type React from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button, { TournamentButton } from "../../../shared/components/Button/Button";
 import Card from "../../../shared/components/Card/Card";

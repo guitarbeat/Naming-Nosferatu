@@ -7,8 +7,8 @@
 import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/tournamentHooks";
-import type { NameItem } from "../../../types/components";
 import { shuffleArray } from "../../../shared/utils/core";
+import type { NameItem } from "../../../types/components";
 
 /**
  * Custom hook for tournament state management

@@ -121,7 +121,7 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 							}
 						}, TIMING.STATUS_ERROR_DISPLAY_DURATION_MS);
 
-						if (process.env.NODE_ENV === "development") {
+						if (import.meta.env.DEV) {
 							console.error("Failed to save rankings:", error);
 						}
 					});
@@ -154,6 +154,9 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 
 		const newItems = Array.from(items);
 		const [reorderedItem] = newItems.splice(result.source.index, 1);
+		if (!reorderedItem) {
+			return; // Safety check
+		}
 		newItems.splice(result.destination.index, 0, reorderedItem);
 
 		// Enhanced rating calculation with better wins/losses preservation

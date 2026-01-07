@@ -55,12 +55,12 @@ const setSupabaseUserContext = async (activeSupabase: unknown, userName: string)
 	} catch (error) {
 		if (isRpcUnavailableError(error)) {
 			canUseSetUserContext = false;
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.info(
 					"Supabase set_user_context RPC is unavailable. Skipping future context calls.",
 				);
 			}
-		} else if (process.env.NODE_ENV === "development") {
+		} else if (import.meta.env.DEV) {
 			console.warn("Failed to set Supabase user context:", error);
 		}
 	}
@@ -100,7 +100,7 @@ function useUserSession({
 			storedUserName = localStorage.getItem(STORAGE_KEYS.USER);
 		} catch (error) {
 			// localStorage might not be available (private browsing, etc.)
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.warn("Unable to access localStorage:", error);
 			}
 		}
@@ -114,7 +114,7 @@ function useUserSession({
 					const activeSupabase = await resolveSupabaseClient();
 					await setSupabaseUserContext(activeSupabase, storedUserName);
 				} catch (error) {
-					if (process.env.NODE_ENV === "development") {
+					if (import.meta.env.DEV) {
 						console.warn("Failed to initialize Supabase user context:", error);
 					}
 				}
@@ -227,7 +227,7 @@ function useUserSession({
 
 						if (isDuplicateKeyError) {
 							// * This is likely a race condition - verify if user was actually created
-							if (process.env.NODE_ENV === "development") {
+							if (import.meta.env.DEV) {
 								console.warn(
 									"RPC create_user_account duplicate key error (race condition):",
 									rpcError,
@@ -246,7 +246,7 @@ function useUserSession({
 							} else {
 								// * Unexpected: duplicate key error but user doesn't exist
 								const errorMessage = rpcError.message || "Failed to create user account";
-								if (process.env.NODE_ENV === "development") {
+								if (import.meta.env.DEV) {
 									console.error("Duplicate key error but user not found:", errorMessage);
 								}
 								showToast?.({ message: errorMessage, type: "error" });
@@ -255,7 +255,7 @@ function useUserSession({
 						} else {
 							// * Not a duplicate key error - this is a real error
 							const errorMessage = rpcError.message || "Failed to create user account";
-							if (process.env.NODE_ENV === "development") {
+							if (import.meta.env.DEV) {
 								console.error("Error creating user:", errorMessage, rpcError);
 							}
 							showToast?.({ message: errorMessage, type: "error" });

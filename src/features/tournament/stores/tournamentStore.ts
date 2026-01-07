@@ -34,11 +34,10 @@ const initialState: TournamentStoreState = {
 
 export const useTournamentStore = create<TournamentStore>()(
 	devtools(
-		(set, get) => ({
+		(set, _get) => ({
 			...initialState,
 
-			setAvailableNames: (names) =>
-				set({ availableNames: names }, false, "setAvailableNames"),
+			setAvailableNames: (names) => set({ availableNames: names }, false, "setAvailableNames"),
 
 			toggleNameSelection: (id) =>
 				set(
@@ -64,11 +63,9 @@ export const useTournamentStore = create<TournamentStore>()(
 					"selectAll",
 				),
 
-			clearSelections: () =>
-				set({ selectedNames: new Set() }, false, "clearSelections"),
+			clearSelections: () => set({ selectedNames: new Set() }, false, "clearSelections"),
 
-			setSearchQuery: (query) =>
-				set({ searchQuery: query }, false, "setSearchQuery"),
+			setSearchQuery: (query) => set({ searchQuery: query }, false, "setSearchQuery"),
 
 			setOperatorIdentity: (identity) =>
 				set({ operatorIdentity: identity }, false, "setOperatorIdentity"),

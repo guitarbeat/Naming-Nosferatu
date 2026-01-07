@@ -136,6 +136,7 @@ function TournamentContent({
 			}, 500);
 			return () => clearTimeout(timer);
 		}
+		return; // Explicit return for hasSeenTutorial === true case
 	}, [currentMatch, currentMatchNumber]);
 
 	// * Voting hook - encapsulates voting logic, rate limiting, and match result updates

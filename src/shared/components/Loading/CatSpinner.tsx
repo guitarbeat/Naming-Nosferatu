@@ -39,26 +39,20 @@ export interface CatSpinnerProps {
 }
 
 const CatSpinner: React.FC<CatSpinnerProps> = memo(
-	({
-		size = "medium",
-		variant = "paw",
-		color = "neon",
-		showFace = true,
-		text,
-		className = "",
-	}) => {
+	({ size = "medium", variant = "paw", color = "neon", showFace = true, text, className = "" }) => {
 		const containerClasses = useMemo(
-			() => [
-				styles.catSpinner,
-				styles[size],
-				styles[variant],
-				styles[color],
-				showFace && styles.withFace,
-				className,
-			]
-				.filter(Boolean)
-				.join(" "),
-			[size, variant, color, showFace, className]
+			() =>
+				[
+					styles.catSpinner,
+					styles[size],
+					styles[variant],
+					styles[color],
+					showFace && styles.withFace,
+					className,
+				]
+					.filter(Boolean)
+					.join(" "),
+			[size, variant, color, showFace, className],
 		);
 
 		const renderSpinner = () => {
@@ -166,14 +160,12 @@ const CatSpinner: React.FC<CatSpinnerProps> = memo(
 
 		return (
 			<div className={containerClasses} role="status" aria-label="Loading">
-				<div className={styles.spinnerContainer}>
-					{renderSpinner()}
-				</div>
+				<div className={styles.spinnerContainer}>{renderSpinner()}</div>
 				{text && <p className={styles.spinnerText}>{text}</p>}
 				<span className={styles.srOnly}>Loading...</span>
 			</div>
 		);
-	}
+	},
 );
 
 CatSpinner.displayName = "CatSpinner";

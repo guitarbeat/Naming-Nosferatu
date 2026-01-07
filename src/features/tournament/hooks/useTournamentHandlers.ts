@@ -13,7 +13,7 @@ interface UseTournamentHandlersProps {
 	setShowCatPictures: (value: boolean | ((prev: boolean) => boolean)) => void;
 	getCurrentRatings?: () => Array<{ id: string | number; rating: number }> | undefined;
 	existingRatings?: Record<string, number>;
-	onComplete: (ratings: Record<string, number>) => void;
+	onComplete: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
 	audioManager: {
 		handleVolumeChange: (type: "music" | "effects", value: number) => void;
 	};
@@ -47,7 +47,7 @@ export function useTournamentHandlers({
 				existingRatings && Object.keys(existingRatings).length > 0 ? existingRatings : {};
 			await onComplete(hasCurrent && currentRatingsRecord ? currentRatingsRecord : fallback);
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.error("Error ending tournament:", error);
 			}
 		} finally {

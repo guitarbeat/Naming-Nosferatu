@@ -41,15 +41,15 @@
 }
 
 .pastel {
-	--cat-primary: #FFB3BA;
-	--cat-secondary: #BAFFC9;
-	--cat-accent: #BAE1FF;
+	--cat-primary: #ffb3ba;
+	--cat-secondary: #baffc9;
+	--cat-accent: #bae1ff;
 }
 
 .warm {
-	--cat-primary: #FFD1A1;
-	--cat-secondary: #FFB3BA;
-	--cat-accent: #FFDFBA;
+	--cat-primary: #ffd1a1;
+	--cat-secondary: #ffb3ba;
+	--cat-accent: #ffdfba;
 }
 
 /* PAW VARIANT */
@@ -100,7 +100,8 @@
 }
 
 @keyframes pawWave {
-	0%, 100% {
+	0%,
+	100% {
 		transform: rotate(0deg) scale(1);
 	}
 	50% {
@@ -109,7 +110,8 @@
 }
 
 @keyframes pawPadPulse {
-	0%, 100% {
+	0%,
+	100% {
 		transform: scale(1);
 		opacity: 0.7;
 	}
@@ -175,7 +177,8 @@
 }
 
 @keyframes tailSwish {
-	0%, 100% {
+	0%,
+	100% {
 		transform: rotate(0deg);
 	}
 	25% {
@@ -187,7 +190,8 @@
 }
 
 @keyframes tailSegmentWave {
-	0%, 100% {
+	0%,
+	100% {
 		transform: scaleY(1);
 	}
 	50% {
@@ -232,7 +236,8 @@
 }
 
 @keyframes catBounce {
-	0%, 100% {
+	0%,
+	100% {
 		transform: translateY(0) scale(1);
 	}
 	50% {
@@ -340,7 +345,7 @@
 
 .heartShape::before,
 .heartShape::after {
-	content: '';
+	content: "";
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -369,7 +374,7 @@
 
 .heartEyes::before,
 .heartEyes::after {
-	content: '';
+	content: "";
 	width: calc(var(--spinner-size) * 0.08);
 	height: calc(var(--spinner-size) * 0.08);
 	background: var(--cat-primary);
@@ -377,7 +382,9 @@
 }
 
 @keyframes heartBeat {
-	0%, 50%, 100% {
+	0%,
+	50%,
+	100% {
 		transform: scale(1);
 	}
 	25% {
@@ -446,15 +453,21 @@
 }
 
 .catFace::before {
-	content: '🐱';
+	content: "🐱";
 }
 
 @keyframes catFaceBlink {
-	0%, 85%, 90%, 95%, 100% {
+	0%,
+	85%,
+	90%,
+	95%,
+	100% {
 		opacity: 1;
 		transform: translateX(-50%) scale(1);
 	}
-	87%, 92%, 97% {
+	87%,
+	92%,
+	97% {
 		opacity: 0.3;
 		transform: translateX(-50%) scale(0.9);
 	}
@@ -472,7 +485,8 @@
 }
 
 @keyframes textPulse {
-	0%, 100% {
+	0%,
+	100% {
 		opacity: 0.7;
 	}
 	50% {

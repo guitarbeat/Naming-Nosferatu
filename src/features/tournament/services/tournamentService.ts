@@ -22,16 +22,24 @@ interface ErrResult<E> extends Result<unknown, E> {
 
 function ok<T>(value: T): OkResult<T> {
 	return {
-		isOk: () => true,
-		isErr: () => false,
+		isOk(): this is OkResult<T> {
+			return true;
+		},
+		isErr(): this is ErrResult<{ message: string }> {
+			return false;
+		},
 		value,
 	};
 }
 
-function err<E>(error: E): ErrResult<E> {
+function err<E = { message: string }>(error: E): ErrResult<E> {
 	return {
-		isOk: () => false,
-		isErr: () => true,
+		isOk(): this is OkResult<unknown> {
+			return false;
+		},
+		isErr(): this is ErrResult<E> {
+			return true;
+		},
 		error,
 	};
 }

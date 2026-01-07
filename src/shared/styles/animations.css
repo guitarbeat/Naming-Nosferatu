@@ -95,7 +95,8 @@
 
 /* Glow pulse animation */
 @keyframes glowPulse {
-	0%, 100% {
+	0%,
+	100% {
 		box-shadow: 0 0 20px color-mix(in srgb, var(--color-neon-cyan) 20%, transparent);
 	}
 	50% {
@@ -195,7 +196,8 @@
 
 /* Bounce animation */
 @keyframes bounce {
-	0%, 100% {
+	0%,
+	100% {
 		transform: translateY(0);
 	}
 	50% {
@@ -267,7 +269,7 @@
 		animation-iteration-count: 1 !important;
 		scroll-behavior: auto !important;
 	}
-	
+
 	.animate-fade-in,
 	.animate-slide-up,
 	.animate-page-enter,

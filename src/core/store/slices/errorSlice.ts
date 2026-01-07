@@ -45,7 +45,7 @@ export const createErrorSlice: StateCreator<
 			}));
 
 			// * Log to console for development
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.error("Error logged:", errorLog);
 			}
 		},

@@ -124,7 +124,7 @@ export function getNextMatch(
 				} as Match;
 			}
 		} catch (e) {
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.warn("Adaptive next-match selection failed:", e);
 			}
 		}
@@ -155,7 +155,7 @@ export function getNextMatch(
 				} as Match;
 			}
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.warn("Could not get next match from sorter:", error);
 			}
 		}
@@ -472,9 +472,13 @@ export function useTournament({
 		if (first) {
 			updateTournamentState({ currentMatch: first });
 		} else if (names.length >= 2) {
-			updateTournamentState({
-				currentMatch: { left: names[0], right: names[1] },
-			});
+			const left = names[0];
+			const right = names[1];
+			if (left && right) {
+				updateTournamentState({
+					currentMatch: { left, right },
+				});
+			}
 		}
 	}, [names, existingRatings, updateTournamentState, updatePersistentState]);
 
