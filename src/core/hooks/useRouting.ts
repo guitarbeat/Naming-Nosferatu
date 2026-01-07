@@ -173,7 +173,7 @@ export function useRouting() {
 // Tournament Routing Sync Hook
 // ============================================================================
 
-const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results"]);
+const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results", "/gallery", "/analysis"]);
 
 interface UseTournamentRoutingSyncProps {
 	currentRoute: string;
@@ -227,7 +227,11 @@ export function useTournamentRoutingSync({
 		// * Allow "photos" view to stay on tournament paths
 		if (currentView === "photos") {
 			if (!TOURNAMENT_PATHS.has(normalizedPath)) {
-				navigateTo("/");
+				// Redirect legacy view state to new route if not on a valid path
+				navigateTo("/gallery");
+			} else if (normalizedPath === "/" || normalizedPath === "/tournament") {
+				// If on home but view is photos, sync URL
+				navigateTo("/gallery", { replace: true });
 			}
 			return;
 		}
@@ -273,10 +277,33 @@ export function useTournamentRoutingSync({
 		// * Allow "photos" view on tournament paths - don't reset it to "tournament"
 		const allowedTournamentViews = new Set(["tournament", "photos"]);
 
+		// Explicit route-to-view mapping
+		if (pathChanged) {
+			if (normalizedPath === "/gallery" && currentView !== "photos") {
+				lastViewRef.current = "photos";
+				onViewChange("photos");
+				previousRouteRef.current = currentRoute;
+				return;
+			}
+
+			if (normalizedPath === "/analysis" && currentView !== "analysis") {
+				// If we have a dedicated analysis view state
+				// or we just rely on dashboard + analysis param?
+				// The plan says Analysis is a route.
+				// If currentView is used for this, set it.
+				// But ViewRouter uses URL param for analysis mode.
+				// Let's assume for now we might leave it or set a view if needed.
+			}
+		}
+
+		// * Allow "photos" view on tournament paths - don't reset it to "tournament"
+		const allowedTournamentViews = new Set(["tournament", "photos"]);
+
 		if (
 			pathChanged &&
 			TOURNAMENT_PATHS.has(normalizedPath) &&
-			!allowedTournamentViews.has(currentView)
+			!allowedTournamentViews.has(currentView) &&
+			normalizedPath !== "/gallery" // Don't reset if we just handled gallery above
 		) {
 			lastViewRef.current = "tournament";
 			onViewChange("tournament");

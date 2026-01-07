@@ -3,7 +3,7 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import type { NameItem } from "@/types/components";
@@ -82,6 +82,27 @@ function TournamentMatch({
 		}, 800);
 	}, []);
 
+	// Handle swipe end
+	const handleDragEnd = (side: "left" | "right", info: PanInfo) => {
+		if (!isEnabled) return;
+
+		const SwipeThreshold = 100;
+		const offset = info.offset.x;
+
+		// Logic: Drag towards center (winner) to vote for that side
+		if (side === "left" && offset > SwipeThreshold) {
+			// Dragged left orb to the right (towards center)
+			createRipple("left");
+			playSound("gameboy-pluck");
+			onNameCardClick("left");
+		} else if (side === "right" && offset < -SwipeThreshold) {
+			// Dragged right orb to the left (towards center)
+			createRipple("right");
+			playSound("gameboy-pluck");
+			onNameCardClick("right");
+		}
+	};
+
 	const getDetails = (item?: NameItem | string) => {
 		if (!item) {
 			return { name: "Unknown", id: null };
@@ -135,6 +156,10 @@ function TournamentMatch({
 					<motion.div
 						ref={leftOrbRef}
 						layout={true}
+						drag={isEnabled ? "x" : false}
+						dragConstraints={{ left: 0, right: 0 }}
+						dragElastic={0.2}
+						onDragEnd={(_, info) => handleDragEnd("left", info)}
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
 						whileHover={isEnabled ? { scale: 1.02 } : {}}
@@ -236,6 +261,10 @@ function TournamentMatch({
 					<motion.div
 						ref={rightOrbRef}
 						layout={true}
+						drag={isEnabled ? "x" : false}
+						dragConstraints={{ left: 0, right: 0 }}
+						dragElastic={0.2}
+						onDragEnd={(_, info) => handleDragEnd("right", info)}
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
 						whileHover={isEnabled ? { scale: 1.02 } : {}}

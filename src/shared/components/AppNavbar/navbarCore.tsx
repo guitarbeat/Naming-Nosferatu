@@ -60,8 +60,10 @@ export interface NavbarContextValue {
 export interface BuildNavItemsContext {
 	view: ViewType;
 	isAnalysisMode: boolean;
+	currentRoute?: string;
 	onOpenPhotos?: () => void;
 	onToggleAnalysis?: () => void;
+	onNavigate?: (route: string) => void;
 }
 
 // --- CONTEXT ---

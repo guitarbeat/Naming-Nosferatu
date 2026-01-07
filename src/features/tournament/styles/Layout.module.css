@@ -163,6 +163,12 @@
 @media (width <= 768px) {
 	.tournament {
 		padding: var(--space-2);
+		min-height: 100dvh; /* Use dynamic viewport height for mobile */
+	}
+
+	.tournamentLayout {
+		margin-top: var(--space-2);
+		gap: var(--space-4);
 	}
 }
 
@@ -172,3 +178,11 @@
 		padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
 	}
 }
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+	.tournament {
+		padding-inline: 0.75rem; /* Slightly more space on very small screens */
+	}
+}
+
