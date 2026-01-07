@@ -1,41 +1,10 @@
-import Button from "../../../shared/components/Button/Button";
-
-// Simple Input replacement
-const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-	({ className, ...props }, ref) => (
-		<input
-			className={`flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${className || ""}`}
-			ref={ref}
-			{...props}
-		/>
-	),
-);
-Input.displayName = "Input";
-
-// Simple Progress replacement
-interface ProgressProps {
-	value?: number;
-	className?: string;
-}
-
-const Progress = ({ value = 0, className }: ProgressProps) => (
-	<div
-		className={`relative h-2 w-full overflow-hidden rounded-full bg-primary/20 ${className || ""}`}
-	>
-		<div
-			className="h-full w-full flex-1 bg-primary transition-all"
-			style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
-		/>
-	</div>
-);
-
+import { Input, Progress } from "@heroui/react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
-
 import { Cat, ChevronRight, Filter, RotateCcw, Search } from "lucide-react";
-
 import React, { useEffect } from "react";
 import { match } from "ts-pattern";
+import Button from "../../../shared/components/Button/Button.tsx";
 // import { ComponentTagger } from "lovable-tagger";
 import { useMasonryLayout } from "../../shared/hooks/useMasonryLayout";
 import { NameCard, OperatorBar, SystemFeed } from "./components/ModernTournamentSetup";

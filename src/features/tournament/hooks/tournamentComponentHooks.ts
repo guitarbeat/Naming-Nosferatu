@@ -152,6 +152,7 @@ export function useTournamentState(
 
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [tournament.roundNumber]);
 
 	return {

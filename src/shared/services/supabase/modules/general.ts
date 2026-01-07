@@ -456,7 +456,7 @@ export const tournamentsAPI = {
 				success: true,
 				tournamentId,
 				status,
-				updatedUser: selections[0].user_name,
+				updatedUser: selections[0]?.user_name,
 				message: `Tournament status updated to ${status} (in-memory only)`,
 			};
 		} catch (error) {

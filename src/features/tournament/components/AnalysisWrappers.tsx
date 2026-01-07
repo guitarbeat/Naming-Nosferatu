@@ -378,7 +378,7 @@ export function AnalysisBulkActionsWrapper({
 				}
 
 				try {
-					await handleBulkHide(selectedNamesArray.map(id => id.toString()));
+					await handleBulkHide(selectedNamesArray.map((id) => id.toString()));
 				} catch (error) {
 					devError("[TournamentSetup] Error calling handleBulkHide:", error);
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -391,7 +391,7 @@ export function AnalysisBulkActionsWrapper({
 					return;
 				}
 				try {
-					await handleBulkUnhide(selectedNamesArray.map(id => id.toString()));
+					await handleBulkUnhide(selectedNamesArray.map((id) => id.toString()));
 				} catch (error) {
 					devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";

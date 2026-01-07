@@ -6,10 +6,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
-import type { NameItem } from "../../../types/components";
 import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import { playSound } from "../../../../shared/utils/soundManager";
+import type { NameItem } from "../../../types/components.ts";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import controlsStyles from "../../styles/TournamentControls.module.css";
 import errorStyles from "../../styles/TournamentError.module.css";

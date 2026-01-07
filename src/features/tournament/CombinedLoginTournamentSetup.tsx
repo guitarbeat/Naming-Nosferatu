@@ -18,10 +18,8 @@ import {
 	createAnalysisDashboardWrapper,
 } from "./components/AnalysisWrappers";
 import Lightbox from "./components/Lightbox";
-import _SwipeableNameCards from "./components/SwipeMode/SwipeableNameCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
-import _cardStyles from "./styles/SetupCards.module.css";
 import layoutStyles from "./styles/SetupLayout.module.css";
 import photoStyles from "./styles/SetupPhotos.module.css";
 import identityStyles from "./TournamentSetupIdentity.module.css";

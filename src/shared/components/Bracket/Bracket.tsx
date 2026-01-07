@@ -65,7 +65,7 @@ const MatchResult = {
 
 type MatchStatus = (typeof MatchResult)[keyof typeof MatchResult];
 
-interface MatchData {
+export interface MatchData {
 	id: number;
 	name1: string;
 	name2?: string;

@@ -13,7 +13,7 @@ interface UseTournamentHandlersProps {
 	setShowCatPictures: (value: boolean | ((prev: boolean) => boolean)) => void;
 	getCurrentRatings?: () => Array<{ id: string | number; rating: number }> | undefined;
 	existingRatings?: Record<string, number>;
-	onComplete: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
+	onComplete: (ratings: Record<string, number>) => void;
 	audioManager: {
 		handleVolumeChange: (type: "music" | "effects", value: number) => void;
 	};

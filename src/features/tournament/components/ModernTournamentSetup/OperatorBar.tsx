@@ -51,9 +51,7 @@ export function OperatorBar() {
 					)}
 				</div>
 			</div>
-			<div
-				className="bg-purple-900/30 border border-purple-500/20 rounded px-2 py-1 inline-flex items-center gap-1"
-			>
+			<div className="bg-purple-900/30 border border-purple-500/20 rounded px-2 py-1 inline-flex items-center gap-1">
 				<Sparkles size={12} />
 				<span className="text-xs">System Online</span>
 			</div>

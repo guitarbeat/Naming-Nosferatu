@@ -8,6 +8,13 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button, { TournamentButton } from "../../../shared/components/Button/Button";
+import Card from "../../../shared/components/Card/Card";
+import {
+	CollapsibleContent,
+	CollapsibleHeader,
+} from "../../../shared/components/Header/CollapsibleHeader";
+import { useToast } from "../../../shared/hooks/useAppHooks";
+import { calculateBracketRound, devError } from "../../../shared/utils/core";
 
 interface RankingItem {
 	id: string | number;
@@ -16,13 +23,7 @@ interface RankingItem {
 	wins?: number;
 	losses?: number;
 }
-import Card from "../../../shared/components/Card/Card";
-import {
-	CollapsibleContent,
-	CollapsibleHeader,
-} from "../../../shared/components/Header/CollapsibleHeader";
-import { useToast } from "../../../shared/hooks/useAppHooks";
-import { calculateBracketRound, devError } from "../../../shared/utils/core";
+
 import RankingAdjustment from "../RankingAdjustment";
 import styles from "./PersonalResults.module.css";
 
@@ -125,10 +126,23 @@ function CalendarButton({
 		window.open(`${baseUrl}?${params.toString()}`, "_blank");
 	};
 
+	const buttonVariant = (() => {
+		switch (variant) {
+			case "primary":
+				return "primary";
+			case "secondary":
+				return "secondary";
+			case "danger":
+				return "danger";
+			default:
+				return "ghost";
+		}
+	})();
+
 	return (
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		<Button
-			variant={variant as "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login"}
+			variant={buttonVariant}
 			size={size}
 			onClick={handleClick}
 			className={className}
@@ -183,7 +197,7 @@ function PersonalResults({
 	userName,
 }: PersonalResultsProps) {
 	const [personalRankings, setPersonalRankings] = useState<Ranking[]>([]);
-	const rankingsForAdjustment: RankingItem[] = personalRankings.map(r => ({
+	const rankingsForAdjustment: RankingItem[] = personalRankings.map((r) => ({
 		id: r.id || r.name,
 		name: r.name,
 		rating: r.rating,
@@ -314,14 +328,15 @@ function PersonalResults({
 
 	// * Handle saving adjusted personal rankings
 	const handleSaveAdjustments = useCallback(
-		async (adjustedRankings: Ranking[]) => {
+		async (adjustedRankings: RankingItem[]) => {
 			try {
-				const updatedRankings = adjustedRankings.map((ranking: Ranking) => {
+				const updatedRankings = adjustedRankings.map((ranking: RankingItem) => {
 					const oldRanking = personalRankings.find((r) => r.name === ranking.name);
 					return {
 						...ranking,
 						change: oldRanking ? ranking.rating - oldRanking.rating : 0,
-					};
+						is_hidden: oldRanking?.is_hidden ?? false,
+					} as Ranking;
 				});
 
 				const newRatings = updatedRankings.map(({ name, rating }: Ranking) => {

@@ -190,6 +190,16 @@
 			"formatter": {
 				"enabled": false
 			}
+		},
+		{
+			"includes": ["**/*.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					}
+				}
+			}
 		}
 	],
 	"javascript": {

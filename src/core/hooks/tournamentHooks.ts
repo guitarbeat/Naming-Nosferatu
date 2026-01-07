@@ -90,7 +90,9 @@ export function getNextMatch(
 
 			for (let idx = pairIndex; idx < s.pairs.length; idx++) {
 				const pair = s.pairs[idx];
-				if (!pair || pair.length < 2) continue;
+				if (!pair || pair.length < 2) {
+					continue;
+				}
 				const [a, b] = pair;
 				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) {
 					continue;

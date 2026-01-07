@@ -83,6 +83,7 @@ export interface BracketMatch {
 	name2?: string;
 	winner?: number;
 	round?: number;
+	[key: string]: unknown;
 }
 
 export interface VoteData {

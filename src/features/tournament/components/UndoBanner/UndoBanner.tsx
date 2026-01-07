@@ -33,6 +33,7 @@ export function UndoBanner({ undoExpiresAt, undoStartTime, onUndo }: UndoBannerP
 			}, 3000);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [undoExpiresAt, undoStartTime]);
 
 	if (!undoExpiresAt || !undoStartTime) {

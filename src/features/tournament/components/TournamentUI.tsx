@@ -4,13 +4,20 @@
  * Includes Header, Footer, MatchResult, and RoundTransition.
  */
 
-import React, { useEffect, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
+import React, { memo, useEffect } from "react";
+import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button from "../../../shared/components/Button/Button";
 import Card from "../../../shared/components/Card/Card";
-import Bracket from "../../../shared/components/Bracket/Bracket";
 import type { BracketMatch } from "../../../types/components";
+
+const CardBody = ({ children, className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+	<div className={className} {...props}>
+		{children}
+	</div>
+);
+
 import { KeyboardHelp } from "./TournamentUI/KeyboardHelp";
 
 // --- Types ---
@@ -293,11 +300,11 @@ export const TournamentFooter = memo(function TournamentFooter({
 				<div className="relative w-full max-w-[800px]">
 					<Button
 						className="w-full px-4 py-2 text-sm text-slate-300 bg-slate-900/50 border border-white/5 rounded-lg transition-all hover:bg-slate-800/50 hover:-translate-y-0.5 active:translate-y-0"
-						onPress={handleBracketToggle}
+						onClick={handleBracketToggle}
 						aria-expanded={showBracket}
 						aria-controls="bracketView"
-						variant="flat"
-						endContent={
+						variant="secondary"
+						endIcon={
 							showBracket ? (
 								<ChevronDown className="w-4 h-4 transition-transform" />
 							) : (
@@ -338,18 +345,11 @@ export const TournamentFooter = memo(function TournamentFooter({
 
 				<Button
 					className="flex gap-2 items-center justify-center px-4 py-2 text-sm text-slate-300 bg-slate-900/50 border border-white/5 rounded-lg transition-all hover:bg-slate-800/50 hover:-translate-y-0.5 active:translate-y-0"
-					onPress={onToggleKeyboardHelp}
+					onClick={onToggleKeyboardHelp}
 					aria-expanded={showKeyboardHelp}
 					aria-controls="keyboardHelp"
-					variant="flat"
-					startContent={<Keyboard className="w-4 h-4" />}
-					endContent={
-						showKeyboardHelp ? (
-							<ChevronDown className="w-4 h-4 transition-transform rotate-90" />
-						) : (
-							<ChevronRight className="w-4 h-4 transition-transform" />
-						)
-					}
+					variant="secondary"
+					startIcon={<Keyboard className="w-4 h-4" />}
 				>
 					Keyboard Shortcuts
 				</Button>
