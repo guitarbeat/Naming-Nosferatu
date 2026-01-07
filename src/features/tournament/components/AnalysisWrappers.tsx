@@ -317,9 +317,12 @@ export function AnalysisBulkActionsWrapper({
 		return filtered;
 	}, [contextNames, contextFilterStatus]);
 
-	const allVisibleSelected =
-		filteredAndSortedNames.length > 0 &&
-		filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id));
+	const allVisibleSelected = useMemo(
+		() =>
+			filteredAndSortedNames.length > 0 &&
+			filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id)),
+		[filteredAndSortedNames, selectedNamesSet],
+	);
 
 	const handleSelectAll = useCallback(() => {
 		const visibleNameIds = filteredAndSortedNames.map((name) => name.id);
@@ -327,14 +330,14 @@ export function AnalysisBulkActionsWrapper({
 			return;
 		}
 		const shouldSelect = !allVisibleSelected;
-		if (context?.toggleNamesByIds) {
-			context.toggleNamesByIds(visibleNameIds, shouldSelect);
+		if (context.toggleNamesByIds) {
+			context.toggleNamesByIds(visibleNameIds.map(id => String(id)), shouldSelect);
 			return;
 		}
 		visibleNameIds.forEach((id) => {
-			context?.toggleNameById?.(String(id), shouldSelect);
+			context.toggleNameById?.(String(id), shouldSelect);
 		});
-	}, [allVisibleSelected, filteredAndSortedNames, context]);
+	}, [allVisibleSelected, filteredAndSortedNames, context.toggleNamesByIds, context.toggleNameById]);
 
 	const handleExport = useCallback(() => {
 		try {
@@ -351,6 +354,46 @@ export function AnalysisBulkActionsWrapper({
 		}
 	}, [filteredAndSortedNames, showError]);
 
+	const handleBulkHideCallback = useCallback(async () => {
+		devLog("[TournamentSetup] onBulkHide called", {
+			selectedCount,
+			selectedNamesArrayLength: selectedNamesArray.length,
+			selectedNamesArray,
+			contextSelectedNames: context.selectedNames,
+		});
+
+		if (selectedNamesArray.length === 0) {
+			devWarn(
+				"[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
+				selectedCount,
+			);
+			showError("Please select at least one name to continue");
+			return;
+		}
+
+		try {
+			await handleBulkHide(selectedNamesArray.map((id) => id.toString()));
+		} catch (error) {
+			devError("[TournamentSetup] Error calling handleBulkHide:", error);
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			showError(`Unable to hide names: ${errorMessage}`);
+		}
+	}, [selectedCount, selectedNamesArray, context.selectedNames, showError, handleBulkHide]);
+
+	const handleBulkUnhideCallback = useCallback(async () => {
+		if (selectedNamesArray.length === 0) {
+			showError("Please select at least one name to continue");
+			return;
+		}
+		try {
+			await handleBulkUnhide(selectedNamesArray.map((id) => id.toString()));
+		} catch (error) {
+			devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			showError(`Unable to unhide names: ${errorMessage}`);
+		}
+	}, [selectedNamesArray, showError, handleBulkUnhide]);
+
 	if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
 		return null;
 	}
@@ -360,44 +403,8 @@ export function AnalysisBulkActionsWrapper({
 			selectedCount={selectedCount}
 			onSelectAll={handleSelectAll}
 			onDeselectAll={handleSelectAll}
-			onBulkHide={async () => {
-				devLog("[TournamentSetup] onBulkHide called", {
-					selectedCount,
-					selectedNamesArrayLength: selectedNamesArray.length,
-					selectedNamesArray,
-					contextSelectedNames: context.selectedNames,
-				});
-
-				if (selectedNamesArray.length === 0) {
-					devWarn(
-						"[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-						selectedCount,
-					);
-					showError("Please select at least one name to continue");
-					return;
-				}
-
-				try {
-					await handleBulkHide(selectedNamesArray.map((id) => id.toString()));
-				} catch (error) {
-					devError("[TournamentSetup] Error calling handleBulkHide:", error);
-					const errorMessage = error instanceof Error ? error.message : "Unknown error";
-					showError(`Unable to hide names: ${errorMessage}`);
-				}
-			}}
-			onBulkUnhide={async () => {
-				if (selectedNamesArray.length === 0) {
-					showError("Please select at least one name to continue");
-					return;
-				}
-				try {
-					await handleBulkUnhide(selectedNamesArray.map((id) => id.toString()));
-				} catch (error) {
-					devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
-					const errorMessage = error instanceof Error ? error.message : "Unknown error";
-					showError(`Unable to unhide names: ${errorMessage}`);
-				}
-			}}
+			onBulkHide={handleBulkHideCallback}
+			onBulkUnhide={handleBulkUnhideCallback}
 			onExport={handleExport}
 			isAllSelected={allVisibleSelected}
 			showActions={true}

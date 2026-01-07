@@ -4,7 +4,7 @@
  * Provides a consistent interface with mode-specific extensions.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "../../providers";
 import { ErrorComponent } from "../CommonUI";
 import { ProfileMode } from "./modes/ProfileMode";
@@ -64,10 +64,7 @@ export function NameManagementView({
 		names,
 		isError,
 		dataError,
-		selectedNames,
-		selectedCount,
 		clearErrors,
-		handleFilterChange,
 	} = state;
 
 	// * Feedback Side Effects
@@ -94,37 +91,6 @@ export function NameManagementView({
 		[onStartTournament, showToast],
 	);
 
-	const contextValue = useMemo(
-		() => ({
-			names,
-			selectedNames,
-			toggleName: state.toggleName,
-			toggleNameById: state.toggleNameById,
-			toggleNamesByIds: state.toggleNamesByIds,
-			selectAll: state.selectAll,
-			clearSelection: state.clearSelection,
-			isSelected: state.isSelected,
-			selectedCount,
-			totalCount: names.length,
-			mode: mode || "tournament",
-			handleFilterChange,
-			onStartTournament: handleStartTournament,
-		}),
-		[
-			names,
-			selectedNames,
-			state.toggleName,
-			state.toggleNameById,
-			state.toggleNamesByIds,
-			state.selectAll,
-			state.clearSelection,
-			state.isSelected,
-			selectedCount,
-			mode,
-			handleFilterChange,
-			handleStartTournament,
-		],
-	);
 
 	const renderContent = () => {
 		// 1. Dashboard Mode (Analysis or Profile Dashboard via extension)
@@ -157,13 +123,15 @@ export function NameManagementView({
 				<TournamentMode
 					{...state}
 					// Pass specific props that might not be in state
-					categories={tournamentProps.categories}
+					handleFilterChange={state.handleFilterChange as (name: string, value: string) => void}
+					analysisMode={analysisMode}
+					categories={tournamentProps.categories as string[]}
 					onStartTournament={handleStartTournament}
 					onOpenSuggestName={onOpenSuggestName}
 					extensions={extensions}
-					isAdmin={profileProps.isAdmin || tournamentProps.isAdmin}
-					imageList={tournamentProps.imageList}
-					SwipeableCards={tournamentProps.SwipeableCards}
+					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
+					imageList={tournamentProps.imageList as string[]}
+					SwipeableCards={tournamentProps.SwipeableCards as React.ComponentType<unknown>}
 					totalCount={names.length}
 					filteredCount={state.filteredNamesForSwipe.length}
 				/>
@@ -176,7 +144,7 @@ export function NameManagementView({
 				{...state}
 				extensions={extensions}
 				profileProps={profileProps}
-				categories={tournamentProps.categories} // Profile might use categories
+				categories={tournamentProps.categories as string[]} // Profile might use categories
 			/>
 		);
 	};
@@ -186,12 +154,12 @@ export function NameManagementView({
 			{isError && (
 				<ErrorComponent
 					error={dataError?.message || "An error occurred"}
-					onRetry={state.refetch}
+					onRetry={() => state.refetch()}
 					onDismiss={clearErrors}
 				/>
 			)}
 
-			<NameManagementProvider value={contextValue}>
+			<NameManagementProvider value={state}>
 				{/* Context Logic Extension */}
 				{extensions.contextLogic &&
 					(typeof extensions.contextLogic === "function"

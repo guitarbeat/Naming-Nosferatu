@@ -19,8 +19,10 @@ export interface UseNameManagementViewProps {
 	mode: "tournament" | "profile";
 	userName?: string | null;
 	profileProps?: Record<string, unknown>;
+	tournamentProps?: Record<string, unknown>;
 	analysisMode: boolean;
 	setAnalysisMode: (mode: boolean) => void;
+	extensions?: NameManagementViewExtensions;
 }
 
 // We need to defer this type definition to avoid circular imports if we import the hook here.

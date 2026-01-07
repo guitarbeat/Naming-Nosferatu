@@ -11,7 +11,7 @@ import type {
 
 interface ProfileModeProps {
 	filterConfig: TournamentFilters;
-	handleFilterChange: (name: string, value: string) => void;
+	handleFilterChange: (name: keyof TournamentFilters, value: string | number | boolean) => void;
 	names: NameItem[];
 	isLoading: boolean;
 	extensions: NameManagementViewExtensions;
@@ -57,7 +57,7 @@ export function ProfileMode({
 				<TournamentToolbar
 					mode="profile"
 					filters={filterConfig}
-					onFilterChange={handleFilterChange}
+					onFilterChange={handleFilterChange as (name: string, value: string) => void}
 					categories={categories || []}
 					showUserFilter={profileProps.showUserFilter}
 					showSelectionFilter={!!profileProps.selectionStats}

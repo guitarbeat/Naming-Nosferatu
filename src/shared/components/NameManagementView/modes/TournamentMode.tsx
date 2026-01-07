@@ -154,7 +154,7 @@ export function TournamentMode({
 							showCatPictures: showCatPictures,
 							imageList: imageList,
 							onStartTournament: onStartTournament,
-						})
+						} as any)
 					) : (
 						<NameGrid
 							names={names}

@@ -103,7 +103,7 @@ export function AnalysisDashboard({
 			analyticsData: (analyticsData ?? null) as AnalyticsDataItem[] | null,
 			isAdmin,
 			highlights,
-			filterConfig,
+			filterConfig: filterConfig as { selectionFilter?: string; dateFilter?: string; [key: string]: unknown },
 			sortField,
 			sortDirection,
 		},
@@ -166,13 +166,13 @@ export function AnalysisDashboard({
 			mode="hybrid"
 			filters={toolbarContext.filterConfig}
 			onFilterChange={
-				toolbarContext.handleFilterChange ||
+				(toolbarContext.handleFilterChange as (name: string, value: string) => void) ||
 				((name: string, value: string) => {
 					if (name === "searchTerm" && toolbarContext.setSearchQuery) {
 						toolbarContext.setSearchQuery(value);
 					}
 					if (name === "category" && toolbarContext.setSelectedCategory) {
-						toolbarContext.setSelectedCategory(value || null);
+						toolbarContext.setSelectedCategory(value || "");
 					}
 					if (name === "sortBy" && toolbarContext.setSortBy) {
 						toolbarContext.setSortBy(value || "alphabetical");
@@ -181,16 +181,16 @@ export function AnalysisDashboard({
 						toolbarContext.setFilterStatus(value);
 					}
 					if (name === "userFilter" && toolbarContext.setUserFilter) {
-						toolbarContext.setUserFilter(value);
+						toolbarContext.setUserFilter(value as "all" | "user" | "other");
 					}
 					if (name === "selectionFilter" && toolbarContext.setSelectionFilter) {
-						toolbarContext.setSelectionFilter(value);
+						toolbarContext.setSelectionFilter(value as "all" | "selected" | "unselected");
 					}
 					if (name === "dateFilter" && toolbarContext.setDateFilter) {
-						toolbarContext.setDateFilter(value);
+						toolbarContext.setDateFilter(value as "all" | "today" | "week" | "month");
 					}
 					if (name === "sortOrder" && toolbarContext.setSortOrder) {
-						toolbarContext.setSortOrder(value);
+						toolbarContext.setSortOrder(value as "asc" | "desc");
 					}
 				})
 			}

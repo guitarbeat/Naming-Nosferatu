@@ -144,6 +144,7 @@ export interface UseNameManagementViewResult {
 		isAdmin?: boolean;
 		[key: string]: unknown;
 	};
+	tournamentProps: Record<string, unknown>;
 
 	// Extensions
 	extensions: NameManagementViewExtensions;
@@ -159,8 +160,10 @@ export function useNameManagementView({
 	mode,
 	userName,
 	profileProps = {},
+	tournamentProps = {},
 	analysisMode,
 	setAnalysisMode,
+	extensions = {},
 }: UseNameManagementViewProps) {
 	const {
 		names,
@@ -481,5 +484,6 @@ export function useNameManagementView({
 		// Additional properties
 		categories: uniqueCategories,
 		profileProps,
+		tournamentProps,
 	};
 }
