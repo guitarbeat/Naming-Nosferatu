@@ -162,20 +162,62 @@ function CombinedLoginTournamentSetupContent({
 		return (
 			<div className={loginStyles.loginWrapper}>
 				<div className={loginStyles.scene}>
-					<div className={loginStyles.cutOutCat} ref={catRef}>
+					{/* Cat with staggered entrance */}
+					<motion.div
+						className={loginStyles.cutOutCat}
+						ref={catRef}
+						initial={{ scale: 0, rotate: -10 }}
+						animate={{ scale: 1, rotate: 0 }}
+						transition={{
+							duration: 0.8,
+							delay: 0.2,
+							type: "spring",
+							stiffness: 200,
+							damping: 20,
+						}}
+					>
 						<motion.div
 							className={loginStyles.eye}
-							animate={{ x: eyePosition.x, y: eyePosition.y }}
-							transition={{ type: "spring", stiffness: 300, damping: 20 }}
+							initial={{ opacity: 0 }}
+							animate={{
+								opacity: 1,
+								x: eyePosition.x,
+								y: eyePosition.y,
+							}}
+							transition={{
+								opacity: { delay: 1.0, duration: 0.3 },
+								x: { type: "spring", stiffness: 300, damping: 20 },
+								y: { type: "spring", stiffness: 300, damping: 20 },
+							}}
 						/>
 						<motion.div
 							className={`${loginStyles.eye} ${loginStyles.eyeRight}`}
-							animate={{ x: eyePosition.x, y: eyePosition.y }}
-							transition={{ type: "spring", stiffness: 300, damping: 20 }}
+							initial={{ opacity: 0 }}
+							animate={{
+								opacity: 1,
+								x: eyePosition.x,
+								y: eyePosition.y,
+							}}
+							transition={{
+								opacity: { delay: 1.0, duration: 0.3 },
+								x: { type: "spring", stiffness: 300, damping: 20 },
+								y: { type: "spring", stiffness: 300, damping: 20 },
+							}}
 						/>
-					</div>
+					</motion.div>
 
-					<div className={loginStyles.catFactTape}>
+					{/* Cat fact tape with slide-in animation */}
+					<motion.div
+						className={loginStyles.catFactTape}
+						initial={{ x: -300, opacity: 0 }}
+						animate={{ x: 0, opacity: 1 }}
+						transition={{
+							duration: 0.6,
+							delay: 0.8,
+							type: "spring",
+							stiffness: 100,
+						}}
+					>
 						{loginCatFact ? (
 							<span>
 								<strong>Fun Fact:</strong> {loginCatFact}
@@ -183,12 +225,46 @@ function CombinedLoginTournamentSetupContent({
 						) : (
 							"PREPARING FELINE WISDOM..."
 						)}
-					</div>
+					</motion.div>
 
-					<h1 className={loginStyles.title}>Welcome, Purr-spective Judge!</h1>
-					<p className={loginStyles.subtitle}>{greeting}, please enter your name to get started.</p>
+					{/* Title with bounce entrance */}
+					<motion.h1
+						className={loginStyles.title}
+						initial={{ y: -50, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						transition={{
+							duration: 0.7,
+							delay: 0.5,
+							type: "spring",
+							stiffness: 120,
+							damping: 15,
+						}}
+					>
+						Welcome, Purr-spective Judge!
+					</motion.h1>
 
-					<div className={loginStyles.inputTray}>
+					{/* Subtitle with fade-in */}
+					<motion.p
+						className={loginStyles.subtitle}
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 1.2 }}
+					>
+						{greeting}, please enter your name to get started.
+					</motion.p>
+
+					{/* Input tray with slide-up animation */}
+					<motion.div
+						className={loginStyles.inputTray}
+						initial={{ y: 40, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						transition={{
+							duration: 0.6,
+							delay: 1.4,
+							type: "spring",
+							stiffness: 100,
+						}}
+					>
 						<ValidatedInput
 							type="text"
 							placeholder="YOUR NAME HERE..."
@@ -204,18 +280,29 @@ function CombinedLoginTournamentSetupContent({
 							externalError={loginError}
 							externalTouched={nameTouched}
 						/>
-					</div>
+					</motion.div>
 
+					{/* Main button with scale entrance */}
 					<motion.button
 						className={loginStyles.leverBtn}
 						onClick={handleLoginSubmit}
 						disabled={isLoginLoading}
 						whileHover={{ scale: 1.02 }}
 						whileTap={{ scale: 0.98 }}
+						initial={{ scale: 0.8, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						transition={{
+							duration: 0.5,
+							delay: 1.6,
+							type: "spring",
+							stiffness: 200,
+							damping: 20,
+						}}
 					>
 						{isLoginLoading ? "PREPARING STAGE..." : "STEP INSIDE"}
 					</motion.button>
 
+					{/* Reroll button with staggered entrance */}
 					<motion.button
 						className={loginStyles.rerollBtn}
 						onClick={handleRandomName}
@@ -223,6 +310,14 @@ function CombinedLoginTournamentSetupContent({
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
 						aria-label="Generate random name"
+						initial={{ x: 50, opacity: 0 }}
+						animate={{ x: 0, opacity: 1 }}
+						transition={{
+							duration: 0.5,
+							delay: 1.8,
+							type: "spring",
+							stiffness: 150,
+						}}
 					>
 						<Dices
 							size={16}

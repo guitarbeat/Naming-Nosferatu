@@ -4,20 +4,12 @@
  * Includes Types, Context, and Hooks for name data and selection management.
  */
 
-import type React from "react";
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
-import type { NameItem } from "../../../types/components";
 import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils/core";
 import type { TournamentFilters, UseNameManagementViewProps } from "./shared/types";
-
-// Re-export NameItem for convenience
-export type { NameItem };
-
-import type React from "react";
-import type { NameItem } from "../../../types/components";
 import { useNameData } from "./shared/useNameData";
 import { useNameSelection } from "./shared/useNameSelection";
 

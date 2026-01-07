@@ -434,7 +434,6 @@ function TournamentToolbar({
 	const renderTournamentMode = () => {
 		const selectedCount = startTournamentButton?.selectedCount ?? 0;
 		const isReady = selectedCount >= 2;
-		const countLabel = selectedCount === 1 ? "1 name selected" : `${selectedCount} names selected`;
 
 		const buttonLabel = isReady
 			? `Start Tournament (${selectedCount} names)`

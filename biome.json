@@ -170,6 +170,25 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["src/integrations/supabase/types.ts", "src/shared/services/supabase/types.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			},
+			"formatter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": ["src/shared/styles/analysis-mode-misc.css"],
+			"formatter": {
+				"enabled": false
+			}
 		}
 	],
 	"javascript": {

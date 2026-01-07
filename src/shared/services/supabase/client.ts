@@ -52,8 +52,12 @@ const getSupabaseCredentials = (): { url: string; key: string } => {
 
 	if (!url || !key) {
 		const missingVars: string[] = [];
-		if (!url) missingVars.push("VITE_SUPABASE_URL or SUPABASE_URL");
-		if (!key) missingVars.push("VITE_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY");
+		if (!url) {
+			missingVars.push("VITE_SUPABASE_URL or SUPABASE_URL");
+		}
+		if (!key) {
+			missingVars.push("VITE_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY");
+		}
 
 		const errorMessage = `Missing required Supabase environment variables: ${missingVars.join(", ")}. Please set them in your .env.local file or environment.`;
 

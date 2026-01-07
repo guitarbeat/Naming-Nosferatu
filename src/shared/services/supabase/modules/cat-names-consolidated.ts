@@ -323,7 +323,6 @@ interface NameRow {
 	name: string;
 	description: string;
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating: number;
 	categories: string[];
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
