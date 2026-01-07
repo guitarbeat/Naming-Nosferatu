@@ -3,10 +3,14 @@
 **Last Updated:** 2026-01-07
 **Status:** Primary Blueprint for System Design & Data
 
+> **Note:** For visual design guidance, design tokens, and UI/UX patterns, see [UI_UX.md](./UI_UX.md).
+
 ## 🏛️ System Overview
+
 Naming Nosferatu is a modern React application centered around React 19, Vite, and Supabase.
 
 ### Tech Stack
+
 - **Framework**: React 19.2.3 (Actions, `use` hook)
 - **Build Tool**: Vite 7.3.0
 - **State Management**: Zustand (Global) + TanStack Query (Server)
@@ -18,6 +22,7 @@ Naming Nosferatu is a modern React application centered around React 19, Vite, a
 ## 📊 Database Schema
 
 ### Core Tables
+
 | Table | Purpose | Key Fields |
 |-------|---------|------------|
 | `cat_name_options` | Available names | `id`, `name`, `avg_rating`, `is_active`, `is_hidden` |
@@ -32,32 +37,71 @@ Naming Nosferatu is a modern React application centered around React 19, Vite, a
 ## 🏗️ Design Principles
 
 ### 1. Decomposed Features
+
 Features are organized by domain in `src/features/`. Complex views like `NameManagement` are split into specialized "Modes" (Tournament vs. Profile).
 
 ### 2. Store Slices
-The global `useAppStore` is composed of focused slices: `tournamentSlice`, `userSlice`, `uiSlice`, `errorSlice`, and `siteSettingsSlice`.
 
-### 3. Glassmorphism & Visual Polish
-We use a hybrid of Tailwind for layout and CSS Modules for rich aesthetics (Glassmorphism, Liquid Glass).
+The global `useAppStore` is composed of focused slices:
+- `tournamentSlice` - Tournament state and actions
+- `userSlice` - User session and preferences
+- `uiSlice` - UI state (modals, loading)
+- `errorSlice` - Error handling
+- `siteSettingsSlice` - Site-wide settings
+
+### 3. Service Layer
+
+Database operations are centralized in `src/shared/services/supabase/modules/`:
+- `cat-names-consolidated.ts` - Name CRUD operations
+- `general.ts` - General database utilities
 
 ---
 
-## 🛠️ Technical Debt & Migration
+## 📁 Project Structure
 
-### Migration Strategy
-Our goal is to move all legacy components to the Design Token system in `src/shared/styles/design-tokens.css`.
+```
+src/
+├── core/                    # Core application logic
+│   ├── constants/           # App-wide constants
+│   ├── hooks/               # Core hooks (routing, storage, session)
+│   └── store/               # Zustand store and slices
+├── features/                # Feature modules
+│   ├── analytics/           # Analysis dashboard
+│   ├── auth/                # Authentication
+│   ├── gallery/             # Photo gallery
+│   ├── profile/             # User profile
+│   └── tournament/          # Tournament feature
+├── shared/                  # Shared utilities
+│   ├── components/          # Reusable components
+│   ├── hooks/               # Shared hooks
+│   ├── providers/           # React context providers
+│   ├── services/            # External service integrations
+│   ├── styles/              # Global styles and tokens
+│   └── utils/               # Utility functions
+└── types/                   # TypeScript type definitions
+```
 
-#### ✅ Completed Refactors
-- **PerformanceBadge**: Replaced hardcoded purple with `color-mix()` and tokens.
-- **Error Component**: Removed all hardcoded RGB values.
-- **NameGrid**: Switched to Masonry layout with glass surface tokens.
+---
 
-#### ⚠️ Active Migration Checklist
-- [ ] **SetupCards.module.css**: Replace hardcoded pixel widths (`180px`) with responsive card width tokens.
-- [ ] **Masonry Layout**: Integrate design tokens (currently uses hardcoded values in `useMasonryLayout` hooks).
-- [ ] **Z-Index**: Continue replacing hardcoded `z-index` values with tokens (e.g., `--z-sticky`, `--z-modal`).
+## 🔄 Data Flow
 
-### Technical Recommendations
-1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks.
-2. **Standardize Breakpoints**: Use `var(--breakpoint-md)` instead of hardcoded `768px`.
-3. **Print Styles**: Add print-specific CSS for tournament results and rankings.
+```
+User Action
+    ↓
+React Component
+    ↓
+Zustand Store (local state) ←→ TanStack Query (server state)
+    ↓                              ↓
+UI Update                    Supabase API
+                                   ↓
+                             PostgreSQL
+```
+
+---
+
+## 🛠️ Technical Recommendations
+
+1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks
+2. **Feature Isolation**: Keep feature modules self-contained
+3. **Query Caching**: Leverage TanStack Query for server state caching
+4. **Error Boundaries**: Wrap feature modules in error boundaries

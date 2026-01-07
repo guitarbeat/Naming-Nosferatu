@@ -95,15 +95,14 @@
 	gap: clamp(1rem, 2.5vw, 1.75rem);
 	background: linear-gradient(
 		135deg,
-		var(--card-background, color-mix(in srgb, var(--color-neutral-700) 60%, transparent)),
-		var(--surface-muted, color-mix(in srgb, var(--color-neutral-900) 50%, transparent))
+		var(--card-background),
+		var(--surface-muted)
 	);
-	border: var(--card-border-width) solid
-		var(--border-color, color-mix(in srgb, var(--color-neutral-400) 30%, transparent));
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: 0;
 	box-shadow:
 		var(--shadow-lg),
-		inset 0 0 0 1px color-mix(in srgb, var(--color-neutral-50) 5%, transparent);
+		inset 0 0 0 1px var(--glass-border);
 	backdrop-filter: blur(20px);
 	overflow: hidden;
 	touch-action: none;
@@ -119,13 +118,10 @@
 
 @media (hover: hover) and (pointer: fine) {
 	.swipeCard:not(.selected, :active):hover {
-		border-color: var(
-			--border-color-hover,
-			color-mix(in srgb, var(--color-neutral-400) 40%, transparent)
-		);
+		border-color: var(--border-color-hover);
 		box-shadow:
 			var(--shadow-xl),
-			inset 0 0 0 1px color-mix(in srgb, var(--color-neutral-50) 8%, transparent);
+			inset 0 0 0 1px var(--glass-border-hover);
 		transform: translateY(-2px);
 	}
 }
@@ -146,8 +142,8 @@
 .swipeCard.selected {
 	background: linear-gradient(
 		135deg,
-		var(--card-background, color-mix(in srgb, var(--color-neutral-700) 70%, transparent)),
-		var(--surface-muted, color-mix(in srgb, var(--color-neutral-900) 60%, transparent))
+		var(--card-background),
+		var(--surface-muted)
 	);
 	border-color: var(--accent-color, var(--color-warning));
 	border-width: var(--border-width-lg);
@@ -214,11 +210,7 @@
 	flex: 1;
 	overflow-y: auto;
 	scrollbar-width: thin;
-	scrollbar-color: var(
-			--border-color,
-			color-mix(in srgb, var(--color-neutral-400) 30%, transparent)
-		)
-		transparent;
+	scrollbar-color: var(--border-color) transparent;
 }
 
 .swipeCardContent::-webkit-scrollbar {
@@ -228,14 +220,11 @@
 	background: transparent;
 }
 .swipeCardContent::-webkit-scrollbar-thumb {
-	background: var(--border-color, color-mix(in srgb, var(--color-neutral-400) 30%, transparent));
+	background: var(--border-color);
 	border-radius: var(--radius-sm);
 }
 .swipeCardContent::-webkit-scrollbar-thumb:hover {
-	background: var(
-		--border-color-hover,
-		color-mix(in srgb, var(--color-neutral-400) 50%, transparent)
-	);
+	background: var(--border-color-hover);
 }
 
 .swipeCardImageContainer {
@@ -345,8 +334,7 @@
 	color: var(--text-secondary);
 	margin-top: auto;
 	padding-top: var(--space-3);
-	border-top: var(--card-border-width) solid
-		var(--border-color, color-mix(in srgb, var(--color-neutral-400) 20%, transparent));
+	border-top: var(--card-border-width) solid var(--border-color);
 	width: 100%;
 }
 
@@ -355,19 +343,15 @@
 	gap: var(--space-1);
 	align-items: center;
 	padding: var(--space-1) var(--space-2);
-	background: var(--surface-elevated, color-mix(in srgb, var(--color-neutral-50) 5%, transparent));
-	border: var(--card-border-width) solid
-		var(--border-color, color-mix(in srgb, var(--color-neutral-400) 20%, transparent));
+	background: var(--surface-elevated);
+	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-sm);
 	font-weight: 500;
 	transition: all var(--duration-fast) var(--ease-out);
 }
 
 .metadataItem:hover {
-	border-color: var(
-		--border-color-hover,
-		color-mix(in srgb, var(--color-neutral-400) 30%, transparent)
-	);
+	border-color: var(--border-color-hover);
 	transform: translateY(-1px);
 	padding: var(--space-1) var(--space-2);
 	background: color-mix(in srgb, var(--color-info) 6%, transparent);

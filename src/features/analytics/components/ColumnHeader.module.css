@@ -44,9 +44,9 @@
 	color: var(--text-primary);
 }
 
-.columnHeaderButton:focus {
-	outline: var(--focus-ring-width) solid var(--analysis-accent, var(--color-neon-cyan));
-	outline-offset: calc(var(--focus-ring-offset) * -1);
+.columnHeaderButton:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
 	background-color: var(--overlay-cyan-medium);
 }
 

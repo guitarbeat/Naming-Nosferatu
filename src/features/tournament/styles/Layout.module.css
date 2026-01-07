@@ -182,7 +182,7 @@
 /* Mobile optimizations */
 @media (max-width: 600px) {
 	.tournament {
-		padding-inline: 0.75rem; /* Slightly more space on very small screens */
+		padding-inline: var(--space-3); /* Slightly more space on very small screens */
 	}
 }
 

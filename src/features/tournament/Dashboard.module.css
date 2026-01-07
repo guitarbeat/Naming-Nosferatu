@@ -68,7 +68,7 @@
 	font-size: var(--text-lg);
 	line-height: 1.7;
 	color: var(--text-secondary);
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 .userName {
@@ -251,7 +251,7 @@
 	position: sticky;
 	top: 0;
 	bottom: 0;
-	z-index: 1;
+	z-index: var(--z-elevate);
 	display: block;
 	width: var(--space-10);
 	pointer-events: none;
