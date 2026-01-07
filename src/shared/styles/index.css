@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* Centralized stylesheet imports for the entire application.
+ * The order matters – keep foundational layers before utilities and themes.
+ */
+
+/* Base reset and primitives */
+@import url("./reset.css");
+@import url("./design-tokens.css");
+@import url("./colors.css");
+
+/* Effects & transitions (shimmer, glass, transitions, typography now in design-tokens.css) */
+@import url("./animations.css");
+@import url("./interactions.css");
+
+/* Buttons & interactive elements */
+/* * Button tokens consolidated into design-tokens.css */
+
+/* Component-level styles */
+@import url("./app-layout.css");
+@import url("./analysis-mode-tokens.css");
+@import url("./analysis-mode-global.css");
+@import url("./analysis-mode-panels.css");
+@import url("./analysis-mode-buttons.css");
+@import url("./analysis-mode-misc.css");
+
+/* Utility layers */
+@import url("./utilities.css");
+
+/* Theme variants */
+@import url("./themes.css");
+
+/* Responsive & device-specific tweaks */
+@import url("./responsive-mobile.css");

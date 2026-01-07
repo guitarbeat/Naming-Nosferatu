@@ -1,0 +1,243 @@
+/**
+ * @file analysis-mode-panels.css
+ * @description Analysis Mode Panel and Header Styles
+ *
+ * Styles for analysis panels, headers, collapsible sections, and panel layouts.
+ */
+
+/* ==========================================================================
+   ANALYSIS PANEL - Primary Container
+   ========================================================================== */
+.analysis-panel {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	padding: 0;
+	margin: 0;
+	background: var(--analysis-surface-1);
+	border: var(--card-border-width) solid var(--analysis-border-accent);
+	border-radius: var(--analysis-radius-xl);
+	box-shadow:
+		0 8px 32px color-mix(in srgb, var(--analysis-accent-rgb, 47 243 224) 5%, transparent),
+		0 2px 8px var(--overlay-light);
+	backdrop-filter: blur(16px);
+	transition:
+		border-color var(--analysis-duration-normal) var(--analysis-ease),
+		box-shadow var(--analysis-duration-normal) var(--analysis-ease),
+		opacity var(--analysis-duration-normal) var(--analysis-ease),
+		transform var(--analysis-duration-normal) var(--analysis-ease);
+	overflow: hidden;
+	/* * Smooth entrance when analysis mode activates */
+	animation: analysis-panel-fade-in var(--analysis-duration-normal)
+		cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Ensure panel doesn't have unwanted spacing */
+.analysis-panel > * {
+	margin: 0;
+}
+
+/* Integrated toolbar styling - seamless integration */
+.analysis-panel-toolbar {
+	padding: 0;
+	margin: 0;
+	background: transparent;
+	border: none;
+}
+
+/* Remove default TournamentToolbar container styling when inside panel */
+.analysis-panel-toolbar .filtersContainer {
+	padding: var(--analysis-gap-md, 12px) var(--analysis-gap-lg, 16px);
+	padding-bottom: var(--analysis-gap-sm, 8px);
+	margin: 0;
+	background: var(
+		--analysis-surface-elevated,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent)
+	);
+	border: none;
+	border-bottom: var(--card-border-width) solid
+		var(--analysis-border, color-mix(in srgb, var(--color-neutral-50) 8%, transparent));
+	border-radius: 0;
+	backdrop-filter: none;
+}
+
+/* When toolbar is present, adjust header border */
+.analysis-panel:has(.analysis-panel-toolbar) .analysis-header {
+	border-bottom: none;
+}
+
+/* When toolbar is present, adjust collapsible header */
+.analysis-panel:has(.analysis-panel-toolbar) .collapsible-header {
+	border-bottom: none;
+	border-radius: var(--analysis-radius-xl, 16px) var(--analysis-radius-xl, 16px) 0 0;
+}
+
+/* When toolbar is present, adjust collapsible header collapsed state */
+.analysis-panel:has(.analysis-panel-toolbar) .collapsible-header--collapsed {
+	border-radius: var(--analysis-radius-xl, 16px) var(--analysis-radius-xl, 16px) 0 0;
+	margin-bottom: 0;
+}
+
+/* Toolbar should connect seamlessly with content */
+.analysis-panel:has(.analysis-panel-toolbar) .collapsible-content .collapsible-content-inner {
+	padding-top: var(--analysis-gap-md, 12px);
+}
+
+/* Ensure toolbar filters are properly styled within panel */
+.analysis-panel-toolbar .filtersContainer .resultsCount {
+	margin-bottom: var(--analysis-gap-sm, 8px);
+}
+
+.analysis-panel-toolbar .filtersContainer .filterRow {
+	margin-bottom: 0;
+}
+
+/* Content area - CollapsibleContent handles its own padding via inner wrapper */
+.analysis-panel > .collapsible-content {
+	padding: 0;
+	margin: 0;
+}
+
+/* Other direct children that need padding */
+.analysis-panel > .analysis-dashboard-content,
+.analysis-panel > .top-names-list,
+.analysis-panel > .admin-analytics-table-container {
+	padding: var(--analysis-gap-lg, 16px);
+	padding-top: var(--analysis-gap-md, 12px);
+	margin: 0;
+}
+
+/* Direct children that need padding (excluding headers and content wrappers) */
+.analysis-panel
+> *:not(
+	.collapsible-header,
+	.analysis-header,
+	.collapsible-content,
+	.analysis-dashboard-content,
+	.top-names-list,
+	.admin-analytics-table-container,
+	.collapsible-content-inner
+) {
+	padding: var(--analysis-gap-lg, 16px);
+	padding-top: var(--analysis-gap-md, 12px);
+	margin: 0;
+}
+
+@keyframes analysis-panel-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-2));
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.analysis-panel::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--analysis-accent) 3%, transparent) 0%,
+		transparent 50%
+	);
+	pointer-events: none;
+	opacity: 0.6;
+	transition: opacity var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+.analysis-panel:hover {
+	border-color: var(--analysis-border-hover);
+	box-shadow:
+		0 12px 48px color-mix(in srgb, var(--analysis-accent-rgb, 47 243 224) 10%, transparent),
+		0 4px 12px var(--overlay-medium);
+}
+
+.analysis-panel:hover::before {
+	opacity: 1;
+}
+
+/* ==========================================================================
+   ANALYSIS HEADER - Mode Indicator
+   ========================================================================== */
+.analysis-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--analysis-gap-md);
+	padding-bottom: var(--analysis-gap-md);
+	border-bottom: var(--card-border-width) solid var(--analysis-border);
+}
+
+.analysis-header-content {
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-sm);
+}
+
+.analysis-header-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--analysis-gap-xs);
+}
+
+.analysis-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--analysis-gap-xs);
+	padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
+	font-family: var(--analysis-text-mono);
+	font-size: var(--analysis-text-caption);
+	font-weight: var(--font-weight-semibold);
+	color: var(--analysis-accent);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	background: var(--analysis-accent-muted);
+	border: var(--card-border-width) solid var(--analysis-border-accent);
+	border-radius: var(--analysis-radius-full);
+}
+
+.analysis-badge::before {
+	content: "";
+	width: 6px; /* 1.5 * 4px base unit - specific size for badge indicator */
+	height: 6px; /* 1.5 * 4px base unit - specific size for badge indicator */
+	background: var(--analysis-accent);
+	border-radius: var(--radius-full);
+	animation: analysis-pulse var(--duration-slow) var(--ease-in-out) infinite;
+}
+
+@keyframes analysis-pulse {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+
+	50% {
+		opacity: 0.5;
+		transform: scale(0.8);
+	}
+}
+
+.analysis-title {
+	margin: 0;
+	font-size: var(--analysis-text-title);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	letter-spacing: var(--tracking-tight);
+}
+
+/* * Collapsible header variant - styles shared with CollapsibleHeader */
+.analysis-header--collapsible {
+	padding: var(--analysis-gap-sm) var(--analysis-gap-md);
+	background: var(--analysis-surface-elevated);
+	border-bottom: var(--card-border-width) solid var(--analysis-border);
+	border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
+}
+
+/* Shared toggle, chevron, and summary styles are in CollapsibleHeader.css */

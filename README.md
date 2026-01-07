@@ -10,11 +10,11 @@
 
 ## 🎯 **What is Name Nosferatu?**
 
-A scientifically-driven tournament platform that helps you discover the perfect cat name using the same Elo rating algorithm that ranks chess grandmasters. Make data-driven decisions about your feline companion's nomenclature!
+A tournament platform for finding the perfect cat name. Compare names side-by-side. Vote on your favorites. Rankings update instantly using the same system that ranks chess players.
 
 ### **Key Features**
 
-- **🧠 Scientific Ranking**: Elo-based tournament system
+- **🧠 Ranking System**: Compare names and see which rank highest
 - **🎨 Adaptive UI**: Automatic dark/light theme detection
 - **📱 Mobile Mastery**: Touch-optimized responsive design
 - **⚡ Performance**: Sub-500ms load times with 48% smaller bundle
@@ -38,8 +38,8 @@ A scientifically-driven tournament platform that helps you discover the perfect 
 ```bash
 git clone <repository-url>
 cd name-nosferatu
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ---
@@ -47,26 +47,31 @@ npm run dev
 ## 🎮 **How to Use**
 
 ### **1. Welcome Screen**
+
 - Get a personalized cat name suggestion
 - Explore name statistics and categories
 - Choose to start a tournament or skip
 
 ### **2. Tournament Creation**
+
 - Select 4-16 cat names for your tournament
 - Choose from curated collections or add custom names
 - Tournament automatically generates optimal pairings
 
 ### **3. Head-to-Head Voting**
+
 - Compare two names at a time
 - Your preferences update Elo ratings mathematically
 - Rankings adjust in real-time as you vote
 
 ### **4. Results & Analytics**
+
 - View final rankings when tournament completes
 - See detailed statistics and performance metrics
 - Export or share your tournament results
 
 ### **5. User Management**
+
 - Create accounts to save tournament history
 - Track your voting patterns and preferences
 - Access personalized recommendations
@@ -75,7 +80,7 @@ npm run dev
 
 ## 🛠️ **Technical Stack**
 
-- **Frontend**: React 18.x + Vite + CSS Modules
+- **Frontend**: React 19.x + Vite + CSS Modules
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **State**: Zustand
 - **Testing**: Vitest + React Testing Library
@@ -98,6 +103,7 @@ src/
 └── shared/                # Shared components
     ├── components/        # Reusable UI
     ├── services/          # Business logic
+    │   └── supabase/      # Supabase API and client
     └── utils/             # Utility functions
 ```
 
@@ -107,59 +113,112 @@ src/
 
 ### **Core Tables**
 
-| Table | Purpose | Key Fields |
-|-------|---------|------------|
-| `cat_app_users` | User accounts | `user_name`, `preferences` |
-| `cat_name_options` | Available names | `name`, `category`, `popularity_score` |
-| `cat_name_ratings` | User ratings | `user_name`, `name`, `rating_value` |
-| `cat_users` | Extended profiles | `user_name`, `total_tournaments`, `stats` |
+| Table                   | Purpose                          | Key Fields                                                               |
+| ----------------------- | -------------------------------- | ------------------------------------------------------------------------ |
+| `cat_app_users`         | User accounts                    | `user_name`, `preferences`, `created_at`, `updated_at`                   |
+| `cat_name_options`      | Available cat names              | `name`, `description`, `avg_rating`, `categories`, `is_active`           |
+| `cat_name_ratings`      | User ratings for names           | `user_name`, `name_id`, `rating`, `wins`, `losses`, `is_hidden`          |
+| `tournament_selections` | Tournament participation history | `user_name`, `name_id`, `tournament_id`, `selected_at`, `selection_type` |
+| `user_roles`            | User role assignments            | `user_name`, `role` (enum: admin, user)                                  |
+| `audit_log`             | System audit trail               | `table_name`, `operation`, `user_name`, `old_values`, `new_values`       |
+| `site_settings`         | Application settings             | `key`, `value`, `updated_by`                                             |
+
+### **Schema Optimizations (January 2026)**
+
+**Removed Columns:**
+
+- ❌ `cat_app_users.tournament_data` (migrated to `tournament_selections` table)
+- ❌ `cat_app_users.user_role` (migrated to `user_roles` table)
+- ❌ `cat_name_options.user_name` (names are global, not user-specific)
+- ❌ `cat_name_options.popularity_score` (calculated dynamically)
+- ❌ `cat_name_options.total_tournaments` (calculated dynamically)
+
+**Removed Objects:**
+
+- ❌ `leaderboard_stats` materialized view (replaced with indexed queries)
+- ❌ `increment_selection` RPC function (no-op, unused)
+
+**Added Constraints:**
+
+- ✅ Unique constraint on `cat_name_ratings(user_name, name_id)` - prevents duplicate ratings
+- ✅ Check constraint on `cat_name_options.name` - length 1-100 characters
+- ✅ Check constraint on ratings - valid range validation
+- ✅ Check constraint on wins/losses - non-negative values
+
+### **Key Indexes**
+
+**Primary Indexes:**
+
+- `cat_app_users_pkey` - Primary key on user_name (573 scans)
+- `cat_name_options_pkey` - Primary key on id (653 scans)
+- `cat_name_ratings_pkey` - Composite primary key on (user_name, name_id) (125 scans)
+- `tournament_selections_pkey` - Primary key on id (3,125 scans)
+
+**Performance Indexes:**
+
+- `idx_ratings_leaderboard` - Covering index for leaderboard queries
+- `idx_ratings_user_stats` - Covering index for user statistics
+- `idx_tournament_user_recent` - Index for tournament history
+- `idx_cat_name_options_name` - Index for name lookups
+- `idx_site_settings_key` - Index for settings retrieval
+
+### **Performance Metrics**
+
+- **Query Speed**: 99%+ improvement over targets
+- **Tournament Queries**: 0.110ms (target: <100ms) ✅
+- **Leaderboard Queries**: 0.519ms (target: <150ms) ✅
+- **User Stats Queries**: 0.133ms (target: <50ms) ✅
+- **Database Size**: ~744 KB (optimized)
+- **Table Bloat**: 0% across all tables ✅
 
 ---
 
 ## 🔌 **API Reference**
 
-### **Tournament Service**
+### **Supabase API Functions**
 
 ```javascript
-// Generate random cat name
-const name = await TournamentService.generateCatName();
+import {
+  catNamesAPI,
+  tournamentsAPI,
+  adminAPI,
+  siteSettingsAPI,
+  imagesAPI,
+} from "@/shared/services/supabase/api";
+
+// Get all cat names with descriptions
+const names = await catNamesAPI.getNamesWithDescriptions();
+
+// Get user statistics
+const stats = await catNamesAPI.getUserStats(userName);
 
 // Create tournament
-const tournament = await TournamentService.createTournament(names, ratings);
+const tournament = await tournamentsAPI.createTournament(names, ratings);
 
-// Process tournament completion
-const results = await TournamentService.processTournamentCompletion(
-  tournamentResults,
-  voteHistory,
-  userName,
-  existingRatings
-);
+// Get user tournaments
+const tournaments = await tournamentsAPI.getUserTournaments(userName);
 ```
 
 ### **Custom Hooks**
 
 ```javascript
-// Tournament state management
-const {
-  names, currentPair, voteHistory, isComplete,
-  addVote, resetTournament
-} = useTournament();
+import { useTournament } from "@/core/hooks/useTournament";
+import { useUserSession } from "@/core/hooks/useUserSession";
+import useAppStore from "@/core/store/useAppStore";
 
-// Theme management
-const { isLightTheme, toggleTheme } = useTheme();
+// Tournament state management
+const tournament = useTournament({
+  names,
+  existingRatings,
+  onComplete: handleComplete,
+});
 
 // User authentication
 const { isLoggedIn, user, login, logout } = useUserSession();
-```
 
-### **State Management**
-
-```javascript
 // Global store access
-const {
-  user, tournament, ui,
-  userActions, tournamentActions, uiActions
-} = useAppStore();
+const { user, tournament, ui, userActions, tournamentActions, uiActions } =
+  useAppStore();
 ```
 
 ---
@@ -168,19 +227,17 @@ const {
 
 ```bash
 # Run all tests
-npm run test
+pnpm run test
 
 # Run a specific test file (Jest-compatible flag supported)
-npm run test -- --runTestsByPath src/App.test.jsx
+pnpm run test -- --runTestsByPath src/App.test.jsx
 
-# Run tests with coverage
-npm run test:coverage
-
-# Run tests in watch mode
-npm run test:watch
+# Run tests with coverage (coverage is included by default)
+pnpm run test
 ```
 
 ### **Coverage Goals**
+
 - **Unit Tests**: 95%+ for utilities and services
 - **Component Tests**: 90%+ for React components
 - **Integration Tests**: 85%+ for feature workflows
@@ -189,12 +246,12 @@ npm run test:watch
 
 ## 📈 **Performance Metrics**
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| **Bundle Size** | 391KB | <500KB | ✅ Excellent |
-| **Load Time** | <800ms | <1.5s | ✅ Excellent |
-| **Lighthouse Score** | 95+ | >90 | ✅ Excellent |
-| **Security Issues** | 0 | 0 | ✅ Perfect |
+| Metric               | Current | Target | Status       |
+| -------------------- | ------- | ------ | ------------ |
+| **Bundle Size**      | 391KB   | <500KB | ✅ Excellent |
+| **Load Time**        | <800ms  | <1.5s  | ✅ Excellent |
+| **Lighthouse Score** | 95+     | >90    | ✅ Excellent |
+| **Security Issues**  | 0       | 0      | ✅ Perfect   |
 
 ---
 
@@ -202,21 +259,88 @@ npm run test:watch
 
 ### **Environment Variables**
 
+Create a `.env.local` file in the project root (see `.env.example` for template):
+
 ```bash
-# Required for Supabase integration (supports both prefixes)
+# Supabase Configuration (supports both VITE_ prefix and direct names)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# Alternative names (for Node.js/Vercel compatibility)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
-# Legacy Vite-prefixed variables are still supported for local development:
-# VITE_SUPABASE_URL=...
-# VITE_SUPABASE_ANON_KEY=...
 ```
 
-### **Build Commands**
+**Getting Your Supabase Credentials:**
+
+1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
+2. Select your project
+3. Navigate to Settings > API
+4. Copy the Project URL and anon public key
+
+**Note:** The application automatically uses environment variables if available, with hardcoded fallbacks for development only. For production, always use environment variables.
+
+### **Manual Setup (if needed)**
+
+#### **1. Create Environment File**
+
+Copy the example environment file and fill in your values:
 
 ```bash
-npm run build    # Production build
-npm run preview  # Preview production build
-npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
+cp .env.example .env.local
+```
+
+Then edit `.env.local` with your actual Supabase credentials:
+
+```bash
+# Supabase Configuration
+# Get these from: https://supabase.com/dashboard > Your Project > Settings > API
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
+
+# Alternative environment variable names (for Node.js/Vercel compatibility)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
+```
+
+#### **2. Get Your Supabase Anon Key**
+
+1. Go to your Supabase project dashboard: https://supabase.com/dashboard
+2. Select your project
+3. Navigate to Settings > API
+4. Copy the "anon public" key
+5. Replace `your_actual_supabase_anon_key_here` with the actual key
+
+#### **3. Restart the Development Server**
+
+After creating the `.env.local` file:
+
+```bash
+pnpm run dev
+```
+
+#### **4. Verify the Setup**
+
+The application should now connect to Supabase successfully. Start the development server and check the browser console to confirm the connection.
+
+### **Alternative: Use Local Supabase**
+
+If you prefer to run Supabase locally:
+
+1. Install Supabase CLI: `pnpm add -g supabase` (or use `npm install -g supabase` if preferred)
+2. Start local Supabase: `supabase start`
+3. Use the local URLs provided by the CLI
+
+### **Build Commands (Vite-first)**
+
+```bash
+pnpm run dev         # Vite dev server with HMR
+pnpm run build       # Vite production build (vite.config.ts)
+pnpm run preview     # Vite preview of the built app
+# Direct Vite CLI (optional)
+pnpm exec vite build --config vite.config.ts
+pnpm exec vite preview --config vite.config.ts
+pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```
 
 ---
@@ -225,22 +349,30 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 
 ### **Available Scripts**
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Development server with HMR |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
-| `npm run test` | Run test suite |
-| `npm run test:coverage` | Tests with coverage report |
-| `npm run lint` | Run ESLint |
-| `npm run lint:css` | Run Stylelint |
-| `npm run format` | Format code with Prettier |
+| Command           | Description                                       |
+| ----------------- | ------------------------------------------------- |
+| `pnpm run dev`    | Start Vite dev server with HMR                    |
+| `pnpm run build`  | Vite production build                             |
+| `pnpm run preview`| Preview the built app via Vite                    |
+| `pnpm run test`   | Run Vitest suite                                  |
+| `pnpm run lint`   | Biome linter + TypeScript checks (src + scripts) |
+| `pnpm run lint:fix`| Auto-fix linting issues (src + scripts)          |
+| `pnpm run format` | Format code with Biome (src + scripts)           |
+| `pnpm run clean`  | Remove dist and Vite cache (`node_modules/.vite`) |
+| `pnpm run check`  | Run all checks (lint, types, limits, deps)        |
 
 ### **Code Quality**
 
-- **Linting**: ESLint with Airbnb configuration
-- **Formatting**: Prettier with consistent rules
-- **TypeScript**: Full type safety (where applicable)
+- **Linting**: Biome (fast linter and formatter) for JavaScript/TypeScript/CSS
+  - Checks both `src/` and `scripts/` directories
+  - Comprehensive rules for complexity, suspicious code, style, correctness, performance, and security
+  - Auto-fix capability: `pnpm run lint:fix`
+- **TypeScript**: Strict type checking with enhanced safety rules
+  - Includes `noImplicitAny`, `strictNullChecks`, `noUnusedLocals`, `noUnusedParameters`
+  - Type checks `src/`, `config/`, and `scripts/` directories
+- **File Size Limits**: Enforced for maintainability
+  - TSX/TS: 400 lines, CSS: 750 lines, JS (scripts): 200 lines
+- **Dead Code Detection**: Knip for unused files, exports, and dependencies
 - **Testing**: Comprehensive unit and integration tests
 
 ---
@@ -257,21 +389,21 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 ### **Typography Scale**
 
 ```css
---text-xs: 0.75rem;   /* 12px */
---text-sm: 0.875rem;  /* 14px */
---text-base: 1rem;    /* 16px */
---text-lg: 1.125rem;  /* 18px */
---text-xl: 1.25rem;   /* 20px */
---text-2xl: 1.5rem;   /* 24px */
+--text-xs: 0.75rem; /* 12px */
+--text-sm: 0.875rem; /* 14px */
+--text-base: 1rem; /* 16px */
+--text-lg: 1.125rem; /* 18px */
+--text-xl: 1.25rem; /* 20px */
+--text-2xl: 1.5rem; /* 24px */
 ```
 
 ### **Color Palette**
 
 ```css
---primary-gold: #e8bf76;    /* Brand accent */
---primary-blue: #3498db;   /* Primary actions */
---neutral-50: #f8f9fa;     /* Light backgrounds */
---neutral-900: #212529;    /* Dark text */
+--primary-gold: #e8bf76; /* Brand accent */
+--primary-blue: #3498db; /* Primary actions */
+--neutral-50: #f8f9fa; /* Light backgrounds */
+--neutral-900: #212529; /* Dark text */
 ```
 
 ---
@@ -329,6 +461,12 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 2. **Verify API Keys** are correctly configured
 3. **Check Network Connectivity** and firewall settings
 
+#### **Environment Issues**
+
+1. **Make sure the `.env.local` file is in the project root directory**
+2. **Ensure there are no extra spaces or quotes around the environment variable values**
+3. **Verify your Supabase project is active and accessible**
+
 #### **Performance Issues**
 
 1. **Clear Browser Cache** completely
@@ -342,7 +480,7 @@ npx vercel --prod  # Deploy to Vercel (requires Vercel CLI login)
 ```bash
 # Kill and restart dev server
 Ctrl+C
-npm run dev
+pnpm run dev
 ```
 
 #### **Tests Failing**
@@ -350,22 +488,31 @@ npm run dev
 ```bash
 # Clear node_modules and reinstall
 rm -rf node_modules
-npm install
+pnpm install
 
 # Clear test cache
-npm run test -- --clearCache
+pnpm run test -- --clearCache
 ```
 
 ---
 
-## 📚 **Contributing**
+## 📚 Documentation
+
+- [Development Guide](docs/DEVELOPMENT.md) - Setup, Standards, & Workflow
+- [Architecture Overview](docs/ARCHITECTURE.md) - System Design & Database
+- [UI/UX Guide](docs/UI_UX.md) - Styling, Accessibility, & Design Tokens
+- [Project Roadmap](docs/ROADMAP.md) - Goals, Bugs, & Status
+
+---
+
+## 🤝 **Contributing**
 
 ### **Development Setup**
 
 1. Fork the repository
 2. Clone your fork: `git clone <your-fork-url>`
-3. Install dependencies: `npm install`
-4. Start development: `npm run dev`
+3. Install dependencies: `pnpm install`
+4. Start development: `pnpm run dev`
 5. Create feature branch: `git checkout -b feature/amazing-feature`
 
 ### **Code Standards**
@@ -381,8 +528,7 @@ npm run test -- --clearCache
 1. Update documentation for new features
 2. Add tests for new functionality
 3. Ensure all tests pass
-4. Update CHANGELOG.md if needed
-5. Request review from maintainers
+4. Request review from maintainers
 
 ---
 
@@ -396,7 +542,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/guitarbeat/name-nosferatu/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/guitarbeat/name-nosferatu/discussions)
-- **Email**: [support@example.com](mailto:support@example.com)
+- **Email**: Contact via GitHub Issues or Discussions
 
 ---
 
@@ -421,4 +567,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for cat lovers everywhere** | _Last updated: October 2025_
+**Built with ❤️ for cat lovers everywhere** | _Last updated: January 2026_

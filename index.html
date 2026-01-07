@@ -1,53 +1,110 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <link rel="manifest" href="/manifest.json" />
     <title>Help Me Name My Cat!</title>
 
     <!-- Mobile-specific meta tags for better navbar experience -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
 
     <!-- SEO -->
-    <meta name="description"
-        content="Pick the perfect cat name via a fun tournament. Save, compare, and share results.">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f7fb">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617">
+    <meta
+      name="description"
+      content="Pick the perfect cat name via a fun tournament. Save, compare, and share results."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#f4f7fb"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#020617"
+    />
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Name Nosferatu">
-    <meta property="og:description" content="Tournament-style voting for cat names.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="/images/IMG_4844.jpg">
+    <meta property="og:title" content="Name Nosferatu" />
+    <meta
+      property="og:description"
+      content="Tournament-style voting for cat names."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/assets/images/IMG_4844.jpg" />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Name Nosferatu">
-    <meta name="twitter:description" content="Tournament-style voting for cat names.">
-  <meta name="twitter:image" content="/images/IMG_4844.jpg">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Name Nosferatu" />
+    <meta
+      name="twitter:description"
+      content="Tournament-style voting for cat names."
+    />
+    <meta name="twitter:image" content="/assets/images/IMG_4844.jpg" />
 
-  <!-- Font performance -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="dns-prefetch" href="//fonts.googleapis.com">
-  <link rel="dns-prefetch" href="//fonts.gstatic.com">
-  <link rel="dns-prefetch" href="//glgmoelyqnbyavabjgyw.supabase.co">
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link
-      href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&display=swap"
-      rel="stylesheet"></noscript>
+    <!-- Font performance - optimized loading strategy -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//glgmoelyqnbyavabjgyw.supabase.co" />
+    <link
+      rel="preconnect"
+      href="https://glgmoelyqnbyavabjgyw.supabase.co"
+      crossorigin
+    />
+    <!-- * Load fonts asynchronously to prevent render blocking -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&family=Sour+Gummy:wght@100&display=swap"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&family=Sour+Gummy:wght@100&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <!-- Black cat favicon stored as a standalone SVG asset -->
+    <link
+      rel="icon"
+      href="/assets/images/black-cat-favicon.svg"
+      type="image/svg+xml"
+    />
 
-  <!-- Black cat favicon stored as a standalone SVG asset -->
-  <link rel="icon" href="/assets/images/black-cat-favicon.svg" type="image/svg+xml" />
-</head>
+    <!-- * Resource hints for better performance -->
+    <!-- * Prefetch for secondary routes -->
+    <link rel="prefetch" href="/assets/js/chunk-Dashboard-*.js" as="script" />
+    <link rel="prefetch" href="/assets/js/chunk-Tournament-*.js" as="script" />
 
-<body>
+    <!-- * Optimize painting performance with no-visible-paint directive -->
+    <style>
+      html {
+        background-color: #050b16;
+      }
+      body {
+        background-color: #050b16;
+      }
+    </style>
+  </head>
+
+  <body>
     <script>
       (function applyInitialTheme() {
         const { documentElement, body } = document;
@@ -55,31 +112,7 @@
           return;
         }
 
-        const STORAGE_KEY = 'theme';
-        const resolveStoredPreference = () => {
-          try {
-            if (!window.localStorage) return null;
-            const stored = window.localStorage.getItem(STORAGE_KEY);
-            return stored === 'light' || stored === 'dark' ? stored : null;
-          } catch (error) {
-            if (
-              typeof process !== 'undefined' &&
-              process.env &&
-              process.env.NODE_ENV === 'development'
-            ) {
-              console.error('Unable to read stored theme during boot:', error);
-            }
-            return null;
-          }
-        };
-
-        const resolveSystemPreference = () =>
-          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-
-        const theme = resolveStoredPreference() ?? resolveSystemPreference();
-
+        const theme = "dark";
         documentElement.dataset.theme = theme;
         if (body) {
           body.dataset.theme = theme;
@@ -87,7 +120,205 @@
       })();
     </script>
     <div id="root"></div>
-    <script type="module" src="/src/index.jsx"></script>
-</body>
+    <script>
+      // * Deployment error detection - runs before React loads
+      (function detectDeploymentErrors() {
+        const ERROR_DISPLAY_ID = "deployment-error-display";
+        const MAX_WAIT_TIME = 5000; // * 5 seconds
 
+        // * Check if root element exists
+        const root = document.getElementById("root");
+        if (!root) {
+          showDeploymentError({
+            title: "Root Element Missing",
+            message:
+              "The application root element (#root) was not found in the HTML.",
+            suggestions: [
+              'Verify index.html contains <div id="root"></div>',
+              "Check that the HTML file is being served correctly",
+            ],
+          });
+        }
+
+        // * Monitor script loading
+        const mainScript =
+          document.querySelector('script[type="module"][src]') ||
+          document.querySelector('script[src*="index"]');
+        if (mainScript) {
+          let scriptLoaded = false;
+          let scriptError = false;
+
+          mainScript.addEventListener("load", () => {
+            scriptLoaded = true;
+          });
+
+          mainScript.addEventListener("error", () => {
+            scriptError = true;
+            showDeploymentError({
+              title: "JavaScript Failed to Load",
+              message:
+                "The application's JavaScript files could not be loaded. This is often caused by:",
+              details: [
+                "Content Security Policy (CSP) blocking scripts",
+                "Incorrect build output paths",
+                "Missing or incorrect base path configuration",
+                "Network issues preventing script downloads",
+              ],
+              suggestions: [
+                'Check browser console for CSP violations (look for "Content-Security-Policy" errors)',
+                "Verify that script files exist in the /assets/js/ directory",
+                "Check Network tab to see if scripts return 404 or are blocked",
+                "Review vercel.json CSP configuration",
+                "Ensure Vite build completed successfully",
+              ],
+            });
+          });
+
+          // * Check if app initialized after timeout
+          setTimeout(() => {
+            if (!scriptLoaded && !scriptError) {
+              // * Script might have loaded but app didn't initialize
+              if (root.children.length === 0) {
+                showDeploymentError({
+                  title: "Application Failed to Initialize",
+                  message:
+                    "The JavaScript loaded but the application failed to initialize. Possible causes:",
+                  details: [
+                    "JavaScript errors preventing React from mounting",
+                    "Missing environment variables (VITE_SUPABASE_URL, etc.)",
+                    "Build configuration issues",
+                    "Runtime errors in the application code",
+                  ],
+                  suggestions: [
+                    "Open browser console (F12) and check for JavaScript errors",
+                    "Verify all required environment variables are set in Vercel",
+                    "Check that the build completed without errors",
+                    "Review the error boundary fallback for more details",
+                    "Try rebuilding the application",
+                  ],
+                });
+              }
+            }
+          }, MAX_WAIT_TIME);
+        }
+
+        // * Monitor CSP violations
+        document.addEventListener("securitypolicyviolation", (event) => {
+          if (
+            event.violatedDirective === "script-src" ||
+            event.effectiveDirective === "script-src"
+          ) {
+            showDeploymentError({
+              title: "Content Security Policy Violation",
+              message:
+                "The application's scripts are being blocked by Content Security Policy:",
+              details: [
+                "Blocked resource: " + (event.blockedURI || "Unknown"),
+                "Violated directive: " + event.violatedDirective,
+                "Current CSP: " + event.originalPolicy,
+              ],
+              suggestions: [
+                "Update vercel.json CSP to allow scripts from 'self'",
+                "Add 'blob:' to script-src for Vite's dynamic imports",
+                "Ensure 'unsafe-inline' is included if needed",
+                "Check that script sources match CSP rules",
+                "Review Vercel deployment logs for CSP configuration",
+              ],
+            });
+          }
+        });
+
+        function showDeploymentError(errorInfo) {
+          // * Remove existing error display if present
+          const existing = document.getElementById(ERROR_DISPLAY_ID);
+          if (existing) {
+            existing.remove();
+          }
+
+          const errorDiv = document.createElement("div");
+          errorDiv.id = ERROR_DISPLAY_ID;
+          errorDiv.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 1rem;
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          `;
+
+          const content = document.createElement("div");
+          content.style.cssText = `
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            color: #1a1a1a;
+          `;
+
+          content.innerHTML = `
+            <div style="font-size: 3rem; text-align: center; margin-bottom: 1rem;">⚠️</div>
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin: 0 0 1rem; color: #dc2626; text-align: center;">
+              ${errorInfo.title}
+            </h2>
+            <p style="font-size: 1rem; line-height: 1.6; margin: 0 0 1.5rem; color: #666;">
+              ${errorInfo.message}
+            </p>
+            ${
+              errorInfo.details
+                ? `
+              <div style="margin: 1.5rem 0; padding: 1rem; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #dc2626;">
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem;">Details:</h3>
+                <ul style="margin: 0; padding-left: 1.5rem;">
+                  ${errorInfo.details.map((d) => `<li style="margin: 0.5rem 0; line-height: 1.5;">${d}</li>`).join("")}
+                </ul>
+              </div>
+            `
+                : ""
+            }
+            ${
+              errorInfo.suggestions
+                ? `
+              <div style="margin: 1.5rem 0; padding: 1rem; background: #f5f5f5; border-radius: 8px; border-left: 4px solid #dc2626;">
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 0.75rem;">How to Fix:</h3>
+                <ol style="margin: 0; padding-left: 1.5rem;">
+                  ${errorInfo.suggestions.map((s) => `<li style="margin: 0.5rem 0; line-height: 1.5;">${s}</li>`).join("")}
+                </ol>
+              </div>
+            `
+                : ""
+            }
+            <div style="display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+              <button onclick="window.location.reload()" style="
+                flex: 1;
+                min-width: 120px;
+                padding: 0.75rem 1.5rem;
+                background: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+              ">Reload Page</button>
+            </div>
+          `;
+
+          errorDiv.appendChild(content);
+          document.body.appendChild(errorDiv);
+        }
+      })();
+    </script>
+    <!-- * Entry point - Vite transforms this path during build to point to bundled assets -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

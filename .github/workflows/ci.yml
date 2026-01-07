@@ -2,43 +2,66 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.mdx"
+      - "**/*.txt"
+      - docs/**
   pull_request:
-    branches: [ main ]
+    branches: [main, develop]
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.mdx"
+      - "**/*.txt"
+      - docs/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-test:
+  test:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    timeout-minutes: 20
+    env:
+      CI: true
+      FORCE_COLOR: 1
+      NODE_OPTIONS: --max-old-space-size=4096
 
-      - name: Setup Node
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.27.0
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: "20"
+          check-latest: true
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
-      - name: Lint (JS & CSS)
-        run: npm run lint
+      - name: Lint & Type Check
+        run: pnpm run lint
 
-      - name: Run unit tests
-        run: npm test
+      - name: Enforce File Limits
+        run: pnpm run check:limits
 
-      - name: Build
-        run: |
-          export BAG_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_URL }}"
-          export BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          npm run build
+      - name: Run tests (Vitest)
+        run: pnpm run test -- --runInBand --reporter=github
 
-      - name: Bundle analyze (optional)
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        run: |
-          export BAG_NEXT_PUBLIC_SUPABASE_URL="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_URL }}"
-          export BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY="${{ secrets.BAG_NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
-          npm run build:analyze
-
-
+      - name: Build (Vite)
+        run: pnpm run build

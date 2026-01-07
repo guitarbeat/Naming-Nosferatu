@@ -1,0 +1,362 @@
+/* Header styles */
+
+.tournamentTitle {
+	margin: 0 0 var(--space-2) 0;
+	font-size: var(--text-3xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-tight);
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+	/* Dark mode gradient (default) */
+	.tournamentTitle {
+		background: linear-gradient(
+			135deg,
+			var(--color-neon-cyan) 0%,
+			var(--color-hot-pink) 50%,
+			var(--color-neutral-50) 100%
+		);
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+		filter: drop-shadow(var(--text-shadow-sm));
+	}
+}
+
+/* Light mode gradient */
+:global(:root[data-theme="light"]) .tournamentTitle {
+	background: linear-gradient(
+		135deg,
+		var(--color-neutral-900) 0%,
+		var(--color-neutral-800) 40%,
+		var(--color-neutral-700) 100%
+	);
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	filter: none;
+	color: var(--color-neutral-900);
+}
+
+/* Fallback */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+	.tournamentTitle {
+		color: var(--text-primary);
+	}
+
+	:global(:root[data-theme="light"]) .tournamentTitle {
+		color: var(--color-neutral-900);
+	}
+}
+
+.tournamentSubtitle {
+	margin: 0;
+	font-size: var(--text-sm);
+	line-height: 1.5;
+	color: var(--text-primary-light, var(--text-secondary));
+}
+
+.tournamentHeaderTop {
+	display: flex;
+	flex-flow: row wrap;
+	gap: var(--space-4);
+	align-items: flex-start;
+	justify-content: space-between;
+	padding-bottom: var(--space-4);
+	border-bottom: var(--card-border-width) solid var(--border-color);
+	animation: slideDown var(--duration-normal) var(--ease-out);
+	flex-shrink: 0;
+}
+
+.tournamentTitleSection {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.headerSearchBar {
+	display: flex;
+	gap: var(--space-2);
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.headerSearchInput {
+	flex: 1 1 300px;
+	min-width: 200px;
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-base);
+	line-height: 1.4;
+	color: var(--text-primary);
+	background: var(--card-background);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: var(--transition-base);
+}
+
+.headerSearchInput:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	box-shadow: var(--focus-ring);
+}
+
+.headerSearchInput::placeholder {
+	color: var(--text-tertiary);
+}
+
+.headerFilters {
+	display: flex;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+}
+
+.headerFilterSelect {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	color: var(--text-primary);
+	background: var(--card-background);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	transition: var(--transition-color);
+	min-width: 120px;
+}
+
+.headerFilterSelect:hover {
+	border-color: var(--accent-color);
+}
+
+.headerFilterSelect:focus {
+	outline: none;
+	border-color: var(--accent-color);
+	box-shadow: var(--focus-ring);
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(calc(var(--space-2) * -1));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.selectionPanel {
+	/* Using composes won't work well across files for composed classes defined locally in standard CSS Modules unless we import them.
+       For refactoring safety, I'll copy the styles or rely on global classes if appropriate, but here I'll just copy the "elevatedCard" and "stack" styles 
+       or assume simple composition isn't needed if I redefine properties.
+       Actually, standard CSS modules composition from other files works like `composes: className from "./other.css"`.
+       Let's try that pattern if possible, or just duplicate for "stack" and "elevatedCard" to be safe and clean.
+    */
+	background: var(--card-background);
+	border-radius: var(--radius-lg);
+	padding: var(--space-3);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4); /* was stackGapXl */
+
+	/* elevatedCard styles */
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	box-shadow: var(--shadow-lg);
+	min-width: 0;
+}
+
+.panelHeader {
+	box-sizing: border-box;
+	width: 100%;
+	padding: var(--space-5) var(--space-6) var(--space-4);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-info) 6%, transparent) 0%,
+		color-mix(in srgb, var(--color-info) 2%, transparent) 3%,
+		transparent 60%
+	);
+	border-bottom: var(--card-border-width) solid var(--border-color);
+}
+
+.headerRow {
+	display: flex;
+	gap: var(--space-4);
+	align-items: center; /* changed from cluster */
+	flex-wrap: wrap; /* changed from clusterWrap */
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+@media (width <= 768px) {
+	.headerRow {
+		justify-content: center;
+		text-align: center;
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--space-3);
+	}
+
+	.panelHeader {
+		padding: var(--space-4); /* was space-3 in one media query */
+	}
+}
+
+.headerActions {
+	display: flex;
+	gap: var(--space-3);
+	align-items: center;
+	flex-wrap: wrap;
+	justify-content: center;
+	min-height: 48px;
+}
+
+@media (width <= 768px) {
+	.headerActions {
+		flex-wrap: wrap;
+		min-height: 60px;
+	}
+}
+
+/* Header Action Button - Copied logic */
+.headerActionButton {
+	position: relative;
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: var(--space-3) var(--space-4);
+	overflow: hidden;
+	font-size: var(--text-sm);
+	font-weight: 600;
+	color: var(--text-primary);
+	letter-spacing: var(--tracking-normal);
+	white-space: nowrap;
+	text-shadow: var(--text-shadow-sm);
+	cursor: pointer;
+	user-select: none;
+	background: var(--glass-bg);
+	background-image:
+		linear-gradient(var(--card-background), var(--card-background)), var(--gradient-primary);
+	background-clip: padding-box;
+	background-origin: border-box;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--radius-xl);
+	box-shadow:
+		var(--shadow-md),
+		var(--shadow-sm),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	backdrop-filter: blur(12px);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.headerActionButton::before {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	content: "";
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent),
+		transparent
+	);
+	transition: left var(--duration-slow) var(--ease-out);
+}
+
+.headerActionButton:hover:not(:disabled) {
+	background-image: linear-gradient(var(--card-hover), var(--card-hover)), var(--gradient-vibrant);
+	border-color: var(--neon-cyan-100);
+	box-shadow: var(--shadow-xl), var(--shadow-md), var(--glow-cyan);
+	transform: translateY(-2px) scale(1.02);
+}
+
+.headerActionButton:hover:not(:disabled)::before {
+	left: 100%;
+}
+
+.headerActionButton:active:not(:disabled) {
+	transform: translateY(-1px) scale(1.01);
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.headerActionButtonActive {
+	composes: headerActionButton;
+	font-weight: 700;
+	color: var(--charcoal);
+	text-shadow: none;
+	background-image:
+		linear-gradient(var(--accent-color), var(--highlight-color)), var(--gradient-vibrant);
+	border-color: var(--mimosa);
+	box-shadow: var(--shadow-lg), var(--shadow-md), var(--glow-pink);
+	transform: translateY(-1px);
+}
+
+.headerActionButtonActive:hover:not(:disabled) {
+	background-image:
+		linear-gradient(var(--highlight-color), var(--accent-color)), var(--gradient-vibrant);
+	box-shadow: var(--shadow-xl), var(--shadow-lg), var(--glow-vibrant);
+	transform: translateY(-3px) scale(1.03);
+}
+
+.headerActionButton:disabled {
+	color: var(--text-tertiary);
+	cursor: not-allowed;
+	background: var(--glass-bg-light);
+	box-shadow: none;
+	opacity: 0.5;
+	transform: none;
+}
+
+.headerActionButton:focus-visible {
+	outline: var(--focus-ring-width) solid var(--accent-color);
+	outline-offset: var(--space-1);
+	box-shadow: var(--focus-ring), var(--shadow-md);
+}
+
+.selectAllButton {
+	/* Using buttonInverted logic directly */
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y-md) var(--button-padding-x-md);
+	font-size: var(--text-sm);
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-secondary-bg, var(--color-neutral-800));
+	border-color: var(--color-neutral-600);
+
+	min-width: fit-content;
+	padding-block: var(--space-3);
+	white-space: nowrap;
+}
+
+:global(:root[data-theme="light"]) .selectAllButton {
+	color: var(--color-neutral-50);
+	background: var(--color-neutral-800);
+	border-color: var(--color-neutral-900);
+}
+
+:global(:root[data-theme="light"]) .selectAllButton:hover:not(:disabled) {
+	background: var(--color-neutral-900);
+	border-color: var(--color-neutral-900);
+}
+
+.selectAllButton:focus-visible {
+	outline: var(--focus-ring-width) solid var(--color-neutral-900);
+	outline-offset: var(--focus-ring-offset);
+}
+
+@media (width <= 768px) {
+	.selectAllButton {
+		width: 100%;
+	}
+}

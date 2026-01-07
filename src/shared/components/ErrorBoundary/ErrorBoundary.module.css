@@ -1,0 +1,68 @@
+.errorBoundary {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--space-50); /* Keep fixed for consistent error display */
+	padding: var(--space-8);
+	background: color-mix(in srgb, var(--color-error) 5%, transparent);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 20%, transparent);
+	border-radius: var(--radius-md);
+	margin: var(--space-4) 0;
+}
+
+.errorContent {
+	text-align: center;
+	max-width: var(--max-width-content); /* Keep fixed for readability */
+}
+
+.errorContent h2 {
+	color: var(--color-error);
+	margin-bottom: var(--space-4);
+	font-size: var(--text-2xl);
+}
+
+.errorContent p {
+	color: var(--text-secondary);
+	margin-bottom: var(--space-4);
+	line-height: var(--leading-normal);
+}
+
+.errorDetails {
+	text-align: left;
+	margin: var(--space-4) 0;
+	padding: var(--space-4);
+	background: var(--glass-bg-light);
+	border-radius: var(--radius-sm);
+	font-size: var(--text-sm);
+}
+
+.errorDetails summary {
+	cursor: pointer;
+	font-weight: var(--font-weight-medium);
+	margin-bottom: var(--space-2);
+}
+
+.errorDetails p {
+	margin: var(--space-1) 0;
+	font-family: var(--font-mono);
+}
+
+.retryButton {
+	background: var(--color-info);
+	color: var(--color-neutral-50);
+	border: none;
+	padding: var(--space-3) var(--space-6);
+	border-radius: var(--radius-md);
+	cursor: pointer;
+	font-weight: var(--font-weight-medium);
+	transition: var(--transition-base);
+}
+
+.retryButton:hover {
+	background: color-mix(in srgb, var(--color-info) 90%, var(--color-neutral-900));
+}
+
+.retryButton:focus {
+	outline: var(--focus-ring-width) solid var(--color-info);
+	outline-offset: var(--focus-ring-offset);
+}

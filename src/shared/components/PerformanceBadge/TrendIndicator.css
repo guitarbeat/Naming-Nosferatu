@@ -1,0 +1,70 @@
+/* TrendIndicator Component Styles */
+
+.trend-indicator {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-1);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	padding: var(--space-1) var(--space-1);
+	border-radius: var(--radius-sm);
+	transition: var(--transition-base);
+	white-space: nowrap;
+}
+
+.trend-indicator.trend-up {
+	color: var(--color-success);
+	background: color-mix(in srgb, var(--color-success) 10%, transparent);
+}
+
+.trend-indicator.trend-down {
+	color: var(--color-error);
+	background: color-mix(in srgb, var(--color-error) 10%, transparent);
+}
+
+.trend-indicator.trend-stable {
+	color: var(--color-neutral-500);
+	background: color-mix(in srgb, var(--color-neutral-500) 10%, transparent);
+}
+
+.trend-indicator.trend-animated {
+	animation: trend-pulse var(--duration-slower) var(--ease-in-out-expo) infinite;
+}
+
+@keyframes trend-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
+}
+
+.trend-icon {
+	font-size: 1em;
+	line-height: 1;
+}
+
+.trend-value {
+	font-size: 0.8em;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+	.trend-indicator {
+		font-size: var(--text-xs);
+		padding: var(--space-1) var(--space-1);
+	}
+
+	.trend-icon {
+		font-size: 0.9em; /* Relative sizing, appropriate */
+	}
+
+	.trend-value {
+		font-size: 0.75em; /* Relative sizing, appropriate */
+	}
+}

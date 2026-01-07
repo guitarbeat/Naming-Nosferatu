@@ -1,0 +1,54 @@
+/**
+ * @file analysis-mode-global.css
+ * @description Global Analysis Mode Effects
+ *
+ * Global styles that affect the entire page when analysis mode is active.
+ * Includes body backgrounds, animations, and page-level effects.
+ */
+
+/* ==========================================================================
+   GLOBAL ANALYSIS MODE EFFECTS
+   ========================================================================== */
+/* * Subtle grid background when analysis mode is active */
+body:has(.analysis-mode-banner) {
+	background-image:
+		linear-gradient(
+			to right,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		),
+		linear-gradient(
+			to bottom,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		);
+	background-size: var(--space-10) var(--space-10);
+	background-attachment: fixed;
+	/* * Smooth background transition */
+	transition: background-image var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+body:has(.analysis-mode-banner)::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	background: radial-gradient(
+		circle at 50% 0%,
+		color-mix(in srgb, var(--analysis-accent) 5%, transparent),
+		transparent 70%
+	);
+	pointer-events: none;
+	z-index: var(--z-negative);
+	/* * Smooth fade-in */
+	animation: analysis-bg-fade-in var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+@keyframes analysis-bg-fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}

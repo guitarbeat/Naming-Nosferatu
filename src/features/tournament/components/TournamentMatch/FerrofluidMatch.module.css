@@ -1,0 +1,538 @@
+/**
+ * FerrofluidMatch.module.css
+ * Styles for the ferrofluid-inspired tournament match display
+ */
+
+/* Battle Stage Container */
+.battleStage {
+	position: relative;
+	width: 100%;
+	max-width: 1200px;
+	height: 600px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto;
+}
+
+/* Stage Wrapper */
+.stageWrapper {
+	position: relative;
+	display: flex;
+	gap: 120px;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+/* Fighter Orb */
+.fighterOrb {
+	position: relative;
+	width: 320px;
+	height: 320px;
+	background: var(--color-neutral-900);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+	cursor: pointer;
+	z-index: var(--z-10);
+	will-change: transform;
+	overflow: hidden;
+}
+
+/* Ferrofluid Particle Effects */
+.fighterOrb::before {
+	content: "";
+	position: absolute;
+	inset: -2px;
+	background: linear-gradient(
+		135deg,
+		var(--color-neon-cyan) 0%,
+		var(--color-hot-pink) 25%,
+		var(--color-fire-red) 50%,
+		var(--color-hot-pink) 75%,
+		var(--color-neon-cyan) 100%
+	);
+	border-radius: 50%;
+	opacity: 0.3;
+	z-index: -1;
+	animation: ferrofluidGlow 3s ease-in-out infinite alternate;
+}
+
+.fighterOrb::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: radial-gradient(
+		circle at 30% 30%,
+		color-mix(in srgb, var(--color-neon-cyan) 20%, transparent) 0%,
+		transparent 50%
+	);
+	animation: ferrofluidParticles 4s ease-in-out infinite;
+	pointer-events: none;
+}
+
+/* Enhanced ferrofluid glow animation */
+@keyframes ferrofluidGlow {
+	0% {
+		opacity: 0.3;
+		filter: hue-rotate(0deg) brightness(1);
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.6;
+		filter: hue-rotate(45deg) brightness(1.2);
+		transform: scale(1.02);
+	}
+	100% {
+		opacity: 0.3;
+		filter: hue-rotate(90deg) brightness(1);
+		transform: scale(1);
+	}
+}
+
+/* Ferrofluid particle movement */
+@keyframes ferrofluidParticles {
+	0% {
+		background: radial-gradient(
+			circle at 30% 30%,
+			color-mix(in srgb, var(--color-neon-cyan) 20%, transparent) 0%,
+			transparent 50%
+		);
+	}
+	25% {
+		background: radial-gradient(
+			circle at 70% 20%,
+			color-mix(in srgb, var(--color-hot-pink) 25%, transparent) 0%,
+			transparent 50%
+		);
+	}
+	50% {
+		background: radial-gradient(
+			circle at 80% 70%,
+			color-mix(in srgb, var(--color-fire-red) 20%, transparent) 0%,
+			transparent 50%
+		);
+	}
+	75% {
+		background: radial-gradient(
+			circle at 20% 80%,
+			color-mix(in srgb, var(--color-hot-pink) 25%, transparent) 0%,
+			transparent 50%
+		);
+	}
+	100% {
+		background: radial-gradient(
+			circle at 30% 30%,
+			color-mix(in srgb, var(--color-neon-cyan) 20%, transparent) 0%,
+			transparent 50%
+		);
+	}
+}
+
+.fighterOrb.selected {
+	transform: scale(1.05);
+}
+
+.fighterOrb.disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Magnetic Spikes Animation */
+.spikes {
+	position: absolute;
+	inset: -20px;
+	background: repeating-conic-gradient(
+		from 0deg,
+		transparent 0deg 10deg,
+		var(--color-neutral-900) 10deg 20deg
+	);
+	mask: radial-gradient(transparent 55%, var(--color-neutral-900) 70%);
+	opacity: 0.4;
+	animation: rotateSpikes 20s linear infinite;
+	pointer-events: none;
+}
+
+/* Ripple Effects */
+.ripple {
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: radial-gradient(
+		circle,
+		color-mix(in srgb, var(--color-neon-cyan) 40%, transparent) 0%,
+		color-mix(in srgb, var(--color-neon-cyan) 20%, transparent) 30%,
+		transparent 70%
+	);
+	animation: rippleExpand 0.8s ease-out forwards;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.fighterOrb.right .ripple {
+	background: radial-gradient(
+		circle,
+		color-mix(in srgb, var(--color-hot-pink) 40%, transparent) 0%,
+		color-mix(in srgb, var(--color-hot-pink) 20%, transparent) 30%,
+		transparent 70%
+	);
+}
+
+@keyframes rippleExpand {
+	0% {
+		transform: scale(0);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(2.5);
+		opacity: 0;
+	}
+}
+
+@keyframes rotateSpikes {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Fighter Content */
+.fighterContent {
+	text-align: center;
+	z-index: var(--z-10);
+	filter: blur(0);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4);
+	width: 100%;
+	height: 100%;
+	padding: var(--space-4);
+}
+
+/* Avatar/Image Wrapper */
+.avatarWrap {
+	width: var(--space-45, 180px);
+	height: var(--space-45, 180px);
+	border-radius: var(--radius-full);
+	overflow: hidden;
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	position: relative;
+	flex-shrink: 0;
+}
+
+.avatarWrap img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: grayscale(100%) contrast(1.2);
+	transition:
+		var(--transition-transform),
+		filter var(--duration-slower) var(--ease-standard);
+}
+
+.fighterOrb:hover .avatarWrap img {
+	transform: scale(1.1);
+	filter: grayscale(0%);
+}
+
+.fighterOrb.disabled:hover .avatarWrap img {
+	transform: none;
+	filter: grayscale(100%) contrast(1.2);
+}
+
+/* Name Text */
+.nameText {
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--color-neutral-50);
+	margin: 0;
+	text-align: center;
+	line-height: var(--leading-tight);
+	text-shadow: var(--text-shadow-lg);
+}
+
+/* VS Text */
+.vsCore {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	z-index: var(--z-10);
+	mix-blend-mode: difference;
+	pointer-events: none;
+}
+
+.vsText {
+	font-size: clamp(var(--text-4xl), 10vw, var(--text-5xl));
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
+	color: var(--color-neutral-50);
+	font-style: italic;
+	opacity: 0.8;
+	pointer-events: none;
+	line-height: 1;
+}
+
+/* Magnetic Line */
+.magneticLine {
+	position: absolute;
+	height: 1px;
+	width: 100%;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		color-mix(in srgb, var(--color-neutral-50) 10%, transparent),
+		transparent
+	);
+	top: 50%;
+	left: 0;
+	pointer-events: none;
+}
+
+/* Hover Effects */
+@media (hover: hover) and (pointer: fine) {
+	.fighterOrb:not(.disabled):hover {
+		transform: translateX(var(--space-10)) var(--transform-hover-scale);
+	}
+
+	.fighterOrb.right:not(.disabled):hover {
+		transform: translateX(calc(var(--space-10) * -1)) var(--transform-hover-scale);
+	}
+}
+
+/* Responsive Design */
+@media (width <= 1024px) {
+	.battleStage {
+		height: 500px;
+	}
+
+	.stageWrapper {
+		gap: 80px;
+	}
+
+	.fighterOrb {
+		width: 280px;
+		height: 280px;
+	}
+
+	.avatarWrap {
+		width: 150px;
+		height: 150px;
+	}
+
+	.nameText {
+		font-size: 1.75rem;
+	}
+
+	.vsText {
+		font-size: 8rem;
+	}
+}
+
+@media (width <= 768px) {
+	.battleStage {
+		height: 400px;
+	}
+
+	.stageWrapper {
+		gap: 40px;
+		flex-direction: column;
+	}
+
+	.fighterOrb {
+		width: 240px;
+		height: 240px;
+	}
+
+	.avatarWrap {
+		width: 120px;
+		height: 120px;
+	}
+
+	.nameText {
+		font-size: 1.5rem;
+	}
+
+	.vsText {
+		font-size: 5rem;
+	}
+
+	.fighterOrb:not(.disabled):hover {
+		transform: translateY(-20px) scale(1.05);
+	}
+
+	.fighterOrb.right:not(.disabled):hover {
+		transform: translateY(-20px) scale(1.05);
+	}
+}
+
+/* Vote Confirmation Checkmark */
+.voteCheckmark {
+	position: absolute;
+	top: var(--space-5);
+	right: var(--space-5);
+	z-index: var(--z-20);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 60px;
+	height: 60px;
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--color-success);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 20%, transparent),
+		color-mix(in srgb, var(--color-success) 15%, transparent)
+	);
+	border: 3px solid var(--color-success);
+	border-radius: var(--radius-full);
+	box-shadow:
+		0 0 20px color-mix(in srgb, var(--color-success) 50%, transparent),
+		0 0 40px color-mix(in srgb, var(--color-success) 30%, transparent),
+		var(--shadow-md),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	backdrop-filter: blur(var(--glass-blur));
+	animation:
+		checkmarkPulse var(--duration-slower) var(--ease-out),
+		checkmarkGlow 2s ease-in-out infinite alternate,
+		checkmarkFloat 3s ease-in-out infinite;
+}
+
+/* Particle burst effect for vote confirmation */
+.voteCheckmark::before {
+	content: "";
+	position: absolute;
+	inset: -10px;
+	border-radius: var(--radius-full);
+	background: radial-gradient(
+		circle,
+		color-mix(in srgb, var(--color-success) 40%, transparent) 0%,
+		color-mix(in srgb, var(--color-success) 20%, transparent) 40%,
+		transparent 70%
+	);
+	animation: particleBurst 1.5s ease-out forwards;
+	pointer-events: none;
+}
+
+/* Success particles */
+.voteCheckmark::after {
+	content: "✨";
+	position: absolute;
+	top: -15px;
+	right: -15px;
+	font-size: var(--text-lg);
+	color: var(--color-success);
+	animation: particleFloat 2s ease-in-out infinite;
+	opacity: 0;
+	animation-delay: 0.5s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes checkmarkPulse {
+	0% {
+		transform: scale(0) rotate(-180deg);
+		opacity: 0;
+		filter: brightness(1);
+	}
+	30% {
+		transform: scale(1.3) rotate(10deg);
+		opacity: 0.8;
+		filter: brightness(1.5);
+	}
+	60% {
+		transform: scale(0.9) rotate(-5deg);
+		opacity: 1;
+		filter: brightness(1.2);
+	}
+	100% {
+		transform: scale(1) rotate(0deg);
+		opacity: 1;
+		filter: brightness(1);
+	}
+}
+
+@keyframes checkmarkGlow {
+	0% {
+		box-shadow:
+			0 0 20px color-mix(in srgb, var(--color-success) 50%, transparent),
+			0 0 40px color-mix(in srgb, var(--color-success) 30%, transparent),
+			var(--shadow-md),
+			inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	}
+	100% {
+		box-shadow:
+			0 0 30px color-mix(in srgb, var(--color-success) 70%, transparent),
+			0 0 60px color-mix(in srgb, var(--color-success) 40%, transparent),
+			var(--shadow-md),
+			inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	}
+}
+
+@keyframes checkmarkFloat {
+	0%,
+	100% {
+		transform: translateY(0px) rotate(0deg);
+	}
+	25% {
+		transform: translateY(-2px) rotate(1deg);
+	}
+	75% {
+		transform: translateY(1px) rotate(-0.5deg);
+	}
+}
+
+@keyframes particleBurst {
+	0% {
+		transform: scale(0);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.5);
+		opacity: 0.7;
+	}
+	100% {
+		transform: scale(2);
+		opacity: 0;
+	}
+}
+
+@keyframes particleFloat {
+	0% {
+		transform: translateY(0px) scale(0);
+		opacity: 0;
+	}
+	20% {
+		transform: translateY(-10px) scale(1);
+		opacity: 1;
+	}
+	80% {
+		transform: translateY(-15px) scale(1);
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-20px) scale(0.8);
+		opacity: 0;
+	}
+}
+
+/* SVG Filter Definition */
+.ferroFilter {
+	position: absolute;
+	width: 0;
+	height: 0;
+	visibility: hidden;
+}
