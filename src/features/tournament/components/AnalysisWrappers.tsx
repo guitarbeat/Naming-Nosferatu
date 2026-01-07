@@ -331,13 +331,21 @@ export function AnalysisBulkActionsWrapper({
 		}
 		const shouldSelect = !allVisibleSelected;
 		if (context.toggleNamesByIds) {
-			context.toggleNamesByIds(visibleNameIds.map(id => String(id)), shouldSelect);
+			context.toggleNamesByIds(
+				visibleNameIds.map((id) => String(id)),
+				shouldSelect,
+			);
 			return;
 		}
 		visibleNameIds.forEach((id) => {
 			context.toggleNameById?.(String(id), shouldSelect);
 		});
-	}, [allVisibleSelected, filteredAndSortedNames, context.toggleNamesByIds, context.toggleNameById]);
+	}, [
+		allVisibleSelected,
+		filteredAndSortedNames,
+		context.toggleNamesByIds,
+		context.toggleNameById,
+	]);
 
 	const handleExport = useCallback(() => {
 		try {
@@ -394,7 +402,7 @@ export function AnalysisBulkActionsWrapper({
 		}
 	}, [selectedNamesArray, showError, handleBulkUnhide]);
 
-	if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
+	if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
 		return null;
 	}
 

@@ -1,4 +1,4 @@
-import errorStyles from "../../styles/TournamentError.module.css";
+import errorStyles from "../../styles/Error.module.css";
 
 export function TournamentErrorState() {
 	return (

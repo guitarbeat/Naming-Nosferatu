@@ -6,6 +6,18 @@ import { TournamentToolbar } from "../../TournamentToolbar/TournamentToolbar";
 import styles from "../NameManagementView.module.css";
 import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 
+export interface SwipeableCardsProps {
+	names: NameItem[];
+	selectedNames: NameItem[];
+	onToggleName: (name: NameItem) => void;
+	onRateName: (name: NameItem, rating: number) => void;
+	isAdmin: boolean;
+	isSelectionMode: boolean;
+	showCatPictures: boolean;
+	imageList?: string[];
+	onStartTournament?: (selectedNames: NameItem[]) => void;
+}
+
 interface TournamentModeProps {
 	analysisMode: boolean;
 	filterConfig: TournamentFilters;
@@ -29,7 +41,7 @@ interface TournamentModeProps {
 	isAdmin?: boolean;
 	imageList?: string[];
 	// biome-ignore lint/style/useNamingConvention: Component prop, PascalCase is appropriate
-	SwipeableCards?: React.ComponentType<unknown>;
+	SwipeableCards?: React.ComponentType<SwipeableCardsProps>;
 }
 
 export function TournamentMode({
@@ -154,7 +166,7 @@ export function TournamentMode({
 							showCatPictures: showCatPictures,
 							imageList: imageList,
 							onStartTournament: onStartTournament,
-						} as any)
+						})
 					) : (
 						<NameGrid
 							names={names}

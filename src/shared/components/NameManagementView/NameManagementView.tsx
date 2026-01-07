@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "../../providers";
 import { ErrorComponent } from "../CommonUI";
 import { ProfileMode } from "./modes/ProfileMode";
-import { TournamentMode } from "./modes/TournamentMode";
+import { type SwipeableCardsProps, TournamentMode } from "./modes/TournamentMode";
 import styles from "./NameManagementView.module.css";
 import {
 	type NameItem,
@@ -61,12 +61,7 @@ export function NameManagementView({
 		extensions,
 	});
 
-	const {
-		names,
-		isError,
-		dataError,
-		clearErrors,
-	} = state;
+	const { names, isError, dataError, clearErrors } = state;
 
 	// * Feedback Side Effects
 	useEffect(() => {
@@ -91,7 +86,6 @@ export function NameManagementView({
 		},
 		[onStartTournament, showToast],
 	);
-
 
 	const renderContent = () => {
 		// 1. Dashboard Mode (Analysis or Profile Dashboard via extension)
@@ -132,7 +126,9 @@ export function NameManagementView({
 					extensions={extensions}
 					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
 					imageList={tournamentProps.imageList as string[]}
-					SwipeableCards={tournamentProps.SwipeableCards as React.ComponentType<unknown>}
+					SwipeableCards={
+						tournamentProps.SwipeableCards as React.ComponentType<SwipeableCardsProps>
+					}
 					totalCount={names.length}
 					filteredCount={state.filteredNamesForSwipe.length}
 				/>

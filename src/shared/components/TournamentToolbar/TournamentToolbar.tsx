@@ -415,7 +415,6 @@ function TournamentToolbar({
 	onOpenSuggestName: _onOpenSuggestName,
 	className = "",
 }: TournamentToolbarProps) {
-
 	const isTournament = mode === "tournament";
 	const isHybrid = mode === "hybrid";
 	// * Progressive Disclosure: In tournament mode, filters are hidden by default

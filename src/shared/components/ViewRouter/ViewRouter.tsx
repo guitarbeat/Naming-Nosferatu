@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 import { lazy, Suspense } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
-import CombinedLoginTournamentSetup from "../../../features/tournament/CombinedLoginTournamentSetup";
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";
-import { ErrorComponent, Loading } from "../CommonUI";
+import TournamentSetup from "../../../features/tournament/TournamentSetup";
 import type { NameItem } from "../../../types/components";
+import { ErrorComponent, Loading } from "../CommonUI";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
@@ -66,7 +66,7 @@ export default function ViewRouter({
 			]),
 		);
 		return (
-			<CombinedLoginTournamentSetup
+			<TournamentSetup
 				onLogin={onLogin as (name: string) => Promise<boolean>}
 				onStart={onTournamentSetup as (selectedNames: unknown) => void}
 				userName={userName}
@@ -82,7 +82,7 @@ export default function ViewRouter({
 	const currentPath =
 		typeof window !== "undefined" && window.location && window.location.pathname
 			? window.location.pathname
-			: (currentRoute.split("?")[0]?.split("#")[0] || "/");
+			: currentRoute.split("?")[0]?.split("#")[0] || "/";
 	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
 
 	if (shouldShowDashboard) {

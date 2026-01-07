@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { siteSettingsAPI } from "../../../shared/services/supabase/client";
-import type { AppState } from "../../../types/store";
+import type { AppState, CatChosenName } from "../../../types/store";
 
 export const createSiteSettingsSlice: StateCreator<
 	AppState,
@@ -16,7 +16,7 @@ export const createSiteSettingsSlice: StateCreator<
 	siteSettingsActions: {
 		loadCatChosenName: async () => {
 			try {
-				const data = await siteSettingsAPI.getCatChosenName();
+				const data = (await siteSettingsAPI.getCatChosenName()) as CatChosenName | null;
 				set((state) => ({
 					siteSettings: {
 						...state.siteSettings,

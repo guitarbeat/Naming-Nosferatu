@@ -179,7 +179,9 @@ export function applyNameFilters(
 				break;
 			case "created_at":
 			case "date":
-				comp = new Date(a.created_at as string || "1970-01-01").getTime() - new Date(b.created_at as string || "1970-01-01").getTime();
+				comp =
+					new Date((a.created_at as string) || "1970-01-01").getTime() -
+					new Date((b.created_at as string) || "1970-01-01").getTime();
 				break;
 			default:
 				comp = 0;

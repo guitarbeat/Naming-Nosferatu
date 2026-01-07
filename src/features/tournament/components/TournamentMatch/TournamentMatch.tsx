@@ -11,9 +11,9 @@ import Button from "../../../../shared/components/Button/Button";
 import { Error } from "../../../../shared/components/CommonUI";
 import { playSound } from "../../../../shared/utils/soundManager";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
-import controlsStyles from "../../styles/TournamentControls.module.css";
-import errorStyles from "../../styles/TournamentError.module.css";
-import tournamentStyles from "../../styles/TournamentMatch.module.css";
+import controlsStyles from "../../styles/Controls.module.css";
+import errorStyles from "../../styles/Error.module.css";
+import tournamentStyles from "../../styles/Match.module.css";
 import { getRandomCatImage } from "../../tournamentUtils";
 import styles from "./FerrofluidMatch.module.css";
 

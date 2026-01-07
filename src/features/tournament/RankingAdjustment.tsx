@@ -80,16 +80,23 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 		}
 	}, [rankings, hasUnsavedChanges, items]);
 
+	const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 	useEffect(() => {
 		isMountedRef.current = true;
-		let saveTimer: ReturnType<typeof setTimeout> | null = null;
-		let successTimer: ReturnType<typeof setTimeout> | null = null;
-		let errorTimer: ReturnType<typeof setTimeout> | null = null;
 
 		if (items && rankings && haveRankingsChanged(items, rankings)) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setSaveStatus("saving");
-			saveTimer = setTimeout(() => {
+
+			// Clear any existing save timer
+			if (saveTimerRef.current) {
+				clearTimeout(saveTimerRef.current);
+			}
+
+			saveTimerRef.current = setTimeout(() => {
 				onSave(items)
 					.then(() => {
 						if (!isMountedRef.current) {
@@ -97,7 +104,12 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 						}
 						setHasUnsavedChanges(false);
 						setSaveStatus("success");
-						successTimer = setTimeout(() => {
+
+						if (successTimerRef.current) {
+							clearTimeout(successTimerRef.current);
+						}
+
+						successTimerRef.current = setTimeout(() => {
 							if (isMountedRef.current) {
 								setSaveStatus("");
 							}
@@ -115,7 +127,12 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 						});
 
 						setSaveStatus("error");
-						errorTimer = setTimeout(() => {
+
+						if (errorTimerRef.current) {
+							clearTimeout(errorTimerRef.current);
+						}
+
+						errorTimerRef.current = setTimeout(() => {
 							if (isMountedRef.current) {
 								setSaveStatus("");
 							}
@@ -129,18 +146,29 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 		}
 
 		return () => {
-			isMountedRef.current = false;
-			if (saveTimer) {
-				clearTimeout(saveTimer);
+			// Note: We don't set isMountedRef.current = false here because it's managed by a separate cleanup effect
+			// and we want this effect to clean up its own timers on every re-run.
+			if (saveTimerRef.current) {
+				clearTimeout(saveTimerRef.current);
+				saveTimerRef.current = null;
 			}
-			if (successTimer) {
-				clearTimeout(successTimer);
+			if (successTimerRef.current) {
+				clearTimeout(successTimerRef.current);
+				successTimerRef.current = null;
 			}
-			if (errorTimer) {
-				clearTimeout(errorTimer);
+			if (errorTimerRef.current) {
+				clearTimeout(errorTimerRef.current);
+				errorTimerRef.current = null;
 			}
 		};
 	}, [items, rankings, onSave]);
+
+	useEffect(() => {
+		isMountedRef.current = true;
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	const handleDragStart = () => {
 		setIsDragging(true);

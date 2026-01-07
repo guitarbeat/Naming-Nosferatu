@@ -1,11 +1,11 @@
 /**
- * @module useTournamentHandlers
+ * @module useTournamentUIHandlers
  * @description Custom hook for tournament event handlers and callbacks.
  */
 
 import { useCallback } from "react";
 
-interface UseTournamentHandlersProps {
+interface UseTournamentUIHandlersProps {
 	setIsProcessing: (value: boolean) => void;
 	setVotingError: (error: unknown) => void;
 	setShowBracket: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -19,7 +19,7 @@ interface UseTournamentHandlersProps {
 	};
 }
 
-export function useTournamentHandlers({
+export function useTournamentUIHandlers({
 	setIsProcessing,
 	setVotingError,
 	setShowBracket,
@@ -29,7 +29,7 @@ export function useTournamentHandlers({
 	existingRatings = {},
 	onComplete,
 	audioManager,
-}: UseTournamentHandlersProps) {
+}: UseTournamentUIHandlersProps) {
 	const handleEndEarly = useCallback(async () => {
 		try {
 			setIsProcessing(true);

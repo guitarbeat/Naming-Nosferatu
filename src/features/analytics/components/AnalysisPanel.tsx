@@ -1,7 +1,7 @@
 import type React from "react";
 import { CollapsibleHeader } from "../../../shared/components/Header/CollapsibleHeader";
 import insightsStyles from "./AnalysisInsights.module.css";
-import viewToggleStyles from "./AnalysisViewToggle.module.css";
+import viewToggleStyles from "./ViewToggle.module.css";
 
 interface AnalysisPanelProps {
 	children: React.ReactNode;

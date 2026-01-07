@@ -1,5 +1,5 @@
 /**
- * @module CombinedLoginTournamentSetup
+ * @module TournamentSetup
  * @description Combined login and tournament setup component.
  * Shows login screen when not logged in, transitions to tournament setup after login.
  */
@@ -20,13 +20,13 @@ import {
 import Lightbox from "./components/Lightbox";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
+import identityStyles from "./styles/Identity.module.css";
 import layoutStyles from "./styles/SetupLayout.module.css";
 import photoStyles from "./styles/SetupPhotos.module.css";
-import identityStyles from "./TournamentSetupIdentity.module.css";
 
 const ErrorBoundary = Error;
 
-interface CombinedLoginTournamentSetupProps {
+interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;
 	onStart: (selectedNames: NameItem[]) => void;
 	userName?: string;
@@ -37,7 +37,7 @@ interface CombinedLoginTournamentSetupProps {
 	existingRatings?: Record<string, number>;
 }
 
-function CombinedLoginTournamentSetupContent({
+function TournamentSetupContent({
 	onLogin,
 	onStart: _onStart,
 	userName = "",
@@ -46,7 +46,7 @@ function CombinedLoginTournamentSetupContent({
 	onOpenSuggestName: _onOpenSuggestName,
 	onNameChange,
 	existingRatings: _existingRatings,
-}: CombinedLoginTournamentSetupProps) {
+}: TournamentSetupProps) {
 	const catRef = useRef<HTMLDivElement>(null);
 	const [analysisMode, setAnalysisMode] = useState(enableAnalysisMode);
 
@@ -439,7 +439,6 @@ function CombinedLoginTournamentSetupContent({
 							setAnalysisMode={setAnalysisMode}
 							extensions={{
 								dashboard: createAnalysisDashboardWrapper(
-									// biome-ignore lint/suspicious/noExplicitAny: Type conversion between UserStats and SummaryStats
 									stats as any,
 									selectionStats,
 									isAdmin,
@@ -479,14 +478,14 @@ function CombinedLoginTournamentSetupContent({
 	);
 }
 
-function CombinedLoginTournamentSetup(props: CombinedLoginTournamentSetupProps) {
+function TournamentSetup(props: TournamentSetupProps) {
 	return (
 		<ErrorBoundary variant="boundary">
-			<CombinedLoginTournamentSetupContent {...props} />
+			<TournamentSetupContent {...props} />
 		</ErrorBoundary>
 	);
 }
 
-CombinedLoginTournamentSetup.displayName = "CombinedLoginTournamentSetup";
+TournamentSetup.displayName = "TournamentSetup";
 
-export default CombinedLoginTournamentSetup;
+export default TournamentSetup;

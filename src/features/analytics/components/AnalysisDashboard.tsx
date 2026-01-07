@@ -25,7 +25,7 @@ import { AnalysisInsights } from "./AnalysisInsights";
 import { AnalysisPanel } from "./AnalysisPanel";
 import panelStyles from "./AnalysisPanel.module.css";
 import { AnalysisTable } from "./AnalysisTable";
-import viewToggleStyles from "./AnalysisViewToggle.module.css";
+import viewToggleStyles from "./ViewToggle.module.css";
 
 /**
  * Common ID type - can be string or number
@@ -103,7 +103,11 @@ export function AnalysisDashboard({
 			analyticsData: (analyticsData ?? null) as AnalyticsDataItem[] | null,
 			isAdmin,
 			highlights,
-			filterConfig: filterConfig as { selectionFilter?: string; dateFilter?: string; [key: string]: unknown },
+			filterConfig: filterConfig as {
+				selectionFilter?: string;
+				dateFilter?: string;
+				[key: string]: unknown;
+			},
 			sortField,
 			sortDirection,
 		},

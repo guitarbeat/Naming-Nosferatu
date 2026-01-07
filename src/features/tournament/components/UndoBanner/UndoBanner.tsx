@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { STORAGE_KEYS, TOURNAMENT_TIMING } from "../../../../core/constants";
 import Button from "../../../../shared/components/Button/Button";
-import undoStyles from "../../styles/TournamentUndo.module.css";
+import undoStyles from "../../styles/Undo.module.css";
 
 interface UndoBannerProps {
 	undoExpiresAt: number | null;

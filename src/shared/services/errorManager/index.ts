@@ -408,7 +408,10 @@ interface ErrorServiceLogData {
 }
 
 function sendToErrorService(logData: ErrorServiceLogData): void {
-	const g = getGlobalScope() as typeof globalThis & { Sentry?: { captureException?: (error: Error, options?: unknown) => void } };
+	const g = getGlobalScope() as typeof globalThis & {
+		// biome-ignore lint/style/useNamingConvention: External library (Sentry) uses PascalCase
+		Sentry?: { captureException?: (error: Error, options?: unknown) => void };
+	};
 	const sentry = g.Sentry;
 	if (sentry?.captureException) {
 		const e = new Error(logData.error.message);

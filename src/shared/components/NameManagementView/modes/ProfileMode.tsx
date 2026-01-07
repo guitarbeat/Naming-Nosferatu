@@ -87,12 +87,20 @@ export function ProfileMode({
 					onToggleName={toggleName}
 					filters={filterConfig}
 					isAdmin={!!profileProps.isAdmin}
-					onToggleVisibility={profileProps.onToggleVisibility ? (id) => {
-						profileProps.onToggleVisibility!(String(id)).catch(console.error);
-					} : undefined}
-					onDelete={profileProps.onDelete ? (name) => {
-						profileProps.onDelete!(name).catch(console.error);
-					} : undefined}
+					onToggleVisibility={
+						profileProps.onToggleVisibility
+							? (id) => {
+									profileProps.onToggleVisibility?.(String(id)).catch(console.error);
+								}
+							: undefined
+					}
+					onDelete={
+						profileProps.onDelete
+							? (name) => {
+									profileProps.onDelete?.(name).catch(console.error);
+								}
+							: undefined
+					}
 					isLoading={isLoading}
 				/>
 			</section>

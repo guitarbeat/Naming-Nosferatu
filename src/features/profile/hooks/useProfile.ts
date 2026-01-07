@@ -79,6 +79,7 @@ export interface SelectionStats {
  * Database query result type - field names match Supabase column names (snake_case required)
  */
 interface TournamentSelection {
+	id?: number;
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name?: string;
@@ -88,6 +89,10 @@ interface TournamentSelection {
 	selected_at: string;
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	selection_type?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	created_at?: string;
 }
 
 /**

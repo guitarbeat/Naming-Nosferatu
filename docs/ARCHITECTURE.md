@@ -1,67 +1,63 @@
 # Architecture & System Design
 
-## Overview
-Naming Nosferatu is a React application for managing cat names and tournaments. It uses a modern stack centered around React 19, Vite, and Supabase.
+**Last Updated:** 2026-01-07
+**Status:** Primary Blueprint for System Design & Data
 
-## Tech Stack
+## 🏛️ System Overview
+Naming Nosferatu is a modern React application centered around React 19, Vite, and Supabase.
 
-### Core
+### Tech Stack
 - **Framework**: React 19.2.3 (Actions, `use` hook)
 - **Build Tool**: Vite 7.3.0
-- **Language**: TypeScript (Strict)
-- **State Management**: 
-    - **Global**: Zustand 5.0.9 (User, Tournament, UI state)
-    - **Server**: TanStack Query 5.90.16 (Supabase data)
+- **State Management**: Zustand (Global) + TanStack Query (Server)
+- **Styling**: TailwindCSS 4 + CSS Modules
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime)
 
-### Styling (`src/shared/styles/`)
-- **Hybrid Approach**: TailwindCSS 4 + CSS Modules
-- **Design Tokens**: `design-tokens.css` (Base values), `themes.css` (Light/Dark modes)
-- **Animations**: Framer Motion 12 + CSS Transitions
+---
 
-### Backend
-- **Supabase**: PostgreSQL, Auth, Realtime
+## 📊 Database Schema
 
-## V2 Architecture Principles
+### Core Tables
+| Table | Purpose | Key Fields |
+|-------|---------|------------|
+| `cat_name_options` | Available names | `id`, `name`, `avg_rating`, `is_active`, `is_hidden` |
+| `cat_name_ratings` | User ratings | `user_name`, `name_id`, `rating`, `wins`, `losses` |
+| `tournament_selections`| History | `user_name`, `name_id`, `tournament_id`, `selection_type` |
+| `cat_app_users` | User profiles | `user_name`, `preferences`, `updated_at` |
 
-To maintain scalability, the codebase adheres to **V2 Design Principles**:
+**Verification Status**: ✅ Migrations match database schema as of Jan 2026.
 
-### 1. File Size Limits
-- **Components**: Max **400 lines**.
-    - *Mitigation*: Split into sub-components or extract hooks.
-- **CSS Modules**: Max **750 lines**.
-    - *Mitigation*: Extract component-specific styles or use shared primitives.
+---
 
-### 2. Decomposed Structure
-Features are organized by domain, not technology.
-- **Shared Components**: `src/shared/components/{Name}/`
-    - Co-located Component (`.tsx`), Styles (`.module.css`), and Barrel (`index.ts`).
-- **Modes**: Complex views (like `NameManagement`) are split into "Modes" (`TournamentMode`, `ProfileMode`) to separate concerns.
+## 🏗️ Design Principles
 
-### 3. Store Slices
-Global state in `useAppStore` is composed of focused slices:
-- `tournamentSlice`: Active tournament data
-- `userSlice`: Auth and profile
-- `uiSlice`: Theme and view preferences
-- `errorSlice`: Global error handling
-- `siteSettingsSlice`: Remote config
+### 1. Decomposed Features
+Features are organized by domain in `src/features/`. Complex views like `NameManagement` are split into specialized "Modes" (Tournament vs. Profile).
 
-## Directory Structure
+### 2. Store Slices
+The global `useAppStore` is composed of focused slices: `tournamentSlice`, `userSlice`, `uiSlice`, `errorSlice`, and `siteSettingsSlice`.
 
-```
-src/
-├── core/               # Global singletons (Store, API clients)
-├── features/           # Domain-specific feature modules
-│   └── tournament/     # Example feature
-├── shared/             # Reusable UI, hooks, utils
-│   ├── components/     # Atomic UI components
-│   ├── hooks/          # Shared logic
-│   └── styles/         # Global CSS & Tokens
-├── types/              # TypeScript definitions
-└── App.tsx             # Root component
-```
+### 3. Glassmorphism & Visual Polish
+We use a hybrid of Tailwind for layout and CSS Modules for rich aesthetics (Glassmorphism, Liquid Glass).
 
-## Key Components
+---
 
-- **NameManagementView**: The core interface for managing names. Acts as a router for `TournamentMode` and `ProfileMode`.
-- **Tournament**: Handling of voting logic and tournament progression.
-- **AnalysisDashboard**: Data visualization for name stats.
+## 🛠️ Technical Debt & Migration
+
+### Migration Strategy
+Our goal is to move all legacy components to the Design Token system in `src/shared/styles/design-tokens.css`.
+
+#### ✅ Completed Refactors
+- **PerformanceBadge**: Replaced hardcoded purple with `color-mix()` and tokens.
+- **Error Component**: Removed all hardcoded RGB values.
+- **NameGrid**: Switched to Masonry layout with glass surface tokens.
+
+#### ⚠️ Active Migration Checklist
+- [ ] **SetupCards.module.css**: Replace hardcoded pixel widths (`180px`) with responsive card width tokens.
+- [ ] **Masonry Layout**: Integrate design tokens (currently uses hardcoded values in `useMasonryLayout` hooks).
+- [ ] **Z-Index**: Continue replacing hardcoded `z-index` values with tokens (e.g., `--z-sticky`, `--z-modal`).
+
+### Technical Recommendations
+1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks.
+2. **Standardize Breakpoints**: Use `var(--breakpoint-md)` instead of hardcoded `768px`.
+3. **Print Styles**: Add print-specific CSS for tournament results and rankings.

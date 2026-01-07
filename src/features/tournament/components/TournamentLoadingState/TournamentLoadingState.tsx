@@ -1,5 +1,5 @@
 import { Loading } from "../../../../shared/components/CommonUI";
-import layoutStyles from "../../styles/TournamentLayout.module.css";
+import layoutStyles from "../../styles/Layout.module.css";
 
 interface TournamentLoadingStateProps {
 	visibleNamesCount: number;

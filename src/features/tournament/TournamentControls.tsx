@@ -19,8 +19,8 @@ import {
 import React, { useState } from "react";
 import Button, { IconButton } from "../../shared/components/Button/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";
-import styles from "./styles/TournamentControls.module.css";
-import layoutStyles from "./styles/TournamentLayout.module.css";
+import styles from "./styles/Controls.module.css";
+import layoutStyles from "./styles/Layout.module.css";
 
 interface TournamentControlsProps {
 	onEndEarly: () => void;

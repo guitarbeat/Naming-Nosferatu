@@ -335,6 +335,7 @@ function PersonalResults({
 					return {
 						...ranking,
 						change: oldRanking ? ranking.rating - oldRanking.rating : 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						is_hidden: oldRanking?.is_hidden ?? false,
 					} as Ranking;
 				});

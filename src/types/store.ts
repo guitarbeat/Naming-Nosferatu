@@ -1,8 +1,15 @@
+export interface UserPreferences {
+	theme?: string;
+	notifications?: boolean;
+	showCatPictures?: boolean;
+	matrixMode?: boolean;
+}
+
 export interface UserState {
 	name: string;
 	isLoggedIn: boolean;
 	isAdmin: boolean;
-	preferences: Record<string, unknown>;
+	preferences: UserPreferences;
 }
 
 export interface TournamentName {
@@ -19,7 +26,7 @@ interface TournamentState {
 	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
 	isComplete: boolean;
 	isLoading: boolean;
-	voteHistory: unknown[];
+	voteHistory: import("./components").VoteData[];
 	currentView: string;
 }
 
@@ -33,8 +40,25 @@ export interface UIState {
 	showCatPictures: boolean;
 }
 
+export interface CatChosenName {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	first_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	middle_names: string[];
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	last_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	greeting_text: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	display_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	is_set: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+	show_banner: boolean;
+}
+
 interface SiteSettingsState {
-	catChosenName: unknown;
+	catChosenName: CatChosenName | null;
 	isLoaded: boolean;
 }
 
@@ -57,7 +81,7 @@ export interface AppState {
 		) => void;
 		setComplete: (isComplete: boolean) => void;
 		setLoading: (isLoading: boolean) => void;
-		addVote: (vote: unknown) => void;
+		addVote: (vote: import("./components").VoteData) => void;
 		resetTournament: () => void;
 		setView: (view: string) => void;
 	};
@@ -87,8 +111,8 @@ export interface AppState {
 	};
 
 	siteSettingsActions: {
-		loadCatChosenName: () => Promise<unknown>;
-		updateCatChosenName: (nameData: unknown) => void;
+		loadCatChosenName: () => Promise<CatChosenName | null>;
+		updateCatChosenName: (nameData: CatChosenName | null) => void;
 	};
 
 	selectors: {
@@ -96,7 +120,7 @@ export interface AppState {
 		getRatings: () => Record<string, { rating: number; wins?: number; losses?: number }>;
 		getIsComplete: () => boolean;
 		getIsLoading: () => boolean;
-		getVoteHistory: () => unknown[];
+		getVoteHistory: () => import("./components").VoteData[];
 		getCurrentView: () => string;
 		getUserName: () => string;
 		getIsLoggedIn: () => boolean;

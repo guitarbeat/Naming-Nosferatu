@@ -311,7 +311,9 @@ function AppLayout({
 						onUpdateRatings={handleUpdateRatings}
 						onTournamentSetup={handleTournamentSetup}
 						onTournamentComplete={handleTournamentComplete}
-						onVote={(vote: unknown) => tournamentActions.addVote(vote)}
+						onVote={(vote: unknown) =>
+							tournamentActions.addVote(vote as import("./types/components").VoteData)
+						}
 						onOpenSuggestName={onOpenSuggestName}
 					/>
 

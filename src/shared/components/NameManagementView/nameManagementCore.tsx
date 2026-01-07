@@ -329,7 +329,7 @@ export function useNameManagementView({
 				userFilter: userFilter as "all" | "user" | "other",
 				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
 				sortBy,
-				sortOrder
+				sortOrder,
 			};
 		}
 	}, [

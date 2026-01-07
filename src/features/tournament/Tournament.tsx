@@ -30,9 +30,9 @@ import {
 	useTournamentVote,
 } from "./hooks/tournamentComponentHooks";
 import { useBracketTransformation } from "./hooks/useBracketTransformation";
-import { useTournamentHandlers } from "./hooks/useTournamentHandlers";
+import { useTournamentUIHandlers } from "./hooks/useTournamentUIHandlers";
 import { useUndoWindow } from "./hooks/useUndoWindow";
-import layoutStyles from "./styles/TournamentLayout.module.css";
+import layoutStyles from "./styles/Layout.module.css";
 import TournamentControls from "./TournamentControls";
 import { CAT_IMAGES } from "./tournamentUtils";
 import { logTournamentRender } from "./utils/debugLogging";
@@ -201,7 +201,7 @@ function TournamentContent({
 		handleToggleKeyboardHelp,
 		handleToggleCatPictures,
 		handleVolumeChange,
-	} = useTournamentHandlers({
+	} = useTournamentUIHandlers({
 		setIsProcessing,
 		setVotingError,
 		setShowBracket,

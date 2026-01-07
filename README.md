@@ -123,7 +123,7 @@ src/
 | `audit_log`             | System audit trail               | `table_name`, `operation`, `user_name`, `old_values`, `new_values`       |
 | `site_settings`         | Application settings             | `key`, `value`, `updated_by`                                             |
 
-### **Schema Optimizations (November 2025)**
+### **Schema Optimizations (January 2026)**
 
 **Removed Columns:**
 
@@ -496,12 +496,12 @@ pnpm run test -- --clearCache
 
 ---
 
-## 📚 **Documentation**
+## 📚 Documentation
 
-- [Architecture Overview](docs/ARCHITECTURE.md)
-- [Development Guide](docs/DEVELOPMENT.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Full Documentation Index](docs/README.md)
+- [Development Guide](docs/DEVELOPMENT.md) - Setup, Standards, & Workflow
+- [Architecture Overview](docs/ARCHITECTURE.md) - System Design & Database
+- [UI/UX Guide](docs/UI_UX.md) - Styling, Accessibility, & Design Tokens
+- [Project Roadmap](docs/ROADMAP.md) - Goals, Bugs, & Status
 
 ---
 
@@ -567,4 +567,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for cat lovers everywhere** | _Last updated: November 2025_
+**Built with ❤️ for cat lovers everywhere** | _Last updated: January 2026_
