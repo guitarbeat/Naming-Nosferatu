@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { ErrorComponent as Error } from "../../shared/components/CommonUI";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
+import type { NameItem } from "../../types/components";
 import { useCatFact, useEyeTracking, useLoginController } from "../auth/hooks/authHooks";
 import loginStyles from "../auth/Login.module.css";
 import {
@@ -29,7 +30,7 @@ const ErrorBoundary = Error;
 
 interface CombinedLoginTournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;
-	onStart: (selectedNames: unknown) => void;
+	onStart: (selectedNames: NameItem[]) => void;
 	userName?: string;
 	isLoggedIn: boolean;
 	enableAnalysisMode?: boolean;
@@ -97,7 +98,6 @@ function CombinedLoginTournamentSetupContent({
 		setUserFilter,
 		stats,
 		selectionStats,
-		shouldEnableAnalysisMode,
 		preloadImages,
 		handleNameSubmit,
 		toggleEditingName,
@@ -462,13 +462,14 @@ function CombinedLoginTournamentSetupContent({
 								selectionStats: selectionStats
 									? (selectionStats as unknown as Record<string, unknown>)
 									: undefined,
-								onToggleVisibility: (nameId) =>
+								onToggleVisibility: (nameId: string) =>
 									handlersRef.current.handleToggleVisibility?.(nameId),
-								onDelete: (name) => handlersRef.current.handleDelete?.(name),
+								onDelete: (name: NameItem) => handlersRef.current.handleDelete?.(name),
 							}}
 							extensions={{
 								dashboard: createAnalysisDashboardWrapper(
-									stats,
+									// biome-ignore lint/suspicious/noExplicitAny: Type conversion between UserStats and SummaryStats
+									stats as any,
 									selectionStats,
 									isAdmin,
 									activeUser || undefined,
@@ -488,7 +489,6 @@ function CombinedLoginTournamentSetupContent({
 								),
 								contextLogic: () => (
 									<AnalysisHandlersProvider
-										shouldEnableAnalysisMode={shouldEnableAnalysisMode}
 										activeUser={activeUser}
 										canManageActiveUser={canManageActiveUser}
 										handlersRef={handlersRef}

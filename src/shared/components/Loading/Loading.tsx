@@ -34,7 +34,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 		height = 20,
 	}) => {
 		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
-		const isVideo = randomAsset.endsWith(".webm");
+		const isVideo = (randomAsset || "").endsWith(".webm");
 
 		// Suspense variant
 		if (variant === "suspense") {

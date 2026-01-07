@@ -70,9 +70,9 @@ function CatImage({
 					let sum = 0;
 					for (let x = 0; x < w; x += 1) {
 						const base = idx(x, y);
-						const r = data[base];
-						const g = data[base + 1];
-						const b = data[base + 2];
+						const r = data[base] ?? 0;
+						const g = data[base + 1] ?? 0;
+						const b = data[base + 2] ?? 0;
 
 						totalR += r;
 						totalG += g;
@@ -81,8 +81,8 @@ function CatImage({
 						if (y > 0 && y < h - 1) {
 							const i1 = idx(x, y - 1);
 							const i2 = idx(x, y + 1);
-							const g1 = toGray(data[i1], data[i1 + 1], data[i1 + 2]);
-							const g2 = toGray(data[i2], data[i2 + 1], data[i2 + 2]);
+							const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
+							const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
 							sum += Math.abs(g2 - g1);
 						}
 					}

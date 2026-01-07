@@ -128,7 +128,9 @@ export function useTournamentController({
 		}
 		const prevIndex = lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
 		const nextIndex = lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
-		return [galleryImages[prevIndex], galleryImages[nextIndex]];
+		return [galleryImages[prevIndex], galleryImages[nextIndex]].filter(
+			(img): img is string => img != null,
+		);
 	}, [lightboxOpen, lightboxIndex, galleryImages]);
 
 	return {

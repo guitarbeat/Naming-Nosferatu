@@ -148,7 +148,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 			return;
 		}
 
-		const handleEscape = (e) => {
+		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === "Escape") {
 				reset();
 				onClose();

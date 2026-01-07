@@ -76,8 +76,8 @@ function SwipeableNameCards({
 		e.stopPropagation();
 
 		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const startX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
-		const startY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
+		const startX = "clientX" in touch ? touch.clientX : ((touch as Touch)?.clientX ?? 0);
+		const startY = "clientY" in touch ? touch.clientY : ((touch as Touch)?.clientY ?? 0);
 
 		setDragStart({ x: startX, y: startY });
 		setIsDragging(true);
@@ -96,8 +96,8 @@ function SwipeableNameCards({
 		e.stopPropagation();
 
 		const touch = "touches" in e && e.touches ? e.touches[0] : (e as React.MouseEvent);
-		const currentX = "clientX" in touch ? touch.clientX : (touch as Touch).clientX;
-		const currentY = "clientY" in touch ? touch.clientY : (touch as Touch).clientY;
+		const currentX = "clientX" in touch ? touch.clientX : ((touch as Touch)?.clientX ?? 0);
+		const currentY = "clientY" in touch ? touch.clientY : ((touch as Touch)?.clientY ?? 0);
 		const deltaX = currentX - dragStart.x;
 		const deltaY = currentY - dragStart.y;
 

@@ -145,10 +145,16 @@ export function AnalysisDashboard({
 			return [];
 		}
 		const allowedIds = new Set(displayNames.map((n) => n.id));
-		if (allowedIds.size === 0) {
-			return rankingHistory.data;
-		}
-		return rankingHistory.data.filter((entry) => allowedIds.has(entry.id));
+		const filtered =
+			allowedIds.size === 0
+				? rankingHistory.data
+				: rankingHistory.data.filter((entry) => allowedIds.has(entry.id));
+
+		// Filter out null values from rankings to match BumpChart expectations
+		return filtered.map((entry) => ({
+			...entry,
+			rankings: entry.rankings.filter((ranking): ranking is number => ranking != null),
+		}));
 	}, [rankingHistory?.data, displayNames]);
 
 	if (!showGlobalLeaderboard && !highlights) {

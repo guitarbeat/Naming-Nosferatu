@@ -299,7 +299,7 @@ function PersonalResults({
 
 	// * Handle saving adjusted personal rankings
 	const handleSaveAdjustments = useCallback(
-		async (adjustedRankings) => {
+		async (adjustedRankings: Ranking[]) => {
 			try {
 				const updatedRankings = adjustedRankings.map((ranking: Ranking) => {
 					const oldRanking = personalRankings.find((r) => r.name === ranking.name);

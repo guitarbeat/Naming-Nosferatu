@@ -32,13 +32,25 @@ function BarChart({
 	showSecondaryValue = false,
 	secondaryValueKey = "avg_rating",
 	className = "",
+}: {
+	title: string;
+	items: Record<string, unknown>[];
+	valueKey?: string;
+	labelKey?: string;
+	maxItems?: number;
+	showSecondaryValue?: boolean;
+	secondaryValueKey?: string;
+	className?: string;
 }) {
 	if (!items || items.length === 0) {
 		return null;
 	}
 
 	const displayItems = items.slice(0, maxItems);
-	const maxValue = Math.max(...displayItems.map((item) => item[valueKey] || 0), 1);
+	const maxValue = Math.max(
+		...displayItems.map((item) => Number(item[valueKey as keyof typeof item]) || 0),
+		1,
+	);
 
 	return (
 		<div className={`charts-bar-chart ${className}`}>
@@ -46,19 +58,24 @@ function BarChart({
 			<div className="charts-bar-chart-bars">
 				{displayItems.map((item, index) => (
 					<div key={item.id || index} className="charts-bar-chart-row">
-						<div className="charts-bar-chart-label" title={item[labelKey]}>
-							{item[labelKey]}
+						<div
+							className="charts-bar-chart-label"
+							title={String(item[labelKey as keyof typeof item] || "")}
+						>
+							{item[labelKey as keyof typeof item]}
 						</div>
 						<div className="charts-bar-chart-bar-container">
 							<div
 								className="charts-bar-chart-bar"
 								style={{
-									width: `${((item[valueKey] || 0) / maxValue) * 100}%`,
+									width: `${((Number(item[valueKey as keyof typeof item]) || 0) / maxValue) * 100}%`,
 								}}
 							>
 								<span className="charts-bar-chart-value">
-									{item[valueKey]}
-									{showSecondaryValue && item[secondaryValueKey] && ` (${item[secondaryValueKey]})`}
+									{item[valueKey as keyof typeof item]}
+									{showSecondaryValue &&
+										item[secondaryValueKey as keyof typeof item] &&
+										` (${item[secondaryValueKey as keyof typeof item]})`}
 								</span>
 							</div>
 						</div>
@@ -107,7 +124,13 @@ const COLORS = [
 /**
  * Generate SVG path for a bump chart line (smooth curves)
  */
-function generatePath(points, chartWidth, _chartHeight, padding, rankToY) {
+function generatePath(
+	points: number[],
+	chartWidth: number,
+	_chartHeight: number,
+	padding: number,
+	rankToY: (rank: number, i?: number) => number,
+): string {
 	if (!points || points.length < 2) {
 		return "";
 	}
@@ -120,10 +143,16 @@ function generatePath(points, chartWidth, _chartHeight, padding, rankToY) {
 	}));
 
 	// Create smooth bezier curve
-	let path = `M ${coords[0].x} ${coords[0].y}`;
+	if (coords.length === 0) {
+		return "";
+	}
+	// biome-ignore lint/style/noNonNullAssertion: coords length checked above, guaranteed to have elements
+	let path = `M ${coords[0]!.x} ${coords[0]!.y}`;
 	for (let i = 0; i < coords.length - 1; i++) {
-		const current = coords[i];
-		const next = coords[i + 1];
+		// biome-ignore lint/style/noNonNullAssertion: loop bounds ensure valid indices
+		const current = coords[i]!;
+		// biome-ignore lint/style/noNonNullAssertion: loop bounds ensure valid indices
+		const next = coords[i + 1]!;
 		const midX = (current.x + next.x) / 2;
 
 		path += ` Q ${current.x} ${current.y} ${midX} ${current.y}`;
@@ -161,6 +190,20 @@ export function BumpChart({
 	showLegend = true,
 	showTrends = true,
 	className = "",
+}: {
+	data: Array<{
+		name: string;
+		rankings: number[];
+	}>;
+	labels?: string[];
+	timeLabels?: string[];
+	title: string;
+	width?: number;
+	height?: number;
+	animated?: boolean;
+	showLegend?: boolean;
+	showTrends?: boolean;
+	className?: string;
 }) {
 	// Support both labels and timeLabels props for compatibility
 	const chartLabels = labels || timeLabels;
@@ -187,7 +230,7 @@ export function BumpChart({
 	}, [data]);
 
 	const rankToY = useCallback(
-		(rank) => {
+		(rank: number) => {
 			const maxRank = Math.max(...processedData.flatMap((s) => s.rankings));
 			const availableHeight = chartHeight - padding * 2 - legendHeight;
 			return padding + (rank - 1) * (availableHeight / maxRank);
@@ -375,13 +418,17 @@ export function BumpChart({
 								style={{ backgroundColor: series.color }}
 							/>
 							<span className="charts-bump-chart-legend-label">{series.name}</span>
-							{showTrends && series.rankings.length >= 2 && (
+							{showTrends && series.rankings && series.rankings.length >= 2 && (
 								<TrendIndicator
 									direction={
-										series.rankings[series.rankings.length - 1] < series.rankings[0] ? "up" : "down"
+										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
+										series.rankings[series.rankings.length - 1]! < series.rankings[0]!
+											? "up"
+											: "down"
 									}
 									percentChange={Math.abs(
-										series.rankings[series.rankings.length - 1] - series.rankings[0],
+										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
+										series.rankings[series.rankings.length - 1]! - series.rankings[0]!,
 									)}
 									compact={true}
 								/>

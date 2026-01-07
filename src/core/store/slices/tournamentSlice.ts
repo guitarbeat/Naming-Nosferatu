@@ -5,7 +5,7 @@ export const createTournamentSlice: StateCreator<
 	AppState,
 	[],
 	[],
-	Pick<AppState, "tournament" | "tournamentActions" | "selectors">
+	Pick<AppState, "tournament" | "tournamentActions">
 > = (set, _get) => ({
 	tournament: {
 		names: null,
@@ -83,11 +83,4 @@ export const createTournamentSlice: StateCreator<
 				},
 			})),
 	},
-
-	// Selectors are usually global, but we can return partial selectors here if needed.
-	// However, AppState.selectors is a single object.
-	// We will merge selectors in the main store or define partials here.
-	// The main store currently defines selectors: { ...getter... }
-	// We'll skip defining selectors here and do it in main store or a dedicated selectors slice to avoid overwriting.
-	selectors: {} as Record<string, never>,
 });

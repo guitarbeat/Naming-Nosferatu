@@ -249,7 +249,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 		Object.keys(nameSelectionCounts).forEach((nameId) => {
 			nameSelectionFrequency[nameId] =
 				uniqueTournaments > 0
-					? Math.round((nameSelectionCounts[nameId] / uniqueTournaments) * 100) / 100
+					? Math.round(((nameSelectionCounts[nameId] || 0) / uniqueTournaments) * 100) / 100
 					: 0;
 		});
 
@@ -267,8 +267,10 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 			if (i === 0) {
 				tempStreak = 1;
 			} else {
+				const currentDate = sortedDates[i];
+				const prevDate = sortedDates[i - 1];
 				const dayDiff = Math.floor(
-					(new Date(sortedDates[i]).getTime() - new Date(sortedDates[i - 1]).getTime()) /
+					(new Date(currentDate as string).getTime() - new Date(prevDate as string).getTime()) /
 						(1000 * 60 * 60 * 24),
 				);
 				if (dayDiff === 1) {
@@ -527,9 +529,7 @@ export function useProfile(
 					throw new Error(error);
 				}
 
-				showSuccess(
-					currentlyHidden ? `"${name.name}" is now visible` : `"${name.name}" is now hidden`,
-				);
+				showSuccess(currentlyHidden ? `"Name" is now visible` : `"Name" is now hidden`);
 				setHiddenNames((prev) => {
 					const next = new Set(prev);
 					if (currentlyHidden) {

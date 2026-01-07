@@ -391,11 +391,13 @@ const CalendarButton = ({
 		const winnerName = activeNames[0]?.name || "No winner yet";
 
 		const today = new Date();
-		const [startDateISO] = today.toISOString().split("T");
+		// biome-ignore lint/style/noNonNullAssertion: ISO string split is guaranteed to have at least one element
+		const startDateISO = today.toISOString().split("T")[0]!;
 		const startDate = startDateISO.replace(/-/g, "");
 		const endDate = new Date(today);
 		endDate.setDate(endDate.getDate() + 1);
-		const [endDateISO] = endDate.toISOString().split("T");
+		// biome-ignore lint/style/noNonNullAssertion: ISO string split is guaranteed to have at least one element
+		const endDateISO = endDate.toISOString().split("T")[0]!;
 		const endDateStr = endDateISO.replace(/-/g, "");
 
 		const text = `🐈‍⬛ ${winnerName}`;
