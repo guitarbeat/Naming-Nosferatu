@@ -42,7 +42,7 @@ function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 function getDateString(): string {
-	return new Date().toISOString().split("T")[0];
+	return new Date().toISOString().split("T")[0] || "";
 }
 
 function escapeCSVValue(value: unknown): string {
@@ -146,13 +146,10 @@ export function exportTournamentResultsToCSV(
 			name: nameItem.name,
 			rating: nameItem.rating || 0,
 			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
-			avg_rating: nameItem.rating || 0,
+			avg_rating: nameItem.avg_rating || nameItem.rating || 0,
 			wins: nameItem.wins || 0,
 			losses: nameItem.losses || 0,
-			isHidden: nameItem.isHidden || false,
-			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
-			is_hidden: nameItem.is_hidden || false,
-		};
+		} as ExportNameItem;
 	});
 
 	return exportToCSV(exportData, {

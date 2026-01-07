@@ -459,8 +459,8 @@ class MobileGestures {
 				warning: [50, 50],
 			};
 
-			const pattern = patterns[type] ?? patterns.light;
-			navigator.vibrate(pattern);
+			const pattern = (type in patterns ? patterns[type] : patterns.light) as number[];
+			(navigator.vibrate as (pattern: number[]) => boolean)(pattern);
 		}
 	}
 

@@ -80,9 +80,9 @@ export default function ViewRouter({
 	// * Show Dashboard (Results + Analysis) if on /results or /analysis routes
 	// * Check route path (without query params) to determine if we should show dashboard
 	const currentPath =
-		typeof window !== "undefined" && window.location
-			? (window.location as Location).pathname
-			: currentRoute.split("?")[0].split("#")[0];
+		typeof window !== "undefined" && window.location && window.location.pathname
+			? window.location.pathname
+			: (currentRoute.split("?")[0]?.split("#")[0] || "/");
 	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
 
 	if (shouldShowDashboard) {

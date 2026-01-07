@@ -156,7 +156,7 @@ export function applyNameFilters(
 	let result = filterByVisibility([...names], { visibility, isAdmin });
 
 	if (category) {
-		result = result.filter((n) => n.categories?.includes(category));
+		result = result.filter((n) => Array.isArray(n.categories) && n.categories.includes(category));
 	}
 
 	if (searchTerm) {
@@ -179,7 +179,7 @@ export function applyNameFilters(
 				break;
 			case "created_at":
 			case "date":
-				comp = new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+				comp = new Date(a.created_at as string || "1970-01-01").getTime() - new Date(b.created_at as string || "1970-01-01").getTime();
 				break;
 			default:
 				comp = 0;

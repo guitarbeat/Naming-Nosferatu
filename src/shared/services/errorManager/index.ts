@@ -169,8 +169,9 @@ export interface FormattedError {
 }
 
 function generateErrorId() {
-	if (GLOBAL_SCOPE.crypto?.randomUUID) {
-		return `error_${GLOBAL_SCOPE.crypto.randomUUID()}`;
+	const scope = GLOBAL_SCOPE as typeof globalThis;
+	if (scope.crypto?.randomUUID) {
+		return `error_${scope.crypto.randomUUID()}`;
 	}
 	return `error_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 }
@@ -338,13 +339,13 @@ function isRetryable(errorInfo: ParsedError, metadata: Record<string, unknown>):
 function collectEnvironmentSnapshot() {
 	const g = getGlobalScope();
 	try {
-		const { navigator = {}, location = {} } = g;
+		const { navigator = {}, location = {} } = g as typeof globalThis;
 		return {
-			userAgent: navigator.userAgent,
-			language: navigator.language,
-			online: navigator.onLine,
-			platform: navigator.platform,
-			location: location.href,
+			userAgent: (navigator as Navigator).userAgent,
+			language: (navigator as Navigator).language,
+			online: (navigator as Navigator).onLine,
+			platform: (navigator as Navigator).platform,
+			location: (location as Location).href,
 		};
 	} catch {
 		return {};
@@ -407,7 +408,7 @@ interface ErrorServiceLogData {
 }
 
 function sendToErrorService(logData: ErrorServiceLogData): void {
-	const g = getGlobalScope();
+	const g = getGlobalScope() as typeof globalThis & { Sentry?: { captureException?: (error: Error, options?: unknown) => void } };
 	const sentry = g.Sentry;
 	if (sentry?.captureException) {
 		const e = new Error(logData.error.message);
@@ -455,7 +456,7 @@ function formatError(
 		aiContext: "",
 		stack: errorInfo.stack,
 	};
-	formatted.aiContext = buildAIContext(formatted, diagnostics);
+	formatted.aiContext = buildAIContext(formatted, diagnostics as { fingerprint: string });
 	return formatted;
 }
 
@@ -557,7 +558,7 @@ export class ErrorManager {
 	static createResilientFunction = createResilientFunction;
 
 	static setupGlobalErrorHandling(): () => void {
-		const g = getGlobalScope();
+		const g = getGlobalScope() as typeof globalThis;
 		if (!g.addEventListener) {
 			return () => {
 				// Intentional no-op: addEventListener not available

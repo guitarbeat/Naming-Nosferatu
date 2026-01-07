@@ -610,11 +610,12 @@ const analyticsAPI = {
 			(selections || []).forEach((item) => {
 				const s = item as unknown as SelectionRow;
 				const nameId = String(s.name_id);
-				const [date] = new Date(s.selected_at).toISOString().split("T");
-				if (!dateGroups.has(date)) {
-					dateGroups.set(date, new Map());
+				const dateStr = new Date(s.selected_at).toISOString();
+				const [date] = dateStr.split("T");
+				if (!date || !dateGroups.has(date)) {
+					dateGroups.set(date || "unknown", new Map());
 				}
-				const dayMap = dateGroups.get(date);
+				const dayMap = dateGroups.get(date || "unknown");
 				if (!dayMap) {
 					return;
 				}
@@ -656,7 +657,7 @@ const analyticsAPI = {
 			for (let i = periodCount - 1; i >= 0; i--) {
 				const d = new Date(today);
 				d.setDate(d.getDate() - i);
-				dateKeys.push(d.toISOString().split("T")[0]);
+				dateKeys.push(d.toISOString().split("T")[0] || "");
 			}
 
 			const sortedNames = Array.from(nameData.values())

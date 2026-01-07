@@ -52,6 +52,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		queryKey: ["auth", "user"],
 		queryFn: async () => {
 			const client = await supabase();
+			if (!client) return null;
+
 			const {
 				data: { user },
 			} = await client.auth.getUser();
@@ -63,7 +65,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 			const { data: profile } = await client
 				.from("cat_app_users")
 				.select("user_name, preferences")
-				.eq("user_name", user.email)
+				.eq("user_name", user.email!)
 				.single();
 
 			const userName = profile?.user_name || user.email || "";
@@ -82,6 +84,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const loginMutation = useMutation({
 		mutationFn: async ({ email, password }: LoginCredentials) => {
 			const client = await supabase();
+			if (!client) throw new Error("Supabase client not available");
+
 			const { error } = await client.auth.signInWithPassword({
 				email,
 				password,
@@ -98,6 +102,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const logoutMutation = useMutation({
 		mutationFn: async () => {
 			const client = await supabase();
+			if (!client) throw new Error("Supabase client not available");
+
 			const { error } = await client.auth.signOut();
 			if (error) {
 				throw error;
@@ -110,7 +116,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const registerMutation = useMutation({
 		mutationFn: async ({ email, password, name }: RegisterData) => {
-			const { error } = await supabase.auth.signUp({
+			const client = await supabase();
+			if (!client) throw new Error("Supabase client not available");
+
+			const { error } = await client.auth.signUp({
 				email,
 				password,
 				options: {

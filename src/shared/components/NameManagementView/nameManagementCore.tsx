@@ -414,9 +414,10 @@ export function useNameManagementView({
 		() => ({
 			total: names.length,
 			visible: filteredNames.length,
+			hidden: names.filter((n: NameItem) => n.is_hidden).length,
 			selected: selectedCount,
 		}),
-		[names.length, filteredNames.length, selectedCount],
+		[names.length, filteredNames.length, selectedCount, names],
 	);
 
 	const uniqueCategories = useMemo(() => {
