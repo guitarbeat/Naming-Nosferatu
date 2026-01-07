@@ -19,6 +19,23 @@ import RankingAdjustment from "../RankingAdjustment";
 import styles from "./PersonalResults.module.css";
 
 /**
+ * Vote history item interface
+ */
+interface VoteHistoryItem {
+	match: {
+		left: {
+			name: string;
+			outcome?: "win" | "loss";
+		};
+		right: {
+			name: string;
+			outcome?: "win" | "loss";
+		};
+	};
+	result?: number;
+}
+
+/**
  * CalendarButton component - exports tournament results to Google Calendar
  */
 interface Ranking {
@@ -140,7 +157,7 @@ interface PersonalResultsProps {
 		| number
 	>;
 	currentTournamentNames: { id: string | number; name: string }[];
-	voteHistory: unknown[];
+	voteHistory: VoteHistoryItem[];
 	onStartNew: () => void;
 	onUpdateRatings: (ratings: unknown) => void;
 	userName: string;
@@ -218,8 +235,7 @@ function PersonalResults({
 		}
 
 		const namesCount = currentTournamentNames?.length || 0;
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const votes = voteHistory as any[];
+		const votes = voteHistory;
 
 		return votes
 			.filter(
@@ -295,9 +311,8 @@ function PersonalResults({
 
 				const newRatings = updatedRankings.map(({ name, rating }: Ranking) => {
 					const existingRating = personalRatings[name];
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const existingRatingObj =
-						typeof existingRating === "object" ? (existingRating as any) : null;
+						typeof existingRating === "object" && existingRating !== null ? existingRating : null;
 					return {
 						name,
 						rating: Math.round(rating),
@@ -451,7 +466,7 @@ function PersonalResults({
 PersonalResults.propTypes = {
 	personalRatings: PropTypes.object,
 	currentTournamentNames: PropTypes.array,
-	voteHistory: PropTypes.array,
+	voteHistory: PropTypes.arrayOf(PropTypes.object),
 	onStartNew: PropTypes.func.isRequired,
 	onUpdateRatings: PropTypes.func,
 	userName: PropTypes.string.isRequired,

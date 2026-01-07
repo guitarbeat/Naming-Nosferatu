@@ -23,11 +23,8 @@ import {
 } from "../../../shared/utils/core";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import type { HighlightItem, SummaryStats } from "../../analytics/types";
-import { useProfile } from "../../profile/hooks/useProfile";
+import { type SelectionStats, useProfile } from "../../profile/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
-
-// Re-export SelectionStats type from useProfile for use in this file
-type SelectionStats = ReturnType<typeof useProfile>["selectionStats"];
 
 interface AnalysisHandlers {
 	handleToggleVisibility?: (nameId: string) => Promise<void>;
@@ -182,6 +179,20 @@ interface AnalysisBulkActionsProps {
 	totalCount: number;
 }
 
+// Style constants to avoid recreating objects on every render
+const actionsContainerStyle = {
+	display: "flex",
+	gap: "var(--space-2)",
+	alignItems: "center",
+	flexWrap: "wrap",
+	padding: "var(--space-3)",
+} as const;
+
+const selectedCountStyle = {
+	fontSize: "var(--text-sm)",
+	color: "var(--text-secondary)",
+} as const;
+
 function AnalysisBulkActions({
 	selectedCount,
 	onSelectAll,
@@ -199,16 +210,8 @@ function AnalysisBulkActions({
 	}
 
 	return (
-		<div
-			style={{
-				display: "flex",
-				gap: "var(--space-2)",
-				alignItems: "center",
-				flexWrap: "wrap",
-				padding: "var(--space-3)",
-			}}
-		>
-			<span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
+		<div style={actionsContainerStyle}>
+			<span style={selectedCountStyle}>
 				{selectedCount} of {totalCount} selected
 			</span>
 			<Button
@@ -334,8 +337,19 @@ export function AnalysisBulkActionsWrapper({
 	}, [allVisibleSelected, filteredAndSortedNames, context]);
 
 	const handleExport = useCallback(() => {
-		exportTournamentResultsToCSV(filteredAndSortedNames, "naming_nosferatu_export");
-	}, [filteredAndSortedNames]);
+		try {
+			const success = exportTournamentResultsToCSV(
+				filteredAndSortedNames,
+				"naming_nosferatu_export",
+			);
+			if (!success) {
+				showError("Failed to export tournament results. Please try again.");
+			}
+		} catch (error) {
+			devError("[TournamentSetup] Error exporting tournament results:", error);
+			showError("Failed to export tournament results. Please try again.");
+		}
+	}, [filteredAndSortedNames, showError]);
 
 	if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
 		return null;
@@ -346,7 +360,7 @@ export function AnalysisBulkActionsWrapper({
 			selectedCount={selectedCount}
 			onSelectAll={handleSelectAll}
 			onDeselectAll={handleSelectAll}
-			onBulkHide={() => {
+			onBulkHide={async () => {
 				devLog("[TournamentSetup] onBulkHide called", {
 					selectedCount,
 					selectedNamesArrayLength: selectedNamesArray.length,
@@ -364,20 +378,20 @@ export function AnalysisBulkActionsWrapper({
 				}
 
 				try {
-					handleBulkHide(selectedNamesArray as string[]);
+					await handleBulkHide(selectedNamesArray);
 				} catch (error) {
 					devError("[TournamentSetup] Error calling handleBulkHide:", error);
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";
 					showError(`Unable to hide names: ${errorMessage}`);
 				}
 			}}
-			onBulkUnhide={() => {
+			onBulkUnhide={async () => {
 				if (selectedNamesArray.length === 0) {
 					showError("Please select at least one name to continue");
 					return;
 				}
 				try {
-					handleBulkUnhide(selectedNamesArray as string[]);
+					await handleBulkUnhide(selectedNamesArray);
 				} catch (error) {
 					devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
 					const errorMessage = error instanceof Error ? error.message : "Unknown error";

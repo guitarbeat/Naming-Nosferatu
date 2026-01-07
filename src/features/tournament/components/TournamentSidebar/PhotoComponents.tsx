@@ -85,7 +85,9 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 
 			// * Validate image before opening
 			if (!image || typeof image !== "string") {
-				console.warn("PhotoThumbnail: Invalid image provided:", image);
+				if (process.env.NODE_ENV === "development") {
+					console.warn("PhotoThumbnail: Invalid image provided:", image);
+				}
 				return;
 			}
 
