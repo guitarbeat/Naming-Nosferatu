@@ -376,6 +376,40 @@
 }
 
 /* ==========================================================================
+   GLASS PRESET UTILITY CLASSES
+   Standard glass surface patterns for consistent glassmorphism effects
+   ========================================================================== */
+
+/* Glass Light - Subtle background effect for minimal emphasis */
+.glass-light {
+	background: var(--glass-bg-light);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+}
+
+/* Glass Medium - Standard glassmorphism for cards and panels */
+.glass-medium {
+	background: var(--glass-bg);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Glass Strong - Prominent glass effect for modals and overlays */
+.glass-strong {
+	background: var(--glass-bg-strong);
+	backdrop-filter: blur(var(--glass-blur-strong));
+	-webkit-backdrop-filter: blur(var(--glass-blur-strong));
+	border: 1px solid var(--glass-border-hover);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--glass-shadow-colored);
+}
+
+/* ==========================================================================
    SHIMMER EFFECTS (merged from shimmer.css)
    ========================================================================== */
 :root {

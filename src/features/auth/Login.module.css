@@ -72,7 +72,7 @@
 		inset 0 0 60px hsla(0, 0%, 0%, 0.05);
 
 	transform: rotate(-0.5deg);
-	z-index: 1;
+	z-index: var(--z-elevate);
 	transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 	border-radius: 2px;
 	animation: fadeSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -117,7 +117,7 @@
 	animation:
 		catEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s backwards,
 		fluidBobble 6s ease-in-out 1s infinite;
-	z-index: 10;
+	z-index: var(--z-10);
 	pointer-events: none;
 	filter: drop-shadow(8px 8px 0 var(--shadow-color));
 }
@@ -325,7 +325,7 @@
 	font-weight: 900;
 	letter-spacing: 2px;
 	position: relative;
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 .loginInput::placeholder {

@@ -19,7 +19,7 @@
 .stageWrapper {
 	position: relative;
 	display: flex;
-	gap: 120px;
+	gap: var(--space-32);
 	align-items: center;
 	justify-content: center;
 	width: 100%;
@@ -172,7 +172,7 @@
 	);
 	animation: rippleExpand 0.8s ease-out forwards;
 	pointer-events: none;
-	z-index: 1;
+	z-index: var(--z-elevate);
 }
 
 .fighterOrb.right .ripple {
@@ -320,7 +320,7 @@
 	}
 
 	.stageWrapper {
-		gap: 80px;
+		gap: var(--space-20);
 	}
 
 	.fighterOrb {
@@ -348,7 +348,7 @@
 	}
 
 	.stageWrapper {
-		gap: 40px;
+		gap: var(--space-10);
 		flex-direction: column;
 	}
 

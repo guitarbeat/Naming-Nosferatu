@@ -38,6 +38,11 @@
 	transform: var(--transform-hover-lift);
 }
 
+.viewBtn:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
+}
+
 .viewBtn.active {
 	background: linear-gradient(135deg, var(--overlay-cyan-medium), var(--overlay-pink-medium));
 	color: var(--text-primary);
@@ -51,4 +56,15 @@
 	margin-bottom: var(--spacing-md, 1rem);
 	max-width: 1100px;
 	margin-inline: auto;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	.viewBtn {
+		transition: none;
+	}
+
+	.viewBtn:hover {
+		transform: none;
+	}
 }
