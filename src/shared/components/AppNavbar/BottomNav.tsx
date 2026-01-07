@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom"; // Assuming react-router or we use our own navigation
-import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../../../config/navigation.config";
-import { useRouting } from "../../../../core/hooks/useRouting";
+import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../config/navigation.config";
+import { useRouting } from "../../core/hooks/useRouting";
 import "./AppNavbar.css"; // Reuse existing styles or create new
 import { NavbarLink } from "./NavbarUI";
 
