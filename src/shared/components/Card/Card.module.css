@@ -7,7 +7,30 @@
 	background-color: var(--card-background);
 	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
-	transition: var(--transition-base);
+	transition: 
+		transform var(--duration-normal) cubic-bezier(0.34, 1.56, 0.64, 1),
+		box-shadow var(--duration-normal) var(--ease-standard),
+		border-color var(--duration-fast) var(--ease-standard);
+}
+
+.card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		transparent 0%,
+		color-mix(in srgb, var(--color-neutral-50) 3%, transparent) 50%,
+		transparent 100%
+	);
+	opacity: 0;
+	transition: opacity var(--duration-normal) var(--ease-standard);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.card:hover::before {
+	opacity: 1;
 }
 
 /* Variants */
@@ -313,10 +336,52 @@
 }
 
 .interactive:hover {
-	transform: translateY(-2px);
-	box-shadow: var(--shadow-lg);
+	transform: translateY(-4px) scale(1.01);
+	box-shadow: 
+		var(--shadow-lg),
+		0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 15%, transparent);
+	border-color: color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
 }
 
 .interactive:active {
-	transform: translateY(0);
+	transform: translateY(-2px) scale(1.005);
+	transition-duration: var(--duration-fast);
+}
+
+/* Selection state for cards */
+.selected {
+	border-color: var(--color-neon-cyan);
+	box-shadow: 
+		0 0 20px color-mix(in srgb, var(--color-neon-cyan) 25%, transparent),
+		inset 0 0 30px color-mix(in srgb, var(--color-neon-cyan) 5%, transparent);
+}
+
+.selected::after {
+	content: "✓";
+	position: absolute;
+	top: var(--space-2);
+	right: var(--space-2);
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--color-neon-cyan);
+	color: var(--color-neutral-900);
+	border-radius: var(--radius-full);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-bold);
+	animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	z-index: 10;
+}
+
+@keyframes checkPop {
+	0% {
+		transform: scale(0) rotate(-45deg);
+		opacity: 0;
+	}
+	100% {
+		transform: scale(1) rotate(0);
+		opacity: 1;
+	}
 }

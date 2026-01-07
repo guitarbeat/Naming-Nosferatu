@@ -83,43 +83,41 @@
 }
 
 .cardsContainer > *:hover {
-	transform: var(--transform-hover-scale);
+	transform: var(--transform-hover-scale) translateY(-4px);
 	z-index: var(--z-10);
+	box-shadow: 
+		var(--shadow-lg),
+		0 0 20px color-mix(in srgb, var(--color-neon-cyan) 15%, transparent);
 }
 
 @keyframes cardFadeIn {
 	from {
 		opacity: 0;
-		transform: translateY(20px) scale(0.95);
+		transform: translateY(30px) scale(0.9) rotateX(10deg);
+		filter: blur(4px);
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0) scale(1);
+		transform: translateY(0) scale(1) rotateX(0);
+		filter: blur(0);
 	}
 }
 
 .cardsContainer > * {
-	animation: cardFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+	animation: cardFadeIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
 
-.cardsContainer > *:nth-child(1) {
-	animation-delay: 0.05s;
-}
-.cardsContainer > *:nth-child(2) {
-	animation-delay: 0.1s;
-}
-.cardsContainer > *:nth-child(3) {
-	animation-delay: 0.15s;
-}
-.cardsContainer > *:nth-child(4) {
-	animation-delay: 0.2s;
-}
-.cardsContainer > *:nth-child(5) {
-	animation-delay: 0.25s;
-}
-.cardsContainer > *:nth-child(n + 6) {
-	animation-delay: 0.3s;
-}
+.cardsContainer > *:nth-child(1) { animation-delay: 0.02s; }
+.cardsContainer > *:nth-child(2) { animation-delay: 0.04s; }
+.cardsContainer > *:nth-child(3) { animation-delay: 0.06s; }
+.cardsContainer > *:nth-child(4) { animation-delay: 0.08s; }
+.cardsContainer > *:nth-child(5) { animation-delay: 0.10s; }
+.cardsContainer > *:nth-child(6) { animation-delay: 0.12s; }
+.cardsContainer > *:nth-child(7) { animation-delay: 0.14s; }
+.cardsContainer > *:nth-child(8) { animation-delay: 0.16s; }
+.cardsContainer > *:nth-child(9) { animation-delay: 0.18s; }
+.cardsContainer > *:nth-child(10) { animation-delay: 0.20s; }
+.cardsContainer > *:nth-child(n + 11) { animation-delay: 0.22s; }
 
 .nameCount {
 	padding-block: var(--space-3);
