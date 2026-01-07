@@ -17,6 +17,7 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
+import { ToastProvider } from "./shared/providers/ToastProvider";
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
@@ -26,7 +27,6 @@ import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/Nam
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
-import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
