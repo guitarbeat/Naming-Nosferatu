@@ -67,9 +67,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	height: var(--navbar-height);
-	padding: 0 var(--navbar-padding-x);
-	gap: var(--navbar-gap);
+	height: clamp(56px, 12vh, 80px);
+	padding: 0 clamp(12px, 4vw, 24px);
+	gap: var(--space-2);
 	width: clamp(300px, 94vw, 1200px);
 	border-radius: var(--radius-2xl);
 	background: var(--nav-bg);
@@ -85,6 +85,14 @@
 	transition-duration: var(--duration-slower);
 	transition-timing-function: var(--ease-emphasized);
 	overflow: hidden;
+}
+
+/* Ensure minimum touch target size on mobile */
+@media (width <= 640px) {
+	.app-navbar {
+		height: clamp(56px, 14vh, 64px);
+		padding: 0 var(--space-2);
+	}
 }
 
 /* Mobile menu open state - styles handled by mobile menu panel */
