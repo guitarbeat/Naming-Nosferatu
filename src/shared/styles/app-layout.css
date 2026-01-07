@@ -38,7 +38,7 @@
 	background: transparent;
 	border: none;
 	box-shadow: none;
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	transition: var(--transition-base);
 	position: relative;
 	z-index: var(--z-elevate);
 }
@@ -84,7 +84,7 @@
 	display: flex;
 	visibility: visible;
 	opacity: 1;
-	z-index: var(--z-sticky, 1020);
+	z-index: var(--z-sticky);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -96,7 +96,7 @@
 	display: block;
 	visibility: visible;
 	opacity: 1;
-	z-index: var(--z-sticky, 1020);
+	z-index: var(--z-sticky);
 	position: fixed;
 	top: 0;
 	left: 0;

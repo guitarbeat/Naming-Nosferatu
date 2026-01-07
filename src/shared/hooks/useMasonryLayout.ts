@@ -18,6 +18,14 @@ interface MasonryPosition {
 	left: number;
 }
 
+/**
+ * Design token defaults (in px):
+ * - gap: 16px (--space-4)
+ * - minColumnWidth: 180px (used for responsive grid calculation)
+ */
+const DEFAULT_GAP_PX = 16;
+const DEFAULT_MIN_COLUMN_WIDTH_PX = 180;
+
 export function useMasonryLayout<T extends HTMLElement>(
 	itemCount: number,
 	options: MasonryOptions = {},
@@ -27,7 +35,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 	const [positions, setPositions] = useState<MasonryPosition[]>([]);
 	const [columnHeights, setColumnHeights] = useState<number[]>([]);
 
-	const { columnCount, gap = 16, minColumnWidth = 180 } = options;
+	const { columnCount, gap = DEFAULT_GAP_PX, minColumnWidth = DEFAULT_MIN_COLUMN_WIDTH_PX } = options;
 
 	const calculateLayout = useCallback(() => {
 		if (!containerRef.current || itemCount === 0) {
