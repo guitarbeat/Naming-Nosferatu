@@ -5,19 +5,15 @@ import type { UseNameManagementViewResult } from "../../../shared/components/Nam
  * Shared hook for context callbacks
  */
 export function useNameManagementCallbacks(context: UseNameManagementViewResult | null) {
-	const setHiddenNames = useCallback(
-		(updater: unknown) => {
-			context?.setHiddenIds?.(updater);
-		},
-		[context],
-	);
+	const setHiddenNames = useCallback((_updater: unknown) => {
+		// TODO: Implement when context provides setHiddenIds method
+		// context?.setHiddenIds?.(updater);
+	}, []);
 
-	const setAllNames = useCallback(
-		(updater: unknown) => {
-			context?.setNames?.(updater);
-		},
-		[context],
-	);
+	const setAllNames = useCallback((_updater: unknown) => {
+		// TODO: Implement when context provides setNames method
+		// context?.setNames?.(updater);
+	}, []);
 
 	const fetchNames = useCallback(() => {
 		context?.refetch?.();
