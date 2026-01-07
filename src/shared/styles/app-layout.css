@@ -84,7 +84,7 @@
 	display: flex;
 	visibility: visible;
 	opacity: 1;
-	z-index: var(--z-sticky, 1020);
+	z-index: var(--z-sticky);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -96,7 +96,7 @@
 	display: block;
 	visibility: visible;
 	opacity: 1;
-	z-index: var(--z-sticky, 1020);
+	z-index: var(--z-sticky);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -104,7 +104,7 @@
 }
 
 /* Desktop: vertical navbar for login page */
-@media (width > 960px) {
+@media (width >= var(--breakpoint-xl)) {
 	.app--login .app-navbar-glass {
 		right: auto;
 		bottom: 0;
