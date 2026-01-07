@@ -10,7 +10,7 @@ import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
 import React, { memo } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import type { BracketMatch } from "../../../types/components";
-import { KeyboardHelp } from "./TournamentUI";
+import { KeyboardHelp } from "./TournamentUI/KeyboardHelp";
 
 // --- Types ---
 
