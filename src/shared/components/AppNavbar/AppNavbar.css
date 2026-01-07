@@ -337,6 +337,9 @@
 	padding: var(--space-2);
 	border-radius: var(--radius-md);
 	transition: var(--transition-base);
+	min-width: var(--icon-button-medium);
+	min-height: var(--icon-button-medium);
+	touch-action: manipulation;
 }
 
 .app-navbar__toggle:hover {
