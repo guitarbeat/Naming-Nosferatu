@@ -1,4 +1,4 @@
-import { MAIN_NAV_ITEMS } from "../../config/navigation.config";
+import { MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import type { BuildNavItemsContext, NavItem } from "./navbarCore";
 
 export function buildNavItems(context: BuildNavItemsContext): NavItem[] {
