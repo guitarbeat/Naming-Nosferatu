@@ -80,11 +80,11 @@ export interface UseNameManagementViewResult {
 	clearErrors: () => void;
 
 	// Selection state
-	selectedNames: Set<string | number>;
+	selectedNames: NameItem[];
 	selectedIds: unknown;
 	isSelectionMode: boolean;
 	setIsSelectionMode: () => void;
-	toggleName: (id: string | number) => void;
+	toggleName: (nameOrId: NameItem | string) => void;
 	toggleNameById: (nameId: string, selected: boolean) => void;
 	toggleNamesByIds: (nameIds: string[], shouldSelect?: boolean) => void;
 	clearSelection: () => void;
@@ -106,7 +106,7 @@ export interface UseNameManagementViewResult {
 	showSelectedOnly: boolean;
 	setShowSelectedOnly: (show: boolean) => void;
 	selectionFilter: string;
-	setSelectionFilter: (filter: string) => void;
+	setSelectionFilter: React.Dispatch<React.SetStateAction<"all" | "selected" | "unselected">>;
 	userFilter: string;
 	setUserFilter: (filter: "all" | "user" | "other") => void;
 	dateFilter: "all" | "today" | "week" | "month";
@@ -485,5 +485,9 @@ export function useNameManagementView({
 		categories: uniqueCategories,
 		profileProps,
 		tournamentProps,
+		analysisMode,
+		setAnalysisMode,
+		sortedNames: filteredNames, // Use filtered names as sorted names for now
+		extensions,
 	};
 }

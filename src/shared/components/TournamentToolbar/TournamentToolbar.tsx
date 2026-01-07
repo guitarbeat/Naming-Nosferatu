@@ -45,6 +45,8 @@ const styles = {
 	toggleStack: "tournament-toolbar-toggle-stack",
 	filtersContainer: "tournament-toolbar-filters-container",
 	startButton: "tournament-toolbar-start-button",
+	startButtonWrapper: "tournament-toolbar-start-button-wrapper",
+	startButtonHint: "tournament-toolbar-start-button-hint",
 	toggleWrapper: "tournament-toolbar-toggle-wrapper",
 	toggleSwitch: "tournament-toolbar-toggle-switch",
 	toggleSwitchActive: "tournament-toolbar-toggle-switch-active",
@@ -410,11 +412,9 @@ function TournamentToolbar({
 	userOptions = null,
 	startTournamentButton,
 	analysisMode = false,
-	onOpenSuggestName,
+	onOpenSuggestName: _onOpenSuggestName,
 	className = "",
 }: TournamentToolbarProps) {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const _unused = onOpenSuggestName; // Kept to match prop signature but marked unused
 
 	const isTournament = mode === "tournament";
 	const isHybrid = mode === "hybrid";

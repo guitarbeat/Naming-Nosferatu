@@ -51,15 +51,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const { data: user, isLoading } = useQuery({
 		queryKey: ["auth", "user"],
 		queryFn: async () => {
+			const client = await supabase();
 			const {
 				data: { user },
-			} = await supabase.auth.getUser();
+			} = await client.auth.getUser();
 			if (!user) {
 				return null;
 			}
 
 			// Get user profile data
-			const { data: profile } = await supabase
+			const { data: profile } = await client
 				.from("cat_app_users")
 				.select("user_name, preferences")
 				.eq("user_name", user.email)
@@ -80,7 +81,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const loginMutation = useMutation({
 		mutationFn: async ({ email, password }: LoginCredentials) => {
-			const { error } = await supabase.auth.signInWithPassword({
+			const client = await supabase();
+			const { error } = await client.auth.signInWithPassword({
 				email,
 				password,
 			});
@@ -95,7 +97,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
 	const logoutMutation = useMutation({
 		mutationFn: async () => {
-			const { error } = await supabase.auth.signOut();
+			const client = await supabase();
+			const { error } = await client.auth.signOut();
 			if (error) {
 				throw error;
 			}

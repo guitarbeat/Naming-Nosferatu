@@ -58,6 +58,7 @@ export function NameManagementView({
 		tournamentProps,
 		analysisMode,
 		setAnalysisMode,
+		extensions,
 	});
 
 	const {

@@ -4,6 +4,8 @@
  * Note: NameItem is now consolidated in src/types/components.ts
  */
 
+import type { NameManagementViewExtensions } from "../nameManagementCore";
+
 export interface TournamentFilters {
 	searchTerm?: string;
 	category?: string;

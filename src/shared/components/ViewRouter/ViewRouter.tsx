@@ -6,6 +6,7 @@ import CombinedLoginTournamentSetup from "../../../features/tournament/CombinedL
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";
 import { ErrorComponent, Loading } from "../CommonUI";
+import type { NameItem } from "../../../types/components";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
@@ -79,8 +80,8 @@ export default function ViewRouter({
 	// * Show Dashboard (Results + Analysis) if on /results or /analysis routes
 	// * Check route path (without query params) to determine if we should show dashboard
 	const currentPath =
-		typeof window !== "undefined"
-			? window.location.pathname
+		typeof window !== "undefined" && window.location
+			? (window.location as Location).pathname
 			: currentRoute.split("?")[0].split("#")[0];
 	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
 
@@ -128,7 +129,7 @@ export default function ViewRouter({
 	return (
 		<ErrorComponent variant="boundary" error={null}>
 			<Tournament
-				names={tournament.names}
+				names={tournament.names as NameItem[]}
 				existingRatings={Object.fromEntries(
 					Object.entries(tournament.ratings).map(([key, value]) => [
 						key,
