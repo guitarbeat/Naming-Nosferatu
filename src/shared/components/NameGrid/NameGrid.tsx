@@ -5,7 +5,7 @@
  */
 
 import PropTypes from "prop-types";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import type { NameItem } from "../../propTypes";
 import {
@@ -43,9 +43,9 @@ interface NameGridProps {
 /**
  * Individual Card wrapper with grid-specific styling
  */
-const GridItem = ({
+const GridItem = memo(({
 	nameObj,
-	selectedSet,
+	isSelected,
 	onToggleName,
 	isAdmin,
 	showCatPictures,
@@ -54,7 +54,7 @@ const GridItem = ({
 	onDelete,
 }: {
 	nameObj: NameItem;
-	selectedSet: Set<string | number>;
+	isSelected: boolean;
 	onToggleName?: (name: NameItem) => void;
 	isAdmin: boolean;
 	showCatPictures: boolean;
@@ -80,7 +80,7 @@ const GridItem = ({
 			<CardName
 				name={nameObj.name || ""}
 				description={nameObj.description}
-				isSelected={selectedSet.has(nameId)}
+				isSelected={isSelected}
 				onClick={() => onToggleName?.(nameObj)}
 				image={cardImage}
 				metadata={
@@ -101,7 +101,9 @@ const GridItem = ({
 			/>
 		</div>
 	);
-};
+});
+
+GridItem.displayName = "GridItem";
 
 export function NameGrid({
 	names = [],
@@ -205,6 +207,7 @@ export function NameGrid({
 			>
 				{processedNames.map((name, index) => {
 					const position = positions[index];
+					const isSelected = selectedSet.has(name.id as string | number);
 					return (
 						<div
 							key={name.id}
@@ -223,7 +226,7 @@ export function NameGrid({
 						>
 							<GridItem
 								nameObj={name}
-								selectedSet={selectedSet}
+								isSelected={isSelected}
 								onToggleName={onToggleName}
 								isAdmin={isAdmin}
 								showCatPictures={showCatPictures}
