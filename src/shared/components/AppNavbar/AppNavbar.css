@@ -602,9 +602,8 @@
 		display: inline;
 	}
 
-	.app-navbar-mobile-panel {
-		display: none;
-	}
+.app-navbar-mobile-panel {
+	display: none;
 }
 
 /* Bottom Nav Styles */
