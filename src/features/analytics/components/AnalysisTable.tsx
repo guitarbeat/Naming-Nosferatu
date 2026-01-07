@@ -56,9 +56,8 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						<th scope="col">Name</th>
 						<th
 							scope="col"
-							className={styles.sortable}
+							className={`${styles.sortable} ${styles.sortableHeader}`}
 							onClick={() => onSort("rating")}
-							style={{ cursor: "pointer" }}
 						>
 							{isAdmin ? (
 								<ColumnHeader
@@ -75,9 +74,8 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						</th>
 						<th
 							scope="col"
-							className={styles.sortable}
+							className={`${styles.sortable} ${styles.sortableHeader}`}
 							onClick={() => onSort("wins")}
-							style={{ cursor: "pointer" }}
 						>
 							{isAdmin ? (
 								<ColumnHeader
@@ -94,9 +92,8 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						</th>
 						<th
 							scope="col"
-							className={styles.sortable}
+							className={`${styles.sortable} ${styles.sortableHeader}`}
 							onClick={() => onSort("selected")}
-							style={{ cursor: "pointer" }}
 						>
 							{isAdmin ? (
 								<ColumnHeader
@@ -118,9 +115,8 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						)}
 						<th
 							scope="col"
-							className={styles.sortable}
+							className={`${styles.sortable} ${styles.sortableHeader}`}
 							onClick={() => onSort("dateSubmitted")}
-							style={{ cursor: "pointer" }}
 						>
 							{isAdmin ? (
 								<ColumnHeader
