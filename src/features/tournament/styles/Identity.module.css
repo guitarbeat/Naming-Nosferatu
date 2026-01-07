@@ -1,0 +1,280 @@
+/* Identity Section -------------------------------------------------------- */
+
+.identitySection {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-2);
+	padding: var(--space-4);
+	background: var(--card-background);
+	border-bottom: var(--card-border-width) solid var(--border-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	letter-spacing: var(--tracking-wide);
+	flex-wrap: wrap; /* Allow wrapping on mobile */
+}
+
+@media (max-width: 480px) {
+	.identitySection {
+		padding: var(--space-3) var(--space-2);
+		flex-direction: column;
+		gap: var(--space-1);
+		text-align: center;
+	}
+}
+
+.identityLabel {
+	color: var(--text-secondary);
+	font-weight: var(--font-weight-medium);
+	text-transform: uppercase;
+}
+
+.identityDisplay {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+}
+
+.identityName {
+	color: var(--text-primary);
+	font-weight: var(--font-weight-bold);
+	text-transform: uppercase;
+	max-width: 15ch;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.identityEditBtn {
+	background: none;
+	border: none;
+	color: var(--accent-color);
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	cursor: pointer;
+	padding: var(--space-1) var(--space-2);
+	opacity: 0.7;
+	transition: var(--transition-opacity);
+}
+
+.identityEditBtn:hover {
+	opacity: 1;
+	text-decoration: underline;
+}
+
+.identityForm {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	width: 100%;
+	justify-content: center;
+}
+
+.identityInput {
+	background: var(--background);
+	border: 1px solid var(--border-color);
+	color: var(--text-primary);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	padding: var(--space-1) var(--space-2);
+	text-transform: uppercase;
+	width: 100%;
+	max-width: 200px;
+}
+
+.identityInput:focus {
+	outline: none;
+	border-color: var(--accent-color);
+}
+
+.identitySaveBtn {
+	background: var(--accent-color);
+	color: var(--background);
+	border: none;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-weight: var(--font-weight-bold);
+	border-radius: var(--radius-sm);
+	flex-shrink: 0;
+}
+
+.identitySaveBtn:hover {
+	filter: brightness(1.1);
+}
+
+/* Cat Fact Tape Section */
+.catFactSection {
+	display: flex;
+	align-items: center;
+	gap: var(--space-3);
+	padding: clamp(var(--space-3), 2vw, var(--space-4)) clamp(var(--space-4), 3vw, var(--space-5));
+	background: var(--glass-bg-strong);
+	/* Scanline effect for terminal aesthetic (inspired by legacy CRT styling) */
+	background-image:
+		var(--glass-bg-strong),
+		repeating-linear-gradient(
+			0deg,
+			transparent,
+			transparent 2px,
+			var(--overlay-cyan) 2px,
+			var(--overlay-cyan) 4px
+		);
+	border: var(--card-border-width) solid var(--color-neon-cyan);
+	border-left-width: calc(var(--space-1) * 1.5);
+	margin-top: calc(var(--space-2) * -1);
+	border-top: none;
+	font-family: var(--font-mono);
+	font-size: clamp(var(--text-xs), 2vw, var(--text-sm));
+	color: var(--text-primary);
+	position: relative;
+	box-shadow:
+		var(--shadow-md),
+		0 0 20px var(--overlay-cyan-medium),
+		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	overflow: hidden;
+	z-index: var(--z-elevate);
+}
+
+/* Left border accent with glow */
+.catFactSection::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: calc(var(--space-1) * 1.5);
+	background: linear-gradient(180deg, var(--color-neon-cyan) 0%, var(--color-neutral-600) 100%);
+	box-shadow: var(--shadow-cyan);
+	z-index: var(--z-10);
+}
+
+/* Tape end decorator on right (inspired by login screen catFactTape) */
+.catFactSection::after {
+	content: "";
+	position: absolute;
+	top: calc(var(--space-1) * -1);
+	right: 8%;
+	width: var(--space-6);
+	height: var(--space-2);
+	background: var(--overlay-cyan);
+	transform: rotate(5deg);
+	border-radius: var(--radius-xs);
+	box-shadow: var(--shadow-sm);
+	z-index: var(--z-elevate);
+	animation: shimmer-sweep var(--duration-slower) var(--ease-in-out-expo) infinite;
+}
+
+/* Shimmer sweep animation (from legacy animations.css) */
+@keyframes shimmer-sweep {
+	0% {
+		opacity: 0;
+		transform: translateX(-100%) skewX(-15deg) rotate(5deg);
+	}
+	50% {
+		opacity: 0.4;
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(200%) skewX(-15deg) rotate(5deg);
+	}
+}
+
+@media (max-width: 480px) {
+	.catFactSection {
+		padding: var(--space-2) var(--space-3);
+		flex-wrap: wrap;
+	}
+	.catFactSection::after {
+		display: none; /* Hide tape decorator on small screens */
+	}
+	.tapeLabel {
+		display: none; /* Hide label on tiny screens to save space */
+	}
+	.tapeDecorator::before {
+		display: none; /* Hide tape decorator on small screens */
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.catFactSection::after {
+		animation: none;
+	}
+	.tapeLabel {
+		animation: none;
+	}
+}
+
+.tapeDecorator {
+	width: var(--space-1);
+	height: 100%;
+	background: var(--color-neon-cyan);
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0.8;
+	box-shadow: 0 0 8px var(--overlay-cyan-medium);
+	z-index: var(--z-10);
+}
+
+/* Additional tape decorator on the left side (inspired by login screen) */
+.tapeDecorator::before {
+	content: "";
+	position: absolute;
+	top: calc(var(--space-1) * -1);
+	left: calc(var(--space-1) * -1);
+	width: var(--space-6);
+	height: var(--space-2);
+	background: var(--overlay-cyan);
+	transform: rotate(-5deg);
+	border-radius: var(--radius-xs);
+	box-shadow: var(--shadow-sm);
+}
+
+.tapeLabel {
+	font-weight: var(--font-weight-bold);
+	color: var(--color-neon-cyan);
+	opacity: 1;
+	flex-shrink: 0;
+	text-shadow:
+		0 0 8px var(--overlay-cyan-medium),
+		0 0 16px var(--overlay-cyan);
+	letter-spacing: var(--tracking-wider);
+	position: relative;
+	z-index: var(--z-elevate);
+	animation: pulse-glow var(--duration-slower) var(--ease-in-out-expo) infinite;
+}
+
+/* Pulsing glow animation for label */
+@keyframes pulse-glow {
+	0%,
+	100% {
+		text-shadow:
+			0 0 8px var(--overlay-cyan-medium),
+			0 0 16px var(--overlay-cyan);
+	}
+	50% {
+		text-shadow:
+			0 0 12px var(--overlay-cyan-medium),
+			0 0 24px var(--overlay-cyan),
+			0 0 32px var(--overlay-cyan);
+	}
+}
+
+.tapeContent {
+	font-weight: var(--font-weight-medium);
+	letter-spacing: var(--tracking-normal);
+	line-height: var(--leading-normal);
+	color: var(--text-primary);
+	text-shadow:
+		var(--text-shadow-sm),
+		0 0 2px var(--overlay-cyan);
+	position: relative;
+	z-index: var(--z-elevate);
+	flex: 1;
+	min-width: 0;
+	word-break: break-word;
+}

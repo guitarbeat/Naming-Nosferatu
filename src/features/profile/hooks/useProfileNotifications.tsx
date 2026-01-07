@@ -40,10 +40,7 @@ export function useProfileNotifications() {
 	);
 
 	const showToast = useCallback(
-		(
-			message: string,
-			type: "success" | "error" | "info" | "warning" = "info",
-		) => {
+		(message: string, type: "success" | "error" | "info" | "warning" = "info") => {
 			devLog(`📢 [${type}]`, message);
 			showToastMessage({
 				message,
@@ -62,11 +59,19 @@ export function useProfileNotifications() {
 				removeToast={removeToast}
 				position="top-right"
 				maxToasts={NOTIFICATION.MAX_TOASTS}
-				onDismiss={() => {}}
+				onDismiss={() => {
+					// Intentional no-op: dismiss handled by component
+				}}
 				message=""
 			/>
 		);
 	}, [toasts, removeToast]);
 
-	return { showSuccess, showError, showToast, ToastContainer };
+	return {
+		showSuccess,
+		showError,
+		showToast,
+		// biome-ignore lint/style/useNamingConvention: Component reference, PascalCase is appropriate
+		ToastContainer,
+	};
 }

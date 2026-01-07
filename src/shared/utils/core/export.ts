@@ -1,13 +1,20 @@
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../../types/components";
 
+/**
+ * Export data structure - snake_case fields match database column names
+ */
 export interface ExportNameItem {
 	name: string;
 	description?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
 	rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_wins?: number;
 	wins?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_losses?: number;
 	losses?: number;
 	matches?: number;
@@ -35,31 +42,22 @@ function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 function getDateString(): string {
-	return new Date().toISOString().split("T")[0];
+	return new Date().toISOString().split("T")[0] || "";
 }
 
 function escapeCSVValue(value: unknown): string {
 	const stringValue = String(value ?? "");
-	if (
-		stringValue.includes(",") ||
-		stringValue.includes('"') ||
-		stringValue.includes("\n")
-	) {
+	if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
 		return `"${stringValue.replace(/"/g, '""')}"`;
 	}
 	return stringValue;
 }
 
-function arrayToCSV<T>(
-	data: T[],
-	headers: string[],
-	fields: FieldAccessor<T>[],
-): string {
+function arrayToCSV<T>(data: T[], headers: string[], fields: FieldAccessor<T>[]): string {
 	const rows = data.map((item, index) =>
 		fields
 			.map((field) => {
-				const value =
-					typeof field === "function" ? field(item, index) : item[field];
+				const value = typeof field === "function" ? field(item, index) : item[field];
 				return escapeCSVValue(value);
 			})
 			.join(","),
@@ -68,24 +66,14 @@ function arrayToCSV<T>(
 	return [headers.join(","), ...rows].join("\n");
 }
 
-export function exportToCSV<T>(
-	data: T[],
-	options: ExportOptions<T> = {},
-): boolean {
-	const {
-		fileName = "export",
-		headers = [],
-		fields = [],
-		includeDate = true,
-	} = options;
+export function exportToCSV<T>(data: T[], options: ExportOptions<T> = {}): boolean {
+	const { fileName = "export", headers = [], fields = [], includeDate = true } = options;
 
 	try {
 		const csvContent = arrayToCSV(data, headers, fields);
 		const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-		const finalFileName = includeDate
-			? `${fileName}-${getDateString()}.csv`
-			: `${fileName}.csv`;
+		const finalFileName = includeDate ? `${fileName}-${getDateString()}.csv` : `${fileName}.csv`;
 
 		downloadBlob(blob, finalFileName);
 		return true;
@@ -95,10 +83,7 @@ export function exportToCSV<T>(
 	}
 }
 
-export function exportNamesToCSV(
-	names: ExportNameItem[],
-	fileName = "cat-names-export",
-): boolean {
+export function exportNamesToCSV(names: ExportNameItem[], fileName = "cat-names-export"): boolean {
 	return exportToCSV(names, {
 		fileName,
 		headers: ["Name", "Description", "Rating", "Wins", "Losses"],
@@ -116,14 +101,16 @@ export type NameId = string | number;
 
 // * Extract name IDs from selected names value
 export function extractNameIds(
-	selectedNamesValue: string[] | NameItem[] | Set<string>,
+	selectedNamesValue: string[] | NameItem[] | Set<string | number>,
 ): NameId[] {
 	if (selectedNamesValue instanceof Set) {
 		return Array.from(selectedNamesValue);
 	}
 
 	if (Array.isArray(selectedNamesValue)) {
-		if (selectedNamesValue.length === 0) return [];
+		if (selectedNamesValue.length === 0) {
+			return [];
+		}
 
 		const first = selectedNamesValue[0];
 		if (typeof first === "string" || typeof first === "number") {
@@ -144,10 +131,28 @@ export function getVisibleNames(names: NameItem[]): NameItem[] {
 }
 
 export function exportTournamentResultsToCSV(
-	names: ExportNameItem[],
+	names: NameItem[] | ExportNameItem[],
 	fileName = "tournament-results",
 ): boolean {
-	return exportToCSV(names, {
+	// Convert NameItem[] to ExportNameItem[] format if needed
+	const exportData: ExportNameItem[] = names.map((n) => {
+		if ("avg_rating" in n || "user_rating" in n || "user_wins" in n) {
+			// Already in ExportNameItem format
+			return n as ExportNameItem;
+		}
+		// Convert from NameItem to ExportNameItem format
+		const nameItem = n as NameItem;
+		return {
+			name: nameItem.name,
+			rating: nameItem.rating || 0,
+			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
+			avg_rating: nameItem.avg_rating || nameItem.rating || 0,
+			wins: nameItem.wins || 0,
+			losses: nameItem.losses || 0,
+		} as ExportNameItem;
+	});
+
+	return exportToCSV(exportData, {
 		fileName,
 		headers: ["Rank", "Name", "Rating", "Matches"],
 		fields: [

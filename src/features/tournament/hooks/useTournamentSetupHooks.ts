@@ -1,25 +1,23 @@
 import { useCallback } from "react";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type NameManagementContextType = any; // Todo: Import proper type from NameManagementView
+import type { UseNameManagementViewResult } from "../../../shared/components/NameManagementView/nameManagementCore";
+import type { NameItem } from "../../../types/components";
 
 /**
  * Shared hook for context callbacks
  */
-export function useNameManagementCallbacks(context: NameManagementContextType) {
+export function useNameManagementCallbacks(context: UseNameManagementViewResult | null) {
 	const setHiddenNames = useCallback(
-		(updater: unknown) => {
-			context?.setHiddenIds?.(updater);
+		(_updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
+			// TODO: Implement when context provides setHiddenIds method
+			// context?.setHiddenIds?.(updater);
 		},
-		[context],
+		[],
 	);
 
-	const setAllNames = useCallback(
-		(updater: unknown) => {
-			context?.setNames?.(updater);
-		},
-		[context],
-	);
+	const setAllNames = useCallback((_updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
+		// TODO: Implement when context provides setNames method
+		// context?.setNames?.(updater);
+	}, []);
 
 	const fetchNames = useCallback(() => {
 		context?.refetch?.();

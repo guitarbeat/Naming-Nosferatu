@@ -30,7 +30,7 @@ interface EloStats {
 	lossesB?: number;
 }
 
-class EloRating {
+export class EloRating {
 	defaultRating: number;
 	kFactor: number;
 	minRating: number;
@@ -54,21 +54,13 @@ class EloRating {
 		if (games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD) {
 			return this.kFactor * ELO_RATING.NEW_PLAYER_K_MULTIPLIER;
 		}
-		if (
-			rating < ELO_RATING.LOW_RATING_THRESHOLD ||
-			rating > ELO_RATING.HIGH_RATING_THRESHOLD
-		) {
+		if (rating < ELO_RATING.LOW_RATING_THRESHOLD || rating > ELO_RATING.HIGH_RATING_THRESHOLD) {
 			return this.kFactor * ELO_RATING.EXTREME_RATING_K_MULTIPLIER;
 		}
 		return this.kFactor;
 	}
 
-	updateRating(
-		rating: number,
-		expected: number,
-		actual: number,
-		games: number = 0,
-	): number {
+	updateRating(rating: number, expected: number, actual: number, games: number = 0): number {
 		const k = this.getKFactor(rating, games);
 		const newRating = Math.round(rating + k * (actual - expected));
 		return Math.max(this.minRating, Math.min(this.maxRating, newRating));
@@ -141,8 +133,6 @@ class EloRating {
 	}
 }
 
-export { EloRating };
-export default EloRating;
 /**
  * @module PreferenceSorter
  * @description A class that implements a merge sort algorithm with custom comparisons
@@ -229,10 +219,7 @@ export class PreferenceSorter {
 		});
 	}
 
-	getPreference(
-		item1: string | { name?: string },
-		item2: string | { name?: string },
-	): number {
+	getPreference(item1: string | { name?: string }, item2: string | { name?: string }): number {
 		const key = `${this.getName(item1)}-${this.getName(item2)}`;
 		const reverseKey = `${this.getName(item2)}-${this.getName(item1)}`;
 
@@ -253,9 +240,7 @@ export class PreferenceSorter {
 		return this.currentRankings;
 	}
 
-	async sort(
-		compareCallback: (a: string, b: string) => Promise<number> | number,
-	): Promise<void> {
+	async sort(compareCallback: (a: string, b: string) => Promise<number> | number): Promise<void> {
 		const n = this.items.length;
 
 		if (!this.rec || this.rec.length !== n) {
@@ -272,7 +257,8 @@ export class PreferenceSorter {
 	): Promise<void> {
 		if (right - left < 1) {
 			if (left === right && left >= 0 && left < this.items.length) {
-				this.ranks.push(this.items[left]);
+				// biome-ignore lint/style/noNonNullAssertion: Array bounds already checked above
+				this.ranks.push(this.items[left]!);
 			}
 			return;
 		}
@@ -290,13 +276,7 @@ export class PreferenceSorter {
 		compareCallback: (a: string, b: string) => Promise<number> | number,
 	): Promise<void> {
 		// Validate bounds
-		if (
-			left < 0 ||
-			right >= this.items.length ||
-			left > right ||
-			mid < left ||
-			mid > right
-		) {
+		if (left < 0 || right >= this.items.length || left > right || mid < left || mid > right) {
 			console.error("Invalid merge bounds:", {
 				left,
 				mid,
@@ -321,18 +301,25 @@ export class PreferenceSorter {
 					});
 					break;
 				}
-				const result = await compareCallback(this.items[i], this.items[j]);
+				// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+				const result = await compareCallback(this.items[i]!, this.items[j]!);
 
 				if (result <= -0.5) {
-					merged.push(this.items[i++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
 				} else if (result >= 0.5) {
-					merged.push(this.items[j++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
 				} else if (result < 0) {
-					merged.push(this.items[i++]);
-					merged.push(this.items[j++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
 				} else {
-					merged.push(this.items[j++]);
-					merged.push(this.items[i++]);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[j++]!);
+					// biome-ignore lint/style/noNonNullAssertion: Array bounds checked in loop condition
+					merged.push(this.items[i++]!);
 				}
 			} catch (error) {
 				console.error("Comparison failed:", error);
@@ -341,15 +328,19 @@ export class PreferenceSorter {
 		}
 
 		while (i <= mid) {
-			merged.push(this.items[i++]);
+			// biome-ignore lint/style/noNonNullAssertion: Loop condition ensures valid index
+			merged.push(this.items[i++]!);
 		}
 		while (j <= right) {
-			merged.push(this.items[j++]);
+			// biome-ignore lint/style/noNonNullAssertion: Loop condition ensures valid index
+			merged.push(this.items[j++]!);
 		}
 
 		for (let k = 0; k < merged.length; k++) {
-			this.items[left + k] = merged[k];
-			this.currentRankings[left + k] = merged[k];
+			// biome-ignore lint/style/noNonNullAssertion: Array access within bounds of merged.length
+			this.items[left + k] = merged[k]!;
+			// biome-ignore lint/style/noNonNullAssertion: Array access within bounds of merged.length
+			this.currentRankings[left + k] = merged[k]!;
 		}
 
 		if (left === 0 && right === this.items.length - 1) {
@@ -361,7 +352,12 @@ export class PreferenceSorter {
 	getNextMatch(): { left: string; right: string } | null {
 		// Advance index to next pair we haven't judged yet
 		while (this.currentIndex < this.pairs.length) {
-			const [a, b] = this.pairs[this.currentIndex];
+			const pair = this.pairs[this.currentIndex];
+			if (!pair) {
+				this.currentIndex++;
+				continue;
+			}
+			const [a, b] = pair;
 			const key = `${a}-${b}`;
 			const reverseKey = `${b}-${a}`;
 			if (!this.preferences.has(key) && !this.preferences.has(reverseKey)) {
@@ -375,7 +371,9 @@ export class PreferenceSorter {
 	// Undo last added preference
 	undoLastPreference(): boolean {
 		const last = this.history.pop();
-		if (!last) return false;
+		if (!last) {
+			return false;
+		}
 		const key = `${last.a}-${last.b}`;
 		const reverseKey = `${last.b}-${last.a}`;
 		this.preferences.delete(key);

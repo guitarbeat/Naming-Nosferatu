@@ -16,23 +16,25 @@ import {
 } from "./core/hooks/useRouting";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
-import useAppStore, {
-	useAppStoreInitialization,
-} from "./core/store/useAppStore";
+import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
+import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
+import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
 import ViewRouter from "./shared/components/ViewRouter/ViewRouter";
-import type { NameItem } from "./shared/propTypes";
+import { ToastProvider } from "./shared/providers/ToastProvider";
+import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
 } from "./shared/utils/core";
-import type { TournamentName } from "./types/store";
+import type { NameItem } from "./types/components";
+import type { AppState } from "./types/store";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -42,91 +44,30 @@ import type { TournamentName } from "./types/store";
  *
  * @returns {JSX.Element} Fully configured application layout.
  */
-interface UserState {
-	name: string;
-	isLoggedIn: boolean;
-	isAdmin: boolean;
-	preferences: Record<string, unknown>;
-}
-
-interface TournamentState {
-	names: TournamentName[] | null;
-	ratings: Record<string, { rating: number }>;
-	isComplete: boolean;
-	isLoading: boolean;
-	voteHistory: unknown[];
-	currentView: string;
-}
-
-interface StoreSlice {
-	user: UserState;
-	tournament: TournamentState;
-	ui: {
-		theme: string;
-		themePreference: string;
-		showGlobalAnalytics: boolean;
-		showUserComparison: boolean;
-		matrixMode: boolean;
-	};
-	errors: {
-		current: Error | null;
-		history: unknown[];
-	};
-	tournamentActions: {
-		setNames: (names: TournamentName[] | null) => void;
-		setRatings: (ratings: Record<string, { rating: number }>) => void;
-		setComplete: (isComplete: boolean) => void;
-		setLoading: (isLoading: boolean) => void;
-		addVote: (vote: unknown) => void;
-		resetTournament: () => void;
-		setView: (view: string) => void;
-	};
-	uiActions: {
-		setMatrixMode: (enabled: boolean) => void;
-		setGlobalAnalytics: (show: boolean) => void;
-		setUserComparison: (show: boolean) => void;
-		setTheme: (theme: string) => void;
-		initializeTheme: () => void;
-	};
-	errorActions: {
-		setError: (error: Error | null) => void;
-		clearError: () => void;
-		logError: (
-			error: Error,
-			context: string,
-			metadata?: Record<string, unknown>,
-		) => void;
-	};
-}
 
 function App() {
 	const { login, logout, isInitialized } = useUserSession();
 	const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
-	// * Initialize performance monitoring
+	// * Initialize performance monitoring and global error handling
 	useEffect(() => {
 		initializePerformanceMonitoring();
-		return () => cleanupPerformanceMonitoring();
+		const cleanup = ErrorManager.setupGlobalErrorHandling();
+		return () => {
+			cleanupPerformanceMonitoring();
+			cleanup();
+		};
 	}, []);
 
 	// * Initialize store from localStorage
 	useAppStoreInitialization();
 
 	// * Centralized store
-	const {
-		user,
-		tournament,
-		ui,
-		errors,
-		tournamentActions,
-		uiActions,
-		errorActions,
-	} = useAppStore() as StoreSlice;
+	const { user, tournament, ui, errors, tournamentActions, uiActions, errorActions } =
+		useAppStore();
 
 	// * Explicitly select currentView to ensure re-renders when it changes
-	const currentView = useAppStore(
-		(state: StoreSlice) => state.tournament.currentView,
-	);
+	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
 
 	// * Simple URL routing helpers
 	const { currentRoute, navigateTo } = useRouting();
@@ -143,7 +84,9 @@ function App() {
 	// * Keyboard shortcuts - consolidated into custom hook
 	useKeyboardShortcuts({
 		navigateTo,
-		onAnalysisToggle: () => {},
+		onAnalysisToggle: () => {
+			// Intentional no-op: analysis toggle handled elsewhere
+		},
 	});
 
 	// * Theme synchronization
@@ -215,54 +158,45 @@ function App() {
 	// * Show loading screen while initializing user session from localStorage
 	if (!isInitialized) {
 		return (
-			<div
-				style={{
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-					height: "100vh",
-					width: "100vw",
-				}}
-			>
+			<div className="fullScreenCenter">
 				<Loading variant="spinner" text="Loading..." />
 			</div>
 		);
 	}
 
 	return (
-		<AppLayout
-			user={user}
-			errors={errors}
-			errorActions={errorActions}
-			tournament={tournament}
-			tournamentActions={tournamentActions}
-			handleLogin={handleLogin}
-			handleStartNewTournament={handleStartNewTournament}
-			handleUpdateRatings={handleUpdateRatings}
-			handleTournamentSetup={handleTournamentSetup}
-			handleTournamentComplete={handleTournamentComplete}
-			ui={ui}
-			uiActions={uiActions}
-			isSuggestNameModalOpen={isSuggestNameModalOpen}
-			onCloseSuggestName={handleCloseSuggestName}
-			onOpenSuggestName={handleOpenSuggestName}
-			handleLogout={handleLogout}
-			handleOpenPhotos={handleOpenPhotos}
-		/>
+		<ToastProvider>
+			<AppLayout
+				user={user}
+				errors={errors}
+				errorActions={errorActions}
+				tournament={tournament}
+				tournamentActions={tournamentActions}
+				handleLogin={handleLogin}
+				handleStartNewTournament={handleStartNewTournament}
+				handleUpdateRatings={handleUpdateRatings}
+				handleTournamentSetup={handleTournamentSetup}
+				handleTournamentComplete={handleTournamentComplete}
+				ui={ui}
+				uiActions={uiActions}
+				isSuggestNameModalOpen={isSuggestNameModalOpen}
+				onCloseSuggestName={handleCloseSuggestName}
+				onOpenSuggestName={handleOpenSuggestName}
+				handleLogout={handleLogout}
+				handleOpenPhotos={handleOpenPhotos}
+			/>
+		</ToastProvider>
 	);
 }
 
 export default App;
 
 interface AppLayoutProps {
-	user: UserState;
-	errors: { current: Error | null; history: unknown[] };
-	errorActions: { clearError: () => void };
-	tournament: TournamentState;
-	tournamentActions: {
-		setView: (view: string) => void;
-		addVote: (vote: unknown) => void;
-	};
+	user: AppState["user"];
+	errors: AppState["errors"];
+	errorActions: AppState["errorActions"];
+	tournament: AppState["tournament"];
+	tournamentActions: AppState["tournamentActions"];
 	handleLogin: (userName: string) => Promise<boolean>;
 	handleStartNewTournament: () => void;
 	handleUpdateRatings: (
@@ -270,18 +204,15 @@ interface AppLayoutProps {
 	) => Promise<boolean> | undefined;
 	handleTournamentSetup: (names?: NameItem[]) => void;
 	handleTournamentComplete: (
-		finalRatings: Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>,
+		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	isSuggestNameModalOpen: boolean;
 	onCloseSuggestName: () => void;
 	onOpenSuggestName: () => void;
 	handleLogout: () => Promise<void>;
 	handleOpenPhotos: () => void;
-	ui: unknown;
-	uiActions: unknown;
+	ui: AppState["ui"];
+	uiActions: AppState["uiActions"];
 }
 
 function AppLayout({
@@ -302,111 +233,107 @@ function AppLayout({
 	handleOpenPhotos,
 }: AppLayoutProps) {
 	const { isLoggedIn } = user;
-	const currentView = useAppStore(
-		(state: StoreSlice) => state.tournament.currentView,
-	);
+	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
 	const { currentRoute, navigateTo } = useRouting();
 
-	const appClassName = useMemo(
-		() => (!isLoggedIn ? "app app--login" : "app"),
-		[isLoggedIn],
-	);
+	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
 	const layoutStyle = useMemo(() => ({}), []);
 
 	const mainWrapperClassName = useMemo(
 		() =>
-			["app-main-wrapper", !isLoggedIn ? "app-main-wrapper--login" : ""]
-				.filter(Boolean)
-				.join(" "),
+			["app-main-wrapper", isLoggedIn ? "" : "app-main-wrapper--login"].filter(Boolean).join(" "),
 		[isLoggedIn],
 	);
 
 	return (
-		<div className={appClassName} style={layoutStyle}>
-			{/* * Skip link for keyboard navigation */}
-			<a href="#main-content" className="skip-link">
-				Skip to main content
-			</a>
+		<ErrorBoundary context="Main Application Layout">
+			<div className={appClassName} style={layoutStyle}>
+				<OfflineIndicator />
 
-			{/* * Static cat-themed background */}
-			<CatBackground />
+				{/* * Skip link for keyboard navigation */}
+				<a href="#main-content" className="skip-link">
+					Skip to main content
+				</a>
 
-			{/* * Primary navigation lives in the navbar */}
-			{isLoggedIn && (
-				<AppNavbar
-					view={currentView || "tournament"}
-					setView={(view: string) => {
-						const nextView = view;
-						// * Toggle photos view: if clicking photos and already on photos, go back to tournament
-						if (nextView === "photos" && currentView === "photos") {
-							tournamentActions.setView("tournament");
-							navigateTo("/");
-						} else {
-							tournamentActions.setView(nextView);
+				{/* * Static cat-themed background */}
+				<CatBackground />
 
-							// * Direct navigation for each view
-							if (nextView === "tournament") {
+				{/* * Primary navigation lives in the navbar */}
+				{isLoggedIn && (
+					<AppNavbar
+						view={currentView || "tournament"}
+						setView={(view: string) => {
+							const nextView = view;
+							// * Toggle photos view: if clicking photos and already on photos, go back to tournament
+							if (nextView === "photos" && currentView === "photos") {
+								tournamentActions.setView("tournament");
 								navigateTo("/");
-							} else if (nextView === "photos") {
-								navigateTo("/");
+							} else {
+								tournamentActions.setView(nextView);
+
+								// * Direct navigation for each view
+								if (nextView === "tournament") {
+									navigateTo("/");
+								} else if (nextView === "photos") {
+									navigateTo("/");
+								}
 							}
-						}
-					}}
-					isLoggedIn={isLoggedIn}
-					userName={user.name}
-					isAdmin={user.isAdmin}
-					onLogout={handleLogout}
-					onStartNewTournament={handleStartNewTournament}
-					onOpenSuggestName={onOpenSuggestName}
-					onOpenPhotos={handleOpenPhotos}
-					currentRoute={currentRoute}
-					onNavigate={navigateTo}
-				/>
-			)}
-
-			<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
-				{errors.current && isLoggedIn && (
-					<Error
-						variant="list"
-						error={errors.current}
-						onDismiss={() => errorActions.clearError()}
-						onRetry={() => window.location.reload()}
+						}}
+						isLoggedIn={isLoggedIn}
+						userName={user.name}
+						isAdmin={user.isAdmin}
+						onLogout={handleLogout}
+						onStartNewTournament={handleStartNewTournament}
+						onOpenSuggestName={onOpenSuggestName}
+						onOpenPhotos={handleOpenPhotos}
+						currentRoute={currentRoute}
+						onNavigate={navigateTo}
 					/>
 				)}
 
-				<ViewRouter
-					isLoggedIn={isLoggedIn}
-					onLogin={handleLogin}
-					tournament={tournament}
-					userName={user.name}
-					onStartNewTournament={handleStartNewTournament}
-					onUpdateRatings={handleUpdateRatings}
-					onTournamentSetup={handleTournamentSetup}
-					onTournamentComplete={handleTournamentComplete}
-					onVote={(vote: unknown) => tournamentActions.addVote(vote)}
-					onOpenSuggestName={onOpenSuggestName}
-				/>
+				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
+					{errors.current && isLoggedIn && (
+						<Error
+							variant="list"
+							error={errors.current}
+							onDismiss={() => errorActions.clearError()}
+							onRetry={() => window.location.reload()}
+						/>
+					)}
 
-				{/* * Global loading overlay */}
-				{tournament.isLoading && (
-					<div
-						className="global-loading-overlay"
-						role="status"
-						aria-live="polite"
-						aria-busy="true"
-					>
-						<Loading variant="spinner" text="Initializing Tournament..." />
-					</div>
-				)}
+					<ViewRouter
+						isLoggedIn={isLoggedIn}
+						onLogin={handleLogin}
+						tournament={tournament}
+						userName={user.name}
+						onStartNewTournament={handleStartNewTournament}
+						onUpdateRatings={handleUpdateRatings}
+						onTournamentSetup={handleTournamentSetup}
+						onTournamentComplete={handleTournamentComplete}
+						onVote={(vote: unknown) =>
+							tournamentActions.addVote(vote as import("./types/components").VoteData)
+						}
+						onOpenSuggestName={onOpenSuggestName}
+					/>
 
-				<ScrollToTopButton isLoggedIn={isLoggedIn} />
-				<NameSuggestionModal
-					isOpen={isSuggestNameModalOpen}
-					onClose={onCloseSuggestName}
-				/>
-			</main>
-		</div>
+					{/* * Global loading overlay */}
+					{tournament.isLoading && (
+						<div
+							className="global-loading-overlay"
+							role="status"
+							aria-live="polite"
+							aria-busy="true"
+						>
+							<Loading variant="spinner" text="Initializing Tournament..." />
+						</div>
+					)}
+
+					<ScrollToTopButton isLoggedIn={isLoggedIn} />
+					<NameSuggestionModal isOpen={isSuggestNameModalOpen} onClose={onCloseSuggestName} />
+				</main>
+			</div>
+		</ErrorBoundary>
 	);
 }
 

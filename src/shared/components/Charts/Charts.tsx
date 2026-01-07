@@ -32,12 +32,23 @@ function BarChart({
 	showSecondaryValue = false,
 	secondaryValueKey = "avg_rating",
 	className = "",
+}: {
+	title: string;
+	items: Record<string, unknown>[];
+	valueKey?: string;
+	labelKey?: string;
+	maxItems?: number;
+	showSecondaryValue?: boolean;
+	secondaryValueKey?: string;
+	className?: string;
 }) {
-	if (!items || items.length === 0) return null;
+	if (!items || items.length === 0) {
+		return null;
+	}
 
 	const displayItems = items.slice(0, maxItems);
 	const maxValue = Math.max(
-		...displayItems.map((item) => item[valueKey] || 0),
+		...displayItems.map((item) => Number(item[valueKey as keyof typeof item]) || 0),
 		1,
 	);
 
@@ -46,22 +57,25 @@ function BarChart({
 			{title && <h3 className="charts-bar-chart-title">{title}</h3>}
 			<div className="charts-bar-chart-bars">
 				{displayItems.map((item, index) => (
-					<div key={item.id || index} className="charts-bar-chart-row">
-						<div className="charts-bar-chart-label" title={item[labelKey]}>
-							{item[labelKey]}
+					<div key={String(item.id || index)} className="charts-bar-chart-row">
+						<div
+							className="charts-bar-chart-label"
+							title={String(item[labelKey as keyof typeof item] || "")}
+						>
+							{String(item[labelKey as keyof typeof item] || "")}
 						</div>
 						<div className="charts-bar-chart-bar-container">
 							<div
 								className="charts-bar-chart-bar"
 								style={{
-									width: `${((item[valueKey] || 0) / maxValue) * 100}%`,
+									width: `${((Number(item[valueKey as keyof typeof item]) || 0) / maxValue) * 100}%`,
 								}}
 							>
 								<span className="charts-bar-chart-value">
-									{item[valueKey]}
-									{showSecondaryValue &&
-										item[secondaryValueKey] &&
-										` (${item[secondaryValueKey]})`}
+									{String(item[valueKey as keyof typeof item] || "")}
+									{showSecondaryValue && item[secondaryValueKey as keyof typeof item]
+										? ` (${String(item[secondaryValueKey as keyof typeof item] || "")})`
+										: ""}
 								</span>
 							</div>
 						</div>
@@ -95,12 +109,12 @@ const ANIMATION_CONFIG = {
 
 // Vibrant color palette for the lines (using flux colors from CSS)
 const COLORS = [
-	"var(--chart-flux-cyan, #00f2ff)",
-	"var(--chart-flux-magenta, #ff00ea)",
-	"var(--chart-flux-orange, #ff4d00)",
-	"var(--chart-flux-amber, #ffaa00)",
-	"var(--chart-flux-purple, #a855f7)",
-	"var(--chart-flux-green, #10b981)",
+	"var(--chart-flux-cyan, var(--color-neon-cyan))",
+	"var(--chart-flux-magenta, var(--color-hot-pink))",
+	"var(--chart-flux-orange, var(--color-fire-red))",
+	"var(--chart-flux-amber, var(--color-warning))",
+	"var(--chart-flux-purple, var(--color-purple, rgb(168 85 247)))",
+	"var(--chart-flux-green, var(--color-success))",
 	"hsl(220, 70%, 50%)",
 	"hsl(160, 60%, 45%)",
 	"hsl(280, 65%, 60%)",
@@ -110,8 +124,16 @@ const COLORS = [
 /**
  * Generate SVG path for a bump chart line (smooth curves)
  */
-function generatePath(points, chartWidth, _chartHeight, padding, rankToY) {
-	if (!points || points.length < 2) return "";
+function generatePath(
+	points: number[],
+	chartWidth: number,
+	_chartHeight: number,
+	padding: number,
+	rankToY: (rank: number, i?: number) => number,
+): string {
+	if (!points || points.length < 2) {
+		return "";
+	}
 
 	const xStep = (chartWidth - padding * 2) / (points.length - 1);
 
@@ -121,10 +143,16 @@ function generatePath(points, chartWidth, _chartHeight, padding, rankToY) {
 	}));
 
 	// Create smooth bezier curve
-	let path = `M ${coords[0].x} ${coords[0].y}`;
+	if (coords.length === 0) {
+		return "";
+	}
+	// biome-ignore lint/style/noNonNullAssertion: coords length checked above, guaranteed to have elements
+	let path = `M ${coords[0]!.x} ${coords[0]!.y}`;
 	for (let i = 0; i < coords.length - 1; i++) {
-		const current = coords[i];
-		const next = coords[i + 1];
+		// biome-ignore lint/style/noNonNullAssertion: loop bounds ensure valid indices
+		const current = coords[i]!;
+		// biome-ignore lint/style/noNonNullAssertion: loop bounds ensure valid indices
+		const next = coords[i + 1]!;
 		const midX = (current.x + next.x) / 2;
 
 		path += ` Q ${current.x} ${current.y} ${midX} ${current.y}`;
@@ -162,10 +190,24 @@ export function BumpChart({
 	showLegend = true,
 	showTrends = true,
 	className = "",
+}: {
+	data: Array<{
+		name: string;
+		rankings: number[];
+	}>;
+	labels?: string[];
+	timeLabels?: string[];
+	title: string;
+	width?: number;
+	height?: number;
+	animated?: boolean;
+	showLegend?: boolean;
+	showTrends?: boolean;
+	className?: string;
 }) {
 	// Support both labels and timeLabels props for compatibility
 	const chartLabels = labels || timeLabels;
-	const [hoveredSeries, setHoveredSeries] = useState(null);
+	const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
 	const svgRef = useRef<SVGSVGElement | null>(null);
 
 	const chartWidth = width;
@@ -173,20 +215,27 @@ export function BumpChart({
 	const padding = 60;
 	const legendHeight = showLegend ? 40 : 0;
 
-	const processedData = useMemo(() => {
-		if (!data || data.length === 0) return [];
+	const processedData = useMemo((): Array<{
+		id: string;
+		name: string;
+		rankings: number[];
+		color: string;
+	}> => {
+		if (!data || data.length === 0) {
+			return [];
+		}
 
 		return data.map((series, index) => ({
 			...series,
-			color: COLORS[index % COLORS.length],
-			id: series.id || `series-${index}`,
+			color: COLORS[index % COLORS.length] || "var(--color-neutral-400)",
+			id: (series as { id?: string }).id || `series-${index}`,
 			name: series.name || `Series ${index + 1}`,
 			rankings: series.rankings || [],
 		}));
 	}, [data]);
 
 	const rankToY = useCallback(
-		(rank) => {
+		(rank: number) => {
 			const maxRank = Math.max(...processedData.flatMap((s) => s.rankings));
 			const availableHeight = chartHeight - padding * 2 - legendHeight;
 			return padding + (rank - 1) * (availableHeight / maxRank);
@@ -195,23 +244,25 @@ export function BumpChart({
 	);
 
 	const xPositions = useMemo(() => {
-		if (!chartLabels || chartLabels.length === 0) return [];
+		if (!chartLabels || chartLabels.length === 0) {
+			return [];
+		}
 		const step = (chartWidth - padding * 2) / (chartLabels.length - 1);
 		return chartLabels.map((_, i) => padding + i * step);
 	}, [chartWidth, chartLabels]);
 
 	// Animation logic
 	useEffect(() => {
-		if (!animated || !svgRef.current) return;
+		if (!animated || !svgRef.current) {
+			return;
+		}
 
 		const svg = svgRef.current;
-		if (!svg) return;
-		const lines = svg.querySelectorAll(
-			".charts-bump-chart-line",
-		) as NodeListOf<SVGPathElement>;
-		const points = svg.querySelectorAll(
-			".charts-bump-chart-point",
-		) as NodeListOf<SVGCircleElement>;
+		if (!svg) {
+			return;
+		}
+		const lines = svg.querySelectorAll(".charts-bump-chart-line") as NodeListOf<SVGPathElement>;
+		const points = svg.querySelectorAll(".charts-bump-chart-point") as NodeListOf<SVGCircleElement>;
 		const legends = svg.querySelectorAll(
 			".charts-bump-chart-legend-item",
 		) as NodeListOf<HTMLElement>;
@@ -235,8 +286,7 @@ export function BumpChart({
 
 			setTimeout(
 				() => {
-					point.style.transition =
-						"opacity 300ms ease-out, transform 300ms ease-out";
+					point.style.transition = "opacity 300ms ease-out, transform 300ms ease-out";
 					point.style.opacity = "1";
 					point.style.transform = "scale(1)";
 				},
@@ -275,16 +325,11 @@ export function BumpChart({
 			>
 				{/* Grid lines */}
 				<defs>
-					<pattern
-						id="grid"
-						width="40"
-						height="40"
-						patternUnits="userSpaceOnUse"
-					>
+					<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
 						<path
 							d="M 40 0 L 0 0 0 40"
 							fill="none"
-							stroke="var(--border-color, #e5e5e5)"
+							stroke="var(--border-color, var(--color-neutral-200))"
 							strokeWidth="0.5"
 							opacity="0.3"
 						/>
@@ -324,13 +369,7 @@ export function BumpChart({
 
 				{/* Lines and points */}
 				{processedData.map((series) => {
-					const path = generatePath(
-						series.rankings,
-						chartWidth,
-						chartHeight,
-						padding,
-						rankToY,
-					);
+					const path = generatePath(series.rankings, chartWidth, chartHeight, padding, rankToY);
 					const isHovered = hoveredSeries === series.id;
 
 					return (
@@ -383,22 +422,20 @@ export function BumpChart({
 								className="charts-bump-chart-legend-color"
 								style={{ backgroundColor: series.color }}
 							/>
-							<span className="charts-bump-chart-legend-label">
-								{series.name}
-							</span>
-							{showTrends && series.rankings.length >= 2 && (
+							<span className="charts-bump-chart-legend-label">{series.name}</span>
+							{showTrends && series.rankings && series.rankings.length >= 2 && (
 								<TrendIndicator
 									direction={
-										series.rankings[series.rankings.length - 1] <
-										series.rankings[0]
+										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
+										series.rankings[series.rankings.length - 1]! < series.rankings[0]!
 											? "up"
 											: "down"
 									}
 									percentChange={Math.abs(
-										series.rankings[series.rankings.length - 1] -
-											series.rankings[0],
+										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
+										series.rankings[series.rankings.length - 1]! - series.rankings[0]!,
 									)}
-									compact
+									compact={true}
 								/>
 							)}
 						</div>

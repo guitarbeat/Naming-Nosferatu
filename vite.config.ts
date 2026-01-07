@@ -5,20 +5,21 @@
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { componentTagger } from "lovable-tagger";
 import { visualizer } from "rollup-plugin-visualizer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, "..");
+const projectRoot = __dirname;
 
 const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...segments);
 
 // ts-prune-ignore-next (used by Vite build system)
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, projectRoot, "");
+  // Use system environment variables directly (skip .env file loading to avoid permission issues)
+  const env = { ...process.env };
   const isProd = mode === "production";
 
   const serverPort = Number(env.VITE_PORT) || 5173;
@@ -26,6 +27,8 @@ export default defineConfig(({ mode }) => {
   const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
   return {
+    // Disable .env file loading to avoid permission issues
+    envDir: false,
     plugins: [
       react({
         // * Strip PropTypes from production bundles to reduce size
@@ -71,11 +74,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 8080,
+      port: serverPort,
       strictPort: true,
       hmr: {
-        clientPort: 8080,
-        port: 8080,
+        clientPort: serverPort,
+        port: serverPort,
         overlay: false
       },
     },

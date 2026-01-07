@@ -2,7 +2,11 @@ import { isDev, isSupabaseAvailable, resolveSupabaseClient } from "../client";
 
 // --- Types & Helpers ---
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface UserRole {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
 	role: string;
 }
@@ -13,22 +17,39 @@ interface FileObject {
 	size?: number;
 }
 
+/**
+ * Database update payload - field names match Supabase column names (snake_case required)
+ */
 export interface CatChosenNameUpdate {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	first_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	middle_names?: string | string[];
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	last_name?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	greeting_text?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	show_banner?: boolean;
 }
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface TournamentDisplayData {
 	id: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	tournament_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	selected_names: string[];
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	participant_names: Array<{ id: string | number; name: string }>;
 	status: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	completed_at: string;
 }
 
@@ -44,15 +65,21 @@ interface HideResult {
 	error?: string;
 }
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface HiddenNameItem {
 	id: string;
 	name: string;
 	description: string | null;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at: string;
 }
 
 const isPermissionError = (error: unknown) => {
-	if (!error) return false;
+	if (!error) {
+		return false;
+	}
 
 	const status =
 		(error as { status?: number; statusCode?: number }).status ??
@@ -65,14 +92,13 @@ const isPermissionError = (error: unknown) => {
 		error as { message?: { toLowerCase?: () => string } }
 	).message?.toLowerCase?.() ?? "") as string;
 
-	if (status === 401 || status === 403) return true;
-	if (status === 400 && message.includes("row-level security")) return true;
-	if (
-		code === "42501" ||
-		code === "PGRST301" ||
-		code === "PGRST302" ||
-		code === "PGRST303"
-	) {
+	if (status === 401 || status === 403) {
+		return true;
+	}
+	if (status === 400 && message.includes("row-level security")) {
+		return true;
+	}
+	if (code === "42501" || code === "PGRST301" || code === "PGRST302" || code === "PGRST303") {
 		return true;
 	}
 	return message.includes("only admins") || message.includes("permission");
@@ -84,31 +110,33 @@ export const adminAPI = {
 	/**
 	 * List application users
 	 */
-	async listUsers({
-		searchTerm,
-		limit = 200,
-	}: {
-		searchTerm?: string;
-		limit?: number;
-	} = {}) {
+	async listUsers({ searchTerm, limit = 200 }: { searchTerm?: string; limit?: number } = {}) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
 			let usersQuery = client
 				.from("cat_app_users")
 				.select("user_name, created_at, updated_at")
 				.order("user_name", { ascending: true });
 
-			if (searchTerm)
+			if (searchTerm) {
 				usersQuery = usersQuery.ilike("user_name", `%${searchTerm}%`);
-			if (Number.isFinite(limit) && limit > 0)
+			}
+			if (Number.isFinite(limit) && limit > 0) {
 				usersQuery = usersQuery.limit(limit);
+			}
 
 			const { data: users, error: usersError } = await usersQuery;
-			if (usersError || !users) return [];
+			if (usersError || !users) {
+				return [];
+			}
 
 			const userNames = users.map((u) => u.user_name);
 			let roles: UserRole[] | null = null;
@@ -121,6 +149,7 @@ export const adminAPI = {
 				roles =
 					// biome-ignore lint/suspicious/noExplicitAny: Safe cast for mapped data
 					(result.data as any[])?.map((r) => ({
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_name: r.user_name || "",
 						role: r.role || "user",
 					})) || null;
@@ -130,12 +159,15 @@ export const adminAPI = {
 
 			const roleMap = new Map<string, { role: string }[]>();
 			(roles || []).forEach((r) => {
-				if (!roleMap.has(r.user_name)) roleMap.set(r.user_name, []);
+				if (!roleMap.has(r.user_name)) {
+					roleMap.set(r.user_name, []);
+				}
 				roleMap.get(r.user_name)?.push({ role: r.role });
 			});
 
 			return users.map((u) => ({
 				...u,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_roles: roleMap.get(u.user_name) || [],
 			}));
 		} catch (error) {
@@ -151,41 +183,58 @@ export const imagesAPI = {
 	 */
 	async list(prefix = "", limit = 1000) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
-			const { data, error } = await client.storage
-				.from("cat-images")
-				.list(prefix, {
-					limit,
-					sortBy: { column: "updated_at", order: "desc" },
-				});
+			const { data, error } = await client.storage.from("cat-images").list(prefix, {
+				limit,
+				sortBy: { column: "updated_at", order: "desc" },
+			});
 
 			if (error) {
-				if (isDev) console.warn("imagesAPI.list error:", error);
+				if (isDev) {
+					console.warn("imagesAPI.list error:", error);
+				}
 				return [];
 			}
 
 			const files = (data || []).filter((f) => f?.name);
-			if (!files.length) return [];
+			if (!files.length) {
+				return [];
+			}
 
 			const rankByExt = (name: string) => {
 				const n = name.toLowerCase();
-				if (n.endsWith(".avif")) return 1;
-				if (n.endsWith(".webp")) return 2;
-				if (n.endsWith(".jpg") || n.endsWith(".jpeg")) return 3;
-				if (n.endsWith(".png")) return 4;
-				if (n.endsWith(".gif")) return 5;
+				if (n.endsWith(".avif")) {
+					return 1;
+				}
+				if (n.endsWith(".webp")) {
+					return 2;
+				}
+				if (n.endsWith(".jpg") || n.endsWith(".jpeg")) {
+					return 3;
+				}
+				if (n.endsWith(".png")) {
+					return 4;
+				}
+				if (n.endsWith(".gif")) {
+					return 5;
+				}
 				return 9;
 			};
 
 			const pickSmaller = (a: FileObject, b: FileObject) => {
 				const sizeA = a?.metadata?.size ?? a?.size;
 				const sizeB = b?.metadata?.size ?? b?.size;
-				if (typeof sizeA === "number" && typeof sizeB === "number")
+				if (typeof sizeA === "number" && typeof sizeB === "number") {
 					return sizeA <= sizeB ? a : b;
+				}
 				return rankByExt(a.name) <= rankByExt(b.name) ? a : b;
 			};
 
@@ -199,12 +248,13 @@ export const imagesAPI = {
 			return Array.from(byBase.values())
 				.map((f) => {
 					const fullPath = prefix ? `${prefix}/${f.name}` : f.name;
-					return client.storage.from("cat-images").getPublicUrl(fullPath).data
-						?.publicUrl;
+					return client.storage.from("cat-images").getPublicUrl(fullPath).data?.publicUrl;
 				})
 				.filter(Boolean);
 		} catch (e) {
-			if (isDev) console.error("imagesAPI.list fatal:", e);
+			if (isDev) {
+				console.error("imagesAPI.list fatal:", e);
+			}
 			return [];
 		}
 	},
@@ -214,16 +264,19 @@ export const imagesAPI = {
 	 */
 	async upload(file: File, _userName = "anon", prefix = "") {
 		const client = await resolveSupabaseClient();
-		if (!client) throw new Error("Supabase not configured");
+		if (!client) {
+			throw new Error("Supabase not configured");
+		}
 
 		const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
 		const objectPath = `${prefix ? `${prefix}/` : ""}${Date.now()}-${safe}`;
 		const { error } = await client.storage
 			.from("cat-images")
 			.upload(objectPath, file, { upsert: false });
-		if (error) throw error;
-		return client.storage.from("cat-images").getPublicUrl(objectPath).data
-			?.publicUrl;
+		if (error) {
+			throw error;
+		}
+		return client.storage.from("cat-images").getPublicUrl(objectPath).data?.publicUrl;
 	},
 };
 
@@ -234,7 +287,9 @@ export const siteSettingsAPI = {
 	async getCatChosenName() {
 		try {
 			const client = await resolveSupabaseClient();
-			if (!client) return null;
+			if (!client) {
+				return null;
+			}
 
 			const { data, error } = await client
 				.from("site_settings")
@@ -242,7 +297,9 @@ export const siteSettingsAPI = {
 				.eq("key", "cat_chosen_name")
 				.maybeSingle();
 
-			if (error) return null;
+			if (error) {
+				return null;
+			}
 			return data?.value || null;
 		} catch (_error) {
 			return null;
@@ -255,7 +312,9 @@ export const siteSettingsAPI = {
 	async updateCatChosenName(nameData: CatChosenNameUpdate, userName: string) {
 		try {
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
 			if (!nameData.first_name || nameData.first_name.trim() === "") {
 				return { success: false, error: "First name is required" };
@@ -277,33 +336,44 @@ export const siteSettingsAPI = {
 			const displayName = nameParts.join(" ");
 
 			const value = {
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				first_name: nameData.first_name.trim(),
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				middle_names: middleNames,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				last_name: nameData.last_name?.trim() || "",
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				greeting_text: nameData.greeting_text || "Hello! My name is",
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				display_name: displayName,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				is_set: true,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				show_banner: nameData.show_banner !== false,
 			};
 
 			const { data, error } = await client
 				.from("site_settings")
-				.update({ value, updated_by: userName })
+				.update({
+					value,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+					updated_by: userName,
+				})
 				.eq("key", "cat_chosen_name")
 				.select()
 				.single();
 
-			if (error)
+			if (error) {
 				return {
 					success: false,
 					error: error.message || "Failed to update cat name",
 				};
+			}
 			return { success: true, data: data.value };
 		} catch (error) {
 			return {
 				success: false,
-				error:
-					error instanceof Error ? error.message : "Unknown error occurred",
+				error: error instanceof Error ? error.message : "Unknown error occurred",
 			};
 		}
 	},
@@ -320,27 +390,37 @@ export const tournamentsAPI = {
 		_tournamentData: Record<string, unknown> = {},
 	) {
 		try {
-			if (!(await isSupabaseAvailable()))
+			if (!(await isSupabaseAvailable())) {
 				return { success: false, error: "Supabase not configured" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
 			// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
 			await (client as any).rpc("create_user_account", {
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_user_name: userName,
 			});
 
 			return {
 				id: crypto.randomUUID(),
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_name: userName,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				tournament_name: tournamentName,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				participant_names: participantNames,
 				status: "in_progress",
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				created_at: new Date().toISOString(),
 			};
 		} catch (error) {
-			if (isDev) console.error("Error creating tournament:", error);
+			if (isDev) {
+				console.error("Error creating tournament:", error);
+			}
 			throw error;
 		}
 	},
@@ -350,11 +430,14 @@ export const tournamentsAPI = {
 	 */
 	async updateTournamentStatus(tournamentId: string, status: string) {
 		try {
-			if (!(await isSupabaseAvailable()))
+			if (!(await isSupabaseAvailable())) {
 				return { success: false, error: "Supabase not configured" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
 			const { data: selections, error: fetchError } = await client
 				.from("tournament_selections")
@@ -362,20 +445,24 @@ export const tournamentsAPI = {
 				.eq("tournament_id", tournamentId)
 				.limit(1);
 
-			if (fetchError)
+			if (fetchError) {
 				return { success: false, error: "Failed to fetch tournament data" };
-			if (!selections || selections.length === 0)
+			}
+			if (!selections || selections.length === 0) {
 				return { success: false, error: "Tournament not found" };
+			}
 
 			return {
 				success: true,
 				tournamentId,
 				status,
-				updatedUser: selections[0].user_name,
+				updatedUser: selections[0]?.user_name,
 				message: `Tournament status updated to ${status} (in-memory only)`,
 			};
 		} catch (error) {
-			if (isDev) console.error("Error updating tournament status:", error);
+			if (isDev) {
+				console.error("Error updating tournament status:", error);
+			}
 			return {
 				success: false,
 				error: (error as Error).message || "Unknown error occurred",
@@ -388,10 +475,14 @@ export const tournamentsAPI = {
 	 */
 	async getUserTournaments(userName: string, _status: string | null = null) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
 			const { data, error } = await client
 				.from("tournament_selections")
@@ -402,7 +493,9 @@ export const tournamentsAPI = {
 				.order("created_at", { ascending: false });
 
 			if (error) {
-				if (error.code === "42P01") return [];
+				if (error.code === "42P01") {
+					return [];
+				}
 				throw error;
 			}
 
@@ -411,12 +504,18 @@ export const tournamentsAPI = {
 				if (!tournamentMap.has(row.tournament_id)) {
 					tournamentMap.set(row.tournament_id, {
 						id: row.tournament_id,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_name: row.user_name,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						tournament_name: `Tournament ${row.tournament_id.slice(0, 8)}`,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						selected_names: [],
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						participant_names: [],
 						status: "completed",
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						created_at: row.created_at,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						completed_at: row.selected_at,
 					});
 				}
@@ -432,7 +531,9 @@ export const tournamentsAPI = {
 
 			return Array.from(tournamentMap.values());
 		} catch (error) {
-			if (isDev) console.error("Error fetching tournaments:", error);
+			if (isDev) {
+				console.error("Error fetching tournaments:", error);
+			}
 			return [];
 		}
 	},
@@ -446,23 +547,34 @@ export const tournamentsAPI = {
 		tournamentId: string | null = null,
 	) {
 		try {
-			if (!(await isSupabaseAvailable()))
+			if (!(await isSupabaseAvailable())) {
 				return { success: false, error: "Supabase not configured" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
-			await client.rpc("set_user_context", { user_name_param: userName });
+			await client.rpc("set_user_context", {
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
+				user_name_param: userName,
+			});
 
 			const finalTournamentId = tournamentId || crypto.randomUUID();
 			const now = new Date().toISOString();
 
 			const selectionRecords = selectedNames.map((nameObj) => ({
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_name: userName,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				name_id: String(nameObj.id),
 				name: nameObj.name,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				tournament_id: finalTournamentId,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				selected_at: now,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				selection_type: "tournament_setup",
 			}));
 
@@ -486,7 +598,9 @@ export const tournamentsAPI = {
 				method: "tournament_selections_table",
 			};
 		} catch (error) {
-			if (isDev) console.error("Error saving tournament selections:", error);
+			if (isDev) {
+				console.error("Error saving tournament selections:", error);
+			}
 			throw error;
 		}
 	},
@@ -504,33 +618,39 @@ export const tournamentsAPI = {
 		}>,
 	) {
 		try {
-			if (!(await isSupabaseAvailable()))
+			if (!(await isSupabaseAvailable())) {
 				return { success: false, error: "Supabase not configured" };
-			if (!userName || !ratings || ratings.length === 0)
+			}
+			if (!userName || !ratings || ratings.length === 0) {
 				return { success: false, error: "Missing userName or ratings" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client)
+			if (!client) {
 				return { success: false, error: "Supabase client unavailable" };
+			}
 
 			try {
 				// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
 				await (client as any).rpc("create_user_account", {
+					// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 					p_user_name: userName,
 				});
 			} catch (rpcError) {
-				if (isDev)
-					console.log(
-						"User account check:",
-						(rpcError as Error).message || "exists",
-					);
+				if (isDev) {
+					console.log("User account check:", (rpcError as Error).message || "exists");
+				}
 			}
 
 			try {
-				await client.rpc("set_user_context", { user_name_param: userName });
+				await client.rpc("set_user_context", {
+					// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
+					user_name_param: userName,
+				});
 			} catch (rpcError) {
-				if (isDev)
+				if (isDev) {
 					console.warn("Failed to set user context for RLS:", rpcError);
+				}
 			}
 
 			const nameStrings = ratings.map((r) => r.name);
@@ -539,35 +659,38 @@ export const tournamentsAPI = {
 				.select("id, name")
 				.in("name", nameStrings);
 
-			if (nameError)
+			if (nameError) {
 				return { success: false, error: "Failed to fetch name IDs" };
+			}
 
-			const nameToId = new Map<string, string | number>(
-				nameData.map((n) => [n.name, n.id]),
-			);
+			const nameToId = new Map<string, string | number>(nameData.map((n) => [n.name, n.id]));
 			const now = new Date().toISOString();
 			const ratingRecords = ratings
 				.filter((r) => nameToId.has(r.name))
 				.map((r) => ({
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_name: userName,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					name_id: String(nameToId.get(r.name)),
 					rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
 					wins: r.wins || 0,
 					losses: r.losses || 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					updated_at: now,
 				}));
 
-			if (ratingRecords.length === 0)
+			if (ratingRecords.length === 0) {
 				return { success: false, error: "No valid ratings to save" };
+			}
 
-			const { error: upsertError } = await client
-				.from("cat_name_ratings")
-				.upsert(ratingRecords, {
-					onConflict: "user_name,name_id",
-					ignoreDuplicates: false,
-				});
+			const { error: upsertError } = await client.from("cat_name_ratings").upsert(ratingRecords, {
+				onConflict: "user_name,name_id",
+				ignoreDuplicates: false,
+			});
 
-			if (upsertError) return { success: false, error: upsertError.message };
+			if (upsertError) {
+				return { success: false, error: upsertError.message };
+			}
 
 			for (const record of ratingRecords) {
 				const { data: avgData } = await client
@@ -575,12 +698,13 @@ export const tournamentsAPI = {
 					.select("rating")
 					.eq("name_id", record.name_id);
 				if (avgData && avgData.length > 0) {
-					const avgRating =
-						avgData.reduce((sum, r) => sum + Number(r.rating), 0) /
-						avgData.length;
+					const avgRating = avgData.reduce((sum, r) => sum + Number(r.rating), 0) / avgData.length;
 					await client
 						.from("cat_name_options")
-						.update({ avg_rating: Math.round(avgRating) })
+						.update({
+							// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+							avg_rating: Math.round(avgRating),
+						})
 						.eq("id", record.name_id);
 				}
 			}
@@ -591,7 +715,9 @@ export const tournamentsAPI = {
 				ratings: ratingRecords,
 			};
 		} catch (error) {
-			if (isDev) console.error("Error saving tournament ratings:", error);
+			if (isDev) {
+				console.error("Error saving tournament ratings:", error);
+			}
 			return {
 				success: false,
 				error: (error as Error).message || String(error),
@@ -602,11 +728,14 @@ export const tournamentsAPI = {
 
 export const deleteName = async (nameId: string | number) => {
 	try {
-		if (!(await isSupabaseAvailable()))
+		if (!(await isSupabaseAvailable())) {
 			return { success: false, error: "Supabase not configured" };
+		}
 
 		const client = await resolveSupabaseClient();
-		if (!client) return { success: false, error: "Supabase not configured" };
+		if (!client) {
+			return { success: false, error: "Supabase not configured" };
+		}
 
 		const { error: nameError } = await client
 			.from("cat_name_options")
@@ -614,9 +743,11 @@ export const deleteName = async (nameId: string | number) => {
 			.eq("id", String(nameId))
 			.single();
 
-		if (nameError?.code === "PGRST116")
+		if (nameError?.code === "PGRST116") {
 			throw new Error("Name has already been deleted");
-		else if (nameError) throw nameError;
+		} else if (nameError) {
+			throw nameError;
+		}
 
 		const { error: deleteError } = await client
 			.from("cat_name_options")
@@ -627,9 +758,14 @@ export const deleteName = async (nameId: string | number) => {
 			if (deleteError.code === "23503") {
 				const { error: updateError } = await client
 					.from("cat_name_options")
-					.update({ is_active: false })
+					.update({
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						is_active: false,
+					})
 					.eq("id", String(nameId));
-				if (updateError) throw updateError;
+				if (updateError) {
+					throw updateError;
+				}
 				return {
 					success: true,
 					message: "Name deactivated (has related data)",
@@ -640,7 +776,9 @@ export const deleteName = async (nameId: string | number) => {
 
 		return { success: true };
 	} catch (error) {
-		if (isDev) console.error("Error deleting name:", error);
+		if (isDev) {
+			console.error("Error deleting name:", error);
+		}
 		return { success: false, error: (error as Error).message || String(error) };
 	}
 };
@@ -655,24 +793,28 @@ export const hiddenNamesAPI = {
 				return { success: false, error: "Supabase not configured" };
 			}
 
-			if (!nameId) return { success: false, error: "Name ID is required" };
+			if (!nameId) {
+				return { success: false, error: "Name ID is required" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client)
+			if (!client) {
 				return { success: false, error: "Supabase client unavailable" };
+			}
 
 			// biome-ignore lint/suspicious/noExplicitAny: Workaround for RPC function overload identification
 			const { error } = await client.rpc("toggle_name_visibility" as any, {
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_name_id: String(nameId),
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_hide: true,
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_user_name: userName,
 			});
 
 			if (error) {
 				if (isPermissionError(error)) {
-					const permissionError = new Error(
-						"Only admins can hide names",
-					) as PermissionError;
+					const permissionError = new Error("Only admins can hide names") as PermissionError;
 					permissionError.code = "NOT_ADMIN";
 					permissionError.originalError = error;
 					throw permissionError;
@@ -682,7 +824,9 @@ export const hiddenNamesAPI = {
 
 			return { success: true, scope: "global" };
 		} catch (error) {
-			if (isDev) console.error("Error hiding name globally:", error);
+			if (isDev) {
+				console.error("Error hiding name globally:", error);
+			}
 			throw error;
 		}
 	},
@@ -696,24 +840,28 @@ export const hiddenNamesAPI = {
 				return { success: false, error: "Supabase not configured" };
 			}
 
-			if (!nameId) return { success: false, error: "Name ID is required" };
+			if (!nameId) {
+				return { success: false, error: "Name ID is required" };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client)
+			if (!client) {
 				return { success: false, error: "Supabase client unavailable" };
+			}
 
 			// biome-ignore lint/suspicious/noExplicitAny: Workaround for RPC function overload identification
 			const { error } = await client.rpc("toggle_name_visibility" as any, {
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_name_id: String(nameId),
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_hide: false,
+				// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 				p_user_name: userName,
 			});
 
 			if (error) {
 				if (isPermissionError(error)) {
-					const permissionError = new Error(
-						"Only admins can unhide names",
-					) as PermissionError;
+					const permissionError = new Error("Only admins can unhide names") as PermissionError;
 					permissionError.code = "NOT_ADMIN";
 					permissionError.originalError = error;
 					throw permissionError;
@@ -723,7 +871,9 @@ export const hiddenNamesAPI = {
 
 			return { success: true, scope: "global" };
 		} catch (error) {
-			if (isDev) console.error("Error unhiding name globally:", error);
+			if (isDev) {
+				console.error("Error unhiding name globally:", error);
+			}
 			throw error;
 		}
 	},
@@ -753,11 +903,13 @@ export const hiddenNamesAPI = {
 						success: result.success,
 						scope: (result as { scope?: string }).scope || null,
 					});
-					if (result.success) processed++;
-					else
+					if (result.success) {
+						processed++;
+					} else {
 						errors.push(
 							`Failed to hide ${nameId}: ${(result as { error?: string }).error || "Unknown error"}`,
 						);
+					}
 				} catch (error) {
 					const errorMsg = (error as Error).message || String(error);
 					results.push({ nameId, success: false, error: errorMsg });
@@ -781,8 +933,9 @@ export const hiddenNamesAPI = {
 				errors: errors.length > 0 ? errors : undefined,
 			};
 		} catch (error) {
-			if (isDev)
+			if (isDev) {
 				console.error("[hiddenNamesAPI.hideNames] Error hiding names:", error);
+			}
 			throw error;
 		}
 	},
@@ -796,8 +949,9 @@ export const hiddenNamesAPI = {
 				return { success: false, error: "Supabase not configured" };
 			}
 
-			if (!nameIds || nameIds.length === 0)
+			if (!nameIds || nameIds.length === 0) {
 				return { success: true, processed: 0 };
+			}
 
 			const results: HideResult[] = [];
 			let processed = 0;
@@ -810,7 +964,9 @@ export const hiddenNamesAPI = {
 						success: result.success,
 						scope: (result as { scope?: string }).scope || null,
 					});
-					if (result.success) processed++;
+					if (result.success) {
+						processed++;
+					}
 				} catch (error) {
 					results.push({
 						nameId,
@@ -822,7 +978,9 @@ export const hiddenNamesAPI = {
 
 			return { success: true, processed, results };
 		} catch (error) {
-			if (isDev) console.error("Error unhiding names:", error);
+			if (isDev) {
+				console.error("Error unhiding names:", error);
+			}
 			throw error;
 		}
 	},
@@ -832,21 +990,30 @@ export const hiddenNamesAPI = {
 	 */
 	async getHiddenNames() {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
 			const { data, error } = await client
 				.from("cat_name_options")
 				.select("id, name, description, created_at")
 				.eq("is_hidden", true);
 
-			if (error) throw error;
+			if (error) {
+				throw error;
+			}
 
 			return (data || []).map((item: HiddenNameItem) => ({
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				name_id: item.id,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				updated_at: item.created_at,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				cat_name_options: {
 					id: item.id,
 					name: item.name,
@@ -854,7 +1021,9 @@ export const hiddenNamesAPI = {
 				},
 			}));
 		} catch (error) {
-			if (isDev) console.error("Error fetching hidden names:", error);
+			if (isDev) {
+				console.error("Error fetching hidden names:", error);
+			}
 			return [];
 		}
 	},

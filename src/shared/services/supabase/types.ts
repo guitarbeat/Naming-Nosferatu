@@ -1,10 +1,9 @@
-type Json =
-	| string
-	| number
-	| boolean
-	| null
-	| { [key: string]: Json | undefined }
-	| Json[];
+/**
+ * Auto-generated Supabase types file.
+ * All snake_case field names match database column names exactly and cannot be changed.
+ * This file is generated from the database schema and should not be manually edited.
+ */
+type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
 	// Allows to automatically instantiate createClient with right options

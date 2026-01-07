@@ -1,10 +1,17 @@
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 export interface NameItem {
 	id: string;
 	name: string;
 	description?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_active: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden?: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string;
 }
 
@@ -16,6 +23,7 @@ export interface NameStats {
 }
 
 export interface SelectionStats {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name: string;
 	count: number;
@@ -39,25 +47,37 @@ export interface RatingInfo {
 	wins: number;
 }
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 export interface NameDataWithRatings {
 	id: string;
 	name: string;
 	description?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_active: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden?: boolean;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	cat_name_ratings?: Array<{
+		// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 		user_name: string;
 		rating?: number;
 		wins?: number;
 		losses?: number;
+		// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 		updated_at?: string;
 	}>;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
 	rating?: number;
 	wins?: number;
 	losses?: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	updated_at?: string;
 }
 
@@ -89,16 +109,26 @@ const coreAPI = {
 					id: name,
 					name: name,
 					description: "temporary fallback — Supabase not configured",
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					avg_rating: 1500,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					popularity_score: 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					total_tournaments: 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					is_active: true,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					created_at: new Date().toISOString(),
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					updated_at: null,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_rating: null,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_wins: 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_losses: 0,
 					isHidden: false,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					has_user_rating: false,
 				}));
 				return fallbackNames;
@@ -131,40 +161,48 @@ const coreAPI = {
 
 			if (!data || data.length === 0) {
 				console.warn("No active names found in database, using fallback names");
-				return [
-					"aaron",
-					"fix",
-					"the",
-					"whiskers",
-					"shadow",
-					"luna",
-					"felix",
-					"milo",
-				].map((name) => ({
-					id: name,
-					name: name,
-					description: "temporary fallback — no active names in database",
-					avg_rating: 1500,
-					popularity_score: 0,
-					total_tournaments: 0,
-					is_active: true,
-					created_at: new Date().toISOString(),
-					updated_at: null,
-					user_rating: null,
-					user_wins: 0,
-					user_losses: 0,
-					isHidden: false,
-					has_user_rating: false,
-				}));
+				return ["aaron", "fix", "the", "whiskers", "shadow", "luna", "felix", "milo"].map(
+					(name) => ({
+						id: name,
+						name: name,
+						description: "temporary fallback — no active names in database",
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						avg_rating: 1500,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						popularity_score: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						total_tournaments: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						is_active: true,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						created_at: new Date().toISOString(),
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						updated_at: null,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						user_rating: null,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						user_wins: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						user_losses: 0,
+						isHidden: false,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+						has_user_rating: false,
+					}),
+				);
 			}
 
 			return (data as unknown as NameItem[]).map((item) => ({
 				...item,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				updated_at: null,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_rating: null,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_wins: 0,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_losses: 0,
 				isHidden: item.is_hidden || false,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				has_user_rating: false,
 			}));
 		} catch (error) {
@@ -178,18 +216,17 @@ const coreAPI = {
 	/**
 	 * Add a new name option
 	 */
-	async addName(
-		name: string,
-		description: string = "",
-		userName: string | null = null,
-	) {
+	async addName(name: string, description: string = "", userName: string | null = null) {
 		try {
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
 			if (userName?.trim()) {
 				try {
 					await client.rpc("set_user_context", {
+						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						user_name_param: userName.trim(),
 					});
 				} catch (rpcError) {
@@ -216,8 +253,7 @@ const coreAPI = {
 			}
 			return {
 				success: false,
-				error:
-					(error as { message?: string }).message || "Unknown error occurred",
+				error: (error as { message?: string }).message || "Unknown error occurred",
 			};
 		}
 	},
@@ -228,12 +264,11 @@ const coreAPI = {
 	async removeName(name: string) {
 		try {
 			const client = await resolveSupabaseClient();
-			if (!client) return { success: false, error: "Supabase not configured" };
+			if (!client) {
+				return { success: false, error: "Supabase not configured" };
+			}
 
-			const { error } = await client
-				.from("cat_name_options")
-				.delete()
-				.eq("name", name);
+			const { error } = await client.from("cat_name_options").delete().eq("name", name);
 
 			if (error) {
 				console.error("Error removing name:", error);
@@ -249,8 +284,7 @@ const coreAPI = {
 			}
 			return {
 				success: false,
-				error:
-					(error as { message?: string }).message || "Unknown error occurred",
+				error: (error as { message?: string }).message || "Unknown error occurred",
 			};
 		}
 	},
@@ -259,26 +293,39 @@ const coreAPI = {
 // analyticsAPI - uses imports from top of file
 
 interface SelectionRow {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	selected_at: string;
 }
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface RatingRow {
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	rating: number;
 	wins: number;
 	losses: number;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
 }
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface NameRow {
 	id: string | number;
 	name: string;
 	description: string;
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating: number;
 	categories: string[];
+	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at: string;
 }
 
@@ -288,14 +335,16 @@ const analyticsAPI = {
 	 */
 	async getSelectionPopularity(limit: number | null = 20) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
-			const { data, error } = await client
-				.from("tournament_selections")
-				.select("name_id, name");
+			const { data, error } = await client.from("tournament_selections").select("name_id, name");
 
 			if (error) {
 				console.error("Error fetching selection popularity:", error);
@@ -307,23 +356,28 @@ const analyticsAPI = {
 				const r = row as unknown as SelectionRow;
 				if (!selectionCounts.has(r.name_id)) {
 					selectionCounts.set(r.name_id, {
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						name_id: r.name_id,
 						name: r.name,
 						count: 0,
 					});
 				}
 				const sc = selectionCounts.get(r.name_id);
-				if (sc) sc.count += 1;
+				if (sc) {
+					sc.count += 1;
+				}
 			});
 
-			let results = Array.from(selectionCounts.values()).sort(
-				(a, b) => b.count - a.count,
-			);
-			if (limit) results = results.slice(0, limit);
+			let results = Array.from(selectionCounts.values()).sort((a, b) => b.count - a.count);
+			if (limit) {
+				results = results.slice(0, limit);
+			}
 
 			return results.map((item) => ({
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				name_id: String(item.name_id),
 				name: item.name,
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				times_selected: item.count,
 			}));
 		} catch (error) {
@@ -343,21 +397,22 @@ const analyticsAPI = {
 		currentUserName: string | null = null,
 	) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
-			let selectionsQuery = client
-				.from("tournament_selections")
-				.select("name_id, name, user_name");
+			let selectionsQuery = client.from("tournament_selections").select("name_id, name, user_name");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses, user_name");
 
 			if (userFilter && userFilter !== "all") {
-				const targetUser =
-					userFilter === "current" ? currentUserName : userFilter;
+				const targetUser = userFilter === "current" ? currentUserName : userFilter;
 				if (targetUser) {
 					selectionsQuery = selectionsQuery.eq("user_name", targetUser);
 					ratingsQuery = ratingsQuery.eq("user_name", targetUser);
@@ -377,10 +432,7 @@ const analyticsAPI = {
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
-			const selectionStats = new Map<
-				string | number,
-				AnalyticsSelectionStats
-			>();
+			const selectionStats = new Map<string | number, AnalyticsSelectionStats>();
 			selections.forEach((item) => {
 				const s = item as unknown as SelectionRow;
 				if (!selectionStats.has(s.name_id)) {
@@ -430,9 +482,7 @@ const analyticsAPI = {
 				};
 
 				const avgRating =
-					ratStat.count > 0
-						? Math.round(ratStat.totalRating / ratStat.count)
-						: 1500;
+					ratStat.count > 0 ? Math.round(ratStat.totalRating / ratStat.count) : 1500;
 				const winRate =
 					ratStat.wins + ratStat.losses > 0
 						? Math.round((ratStat.wins / (ratStat.wins + ratStat.losses)) * 100)
@@ -442,25 +492,33 @@ const analyticsAPI = {
 				);
 
 				return {
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					name_id: name.id,
 					name: name.name,
 					description: name.description,
 					category: name.categories?.[0] || null,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					times_selected: selStat.count,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					unique_selectors: selStat.users.size,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					avg_rating: avgRating,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					total_wins: ratStat.wins,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					total_losses: ratStat.losses,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					win_rate: winRate,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					users_rated: ratStat.users.size,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					popularity_score: popularityScore,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					created_at: name.created_at || null,
 				};
 			});
 
-			const sorted = analytics.sort(
-				(a, b) => b.popularity_score - a.popularity_score,
-			);
+			const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
 			return limit ? sorted.slice(0, limit) : sorted;
 		} catch (error) {
 			if (isDev) {
@@ -488,10 +546,14 @@ const analyticsAPI = {
 		timeLabels: string[];
 	}> {
 		try {
-			if (!(await isSupabaseAvailable())) return { data: [], timeLabels: [] };
+			if (!(await isSupabaseAvailable())) {
+				return { data: [], timeLabels: [] };
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return { data: [], timeLabels: [] };
+			if (!client) {
+				return { data: [], timeLabels: [] };
+			}
 
 			const dateFilterPeriods = {
 				today: 2,
@@ -500,8 +562,7 @@ const analyticsAPI = {
 				year: 365,
 				all: periods,
 			};
-			const dateFilterKey =
-				options?.dateFilter as keyof typeof dateFilterPeriods;
+			const dateFilterKey = options?.dateFilter as keyof typeof dateFilterPeriods;
 			const requestedPeriods =
 				options?.periods ??
 				(dateFilterKey ? dateFilterPeriods[dateFilterKey] : undefined) ??
@@ -528,11 +589,8 @@ const analyticsAPI = {
 
 			const ratingMap = new Map<string, RatingInfo>();
 			(ratings || []).forEach(
-				(r: {
-					name_id: string;
-					rating: number | null;
-					wins: number | null;
-				}) => {
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
+				(r: { name_id: string; rating: number | null; wins: number | null }) => {
 					const existing = ratingMap.get(r.name_id);
 					if (!existing || (r.rating && r.rating > existing.rating)) {
 						ratingMap.set(r.name_id, {
@@ -543,10 +601,7 @@ const analyticsAPI = {
 				},
 			);
 
-			const dateGroups = new Map<
-				string,
-				Map<string, { name: string; count: number }>
-			>();
+			const dateGroups = new Map<string, Map<string, { name: string; count: number }>>();
 			const nameData = new Map<
 				string,
 				{ id: string; name: string; avgRating: number; totalSelections: number }
@@ -555,13 +610,22 @@ const analyticsAPI = {
 			(selections || []).forEach((item) => {
 				const s = item as unknown as SelectionRow;
 				const nameId = String(s.name_id);
-				const [date] = new Date(s.selected_at).toISOString().split("T");
-				if (!dateGroups.has(date)) dateGroups.set(date, new Map());
-				const dayMap = dateGroups.get(date);
-				if (!dayMap) return;
-				if (!dayMap.has(nameId)) dayMap.set(nameId, { name: s.name, count: 0 });
+				const dateStr = new Date(s.selected_at).toISOString();
+				const [date] = dateStr.split("T");
+				if (!date || !dateGroups.has(date)) {
+					dateGroups.set(date || "unknown", new Map());
+				}
+				const dayMap = dateGroups.get(date || "unknown");
+				if (!dayMap) {
+					return;
+				}
+				if (!dayMap.has(nameId)) {
+					dayMap.set(nameId, { name: s.name, count: 0 });
+				}
 				const dayData = dayMap.get(nameId);
-				if (dayData) dayData.count += 1;
+				if (dayData) {
+					dayData.count += 1;
+				}
 
 				if (!nameData.has(nameId)) {
 					const ratingInfo = ratingMap.get(nameId) || {
@@ -576,7 +640,9 @@ const analyticsAPI = {
 					});
 				}
 				const ns = nameData.get(nameId);
-				if (ns) ns.totalSelections += 1;
+				if (ns) {
+					ns.totalSelections += 1;
+				}
 			});
 
 			const timeLabels: string[] = [];
@@ -584,16 +650,14 @@ const analyticsAPI = {
 			for (let i = periodCount - 1; i >= 0; i--) {
 				const d = new Date(today);
 				d.setDate(d.getDate() - i);
-				timeLabels.push(
-					d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-				);
+				timeLabels.push(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }));
 			}
 
 			const dateKeys: string[] = [];
 			for (let i = periodCount - 1; i >= 0; i--) {
 				const d = new Date(today);
 				d.setDate(d.getDate() - i);
-				dateKeys.push(d.toISOString().split("T")[0]);
+				dateKeys.push(d.toISOString().split("T")[0] || "");
 			}
 
 			const sortedNames = Array.from(nameData.values())
@@ -603,10 +667,10 @@ const analyticsAPI = {
 			const rankingData = sortedNames.map((nameInfo) => {
 				const rankings = dateKeys.map((dateKey) => {
 					const dayData = dateGroups.get(dateKey);
-					if (!dayData) return null;
-					const dayEntries = Array.from(dayData.entries()).sort(
-						(a, b) => b[1].count - a[1].count,
-					);
+					if (!dayData) {
+						return null;
+					}
+					const dayEntries = Array.from(dayData.entries()).sort((a, b) => b[1].count - a[1].count);
 					const rankIndex = dayEntries.findIndex(([id]) => id === nameInfo.id);
 					return rankIndex >= 0 ? rankIndex + 1 : null;
 				});
@@ -642,16 +706,22 @@ const leaderboardAPI = {
 		_minTournaments: number = 3,
 	) {
 		try {
-			if (!(await isSupabaseAvailable())) return [];
+			if (!(await isSupabaseAvailable())) {
+				return [];
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
 			if (categoryId) {
 				const { data: topNames, error: categoryError } = await client.rpc(
 					"get_top_names_by_category",
 					{
+						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_category: categoryId,
+						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_limit: limit ?? undefined,
 					},
 				);
@@ -670,6 +740,7 @@ const leaderboardAPI = {
 					const t = item as unknown as TopNameItem;
 					return {
 						...t,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						name_id: t.id,
 					};
 				});
@@ -726,14 +797,18 @@ const leaderboardAPI = {
 						? Math.round(stats.totalRating / stats.count)
 						: row.avg_rating || 1500;
 					return {
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						name_id: row.id,
 						name: row.name,
 						description: row.description,
 						category: row.categories?.[0] || null,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						avg_rating: avgRating,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						total_ratings: stats?.count || 0,
 						wins: stats?.totalWins || 0,
 						losses: stats?.totalLosses || 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						created_at: row.created_at || null,
 					};
 				})
@@ -759,31 +834,24 @@ const statsAPI = {
 	async getSiteStats() {
 		try {
 			const client = await resolveSupabaseClient();
-			if (!client) return null;
+			if (!client) {
+				return null;
+			}
 
-			const [
-				namesResult,
-				hiddenResult,
-				usersResult,
-				ratingsResult,
-				selectionsResult,
-			] = await Promise.all([
-				client
-					.from("cat_name_options")
-					.select("id", { count: "exact", head: true })
-					.eq("is_active", true),
-				client
-					.from("cat_name_options")
-					.select("id", { count: "exact", head: true })
-					.eq("is_hidden", true),
-				client
-					.from("cat_app_users")
-					.select("user_name", { count: "exact", head: true }),
-				client.from("cat_name_ratings").select("rating"),
-				client
-					.from("tournament_selections")
-					.select("id", { count: "exact", head: true }),
-			]);
+			const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
+				await Promise.all([
+					client
+						.from("cat_name_options")
+						.select("id", { count: "exact", head: true })
+						.eq("is_active", true),
+					client
+						.from("cat_name_options")
+						.select("id", { count: "exact", head: true })
+						.eq("is_hidden", true),
+					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
+					client.from("cat_name_ratings").select("rating"),
+					client.from("tournament_selections").select("id", { count: "exact", head: true }),
+				]);
 
 			const totalNames = namesResult.count || 0;
 			const hiddenNames = hiddenResult.count || 0;
@@ -803,17 +871,13 @@ const statsAPI = {
 				.eq("is_active", true)
 				.eq("is_hidden", false);
 
-			const { data: selectedIds } = await client
-				.from("tournament_selections")
-				.select("name_id");
+			const { data: selectedIds } = await client.from("tournament_selections").select("name_id");
 
 			// Map selected IDs to a Set for O(1) lookups
 			const selectedSet = new Set((selectedIds || []).map((s) => s.name_id));
 
 			// Filter names that have never been selected
-			const neverSelectedNames = (neverSelected || []).filter(
-				(n) => !selectedSet.has(n.id),
-			);
+			const neverSelectedNames = (neverSelected || []).filter((n) => !selectedSet.has(n.id));
 
 			return {
 				totalNames,
@@ -846,23 +910,35 @@ const statsAPI = {
 						id: "aaron",
 						name: "aaron",
 						description: "temporary fallback — Supabase not configured",
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						avg_rating: 1500,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						popularity_score: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						total_tournaments: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						is_active: true,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						created_at: new Date().toISOString(),
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						updated_at: null,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_rating: null,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_wins: 0,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_losses: 0,
 						isHidden: false,
+						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						has_user_rating: false,
 					},
 				];
 			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return [];
+			if (!client) {
+				return [];
+			}
 
 			const { data, error } = await client
 				.from("cat_name_options")
@@ -879,10 +955,15 @@ const statsAPI = {
 			}
 
 			// Define interface for the join result shape
+			/**
+			 * Database query result type - field names match Supabase column names (snake_case required)
+			 */
 			interface JoinResult {
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				cat_name_ratings?:
 					| { rating: number; wins: number; losses: number }
 					| { rating: number; wins: number; losses: number }[];
+				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				is_hidden?: boolean;
 				[key: string]: unknown;
 			}
@@ -894,9 +975,13 @@ const statsAPI = {
 
 				return {
 					...item,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_rating: userRating?.rating || null,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_wins: userRating?.wins || 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_losses: userRating?.losses || 0,
+					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					has_user_rating: !!userRating,
 					isHidden: itemWithRatings.is_hidden || false,
 				};
@@ -914,17 +999,18 @@ const statsAPI = {
 	 */
 	async getUserStats(userName: string) {
 		try {
-			if (!(await isSupabaseAvailable())) return null;
+			if (!(await isSupabaseAvailable())) {
+				return null;
+			}
 
 			const client = await resolveSupabaseClient();
-			if (!client) return null;
+			if (!client) {
+				return null;
+			}
 
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
-				client
-					.from("tournament_selections")
-					.select("*")
-					.eq("user_name", userName),
+				client.from("tournament_selections").select("*").eq("user_name", userName),
 			]);
 
 			const ratings = ratingsResult.data || [];
@@ -933,9 +1019,7 @@ const statsAPI = {
 			const totalWins = ratings.reduce((sum, r) => sum + (r.wins || 0), 0);
 			const totalLosses = ratings.reduce((sum, r) => sum + (r.losses || 0), 0);
 			const winRate =
-				totalWins + totalLosses > 0
-					? Math.round((totalWins / (totalWins + totalLosses)) * 100)
-					: 0;
+				totalWins + totalLosses > 0 ? Math.round((totalWins / (totalWins + totalLosses)) * 100) : 0;
 
 			return {
 				userName,
@@ -946,10 +1030,7 @@ const statsAPI = {
 				winRate,
 				avgUserRating:
 					ratings.length > 0
-						? Math.round(
-								ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) /
-									ratings.length,
-							)
+						? Math.round(ratings.reduce((sum, r) => sum + (r.rating || 1500), 0) / ratings.length)
 						: 1500,
 			};
 		} catch (error) {

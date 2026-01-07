@@ -32,7 +32,7 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 					})()
 				: initialValue;
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
+			if (import.meta.env.DEV) {
 				console.error(`Error reading localStorage key "${key}":`, error);
 			}
 			return initialValue;
@@ -43,15 +43,13 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 		(value: T | ((prev: T) => T)) => {
 			try {
 				const valueToStore =
-					value instanceof Function
-						? (value as (prev: T) => T)(storedValue as T)
-						: value;
+					value instanceof Function ? (value as (prev: T) => T)(storedValue as T) : value;
 				setStoredValue(valueToStore);
 				if (typeof window !== "undefined") {
 					window.localStorage.setItem(key, JSON.stringify(valueToStore));
 				}
 			} catch (error) {
-				if (process.env.NODE_ENV === "development") {
+				if (import.meta.env.DEV) {
 					console.error(`Error setting localStorage key "${key}":`, error);
 				}
 			}
@@ -72,10 +70,7 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
  * @param {boolean} defaultValue - Default collapsed state
  * @returns {Object} { isCollapsed, toggleCollapsed, setCollapsed }
  */
-export function useCollapsible(
-	storageKey: string | null = null,
-	defaultValue: boolean = false,
-) {
+export function useCollapsible(storageKey: string | null = null, defaultValue: boolean = false) {
 	// Use localStorage hook if storageKey provided, otherwise use local state
 	const [persistedValue, setPersistedValue] = useLocalStorage(
 		storageKey || "__unused__",

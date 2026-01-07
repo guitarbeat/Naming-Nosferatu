@@ -82,8 +82,6 @@ function CardName({
 	metadata,
 	isAdmin = false,
 	isHidden = false,
-	_onToggleVisibility,
-	_onDelete,
 	onSelectionChange,
 	image,
 }: CardNameProps) {
@@ -95,12 +93,10 @@ function CardName({
 
 	useEffect(() => {
 		if (isRippling) {
-			const timer = setTimeout(
-				() => setIsRippling(false),
-				TIMING.RIPPLE_ANIMATION_DURATION_MS,
-			);
+			const timer = setTimeout(() => setIsRippling(false), TIMING.RIPPLE_ANIMATION_DURATION_MS);
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [isRippling]);
 
 	const hasMetadata =
@@ -114,7 +110,9 @@ function CardName({
 
 	useEffect(() => {
 		const card = cardRef.current;
-		if (!card || disabled || !hasMetadata) return;
+		if (!card || disabled || !hasMetadata) {
+			return undefined;
+		}
 
 		const handleMouseMove = (e: MouseEvent) => {
 			if (typeof e.clientX === "number" && typeof e.clientY === "number") {
@@ -137,7 +135,9 @@ function CardName({
 	}, [disabled, hasMetadata]);
 
 	const handleFocus = () => {
-		if (!cardRef.current || disabled || !hasMetadata) return;
+		if (!cardRef.current || disabled || !hasMetadata) {
+			return;
+		}
 
 		const rect = cardRef.current.getBoundingClientRect();
 		setTooltipPosition({
@@ -191,13 +191,13 @@ function CardName({
 			label += ` - ${description}`;
 		}
 		if (isSelected) {
-			label += " (selected)";
+			label += " - selected";
 		}
 		if (disabled) {
-			label += " (disabled)";
+			label += " - disabled";
 		}
 		if (isHidden) {
-			label += " (hidden)";
+			label += " - hidden";
 		}
 		return label;
 	};
@@ -218,8 +218,7 @@ function CardName({
 		.filter(Boolean)
 		.join(" ");
 
-	const isInteractive =
-		!disabled && (!!onClick || (isAdmin && !!onSelectionChange));
+	const isInteractive = !disabled && (!!onClick || (isAdmin && !!onSelectionChange));
 	const Component = isInteractive ? "button" : "div";
 
 	return (
@@ -227,16 +226,12 @@ function CardName({
 			<Card
 				as={Component}
 				ref={cardRef}
-				className={`${cardClasses} ${!isInteractive ? styles.nonInteractive : ""}`}
+				className={`${cardClasses} ${isInteractive ? "" : styles.nonInteractive}`}
 				onClick={
-					isInteractive
-						? (handleInteraction as unknown as React.MouseEventHandler)
-						: undefined
+					isInteractive ? (handleInteraction as unknown as React.MouseEventHandler) : undefined
 				}
 				onKeyDown={
-					isInteractive
-						? (handleInteraction as unknown as React.KeyboardEventHandler)
-						: undefined
+					isInteractive ? (handleInteraction as unknown as React.KeyboardEventHandler) : undefined
 				}
 				onFocus={handleFocus}
 				onBlur={handleBlur}
@@ -244,12 +239,10 @@ function CardName({
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
-				aria-describedby={
-					description ? `${getSafeId(name)}-description` : undefined
-				}
+				aria-describedby={description ? `${getSafeId(name)}-description` : undefined}
 				aria-labelledby={`${getSafeId(name)}-title`}
 				type={isInteractive ? "button" : undefined}
-				role={!isInteractive ? "article" : undefined}
+				role={isInteractive ? undefined : "article"}
 				variant={isSelected ? "primary" : "default"}
 				padding={size === "small" ? "small" : "medium"}
 				interactive={isInteractive}
@@ -266,10 +259,7 @@ function CardName({
 					{name}
 				</h3>
 				{description && (
-					<p
-						id={`${getSafeId(name)}-description`}
-						className={styles.description}
-					>
+					<p id={`${getSafeId(name)}-description`} className={styles.description}>
 						{description}
 					</p>
 				)}
@@ -299,9 +289,7 @@ function CardName({
 									</span>
 								))}
 								{metadata.categories.length > 2 && (
-									<span className={styles.categoryMore}>
-										+{metadata.categories.length - 2}
-									</span>
+									<span className={styles.categoryMore}>+{metadata.categories.length - 2}</span>
 								)}
 							</div>
 						)}
@@ -319,83 +307,68 @@ function CardName({
 					</span>
 				)}
 				{isRippling && isInteractive && (
-					<span
-						className={styles.rippleEffect}
-						style={rippleStyle}
-						aria-hidden="true"
-					/>
+					<span className={styles.rippleEffect} style={rippleStyle} aria-hidden="true" />
 				)}
 			</Card>
 
-			{showTooltip &&
-				metadata &&
-				tooltipPosition.x > 0 &&
-				tooltipPosition.y > 0 && (
-					<div
-						className={styles.tooltip}
-						style={{
-							left: Math.min(
-								tooltipPosition.x + 10,
-								typeof window !== "undefined"
-									? window.innerWidth - 320
-									: tooltipPosition.x + 10,
-							),
-							top: Math.max(tooltipPosition.y - 10, 10),
-							zIndex: 1000,
-						}}
-					>
-						<div className={styles.tooltipContent}>
-							<div className={styles.tooltipHeader}>
-								<h3 className={styles.tooltipName}>{name}</h3>
-								{metadata.rank && (
-									<span className={styles.tooltipRank}>#{metadata.rank}</span>
-								)}
-							</div>
-
-							{metadata.description && (
-								<p className={styles.tooltipDescription}>
-									{metadata.description}
-								</p>
-							)}
-
-							<div className={styles.tooltipStats}>
-								{[
-									{ key: "rating", label: "Rating" },
-									{ key: "wins", label: "Wins" },
-									{ key: "losses", label: "Losses" },
-									{ key: "totalMatches", label: "Total Matches" },
-									{ key: "winRate", label: "Win Rate", suffix: "%" },
-								].map(({ key, label, suffix }) => {
-									const value = metadata[key];
-									return value !== undefined && value !== null ? (
-										<div key={key} className={styles.tooltipStat}>
-											<span className={styles.tooltipLabel}>{label}</span>
-											<span className={styles.tooltipValue}>
-												{String(value)}
-												{suffix}
-											</span>
-										</div>
-									) : null;
-								})}
-							</div>
-
-							{metadata.categories && metadata.categories.length > 0 && (
-								<div className={styles.tooltipCategories}>
-									<span className={styles.tooltipCategoriesLabel}>
-										Categories:
-									</span>
-									<div className={styles.tooltipCategoryTags}>
-										{metadata.categories.map((category, index) => (
-											<span key={index} className={styles.tooltipCategoryTag}>
-												{category}
-											</span>
-										))}
-									</div>
-								</div>
-							)}
+			{showTooltip && metadata && tooltipPosition.x > 0 && tooltipPosition.y > 0 && (
+				<div
+					className={styles.tooltip}
+					style={{
+						left: Math.min(
+							tooltipPosition.x + 10,
+							typeof window !== "undefined" ? window.innerWidth - 320 : tooltipPosition.x + 10,
+						),
+						top: Math.max(tooltipPosition.y - 10, 10),
+						zIndex: 1000,
+					}}
+				>
+					<div className={styles.tooltipContent}>
+						<div className={styles.tooltipHeader}>
+							<h3 className={styles.tooltipName}>{name}</h3>
+							{metadata.rank && <span className={styles.tooltipRank}>#{metadata.rank}</span>}
 						</div>
+
+						{metadata.description && (
+							<p className={styles.tooltipDescription}>{metadata.description}</p>
+						)}
+
+						<div className={styles.tooltipStats}>
+							{[
+								{ key: "rating", label: "Rating" },
+								{ key: "wins", label: "Wins" },
+								{ key: "losses", label: "Losses" },
+								{ key: "totalMatches", label: "Total Matches" },
+								{ key: "winRate", label: "Win Rate", suffix: "%" },
+							].map(({ key, label, suffix }) => {
+								const value = metadata[key];
+								return value !== undefined && value !== null ? (
+									<div key={key} className={styles.tooltipStat}>
+										<span className={styles.tooltipLabel}>{label}</span>
+										<span className={styles.tooltipValue}>
+											{String(value)}
+											{suffix}
+										</span>
+									</div>
+								) : null;
+							})}
+						</div>
+
+						{metadata.categories && metadata.categories.length > 0 && (
+							<div className={styles.tooltipCategories}>
+								<span className={styles.tooltipCategoriesLabel}>Categories:</span>
+								<div className={styles.tooltipCategoryTags}>
+									{metadata.categories.map((category, index) => (
+										<span key={index} className={styles.tooltipCategoryTag}>
+											{category}
+										</span>
+									))}
+								</div>
+							</div>
+						)}
 					</div>
-				)}
+				</div>
+			)}
 		</div>
 	);
 }

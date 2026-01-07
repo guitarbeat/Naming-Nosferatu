@@ -6,10 +6,7 @@
 import PropTypes from "prop-types";
 import React, { memo, useId } from "react";
 import { cn } from "../../utils/core";
-import LiquidGlass, {
-	DEFAULT_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../LiquidGlass/LiquidGlass";
+import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass/LiquidGlass";
 
 import styles from "./Card.module.css";
 
@@ -140,10 +137,7 @@ const Card = memo(
 			const glassId = useId();
 
 			if (shouldUseLiquidGlass) {
-				const glassConfig = resolveGlassConfig(
-					liquidGlass,
-					DEFAULT_GLASS_CONFIG,
-				) as GlassConfig;
+				const glassConfig = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG) as GlassConfig;
 				const {
 					width = 240,
 					height = 110,
@@ -159,12 +153,7 @@ const Card = memo(
 
 				// * Separate wrapper classes (for LiquidGlass) from content classes
 				const wrapperClasses = [className].filter(Boolean).join(" ");
-				const contentClasses = buildContentClasses(
-					variant,
-					padding,
-					shadow,
-					border,
-				);
+				const contentClasses = buildContentClasses(variant, padding, shadow, border);
 
 				return (
 					<LiquidGlass
@@ -181,12 +170,7 @@ const Card = memo(
 						style={{ width: "100%", height: "auto", ...props.style }}
 						{...glassProps}
 					>
-						<Component
-							ref={ref}
-							className={contentClasses}
-							onClick={onClick}
-							{...props}
-						>
+						<Component ref={ref} className={contentClasses} onClick={onClick} {...props}>
 							{children}
 						</Component>
 					</LiquidGlass>
@@ -194,12 +178,7 @@ const Card = memo(
 			}
 
 			return (
-				<Component
-					ref={ref}
-					className={finalClasses}
-					onClick={onClick}
-					{...props}
-				>
+				<Component ref={ref} className={finalClasses} onClick={onClick} {...props}>
 					{children}
 				</Component>
 			);
@@ -276,8 +255,7 @@ const CardStats: React.FC<CardStatsProps> = ({
 	...props
 }) => {
 	const labelText = title || label || "Statistic";
-	const valueText =
-		typeof value === "string" || typeof value === "number" ? value : "";
+	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
 	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
 
 	return (
@@ -293,9 +271,7 @@ const CardStats: React.FC<CardStatsProps> = ({
 				<span className={cn(styles.statsLabel, labelClassName)}>{label}</span>
 			)}
 			<span className={cn(styles.statsValue, valueClassName)}>{value}</span>
-			{emoji && (
-				<span className={cn(styles.statsEmoji, emojiClassName)}>{emoji}</span>
-			)}
+			{emoji && <span className={cn(styles.statsEmoji, emojiClassName)}>{emoji}</span>}
 		</Card>
 	);
 };
@@ -303,11 +279,7 @@ const CardStats: React.FC<CardStatsProps> = ({
 CardStats.propTypes = {
 	title: PropTypes.string,
 	label: PropTypes.string,
-	value: PropTypes.oneOfType([
-		PropTypes.string,
-		PropTypes.number,
-		PropTypes.node,
-	]).isRequired,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node]).isRequired,
 	emoji: PropTypes.node,
 	className: PropTypes.string,
 	labelClassName: PropTypes.string,
@@ -316,6 +288,7 @@ CardStats.propTypes = {
 };
 
 // Add sub-component to Card
+// biome-ignore lint/style/useNamingConvention: Component name, PascalCase is appropriate
 const CardWithStats = Object.assign(Card, { Stats: CardStats });
 
 export default CardWithStats;

@@ -7,7 +7,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { imagesAPI } from "../../../../shared/services/supabase/client";
 import { compressImageFile, devError } from "../../../../shared/utils/core";
-import styles from "../../TournamentSetup.module.css";
+import styles from "../../styles/SetupPhotos.module.css";
 import { GALLERY_IMAGE_SIZES } from "../../tournamentUtils";
 
 // ============================================================================
@@ -20,135 +20,114 @@ interface PhotoThumbnailProps {
 	onImageOpen: (image: string) => void;
 }
 
-const PhotoThumbnail = memo(
-	({ image, index, onImageOpen }: PhotoThumbnailProps) => {
-		const elementRef = useRef<HTMLButtonElement>(null);
+const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps) => {
+	const elementRef = useRef<HTMLButtonElement>(null);
 
-		const [imageError, setImageError] = useState(false);
-		const [imageLoading, setImageLoading] = useState(true);
-		const [tiltStyle, setTiltStyle] = useState({});
+	const [imageError, setImageError] = useState(false);
+	const [imageLoading, setImageLoading] = useState(true);
+	const [tiltStyle, setTiltStyle] = useState({});
 
-		const handleImageLoad = useCallback(() => {
-			setImageLoading(false);
-			setImageError(false);
-		}, []);
+	const handleImageLoad = useCallback(() => {
+		setImageLoading(false);
+		setImageError(false);
+	}, []);
 
-		const handleImageError = useCallback(() => {
-			setImageError(true);
-			setImageLoading(false);
-		}, []);
+	const handleImageError = useCallback(() => {
+		setImageError(true);
+		setImageLoading(false);
+	}, []);
 
-		// * 3D tilt effect that follows mouse
-		useEffect(() => {
-			const element = elementRef.current;
-			if (!element || imageError) return;
-
-			const handleMouseMove = (e: MouseEvent) => {
-				const rect = element.getBoundingClientRect();
-				const x = e.clientX - rect.left;
-				const y = e.clientY - rect.top;
-
-				const centerX = rect.width / 2;
-				const centerY = rect.height / 2;
-
-				const rotateX = ((y - centerY) / centerY) * -5; // * Max 5 degrees
-				const rotateY = ((x - centerX) / centerX) * 5; // * Max 5 degrees
-
-				setTiltStyle({
-					transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-					transition: "transform 0.1s ease-out",
-				});
-			};
-
-			const handleMouseLeave = () => {
-				setTiltStyle({
-					transform:
-						"perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)",
-					transition: "transform 0.3s ease-out",
-				});
-			};
-
-			element.addEventListener("mousemove", handleMouseMove);
-			element.addEventListener("mouseleave", handleMouseLeave);
-
-			return () => {
-				element.removeEventListener("mousemove", handleMouseMove);
-				element.removeEventListener("mouseleave", handleMouseLeave);
-			};
-		}, [imageError]);
-
-		const handleClick = useCallback(
-			(e) => {
-				// * Prevent event propagation to avoid triggering parent handlers
-				e.preventDefault();
-				e.stopPropagation();
-
-				// * Validate image before opening
-				if (!image || typeof image !== "string") {
-					console.warn("PhotoThumbnail: Invalid image provided:", image);
-					return;
-				}
-
-				onImageOpen(image);
-			},
-			[image, onImageOpen],
-		);
-
-		// * Validate image prop
-		if (!image || typeof image !== "string") {
-			return null;
+	// * 3D tilt effect that follows mouse
+	useEffect(() => {
+		const element = elementRef.current;
+		if (!element || imageError) {
+			return;
 		}
 
-		const isLocalAsset = image.startsWith("/assets/images/");
-		const isGif = image.toLowerCase().endsWith(".gif");
-		// * GIF files typically don't have .avif/.webp versions, so skip picture element
-		const shouldUsePicture = isLocalAsset && !isGif;
-		const base = shouldUsePicture
-			? image.substring(0, image.lastIndexOf("."))
-			: null;
+		const handleMouseMove = (e: MouseEvent) => {
+			const rect = element.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
 
-		return (
-			<button
-				ref={elementRef}
-				type="button"
-				className={`${styles.photoThumbnail} ${styles.photoThumbButton} ${imageLoading ? styles.imageLoading : ""} ${imageError ? styles.imageError : ""}`}
-				onClick={handleClick}
-				aria-label={`Open cat photo ${index + 1}`}
-				disabled={imageError}
-				style={tiltStyle}
-			>
-				{imageError ? (
-					<div className={styles.imageErrorPlaceholder}>
-						<span className={styles.errorIcon}>📷</span>
-						<span className={styles.errorText}>Failed to load</span>
-					</div>
-				) : (
-					<>
-						{shouldUsePicture && base ? (
-							<picture>
-								<source
-									type="image/avif"
-									srcSet={`${base}.avif`}
-									sizes={GALLERY_IMAGE_SIZES}
-								/>
-								<source
-									type="image/webp"
-									srcSet={`${base}.webp`}
-									sizes={GALLERY_IMAGE_SIZES}
-								/>
-								<img
-									src={image}
-									alt={`Cat photo ${index + 1}`}
-									loading="lazy"
-									decoding="async"
-									width="200"
-									height="200"
-									sizes={GALLERY_IMAGE_SIZES}
-									onLoad={handleImageLoad}
-									onError={handleImageError}
-								/>
-							</picture>
-						) : (
+			const centerX = rect.width / 2;
+			const centerY = rect.height / 2;
+
+			const rotateX = ((y - centerY) / centerY) * -5; // * Max 5 degrees
+			const rotateY = ((x - centerX) / centerX) * 5; // * Max 5 degrees
+
+			setTiltStyle({
+				transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+				transition: "transform 0.1s ease-out",
+			});
+		};
+
+		const handleMouseLeave = () => {
+			setTiltStyle({
+				transform: "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)",
+				transition: "transform 0.3s ease-out",
+			});
+		};
+
+		element.addEventListener("mousemove", handleMouseMove);
+		element.addEventListener("mouseleave", handleMouseLeave);
+
+		return () => {
+			element.removeEventListener("mousemove", handleMouseMove);
+			element.removeEventListener("mouseleave", handleMouseLeave);
+		};
+	}, [imageError]);
+
+	const handleClick = useCallback(
+		(e: React.MouseEvent) => {
+			// * Prevent event propagation to avoid triggering parent handlers
+			e.preventDefault();
+			e.stopPropagation();
+
+			// * Validate image before opening
+			if (!image || typeof image !== "string") {
+				if (process.env.NODE_ENV === "development") {
+					console.warn("PhotoThumbnail: Invalid image provided:", image);
+				}
+				return;
+			}
+
+			onImageOpen(image);
+		},
+		[image, onImageOpen],
+	);
+
+	// * Validate image prop
+	if (!image || typeof image !== "string") {
+		return null;
+	}
+
+	const isLocalAsset = image.startsWith("/assets/images/");
+	const isGif = image.toLowerCase().endsWith(".gif");
+	// * GIF files typically don't have .avif/.webp versions, so skip picture element
+	const shouldUsePicture = isLocalAsset && !isGif;
+	const base = shouldUsePicture ? image.substring(0, image.lastIndexOf(".")) : null;
+
+	return (
+		<button
+			ref={elementRef}
+			type="button"
+			className={`${styles.photoThumbnail} ${styles.photoThumbButton} ${imageLoading ? styles.imageLoading : ""} ${imageError ? styles.imageError : ""}`}
+			onClick={handleClick}
+			aria-label={`Open cat photo ${index + 1}`}
+			disabled={imageError}
+			style={tiltStyle}
+		>
+			{imageError ? (
+				<div className={styles.imageErrorPlaceholder}>
+					<span className={styles.errorIcon}>📷</span>
+					<span className={styles.errorText}>Unable to load image</span>
+				</div>
+			) : (
+				<>
+					{shouldUsePicture && base ? (
+						<picture>
+							<source type="image/avif" srcSet={`${base}.avif`} sizes={GALLERY_IMAGE_SIZES} />
+							<source type="image/webp" srcSet={`${base}.webp`} sizes={GALLERY_IMAGE_SIZES} />
 							<img
 								src={image}
 								alt={`Cat photo ${index + 1}`}
@@ -160,23 +139,35 @@ const PhotoThumbnail = memo(
 								onLoad={handleImageLoad}
 								onError={handleImageError}
 							/>
-						)}
-						{imageLoading && (
-							<div className={styles.imageLoadingPlaceholder}>
-								<div className={styles.loadingSpinner} />
-							</div>
-						)}
-					</>
-				)}
-				{!imageError && (
-					<div className={styles.photoOverlay}>
-						<span className={styles.photoIcon}>👁️</span>
-					</div>
-				)}
-			</button>
-		);
-	},
-);
+						</picture>
+					) : (
+						<img
+							src={image}
+							alt={`Cat photo ${index + 1}`}
+							loading="lazy"
+							decoding="async"
+							width="200"
+							height="200"
+							sizes={GALLERY_IMAGE_SIZES}
+							onLoad={handleImageLoad}
+							onError={handleImageError}
+						/>
+					)}
+					{imageLoading && (
+						<div className={styles.imageLoadingPlaceholder}>
+							<div className={styles.loadingSpinner} />
+						</div>
+					)}
+				</>
+			)}
+			{!imageError && (
+				<div className={styles.photoOverlay}>
+					<span className={styles.photoIcon}>👁️</span>
+				</div>
+			)}
+		</button>
+	);
+});
 
 PhotoThumbnail.displayName = "PhotoThumbnail";
 
@@ -218,7 +209,9 @@ export function PhotoGallery({
 	const handleFileUpload = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const files = Array.from(e.target.files || []);
-			if (!files.length) return;
+			if (!files.length) {
+				return;
+			}
 
 			try {
 				const uploaded: string[] = [];
@@ -229,11 +222,10 @@ export function PhotoGallery({
 							maxHeight: 1600,
 							quality: 0.8,
 						});
-						const url = await imagesAPI.upload(
-							compressed,
-							userName || "anonymous",
-						);
-						if (url) uploaded.push(url);
+						const url = await imagesAPI.upload(compressed, userName || "anonymous");
+						if (url) {
+							uploaded.push(url);
+						}
 					} catch (err) {
 						devError("PhotoGallery: Failed to upload image", err);
 					}
@@ -259,7 +251,7 @@ export function PhotoGallery({
 						<input
 							type="file"
 							accept="image/*"
-							multiple
+							multiple={true}
 							onChange={handleFileUpload}
 							style={{ display: "none" }}
 						/>
@@ -283,9 +275,7 @@ export function PhotoGallery({
 					className={styles.showAllPhotosButton}
 					onClick={onShowAllPhotosToggle}
 				>
-					{showAllPhotos
-						? "Show Less"
-						: `Show All ${safeGalleryImages.length} Photos`}
+					{showAllPhotos ? "Show Less" : `Show All ${safeGalleryImages.length} Photos`}
 				</button>
 			)}
 		</div>

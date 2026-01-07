@@ -45,6 +45,8 @@ const styles = {
 	toggleStack: "tournament-toolbar-toggle-stack",
 	filtersContainer: "tournament-toolbar-filters-container",
 	startButton: "tournament-toolbar-start-button",
+	startButtonWrapper: "tournament-toolbar-start-button-wrapper",
+	startButtonHint: "tournament-toolbar-start-button-hint",
 	toggleWrapper: "tournament-toolbar-toggle-wrapper",
 	toggleSwitch: "tournament-toolbar-toggle-switch",
 	toggleSwitchActive: "tournament-toolbar-toggle-switch-active",
@@ -112,10 +114,7 @@ interface SortOrderIconProps {
 	className?: string;
 }
 
-function SortOrderIcon({
-	direction = "asc",
-	className = "",
-}: SortOrderIconProps) {
+function SortOrderIcon({ direction = "asc", className = "" }: SortOrderIconProps) {
 	return (
 		<svg
 			className={className}
@@ -162,13 +161,7 @@ interface FilterSelectProps {
 	onChange: (value: string | null) => void;
 }
 
-function FilterSelect({
-	id,
-	label,
-	value,
-	options,
-	onChange,
-}: FilterSelectProps) {
+function FilterSelect({ id, label, value, options, onChange }: FilterSelectProps) {
 	return (
 		<div className={styles.filterGroup}>
 			<label htmlFor={id} className={styles.filterLabel}>
@@ -177,9 +170,7 @@ function FilterSelect({
 			<Select
 				name={id}
 				value={value || ""}
-				onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-					onChange(e.target.value || null)
-				}
+				onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value || null)}
 				options={options}
 				className={styles.filterSelect}
 			/>
@@ -195,13 +186,7 @@ interface ToolbarGlassProps {
 	children: React.ReactNode;
 }
 
-function ToolbarGlass({
-	mode,
-	id,
-	className,
-	style,
-	children,
-}: ToolbarGlassProps) {
+function ToolbarGlass({ mode, id, className, style, children }: ToolbarGlassProps) {
 	const config =
 		TOOLBAR_GLASS_CONFIGS[mode as keyof typeof TOOLBAR_GLASS_CONFIGS] ||
 		TOOLBAR_GLASS_CONFIGS.filter;
@@ -312,10 +297,7 @@ function FilterModeToolbar({
 						<FilterSelect
 							id="filter-status"
 							label="Status"
-							value={
-								(filters.filterStatus as string) ||
-								FILTER_OPTIONS.VISIBILITY.VISIBLE
-							}
+							value={(filters.filterStatus as string) || FILTER_OPTIONS.VISIBILITY.VISIBLE}
 							options={FILTER_CONFIGS.visibility}
 							onChange={(value) =>
 								onFilterChange?.(
@@ -330,13 +312,9 @@ function FilterModeToolbar({
 							<FilterSelect
 								id="filter-user"
 								label="User"
-								value={
-									(filters.userFilter as string) || FILTER_OPTIONS.USER.ALL
-								}
+								value={(filters.userFilter as string) || FILTER_OPTIONS.USER.ALL}
 								options={userOptions || FILTER_CONFIGS.users}
-								onChange={(value) =>
-									onFilterChange?.("userFilter", value as string)
-								}
+								onChange={(value) => onFilterChange?.("userFilter", value as string)}
 							/>
 						)}
 						{showSelectionFilter && (
@@ -345,9 +323,7 @@ function FilterModeToolbar({
 								label="Selection"
 								value={(filters.selectionFilter as string) || "all"}
 								options={FILTER_CONFIGS.selection}
-								onChange={(value) =>
-									onFilterChange?.("selectionFilter", value as string)
-								}
+								onChange={(value) => onFilterChange?.("selectionFilter", value as string)}
 							/>
 						)}
 						{analysisMode && (
@@ -356,9 +332,7 @@ function FilterModeToolbar({
 								label="Date"
 								value={(filters.dateFilter as string) || "all"}
 								options={FILTER_CONFIGS.date}
-								onChange={(value) =>
-									onFilterChange?.("dateFilter", value as string)
-								}
+								onChange={(value) => onFilterChange?.("dateFilter", value as string)}
 							/>
 						)}
 					</div>
@@ -385,19 +359,14 @@ function FilterModeToolbar({
 									onClick={() =>
 										onFilterChange?.(
 											"sortOrder",
-											(isAsc
-												? FILTER_OPTIONS.ORDER.DESC
-												: FILTER_OPTIONS.ORDER.ASC) as string,
+											(isAsc ? FILTER_OPTIONS.ORDER.DESC : FILTER_OPTIONS.ORDER.ASC) as string,
 										)
 									}
 									className={styles.sortOrderButton}
 									title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
 									aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
 								>
-									<SortOrderIcon
-										direction={isAsc ? "asc" : "desc"}
-										className={styles.sortIcon}
-									/>
+									<SortOrderIcon direction={isAsc ? "asc" : "desc"} className={styles.sortIcon} />
 								</button>
 							</div>
 						</div>
@@ -443,36 +412,35 @@ function TournamentToolbar({
 	userOptions = null,
 	startTournamentButton,
 	analysisMode = false,
-	onOpenSuggestName,
+	onOpenSuggestName: _onOpenSuggestName,
 	className = "",
 }: TournamentToolbarProps) {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const _unused = onOpenSuggestName; // Kept to match prop signature but marked unused
-
 	const isTournament = mode === "tournament";
 	const isHybrid = mode === "hybrid";
-	const showFilters = isHybrid || mode === "profile";
+	// * Progressive Disclosure: In tournament mode, filters are hidden by default
+	const [showFiltersInTournament, setShowFiltersInTournament] = React.useState(false);
+
+	const showFilters = isHybrid || mode === "profile" || (isTournament && showFiltersInTournament);
+
 	const toolbarGlassId = useId();
 	const glassId = `toolbar-glass-${toolbarGlassId.replace(/:/g, "-")}`;
 
 	// Get swipe mode and cat pictures state from store
 	const { isSwipeMode, showCatPictures } = useAppStore((state) => state.ui);
-	const { setSwipeMode, setCatPictures } = useAppStore(
-		(state) => state.uiActions,
-	);
+	const { setSwipeMode, setCatPictures } = useAppStore((state) => state.uiActions);
 
 	// Tournament mode toolbar content
 	const renderTournamentMode = () => {
 		const selectedCount = startTournamentButton?.selectedCount ?? 0;
 		const isReady = selectedCount >= 2;
-		const countLabel =
-			selectedCount === 1
-				? "1 selected name"
-				: `${selectedCount} selected names`;
 
 		const buttonLabel = isReady
-			? `Start the tournament with ${countLabel}`
-			: "Select at least 2 names to start";
+			? `Start Tournament (${selectedCount} names)`
+			: `Select at least 2 names (${selectedCount} selected)`;
+
+		const tooltipText = isReady
+			? `Start comparing ${selectedCount} names head-to-head`
+			: "Select at least 2 names to start a tournament. You can select up to 64 names.";
 
 		return (
 			<div className={styles.unifiedContainer} data-mode={mode}>
@@ -483,15 +451,11 @@ function TournamentToolbar({
 							onClick={() => setSwipeMode(!isSwipeMode)}
 							className={`${styles.toggleSwitch} ${isSwipeMode ? styles.toggleSwitchActive : ""}`}
 							aria-pressed={isSwipeMode}
-							aria-label={
-								isSwipeMode ? "Disable swipe mode" : "Enable swipe mode"
-							}
+							aria-label={isSwipeMode ? "Disable swipe mode" : "Enable swipe mode"}
 							title={isSwipeMode ? "Swipe mode: On" : "Swipe mode: Off"}
 						>
 							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>
-								{isSwipeMode ? "Swipe Mode" : "Grid Mode"}
-							</span>
+							<span className={styles.toggleLabel}>{isSwipeMode ? "Swipe Mode" : "Grid Mode"}</span>
 						</button>
 					</div>
 					<div className={styles.toggleWrapper}>
@@ -500,9 +464,7 @@ function TournamentToolbar({
 							onClick={() => setCatPictures(!showCatPictures)}
 							className={`${styles.toggleSwitch} ${showCatPictures ? styles.toggleSwitchActive : ""}`}
 							aria-pressed={showCatPictures}
-							aria-label={
-								showCatPictures ? "Hide cat pictures" : "Show cat pictures"
-							}
+							aria-label={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 							title={showCatPictures ? "Cat pictures: On" : "Cat pictures: Off"}
 						>
 							<span className={styles.toggleThumb} />
@@ -511,46 +473,101 @@ function TournamentToolbar({
 							</span>
 						</button>
 					</div>
+
+					{/* Progressive Disclosure: Filter Toggle */}
+					<div className={styles.toggleWrapper}>
+						<button
+							type="button"
+							onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
+							className={`${styles.toggleSwitch} ${showFiltersInTournament ? styles.toggleSwitchActive : ""}`}
+							aria-pressed={showFiltersInTournament}
+							aria-label={showFiltersInTournament ? "Hide filters" : "Show filters"}
+							title="Toggle search and filters"
+						>
+							<span className={styles.toggleThumb} />
+							<span className={styles.toggleLabel}>
+								🔍 {showFiltersInTournament ? "Hide Filters" : "Filter/Sort"}
+							</span>
+						</button>
+					</div>
 				</div>
+
 				{startTournamentButton && (
-					<TournamentButton
-						onClick={startTournamentButton.onClick}
-						disabled={!isReady}
-						className={styles.startButton}
-						ariaLabel={buttonLabel}
-						startIcon={isReady ? undefined : null}
-					>
-						{buttonLabel}
-					</TournamentButton>
+					<div className={styles.startButtonWrapper} title={tooltipText}>
+						<TournamentButton
+							onClick={startTournamentButton.onClick}
+							disabled={!isReady}
+							className={styles.startButton}
+							ariaLabel={buttonLabel}
+							startIcon={isReady ? undefined : null}
+						>
+							{buttonLabel}
+						</TournamentButton>
+						{!isReady && selectedCount > 0 && (
+							<span className={styles.startButtonHint} role="status" aria-live="polite">
+								{selectedCount === 1
+									? "Select 1 more name"
+									: `Select ${2 - selectedCount} more names`}
+							</span>
+						)}
+					</div>
 				)}
 			</div>
 		);
 	};
 
 	return (
-		<ToolbarGlass
-			mode={isTournament ? "tournament" : "filter"}
-			id={glassId}
-			className={className}
+		<div
+			style={{
+				display: "flex",
+				flexDirection: "column",
+				gap: "16px",
+				width: "100%",
+			}}
 		>
-			{isTournament ? (
-				renderTournamentMode()
-			) : (
-				<FilterModeToolbar
-					filters={filters}
-					onFilterChange={onFilterChange}
-					filteredCount={filteredCount}
-					totalCount={totalCount}
-					categories={categories}
-					showUserFilter={showUserFilter}
-					userOptions={userOptions}
-					showSelectionFilter={showSelectionFilter}
-					analysisMode={analysisMode}
-					isHybrid={isHybrid}
-					showFilters={showFilters}
-				/>
+			<ToolbarGlass
+				mode={isTournament ? "tournament" : "filter"}
+				id={glassId}
+				className={className}
+			>
+				{isTournament ? (
+					renderTournamentMode()
+				) : (
+					<FilterModeToolbar
+						filters={filters}
+						onFilterChange={onFilterChange}
+						filteredCount={filteredCount}
+						totalCount={totalCount}
+						categories={categories}
+						showUserFilter={showUserFilter}
+						userOptions={userOptions}
+						showSelectionFilter={showSelectionFilter}
+						analysisMode={analysisMode}
+						isHybrid={isHybrid}
+						showFilters={showFilters}
+					/>
+				)}
+			</ToolbarGlass>
+
+			{/* Render Filter Toolbar below main toolbar when toggled in Tournament Mode */}
+			{isTournament && showFiltersInTournament && (
+				<ToolbarGlass mode="filter" id={`${glassId}-filters`} className={className}>
+					<FilterModeToolbar
+						filters={filters}
+						onFilterChange={onFilterChange}
+						filteredCount={filteredCount}
+						totalCount={totalCount}
+						categories={categories}
+						// * Field Reduction: Hide complex filters in tournament mode
+						showUserFilter={false}
+						showSelectionFilter={false}
+						analysisMode={false} // Force simple mode
+						isHybrid={true} // Use hybrid layout for compact view
+						showFilters={true}
+					/>
+				</ToolbarGlass>
 			)}
-		</ToolbarGlass>
+		</div>
 	);
 }
 

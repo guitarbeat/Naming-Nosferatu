@@ -38,8 +38,8 @@ A tournament platform for finding the perfect cat name. Compare names side-by-si
 ```bash
 git clone <repository-url>
 cd name-nosferatu
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ---
@@ -123,7 +123,7 @@ src/
 | `audit_log`             | System audit trail               | `table_name`, `operation`, `user_name`, `old_values`, `new_values`       |
 | `site_settings`         | Application settings             | `key`, `value`, `updated_by`                                             |
 
-### **Schema Optimizations (November 2025)**
+### **Schema Optimizations (January 2026)**
 
 **Removed Columns:**
 
@@ -227,13 +227,13 @@ const { user, tournament, ui, userActions, tournamentActions, uiActions } =
 
 ```bash
 # Run all tests
-npm run test
+pnpm run test
 
 # Run a specific test file (Jest-compatible flag supported)
-npm run test -- --runTestsByPath src/App.test.jsx
+pnpm run test -- --runTestsByPath src/App.test.jsx
 
 # Run tests with coverage (coverage is included by default)
-npm run test
+pnpm run test
 ```
 
 ### **Coverage Goals**
@@ -316,7 +316,7 @@ SUPABASE_ANON_KEY=your_actual_supabase_anon_key_here
 After creating the `.env.local` file:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 #### **4. Verify the Setup**
@@ -327,20 +327,20 @@ The application should now connect to Supabase successfully. Start the developme
 
 If you prefer to run Supabase locally:
 
-1. Install Supabase CLI: `npm install -g supabase`
+1. Install Supabase CLI: `pnpm add -g supabase` (or use `npm install -g supabase` if preferred)
 2. Start local Supabase: `supabase start`
 3. Use the local URLs provided by the CLI
 
 ### **Build Commands (Vite-first)**
 
 ```bash
-npm run dev         # Vite dev server with HMR
-npm run build       # Vite production build (config/vite.config.ts)
-npm run preview     # Vite preview of the built app
+pnpm run dev         # Vite dev server with HMR
+pnpm run build       # Vite production build (vite.config.ts)
+pnpm run preview     # Vite preview of the built app
 # Direct Vite CLI (optional)
-npx vite build --config config/vite.config.ts
-npx vite preview --config config/vite.config.ts
-npx vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
+pnpm exec vite build --config vite.config.ts
+pnpm exec vite preview --config vite.config.ts
+pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```
 
 ---
@@ -351,25 +351,29 @@ npx vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 
 | Command           | Description                                       |
 | ----------------- | ------------------------------------------------- |
-| `npm run dev`     | Start Vite dev server with HMR                    |
-| `npm run build`   | Vite production build                             |
-| `npm run preview` | Preview the built app via Vite                    |
-| `npm run test`    | Run Vitest suite                                  |
-| `npm run lint`    | ESLint + Stylelint + Prettier + type checks       |
-| `npm run format`  | Format code with Prettier                         |
-| `npm run clean`   | Remove dist and Vite cache (`node_modules/.vite`) |
-| `npm run check`   | CSS usage report (PurgeCSS + discard-unused)      |
+| `pnpm run dev`    | Start Vite dev server with HMR                    |
+| `pnpm run build`  | Vite production build                             |
+| `pnpm run preview`| Preview the built app via Vite                    |
+| `pnpm run test`   | Run Vitest suite                                  |
+| `pnpm run lint`   | Biome linter + TypeScript checks (src + scripts) |
+| `pnpm run lint:fix`| Auto-fix linting issues (src + scripts)          |
+| `pnpm run format` | Format code with Biome (src + scripts)           |
+| `pnpm run clean`  | Remove dist and Vite cache (`node_modules/.vite`) |
+| `pnpm run check`  | Run all checks (lint, types, limits, deps)        |
 
 ### **Code Quality**
 
-- **Linting**: ESLint with Airbnb configuration
-- **Unused Imports**: `eslint-plugin-unused-imports` automatically removes unused imports on save (when autofix is enabled)
-- **Formatting**: Prettier with consistent rules
-- **TypeScript**: Full type safety (where applicable)
+- **Linting**: Biome (fast linter and formatter) for JavaScript/TypeScript/CSS
+  - Checks both `src/` and `scripts/` directories
+  - Comprehensive rules for complexity, suspicious code, style, correctness, performance, and security
+  - Auto-fix capability: `pnpm run lint:fix`
+- **TypeScript**: Strict type checking with enhanced safety rules
+  - Includes `noImplicitAny`, `strictNullChecks`, `noUnusedLocals`, `noUnusedParameters`
+  - Type checks `src/`, `config/`, and `scripts/` directories
+- **File Size Limits**: Enforced for maintainability
+  - TSX/TS: 400 lines, CSS: 750 lines, JS (scripts): 200 lines
+- **Dead Code Detection**: Knip for unused files, exports, and dependencies
 - **Testing**: Comprehensive unit and integration tests
-- Plugin system that understands Vite, React, and other tools
-- Auto-fix capability for unused exports
-- Zero configuration required (works out of the box)
 
 ---
 
@@ -476,7 +480,7 @@ npx vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```bash
 # Kill and restart dev server
 Ctrl+C
-npm run dev
+pnpm run dev
 ```
 
 #### **Tests Failing**
@@ -484,22 +488,31 @@ npm run dev
 ```bash
 # Clear node_modules and reinstall
 rm -rf node_modules
-npm install
+pnpm install
 
 # Clear test cache
-npm run test -- --clearCache
+pnpm run test -- --clearCache
 ```
 
 ---
 
-## 📚 **Contributing**
+## 📚 Documentation
+
+- [Development Guide](docs/DEVELOPMENT.md) - Setup, Standards, & Workflow
+- [Architecture Overview](docs/ARCHITECTURE.md) - System Design & Database
+- [UI/UX Guide](docs/UI_UX.md) - Styling, Accessibility, & Design Tokens
+- [Project Roadmap](docs/ROADMAP.md) - Goals, Bugs, & Status
+
+---
+
+## 🤝 **Contributing**
 
 ### **Development Setup**
 
 1. Fork the repository
 2. Clone your fork: `git clone <your-fork-url>`
-3. Install dependencies: `npm install`
-4. Start development: `npm run dev`
+3. Install dependencies: `pnpm install`
+4. Start development: `pnpm run dev`
 5. Create feature branch: `git checkout -b feature/amazing-feature`
 
 ### **Code Standards**
@@ -554,4 +567,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ for cat lovers everywhere** | _Last updated: November 2025_
+**Built with ❤️ for cat lovers everywhere** | _Last updated: January 2026_

@@ -7,21 +7,21 @@ import PropTypes from "prop-types";
 import "./PerformanceBadge.css";
 import "./TrendIndicator.css";
 
-// Insight category lookup
-const INSIGHT_CATEGORIES: Record<
-	string,
-	{ label: string; icon: string; description: string }
-> = {
+// Insight category lookup - keys use snake_case to match insight tag strings
+const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	top_rated: {
 		label: "Top Rated",
 		icon: "⭐",
 		description: "Among the highest rated names",
 	},
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_up: {
 		label: "Trending",
 		icon: "📈",
 		description: "Rising in popularity",
 	},
+	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_down: {
 		label: "Declining",
 		icon: "📉",
@@ -62,12 +62,7 @@ interface PerformanceBadgeProps {
 }
 
 // Internal component - only used within PerformanceBadges
-function PerformanceBadge({
-	type,
-	label,
-	variant = "md",
-	className = "",
-}: PerformanceBadgeProps) {
+function PerformanceBadge({ type, label, variant = "md", className = "" }: PerformanceBadgeProps) {
 	const category = getInsightCategory(type);
 
 	if (!category && !label) {
@@ -118,10 +113,7 @@ interface PerformanceBadgesProps {
  * @param {string} props.className - Additional CSS classes
  * @returns {JSX.Element}
  */
-export function PerformanceBadges({
-	types = [],
-	className = "",
-}: PerformanceBadgesProps) {
+export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
 	if (!types || types.length === 0) {
 		return null;
 	}

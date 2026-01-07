@@ -1,0 +1,133 @@
+/* Loading Component Styles */
+
+.loadingContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	align-items: center;
+	justify-content: center;
+	padding: var(--spacing-component-padding);
+}
+
+.loadingGif {
+	max-width: var(--size-avatar-xl);
+	max-height: var(--size-avatar-xl);
+	width: auto;
+	height: auto;
+	object-fit: contain;
+	image-rendering: auto;
+}
+
+.small {
+	font-size: var(--text-lg);
+}
+
+.medium {
+	font-size: var(--text-2xl);
+}
+
+.large {
+	font-size: var(--text-4xl);
+}
+
+.loadingText {
+	margin: 0;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-color, var(--text-secondary));
+	text-align: center;
+	line-height: var(--leading-normal);
+}
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	white-space: nowrap;
+	border-width: 0;
+	clip-path: inset(50%);
+}
+
+.loadingOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-modal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--glass-bg-strong);
+	backdrop-filter: blur(var(--glass-blur));
+}
+
+.skeleton {
+	position: relative;
+	min-height: var(--space-4);
+	overflow: hidden;
+	background: var(--skeleton-bg, var(--color-neutral-100));
+	border-radius: var(--radius-sm);
+}
+
+.skeletonShimmer {
+	position: absolute;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 40%), transparent);
+	animation: shimmer var(--duration-slower) infinite;
+}
+
+@keyframes shimmer {
+	0% {
+		left: -100%;
+	}
+
+	100% {
+		left: 100%;
+	}
+}
+
+.loadingPlaceholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-8);
+	font-size: var(--text-sm);
+	color: var(--text-color, var(--text-secondary));
+}
+
+@media (width <= 640px) {
+	.loadingContainer {
+		gap: var(--space-2);
+		padding: var(--space-3);
+	}
+
+	.spinner {
+		font-size: var(--text-xl);
+	}
+
+	.large {
+		font-size: var(--text-3xl);
+	}
+
+	.loadingText {
+		font-size: var(--text-xs);
+	}
+
+	.loadingOverlay {
+		padding: var(--space-4);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.spinner {
+		animation: none;
+	}
+
+	.skeletonShimmer {
+		animation: none;
+	}
+}

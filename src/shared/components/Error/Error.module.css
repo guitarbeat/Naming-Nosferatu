@@ -1,0 +1,343 @@
+/* Error Component Styles - Extracted from CommonUI.module.css */
+
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	white-space: nowrap;
+	border-width: 0;
+	clip-path: inset(0);
+}
+
+.boundary {
+	position: fixed;
+	inset: 0;
+	z-index: var(--z-modal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100dvh;
+	padding: max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-top))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-bottom))
+		max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
+	overflow: hidden auto;
+	font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+	background: var(--gradient-mesh);
+	-webkit-overflow-scrolling: touch;
+}
+
+.boundaryGlass {
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.boundaryContent {
+	position: relative;
+	z-index: var(--z-elevate);
+	width: 100%;
+	height: 100%;
+	padding: clamp(var(--space-6), 5vw, var(--space-12));
+	text-align: center;
+	outline: none;
+	background: transparent;
+	border: none;
+	border-radius: inherit;
+	transition: var(--transition-base);
+}
+
+.boundaryContent:focus-visible {
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--space-1);
+}
+
+.boundaryContentNoMotion {
+	transition: none;
+}
+
+.boundaryContentSmallMobile {
+	max-width: 100%;
+	padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.boundaryContentMobile {
+	padding: clamp(1.25rem, 4.5vw, 2rem);
+}
+
+.boundaryContentTablet {
+	max-width: 700px;
+	padding: clamp(2rem, 5vw, 2.5rem);
+}
+
+.boundaryIcon {
+	margin-bottom: clamp(var(--space-4), 3vw, var(--space-6));
+	font-size: clamp(var(--text-3xl), 10vw, var(--text-4xl));
+	line-height: 1;
+	filter: drop-shadow(0 0 10px var(--overlay-cyan-medium));
+	animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+	0%,
+	20%,
+	50%,
+	80%,
+	100% {
+		transform: translateY(0);
+	}
+
+	40% {
+		transform: translateY(calc(var(--space-2) * -1));
+	}
+
+	60% {
+		transform: translateY(calc(var(--space-1) * -1));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boundaryIcon {
+		animation: none;
+	}
+}
+
+.boundaryTitle {
+	margin-bottom: clamp(var(--space-3), 2vw, var(--space-4));
+	font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+	font-weight: var(--font-weight-bold);
+	line-height: var(--leading-tight);
+	color: var(--text-primary);
+	overflow-wrap: break-word;
+	text-shadow:
+		var(--text-shadow-lg),
+		0 0 20px var(--overlay-cyan-medium);
+	background: var(--gradient-primary);
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	filter: brightness(1.2) contrast(1.3);
+}
+
+.boundaryActions {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	gap: clamp(var(--space-3), 2vw, var(--space-4));
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+.boundaryRetryButton,
+.boundaryHomeButton,
+.boundaryCopyButton {
+	position: relative;
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	min-height: var(--mobile-touch-target-min, 48px);
+	padding: clamp(var(--space-3), 2vw, var(--space-3)) clamp(var(--space-4), 3vw, var(--space-6));
+	overflow: hidden;
+	font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
+	font-weight: var(--font-weight-medium);
+	touch-action: manipulation;
+	cursor: pointer;
+	border: none;
+	border-radius: clamp(var(--radius-sm), 1.5vw, var(--radius-md));
+	transition: var(--transition-base);
+	-webkit-tap-highlight-color: transparent;
+}
+
+.boundaryRetryButton:focus-visible,
+.boundaryHomeButton:focus-visible,
+.boundaryCopyButton:focus-visible {
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--focus-ring-offset);
+}
+
+.boundaryRetryButton {
+	color: var(--color-neutral-50);
+	background: var(--color-neon-cyan);
+	box-shadow: 0 2px 8px var(--overlay-cyan-medium);
+	text-shadow: var(--text-shadow-sm);
+}
+
+.boundaryRetryButton:hover:not(:active) {
+	background: color-mix(in srgb, var(--color-neon-cyan) 90%, var(--color-neutral-900));
+	box-shadow: 0 4px 12px var(--overlay-cyan-medium);
+	transform: var(--transform-hover-lift) var(--transform-hover-scale);
+}
+
+.boundaryHomeButton {
+	color: var(--color-neutral-50);
+	background: var(--color-fire-red);
+	box-shadow: 0 2px 8px var(--overlay-red-medium);
+	text-shadow: var(--text-shadow-sm);
+}
+
+.boundaryHomeButton:hover:not(:active) {
+	background: color-mix(in srgb, var(--color-fire-red) 90%, var(--color-neutral-900));
+	box-shadow: 0 4px 12px var(--overlay-red-medium);
+	transform: var(--transform-hover-lift) var(--transform-hover-scale);
+}
+
+.boundaryCopyButton {
+	color: var(--text-primary);
+	background: var(--overlay-cyan-medium);
+	border: var(--button-border-width) solid
+		color-mix(in srgb, var(--color-neon-cyan) 60%, transparent);
+	box-shadow: var(--shadow-sm);
+}
+
+.boundaryCopyButton:hover:not(:active) {
+	background: color-mix(in srgb, var(--color-neon-cyan) 45%, transparent);
+	border-color: color-mix(in srgb, var(--color-neon-cyan) 75%, transparent);
+	box-shadow: var(--shadow-md);
+	transform: var(--transform-hover-lift);
+}
+
+.boundaryDetails {
+	padding: clamp(var(--space-4), 3vw, var(--space-6));
+	margin-top: clamp(var(--space-6), 4vw, var(--space-8));
+	text-align: left;
+	background: var(--glass-bg-strong);
+	border: 1px solid var(--glass-border);
+	border-radius: clamp(var(--radius-md), 2vw, var(--radius-lg));
+	box-shadow: var(--shadow-md);
+}
+
+.boundaryDetails summary {
+	padding: var(--space-2);
+	font-size: clamp(0.9375rem, 2.5vw, var(--text-base));
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
+	text-shadow: var(--text-shadow-sm);
+	cursor: pointer;
+	user-select: none;
+	border-radius: var(--radius-sm);
+}
+
+.boundaryErrorStack {
+	max-height: 400px;
+	padding: var(--space-4);
+	margin-top: var(--space-4);
+	overflow: auto;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	line-height: var(--leading-relaxed);
+	color: var(--text-secondary);
+	white-space: pre-wrap;
+	word-break: break-word;
+	background: var(--glass-bg-strong);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-md);
+	text-shadow: var(--text-shadow-sm);
+}
+
+/* Error List Styles */
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	background: color-mix(in srgb, var(--color-error) 5%, var(--color-neutral-50));
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 20%, transparent);
+	border-radius: var(--radius-lg);
+}
+
+.listItems {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+.listItem {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-3);
+	background: var(--color-neutral-50);
+	border-radius: var(--radius-md);
+}
+
+.listMessage {
+	flex: 1;
+	color: var(--color-error);
+	font-size: var(--text-sm);
+}
+
+.listClearAllButton,
+.listDismissButton {
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
+	font-weight: 500;
+	cursor: pointer;
+	border-radius: var(--radius-md);
+	transition: var(--transition-base);
+}
+
+.listClearAllButton {
+	align-self: flex-end;
+	color: var(--color-error);
+	background: transparent;
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.listClearAllButton:hover {
+	background: color-mix(in srgb, var(--color-error) 10%, transparent);
+}
+
+.listDismissButton {
+	color: color-mix(in srgb, var(--color-error) 80%, var(--color-neutral-900));
+	background: transparent;
+	border: none;
+}
+
+.listDismissButton:hover {
+	color: var(--color-error);
+}
+
+/* Error Inline Styles */
+.inline {
+	display: flex;
+	align-items: center;
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-md);
+}
+
+.inlineGeneral {
+	background: color-mix(in srgb, var(--color-error) 5%, var(--color-neutral-50));
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 20%, transparent);
+}
+
+.inlineContent {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.inlineIcon {
+	flex-shrink: 0;
+	font-size: 1.25em;
+}
+
+.inlineMessage {
+	color: var(--color-error);
+	font-size: var(--text-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.boundaryRetryButton,
+	.boundaryHomeButton,
+	.boundaryCopyButton {
+		transition: none;
+	}
+
+	.boundaryRetryButton:hover,
+	.boundaryHomeButton:hover,
+	.boundaryCopyButton:hover {
+		transform: none;
+	}
+}

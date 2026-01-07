@@ -1,4 +1,4 @@
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../../types/components";
 
 /**
  * Converts an array of selected names to a Set of IDs for O(1) lookup.
@@ -66,10 +66,8 @@ export function generateFunName() {
 	let generatedName = "";
 
 	while (!generatedName && attempts < 3) {
-		const prefix =
-			FUNNY_PREFIXES[Math.floor(Math.random() * FUNNY_PREFIXES.length)];
-		const adjective =
-			FUNNY_ADJECTIVES[Math.floor(Math.random() * FUNNY_ADJECTIVES.length)];
+		const prefix = FUNNY_PREFIXES[Math.floor(Math.random() * FUNNY_PREFIXES.length)];
+		const adjective = FUNNY_ADJECTIVES[Math.floor(Math.random() * FUNNY_ADJECTIVES.length)];
 
 		generatedName = sanitizeGeneratedName(`${prefix} ${adjective}`);
 		attempts += 1;
@@ -99,11 +97,13 @@ export function isNameHidden(name: NameItem | null | undefined): boolean {
 /**
  * Map filterStatus to visibility string
  */
-export function mapFilterStatusToVisibility(
-	filterStatus: string,
-): "hidden" | "all" | "visible" {
-	if (filterStatus === "hidden") return "hidden";
-	if (filterStatus === "all") return "all";
+export function mapFilterStatusToVisibility(filterStatus: string): "hidden" | "all" | "visible" {
+	if (filterStatus === "hidden") {
+		return "hidden";
+	}
+	if (filterStatus === "all") {
+		return "all";
+	}
 	return "visible";
 }
 
@@ -117,8 +117,12 @@ function filterByVisibility(
 		isAdmin = false,
 	}: { visibility?: "visible" | "hidden" | "all"; isAdmin?: boolean } = {},
 ): NameItem[] {
-	if (!Array.isArray(names)) return [];
-	if (!isAdmin) return names.filter((name) => !isNameHidden(name));
+	if (!Array.isArray(names)) {
+		return [];
+	}
+	if (!isAdmin) {
+		return names.filter((name) => !isNameHidden(name));
+	}
 
 	switch (visibility) {
 		case "hidden":
@@ -146,19 +150,19 @@ export function applyNameFilters(
 		isAdmin = false,
 	} = filters;
 
-	if (!names || !Array.isArray(names)) return [];
+	if (!names || !Array.isArray(names)) {
+		return [];
+	}
 	let result = filterByVisibility([...names], { visibility, isAdmin });
 
 	if (category) {
-		result = result.filter((n) => n.categories?.includes(category));
+		result = result.filter((n) => Array.isArray(n.categories) && n.categories.includes(category));
 	}
 
 	if (searchTerm) {
 		const term = searchTerm.toLowerCase();
 		result = result.filter(
-			(n) =>
-				n.name?.toLowerCase().includes(term) ||
-				n.description?.toLowerCase().includes(term),
+			(n) => n.name?.toLowerCase().includes(term) || n.description?.toLowerCase().includes(term),
 		);
 	}
 
@@ -176,8 +180,8 @@ export function applyNameFilters(
 			case "created_at":
 			case "date":
 				comp =
-					new Date(a.created_at || 0).getTime() -
-					new Date(b.created_at || 0).getTime();
+					new Date((a.created_at as string) || "1970-01-01").getTime() -
+					new Date((b.created_at as string) || "1970-01-01").getTime();
 				break;
 			default:
 				comp = 0;

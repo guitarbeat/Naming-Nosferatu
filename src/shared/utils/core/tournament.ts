@@ -1,4 +1,4 @@
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "../../../types/components";
 import { generatePairs } from ".";
 
 export interface Sorter {
@@ -7,10 +7,7 @@ export interface Sorter {
 	preferences?: Map<string, unknown>;
 }
 
-export function initializeSorterPairs(
-	sorter: Sorter | null,
-	nameList: NameItem[],
-): void {
+export function initializeSorterPairs(sorter: Sorter | null, nameList: NameItem[]): void {
 	if (!sorter) {
 		return;
 	}
@@ -40,10 +37,7 @@ export function calculateMaxRoundForNames(namesCount: number): number {
 	return maxRound;
 }
 
-export function calculateBracketRound(
-	namesCount: number,
-	matchNumber: number,
-): number {
+export function calculateBracketRound(namesCount: number, matchNumber: number): number {
 	if (!Number.isInteger(namesCount) || namesCount < 1) {
 		return 1;
 	}

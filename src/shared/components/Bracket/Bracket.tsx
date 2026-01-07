@@ -47,18 +47,25 @@ import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import styles from "./Bracket.module.css";
 
+// Constants use UPPER_CASE keys (intentional for match result constants)
 const MatchResult = {
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	PENDING: "pending",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	FIRST_WIN: "first",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SECOND_WIN: "second",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	BOTH_ADVANCE: "both",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SKIPPED: "skip",
+	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	NEITHER: "neither",
 } as const;
 
 type MatchStatus = (typeof MatchResult)[keyof typeof MatchResult];
 
-interface MatchData {
+export interface MatchData {
 	id: number;
 	name1: string;
 	name2?: string;
@@ -67,13 +74,7 @@ interface MatchData {
 	[key: string]: unknown;
 }
 
-function Match({
-	match,
-	isLastRound,
-}: {
-	match: MatchData;
-	isLastRound: boolean;
-}) {
+function Match({ match, isLastRound }: { match: MatchData; isLastRound: boolean }) {
 	const status = useMemo((): MatchStatus => {
 		if (!match.winner && match.winner !== 0) {
 			return MatchResult.PENDING;
@@ -205,9 +206,7 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 		// If caller provides explicit round numbers, group by them.
 		const hasExplicitRounds = matches.some((m) => typeof m.round === "number");
 		if (hasExplicitRounds) {
-			const maxRound = Math.max(
-				...matches.map((m) => (typeof m.round === "number" ? m.round : 1)),
-			);
+			const maxRound = Math.max(...matches.map((m) => (typeof m.round === "number" ? m.round : 1)));
 			interface Match {
 				id?: number;
 				round?: number;
@@ -216,7 +215,8 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			const grouped: Match[][] = Array.from({ length: maxRound }, () => []);
 			matches.forEach((m) => {
 				const idx = Math.max(1, Number(m.round) || 1) - 1;
-				grouped[idx].push(m);
+				// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays
+				grouped[idx]!.push(m);
 			});
 			// Sort within each round by id if present
 			grouped.forEach((round) => {
@@ -231,8 +231,7 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			round?: number;
 			[key: string]: unknown;
 		}
-		const totalRounds =
-			matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
+		const totalRounds = matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
 		const rounds: Match[][] = Array(totalRounds)
 			.fill(null)
 			.map(() => []);
@@ -241,7 +240,8 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 			if (match?.id != null && match.id > 0) {
 				const roundIndex = Math.floor(Math.log2(match.id));
 				if (roundIndex >= 0 && roundIndex < totalRounds) {
-					rounds[roundIndex].push(match);
+					// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays and bounds checked
+					rounds[roundIndex]!.push(match);
 				}
 			}
 		});

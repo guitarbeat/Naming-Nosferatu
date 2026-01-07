@@ -1,6 +1,5 @@
 import { memo, useMemo } from "react";
 import "./AppNavbar.css";
-import styles from "./AppNavbar.module.css";
 import {
 	buildNavItems,
 	MobileMenu,
@@ -35,8 +34,7 @@ export const AppNavbar = memo(function AppNavbar({
 }: AppNavbarProps) {
 	// Hooks
 	const { isCollapsed, toggle: toggleCollapse } = useNavbarCollapse();
-	const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } =
-		useMobileMenu();
+	const { isMobileMenuOpen, toggleMobileMenu, closeMobileMenu } = useMobileMenu();
 	const { isAnalysisMode, setIsAnalysisMode } = useAnalysisMode();
 	const toggleAnalysis = useToggleAnalysis(isAnalysisMode, setIsAnalysisMode);
 	useNavbarDimensions(isCollapsed);
@@ -108,18 +106,14 @@ export const AppNavbar = memo(function AppNavbar({
 		closeMobileMenu();
 	};
 
-	const headerClass = `${styles.appNavbar} ${isCollapsed ? styles.collapsed : ""} ${isMobileMenuOpen ? styles.mobileOpen : ""}`;
+	const headerClass = `app-navbar ${isCollapsed ? "collapsed" : ""} ${isMobileMenuOpen ? "mobileOpen" : ""}`;
 
 	return (
 		<NavbarProvider value={contextValue}>
-			<header
-				id="app-navbar"
-				className={headerClass}
-				data-collapsed={isCollapsed}
-			>
-				<div className={styles.container}>
+			<header id="app-navbar" className={headerClass} data-collapsed={isCollapsed}>
+				<div className="app-navbar__container">
 					{/* Left: Brand/Logo */}
-					<div className={styles.leftSection}>
+					<div className="app-navbar__left-section">
 						<NavbarBrand
 							isActive={view === "tournament" && !isAnalysisMode}
 							onClick={handleHomeClick}
@@ -129,7 +123,7 @@ export const AppNavbar = memo(function AppNavbar({
 
 					{/* Center: Navigation Links */}
 					<nav
-						className={styles.centerSection}
+						className="app-navbar__center-section"
 						role="navigation"
 						aria-label="Main navigation"
 					>
@@ -138,14 +132,14 @@ export const AppNavbar = memo(function AppNavbar({
 								key={item.key}
 								item={item}
 								onClick={handleNavClick}
-								className={styles.navLink}
+								className="app-navbar__link"
 							/>
 						))}
 					</nav>
 
 					{/* Right: Actions & Toggles */}
-					<div className={styles.rightSection}>
-						<div className={styles.desktopOnly}>
+					<div className="app-navbar__right-section">
+						<div className="app-navbar__desktop-only">
 							<ModeToggles />
 						</div>
 
@@ -157,18 +151,12 @@ export const AppNavbar = memo(function AppNavbar({
 							onOpenSuggestName={onOpenSuggestName}
 						/>
 
-						<div className={styles.mobileOnly}>
-							<MobileMenuToggle
-								isOpen={isMobileMenuOpen}
-								onToggle={toggleMobileMenu}
-							/>
+						<div className="app-navbar__mobile-only">
+							<MobileMenuToggle isOpen={isMobileMenuOpen} onToggle={toggleMobileMenu} />
 						</div>
 
-						<div className={styles.collapseToggleWrapper}>
-							<NavbarCollapseToggle
-								isCollapsed={isCollapsed}
-								onToggle={toggleCollapse}
-							/>
+						<div className="app-navbar__collapse-toggle-wrapper">
+							<NavbarCollapseToggle isCollapsed={isCollapsed} onToggle={toggleCollapse} />
 						</div>
 					</div>
 				</div>

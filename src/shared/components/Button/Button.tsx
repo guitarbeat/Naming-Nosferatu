@@ -18,8 +18,7 @@ const buttonVariants = cva(
 	{
 		variants: {
 			variant: {
-				default:
-					"bg-primary text-primary-foreground shadow transition-colors hover:bg-primary/90",
+				default: "bg-primary text-primary-foreground shadow transition-colors hover:bg-primary/90",
 				destructive:
 					"bg-destructive text-destructive-foreground shadow-sm transition-colors hover:bg-destructive/90",
 				outline:
@@ -29,7 +28,7 @@ const buttonVariants = cva(
 				ghost: "transition-colors hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 transition-colors hover:underline",
 				login:
-					"relative font-bold tracking-wide bg-[linear-gradient(135deg,var(--button-primary-bg,var(--primary-600)),var(--button-primary-hover,var(--primary-700)))] text-primary-foreground shadow-[0_4px_16px_rgb(0_0_0/0.2),0_2px_8px_rgb(0_0_0/0.15),0_0_20px_rgb(var(--primary-rgb,44,62,64)/0.3)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_8px_24px_rgb(0_0_0/0.25),0_4px_12px_rgb(0_0_0/0.2),0_0_30px_rgb(var(--primary-rgb,44,62,64)/0.4)] hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 active:shadow-[0_2px_8px_rgb(0_0_0/0.2),0_0_15px_rgb(var(--primary-rgb,44,62,64)/0.25)] before:absolute before:inset-0 before:content-[''] before:bg-[linear-gradient(135deg,rgb(255_255_255/0.1),transparent_50%,rgb(255_255_255/0.05))] before:rounded-[inherit] before:opacity-0 before:transition-opacity before:duration-300 before:pointer-events-none hover:before:opacity-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-[0_2px_4px_rgb(0_0_0/0.1)]",
+					"relative font-bold tracking-wide bg-[linear-gradient(135deg,var(--button-primary-bg,var(--primary-600)),var(--button-primary-hover,var(--primary-700)))] text-primary-foreground shadow-[0_4px_16px_var(--overlay-dark),0_2px_8px_var(--overlay-medium),0_0_20px_color-mix(in_srgb,var(--primary-600)_30%,transparent)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_8px_24px_var(--overlay-darker),0_4px_12px_var(--overlay-dark),0_0_30px_color-mix(in_srgb,var(--primary-600)_40%,transparent)] hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 active:shadow-[0_2px_8px_var(--overlay-dark),0_0_15px_color-mix(in_srgb,var(--primary-600)_25%,transparent)] before:absolute before:inset-0 before:content-[''] before:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-neutral-50)_10%,transparent),transparent_50%,color-mix(in_srgb,var(--color-neutral-50)_5%,transparent))] before:rounded-[inherit] before:opacity-0 before:transition-opacity before:duration-300 before:pointer-events-none hover:before:opacity-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-[0_2px_4px_var(--overlay-light)]",
 			},
 			size: {
 				default: "h-9 px-4 py-2",
@@ -45,16 +44,8 @@ const buttonVariants = cva(
 	},
 );
 
-interface ShadcnButtonProps
-	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?:
-		| "default"
-		| "destructive"
-		| "outline"
-		| "secondary"
-		| "ghost"
-		| "link"
-		| "login";
+interface ShadcnButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login";
 	size?: "default" | "sm" | "lg" | "icon";
 	asChild?: boolean;
 }
@@ -63,11 +54,7 @@ const ShadcnButton = forwardRef<HTMLButtonElement, ShadcnButtonProps>(
 	({ className, variant, size, asChild = false, ...props }, ref) => {
 		const Comp = asChild ? Slot : "button";
 		return (
-			<Comp
-				className={cn(buttonVariants({ variant, size }), className)}
-				ref={ref}
-				{...props}
-			/>
+			<Comp className={cn(buttonVariants({ variant, size }), className)} ref={ref} {...props} />
 		);
 	},
 );
@@ -90,8 +77,7 @@ const sizeMapping = {
 const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
 const BUTTON_SIZES = ["small", "medium", "large"];
 
-interface ButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
 	variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
 	size?: "small" | "medium" | "large";
@@ -127,11 +113,7 @@ const Button = ({
 		| "ghost"
 		| "link"
 		| "login";
-	let shadcnSize = (sizeMapping[size] || "default") as
-		| "default"
-		| "sm"
-		| "lg"
-		| "icon";
+	let shadcnSize = (sizeMapping[size] || "default") as "default" | "sm" | "lg" | "icon";
 
 	if (iconOnly) {
 		shadcnSize = "icon";
@@ -194,8 +176,7 @@ Button.displayName = "Button";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} IconButton component
  */
-interface IconButtonProps
-	extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	icon: React.ReactNode;
 	variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
 	size?: "small" | "medium" | "large";
@@ -251,13 +232,7 @@ IconButton.displayName = "IconButton";
  * PlusIcon component for tournament button
  */
 const PlusIcon = () => (
-	<svg
-		viewBox="0 0 24 24"
-		role="img"
-		aria-hidden="true"
-		focusable="false"
-		className="w-4 h-4"
-	>
+	<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false" className="w-4 h-4">
 		<path
 			d="M12 4v16m8-8H4"
 			stroke="currentColor"
@@ -322,11 +297,7 @@ const TournamentButton = ({
 		(typeof children === "string" ? children : "Start New Tournament");
 
 	const resolvedStartIcon =
-		startIcon === null ? null : startIcon !== undefined ? (
-			startIcon
-		) : (
-			<PlusIcon />
-		);
+		startIcon === null ? null : startIcon !== undefined ? startIcon : <PlusIcon />;
 
 	return (
 		<Button
@@ -379,6 +350,7 @@ interface CalendarButtonProps {
 		id: string | number;
 		name: string;
 		rating?: number;
+		// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 		is_hidden?: boolean;
 	}>;
 	userName: string;
@@ -407,7 +379,9 @@ const CalendarButton = ({
 			externalOnClick(event);
 		}
 
-		if (event?.defaultPrevented) return;
+		if (event?.defaultPrevented) {
+			return;
+		}
 
 		// Filter out hidden names and sort by rating
 		const activeNames = rankings
@@ -417,18 +391,19 @@ const CalendarButton = ({
 		const winnerName = activeNames[0]?.name || "No winner yet";
 
 		const today = new Date();
-		const [startDateISO] = today.toISOString().split("T");
+		// biome-ignore lint/style/noNonNullAssertion: ISO string split is guaranteed to have at least one element
+		const startDateISO = today.toISOString().split("T")[0]!;
 		const startDate = startDateISO.replace(/-/g, "");
 		const endDate = new Date(today);
 		endDate.setDate(endDate.getDate() + 1);
-		const [endDateISO] = endDate.toISOString().split("T");
+		// biome-ignore lint/style/noNonNullAssertion: ISO string split is guaranteed to have at least one element
+		const endDateISO = endDate.toISOString().split("T")[0]!;
 		const endDateStr = endDateISO.replace(/-/g, "");
 
 		const text = `🐈‍⬛ ${winnerName}`;
 		const details = `Cat name rankings for ${userName}:\n\n${activeNames
 			.map(
-				(name, index) =>
-					`${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
+				(name, index) => `${index + 1}. ${name.name} (Rating: ${Math.round(name.rating || 1500)})`,
 			)
 			.join("\n")}`;
 
@@ -467,6 +442,7 @@ CalendarButton.propTypes = {
 			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 			name: PropTypes.string.isRequired,
 			rating: PropTypes.number,
+			// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 			is_hidden: PropTypes.bool,
 		}),
 	).isRequired,
@@ -505,15 +481,14 @@ const ScrollToTopButton = ({
 		let scrollTimeout: number | null = null;
 
 		const checkScroll = () => {
-			const threshold =
-				window.innerHeight <= 768
-					? window.innerHeight * 1.5
-					: window.innerHeight;
+			const threshold = window.innerHeight <= 768 ? window.innerHeight * 1.5 : window.innerHeight;
 			setShowScrollTop(window.scrollY > threshold);
 		};
 
 		const throttledCheckScroll = () => {
-			if (scrollTimeout) return;
+			if (scrollTimeout) {
+				return;
+			}
 
 			scrollTimeout = requestAnimationFrame(() => {
 				checkScroll();

@@ -51,14 +51,15 @@ function CatImage({
 				canvas.width = w;
 				canvas.height = h;
 				const ctx = canvas.getContext("2d", { willReadFrequently: true });
-				if (!ctx) return {};
+				if (!ctx) {
+					return {};
+				}
 
 				ctx.drawImage(imgEl, 0, 0, w, h);
 				const { data } = ctx.getImageData(0, 0, w, h);
 
 				const rowEnergy = new Array(h).fill(0);
-				const toGray = (r: number, g: number, b: number) =>
-					r * 0.299 + g * 0.587 + b * 0.114;
+				const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
 				const idx = (x: number, y: number) => (y * w + x) * 4;
 
 				let totalR = 0;
@@ -69,9 +70,9 @@ function CatImage({
 					let sum = 0;
 					for (let x = 0; x < w; x += 1) {
 						const base = idx(x, y);
-						const r = data[base];
-						const g = data[base + 1];
-						const b = data[base + 2];
+						const r = data[base] ?? 0;
+						const g = data[base + 1] ?? 0;
+						const b = data[base + 2] ?? 0;
 
 						totalR += r;
 						totalG += g;
@@ -80,8 +81,8 @@ function CatImage({
 						if (y > 0 && y < h - 1) {
 							const i1 = idx(x, y - 1);
 							const i2 = idx(x, y + 1);
-							const g1 = toGray(data[i1], data[i1 + 1], data[i1 + 2]);
-							const g2 = toGray(data[i2], data[i2 + 1], data[i2 + 2]);
+							const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
+							const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
 							sum += Math.abs(g2 - g1);
 						}
 					}
@@ -97,8 +98,7 @@ function CatImage({
 				let bestVal = -Infinity;
 
 				for (let y = start; y < end; y += 1) {
-					const e =
-						(rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
+					const e = (rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
 					if (e > bestVal) {
 						bestVal = e;
 						bestY = y;
@@ -116,8 +116,12 @@ function CatImage({
 
 				const orientation = (() => {
 					const ratio = naturalW / naturalH;
-					if (ratio >= 1.45) return "landscape";
-					if (ratio <= 0.75) return "portrait";
+					if (ratio >= 1.45) {
+						return "landscape";
+					}
+					if (ratio <= 0.75) {
+						return "portrait";
+					}
 					return "square";
 				})();
 
@@ -136,9 +140,13 @@ function CatImage({
 
 	const applyImageEnhancements = useCallback(
 		(imgEl: HTMLImageElement | null) => {
-			if (!imgEl) return;
+			if (!imgEl) {
+				return;
+			}
 			const container = containerRef.current;
-			if (!container) return;
+			if (!container) {
+				return;
+			}
 
 			const { focal, accent, orientation } = analyseImage(imgEl);
 
@@ -154,11 +162,7 @@ function CatImage({
 				container.dataset.orientation = orientation;
 			}
 
-			if (
-				imgEl.naturalWidth &&
-				imgEl.naturalHeight &&
-				imgEl.naturalHeight > 0
-			) {
+			if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
 				const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
 				const isPortrait = ratio <= 0.85;
 				const isUltraWide = ratio >= 1.9;
@@ -194,7 +198,9 @@ function CatImage({
 
 	useEffect(() => {
 		const container = containerRef.current;
-		if (!container) return;
+		if (!container) {
+			return;
+		}
 
 		container.dataset.loaded = "false";
 		delete container.dataset.orientation;

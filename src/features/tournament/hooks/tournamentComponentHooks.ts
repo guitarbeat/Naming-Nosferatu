@@ -4,18 +4,11 @@
  * Handles randomized names, selected options, transitions, and UI visibility states.
  */
 
-import {
-	type RefObject,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { type RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "../../../core/constants";
 import { useTournament } from "../../../core/hooks/tournamentHooks";
-import type { NameItem } from "../../../shared/propTypes";
 import { shuffleArray } from "../../../shared/utils/core";
+import type { NameItem, VoteData } from "../../../types/components";
 
 /**
  * Custom hook for tournament state management
@@ -43,8 +36,7 @@ export function useTournamentState(
 	const [showMatchResult, setShowMatchResult] = useState<boolean>(false);
 	const [showBracket, setShowBracket] = useState<boolean>(false);
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
-	const [showRoundTransition, setShowRoundTransition] =
-		useState<boolean>(false);
+	const [showRoundTransition, setShowRoundTransition] = useState<boolean>(false);
 	const [nextRoundNumber, setNextRoundNumber] = useState<number | null>(null);
 	const [votingError, setVotingError] = useState<unknown>(null);
 
@@ -53,18 +45,17 @@ export function useTournamentState(
 	// * Set up randomized names
 	// Shuffle only when the identity set (ids) changes, not on shallow changes
 	const namesIdentity = useMemo(
-		() =>
-			Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : "",
+		() => (Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : ""),
 		[names],
 	);
 	useEffect(() => {
 		if (Array.isArray(names) && names.length > 0) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setRandomizedNames((prev) => {
-				const prevIds = Array.isArray(prev)
-					? prev.map((n) => n.id || n.name).join(",")
-					: "";
-				if (prevIds === namesIdentity) return prev; // no reshuffle
+				const prevIds = Array.isArray(prev) ? prev.map((n) => n.id || n.name).join(",") : "";
+				if (prevIds === namesIdentity) {
+					return prev; // no reshuffle
+				}
 				return shuffleArray([...names]);
 			});
 		}
@@ -81,17 +72,15 @@ export function useTournamentState(
 		name: String(n.name || ""),
 		description: n.description as string | undefined, // Pass description through
 	}));
-	const convertedRatings: Record<
-		string,
-		{ rating: number; wins?: number; losses?: number }
-	> = existingRatings
-		? Object.fromEntries(
-				Object.entries(existingRatings).map(([key, value]) => [
-					key,
-					typeof value === "number" ? { rating: value } : value,
-				]),
-			)
-		: {};
+	const convertedRatings: Record<string, { rating: number; wins?: number; losses?: number }> =
+		existingRatings
+			? Object.fromEntries(
+					Object.entries(existingRatings).map(([key, value]) => [
+						key,
+						typeof value === "number" ? { rating: value } : value,
+					]),
+				)
+			: {};
 	const convertedOnComplete = onComplete
 		? (
 				results: Array<{
@@ -102,10 +91,23 @@ export function useTournamentState(
 					losses: number;
 				}>,
 			) => {
+				// Convert results to format expected by onComplete
+				// onComplete expects Record<string, number> but we need to preserve wins/losses
+				// So we pass Record<string, { rating: number; wins: number; losses: number }>
+				// The actual onComplete handler (handleTournamentComplete) expects this format
 				const ratings = Object.fromEntries(
-					results.map((r) => [r.id, r.rating]),
+					results.map((r) => [
+						r.name, // Use name as key, not id, to match what ratingsToArray expects
+						{
+							rating: r.rating,
+							wins: r.wins,
+							losses: r.losses,
+						},
+					]),
 				);
-				onComplete(ratings);
+				// Type assertion needed because TournamentProps.onComplete is Record<string, number>
+				// but handleTournamentComplete actually accepts the extended format
+				onComplete(ratings as unknown as Record<string, number>);
 			}
 		: undefined;
 
@@ -150,7 +152,45 @@ export function useTournamentState(
 
 			return () => clearTimeout(timer);
 		}
+		return undefined;
 	}, [tournament.roundNumber]);
+
+	// Adapter function to convert tournament handleVote to expected signature
+	const adaptedHandleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown> =
+		useCallback(
+			async (option: "left" | "right" | "both" | "neither"): Promise<unknown> => {
+				if (!tournament.handleVote) {
+					return undefined;
+				}
+
+				// Convert option to winner/voteType format expected by core hook
+				let winner: string;
+				let voteType: string;
+
+				switch (option) {
+					case "left":
+						winner = "left";
+						voteType = "normal";
+						break;
+					case "right":
+						winner = "right";
+						voteType = "normal";
+						break;
+					case "both":
+						winner = "both";
+						voteType = "both";
+						break;
+					case "neither":
+						winner = "neither";
+						voteType = "neither";
+						break;
+				}
+
+				// Call the core handleVote function and return as Promise<unknown>
+				return tournament.handleVote(winner, voteType);
+			},
+			[tournament.handleVote],
+		);
 
 	return {
 		randomizedNames,
@@ -172,6 +212,7 @@ export function useTournamentState(
 		nextRoundNumber,
 		votingError,
 		setVotingError,
+		handleVote: adaptedHandleVote,
 		tournament,
 	};
 }
@@ -200,11 +241,13 @@ export function useAudioManager() {
 	const [volume, setVolume] = useState(0.2);
 
 	const trackInfo = useMemo(() => {
-		if (!currentTrack) return null;
+		if (!currentTrack) {
+			return null;
+		}
 		return { title: currentTrack, artist: "ambient", duration: 0 };
 	}, [currentTrack]);
 
-	const playSound = useCallback(() => {
+	const playAudioTrack = useCallback(() => {
 		// Placeholder: wire to real audio if assets are added.
 	}, []);
 
@@ -235,7 +278,7 @@ export function useAudioManager() {
 	);
 
 	return {
-		playSound,
+		playAudioTrack,
 		isMuted,
 		handleToggleMute,
 		handleNextTrack,
@@ -356,10 +399,7 @@ export function useKeyboardControls(
 			window.removeEventListener("keydown", handleKeyDown);
 			if (listenersSet?.delete) {
 				listenersSet.forEach((listener) => {
-					if (
-						listener?.event === "keydown" &&
-						listener?.handler === handleKeyDown
-					) {
+					if (listener?.event === "keydown" && listener?.handler === handleKeyDown) {
 						listenersSet.delete(listener);
 					}
 				});
@@ -397,19 +437,25 @@ export default function useMagneticPull(
 	});
 
 	useEffect(() => {
-		if (!enabled) return;
+		if (!enabled) {
+			return;
+		}
 
 		const leftOrb = leftOrbRef.current;
 		const rightOrb = rightOrbRef.current;
 
-		if (!leftOrb || !rightOrb) return;
+		if (!leftOrb || !rightOrb) {
+			return;
+		}
 
 		let animationFrameId: number;
 		const mousePos = { x: 0, y: 0 };
 		let isDirty = false;
 
 		const updatePosition = () => {
-			if (!leftOrb || !rightOrb) return;
+			if (!leftOrb || !rightOrb) {
+				return;
+			}
 
 			if (isDirty) {
 				const xAxis = (window.innerWidth / 2 - mousePos.x) / 40;
@@ -439,18 +485,20 @@ export default function useMagneticPull(
 		animationFrameId = requestAnimationFrame(updatePosition);
 
 		const handleMouseDown = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) return;
+			if (!orb) {
+				return;
+			}
 			orb.style.transition = "transform 0.1s ease";
-			const currentTransform =
-				transformRef.current[isLeft ? "left" : "right"] || "";
+			const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
 			orb.style.transform = `${currentTransform} scale(0.9)`;
 		};
 
 		const handleMouseUp = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) return;
+			if (!orb) {
+				return;
+			}
 			orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-			const currentTransform =
-				transformRef.current[isLeft ? "left" : "right"] || "";
+			const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
 			orb.style.transform = currentTransform;
 		};
 
@@ -490,4 +538,278 @@ export default function useMagneticPull(
 			}
 		};
 	}, [leftOrbRef, rightOrbRef, enabled]);
+}
+
+// ============================================================================
+// Tournament Vote Hook
+// ============================================================================
+
+interface UseTournamentVoteProps {
+	isProcessing: boolean;
+	isTransitioning: boolean;
+	isError: boolean;
+	currentMatch: { left?: unknown; right?: unknown } | null;
+	handleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown>;
+	onVote?: (voteData: VoteData) => Promise<void> | void;
+	audioManager: { playAudioTrack: () => void };
+	setIsProcessing: (value: boolean) => void;
+	setIsTransitioning: (value: boolean) => void;
+	setSelectedOption: (value: "left" | "right" | "both" | "neither" | null) => void;
+	setVotingError: (error: unknown) => void;
+	setLastMatchResult: (message: string | null) => void;
+	setShowMatchResult: (show: boolean) => void;
+	setUndoExpiresAt: (time: number | null) => void;
+	showSuccess: (message: string, options?: { duration?: number }) => void;
+	showError: (message: string, options?: { duration?: number }) => void;
+}
+
+/**
+ * Hook that encapsulates voting logic, rate limiting, and undo state management
+ */
+export function useTournamentVote({
+	isProcessing,
+	isTransitioning,
+	isError,
+	currentMatch,
+	handleVote,
+	onVote,
+	audioManager,
+	setIsProcessing,
+	setIsTransitioning,
+	setSelectedOption,
+	setVotingError,
+	setLastMatchResult,
+	setShowMatchResult,
+	setUndoExpiresAt,
+	showSuccess,
+	showError,
+}: UseTournamentVoteProps) {
+	const lastVoteTimeRef = useRef(0);
+	const matchResultTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+	// Cleanup match result timers on unmount
+	useEffect(() => {
+		return () => {
+			matchResultTimersRef.current.forEach((timer) => {
+				clearTimeout(timer);
+			});
+			matchResultTimersRef.current = [];
+		};
+	}, []);
+
+	// Update match result
+	const updateMatchResult = useCallback(
+		(option: string) => {
+			let resultMessage = "";
+			if (option === "both") {
+				const leftName =
+					typeof currentMatch?.left === "string"
+						? currentMatch.left
+						: (currentMatch?.left as { name?: string })?.name || "Unknown";
+				const rightName =
+					typeof currentMatch?.right === "string"
+						? currentMatch.right
+						: (currentMatch?.right as { name?: string })?.name || "Unknown";
+				resultMessage = `Both "${leftName}" and "${rightName}" advance!`;
+			} else if (option === "left") {
+				const leftName =
+					typeof currentMatch?.left === "string"
+						? currentMatch.left
+						: (currentMatch?.left as { name?: string })?.name || "Unknown";
+				resultMessage = `"${leftName}" wins this round!`;
+			} else if (option === "right") {
+				const rightName =
+					typeof currentMatch?.right === "string"
+						? currentMatch.right
+						: (currentMatch?.right as { name?: string })?.name || "Unknown";
+				resultMessage = `"${rightName}" wins this round!`;
+			} else if (option === "neither") {
+				resultMessage = "Match skipped";
+			}
+
+			setLastMatchResult(resultMessage);
+			const showTimer = setTimeout(
+				() => setShowMatchResult(true),
+				TOURNAMENT_TIMING.MATCH_RESULT_SHOW_DELAY,
+			);
+			const hideTimer = setTimeout(
+				() => setShowMatchResult(false),
+				TOURNAMENT_TIMING.MATCH_RESULT_HIDE_DELAY,
+			);
+			matchResultTimersRef.current.push(showTimer, hideTimer);
+			showSuccess("Vote recorded successfully!", {
+				duration: TOURNAMENT_TIMING.TOAST_SUCCESS_DURATION,
+			});
+			// Start undo window
+			setUndoExpiresAt(Date.now() + TOURNAMENT_TIMING.UNDO_WINDOW_MS);
+		},
+		[currentMatch, showSuccess, setLastMatchResult, setShowMatchResult, setUndoExpiresAt],
+	);
+
+	// Handle vote with animation
+	const handleVoteWithAnimation = useCallback(
+		async (option: "left" | "right" | "both" | "neither") => {
+			if (isProcessing || isTransitioning || isError) {
+				return;
+			}
+
+			// Rate limiting check
+			const now = Date.now();
+			if (now - lastVoteTimeRef.current < TOURNAMENT_TIMING.VOTE_COOLDOWN) {
+				return;
+			}
+			lastVoteTimeRef.current = now;
+
+			try {
+				setIsProcessing(true);
+				setIsTransitioning(true);
+
+				audioManager.playAudioTrack();
+				updateMatchResult(option);
+
+				const rawRatings = await handleVote(option);
+
+				if (!rawRatings) {
+					setIsProcessing(false);
+					setIsTransitioning(false);
+					return;
+				}
+
+				// Transform complex ratings to simple number map if necessary
+				const updatedRatings: Record<string, number> = Object.entries(
+					rawRatings as Record<string, unknown>,
+				).reduce(
+					(acc, [key, value]) => {
+						acc[key] = typeof value === "number" ? value : (value as { rating: number }).rating;
+						return acc;
+					},
+					{} as Record<string, number>,
+				);
+
+				if (onVote && currentMatch) {
+					// Helper to safely get properties from NameItem | string
+					const getNameData = (item: unknown) => {
+						if (!item) {
+							return { name: "Unknown", id: null as string | number | null, description: "" };
+						}
+						if (typeof item === "string") {
+							return { name: item, id: item, description: "" };
+						}
+						const obj = item as {
+							name?: string;
+							id?: unknown;
+							description?: string;
+						};
+						let id: string | number | null = null;
+						if (obj.id === null || obj.id === undefined) {
+							id = null;
+						} else if (typeof obj.id === "string" || typeof obj.id === "number") {
+							id = obj.id;
+						} else if (obj.id && typeof obj.id === "object" && "toString" in obj.id) {
+							id = String(obj.id);
+						}
+						return {
+							name: obj.name || "Unknown",
+							id,
+							description: obj.description || "",
+						};
+					};
+
+					const leftData = getNameData(currentMatch.left);
+					const rightData = getNameData(currentMatch.right);
+
+					let leftOutcome = "skip";
+					let rightOutcome = "skip";
+
+					switch (option) {
+						case "left":
+							leftOutcome = "win";
+							rightOutcome = "loss";
+							break;
+						case "right":
+							leftOutcome = "loss";
+							rightOutcome = "win";
+							break;
+						case "both":
+							leftOutcome = "win";
+							rightOutcome = "win";
+							break;
+						case "neither":
+							break;
+					}
+
+					const voteData = {
+						match: {
+							left: {
+								name: leftData.name,
+								id: leftData.id,
+								description: leftData.description,
+								outcome: leftOutcome,
+							},
+							right: {
+								name: rightData.name,
+								id: rightData.id,
+								description: rightData.description,
+								outcome: rightOutcome,
+							},
+						},
+						result: option === "left" ? -1 : option === "right" ? 1 : option === "both" ? 0.5 : 0,
+						ratings: updatedRatings,
+						timestamp: new Date().toISOString(),
+					};
+
+					await onVote(voteData);
+				}
+
+				setSelectedOption(null);
+				await new Promise((resolve) =>
+					setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_MEDIUM),
+				);
+				setIsProcessing(false);
+				await new Promise((resolve) =>
+					setTimeout(resolve, TOURNAMENT_TIMING.TRANSITION_DELAY_SHORT),
+				);
+				setIsTransitioning(false);
+			} catch (error) {
+				// Reset state on error
+				setIsProcessing(false);
+				setIsTransitioning(false);
+				setSelectedOption(null);
+				if (process.env.NODE_ENV === "development") {
+					console.error("Error handling vote:", error);
+				}
+				setVotingError({
+					message: "Unable to submit vote. Please try again.",
+					severity: "MEDIUM",
+					isRetryable: true,
+					originalError: error,
+				});
+
+				showError("Unable to submit vote. Please try again.", {
+					duration: TOURNAMENT_TIMING.TOAST_ERROR_DURATION,
+				});
+				setIsProcessing(false);
+				setIsTransitioning(false);
+			}
+		},
+		[
+			isProcessing,
+			isTransitioning,
+			isError,
+			audioManager,
+			updateMatchResult,
+			handleVote,
+			onVote,
+			currentMatch,
+			showError,
+			setIsProcessing,
+			setIsTransitioning,
+			setSelectedOption,
+			setVotingError,
+		],
+	);
+
+	return {
+		handleVoteWithAnimation,
+	};
 }

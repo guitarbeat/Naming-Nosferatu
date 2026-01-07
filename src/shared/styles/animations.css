@@ -58,6 +58,29 @@
 	}
 }
 
+/* Page transition animations */
+@keyframes pageEnter {
+	from {
+		opacity: 0;
+		transform: translateY(20px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes pageExit {
+	from {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translateY(-20px) scale(0.98);
+	}
+}
+
 /* Gradient animations */
 @keyframes gradient-shift {
 	0%,
@@ -67,6 +90,17 @@
 
 	50% {
 		background-position: 100% 50%;
+	}
+}
+
+/* Glow pulse animation */
+@keyframes glowPulse {
+	0%,
+	100% {
+		box-shadow: 0 0 20px color-mix(in srgb, var(--color-neon-cyan) 20%, transparent);
+	}
+	50% {
+		box-shadow: 0 0 40px color-mix(in srgb, var(--color-neon-cyan) 40%, transparent);
 	}
 }
 
@@ -160,14 +194,91 @@
 	}
 }
 
+/* Bounce animation */
+@keyframes bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+/* Spin animation */
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Scale pop animation */
+@keyframes scalePop {
+	0% {
+		transform: scale(0.8);
+		opacity: 0;
+	}
+	50% {
+		transform: scale(1.1);
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+/* Utility classes */
+.animate-fade-in {
+	animation: fadeIn 0.3s var(--ease-standard) forwards;
+}
+
+.animate-slide-up {
+	animation: slideUp 0.4s var(--ease-standard) forwards;
+}
+
+.animate-page-enter {
+	animation: pageEnter 0.4s var(--ease-standard) forwards;
+}
+
+.animate-glow-pulse {
+	animation: glowPulse 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+	animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+.animate-scale-pop {
+	animation: scalePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
 	*::after {
-		transition-duration: 0.01ms;
-		animation-duration: 0.01ms;
-		animation-iteration-count: 1;
-		scroll-behavior: auto;
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		scroll-behavior: auto !important;
+	}
+
+	.animate-fade-in,
+	.animate-slide-up,
+	.animate-page-enter,
+	.animate-glow-pulse,
+	.animate-bounce,
+	.animate-spin,
+	.animate-scale-pop {
+		animation: none !important;
+		opacity: 1 !important;
+		transform: none !important;
 	}
 }

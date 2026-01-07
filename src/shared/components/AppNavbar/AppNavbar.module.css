@@ -10,61 +10,62 @@
 	align-items: center;
 	justify-content: space-between;
 	width: clamp(160px, 30vw, 200px);
-	height: 36px;
-	padding: 4px;
-	border-radius: 20px;
-	background: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	backdrop-filter: blur(8px);
+	height: var(--space-9, 36px);
+	padding: var(--space-1);
+	border-radius: var(--radius-xl);
+	background: color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
+	backdrop-filter: blur(var(--glass-blur));
 	cursor: pointer;
-	transition: all 0.3s ease;
+	transition: var(--transition-base);
 	overflow: hidden;
 }
 
 .toggleWrapper:hover {
-	background: rgba(255, 255, 255, 0.15);
-	border-color: rgba(255, 255, 255, 0.2);
+	background: color-mix(in srgb, var(--color-neutral-50) 15%, transparent);
+	border-color: color-mix(in srgb, var(--color-neutral-50) 20%, transparent);
 }
 
 .toggleWrapper:focus-visible {
-	outline: 2px solid var(--nav-highlight);
-	outline-offset: 2px;
+	outline: var(--focus-ring-width) solid var(--focus-ring-color);
+	outline-offset: var(--focus-ring-offset);
 }
 
 .toggleSlider {
 	position: absolute;
-	top: 4px;
-	left: 4px;
-	bottom: 4px;
-	width: calc(50% - 4px);
-	border-radius: 16px;
-	background: rgba(255, 255, 255, 0.2);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	z-index: 1;
+	top: var(--space-1);
+	left: var(--space-1);
+	bottom: var(--space-1);
+	width: calc(50% - var(--space-1));
+	border-radius: var(--radius-lg);
+	background: color-mix(in srgb, var(--color-neutral-50) 20%, transparent);
+	box-shadow: var(--shadow-md);
+	transition: var(--transition-transform);
+	z-index: var(--z-elevate);
 }
 
 .toggleSlider.active {
 	transform: translateX(100%);
-	background: var(--nav-highlight, #00f0ff);
-	box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+	background: var(--nav-highlight, var(--color-neon-cyan));
+	box-shadow: var(--shadow-cyan);
 }
 
 .toggleLabel {
 	position: relative;
-	z-index: 2;
+	z-index: var(--z-10);
 	flex: 1;
 	text-align: center;
-	font-size: 0.85rem;
-	font-weight: 600;
-	color: rgba(255, 255, 255, 0.6);
-	transition: color 0.3s ease;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: color-mix(in srgb, var(--color-neutral-50) 60%, transparent);
+	transition: var(--transition-color);
 	user-select: none;
 	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	letter-spacing: var(--tracking-wide);
 }
 
 .toggleLabel.active {
-	color: #fff;
-	text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+	color: var(--color-neutral-50);
+	text-shadow: var(--text-shadow-lg);
 }

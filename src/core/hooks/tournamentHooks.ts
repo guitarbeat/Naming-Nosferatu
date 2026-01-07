@@ -1,16 +1,6 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-	EloRating,
-	PreferenceSorter,
-} from "../../features/tournament/tournamentUtils";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	PersistentState,
-	TournamentState,
-} from "../../shared/propTypes";
+import { EloRating, PreferenceSorter } from "../../features/tournament/tournamentUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
@@ -26,6 +16,13 @@ import {
 	ratingsToArray,
 	ratingsToObject,
 } from "../../shared/utils/core";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentState,
+} from "../../types/components";
 import type { AppState } from "../../types/store";
 import useAppStore from "../store/useAppStore";
 import useLocalStorage from "./useStorage";
@@ -33,10 +30,7 @@ import useLocalStorage from "./useStorage";
 // Types
 export interface UseTournamentProps {
 	names?: NameItem[];
-	existingRatings?: Record<
-		string,
-		{ rating: number; wins?: number; losses?: number }
-	>;
+	existingRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
 	onComplete?: (
 		results: Array<{
 			name: string;
@@ -61,14 +55,13 @@ export function getNextMatch(
 	sorter: unknown,
 	_matchNumber: number,
 	options: {
-		currentRatings?: Record<
-			string,
-			{ rating: number; wins?: number; losses?: number }
-		>;
+		currentRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
 		history?: MatchRecord[];
 	} = {},
 ): Match | null {
-	if (!sorter || names.length <= 2) return null;
+	if (!sorter || names.length <= 2) {
+		return null;
+	}
 
 	const findBestMatch = () => {
 		try {
@@ -76,7 +69,9 @@ export function getNextMatch(
 			const s = sorter as PreferenceSorter;
 			initializeSorterPairs(sorter, nameList);
 
-			if (!Array.isArray(s.pairs) || s.pairs.length === 0) return null;
+			if (!Array.isArray(s.pairs) || s.pairs.length === 0) {
+				return null;
+			}
 
 			const prefs = getPreferencesMap(sorter);
 			const ratings = options.currentRatings || {};
@@ -94,19 +89,21 @@ export function getNextMatch(
 			const pairIndex = typeof s.currentIndex === "number" ? s.currentIndex : 0;
 
 			for (let idx = pairIndex; idx < s.pairs.length; idx++) {
-				const [a, b] = s.pairs[idx];
-				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) continue;
+				const pair = s.pairs[idx];
+				if (!pair || pair.length < 2) {
+					continue;
+				}
+				const [a, b] = pair;
+				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) {
+					continue;
+				}
 
 				const ra =
 					ratings[a]?.rating ||
-					(typeof ratings[a] === "number"
-						? (ratings[a] as unknown as number)
-						: 1500);
+					(typeof ratings[a] === "number" ? (ratings[a] as unknown as number) : 1500);
 				const rb =
 					ratings[b]?.rating ||
-					(typeof ratings[b] === "number"
-						? (ratings[b] as unknown as number)
-						: 1500);
+					(typeof ratings[b] === "number" ? (ratings[b] as unknown as number) : 1500);
 				const diff = Math.abs(ra - rb);
 				const ca = comparisons.get(a) || 0;
 				const cb = comparisons.get(b) || 0;
@@ -131,15 +128,18 @@ export function getNextMatch(
 				} as Match;
 			}
 		} catch (e) {
-			if (process.env.NODE_ENV === "development")
+			if (import.meta.env.DEV) {
 				console.warn("Adaptive next-match selection failed:", e);
+			}
 		}
 		return null;
 	};
 
 	if (options && (options.currentRatings || options.history)) {
 		const match = findBestMatch();
-		if (match) return match;
+		if (match) {
+			return match;
+		}
 	}
 
 	const s = sorter as PreferenceSorter;
@@ -159,8 +159,9 @@ export function getNextMatch(
 				} as Match;
 			}
 		} catch (error) {
-			if (process.env.NODE_ENV === "development")
+			if (import.meta.env.DEV) {
 				console.warn("Could not get next match from sorter:", error);
+			}
 		}
 	}
 
@@ -181,12 +182,7 @@ export function useTournamentHandlers({
 	 * Saves ratings, updates state, and navigates to results.
 	 */
 	const handleTournamentComplete = useCallback(
-		async (
-			finalRatings: Record<
-				string,
-				{ rating: number; wins?: number; losses?: number }
-			>,
-		) => {
+		async (finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>) => {
 			try {
 				devLog("[App] handleTournamentComplete called with:", finalRatings);
 
@@ -201,18 +197,12 @@ export function useTournamentHandlers({
 				devLog("[App] Ratings to save:", ratingsArray);
 
 				// * Save ratings to database
-				const saveResult = await tournamentsAPI.saveTournamentRatings(
-					userName,
-					ratingsArray,
-				);
+				const saveResult = await tournamentsAPI.saveTournamentRatings(userName, ratingsArray);
 
 				devLog("[App] Save ratings result:", saveResult);
 
 				if (!saveResult.success) {
-					devWarn(
-						"[App] Failed to save ratings to database:",
-						saveResult.error,
-					);
+					devWarn("[App] Failed to save ratings to database:", saveResult.error);
 					// We continue even if save fails, to show results locally
 				}
 
@@ -262,9 +252,7 @@ export function useTournamentHandlers({
 				: [];
 
 			if (processedNames.length === 0) {
-				devWarn(
-					"[App] No visible names available after filtering hidden names",
-				);
+				devWarn("[App] No visible names available after filtering hidden names");
 				tournamentActions.setLoading(false);
 				return;
 			}
@@ -285,27 +273,19 @@ export function useTournamentHandlers({
 	 * Updates ratings during the tournament (e.g. after each match).
 	 */
 	const handleUpdateRatings = useCallback(
-		async (
-			adjustedRatings: Record<
-				string,
-				{ rating: number; wins?: number; losses?: number }
-			>,
-		) => {
+		async (adjustedRatings: Record<string, { rating: number; wins?: number; losses?: number }>) => {
 			try {
 				// * Convert ratings using utility functions
 				const ratingsArray = ratingsToArray(adjustedRatings);
 
 				// * Save ratings to database
 				if (userName) {
-					const saveResult = await tournamentsAPI.saveTournamentRatings(
-						userName,
-						ratingsArray,
-					);
+					const saveResult = await tournamentsAPI.saveTournamentRatings(userName, ratingsArray);
 
-					if (!saveResult.success) {
-						devWarn("[App] Failed to auto-save ratings:", saveResult.error);
-					} else {
+					if (saveResult.success) {
 						devLog("[App] Update ratings result:", saveResult);
+					} else {
+						devWarn("[App] Failed to auto-save ratings:", saveResult.error);
 					}
 				}
 
@@ -374,13 +354,12 @@ export function useTournament({
 		return `tournament-${prefix}-${sortedNames}`;
 	}, [names, userName]);
 
-	const defaultPersistentState = useMemo(
-		() => createDefaultPersistentState(userName),
-		[userName],
-	);
+	const defaultPersistentState = useMemo(() => createDefaultPersistentState(userName), [userName]);
 
-	const [persistentStateRaw, setPersistentState] =
-		useLocalStorage<PersistentState>(tournamentId, defaultPersistentState);
+	const [persistentStateRaw, setPersistentState] = useLocalStorage<PersistentState>(
+		tournamentId,
+		defaultPersistentState,
+	);
 
 	// Safety wrapper for persistentState
 	const persistentState = useMemo(() => {
@@ -401,14 +380,9 @@ export function useTournament({
 	}, [persistentStateRaw, userName]);
 
 	const updatePersistentState = useCallback(
-		(
-			updates:
-				| Partial<PersistentState>
-				| ((prev: PersistentState) => Partial<PersistentState>),
-		) => {
+		(updates: Partial<PersistentState> | ((prev: PersistentState) => Partial<PersistentState>)) => {
 			setPersistentState((prev: PersistentState) => {
-				const delta =
-					typeof updates === "function" ? updates(prev) || {} : updates || {};
+				const delta = typeof updates === "function" ? updates(prev) || {} : updates || {};
 				return {
 					...prev,
 					...delta,
@@ -421,10 +395,7 @@ export function useTournament({
 	);
 
 	useEffect(() => {
-		if (
-			persistentState &&
-			persistentState.userName !== (userName || "anonymous")
-		) {
+		if (persistentState && persistentState.userName !== (userName || "anonymous")) {
 			updatePersistentState({
 				matchHistory: [],
 				currentRound: 1,
@@ -450,11 +421,7 @@ export function useTournament({
 	});
 
 	const updateTournamentState = useCallback(
-		(
-			updates:
-				| Partial<TournamentState>
-				| ((prev: TournamentState) => Partial<TournamentState>),
-		) => {
+		(updates: Partial<TournamentState> | ((prev: TournamentState) => Partial<TournamentState>)) => {
 			setTState((prev) => {
 				const delta = typeof updates === "function" ? updates(prev) : updates;
 				return { ...prev, ...delta };
@@ -467,14 +434,18 @@ export function useTournament({
 
 	// Initialize tournament when names change
 	useEffect(() => {
-		if (!Array.isArray(names) || names.length < 2) return;
+		if (!Array.isArray(names) || names.length < 2) {
+			return;
+		}
 
 		const namesKey = names
 			.map((n) => n?.id || n?.name || "")
 			.filter(Boolean)
 			.sort()
 			.join(",");
-		if (lastInitKeyRef.current === namesKey) return;
+		if (lastInitKeyRef.current === namesKey) {
+			return;
+		}
 
 		lastInitKeyRef.current = namesKey;
 		const nameStrings = names.map((n) => n?.name || "").filter(Boolean);
@@ -505,15 +476,21 @@ export function useTournament({
 		if (first) {
 			updateTournamentState({ currentMatch: first });
 		} else if (names.length >= 2) {
-			updateTournamentState({
-				currentMatch: { left: names[0], right: names[1] },
-			});
+			const left = names[0];
+			const right = names[1];
+			if (left && right) {
+				updateTournamentState({
+					currentMatch: { left, right },
+				});
+			}
 		}
 	}, [names, existingRatings, updateTournamentState, updatePersistentState]);
 
 	// --- Voting Logic ---
 	const getCurrentRatings = useCallback(() => {
-		if (!names || names.length === 0) return [];
+		if (!names || names.length === 0) {
+			return [];
+		}
 		return names
 			.map((name) => {
 				const nameStr = name.name;
@@ -535,17 +512,16 @@ export function useTournament({
 
 	const handleVote = useCallback(
 		(winner: string, voteType: string = "normal") => {
-			if (tState.isTransitioning || tState.isError || !tState.currentMatch)
+			if (tState.isTransitioning || tState.isError || !tState.currentMatch) {
 				return;
+			}
 
 			updateTournamentState({ isTransitioning: true });
 
 			const leftName =
-				(tState.currentMatch.left as NameItem)?.name ||
-				(tState.currentMatch.left as string);
+				(tState.currentMatch.left as NameItem)?.name || (tState.currentMatch.left as string);
 			const rightName =
-				(tState.currentMatch.right as NameItem)?.name ||
-				(tState.currentMatch.right as string);
+				(tState.currentMatch.right as NameItem)?.name || (tState.currentMatch.right as string);
 
 			let winnerName: string | null = null;
 			let loserName: string | null = null;
@@ -608,10 +584,11 @@ export function useTournament({
 			if (tState.sorter) {
 				const s = tState.sorter as PreferenceSorter;
 				if (winnerName && loserName) {
-					if (typeof s.addPreference === "function")
+					if (typeof s.addPreference === "function") {
 						s.addPreference(winnerName, loserName, 1);
-					else if (s.preferences instanceof Map)
+					} else if (s.preferences instanceof Map) {
 						s.preferences.set(`${winnerName}-${loserName}`, 1);
+					}
 				} else if (voteType === "both" || voteType === "neither") {
 					if (typeof s.addPreference === "function") {
 						s.addPreference(leftName, rightName, 0);
@@ -639,14 +616,17 @@ export function useTournament({
 				currentMatch: nextMatchNumber,
 			});
 
-			if (tournamentActions?.setRatings)
+			if (tournamentActions?.setRatings) {
 				tournamentActions.setRatings(newRatings);
+			}
 			updateTournamentState({ currentRatings: newRatings, canUndo: true });
 
 			if (nextMatchNumber > tState.totalMatches) {
 				setTimeout(() => {
 					updateTournamentState({ isTransitioning: false });
-					if (onComplete) onComplete(getCurrentRatings());
+					if (onComplete) {
+						onComplete(getCurrentRatings());
+					}
 				}, 300);
 				return;
 			}
@@ -656,10 +636,7 @@ export function useTournament({
 				history: [...(persistentState.matchHistory || []), matchRecord],
 			});
 
-			const newRoundNumber = calculateBracketRound(
-				names.length,
-				nextMatchNumber,
-			);
+			const newRoundNumber = calculateBracketRound(names.length, nextMatchNumber);
 			setTimeout(() => {
 				updateTournamentState({
 					currentMatch: nextMatch || null,
@@ -667,8 +644,9 @@ export function useTournament({
 					roundNumber: newRoundNumber,
 					isTransitioning: false,
 				});
-				if (newRoundNumber !== tState.roundNumber)
+				if (newRoundNumber !== tState.roundNumber) {
 					updatePersistentState({ currentRound: newRoundNumber });
+				}
 			}, 300);
 
 			return newRatings;
@@ -689,12 +667,9 @@ export function useTournament({
 
 	// --- Progress Logic ---
 	const handleUndo = useCallback(() => {
-		if (
-			tState.isTransitioning ||
-			!tState.canUndo ||
-			persistentState.matchHistory.length === 0
-		)
+		if (tState.isTransitioning || !tState.canUndo || persistentState.matchHistory.length === 0) {
 			return;
+		}
 
 		updateTournamentState({ isTransitioning: true });
 		const history = persistentState.matchHistory;
@@ -714,27 +689,24 @@ export function useTournament({
 
 		const s = tState.sorter as PreferenceSorter;
 		if (s) {
-			if (typeof s.undoLastPreference === "function") s.undoLastPreference();
-			else if (s.preferences instanceof Map) {
-				const ln =
-					(lastVote.match.left as NameItem)?.name ||
-					(lastVote.match.left as string);
-				const rn =
-					(lastVote.match.right as NameItem)?.name ||
-					(lastVote.match.right as string);
+			if (typeof s.undoLastPreference === "function") {
+				s.undoLastPreference();
+			} else if (s.preferences instanceof Map) {
+				const ln = (lastVote.match.left as NameItem)?.name || (lastVote.match.left as string);
+				const rn = (lastVote.match.right as NameItem)?.name || (lastVote.match.right as string);
 				if (ln && rn) {
 					s.preferences.delete(`${ln}-${rn}`);
 					s.preferences.delete(`${rn}-${ln}`);
-					if (typeof s.currentIndex === "number")
+					if (typeof s.currentIndex === "number") {
 						s.currentIndex = Math.max(0, s.currentIndex - 1);
+					}
 				}
 			}
 		}
 
 		if (names.length >= 2 && newHistory.length > 0) {
 			const prevMatchNumber =
-				newHistory[newHistory.length - 1]?.matchNumber ||
-				tState.currentMatchNumber;
+				newHistory[newHistory.length - 1]?.matchNumber || tState.currentMatchNumber;
 			const calcRound = calculateBracketRound(names.length, prevMatchNumber);
 			if (calcRound !== tState.roundNumber) {
 				updateTournamentState({ roundNumber: calcRound });
@@ -756,7 +728,9 @@ export function useTournament({
 	]);
 
 	const progressValue = useMemo(() => {
-		if (!tState.totalMatches) return 0;
+		if (!tState.totalMatches) {
+			return 0;
+		}
 		return Math.round((tState.currentMatchNumber / tState.totalMatches) * 100);
 	}, [tState.currentMatchNumber, tState.totalMatches]);
 
@@ -764,7 +738,9 @@ export function useTournament({
 	if (tState.isError) {
 		return {
 			currentMatch: null,
-			handleVote: () => {},
+			handleVote: () => {
+				// Intentional no-op: error state, voting disabled
+			},
 			progress: 0,
 			roundNumber: 0,
 			currentMatchNumber: 0,

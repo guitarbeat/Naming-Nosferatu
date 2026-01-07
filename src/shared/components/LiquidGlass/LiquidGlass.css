@@ -1,17 +1,11 @@
 .liquid-glass {
 	position: relative;
 	/* * Use specified radius, but cap to ~35% of height to avoid overly pill shapes */
-	border-radius: min(
-		calc(var(--radius, 28) * 1px),
-		calc(var(--height, 80) * 0.35 * 1px)
-	);
+	border-radius: min(calc(var(--radius, 28) * 1px), calc(var(--height, 80) * 0.35 * 1px));
 	overflow: visible;
-	z-index: 1;
+	z-index: var(--z-elevate);
 	/* * Frost effect: subtle background tint for better visual separation */
-	background: light-dark(
-		hsl(0deg 0% 100% / var(--frost, 0)),
-		hsl(0deg 0% 0% / var(--frost, 0))
-	);
+	background: light-dark(hsl(0deg 0% 100% / var(--frost, 0)), hsl(0deg 0% 0% / var(--frost, 0)));
 	/* * Liquid glass uses backdrop-filter with SVG filter for refraction effect */
 	/* * Note: backdrop-filter with url() is set via JavaScript for browser compatibility */
 	backdrop-filter: var(--backdrop-filter, blur(8px) saturate(1));
@@ -30,9 +24,9 @@
 			color-mix(in oklch, canvasText, #0000 85%)
 		)
 		inset,
-		/* Outer depth shadows */ 0 4px 16px rgb(17 17 26 / 5%),
-		0 8px 24px rgb(17 17 26 / 5%),
-		0 16px 56px rgb(17 17 26 / 5%);
+		/* Outer depth shadows */ var(--shadow-md),
+		var(--shadow-lg),
+		var(--shadow-xl);
 }
 
 /* * When used for navbar, ensure it's fixed and visible */
@@ -44,14 +38,14 @@
 	z-index: var(--z-sticky, 1020);
 	overflow: visible; /* Allow collapse toggle to extend outside bounds */
 	transition:
-		position 0.3s ease,
-		top 0.3s ease,
-		left 0.3s ease,
-		right 0.3s ease,
-		bottom 0.3s ease,
-		width 0.3s ease,
-		height 0.3s ease,
-		padding 0.3s ease;
+		position var(--duration-normal) var(--ease-standard),
+		top var(--duration-normal) var(--ease-standard),
+		left var(--duration-normal) var(--ease-standard),
+		right var(--duration-normal) var(--ease-standard),
+		bottom var(--duration-normal) var(--ease-standard),
+		width var(--duration-normal) var(--ease-standard),
+		height var(--duration-normal) var(--ease-standard),
+		padding var(--duration-normal) var(--ease-standard);
 }
 
 /* Horizontal navbar glass */
@@ -82,36 +76,25 @@
 	background:
 		radial-gradient(
 			120% 120% at 10% 10%,
-			color-mix(
-				in srgb,
-				var(--glass-bg-strong, rgb(15 23 42 / 70%)) 80%,
-				transparent
-			),
+			color-mix(in srgb, var(--glass-bg-strong, rgb(15 23 42 / 70%)) 80%, transparent),
 			transparent 72%
 		),
 		linear-gradient(
 			140deg,
-			color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 55%)) 75%, transparent)
-				0%,
-			color-mix(
-					in srgb,
-					var(--glass-bg-strong, rgb(15 23 42 / 80%)) 65%,
-					transparent
-				)
-				55%,
-			color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 65%)) 55%, transparent)
-				100%
+			color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 55%)) 75%, transparent) 0%,
+			color-mix(in srgb, var(--glass-bg-strong, rgb(15 23 42 / 80%)) 65%, transparent) 55%,
+			color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 65%)) 55%, transparent) 100%
 		);
 	opacity: 0.45;
-	z-index: 0;
+	z-index: var(--z-0);
 	pointer-events: none;
-	transition: opacity 0.3s ease;
+	transition: var(--transition-opacity);
 }
 
 /* Direct children of liquid-glass should be above the filter */
 .liquid-glass > *:not(.liquid-glass-filter, .displacement-image-container) {
 	position: relative;
-	z-index: 2;
+	z-index: var(--z-10);
 	overflow: visible;
 }
 
@@ -159,19 +142,14 @@
 	}
 }
 
-@supports not (
-		(-webkit-backdrop-filter: blur(1px)) or
-		(backdrop-filter: blur(1px))
-	) {
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
 	.liquid-glass {
 		background: color-mix(
 			in srgb,
 			var(--glass-bg-strong, rgb(15 23 42 / 80%)) 80%,
 			rgb(6 11 22 / 90%)
 		);
-		box-shadow:
-			0 8px 24px rgb(0 0 0 / 28%),
-			0 2px 8px rgb(0 0 0 / 12%);
+		box-shadow: var(--shadow-lg), var(--shadow-sm);
 	}
 
 	.app-navbar-glass.liquid-glass::before {
@@ -179,11 +157,7 @@
 		background: linear-gradient(
 			150deg,
 			color-mix(in srgb, var(--glass-bg, rgb(15 23 42 / 75%)) 90%, transparent),
-			color-mix(
-				in srgb,
-				var(--glass-bg-strong, rgb(15 23 42 / 90%)) 85%,
-				transparent
-			)
+			color-mix(in srgb, var(--glass-bg-strong, rgb(15 23 42 / 90%)) 85%, transparent)
 		);
 	}
 }
@@ -197,19 +171,20 @@
 	height: 100%;
 	background: none;
 	border: none;
-	color: #f8fbff;
-	font-weight: 700;
-	letter-spacing: 0.08em;
+	color: var(--color-neutral-50);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-wider);
 	text-transform: uppercase;
 	cursor: pointer;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
-	padding: 0 1.5rem;
+	gap: var(--space-2);
+	padding: 0 var(--space-6);
 }
 
 .liquid-glass-button:focus-visible {
-	outline: 2px solid rgb(255 255 255 / 75%);
-	outline-offset: 3px;
+	outline: var(--focus-ring-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 75%, transparent);
+	outline-offset: var(--space-1);
 }

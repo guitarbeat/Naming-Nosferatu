@@ -4,11 +4,13 @@
  * Includes AnalysisHandlersProvider, AnalysisDashboardWrapper, and AnalysisBulkActionsWrapper
  */
 
-import React, { useCallback, useEffect, useMemo } from "react";
-import { AnalysisDashboard } from "../../../shared/components/AnalysisDashboard/AnalysisDashboard";
-import { AnalysisBulkActions } from "../../../shared/components/AnalysisDashboard/components/AnalysisBulkActions";
-import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
-import type { NameItem } from "../../../shared/propTypes";
+import type React from "react";
+import { useCallback, useContext, useEffect, useMemo } from "react";
+import Button from "../../../shared/components/Button/Button";
+import {
+	NameManagementContext,
+	useNameManagementContextSafe,
+} from "../../../shared/components/NameManagementView/nameManagementCore";
 import {
 	devError,
 	devLog,
@@ -18,18 +20,25 @@ import {
 	isNameHidden,
 	selectedNamesToSet,
 } from "../../../shared/utils/core";
-import { useProfile } from "../../profile/hooks/useProfile";
+import type { NameItem } from "../../../types/components";
+import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
+import type { HighlightItem, SummaryStats } from "../../analytics/types";
+import { type SelectionStats, useProfile } from "../../profile/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
+
+interface AnalysisHandlers {
+	handleToggleVisibility: ((nameId: string) => Promise<void>) | undefined;
+	handleDelete: ((name: NameItem) => Promise<void>) | undefined;
+}
 
 // ============================================================================
 // AnalysisHandlersProvider
 // ============================================================================
 
 interface AnalysisHandlersProviderProps {
-	shouldEnableAnalysisMode: boolean;
 	activeUser: string | null;
 	canManageActiveUser: boolean;
-	handlersRef: React.MutableRefObject<any>;
+	handlersRef: React.MutableRefObject<AnalysisHandlers>;
 	fetchSelectionStats?: () => void;
 	showSuccess: (msg: string) => void;
 	showError: (msg: string) => void;
@@ -40,39 +49,33 @@ interface AnalysisHandlersProviderProps {
  * Component that creates handlers inside context and initializes analysis mode
  */
 export function AnalysisHandlersProvider({
-	shouldEnableAnalysisMode,
 	activeUser,
 	handlersRef,
 	fetchSelectionStats: _fetchSelectionStats,
 	showSuccess,
 	showError,
 }: AnalysisHandlersProviderProps) {
-	const context = useNameManagementContextSafe();
+	// Use useContext directly instead of useNameManagementContextSafe to avoid throwing
+	// if context is not available yet (e.g., during initial render)
+	const context = useContext(NameManagementContext);
 
 	// * Initialize analysis mode from URL or prop
-	useEffect(() => {
-		if (!context) return;
-
-		const ctx = context as any;
-		if (shouldEnableAnalysisMode && !ctx.analysisMode) {
-			ctx.setAnalysisMode(true);
-		}
-	}, [shouldEnableAnalysisMode, context]);
+	// Note: analysisMode is managed by the parent component (NameManagementView)
+	// This component doesn't need to set it directly
 
 	const { setAllNames, fetchNames } = useNameManagementCallbacks(context);
 
-	const { handleToggleVisibility, handleDelete } = useProfile(
-		activeUser || "",
-		{
-			showSuccess,
-			showError,
-			fetchNames,
-			setAllNames,
-		},
-	);
+	const { handleToggleVisibility, handleDelete } = useProfile(activeUser || "", {
+		showSuccess,
+		showError,
+		fetchNames,
+		setAllNames,
+	});
 
-	React.useEffect(() => {
-		if (!context) return;
+	useEffect(() => {
+		if (!context) {
+			return;
+		}
 		handlersRef.current.handleToggleVisibility = handleToggleVisibility;
 		handlersRef.current.handleDelete = handleDelete;
 	}, [context, handleToggleVisibility, handleDelete, handlersRef]);
@@ -89,9 +92,9 @@ export function AnalysisHandlersProvider({
 // ============================================================================
 
 interface AnalysisDashboardWrapperProps {
-	stats: any;
-	selectionStats: any;
-	highlights?: any;
+	stats: SummaryStats | null;
+	selectionStats: SelectionStats | null;
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] } | undefined;
 	isAdmin?: boolean;
 	activeUser?: string;
 	onNameHidden?: () => void;
@@ -110,7 +113,9 @@ function AnalysisDashboardWrapper({
 	onNameHidden,
 }: AnalysisDashboardWrapperProps) {
 	// * Only render if stats are available
-	if (!stats) return null;
+	if (!stats) {
+		return null;
+	}
 
 	return (
 		<AnalysisDashboard
@@ -127,8 +132,8 @@ function AnalysisDashboardWrapper({
  * This creates a component function that can use hooks properly
  */
 export const createAnalysisDashboardWrapper = (
-	stats: any,
-	selectionStats: any,
+	stats: SummaryStats | null,
+	selectionStats: SelectionStats | null,
 	isAdmin: boolean,
 	activeUser: string | undefined,
 	onNameHidden: (() => void) | undefined,
@@ -141,11 +146,7 @@ export const createAnalysisDashboardWrapper = (
 			onNameHidden ||
 			(() => {
 				// refetch is not available on context, use fetchNames if available
-				if (
-					context &&
-					"fetchNames" in context &&
-					typeof context.fetchNames === "function"
-				) {
+				if (context && "fetchNames" in context && typeof context.fetchNames === "function") {
 					context.fetchNames();
 				}
 			});
@@ -160,6 +161,94 @@ export const createAnalysisDashboardWrapper = (
 		);
 	};
 };
+
+// ============================================================================
+// AnalysisBulkActions Component
+// ============================================================================
+
+interface AnalysisBulkActionsProps {
+	selectedCount: number;
+	onSelectAll: () => void;
+	onDeselectAll: () => void;
+	onBulkHide: () => void;
+	onBulkUnhide: () => void;
+	onExport?: () => void;
+	isAllSelected: boolean;
+	showActions: boolean;
+	isAdmin: boolean;
+	totalCount: number;
+}
+
+// Style constants to avoid recreating objects on every render
+const actionsContainerStyle = {
+	display: "flex",
+	gap: "var(--space-2)",
+	alignItems: "center",
+	flexWrap: "wrap",
+	padding: "var(--space-3)",
+} as const;
+
+const selectedCountStyle = {
+	fontSize: "var(--text-sm)",
+	color: "var(--text-secondary)",
+} as const;
+
+function AnalysisBulkActions({
+	selectedCount,
+	onSelectAll,
+	onDeselectAll,
+	onBulkHide,
+	onBulkUnhide,
+	onExport,
+	isAllSelected,
+	showActions,
+	isAdmin,
+	totalCount,
+}: AnalysisBulkActionsProps) {
+	if (!showActions) {
+		return null;
+	}
+
+	return (
+		<div style={actionsContainerStyle}>
+			<span style={selectedCountStyle}>
+				{selectedCount} of {totalCount} selected
+			</span>
+			<Button
+				variant="secondary"
+				size="small"
+				onClick={isAllSelected ? onDeselectAll : onSelectAll}
+			>
+				{isAllSelected ? "Deselect All" : "Select All"}
+			</Button>
+			{isAdmin && (
+				<>
+					<Button
+						variant="secondary"
+						size="small"
+						onClick={onBulkHide}
+						disabled={selectedCount === 0}
+					>
+						Hide Selected
+					</Button>
+					<Button
+						variant="secondary"
+						size="small"
+						onClick={onBulkUnhide}
+						disabled={selectedCount === 0}
+					>
+						Unhide Selected
+					</Button>
+				</>
+			)}
+			{onExport && (
+				<Button variant="secondary" size="small" onClick={onExport}>
+					Export CSV
+				</Button>
+			)}
+		</div>
+	);
+}
 
 // ============================================================================
 // AnalysisBulkActionsWrapper
@@ -185,8 +274,8 @@ export function AnalysisBulkActionsWrapper({
 }: AnalysisBulkActionsWrapperProps) {
 	const context = useNameManagementContextSafe();
 
-	const selectedCount = context?.selectedCount ?? 0;
-	const selectedNamesValue = context?.selectedNames as any;
+	const selectedCount = context.selectedCount ?? 0;
+	const selectedNamesValue = context.selectedNames;
 	// * Keep both Set format for selection logic and original array for bulk operations
 	const selectedNamesSet = useMemo(
 		() => selectedNamesToSet(selectedNamesValue),
@@ -208,27 +297,32 @@ export function AnalysisBulkActionsWrapper({
 		setAllNames,
 	});
 
-	const contextNames = context?.names as NameItem[] | undefined;
-	const contextFilterStatus = (context as any)?.filterStatus;
+	const contextNames = context.names;
+	const contextFilterStatus = context.filterStatus;
 
 	const filteredAndSortedNames = useMemo(() => {
-		if (!contextNames || contextNames.length === 0) return [];
+		if (!contextNames || contextNames.length === 0) {
+			return [];
+		}
 		let filtered = [...contextNames];
 
 		// Use shared isNameHidden utility for consistent visibility check
 		if (contextFilterStatus === "visible") {
-			filtered = filtered.filter((name) => !isNameHidden(name as NameItem));
+			filtered = filtered.filter((name) => !isNameHidden(name));
 		} else if (contextFilterStatus === "hidden") {
-			filtered = filtered.filter((name) => isNameHidden(name as NameItem));
+			filtered = filtered.filter((name) => isNameHidden(name));
 		}
 		// * "all" shows everything (no filtering)
 
 		return filtered;
 	}, [contextNames, contextFilterStatus]);
 
-	const allVisibleSelected =
-		filteredAndSortedNames.length > 0 &&
-		filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id));
+	const allVisibleSelected = useMemo(
+		() =>
+			filteredAndSortedNames.length > 0 &&
+			filteredAndSortedNames.every((name) => selectedNamesSet.has(name.id)),
+		[filteredAndSortedNames, selectedNamesSet],
+	);
 
 	const handleSelectAll = useCallback(() => {
 		const visibleNameIds = filteredAndSortedNames.map((name) => name.id);
@@ -236,23 +330,79 @@ export function AnalysisBulkActionsWrapper({
 			return;
 		}
 		const shouldSelect = !allVisibleSelected;
-		if ((context as any)?.toggleNamesByIds) {
-			(context as any).toggleNamesByIds(visibleNameIds, shouldSelect);
+		if (context.toggleNamesByIds) {
+			context.toggleNamesByIds(
+				visibleNameIds.map((id) => String(id)),
+				shouldSelect,
+			);
 			return;
 		}
 		visibleNameIds.forEach((id) => {
-			context?.toggleNameById?.(String(id), shouldSelect);
+			context.toggleNameById?.(String(id), shouldSelect);
 		});
-	}, [allVisibleSelected, filteredAndSortedNames, context]);
+	}, [
+		allVisibleSelected,
+		filteredAndSortedNames,
+		context.toggleNamesByIds,
+		context.toggleNameById,
+	]);
 
 	const handleExport = useCallback(() => {
-		exportTournamentResultsToCSV(
-			filteredAndSortedNames as any,
-			"naming_nosferatu_export",
-		);
-	}, [filteredAndSortedNames]);
+		try {
+			const success = exportTournamentResultsToCSV(
+				filteredAndSortedNames,
+				"naming_nosferatu_export",
+			);
+			if (!success) {
+				showError("Failed to export tournament results. Please try again.");
+			}
+		} catch (error) {
+			devError("[TournamentSetup] Error exporting tournament results:", error);
+			showError("Failed to export tournament results. Please try again.");
+		}
+	}, [filteredAndSortedNames, showError]);
 
-	if (!context || !canManageActiveUser || filteredAndSortedNames.length === 0) {
+	const handleBulkHideCallback = useCallback(async () => {
+		devLog("[TournamentSetup] onBulkHide called", {
+			selectedCount,
+			selectedNamesArrayLength: selectedNamesArray.length,
+			selectedNamesArray,
+			contextSelectedNames: context.selectedNames,
+		});
+
+		if (selectedNamesArray.length === 0) {
+			devWarn(
+				"[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
+				selectedCount,
+			);
+			showError("Please select at least one name to continue");
+			return;
+		}
+
+		try {
+			await handleBulkHide(selectedNamesArray.map((id) => id.toString()));
+		} catch (error) {
+			devError("[TournamentSetup] Error calling handleBulkHide:", error);
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			showError(`Unable to hide names: ${errorMessage}`);
+		}
+	}, [selectedCount, selectedNamesArray, context.selectedNames, showError, handleBulkHide]);
+
+	const handleBulkUnhideCallback = useCallback(async () => {
+		if (selectedNamesArray.length === 0) {
+			showError("Please select at least one name to continue");
+			return;
+		}
+		try {
+			await handleBulkUnhide(selectedNamesArray.map((id) => id.toString()));
+		} catch (error) {
+			devError("[TournamentSetup] Error calling handleBulkUnhide:", error);
+			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			showError(`Unable to unhide names: ${errorMessage}`);
+		}
+	}, [selectedNamesArray, showError, handleBulkUnhide]);
+
+	if (!canManageActiveUser || filteredAndSortedNames.length === 0) {
 		return null;
 	}
 
@@ -261,39 +411,8 @@ export function AnalysisBulkActionsWrapper({
 			selectedCount={selectedCount}
 			onSelectAll={handleSelectAll}
 			onDeselectAll={handleSelectAll}
-			onBulkHide={() => {
-				devLog("[TournamentSetup] onBulkHide called", {
-					selectedCount,
-					selectedNamesArrayLength: selectedNamesArray.length,
-					selectedNamesArray,
-					contextSelectedNames: context.selectedNames,
-				});
-
-				if (selectedNamesArray.length === 0) {
-					devWarn(
-						"[TournamentSetup] No names in selectedNamesArray despite selectedCount:",
-						selectedCount,
-					);
-					showError("No names selected");
-					return;
-				}
-
-				try {
-					handleBulkHide(selectedNamesArray as string[]);
-				} catch (error) {
-					devError("[TournamentSetup] Error calling handleBulkHide:", error);
-					showError(
-						`Failed to hide names: ${(error as any).message || "Unknown error"}`,
-					);
-				}
-			}}
-			onBulkUnhide={() => {
-				if (selectedNamesArray.length === 0) {
-					showError("No names selected");
-					return;
-				}
-				handleBulkUnhide(selectedNamesArray as string[]);
-			}}
+			onBulkHide={handleBulkHideCallback}
+			onBulkUnhide={handleBulkUnhideCallback}
 			onExport={handleExport}
 			isAllSelected={allVisibleSelected}
 			showActions={true}

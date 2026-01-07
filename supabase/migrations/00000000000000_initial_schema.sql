@@ -6,6 +6,13 @@
 -- indexes required for the application to function.
 --
 -- Last updated: 2025-11-29
+-- Schema verified: 2025-01-07
+-- NOTE: This migration has been updated to match the actual database schema.
+-- Key changes documented:
+-- - cat_app_users: Removed user_role and tournament_data columns
+-- - cat_name_options: Removed user_name, popularity_score, total_tournaments, updated_at columns
+-- - cat_name_ratings: Changed from id-based PK to composite PK (user_name, name_id)
+-- - user_roles: Added user_id column for auth.users support
 -- ============================================================================
 
 -- ============================================================================
@@ -20,59 +27,56 @@ CREATE TYPE app_role AS ENUM ('user', 'moderator', 'admin');
 -- ============================================================================
 
 -- User accounts table
+-- NOTE: user_role and tournament_data columns were removed - roles are now in user_roles table
 CREATE TABLE IF NOT EXISTS cat_app_users (
   user_name TEXT PRIMARY KEY,
-  user_role VARCHAR(20) DEFAULT 'user' CHECK (user_role IN ('user', 'admin', 'moderator')),
-  preferences JSONB DEFAULT '{}' CHECK (preferences IS NULL OR jsonb_typeof(preferences) = 'object'),
-  tournament_data JSONB DEFAULT '[]' CHECK (tournament_data IS NULL OR jsonb_typeof(tournament_data) = 'array'),
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  preferences JSONB DEFAULT '{"sound_enabled": true, "theme_preference": "dark", "preferred_categories": [], "rating_display_preference": "elo", "tournament_size_preference": 8}' CHECK (preferences IS NULL OR jsonb_typeof(preferences) = 'object'),
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 COMMENT ON TABLE cat_app_users IS 'Username-based auth. Users self-identify via username.';
-COMMENT ON COLUMN cat_app_users.user_role IS 'User role for RBAC: user, admin, or moderator';
 COMMENT ON COLUMN cat_app_users.preferences IS 'User preferences (theme, sound, etc.)';
 
 -- User roles table (separate from user data for security)
+-- NOTE: Supports both user_name (for cat_app_users) and user_id (for auth.users)
 CREATE TABLE IF NOT EXISTS user_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_name TEXT NOT NULL,
+  user_id UUID, -- For auth.users reference (nullable)
+  user_name TEXT, -- For cat_app_users reference (nullable)
   role app_role NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (user_id, role),
   UNIQUE (user_name, role)
 );
 
 COMMENT ON TABLE user_roles IS 'Stores user roles separately from user data to prevent privilege escalation';
 
 -- Cat name options table
+-- NOTE: user_name, popularity_score, total_tournaments, and updated_at columns were removed
 CREATE TABLE IF NOT EXISTS cat_name_options (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL CHECK (length(name) >= 1 AND length(name) <= 100),
-  description TEXT,
-  avg_rating NUMERIC DEFAULT 1200,
+  description TEXT DEFAULT '',
+  avg_rating NUMERIC DEFAULT 1500,
   is_active BOOLEAN DEFAULT true,
-  is_hidden BOOLEAN DEFAULT false,
-  categories TEXT[],
-  user_name TEXT CHECK (user_name IS NULL OR (length(user_name) >= 2 AND length(user_name) <= 50)),
-  popularity_score INTEGER DEFAULT 0,
-  total_tournaments INTEGER DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  is_hidden BOOLEAN DEFAULT false NOT NULL,
+  categories TEXT[] DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
 -- Cat name ratings table
+-- NOTE: Uses composite primary key (user_name, name_id) instead of id column
 CREATE TABLE IF NOT EXISTS cat_name_ratings (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_name TEXT NOT NULL,
-  name_id UUID REFERENCES cat_name_options(id) ON DELETE CASCADE,
-  rating INTEGER CHECK (rating IS NULL OR (rating >= 1000 AND rating <= 2000)),
+  name_id UUID NOT NULL REFERENCES cat_name_options(id) ON DELETE CASCADE,
+  rating NUMERIC DEFAULT 1500 CHECK (rating IS NULL OR (rating >= 800 AND rating <= 2400)),
   wins INTEGER DEFAULT 0 CHECK (wins IS NULL OR wins >= 0),
   losses INTEGER DEFAULT 0 CHECK (losses IS NULL OR losses >= 0),
   is_hidden BOOLEAN DEFAULT false,
   rating_history JSONB DEFAULT '[]',
-  created_at TIMESTAMPTZ DEFAULT now(),
-  updated_at TIMESTAMPTZ DEFAULT now()
+  updated_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  PRIMARY KEY (user_name, name_id)
 );
 
 COMMENT ON TABLE cat_name_ratings IS 'User ratings for cat names';
@@ -120,12 +124,10 @@ COMMENT ON TABLE audit_log IS 'Audit trail for tracking important database chang
 -- ============================================================================
 
 -- cat_app_users indexes
-CREATE INDEX IF NOT EXISTS idx_cat_app_users_user_role ON cat_app_users(user_role);
 CREATE INDEX IF NOT EXISTS idx_cat_app_users_preferences ON cat_app_users USING gin(preferences);
-CREATE INDEX IF NOT EXISTS idx_cat_app_users_tournament_data ON cat_app_users USING gin(tournament_data);
-CREATE INDEX IF NOT EXISTS idx_cat_app_users_tournament_recent ON cat_app_users(user_name, updated_at DESC) WHERE tournament_data IS NOT NULL;
 
 -- user_roles indexes
+CREATE INDEX IF NOT EXISTS idx_user_roles_user_id ON user_roles(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_roles_user_name ON user_roles(user_name);
 CREATE INDEX IF NOT EXISTS idx_user_roles_role ON user_roles(role);
 
@@ -139,6 +141,8 @@ CREATE INDEX IF NOT EXISTS idx_cat_name_ratings_name_id ON cat_name_ratings(name
 CREATE INDEX IF NOT EXISTS idx_cat_name_ratings_hidden ON cat_name_ratings(user_name, name_id) WHERE is_hidden = true;
 CREATE INDEX IF NOT EXISTS idx_cat_name_ratings_leaderboard ON cat_name_ratings(name_id, rating DESC, wins DESC, losses) WHERE rating IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_cat_name_ratings_with_rating ON cat_name_ratings(user_name, rating, name_id) WHERE rating IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_ratings_leaderboard ON cat_name_ratings(name_id, rating DESC NULLS LAST) INCLUDE (wins, losses, user_name);
+CREATE INDEX IF NOT EXISTS idx_ratings_user_stats ON cat_name_ratings(user_name, rating DESC) INCLUDE (wins, losses, is_hidden, updated_at);
 
 -- tournament_selections indexes
 CREATE INDEX IF NOT EXISTS idx_tournament_selections_user_name ON tournament_selections(user_name);
@@ -282,6 +286,7 @@ $$;
 -- ============================================================================
 
 -- Create user account
+-- NOTE: Updated to match actual implementation (user_role handled separately in user_roles table)
 CREATE OR REPLACE FUNCTION create_user_account(
   p_user_name TEXT,
   p_preferences JSONB DEFAULT '{"sound_enabled": true, "theme_preference": "dark"}',
@@ -290,11 +295,26 @@ CREATE OR REPLACE FUNCTION create_user_account(
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO cat_app_users (user_name, preferences, user_role)
-  VALUES (p_user_name, p_preferences, p_user_role)
-  ON CONFLICT (user_name) DO NOTHING;
+  -- Insert or update user in cat_app_users table
+  INSERT INTO public.cat_app_users (user_name, preferences)
+  VALUES (p_user_name, p_preferences)
+  ON CONFLICT (user_name) DO UPDATE
+    SET preferences = COALESCE(EXCLUDED.preferences, cat_app_users.preferences);
+    
+  -- Only allow admin role assignment if caller is already an admin
+  IF p_user_role IS NOT NULL THEN
+    -- SECURITY FIX: Prevent privilege escalation by checking if caller is admin
+    IF p_user_role != 'user' AND NOT is_admin() THEN
+      RAISE EXCEPTION 'Only admins can create privileged accounts';
+    END IF;
+    
+    INSERT INTO public.user_roles (user_name, role)
+    VALUES (p_user_name, p_user_role::app_role)
+    ON CONFLICT DO NOTHING;
+  END IF;
 END;
 $$;
 
@@ -353,12 +373,14 @@ $$;
 GRANT EXECUTE ON FUNCTION get_user_stats(TEXT) TO authenticated, anon;
 
 -- Get top names by category
+-- NOTE: Updated to use p_category and p_limit parameter names (matching actual implementation)
+-- Returns TABLE with uuid id (not TEXT)
 CREATE OR REPLACE FUNCTION get_top_names_by_category(
   p_category TEXT,
   p_limit INTEGER DEFAULT 10
 )
 RETURNS TABLE(
-  id TEXT,
+  id UUID,
   name TEXT,
   description TEXT,
   avg_rating NUMERIC,
@@ -370,11 +392,11 @@ AS $$
 BEGIN
   RETURN QUERY
   SELECT 
-    cno.id::TEXT,
+    cno.id,
     cno.name,
     cno.description,
     cno.avg_rating,
-    COUNT(cnr.id)::INTEGER as total_ratings,
+    COUNT(cnr.name_id)::INTEGER as total_ratings,
     p_category as category
   FROM cat_name_options cno
   LEFT JOIN cat_name_ratings cnr ON cno.id = cnr.name_id
@@ -390,15 +412,18 @@ $$;
 GRANT EXECUTE ON FUNCTION get_top_names_by_category(TEXT, INTEGER) TO authenticated, anon;
 
 -- Increment selection count
+-- NOTE: popularity_score column was removed from cat_name_options
+-- This function is kept for backward compatibility but does nothing
 CREATE OR REPLACE FUNCTION increment_selection(p_user_name TEXT, p_name_id UUID)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  UPDATE cat_name_options 
-  SET popularity_score = COALESCE(popularity_score, 0) + 1
-  WHERE id = p_name_id;
+  -- Function kept for backward compatibility
+  -- popularity_score column no longer exists in cat_name_options
+  -- Selection tracking is now done via tournament_selections table
+  NULL;
 END;
 $$;
 
@@ -442,43 +467,26 @@ END;
 $$;
 
 -- Prevent role modification trigger
-CREATE OR REPLACE FUNCTION prevent_role_modification()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
-BEGIN
-  IF OLD.user_role IS DISTINCT FROM NEW.user_role THEN
-    IF NOT is_admin() THEN
-      RAISE EXCEPTION 'Only admins can modify user roles';
-    END IF;
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-COMMENT ON FUNCTION prevent_role_modification() IS 'Prevents non-admin users from modifying their own roles';
+-- NOTE: user_role column was removed from cat_app_users, so this trigger is no longer needed
+-- Role modifications are handled via the user_roles table with proper RLS policies
+-- Function kept for documentation but trigger not created
 
 -- Toggle name visibility (admin only)
+-- NOTE: Updated to use is_admin() function instead of checking user_role column
+-- Returns boolean indicating success
 CREATE OR REPLACE FUNCTION toggle_name_visibility(
   p_name_id UUID,
   p_hide BOOLEAN,
   p_user_name TEXT DEFAULT NULL
 )
-RETURNS VOID
+RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-AS $
-DECLARE
-  v_is_admin BOOLEAN;
+SET search_path = public
+AS $$
 BEGIN
-  -- Check if user is admin (case-insensitive)
-  SELECT EXISTS (
-    SELECT 1 FROM cat_app_users 
-    WHERE LOWER(user_name) = LOWER(COALESCE(p_user_name, get_current_user_name()))
-    AND user_role = 'admin'
-  ) INTO v_is_admin;
-  
-  IF NOT v_is_admin THEN
+  -- Check if user is admin using is_admin() function
+  IF NOT is_admin() THEN
     RAISE EXCEPTION 'Only admins can toggle name visibility';
   END IF;
   
@@ -490,8 +498,10 @@ BEGIN
   IF NOT FOUND THEN
     RAISE EXCEPTION 'Name not found: %', p_name_id;
   END IF;
+  
+  RETURN TRUE;
 END;
-$;
+$$;
 
 COMMENT ON FUNCTION toggle_name_visibility(UUID, BOOLEAN, TEXT) IS 'Toggle visibility of a name (admin only). Sets is_hidden on cat_name_options.';
 
@@ -512,10 +522,8 @@ CREATE TRIGGER audit_cat_app_users_trigger
   AFTER INSERT OR UPDATE OR DELETE ON cat_app_users
   FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
 
-DROP TRIGGER IF EXISTS prevent_role_modification_trigger ON cat_app_users;
-CREATE TRIGGER prevent_role_modification_trigger
-  BEFORE UPDATE ON cat_app_users
-  FOR EACH ROW EXECUTE FUNCTION prevent_role_modification();
+-- NOTE: prevent_role_modification_trigger removed - user_role column no longer exists
+-- Role modifications are handled via user_roles table with proper RLS policies
 
 DROP TRIGGER IF EXISTS site_settings_updated_at ON site_settings;
 CREATE TRIGGER site_settings_updated_at

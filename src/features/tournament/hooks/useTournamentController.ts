@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAppStore from "../../../core/store/useAppStore";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
-import type { NameItem } from "../../../shared/propTypes";
+import type { NameItem } from "../../../types/components";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useProfileNotifications } from "../../profile/hooks/useProfileNotifications";
 import { useImageGallery } from "./useImageGallery";
@@ -25,7 +26,7 @@ export function useTournamentController({
 	const [tempName, setTempName] = useState(userName);
 
 	// * Sync temp name when userName prop changes
-	React.useEffect(() => {
+	useEffect(() => {
 		setTempName(userName);
 	}, [userName]);
 
@@ -55,8 +56,7 @@ export function useTournamentController({
 	const { isAdmin } = useAdminStatus(userName);
 
 	// * Notifications
-	const { showSuccess, showError, showToast, ToastContainer } =
-		useProfileNotifications();
+	const { showSuccess, showError, showToast, ToastContainer } = useProfileNotifications();
 
 	// * Profile & Analysis
 	const {
@@ -76,24 +76,28 @@ export function useTournamentController({
 
 	// * Analysis mode check
 	const shouldEnableAnalysisMode = useMemo(() => {
-		if (typeof window === "undefined") return !!enableAnalysisMode;
+		if (typeof window === "undefined") {
+			return !!enableAnalysisMode;
+		}
 		const urlParams = new URLSearchParams(window.location.search);
 		return !!enableAnalysisMode || urlParams.get("analysis") === "true";
 	}, [enableAnalysisMode]);
 
 	// * Handlers Ref
 	const handlersRef = useRef<{
-		handleToggleVisibility: ((nameId: string | number) => void) | null;
-		handleDelete: ((name: NameItem) => void) | null;
+		handleToggleVisibility: ((nameId: string) => Promise<void>) | undefined;
+		handleDelete: ((name: NameItem) => Promise<void>) | undefined;
 	}>({
-		handleToggleVisibility: null,
-		handleDelete: null,
+		handleToggleVisibility: undefined,
+		handleDelete: undefined,
 	});
 
 	// * Lightbox handlers
 	const handleImageOpen = useCallback(
 		(image: string) => {
-			if (!galleryImages) return;
+			if (!galleryImages) {
+				return;
+			}
 			const idx = galleryImages.indexOf(image);
 			if (idx !== -1) {
 				setLightboxIndex(idx);
@@ -119,13 +123,14 @@ export function useTournamentController({
 	}, []);
 
 	const preloadImages = useMemo(() => {
-		if (!lightboxOpen || !galleryImages || galleryImages.length === 0)
+		if (!lightboxOpen || !galleryImages || galleryImages.length === 0) {
 			return [];
-		const prevIndex =
-			lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
-		const nextIndex =
-			lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
-		return [galleryImages[prevIndex], galleryImages[nextIndex]];
+		}
+		const prevIndex = lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
+		const nextIndex = lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
+		return [galleryImages[prevIndex], galleryImages[nextIndex]].filter(
+			(img): img is string => img != null,
+		);
 	}, [lightboxOpen, lightboxIndex, galleryImages]);
 
 	return {
@@ -165,6 +170,7 @@ export function useTournamentController({
 
 		// Refs/Components
 		handlersRef,
+		// biome-ignore lint/style/useNamingConvention: Component reference, PascalCase is appropriate
 		ToastContainer,
 	};
 }

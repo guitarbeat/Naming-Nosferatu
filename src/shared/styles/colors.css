@@ -25,17 +25,8 @@
 	--fire-red-700: #c31218;
 
 	/* * Gradient Definitions */
-	--gradient-primary: linear-gradient(
-		135deg,
-		var(--neon-cyan),
-		var(--hot-pink)
-	);
-	--gradient-vibrant: linear-gradient(
-		135deg,
-		var(--fire-red),
-		var(--hot-pink),
-		var(--neon-cyan)
-	);
+	--gradient-primary: linear-gradient(135deg, var(--neon-cyan), var(--hot-pink));
+	--gradient-vibrant: linear-gradient(135deg, var(--fire-red), var(--hot-pink), var(--neon-cyan));
 	--gradient-mesh:
 		radial-gradient(at 40% 20%, rgb(47 243 224 / 30%) 0px, transparent 50%),
 		radial-gradient(at 80% 0%, rgb(250 38 160 / 30%) 0px, transparent 50%),

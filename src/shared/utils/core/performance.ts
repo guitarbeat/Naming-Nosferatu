@@ -6,15 +6,16 @@ const performanceMetrics = {
 };
 
 function reportNavigationMetrics() {
-	if (typeof window === "undefined") return;
-	const timing = (
-		window.performance as unknown as { timing: PerformanceTiming }
-	)?.timing;
-	if (!timing) return;
+	if (typeof window === "undefined") {
+		return;
+	}
+	const timing = (window.performance as unknown as { timing: PerformanceTiming })?.timing;
+	if (!timing) {
+		return;
+	}
 
 	const { navigationStart } = timing;
-	const domContentLoadedTime =
-		timing.domContentLoadedEventEnd - navigationStart;
+	const domContentLoadedTime = timing.domContentLoadedEventEnd - navigationStart;
 	const loadCompleteTime = timing.loadEventEnd - navigationStart;
 	const connectTime = timing.responseEnd - timing.requestStart;
 
@@ -51,8 +52,7 @@ export function initializePerformanceMonitoring() {
 					renderTime: number;
 					loadTime: number;
 				};
-				performanceMetrics.metrics.lcp =
-					lastEntry.renderTime || lastEntry.loadTime;
+				performanceMetrics.metrics.lcp = lastEntry.renderTime || lastEntry.loadTime;
 				console.debug(
 					`[Performance] Largest Contentful Paint: ${performanceMetrics.metrics.lcp}ms`,
 				);
@@ -73,9 +73,7 @@ export function initializePerformanceMonitoring() {
 					if (!entry.hadRecentInput) {
 						clsValue += entry.value;
 						performanceMetrics.metrics.cls = clsValue;
-						console.debug(
-							`[Performance] Cumulative Layout Shift: ${clsValue.toFixed(3)}`,
-						);
+						console.debug(`[Performance] Cumulative Layout Shift: ${clsValue.toFixed(3)}`);
 					}
 				}
 			});
@@ -91,9 +89,7 @@ export function initializePerformanceMonitoring() {
 				entries.forEach((entry: PerformanceEntry) => {
 					const eventEntry = entry as unknown as { processingDuration: number };
 					performanceMetrics.metrics.fid = eventEntry.processingDuration;
-					console.debug(
-						`[Performance] First Input Delay: ${eventEntry.processingDuration}ms`,
-					);
+					console.debug(`[Performance] First Input Delay: ${eventEntry.processingDuration}ms`);
 				});
 			});
 			fidObserver.observe({ type: "first-input", buffered: true });
@@ -108,9 +104,7 @@ export function initializePerformanceMonitoring() {
 				entries.forEach((entry) => {
 					if (entry.name === "first-contentful-paint") {
 						performanceMetrics.metrics.fcp = entry.startTime;
-						console.debug(
-							`[Performance] First Contentful Paint: ${entry.startTime}ms`,
-						);
+						console.debug(`[Performance] First Contentful Paint: ${entry.startTime}ms`);
 					}
 				});
 			});

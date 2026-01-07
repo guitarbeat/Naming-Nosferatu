@@ -27,6 +27,10 @@ jspm_packages/
 .yarn/build-state.yml
 .yarn/install-state.gz
 
+# Lock files (using pnpm only)
+package-lock.json
+yarn.lock
+
 # Build outputs
 /build
 /dist
@@ -43,6 +47,7 @@ jspm_packages/
 # Logs
 logs/
 *.log
+build_success.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -102,14 +107,6 @@ verification/*.jpeg
 !verification/verify_button_style.py
 .internal-docs/
 scripts/data
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-
-/src/generated/prisma
-stats.html
 stats.html
 stats.json
+jscpd-report.html

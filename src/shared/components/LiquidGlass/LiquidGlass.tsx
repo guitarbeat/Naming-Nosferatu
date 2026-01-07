@@ -1,32 +1,35 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import "./LiquidGlass.css";
+
+interface LiquidGlassProps {
+	children: React.ReactNode;
+	className?: string;
+	width?: number;
+	height?: number;
+	radius?: number;
+	scale?: number;
+	saturation?: number;
+	frost?: number;
+	alpha?: number;
+	lightness?: number;
+	inputBlur?: number;
+	outputBlur?: number;
+	border?: number;
+	blend?: string;
+	xChannel?: string;
+	yChannel?: string;
+	chromaticR?: number;
+	chromaticG?: number;
+	chromaticB?: number;
+	id?: string;
+	showCrosshair?: boolean;
+	style?: React.CSSProperties;
+	[key: string]: unknown;
+}
 
 /**
  * LiquidGlass component - Creates a liquid glass refraction effect using SVG filters
  * Based on: https://codepen.io/jh3y/pen/EajLxJV
- *
- * @param {Object} props
- * @param {React.ReactNode} props.children - Content to render inside glass
- * @param {string} props.className - Additional CSS classes
- * @param {number} props.width - Width of the glass effect
- * @param {number} props.height - Height of the glass effect
- * @param {number} props.radius - Border radius in pixels
- * @param {number} props.scale - Displacement scale (-180 default)
- * @param {number} props.saturation - Color saturation multiplier (1 = normal)
- * @param {number} props.frost - Frost overlay opacity (0-1)
- * @param {number} props.alpha - Displacement map alpha (0-1)
- * @param {number} props.lightness - Displacement map lightness (0-100)
- * @param {number} props.inputBlur - Input blur for displacement image
- * @param {number} props.outputBlur - Output blur for final effect
- * @param {number} props.border - Border width as fraction of size (0-1)
- * @param {string} props.blend - Blend mode for gradient mixing
- * @param {string} props.xChannel - X displacement channel (R/G/B)
- * @param {string} props.yChannel - Y displacement channel (R/G/B)
- * @param {number} props.chromaticR - Red channel offset
- * @param {number} props.chromaticG - Green channel offset
- * @param {number} props.chromaticB - Blue channel offset
- * @param {string} props.id - Unique filter ID
- * @param {boolean} props.showCrosshair - Show crosshair pattern overlay (default: false)
  */
 function LiquidGlass({
 	children,
@@ -52,7 +55,7 @@ function LiquidGlass({
 	showCrosshair = false,
 	style = {},
 	...props
-}) {
+}: LiquidGlassProps) {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const svgRef = useRef<SVGSVGElement | null>(null);
 	const filterRef = useRef<SVGFilterElement | null>(null);
@@ -102,17 +105,19 @@ function LiquidGlass({
 	);
 
 	const buildDisplacementImage = useCallback(() => {
-		if (!displacementImageRef.current || !filterRef.current) return;
+		if (!displacementImageRef.current || !filterRef.current) {
+			return;
+		}
 
 		const svgContent = `
       <svg class="displacement-image" viewBox="0 0 ${validWidth} ${validHeight}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="red-${id}" x1="100%" y1="0%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#000"/>
+            <stop offset="0%" stopColor="var(--color-neutral-900)"/>
             <stop offset="100%" stop-color="red"/>
           </linearGradient>
           <linearGradient id="blue-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#000"/>
+            <stop offset="0%" stopColor="var(--color-neutral-900)"/>
             <stop offset="100%" stop-color="blue"/>
           </linearGradient>
         </defs>
@@ -128,7 +133,9 @@ function LiquidGlass({
     `;
 
 		try {
-			if (!displacementImageRef.current || !filterRef.current) return;
+			if (!displacementImageRef.current || !filterRef.current) {
+				return;
+			}
 			displacementImageRef.current.innerHTML = svgContent;
 			const svgEl = displacementImageRef.current.querySelector(
 				".displacement-image",
@@ -139,9 +146,7 @@ function LiquidGlass({
 				const dataUri = `data:image/svg+xml,${encoded}`;
 
 				// * Update feImage href
-				const feImage = filterRef.current.querySelector(
-					"feImage",
-				) as SVGFEImageElement | null;
+				const feImage = filterRef.current.querySelector("feImage") as SVGFEImageElement | null;
 				if (feImage) {
 					feImage.setAttribute("href", dataUri);
 				}
@@ -179,7 +184,9 @@ function LiquidGlass({
 	}, []);
 
 	const updateFilter = useCallback(() => {
-		if (!filterRef.current || !containerRef.current) return;
+		if (!filterRef.current || !containerRef.current) {
+			return;
+		}
 
 		buildDisplacementImage();
 
@@ -199,14 +206,13 @@ function LiquidGlass({
 			const backdropFilterValue = supportsBackdropFilterUrl
 				? `url(#${id}) saturate(${saturation})` // * Chromium browsers: use url() filter for liquid glass effect
 				: `blur(8px) saturate(${saturation})`; // * Fallback for Firefox/WebKit: use blur + saturate
-			containerRef.current.style.setProperty(
-				"--backdrop-filter",
-				backdropFilterValue,
-			);
+			containerRef.current.style.setProperty("--backdrop-filter", backdropFilterValue);
 			containerRef.current.style.backdropFilter = backdropFilterValue;
 		}
 
-		if (!filterRef.current) return;
+		if (!filterRef.current) {
+			return;
+		}
 
 		// * Set base scale on all feDisplacementMap elements first (matching example pattern)
 		const allDisplacementMaps = filterRef.current.querySelectorAll(
@@ -287,13 +293,15 @@ function LiquidGlass({
 
 	// * Setup effect: runs once on mount to initialize filter and setup resize handler
 	useEffect(() => {
-		if (!containerRef.current || !svgRef.current) return;
+		if (!containerRef.current || !svgRef.current) {
+			return;
+		}
 
 		// * Get filter element by ID since we can't use ref directly on SVG filter
-		const filterElement = svgRef.current.querySelector(
-			`#${id}`,
-		) as SVGFilterElement | null;
-		if (!filterElement) return;
+		const filterElement = svgRef.current.querySelector(`#${id}`) as SVGFilterElement | null;
+		if (!filterElement) {
+			return;
+		}
 
 		filterRef.current = filterElement;
 		// * Initial update doesn't need transition
@@ -325,7 +333,9 @@ function LiquidGlass({
 	// * Update filter with view transition when props change (for smooth transitions)
 	useEffect(() => {
 		// * Skip on initial mount (handled by setup effect above)
-		if (isInitialMountRef.current || !filterRef.current) return;
+		if (isInitialMountRef.current || !filterRef.current) {
+			return;
+		}
 		// * Use view transition for prop changes to create smooth visual updates
 		updateFilterWithTransition();
 	}, [updateFilterWithTransition]);
@@ -336,22 +346,15 @@ function LiquidGlass({
 			className={`liquid-glass ${className}`}
 			style={
 				{
-					width:
-						(style as { width?: string | number })?.width || `${validWidth}px`,
-					height:
-						(style as { height?: string | number })?.height ||
-						`${validHeight}px`,
+					width: (style as { width?: string | number })?.width || `${validWidth}px`,
+					height: (style as { height?: string | number })?.height || `${validHeight}px`,
 					...(style as React.CSSProperties),
 				} as React.CSSProperties
 			}
 			{...props}
 		>
 			{children}
-			<svg
-				ref={svgRef}
-				className="liquid-glass-filter"
-				xmlns="http://www.w3.org/2000/svg"
-			>
+			<svg ref={svgRef} className="liquid-glass-filter" xmlns="http://www.w3.org/2000/svg">
 				<defs>
 					<filter id={id} colorInterpolationFilters="sRGB">
 						{/* * The input displacement image (generated SVG with gradients) */}
@@ -419,18 +422,11 @@ function LiquidGlass({
 						<feBlend in="rg" in2="blue" mode="screen" result="output" />
 
 						{/* * Output blur softens the chromatic aberration effect */}
-						<feGaussianBlur
-							id={feGaussianBlurId}
-							in="output"
-							stdDeviation={outputBlur}
-						/>
+						<feGaussianBlur id={feGaussianBlurId} in="output" stdDeviation={outputBlur} />
 					</filter>
 				</defs>
 			</svg>
-			<div
-				ref={displacementImageRef}
-				className="displacement-image-container"
-			/>
+			<div ref={displacementImageRef} className="displacement-image-container" />
 			{showCrosshair && (
 				<div
 					className="liquid-glass-crosshair"

@@ -6,7 +6,7 @@
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TIMING } from "../../../core/constants";
-import styles from "../TournamentSetup.module.css";
+import styles from "../styles/SetupLightbox.module.css";
 import { LIGHTBOX_IMAGE_SIZES } from "../tournamentUtils";
 
 interface LightboxProps {
@@ -27,16 +27,16 @@ function Lightbox({
 	const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 	const transitionTimerRef = useRef<NodeJS.Timeout | null>(null);
 	const isTransitioningRef = useRef(false);
-	const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-		null,
-	);
+	const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
 	const touchStartRef = useRef({ x: 0, y: 0 });
 	const touchEndRef = useRef({ x: 0, y: 0 });
 	const minSwipeDistance = 50;
 
 	const handleNavigate = useCallback(
 		(newIndex: number) => {
-			if (isTransitioningRef.current) return;
+			if (isTransitioningRef.current) {
+				return;
+			}
 
 			isTransitioningRef.current = true;
 
@@ -86,7 +86,9 @@ function Lightbox({
 	}, []);
 
 	const onTouchEnd = useCallback(() => {
-		if (!touchStartRef.current || !touchEndRef.current.x) return;
+		if (!touchStartRef.current || !touchEndRef.current.x) {
+			return;
+		}
 
 		const deltaX = touchStartRef.current.x - touchEndRef.current.x;
 		const deltaY = touchStartRef.current.y - touchEndRef.current.y;
@@ -101,11 +103,7 @@ function Lightbox({
 			} else {
 				handlePrev(); // Swipe right = previous
 			}
-		} else if (
-			absDeltaY > absDeltaX &&
-			absDeltaY > minSwipeDistance &&
-			deltaY < 0
-		) {
+		} else if (absDeltaY > absDeltaX && absDeltaY > minSwipeDistance && deltaY < 0) {
 			// * Swipe down to close
 			onClose();
 		}
@@ -117,9 +115,13 @@ function Lightbox({
 
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
-			if (e.key === "Escape") onClose();
-			else if (e.key === "ArrowLeft") handlePrev();
-			else if (e.key === "ArrowRight") handleNext();
+			if (e.key === "Escape") {
+				onClose();
+			} else if (e.key === "ArrowLeft") {
+				handlePrev();
+			} else if (e.key === "ArrowRight") {
+				handleNext();
+			}
 		};
 		window.addEventListener("keydown", onKey);
 		return () => window.removeEventListener("keydown", onKey);
@@ -197,10 +199,7 @@ function Lightbox({
 			aria-modal="true"
 			aria-label="Image gallery"
 		>
-			<div
-				className={styles.lightboxContent}
-				onClick={(e) => e.stopPropagation()}
-			>
+			<div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
 				<button
 					type="button"
 					className={styles.lightboxClose}
@@ -243,16 +242,8 @@ function Lightbox({
 				>
 					{shouldUsePicture ? (
 						<picture>
-							<source
-								type="image/avif"
-								srcSet={`${base}.avif`}
-								sizes={LIGHTBOX_IMAGE_SIZES}
-							/>
-							<source
-								type="image/webp"
-								srcSet={`${base}.webp`}
-								sizes={LIGHTBOX_IMAGE_SIZES}
-							/>
+							<source type="image/avif" srcSet={`${base}.avif`} sizes={LIGHTBOX_IMAGE_SIZES} />
+							<source type="image/webp" srcSet={`${base}.webp`} sizes={LIGHTBOX_IMAGE_SIZES} />
 							<img
 								src={current}
 								alt=""

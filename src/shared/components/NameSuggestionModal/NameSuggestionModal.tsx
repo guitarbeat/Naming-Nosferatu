@@ -5,38 +5,33 @@
 
 import PropTypes from "prop-types";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { z } from "zod";
+import { VALIDATION } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
+import { useToast } from "../../hooks/useAppHooks";
+import { useValidatedForm } from "../../hooks/useValidatedForm";
 import { ErrorManager } from "../../services/errorManager/index";
 import { catNamesAPI } from "../../services/supabase/client";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
+import { ValidatedInput } from "../ValidatedInput/ValidatedInput";
 import "./NameSuggestionModal.css";
 
-// Validation helpers
-const validateCatName = (name: string) => {
-	const trimmed = name.trim();
-	if (!trimmed) return { success: false, error: "Name is required" };
-	if (trimmed.length < 2)
-		return { success: false, error: "Name must be at least 2 characters" };
-	if (trimmed.length > 50)
-		return { success: false, error: "Name must be 50 characters or less" };
-	return { success: true, value: trimmed };
-};
-
-const validateDescription = (description: string) => {
-	const trimmed = description.trim();
-	if (!trimmed) return { success: false, error: "Description is required" };
-	if (trimmed.length < 5)
-		return {
-			success: false,
-			error: "Description must be at least 5 characters",
-		};
-	if (trimmed.length > 500)
-		return {
-			success: false,
-			error: "Description must be 500 characters or less",
-		};
-	return { success: true, value: trimmed };
-};
+/**
+ * Schema for name suggestion form validation
+ */
+const SuggestionSchema = z.object({
+	name: z
+		.string()
+		.min(VALIDATION.MIN_CAT_NAME_LENGTH || 2, "Name must be at least 2 characters")
+		.max(VALIDATION.MAX_CAT_NAME_LENGTH || 50, "Name must be 50 characters or less"),
+	description: z
+		.string()
+		.min(
+			5, // * Low-Friction Validation: Relaxed from 10 to 5
+			"Description can be short!",
+		)
+		.max(VALIDATION.MAX_DESCRIPTION_LENGTH || 500, "Description must be 500 characters or less"),
+});
 
 /**
  * Modal component for suggesting new cat names
@@ -44,19 +39,87 @@ const validateDescription = (description: string) => {
  * @param {boolean} props.isOpen - Whether the modal is open
  * @param {Function} props.onClose - Function to close the modal
  */
-export function NameSuggestionModal({ isOpen, onClose }) {
-	const [name, setName] = useState("");
-	const [description, setDescription] = useState("");
-	const [error, setError] = useState("");
+export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+	const [globalError, setGlobalError] = useState("");
 	const [success, setSuccess] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
 	const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isMountedRef = useRef(true);
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const modalGlassId = useId();
+	const { showSuccess, showError } = useToast();
 
 	// * Get current user name from store for RLS context
 	const userName = useAppStore((state) => state.user.name);
+
+	const form = useValidatedForm<typeof SuggestionSchema.shape>({
+		schema: SuggestionSchema,
+		initialValues: { name: "", description: "" },
+		onSubmit: async (values) => {
+			if (!userName || !userName.trim()) {
+				setGlobalError("Please log in to suggest a name.");
+				return;
+			}
+
+			try {
+				setGlobalError("");
+				const res = await catNamesAPI.addName(values.name, values.description, userName);
+
+				if (!isMountedRef.current) {
+					return;
+				}
+
+				if (res?.success === false) {
+					throw new Error(res.error || "Unable to add name. Please try again.");
+				}
+
+				setSuccess("Thank you for your suggestion!");
+				showSuccess("Name suggestion submitted!");
+				form.reset();
+
+				// * Clear success message after 3 seconds, then close modal
+				if (successTimeoutRef.current) {
+					clearTimeout(successTimeoutRef.current);
+				}
+				successTimeoutRef.current = setTimeout(() => {
+					if (isMountedRef.current) {
+						setSuccess("");
+						onClose();
+					}
+					successTimeoutRef.current = null;
+				}, 3000);
+			} catch (err) {
+				if (!isMountedRef.current) {
+					return;
+				}
+
+				const errorObj = err as { message?: string; error?: string } | null;
+				const errorMessage =
+					errorObj?.message ||
+					errorObj?.error ||
+					"Unable to submit your suggestion. Please try again.";
+				setGlobalError(errorMessage);
+				showError(errorMessage);
+
+				ErrorManager.handleError(err, "Add Name Suggestion", {
+					isRetryable: true,
+					affectsUserData: false,
+					isCritical: false,
+				});
+			}
+		},
+	});
+
+	const {
+		values,
+		errors,
+		touched,
+		isSubmitting,
+		isValid,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		reset,
+	} = form;
 
 	// * Track mount state and cleanup timeout on unmount
 	useEffect(() => {
@@ -81,145 +144,38 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 
 	// * Handle Escape key to close modal
 	useEffect(() => {
-		if (!isOpen) return;
+		if (!isOpen) {
+			return;
+		}
 
-		const handleEscape = (e) => {
+		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === "Escape") {
+				reset();
 				onClose();
 			}
 		};
 
 		window.addEventListener("keydown", handleEscape);
 		return () => window.removeEventListener("keydown", handleEscape);
-	}, [isOpen, onClose]);
-
-	const handleNameChange = useCallback(
-		(e) => {
-			setName(e.target.value);
-			if (error) setError("");
-		},
-		[error],
-	);
-
-	const handleDescriptionChange = useCallback(
-		(e) => {
-			setDescription(e.target.value);
-			if (error) setError("");
-		},
-		[error],
-	);
-
-	const handleSubmit = useCallback(
-		async (e) => {
-			e.preventDefault();
-			e.stopPropagation();
-
-			setError("");
-			setSuccess("");
-
-			const trimmedName = name.trim();
-			const trimmedDescription = description.trim();
-
-			if (!trimmedName || !trimmedDescription) {
-				return;
-			}
-
-			const nameValidation = validateCatName(trimmedName);
-			if (!nameValidation.success) {
-				setError(nameValidation.error || "Invalid name");
-				return;
-			}
-
-			const descriptionValidation = validateDescription(trimmedDescription);
-			if (!descriptionValidation.success) {
-				setError(descriptionValidation.error || "Invalid description");
-				return;
-			}
-
-			// * Check if user is logged in
-			if (!userName || !userName.trim()) {
-				setError("Please log in to suggest a name.");
-				return;
-			}
-
-			try {
-				setIsSubmitting(true);
-				// * Pass userName to set RLS context before inserting
-				const res = await catNamesAPI.addName(
-					nameValidation.value || trimmedName,
-					descriptionValidation.value || trimmedDescription,
-					userName || "",
-				);
-
-				// * Check if component is still mounted before updating state
-				if (!isMountedRef.current) return;
-
-				if (res?.success === false) {
-					// * Preserve the actual error message from the API response
-					const apiError = res.error || "Failed to add name";
-					throw new Error(apiError);
-				}
-				setSuccess("Thank you for your suggestion!");
-				setName("");
-				setDescription("");
-
-				// * Clear success message after 3 seconds, then close modal
-				if (successTimeoutRef.current) {
-					clearTimeout(successTimeoutRef.current);
-				}
-				successTimeoutRef.current = setTimeout(() => {
-					if (isMountedRef.current) {
-						setSuccess("");
-						onClose();
-					}
-					successTimeoutRef.current = null;
-				}, 3000);
-			} catch (err) {
-				// * Check if component is still mounted before updating state
-				if (!isMountedRef.current) return;
-
-				// * Show the actual error message from the API
-				const errorObj = err as { message?: string; error?: string } | null;
-				const errorMessage =
-					errorObj?.message ||
-					errorObj?.error ||
-					"Failed to add name. Please try again.";
-				setError(errorMessage);
-				ErrorManager.handleError(err, "Add Name Suggestion", {
-					isRetryable: true,
-					affectsUserData: false,
-					isCritical: false,
-				});
-			} finally {
-				// * Only update submitting state if component is still mounted
-				if (isMountedRef.current) {
-					setIsSubmitting(false);
-				}
-			}
-		},
-		[name, description, userName, onClose],
-	);
+	}, [isOpen, onClose, reset]);
 
 	const handleClose = useCallback(() => {
-		if (isSubmitting) return;
-		setName("");
-		setDescription("");
-		setError("");
+		if (isSubmitting) {
+			return;
+		}
+		reset();
+		setGlobalError("");
 		setSuccess("");
 		onClose();
-	}, [isSubmitting, onClose]);
+	}, [isSubmitting, onClose, reset]);
 
-	if (!isOpen) return null;
-
-	const isFormValid = name.trim() && description.trim();
+	if (!isOpen) {
+		return null;
+	}
 
 	return (
 		<>
-			<div
-				className="name-suggestion-modal-backdrop"
-				onClick={handleClose}
-				aria-hidden="true"
-			/>
+			<div className="name-suggestion-modal-backdrop" onClick={handleClose} aria-hidden="true" />
 			<LiquidGlass
 				id={`modal-glass-${modalGlassId.replace(/:/g, "-")}`}
 				width={500}
@@ -266,59 +222,66 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 						</button>
 					</div>
 
-					<p
-						id="suggest-name-description"
-						className="name-suggestion-modal-description"
-					>
+					<p id="suggest-name-description" className="name-suggestion-modal-description">
 						Help us expand the list by suggesting new cat names!
 					</p>
 
-					<form onSubmit={handleSubmit} className="name-suggestion-modal-form">
-						<div className="name-suggestion-form-group">
-							<label
-								htmlFor="modal-name-input"
-								className="name-suggestion-form-label"
-							>
-								Name
-							</label>
-							<input
-								id="modal-name-input"
-								ref={nameInputRef}
-								type="text"
-								value={name}
-								onChange={handleNameChange}
-								placeholder="e.g., Whiskers"
-								className="name-suggestion-form-input"
-								disabled={isSubmitting}
-								maxLength={50}
-								required
-							/>
-						</div>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							void handleSubmit();
+						}}
+						className="name-suggestion-modal-form"
+					>
+						<ValidatedInput
+							id="modal-name-input"
+							label="Name"
+							ref={nameInputRef}
+							type="text"
+							value={values.name}
+							onChange={(e) => {
+								handleChange("name", e.target.value);
+								if (globalError) {
+									setGlobalError("");
+								}
+							}}
+							onBlur={() => handleBlur("name")}
+							placeholder="e.g., Whiskers"
+							disabled={isSubmitting}
+							maxLength={50}
+							schema={SuggestionSchema.shape.name}
+							externalError={errors.name}
+							externalTouched={touched.name}
+							showSuccess={true}
+						/>
 
 						<div className="name-suggestion-form-group">
-							<label
-								htmlFor="modal-description-input"
-								className="name-suggestion-form-label"
-							>
+							<label htmlFor="modal-description-input" className="name-suggestion-form-label">
 								Description
 							</label>
 							<textarea
 								id="modal-description-input"
-								value={description}
-								onChange={handleDescriptionChange}
-								placeholder="A brief description of why this name is special"
-								className="name-suggestion-form-textarea"
+								value={values.description}
+								onChange={(e) => {
+									handleChange("description", e.target.value);
+									if (globalError) {
+										setGlobalError("");
+									}
+								}}
+								onBlur={() => handleBlur("description")}
+								placeholder="Why is this name special? (e.g. 'He looks like a vampire!')"
+								className={`name-suggestion-form-textarea ${touched.description && errors.description ? "input-error" : ""}`}
 								disabled={isSubmitting}
 								maxLength={500}
 								rows={4}
-								required
 							/>
+							{touched.description && errors.description && (
+								<p className="field-error-message">{errors.description}</p>
+							)}
 						</div>
 
-						{error && <div className="name-suggestion-form-error">{error}</div>}
-						{success && (
-							<div className="name-suggestion-form-success">{success}</div>
-						)}
+						{globalError && <div className="name-suggestion-form-error">{globalError}</div>}
+						{success && <div className="name-suggestion-form-success">{success}</div>}
 
 						<div className="name-suggestion-modal-actions">
 							<button
@@ -332,7 +295,7 @@ export function NameSuggestionModal({ isOpen, onClose }) {
 							<button
 								type="submit"
 								className="name-suggestion-modal-submit"
-								disabled={isSubmitting || !isFormValid}
+								disabled={isSubmitting || !isValid}
 							>
 								{isSubmitting ? "Submitting..." : "Submit Suggestion"}
 							</button>

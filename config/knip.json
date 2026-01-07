@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "entry": ["src/main.tsx"],
-  "project": ["src/**/*.{js,jsx,ts,tsx}", "config/**/*.{js,ts}"],
+  "project": ["src/**/*.{js,jsx,ts,tsx}", "config/**/*.{js,ts}", "scripts/**/*.{js,ts}"],
   "ignore": [
     "**/*.test.{js,jsx,ts,tsx}",
     "**/*.spec.{js,jsx,ts,tsx}",

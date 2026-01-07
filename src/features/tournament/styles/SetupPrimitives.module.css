@@ -1,0 +1,147 @@
+/* Shared primitives */
+
+.stack {
+	display: flex;
+	flex-direction: column;
+}
+
+.stackGapSm {
+	gap: var(--space-1);
+}
+
+.stackGapMd {
+	gap: var(--space-2);
+}
+
+.stackGapLg {
+	gap: var(--space-3);
+}
+
+.stackGapXl {
+	gap: var(--space-4);
+}
+
+.stackGapXs {
+	gap: var(--space-1);
+}
+
+.cluster {
+	display: flex;
+	gap: var(--space-3);
+	align-items: center;
+}
+
+.clusterWrap {
+	composes: cluster;
+	flex-wrap: wrap;
+}
+
+.surfaceCard {
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+}
+
+.elevatedCard {
+	composes: surfaceCard;
+	box-shadow: var(--shadow-lg);
+}
+
+.inputBase {
+	width: 100%;
+	padding: var(--input-padding-y) var(--input-padding-x);
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
+	color: var(--text-primary);
+	background: var(--card-background);
+	border: var(--input-border-width) solid var(--border-color);
+	border-radius: var(--input-border-radius);
+	transition: var(--transition-base);
+}
+
+.inputBase:focus {
+	outline: none;
+	border-color: var(--neon-cyan);
+	box-shadow: var(--focus-ring);
+}
+
+.buttonBase {
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y-md) var(--button-padding-x-md);
+	font-size: var(--text-sm);
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+}
+
+.buttonPrimary {
+	composes: buttonBase;
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-primary-bg, var(--primary-color));
+}
+
+.buttonPrimary:hover:not(:disabled) {
+	background: var(--button-primary-hover, var(--primary-dark));
+	box-shadow: var(--shadow-md);
+	transform: var(--transform-hover-lift);
+}
+
+.buttonSecondary {
+	composes: buttonBase;
+	color: var(--text-primary);
+	background: var(--surface-color);
+	border-color: var(--border-color);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+	background: var(--card-hover);
+	box-shadow: var(--shadow-sm);
+	transform: var(--transform-hover-lift);
+}
+
+.buttonInverted {
+	composes: buttonBase;
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-secondary-bg, var(--glass-bg-strong));
+	border-color: var(--glass-border);
+}
+
+.buttonInverted:hover:not(:disabled) {
+	background: var(--button-secondary-hover, var(--glass-bg));
+	border-color: var(--border-color);
+	box-shadow: var(--shadow-md);
+	transform: var(--transform-hover-lift);
+}
+
+.buttonWide {
+	composes: buttonBase;
+	width: 100%;
+	padding-block: var(--space-3);
+	font-size: var(--text-base);
+}
+
+.buttonDisabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.mutedText {
+	color: var(--text-secondary);
+}
+
+.errorMessage {
+	margin: var(--space-2) 0;
+	color: var(--error-500);
+}
+
+.successMessage {
+	margin: var(--space-2) 0;
+	color: var(--success-500);
+}

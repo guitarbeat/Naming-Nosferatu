@@ -4,9 +4,11 @@
  * Optimized for layout stability and performance.
  */
 
+import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { useMemo } from "react";
-import type { NameItem } from "../../propTypes";
+import type { NameItem } from "@/types/components";
+import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -14,7 +16,8 @@ import {
 	selectedNamesToSet,
 } from "../../utils/core";
 import CardName from "../Card/components/CardName";
-import { Loading } from "../CommonUI";
+import EmptyState from "../EmptyState/EmptyState";
+import { CatSpinner } from "../Loading";
 import styles from "./NameGrid.module.css";
 
 interface NameGridProps {
@@ -50,6 +53,7 @@ const GridItem = ({
 	imageList,
 	onToggleVisibility,
 	onDelete,
+	index,
 }: {
 	nameObj: NameItem;
 	selectedSet: Set<string | number>;
@@ -59,26 +63,69 @@ const GridItem = ({
 	imageList: string[];
 	onToggleVisibility?: (id: string | number) => void;
 	onDelete?: (name: NameItem) => void;
+	index: number;
 }) => {
 	const nameId = nameObj.id as string | number;
 	const isHidden = isNameHidden(nameObj);
+	const isSelected = selectedSet.has(nameId);
 
 	// * Deterministic image selection
 	const cardImage = useMemo(() => {
-		if (!nameObj || !showCatPictures || !imageList.length) return undefined;
+		if (!nameObj || !showCatPictures || !imageList.length) {
+			return undefined;
+		}
 		const idStr = String(nameObj.id);
-		const hash = idStr
-			.split("")
-			.reduce((acc, char) => acc + char.charCodeAt(0), 0);
+		const hash = idStr.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
 		return imageList[Math.abs(hash) % imageList.length];
 	}, [nameObj, showCatPictures, imageList]);
 
 	return (
-		<div className={styles.gridItem}>
+		<motion.div
+			className={styles.gridItem}
+			initial={{
+				opacity: 0,
+				y: 20,
+				scale: 0.9,
+			}}
+			animate={{
+				opacity: 1,
+				y: 0,
+				scale: isSelected ? 1.05 : 1,
+				boxShadow: isSelected
+					? "0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1)"
+					: "0 2px 8px rgba(0, 0, 0, 0.08)",
+			}}
+			transition={{
+				duration: 0.4,
+				delay: Math.min(index * 0.05, 1.5), // Staggered entrance, max 1.5s delay
+				type: "spring",
+				stiffness: 200,
+				damping: 20,
+				boxShadow: { duration: 0.3, ease: "easeOut" },
+				scale: { duration: 0.3, type: "spring", stiffness: 300, damping: 25 },
+			}}
+			whileHover={{
+				y: -8,
+				scale: isSelected ? 1.07 : 1.02,
+				boxShadow: "0 12px 30px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.15)",
+				transition: {
+					duration: 0.2,
+					type: "spring",
+					stiffness: 300,
+					damping: 25,
+				},
+			}}
+			whileTap={{
+				scale: 0.95,
+				transition: { duration: 0.1 },
+			}}
+			layout={true}
+			key={`grid-item-${nameId}-${isSelected ? "selected" : "unselected"}`}
+		>
 			<CardName
 				name={nameObj.name || ""}
 				description={nameObj.description}
-				isSelected={selectedSet.has(nameId)}
+				isSelected={isSelected}
 				onClick={() => onToggleName?.(nameObj)}
 				image={cardImage}
 				metadata={
@@ -92,14 +139,12 @@ const GridItem = ({
 				className={isHidden ? styles.hiddenCard : ""}
 				isAdmin={isAdmin}
 				isHidden={isHidden}
-				_onToggleVisibility={
-					isAdmin ? () => onToggleVisibility?.(nameId) : undefined
-				}
+				_onToggleVisibility={isAdmin ? () => onToggleVisibility?.(nameId) : undefined}
 				_onDelete={isAdmin ? () => onDelete?.(nameObj) : undefined}
 				onSelectionChange={undefined}
 				size="medium"
 			/>
-		</div>
+		</motion.div>
 	);
 };
 
@@ -117,15 +162,10 @@ export function NameGrid({
 	isLoading = false,
 	className = "",
 }: NameGridProps) {
-	const selectedSet = useMemo(
-		() => selectedNamesToSet(selectedNames as any),
-		[selectedNames],
-	);
+	const selectedSet = useMemo(() => selectedNamesToSet(selectedNames as any), [selectedNames]);
 
 	const processedNames = useMemo(() => {
-		const visibility = mapFilterStatusToVisibility(
-			filters.filterStatus || "visible",
-		);
+		const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
 
 		let result = applyNameFilters(names, {
 			searchTerm: filters.searchTerm,
@@ -146,11 +186,36 @@ export function NameGrid({
 		return result;
 	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
+	const { containerRef, setItemRef, positions, columnHeights } = useMasonryLayout<HTMLDivElement>(
+		processedNames.length,
+		{
+			minColumnWidth: 280,
+			gap: 24,
+		},
+	);
+
 	if (isLoading) {
 		return (
 			<div className={`${styles.gridContainer} ${className}`}>
-				<div className={styles.loadingContainer}>
-					<Loading variant="spinner" text="Loading names..." />
+				<div className={styles.namesGrid}>
+					{Array.from({ length: 8 }).map((_, i) => (
+						<div key={`spinner-${i}`} className={styles.gridItem}>
+							<CatSpinner
+								size="medium"
+								variant={
+									["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as
+										| "paw"
+										| "tail"
+										| "bounce"
+										| "spin"
+										| "heartbeat"
+										| "orbit"
+								}
+								color={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
+								text="Loading cat names..."
+							/>
+						</div>
+					))}
 				</div>
 			</div>
 		);
@@ -158,33 +223,80 @@ export function NameGrid({
 
 	if (processedNames.length === 0) {
 		return (
-			<div className={styles.emptyState}>
-				<h3 className={styles.emptyTitle}>No names found</h3>
-				<p className={styles.emptyMessage}>
-					{showSelectedOnly
-						? "No names selected."
-						: "Try adjusting your filters."}
-				</p>
+			<div className={`${styles.gridContainer} ${className}`}>
+				<EmptyState
+					title="No names found"
+					description={
+						showSelectedOnly
+							? "You haven't selected any names yet. Switch back to browse mode to pick some favorites!"
+							: "No names match your search or filters. Try adjusting your filters or search terms to find what you're looking for."
+					}
+					icon={showSelectedOnly ? "🕸️" : "🔍"}
+					action={
+						showSelectedOnly ? (
+							<button
+								type="button"
+								className={styles.resetButton}
+								onClick={() => {
+									// This relies on the parent checking 'showSelectedOnly' and providing a reset
+									// or we can just guide the user textually
+								}}
+							>
+								{/* Action handled by description hint for now */}
+							</button>
+						) : undefined
+					}
+				/>
 			</div>
 		);
 	}
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<div className={styles.namesGrid}>
-				{processedNames.map((name) => (
-					<GridItem
-						key={name.id}
-						nameObj={name}
-						selectedSet={selectedSet}
-						onToggleName={onToggleName}
-						isAdmin={isAdmin}
-						showCatPictures={showCatPictures}
-						imageList={imageList}
-						onToggleVisibility={onToggleVisibility}
-						onDelete={onDelete}
-					/>
-				))}
+			<div
+				ref={containerRef}
+				className={styles.namesGrid}
+				role="list"
+				style={{
+					minHeight: columnHeights.length > 0 ? `${Math.max(...columnHeights)}px` : "auto",
+				}}
+			>
+				{processedNames.map((name, index) => {
+					const position = positions[index];
+					return (
+						<motion.div
+							key={name.id}
+							ref={setItemRef(index)}
+							role="listitem"
+							className={styles.gridItemWrapper}
+							style={
+								position
+									? {
+											position: "absolute",
+											top: `${position.top}px`,
+											left: `${position.left}px`,
+										}
+									: { position: "relative" }
+							}
+							layout={true}
+							transition={{
+								layout: { duration: 0.3, ease: "easeOut" },
+							}}
+						>
+							<GridItem
+								nameObj={name}
+								selectedSet={selectedSet}
+								onToggleName={onToggleName}
+								isAdmin={isAdmin}
+								showCatPictures={showCatPictures}
+								imageList={imageList}
+								onToggleVisibility={onToggleVisibility}
+								onDelete={onDelete}
+								index={index}
+							/>
+						</motion.div>
+					);
+				})}
 			</div>
 		</div>
 	);
@@ -192,10 +304,7 @@ export function NameGrid({
 
 NameGrid.propTypes = {
 	names: PropTypes.array.isRequired,
-	selectedNames: PropTypes.oneOfType([
-		PropTypes.array,
-		PropTypes.instanceOf(Set),
-	]),
+	selectedNames: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
 	onToggleName: PropTypes.func,
 	filters: PropTypes.shape({
 		searchTerm: PropTypes.string,

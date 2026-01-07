@@ -124,28 +124,28 @@ export function useToast(options: UseToastOptions = {}) {
 	}, []);
 
 	const showSuccess = useCallback(
-		(message, options = {}) => {
+		(message: string, options: Record<string, unknown> = {}) => {
 			return showToast({ message, type: "success", ...options });
 		},
 		[showToast],
 	);
 
 	const showError = useCallback(
-		(message, options = {}) => {
+		(message: string, options: Record<string, unknown> = {}) => {
 			return showToast({ message, type: "error", ...options });
 		},
 		[showToast],
 	);
 
 	const showInfo = useCallback(
-		(message, options = {}) => {
+		(message: string, options: Record<string, unknown> = {}) => {
 			return showToast({ message, type: "info", ...options });
 		},
 		[showToast],
 	);
 
 	const showWarning = useCallback(
-		(message, options = {}) => {
+		(message: string, options: Record<string, unknown> = {}) => {
 			return showToast({ message, type: "warning", ...options });
 		},
 		[showToast],
