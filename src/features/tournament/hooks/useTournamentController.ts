@@ -25,7 +25,7 @@ export function useTournamentController({
 	const [tempName, setTempName] = useState(userName);
 
 	// * Sync temp name when userName prop changes
-	React.useEffect(() => {
+	useEffect(() => {
 		setTempName(userName);
 	}, [userName]);
 

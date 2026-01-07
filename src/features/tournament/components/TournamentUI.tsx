@@ -190,7 +190,7 @@ export const ProgressMilestone = memo(function ProgressMilestone({
 	const [showMilestone, setShowMilestone] = React.useState(false);
 	const [milestoneMessage, setMilestoneMessage] = React.useState("");
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (progress >= 50 && !hasShown50) {
 			setHasShown50(true);
 			setMilestoneMessage("Halfway there! 🎉");
@@ -262,7 +262,7 @@ export const TournamentFooter = memo(function TournamentFooter({
 	});
 	const [showBracketHint, setShowBracketHint] = React.useState(false);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!hasSeenBracketHint && transformedMatches.length >= 2 && !showBracket) {
 			const timer = setTimeout(() => {
 				setShowBracketHint(true);

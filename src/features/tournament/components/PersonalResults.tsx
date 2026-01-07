@@ -102,8 +102,8 @@ function CalendarButton({
 	return (
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		<Button
-			variant={variant as any}
-			size={size as any}
+			variant={variant}
+			size={size}
 			onClick={handleClick}
 			className={className}
 			disabled={disabled}
@@ -180,7 +180,7 @@ function PersonalResults({
 		[currentTournamentNames],
 	);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!hasPersonalData || !hasTournamentNames) {
 			setPersonalRankings([]);
 			return;
