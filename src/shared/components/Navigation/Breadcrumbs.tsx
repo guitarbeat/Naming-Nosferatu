@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"; // Or custom Link if we don't have router
-import { useRouting } from "../../core/hooks/useRouting";
-import { MAIN_NAV_ITEMS } from "../../config/navigation.config";
+import { useRouting } from "../../../core/hooks/useRouting";
+import { MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import "../AppNavbar/AppNavbar.css"; // Reuse nav styles for now or create new
 
 export function Breadcrumbs() {
