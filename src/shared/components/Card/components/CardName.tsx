@@ -82,8 +82,6 @@ function CardName({
 	metadata,
 	isAdmin = false,
 	isHidden = false,
-	_onToggleVisibility, // @ts-ignore - kept for API compatibility
-	_onDelete, // @ts-ignore - kept for API compatibility
 	onSelectionChange,
 	image,
 }: CardNameProps) {

@@ -32,9 +32,6 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 	const { prefersReducedMotion, ...screenSize } = useBrowserState();
 	const mainContentRef = useRef<HTMLDivElement>(null);
 	const retryButtonRef = useRef<HTMLButtonElement>(null);
-	const _announcementRef = useRef<HTMLDivElement | null>(null);
-	const _textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-	const _copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		if (mainContentRef.current) {
@@ -78,10 +75,8 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 		resetErrorBoundary();
 	};
 
-	const _diagnostics = standardizedError?.diagnostics || {};
-
 	const handleCopyDiagnostics = async () => {
-		const diagnosticText = `Error: ${error.message}\nStack: ${error.stack}`;
+		const diagnosticText = `Error: ${error.message || "Unknown error"}\nStack: ${error.stack || "No stack trace"}`;
 		try {
 			await navigator.clipboard.writeText(diagnosticText);
 			setCopied(true);
@@ -277,8 +272,8 @@ class ErrorBoundary extends React.Component<
 	},
 	{ error: Error | null }
 > {
-	state: { error: Error | null } = { error: null };
-	static getDerivedStateFromError(error: unknown) {
+	override state: { error: Error | null } = { error: null };
+	static override getDerivedStateFromError(error: unknown) {
 		// Use globalThis.Error to avoid conflict with exported Error alias
 		const NativeError = globalThis.Error;
 		return {

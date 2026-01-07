@@ -156,7 +156,7 @@ export function useTournamentState(
 	}, [tournament.roundNumber]);
 
 	// Adapter function to convert tournament handleVote to expected signature
-	const adaptedHandleVote = useCallback(
+	const adaptedHandleVote: (option: "left" | "right" | "both" | "neither") => Promise<unknown> = useCallback(
 		async (option: "left" | "right" | "both" | "neither"): Promise<unknown> => {
 			if (!tournament.handleVote) {
 				return undefined;

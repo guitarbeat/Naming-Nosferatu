@@ -95,7 +95,6 @@ function TournamentContent({
 
 	const {
 		currentMatch,
-		handleVote,
 		handleUndo,
 		progress,
 		roundNumber,
@@ -105,6 +104,9 @@ function TournamentContent({
 		getCurrentRatings,
 		isError,
 	} = tournament;
+
+	// Use the adapted handleVote from tournamentState instead of the raw one from tournament
+	const { handleVote } = tournamentState;
 
 	// * Debug logging (development only, throttled)
 	logTournamentRender(names?.length || 0, randomizedNames?.length || 0, !!currentMatch);

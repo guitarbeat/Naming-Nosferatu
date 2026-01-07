@@ -207,7 +207,7 @@ export function BumpChart({
 }) {
 	// Support both labels and timeLabels props for compatibility
 	const chartLabels = labels || timeLabels;
-	const [hoveredSeries, setHoveredSeries] = useState(null);
+	const [hoveredSeries, setHoveredSeries] = useState<string | null>(null);
 	const svgRef = useRef<SVGSVGElement | null>(null);
 
 	const chartWidth = width;
@@ -228,7 +228,7 @@ export function BumpChart({
 		return data.map((series, index) => ({
 			...series,
 			color: COLORS[index % COLORS.length] || "var(--color-neutral-400)",
-			id: (series as any).id || `series-${index}`,
+			id: (series as { id?: string }).id || `series-${index}`,
 			name: series.name || `Series ${index + 1}`,
 			rankings: series.rankings || [],
 		}));
