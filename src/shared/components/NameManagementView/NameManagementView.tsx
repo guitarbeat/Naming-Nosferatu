@@ -23,6 +23,8 @@ interface NameManagementViewProps extends UseNameManagementViewProps {
 	onStartTournament?: (selectedNames: NameItem[]) => void;
 	onOpenSuggestName?: () => void;
 	extensions?: NameManagementViewExtensions;
+	tournamentProps?: Record<string, unknown>;
+	profileProps?: Record<string, unknown>;
 }
 
 export function NameManagementView({

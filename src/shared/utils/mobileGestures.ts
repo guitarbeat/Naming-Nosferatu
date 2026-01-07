@@ -72,7 +72,7 @@ class MobileGestures {
 			type: gestureType,
 			callback,
 			options: {
-				threshold: this.thresholds[gestureType] || 50,
+				threshold: (this.thresholds as Record<string, number>)[gestureType] || 50,
 				preventDefault: true,
 				...options,
 			},
@@ -131,7 +131,7 @@ class MobileGestures {
 
 		// Handle single touch gestures
 		if (touches.length === 1) {
-			this.handleSingleTouchStart(touches[0], event);
+			this.handleSingleTouchStart(touches[0]!, event);
 		}
 		// Handle multi-touch gestures
 		else if (touches.length > 1) {
@@ -177,7 +177,7 @@ class MobileGestures {
 
 		// Handle single touch gestures
 		if (touches.length === 1) {
-			this.handleSingleTouchMove(touches[0], event);
+			this.handleSingleTouchMove(touches[0]!, event);
 		}
 		// Handle multi-touch gestures
 		else if (touches.length > 1) {
@@ -296,11 +296,11 @@ class MobileGestures {
 		if (touches.length === 2) {
 			const [touch1, touch2] = touches;
 
-			const initialDistance = this.calculateTouchDistance(touch1, touch2);
+			const initialDistance = this.calculateTouchDistance(touch1!, touch2!);
 
 			// Store initial pinch distance
-			const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
-			const activeTouch2 = this.activeTouches.get(`${touch2.identifier}_1`);
+			const activeTouch1 = this.activeTouches.get(`${touch1!.identifier}_0`);
+			const activeTouch2 = this.activeTouches.get(`${touch2!.identifier}_1`);
 			if (activeTouch1) {
 				activeTouch1.initialPinchDistance = initialDistance;
 			}
@@ -319,10 +319,10 @@ class MobileGestures {
 		if (touches.length === 2) {
 			const [touch1, touch2] = touches;
 
-			const currentDistance = this.calculateTouchDistance(touch1, touch2);
+			const currentDistance = this.calculateTouchDistance(touch1!, touch2!);
 
-			const activeTouch1 = this.activeTouches.get(`${touch1.identifier}_0`);
-			const activeTouch2 = this.activeTouches.get(`${touch2.identifier}_1`);
+			const activeTouch1 = this.activeTouches.get(`${touch1!.identifier}_0`);
+			const activeTouch2 = this.activeTouches.get(`${touch2!.identifier}_1`);
 
 			if (activeTouch1 && activeTouch2) {
 				const initialDistance = activeTouch1.initialPinchDistance || currentDistance;
@@ -459,7 +459,8 @@ class MobileGestures {
 				warning: [50, 50],
 			};
 
-			navigator.vibrate(patterns[type] || patterns.light);
+			const pattern = patterns[type] ?? patterns.light;
+			navigator.vibrate(pattern);
 		}
 	}
 

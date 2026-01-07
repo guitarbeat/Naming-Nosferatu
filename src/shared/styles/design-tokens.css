@@ -317,6 +317,14 @@
 	--grid-gap-normal: var(--card-gap-normal); /* * Normal gaps */
 	--grid-row-unit: 20px; /* * Base row unit for flexible grid sizing */
 	--grid-min-column-width: 200px; /* * Minimum column width for responsive grids */
+
+	/* * Tournament card width tokens */
+	--card-width-xs: 140px; /* * Mobile screens */
+	--card-width-sm: 160px; /* * Tablet screens */
+	--card-width-md: 180px; /* * Desktop screens */
+	--card-width-lg: 190px; /* * Large desktop screens */
+	--card-width-xl: 200px; /* * Extra large screens */
+	--card-width-responsive: clamp(140px, 12vw, 200px); /* * Responsive width using viewport units */
 }
 
 /* ==========================================================================

@@ -24,7 +24,7 @@ import { useNameSelection } from "./shared/useNameSelection";
 export interface NameManagementViewExtensions {
 	header?: React.ReactNode | (() => React.ReactNode);
 	dashboard?: React.ReactNode | (() => React.ReactNode) | React.ComponentType;
-	bulkActions?: (props: { onExport?: () => void }) => React.ReactNode;
+	bulkActions?: React.ComponentType<{ onExport?: () => void }>;
 	contextLogic?: React.ReactNode | (() => React.ReactNode);
 	nameGrid?: React.ReactNode;
 	navbar?: React.ReactNode | (() => React.ReactNode);
@@ -73,33 +73,80 @@ export interface UseNameManagementViewResult {
 	// Core data
 	names: NameItem[];
 	isLoading: boolean;
-	error: unknown;
+	isError: boolean;
+	error: Error | null;
+	dataError: Error | null;
+	refetch: () => void;
+	clearErrors: () => void;
 
 	// Selection state
 	selectedNames: Set<string | number>;
+	selectedIds: unknown;
+	isSelectionMode: boolean;
+	setIsSelectionMode: () => void;
+	toggleName: (id: string | number) => void;
+	toggleNameById: (nameId: string, selected: boolean) => void;
+	toggleNamesByIds: (nameIds: string[], shouldSelect?: boolean) => void;
+	clearSelection: () => void;
+	selectAll: () => void;
+	isSelected: (item: NameItem) => boolean;
 	selectedCount: number;
 
 	// Filtering and sorting
-	filters: TournamentFilters;
-	setFilters: (filters: Partial<TournamentFilters>) => void;
+	searchQuery: string;
+	setSearchQuery: (query: string) => void;
+	filterStatus: string;
+	setFilterStatus: (status: string) => void;
+	sortBy: string;
+	setSortBy: (sortBy: string) => void;
+	sortOrder: "asc" | "desc";
+	setSortOrder: (order: "asc" | "desc") => void;
+	selectedCategory: string;
+	setSelectedCategory: (category: string) => void;
+	showSelectedOnly: boolean;
+	setShowSelectedOnly: (show: boolean) => void;
+	selectionFilter: string;
+	setSelectionFilter: (filter: string) => void;
+	userFilter: string;
+	setUserFilter: (filter: "all" | "user" | "other") => void;
+	dateFilter: "all" | "today" | "week" | "month";
+	setDateFilter: (filter: "all" | "today" | "week" | "month") => void;
+
+	// UI state
+	isSwipeMode: boolean;
+	showCatPictures: boolean;
+	activeTab: string;
+	setActiveTab: (tab: string) => void;
+	analysisMode: boolean;
+	setAnalysisMode: (mode: boolean) => void;
+
+	// Computed values
 	sortedNames: NameItem[];
 	filteredNames: NameItem[];
+	filteredNamesForSwipe: NameItem[];
+	uniqueCategories: string[];
+	stats: {
+		total: number;
+		visible: number;
+		hidden: number;
+		selected: number;
+	};
+	filterConfig: TournamentFilters;
+	handleFilterChange: (name: keyof TournamentFilters, value: string | number | boolean) => void;
+	handleAnalysisModeToggle: () => void;
 
-	// Actions
-	toggleName: (id: string | number) => void;
-	selectAll: () => void;
-	clearSelection: () => void;
-	toggleVisibility: (id: string | number) => Promise<void>;
-	deleteName: (name: NameItem) => Promise<void>;
+	// Additional properties
+	categories: string[];
+	profileProps: {
+		showUserFilter?: boolean;
+		selectionStats?: unknown;
+		userOptions?: Array<{ value: string; label: string }>;
+		isAdmin?: boolean;
+		[key: string]: unknown;
+	};
 
 	// Extensions
 	extensions: NameManagementViewExtensions;
-
-	// Utility functions
-	hasSelection: boolean;
-	allSelected: boolean;
-	someSelected: boolean;
-	visibleCount: number;
 }
 
 export type { TournamentFilters, UseNameManagementViewProps, NameItem };
@@ -200,7 +247,7 @@ export function useNameManagementView({
 			sortBy,
 			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
-			isAdmin: profileProps.isAdmin,
+			isAdmin: Boolean(profileProps.isAdmin),
 		});
 
 		if (showSelectedOnly) {
@@ -232,7 +279,7 @@ export function useNameManagementView({
 			sortBy,
 			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
-			isAdmin: profileProps.isAdmin,
+			isAdmin: Boolean(profileProps.isAdmin),
 		});
 
 		// Apply additional filters
@@ -265,16 +312,22 @@ export function useNameManagementView({
 				searchTerm,
 				category: selectedCategory,
 				sortBy,
-				filterStatus,
-				userFilter,
-				selectionFilter,
-				dateFilter,
+				filterStatus: filterStatus as "all" | "visible" | "hidden",
+				userFilter: userFilter as "all" | "user" | "other",
+				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
+				dateFilter: dateFilter as "all" | "today" | "week" | "month",
 				sortOrder,
 			};
 		} else if (mode === "tournament") {
 			return { searchTerm, category: selectedCategory, sortBy, sortOrder };
 		} else {
-			return { filterStatus, userFilter, selectionFilter, sortBy, sortOrder };
+			return {
+				filterStatus: filterStatus as "all" | "visible" | "hidden",
+				userFilter: userFilter as "all" | "user" | "other",
+				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
+				sortBy,
+				sortOrder
+			};
 		}
 	}, [
 		mode,
@@ -424,5 +477,9 @@ export function useNameManagementView({
 		filterConfig,
 		handleFilterChange,
 		handleAnalysisModeToggle,
+
+		// Additional properties
+		categories: uniqueCategories,
+		profileProps,
 	};
 }

@@ -27,8 +27,8 @@ import { type SelectionStats, useProfile } from "../../profile/hooks/useProfile"
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
 
 interface AnalysisHandlers {
-	handleToggleVisibility?: (nameId: string) => Promise<void>;
-	handleDelete?: (name: NameItem) => Promise<void>;
+	handleToggleVisibility: ((nameId: string) => Promise<void>) | undefined;
+	handleDelete: ((name: NameItem) => Promise<void>) | undefined;
 }
 
 // ============================================================================
@@ -274,8 +274,8 @@ export function AnalysisBulkActionsWrapper({
 }: AnalysisBulkActionsWrapperProps) {
 	const context = useNameManagementContextSafe();
 
-	const selectedCount = context?.selectedCount ?? 0;
-	const selectedNamesValue = context?.selectedNames;
+	const selectedCount = context.selectedCount ?? 0;
+	const selectedNamesValue = context.selectedNames;
 	// * Keep both Set format for selection logic and original array for bulk operations
 	const selectedNamesSet = useMemo(
 		() => selectedNamesToSet(selectedNamesValue),
@@ -297,8 +297,8 @@ export function AnalysisBulkActionsWrapper({
 		setAllNames,
 	});
 
-	const contextNames = context?.names;
-	const contextFilterStatus = context?.filterStatus;
+	const contextNames = context.names;
+	const contextFilterStatus = context.filterStatus;
 
 	const filteredAndSortedNames = useMemo(() => {
 		if (!contextNames || contextNames.length === 0) {
@@ -308,9 +308,9 @@ export function AnalysisBulkActionsWrapper({
 
 		// Use shared isNameHidden utility for consistent visibility check
 		if (contextFilterStatus === "visible") {
-			filtered = filtered.filter((name) => !isNameHidden(name as NameItem));
+			filtered = filtered.filter((name) => !isNameHidden(name));
 		} else if (contextFilterStatus === "hidden") {
-			filtered = filtered.filter((name) => isNameHidden(name as NameItem));
+			filtered = filtered.filter((name) => isNameHidden(name));
 		}
 		// * "all" shows everything (no filtering)
 

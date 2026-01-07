@@ -100,7 +100,9 @@ export function exportNamesToCSV(names: ExportNameItem[], fileName = "cat-names-
 export type NameId = string | number;
 
 // * Extract name IDs from selected names value
-export function extractNameIds(selectedNamesValue: string[] | NameItem[] | Set<string>): NameId[] {
+export function extractNameIds(
+	selectedNamesValue: string[] | NameItem[] | Set<string | number>,
+): NameId[] {
 	if (selectedNamesValue instanceof Set) {
 		return Array.from(selectedNamesValue);
 	}

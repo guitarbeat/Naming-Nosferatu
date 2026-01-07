@@ -70,13 +70,12 @@ export function ProfileMode({
 			{/* Bulk Actions Extension */}
 			{extensions.bulkActions && (
 				<section className={styles.bulkActionsSection}>
-					{typeof extensions.bulkActions === "function"
-						? React.createElement(extensions.bulkActions as React.ComponentType<unknown>, {
-								onExport: () => {
-									console.log("Export", names.length, "names");
-								},
-							})
-						: null}
+					{extensions.bulkActions &&
+						React.createElement(extensions.bulkActions, {
+							onExport: () => {
+								console.log("Export", names.length, "names");
+							},
+						})}
 				</section>
 			)}
 
@@ -88,8 +87,12 @@ export function ProfileMode({
 					onToggleName={toggleName}
 					filters={filterConfig}
 					isAdmin={!!profileProps.isAdmin}
-					onToggleVisibility={profileProps.onToggleVisibility}
-					onDelete={profileProps.onDelete}
+					onToggleVisibility={profileProps.onToggleVisibility ? (id) => {
+						profileProps.onToggleVisibility!(String(id)).catch(console.error);
+					} : undefined}
+					onDelete={profileProps.onDelete ? (name) => {
+						profileProps.onDelete!(name).catch(console.error);
+					} : undefined}
 					isLoading={isLoading}
 				/>
 			</section>

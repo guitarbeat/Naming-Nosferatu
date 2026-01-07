@@ -16,7 +16,7 @@
 
 .cardsContainer > * {
 	position: absolute;
-	width: 180px;
+	width: var(--card-width-responsive);
 	transition:
 		var(--transition-transform),
 		var(--transition-opacity),
@@ -26,36 +26,9 @@
 	will-change: transform, top, left;
 }
 
-@media (width >= 1920px) {
-	.cardsContainer > * {
-		width: 200px;
-	}
-}
-
-@media (width >= 1440px) and (width < 1920px) {
-	.cardsContainer > * {
-		width: 190px;
-	}
-}
-
-@media (width >= 1024px) and (width < 1440px) {
-	.cardsContainer > * {
-		width: 180px;
-	}
-}
-
-@media (width >= 768px) and (width < 1024px) {
-	.cardsContainer > * {
-		width: 160px;
-	}
-}
-
 @media (width < 768px) {
 	.cardsContainer {
 		padding: var(--space-2);
-	}
-	.cardsContainer > * {
-		width: 140px;
 	}
 }
 
@@ -84,7 +57,7 @@
 
 .cardsContainer > *:hover {
 	transform: var(--transform-hover-scale) translateY(-4px);
-	z-index: var(--z-10);
+	z-index: var(--z-20);
 	box-shadow:
 		var(--shadow-lg),
 		0 0 20px color-mix(in srgb, var(--color-neon-cyan) 15%, transparent);

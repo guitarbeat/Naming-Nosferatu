@@ -140,11 +140,7 @@ export function TournamentMode({
 				{/* Name Grid */}
 				<section className={styles.gridSection}>
 					{extensions.nameGrid ? (
-						typeof extensions.nameGrid === "function" ? (
-							extensions.nameGrid()
-						) : (
-							extensions.nameGrid
-						)
+						extensions.nameGrid
 					) : isSwipeMode && SwipeableCards && !isLoading ? (
 						React.createElement(SwipeableCards, {
 							names: filteredNamesForSwipe,

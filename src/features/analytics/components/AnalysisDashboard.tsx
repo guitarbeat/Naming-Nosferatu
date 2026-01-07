@@ -168,8 +168,8 @@ export function AnalysisDashboard({
 			onFilterChange={
 				toolbarContext.handleFilterChange ||
 				((name: string, value: string) => {
-					if (name === "searchTerm" && toolbarContext.setSearchTerm) {
-						toolbarContext.setSearchTerm(value);
+					if (name === "searchTerm" && toolbarContext.setSearchQuery) {
+						toolbarContext.setSearchQuery(value);
 					}
 					if (name === "category" && toolbarContext.setSelectedCategory) {
 						toolbarContext.setSelectedCategory(value || null);
