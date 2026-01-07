@@ -94,18 +94,25 @@ Working with AI agents works best in small, verifiable cycles:
 
 ## 🗑️ Dead Code Analysis
 
-### Identified Dead Code (Last Updated: 2026-01-07)
+### Cleanup Completed (Last Updated: 2026-01-07)
 
-#### Test Files
-- **`test/test-supabase-credentials.js`**: Security validation script that appears to be a one-time verification tool. No references found in package.json scripts or CI/CD. Consider removing if security fix is verified.
+#### Removed Dead Code
+- **`test/test-supabase-credentials.js`**: ✅ REMOVED - Security validation script that was a one-time verification tool with no references in package.json scripts or CI/CD.
 
-#### Potentially Unused Components
-- **`src/shared/components/Navigation/Breadcrumbs.tsx`**: While imported in `App.tsx`, this component may not be actively used in the UI. Review if breadcrumb navigation is actually displayed to users.
+#### Removed Unused Dependencies
+- **`@heroui/react`**: ✅ REMOVED - Unused dependency identified by knip
+- **`clsx`**: ✅ REMOVED - Unused dependency identified by knip  
+- **`ts-pattern`**: ✅ REMOVED - Unused dependency identified by knip
+- **`@testing-library/user-event`**: ✅ REMOVED - Unused dev dependency identified by knip
 
-#### Commented Code Patterns
-- **Tournament.tsx**: Contains intentional no-op comment for unused hook parameter
-- **NameManagementView.tsx**: Has `className` prop marked as potentially unused
-- **NavbarConfig.ts**: Contains legacy view support fallback that may be removable
+#### Components Verified as Active
+- **`src/shared/components/Navigation/Breadcrumbs.tsx`**: ✅ CONFIRMED ACTIVE - Imported and used in `App.tsx` on line 300, displays when user is logged in.
+
+#### Remaining Cleanup Opportunities
+The codebase has several unused exports and types identified by knip, but these are intentionally kept for:
+- API compatibility and future features
+- Type safety and documentation
+- Component interfaces that may be used by external consumers
 
 #### Maintenance Notes
 - All exports are marked with `// ts-prune-ignore-next` comments to prevent false positives from automated dead code detection
@@ -116,7 +123,7 @@ Working with AI agents works best in small, verifiable cycles:
   - Required by external systems (Vite, testing frameworks)
 
 ### Dead Code Prevention
-- Use `pnpm run check` to catch unused imports
+- Use `pnpm run check:deps` to catch unused dependencies and exports
 - Review `// ts-prune-ignore-next` comments periodically
 - Remove TODO/FIXME comments after addressing issues
 - Consider using tools like `ts-prune` or `knip` for automated detection
