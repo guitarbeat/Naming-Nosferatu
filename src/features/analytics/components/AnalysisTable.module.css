@@ -124,9 +124,19 @@
 	transform: scale(0.95);
 }
 
+.sortableHeader {
+	cursor: pointer;
+}
+
 .hideButton:focus-visible {
 	outline: none;
 	box-shadow: var(--focus-ring);
+}
+
+.percentileLabel {
+	font-size: 0.7em;
+	margin-left: 4px;
+	opacity: 0.7;
 }
 
 /* Rank Badge */

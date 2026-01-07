@@ -16,8 +16,11 @@
 	/* * Base spacing scale - 4px base unit for consistent rhythm */
 	--space-0: 0;
 	--space-1: 0.25rem; /* 4px */
+	--space-1_5: 0.375rem; /* 6px - Between space-1 and space-2 */
 	--space-2: 0.5rem; /* 8px */
+	--space-2_5: 0.625rem; /* 10px - Between space-2 and space-3 */
 	--space-3: 0.75rem; /* 12px */
+	--space-3_5: 0.875rem; /* 14px - Between space-3 and space-4 */
 	--space-4: 1rem; /* 16px */
 	--space-5: 1.25rem; /* 20px */
 	--space-6: 1.5rem; /* 24px */
