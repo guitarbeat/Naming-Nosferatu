@@ -2,6 +2,7 @@ import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { updateSupabaseUserContext } from "../../../shared/services/supabase/client";
 import type { AppState, UserState } from "../../../types/store";
+import { updateSlice } from "../utils";
 
 const getInitialUserState = (): UserState => {
 	const defaultState: UserState = {
@@ -42,109 +43,83 @@ export const createUserSlice: StateCreator<
 	user: getInitialUserState(),
 
 	userActions: {
-		setUser: (userData) =>
-			set((state) => {
-				const newUser = {
-					...state.user,
-					...userData,
-				};
-				// * Persist to localStorage
-				try {
-					if (newUser.name) {
-						localStorage.setItem(STORAGE_KEYS.USER, newUser.name);
-					} else {
-						localStorage.removeItem(STORAGE_KEYS.USER);
-					}
-				} catch (error) {
-					if (import.meta.env.DEV) {
-						console.error("Error updating localStorage:", error);
-					}
-				}
-				return {
-					user: newUser,
-				};
-			}),
-
-		login: (userName) =>
-			set((state) => {
-				const newUser = {
-					...state.user,
-					name: userName,
-					isLoggedIn: true,
-				};
-				// * Persist to localStorage
-				try {
-					localStorage.setItem(STORAGE_KEYS.USER, userName);
-					// Update Supabase client headers for RLS policies
-					updateSupabaseUserContext(userName);
-				} catch (error) {
-					if (import.meta.env.DEV) {
-						console.error("Error updating localStorage:", error);
-					}
-				}
-				return {
-					user: newUser,
-				};
-			}),
-
-		logout: () =>
-			set((state) => {
-				// * Clear localStorage
-				try {
+		setUser: (userData) => {
+			updateSlice(set, "user", userData);
+			// * Persist to localStorage
+			try {
+				const name = userData.name ?? _get().user.name;
+				if (name) {
+					localStorage.setItem(STORAGE_KEYS.USER, name);
+				} else {
 					localStorage.removeItem(STORAGE_KEYS.USER);
-					// Clear Supabase client headers
-					updateSupabaseUserContext(null);
-				} catch (error) {
-					if (import.meta.env.DEV) {
-						console.error("Error clearing localStorage:", error);
-					}
 				}
-				return {
-					user: {
-						...state.user,
-						name: "",
-						isLoggedIn: false,
-						isAdmin: false,
-					},
-					tournament: {
-						...state.tournament,
-						names: null,
-						isComplete: false,
-						voteHistory: [],
-					},
-				};
-			}),
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.error("Error updating localStorage:", error);
+				}
+			}
+		},
 
-		setAdminStatus: (isAdmin) =>
+		login: (userName) => {
+			updateSlice(set, "user", { name: userName, isLoggedIn: true });
+			// * Persist to localStorage
+			try {
+				localStorage.setItem(STORAGE_KEYS.USER, userName);
+				// Update Supabase client headers for RLS policies
+				updateSupabaseUserContext(userName);
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.error("Error updating localStorage:", error);
+				}
+			}
+		},
+
+		logout: () => {
+			// * Clear localStorage
+			try {
+				localStorage.removeItem(STORAGE_KEYS.USER);
+				// Clear Supabase client headers
+				updateSupabaseUserContext(null);
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.error("Error clearing localStorage:", error);
+				}
+			}
 			set((state) => ({
 				user: {
 					...state.user,
-					isAdmin,
+					name: "",
+					isLoggedIn: false,
+					isAdmin: false,
 				},
-			})),
+				tournament: {
+					...state.tournament,
+					names: null,
+					isComplete: false,
+					voteHistory: [],
+				},
+			}));
+		},
+
+		setAdminStatus: (isAdmin) => updateSlice(set, "user", { isAdmin }),
 
 		// * Initialize user from localStorage
-		initializeFromStorage: () =>
-			set((state) => {
-				try {
-					const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
-					if (storedUser && state.user.name !== storedUser) {
-						// Update Supabase client headers for RLS policies
-						updateSupabaseUserContext(storedUser);
-						return {
-							user: {
-								...state.user,
-								name: storedUser,
-								isLoggedIn: true,
-							},
-						};
-					}
-				} catch (error) {
-					if (import.meta.env.DEV) {
-						console.error("Error reading from localStorage:", error);
-					}
+		initializeFromStorage: () => {
+			try {
+				const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
+				if (storedUser && _get().user.name !== storedUser) {
+					// Update Supabase client headers for RLS policies
+					updateSupabaseUserContext(storedUser);
+					updateSlice(set, "user", {
+						name: storedUser,
+						isLoggedIn: true,
+					});
 				}
-				return state;
-			}),
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.error("Error reading from localStorage:", error);
+				}
+			}
+		},
 	},
 });

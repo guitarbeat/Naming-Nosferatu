@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { siteSettingsAPI } from "../../../shared/services/supabase/client";
 import type { AppState, CatChosenName } from "../../../types/store";
+import { updateSlice } from "../utils";
 
 export const createSiteSettingsSlice: StateCreator<
 	AppState,
@@ -17,32 +18,19 @@ export const createSiteSettingsSlice: StateCreator<
 		loadCatChosenName: async () => {
 			try {
 				const data = (await siteSettingsAPI.getCatChosenName()) as CatChosenName | null;
-				set((state) => ({
-					siteSettings: {
-						...state.siteSettings,
-						catChosenName: data,
-						isLoaded: true,
-					},
-				}));
+				updateSlice(set, "siteSettings", {
+					catChosenName: data,
+					isLoaded: true,
+				});
 				return data;
 			} catch (error) {
 				console.error("Error loading cat chosen name:", error);
-				set((state) => ({
-					siteSettings: {
-						...state.siteSettings,
-						isLoaded: true,
-					},
-				}));
+				updateSlice(set, "siteSettings", { isLoaded: true });
 				return null;
 			}
 		},
 
 		updateCatChosenName: (nameData) =>
-			set((state) => ({
-				siteSettings: {
-					...state.siteSettings,
-					catChosenName: nameData,
-				},
-			})),
+			updateSlice(set, "siteSettings", { catChosenName: nameData }),
 	},
 });

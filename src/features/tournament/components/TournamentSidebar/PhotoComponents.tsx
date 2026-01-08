@@ -222,9 +222,9 @@ export function PhotoGallery({
 							maxHeight: 1600,
 							quality: 0.8,
 						});
-						const url = await imagesAPI.upload(compressed, userName || "anonymous");
-						if (url) {
-							uploaded.push(url);
+						const data = await imagesAPI.upload(compressed, userName || "anonymous");
+						if (data?.path) {
+							uploaded.push(data.path);
 						}
 					} catch (err) {
 						devError("PhotoGallery: Failed to upload image", err);

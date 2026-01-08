@@ -15,18 +15,21 @@ export type IdType = string | number;
 export interface NameItem {
 	id: IdType;
 	name: string;
-	value?: IdType;
 	description?: string;
+	// View state
+	isHidden?: boolean;
+	isSelected?: boolean;
+	avgRating?: number;
+	categories?: string[];
+	// Database fields (compatibility)
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden?: boolean;
-	rating?: number;
 	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
-	popularity_score?: number;
-	category?: string;
+	// Ratings & Stats
 	wins?: number;
 	losses?: number;
+	popularity_score?: number;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	[key: string]: unknown;
 }

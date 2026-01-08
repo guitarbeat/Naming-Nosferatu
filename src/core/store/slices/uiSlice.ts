@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
 import type { AppState, UIState } from "../../../types/store";
+import { updateSlice } from "../utils";
 
 const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	if (typeof window !== "undefined") {
@@ -36,45 +37,15 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 	},
 
 	uiActions: {
-		setMatrixMode: (enabled) =>
-			set((state) => ({
-				ui: {
-					...state.ui,
-					matrixMode: enabled,
-				},
-			})),
+		setMatrixMode: (enabled) => updateSlice(set, "ui", { matrixMode: enabled }),
 
-		setGlobalAnalytics: (show) =>
-			set((state) => ({
-				ui: {
-					...state.ui,
-					showGlobalAnalytics: show,
-				},
-			})),
+		setGlobalAnalytics: (show) => updateSlice(set, "ui", { showGlobalAnalytics: show }),
 
-		setSwipeMode: (enabled) =>
-			set((state) => ({
-				ui: {
-					...state.ui,
-					isSwipeMode: enabled,
-				},
-			})),
+		setSwipeMode: (enabled) => updateSlice(set, "ui", { isSwipeMode: enabled }),
 
-		setCatPictures: (show) =>
-			set((state) => ({
-				ui: {
-					...state.ui,
-					showCatPictures: show,
-				},
-			})),
+		setCatPictures: (show) => updateSlice(set, "ui", { showCatPictures: show }),
 
-		setUserComparison: (show) =>
-			set((state) => ({
-				ui: {
-					...state.ui,
-					showUserComparison: show,
-				},
-			})),
+		setUserComparison: (show) => updateSlice(set, "ui", { showUserComparison: show }),
 
 		setTheme: (newTheme) => {
 			const isSystem = newTheme === "system";
@@ -86,13 +57,10 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 					: "light";
 			}
 
-			set((state) => ({
-				ui: {
-					...state.ui,
-					theme: resolvedTheme,
-					themePreference: newTheme,
-				},
-			}));
+			updateSlice(set, "ui", {
+				theme: resolvedTheme,
+				themePreference: newTheme,
+			});
 
 			if (typeof window !== "undefined") {
 				localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
@@ -104,12 +72,9 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 					const listener = (e: MediaQueryListEvent) => {
 						// Only update if preference is still system
 						if (get().ui.themePreference === "system") {
-							set((s) => ({
-								ui: {
-									...s.ui,
-									theme: e.matches ? "dark" : "light",
-								},
-							}));
+							updateSlice(set, "ui", {
+								theme: e.matches ? "dark" : "light",
+							});
 						}
 					};
 					mediaQuery.addEventListener("change", listener);

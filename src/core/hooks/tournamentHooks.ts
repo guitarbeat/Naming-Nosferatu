@@ -61,7 +61,9 @@ export function getNextMatch(
 		history?: MatchRecord[];
 	} = {},
 ): Match | null {
-	if (!sorter || names.length <= 2) return null;
+	if (!sorter || names.length <= 2) {
+		return null;
+	}
 
 	const s = sorter as PreferenceSorter;
 	const ratings = options.currentRatings || {};

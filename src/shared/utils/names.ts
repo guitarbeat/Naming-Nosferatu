@@ -121,16 +121,16 @@ function filterByVisibility(
 		return [];
 	}
 	if (!isAdmin) {
-		return names.filter((name) => !isNameHidden(name));
+		return names.filter((n) => !isNameHidden(n));
 	}
 
 	switch (visibility) {
 		case "hidden":
-			return names.filter((name) => isNameHidden(name));
+			return names.filter((n) => isNameHidden(n));
 		case "all":
 			return names;
 		default:
-			return names.filter((name) => !isNameHidden(name));
+			return names.filter((n) => !isNameHidden(n));
 	}
 }
 
@@ -169,20 +169,24 @@ export function applyNameFilters(
 	const multiplier = sortOrder === "asc" ? 1 : -1;
 	result.sort((a, b) => {
 		let comp = 0;
+		const valA = a.avgRating ?? a.avg_rating ?? 1500;
+		const valB = b.avgRating ?? b.avg_rating ?? 1500;
+
 		switch (sortBy) {
 			case "rating":
-				comp = (a.avg_rating || 1500) - (b.avg_rating || 1500);
+				comp = valA - valB;
 				break;
 			case "name":
 			case "alphabetical":
 				comp = (a.name || "").localeCompare(b.name || "");
 				break;
 			case "created_at":
-			case "date":
-				comp =
-					new Date((a.created_at as string) || "1970-01-01").getTime() -
-					new Date((b.created_at as string) || "1970-01-01").getTime();
+			case "date": {
+				const dateA = new Date((a.created_at as string) || (a.addedAt as string) || 0).getTime();
+				const dateB = new Date((b.created_at as string) || (b.addedAt as string) || 0).getTime();
+				comp = dateA - dateB;
 				break;
+			}
 			default:
 				comp = 0;
 		}

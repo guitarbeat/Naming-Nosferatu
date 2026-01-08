@@ -1,5 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "../../../types/store";
+import { updateSlice } from "../utils";
 
 export const createTournamentSlice: StateCreator<
 	AppState,
@@ -18,69 +19,39 @@ export const createTournamentSlice: StateCreator<
 
 	tournamentActions: {
 		setNames: (names) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					names:
-						names?.map((n) => ({
-							id: n.id,
-							name: n.name,
-							description: n.description,
-							rating: state.tournament.ratings[n.name]?.rating || 1500,
-						})) || null,
-				},
-			})),
+			updateSlice(set, "tournament", {
+				names:
+					names?.map((n) => ({
+						id: n.id,
+						name: n.name,
+						description: n.description,
+						rating: _get().tournament.ratings[n.name]?.rating || 1500,
+					})) || null,
+			}),
 
 		setRatings: (ratings) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					ratings: { ...state.tournament.ratings, ...ratings },
-				},
-			})),
+			updateSlice(set, "tournament", {
+				ratings: { ..._get().tournament.ratings, ...ratings },
+			}),
 
-		setComplete: (isComplete) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					isComplete,
-				},
-			})),
+		setComplete: (isComplete) => updateSlice(set, "tournament", { isComplete }),
 
-		setLoading: (isLoading) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					isLoading,
-				},
-			})),
+		setLoading: (isLoading) => updateSlice(set, "tournament", { isLoading }),
 
 		addVote: (vote) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					voteHistory: [...state.tournament.voteHistory, vote],
-				},
-			})),
+			updateSlice(set, "tournament", {
+				voteHistory: [..._get().tournament.voteHistory, vote],
+			}),
 
 		resetTournament: () =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					names: null,
-					isComplete: false,
-					voteHistory: [],
-					isLoading: false, // * Explicitly set loading to false to prevent flashing
-					currentView: "tournament", // * Reset view to allow starting new tournament
-				},
-			})),
+			updateSlice(set, "tournament", {
+				names: null,
+				isComplete: false,
+				voteHistory: [],
+				isLoading: false,
+				currentView: "tournament",
+			}),
 
-		setView: (view) =>
-			set((state) => ({
-				tournament: {
-					...state.tournament,
-					currentView: view,
-				},
-			})),
+		setView: (view) => updateSlice(set, "tournament", { currentView: view }),
 	},
 });

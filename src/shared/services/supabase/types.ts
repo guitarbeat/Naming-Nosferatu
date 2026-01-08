@@ -72,6 +72,7 @@ export type Database = {
 					description: string | null;
 					id: string;
 					is_active: boolean | null;
+					is_hidden: boolean | null;
 					name: string;
 				};
 				Insert: {
@@ -81,6 +82,7 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_active?: boolean | null;
+					is_hidden?: boolean | null;
 					name: string;
 				};
 				Update: {
@@ -90,6 +92,7 @@ export type Database = {
 					description?: string | null;
 					id?: string;
 					is_active?: boolean | null;
+					is_hidden?: boolean | null;
 					name?: string;
 				};
 				Relationships: [];
@@ -207,6 +210,65 @@ export type Database = {
 						isOneToOne: false;
 						referencedRelation: "cat_name_options";
 						referencedColumns: ["id"];
+					},
+				];
+			};
+			cat_chosen_name: {
+				Row: {
+					created_at: string;
+					first_name: string;
+					greeting_text: string | null;
+					id: string;
+					last_name: string | null;
+					middle_names: string | string[] | null;
+					show_banner: boolean | null;
+				};
+				Insert: {
+					created_at?: string;
+					first_name: string;
+					greeting_text?: string | null;
+					id?: string;
+					last_name?: string | null;
+					middle_names?: string | string[] | null;
+					show_banner?: boolean | null;
+				};
+				Update: {
+					created_at?: string;
+					first_name?: string;
+					greeting_text?: string | null;
+					id?: string;
+					last_name?: string | null;
+					middle_names?: string | string[] | null;
+					show_banner?: boolean | null;
+				};
+				Relationships: [];
+			};
+			user_roles: {
+				Row: {
+					created_at: string | null;
+					id: string;
+					role: string;
+					user_name: string;
+				};
+				Insert: {
+					created_at?: string | null;
+					id?: string;
+					role: string;
+					user_name: string;
+				};
+				Update: {
+					created_at?: string | null;
+					id?: string;
+					role?: string;
+					user_name?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "user_roles_user_name_fkey";
+						columns: ["user_name"];
+						isOneToOne: false;
+						referencedRelation: "cat_app_users";
+						referencedColumns: ["user_name"];
 					},
 				];
 			};
@@ -336,15 +398,15 @@ export type Database = {
 				}[];
 			};
 			has_role:
-				| { Args: { _role?: string; _user_name: string }; Returns: boolean }
-				| { Args: { required_role: string }; Returns: boolean }
-				| {
-						Args: {
-							_role: Database["public"]["Enums"]["app_role"];
-							_user_id: string;
-						};
-						Returns: boolean;
-				  };
+			| { Args: { _role?: string; _user_name: string }; Returns: boolean }
+			| { Args: { required_role: string }; Returns: boolean }
+			| {
+				Args: {
+					_role: Database["public"]["Enums"]["app_role"];
+					_user_id: string;
+				};
+				Returns: boolean;
+			};
 			is_admin: { Args: never; Returns: boolean };
 			is_user_admin: { Args: { user_id_to_check: string }; Returns: boolean };
 			merge_user_accounts: {

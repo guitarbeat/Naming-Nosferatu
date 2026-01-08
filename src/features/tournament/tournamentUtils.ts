@@ -364,7 +364,9 @@ export class PreferenceSorter {
 
 			for (let idx = this.currentIndex; idx < this.pairs.length; idx++) {
 				const pair = this.pairs[idx];
-				if (!pair) continue;
+				if (!pair) {
+					continue;
+				}
 				const [a, b] = pair;
 
 				// Skip if already judged

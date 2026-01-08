@@ -224,17 +224,17 @@ export function SwipeableCards({
 											)}
 
 											{/* Name */}
-											<h2 className={styles.swipeCardName}>{card.name}</h2>
+											<h2 className={styles.swipeCardName}>{String(card.name)}</h2>
 
 											{/* Description */}
 											{card.description && (
-												<p className={styles.swipeCardDescription}>{card.description}</p>
+												<p className={styles.swipeCardDescription}>{String(card.description)}</p>
 											)}
 
 											{/* Metadata */}
-											{card.category && (
+											{card.categories && card.categories.length > 0 && (
 												<div className={styles.swipeCardMetadata}>
-													<span className={styles.metadataItem}>{card.category}</span>
+													<span className={styles.metadataItem}>{card.categories[0]}</span>
 												</div>
 											)}
 										</div>

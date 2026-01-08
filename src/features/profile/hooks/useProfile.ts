@@ -6,13 +6,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
+import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
 import {
 	adminAPI,
 	catNamesAPI,
 	deleteName,
 	hiddenNamesAPI,
-	resolveSupabaseClient,
-} from "../../../shared/services/supabase/client";
+} from "../../../shared/services/supabase/modules/general";
 import { clearAllCaches, devError, devLog } from "../../../shared/utils";
 import type { IdType, NameItem } from "../../../types/components";
 
@@ -382,7 +382,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
  */
 async function listAllUsers(): Promise<UserWithRoles[]> {
 	try {
-		const users = await adminAPI.listUsers();
+		const { users } = await adminAPI.listUsers();
 		return (users || []) as UserWithRoles[];
 	} catch (error) {
 		devError("Error listing users:", error);
@@ -602,27 +602,23 @@ export function useProfile(
 				const result = isHide
 					? await hiddenNamesAPI.hideNames(userName, ids)
 					: await hiddenNamesAPI.unhideNames(userName, ids);
-				if (result.success && (result.processed ?? 0) > 0) {
-					showSuccess(
-						`Successfully ${isHide ? "hidden" : "unhidden"} ${result.processed} ${result.processed === 1 ? "name" : "names"}`,
-					);
-					setHiddenNames((prev) => {
-						const next = new Set(prev);
-						ids.forEach((id) => {
-							if (isHide) {
-								next.add(id);
-							} else {
-								next.delete(id);
-							}
-						});
-						return next;
+				showSuccess(
+					`Successfully ${isHide ? "hidden" : "unhidden"} ${result.length} ${result.length === 1 ? "name" : "names"}`,
+				);
+				setHiddenNames((prev) => {
+					const next = new Set(prev);
+					ids.forEach((id) => {
+						if (isHide) {
+							next.add(id);
+						} else {
+							next.delete(id);
+						}
 					});
-					setSelectedNames(new Set());
-					clearAllCaches();
-					fetchNames(userName);
-				} else {
-					showError(result.error || "Unable to complete operation. Please try again.");
-				}
+					return next;
+				});
+				setSelectedNames(new Set());
+				clearAllCaches();
+				fetchNames(userName);
 			} catch (e: unknown) {
 				const error = e instanceof Error ? e : new Error(String(e));
 				showError(`Unable to complete bulk operation: ${error.message}`);

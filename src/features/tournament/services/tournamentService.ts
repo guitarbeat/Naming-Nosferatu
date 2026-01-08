@@ -220,7 +220,7 @@ export const tournamentsAPI = {
 						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_user_name: userName,
 					});
-				} catch (rpcError) {
+				} catch (_rpcError) {
 					// ignore if already exists
 				}
 
@@ -229,7 +229,7 @@ export const tournamentsAPI = {
 						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						user_name_param: userName,
 					});
-				} catch (rpcError) {
+				} catch (_rpcError) {
 					// ignore context errors
 				}
 
