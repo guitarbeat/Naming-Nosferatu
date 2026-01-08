@@ -435,12 +435,27 @@ export default function useMagneticPull(
 		left: null,
 		right: null,
 	});
+	const enabledRef = useRef(enabled);
+
+	// Sync enabled ref and handle reset when disabled
+	useEffect(() => {
+		enabledRef.current = enabled;
+		if (!enabled) {
+			const leftOrb = leftOrbRef.current;
+			const rightOrb = rightOrbRef.current;
+
+			if (leftOrb) {
+				leftOrb.style.transform = "";
+				leftOrb.style.transition = "";
+			}
+			if (rightOrb) {
+				rightOrb.style.transform = "";
+				rightOrb.style.transition = "";
+			}
+		}
+	}, [enabled, leftOrbRef, rightOrbRef]);
 
 	useEffect(() => {
-		if (!enabled) {
-			return;
-		}
-
 		const leftOrb = leftOrbRef.current;
 		const rightOrb = rightOrbRef.current;
 
@@ -457,7 +472,7 @@ export default function useMagneticPull(
 				return;
 			}
 
-			if (isDirty) {
+			if (isDirty && enabledRef.current) {
 				const xAxis = (window.innerWidth / 2 - mousePos.x) / 40;
 				const yAxis = (window.innerHeight / 2 - mousePos.y) / 40;
 
@@ -476,6 +491,9 @@ export default function useMagneticPull(
 		};
 
 		const handleMouseMove = (e: MouseEvent) => {
+			if (!enabledRef.current) {
+				return;
+			}
 			mousePos.x = e.pageX;
 			mousePos.y = e.pageY;
 			isDirty = true;
@@ -485,7 +503,7 @@ export default function useMagneticPull(
 		animationFrameId = requestAnimationFrame(updatePosition);
 
 		const handleMouseDown = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) {
+			if (!orb || !enabledRef.current) {
 				return;
 			}
 			orb.style.transition = "transform 0.1s ease";
@@ -494,7 +512,7 @@ export default function useMagneticPull(
 		};
 
 		const handleMouseUp = (orb: HTMLElement | null, isLeft: boolean) => {
-			if (!orb) {
+			if (!orb || !enabledRef.current) {
 				return;
 			}
 			orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
@@ -527,7 +545,7 @@ export default function useMagneticPull(
 			rightOrb.removeEventListener("mousedown", rightMouseDown);
 			rightOrb.removeEventListener("mouseup", rightMouseUp);
 
-			// Reset transforms
+			// Ensure transforms are reset on unmount
 			if (leftOrb) {
 				leftOrb.style.transform = "";
 				leftOrb.style.transition = "";
@@ -537,7 +555,7 @@ export default function useMagneticPull(
 				rightOrb.style.transition = "";
 			}
 		};
-	}, [leftOrbRef, rightOrbRef, enabled]);
+	}, [leftOrbRef, rightOrbRef]);
 }
 
 // ============================================================================
