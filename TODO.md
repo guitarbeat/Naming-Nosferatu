@@ -28,4 +28,12 @@ This document tracks potential areas for code consolidation and simplification t
 
 ## General
 - [ ] **Type definitions**:
-    - Review `src/types/` for fragmentation. Consolidate component props and domain models.
+    - **DRY Violations Found:**
+      - **CRITICAL:** Three different `TournamentState` interfaces in `types/components.ts`, `types/store.ts`, and `ViewRouter.tsx` - same name, different purposes
+      - **MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type
+    - **Consolidation Plan:**
+      - Rename `TournamentState` in components.ts to `TournamentUIState` (UI-specific state)
+      - Remove duplicate `TournamentState` from ViewRouter.tsx (use store import)
+      - Replace `TournamentName` with `NameItem` throughout codebase
+    - **Impact:** ~25 file imports to update, prevents naming conflicts
+
