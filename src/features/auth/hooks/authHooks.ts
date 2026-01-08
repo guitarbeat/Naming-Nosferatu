@@ -184,7 +184,7 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 					setValues({ name });
 				}
 			}
-		} catch (_e) {
+		} catch {
 			// Ignore storage errors
 		}
 	}, [setValues, values.name]); // Run once on mount if name is missing

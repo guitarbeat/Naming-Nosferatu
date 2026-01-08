@@ -50,12 +50,16 @@ export function SwipeableCards({
 
 	const handleDragEnd = useCallback(
 		async (cardId: string, info: PanInfo) => {
-			if (isProcessing) return;
+			if (isProcessing) {
+				return;
+			}
 
 			const offset = info.offset.x;
 			const card = names.find((n) => String(n.id) === cardId);
 
-			if (!card) return;
+			if (!card) {
+				return;
+			}
 
 			// Check if swipe exceeds threshold
 			if (Math.abs(offset) < SwipeThreshold) {
@@ -103,16 +107,10 @@ export function SwipeableCards({
 		[names, isProcessing, isSelected, onToggleName],
 	);
 
-	const handleCardClick = useCallback(
-		(card: NameItem) => {
-			playSound("gameboy-pluck");
-			onToggleName(card);
-		},
-		[onToggleName],
-	);
-
 	const handleUndo = useCallback(() => {
-		if (undoStackRef.current.length === 0) return;
+		if (undoStackRef.current.length === 0) {
+			return;
+		}
 
 		const cardToRestore = undoStackRef.current.pop();
 		if (cardToRestore) {

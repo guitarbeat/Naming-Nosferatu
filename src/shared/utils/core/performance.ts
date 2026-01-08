@@ -59,7 +59,7 @@ export function initializePerformanceMonitoring() {
 			});
 			lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
 			performanceMetrics.observers.push(lcpObserver);
-		} catch (_error) {
+		} catch {
 			console.debug("LCP observer not supported");
 		}
 
@@ -79,7 +79,7 @@ export function initializePerformanceMonitoring() {
 			});
 			clsObserver.observe({ type: "layout-shift", buffered: true });
 			performanceMetrics.observers.push(clsObserver);
-		} catch (_error) {
+		} catch {
 			console.debug("CLS observer not supported");
 		}
 
@@ -94,7 +94,7 @@ export function initializePerformanceMonitoring() {
 			});
 			fidObserver.observe({ type: "first-input", buffered: true });
 			performanceMetrics.observers.push(fidObserver);
-		} catch (_error) {
+		} catch {
 			console.debug("FID observer not supported");
 		}
 
@@ -110,7 +110,7 @@ export function initializePerformanceMonitoring() {
 			});
 			fcpObserver.observe({ type: "paint", buffered: true });
 			performanceMetrics.observers.push(fcpObserver);
-		} catch (_error) {
+		} catch {
 			console.debug("FCP observer not supported");
 		}
 	}

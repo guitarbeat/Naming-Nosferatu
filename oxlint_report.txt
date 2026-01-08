@@ -1,0 +1,211 @@
+
+> name-nosferatu@1.0.2 lint:quick /Users/aaron/Downloads/Naming-Nosferatu
+> oxlint
+
+
+  ! eslint(no-unused-vars): Identifier 'SubNavigation' is imported but never used.
+    ,-[src/App.tsx:28:10]
+ 27 | 
+ 28 | import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
+    :          ^^^^^^|^^^^^^
+    :                `-- 'SubNavigation' is imported here
+ 29 | import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'handleLogout' is declared but never used. Unused parameters should start with a '_'.
+     ,-[src/App.tsx:236:2]
+ 235 |     onOpenSuggestName,
+ 236 |     handleLogout,
+     :     ^^^^^^|^^^^^
+     :           `-- 'handleLogout' is declared here
+ 237 |     handleOpenPhotos,
+     `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Parameter 'handleOpenPhotos' is declared but never used. Unused parameters should start with a '_'.
+     ,-[src/App.tsx:237:2]
+ 236 |     handleLogout,
+ 237 |     handleOpenPhotos,
+     :     ^^^^^^^^|^^^^^^^
+     :             `-- 'handleOpenPhotos' is declared here
+ 238 | }: AppLayoutProps) {
+     `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Variable 'currentView' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/App.tsx:240:8]
+ 239 |     const { isLoggedIn } = user;
+ 240 |     const currentView = useAppStore((state: AppState) => state.tournament.currentView);
+     :           ^^^^^|^^^^^
+     :                `-- 'currentView' is declared here
+ 241 |     const { currentRoute, navigateTo } = useRouting();
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'currentRoute' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/App.tsx:241:10]
+ 240 |     const currentView = useAppStore((state: AppState) => state.tournament.currentView);
+ 241 |     const { currentRoute, navigateTo } = useRouting();
+     :             ^^^^^^|^^^^^
+     :                   `-- 'currentRoute' is declared here
+ 242 | 
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'navigateTo' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/App.tsx:241:24]
+ 240 |     const currentView = useAppStore((state: AppState) => state.tournament.currentView);
+ 241 |     const { currentRoute, navigateTo } = useRouting();
+     :                           ^^^^^|^^^^
+     :                                `-- 'navigateTo' is declared here
+ 242 | 
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Interface 'SubmitNameRequest' is declared but never used.
+    ,-[api/submit-name.ts:10:11]
+  9 | 
+ 10 | interface SubmitNameRequest {
+    :           ^^^^^^^^|^^^^^^^^
+    :                   `-- 'SubmitNameRequest' is declared here
+ 11 |     name: string;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+    ,-[src/core/hooks/useRouting.ts:67:11]
+ 66 |         window.dispatchEvent(new Event(ROUTE_CHANGE_EVENT));
+ 67 |     } catch (_error) {
+    :              ^^^|^^
+    :                 `-- '_error' is declared here
+ 68 |         if (typeof document !== "undefined" && typeof document.createEvent === "function") {
+    `----
+  help: Consider handling this error.
+
+  ! eslint-plugin-unicorn(no-useless-fallback-in-spread): Empty fallbacks in spreads are unnecessary
+     ,-[src/core/hooks/tournamentHooks.ts:571:6]
+ 570 |                 newRatings[leftName] = {
+ 571 |                     ...(newRatings[leftName] || {}),
+     :                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 572 |                     rating: r.newRatingA,
+     `----
+  help: Spreading falsy values in object literals won't add any unexpected properties, so it's unnecessary to add an empty object as fallback.
+
+  ! eslint-plugin-unicorn(no-useless-fallback-in-spread): Empty fallbacks in spreads are unnecessary
+     ,-[src/core/hooks/tournamentHooks.ts:577:6]
+ 576 |                 newRatings[rightName] = {
+ 577 |                     ...(newRatings[rightName] || {}),
+     :                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 578 |                     rating: r.newRatingB,
+     `----
+  help: Spreading falsy values in object literals won't add any unexpected properties, so it's unnecessary to add an empty object as fallback.
+
+  ! eslint-plugin-unicorn(no-new-array): Do not use `new Array(singleArgument)`.
+    ,-[src/shared/hooks/useMasonryLayout.ts:63:19]
+ 62 |         // Initialize column heights
+ 63 |         const heights = new Array(calculatedColumnCount).fill(0);
+    :                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 64 |         const newPositions: MasonryPosition[] = [];
+    `----
+  help: It's not clear whether the argument is meant to be the length of the array or the only element. If the argument is the array's length, consider using `Array.from({ length: n })`. If the argument is the only element, use `[element]`.
+
+  ! eslint-plugin-unicorn(no-new-array): Do not use `new Array(singleArgument)`.
+     ,-[src/features/tournament/tournamentUtils.ts:188:14]
+ 187 |         this.ranks = [];
+ 188 |         this.rec = new Array(items.length).fill(0);
+     :                    ^^^^^^^^^^^^^^^^^^^^^^^
+ 189 |         // Pairwise comparison queue (simple, reliable fallback)
+     `----
+  help: It's not clear whether the argument is meant to be the length of the array or the only element. If the argument is the array's length, consider using `Array.from({ length: n })`. If the argument is the only element, use `[element]`.
+
+  ! eslint-plugin-unicorn(no-new-array): Do not use `new Array(singleArgument)`.
+     ,-[src/features/tournament/tournamentUtils.ts:247:15]
+ 246 |         if (!this.rec || this.rec.length !== n) {
+ 247 |             this.rec = new Array(n).fill(0);
+     :                        ^^^^^^^^^^^^
+ 248 |         }
+     `----
+  help: It's not clear whether the argument is meant to be the length of the array or the only element. If the argument is the array's length, consider using `Array.from({ length: n })`. If the argument is the only element, use `[element]`.
+
+  ! eslint-plugin-unicorn(no-new-array): Do not use `new Array(singleArgument)`.
+    ,-[src/shared/components/CatImage/CatImage.tsx:61:23]
+ 60 | 
+ 61 |                 const rowEnergy = new Array(h).fill(0);
+    :                                   ^^^^^^^^^^^^
+ 62 |                 const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
+    `----
+  help: It's not clear whether the argument is meant to be the length of the array or the only element. If the argument is the array's length, consider using `Array.from({ length: n })`. If the argument is the only element, use `[element]`.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+    ,-[src/shared/utils/core/performance.ts:62:12]
+ 61 |             performanceMetrics.observers.push(lcpObserver);
+ 62 |         } catch (_error) {
+    :                  ^^^|^^
+    :                     `-- '_error' is declared here
+ 63 |             console.debug("LCP observer not supported");
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+    ,-[src/shared/utils/core/performance.ts:82:12]
+ 81 |             performanceMetrics.observers.push(clsObserver);
+ 82 |         } catch (_error) {
+    :                  ^^^|^^
+    :                     `-- '_error' is declared here
+ 83 |             console.debug("CLS observer not supported");
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+    ,-[src/shared/utils/core/performance.ts:97:12]
+ 96 |             performanceMetrics.observers.push(fidObserver);
+ 97 |         } catch (_error) {
+    :                  ^^^|^^
+    :                     `-- '_error' is declared here
+ 98 |             console.debug("FID observer not supported");
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+     ,-[src/shared/utils/core/performance.ts:113:12]
+ 112 |             performanceMetrics.observers.push(fcpObserver);
+ 113 |         } catch (_error) {
+     :                  ^^^|^^
+     :                     `-- '_error' is declared here
+ 114 |             console.debug("FCP observer not supported");
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter '_error' is caught but never used.
+     ,-[src/shared/services/supabase/modules/general.ts:304:12]
+ 303 |             return data?.value || null;
+ 304 |         } catch (_error) {
+     :                  ^^^|^^
+     :                     `-- '_error' is declared here
+ 305 |             return null;
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter '_e' is caught but never used.
+     ,-[src/features/auth/hooks/authHooks.ts:187:12]
+ 186 |             }
+ 187 |         } catch (_e) {
+     :                  ^|
+     :                   `-- '_e' is declared here
+ 188 |             // Ignore storage errors
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Variable 'handleCardClick' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/features/tournament/components/SwipeableCards.tsx:106:8]
+ 105 | 
+ 106 |     const handleCardClick = useCallback(
+     :           ^^^^^^^|^^^^^^^
+     :                  `-- 'handleCardClick' is declared here
+ 107 |         (card: NameItem) => {
+     `----
+  help: Consider removing this declaration.
+
+Found 21 warnings and 0 errors.
+Finished in 402ms on 156 files with 90 rules using 8 threads.

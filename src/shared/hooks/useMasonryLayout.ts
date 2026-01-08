@@ -60,7 +60,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 			columnCount || Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
 
 		// Initialize column heights
-		const heights = new Array(calculatedColumnCount).fill(0);
+		const heights = Array(Number(calculatedColumnCount)).fill(0);
 		const newPositions: MasonryPosition[] = [];
 
 		// Calculate position for each item

@@ -185,7 +185,7 @@ export class PreferenceSorter {
 		this.preferences = new Map<string, number>();
 		this.currentRankings = [...items];
 		this.ranks = [];
-		this.rec = new Array(items.length).fill(0);
+		this.rec = Array(Number(items.length)).fill(0);
 		// Pairwise comparison queue (simple, reliable fallback)
 		this.pairs = [];
 		for (let i = 0; i < items.length - 1; i++) {
@@ -244,7 +244,7 @@ export class PreferenceSorter {
 		const n = this.items.length;
 
 		if (!this.rec || this.rec.length !== n) {
-			this.rec = new Array(n).fill(0);
+			this.rec = Array(Number(n)).fill(0);
 		}
 
 		await this.sortRecursive(0, n - 1, compareCallback);
@@ -494,4 +494,106 @@ export function deduplicateImages(images: string[] = []): string[] {
 	}
 
 	return unique;
+}
+/**
+ * Computes a new rating by blending an existing rating with a new position rating based on the number of matches played.
+ *
+ * @param existingRating The player's current rating.
+ * @param newPositionRating The rating derived from the player's new position/performance.
+ * @param matchesPlayed The number of matches the player has played.
+ * @param maxMatches The maximum number of matches possible or considered for full confidence.
+ * @returns The new computed rating, clamped between 1000 and 2000.
+ */
+export function computeRating(
+	existingRating: number,
+	newPositionRating: number,
+	matchesPlayed: number,
+	maxMatches: number,
+): number {
+	const safeMaxMatches = Math.max(1, maxMatches);
+	// Clamp matchesPlayed to maxMatches to prevent logical inconsistencies
+	const clampedMatchesPlayed = Math.min(matchesPlayed, safeMaxMatches);
+	const blendFactor = Math.min(0.8, (clampedMatchesPlayed / safeMaxMatches) * 0.9);
+	const newRating = Math.round(
+		blendFactor * newPositionRating + (1 - blendFactor) * existingRating,
+	);
+	return Math.max(1000, Math.min(2000, newRating));
+}
+
+import { generatePairs } from "../../shared/utils/core";
+import type { NameItem } from "../../types/components";
+
+export interface Sorter {
+	_pairs?: Array<[unknown, unknown]>;
+	_pairIndex?: number;
+	preferences?: Map<string, unknown>;
+}
+
+export function initializeSorterPairs(sorter: Sorter | null, nameList: NameItem[]): void {
+	if (!sorter) {
+		return;
+	}
+	if (!Array.isArray(sorter._pairs)) {
+		const validNameList = Array.isArray(nameList) ? nameList : [];
+		sorter._pairs = generatePairs(validNameList);
+		sorter._pairIndex = 0;
+	}
+}
+
+export function getPreferencesMap(sorter: Sorter): Map<string, unknown> {
+	return sorter.preferences instanceof Map ? sorter.preferences : new Map();
+}
+
+export function calculateMaxRoundForNames(namesCount: number): number {
+	let maxRound = 1;
+	let remainingNames = namesCount;
+
+	while (remainingNames > 1) {
+		const matchesThisRound = Math.floor(remainingNames / 2);
+		const winners = matchesThisRound;
+		const byes = remainingNames % 2;
+		remainingNames = winners + byes;
+		maxRound++;
+	}
+
+	return maxRound;
+}
+
+export function calculateBracketRound(namesCount: number, matchNumber: number): number {
+	if (!Number.isInteger(namesCount) || namesCount < 1) {
+		return 1;
+	}
+	if (!Number.isInteger(matchNumber) || matchNumber < 1) {
+		return 1;
+	}
+
+	const maxMatches = namesCount - 1;
+	if (matchNumber > maxMatches) {
+		return calculateMaxRoundForNames(namesCount);
+	}
+
+	if (namesCount === 2) {
+		return 1;
+	}
+
+	let roundNumber = 1;
+	let remainingNames = namesCount;
+	let matchesPlayed = 0;
+	const maxRounds = Math.ceil(Math.log2(namesCount)) + 1;
+
+	while (matchesPlayed < matchNumber - 1 && roundNumber < maxRounds) {
+		const matchesThisRound = Math.floor(remainingNames / 2);
+
+		if (matchesPlayed + matchesThisRound >= matchNumber) {
+			break;
+		}
+
+		matchesPlayed += matchesThisRound;
+		const winners = matchesThisRound;
+		const byes = remainingNames % 2;
+		remainingNames = winners + byes;
+		roundNumber++;
+	}
+
+	return roundNumber;
 }

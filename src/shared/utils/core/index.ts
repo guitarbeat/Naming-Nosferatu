@@ -4,7 +4,7 @@ export * from "./export";
 export * from "./metrics";
 export * from "./name";
 export * from "./performance";
-export * from "./tournament";
+
 export * from "./ui";
 export * from "./validation";
 

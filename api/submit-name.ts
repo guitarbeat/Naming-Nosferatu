@@ -1,5 +1,5 @@
-import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { createClient } from "@supabase/supabase-js";
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY =
@@ -7,7 +7,7 @@ const SUPABASE_ANON_KEY =
 	process.env.SUPABASE_ANON_KEY ||
 	process.env.SUPABASE_PUBLISHABLE_KEY;
 
-interface SubmitNameRequest {
+export interface SubmitNameRequest {
 	name: string;
 	description?: string;
 	userName?: string;
@@ -33,13 +33,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 			if (checkName.length === 0) {
 				return res.status(400).json({ error: "Name parameter cannot be empty" });
 			}
-			
+
 			if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 				return res.status(500).json({
 					error: "Server configuration error. Supabase credentials not found.",
 				});
 			}
-			
+
 			try {
 				const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 				const { data: existingName, error: checkError } = await supabase
@@ -47,11 +47,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 					.select("id, name, description, is_active, is_hidden")
 					.ilike("name", checkName)
 					.maybeSingle();
-				
+
 				if (checkError) {
-					return res.status(500).json({ error: "Error checking name", details: checkError.message });
+					return res
+						.status(500)
+						.json({ error: "Error checking name", details: checkError.message });
 				}
-				
+
 				return res.status(200).json({
 					exists: !!existingName,
 					name: checkName,
@@ -64,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 				});
 			}
 		}
-		
+
 		// Otherwise show usage instructions
 		return res.status(200).json({
 			message: "Cat Name Submission API",
@@ -135,12 +137,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 	// Support both JSON body and query parameters for flexibility
 	const bodyData = req.method === "POST" ? req.body : {};
 	const queryData = req.query || {};
-	
+
 	// Merge query params and body (body takes precedence)
 	// Query params come as strings, so convert if needed
-	const name = bodyData.name || (typeof queryData.name === "string" ? queryData.name : String(queryData.name || ""));
-	const description = bodyData.description || (typeof queryData.description === "string" ? queryData.description : String(queryData.description || ""));
-	const userName = bodyData.userName || (typeof queryData.userName === "string" ? queryData.userName : String(queryData.userName || ""));
+	const name =
+		bodyData.name ||
+		(typeof queryData.name === "string" ? queryData.name : String(queryData.name || ""));
+	const description =
+		bodyData.description ||
+		(typeof queryData.description === "string"
+			? queryData.description
+			: String(queryData.description || ""));
+	const userName =
+		bodyData.userName ||
+		(typeof queryData.userName === "string"
+			? queryData.userName
+			: String(queryData.userName || ""));
 
 	if (!name || typeof name !== "string" || name.trim().length === 0) {
 		return res.status(400).json({
@@ -160,7 +172,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 	}
 
 	const trimmedDescription = description?.trim() || "";
-	
+
 	// Validate description length (max 500 characters)
 	if (trimmedDescription.length > 500) {
 		return res.status(400).json({
@@ -172,14 +184,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 	try {
 		const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-		
+
 		// Check for case-insensitive duplicate before inserting
 		const { data: existingName } = await supabase
 			.from("cat_name_options")
 			.select("id, name")
 			.ilike("name", trimmedName)
 			.maybeSingle();
-		
+
 		if (existingName) {
 			return res.status(409).json({
 				error: "A similar name already exists.",
@@ -193,6 +205,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 		if (userName?.trim()) {
 			try {
 				await supabase.rpc("set_user_context", {
+					// biome-ignore lint/style/useNamingConvention: RPC parameter matches database function
 					user_name_param: userName.trim(),
 				});
 			} catch (rpcError) {
@@ -219,9 +232,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
 			// Add helpful hints for common errors
 			if (error.code === "23505") {
-				errorResponse.hint = "This name already exists in the database. Try a different name or check if it's already there.";
+				errorResponse.hint =
+					"This name already exists in the database. Try a different name or check if it's already there.";
 			} else if (error.code === "23514") {
-				errorResponse.hint = "The name doesn't meet validation requirements. Ensure it's 1-100 characters.";
+				errorResponse.hint =
+					"The name doesn't meet validation requirements. Ensure it's 1-100 characters.";
 			}
 
 			return res.status(400).json(errorResponse);

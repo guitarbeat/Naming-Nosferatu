@@ -64,7 +64,7 @@ const broadcastRouteChange = () => {
 
 	try {
 		window.dispatchEvent(new Event(ROUTE_CHANGE_EVENT));
-	} catch (_error) {
+	} catch {
 		if (typeof document !== "undefined" && typeof document.createEvent === "function") {
 			const fallbackEvent = document.createEvent("Event");
 			fallbackEvent.initEvent(ROUTE_CHANGE_EVENT, false, false);

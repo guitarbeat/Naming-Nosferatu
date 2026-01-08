@@ -25,7 +25,6 @@ import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
-import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
@@ -233,12 +232,10 @@ function AppLayout({
 	isSuggestNameModalOpen,
 	onCloseSuggestName,
 	onOpenSuggestName,
-	handleLogout,
-	handleOpenPhotos,
 }: AppLayoutProps) {
 	const { isLoggedIn } = user;
-	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
-	const { currentRoute, navigateTo } = useRouting();
+	// const currentView = useAppStore((state: AppState) => state.tournament.currentView);
+	// const { currentRoute, navigateTo } = useRouting();
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 

@@ -301,7 +301,7 @@ export const siteSettingsAPI = {
 				return null;
 			}
 			return data?.value || null;
-		} catch (_error) {
+		} catch {
 			return null;
 		}
 	},

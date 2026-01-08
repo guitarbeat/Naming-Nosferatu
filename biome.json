@@ -27,7 +27,7 @@
 				"noStaticOnlyClass": "off",
 				"noUselessConstructor": "error",
 				"noUselessEmptyExport": "error",
-				"noUselessFragments": "warn",
+				"noUselessFragments": "error",
 				"noUselessLabel": "error",
 				"noUselessRename": "error",
 				"noUselessTypeConstraint": "error"
@@ -87,7 +87,8 @@
 				"useExhaustiveDependencies": "warn",
 				"noUnusedVariables": "warn",
 				"noUnusedImports": "error",
-				"noUnusedPrivateClassMembers": "warn"
+				"noUnusedPrivateClassMembers": "warn",
+				"noUndeclaredVariables": "error"
 			},
 			"performance": {
 				"noAccumulatingSpread": "warn",

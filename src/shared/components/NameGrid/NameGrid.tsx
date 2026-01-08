@@ -252,7 +252,7 @@ export function NameGrid({
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
 			<div className={styles.namesGrid} role="list">
-				{processedNames.map((name) => {
+				{processedNames.map((name, index) => {
 					const isSelected = selectedSet.has(name.id as string | number);
 					return (
 						<motion.div

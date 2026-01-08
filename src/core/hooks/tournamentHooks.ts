@@ -1,17 +1,20 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EloRating, PreferenceSorter } from "../../features/tournament/tournamentUtils";
+import {
+	calculateBracketRound,
+	EloRating,
+	getPreferencesMap,
+	initializeSorterPairs,
+	PreferenceSorter,
+} from "../../features/tournament/tournamentUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
 	buildComparisonsMap,
-	calculateBracketRound,
 	clearTournamentCache,
 	devError,
 	devLog,
 	devWarn,
-	getPreferencesMap,
-	initializeSorterPairs,
 	isNameHidden,
 	ratingsToArray,
 	ratingsToObject,
@@ -568,13 +571,13 @@ export function useTournament({
 				});
 
 				newRatings[leftName] = {
-					...(newRatings[leftName] || {}),
+					...newRatings[leftName],
 					rating: r.newRatingA,
 					wins: r.winsA,
 					losses: r.lossesA,
 				};
 				newRatings[rightName] = {
-					...(newRatings[rightName] || {}),
+					...newRatings[rightName],
 					rating: r.newRatingB,
 					wins: r.winsB,
 					losses: r.lossesB,

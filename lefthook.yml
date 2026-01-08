@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: true
+  commands:
+    oxlint:
+      glob: "*.{js,jsx,ts,tsx}"
+      run: pnpm dlx oxlint {staged_files}
+    biome:
+      glob: "*.{js,jsx,ts,tsx,css}"
+      run: pnpm biome check --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+    types:
+      glob: "*.{ts,tsx}"
+      run: pnpm run lint:types

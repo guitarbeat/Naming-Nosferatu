@@ -58,7 +58,7 @@ function CatImage({
 				ctx.drawImage(imgEl, 0, 0, w, h);
 				const { data } = ctx.getImageData(0, 0, w, h);
 
-				const rowEnergy = new Array(h).fill(0);
+				const rowEnergy = Array(Number(h)).fill(0);
 				const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
 				const idx = (x: number, y: number) => (y * w + x) * 4;
 
