@@ -122,12 +122,537 @@
 	}
 }
 
-@media (prefers-reduced-motion: reduce) {
-	.spinner {
-		animation: none;
+/* ============================================
+   CAT SPINNER STYLES (merged from CatSpinner)
+   ============================================ */
+
+/* Base Container */
+.catSpinner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-3);
+	padding: var(--space-4);
+}
+
+.spinnerContainer {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Size Variants */
+.small {
+	--spinner-size: 32px;
+	font-size: var(--text-sm);
+}
+
+.medium {
+	--spinner-size: 48px;
+	font-size: var(--text-base);
+}
+
+.large {
+	--spinner-size: 64px;
+	font-size: var(--text-lg);
+}
+
+/* Color Themes */
+.neon {
+	--cat-primary: var(--color-neon-cyan);
+	--cat-secondary: var(--color-hot-pink);
+	--cat-accent: var(--color-fire-red);
+}
+
+.pastel {
+	--cat-primary: hsl(350 100% 85%);
+	--cat-secondary: hsl(135 100% 85%);
+	--cat-accent: hsl(210 100% 85%);
+}
+
+.warm {
+	--cat-primary: hsl(30 100% 82%);
+	--cat-secondary: hsl(350 100% 85%);
+	--cat-accent: hsl(35 100% 87%);
+}
+
+/* PAW VARIANT */
+.pawContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.paw {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	animation: pawWave 2s ease-in-out infinite;
+}
+
+.pawPad {
+	position: absolute;
+	width: calc(var(--spinner-size) * 0.25);
+	height: calc(var(--spinner-size) * 0.25);
+	background: var(--cat-primary);
+	border-radius: 50%;
+	animation: pawPadPulse 2s ease-in-out infinite;
+}
+
+.pawPad:nth-child(1) {
+	top: 10%;
+	left: 10%;
+	animation-delay: 0s;
+}
+
+.pawPad:nth-child(2) {
+	top: 10%;
+	right: 10%;
+	animation-delay: 0.5s;
+}
+
+.pawPad:nth-child(3) {
+	bottom: 10%;
+	left: 10%;
+	animation-delay: 1s;
+}
+
+.pawPad:nth-child(4) {
+	bottom: 10%;
+	right: 10%;
+	animation-delay: 1.5s;
+}
+
+@keyframes pawWave {
+	0%,
+	100% {
+		transform: rotate(0deg) scale(1);
+	}
+	50% {
+		transform: rotate(5deg) scale(1.05);
+	}
+}
+
+@keyframes pawPadPulse {
+	0%,
+	100% {
+		transform: scale(1);
+		opacity: 0.7;
+	}
+	50% {
+		transform: scale(1.2);
+		opacity: 1;
+	}
+}
+
+/* TAIL VARIANT */
+.tailContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.tail {
+	position: relative;
+	width: calc(var(--spinner-size) * 0.8);
+	height: calc(var(--spinner-size) * 0.1);
+	background: var(--cat-primary);
+	border-radius: calc(var(--spinner-size) * 0.05);
+	transform-origin: left center;
+	animation: tailSwish 1.5s ease-in-out infinite;
+}
+
+.tailSegment {
+	position: absolute;
+	height: 100%;
+	background: inherit;
+	border-radius: inherit;
+	animation: tailSegmentWave 1.5s ease-in-out infinite;
+}
+
+.tailSegment:nth-child(1) {
+	width: 20%;
+	left: 0%;
+	animation-delay: 0s;
+}
+
+.tailSegment:nth-child(2) {
+	width: 18%;
+	left: 20%;
+	animation-delay: 0.1s;
+}
+
+.tailSegment:nth-child(3) {
+	width: 16%;
+	left: 38%;
+	animation-delay: 0.2s;
+}
+
+.tailSegment:nth-child(4) {
+	width: 14%;
+	left: 54%;
+	animation-delay: 0.3s;
+}
+
+.tailSegment:nth-child(5) {
+	width: 12%;
+	left: 68%;
+	animation-delay: 0.4s;
+}
+
+@keyframes tailSwish {
+	0%,
+	100% {
+		transform: rotate(0deg);
+	}
+	25% {
+		transform: rotate(15deg);
+	}
+	75% {
+		transform: rotate(-15deg);
+	}
+}
+
+@keyframes tailSegmentWave {
+	0%,
+	100% {
+		transform: scaleY(1);
+	}
+	50% {
+		transform: scaleY(1.3);
+	}
+}
+
+/* BOUNCE VARIANT */
+.bounceContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.bouncingCat {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	animation: catBounce 1.2s ease-in-out infinite;
+}
+
+.catBody {
+	position: absolute;
+	bottom: 20%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(var(--spinner-size) * 0.6);
+	height: calc(var(--spinner-size) * 0.4);
+	background: var(--cat-primary);
+	border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.catHead {
+	position: absolute;
+	top: 15%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(var(--spinner-size) * 0.4);
+	height: calc(var(--spinner-size) * 0.35);
+	background: var(--cat-primary);
+	border-radius: 50%;
+}
+
+@keyframes catBounce {
+	0%,
+	100% {
+		transform: translateY(0) scale(1);
+	}
+	50% {
+		transform: translateY(-20%) scale(1.1);
+	}
+}
+
+/* SPIN VARIANT */
+.spinContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.spinningCat {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: var(--cat-primary);
+	border-radius: 50%;
+	animation: catSpin 1s linear infinite;
+}
+
+.withFace .spinContainer .spinningCat {
+	background: transparent;
+}
+
+.ear {
+	position: absolute;
+	top: -15%;
+	width: calc(var(--spinner-size) * 0.15);
+	height: calc(var(--spinner-size) * 0.25);
+	background: var(--cat-primary);
+	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.ear:first-child {
+	left: 25%;
+}
+
+.ear:last-child {
+	right: 25%;
+}
+
+.eye {
+	position: absolute;
+	top: 35%;
+	width: calc(var(--spinner-size) * 0.08);
+	height: calc(var(--spinner-size) * 0.08);
+	background: var(--cat-secondary);
+	border-radius: 50%;
+}
+
+.eye:first-child {
+	left: 35%;
+}
+
+.eye:last-child {
+	right: 35%;
+}
+
+.nose {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 0;
+	height: 0;
+	border-left: calc(var(--spinner-size) * 0.04) solid transparent;
+	border-right: calc(var(--spinner-size) * 0.04) solid transparent;
+	border-top: calc(var(--spinner-size) * 0.06) solid var(--cat-accent);
+}
+
+@keyframes catSpin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* HEARTBEAT VARIANT */
+.heartbeatContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.heartCat {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	animation: heartBeat 1.4s ease-in-out infinite;
+}
+
+.heartShape {
+	position: relative;
+	width: calc(var(--spinner-size) * 0.8);
+	height: calc(var(--spinner-size) * 0.7);
+	background: var(--cat-secondary);
+	transform: rotate(-45deg);
+	margin: 0 auto;
+}
+
+.heartShape::before,
+.heartShape::after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: inherit;
+	border-radius: 50%;
+}
+
+.heartShape::before {
+	top: -50%;
+	left: 0;
+}
+
+.heartShape::after {
+	top: 0;
+	left: 50%;
+}
+
+.heartEyes {
+	position: absolute;
+	top: 35%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: calc(var(--spinner-size) * 0.1);
+}
+
+.heartEyes::before,
+.heartEyes::after {
+	content: "";
+	width: calc(var(--spinner-size) * 0.08);
+	height: calc(var(--spinner-size) * 0.08);
+	background: var(--cat-primary);
+	border-radius: 50%;
+}
+
+@keyframes heartBeat {
+	0%,
+	50%,
+	100% {
+		transform: scale(1);
+	}
+	25% {
+		transform: scale(1.1);
+	}
+	75% {
+		transform: scale(0.95);
+	}
+}
+
+/* ORBIT VARIANT */
+.orbitContainer {
+	position: relative;
+	width: var(--spinner-size);
+	height: var(--spinner-size);
+}
+
+.orbitRing {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border: 3px solid var(--cat-primary);
+	border-radius: 50%;
+	animation: orbitRing 2s linear infinite;
+}
+
+.orbitCat {
+	position: absolute;
+	top: -6px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: calc(var(--spinner-size) * 0.15);
+	height: calc(var(--spinner-size) * 0.15);
+	background: var(--cat-secondary);
+	border-radius: 50%;
+	animation: orbitCat 2s linear infinite;
+}
+
+@keyframes orbitRing {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes orbitCat {
+	from {
+		transform: translateX(-50%) rotate(0deg);
+	}
+	to {
+		transform: translateX(-50%) rotate(-360deg);
+	}
+}
+
+/* Common Cat Face */
+.catFace {
+	position: absolute;
+	bottom: calc(var(--spinner-size) * -0.3);
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: calc(var(--spinner-size) * 0.8);
+	line-height: 1;
+	animation: catFaceBlink 3s ease-in-out infinite;
+}
+
+.catFace::before {
+	content: "🐱";
+}
+
+@keyframes catFaceBlink {
+	0%,
+	85%,
+	90%,
+	95%,
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) scale(1);
+	}
+	87%,
+	92%,
+	97% {
+		opacity: 0.3;
+		transform: translateX(-50%) scale(0.9);
+	}
+}
+
+/* Spinner Text */
+.spinnerText {
+	margin: 0;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-secondary);
+	text-align: center;
+	line-height: var(--leading-normal);
+	animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+	0%,
+	100% {
+		opacity: 0.7;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+/* Cat Spinner Responsive */
+@media (width <= 640px) {
+	.catSpinner {
+		padding: var(--space-3);
+		gap: var(--space-2);
 	}
 
-	.skeletonShimmer {
+	.small {
+		--spinner-size: 24px;
+	}
+
+	.medium {
+		--spinner-size: 36px;
+	}
+
+	.large {
+		--spinner-size: 48px;
+	}
+}
+
+/* Cat Spinner Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+	.paw,
+	.pawPad,
+	.tail,
+	.tailSegment,
+	.bouncingCat,
+	.spinningCat,
+	.heartCat,
+	.orbitRing,
+	.orbitCat,
+	.catFace,
+	.spinnerText {
 		animation: none;
 	}
 }

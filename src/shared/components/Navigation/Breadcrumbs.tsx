@@ -5,10 +5,13 @@ import "../AppNavbar/AppNavbar.css"; // Reuse nav styles for now
 export function Breadcrumbs() {
 	const { currentRoute, navigateTo } = useRouting();
 
-	const pathSegments = currentRoute.split("/").filter(Boolean);
+	// Extract just the pathname (without query string or hash)
+	const pathname = currentRoute.split("?")[0].split("#")[0];
+	const pathSegments = pathname.split("/").filter(Boolean);
 
+	// Don't render breadcrumbs on home page
 	if (pathSegments.length === 0) {
-		return null; // Home
+		return null;
 	}
 
 	// Helper to find item in config recursively
