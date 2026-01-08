@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
   const env = { ...process.env };
   const isProd = mode === "production";
 
-  const serverPort = Number(env.VITE_PORT) || 5173;
+  const serverPort = Number(env.VITE_PORT) || 5000; // Default to 5000 for Replit
   const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
   const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
@@ -76,6 +76,7 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: serverPort,
       strictPort: true,
+      allowedHosts: true, // Allow all hosts for Replit proxy compatibility
       hmr: {
         clientPort: serverPort,
         port: serverPort,

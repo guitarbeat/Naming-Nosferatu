@@ -5,7 +5,7 @@
 
 import PropTypes from "prop-types";
 import React from "react";
-import Button from "../../../../shared/components/Button/Button";
+import Button from "../Button/Button";
 
 const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
 const BUTTON_SIZES = ["small", "medium", "large"];
