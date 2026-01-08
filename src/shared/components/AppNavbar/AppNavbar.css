@@ -714,12 +714,16 @@
 	}
 }
 
-/* Breadcrumbs */
+/* Breadcrumbs - Secondary navigation for sub-routes */
 .breadcrumbs {
-	padding: var(--space-2) var(--space-6);
-	margin-top: var(--space-4);
-	font-size: var(--text-sm);
+	padding: var(--space-3) var(--space-4);
+	margin-top: 0;
+	font-size: var(--text-xs);
 	color: var(--nav-text-muted);
+	background: color-mix(in srgb, var(--color-neutral-50) 2%, transparent);
+	border-bottom: 1px solid var(--glass-border);
+	position: relative;
+	z-index: 50;
 }
 
 .breadcrumbs__list {
