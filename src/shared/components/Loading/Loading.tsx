@@ -112,5 +112,3 @@ export const Loading: React.FC<LoadingProps> = memo(
 );
 
 Loading.displayName = "Loading";
-
-

@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { memo, useMemo } from "react";
 import "./AppNavbar.css";
 import {
 	buildNavItems,

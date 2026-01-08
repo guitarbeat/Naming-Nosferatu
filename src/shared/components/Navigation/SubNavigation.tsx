@@ -8,7 +8,9 @@ export const SubNavigation = memo(function SubNavigation() {
 
 	// Find the active primary item
 	const activePrimaryItem = MAIN_NAV_ITEMS.find((item) => {
-		if (item.route === "/") return currentRoute === "/";
+		if (item.route === "/") {
+			return currentRoute === "/";
+		}
 		return item.route && currentRoute.startsWith(item.route);
 	});
 
@@ -22,7 +24,7 @@ export const SubNavigation = memo(function SubNavigation() {
 			<ul className="sub-navigation__list">
 				{activePrimaryItem.children.map((child) => {
 					const isActive = child.route === currentRoute;
-                    
+
 					return (
 						<li key={child.key} className="sub-navigation__item">
 							<button

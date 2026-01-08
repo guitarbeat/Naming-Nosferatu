@@ -84,7 +84,9 @@ function TournamentMatch({
 
 	// Handle swipe end
 	const handleDragEnd = (side: "left" | "right", info: PanInfo) => {
-		if (!isEnabled) return;
+		if (!isEnabled) {
+			return;
+		}
 
 		const SwipeThreshold = 100;
 		const offset = info.offset.x;

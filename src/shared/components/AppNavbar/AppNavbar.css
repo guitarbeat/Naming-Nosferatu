@@ -427,14 +427,14 @@
 }
 
 .chevron-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    margin-left: auto;
-    font-size: 10px;
-    color: var(--nav-text-muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	margin-left: auto;
+	font-size: 10px;
+	color: var(--nav-text-muted);
 }
 
 .app-navbar__mobile-link:hover {
@@ -654,7 +654,7 @@
 	position: relative;
 	flex: 1;
 	height: 100%;
-    min-height: 48px; /* Ensure 48px touch target */
+	min-height: 48px; /* Ensure 48px touch target */
 	cursor: pointer;
 	transition: color 0.2s ease;
 }
@@ -690,58 +690,58 @@
 	.bottom-nav {
 		display: block;
 	}
-	
+
 	/* Hide desktop nav elements on mobile when bottom nav is present */
-    .app-navbar__center-section {
-        display: none;
-    }
+	.app-navbar__center-section {
+		display: none;
+	}
 }
 
 /* Breadcrumbs */
 .breadcrumbs {
-    padding: var(--space-2) var(--space-6);
-    margin-top: var(--space-4);
-    font-size: var(--text-sm);
-    color: var(--nav-text-muted);
+	padding: var(--space-2) var(--space-6);
+	margin-top: var(--space-4);
+	font-size: var(--text-sm);
+	color: var(--nav-text-muted);
 }
 
 .breadcrumbs__list {
-    display: flex;
-    align-items: center;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    gap: var(--space-2);
+	display: flex;
+	align-items: center;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	gap: var(--space-2);
 }
 
 .breadcrumbs__item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
 }
 
 .breadcrumbs__link {
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--nav-text-muted);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: inherit;
+	background: none;
+	border: none;
+	padding: 0;
+	color: var(--nav-text-muted);
+	cursor: pointer;
+	font-family: inherit;
+	font-size: inherit;
 }
 
 .breadcrumbs__link:hover {
-    color: var(--nav-highlight);
-    text-decoration: underline;
+	color: var(--nav-highlight);
+	text-decoration: underline;
 }
 
 .breadcrumbs__separator {
-    color: var(--glass-border);
+	color: var(--glass-border);
 }
 
 .breadcrumbs__current {
-    color: var(--nav-text);
-    font-weight: 500;
+	color: var(--nav-text);
+	font-weight: 500;
 }
 
 /* Tooltip for collapsed state */
@@ -768,4 +768,3 @@
 		animation: fadeIn 0.2s ease-out;
 	}
 }
-

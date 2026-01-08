@@ -35,7 +35,11 @@ export function useMasonryLayout<T extends HTMLElement>(
 	const [positions, setPositions] = useState<MasonryPosition[]>([]);
 	const [columnHeights, setColumnHeights] = useState<number[]>([]);
 
-	const { columnCount, gap = DEFAULT_GAP_PX, minColumnWidth = DEFAULT_MIN_COLUMN_WIDTH_PX } = options;
+	const {
+		columnCount,
+		gap = DEFAULT_GAP_PX,
+		minColumnWidth = DEFAULT_MIN_COLUMN_WIDTH_PX,
+	} = options;
 
 	const calculateLayout = useCallback(() => {
 		if (!containerRef.current || itemCount === 0) {

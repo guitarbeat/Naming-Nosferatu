@@ -84,7 +84,9 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		handleChange,
 		handleBlur,
 		handleSubmit: (e?: React.FormEvent) => {
-			if (e) e.preventDefault();
+			if (e) {
+				e.preventDefault();
+			}
 			return handleFormSubmit(e);
 		},
 		reset,

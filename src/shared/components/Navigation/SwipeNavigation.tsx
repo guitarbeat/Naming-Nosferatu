@@ -24,14 +24,18 @@ export function SwipeNavigation({ children }: SwipeNavigationProps) {
 		// filter items that are in bottom nav
 		const navItems = BOTTOM_NAV_ITEMS.map((key) =>
 			MAIN_NAV_ITEMS.find((item) => item.key === key),
-		).filter((item): item is typeof MAIN_NAV_ITEMS[0] => Boolean(item));
+		).filter((item): item is (typeof MAIN_NAV_ITEMS)[0] => Boolean(item));
 
 		const currentIndex = navItems.findIndex((item) => {
-             if (item.route === "/") return currentRoute === "/";
-             return currentRoute.startsWith(item.route || "");
-        });
+			if (item.route === "/") {
+				return currentRoute === "/";
+			}
+			return currentRoute.startsWith(item.route || "");
+		});
 
-		if (currentIndex === -1) return;
+		if (currentIndex === -1) {
+			return;
+		}
 
 		const nextIndex = currentIndex + direction;
 
@@ -52,8 +56,8 @@ export function SwipeNavigation({ children }: SwipeNavigationProps) {
 			drag="x"
 			dragConstraints={{ left: 0, right: 0 }}
 			dragElastic={0.05} // Minimal elasticity to feel like a swipe but not move the whole page too much
-            onDragEnd={handleDragEnd}
-            style={{ minHeight: '100%', touchAction: 'pan-y' }} // Allow vertical scroll, handle horizontal swipe
+			onDragEnd={handleDragEnd}
+			style={{ minHeight: "100%", touchAction: "pan-y" }} // Allow vertical scroll, handle horizontal swipe
 		>
 			{children}
 		</motion.div>

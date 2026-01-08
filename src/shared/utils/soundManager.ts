@@ -101,5 +101,3 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 		soundManager.play(soundName, config);
 	}
 };
-
-
