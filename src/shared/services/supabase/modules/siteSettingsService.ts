@@ -42,13 +42,15 @@ export const siteSettingsAPI = {
 					await client.rpc("set_user_context", {
 						user_name_param: userName,
 					});
-				} catch {
-					/* ignore */
+				} catch (err) {
+					if (import.meta.env.DEV) {
+						console.warn("Could not set user context:", err);
+					}
 				}
 
 				const { data, error } = await client
 					.from("cat_chosen_name")
-					.insert([nameData as any])
+					.insert([nameData])
 					.select()
 					.single();
 

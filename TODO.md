@@ -26,21 +26,17 @@ This document tracks potential areas for code consolidation and simplification t
 - [x] **Tournament Logic**:
     - **Completed:** Migrated `tournamentsAPI` to `src/features/tournament/services/tournamentService.ts`.
     - **DRY Refactor:** Implemented `withSupabase` helper in `client.ts` and refactored all service modules to use it, reducing boilerplate and centralizing error handling/availability checks.
-
+- [x] **Service Decomposition**:
+    - **Completed:** Decomposed monolithic `general.ts` into domain-specific services (`admin`, `image`, `name`, `analytics`, `siteSettings`). Original file updated as a barrel export.
+- [x] **Store DRYing**:
+    - **Completed:** Introduced `updateSlice` utility in `src/core/store/utils.ts` and refactored all store slices to use it, drastically reducing boilerplate.
 
 ## General
 - [x] **Type definitions**:
-    - **DRY Violations Found:**
-      - ~~**CRITICAL:** Three different `TournamentState` interfaces~~ **FIXED:** Renamed to `TournamentUIState` in components.ts
-      - ~~**MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type~~ **FIXED:** Replaced with `NameItem`
-    - **Completed:**
-      - ✅ Renamed `TournamentState` → `TournamentUIState` in types/components.ts
-      - ✅ Updated 3 references in core/hooks/tournamentHooks.ts
-      - ✅ Removed duplicate from ViewRouter.tsx
-      - ✅ Replaced `TournamentName` with `NameItem` throughout codebase
-        - Removed redundant `TournamentName` interface from types/store.ts
-        - Updated all type references in store.ts (3 locations)
-        - Updated imports and types in ViewRouter.tsx
-        - Verified with type checking and test suite (22 tests passed)
-
-
+    - ✅ Renamed `TournamentState` → `TournamentUIState` to avoid conflicts.
+    - ✅ Replaced redundant `TournamentName` with `NameItem`.
+    - ✅ Aligned `NameItem` with domain model and updated filtering logic in `names.ts`.
+- [x] **Address Remaining TODOs**:
+    - ✅ Implemented missing callbacks in `src/features/tournament/hooks/useTournamentSetupHooks.ts`.
+- [x] **Type Safety Audit**:
+    - ✅ Removed remaining `any` types in `analyticsService.ts`, `nameService.ts`, and `siteSettingsService.ts`.

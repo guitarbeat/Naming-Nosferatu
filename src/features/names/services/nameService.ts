@@ -34,7 +34,7 @@ export const coreAPI = {
 				return [];
 			}
 
-			return (data as unknown as NameItem[]).map((item) => ({
+			return (data as NameItem[]).map((item) => ({
 				...item,
 				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				updated_at: null,
@@ -131,7 +131,7 @@ export const hiddenNamesAPI = {
 
 				const { error } = await client
 					.from("cat_name_options")
-					.update({ is_hidden: true } as any)
+					.update({ is_hidden: true })
 					.eq("id", String(nameId));
 
 				if (error) {
@@ -165,7 +165,7 @@ export const hiddenNamesAPI = {
 
 				const { error } = await client
 					.from("cat_name_options")
-					.update({ is_hidden: false } as any)
+					.update({ is_hidden: false })
 					.eq("id", String(nameId));
 
 				if (error) {
@@ -201,7 +201,7 @@ export const hiddenNamesAPI = {
 					nameIds.map(async (id) => {
 						const { error } = await client
 							.from("cat_name_options")
-							.update({ is_hidden: true } as any)
+							.update({ is_hidden: true })
 							.eq("id", String(id));
 						return { nameId: id, success: !error, error: error?.message };
 					}),
@@ -228,7 +228,7 @@ export const hiddenNamesAPI = {
 					nameIds.map(async (id) => {
 						const { error } = await client
 							.from("cat_name_options")
-							.update({ is_hidden: false } as any)
+							.update({ is_hidden: false })
 							.eq("id", String(id));
 						return { nameId: id, success: !error, error: error?.message };
 					}),

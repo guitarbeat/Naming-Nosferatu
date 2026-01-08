@@ -7,20 +7,26 @@ import type { NameItem } from "../../../types/components";
  */
 export function useNameManagementCallbacks(context: UseNameManagementViewResult | null) {
 	const setHiddenNames = useCallback(
-		(_updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
-			// TODO: Implement when context provides setHiddenIds method
-			// context?.setHiddenIds?.(updater);
+		(updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
+			if (!context) return;
+			const currentNames = typeof updater === "function" ? updater(context.names) : updater;
+			const hiddenIds = new Set(
+				currentNames.filter((n) => n.isHidden || n.is_hidden).map((n) => n.id),
+			);
+			context.setHiddenIds(hiddenIds);
 		},
-		[],
+		[context],
 	);
 
-	const setAllNames = useCallback((_updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
-		// TODO: Implement when context provides setNames method
-		// context?.setNames?.(updater);
-	}, []);
+	const setAllNames = useCallback(
+		(updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
+			context?.setNames(updater);
+		},
+		[context],
+	);
 
 	const fetchNames = useCallback(() => {
-		context?.refetch?.();
+		context?.refetch();
 	}, [context]);
 
 	return { setHiddenNames, setAllNames, fetchNames };

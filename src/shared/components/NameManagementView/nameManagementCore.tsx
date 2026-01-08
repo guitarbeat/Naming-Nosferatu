@@ -78,6 +78,8 @@ export interface UseNameManagementViewResult {
 	dataError: Error | null;
 	refetch: () => void;
 	clearErrors: () => void;
+	setNames: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
+	setHiddenIds: (ids: Set<string | number>) => void;
 
 	// Selection state
 	selectedNames: NameItem[];
@@ -170,6 +172,7 @@ export function useNameManagementView({
 		isLoading,
 		error: dataError,
 		refetch,
+		setNames,
 	} = useNameData({ userName: userName ?? null, mode });
 
 	const {
@@ -434,6 +437,16 @@ export function useNameManagementView({
 		dataError: dataError as Error | null,
 		refetch,
 		clearErrors,
+		setNames,
+		setHiddenIds: (ids: Set<string | number>) => {
+			setNames((prev) =>
+				prev.map((n) => ({
+					...n,
+					is_hidden: ids.has(n.id),
+					isHidden: ids.has(n.id),
+				})),
+			);
+		},
 
 		selectedNames,
 		selectedIds,

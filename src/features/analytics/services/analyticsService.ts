@@ -61,7 +61,7 @@ export const analyticsAPI = {
 
 			const selectionCounts = new Map<string | number, SelectionStats>();
 			(data || []).forEach((row) => {
-				const r = row as unknown as SelectionRow;
+				const r = row as SelectionRow;
 				if (!selectionCounts.has(r.name_id)) {
 					selectionCounts.set(r.name_id, { name_id: r.name_id, name: r.name, count: 0 });
 				}
@@ -122,7 +122,7 @@ export const analyticsAPI = {
 
 			const selectionStats = new Map<string | number, AnalyticsSelectionStats>();
 			selections.forEach((item) => {
-				const s = item as unknown as SelectionRow;
+				const s = item as SelectionRow;
 				if (!selectionStats.has(s.name_id)) {
 					selectionStats.set(s.name_id, { count: 0, users: new Set() });
 				}
@@ -135,7 +135,7 @@ export const analyticsAPI = {
 
 			const ratingStats = new Map<string | number, RatingStats>();
 			ratings.forEach((item) => {
-				const r = item as unknown as RatingRow;
+				const r = item as RatingRow;
 				if (!ratingStats.has(r.name_id)) {
 					ratingStats.set(r.name_id, {
 						totalRating: 0,
@@ -156,7 +156,7 @@ export const analyticsAPI = {
 			});
 
 			const analytics = names.map((item) => {
-				const name = item as unknown as NameRow;
+				const name = item as NameRow;
 				const selStat = selectionStats.get(name.id) || { count: 0, users: new Set() };
 				const ratStat = ratingStats.get(name.id) || {
 					totalRating: 0,
@@ -232,13 +232,14 @@ export const analyticsAPI = {
 					.select("name_id, rating, wins");
 
 				const ratingMap = new Map<string, RatingInfo>();
-				(ratings || []).forEach((r: any) => {
-					const nameId = String(r.name_id);
+				(ratings || []).forEach((r) => {
+					const row = r as RatingRow;
+					const nameId = String(row.name_id);
 					const existing = ratingMap.get(nameId);
-					if (!existing || (r.rating && r.rating > existing.rating)) {
+					if (!existing || (row.rating && row.rating > existing.rating)) {
 						ratingMap.set(nameId, {
-							rating: r.rating || 1500,
-							wins: r.wins || 0,
+							rating: row.rating || 1500,
+							wins: row.wins || 0,
 						});
 					}
 				});
@@ -249,8 +250,8 @@ export const analyticsAPI = {
 					{ id: string; name: string; avgRating: number; totalSelections: number }
 				>();
 
-				(selections || []).forEach((item: any) => {
-					const s = item as unknown as SelectionRow;
+				(selections || []).forEach((item) => {
+					const s = item as SelectionRow;
 					const nameId = String(s.name_id);
 					const dateStr = new Date(s.selected_at).toISOString();
 					const [date] = dateStr.split("T");
@@ -351,7 +352,7 @@ export const leaderboardAPI = {
 				if (error) {
 					return [];
 				}
-				return (topNames || []).map((t: any) => ({ ...t, name_id: t.id }));
+				return (topNames || []).map((t) => ({ ...t, name_id: (t as { id: string | number }).id }));
 			}
 
 			const { data: ratings } = await client
@@ -463,9 +464,11 @@ export const statsAPI = {
 				return [];
 			}
 
-			return (data || []).map((item: any) => {
+			return (data || []).map((item) => {
 				const ratingsList = item.cat_name_ratings;
-				const userRating = Array.isArray(ratingsList) ? ratingsList[0] : ratingsList;
+				const userRating = Array.isArray(ratingsList)
+					? ratingsList[0]
+					: (ratingsList as RatingRow | null);
 				return {
 					...item,
 					user_rating: userRating?.rating || null,
