@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
 import { Error } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
-import { getVisibleNames } from "../../shared/utils/core";
+import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { FirstMatchTutorial } from "./components/FirstMatchTutorial";
 import { TournamentErrorState } from "./components/TournamentErrorState";

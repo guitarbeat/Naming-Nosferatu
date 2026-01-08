@@ -9,7 +9,7 @@ import { FILTER_OPTIONS } from "../../../core/constants";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
 import type { NameItem } from "../../../types/components";
-import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils/core";
+import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils";
 import type { TournamentFilters, UseNameManagementViewProps } from "./shared/types";
 import { useNameData } from "./shared/useNameData";
 import { useNameSelection } from "./shared/useNameSelection";

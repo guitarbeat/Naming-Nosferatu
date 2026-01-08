@@ -1,4 +1,4 @@
-import { VALIDATION } from "../../../core/constants";
+import { VALIDATION } from "../../core/constants";
 
 export interface ValidationResult {
 	success: boolean;

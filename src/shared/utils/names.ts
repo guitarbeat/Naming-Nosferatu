@@ -1,4 +1,4 @@
-import type { NameItem } from "../../../types/components";
+import type { NameItem } from "../../types/components";
 
 /**
  * Converts an array of selected names to a Set of IDs for O(1) lookup.

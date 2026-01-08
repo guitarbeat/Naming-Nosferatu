@@ -1,4 +1,4 @@
-import type { NameItem } from "../../../types/components";
+import type { NameItem } from "../../types/components";
 
 /**
  * Export data structure - snake_case fields match database column names

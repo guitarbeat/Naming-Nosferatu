@@ -1,6 +1,7 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+	buildComparisonsMap,
 	calculateBracketRound,
 	EloRating,
 	getPreferencesMap,
@@ -10,7 +11,6 @@ import {
 import { ErrorManager } from "../../shared/services/errorManager";
 import { tournamentsAPI } from "../../shared/services/supabase/client";
 import {
-	buildComparisonsMap,
 	clearTournamentCache,
 	devError,
 	devLog,
@@ -18,7 +18,7 @@ import {
 	isNameHidden,
 	ratingsToArray,
 	ratingsToObject,
-} from "../../shared/utils/core";
+} from "../../shared/utils";
 import type {
 	Match,
 	MatchRecord,

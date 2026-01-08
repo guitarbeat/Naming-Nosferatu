@@ -13,7 +13,7 @@ import {
 	hiddenNamesAPI,
 	resolveSupabaseClient,
 } from "../../../shared/services/supabase/client";
-import { clearAllCaches, devError, devLog } from "../../../shared/utils/core";
+import { clearAllCaches, devError, devLog } from "../../../shared/utils";
 import type { IdType, NameItem } from "../../../types/components";
 
 // ============================================================================

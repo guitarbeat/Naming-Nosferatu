@@ -1,5 +1,5 @@
 import type React from "react";
-import { devError } from "../../../shared/utils/core";
+import { devError } from "../../../shared/utils";
 import type { NameWithInsight, SummaryStats } from "../types";
 import styles from "./AnalysisInsights.module.css";
 import statsStyles from "./AnalysisStats.module.css";

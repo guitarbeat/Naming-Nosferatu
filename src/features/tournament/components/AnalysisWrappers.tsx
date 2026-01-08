@@ -19,7 +19,7 @@ import {
 	extractNameIds,
 	isNameHidden,
 	selectedNamesToSet,
-} from "../../../shared/utils/core";
+} from "../../../shared/utils";
 import type { NameItem } from "../../../types/components";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import type { HighlightItem, SummaryStats } from "../../analytics/types";

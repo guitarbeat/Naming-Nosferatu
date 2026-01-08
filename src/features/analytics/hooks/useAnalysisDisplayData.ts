@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { calculatePercentile } from "../../../shared/utils/core";
+import { calculatePercentile } from "../../../shared/utils";
 import type {
 	AnalyticsDataItem,
 	ConsolidatedName,

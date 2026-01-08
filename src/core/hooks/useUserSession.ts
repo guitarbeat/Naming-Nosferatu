@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
 import { resolveSupabaseClient } from "../../shared/services/supabase/client";
-import { isUserAdmin } from "../../shared/utils/core";
+import { isUserAdmin } from "../../shared/utils";
 import useAppStore from "../store/useAppStore";
 
 let canUseSetUserContext = true;
@@ -130,7 +130,7 @@ function useUserSession({
 				});
 		} else {
 			// * Auto-login as guest if no user found
-			import("../../shared/utils/core").then(({ generateFunName }) => {
+			import("../../shared/utils").then(({ generateFunName }) => {
 				const randomName = generateFunName();
 				// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
 				// Actually, for better UX let's save it so refresh works.

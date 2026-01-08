@@ -35,7 +35,7 @@ import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
-} from "./shared/utils/core";
+} from "./shared/utils";
 import type { NameItem } from "./types/components";
 import type { AppState } from "./types/store";
 

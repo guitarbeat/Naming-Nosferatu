@@ -16,7 +16,7 @@ vi.mock("../../../core/hooks/tournamentHooks", () => ({
 }));
 
 // Mock shuffleArray
-vi.mock("../../../shared/utils/core", () => ({
+vi.mock("../../../shared/utils", () => ({
 	shuffleArray: <T,>(arr: T[]): T[] => [...arr].reverse(), // Simple deterministic shuffle
 }));
 

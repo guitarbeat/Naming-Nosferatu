@@ -15,7 +15,7 @@ import {
 } from "../../../shared/components/Header/CollapsibleHeader";
 import TournamentButton from "../../../shared/components/TournamentButton/TournamentButton";
 import { useToast } from "../../../shared/hooks/useAppHooks";
-import { devError } from "../../../shared/utils/core";
+import { devError } from "../../../shared/utils";
 import { calculateBracketRound } from "../tournamentUtils";
 
 interface RankingItem {

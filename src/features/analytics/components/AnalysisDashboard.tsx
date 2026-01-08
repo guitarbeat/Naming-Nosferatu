@@ -17,7 +17,7 @@ import {
 import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";
-import { clearAllCaches, devError } from "../../../shared/utils/core";
+import { clearAllCaches, devError } from "../../../shared/utils";
 import { useAnalysisData } from "../hooks/useAnalysisData";
 import { useAnalysisDisplayData } from "../hooks/useAnalysisDisplayData";
 import type { AnalysisDashboardProps, AnalyticsDataItem, LeaderboardItem } from "../types";

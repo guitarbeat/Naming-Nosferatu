@@ -14,7 +14,7 @@ import {
 	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
-} from "../../utils/core";
+} from "../../utils";
 import CardName from "../Card/components/CardName";
 import { EmptyState } from "../EmptyState/EmptyState";
 import { CatSpinner } from "../Loading";

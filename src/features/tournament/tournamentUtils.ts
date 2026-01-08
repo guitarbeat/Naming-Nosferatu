@@ -520,7 +520,7 @@ export function computeRating(
 	return Math.max(1000, Math.min(2000, newRating));
 }
 
-import { generatePairs } from "../../shared/utils/core";
+import { generatePairs } from "../../shared/utils";
 import type { NameItem } from "../../types/components";
 
 export interface Sorter {
@@ -596,4 +596,21 @@ export function calculateBracketRound(namesCount: number, matchNumber: number): 
 	}
 
 	return roundNumber;
+}
+
+export interface ComparisonHistory {
+	winner: string;
+	loser: string;
+}
+
+// * Build a comparisons map from tournament history
+export function buildComparisonsMap(history: ComparisonHistory[]): Map<string, number> {
+	const comparisons = new Map<string, number>();
+
+	for (const { winner, loser } of history) {
+		const pair = [winner, loser].sort().join(":");
+		comparisons.set(pair, (comparisons.get(pair) || 0) + 1);
+	}
+
+	return comparisons;
 }

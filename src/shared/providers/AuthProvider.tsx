@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { createContext, useContext } from "react";
 import { supabase } from "../services/supabase/client";
-import { isUserAdmin } from "../utils/core/auth";
+import { isUserAdmin } from "../utils/auth";
 
 interface User {
 	id: string;

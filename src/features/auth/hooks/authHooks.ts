@@ -3,7 +3,7 @@ import { z } from "zod";
 import { STORAGE_KEYS, VALIDATION } from "../../../core/constants";
 import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
 import { ErrorManager } from "../../../shared/services/errorManager";
-import { generateFunName } from "../../../shared/utils/core";
+import { generateFunName } from "../../../shared/utils";
 import { playSound } from "../../../shared/utils/soundManager";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";

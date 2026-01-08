@@ -1,6 +1,6 @@
 import type React from "react";
 import { PerformanceBadges } from "../../../shared/components/PerformanceBadge/PerformanceBadge";
-import { devError, formatDate, getMetricLabel, getRankDisplay } from "../../../shared/utils/core";
+import { devError, formatDate, getMetricLabel, getRankDisplay } from "../../../shared/utils";
 import type { ConsolidatedName, SummaryStats } from "../types";
 import styles from "./AnalysisTable.module.css";
 import { ColumnHeader } from "./ColumnHeader";
