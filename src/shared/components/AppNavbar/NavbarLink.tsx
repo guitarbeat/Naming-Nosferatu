@@ -18,7 +18,7 @@ export const NavbarLink = React.forwardRef<
 	const hasChildren = item.children && item.children.length > 0;
 
 	// Always call hooks at the top level
-	const [isOpen, setIsOpen] = React.useState(false);
+	const [_isOpen, setIsOpen] = React.useState(false);
 	const hasActiveChild = hasChildren
 		? (item.children?.some((child) => child.isActive) ?? false)
 		: false;

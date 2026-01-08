@@ -1,7 +1,7 @@
 export {
 	type CatColor,
-	type CatSpinnerProps,
 	CatSpinner,
+	type CatSpinnerProps,
 	type CatVariant,
 	Loading,
 	type LoadingProps,
