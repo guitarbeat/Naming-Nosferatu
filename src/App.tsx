@@ -23,7 +23,11 @@ import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
-import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
+<<<<<<< HEAD
+import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
+=======
+import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
+>>>>>>> origin/hide-breadcrumbs-12667715084447836329
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
@@ -264,7 +268,41 @@ function AppLayout({
 				{/* * Primary Bottom Navigation */}
 				{isLoggedIn && <BottomNav />}
 
-				{isLoggedIn && <Breadcrumbs />}
+<<<<<<< HEAD
+				{/* * Primary navigation lives in the navbar */}
+				{isLoggedIn && (
+					<AppNavbar
+						view={currentView || "tournament"}
+						setView={(view: string) => {
+							const nextView = view;
+							// * Toggle photos view: if clicking photos and already on photos, go back to tournament
+							if (nextView === "photos" && currentView === "photos") {
+								tournamentActions.setView("tournament");
+								navigateTo("/");
+							} else {
+								tournamentActions.setView(nextView);
+
+								// * Direct navigation for each view
+								if (nextView === "tournament") {
+									navigateTo("/");
+								} else if (nextView === "photos") {
+									navigateTo("/");
+								}
+							}
+						}}
+						isLoggedIn={isLoggedIn}
+						userName={user.name}
+						isAdmin={user.isAdmin}
+						onLogout={handleLogout}
+						onStartNewTournament={handleStartNewTournament}
+						onOpenSuggestName={onOpenSuggestName}
+						onOpenPhotos={handleOpenPhotos}
+						currentRoute={currentRoute}
+						onNavigate={navigateTo}
+					/>
+				)}
+
+				{isLoggedIn && <SubNavigation />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && isLoggedIn && (
