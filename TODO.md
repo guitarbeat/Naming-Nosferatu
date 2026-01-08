@@ -27,13 +27,15 @@ This document tracks potential areas for code consolidation and simplification t
     - **Future Work:** Move to `features/tournament/services/` when test coverage is comprehensive.
 
 ## General
-- [ ] **Type definitions**:
+- [~] **Type definitions**:
     - **DRY Violations Found:**
-      - **CRITICAL:** Three different `TournamentState` interfaces in `types/components.ts`, `types/store.ts`, and `ViewRouter.tsx` - same name, different purposes
-      - **MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type
-    - **Consolidation Plan:**
-      - Rename `TournamentState` in components.ts to `TournamentUIState` (UI-specific state)
-      - Remove duplicate `TournamentState` from ViewRouter.tsx (use store import)
-      - Replace `TournamentName` with `NameItem` throughout codebase
-    - **Impact:** ~25 file imports to update, prevents naming conflicts
+      - ~~**CRITICAL:** Three different `TournamentState` interfaces~~ **FIXED:** Renamed to `TournamentUIState` in components.ts
+      - **MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type (remaining)
+    - **Completed:**
+      - ✅ Renamed `TournamentState` → `TournamentUIState` in types/components.ts
+      - ✅ Updated 3 references in core/hooks/tournamentHooks.ts
+      - ✅ Removed duplicate from ViewRouter.tsx
+    - **Remaining:**
+      - Replace `TournamentName` with `NameItem` throughout codebase (~25 files)
+
 
