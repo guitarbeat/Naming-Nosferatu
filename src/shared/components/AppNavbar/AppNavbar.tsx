@@ -20,7 +20,20 @@ import {
 	NavbarCollapseToggle,
 	NavbarLink,
 } from "./NavbarUI";
-import type { AppNavbarProps } from "./navbarCore";
+
+interface AppNavbarProps {
+	view: string;
+	setView: (view: string) => void;
+	isLoggedIn: boolean;
+	userName?: string;
+	isAdmin?: boolean;
+	onLogout: () => void;
+	onStartNewTournament?: () => void;
+	onOpenSuggestName?: () => void;
+	onOpenPhotos?: () => void;
+	currentRoute?: string;
+	onNavigate?: (route: string) => void;
+}
 
 export const AppNavbar = memo(function AppNavbar({
 	view,

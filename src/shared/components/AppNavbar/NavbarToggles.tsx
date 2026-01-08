@@ -1,6 +1,6 @@
 import { useContext } from "react";
+import { NavbarContext } from "../../navigation";
 import styles from "./AppNavbar.module.css";
-import { NavbarContext } from "./navbarCore";
 
 export interface NavbarToggleProps {
 	isActive: boolean;
