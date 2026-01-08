@@ -125,22 +125,22 @@ export interface NavbarContextValue {
   // View state
   view: string;
   setView: (view: string) => void;
-  
+
   // Analysis mode
   isAnalysisMode: boolean;
   toggleAnalysis: () => void;
-  
+
   // UI state
   isCollapsed: boolean;
   toggleCollapse: () => void;
   isMobileMenuOpen: boolean;
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
-  
+
   // Actions
   onOpenPhotos?: () => void;
   onOpenSuggestName?: () => void;
-  
+
   // Auth state
   isLoggedIn: boolean;
   userName?: string;
@@ -289,7 +289,7 @@ export function buildNavItems(
 
   return items.map((config) => {
     const isActive = isRouteActive(config.route, currentRoute);
-    
+
     const onClick = config.route && onNavigate
       ? () => onNavigate(config.route!)
       : undefined;

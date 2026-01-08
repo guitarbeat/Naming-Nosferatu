@@ -48,7 +48,7 @@ This plan migrates the UI/UX system to use design tokens consistently, consolida
     - _Requirements: 2.5_
   - [x]* 2.8 Write property test for breakpoint token compliance (SKIPPED - Optional test)
     - **Property 3: Breakpoint Token Compliance**
-    - **Validates: Requirements 2.5**
+    - **Validates: Requirements 2.5_
 
 - [x] 3. Checkpoint - Verify token migration
   - Ensure all tests pass, ask the user if questions arise.
@@ -62,7 +62,7 @@ This plan migrates the UI/UX system to use design tokens consistently, consolida
     - _Requirements: 3.3_
   - [x]* 4.3 Write property test for glass token theme parity (SKIPPED - Optional test)
     - **Property 4: Glass Token Theme Parity**
-    - **Validates: Requirements 3.3**
+    - **Validates: Requirements 3.3_
 
 - [x] 5. Complete accessibility audit
   - [x] 5.1 Audit analytics views for focus states (VERIFIED)
@@ -71,21 +71,21 @@ This plan migrates the UI/UX system to use design tokens consistently, consolida
     - _Requirements: 4.1, 4.4_
   - [x]* 5.2 Write property test for focus state token compliance (SKIPPED - Optional test)
     - **Property 5: Focus State Token Compliance**
-    - **Validates: Requirements 4.1, 4.4**
+    - **Validates: Requirements 4.1, 4.4_
   - [x] 5.3 Verify touch target sizes (VERIFIED)
     - Ensure all interactive elements have 48px minimum
     - **Status:** Components use semantic `--space-*` tokens for sizing
     - _Requirements: 4.2_
   - [x]* 5.4 Write property test for touch target minimum size (SKIPPED - Optional test)
     - **Property 6: Touch Target Minimum Size**
-    - **Validates: Requirements 4.2**
+    - **Validates: Requirements 4.2_
   - [x] 5.5 Add reduced motion support (VERIFIED)
     - Verify `prefers-reduced-motion` media queries exist
     - **Status:** `prefers-reduced-motion` implemented across all animated components
     - _Requirements: 4.3_
   - [x]* 5.6 Write property test for reduced motion respect (SKIPPED - Optional test)
     - **Property 7: Reduced Motion Respect**
-    - **Validates: Requirements 4.3**
+    - **Validates: Requirements 4.3_
 
 - [x] 6. Checkpoint - Verify accessibility compliance
   - All accessibility features verified and in place. ✓
@@ -101,7 +101,7 @@ This plan migrates the UI/UX system to use design tokens consistently, consolida
     - _Requirements: 5.2_
   - [x]* 7.3 Write property test for CSS module co-location (SKIPPED - Optional test)
     - **Property 8: CSS Module Co-location**
-    - **Validates: Requirements 5.2**
+    - **Validates: Requirements 5.2_
   - [x] 7.4 Remove unnecessary inline styles (COMPLETED)
     - Replace with CSS custom properties where possible
     - **Status:** Removed inline `cursor: pointer` and percentile label styles from AnalysisTable.tsx
@@ -122,7 +122,7 @@ This plan migrates the UI/UX system to use design tokens consistently, consolida
     - _Requirements: 6.4_
   - [x]* 8.3 Write property test for theme transition token usage (SKIPPED - Optional test)
     - **Property 9: Theme Transition Token Usage**
-    - **Validates: Requirements 6.4**
+    - **Validates: Requirements 6.4_
 
 - [x] 9. Final checkpoint - Complete verification
   - All tasks verified and completed. ✓

@@ -1,8 +1,9 @@
 ---
 description: Code Quality Guidelines
-globs: 
+globs:
 alwaysApply: true
 ---
+
 # Code Quality Guidelines
 
 ## Verify Information

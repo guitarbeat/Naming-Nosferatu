@@ -60,6 +60,7 @@ The consolidated `docs/UI_UX.md` will follow this structure:
 [Brand colors, semantic colors, gradients]
 
 ...
+
 ```
 
 ### Token Migration Patterns
@@ -277,9 +278,3 @@ For structural properties (4, 8):
 For accessibility properties (6):
 - Parse interactive element styles
 - Verify minimum size constraints
-
-### Dual Testing Approach
-
-- **Unit tests**: Verify specific files are correctly migrated
-- **Property tests**: Verify universal compliance across all files
-- Both are complementary and necessary for comprehensive coverage

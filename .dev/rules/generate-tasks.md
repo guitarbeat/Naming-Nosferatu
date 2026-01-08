@@ -59,7 +59,7 @@ Update the file after completing each sub-task, not just after completing an ent
   - [ ] 1.2 [Sub-task description 1.2]
 - [ ] 2.0 Parent Task Title
   - [ ] 2.1 [Sub-task description 2.1]
-- [ ] 3.0 Parent Task Title (may not require sub-tasks if purely structural or configuration)
+  - [ ] 3.0 Parent Task Title (may not require sub-tasks if purely structural or configuration)
 ```
 
 ## Interaction Model

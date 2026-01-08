@@ -98,5 +98,5 @@ Your output is successful ONLY if:
 - The codebase is easier to extend after this pass.
 
 Before finalizing, reflect in `04-implementation-notes.md`:
-“Did this meaningfully improve the system, or did it merely reorganize it?”
+"Did this meaningfully improve the system, or did it merely reorganize it?"
 If the answer is unclear, revise.
