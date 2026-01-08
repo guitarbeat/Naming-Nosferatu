@@ -1,5 +1,5 @@
 import React from "react";
-import type { NavItem } from "./navbarCore";
+import type { NavItem } from "../../navigation";
 
 export const NavbarLink = React.forwardRef<
 	HTMLButtonElement,
@@ -10,11 +10,24 @@ export const NavbarLink = React.forwardRef<
 		showIcon?: boolean;
 		onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
 	}
-> = React.forwardRef(function NavbarLinkInner(
+>(function NavbarLinkInner(
 	{ item, onClick, className = "app-navbar__link", showIcon = true, onKeyDown },
 	ref,
 ) {
 	const Icon = item.icon;
+	const hasChildren = item.children && item.children.length > 0;
+
+	// Always call hooks at the top level
+	const [isOpen, setIsOpen] = React.useState(false);
+	const hasActiveChild = hasChildren
+		? (item.children?.some((child) => child.isActive) ?? false)
+		: false;
+
+	React.useEffect(() => {
+		if (hasActiveChild) {
+			setIsOpen(true);
+		}
+	}, [hasActiveChild]);
 
 	/*
 	 * Progressive Disclosure:
@@ -23,16 +36,8 @@ export const NavbarLink = React.forwardRef<
 	 * However, AppNavbar iterates and renders NavbarLink directly.
 	 * We'll check if children exist and return a fragment/div.
 	 */
-	if (item.children && item.children.length > 0) {
+	if (hasChildren) {
 		// Simple recursive rendering
-		// Note: We need state for expand/collapse (progressive disclosure).
-		// For this 'One-Shot' implementation, we'll use a local state.
-		const [isOpen, setIsOpen] = React.useState(false);
-		const hasActiveChild = item.children.some((child) => child.isActive);
-
-		React.useEffect(() => {
-			if (hasActiveChild) setIsOpen(true);
-		}, [hasActiveChild]);
 
 		const toggleOpen = (e: React.MouseEvent) => {
 			e.stopPropagation();
@@ -70,10 +75,19 @@ export const NavbarLink = React.forwardRef<
 							padding: "0 var(--space-2)",
 						}}
 					>
-						<span style={{ fontSize: "10px", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", display: "inline-block", transition: "transform 0.2s" }}>▼</span>
+						<span
+							style={{
+								fontSize: "10px",
+								transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+								display: "inline-block",
+								transition: "transform 0.2s",
+							}}
+						>
+							▼
+						</span>
 					</button>
 				</div>
-				{isOpen && (
+				{isOpen && item.children && (
 					<div className="app-navbar__sub-menu" style={{ paddingLeft: "var(--space-4)" }}>
 						{item.children.map((child) => (
 							<NavbarLink

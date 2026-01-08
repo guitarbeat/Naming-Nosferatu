@@ -1,8 +1,17 @@
-import { memo, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
+import { memo, useMemo } from "react";
 import "./AppNavbar.css";
 import {
 	buildNavItems,
+	MAIN_NAV_ITEMS,
+	NavbarProvider,
+	useAnalysisMode,
+	useMobileMenu,
+	useNavbarCollapse,
+	useNavbarDimensions,
+	useToggleAnalysis,
+} from "../../navigation";
+import {
 	MobileMenu,
 	MobileMenuToggle,
 	ModeToggles,
@@ -11,15 +20,7 @@ import {
 	NavbarCollapseToggle,
 	NavbarLink,
 } from "./NavbarUI";
-import {
-	type AppNavbarProps,
-	NavbarProvider,
-	useAnalysisMode,
-	useMobileMenu,
-	useNavbarCollapse,
-	useNavbarDimensions,
-	useToggleAnalysis,
-} from "./navbarCore";
+import type { AppNavbarProps } from "./navbarCore";
 
 export const AppNavbar = memo(function AppNavbar({
 	view,
@@ -81,15 +82,17 @@ export const AppNavbar = memo(function AppNavbar({
 	// Navigation Items
 	const navItems = useMemo(
 		() =>
-			buildNavItems({
-				view,
-				isAnalysisMode,
-				onOpenPhotos,
-				onToggleAnalysis: toggleAnalysis,
-				currentRoute: onNavigate ? window.location.pathname : undefined, // Fallback if prop missing, but better to use prop
-				onNavigate,
-			}),
-		[view, isAnalysisMode, onOpenPhotos, toggleAnalysis, onNavigate], // Added onNavigate dependency
+			buildNavItems(
+				{
+					currentRoute: onNavigate ? window.location.pathname : undefined,
+					onNavigate,
+					onOpenPhotos,
+					onToggleAnalysis: toggleAnalysis,
+					isAnalysisMode,
+				},
+				MAIN_NAV_ITEMS,
+			),
+		[isAnalysisMode, onOpenPhotos, toggleAnalysis, onNavigate],
 	);
 
 	const handleHomeClick = () => {

@@ -274,8 +274,6 @@ export function useTournamentRoutingSync({
 		const previousPath = normalizeRoutePath(previousRouteRef.current || "");
 		const pathChanged = previousRouteRef.current === null || previousPath !== normalizedPath;
 
-
-
 		// Explicit route-to-view mapping
 		if (pathChanged) {
 			if (normalizedPath === "/gallery" && currentView !== "photos") {

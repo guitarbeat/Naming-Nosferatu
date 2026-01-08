@@ -62,11 +62,26 @@ export default function CatBackground() {
 
 			const size = randomBetween(6, 16);
 			el.style.fontSize = `${size.toFixed(2)}px`;
-			el.style.setProperty("--twinkle-duration", `${randomBetween(TWINKLE_DURATION_MIN, TWINKLE_DURATION_MAX).toFixed(2)}s`);
-			el.style.setProperty("--twinkle-delay", `${randomBetween(TWINKLE_DELAY_MIN, TWINKLE_DELAY_MAX).toFixed(2)}s`);
-			el.style.setProperty("--twinkle-scale", `${randomBetween(TWINKLE_SCALE_MIN, TWINKLE_SCALE_MAX).toFixed(2)}`);
-			el.style.setProperty("--twinkle-alpha", `${randomBetween(TWINKLE_ALPHA_MIN, TWINKLE_ALPHA_MAX).toFixed(2)}`);
-			el.style.setProperty("--twinkle-blur", `${randomBetween(TWINKLE_BLUR_MIN, TWINKLE_BLUR_MAX).toFixed(2)}px`);
+			el.style.setProperty(
+				"--twinkle-duration",
+				`${randomBetween(TWINKLE_DURATION_MIN, TWINKLE_DURATION_MAX).toFixed(2)}s`,
+			);
+			el.style.setProperty(
+				"--twinkle-delay",
+				`${randomBetween(TWINKLE_DELAY_MIN, TWINKLE_DELAY_MAX).toFixed(2)}s`,
+			);
+			el.style.setProperty(
+				"--twinkle-scale",
+				`${randomBetween(TWINKLE_SCALE_MIN, TWINKLE_SCALE_MAX).toFixed(2)}`,
+			);
+			el.style.setProperty(
+				"--twinkle-alpha",
+				`${randomBetween(TWINKLE_ALPHA_MIN, TWINKLE_ALPHA_MAX).toFixed(2)}`,
+			);
+			el.style.setProperty(
+				"--twinkle-blur",
+				`${randomBetween(TWINKLE_BLUR_MIN, TWINKLE_BLUR_MAX).toFixed(2)}px`,
+			);
 
 			fragment.appendChild(el);
 		}

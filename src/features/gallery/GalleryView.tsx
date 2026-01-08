@@ -4,8 +4,8 @@ import { useAdminStatus } from "../../shared/hooks/useAppHooks";
 import Lightbox from "../tournament/components/Lightbox";
 import { PhotoGallery } from "../tournament/components/TournamentSidebar/PhotoComponents";
 import { useImageGallery } from "../tournament/hooks/useImageGallery";
-import photoStyles from "../tournament/styles/SetupPhotos.module.css";
 import layoutStyles from "../tournament/styles/SetupLayout.module.css";
+import photoStyles from "../tournament/styles/SetupPhotos.module.css";
 
 export default function GalleryView() {
 	const userName = useAppStore((state) => state.user.name);
@@ -22,7 +22,9 @@ export default function GalleryView() {
 
 	const handleImageOpen = useCallback(
 		(image: string) => {
-			if (!galleryImages) return;
+			if (!galleryImages) {
+				return;
+			}
 			const idx = galleryImages.indexOf(image);
 			if (idx !== -1) {
 				setLightboxIndex(idx);
@@ -67,7 +69,10 @@ export default function GalleryView() {
 	);
 
 	return (
-		<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`} style={{ paddingTop: '100px', minHeight: '100vh' }}>
+		<div
+			className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}
+			style={{ paddingTop: "100px", minHeight: "100vh" }}
+		>
 			<div className={photoStyles.photosViewContent}>
 				<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
 				<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>

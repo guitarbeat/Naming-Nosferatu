@@ -93,11 +93,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: clamp(1rem, 2.5vw, 1.75rem);
-	background: linear-gradient(
-		135deg,
-		var(--card-background),
-		var(--surface-muted)
-	);
+	background: linear-gradient(135deg, var(--card-background), var(--surface-muted));
 	border: var(--card-border-width) solid var(--border-color);
 	border-radius: 0;
 	box-shadow:
@@ -140,11 +136,7 @@
 }
 
 .swipeCard.selected {
-	background: linear-gradient(
-		135deg,
-		var(--card-background),
-		var(--surface-muted)
-	);
+	background: linear-gradient(135deg, var(--card-background), var(--surface-muted));
 	border-color: var(--accent-color, var(--color-warning));
 	border-width: var(--border-width-lg);
 	box-shadow:

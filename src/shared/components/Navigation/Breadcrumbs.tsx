@@ -1,5 +1,5 @@
 import { useRouting } from "../../../core/hooks/useRouting";
-import { MAIN_NAV_ITEMS, type NavItemConfig } from "../../../config/navigation.config";
+import { MAIN_NAV_ITEMS, type NavItemConfig } from "../../navigation";
 import "../AppNavbar/AppNavbar.css"; // Reuse nav styles for now
 
 export function Breadcrumbs() {
@@ -7,7 +7,9 @@ export function Breadcrumbs() {
 
 	const pathSegments = currentRoute.split("/").filter(Boolean);
 
-	if (pathSegments.length === 0) return null; // Home
+	if (pathSegments.length === 0) {
+		return null; // Home
+	}
 
 	// Helper to find item in config recursively
 	const findItem = (
@@ -20,10 +22,10 @@ export function Breadcrumbs() {
 
 		for (const segment of segments) {
 			currentPath += `/${segment}`;
-            
-            // Try to find a match in the current level of items
-            // We check if the item's route matches the current accumulated path
-            // OR if the item's key matches the segment (for purely path-based matching)
+
+			// Try to find a match in the current level of items
+			// We check if the item's route matches the current accumulated path
+			// OR if the item's key matches the segment (for purely path-based matching)
 			const foundItem = currentItems.find(
 				(item) => item.route === currentPath || item.key === segment,
 			);
@@ -37,8 +39,8 @@ export function Breadcrumbs() {
 				if (foundItem.children) {
 					currentItems = foundItem.children;
 				} else {
-                    // No children, stop trying to match from config for deeper levels
-                    // (But we might continue loop to add generic labels for unknown segments)
+					// No children, stop trying to match from config for deeper levels
+					// (But we might continue loop to add generic labels for unknown segments)
 					currentItems = [];
 				}
 			} else {
@@ -47,8 +49,8 @@ export function Breadcrumbs() {
 					path: currentPath,
 					label: segment.charAt(0).toUpperCase() + segment.slice(1),
 				});
-                // Since we lost the trail in config, we can't look for children anymore
-                currentItems = [];
+				// Since we lost the trail in config, we can't look for children anymore
+				currentItems = [];
 			}
 		}
 		return breadcrumbs;

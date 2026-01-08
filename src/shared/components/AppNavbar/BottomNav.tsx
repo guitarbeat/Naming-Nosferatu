@@ -1,23 +1,24 @@
 import { motion } from "framer-motion";
-import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import { useRouting } from "../../../core/hooks/useRouting";
+import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import "./AppNavbar.css"; // Reuse existing styles or create new
-import { NavbarLink } from "./NavbarUI";
 
 export function BottomNav() {
 	const { currentRoute, navigateTo } = useRouting();
 
-	const items = BOTTOM_NAV_ITEMS.map((key) =>
-		MAIN_NAV_ITEMS.find((item) => item.key === key),
-	).filter((item): item is typeof MAIN_NAV_ITEMS[0] => Boolean(item));
+	const items = getBottomNavItems(MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS);
 
-	if (!items.length) return null;
+	if (!items.length) {
+		return null;
+	}
 
 	const handleNavClick = (route?: string) => {
 		if (navigator.vibrate) {
 			navigator.vibrate(10);
 		}
-		if (route) navigateTo(route);
+		if (route) {
+			navigateTo(route);
+		}
 	};
 
 	return (
@@ -29,10 +30,9 @@ export function BottomNav() {
 		>
 			<nav className="bottom-nav__container" role="navigation" aria-label="Mobile navigation">
 				{items.map((item) => {
-					const isActive = item?.route === "/" 
-                        ? currentRoute === "/" 
-                        : currentRoute.startsWith(item?.route || "");
-                        
+					const isActive =
+						item?.route === "/" ? currentRoute === "/" : currentRoute.startsWith(item?.route || "");
+
 					return (
 						<button
 							key={item.key}
@@ -41,7 +41,7 @@ export function BottomNav() {
 							aria-current={isActive ? "page" : undefined}
 							aria-label={item.ariaLabel || item.label}
 						>
-							{item.icon && <item.icon className="bottom-nav__icon" aria-hidden="true" />}
+							{item.icon && <item.icon className="bottom-nav__icon" aria-hidden={true} />}
 							<span className="bottom-nav__label">{item.shortLabel || item.label}</span>
 							{isActive && (
 								<motion.div

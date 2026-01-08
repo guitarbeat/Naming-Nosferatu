@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { NavItem } from "../../navigation";
 import "./AppNavbar.css";
 import { NavbarLink } from "./NavbarLink";
 import { ModeToggles } from "./NavbarToggles";
-import type { NavItem } from "./navbarCore";
 
 export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onToggle: () => void }) {
 	return (
@@ -14,7 +14,9 @@ export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onTogg
 			aria-expanded={isOpen}
 			aria-controls="app-navbar-mobile-panel"
 			onClick={() => {
-				if (navigator.vibrate) navigator.vibrate(10);
+				if (navigator.vibrate) {
+					navigator.vibrate(10);
+				}
 				onToggle();
 			}}
 			title={isOpen ? "Close menu" : "Open menu"}
@@ -31,12 +33,17 @@ export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onTogg
 const CollapsibleNavItem = ({
 	item,
 	onNavClick,
-}: { item: NavItem; onNavClick: (item: NavItem) => void }) => {
+}: {
+	item: NavItem;
+	onNavClick: (item: NavItem) => void;
+}) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const hasChildren = item.children && item.children.length > 0;
 
 	const handleClick = () => {
-		if (navigator.vibrate) navigator.vibrate(10);
+		if (navigator.vibrate) {
+			navigator.vibrate(10);
+		}
 		if (hasChildren) {
 			setIsOpen(!isOpen);
 		} else {
@@ -53,7 +60,7 @@ const CollapsibleNavItem = ({
 				data-active={item.isActive}
 				aria-expanded={hasChildren ? isOpen : undefined}
 			>
-				{item.icon && <item.icon className="app-navbar__link-icon" aria-hidden="true" />}
+				{item.icon && <item.icon className="app-navbar__link-icon" aria-hidden={true} />}
 				<span className="app-navbar__link-text">{item.label}</span>
 				{hasChildren && (
 					<span
@@ -77,12 +84,14 @@ const CollapsibleNavItem = ({
 						style={{ overflow: "hidden", paddingLeft: "16px" }}
 						className="mobile-nav-children"
 					>
-						{item.children!.map((child) => (
+						{item.children?.map((child) => (
 							<NavbarLink
 								key={child.key}
 								item={child}
 								onClick={(i) => {
-									if (navigator.vibrate) navigator.vibrate(10);
+									if (navigator.vibrate) {
+										navigator.vibrate(10);
+									}
 									onNavClick(i);
 								}}
 								className="app-navbar__mobile-link child-link"
@@ -96,7 +105,6 @@ const CollapsibleNavItem = ({
 };
 
 export function MobileMenu({
-	isOpen,
 	navItems,
 	homeIsActive,
 	onHomeClick,
@@ -168,7 +176,9 @@ export function MobileMenu({
 					ref={firstLinkRef}
 					type="button"
 					onClick={() => {
-						if (navigator.vibrate) navigator.vibrate(10);
+						if (navigator.vibrate) {
+							navigator.vibrate(10);
+						}
 						onHomeClick();
 					}}
 					className="app-navbar__mobile-link"

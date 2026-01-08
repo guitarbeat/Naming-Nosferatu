@@ -14,6 +14,8 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	initialValues,
 	onSubmit,
 }: FormOptions<T>) {
+	type FormValues = z.infer<z.ZodObject<T>>;
+
 	const {
 		handleSubmit: rshHandleSubmit,
 		formState: { errors, touchedFields, isSubmitting, isValid },
@@ -21,8 +23,10 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		trigger,
 		watch,
 		reset,
-	} = useForm({
-		resolver: zodResolver(schema),
+	} = useForm<FormValues>({
+		// biome-ignore lint/suspicious/noExplicitAny: zodResolver type mismatch with react-hook-form generics
+		resolver: zodResolver(schema) as any,
+		// biome-ignore lint/suspicious/noExplicitAny: defaultValues type mismatch with react-hook-form generics
 		defaultValues: initialValues as any,
 		mode: "onChange",
 	});
@@ -32,7 +36,8 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	// Backward compatibility wrapper for handleChange
 	const handleChange = useCallback(
 		(name: keyof T, value: unknown) => {
-			setValue(name as any, value, {
+			// biome-ignore lint/suspicious/noExplicitAny: setValue requires complex path types from react-hook-form
+			setValue(name as any, value as any, {
 				shouldValidate: true,
 				shouldDirty: true,
 				shouldTouch: true,
@@ -44,6 +49,7 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	// Backward compatibility wrapper for handleBlur
 	const handleBlur = useCallback(
 		(name: keyof T) => {
+			// biome-ignore lint/suspicious/noExplicitAny: trigger requires complex path types from react-hook-form
 			trigger(name as any);
 		},
 		[trigger],
@@ -51,13 +57,14 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 
 	// Wrapped onSubmit to match expected signature
 	const handleFormSubmit = rshHandleSubmit(async (data) => {
-		await onSubmit(data);
+		await onSubmit(data as FormValues);
 	});
 
 	const setValues = useCallback(
-		(newValues: Partial<z.infer<z.ZodObject<T>>>) => {
+		(newValues: Partial<FormValues>) => {
 			Object.entries(newValues).forEach(([key, val]) => {
-				setValue(key as any, val);
+				// biome-ignore lint/suspicious/noExplicitAny: setValue requires complex path types from react-hook-form
+				setValue(key as any, val as any);
 			});
 		},
 		[setValue],
@@ -66,7 +73,7 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 	// Map RHF errors to simple string map for backward compatibility
 	const formattedErrors = Object.keys(errors).reduce(
 		(acc, key) => {
-			const error = errors[key as keyof T];
+			const error = errors[key as keyof typeof errors];
 			if (error && typeof error === "object" && "message" in error) {
 				acc[key as keyof T] = error.message as string;
 			}
@@ -84,7 +91,9 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		handleChange,
 		handleBlur,
 		handleSubmit: (e?: React.FormEvent) => {
-			if (e) e.preventDefault();
+			if (e) {
+				e.preventDefault();
+			}
 			return handleFormSubmit(e);
 		},
 		reset,
