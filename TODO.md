@@ -21,9 +21,10 @@ This document tracks potential areas for code consolidation and simplification t
     - Ensure colors and spacing variables are consistent. Found references to `var(--color-gold)` etc. in code. Centralize these in `index.css` or Tailwind config.
 
 ## Feature Logic
-- [ ] **Tournament Logic**:
-    - Continue moving tournament-specific logic from `shared/` to `features/tournament/`.
-    - Check if `src/shared/services/supabase/modules/` contains tournament logic that belongs in `features/tournament/services/`.
+- [~] **Tournament Logic**:
+    - **Analysis Complete:** Found `tournamentsAPI` object (~345 lines) in `src/shared/services/supabase/modules/general.ts` with 5 methods (createTournament, updateTournamentStatus, getUserTournaments, saveTournamentSelections, saveTournamentRatings).
+    - **Recommendation:** Defer migration - too complex for current session. Requires comprehensive testing and dedicated refactoring time.
+    - **Future Work:** Move to `features/tournament/services/` when test coverage is comprehensive.
 
 ## General
 - [ ] **Type definitions**:
