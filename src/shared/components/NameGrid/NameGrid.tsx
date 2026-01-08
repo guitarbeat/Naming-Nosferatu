@@ -201,8 +201,9 @@ export function NameGrid({
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`spinner-${i}`} className={styles.gridItem}>
 							<CatSpinner
+								variant="cat"
 								size="medium"
-								variant={
+								catVariant={
 									["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as
 										| "paw"
 										| "tail"
@@ -211,7 +212,7 @@ export function NameGrid({
 										| "heartbeat"
 										| "orbit"
 								}
-								color={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
+								catColor={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
 								text="Loading cat names..."
 							/>
 						</div>
