@@ -19,6 +19,7 @@ import {
 } from "./components/AnalysisWrappers";
 import Lightbox from "./components/Lightbox";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
+import { SwipeableCards } from "./components/SwipeableCards";
 import { useTournamentController } from "./hooks/useTournamentController";
 import identityStyles from "./styles/Identity.module.css";
 import layoutStyles from "./styles/SetupLayout.module.css";
