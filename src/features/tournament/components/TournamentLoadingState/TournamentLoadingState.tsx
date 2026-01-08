@@ -1,4 +1,4 @@
-import { Loading } from "../../../../shared/components/CommonUI";
+import { Loading } from "../../../../shared/components/Loading";
 import layoutStyles from "../../styles/Layout.module.css";
 
 interface TournamentLoadingStateProps {

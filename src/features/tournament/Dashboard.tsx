@@ -7,7 +7,7 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useState, useTransition } from "react";
 import Card from "../../shared/components/Card/Card";
-import { Toast } from "../../shared/components/CommonUI";
+import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { AnalysisDashboard } from "../analytics/components/AnalysisDashboard";
 import PersonalResults from "./components/PersonalResults";

@@ -21,8 +21,9 @@ import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
-import { Error, Loading } from "./shared/components/CommonUI";
+import { Error } from "./shared/components/Error";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
+import { Loading } from "./shared/components/Loading";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";

@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { isUserAdmin } from "../utils";
+import { isUserAdmin } from "../../features/auth/utils/authUtils";
 
 // ============================================================================
 // Admin Status Hook

@@ -6,7 +6,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { ErrorComponent as Error } from "../../shared/components/CommonUI";
+import { ErrorComponent as Error } from "../../shared/components/Error";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
 import type { NameItem } from "../../types/components";

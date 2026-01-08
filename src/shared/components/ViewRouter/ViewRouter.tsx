@@ -6,7 +6,8 @@ import { useRouting } from "../../../core/hooks/useRouting";
 import Tournament from "../../../features/tournament/Tournament";
 import TournamentSetup from "../../../features/tournament/TournamentSetup";
 import type { NameItem } from "../../../types/components";
-import { ErrorComponent, Loading } from "../CommonUI";
+import { ErrorComponent } from "../Error";
+import { Loading } from "../Loading";
 
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));

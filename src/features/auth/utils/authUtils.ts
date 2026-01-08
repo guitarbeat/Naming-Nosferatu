@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { resolveSupabaseClient } from "../services/supabase/client";
-import type { Database } from "../services/supabase/types";
+import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
+import type { Database } from "../../../shared/services/supabase/types";
 
 // Constants use UPPER_CASE keys (intentional for role constants)
 const USER_ROLES = {
