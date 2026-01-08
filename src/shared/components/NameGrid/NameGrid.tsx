@@ -6,8 +6,12 @@
 
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
+<<<<<<< HEAD
 import { useMemo } from "react";
 import type { NameItem } from "@/types/components";
+=======
+import { memo, useMemo } from "react";
+>>>>>>> origin/bolt-namegrid-optimization-9847520333013971848
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import {
 	applyNameFilters,
@@ -44,9 +48,9 @@ interface NameGridProps {
 /**
  * Individual Card wrapper with grid-specific styling
  */
-const GridItem = ({
+const GridItem = memo(({
 	nameObj,
-	selectedSet,
+	isSelected,
 	onToggleName,
 	isAdmin,
 	showCatPictures,
@@ -56,7 +60,7 @@ const GridItem = ({
 	index,
 }: {
 	nameObj: NameItem;
-	selectedSet: Set<string | number>;
+	isSelected: boolean;
 	onToggleName?: (name: NameItem) => void;
 	isAdmin: boolean;
 	showCatPictures: boolean;
@@ -146,7 +150,9 @@ const GridItem = ({
 			/>
 		</motion.div>
 	);
-};
+});
+
+GridItem.displayName = "GridItem";
 
 export function NameGrid({
 	names = [],
@@ -264,6 +270,7 @@ export function NameGrid({
 			>
 				{processedNames.map((name, index) => {
 					const position = positions[index];
+					const isSelected = selectedSet.has(name.id as string | number);
 					return (
 						<motion.div
 							key={name.id}
@@ -286,7 +293,7 @@ export function NameGrid({
 						>
 							<GridItem
 								nameObj={name}
-								selectedSet={selectedSet}
+								isSelected={isSelected}
 								onToggleName={onToggleName}
 								isAdmin={isAdmin}
 								showCatPictures={showCatPictures}
