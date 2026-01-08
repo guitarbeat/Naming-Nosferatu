@@ -11,8 +11,8 @@ This document tracks potential areas for code consolidation and simplification t
     - `TournamentButton` is a thin wrapper around `Button` adding default plus icon. Used in 3 locations (TournamentToolbar, PersonalResults). Keeping as semantic component for now, but could be simplified to direct Button usage with startIcon prop in future cleanup.
 - [ ] **Header vs Navbar**:
     - Clarify the relationship between `src/shared/components/AppNavbar` (main nav) and `src/shared/components/Header/CollapsibleHeader.tsx`. If `CollapsibleHeader` is only used in specific views (Analytics/Results), consider moving it closer to those features or renaming to `ViewHeader`.
-- [ ] **AppNavbar Simplification**:
-    - `src/shared/components/AppNavbar` contains 12 files. Assess if some sub-components (`NavbarBrand`, `NavbarIcons`, `NavbarLink`) can be merged into the main component or grouped to reduce file sprawl.
+- [x] **AppNavbar Simplification**:
+    - Completed navigation consolidation by removing redundant `navbarCore.tsx` (243 lines). AppNavbar components now import from `src/shared/navigation` module. Reduced from 12 to 11 files.
 
 ## Style Consolidation
 - [ ] **CSS Strategy**:
