@@ -17,7 +17,8 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-import { AppNavbar, BottomNav } from "./shared/components/AppNavbar/AppNavbar";
+import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
+import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";

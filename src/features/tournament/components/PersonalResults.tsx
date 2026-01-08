@@ -8,12 +8,12 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
 import Button from "../../../shared/components/Button/Button";
-import TournamentButton from "../../../shared/components/TournamentButton/TournamentButton";
 import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/Header/CollapsibleHeader";
+import TournamentButton from "../../../shared/components/TournamentButton/TournamentButton";
 import { useToast } from "../../../shared/hooks/useAppHooks";
 import { calculateBracketRound, devError } from "../../../shared/utils/core";
 

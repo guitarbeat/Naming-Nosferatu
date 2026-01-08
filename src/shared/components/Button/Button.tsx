@@ -228,8 +228,6 @@ IconButton.propTypes = {
 
 IconButton.displayName = "IconButton";
 
-
-
 /**
  * ScrollToTopButton component - floating button that scrolls to top of page
  * @param {Object} props - Component props

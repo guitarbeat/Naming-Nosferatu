@@ -1,11 +1,11 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { NameItem } from "../../../types/components";
-import CatImage from "../../../shared/components/CatImage/CatImage";
 import Button from "../../../shared/components/Button/Button";
+import CatImage from "../../../shared/components/CatImage/CatImage";
 import { playSound } from "../../../shared/utils/soundManager";
-import { getRandomCatImage } from "../tournamentUtils";
+import type { NameItem } from "../../../types/components";
 import styles from "../styles/SetupSwipe.module.css";
+import { getRandomCatImage } from "../tournamentUtils";
 
 interface SwipeableCardsProps {
 	names: NameItem[];
@@ -125,7 +125,7 @@ export function SwipeableCards({
 		}
 	}, []);
 
-	const progressPercentage = names.length > 0 ? ((swipedIds.size / names.length) * 100) : 0;
+	const progressPercentage = names.length > 0 ? (swipedIds.size / names.length) * 100 : 0;
 
 	if (names.length === 0) {
 		return (

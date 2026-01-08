@@ -1,9 +1,4 @@
-import {
-	AlertCircle,
-	Music,
-	Volume2,
-	VolumeX,
-} from "lucide-react";
+import { AlertCircle, Music, Volume2, VolumeX } from "lucide-react";
 import React, { useState } from "react";
 import Button, { IconButton } from "../../shared/components/Button/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";

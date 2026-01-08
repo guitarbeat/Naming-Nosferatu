@@ -714,7 +714,6 @@
 	}
 }
 
-
 /* Tooltip for collapsed state */
 @media (width > 640px) {
 	.app-navbar.collapsed .app-navbar__link:hover::after {
