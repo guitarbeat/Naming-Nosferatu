@@ -17,7 +17,6 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
@@ -25,7 +24,6 @@ import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
-import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
@@ -263,43 +261,9 @@ function AppLayout({
 				{/* * Static cat-themed background */}
 				<CatBackground />
 
-				{/* * Mobile Bottom Navigation */}
+				{/* * Primary Bottom Navigation */}
 				{isLoggedIn && <BottomNav />}
 
-				{/* * Primary navigation lives in the navbar */}
-				{isLoggedIn && (
-					<AppNavbar
-						view={currentView || "tournament"}
-						setView={(view: string) => {
-							const nextView = view;
-							// * Toggle photos view: if clicking photos and already on photos, go back to tournament
-							if (nextView === "photos" && currentView === "photos") {
-								tournamentActions.setView("tournament");
-								navigateTo("/");
-							} else {
-								tournamentActions.setView(nextView);
-
-								// * Direct navigation for each view
-								if (nextView === "tournament") {
-									navigateTo("/");
-								} else if (nextView === "photos") {
-									navigateTo("/");
-								}
-							}
-						}}
-						isLoggedIn={isLoggedIn}
-						userName={user.name}
-						isAdmin={user.isAdmin}
-						onLogout={handleLogout}
-						onStartNewTournament={handleStartNewTournament}
-						onOpenSuggestName={onOpenSuggestName}
-						onOpenPhotos={handleOpenPhotos}
-						currentRoute={currentRoute}
-						onNavigate={navigateTo}
-					/>
-				)}
-
-				{isLoggedIn && <SubNavigation />}
 				{isLoggedIn && <Breadcrumbs />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>

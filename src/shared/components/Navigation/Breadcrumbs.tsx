@@ -9,8 +9,12 @@ export function Breadcrumbs() {
 	const pathname = currentRoute.split("?")[0].split("#")[0];
 	const pathSegments = pathname.split("/").filter(Boolean);
 
-	// Don't render breadcrumbs on home page
-	if (pathSegments.length === 0) {
+	// Only show breadcrumbs on routes with sub-pages
+	const breadcrumbRoutes = new Set(["/results", "/analysis", "/gallery"]);
+	const shouldShowBreadcrumbs = pathSegments.length > 0 && breadcrumbRoutes.has(`/${pathSegments[0]}`);
+
+	// Don't render breadcrumbs on home page or non-breadcrumb routes
+	if (!shouldShowBreadcrumbs) {
 		return null;
 	}
 
