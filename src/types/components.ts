@@ -56,7 +56,7 @@ export interface PersistentState {
 	namesKey: string;
 }
 
-export interface TournamentState {
+export interface TournamentUIState {
 	currentMatch: Match | null;
 	currentMatchNumber: number;
 	roundNumber: number;

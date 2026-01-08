@@ -24,7 +24,7 @@ import type {
 	MatchRecord,
 	NameItem,
 	PersistentState,
-	TournamentState,
+	TournamentUIState,
 } from "../../types/components";
 import type { AppState } from "../../types/store";
 import useAppStore from "../store/useAppStore";
@@ -411,7 +411,7 @@ export function useTournament({
 	}, [persistentState, updatePersistentState, userName]);
 
 	// --- Intermediate State ---
-	const [tState, setTState] = useState<TournamentState>({
+	const [tState, setTState] = useState<TournamentUIState>({
 		currentMatch: null,
 		isTransitioning: false,
 		roundNumber: persistentState.currentRound || 1,
@@ -424,7 +424,11 @@ export function useTournament({
 	});
 
 	const updateTournamentState = useCallback(
-		(updates: Partial<TournamentState> | ((prev: TournamentState) => Partial<TournamentState>)) => {
+		(
+			updates:
+				| Partial<TournamentUIState>
+				| ((prev: TournamentUIState) => Partial<TournamentUIState>),
+		) => {
 			setTState((prev) => {
 				const delta = typeof updates === "function" ? updates(prev) : updates;
 				return { ...prev, ...delta };

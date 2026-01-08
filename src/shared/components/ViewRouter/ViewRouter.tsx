@@ -13,14 +13,16 @@ import { Loading } from "../Loading";
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
 const GalleryView = lazy(() => import("../../../features/gallery/GalleryView"));
 
+import type { VoteData } from "../../../types/components";
 import type { TournamentName } from "../../../types/store";
 
+// Local interface matching store's TournamentState structure
 interface TournamentState {
 	names: TournamentName[] | null;
-	ratings: Record<string, { rating: number }>;
+	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
 	isComplete: boolean;
 	isLoading: boolean;
-	voteHistory: unknown[];
+	voteHistory: VoteData[];
 	currentView: string;
 }
 
