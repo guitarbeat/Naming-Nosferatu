@@ -10,41 +10,36 @@ This `.dev/` directory consolidates all development-related configuration, workf
 ├── prompt_instructions.md       # AI assistant system prompt
 ├── workflows/                   # Development workflow guides
 │   └── ui-ux.md                # UI/UX development workflow
-├── rules/                       # Development rules and guidelines
+├── rules/                       # AI-specific development rules
 │   ├── smart-mcp.md            # Smart MCP tool usage rules
-│   ├── react-vite.mdc          # React/Vite development guidelines
-│   ├── clean-code.mdc          # Clean code principles
-│   ├── code-quality.mdc        # Code quality standards
+│   ├── react-vite.mdc          # AI React/Vite guidelines
+│   ├── code-quality.mdc        # AI code quality standards
 │   ├── create-prd.md           # PRD generation workflow
 │   └── generate-tasks.md       # Task list generation workflow
-└── specs/                      # Detailed project specifications
-    ├── navigation-consolidation/
-    │   ├── design.md           # Navigation consolidation design
-    │   ├── requirements.md     # Navigation requirements
-    │   └── tasks.md            # Navigation implementation tasks
-    └── ui-ux-consolidation/
-        ├── design.md           # UI/UX consolidation design
-        ├── requirements.md     # UI/UX requirements
-        └── tasks.md            # UI/UX implementation tasks
+└── workflows/                   # Agent development workflows
 ```
 
 ## Purpose
 
+### AI Instructions
+`.dev/` is primarily for AI assistant configuration, including system-level instructions and behavioral rules.
+
 ### Workflows
-Development process guides and checklists for consistent project execution.
+Agent-specific process guides and checklists for automated or semi-automated task execution.
 
 ### Rules
-Development standards, coding guidelines, and tool usage rules that ensure quality and consistency.
+Tool usage rules and AI-specific coding guidelines that ensure consistent behavior and quality from AI coding partners.
 
-### Specs
-Detailed specifications for major refactoring projects, including design documents, requirements, and implementation plans.
+## Documentation Hub
+
+All primary project documentation, including standards, architectural specs, and roadmaps, are now centralized in the [docs/](file:///Users/aaron/Downloads/Naming-Nosferatu/docs/) directory.
 
 ## Migration History
 
 This directory consolidates content from:
 - `.agent/` - AI assistant workflows and rules
 - `.cursor/` - IDE-specific rules and guidelines
-- `.kiro/specs/` - Project specifications
+- Project specs and general rules have been moved to [docs/](file:///Users/aaron/Downloads/Naming-Nosferatu/docs/)
 
 ## Usage
 

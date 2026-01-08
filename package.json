@@ -32,7 +32,7 @@
 	},
 	"scripts": {
 		"dev": "vite --config vite.config.ts",
-		"build": "npm run optimize:images && vite build --config vite.config.ts --outDir dist",
+		"build": "vite build --config vite.config.ts --outDir dist",
 		"build:dev": "vite build --config vite.config.ts --mode development --outDir dist",
 		"preview": "vite preview --config vite.config.ts",
 		"test": "vitest run --config config/vitest.config.mjs",

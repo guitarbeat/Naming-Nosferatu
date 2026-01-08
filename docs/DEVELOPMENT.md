@@ -188,6 +188,45 @@ const { user_name } = user;
 
 ---
 
+## 💎 Clean Code Principles
+
+To maintain long-term maintainability, follow these principles:
+
+- **Constants Over Magic Numbers**: Replace hard-coded values with named constants at the top of the file or in a dedicated constants file.
+- **Meaningful Names**: Variables, functions, and classes should reveal their purpose (e.g., `isLoading`, `hasError`).
+- **Smart Comments**: Make code self-documenting; use comments to explain *why* something is done, not *what* it does.
+- **Single Responsibility**: Each function or component should do exactly one thing and be small/focused.
+- **DRY (Don't Repeat Yourself)**: Extract repeated logic into reusable hooks or utilities.
+- **Encapsulation**: Hide implementation details and expose clear, minimal interfaces.
+- **Early Returns**: Use guard clauses to handle edge cases or errors early in functions.
+
+---
+
+## ⚛️ React & TypeScript Patterns
+
+### TypeScript Standards
+- **Interfaces over Types**: Prefer `interface` for object definitions and component props.
+- **No Enums**: Use constant maps or literal unions for better tree-shaking and simplicity.
+- **Direct Exports**: Favor named exports for components and utilities to improve IDE discoverability.
+
+### Synthetic Components
+- Use functional components with TypeScript interfaces.
+- Keep components under 400 lines (see [File Size Limits](#1-file-size-limits)).
+- Structure files logically: Exported component → Subcomponents → Helpers → Types.
+
+### State Management
+- **Zustand**: Use for UI state and cross-route client state.
+- **TanStack Query**: Exclusive for server-side data fetching and synchronization.
+- **Local State**: Use `useState` only for state that doesn't need to be shared.
+
+### Performance & Optimization
+- Use immutable data structures.
+- Lazy load heavy features (e.g., charts, drag-and-drop) using `React.lazy`.
+- Leverage efficient data structures (Maps/Sets) for frequent lookups.
+- Avoid unnecessary effect dependencies to prevent re-render loops.
+
+---
+
 ## ✍️ Copywriting & Tone
 
 ### Tone of Voice
