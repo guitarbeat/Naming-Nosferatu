@@ -234,7 +234,7 @@
                     nameCount.textContent = '0';
                     descCount.textContent = '0';
                 } else {
-                    showResult('error', `❌ ${result.error}${result.hint ? '<br><br>' + result.hint : ''}`);
+                    showResult('error', `❌ ${result.error}${result.hint ? `<br><br>${result.hint}` : ''}`);
                 }
             } catch (error) {
                 showResult('error', `❌ Network error: ${error.message}`);

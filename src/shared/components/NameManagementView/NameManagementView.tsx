@@ -126,8 +126,8 @@ export function NameManagementView({
 					extensions={extensions}
 					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
 					imageList={tournamentProps.imageList as string[]}
-					SwipeableCards={
-						tournamentProps.SwipeableCards as React.ComponentType<SwipeableCardsProps>
+					swipeableCards={
+						tournamentProps.swipeableCards as React.ComponentType<SwipeableCardsProps>
 					}
 					totalCount={names.length}
 					filteredCount={state.filteredNamesForSwipe.length}

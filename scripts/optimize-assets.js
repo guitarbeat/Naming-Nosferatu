@@ -5,9 +5,9 @@
  * Removes duplicate image formats and compresses assets
  */
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 
 const ASSETS_DIR = "public/assets";
 const IMAGES_DIR = path.join(ASSETS_DIR, "images");
@@ -53,7 +53,9 @@ function optimizeImages() {
 	let filesRemoved = 0;
 
 	Object.entries(groups).forEach(([baseName, files]) => {
-		if (files.length <= 1) return;
+		if (files.length <= 1) {
+			return;
+		}
 
 		console.log(`\n📁 Processing ${baseName}:`);
 
@@ -69,7 +71,9 @@ function optimizeImages() {
 				// First sort by format priority
 				const aPriority = IMAGE_FORMAT_PRIORITY.indexOf(a.ext);
 				const bPriority = IMAGE_FORMAT_PRIORITY.indexOf(b.ext);
-				if (aPriority !== bPriority) return aPriority - bPriority;
+				if (aPriority !== bPriority) {
+					return aPriority - bPriority;
+				}
 				// Then by size (smaller first)
 				return a.size - b.size;
 			});

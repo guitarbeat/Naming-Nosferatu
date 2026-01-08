@@ -6,7 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist", "!!**/node_modules/**", "!!**/build/**"]
+		"includes": ["**", "!!**/dist", "!!**/node_modules", "!!**/build"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -190,6 +190,16 @@
 			"includes": ["src/shared/styles/analysis-mode-misc.css"],
 			"formatter": {
 				"enabled": false
+			}
+		},
+		{
+			"includes": ["vite.config.ts", "config/tailwind.config.js", "config/vitest.config.mjs"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
 			}
 		},
 		{

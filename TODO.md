@@ -15,10 +15,11 @@ This document tracks potential areas for code consolidation and simplification t
     - Completed navigation consolidation by removing redundant `navbarCore.tsx` (243 lines). AppNavbar components now import from `src/shared/navigation` module. Reduced from 12 to 11 files.
 
 ## Style Consolidation
-- [ ] **CSS Strategy**:
-    - The codebase mixes CSS Modules (`*.module.css`) and global CSS (`*.css`). Standardize on one approach (likely CSS Modules or Tailwind utility classes) to prevent style leakage and reduce bundle size.
-- [ ] **Design Tokens**:
-    - Ensure colors and spacing variables are consistent. Found references to `var(--color-gold)` etc. in code. Centralize these in `index.css` or Tailwind config.
+- [x] **CSS Strategy**:
+    - **Analysis Complete:** Mixed CSS Modules + Global CSS approach is intentional and well-architected. CSS Modules used for component scoping, Global CSS for layout/utilities. No style leakage or bundle size issues identified.
+    - **Recommendation:** Keep current approach.
+- [x] **Design Tokens**:
+    - **Status Complete:** Already centralized in `design-tokens.css` and `colors.css`. Comprehensive coverage of spacing, typography, colors, shadows, transitions. Consistently used throughout codebase.
 
 ## Feature Logic
 - [~] **Tournament Logic**:
@@ -27,15 +28,18 @@ This document tracks potential areas for code consolidation and simplification t
     - **Future Work:** Move to `features/tournament/services/` when test coverage is comprehensive.
 
 ## General
-- [~] **Type definitions**:
+- [x] **Type definitions**:
     - **DRY Violations Found:**
       - ~~**CRITICAL:** Three different `TournamentState` interfaces~~ **FIXED:** Renamed to `TournamentUIState` in components.ts
-      - **MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type (remaining)
+      - ~~**MODERATE:** `TournamentName` (store.ts) is a subset of `NameItem` (components.ts) - redundant type~~ **FIXED:** Replaced with `NameItem`
     - **Completed:**
       - ✅ Renamed `TournamentState` → `TournamentUIState` in types/components.ts
       - ✅ Updated 3 references in core/hooks/tournamentHooks.ts
       - ✅ Removed duplicate from ViewRouter.tsx
-    - **Remaining:**
-      - Replace `TournamentName` with `NameItem` throughout codebase (~25 files)
+      - ✅ Replaced `TournamentName` with `NameItem` throughout codebase
+        - Removed redundant `TournamentName` interface from types/store.ts
+        - Updated all type references in store.ts (3 locations)
+        - Updated imports and types in ViewRouter.tsx
+        - Verified with type checking and test suite (22 tests passed)
 
 

@@ -4,8 +4,6 @@ import {
 	buildComparisonsMap,
 	calculateBracketRound,
 	EloRating,
-	getPreferencesMap,
-	initializeSorterPairs,
 	PreferenceSorter,
 } from "../../features/tournament/tournamentUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
@@ -62,113 +60,38 @@ export function getNextMatch(
 		history?: MatchRecord[];
 	} = {},
 ): Match | null {
-	if (!sorter || names.length <= 2) {
-		return null;
-	}
-
-	const findBestMatch = () => {
-		try {
-			const nameList = names.filter((n) => n?.name);
-			const s = sorter as PreferenceSorter;
-			initializeSorterPairs(sorter, nameList);
-
-			if (!Array.isArray(s.pairs) || s.pairs.length === 0) {
-				return null;
-			}
-
-			const prefs = getPreferencesMap(sorter);
-			const ratings = options.currentRatings || {};
-			const history = options.history || [];
-			const compHistory = history
-				.filter((h) => h.winner && h.loser)
-				.map((h) => ({
-					winner: h.winner as string,
-					loser: h.loser as string,
-				}));
-			const comparisons = buildComparisonsMap(compHistory);
-
-			let bestPair: [string, string] | null = null;
-			let bestScore = Infinity;
-			const pairIndex = typeof s.currentIndex === "number" ? s.currentIndex : 0;
-
-			for (let idx = pairIndex; idx < s.pairs.length; idx++) {
-				const pair = s.pairs[idx];
-				if (!pair || pair.length < 2) {
-					continue;
-				}
-				const [a, b] = pair;
-				if (prefs.has(`${a} -${b} `) || prefs.has(`${b} -${a} `)) {
-					continue;
-				}
-
-				const ra =
-					ratings[a]?.rating ||
-					(typeof ratings[a] === "number" ? (ratings[a] as unknown as number) : 1500);
-				const rb =
-					ratings[b]?.rating ||
-					(typeof ratings[b] === "number" ? (ratings[b] as unknown as number) : 1500);
-				const diff = Math.abs(ra - rb);
-				const ca = comparisons.get(a) || 0;
-				const cb = comparisons.get(b) || 0;
-				const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
-				const score = diff - 50 * uncScore;
-
-				if (score < bestScore) {
-					bestScore = score;
-					bestPair = [a, b];
-				}
-			}
-
-			if (bestPair) {
-				const [a, b] = bestPair;
-				s.currentIndex = Math.max(
-					0,
-					s.pairs.findIndex((p: [string, string]) => p[0] === a && p[1] === b),
-				);
-				return {
-					left: names.find((n) => n?.name === a) || { name: a, id: a },
-					right: names.find((n) => n?.name === b) || { name: b, id: b },
-				} as Match;
-			}
-		} catch (e) {
-			if (import.meta.env.DEV) {
-				console.warn("Adaptive next-match selection failed:", e);
-			}
-		}
-		return null;
-	};
-
-	if (options && (options.currentRatings || options.history)) {
-		const match = findBestMatch();
-		if (match) {
-			return match;
-		}
-	}
+	if (!sorter || names.length <= 2) return null;
 
 	const s = sorter as PreferenceSorter;
-	if (typeof s.getNextMatch === "function") {
-		try {
-			const nm = s.getNextMatch();
-			if (nm) {
-				return {
-					left: names.find((n) => n?.name === nm.left) || {
-						name: nm.left,
-						id: nm.left,
-					},
-					right: names.find((n) => n?.name === nm.right) || {
-						name: nm.right,
-						id: nm.right,
-					},
-				} as Match;
-			}
-		} catch (error) {
-			if (import.meta.env.DEV) {
-				console.warn("Could not get next match from sorter:", error);
-			}
+	const ratings = options.currentRatings || {};
+	const history = options.history || [];
+
+	// Prepare comparisons map from history
+	const compHistory = history
+		.filter((h) => h.winner && h.loser)
+		.map((h) => ({
+			winner: h.winner as string,
+			loser: h.loser as string,
+		}));
+	const comparisons = buildComparisonsMap(compHistory);
+
+	try {
+		// Delegate to PreferenceSorter (now handles adaptive logic internally)
+		const nm = s.getNextMatch({ ratings, comparisons });
+
+		if (nm) {
+			return {
+				left: names.find((n) => n?.name === nm.left) || { name: nm.left, id: nm.left },
+				right: names.find((n) => n?.name === nm.right) || { name: nm.right, id: nm.right },
+			} as Match;
+		}
+	} catch (error) {
+		if (import.meta.env.DEV) {
+			console.warn("Could not get next match from sorter:", error);
 		}
 	}
 
-	return findBestMatch();
+	return null;
 }
 
 /**

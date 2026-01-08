@@ -123,8 +123,8 @@
     <script>
       // * Deployment error detection - runs before React loads
       (function detectDeploymentErrors() {
-        const ERROR_DISPLAY_ID = "deployment-error-display";
-        const MAX_WAIT_TIME = 5000; // * 5 seconds
+        const ErrorDisplayId = "deployment-error-display";
+        const MaxWaitTime = 5000; // * 5 seconds
 
         // * Check if root element exists
         const root = document.getElementById("root");
@@ -199,7 +199,7 @@
                 });
               }
             }
-          }, MAX_WAIT_TIME);
+          }, MaxWaitTime);
         }
 
         // * Monitor CSP violations
@@ -213,9 +213,9 @@
               message:
                 "The application's scripts are being blocked by Content Security Policy:",
               details: [
-                "Blocked resource: " + (event.blockedURI || "Unknown"),
-                "Violated directive: " + event.violatedDirective,
-                "Current CSP: " + event.originalPolicy,
+                `Blocked resource: ${event.blockedURI || "Unknown"}`,
+                `Violated directive: ${event.violatedDirective}`,
+                `Current CSP: ${event.originalPolicy}`,
               ],
               suggestions: [
                 "Update vercel.json CSP to allow scripts from 'self'",
@@ -230,13 +230,13 @@
 
         function showDeploymentError(errorInfo) {
           // * Remove existing error display if present
-          const existing = document.getElementById(ERROR_DISPLAY_ID);
+          const existing = document.getElementById(ErrorDisplayId);
           if (existing) {
             existing.remove();
           }
 
           const errorDiv = document.createElement("div");
-          errorDiv.id = ERROR_DISPLAY_ID;
+          errorDiv.id = ErrorDisplayId;
           errorDiv.style.cssText = `
             position: fixed;
             top: 0;

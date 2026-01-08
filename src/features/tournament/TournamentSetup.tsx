@@ -471,7 +471,7 @@ function TournamentSetupContent({
 								),
 							}}
 							tournamentProps={{
-								SwipeableCards,
+								swipeableCards: SwipeableCards,
 								imageList: galleryImages,
 							}}
 							onStartTournament={_onStart}

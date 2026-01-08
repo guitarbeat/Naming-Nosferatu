@@ -5,8 +5,8 @@
  * Automatically optimizes images during the build process
  */
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import sharp from "sharp";
 
 const PUBLIC_DIR = "public";

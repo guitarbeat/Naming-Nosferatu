@@ -5,7 +5,7 @@ import { useRouting } from "../../../core/hooks/useRouting";
 // Note: These are .jsx files, so we need to import them without extensions
 import Tournament from "../../../features/tournament/Tournament";
 import TournamentSetup from "../../../features/tournament/TournamentSetup";
-import type { NameItem } from "../../../types/components";
+import type { NameItem, VoteData } from "../../../types/components";
 import { ErrorComponent } from "../Error";
 import { Loading } from "../Loading";
 
@@ -13,12 +13,9 @@ import { Loading } from "../Loading";
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
 const GalleryView = lazy(() => import("../../../features/gallery/GalleryView"));
 
-import type { VoteData } from "../../../types/components";
-import type { TournamentName } from "../../../types/store";
-
 // Local interface matching store's TournamentState structure
 interface TournamentState {
-	names: TournamentName[] | null;
+	names: NameItem[] | null;
 	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
 	isComplete: boolean;
 	isLoading: boolean;

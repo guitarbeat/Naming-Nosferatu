@@ -349,8 +349,55 @@ export class PreferenceSorter {
 	}
 
 	// Return the next un-judged pair as a match { left, right }
-	getNextMatch(): { left: string; right: string } | null {
-		// Advance index to next pair we haven't judged yet
+	getNextMatch(
+		options: {
+			ratings?: Record<string, { rating: number; wins?: number; losses?: number }>;
+			comparisons?: Map<string, number>;
+		} = {},
+	): { left: string; right: string } | null {
+		const { ratings = {}, comparisons = new Map() } = options;
+
+		// If we have ratings/comparisons, use adaptive selection
+		if (Object.keys(ratings).length > 0 || comparisons.size > 0) {
+			let bestPair: [string, string] | null = null;
+			let bestScore = Infinity;
+
+			for (let idx = this.currentIndex; idx < this.pairs.length; idx++) {
+				const pair = this.pairs[idx];
+				if (!pair) continue;
+				const [a, b] = pair;
+
+				// Skip if already judged
+				if (this.preferences.has(`${a}-${b}`) || this.preferences.has(`${b}-${a}`)) {
+					continue;
+				}
+
+				// Adaptive scoring
+				const ra = ratings[a]?.rating ?? 1500;
+				const rb = ratings[b]?.rating ?? 1500;
+				const diff = Math.abs(ra - rb);
+
+				const ca = comparisons.get(a) || 0;
+				const cb = comparisons.get(b) || 0;
+				const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
+
+				// Diff is primary, uncertainty (uncScore) is secondary boost
+				const score = diff - 50 * uncScore;
+
+				if (score < bestScore) {
+					bestScore = score;
+					bestPair = [a, b];
+				}
+			}
+
+			if (bestPair) {
+				const [a, b] = bestPair;
+				this.currentIndex = this.pairs.findIndex((p) => p?.[0] === a && p?.[1] === b);
+				return { left: a, right: b };
+			}
+		}
+
+		// Fallback to sequential selection
 		while (this.currentIndex < this.pairs.length) {
 			const pair = this.pairs[this.currentIndex];
 			if (!pair) {
@@ -358,9 +405,7 @@ export class PreferenceSorter {
 				continue;
 			}
 			const [a, b] = pair;
-			const key = `${a}-${b}`;
-			const reverseKey = `${b}-${a}`;
-			if (!this.preferences.has(key) && !this.preferences.has(reverseKey)) {
+			if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
 				return { left: a, right: b };
 			}
 			this.currentIndex++;

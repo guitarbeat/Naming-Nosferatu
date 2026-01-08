@@ -8,8 +8,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { STORAGE_KEYS } from "../../../core/constants";
 import type { Database } from "./types";
 
-// Re-export all modules
-export * from "./modules/cat-names-consolidated";
+// Re-export modules
 export * from "./modules/general";
 
 // Re-export types

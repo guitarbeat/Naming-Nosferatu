@@ -5,9 +5,9 @@
  * Compresses and optimizes audio files
  */
 
-import { execSync } from "child_process";
-import fs from "fs";
-import path from "path";
+import { execSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
 
 const SOUNDS_DIR = "public/assets/sounds";
 
@@ -69,7 +69,9 @@ function optimizeWithFFmpeg(soundInfo) {
 	let optimizedCount = 0;
 
 	soundInfo.forEach((sound) => {
-		if (sound.ext !== ".mp3") return;
+		if (sound.ext !== ".mp3") {
+			return;
+		}
 
 		const outputPath = sound.path.replace(".mp3", "_optimized.mp3");
 		const tempPath = sound.path.replace(".mp3", "_temp.mp3");
@@ -85,7 +87,7 @@ function optimizeWithFFmpeg(soundInfo) {
 
 			if (optimizedSize < originalSize && optimizedSize > 0) {
 				// Backup original and replace
-				fs.renameSync(sound.path, outputPath + ".backup");
+				fs.renameSync(sound.path, `${outputPath}.backup`);
 				fs.renameSync(tempPath, sound.path);
 
 				const saved = originalSize - optimizedSize;
@@ -106,8 +108,12 @@ function optimizeWithFFmpeg(soundInfo) {
 			console.error(`  ❌ Failed to optimize ${sound.name}: ${err.message}`);
 			// Clean up temp file
 			try {
-				if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-			} catch {}
+				if (fs.existsSync(tempPath)) {
+					fs.unlinkSync(tempPath);
+				}
+			} catch {
+				// Ignore cleanup errors
+			}
 		}
 	});
 

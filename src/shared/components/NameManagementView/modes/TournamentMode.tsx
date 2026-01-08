@@ -40,8 +40,7 @@ interface TournamentModeProps {
 	isLoading: boolean;
 	isAdmin?: boolean;
 	imageList?: string[];
-	// biome-ignore lint/style/useNamingConvention: Component prop, PascalCase is appropriate
-	SwipeableCards?: React.ComponentType<SwipeableCardsProps>;
+	swipeableCards?: React.ComponentType<SwipeableCardsProps>;
 }
 
 export function TournamentMode({
@@ -66,7 +65,7 @@ export function TournamentMode({
 	isLoading,
 	isAdmin,
 	imageList,
-	SwipeableCards,
+	swipeableCards,
 }: TournamentModeProps) {
 	if (analysisMode) {
 		return null;
@@ -153,8 +152,8 @@ export function TournamentMode({
 				<section className={styles.gridSection}>
 					{extensions.nameGrid ? (
 						extensions.nameGrid
-					) : isSwipeMode && SwipeableCards && !isLoading ? (
-						React.createElement(SwipeableCards, {
+					) : isSwipeMode && swipeableCards && !isLoading ? (
+						React.createElement(swipeableCards, {
 							names: filteredNamesForSwipe,
 							selectedNames: selectedNames,
 							onToggleName: toggleName,

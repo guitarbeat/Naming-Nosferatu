@@ -1,3 +1,5 @@
+import type { NameItem } from "./components";
+
 export interface UserPreferences {
 	theme?: string;
 	notifications?: boolean;
@@ -12,17 +14,8 @@ export interface UserState {
 	preferences: UserPreferences;
 }
 
-export interface TournamentName {
-	id: string | number;
-	name: string;
-	description?: string;
-	rating?: number;
-	wins?: number;
-	losses?: number;
-}
-
 interface TournamentState {
-	names: TournamentName[] | null;
+	names: NameItem[] | null;
 	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
 	isComplete: boolean;
 	isLoading: boolean;
@@ -75,7 +68,7 @@ export interface AppState {
 	errors: ErrorState;
 
 	tournamentActions: {
-		setNames: (names: TournamentName[] | null) => void;
+		setNames: (names: NameItem[] | null) => void;
 		setRatings: (
 			ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 		) => void;
@@ -116,7 +109,7 @@ export interface AppState {
 	};
 
 	selectors: {
-		getTournamentNames: () => TournamentName[] | null;
+		getTournamentNames: () => NameItem[] | null;
 		getRatings: () => Record<string, { rating: number; wins?: number; losses?: number }>;
 		getIsComplete: () => boolean;
 		getIsLoading: () => boolean;
