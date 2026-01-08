@@ -697,52 +697,6 @@
 	}
 }
 
-/* Breadcrumbs */
-.breadcrumbs {
-	padding: var(--space-2) var(--space-6);
-	margin-top: var(--space-4);
-	font-size: var(--text-sm);
-	color: var(--nav-text-muted);
-}
-
-.breadcrumbs__list {
-	display: flex;
-	align-items: center;
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	gap: var(--space-2);
-}
-
-.breadcrumbs__item {
-	display: flex;
-	align-items: center;
-	gap: var(--space-2);
-}
-
-.breadcrumbs__link {
-	background: none;
-	border: none;
-	padding: 0;
-	color: var(--nav-text-muted);
-	cursor: pointer;
-	font-family: inherit;
-	font-size: inherit;
-}
-
-.breadcrumbs__link:hover {
-	color: var(--nav-highlight);
-	text-decoration: underline;
-}
-
-.breadcrumbs__separator {
-	color: var(--glass-border);
-}
-
-.breadcrumbs__current {
-	color: var(--nav-text);
-	font-weight: 500;
-}
 
 /* Tooltip for collapsed state */
 @media (width > 640px) {
