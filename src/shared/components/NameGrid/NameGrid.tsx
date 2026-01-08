@@ -6,12 +6,8 @@
 
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
-<<<<<<< HEAD
-import { useMemo } from "react";
-import type { NameItem } from "@/types/components";
-=======
 import { memo, useMemo } from "react";
->>>>>>> origin/bolt-namegrid-optimization-9847520333013971848
+import type { NameItem } from "@/types/components";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import {
 	applyNameFilters,
@@ -71,7 +67,6 @@ const GridItem = memo(({
 }) => {
 	const nameId = nameObj.id as string | number;
 	const isHidden = isNameHidden(nameObj);
-	const isSelected = selectedSet.has(nameId);
 
 	// * Deterministic image selection
 	const cardImage = useMemo(() => {
