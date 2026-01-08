@@ -470,6 +470,12 @@ function TournamentSetupContent({
 									/>
 								),
 							}}
+							tournamentProps={{
+								SwipeableCards,
+								imageList: galleryImages,
+							}}
+							onStartTournament={handleStartTournament}
+							onOpenSuggestName={handleOpenSuggestName}
 						/>
 						{lightboxElement}
 					</div>
