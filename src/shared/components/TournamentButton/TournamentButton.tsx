@@ -3,28 +3,14 @@
  * @description Specialized button component for tournament actions
  */
 
-import PropTypes from "prop-types";
+import { Plus } from "lucide-react";
 import React from "react";
 import Button from "../Button/Button";
 
-const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
-const BUTTON_SIZES = ["small", "medium", "large"];
-
 /**
- * PlusIcon component for tournament button
+ * PlusIcon component for tournament button - now using lucide-react
  */
-const PlusIcon = () => (
-	<svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false" className="w-4 h-4">
-		<path
-			d="M12 4v16m8-8H4"
-			stroke="currentColor"
-			strokeWidth="2"
-			fill="none"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-	</svg>
-);
+const PlusIcon = () => <Plus className="w-4 h-4" />;
 
 /**
  * TournamentButton component - specialized button for starting tournaments
@@ -97,19 +83,6 @@ const TournamentButton = ({
 			{children}
 		</Button>
 	);
-};
-
-TournamentButton.propTypes = {
-	children: PropTypes.node,
-	variant: PropTypes.oneOf(BUTTON_VARIANTS),
-	size: PropTypes.oneOf(BUTTON_SIZES),
-	disabled: PropTypes.bool,
-	loading: PropTypes.bool,
-	onClick: PropTypes.func,
-	className: PropTypes.string,
-	startIcon: PropTypes.node,
-	endIcon: PropTypes.node,
-	ariaLabel: PropTypes.string,
 };
 
 TournamentButton.displayName = "TournamentButton";

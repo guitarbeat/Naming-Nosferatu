@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { tournamentsAPI } from "@/features/tournament/services/tournamentService";
 import type { NameItem } from "@/types/components";
 import { ErrorManager } from "../../../services/errorManager/index";
-import { tournamentsAPI } from "../../../services/supabase/client";
 
 interface UseNameSelectionProps {
 	names?: NameItem[];

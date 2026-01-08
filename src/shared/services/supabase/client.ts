@@ -184,5 +184,29 @@ export const isSupabaseAvailable = async () => {
 	return true;
 };
 
+/**
+ * Helper to execute Supabase operations with standardized availability checks and error handling.
+ */
+export async function withSupabase<T>(
+	operation: (client: SupabaseClient<Database>) => Promise<T>,
+	fallback: T,
+): Promise<T> {
+	try {
+		if (!(await isSupabaseAvailable())) {
+			return fallback;
+		}
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			return fallback;
+		}
+		return await operation(client);
+	} catch (error) {
+		if (isDev) {
+			console.error("Supabase operation failed:", error);
+		}
+		return fallback;
+	}
+}
+
 // Re-export client for modern usage
 export { resolveSupabaseClient as supabase };

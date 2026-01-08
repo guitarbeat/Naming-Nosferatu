@@ -8,7 +8,8 @@ This document tracks potential areas for code consolidation and simplification t
 
 ## Component Consolidation
 - [x] **Button Unification**:
-    - `TournamentButton` is a thin wrapper around `Button` adding default plus icon. Used in 3 locations (TournamentToolbar, PersonalResults). Keeping as semantic component for now, but could be simplified to direct Button usage with startIcon prop in future cleanup.
+    - Simplified `TournamentButton` by using standard `Plus` icon from `lucide-react` and removing redundant SVG code.
+
 - [x] **Header vs Navbar**:
     - **Analysis Complete:** `CollapsibleHeader` and `AppNavbar` are distinct components serving different purposes. `CollapsibleHeader` is a section header for collapsible content panels used in analytics and results views. Appropriately located in `shared/components` as it's used by multiple features. No changes needed.
 - [x] **AppNavbar Simplification**:
@@ -22,10 +23,10 @@ This document tracks potential areas for code consolidation and simplification t
     - **Status Complete:** Already centralized in `design-tokens.css` and `colors.css`. Comprehensive coverage of spacing, typography, colors, shadows, transitions. Consistently used throughout codebase.
 
 ## Feature Logic
-- [~] **Tournament Logic**:
-    - **Analysis Complete:** Found `tournamentsAPI` object (~345 lines) in `src/shared/services/supabase/modules/general.ts` with 5 methods (createTournament, updateTournamentStatus, getUserTournaments, saveTournamentSelections, saveTournamentRatings).
-    - **Recommendation:** Defer migration - too complex for current session. Requires comprehensive testing and dedicated refactoring time.
-    - **Future Work:** Move to `features/tournament/services/` when test coverage is comprehensive.
+- [x] **Tournament Logic**:
+    - **Completed:** Migrated `tournamentsAPI` to `src/features/tournament/services/tournamentService.ts`.
+    - **DRY Refactor:** Implemented `withSupabase` helper in `client.ts` and refactored all service modules to use it, reducing boilerplate and centralizing error handling/availability checks.
+
 
 ## General
 - [x] **Type definitions**:

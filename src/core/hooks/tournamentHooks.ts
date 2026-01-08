@@ -1,5 +1,6 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { tournamentsAPI } from "../../features/tournament/services/tournamentService";
 import {
 	buildComparisonsMap,
 	calculateBracketRound,
@@ -7,7 +8,7 @@ import {
 	PreferenceSorter,
 } from "../../features/tournament/tournamentUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
-import { tournamentsAPI } from "../../shared/services/supabase/client";
+
 import {
 	clearTournamentCache,
 	devError,
