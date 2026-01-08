@@ -260,7 +260,5 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 Loading.displayName = "Loading";
 
-// Re-export CatSpinner as alias for backwards compatibility
 export const CatSpinner = Loading;
 export type CatSpinnerProps = LoadingProps;
-export default Loading;

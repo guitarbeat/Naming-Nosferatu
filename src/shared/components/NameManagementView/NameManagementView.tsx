@@ -168,5 +168,3 @@ export function NameManagementView({
 		</>
 	);
 }
-
-export default NameManagementView;

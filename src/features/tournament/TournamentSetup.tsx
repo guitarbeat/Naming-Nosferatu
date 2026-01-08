@@ -6,7 +6,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { ErrorComponent as Error } from "../../shared/components/Error";
+import { ErrorComponent } from "../../shared/components/Error";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
 import type { NameItem } from "../../types/components";
@@ -24,8 +24,6 @@ import { useTournamentController } from "./hooks/useTournamentController";
 import identityStyles from "./styles/Identity.module.css";
 import layoutStyles from "./styles/SetupLayout.module.css";
 import photoStyles from "./styles/SetupPhotos.module.css";
-
-const ErrorBoundary = Error;
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;
@@ -487,9 +485,9 @@ function TournamentSetupContent({
 
 function TournamentSetup(props: TournamentSetupProps) {
 	return (
-		<ErrorBoundary variant="boundary">
+		<ErrorComponent variant="boundary">
 			<TournamentSetupContent {...props} />
-		</ErrorBoundary>
+		</ErrorComponent>
 	);
 }
 

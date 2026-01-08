@@ -6,12 +6,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
-import { Error } from "../../shared/components/Error";
+import { ErrorComponent } from "../../shared/components/Error";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { FirstMatchTutorial } from "./components/FirstMatchTutorial";
-import { TournamentErrorState } from "./components/TournamentErrorState";
 import { TournamentLoadingState } from "./components/TournamentLoadingState";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
@@ -249,9 +248,16 @@ function TournamentContent({
 	// * Transform match history for bracket
 	const transformedMatches = useBracketTransformation(matchHistory, visibleNames);
 
-	// * Error state
 	if (isError) {
-		return <TournamentErrorState />;
+		return (
+			<div className={layoutStyles.tournament}>
+				<ErrorComponent
+					error="Failed to load tournament data"
+					onRetry={() => window.location.reload()}
+					variant="boundary" // Show big error for fatal initialization
+				/>
+			</div>
+		);
 	}
 
 	// * Loading state
@@ -372,9 +378,9 @@ function TournamentContent({
 // * Main Tournament component with error boundary
 function Tournament(props: TournamentProps) {
 	return (
-		<Error variant="boundary">
+		<ErrorComponent variant="boundary">
 			<TournamentContent {...props} />
-		</Error>
+		</ErrorComponent>
 	);
 }
 

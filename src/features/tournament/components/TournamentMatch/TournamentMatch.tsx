@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import type { NameItem } from "@/types/components";
 import Button from "../../../../shared/components/Button/Button";
-import { Error } from "../../../../shared/components/Error";
+import { ErrorComponent } from "../../../../shared/components/Error";
 import { playSound } from "../../../../shared/utils/soundManager";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import controlsStyles from "../../styles/Controls.module.css";
@@ -401,9 +401,9 @@ function TournamentMatch({
 
 			{/* Voting Error Display */}
 			{!!votingError && (
-				<Error
+				<ErrorComponent
 					variant="inline"
-					error={votingError as Error}
+					error={votingError}
 					context="vote"
 					position="below"
 					onRetry={onVoteRetry}

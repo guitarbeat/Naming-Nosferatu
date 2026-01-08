@@ -21,7 +21,7 @@ import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
-import { Error } from "./shared/components/Error";
+import { ErrorComponent } from "./shared/components/Error";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
@@ -300,15 +300,15 @@ function AppLayout({
 				{/* {isLoggedIn && <SubNavigation />} */}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
-					{errors.current && isLoggedIn && (
-						<Error
-							variant="list"
-							error={errors.current}
-							onDismiss={() => errorActions.clearError()}
-							onRetry={() => window.location.reload()}
-						/>
+					{errors.current && (
+						<div className="p-4">
+							<ErrorComponent
+								error={errors.current}
+								onRetry={() => errorActions.clearError()}
+								onDismiss={() => errorActions.clearError()}
+							/>
+						</div>
 					)}
-
 					<SwipeNavigation>
 						<ViewRouter
 							isLoggedIn={isLoggedIn}

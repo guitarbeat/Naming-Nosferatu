@@ -169,6 +169,8 @@ CalendarButton.propTypes = {
 	onClick: PropTypes.func,
 };
 
+import type { NameItem } from "../../../types/components";
+
 interface PersonalResultsProps {
 	personalRatings: Record<
 		string,
@@ -180,7 +182,7 @@ interface PersonalResultsProps {
 		  }
 		| number
 	>;
-	currentTournamentNames: { id: string | number; name: string }[];
+	currentTournamentNames: NameItem[];
 	voteHistory: VoteHistoryItem[];
 	onStartNew: () => void;
 	onUpdateRatings: (ratings: unknown) => void;

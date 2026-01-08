@@ -9,10 +9,6 @@ import React, { useEffect, useState, useTransition } from "react";
 import Card from "../../shared/components/Card/Card";
 import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
-import { AnalysisDashboard } from "../analytics/components/AnalysisDashboard";
-import PersonalResults from "./components/PersonalResults";
-import styles from "./Dashboard.module.css";
-
 /**
  * Unified Dashboard Component
  * @param {Object} props
@@ -24,9 +20,14 @@ import styles from "./Dashboard.module.css";
  * @param {string} props.userName - Current user name
  * @param {string} props.mode - "personal" | "global" | "both" (default: "both")
  */
+import type { NameItem } from "../../types/components";
+import { AnalysisDashboard } from "../analytics/components/AnalysisDashboard";
+import PersonalResults from "./components/PersonalResults";
+import styles from "./Dashboard.module.css";
+
 interface DashboardProps {
 	personalRatings?: Record<string, unknown>;
-	currentTournamentNames?: unknown[];
+	currentTournamentNames?: NameItem[];
 	voteHistory?: unknown[];
 	onStartNew: () => void;
 	onUpdateRatings?: (ratings: unknown) => void;
@@ -131,7 +132,7 @@ function Dashboard({
 				{viewMode === "personal" ? (
 					<PersonalResults
 						personalRatings={(personalRatings as any) || {}}
-						currentTournamentNames={(currentTournamentNames as any) || []}
+						currentTournamentNames={currentTournamentNames || []}
 						voteHistory={(voteHistory as any) || []}
 						onStartNew={onStartNew}
 						onUpdateRatings={onUpdateRatings as any}

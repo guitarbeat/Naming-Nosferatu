@@ -1,5 +1,4 @@
 export {
-	Error,
 	ErrorBoundaryFallback,
 	type ErrorBoundaryFallbackProps,
 	ErrorComponent,

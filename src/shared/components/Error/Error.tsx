@@ -315,6 +315,3 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 };
 
 ErrorComponent.displayName = "ErrorComponent";
-
-// Alias for backward compatibility
-export const Error = ErrorComponent;
