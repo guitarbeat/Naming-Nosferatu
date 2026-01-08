@@ -1,14 +1,12 @@
 import { motion } from "framer-motion";
-import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import { useRouting } from "../../../core/hooks/useRouting";
+import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import "./AppNavbar.css"; // Reuse existing styles or create new
 
 export function BottomNav() {
 	const { currentRoute, navigateTo } = useRouting();
 
-	const items = BOTTOM_NAV_ITEMS.map((key) =>
-		MAIN_NAV_ITEMS.find((item) => item.key === key),
-	).filter((item): item is (typeof MAIN_NAV_ITEMS)[0] => Boolean(item));
+	const items = getBottomNavItems(MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS);
 
 	if (!items.length) {
 		return null;

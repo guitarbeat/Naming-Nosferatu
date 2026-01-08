@@ -1,7 +1,7 @@
 import { motion, PanInfo } from "framer-motion";
 import { ReactNode } from "react";
-import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import { useRouting } from "../../../core/hooks/useRouting";
+import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "../../navigation";
 
 interface SwipeNavigationProps {
 	children: ReactNode;

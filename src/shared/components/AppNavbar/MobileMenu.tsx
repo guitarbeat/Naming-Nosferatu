@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import type { NavItem } from "../../navigation";
 import "./AppNavbar.css";
 import { NavbarLink } from "./NavbarLink";
 import { ModeToggles } from "./NavbarToggles";
-import type { NavItem } from "./navbarCore";
 
 export function MobileMenuToggle({ isOpen, onToggle }: { isOpen: boolean; onToggle: () => void }) {
 	return (

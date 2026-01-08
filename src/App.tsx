@@ -17,14 +17,14 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
+// import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar"; // Removed: Keeping only bottom nav
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
-import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
+
 import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
@@ -263,11 +263,11 @@ function AppLayout({
 				{/* * Static cat-themed background */}
 				<CatBackground />
 
-				{/* * Mobile Bottom Navigation */}
+				{/* * Primary Bottom Navigation */}
 				{isLoggedIn && <BottomNav />}
 
-				{/* * Primary navigation lives in the navbar */}
-				{isLoggedIn && (
+				{/* * Primary navigation lives in the navbar - REMOVED: Keeping only bottom nav */}
+				{/* {isLoggedIn && (
 					<AppNavbar
 						view={currentView || "tournament"}
 						setView={(view: string) => {
@@ -297,10 +297,9 @@ function AppLayout({
 						currentRoute={currentRoute}
 						onNavigate={navigateTo}
 					/>
-				)}
+				)} */}
 
-				{isLoggedIn && <SubNavigation />}
-				{isLoggedIn && <Breadcrumbs />}
+				{/* {isLoggedIn && <SubNavigation />} */}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && isLoggedIn && (

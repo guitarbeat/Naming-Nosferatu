@@ -8,9 +8,9 @@ import PropTypes from "prop-types";
 import React, { useId, useMemo } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
-import { TournamentButton } from "../Button/Button";
 import { Select } from "../Form/Form";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
+import TournamentButton from "../TournamentButton/TournamentButton";
 import "./TournamentToolbar.css";
 
 // ============================================================================

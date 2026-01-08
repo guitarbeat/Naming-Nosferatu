@@ -1,2 +1,8 @@
-export { type CatSpinnerProps, default as CatSpinner } from "./CatSpinner";
-export { Loading, type LoadingProps } from "./Loading";
+export {
+	type CatColor,
+	CatSpinner,
+	type CatSpinnerProps,
+	type CatVariant,
+	Loading,
+	type LoadingProps,
+} from "./Loading";

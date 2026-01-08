@@ -5,26 +5,25 @@
 }
 
 .namesGrid {
-	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: var(--space-4);
 	width: 100%;
+	min-height: min-content;
 }
 
 .namesGrid > * {
-	position: absolute;
-	width: 280px;
+	position: relative;
+	width: 100%;
 	transition:
 		var(--transition-transform),
 		var(--transition-opacity),
-		box-shadow var(--duration-fast) var(--ease-standard),
-		top var(--duration-normal) var(--ease-standard),
-		left var(--duration-normal) var(--ease-standard);
-	will-change: transform, top, left;
+		box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 @media (max-width: 640px) {
-	.namesGrid > * {
-		width: 100%;
-		position: relative;
+	.namesGrid {
+		grid-template-columns: 1fr;
 	}
 }
 

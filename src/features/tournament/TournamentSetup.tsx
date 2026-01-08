@@ -18,6 +18,7 @@ import {
 	createAnalysisDashboardWrapper,
 } from "./components/AnalysisWrappers";
 import Lightbox from "./components/Lightbox";
+import { SwipeableCards } from "./components/SwipeableCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
 import identityStyles from "./styles/Identity.module.css";
@@ -469,6 +470,12 @@ function TournamentSetupContent({
 									/>
 								),
 							}}
+							tournamentProps={{
+								SwipeableCards,
+								imageList: galleryImages,
+							}}
+							onStartTournament={_onStart}
+							onOpenSuggestName={_onOpenSuggestName}
 						/>
 						{lightboxElement}
 					</div>

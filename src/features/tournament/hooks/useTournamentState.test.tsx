@@ -17,7 +17,7 @@ vi.mock("../../../core/hooks/tournamentHooks", () => ({
 
 // Mock shuffleArray
 vi.mock("../../../shared/utils/core", () => ({
-	shuffleArray: (arr: any[]) => [...arr].reverse(), // Simple deterministic shuffle
+	shuffleArray: <T,>(arr: T[]): T[] => [...arr].reverse(), // Simple deterministic shuffle
 }));
 
 describe("useTournamentState", () => {
@@ -41,7 +41,7 @@ describe("useTournamentState", () => {
 
 		// Expect reversed order due to mock shuffle
 		expect(result.current.randomizedNames).toHaveLength(2);
-		expect(result.current.randomizedNames[0]?.name).toBe("Cat B");
+		expect(result.current.randomizedNames?.[0]?.name).toBe("Cat B");
 	});
 
 	it("should handle option selection", () => {

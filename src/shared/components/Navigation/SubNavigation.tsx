@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { MAIN_NAV_ITEMS } from "../../../config/navigation.config";
 import { useRouting } from "../../../core/hooks/useRouting";
+import { MAIN_NAV_ITEMS } from "../../navigation";
 import "./SubNavigation.css";
 
 export const SubNavigation = memo(function SubNavigation() {

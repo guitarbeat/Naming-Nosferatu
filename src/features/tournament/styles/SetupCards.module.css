@@ -1,29 +1,22 @@
-/* Card grid styles - Masonry Layout */
+/* Single card container with masonry layout - inspired by NameSuggestionModal */
 
 .cardsContainer {
-	position: relative;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: var(--space-4);
 	width: 100%;
-	max-width: 100%;
-	margin-inline: 0;
+	padding: var(--space-4);
 	min-height: min-content;
-	min-width: 0;
-	padding: 0;
-	overflow-x: visible;
-	transition:
-		gap var(--duration-normal) var(--ease-standard),
-		padding var(--duration-normal) var(--ease-standard);
+	transition: all var(--duration-normal) var(--ease-standard);
 }
 
 .cardsContainer > * {
-	position: absolute;
-	width: var(--card-width-responsive);
+	position: relative;
+	width: 100%;
 	transition:
 		var(--transition-transform),
 		var(--transition-opacity),
-		box-shadow var(--duration-fast) var(--ease-standard),
-		top var(--duration-normal) var(--ease-standard),
-		left var(--duration-normal) var(--ease-standard);
-	will-change: transform, top, left;
+		box-shadow var(--duration-fast) var(--ease-standard);
 }
 
 @media (width < 768px) {
