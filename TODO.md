@@ -3,12 +3,12 @@
 This document tracks potential areas for code consolidation and simplification to improve maintainability without feature loss.
 
 ## High Priority: Regressions & Cleanup
-- [ ] **Verify Auth Logic**: Ensure `src/shared/utils/auth.ts` (low-level helpers) does not overlap or conflict with `src/features/auth/hooks/authHooks.ts`. Consolidate if possible.
-- [ ] **Remove deprecated shims**: `src/shared/components/CommonUI.tsx` re-exports components. Update consumers to import directly from `Loading`, `Toast`, etc., and remove this shim.
+- [x] **Verify Auth Logic**: Moved `src/shared/utils/auth.ts` to `src/features/auth/utils/authUtils.ts`. No conflicts found.
+- [x] **Remove deprecated shims**: Removed `src/shared/components/CommonUI.tsx` and updated all consumers to import directly from component directories.
 
 ## Component Consolidation
-- [ ] **Button Unification**:
-    - `src/shared/components/TournamentButton/TournamentButton.tsx` is a wrapper around `Button`. Validate if this warrants a separate component or can be a `variant` or simple prop configuration of `Button`.
+- [x] **Button Unification**:
+    - `TournamentButton` is a thin wrapper around `Button` adding default plus icon. Used in 3 locations (TournamentToolbar, PersonalResults). Keeping as semantic component for now, but could be simplified to direct Button usage with startIcon prop in future cleanup.
 - [ ] **Header vs Navbar**:
     - Clarify the relationship between `src/shared/components/AppNavbar` (main nav) and `src/shared/components/Header/CollapsibleHeader.tsx`. If `CollapsibleHeader` is only used in specific views (Analytics/Results), consider moving it closer to those features or renaming to `ViewHeader`.
 - [ ] **AppNavbar Simplification**:
