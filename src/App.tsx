@@ -17,7 +17,6 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar";
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
@@ -25,7 +24,6 @@ import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 import { Breadcrumbs } from "./shared/components/Navigation/Breadcrumbs";
-import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
