@@ -23,11 +23,7 @@ import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { Error, Loading } from "./shared/components/CommonUI";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
-<<<<<<< HEAD
 import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
-=======
-import { SubNavigation } from "./shared/components/Navigation/SubNavigation";
->>>>>>> origin/hide-breadcrumbs-12667715084447836329
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
 // * Use path aliases for better tree shaking
@@ -268,7 +264,6 @@ function AppLayout({
 				{/* * Primary Bottom Navigation */}
 				{isLoggedIn && <BottomNav />}
 
-<<<<<<< HEAD
 				{/* * Primary navigation lives in the navbar */}
 				{isLoggedIn && (
 					<AppNavbar
