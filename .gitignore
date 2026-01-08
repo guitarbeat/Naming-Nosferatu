@@ -110,3 +110,30 @@ scripts/data
 stats.html
 stats.json
 jscpd-report.html
+
+# Large media files (prevent accidental commits)
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.m4a
+*.aac
+# Allow small sound effects (under 1MB) - adjust threshold as needed
+!public/assets/sounds/*.{mp3,wav,ogg}  # Remove this line if you want to track all sounds
+
+# Large image files (prevent uncompressed originals)
+*.psd
+*.ai
+*.tiff
+*.tif
+*.bmp
+# Allow optimized web formats
+!*.{jpg,jpeg,png,gif,webp,avif,svg}
+
+# Large video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.m4v

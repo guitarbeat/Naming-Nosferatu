@@ -32,7 +32,7 @@
   },
   "scripts": {
     "dev": "vite --config vite.config.ts",
-    "build": "vite build --config vite.config.ts --outDir dist",
+    "build": "npm run optimize:images && vite build --config vite.config.ts --outDir dist",
     "build:dev": "vite build --config vite.config.ts --mode development --outDir dist",
     "preview": "vite preview --config vite.config.ts",
     "test": "vitest run --config config/vitest.config.mjs",
@@ -49,8 +49,11 @@
     "check:outdated": "pnpm outdated",
     "check:audit": "pnpm audit",
     "update:check": "pnpm outdated --format table",
-    "clean": "rm -rf build dist node_modules/.vite stats.html",
-    "vercel:dev": "vercel dev"
+    "clean": "del /q build dist node_modules\\.vite stats.html 2>nul || rmdir /s /q build dist node_modules\\.vite 2>nul || echo No files to clean",
+    "vercel:dev": "vercel dev",
+    "optimize:images": "node scripts/optimize-images-build.js",
+    "optimize:assets": "node scripts/optimize-assets.js",
+    "optimize:sounds": "node scripts/optimize-sounds.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
