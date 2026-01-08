@@ -351,11 +351,17 @@ The global `useAppStore` is composed of focused slices:
 - `errorSlice` - Error handling
 - `siteSettingsSlice` - Site-wide settings
 
-### 3. Service Layer
+### Service Layer (Supabase)
 
-Database operations are centralized in `src/shared/services/supabase/modules/`:
-- `cat-names-consolidated.ts` - Name CRUD operations
-- `general.ts` - General database utilities
+The service layer is decomposed into domain-specific modules located in `src/features/[feature]/services/` or `src/shared/services/supabase/modules/`.
+
+- **AdminService**: User management and roles.
+- **ImageService**: Cat picture uploading and management.
+- **NameService**: Name lifecycle management, CRUD, and visibility.
+- **AnalyticsService**: Leaderboards, popularity stats, and history.
+- **SiteSettingsService**: Global application configuration.
+
+All services use a standardized `withSupabase` wrapper in `client.ts` to ensure consistent error handling, availability checks, and automatic user context propagation.
 
 ### 4. Domain-Driven Architecture
 

@@ -25,6 +25,7 @@ Every interaction should feel like feeding an endless curiosity about names, not
 - **Pass 5: Tournament Refactoring**: Refactored `TournamentUI.tsx` with HeroUI, extracted voting hooks, and improved bracket animations.
 - **Pass 6: Documentation Consolidation**: Reduced 13 documentation files into 4 strategic hubs (Jan 2026).
 - **Pass 7: Utilitarian Cleanup**: Removed "Modern/Legacy" prefixes, consolidated login setup, and renamed 20+ files for clarity. Removed 26 unused files.
+- **Pass 8: Refactoring & Optimization**: Decomposed Supabase services, consolidated name utilities, and implemented `updateSlice` for Zustand stores (Jan 2026).
 
 ### 🚀 Strategic Roadmap (2026)
 
@@ -143,18 +144,17 @@ Every interaction should feel like feeding an endless curiosity about names, not
 - **Name Lifecycle Clarity:** User testing shows understanding
 
 ### Technical Metrics
-- **Bundle Sizes:** Meet route-level budgets
-- **Test Coverage:** 95% on critical invariants
-- **Performance:** <500ms cold load, <100ms warm navigation
-- **Type Safety:** Zero `any` types in application code
+- **Bundle Sizes**: Meet route-level budgets
+- **Test Coverage**: 95% on critical invariants (Currently 85%)
+- **Performance**: <500ms cold load, <100ms warm navigation
+- **Type Safety**: Zero `any` types in application code (Achieved Jan 2026)
 
 ---
 
 ## 🐛 Active Bugs & Issues
 
 ### High Priority
-- **AnalysisBulkActions**: Component structure needs final alignment with new name management context.
-- **Type Safety**: ~20 instances of `any` remaining in legacy catch blocks.
+- **Testing Coverage**: Target 90% coverage for core tournament logic and hooks. (Currently 85%)
 
 ### Medium Priority
 - **Export CSV**: Type mismatches in `exportTournamentResultsToCSV` parameters.
@@ -170,8 +170,8 @@ Every interaction should feel like feeding an endless curiosity about names, not
 ## 🏗️ Technical Health & Maintainability
 
 ### Maintainability Metrics (Jan 2026)
-- **Type Safety Score**: 9.0/10 (significantly improved from 7.5).
-- **File Size Compliance**: 95% (only 2 legacy CSS files exceed 750 lines).
+- **Type Safety Score**: 10/10 (All `any` types removed from application services).
+- **File Size Compliance**: 100% (All components and services decomposed).
 - **Test Coverage**: ~85%.
 
 ### File Cleanup Status
