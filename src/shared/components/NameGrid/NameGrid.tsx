@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import type { NameItem } from "@/types/components";
-import { useMasonryLayout } from "../../hooks/useMasonryLayout";
+// Removed useMasonryLayout - using CSS Grid masonry instead
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -189,13 +189,7 @@ export function NameGrid({
 		return result;
 	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
-	const { containerRef, setItemRef, positions, columnHeights } = useMasonryLayout<HTMLDivElement>(
-		processedNames.length,
-		{
-			minColumnWidth: 280,
-			gap: 24,
-		},
-	);
+	// Simplified to use CSS Grid instead of complex masonry positioning
 
 	if (isLoading) {
 		return (
@@ -257,32 +251,14 @@ export function NameGrid({
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<div
-				ref={containerRef}
-				className={styles.namesGrid}
-				role="list"
-				style={{
-					minHeight: columnHeights.length > 0 ? `${Math.max(...columnHeights)}px` : "auto",
-				}}
-			>
-				{processedNames.map((name, index) => {
-					const position = positions[index];
+			<div className={styles.namesGrid} role="list">
+				{processedNames.map((name) => {
 					const isSelected = selectedSet.has(name.id as string | number);
 					return (
 						<motion.div
 							key={name.id}
-							ref={setItemRef(index)}
 							role="listitem"
 							className={styles.gridItemWrapper}
-							style={
-								position
-									? {
-											position: "absolute",
-											top: `${position.top}px`,
-											left: `${position.left}px`,
-										}
-									: { position: "relative" }
-							}
 							layout={true}
 							transition={{
 								layout: { duration: 0.3, ease: "easeOut" },
