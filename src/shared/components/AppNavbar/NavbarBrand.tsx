@@ -14,8 +14,7 @@ export function NavbarBrand({ isActive, onClick, ariaLabel }: NavbarBrandProps) 
 			aria-current={isActive ? "page" : undefined}
 			aria-label={ariaLabel}
 		>
-			<span className="app-navbar__brand-text">Tournament</span>
-			<span className="app-navbar__brand-subtext">Daily Bracket</span>
+			<span className="app-navbar__brand-text">Cat Bracket</span>
 		</button>
 	);
 }
