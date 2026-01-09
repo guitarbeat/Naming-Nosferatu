@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
-import styles from "./ValidatedInput.module.css";
+// Styles consolidated in src/shared/styles/form-controls.css
 
 interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
@@ -88,14 +88,14 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 			currentTouched && !currentError && !isValidating && String(value || "").length > 0;
 
 		return (
-			<div className={`${styles.container} ${className}`}>
+			<div className={`input-container ${className}`}>
 				{label && (
-					<label htmlFor={id} className={styles.label}>
+					<label htmlFor={id} className="form-label">
 						{label}
 					</label>
 				)}
 
-				<div className={styles.inputWrapper}>
+				<div className="input-wrapper">
 					<input
 						{...props}
 						id={id}
@@ -104,10 +104,10 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 						onChange={handleChange}
 						onBlur={handleBlur}
 						className={`
-            ${styles.input}
-            ${hasError ? styles.inputError : ""}
-            ${isSuccess && showSuccess ? styles.inputSuccess : ""}
-            ${hasError ? styles.shake : ""}
+            form-input
+            ${hasError ? "error" : ""}
+            ${isSuccess && showSuccess ? "success" : ""}
+            ${hasError ? "input-shake" : ""}
           `}
 						aria-invalid={!!hasError}
 						aria-describedby={hasError ? `${id}-error` : undefined}
@@ -119,7 +119,7 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className={styles.feedbackIcon}
+								className="feedback-icon"
 							>
 								✅
 							</motion.span>
@@ -129,7 +129,7 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className={styles.feedbackIcon}
+								className="feedback-icon"
 							>
 								❌
 							</motion.span>
@@ -137,7 +137,7 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 					</AnimatePresence>
 				</div>
 
-				<div className={styles.errorContainer}>
+				<div className="error-container">
 					<AnimatePresence mode="wait">
 						{hasError && (
 							<motion.p
@@ -146,7 +146,7 @@ export const ValidatedInput = forwardRef<HTMLInputElement, ValidatedInputProps>(
 								initial={{ opacity: 0, y: -10 }}
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -10 }}
-								className={styles.errorMessage}
+								className="error-message"
 								role="alert"
 							>
 								{currentError}

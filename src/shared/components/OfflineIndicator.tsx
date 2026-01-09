@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useNetworkStatus } from "../hooks/useBrowserState";
-import styles from "./OfflineIndicator.module.css";
+// Styles consolidated in src/shared/styles/components-primitives.css
 
 interface OfflineIndicatorProps {
 	showWhenOnline?: boolean;
@@ -54,22 +54,22 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
 
 	const getStatusClass = () => {
 		if (!isOnline) {
-			return styles.offline;
+			return "offline";
 		}
 		if (justCameOnline) {
-			return styles.online;
+			return "online";
 		}
 		if (isSlowConnection) {
-			return styles.slow;
+			return "slow";
 		}
-		return styles.online;
+		return "online";
 	};
 
 	return (
-		<div className={`${styles.indicator} ${styles[position]} ${getStatusClass()}`}>
-			<div className={styles.content}>
-				<span className={styles.dot} />
-				<span className={styles.message}>{getStatusMessage()}</span>
+		<div className={`indicator ${position} ${getStatusClass()}`}>
+			<div className="indicator-content">
+				<span className="indicator-dot" />
+				<span className="indicator-message">{getStatusMessage()}</span>
 			</div>
 		</div>
 	);

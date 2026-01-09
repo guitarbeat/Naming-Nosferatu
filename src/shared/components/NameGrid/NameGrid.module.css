@@ -44,7 +44,11 @@
 }
 
 .emptyState {
-	composes: glass-light from global;
+	background: var(--glass-bg-light);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
 	display: flex;
 	flex-direction: column;
 	align-items: center;

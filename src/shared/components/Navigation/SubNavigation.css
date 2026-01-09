@@ -1,29 +1,29 @@
 .sub-navigation {
-	background-color: rgba(0, 0, 0, 0.2);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	padding: 0.5rem 1rem;
-	backdrop-filter: blur(8px);
-	-webkit-backdrop-filter: blur(8px);
+	background: color-mix(in srgb, var(--color-neutral-900) 20%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
+	padding: var(--space-2) var(--space-4);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
 	position: sticky;
-	top: var(--navbar-height, 60px); /* Adjust based on AppNavbar height */
-	z-index: 90;
+	top: var(--navbar-height, 60px);
+	z-index: var(--z-navigation);
 	width: 100%;
 }
 
 .sub-navigation__list {
 	display: flex;
-	gap: 1.5rem;
+	gap: var(--space-6);
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	max-width: 1200px;
 	margin: 0 auto;
 	overflow-x: auto;
-	scrollbar-width: none; /* Firefox */
+	scrollbar-width: none;
 }
 
 .sub-navigation__list::-webkit-scrollbar {
-	display: none; /* Chrome/Safari */
+	display: none;
 }
 
 .sub-navigation__item {
@@ -33,31 +33,31 @@
 .sub-navigation__link {
 	background: none;
 	border: none;
-	color: var(--text-muted, rgba(255, 255, 255, 0.6));
+	color: var(--text-secondary);
 	cursor: pointer;
-	font-size: 0.9rem;
-	font-weight: 500;
-	padding: 0.25rem 0;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	padding: var(--space-1) 0;
 	position: relative;
-	transition: color 0.2s ease;
+	transition: var(--transition-base);
 	white-space: nowrap;
 }
 
 .sub-navigation__link:hover {
-	color: var(--text-primary, #ffffff);
+	color: var(--text-primary);
 }
 
 .sub-navigation__link.active {
-	color: var(--accent-color, #ffae00);
+	color: var(--accent-color, var(--color-neon-cyan));
 }
 
 .sub-navigation__link.active::after {
 	content: "";
 	position: absolute;
-	bottom: -2px;
+	bottom: -8px;
 	left: 0;
 	width: 100%;
 	height: 2px;
-	background-color: var(--accent-color, #ffae00);
-	border-radius: 2px;
+	background-color: var(--accent-color, var(--color-neon-cyan));
+	border-radius: var(--radius-sm);
 }
