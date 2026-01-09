@@ -134,6 +134,32 @@ export class EloRating {
 }
 
 /**
+ * Computes a weighted rating based on matches played.
+ * Clamps matchesPlayed to maxMatches to prevent logical inconsistencies.
+ *
+ * @param existingRating - The current rating of the item
+ * @param newPositionRating - The target rating based on position
+ * @param matchesPlayed - Number of matches played
+ * @param maxMatches - Maximum expected matches (used for normalization)
+ * @returns The computed rating
+ */
+export function computeRating(
+  existingRating: number,
+  newPositionRating: number,
+  matchesPlayed: number,
+  maxMatches: number
+): number {
+  const safeMaxMatches = Math.max(1, maxMatches);
+  const safeMatchesPlayed = Math.min(matchesPlayed, safeMaxMatches);
+  const blendFactor = Math.min(0.8, (safeMatchesPlayed / safeMaxMatches) * 0.9);
+
+  const newRating = Math.round(
+    blendFactor * newPositionRating + (1 - blendFactor) * existingRating,
+  );
+  return Math.max(1000, Math.min(2000, newRating));
+}
+
+/**
  * @module PreferenceSorter
  * @description A class that implements a merge sort algorithm with custom comparisons
  * for sorting cat names based on user preferences.

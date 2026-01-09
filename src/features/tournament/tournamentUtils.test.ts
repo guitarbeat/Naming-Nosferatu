@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	computeRating,
 	deduplicateImages,
 	EloRating,
 	getRandomCatImage,
@@ -47,6 +48,50 @@ describe("EloRating", () => {
 			expect(result.winsA).toBe(1);
 			expect(result.winsB).toBe(1);
 		});
+	});
+});
+
+describe("computeRating", () => {
+	it("should return existing rating when matchesPlayed is 0", () => {
+		// blendFactor = min(0.8, (0 / safeMax) * 0.9) = 0
+		// result = 0 * newPos + 1 * existing
+		const result = computeRating(1500, 2000, 0, 100);
+		expect(result).toBe(1500);
+	});
+
+	it("should blend ratings based on matches played", () => {
+		// safeMax = 100
+		// matches = 50
+		// blendFactor = min(0.8, (50/100) * 0.9) = 0.45
+		// rating = 0.45 * 2000 + 0.55 * 1000 = 900 + 550 = 1450
+		// clamped between 1000 and 2000
+		const result = computeRating(1000, 2000, 50, 100);
+		expect(result).toBe(1450);
+	});
+
+	it("should clamp matchesPlayed to maxMatches", () => {
+		// Case 1: matchesPlayed = maxMatches = 100
+		// blendFactor = min(0.8, (100/100) * 0.9) = 0.9 -> capped at 0.8
+		// rating = 0.8 * 2000 + 0.2 * 1000 = 1600 + 200 = 1800
+		const resultNormal = computeRating(1000, 2000, 100, 100);
+		expect(resultNormal).toBe(1800);
+
+		// Case 2: matchesPlayed = 200, maxMatches = 100
+		// If clamped correctly, this should behave exactly as matchesPlayed = 100
+		const resultExcess = computeRating(1000, 2000, 200, 100);
+		expect(resultExcess).toBe(1800);
+	});
+
+	it("should respect min/max rating bounds", () => {
+		// Potential result < 1000
+		// blendFactor = 0 (matches=0)
+		// result = existing(500) -> should be clamped to 1000
+		expect(computeRating(500, 500, 0, 100)).toBe(1000);
+
+		// Potential result > 2000
+		// blendFactor = 0 (matches=0)
+		// result = existing(2500) -> should be clamped to 2000
+		expect(computeRating(2500, 2500, 0, 100)).toBe(2000);
 	});
 });
 
