@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
-import "./AppNavbar.css"; // Reuse existing styles or create new
+import "./BottomNav.css"; // Reuse existing styles or create new
 
 export function BottomNav() {
 	const { currentRoute, navigateTo } = useRouting();

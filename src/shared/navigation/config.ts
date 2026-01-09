@@ -1,9 +1,4 @@
-import {
-	AnalysisIcon,
-	PhotosIcon,
-	TrophyIcon,
-	VoteIcon,
-} from "../components/AppNavbar/NavbarIcons";
+import { BarChart2, CheckCircle, Image, Trophy } from "lucide-react";
 import type { NavItemConfig } from "./types";
 
 /**
@@ -14,7 +9,7 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 		key: "tournament",
 		label: "Vote Now",
 		route: "/",
-		icon: VoteIcon,
+		icon: CheckCircle,
 		type: "primary",
 		children: [
 			{
@@ -29,7 +24,7 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 		key: "results",
 		label: "View Results",
 		route: "/results",
-		icon: TrophyIcon,
+		icon: Trophy,
 		type: "primary",
 		children: [
 			{
@@ -56,7 +51,7 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 		key: "analysis",
 		label: "Analyze Data",
 		route: "/analysis",
-		icon: AnalysisIcon,
+		icon: BarChart2,
 		type: "primary",
 		children: [
 			{
@@ -77,7 +72,7 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 		key: "gallery",
 		label: "Browse Gallery",
 		route: "/gallery",
-		icon: PhotosIcon,
+		icon: Image,
 		type: "primary",
 		children: [
 			{

@@ -13,7 +13,7 @@ import { BumpChart } from "../../../shared/components/Charts/Charts";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,
-} from "../../../shared/components/Header/CollapsibleHeader";
+} from "../../../shared/components/CollapsibleHeader";
 import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";

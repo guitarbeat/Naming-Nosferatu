@@ -17,8 +17,8 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-// import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar"; // Removed: Keeping only bottom nav
-import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
+
+import { BottomNav } from "./shared/components/Navigation/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { ErrorComponent } from "./shared/components/Error";
@@ -254,7 +254,11 @@ function AppLayout({
 				<OfflineIndicator />
 
 				{/* * Skip link for keyboard navigation */}
-				<a href="#main-content" className="skip-link">
+				{/* * Skip link for keyboard navigation */}
+				<a
+					href="#main-content"
+					className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:p-4 focus:bg-white focus:text-black focus:rounded-md focus:shadow-lg focus:font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+				>
 					Skip to main content
 				</a>
 

@@ -370,7 +370,17 @@ Business logic is organized around the name lifecycle:
 - **Invariants**: Business rules enforced through TypeScript types and runtime validation
 - **Provenance**: Complete audit trail of name evolution through states
 
+- **Provenance**: Complete audit trail of name evolution through states
+
+### 5. Simplicity & Consolidation
+**Objective**: Minimize Lines of Code (LOC) and Cognitive Load.
+- **Deduplication**: Prefer configurable shared components (e.g., `Button`) over specialized wrappers (e.g., `TournamentButton`).
+- **Direct Usage**: Use Tailwind utilities for one-off styles instead of creating unique component files.
+- **Flattened Structure**: Avoid deep nesting; co-locate related logic.
+- **YAGNI**: Remove unused features and dead code immediately.
+
 ---
+
 
 ## 📁 Project Structure
 

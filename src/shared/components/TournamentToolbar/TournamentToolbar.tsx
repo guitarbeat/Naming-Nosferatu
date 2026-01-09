@@ -10,7 +10,8 @@ import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
 import { Select } from "../Form/Form";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import TournamentButton from "../TournamentButton";
+import { Plus } from "lucide-react";
+import Button from "../Button";
 import "./TournamentToolbar.css";
 
 // ============================================================================
@@ -494,15 +495,15 @@ function TournamentToolbar({
 
 				{startTournamentButton && (
 					<div className={styles.startButtonWrapper} title={tooltipText}>
-						<TournamentButton
+						<Button
 							onClick={startTournamentButton.onClick}
 							disabled={!isReady}
 							className={styles.startButton}
-							ariaLabel={buttonLabel}
-							startIcon={isReady ? undefined : null}
+							aria-label={buttonLabel}
+							startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
 						>
 							{buttonLabel}
-						</TournamentButton>
+						</Button>
 						{!isReady && selectedCount > 0 && (
 							<span className={styles.startButtonHint} role="status" aria-live="polite">
 								{selectedCount === 1

@@ -101,24 +101,7 @@ a:focus-visible {
 	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
-/* Skip link for keyboard navigation - Essential accessibility feature */
-.skip-link {
-	position: absolute;
-	top: calc(-1 * (var(--space-10) + var(--space-2))); /* -40px offset */
-	left: var(--space-1_5);
-	z-index: var(--z-max);
-	padding: var(--space-2);
-	font-weight: var(--font-weight-semibold);
-	color: var(--text-primary);
-	text-decoration: none;
-	background: var(--accent-color, var(--color-info));
-	border-radius: var(--radius-sm);
-	transition: top var(--duration-fast) var(--ease-standard);
-}
 
-.skip-link:focus {
-	top: var(--space-1_5);
-}
 
 :root {
 	--background: hsl(0deg 0% 100%);

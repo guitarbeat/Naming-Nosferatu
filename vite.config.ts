@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
 	const env = { ...process.env };
 	const isProd = mode === "production";
 
-	const serverPort = Number(env.VITE_PORT) || 5000; // Default to 5000 for Replit
+	const serverPort = Number(env.VITE_PORT) || 5173; // Default to 5173 (standard Vite) to avoid macOS AirPlay conflict on 5000
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 	const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
@@ -38,13 +38,13 @@ export default defineConfig(({ mode }) => {
 			}),
 			mode === "development" && componentTagger(),
 			mode === "production" &&
-				visualizer({
-					filename: "stats.html",
-					open: false,
-					gzipSize: true,
-					brotliSize: true,
-					template: "treemap",
-				}),
+			visualizer({
+				filename: "stats.html",
+				open: false,
+				gzipSize: true,
+				brotliSize: true,
+				template: "treemap",
+			}),
 		].filter(Boolean),
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds

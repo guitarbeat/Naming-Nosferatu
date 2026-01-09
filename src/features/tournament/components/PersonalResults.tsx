@@ -12,8 +12,8 @@ import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,
-} from "../../../shared/components/Header/CollapsibleHeader";
-import TournamentButton from "../../../shared/components/TournamentButton";
+} from "../../../shared/components/CollapsibleHeader";
+import { Plus } from "lucide-react";
 import { useToast } from "../../../shared/hooks/useAppHooks";
 import { devError } from "../../../shared/utils";
 import { calculateBracketRound } from "../tournamentUtils";
@@ -403,9 +403,13 @@ function PersonalResults({
 			<div className={styles.emptyState}>
 				<p>Complete a tournament to see your personal results here!</p>
 				<div className={styles.actions}>
-					<TournamentButton onClick={onStartNew} className={styles.startNewButton}>
+					<Button
+						onClick={onStartNew}
+						className={styles.startNewButton}
+						startIcon={<Plus className="w-4 h-4" />}
+					>
 						Start New Tournament
-					</TournamentButton>
+					</Button>
 				</div>
 			</div>
 		);
@@ -489,9 +493,13 @@ function PersonalResults({
 			)}
 
 			<div className={styles.actions}>
-				<TournamentButton onClick={onStartNew} className={styles.startNewButton}>
+				<Button
+					onClick={onStartNew}
+					className={styles.startNewButton}
+					startIcon={<Plus className="w-4 h-4" />}
+				>
 					Start New Tournament
-				</TournamentButton>
+				</Button>
 				{hasPersonalData && <CalendarButton rankings={personalRankings} userName={userName} />}
 			</div>
 		</div>
