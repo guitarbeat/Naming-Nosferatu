@@ -27,8 +27,6 @@ export default defineConfig(({ mode }) => {
 	const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
 	return {
-		// Disable .env file loading to avoid permission issues
-		envDir: false,
 		plugins: [
 			react({
 				// * Strip PropTypes from production bundles to reduce size
