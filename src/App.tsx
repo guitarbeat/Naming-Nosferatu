@@ -19,7 +19,7 @@ import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 // import { AppNavbar } from "./shared/components/AppNavbar/AppNavbar"; // Removed: Keeping only bottom nav
 import { BottomNav } from "./shared/components/AppNavbar/BottomNav";
-import { ScrollToTopButton } from "./shared/components/Button/Button";
+import { ScrollToTopButton } from "./shared/components/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { ErrorComponent } from "./shared/components/Error";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";

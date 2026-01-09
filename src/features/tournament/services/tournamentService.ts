@@ -51,6 +51,7 @@ export const tournamentsAPI = {
 					created_at: new Date().toISOString(),
 				};
 			},
+			// biome-ignore lint/suspicious/noExplicitAny: Fallback object shape depends on generic T
 			{ success: false, error: "Supabase not configured" } as any,
 		);
 	},
@@ -220,7 +221,7 @@ export const tournamentsAPI = {
 						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_user_name: userName,
 					});
-				} catch (_rpcError) {
+				} catch {
 					// ignore if already exists
 				}
 
@@ -229,7 +230,7 @@ export const tournamentsAPI = {
 						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						user_name_param: userName,
 					});
-				} catch (_rpcError) {
+				} catch {
 					// ignore context errors
 				}
 

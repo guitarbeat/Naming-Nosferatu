@@ -5,7 +5,7 @@
 
 import { Plus } from "lucide-react";
 import React from "react";
-import Button from "../Button/Button";
+import Button from "./Button";
 
 /**
  * PlusIcon component for tournament button - now using lucide-react

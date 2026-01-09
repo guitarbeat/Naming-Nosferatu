@@ -6,7 +6,7 @@
 
 import type React from "react";
 import { useCallback, useContext, useEffect, useMemo } from "react";
-import Button from "../../../shared/components/Button/Button";
+import Button from "../../../shared/components/Button";
 import {
 	NameManagementContext,
 	useNameManagementContextSafe,

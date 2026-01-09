@@ -1,5 +1,5 @@
-import { Loading } from "../../../../shared/components/Loading";
-import layoutStyles from "../../styles/Layout.module.css";
+import { Loading } from "../../../shared/components/Loading";
+import tournamentStyles from "../styles/Tournament.module.css";
 
 interface TournamentLoadingStateProps {
 	visibleNamesCount: number;
@@ -11,7 +11,7 @@ export function TournamentLoadingState({
 	randomizedNamesCount,
 }: TournamentLoadingStateProps) {
 	return (
-		<div className={layoutStyles.tournamentContainer}>
+		<div className={tournamentStyles.tournament}>
 			<Loading variant="spinner" />
 			<p style={{ textAlign: "center", marginTop: "1rem" }}>
 				{visibleNamesCount

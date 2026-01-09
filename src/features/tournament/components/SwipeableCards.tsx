@@ -1,10 +1,10 @@
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { useCallback, useMemo, useRef, useState } from "react";
-import Button from "../../../shared/components/Button/Button";
+import Button from "../../../shared/components/Button";
 import CatImage from "../../../shared/components/CatImage/CatImage";
 import { playSound } from "../../../shared/utils/soundManager";
 import type { NameItem } from "../../../types/components";
-import styles from "../styles/SetupSwipe.module.css";
+import styles from "../styles/Setup.module.css";
 import { getRandomCatImage } from "../tournamentUtils";
 
 interface SwipeableCardsProps {

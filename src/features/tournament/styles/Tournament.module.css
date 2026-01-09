@@ -1,3 +1,190 @@
+/* Layout & Container - Premium Full-Width Design */
+.tournament {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(var(--space-3), 2vw, var(--space-5));
+	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+	max-width: 100%;
+	min-height: calc(100vh - clamp(var(--space-4), 3vw, var(--space-8)));
+	padding: clamp(var(--space-2), 2vw, var(--space-4)) clamp(var(--space-3), 3vw, var(--space-6));
+	margin: 0 auto;
+	overflow-x: hidden;
+	isolation: isolate;
+	animation: fadeIn var(--duration-slow) var(--ease-out);
+}
+
+.tournamentLayout {
+	display: grid;
+	gap: clamp(var(--space-3), 2vw, var(--space-6));
+	width: 100%;
+	max-width: 1200px;
+	margin-top: clamp(var(--space-2), 1.5vw, var(--space-4));
+}
+
+.tournamentContainer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 50vh;
+	gap: var(--space-4);
+}
+
+.tournament button {
+	font: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+/* Modal Components */
+.modal {
+	outline: none;
+	box-shadow: var(--shadow-xl);
+	animation: fadeIn var(--duration-normal) var(--ease-out);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+	max-width: 500px;
+	width: 90%;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: var(--z-modal);
+}
+
+.modalBackdrop {
+	animation: fadeIn var(--duration-normal) var(--ease-out);
+	position: fixed;
+	inset: 0;
+	background: var(--overlay-dark);
+	backdrop-filter: blur(4px);
+	z-index: calc(var(--z-modal) - 1);
+}
+
+.modalTitle {
+	margin: 0 0 var(--space-4);
+	font-size: var(--text-xl);
+	font-weight: 700;
+	color: var(--text-primary);
+}
+
+.modalText {
+	margin: 0 0 var(--space-6);
+	color: var(--text-secondary);
+}
+
+.modalActions {
+	display: flex;
+	gap: var(--space-4);
+	margin-top: var(--space-4);
+	justify-content: flex-end;
+}
+
+.confirmButton {
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	min-width: 160px;
+	min-height: 42px;
+	padding: var(--space-2) var(--space-5);
+	font-weight: 700;
+	color: var(--button-text-light, white);
+	background: linear-gradient(135deg, var(--error-600), var(--error-700));
+	border: 1px solid var(--error-500);
+	border-radius: var(--radius-full);
+	box-shadow: 0 6px 18px var(--overlay-red-medium);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.cancelButton {
+	display: inline-flex;
+	gap: var(--space-2);
+	align-items: center;
+	justify-content: center;
+	min-width: 140px;
+	min-height: 42px;
+	padding: var(--space-2) var(--space-5);
+	font-weight: 700;
+	color: var(--text-primary);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-full);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.confirmButton:hover {
+	background: linear-gradient(135deg, var(--error-700), var(--error-800));
+	border-color: var(--error-600);
+	transform: translateY(calc(var(--space-1) * -1));
+}
+
+.cancelButton:hover {
+	background: var(--card-hover);
+	border-color: var(--primary-300);
+	transform: translateY(calc(var(--space-1) * -1));
+}
+
+.confirmButton:focus-visible,
+.cancelButton:focus-visible {
+	outline: var(--focus-ring-width) solid var(--primary-color);
+	outline-offset: var(--focus-ring-offset);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* Responsive Design */
+@media (width >= 1920px) {
+	.tournament {
+		max-width: 2000px;
+	}
+}
+
+@media (width >= 2560px) {
+	.tournament {
+		max-width: 2400px;
+	}
+}
+
+@media (width <= 768px) {
+	.tournament {
+		padding: var(--space-2);
+		min-height: 100dvh; /* Use dynamic viewport height for mobile */
+	}
+
+	.tournamentLayout {
+		margin-top: var(--space-2);
+		gap: var(--space-4);
+	}
+}
+
+@supports (padding: max(0px)) {
+	.tournament {
+		padding-top: max(var(--space-8), env(safe-area-inset-top));
+		padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+	}
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+	.tournament {
+		padding-inline: var(--space-3); /* Slightly more space on very small screens */
+	}
+}
 /* Controls & Buttons */
 .tournamentControls {
 	position: sticky;
@@ -680,4 +867,173 @@
 		margin: var(--space-2);
 		font-size: var(--text-xs);
 	}
+}
+/* Undo Banner */
+.undoBanner {
+	position: fixed;
+	bottom: var(--space-5);
+	left: 50%;
+	z-index: var(--z-toast);
+	display: flex;
+	gap: var(--space-3);
+	align-items: center;
+	padding: var(--space-3) var(--space-4);
+	font-size: var(--text-base);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-primary);
+	background: var(--glass-bg);
+	border: var(--card-border-width) solid var(--glass-border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--glass-shadow), var(--shadow-lg);
+	backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+	transform: translateX(-50%);
+	animation: slideUp var(--duration-normal) var(--ease-out-expo);
+	transition: var(--transition-base);
+}
+
+.undoBannerContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	align-items: flex-start;
+}
+
+.undoFirstTimeHint {
+	font-size: var(--text-xs);
+	color: var(--color-neon-cyan);
+	font-weight: var(--font-weight-normal);
+	opacity: 0.9;
+	animation: fadeInHint var(--duration-slow) var(--ease-enter) 0.2s both;
+}
+
+@keyframes fadeInHint {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--space-1) * -1));
+	}
+	to {
+		opacity: 0.9;
+		transform: translateX(0);
+	}
+}
+
+.undoBanner:hover {
+	background: var(--glass-bg-strong);
+	border-color: var(--glass-border-hover);
+	box-shadow: var(--glass-shadow-colored), var(--shadow-xl);
+	transform: translateX(-50%) var(--transform-hover-lift);
+}
+
+.undoButton {
+	padding: var(--space-2) var(--space-4);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
+	cursor: pointer;
+	background: linear-gradient(135deg, var(--overlay-cyan), var(--overlay-pink));
+	border: var(--button-border-width) solid var(--color-neon-cyan);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-cyan);
+	transition: var(--transition-base);
+}
+
+.undoButton:hover {
+	background: linear-gradient(135deg, var(--overlay-cyan-medium), var(--overlay-pink-medium));
+	border-color: var(--color-neon-cyan);
+	box-shadow: var(--shadow-cyan), var(--shadow-md);
+	transform: var(--transform-hover-lift);
+}
+
+.undoButton:active {
+	transform: var(--transform-active-press);
+	box-shadow: var(--shadow-sm);
+}
+
+.undoTimer {
+	margin-left: var(--space-2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	font-family: var(--font-mono);
+	color: var(--color-neon-cyan);
+}
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-3));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes undoProgress {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0.5;
+	}
+}
+/* Matchup & Voting Area */
+.matchup {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(var(--space-2), 1.5vw, var(--space-4));
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 100%;
+	min-height: auto;
+	padding: clamp(var(--space-3), 1.5vw, var(--space-5));
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	backdrop-filter: none;
+	transition: var(--transition-base);
+	will-change: transform, box-shadow;
+	overflow: visible;
+}
+
+.matchup::before {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	content: "";
+	background: radial-gradient(circle at 50% 50%, var(--glass-border) 0%, transparent 70%);
+	opacity: 0.5;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.matchup:hover {
+		box-shadow: var(--shadow-xl);
+		transform: var(--transform-hover-lift);
+	}
+}
+
+@media (width >= 1920px) {
+	.matchup {
+		max-width: 100%;
+	}
+}
+
+@media (width >= 2560px) {
+	.matchup {
+		max-width: 2200px;
+	}
+}
+
+@media (width <= 768px) {
+	.matchup {
+		padding: var(--space-4);
+	}
+}
+
+.votingError {
+	margin-top: var(--space-4);
+	width: 100%;
+	max-width: 400px;
 }

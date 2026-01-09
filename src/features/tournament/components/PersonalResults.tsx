@@ -7,13 +7,13 @@ import PropTypes from "prop-types";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket/Bracket";
-import Button from "../../../shared/components/Button/Button";
+import Button from "../../../shared/components/Button";
 import Card from "../../../shared/components/Card/Card";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/Header/CollapsibleHeader";
-import TournamentButton from "../../../shared/components/TournamentButton/TournamentButton";
+import TournamentButton from "../../../shared/components/TournamentButton";
 import { useToast } from "../../../shared/hooks/useAppHooks";
 import { devError } from "../../../shared/utils";
 import { calculateBracketRound } from "../tournamentUtils";

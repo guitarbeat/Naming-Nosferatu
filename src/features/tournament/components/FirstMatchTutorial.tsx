@@ -4,8 +4,8 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { STORAGE_KEYS } from "../../../../core/constants";
-import Button from "../../../../shared/components/Button/Button";
+import { STORAGE_KEYS } from "../../../core/constants";
+import Button from "../../../shared/components/Button";
 import styles from "./FirstMatchTutorial.module.css";
 
 interface FirstMatchTutorialProps {

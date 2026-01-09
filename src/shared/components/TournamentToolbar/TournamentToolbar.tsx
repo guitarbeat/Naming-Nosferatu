@@ -10,7 +10,7 @@ import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
 import { Select } from "../Form/Form";
 import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import TournamentButton from "../TournamentButton/TournamentButton";
+import TournamentButton from "../TournamentButton";
 import "./TournamentToolbar.css";
 
 // ============================================================================

@@ -7,13 +7,11 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import type { NameItem } from "@/types/components";
-import Button from "../../../../shared/components/Button/Button";
+import Button from "../../../../shared/components/Button";
 import { ErrorComponent } from "../../../../shared/components/Error";
 import { playSound } from "../../../../shared/utils/soundManager";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
-import controlsStyles from "../../styles/Controls.module.css";
-import errorStyles from "../../styles/Error.module.css";
-import tournamentStyles from "../../styles/Match.module.css";
+import tournamentStyles from "../../styles/Tournament.module.css";
 import { getRandomCatImage } from "../../tournamentUtils";
 import styles from "./FerrofluidMatch.module.css";
 
@@ -366,7 +364,7 @@ function TournamentMatch({
 
 			{/* Extra Voting Options */}
 			<div
-				className={controlsStyles.extraOptions}
+				className={tournamentStyles.extraOptions}
 				role="group"
 				aria-label="Additional voting options"
 			>
@@ -374,12 +372,12 @@ function TournamentMatch({
 					onClick={() => onVoteWithAnimation("both")}
 					disabled={isProcessing || isTransitioning}
 					variant={selectedOption === "both" ? "primary" : "secondary"}
-					className={`${controlsStyles.extraOptionsButton} ${selectedOption === "both" ? controlsStyles.selected : ""}`}
+					className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "both" ? tournamentStyles.selected : ""}`}
 					aria-pressed={selectedOption === "both"}
 					aria-label="Vote for both names (Press Up arrow key)"
 				>
 					I Like Both!{" "}
-					<span className={controlsStyles.shortcutHint} aria-hidden="true">
+					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
 						(↑ Up)
 					</span>
 				</Button>
@@ -388,12 +386,12 @@ function TournamentMatch({
 					onClick={() => onVoteWithAnimation("neither")}
 					disabled={isProcessing || isTransitioning}
 					variant={selectedOption === "neither" ? "primary" : "secondary"}
-					className={`${controlsStyles.extraOptionsButton} ${selectedOption === "neither" ? controlsStyles.selected : ""}`}
+					className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "neither" ? tournamentStyles.selected : ""}`}
 					aria-pressed={selectedOption === "neither"}
 					aria-label="Skip this match (Press Down arrow key)"
 				>
 					Skip{" "}
-					<span className={controlsStyles.shortcutHint} aria-hidden="true">
+					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
 						(↓ Down)
 					</span>
 				</Button>
@@ -411,7 +409,7 @@ function TournamentMatch({
 					showRetry={true}
 					showDismiss={true}
 					size="medium"
-					className={errorStyles.votingError}
+					className={tournamentStyles.votingError}
 				/>
 			)}
 		</div>

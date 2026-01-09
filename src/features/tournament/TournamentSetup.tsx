@@ -21,9 +21,7 @@ import Lightbox from "./components/Lightbox";
 import { SwipeableCards } from "./components/SwipeableCards";
 import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
 import { useTournamentController } from "./hooks/useTournamentController";
-import identityStyles from "./styles/Identity.module.css";
-import layoutStyles from "./styles/SetupLayout.module.css";
-import photoStyles from "./styles/SetupPhotos.module.css";
+import setupStyles from "./styles/Setup.module.css";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;
@@ -123,7 +121,7 @@ function TournamentSetupContent({
 		() => ({
 			galleryImages: galleryImages || [],
 			showAllPhotos,
-			onShowAllPhotosToggle: () => setShowAllPhotos((v) => !v),
+			onShowAllPhotosToggle: () => setShowAllPhotos((v: boolean) => !v),
 			onImageOpen: handleImageOpen,
 			isAdmin,
 			userName,
@@ -353,10 +351,10 @@ function TournamentSetupContent({
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
 					<ToastContainer />
-					<div className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}>
-						<div className={photoStyles.photosViewContent}>
-							<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
-							<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
+					<div className={`${setupStyles.container} ${setupStyles.photosViewContainer}`}>
+						<div className={setupStyles.photosViewContent}>
+							<h2 className={setupStyles.photosViewTitle}>Photo Gallery</h2>
+							<p className={setupStyles.photosViewSubtitle}>Click any photo to view full size</p>
 							<PhotoGallery {...photoGalleryProps} />
 						</div>
 					</div>
@@ -378,11 +376,11 @@ function TournamentSetupContent({
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
 					<ToastContainer />
-					<div className={layoutStyles.container}>
+					<div className={setupStyles.container}>
 						{/* Name Identity Section */}
-						<div className={identityStyles.identitySection}>
+						<div className={setupStyles.identitySection}>
 							{isEditingName ? (
-								<form onSubmit={handleNameSubmit} className={identityStyles.identityForm}>
+								<form onSubmit={handleNameSubmit} className={setupStyles.identityForm}>
 									<ValidatedInput
 										type="text"
 										value={tempName}
@@ -403,17 +401,17 @@ function TournamentSetupContent({
 										maxLength={30}
 										aria-label="Edit name"
 										schema={nameSchema}
-										className={identityStyles.identityInputWrapper}
+										className={setupStyles.identityInputWrapper}
 									/>
-									<button type="submit" className={identityStyles.identitySaveBtn}>
+									<button type="submit" className={setupStyles.identitySaveBtn}>
 										✓
 									</button>
 								</form>
 							) : (
-								<div className={identityStyles.identityDisplay}>
-									<span className={identityStyles.identityName}>{userName}</span>
+								<div className={setupStyles.identityDisplay}>
+									<span className={setupStyles.identityName}>{userName}</span>
 									<button
-										className={identityStyles.identityEditBtn}
+										className={setupStyles.identityEditBtn}
 										onClick={() => toggleEditingName(true)}
 										aria-label="Change Name"
 									>
@@ -424,9 +422,9 @@ function TournamentSetupContent({
 						</div>
 
 						{/* Cat Fact Tape / System Feed */}
-						<div className={identityStyles.catFactSection}>
-							<div className={identityStyles.tapeDecorator} />
-							<span className={identityStyles.tapeContent}>
+						<div className={setupStyles.catFactSection}>
+							<div className={setupStyles.tapeDecorator} />
+							<span className={setupStyles.tapeContent}>
 								{catFact ? catFact.toUpperCase() : "SYNCING FELINE DATABASE..."}
 							</span>
 						</div>

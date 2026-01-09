@@ -1,9 +1,8 @@
 import { AlertCircle, Music, Volume2, VolumeX } from "lucide-react";
 import React, { useState } from "react";
-import Button, { IconButton } from "../../shared/components/Button/Button";
+import Button, { IconButton } from "../../shared/components/Button";
 import LiquidGlass from "../../shared/components/LiquidGlass/LiquidGlass";
-import styles from "./styles/Controls.module.css";
-import layoutStyles from "./styles/Layout.module.css";
+import styles from "./styles/Tournament.module.css";
 
 interface TournamentControlsProps {
 	onEndEarly: () => void;
@@ -198,36 +197,36 @@ const TournamentControls = ({
 				{showConfirmation && (
 					<>
 						<div
-							className={layoutStyles.modalBackdrop}
+							className={styles.modalBackdrop}
 							onClick={() => setShowConfirmation(false)}
 							aria-hidden="true"
 						/>
 						<div
-							className={layoutStyles.modal}
+							className={styles.modal}
 							role="dialog"
 							aria-labelledby="confirm-end-title"
 							aria-describedby="confirm-end-description"
 						>
-							<h2 id="confirm-end-title" className={layoutStyles.modalTitle}>
+							<h2 id="confirm-end-title" className={styles.modalTitle}>
 								End Tournament?
 							</h2>
-							<p id="confirm-end-description" className={layoutStyles.modalText}>
+							<p id="confirm-end-description" className={styles.modalText}>
 								Are you sure you want to end the tournament early? Your progress will be saved, but
 								you won't be able to continue voting.
 							</p>
-							<div className={layoutStyles.modalActions}>
+							<div className={styles.modalActions}>
 								<Button
 									onClick={handleEndConfirm}
 									variant="danger"
 									autoFocus={true}
-									className={layoutStyles.confirmButton}
+									className={styles.confirmButton}
 								>
 									Yes, End Tournament
 								</Button>
 								<Button
 									onClick={() => setShowConfirmation(false)}
 									variant="secondary"
-									className={layoutStyles.cancelButton}
+									className={styles.cancelButton}
 								>
 									Cancel
 								</Button>

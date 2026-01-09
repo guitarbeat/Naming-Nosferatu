@@ -4,8 +4,7 @@ import { useAdminStatus } from "../../shared/hooks/useAppHooks";
 import Lightbox from "../tournament/components/Lightbox";
 import { PhotoGallery } from "../tournament/components/TournamentSidebar/PhotoComponents";
 import { useImageGallery } from "../tournament/hooks/useImageGallery";
-import layoutStyles from "../tournament/styles/SetupLayout.module.css";
-import photoStyles from "../tournament/styles/SetupPhotos.module.css";
+import setupStyles from "../tournament/styles/Setup.module.css";
 
 export default function GalleryView() {
 	const userName = useAppStore((state) => state.user.name);
@@ -70,12 +69,12 @@ export default function GalleryView() {
 
 	return (
 		<div
-			className={`${layoutStyles.container} ${photoStyles.photosViewContainer}`}
+			className={`${setupStyles.container} ${setupStyles.photosViewContainer}`}
 			style={{ paddingTop: "100px", minHeight: "100vh" }}
 		>
-			<div className={photoStyles.photosViewContent}>
-				<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
-				<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
+			<div className={setupStyles.photosViewContent}>
+				<h2 className={setupStyles.photosViewTitle}>Photo Gallery</h2>
+				<p className={setupStyles.photosViewSubtitle}>Click any photo to view full size</p>
 				<PhotoGallery
 					galleryImages={galleryImages}
 					showAllPhotos={showAllPhotos}

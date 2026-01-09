@@ -1,6 +1,6 @@
 import React from "react";
 import type { NameItem } from "../../../../types/components";
-import Button from "../../Button/Button";
+import Button from "../../Button";
 import { NameGrid } from "../../NameGrid/NameGrid";
 import { TournamentToolbar } from "../../TournamentToolbar/TournamentToolbar";
 import styles from "../NameManagementView.module.css";

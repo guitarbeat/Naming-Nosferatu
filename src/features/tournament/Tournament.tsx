@@ -31,7 +31,7 @@ import {
 import { useBracketTransformation } from "./hooks/useBracketTransformation";
 import { useTournamentUIHandlers } from "./hooks/useTournamentUIHandlers";
 import { useUndoWindow } from "./hooks/useUndoWindow";
-import layoutStyles from "./styles/Layout.module.css";
+import layoutStyles from "./styles/Tournament.module.css";
 import TournamentControls from "./TournamentControls";
 import { CAT_IMAGES } from "./tournamentUtils";
 import { logTournamentRender } from "./utils/debugLogging";
