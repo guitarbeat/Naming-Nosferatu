@@ -17,7 +17,7 @@ import {
 } from "../../utils";
 import CardName from "../Card/components/CardName";
 import { EmptyState } from "../EmptyState";
-import { CatSpinner } from "../Loading";
+import { Loading } from "../Loading";
 import styles from "./NameGrid.module.css";
 
 interface NameGridProps {
@@ -197,7 +197,7 @@ export function NameGrid({
 				<div className={styles.namesGrid}>
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`spinner-${i}`} className={styles.gridItem}>
-							<CatSpinner
+							<Loading
 								variant="cat"
 								size="medium"
 								catVariant={

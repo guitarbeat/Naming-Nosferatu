@@ -4,7 +4,7 @@
  * Used to calculate and update ratings based on head-to-head comparisons.
  */
 
-import { ELO_RATING } from "../../core/constants";
+import { ELO_RATING } from "../../../core/constants";
 
 /**
  * --- AUTO-GENERATED DOCSTRING ---
@@ -567,8 +567,9 @@ export function computeRating(
 	return Math.max(1000, Math.min(2000, newRating));
 }
 
-import { generatePairs } from "../../shared/utils";
-import type { NameItem } from "../../types/components";
+// Fix imports after move
+import { generatePairs } from "../../../shared/utils";
+import type { NameItem } from "../../../types/components";
 
 export interface Sorter {
 	_pairs?: Array<[unknown, unknown]>;

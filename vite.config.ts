@@ -38,13 +38,13 @@ export default defineConfig(({ mode }) => {
 			}),
 			mode === "development" && componentTagger(),
 			mode === "production" &&
-			visualizer({
-				filename: "stats.html",
-				open: false,
-				gzipSize: true,
-				brotliSize: true,
-				template: "treemap",
-			}),
+				visualizer({
+					filename: "stats.html",
+					open: false,
+					gzipSize: true,
+					brotliSize: true,
+					template: "treemap",
+				}),
 		].filter(Boolean),
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds

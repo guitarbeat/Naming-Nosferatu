@@ -5,7 +5,7 @@ import CatImage from "../../../shared/components/CatImage/CatImage";
 import { playSound } from "../../../shared/utils/soundManager";
 import type { NameItem } from "../../../types/components";
 import styles from "../styles/Setup.module.css";
-import { getRandomCatImage } from "../tournamentUtils";
+import { getRandomCatImage } from "../utils/tournamentUtils";
 
 interface SwipeableCardsProps {
 	names: NameItem[];

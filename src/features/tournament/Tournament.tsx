@@ -11,6 +11,7 @@ import { useToast } from "../../shared/hooks/useAppHooks";
 import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { FirstMatchTutorial } from "./components/FirstMatchTutorial";
+import TournamentControls from "./components/TournamentControls";
 import { TournamentLoadingState } from "./components/TournamentLoadingState";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
@@ -32,9 +33,8 @@ import { useBracketTransformation } from "./hooks/useBracketTransformation";
 import { useTournamentUIHandlers } from "./hooks/useTournamentUIHandlers";
 import { useUndoWindow } from "./hooks/useUndoWindow";
 import layoutStyles from "./styles/Tournament.module.css";
-import TournamentControls from "./TournamentControls";
-import { CAT_IMAGES } from "./tournamentUtils";
 import { logTournamentRender } from "./utils/debugLogging";
+import { CAT_IMAGES } from "./utils/tournamentUtils";
 
 // * Main tournament content component
 function TournamentContent({

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { BracketMatch, NameItem } from "../../../types/components";
-import { calculateBracketRound } from "../tournamentUtils";
+import { calculateBracketRound } from "../utils/tournamentUtils";
 
 interface MatchHistoryItem {
 	match?: {

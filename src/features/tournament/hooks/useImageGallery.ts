@@ -4,7 +4,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { imagesAPI, resolveSupabaseClient } from "../../../shared/services/supabase/client";
-import { CAT_IMAGES } from "../tournamentUtils";
+import { CAT_IMAGES } from "../utils/tournamentUtils";
 
 // deduplicateImages - need to check if this exists or create it
 function deduplicateImages(images: string[]): string[] {

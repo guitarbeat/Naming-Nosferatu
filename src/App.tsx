@@ -17,14 +17,13 @@ import {
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-
-import { BottomNav } from "./shared/components/Navigation/BottomNav";
 import { ScrollToTopButton } from "./shared/components/Button";
 import CatBackground from "./shared/components/CatBackground/CatBackground";
 import { ErrorComponent } from "./shared/components/Error";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
+import { BottomNav } from "./shared/components/Navigation/BottomNav";
 
 import { SwipeNavigation } from "./shared/components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "./shared/components/OfflineIndicator";
@@ -267,41 +266,6 @@ function AppLayout({
 
 				{/* * Primary Bottom Navigation */}
 				{isLoggedIn && <BottomNav />}
-
-				{/* * Primary navigation lives in the navbar - REMOVED: Keeping only bottom nav */}
-				{/* {isLoggedIn && (
-					<AppNavbar
-						view={currentView || "tournament"}
-						setView={(view: string) => {
-							const nextView = view;
-							// * Toggle photos view: if clicking photos and already on photos, go back to tournament
-							if (nextView === "photos" && currentView === "photos") {
-								tournamentActions.setView("tournament");
-								navigateTo("/");
-							} else {
-								tournamentActions.setView(nextView);
-
-								// * Direct navigation for each view
-								if (nextView === "tournament") {
-									navigateTo("/");
-								} else if (nextView === "photos") {
-									navigateTo("/");
-								}
-							}
-						}}
-						isLoggedIn={isLoggedIn}
-						userName={user.name}
-						isAdmin={user.isAdmin}
-						onLogout={handleLogout}
-						onStartNewTournament={handleStartNewTournament}
-						onOpenSuggestName={onOpenSuggestName}
-						onOpenPhotos={handleOpenPhotos}
-						currentRoute={currentRoute}
-						onNavigate={navigateTo}
-					/>
-				)} */}
-
-				{/* {isLoggedIn && <SubNavigation />} */}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (

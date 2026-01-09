@@ -6,22 +6,22 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { ErrorComponent } from "../../shared/components/Error";
-import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
-import { ValidatedInput } from "../../shared/components/ValidatedInput/ValidatedInput";
-import type { NameItem } from "../../types/components";
-import { useCatFact, useEyeTracking, useLoginController } from "../auth/hooks/authHooks";
-import loginStyles from "../auth/Login.module.css";
+import { ErrorComponent } from "../../../shared/components/Error";
+import { NameManagementView } from "../../../shared/components/NameManagementView/NameManagementView";
+import { ValidatedInput } from "../../../shared/components/ValidatedInput/ValidatedInput";
+import type { NameItem } from "../../../types/components";
+import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
+import loginStyles from "../../auth/Login.module.css";
+import { useTournamentController } from "../hooks/useTournamentController";
+import setupStyles from "../styles/Setup.module.css";
 import {
 	AnalysisBulkActionsWrapper,
 	AnalysisHandlersProvider,
 	createAnalysisDashboardWrapper,
-} from "./components/AnalysisWrappers";
-import Lightbox from "./components/Lightbox";
-import { SwipeableCards } from "./components/SwipeableCards";
-import { PhotoGallery } from "./components/TournamentSidebar/PhotoComponents";
-import { useTournamentController } from "./hooks/useTournamentController";
-import setupStyles from "./styles/Setup.module.css";
+} from "./AnalysisWrappers";
+import Lightbox from "./Lightbox";
+import { SwipeableCards } from "./SwipeableCards";
+import { PhotoGallery } from "./TournamentSidebar/PhotoComponents";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;

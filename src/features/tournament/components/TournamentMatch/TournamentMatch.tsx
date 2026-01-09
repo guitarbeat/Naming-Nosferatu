@@ -12,7 +12,7 @@ import { ErrorComponent } from "../../../../shared/components/Error";
 import { playSound } from "../../../../shared/utils/soundManager";
 import useMagneticPull from "../../hooks/tournamentComponentHooks";
 import tournamentStyles from "../../styles/Tournament.module.css";
-import { getRandomCatImage } from "../../tournamentUtils";
+import { getRandomCatImage } from "../../utils/tournamentUtils";
 import styles from "./FerrofluidMatch.module.css";
 
 interface TournamentMatchProps {

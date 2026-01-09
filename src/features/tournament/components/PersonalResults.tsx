@@ -3,6 +3,7 @@
  * @description Component that displays the user's personal tournament results.
  */
 
+import { Plus } from "lucide-react";
 import PropTypes from "prop-types";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -13,10 +14,9 @@ import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/CollapsibleHeader";
-import { Plus } from "lucide-react";
 import { useToast } from "../../../shared/hooks/useAppHooks";
 import { devError } from "../../../shared/utils";
-import { calculateBracketRound } from "../tournamentUtils";
+import { calculateBracketRound } from "../utils/tournamentUtils";
 
 interface RankingItem {
 	id: string | number;
@@ -26,8 +26,8 @@ interface RankingItem {
 	losses?: number;
 }
 
-import RankingAdjustment from "../RankingAdjustment";
 import styles from "./PersonalResults.module.css";
+import RankingAdjustment from "./RankingAdjustment";
 
 /**
  * Vote history item interface

@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TIMING } from "../../../core/constants";
 import styles from "../styles/Setup.module.css";
-import { LIGHTBOX_IMAGE_SIZES } from "../tournamentUtils";
+import { LIGHTBOX_IMAGE_SIZES } from "../utils/tournamentUtils";
 
 interface LightboxProps {
 	images: string[];

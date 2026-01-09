@@ -3,8 +3,6 @@ import { lazy, Suspense } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
-import Tournament from "../../../features/tournament/Tournament";
-import TournamentSetup from "../../../features/tournament/TournamentSetup";
 import type { NameItem, VoteData } from "../../../types/components";
 import { ErrorComponent } from "../Error";
 import { Loading } from "../Loading";
@@ -12,6 +10,10 @@ import { Loading } from "../Loading";
 // * Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
 const GalleryView = lazy(() => import("../../../features/gallery/GalleryView"));
+const Tournament = lazy(() => import("../../../features/tournament/Tournament"));
+const TournamentSetup = lazy(
+	() => import("../../../features/tournament/components/TournamentSetup"),
+);
 
 // Local interface matching store's TournamentState structure
 interface TournamentState {
@@ -67,14 +69,16 @@ export default function ViewRouter({
 			]),
 		);
 		return (
-			<TournamentSetup
-				onLogin={onLogin as (name: string) => Promise<boolean>}
-				onStart={onTournamentSetup as (selectedNames: unknown) => void}
-				userName={userName}
-				isLoggedIn={isLoggedIn}
-				existingRatings={existingRatings}
-				onOpenSuggestName={onOpenSuggestName}
-			/>
+			<Suspense fallback={<Loading variant="spinner" text="Loading Setup..." />}>
+				<TournamentSetup
+					onLogin={onLogin as (name: string) => Promise<boolean>}
+					onStart={onTournamentSetup as (selectedNames: unknown) => void}
+					userName={userName}
+					isLoggedIn={isLoggedIn}
+					existingRatings={existingRatings}
+					onOpenSuggestName={onOpenSuggestName}
+				/>
+			</Suspense>
 		);
 	}
 
@@ -140,27 +144,29 @@ export default function ViewRouter({
 
 	return (
 		<ErrorComponent variant="boundary" error={null}>
-			<Tournament
-				names={tournament.names as NameItem[]}
-				existingRatings={Object.fromEntries(
-					Object.entries(tournament.ratings).map(([key, value]) => [
-						key,
-						typeof value === "object" && value !== null && "rating" in value
-							? value.rating
-							: typeof value === "number"
-								? value
-								: 0,
-					]),
-				)}
-				onComplete={(ratings: Record<string, number>) => {
-					const convertedRatings = Object.fromEntries(
-						Object.entries(ratings).map(([key, value]) => [key, { rating: value }]),
-					);
-					return onTournamentComplete(convertedRatings);
-				}}
-				userName={userName}
-				onVote={onVote}
-			/>
+			<Suspense fallback={<Loading variant="spinner" text="Loading Tournament..." />}>
+				<Tournament
+					names={tournament.names as NameItem[]}
+					existingRatings={Object.fromEntries(
+						Object.entries(tournament.ratings).map(([key, value]) => [
+							key,
+							typeof value === "object" && value !== null && "rating" in value
+								? value.rating
+								: typeof value === "number"
+									? value
+									: 0,
+						]),
+					)}
+					onComplete={(ratings: Record<string, number>) => {
+						const convertedRatings = Object.fromEntries(
+							Object.entries(ratings).map(([key, value]) => [key, { rating: value }]),
+						);
+						return onTournamentComplete(convertedRatings);
+					}}
+					userName={userName}
+					onVote={onVote}
+				/>
+			</Suspense>
 		</ErrorComponent>
 	);
 }

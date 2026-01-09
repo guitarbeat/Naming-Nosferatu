@@ -6,7 +6,7 @@ import {
 	calculateBracketRound,
 	EloRating,
 	PreferenceSorter,
-} from "../../features/tournament/tournamentUtils";
+} from "../../features/tournament/utils/tournamentUtils";
 import { ErrorManager } from "../../shared/services/errorManager";
 
 import {

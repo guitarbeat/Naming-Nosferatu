@@ -7,9 +7,9 @@ import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
-import { TIMING } from "../../core/constants";
-import Card from "../../shared/components/Card/Card";
-import { ErrorManager } from "../../shared/services/errorManager";
+import { TIMING } from "../../../core/constants";
+import Card from "../../../shared/components/Card/Card";
+import { ErrorManager } from "../../../shared/services/errorManager";
 import "./RankingAdjustment.css";
 
 interface RankingItem {

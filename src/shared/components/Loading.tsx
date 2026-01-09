@@ -259,6 +259,3 @@ export const Loading: React.FC<LoadingProps> = memo(
 );
 
 Loading.displayName = "Loading";
-
-export const CatSpinner = Loading;
-export type CatSpinnerProps = LoadingProps;
