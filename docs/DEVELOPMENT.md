@@ -261,9 +261,20 @@ Working with AI agents works best in small, verifiable cycles:
 
 ## 🗑️ Dead Code Analysis
 
-### Cleanup Completed (Last Updated: 2026-01-07)
+### Cleanup Completed (Last Updated: 2026-01-08)
 
-#### Removed Dead Code
+#### Recent Consolidation (2026-01-08)
+- **`src/features/auth/Login.module.css`**: ✅ REMOVED - Merged into `Setup.module.css`
+- **`src/features/auth/components/Login.tsx`**: ✅ REMOVED - Inlined into `TournamentSetup.tsx`
+- **`src/features/tournament/utils/debugLogging.ts`**: ✅ REMOVED - Inlined into `Tournament.tsx`
+- **`src/features/tournament/components/TournamentErrorState.tsx`**: ✅ REMOVED - Unused (0 imports)
+- **`src/features/tournament/components/TournamentLoadingState.tsx`**: ✅ REMOVED - Inlined into `Tournament.tsx`
+- **`src/features/tournament/components/TournamentUI/`**: ✅ FLATTENED - Moved `KeyboardHelp.tsx` to components/
+- **`src/features/tournament/components/TournamentSidebar/`**: ✅ FLATTENED - Moved `PhotoComponents.tsx` to components/
+
+**Total savings:** ~319 LOC, 5 files, 2 directories
+
+#### Previous Cleanup (2026-01-07)
 - **`test/test-supabase-credentials.js`**: ✅ REMOVED - Security validation script that was a one-time verification tool with no references in package.json scripts or CI/CD.
 
 #### Removed Unused Dependencies

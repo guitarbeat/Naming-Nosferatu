@@ -392,11 +392,16 @@ src/
 │   └── store/               # Zustand store and slices
 ├── features/                # Feature modules (domain-driven)
 │   ├── analytics/           # Analysis dashboard
-│   ├── auth/                # Authentication
-│   ├── gallery/             # Photo gallery
+│   ├── auth/                # Authentication (hooks, utils, services)
+│   ├── gallery/             # Photo gallery view
 │   ├── names/               # Name lifecycle management
 │   ├── profile/             # User profile
-│   └── tournaments/         # Tournament competition logic
+│   └── tournament/          # Tournament competition logic
+│       ├── components/      # Flat component structure (no nested subdirs)
+│       ├── hooks/           # Tournament-specific hooks
+│       ├── services/        # Tournament services
+│       ├── styles/          # Tournament CSS modules
+│       └── utils/           # Tournament utilities
 ├── shared/                  # Shared utilities
 │   ├── components/          # Reusable components
 │   ├── hooks/               # Shared hooks
