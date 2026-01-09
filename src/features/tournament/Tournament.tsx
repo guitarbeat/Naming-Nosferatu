@@ -7,12 +7,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
 import { ErrorComponent } from "../../shared/components/Error";
+import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { FirstMatchTutorial } from "./components/FirstMatchTutorial";
 import TournamentControls from "./components/TournamentControls";
-import { TournamentLoadingState } from "./components/TournamentLoadingState";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
 	MatchResult,
@@ -269,10 +269,16 @@ function TournamentContent({
 	// * Loading state
 	if (!visibleNames.length || !randomizedNames.length || !currentMatch) {
 		return (
-			<TournamentLoadingState
-				visibleNamesCount={visibleNames.length}
-				randomizedNamesCount={randomizedNames.length}
-			/>
+			<div className={layoutStyles.tournament}>
+				<Loading variant="spinner" />
+				<p style={{ textAlign: "center", marginTop: "1rem" }}>
+					{visibleNames.length
+						? randomizedNames.length
+							? "Preparing tournament..."
+							: "Setting up tournament..."
+						: "No visible names available. Please check your filters or try again."}
+				</p>
+			</div>
 		);
 	}
 

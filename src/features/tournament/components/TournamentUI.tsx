@@ -18,7 +18,7 @@ const CardBody = ({ children, className, ...props }: React.HTMLAttributes<HTMLDi
 	</div>
 );
 
-import { KeyboardHelp } from "./TournamentUI/KeyboardHelp";
+import { KeyboardHelp } from "./KeyboardHelp";
 
 // --- Types ---
 

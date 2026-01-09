@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import { useAdminStatus } from "../../shared/hooks/useAppHooks";
 import Lightbox from "../tournament/components/Lightbox";
-import { PhotoGallery } from "../tournament/components/TournamentSidebar/PhotoComponents";
+import { PhotoGallery } from "../tournament/components/PhotoComponents";
 import { useImageGallery } from "../tournament/hooks/useImageGallery";
 import setupStyles from "../tournament/styles/Setup.module.css";
 

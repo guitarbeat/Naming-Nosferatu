@@ -19,8 +19,8 @@ import {
 	createAnalysisDashboardWrapper,
 } from "./AnalysisWrappers";
 import Lightbox from "./Lightbox";
+import { PhotoGallery } from "./PhotoComponents";
 import { SwipeableCards } from "./SwipeableCards";
-import { PhotoGallery } from "./TournamentSidebar/PhotoComponents";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean>;
