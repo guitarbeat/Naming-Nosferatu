@@ -49,7 +49,7 @@
 	position: relative;
 	margin: 0;
 	font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
-	font-weight: 700;
+	font-weight: var(--font-weight-bold);
 	background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
 	background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -76,7 +76,7 @@
 }
 
 .userName {
-	font-weight: 600;
+	font-weight: var(--font-weight-semibold);
 	color: var(--primary-500);
 	background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
 	background-clip: text;
@@ -153,7 +153,7 @@
 	);
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neon-cyan) 25%, transparent);
 	border-radius: var(--radius-2xl);
-	backdrop-filter: blur(16px);
+	backdrop-filter: blur(var(--glass-blur));
 	box-shadow:
 		0 8px 32px var(--overlay-cyan-medium),
 		0 4px 16px var(--overlay-pink-medium),
@@ -248,8 +248,8 @@
 	);
 	border: var(--card-border-width) solid
 		color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
-	border-radius: 24px;
-	backdrop-filter: blur(12px);
+	border-radius: var(--radius-2xl);
+	backdrop-filter: blur(var(--glass-blur));
 	box-shadow:
 		var(--shadow-xl),
 		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 10%, transparent);
@@ -280,7 +280,7 @@
 .tournamentBracket h3 {
 	margin: 0 0 var(--space-8);
 	font-size: clamp(var(--text-xl), 3vw, var(--text-3xl));
-	font-weight: 700;
+	font-weight: var(--font-weight-bold);
 	color: var(--text-primary);
 	text-align: center;
 	letter-spacing: var(--tracking-tight);

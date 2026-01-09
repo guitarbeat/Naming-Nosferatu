@@ -166,11 +166,11 @@
 /* Loading text */
 .text {
 	margin: 0;
-	font-size: var(--text-sm, 0.875rem);
-	font-weight: var(--font-weight-medium, 500);
-	color: var(--text-secondary, #666);
+	font-size: var(--text-sm, var(--text-sm));
+	font-weight: var(--font-weight-medium, var(--font-weight-medium));
+	color: var(--text-secondary, var(--color-neutral-500));
 	text-align: center;
-	line-height: var(--leading-normal, 1.5);
+	line-height: var(--leading-normal, var(--leading-normal));
 	animation: textPulse 2s ease-in-out infinite;
 }
 
