@@ -22,6 +22,10 @@
 @import url("./analysis-mode-global.css");
 @import url("./analysis-mode-components.css");
 
+/* Component primitives and forms */
+@import url("./components-primitives.css");
+@import url("./form-controls.css");
+
 /* Utility layers */
 @import url("./layout.css");
 @import url("./utilities.css");
