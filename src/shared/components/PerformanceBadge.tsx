@@ -1,11 +1,10 @@
 /**
  * @module PerformanceBadge
  * @description Component to display achievement/status badges for names
+ * Styles are consolidated in src/shared/styles/components-primitives.css
  */
 
 import PropTypes from "prop-types";
-import "./PerformanceBadge.css";
-import "./TrendIndicator.css";
 
 // Insight category lookup - keys use snake_case to match insight tag strings
 const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
