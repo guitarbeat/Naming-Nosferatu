@@ -8,7 +8,11 @@
 .loading,
 .error,
 .empty {
-	composes: glass-light from global;
+	background: var(--glass-bg-light);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
 	padding: var(--space-8);
 	text-align: center;
 	color: var(--text-secondary, color-mix(in srgb, var(--color-neutral-50) 70%, transparent));
