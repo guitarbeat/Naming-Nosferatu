@@ -509,7 +509,10 @@
 }
 
 .resultsInfoContent {
-	composes: surfaceCard from global;
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -577,7 +580,10 @@
 }
 
 .noResults {
-	composes: surfaceCard from global;
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-1);
@@ -1968,7 +1974,10 @@
 }
 
 .cardProgress {
-	composes: surfaceCard from global;
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
 	padding: var(--space-2) var(--space-4);
 	font-weight: 600;
 	color: var(--text-secondary);
@@ -2291,7 +2300,10 @@
 }
 
 .swipeModeInstructions {
-	composes: surfaceCard from global;
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
 	padding: var(--space-3) var(--space-4);
 	font-size: var(--text-sm);
 	color: var(--text-secondary);
@@ -2300,7 +2312,10 @@
 
 /* Completion State */
 .swipeCompletion {
-	composes: surfaceCard from global;
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
