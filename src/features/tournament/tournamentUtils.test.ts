@@ -78,10 +78,10 @@ describe("Utils", () => {
 	describe("PreferenceSorter", () => {
 		const items = ["Apple", "Banana", "Cherry"];
 
-		it("should initialize with all pairs generated", () => {
+		it("should initialize with all pairs counted", () => {
 			const sorter = new PreferenceSorter(items);
 			// for 3 items: (A,B), (A,C), (B,C) -> 3 pairs
-			expect(sorter.pairs.length).toBe(3);
+			expect(sorter.totalPairs).toBe(3);
 			expect(sorter.currentIndex).toBe(0);
 		});
 

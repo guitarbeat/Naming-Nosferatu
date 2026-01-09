@@ -173,7 +173,9 @@ export class PreferenceSorter {
 	currentRankings: string[];
 	ranks: string[];
 	rec: number[];
-	pairs: Array<[string, string]>;
+	// Optimized: pairs are generated on demand to avoid O(N^2) memory allocation
+	// pairs: Array<[string, string]>;
+	totalPairs: number;
 	currentIndex: number;
 	history: Array<{ a: string; b: string; value: number }>;
 
@@ -186,13 +188,11 @@ export class PreferenceSorter {
 		this.currentRankings = [...items];
 		this.ranks = [];
 		this.rec = Array(Number(items.length)).fill(0);
-		// Pairwise comparison queue (simple, reliable fallback)
-		this.pairs = [];
-		for (let i = 0; i < items.length - 1; i++) {
-			for (let j = i + 1; j < items.length; j++) {
-				this.pairs.push([this.getName(items[i]), this.getName(items[j])]);
-			}
-		}
+
+		// Calculate total pairs: N * (N - 1) / 2
+		const N = items.length;
+		this.totalPairs = (N * (N - 1)) / 2;
+
 		this.currentIndex = 0;
 		this.history = [];
 	}
@@ -348,6 +348,13 @@ export class PreferenceSorter {
 		}
 	}
 
+	// Helper to get pair at a specific index without generating all pairs
+	// Mapped from linear index k to (i, j)
+	// This approach avoids O(N^2) memory but is O(N) to seek (if done naively),
+	// but here we just iterate linearly in the loops below.
+	// For random access by index, we can use the formula, but we don't strictly need random access,
+	// just iteration from currentIndex.
+
 	// Return the next un-judged pair as a match { left, right }
 	getNextMatch(
 		options: {
@@ -356,62 +363,79 @@ export class PreferenceSorter {
 		} = {},
 	): { left: string; right: string } | null {
 		const { ratings = {}, comparisons = new Map() } = options;
+		const n = this.items.length;
 
 		// If we have ratings/comparisons, use adaptive selection
 		if (Object.keys(ratings).length > 0 || comparisons.size > 0) {
 			let bestPair: [string, string] | null = null;
 			let bestScore = Infinity;
+			let bestIndex = -1;
 
-			for (let idx = this.currentIndex; idx < this.pairs.length; idx++) {
-				const pair = this.pairs[idx];
-				if (!pair) {
-					continue;
-				}
-				const [a, b] = pair;
+			// Virtual iteration starting from currentIndex
+			let counter = 0;
+			for (let i = 0; i < n - 1; i++) {
+				for (let j = i + 1; j < n; j++) {
+					if (counter >= this.currentIndex) {
+						// Only process if after current index
+						const a = this.getName(this.items[i]);
+						const b = this.getName(this.items[j]);
 
-				// Skip if already judged
-				if (this.preferences.has(`${a}-${b}`) || this.preferences.has(`${b}-${a}`)) {
-					continue;
-				}
+						// Skip if already judged
+						if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
+							// Adaptive scoring
+							const ra = ratings[a]?.rating ?? 1500;
+							const rb = ratings[b]?.rating ?? 1500;
+							const diff = Math.abs(ra - rb);
 
-				// Adaptive scoring
-				const ra = ratings[a]?.rating ?? 1500;
-				const rb = ratings[b]?.rating ?? 1500;
-				const diff = Math.abs(ra - rb);
+							const ca = comparisons.get(a) || 0;
+							const cb = comparisons.get(b) || 0;
+							const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
 
-				const ca = comparisons.get(a) || 0;
-				const cb = comparisons.get(b) || 0;
-				const uncScore = 1 / (1 + ca) + 1 / (1 + cb);
+							// Diff is primary, uncertainty (uncScore) is secondary boost
+							const score = diff - 50 * uncScore;
 
-				// Diff is primary, uncertainty (uncScore) is secondary boost
-				const score = diff - 50 * uncScore;
-
-				if (score < bestScore) {
-					bestScore = score;
-					bestPair = [a, b];
+							if (score < bestScore) {
+								bestScore = score;
+								bestPair = [a, b];
+								bestIndex = counter;
+							}
+						}
+					}
+					counter++;
 				}
 			}
 
 			if (bestPair) {
 				const [a, b] = bestPair;
-				this.currentIndex = this.pairs.findIndex((p) => p?.[0] === a && p?.[1] === b);
+				this.currentIndex = bestIndex;
 				return { left: a, right: b };
 			}
 		}
 
 		// Fallback to sequential selection
-		while (this.currentIndex < this.pairs.length) {
-			const pair = this.pairs[this.currentIndex];
-			if (!pair) {
-				this.currentIndex++;
-				continue;
+		// Start iteration from current index logic
+		let counter = 0;
+		for (let i = 0; i < n - 1; i++) {
+			for (let j = i + 1; j < n; j++) {
+				if (counter >= this.currentIndex) {
+					const a = this.getName(this.items[i]);
+					const b = this.getName(this.items[j]);
+
+					if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
+						// Found the next sequential pair
+						this.currentIndex = counter;
+						return { left: a, right: b };
+					}
+					// If already judged, just move past it
+					// Effectively we could just increment currentIndex here if we wanted to
+					// always be "at the next unjudged pair", but for now we follow the "seek" pattern
+				}
+				counter++;
 			}
-			const [a, b] = pair;
-			if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
-				return { left: a, right: b };
-			}
-			this.currentIndex++;
 		}
+
+		// If we exhausted everything
+		this.currentIndex = this.totalPairs;
 		return null;
 	}
 
