@@ -8,7 +8,9 @@ import type { NameItem } from "../../../types/components";
 export function useNameManagementCallbacks(context: UseNameManagementViewResult | null) {
 	const setHiddenNames = useCallback(
 		(updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
-			if (!context) return;
+			if (!context) {
+				return;
+			}
 			const currentNames = typeof updater === "function" ? updater(context.names) : updater;
 			const hiddenIds = new Set(
 				currentNames.filter((n) => n.isHidden || n.is_hidden).map((n) => n.id),

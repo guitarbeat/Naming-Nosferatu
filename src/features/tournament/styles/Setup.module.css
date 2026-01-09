@@ -295,52 +295,10 @@
    END LOGIN SCENE STYLES
    ======================================== */
 
-.stack {
-	display: flex;
-	flex-direction: column;
-}
+/* Layout Primitives replaced by global layout.css */
 
-.stackGapSm {
-	gap: var(--space-1);
-}
-
-.stackGapMd {
-	gap: var(--space-2);
-}
-
-.stackGapLg {
-	gap: var(--space-3);
-}
-
-.stackGapXl {
-	gap: var(--space-4);
-}
-
-.stackGapXs {
-	gap: var(--space-1);
-}
-
-.cluster {
-	display: flex;
-	gap: var(--space-3);
-	align-items: center;
-}
-
-.clusterWrap {
-	composes: cluster;
-	flex-wrap: wrap;
-}
-
-.surfaceCard {
-	background: var(--surface-color);
-	border: var(--card-border-width) solid var(--border-color);
-	border-radius: var(--radius-lg);
-}
-
-.elevatedCard {
-	composes: surfaceCard;
-	box-shadow: var(--shadow-lg);
-}
+/* Surface cards replaced by global layout.css */
+/* Use .surfaceCard and .elevatedCard from layout.css instead */
 
 .inputBase {
 	width: 100%;

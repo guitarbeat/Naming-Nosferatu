@@ -1,0 +1,83 @@
+/* Layout Primitives - Reusable layout patterns */
+
+/**
+ * Stack Component
+ * @description Vertical layout with consistent spacing between children.
+ */
+.stack {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.stack-xs {
+	gap: var(--space-1);
+}
+.stack-sm {
+	gap: var(--space-2);
+}
+.stack-md {
+	gap: var(--space-4);
+}
+.stack-lg {
+	gap: var(--space-6);
+}
+.stack-xl {
+	gap: var(--space-8);
+}
+
+/**
+ * Cluster Component
+ * @description Horizontal layout that wraps. Great for tags, buttons, or nav items.
+ */
+.cluster {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-3);
+}
+
+.cluster-sm {
+	gap: var(--space-2);
+}
+.cluster-md {
+	gap: var(--space-4);
+}
+.cluster-lg {
+	gap: var(--space-6);
+}
+
+/**
+ * HeroStage Component
+ * @description A high-impact container for scenes or central focuses.
+ */
+.heroStage {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: clamp(400px, 80dvh, 1000px);
+	padding: var(--space-6);
+	overflow: hidden;
+}
+
+/**
+ * Surface Primitives
+ * @description Standardized card surfaces.
+ */
+.surfaceCard {
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.elevatedCard {
+	composes: surfaceCard;
+	box-shadow: var(--shadow-lg);
+}
+
+.elevatedCard:hover {
+	transform: var(--transform-hover-lift);
+	box-shadow: var(--shadow-xl);
+}

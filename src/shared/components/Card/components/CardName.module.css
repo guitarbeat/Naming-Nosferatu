@@ -248,16 +248,13 @@
 	);
 	border: var(--card-border-width) solid
 		var(--border-color, color-mix(in srgb, var(--color-neutral-400) 25%, transparent));
-	border-radius: 0; /* * Sharp edges to match SwipeCard */
+	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
 
 	/* Enhanced visual hierarchy */
 	backdrop-filter: blur(16px);
 	/* * Transition only non-transform properties to avoid conflicts with tilt effect */
-	transition:
-		box-shadow var(--transition-base),
-		border-color var(--transition-base),
-		background var(--transition-base);
+	transition: all var(--transition-base);
 	will-change: transform, box-shadow;
 }
 
@@ -267,7 +264,7 @@
 	inset: 0;
 	z-index: var(--z-0);
 	pointer-events: none;
-	border-radius: 0; /* * Match card sharp edges */
+	border-radius: var(--radius-lg);
 	mix-blend-mode: soft-light;
 	transition: var(--transition-color);
 }
@@ -583,7 +580,7 @@
 	.card {
 		min-height: 120px;
 		padding: var(--space-2);
-		border-radius: var(--card-border-radius-mosaic); /* * Use design token */
+		border-radius: var(--radius-lg);
 	}
 
 	.name {
@@ -726,7 +723,7 @@
 		),
 		var(--surface-color); /* Neutral background for letterboxing */
 
-	border-radius: 0; /* * Sharp edges to match card */
+	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-lg);
 	transition:
 		box-shadow var(--duration-normal) var(--ease-out),

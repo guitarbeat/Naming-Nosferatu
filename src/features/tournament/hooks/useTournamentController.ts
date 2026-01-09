@@ -2,6 +2,7 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAppStore from "../../../core/store/useAppStore";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
+import { useLightboxState } from "../../../shared/hooks/useLightboxState";
 import type { NameItem } from "../../../types/components";
 import { useProfile } from "../../profile/hooks/useProfile";
 import { useProfileNotifications } from "../../profile/hooks/useProfileNotifications";
@@ -47,12 +48,20 @@ export function useTournamentController({
 
 	// * Gallery state
 	const [showAllPhotos, setShowAllPhotos] = useState(false);
-	const [lightboxOpen, setLightboxOpen] = useState(false);
-	const [lightboxIndex, setLightboxIndex] = useState(0);
 
 	const { galleryImages, addImages } = useImageGallery({
-		isLightboxOpen: lightboxOpen,
+		isLightboxOpen: false, // Will be managed by useLightboxState
 	});
+
+	const {
+		isOpen: lightboxOpen,
+		currentIndex: lightboxIndex,
+		handleOpen: handleImageOpen,
+		handleNavigate: handleLightboxNavigate,
+		handleClose: handleLightboxClose,
+		preloadImages,
+	} = useLightboxState({ galleryImages: galleryImages || [] });
+
 	const { isAdmin } = useAdminStatus(userName);
 
 	// * Notifications
@@ -92,46 +101,12 @@ export function useTournamentController({
 		handleDelete: undefined,
 	});
 
-	// * Lightbox handlers
-	const handleImageOpen = useCallback(
-		(image: string) => {
-			if (!galleryImages) {
-				return;
-			}
-			const idx = galleryImages.indexOf(image);
-			if (idx !== -1) {
-				setLightboxIndex(idx);
-				setLightboxOpen(true);
-			}
-		},
-		[galleryImages],
-	);
-
 	const handleImagesUploaded = useCallback(
 		(uploaded: string[]) => {
 			addImages(uploaded);
 		},
 		[addImages],
 	);
-
-	const handleLightboxNavigate = useCallback((newIndex: number) => {
-		setLightboxIndex(newIndex);
-	}, []);
-
-	const handleLightboxClose = useCallback(() => {
-		setLightboxOpen(false);
-	}, []);
-
-	const preloadImages = useMemo(() => {
-		if (!lightboxOpen || !galleryImages || galleryImages.length === 0) {
-			return [];
-		}
-		const prevIndex = lightboxIndex === 0 ? galleryImages.length - 1 : lightboxIndex - 1;
-		const nextIndex = lightboxIndex === galleryImages.length - 1 ? 0 : lightboxIndex + 1;
-		return [galleryImages[prevIndex], galleryImages[nextIndex]].filter(
-			(img): img is string => img != null,
-		);
-	}, [lightboxOpen, lightboxIndex, galleryImages]);
 
 	return {
 		// States

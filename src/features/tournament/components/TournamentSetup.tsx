@@ -9,6 +9,7 @@ import { useMemo, useRef, useState } from "react";
 import { ErrorComponent } from "../../../shared/components/Error";
 import { NameManagementView } from "../../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../../shared/components/ValidatedInput/ValidatedInput";
+import { useGreeting } from "../../../shared/hooks/useGreeting";
 import type { NameItem } from "../../../types/components";
 import type { SummaryStats } from "../../analytics/types";
 import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
@@ -68,16 +69,7 @@ function TournamentSetupContent({
 	const eyePosition = useEyeTracking({ catRef, catSvgRef: catRef });
 
 	// Time-based greeting
-	const greeting = useMemo(() => {
-		const hour = new Date().getHours();
-		if (hour < 12) {
-			return "Good morning";
-		}
-		if (hour < 18) {
-			return "Good afternoon";
-		}
-		return "Good evening";
-	}, []);
+	const greeting = useGreeting();
 
 	// Tournament setup state and handlers (only when logged in)
 	const tournamentController = useTournamentController({
@@ -377,7 +369,7 @@ function TournamentSetupContent({
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
 					<ToastContainer />
-					<div className={setupStyles.container}>
+					<div className="stack stack-md">
 						{/* Name Identity Section */}
 						<div className={setupStyles.identitySection}>
 							{isEditingName ? (

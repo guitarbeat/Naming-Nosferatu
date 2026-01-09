@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import type { NameItem } from "@/types/components";
+import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 // Removed useMasonryLayout - using CSS Grid masonry instead
 import {
 	applyNameFilters,
@@ -55,6 +56,7 @@ const GridItem = memo(
 		onToggleVisibility,
 		onDelete,
 		index,
+		style = {},
 	}: {
 		nameObj: NameItem;
 		isSelected: boolean;
@@ -65,6 +67,7 @@ const GridItem = memo(
 		onToggleVisibility?: (id: string | number) => void;
 		onDelete?: (name: NameItem) => void;
 		index: number;
+		style?: React.CSSProperties;
 	}) => {
 		const nameId = nameObj.id as string | number;
 		const isHidden = isNameHidden(nameObj);
@@ -82,6 +85,7 @@ const GridItem = memo(
 		return (
 			<motion.div
 				className={styles.gridItem}
+				style={style}
 				initial={{
 					opacity: 0,
 					y: 20,
@@ -189,7 +193,12 @@ export function NameGrid({
 		return result;
 	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
 
-	// Simplified to use CSS Grid instead of complex masonry positioning
+	const { containerRef, setItemRef, positions, columnHeights } = useMasonryLayout<HTMLDivElement>(
+		processedNames.length,
+		{ gap: 16, minColumnWidth: 280 },
+	);
+
+	const maxColumnHeight = Math.max(0, ...columnHeights);
 
 	if (isLoading) {
 		return (
@@ -251,17 +260,27 @@ export function NameGrid({
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<div className={styles.namesGrid} role="list">
+			<div
+				ref={containerRef}
+				className={styles.namesGrid}
+				role="list"
+				style={{ height: maxColumnHeight }}
+			>
 				{processedNames.map((name, index) => {
 					const isSelected = selectedSet.has(name.id as string | number);
+					const position = positions[index];
+
 					return (
-						<motion.div
+						<div
 							key={name.id}
 							role="listitem"
 							className={styles.gridItemWrapper}
-							layout={true}
-							transition={{
-								layout: { duration: 0.3, ease: "easeOut" },
+							ref={setItemRef(index)}
+							style={{
+								position: "absolute",
+								top: position?.top || 0,
+								left: position?.left || 0,
+								width: 280, // Matches minColumnWidth
 							}}
 						>
 							<GridItem
@@ -275,7 +294,7 @@ export function NameGrid({
 								onDelete={onDelete}
 								index={index}
 							/>
-						</motion.div>
+						</div>
 					);
 				})}
 			</div>
