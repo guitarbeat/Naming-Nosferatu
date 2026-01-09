@@ -8,12 +8,11 @@
 .loading,
 .error,
 .empty {
+	composes: glass-light from global;
 	padding: var(--space-8);
 	text-align: center;
 	color: var(--text-secondary, color-mix(in srgb, var(--color-neutral-50) 70%, transparent));
 	font-size: var(--text-sm);
-	background: color-mix(in srgb, var(--color-neutral-50) 3%, transparent);
-	border-radius: var(--radius-lg);
 }
 
 .error {

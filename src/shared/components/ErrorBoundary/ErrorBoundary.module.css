@@ -28,10 +28,10 @@
 }
 
 .errorDetails {
+	composes: glass-light from global;
 	text-align: left;
 	margin: var(--space-4) 0;
 	padding: var(--space-4);
-	background: var(--glass-bg-light);
 	border-radius: var(--radius-sm);
 	font-size: var(--text-sm);
 }

@@ -1,13 +1,12 @@
 .container {
+	composes: glass-light from global;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	padding: var(--space-12) var(--space-6);
 	text-align: center;
-	background: var(--glass-bg-light);
-	border-radius: var(--radius-lg);
-	border: var(--card-border-width) dashed var(--glass-border);
+	border-style: dashed;
 	color: var(--text-secondary);
 	min-height: var(--space-50); /* Keep fixed for consistent empty state */
 }
