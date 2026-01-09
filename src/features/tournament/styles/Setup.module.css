@@ -509,7 +509,7 @@
 }
 
 .resultsInfoContent {
-	composes: surfaceCard;
+	composes: surfaceCard from global;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -577,7 +577,7 @@
 }
 
 .noResults {
-	composes: surfaceCard;
+	composes: surfaceCard from global;
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-1);
@@ -1899,7 +1899,8 @@
 /* Swipe Mode Styles */
 
 .swipeContainer {
-	composes: stack stackGapLg;
+	composes: stack from global;
+	composes: stack-lg from global;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
@@ -1916,7 +1917,7 @@
 }
 
 .swipeButtons {
-	composes: cluster;
+	composes: cluster from global;
 	gap: var(--space-6);
 	justify-content: center;
 }
@@ -1967,7 +1968,7 @@
 }
 
 .cardProgress {
-	composes: surfaceCard;
+	composes: surfaceCard from global;
 	padding: var(--space-2) var(--space-4);
 	font-weight: 600;
 	color: var(--text-secondary);
@@ -2290,7 +2291,7 @@
 }
 
 .swipeModeInstructions {
-	composes: surfaceCard;
+	composes: surfaceCard from global;
 	padding: var(--space-3) var(--space-4);
 	font-size: var(--text-sm);
 	color: var(--text-secondary);
@@ -2299,7 +2300,7 @@
 
 /* Completion State */
 .swipeCompletion {
-	composes: surfaceCard;
+	composes: surfaceCard from global;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

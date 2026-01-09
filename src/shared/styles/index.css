@@ -20,9 +20,7 @@
 @import url("./app-layout.css");
 @import url("./analysis-mode-tokens.css");
 @import url("./analysis-mode-global.css");
-@import url("./analysis-mode-panels.css");
-@import url("./analysis-mode-buttons.css");
-@import url("./analysis-mode-misc.css");
+@import url("./analysis-mode-components.css");
 
 /* Utility layers */
 @import url("./layout.css");
