@@ -33,7 +33,7 @@ import { useBracketTransformation } from "./hooks/useBracketTransformation";
 import { useTournamentUIHandlers } from "./hooks/useTournamentUIHandlers";
 import { useUndoWindow } from "./hooks/useUndoWindow";
 import layoutStyles from "./styles/Tournament.module.css";
-import { logTournamentRender } from "./utils/debugLogging";
+
 import { CAT_IMAGES } from "./utils/tournamentUtils";
 
 // * Main tournament content component
@@ -107,8 +107,14 @@ function TournamentContent({
 	// Use the adapted handleVote from tournamentState instead of the raw one from tournament
 	const { handleVote } = tournamentState;
 
-	// * Debug logging (development only, throttled)
-	logTournamentRender(names?.length || 0, randomizedNames?.length || 0, !!currentMatch);
+	// * Debug logging (development only)
+	if (process.env.NODE_ENV === "development") {
+		console.debug("[DEV] 🎮 Tournament: render", {
+			namesCount: names?.length || 0,
+			randomizedCount: randomizedNames?.length || 0,
+			hasMatch: !!currentMatch,
+		});
+	}
 
 	// * Undo window - optimized to use CSS animation and single timeout
 	const { undoExpiresAt, undoStartTime, canUndoNow, setUndoExpiresAt, clearUndo } = useUndoWindow();

@@ -246,7 +246,7 @@ function Lightbox({
 							<source type="image/webp" srcSet={`${base}.webp`} sizes={LIGHTBOX_IMAGE_SIZES} />
 							<img
 								src={current}
-								alt=""
+								alt={`Photo ${currentIndex + 1} of ${images.length}`}
 								className={styles.lightboxImage}
 								loading="eager"
 								decoding="async"
@@ -256,7 +256,7 @@ function Lightbox({
 					) : (
 						<img
 							src={current}
-							alt=""
+							alt={`Photo ${currentIndex + 1} of ${images.length}`}
 							className={styles.lightboxImage}
 							loading="eager"
 							decoding="async"

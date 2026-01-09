@@ -11,7 +11,6 @@ import { NameManagementView } from "../../../shared/components/NameManagementVie
 import { ValidatedInput } from "../../../shared/components/ValidatedInput/ValidatedInput";
 import type { NameItem } from "../../../types/components";
 import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
-import loginStyles from "../../auth/Login.module.css";
 import { useTournamentController } from "../hooks/useTournamentController";
 import setupStyles from "../styles/Setup.module.css";
 import {
@@ -60,12 +59,20 @@ function TournamentSetupContent({
 		catFact: loginCatFact,
 		nameSchema,
 		touched: nameTouched,
-	} = useLoginController(async (name: string): Promise<void> => {
-		await onLogin(name);
+	} = useLoginController(async (loginName: string): Promise<void> => {
+		await onLogin(loginName);
 	});
 
 	// Track eye position for login screen
 	const eyePosition = useEyeTracking({ catRef, catSvgRef: catRef });
+
+	// Time-based greeting
+	const greeting = useMemo(() => {
+		const hour = new Date().getHours();
+		if (hour < 12) return "Good morning";
+		if (hour < 18) return "Good afternoon";
+		return "Good evening";
+	}, []);
 
 	// Tournament setup state and handlers (only when logged in)
 	const tournamentController = useTournamentController({
@@ -103,17 +110,6 @@ function TournamentSetupContent({
 		handlersRef,
 		ToastContainer,
 	} = tournamentController;
-
-	const greeting = useMemo(() => {
-		const hour = new Date().getHours();
-		if (hour < 12) {
-			return "Good morning";
-		}
-		if (hour < 18) {
-			return "Good afternoon";
-		}
-		return "Good evening";
-	}, []);
 
 	const catFact = useCatFact();
 
@@ -155,7 +151,7 @@ function TournamentSetupContent({
 			{!isLoggedIn && (
 				<motion.div
 					key="login"
-					className={loginStyles.loginWrapper}
+					className={setupStyles.loginWrapper}
 					initial={{ opacity: 0, scale: 0.95 }}
 					animate={{ opacity: 1, scale: 1 }}
 					exit={{
@@ -165,10 +161,10 @@ function TournamentSetupContent({
 					}}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
-					<div className={loginStyles.scene}>
-						{/* Cat with staggered entrance */}
+					<div className={setupStyles.loginScene}>
+						{/* Cat silhouette with eyes */}
 						<motion.div
-							className={loginStyles.cutOutCat}
+							className={setupStyles.loginCat}
 							ref={catRef}
 							initial={{ scale: 0, rotate: -10 }}
 							animate={{ scale: 1, rotate: 0 }}
@@ -181,7 +177,7 @@ function TournamentSetupContent({
 							}}
 						>
 							<motion.div
-								className={loginStyles.eye}
+								className={setupStyles.loginEye}
 								initial={{ opacity: 0 }}
 								animate={{
 									opacity: 1,
@@ -195,7 +191,7 @@ function TournamentSetupContent({
 								}}
 							/>
 							<motion.div
-								className={`${loginStyles.eye} ${loginStyles.eyeRight}`}
+								className={`${setupStyles.loginEye} ${setupStyles.loginEyeRight}`}
 								initial={{ opacity: 0 }}
 								animate={{
 									opacity: 1,
@@ -210,9 +206,9 @@ function TournamentSetupContent({
 							/>
 						</motion.div>
 
-						{/* Cat fact tape with slide-in animation */}
+						{/* Cat fact tape */}
 						<motion.div
-							className={loginStyles.catFactTape}
+							className={setupStyles.loginTape}
 							initial={{ x: -300, opacity: 0 }}
 							animate={{ x: 0, opacity: 1 }}
 							transition={{
@@ -231,9 +227,9 @@ function TournamentSetupContent({
 							)}
 						</motion.div>
 
-						{/* Title with bounce entrance */}
+						{/* Title */}
 						<motion.h1
-							className={loginStyles.title}
+							className={setupStyles.loginTitle}
 							initial={{ y: -50, opacity: 0 }}
 							animate={{ y: 0, opacity: 1 }}
 							transition={{
@@ -247,9 +243,9 @@ function TournamentSetupContent({
 							Welcome, Purr-spective Judge!
 						</motion.h1>
 
-						{/* Subtitle with fade-in */}
+						{/* Subtitle */}
 						<motion.p
-							className={loginStyles.subtitle}
+							className={setupStyles.loginSubtitle}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 1.2 }}
@@ -257,9 +253,9 @@ function TournamentSetupContent({
 							{greeting}, please enter your name to get started.
 						</motion.p>
 
-						{/* Input tray with slide-up animation */}
+						{/* Input tray */}
 						<motion.div
-							className={loginStyles.inputTray}
+							className={setupStyles.loginInputTray}
 							initial={{ y: 40, opacity: 0 }}
 							animate={{ y: 0, opacity: 1 }}
 							transition={{
@@ -286,9 +282,9 @@ function TournamentSetupContent({
 							/>
 						</motion.div>
 
-						{/* Main button with scale entrance */}
+						{/* Main button */}
 						<motion.button
-							className={loginStyles.leverBtn}
+							className={setupStyles.loginBtn}
 							onClick={handleLoginSubmit}
 							disabled={isLoginLoading}
 							whileHover={{ scale: 1.02 }}
@@ -306,9 +302,9 @@ function TournamentSetupContent({
 							{isLoginLoading ? "PREPARING STAGE..." : "STEP INSIDE"}
 						</motion.button>
 
-						{/* Reroll button with staggered entrance */}
+						{/* Reroll button */}
 						<motion.button
-							className={loginStyles.rerollBtn}
+							className={setupStyles.loginRerollBtn}
 							onClick={handleRandomName}
 							disabled={isLoginLoading}
 							whileHover={{ scale: 1.05 }}

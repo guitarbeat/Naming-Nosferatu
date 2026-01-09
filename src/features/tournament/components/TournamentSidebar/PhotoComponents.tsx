@@ -274,6 +274,7 @@ export function PhotoGallery({
 					type="button"
 					className={styles.showAllPhotosButton}
 					onClick={onShowAllPhotosToggle}
+					aria-expanded={showAllPhotos}
 				>
 					{showAllPhotos ? "Show Less" : `Show All ${safeGalleryImages.length} Photos`}
 				</button>
