@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useNetworkStatus } from "../hooks/useBrowserState";
-import styles from "./OfflineIndicator.module.css";
+// Styles consolidated in src/shared/styles/components-primitives.css
 
 interface OfflineIndicatorProps {
 	showWhenOnline?: boolean;
