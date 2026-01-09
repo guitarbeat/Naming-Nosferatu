@@ -35,13 +35,13 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 	className = "",
 }) => {
 	return (
-		<div className={`${styles.container} ${className}`}>
-			<div className={styles.iconWrapper} aria-hidden="true">
+		<div className={`empty-state ${className}`}>
+			<div className="empty-state__icon" aria-hidden="true">
 				{icon}
 			</div>
-			<h3 className={styles.title}>{title}</h3>
-			{description && <p className={styles.description}>{description}</p>}
-			{action && <div className={styles.actions}>{action}</div>}
+			<h3 className="empty-state__title">{title}</h3>
+			{description && <p className="empty-state__description">{description}</p>}
+			{action && <div className="empty-state__actions">{action}</div>}
 		</div>
 	);
 };
