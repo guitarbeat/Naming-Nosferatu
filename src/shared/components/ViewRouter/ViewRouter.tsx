@@ -39,7 +39,6 @@ interface ViewRouterProps {
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	onVote: (vote: unknown) => void;
-	onOpenSuggestName?: () => void;
 }
 
 export default function ViewRouter({
@@ -52,7 +51,6 @@ export default function ViewRouter({
 	onTournamentSetup,
 	onTournamentComplete,
 	onVote,
-	onOpenSuggestName,
 }: ViewRouterProps) {
 	const { currentRoute } = useRouting();
 
@@ -76,7 +74,6 @@ export default function ViewRouter({
 					userName={userName}
 					isLoggedIn={isLoggedIn}
 					existingRatings={existingRatings}
-					onOpenSuggestName={onOpenSuggestName}
 				/>
 			</Suspense>
 		);
@@ -187,5 +184,4 @@ ViewRouter.propTypes = {
 	onTournamentSetup: PropTypes.func.isRequired,
 	onTournamentComplete: PropTypes.func.isRequired,
 	onVote: PropTypes.func.isRequired,
-	onOpenSuggestName: PropTypes.func,
 };

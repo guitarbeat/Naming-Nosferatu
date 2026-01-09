@@ -265,7 +265,7 @@ function AppLayout({
 				<CatBackground />
 
 				{/* * Primary Bottom Navigation */}
-				{isLoggedIn && <BottomNav />}
+				{isLoggedIn && <BottomNav onOpenSuggestName={onOpenSuggestName} />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (
@@ -290,7 +290,6 @@ function AppLayout({
 							onVote={(vote: unknown) =>
 								tournamentActions.addVote(vote as import("./types/components").VoteData)
 							}
-							onOpenSuggestName={onOpenSuggestName}
 						/>
 					</SwipeNavigation>
 

@@ -397,7 +397,7 @@ interface TournamentToolbarProps {
 		selectedCount: number;
 	};
 	analysisMode?: boolean;
-	onOpenSuggestName?: () => void;
+
 	className?: string;
 }
 
@@ -413,7 +413,7 @@ function TournamentToolbar({
 	userOptions = null,
 	startTournamentButton,
 	analysisMode = false,
-	onOpenSuggestName: _onOpenSuggestName,
+
 	className = "",
 }: TournamentToolbarProps) {
 	const isTournament = mode === "tournament";
@@ -607,7 +607,7 @@ TournamentToolbar.propTypes = {
 		onClick: PropTypes.func.isRequired,
 		selectedCount: PropTypes.number.isRequired,
 	}),
-	onOpenSuggestName: PropTypes.func,
+
 	className: PropTypes.string,
 };
 

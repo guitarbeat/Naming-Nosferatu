@@ -10,6 +10,7 @@ import { ErrorComponent } from "../../../shared/components/Error";
 import { NameManagementView } from "../../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../../shared/components/ValidatedInput/ValidatedInput";
 import type { NameItem } from "../../../types/components";
+import type { SummaryStats } from "../../analytics/types";
 import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
 import { useTournamentController } from "../hooks/useTournamentController";
 import setupStyles from "../styles/Setup.module.css";
@@ -28,7 +29,7 @@ interface TournamentSetupProps {
 	userName?: string;
 	isLoggedIn: boolean;
 	enableAnalysisMode?: boolean;
-	onOpenSuggestName?: () => void;
+
 	onNameChange?: (name: string) => void;
 	existingRatings?: Record<string, number>;
 }
@@ -39,7 +40,7 @@ function TournamentSetupContent({
 	userName = "",
 	isLoggedIn,
 	enableAnalysisMode = false,
-	onOpenSuggestName: _onOpenSuggestName,
+
 	onNameChange,
 	existingRatings: _existingRatings,
 }: TournamentSetupProps) {
@@ -69,8 +70,12 @@ function TournamentSetupContent({
 	// Time-based greeting
 	const greeting = useMemo(() => {
 		const hour = new Date().getHours();
-		if (hour < 12) return "Good morning";
-		if (hour < 18) return "Good afternoon";
+		if (hour < 12) {
+			return "Good morning";
+		}
+		if (hour < 18) {
+			return "Good afternoon";
+		}
 		return "Good evening";
 	}, []);
 
@@ -432,7 +437,7 @@ function TournamentSetupContent({
 							setAnalysisMode={setAnalysisMode}
 							extensions={{
 								dashboard: createAnalysisDashboardWrapper(
-									stats as any,
+									stats as unknown as SummaryStats | null,
 									selectionStats,
 									isAdmin,
 									activeUser || undefined,
@@ -467,7 +472,6 @@ function TournamentSetupContent({
 								imageList: galleryImages,
 							}}
 							onStartTournament={_onStart}
-							onOpenSuggestName={_onOpenSuggestName}
 						/>
 						{lightboxElement}
 					</div>

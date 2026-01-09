@@ -1,9 +1,14 @@
 import { motion } from "framer-motion";
+import { Lightbulb } from "lucide-react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
-import "./BottomNav.css"; // Reuse existing styles or create new
+import "./BottomNav.css";
 
-export function BottomNav() {
+interface BottomNavProps {
+	onOpenSuggestName?: () => void;
+}
+
+export function BottomNav({ onOpenSuggestName }: BottomNavProps) {
 	const { currentRoute, navigateTo } = useRouting();
 
 	const items = getBottomNavItems(MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS);
@@ -54,6 +59,24 @@ export function BottomNav() {
 						</button>
 					);
 				})}
+
+				{/* Suggest Name Action Button */}
+				{onOpenSuggestName && (
+					<button
+						className="bottom-nav__item bottom-nav__item--action"
+						onClick={() => {
+							if (navigator.vibrate) {
+								navigator.vibrate(10);
+							}
+							onOpenSuggestName();
+						}}
+						aria-label="Suggest a name"
+						title="Suggest a name"
+					>
+						<Lightbulb className="bottom-nav__icon" aria-hidden={true} />
+						<span className="bottom-nav__label">Suggest</span>
+					</button>
+				)}
 			</nav>
 		</motion.div>
 	);

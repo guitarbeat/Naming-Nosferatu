@@ -694,6 +694,20 @@
 	border-radius: 2px 2px 0 0;
 }
 
+/* Action button variant (Suggest, etc.) */
+.bottom-nav__item--action {
+	color: var(--nav-accent, var(--color-neon-cyan));
+}
+
+.bottom-nav__item--action:hover {
+	color: var(--nav-highlight);
+	background: color-mix(in srgb, var(--nav-accent, var(--color-neon-cyan)) 15%, transparent);
+}
+
+.bottom-nav__item--action .bottom-nav__icon {
+	filter: drop-shadow(0 0 4px currentColor);
+}
+
 @media (max-width: 768px) {
 	.bottom-nav {
 		display: block;

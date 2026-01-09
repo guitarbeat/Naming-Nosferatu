@@ -21,7 +21,7 @@ import {
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
 	onStartTournament?: (selectedNames: NameItem[]) => void;
-	onOpenSuggestName?: () => void;
+
 	extensions?: NameManagementViewExtensions;
 	tournamentProps?: Record<string, unknown>;
 	profileProps?: Record<string, unknown>;
@@ -31,9 +31,7 @@ export function NameManagementView({
 	mode = "tournament", // Default mode
 	userName,
 	onStartTournament,
-	onOpenSuggestName = () => {
-		// Intentional no-op: optional callback
-	},
+
 	extensions = {},
 	tournamentProps = {},
 	profileProps = {},
@@ -122,7 +120,6 @@ export function NameManagementView({
 					analysisMode={analysisMode}
 					categories={tournamentProps.categories as string[]}
 					onStartTournament={handleStartTournament}
-					onOpenSuggestName={onOpenSuggestName}
 					extensions={extensions}
 					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
 					imageList={tournamentProps.imageList as string[]}

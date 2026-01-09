@@ -27,7 +27,7 @@ interface TournamentModeProps {
 	filteredCount: number;
 	selectedCount: number;
 	onStartTournament?: (selectedNames: NameItem[]) => void;
-	onOpenSuggestName: () => void;
+
 	selectedNames: NameItem[];
 	showSelectedOnly: boolean;
 	setShowSelectedOnly: (show: boolean) => void;
@@ -52,7 +52,7 @@ export function TournamentMode({
 	filteredCount,
 	selectedCount,
 	onStartTournament,
-	onOpenSuggestName,
+
 	selectedNames,
 	showSelectedOnly,
 	setShowSelectedOnly,
@@ -91,7 +91,6 @@ export function TournamentMode({
 							}
 						: undefined
 				}
-				onOpenSuggestName={onOpenSuggestName}
 			/>
 
 			<div className={styles.container} data-mode="tournament">
