@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
-import styles from "./ValidatedInput.module.css";
+// Styles consolidated in src/shared/styles/form-controls.css
 
 interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
