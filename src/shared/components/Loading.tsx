@@ -1,10 +1,11 @@
 /**
  * @module Loading
- * @description Unified loading component with spinner, cat, suspense, and skeleton variants.
+ * @description Unified loading component with spinner, cat, bongo, suspense, and skeleton variants.
  */
 
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
+import { BongoCat } from "./BongoCat";
 import styles from "./Loading.module.css";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
@@ -17,7 +18,7 @@ export type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orb
 export type CatColor = "neon" | "pastel" | "warm";
 
 export interface LoadingProps {
-	variant?: "spinner" | "cat" | "suspense" | "skeleton";
+	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton";
 	/** Cat animation variant (only used when variant="cat") */
 	catVariant?: CatVariant;
 	/** Cat color theme (only used when variant="cat") */
@@ -201,6 +202,23 @@ export const Loading: React.FC<LoadingProps> = memo(
 					aria-hidden="true"
 				>
 					<div className={styles.skeletonShimmer} />
+				</div>
+			);
+		}
+
+		// Bongo Cat variant
+		if (variant === "bongo") {
+			const containerClasses = [
+				styles.loadingContainer,
+				overlay ? styles.loadingOverlay : "",
+				className,
+			]
+				.filter(Boolean)
+				.join(" ");
+
+			return (
+				<div className={containerClasses}>
+					<BongoCat size={size} text={text} />
 				</div>
 			);
 		}

@@ -1,0 +1,250 @@
+/* BongoCat Loading Animation Styles */
+
+/* Animation timing variables */
+:root {
+	--bongo-typing-speed: 150ms;
+	--bongo-code-duration: 2400ms;
+}
+
+/* Container */
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-3, 0.75rem);
+	padding: var(--space-4, 1rem);
+}
+
+/* Size variants */
+.small {
+	--bongo-size: 120px;
+}
+
+.medium {
+	--bongo-size: 200px;
+}
+
+.large {
+	--bongo-size: 300px;
+}
+
+/* SVG Sizing */
+.bongoCat {
+	width: var(--bongo-size);
+	height: auto;
+	max-width: 100%;
+}
+
+/* Cat head subtle bob */
+.catHead {
+	animation: headBob 600ms ease-in-out infinite;
+	transform-origin: center bottom;
+}
+
+@keyframes headBob {
+	0%,
+	100% {
+		transform: translateY(0) rotate(0deg);
+	}
+	25% {
+		transform: translateY(-2px) rotate(-0.5deg);
+	}
+	75% {
+		transform: translateY(-2px) rotate(0.5deg);
+	}
+}
+
+/* Eye blink animation */
+.eye {
+	animation: blink 4s ease-in-out infinite;
+}
+
+@keyframes blink {
+	0%,
+	94%,
+	100% {
+		transform: scaleY(1);
+	}
+	96%,
+	98% {
+		transform: scaleY(0.1);
+	}
+}
+
+/* Whisker twitch */
+.whiskers {
+	animation: whiskerTwitch 3s ease-in-out infinite;
+	transform-origin: center;
+}
+
+@keyframes whiskerTwitch {
+	0%,
+	90%,
+	100% {
+		transform: rotate(0deg);
+	}
+	93%,
+	97% {
+		transform: rotate(1deg);
+	}
+	95% {
+		transform: rotate(-1deg);
+	}
+}
+
+/* Paw typing animations - alternating */
+.pawLeftUp,
+.pawRightDown {
+	animation: pawBlink var(--bongo-typing-speed) step-end infinite;
+}
+
+.pawLeftDown,
+.pawRightUp {
+	animation: pawBlink var(--bongo-typing-speed) step-end infinite;
+	animation-delay: calc(var(--bongo-typing-speed) / 2);
+}
+
+@keyframes pawBlink {
+	0%,
+	49% {
+		opacity: 1;
+	}
+	50%,
+	100% {
+		opacity: 0;
+	}
+}
+
+/* Code line typing animations using stroke-dashoffset */
+.codeLine1,
+.codeLine2,
+.codeLine3,
+.codeLine4,
+.codeLine5 {
+	stroke-dasharray: 150;
+	stroke-dashoffset: 150;
+}
+
+.codeLine1 {
+	animation: typeCode var(--bongo-code-duration) linear infinite;
+}
+
+.codeLine2 {
+	animation: typeCode var(--bongo-code-duration) linear infinite;
+	animation-delay: 200ms;
+}
+
+.codeLine3 {
+	animation: typeCode var(--bongo-code-duration) linear infinite;
+	animation-delay: 400ms;
+}
+
+.codeLine4 {
+	animation: typeCode var(--bongo-code-duration) linear infinite;
+	animation-delay: 600ms;
+}
+
+.codeLine5 {
+	animation: typeCode var(--bongo-code-duration) linear infinite;
+	animation-delay: 800ms;
+}
+
+@keyframes typeCode {
+	0% {
+		stroke-dashoffset: 150;
+	}
+	30% {
+		stroke-dashoffset: 0;
+	}
+	80%,
+	100% {
+		stroke-dashoffset: 0;
+	}
+}
+
+/* Loading text */
+.text {
+	margin: 0;
+	font-size: var(--text-sm, 0.875rem);
+	font-weight: var(--font-weight-medium, 500);
+	color: var(--text-secondary, #666);
+	text-align: center;
+	line-height: var(--leading-normal, 1.5);
+	animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+	0%,
+	100% {
+		opacity: 0.7;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+/* Screen reader only */
+.srOnly {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	white-space: nowrap;
+	border-width: 0;
+	clip-path: inset(50%);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.catHead,
+	.eye,
+	.whiskers,
+	.pawLeftUp,
+	.pawLeftDown,
+	.pawRightUp,
+	.pawRightDown,
+	.codeLine1,
+	.codeLine2,
+	.codeLine3,
+	.codeLine4,
+	.codeLine5,
+	.text {
+		animation: none;
+	}
+
+	.pawLeftUp,
+	.pawRightDown {
+		opacity: 1;
+	}
+
+	.pawLeftDown,
+	.pawRightUp {
+		opacity: 0;
+	}
+
+	.codeLine1,
+	.codeLine2,
+	.codeLine3,
+	.codeLine4,
+	.codeLine5 {
+		stroke-dashoffset: 0;
+	}
+}
+
+/* Responsive sizing */
+@media (width <= 640px) {
+	.small {
+		--bongo-size: 80px;
+	}
+
+	.medium {
+		--bongo-size: 150px;
+	}
+
+	.large {
+		--bongo-size: 220px;
+	}
+}
