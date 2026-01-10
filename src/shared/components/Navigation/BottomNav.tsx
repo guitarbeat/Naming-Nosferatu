@@ -1,14 +1,15 @@
 import { motion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Menu } from "lucide-react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 
 interface BottomNavProps {
 	onOpenSuggestName?: () => void;
+	onOpenMobileMenu?: () => void;
 }
 
-export function BottomNav({ onOpenSuggestName }: BottomNavProps) {
+export function BottomNav({ onOpenSuggestName, onOpenMobileMenu }: BottomNavProps) {
 	const { currentRoute, navigateTo } = useRouting();
 	const isComplete = useAppStore((state) => state.tournament.isComplete);
 
@@ -80,6 +81,23 @@ export function BottomNav({ onOpenSuggestName }: BottomNavProps) {
 					>
 						<Lightbulb className="bottom-nav__icon" aria-hidden={true} />
 						<span className="bottom-nav__label">Suggest</span>
+					</button>
+				)}
+
+				{/* Mobile Menu Toggle */}
+				{onOpenMobileMenu && (
+					<button
+						className="bottom-nav__item bottom-nav__item--action"
+						onClick={() => {
+							if (navigator.vibrate) {
+								navigator.vibrate(10);
+							}
+							onOpenMobileMenu();
+						}}
+						aria-label="Open menu"
+					>
+						<Menu className="bottom-nav__icon" aria-hidden={true} />
+						<span className="bottom-nav__label">Menu</span>
 					</button>
 				)}
 			</nav>

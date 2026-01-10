@@ -34,7 +34,7 @@
 .photosViewContent .starsSection {
 	width: 100%;
 	max-width: 100%;
-	background: hsl(var(--card) / 95%);
+	background: color-mix(in srgb, var(--card-background) 95%, transparent);
 	backdrop-filter: blur(12px);
 	border: var(--card-border-width) solid var(--border-color);
 	border-radius: var(--radius-lg);
@@ -97,14 +97,14 @@
 	text-align: center;
 	color: var(--text-secondary);
 	font-size: var(--text-sm);
-	background: hsl(var(--card) / 30%);
+	background: color-mix(in srgb, var(--card-background) 30%, transparent);
 	border-radius: var(--radius-md);
 	border: var(--card-border-width) dashed var(--border-color);
 }
 
 .photosViewContent .emptyGallery {
 	padding: var(--space-12);
-	background: hsl(var(--card) / 20%);
+	background: color-mix(in srgb, var(--card-background) 20%, transparent);
 }
 
 .photoThumbnail img {

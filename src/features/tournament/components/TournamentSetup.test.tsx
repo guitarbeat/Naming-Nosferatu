@@ -1,0 +1,131 @@
+
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import TournamentSetup from './TournamentSetup';
+import React from 'react';
+
+// --- Mocks ---
+
+// Mock Framer Motion
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
+
+// Mock Hooks
+const mockLoginController = {
+  name: '',
+  isLoading: false,
+  error: null,
+  handleNameChange: vi.fn(),
+  handleSubmit: vi.fn(),
+  handleRandomName: vi.fn(),
+  handleKeyDown: vi.fn(),
+  handleBlur: vi.fn(),
+  catFact: 'Cats are great',
+  nameSchema: {},
+  touched: {},
+};
+
+vi.mock('../../auth/hooks/authHooks', () => ({
+  useLoginController: () => mockLoginController,
+  useEyeTracking: () => ({ x: 0, y: 0 }),
+  useCatFact: () => 'Cats rule',
+}));
+
+const mockTournamentController = {
+  currentView: 'setup',
+  isEditingName: false,
+  tempName: '',
+  setTempName: vi.fn(),
+  showAllPhotos: false,
+  setShowAllPhotos: vi.fn(),
+  galleryImages: [],
+  isAdmin: false,
+  activeUser: 'User',
+  stats: {},
+  selectionStats: {},
+  handleNameSubmit: vi.fn(),
+  toggleEditingName: vi.fn(),
+  handleImageOpen: vi.fn(),
+  handleImagesUploaded: vi.fn(),
+  handleLightboxNavigate: vi.fn(),
+  handleLightboxClose: vi.fn(),
+  fetchSelectionStats: vi.fn(),
+  showSuccess: vi.fn(),
+  showError: vi.fn(),
+  showToast: vi.fn(),
+  handlersRef: { current: {} },
+  ToastContainer: () => <div>ToastContainer</div>,
+};
+
+vi.mock('../hooks/useTournamentController', () => ({
+  useTournamentController: () => mockTournamentController,
+}));
+
+// Mock Child Components
+vi.mock('../../../shared/components/NameManagementView/NameManagementView', () => ({
+  NameManagementView: ({ onStartTournament }: any) => (
+    <button onClick={() => onStartTournament([])}>Start Tournament Utils</button>
+  ),
+}));
+
+vi.mock('../../../shared/components/ValidatedInput/ValidatedInput', () => ({
+  ValidatedInput: (props: any) => <input data-testid="validated-input" {...props} />,
+}));
+
+describe('TournamentSetup', () => {
+  const defaultProps = {
+    onLogin: vi.fn(),
+    onStart: vi.fn(),
+    userName: 'TestUser',
+    isLoggedIn: false,
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockTournamentController.currentView = 'setup';
+  });
+
+  it('renders login screen when not logged in', () => {
+    render(<TournamentSetup {...defaultProps} isLoggedIn={false} />);
+    expect(screen.getByText('Welcome, Purr-spective Judge!')).toBeTruthy();
+    expect(screen.getByText('STEP INSIDE')).toBeTruthy();
+  });
+
+  it('renders setup screen when logged in', () => {
+    render(<TournamentSetup {...defaultProps} isLoggedIn={true} />);
+    expect(screen.getByText('TestUser')).toBeTruthy();
+    expect(screen.getByText('Start Tournament Utils')).toBeTruthy();
+  });
+
+  it('triggers onLogin when login button is clicked', () => {
+    // We mock the handleSubmit of the hook to call the passed onLogin prop in real code,
+    // but here we are testing the COMPONENT's integration with the hook.
+    // The component calls `handleLoginSubmit` from the hook.
+    
+    render(<TournamentSetup {...defaultProps} isLoggedIn={false} />);
+    const loginBtn = screen.getByText('STEP INSIDE');
+    fireEvent.click(loginBtn);
+    
+    expect(mockLoginController.handleSubmit).toHaveBeenCalled();
+  });
+
+  it('triggers onStart when NameManagementView starts tournament', () => {
+    render(<TournamentSetup {...defaultProps} isLoggedIn={true} />);
+    const startBtn = screen.getByText('Start Tournament Utils');
+    fireEvent.click(startBtn);
+    
+    expect(defaultProps.onStart).toHaveBeenCalled();
+  });
+
+  it('displays cat facts correctly', () => {
+     render(<TournamentSetup {...defaultProps} isLoggedIn={true} />);
+     expect(screen.getByText('CATS RULE')).toBeTruthy(); // Hook returns "Cats rule", component uppercases it
+  });
+});

@@ -4,7 +4,7 @@
  * Extracted from App.tsx to improve maintainability.
  */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import type { NameItem } from "../../types/components";
 import { ScrollToTopButton } from "../components/Button";
@@ -15,6 +15,7 @@ import { Loading } from "../components/Loading";
 import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSuggestionModal";
 import { BottomNav } from "../components/Navigation/BottomNav";
 import { DesktopNav } from "../components/Navigation/DesktopNav";
+import { MobileMenu } from "../components/Navigation/MobileMenu";
 import { SwipeNavigation } from "../components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "../components/OfflineIndicator";
 import ViewRouter from "../components/ViewRouter/ViewRouter";
@@ -47,6 +48,7 @@ export function AppLayout({
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
 	const { isLoggedIn } = user;
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
@@ -79,7 +81,15 @@ export function AppLayout({
 							onLogout={() => userActions.logout()}
 							onOpenSuggestName={onOpenSuggestName}
 						/>
-						<BottomNav onOpenSuggestName={onOpenSuggestName} />
+						<BottomNav
+							onOpenSuggestName={onOpenSuggestName}
+							onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+						/>
+						<MobileMenu
+							isOpen={isMobileMenuOpen}
+							onClose={() => setIsMobileMenuOpen(false)}
+							onLogout={() => userActions.logout()}
+						/>
 					</>
 				)}
 

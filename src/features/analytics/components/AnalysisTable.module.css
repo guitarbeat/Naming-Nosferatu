@@ -104,7 +104,7 @@
 	justify-content: center;
 	padding: var(--space-1) var(--space-2);
 	font-size: 0.875rem;
-	color: hsl(var(--destructive));
+	color: var(--color-error);
 	background: transparent;
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-error) 30%, transparent);
 	border-radius: var(--radius-sm, var(--radius-md));
@@ -115,8 +115,8 @@
 }
 
 .hideButton:hover {
-	background: hsl(var(--destructive) / 10%);
-	border-color: hsl(var(--destructive) / 50%);
+	background: color-mix(in srgb, var(--color-error) 10%, transparent);
+	border-color: color-mix(in srgb, var(--color-error) 50%, transparent);
 	transform: scale(1.05);
 }
 
@@ -162,10 +162,10 @@
 }
 
 .rankBadge.top {
-	background: linear-gradient(135deg, hsl(var(--neon-cyan) / 25%), hsl(var(--hot-pink) / 20%));
-	border-color: hsl(var(--neon-cyan) / 50%);
+	background: linear-gradient(135deg, color-mix(in srgb, var(--color-neon-cyan) 25%, transparent), color-mix(in srgb, var(--color-hot-pink) 20%, transparent));
+	border-color: color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
 	color: var(--analysis-accent, var(--color-neon-cyan));
-	box-shadow: 0 2px 8px hsl(var(--neon-cyan) / 30%);
+	box-shadow: 0 2px 8px color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
 }
 
 .tableRow:hover .rankBadge {
@@ -218,13 +218,13 @@
 }
 
 .metricBarFill.rating {
-	background: linear-gradient(90deg, hsl(var(--neon-cyan)), hsl(var(--neon-cyan) / 70%));
-	box-shadow: 0 0 8px hsl(var(--neon-cyan) / 50%);
+	background: linear-gradient(90deg, var(--color-neon-cyan), color-mix(in srgb, var(--color-neon-cyan) 70%, transparent));
+	box-shadow: 0 0 8px color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
 }
 
 .metricBarFill.wins {
-	background: linear-gradient(90deg, hsl(var(--hot-pink)), hsl(var(--hot-pink) / 70%));
-	box-shadow: 0 0 8px hsl(var(--hot-pink) / 50%);
+	background: linear-gradient(90deg, var(--color-hot-pink), color-mix(in srgb, var(--color-hot-pink) 70%, transparent));
+	box-shadow: 0 0 8px color-mix(in srgb, var(--color-hot-pink) 50%, transparent);
 }
 
 .metricBarFill.selected {
