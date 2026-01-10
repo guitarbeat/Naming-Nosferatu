@@ -4,7 +4,7 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import styles from "./FirstMatchTutorial.module.css";
 
@@ -16,13 +16,13 @@ interface FirstMatchTutorialProps {
 export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps) {
 	const [showKeyboardHint, setShowKeyboardHint] = useState(false);
 
-	const handleDismiss = () => {
+	const handleDismiss = useCallback(() => {
 		// Mark tutorial as seen
 		const userStorage = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_STORAGE) || "{}");
 		userStorage.hasSeenFirstMatchTutorial = true;
 		localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify(userStorage));
 		onClose();
-	};
+	}, [onClose]);
 
 	// Show keyboard hint after a delay (progressive disclosure)
 	useEffect(() => {
@@ -41,7 +41,7 @@ export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps)
 			return () => clearTimeout(timer);
 		}
 		return undefined;
-	}, [isOpen]);
+	}, [isOpen, handleDismiss]);
 
 	if (!isOpen) {
 		return null;
