@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FRAMER_MOTION_PROPS } from "../../../shared/test-utils";
+import { FRAMER_MOTION_PROPS, createCommonMocks } from "../../../shared/test-utils";
 import TournamentSetup from "./TournamentSetup";
 
 // --- Mocks ---
@@ -100,6 +100,14 @@ vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
 		<input data-testid="validated-input" {...props} />
 	),
 }));
+
+// Mock Context
+vi.mock("../../../shared/components/NameManagementView/nameManagementCore", () => {
+	const { contexts } = createCommonMocks();
+	return {
+		useNameManagementContextSafe: contexts.useNameManagementContextSafe,
+	};
+});
 
 describe("TournamentSetup", () => {
 	const defaultProps = {

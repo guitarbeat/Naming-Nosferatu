@@ -169,22 +169,22 @@ export function NameGrid({
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`skeleton-${i}`} className={styles.gridItem}>
 							<Loading
-								variant="cat"
+								variant="card-skeleton"
+								cardSkeletonVariant="mosaic-card"
 								size="medium"
-								catVariant={
-									["paw", "tail", "bounce", "spin", "heartbeat", "orbit"][i % 6] as
-										| "paw"
-										| "tail"
-										| "bounce"
-										| "spin"
-										| "heartbeat"
-										| "orbit"
-								}
-								catColor={["neon", "pastel", "warm"][i % 3] as "neon" | "pastel" | "warm"}
-								text="Loading cat names..."
 							/>
 						</div>
 					))}
+					{/* Loading text below the grid */}
+					<div className={styles.loadingText}>
+						<Loading
+							variant="cat"
+							catVariant="paw"
+							catColor="neon"
+							text="Loading cat names..."
+							size="small"
+						/>
+					</div>
 				</div>
 			</div>
 		);

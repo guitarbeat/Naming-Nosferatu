@@ -1,6 +1,6 @@
-// Shared test utilities for eliminating duplication across test files
+import React from 'react';
 
-import { vi } from "vitest";
+// Shared test utilities for eliminating duplication across test files
 
 // Framer Motion Props that should not be passed to DOM elements
 export const FRAMER_MOTION_PROPS = new Set([
@@ -31,11 +31,66 @@ export const FRAMER_MOTION_PROPS = new Set([
 	'onTapCancel',
 ]);
 
-// Utility function to filter out framer-motion specific props
-export const filterFramerMotionProps = (props: Record<string, any>) => {
-	return Object.fromEntries(
-		Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
-	);
+// Framer Motion mock factory - creates filtered element components
+export const createFramerMotionMock = () => {
+	const createFilteredElement = (Tag: React.ElementType) =>
+		({ children, ...props }: React.PropsWithChildren<Record<string, any>>) => {
+			// Filter out framer-motion specific props
+			const domProps = Object.fromEntries(
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+			);
+			return React.createElement(Tag, domProps, children);
+		};
+
+	return {
+		motion: {
+			div: createFilteredElement('div'),
+			h1: createFilteredElement('h1'),
+			p: createFilteredElement('p'),
+			button: createFilteredElement('button'),
+		},
+		AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+	};
+};
+
+// Enhanced Framer Motion mock with drag simulation for interactive components
+export const createEnhancedFramerMotionMock = () => {
+	const createFilteredElement = (Tag: React.ElementType) =>
+		({ children, onDragEnd, onClick, ...props }: React.PropsWithChildren<Record<string, any> & {
+			onDragEnd?: (event: any, info: { offset: { x: number; y: number } }) => void;
+			onClick?: (e: React.MouseEvent) => void;
+		}>) => {
+			// Filter out framer-motion specific props
+			const domProps = Object.fromEntries(
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+			);
+
+			return React.createElement(Tag, {
+				...domProps,
+				'data-testid': 'motion-div',
+				onClick: (e: React.MouseEvent) => {
+					// Meta Key = Simulate Swipe Right (+150px)
+					if (e.metaKey && onDragEnd) {
+						onDragEnd(e, { offset: { x: 150, y: 0 } });
+						return;
+					}
+					// Alt Key = Simulate Swipe Left (-150px)
+					if (e.altKey && onDragEnd) {
+						onDragEnd(e, { offset: { x: -150, y: 0 } });
+						return;
+					}
+					// Normal Click
+					if (onClick) { onClick(e); }
+				}
+			}, children);
+		};
+
+	return {
+		motion: {
+			div: createFilteredElement,
+		},
+		AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+	};
 };
 
 // Common mock objects
@@ -83,13 +138,17 @@ export const createCommonMocks = () => ({
 		showError: vi.fn(),
 		showToast: vi.fn(),
 		handlersRef: { current: {} },
-		ToastContainer: () => null,
+		ToastContainer: () => <div>ToastContainer</div>,
 	},
 
 	// Component mocks
 	components: {
-		NameManagementView: ({ onStartTournament: _onStartTournament }: any) => null,
-		ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched }: any) => null,
+		NameManagementView: ({ onStartTournament }: any) => (
+			<button onClick={() => onStartTournament?.([])}>Start Tournament Utils</button>
+		),
+		ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched, ...props }: any) => (
+			<input data-testid="validated-input" {...props} />
+		),
 	},
 
 	// Context mocks
@@ -136,6 +195,18 @@ export const createCommonMocks = () => ({
 			createName: vi.fn(),
 		}),
 	},
+});
+
+// Test setup utilities
+export const createTestSetup = (_testName: string) => ({
+	beforeEach: (setupFn?: () => void) => {
+		beforeEach(() => {
+			vi.clearAllMocks();
+			if (setupFn) { setupFn(); }
+		});
+	},
+
+	createDefaultProps: <T extends Record<string, any>>(defaults: T) => defaults,
 });
 
 // Re-export common testing utilities

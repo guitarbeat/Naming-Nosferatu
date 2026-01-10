@@ -48,7 +48,16 @@
 	transform: translateY(-4px);
 	box-shadow: var(--shadow-lg);
 	z-index: 10;
-	position: relative;
+}
+
+/* Loading state styles */
+.loadingText {
+	column-span: all;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: var(--space-6) 0;
+	margin-top: var(--space-4);
 }
 
 .gridItem:active {

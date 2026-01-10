@@ -16,15 +16,18 @@ const getRandomLoadingAsset = () => {
 
 export type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit";
 export type CatColor = "neon" | "pastel" | "warm";
+export type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
 
 export interface LoadingProps {
-	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton";
+	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
 	/** Cat animation variant (only used when variant="cat") */
 	catVariant?: CatVariant;
 	/** Cat color theme (only used when variant="cat") */
 	catColor?: CatColor;
 	/** Show cat face (only used when variant="cat") */
 	showCatFace?: boolean;
+	/** Card skeleton variant (only used when variant="card-skeleton") */
+	cardSkeletonVariant?: CardSkeletonVariant;
 	text?: string;
 	overlay?: boolean;
 	className?: string;
@@ -156,6 +159,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 		width = "100%",
 		height = 20,
 		size = "medium",
+		cardSkeletonVariant = "name-card",
 	}) => {
 		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
 		const isVideo = (randomAsset || "").endsWith(".webm");
@@ -202,6 +206,56 @@ export const Loading: React.FC<LoadingProps> = memo(
 					aria-hidden="true"
 				>
 					<div className={styles.skeletonShimmer} />
+				</div>
+			);
+		}
+
+		// Card skeleton variant
+		if (variant === "card-skeleton") {
+			const cardClasses = [
+				styles.cardSkeleton,
+				styles[cardSkeletonVariant || "name-card"],
+				className,
+			]
+				.filter(Boolean)
+				.join(" ");
+
+			return (
+				<div
+					className={cardClasses}
+					role="presentation"
+					aria-hidden="true"
+					style={{
+						width,
+						height: typeof height === "number" ? `${height}px` : height,
+					}}
+				>
+					{/* Card background with glass effect */}
+					<div className={styles.cardSkeletonBackground}>
+						<div className={styles.cardSkeletonShimmer} />
+					</div>
+
+					{/* Card content structure */}
+					<div className={styles.cardSkeletonContent}>
+						{/* Avatar/Icon placeholder */}
+						<div className={styles.cardSkeletonAvatar} />
+
+						{/* Text content placeholders */}
+						<div className={styles.cardSkeletonText}>
+							<div className={styles.cardSkeletonTitle} />
+							<div className={styles.cardSkeletonSubtitle} />
+						</div>
+
+						{/* Action placeholder */}
+						<div className={styles.cardSkeletonAction} />
+					</div>
+
+					{/* Optional text */}
+					{text && (
+						<div className={styles.cardSkeletonFooter}>
+							{text}
+						</div>
+					)}
 				</div>
 			);
 		}

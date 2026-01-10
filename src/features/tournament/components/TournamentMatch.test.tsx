@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import React from "react";
 import { FRAMER_MOTION_PROPS } from "../../../shared/test-utils";
 import TournamentMatch from "./TournamentMatch";
 
@@ -44,7 +43,7 @@ vi.mock("framer-motion", () => ({
 							return;
 						}
 						// Normal Click
-						if (onClick) onClick(e);
+						if (onClick) { onClick(e); }
 					}}
 				>
 					{children}
