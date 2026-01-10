@@ -14,6 +14,7 @@ const Tournament = lazy(() => import("../../../features/tournament/Tournament"))
 const TournamentSetup = lazy(
 	() => import("../../../features/tournament/components/TournamentSetup"),
 );
+const Explore = lazy(() => import("../../../features/explore/Explore"));
 
 // Local interface matching store's TournamentState structure
 interface TournamentState {
@@ -169,6 +170,13 @@ export default function ViewRouter({
 				</Suspense>
 			);
 		}
+
+		case "explore":
+			return (
+				<Suspense fallback={<Loading variant="spinner" text="Loading Explore..." />}>
+					<Explore userName={userName || ""} />
+				</Suspense>
+			);
 
 		default:
 			// Show setup if no names selected yet

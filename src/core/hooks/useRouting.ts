@@ -235,6 +235,14 @@ export function useTournamentRoutingSync({
 			return;
 		}
 
+		// * Allow "explore" view
+		if (currentView === "explore") {
+			if (normalizedPath !== "/explore") {
+				navigateTo("/explore");
+			}
+			return;
+		}
+
 		if (isTournamentComplete && currentView === "tournament") {
 			if (normalizedPath !== "/results") {
 				navigateTo("/results");
@@ -282,6 +290,13 @@ export function useTournamentRoutingSync({
 				return;
 			}
 
+			if (normalizedPath === "/explore" && currentView !== "explore") {
+				lastViewRef.current = "explore";
+				onViewChange("explore");
+				previousRouteRef.current = currentRoute;
+				return;
+			}
+
 			if (normalizedPath === "/analysis" && currentView !== "analysis") {
 				// If we have a dedicated analysis view state
 				// or we just rely on dashboard + analysis param?
@@ -292,8 +307,8 @@ export function useTournamentRoutingSync({
 			}
 		}
 
-		// * Allow "photos" view on tournament paths - don't reset it to "tournament"
-		const allowedTournamentViews = new Set(["tournament", "photos"]);
+		// * Allow these views on tournament paths without resetting to "tournament"
+		const allowedTournamentViews = new Set(["tournament", "photos", "explore"]);
 
 		if (
 			pathChanged &&

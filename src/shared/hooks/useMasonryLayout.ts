@@ -21,10 +21,10 @@ interface MasonryPosition {
 /**
  * Design token defaults (in px):
  * - gap: 16px (--space-4)
- * - minColumnWidth: 180px (used for responsive grid calculation)
+ * - minColumnWidth: 280px (standard card width)
  */
 const DEFAULT_GAP_PX = 16;
-const DEFAULT_MIN_COLUMN_WIDTH_PX = 180;
+const DEFAULT_MIN_COLUMN_WIDTH_PX = 280;
 
 export function useMasonryLayout<T extends HTMLElement>(
 	itemCount: number,
@@ -40,6 +40,8 @@ export function useMasonryLayout<T extends HTMLElement>(
 		gap = DEFAULT_GAP_PX,
 		minColumnWidth = DEFAULT_MIN_COLUMN_WIDTH_PX,
 	} = options;
+
+	const [columnWidth, setColumnWidth] = useState(minColumnWidth);
 
 	const calculateLayout = useCallback(() => {
 		if (!containerRef.current || itemCount === 0) {
@@ -59,6 +61,11 @@ export function useMasonryLayout<T extends HTMLElement>(
 		const calculatedColumnCount =
 			columnCount || Math.max(1, Math.floor((containerWidth + gap) / (minColumnWidth + gap)));
 
+		// Calculate actual column width to fill the container perfectly
+		const totalGapSpace = (calculatedColumnCount - 1) * gap;
+		const actualColumnWidth = (containerWidth - totalGapSpace) / calculatedColumnCount;
+		setColumnWidth(actualColumnWidth);
+
 		// Initialize column heights
 		const heights = Array(Number(calculatedColumnCount)).fill(0);
 		const newPositions: MasonryPosition[] = [];
@@ -73,7 +80,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 			const shortestColumnIndex = heights.indexOf(Math.min(...heights));
 
 			// Calculate position
-			const left = shortestColumnIndex * (minColumnWidth + gap);
+			const left = shortestColumnIndex * (actualColumnWidth + gap);
 			const top = heights[shortestColumnIndex];
 
 			newPositions[index] = {
@@ -143,7 +150,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 		setItemRef,
 		positions,
 		columnHeights,
+		columnWidth,
 		columnCount: columnHeights.length,
+		totalHeight: Math.max(0, ...columnHeights),
 		recalculate: calculateLayout,
 	};
 }

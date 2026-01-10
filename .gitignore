@@ -136,4 +136,5 @@ jscpd-report.html
 *.avi
 *.mkv
 *.webm
-*.m4v
+*.m4v.smart-coding-cache/
+.smart-coding-cache/

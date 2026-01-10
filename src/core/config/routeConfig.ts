@@ -9,15 +9,28 @@ export const ROUTES = {
 	HOME: "/",
 	TOURNAMENT: "/tournament",
 	RESULTS: "/results",
+	RESULTS_LEADERBOARD: "/results/leaderboard",
+	RESULTS_MATCHUPS: "/results/matchups",
 	GALLERY: "/gallery",
 	ANALYSIS: "/analysis",
+	ANALYSIS_CATS: "/analysis/cats",
 	LOGIN: "/login",
+	EXPLORE: "/explore",
+	EXPLORE_STATS: "/explore/stats",
+	EXPLORE_PHOTOS: "/explore/photos",
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
 
 // View states that map to routes
-export type ViewState = "login" | "tournament" | "results" | "gallery" | "analysis" | "photos";
+export type ViewState =
+	| "login"
+	| "tournament"
+	| "results"
+	| "gallery"
+	| "analysis"
+	| "photos"
+	| "explore";
 
 // Route configuration with metadata
 export interface RouteConfig {
@@ -51,6 +64,20 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
 		title: "Results",
 	},
 	{
+		path: ROUTES.RESULTS_LEADERBOARD,
+		view: "results",
+		requiresAuth: true,
+		lazyComponent: "Dashboard",
+		title: "Leaderboard",
+	},
+	{
+		path: ROUTES.RESULTS_MATCHUPS,
+		view: "results",
+		requiresAuth: true,
+		lazyComponent: "Dashboard",
+		title: "Matchup History",
+	},
+	{
 		path: ROUTES.GALLERY,
 		view: "gallery",
 		requiresAuth: true,
@@ -65,11 +92,39 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
 		title: "Analysis",
 	},
 	{
+		path: ROUTES.ANALYSIS_CATS,
+		view: "analysis",
+		requiresAuth: true,
+		lazyComponent: "Dashboard",
+		title: "Cat Analytics",
+	},
+	{
 		path: ROUTES.LOGIN,
 		view: "login",
 		requiresAuth: false,
 		lazyComponent: "TournamentSetup",
 		title: "Login",
+	},
+	{
+		path: ROUTES.EXPLORE,
+		view: "explore",
+		requiresAuth: true,
+		lazyComponent: "Explore",
+		title: "Explore",
+	},
+	{
+		path: ROUTES.EXPLORE_STATS,
+		view: "explore",
+		requiresAuth: true,
+		lazyComponent: "Explore",
+		title: "Explore Statistics",
+	},
+	{
+		path: ROUTES.EXPLORE_PHOTOS,
+		view: "explore",
+		requiresAuth: true,
+		lazyComponent: "Explore",
+		title: "Explore Photos",
 	},
 ];
 
@@ -103,8 +158,14 @@ export const TOURNAMENT_PATHS = new Set<string>([
 	ROUTES.HOME,
 	ROUTES.TOURNAMENT,
 	ROUTES.RESULTS,
+	ROUTES.RESULTS_LEADERBOARD,
+	ROUTES.RESULTS_MATCHUPS,
 	ROUTES.GALLERY,
 	ROUTES.ANALYSIS,
+	ROUTES.ANALYSIS_CATS,
+	ROUTES.EXPLORE,
+	ROUTES.EXPLORE_STATS,
+	ROUTES.EXPLORE_PHOTOS,
 ]);
 
 /**

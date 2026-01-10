@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import type { NameItem } from "@/types/components";
+import { useMasonryLayout } from "../../hooks/useMasonryLayout";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -131,6 +132,12 @@ export function NameGrid({
 	isLoading = false,
 	className = "",
 }: NameGridProps) {
+	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
+		useMasonryLayout<HTMLDivElement>(names.length, {
+			minColumnWidth: 280,
+			gap: 16,
+		});
+
 	const selectedSet = useMemo(() => selectedNamesToSet(selectedNames as any), [selectedNames]);
 
 	const processedNames = useMemo(() => {
@@ -201,23 +208,41 @@ export function NameGrid({
 
 	return (
 		<div className={`${styles.gridContainer} ${className}`}>
-			<div className={styles.namesGrid} role="list">
+			<div
+				className={styles.namesGrid}
+				role="list"
+				ref={containerRef}
+				style={{ height: totalHeight || "auto", position: "relative" }}
+			>
 				{processedNames.map((name, index) => {
 					const isSelected = selectedSet.has(name.id as string | number);
+					const position = positions[index];
 
 					return (
-						<GridItem
+						<div
 							key={name.id}
-							nameObj={name}
-							isSelected={isSelected}
-							onToggleName={onToggleName}
-							isAdmin={isAdmin}
-							showCatPictures={showCatPictures}
-							imageList={imageList}
-							onToggleVisibility={onToggleVisibility}
-							onDelete={onDelete}
-							index={index}
-						/>
+							className={styles.gridItemWrapper}
+							ref={setItemRef(index)}
+							style={{
+								position: "absolute",
+								top: position?.top || 0,
+								left: position?.left || 0,
+								width: columnWidth || 280,
+								transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+							}}
+						>
+							<GridItem
+								nameObj={name}
+								isSelected={isSelected}
+								onToggleName={onToggleName}
+								isAdmin={isAdmin}
+								showCatPictures={showCatPictures}
+								imageList={imageList}
+								onToggleVisibility={onToggleVisibility}
+								onDelete={onDelete}
+								index={index}
+							/>
+						</div>
 					);
 				})}
 			</div>

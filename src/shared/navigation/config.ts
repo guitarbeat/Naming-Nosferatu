@@ -1,4 +1,4 @@
-import { BarChart2, CheckCircle, Image, Trophy } from "lucide-react";
+import { BarChart2, CheckCircle, Compass, Image, Trophy } from "lucide-react";
 import type { NavItemConfig } from "./types";
 
 /**
@@ -7,7 +7,7 @@ import type { NavItemConfig } from "./types";
 export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "tournament",
-		label: "Vote Now",
+		label: "Vote",
 		route: "/",
 		icon: CheckCircle,
 		type: "primary",
@@ -22,7 +22,7 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	},
 	{
 		key: "results",
-		label: "View Results",
+		label: "Results",
 		route: "/results",
 		icon: Trophy,
 		type: "primary",
@@ -83,6 +83,27 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 			},
 		],
 	},
+	{
+		key: "explore",
+		label: "Explore",
+		route: "/explore",
+		icon: Compass,
+		type: "primary",
+		children: [
+			{
+				key: "stats",
+				label: "Statistics",
+				route: "/explore/stats",
+				type: "secondary",
+			},
+			{
+				key: "photos",
+				label: "Photos",
+				route: "/explore/photos",
+				type: "secondary",
+			},
+		],
+	},
 ];
 
 /**
@@ -93,4 +114,4 @@ export const UTILITY_NAV_ITEMS: NavItemConfig[] = [];
 /**
  * Bottom navigation item keys (mobile)
  */
-export const BOTTOM_NAV_ITEMS: string[] = ["tournament", "results", "analysis", "gallery"];
+export const BOTTOM_NAV_ITEMS: string[] = ["tournament", "results", "explore"];

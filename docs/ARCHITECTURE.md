@@ -14,6 +14,7 @@
 - **Framework**: React 19.2.3 (Actions, `use` hook)
 - **Build Tool**: Vite 7.3.0
 - **State Management**: Zustand (Global) + TanStack Query (Server)
+- **Routing**: Custom route management with `useRouting` hook
 - **Styling**: TailwindCSS 4 + CSS Modules
 - **Backend**: Supabase (PostgreSQL, Auth, Realtime)
 - **Domain Logic**: TypeScript with strict invariants
@@ -366,7 +367,7 @@ All services use a standardized `withSupabase` wrapper in `client.ts` to ensure 
 ### 4. Domain-Driven Architecture
 
 Business logic is organized around the name lifecycle:
-- **Features**: `src/features/names/` (lifecycle management), `src/features/tournaments/` (competition logic)
+- **Features**: `src/features/names/` (lifecycle management), `src/features/tournament/` (competition logic)
 - **Invariants**: Business rules enforced through TypeScript types and runtime validation
 - **Provenance**: Complete audit trail of name evolution through states
 
@@ -396,12 +397,13 @@ src/
 │   ├── gallery/             # Photo gallery view
 │   ├── names/               # Name lifecycle management
 │   ├── profile/             # User profile
-│   └── tournament/          # Tournament competition logic
+│   ├── tournament/          # Tournament competition logic
 │       ├── components/      # Flat component structure (no nested subdirs)
 │       ├── hooks/           # Tournament-specific hooks
 │       ├── services/        # Tournament services
 │       ├── styles/          # Tournament CSS modules
 │       └── utils/           # Tournament utilities
+│   └── explore/             # Global data and photo discovery
 ├── shared/                  # Shared utilities
 │   ├── components/          # Reusable components
 │   ├── hooks/               # Shared hooks

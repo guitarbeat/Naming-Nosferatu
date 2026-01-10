@@ -1,0 +1,119 @@
+.container {
+	position: relative;
+	z-index: var(--z-0);
+	width: 100%;
+	max-width: 1200px;
+	padding: var(--space-3);
+	margin: 0 auto var(--space-6);
+	animation: fadeIn var(--duration-slow) var(--ease-out);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-2));
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	margin: 0 auto var(--space-6);
+	text-align: center;
+	position: relative;
+	overflow: hidden;
+	max-width: 1100px;
+}
+
+.title {
+	position: relative;
+	margin: 0;
+	font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+	font-weight: 700;
+	background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	letter-spacing: var(--tracking-tight);
+	z-index: var(--z-elevate);
+}
+
+.subtitle {
+	position: relative;
+	margin: 0;
+	font-size: var(--text-lg);
+	line-height: 1.7;
+	color: var(--text-secondary);
+	z-index: var(--z-elevate);
+}
+
+.tabs {
+	display: flex;
+	gap: var(--space-2);
+	margin-top: var(--space-4);
+	justify-content: center;
+	flex-wrap: wrap;
+}
+
+.tabBtn {
+	flex: 1;
+	max-width: 200px;
+	min-width: 140px;
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-lg);
+	border: var(--card-border-width) solid var(--border-color);
+	background: var(--card-background);
+	color: var(--text-secondary);
+	font-weight: var(--font-weight-medium);
+	transition: var(--transition-base);
+	cursor: pointer;
+}
+
+.tabBtn:hover:not(:disabled) {
+	background: var(--card-hover);
+	border-color: var(--primary-300);
+	transform: translateY(calc(var(--space-1) * -1));
+}
+
+.tabBtn.active {
+	background: color-mix(in srgb, var(--primary-500) 20%, transparent);
+	border-color: var(--primary-500);
+	color: var(--text-on-accent);
+}
+
+.tabBtn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.content {
+	display: grid;
+	gap: var(--space-6);
+	min-height: 400px;
+}
+
+.pending {
+	opacity: 0.7;
+	pointer-events: none;
+}
+
+@media (max-width: 768px) {
+	.container {
+		padding: var(--space-2);
+	}
+	.title {
+		font-size: var(--text-2xl);
+	}
+	.subtitle {
+		font-size: var(--text-sm);
+	}
+	.tabBtn {
+		flex: 1;
+		min-width: 120px;
+	}
+}

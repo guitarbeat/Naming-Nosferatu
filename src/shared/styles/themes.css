@@ -98,6 +98,13 @@
 	--muted: #f8fafc;
 	--muted-foreground: #64748b; /* Very soft, gentle appearance */
 
+	/* Navigation color tokens (light theme) */
+	--nav-bg: rgb(241 245 249 / 85%);
+	--nav-text: #334155;
+	--nav-text-muted: #64748b;
+	--nav-highlight: var(--primary-600);
+	--nav-accent: var(--color-neon-cyan);
+
 	color-scheme: light;
 }
 
@@ -177,6 +184,13 @@
 	--namecard-selected-description: var(--primary-300);
 	--muted: #111827;
 	--muted-foreground: #cbd5e1; /* Improved from #94a3b8 to meet 7:1 (now 7.2:1 on dark) */
+
+	/* Navigation color tokens (dark theme) - high contrast for dark backgrounds */
+	--nav-bg: rgb(15 23 42 / 85%);
+	--nav-text: #f8fafc;
+	--nav-text-muted: #e2e8f0;
+	--nav-highlight: var(--color-neon-cyan);
+	--nav-accent: var(--color-hot-pink);
 
 	color-scheme: dark;
 }

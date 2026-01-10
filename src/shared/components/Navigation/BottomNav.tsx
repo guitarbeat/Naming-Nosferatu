@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
 import { useRouting } from "../../../core/hooks/useRouting";
+import useAppStore from "../../../core/store/useAppStore";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 
 interface BottomNavProps {
@@ -9,8 +10,13 @@ interface BottomNavProps {
 
 export function BottomNav({ onOpenSuggestName }: BottomNavProps) {
 	const { currentRoute, navigateTo } = useRouting();
+	const isComplete = useAppStore((state) => state.tournament.isComplete);
 
-	const items = getBottomNavItems(MAIN_NAV_ITEMS, BOTTOM_NAV_ITEMS);
+	// Filter out results if not complete
+	const visibleItems = isComplete
+		? BOTTOM_NAV_ITEMS
+		: BOTTOM_NAV_ITEMS.filter((key) => key !== "results");
+	const items = getBottomNavItems(MAIN_NAV_ITEMS, visibleItems);
 
 	if (!items.length) {
 		return null;
