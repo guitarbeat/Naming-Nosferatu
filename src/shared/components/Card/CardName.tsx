@@ -33,9 +33,9 @@
 
 import PropTypes from "prop-types";
 import React, { memo, useEffect, useState } from "react";
-import { TIMING } from "../../../../core/constants";
-import CatImage from "../../CatImage/CatImage";
-import Card from "../Card";
+import { TIMING } from "../../../core/constants";
+import CatImage from "../CatImage/CatImage";
+import Card from "./Card";
 import styles from "./CardName.module.css";
 
 interface NameMetadata {
