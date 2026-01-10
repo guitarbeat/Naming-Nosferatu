@@ -4,7 +4,7 @@
  * Extracted from App.tsx to improve maintainability.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import type { NameItem } from "../../types/components";
 import { ScrollToTopButton } from "../components/Button";
@@ -46,8 +46,6 @@ export function AppLayout({
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
 	const { isLoggedIn } = user;
-	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const [isMobile, setIsMobile] = useState(false);
 
 	// Detect mobile vs desktop for conditional rendering
 	useEffect(() => {
@@ -102,7 +100,7 @@ export function AppLayout({
 							/>
 						</div>
 					)}
-					<SwipeNavigation>
+					<SwipeWrapper>
 						<ViewRouter
 							isLoggedIn={isLoggedIn}
 							onLogin={handleLogin}
@@ -117,7 +115,7 @@ export function AppLayout({
 							}
 							onOpenSuggestName={onOpenSuggestName}
 						/>
-					</SwipeNavigation>
+					</SwipeWrapper>
 
 					{/* Global loading overlay */}
 					{tournament.isLoading && (
