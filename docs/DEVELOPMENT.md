@@ -1,7 +1,8 @@
 # Development Guide & Standards
 
-**Last Updated:** January 2026
+**Last Updated:** January 10, 2026
 **Status:** Primary Reference for Developers
+**Latest Update:** Fixed unhandled promise rejection and removed unused dependencies (see CODE_QUALITY_REPORT.md)
 
 This document provides a comprehensive guide for setting up, developing, maintaining, and optimizing the Naming Nosferatu application.
 
