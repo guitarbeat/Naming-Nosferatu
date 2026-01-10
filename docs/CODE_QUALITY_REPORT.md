@@ -61,12 +61,13 @@ These 8 files are not imported anywhere in the codebase and should be deleted:
 
 ## 🟡 Unused Dependencies
 
-| Dependency | Version | Reason | Recommendation |
-|------------|---------|--------|-----------------|
-| `react-router-dom` | 6.21.3 | Not used; using custom routing | Remove |
-| `sharp` (dev) | 0.34.5 | Image optimization tool not in use | Remove |
+| Dependency | Version | Reason | Status |
+|------------|---------|--------|--------|
+| `react-router-dom` | 6.21.3 | Not used; using custom routing | ✅ REMOVED |
+| `sharp` (dev) | 0.34.5 | Image optimization tool not in use | ✅ REMOVED |
+| `lovable-tagger` | 1.1.13 | Used in vite.config.ts for component tagging | ✅ KEPT (was mistakenly removed) |
 
-**Status:** ⏳ PENDING - Safe to remove
+**Status:** ✅ COMPLETE - Removed 2 unused dependencies, restored 1 that was in use
 
 ---
 
