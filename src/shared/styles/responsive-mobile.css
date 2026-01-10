@@ -44,7 +44,7 @@
 	}
 
 	.nav-menu button.active {
-		color: white;
+		color: var(--button-text-light);
 		background: var(--primary-500);
 		border-color: var(--primary-600);
 	}

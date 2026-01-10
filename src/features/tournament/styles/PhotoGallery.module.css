@@ -180,7 +180,7 @@
 	height: var(--space-8);
 	padding: 0 var(--space-2);
 	background: var(--primary-color);
-	color: white;
+	color: var(--button-text-light);
 	border-radius: 50%;
 	font-weight: 600;
 	font-size: var(--text-sm);
@@ -250,7 +250,7 @@
 	padding: var(--space-2) var(--space-4);
 	font-size: var(--text-sm);
 	font-weight: 600;
-	color: white;
+	color: var(--button-text-light);
 	cursor: pointer;
 	background: var(--primary-color);
 	border: none;

@@ -413,7 +413,7 @@
 	font-weight: var(--tt-font-weight-button);
 	letter-spacing: var(--tt-letter-spacing-button);
 	text-transform: uppercase;
-	color: white;
+	color: var(--button-text-light);
 	background:
 		linear-gradient(
 			135deg,

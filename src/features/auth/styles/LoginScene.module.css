@@ -204,7 +204,7 @@
 .loginBtn {
 	background: var(--error-color);
 	border: 3px solid var(--text-primary);
-	color: white;
+	color: var(--button-text-light);
 	padding: var(--space-3);
 	font-weight: 900;
 	width: 100%;
