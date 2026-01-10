@@ -1,9 +1,28 @@
 # Development Guide & Standards
 
-**Last Updated:** January 2026
+**Last Updated:** January 10, 2026
 **Status:** Primary Reference for Developers
+**Latest Update:** Fixed unhandled promise rejection and removed unused dependencies (see CODE_QUALITY_REPORT.md)
 
 This document provides a comprehensive guide for setting up, developing, maintaining, and optimizing the Naming Nosferatu application.
+
+---
+
+## 📋 Recent Updates (January 2026)
+
+### Code Quality Improvements
+- **Fixed Critical Bug**: Unhandled promise rejection in `src/core/hooks/useUserSession.ts` (line 133)
+  - Added `.catch()` handler to prevent "An unexpected error occurred" global error message
+  - Added fallback login mechanism for import failures
+- **Removed Unused Dependencies**: `react-router-dom`, `sharp`, `lovable-tagger`
+- **Identified Dead Code**: 8 unused files documented (See `docs/CODE_QUALITY_REPORT.md`)
+- **Code Quality Report**: Comprehensive analysis of unused exports and files (See `docs/CODE_QUALITY_REPORT.md`)
+
+### How to Avoid Similar Issues
+1. Always add `.catch()` handlers to promise chains
+2. Test `pnpm run check:deps` before committing
+3. Avoid dynamic imports without error handling
+4. Use `.then().catch()` not `.then().then()` for error handling
 
 ---
 

@@ -130,24 +130,34 @@ function useUserSession({
 				});
 		} else {
 			// * Auto-login as guest if no user found
-			import("../../shared/utils").then(({ generateFunName }) => {
-				const randomName = generateFunName();
-				// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
-				// Actually, for better UX let's save it so refresh works.
-				// If they want to be admin they can "re-login".
-				localStorage.setItem(STORAGE_KEYS.USER, randomName);
-				userActions.login(randomName);
+			import("../../shared/utils")
+				.then(({ generateFunName }) => {
+					const randomName = generateFunName();
+					// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
+					// Actually, for better UX let's save it so refresh works.
+					// If they want to be admin they can "re-login".
+					localStorage.setItem(STORAGE_KEYS.USER, randomName);
+					userActions.login(randomName);
 
-				// Also need to set the supabase context for this new guest
-				(async () => {
-					try {
-						const activeSupabase = await resolveSupabaseClient();
-						await setSupabaseUserContext(activeSupabase, randomName);
-					} catch {
-						// ignore
+					// Also need to set the supabase context for this new guest
+					(async () => {
+						try {
+							const activeSupabase = await resolveSupabaseClient();
+							await setSupabaseUserContext(activeSupabase, randomName);
+						} catch {
+							// ignore
+						}
+					})();
+				})
+				.catch((error) => {
+					if (import.meta.env.DEV) {
+						console.warn("Failed to import utils for guest login:", error);
 					}
-				})();
-			});
+					// Fallback: use a default guest name if import fails
+					const fallbackName = "Guest Cat";
+					localStorage.setItem(STORAGE_KEYS.USER, fallbackName);
+					userActions.login(fallbackName);
+				});
 		}
 		setIsInitialized(true);
 	}, [userActions]);
