@@ -1,44 +1,16 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { FRAMER_MOTION_PROPS } from "../../../shared/test-utils";
 import TournamentSetup from "./TournamentSetup";
 
 // --- Mocks ---
 
 // Mock Framer Motion
 vi.mock("framer-motion", () => {
-	// Framer Motion specific props that should not be passed to DOM
-	const FRAMER_MOTION_PROPS = new Set([
-		'layout',
-		'dragConstraints',
-		'dragElastic',
-		'whileHover',
-		'whileTap',
-		'initial',
-		'animate',
-		'exit',
-		'variants',
-		'transition',
-		'drag',
-		'dragDirectionLock',
-		'dragMomentum',
-		'dragPropagation',
-		'dragSnapToOrigin',
-		'layoutId',
-		'layoutDependency',
-		'onDrag',
-		'onDragStart',
-		'onDragEnd',
-		'onHoverStart',
-		'onHoverEnd',
-		'onTap',
-		'onTapStart',
-		'onTapCancel',
-	]);
-
 	const createFilteredElement = (Tag: React.ElementType) =>
 		({ children, ...props }: React.PropsWithChildren<Record<string, any>>) => {
-			// Filter out framer-motion specific props
+			// Filter out framer-motion specific props using shared constant
 			const domProps = Object.fromEntries(
 				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
 			);
@@ -127,51 +99,6 @@ vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
 	ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched, ...props }: ValidatedInputProps) => (
 		<input data-testid="validated-input" {...props} />
 	),
-}));
-
-// Mock the name management context hook
-vi.mock("../../../shared/components/NameManagementView/nameManagementCore", () => ({
-	useNameManagementContextSafe: () => ({
-		names: [],
-		isLoading: false,
-		isError: false,
-		error: null,
-		dataError: null,
-		refetch: vi.fn(),
-		clearErrors: vi.fn(),
-		setNames: vi.fn(),
-		setHiddenIds: vi.fn(),
-		selectedNames: [],
-		selectedIds: new Set(),
-		isSelectionMode: false,
-		setIsSelectionMode: vi.fn(),
-		toggleName: vi.fn(),
-		toggleNameById: vi.fn(),
-		toggleNamesByIds: vi.fn(),
-		clearSelection: vi.fn(),
-		selectAll: vi.fn(),
-		isSelected: vi.fn(() => false),
-		selectedCount: 0,
-		searchQuery: "",
-		setSearchQuery: vi.fn(),
-		filterStatus: "all",
-		setFilterStatus: vi.fn(),
-		sortBy: "name",
-		setSortBy: vi.fn(),
-		sortOrder: "asc",
-		setSortOrder: vi.fn(),
-		visibleNames: [],
-		hiddenIds: new Set(),
-		hasHiddenNames: false,
-		totalCount: 0,
-		visibleCount: 0,
-		hiddenCount: 0,
-		fetchNames: vi.fn(),
-		toggleVisibility: vi.fn(),
-		deleteName: vi.fn(),
-		updateName: vi.fn(),
-		createName: vi.fn(),
-	}),
 }));
 
 describe("TournamentSetup", () => {

@@ -635,68 +635,306 @@ width: 100px;
 
 To maintain a DRY (Don't Repeat Yourself) styling architecture and leverage centralized primitives, the project uses **CSS Modules Composition**. This allows developers to inherit styles from global utility classes while keeping local component styles focused and manageable.
 
-### Rule of Thumb
-Use `composes: [CLASS] from global;` as the **first line** in your CSS module class definition. This brings in global styles from `src/shared/styles/` without needing to import individual CSS files.
+### Core Principles
 
-### 1. Glass Surfaces
-Centralized glassmorphism styles ensure consistent blur, border, and background across the application.
+1. **Composition First**: Use `composes: [CLASS] from global;` as the **first line** in your CSS module class definition
+2. **Layering**: Global styles provide base behavior; local styles add specificity
+3. **Design Tokens**: Always use CSS custom properties for dynamic values
+4. **Theme Awareness**: Global classes automatically adapt to light/dark themes
+
+### Syntax Reference
 
 ```css
-/* MyComponent.module.css */
-.container {
+/* Basic composition */
+.myClass {
+  composes: globalClass from global;
+  /* Local styles */
+}
+
+/* Multiple compositions */
+.myClass {
+  composes: baseClass spacingClass from global;
+  /* Local styles */
+}
+
+/* Conditional composition (advanced) */
+.myClass {
+  composes: baseClass from global;
+}
+
+.myClass--active {
+  composes: activeState from global;
+}
+```
+
+### 1. Glass Surfaces
+
+Centralized glassmorphism styles ensure consistent blur, border, and background effects across the application. Glass classes automatically adapt to theme changes and provide appropriate fallbacks.
+
+#### Basic Usage
+
+```css
+/* Modal.module.css */
+.overlay {
+  composes: glass-strong from global;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-backdrop);
+}
+
+/* Card.module.css */
+.content {
   composes: glass-medium from global;
-  /* Local overrides or additions */
+  composes: elevatedCard from global;
+  padding: var(--card-padding-md);
+}
+```
+
+#### Glass Variants
+
+| Global Class | Theme Adaptation | Use Case |
+|--------------|------------------|----------|
+| `glass-light` | `rgba(241, 245, 249, 0.4)` / `rgba(15, 23, 42, 0.3)` | Subtle backgrounds, low-priority panels |
+| `glass-medium` | `rgba(241, 245, 249, 0.6)` / `rgba(15, 23, 42, 0.55)` | Standard surfaces, cards, navigation |
+| `glass-strong` | `rgba(241, 245, 249, 0.65)` / `rgba(15, 23, 42, 0.7)` | Modals, dropdowns, high-impact overlays |
+
+#### Advanced Glass Composition
+
+```css
+/* InteractiveCard.module.css */
+.card {
+  composes: glass-medium from global;
+  composes: elevatedCard from global;
+  transition: var(--transition-base);
+}
+
+.card:hover {
+  composes: glass-strong from global;
+  /* Override specific properties while keeping glass behavior */
+  backdrop-filter: blur(var(--glass-blur-strong));
+}
+```
+
+### 2. Layout Primitives
+
+Standardized layout patterns eliminate repetitive flexbox/grid boilerplate. These primitives handle common layout needs while remaining flexible for component-specific requirements.
+
+#### Stack Layouts (Vertical)
+
+```css
+/* Form.module.css */
+.form {
+  composes: stack from global;
+  composes: stack-md from global; /* 12px gap */
+  max-width: 400px;
+}
+
+/* Section.module.css */
+.section {
+  composes: stack from global;
+  composes: stack-lg from global; /* 16px gap */
+  composes: heroStage from global; /* Responsive min-height */
+}
+```
+
+#### Cluster Layouts (Horizontal)
+
+```css
+/* ButtonGroup.module.css */
+.actions {
+  composes: cluster from global;
+  composes: cluster-sm from global; /* 8px gap */
+  justify-content: flex-end;
+}
+
+/* Navigation.module.css */
+.nav {
+  composes: cluster from global;
+  composes: cluster-md from global; /* 12px gap */
+  flex-wrap: wrap;
+}
+```
+
+#### Grid and Special Layouts
+
+```css
+/* NameGrid.module.css */
+.grid {
+  composes: grid-mosaic from global;
+  /* Custom grid properties */
+  --grid-min-column-width: var(--card-width-responsive);
+}
+
+/* CenteredContent.module.css */
+.hero {
+  composes: flex-center from global;
+  composes: heroStage from global;
+  min-height: 60vh;
+}
+```
+
+#### Layout Primitive Reference
+
+| Primitive | CSS Properties | Variants | Use Case |
+|-----------|----------------|----------|----------|
+| `stack` | `display: flex; flex-direction: column` | `-xs`, `-sm`, `-md`, `-lg`, `-xl` | Vertical content flow |
+| `cluster` | `display: flex; flex-wrap: wrap` | `-xs`, `-sm`, `-md`, `-lg`, `-xl` | Horizontal wrapping |
+| `heroStage` | `display: flex; align-items: center; min-height: clamp(50vh, 80vh, 600px)` | None | Landing sections |
+| `flex-center` | `display: flex; align-items: center; justify-content: center` | None | Centered content |
+| `grid-mosaic` | `display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr))` | None | Masonry layouts |
+
+### 3. Card Surfaces
+
+Card primitives provide consistent borders, backgrounds, shadows, and interaction states. They compose with glass surfaces for layered visual effects.
+
+#### Basic Card Composition
+
+```css
+/* StandardCard.module.css */
+.card {
+  composes: surfaceCard from global;
+  composes: elevatedCard from global;
+  /* Component-specific sizing */
+  width: var(--card-width-responsive);
+  padding: var(--card-padding-md);
+}
+
+/* MosaicCard.module.css */
+.mosaicCard {
+  composes: card-mosaic from global;
+  /* Sharp edges for grid layouts */
+  border-radius: var(--radius-xs);
+}
+```
+
+#### Interactive Cards
+
+```css
+/* InteractiveCard.module.css */
+.interactiveCard {
+  composes: elevatedCard from global;
+  composes: glass-medium from global;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.interactiveCard:hover {
+  transform: var(--button-hover-transform);
+  box-shadow: var(--shadow-lg);
+}
+
+.interactiveCard:active {
+  transform: var(--button-active-transform);
+}
+```
+
+#### Card Primitive Reference
+
+| Global Class | Composition | Key Properties | Use Case |
+|--------------|-------------|----------------|----------|
+| `surfaceCard` | Base layer | `border-radius: var(--radius-card); border: 1px solid var(--border-color)` | Basic card structure |
+| `elevatedCard` | Extends `surfaceCard` | `box-shadow: var(--shadow-md); transition: var(--transition-transform)` | Cards with depth |
+| `card-base` | Utility | `padding: var(--card-padding-md); transition: var(--transition-base)` | Quick card setup |
+| `card-mosaic` | Grid-optimized | `border-radius: var(--radius-xs); margin: var(--card-gap)` | Grid/masonry layouts |
+
+### Best Practices
+
+#### 1. Composition Order Matters
+```css
+/* ✅ Correct: Global first, then local */
+.myClass {
+  composes: glass-medium from global;  /* Global behavior */
+  composes: elevatedCard from global;  /* Additional global behavior */
+  /* Local customizations */
   padding: var(--space-6);
   max-width: 600px;
 }
-```
 
-| Global Class | Usage |
-|--------------|-------|
-| `glass-light` | Subtle background for low-priority panels. |
-| `glass-medium` | Standard surface for cards, navigation, and content sections. |
-| `glass-strong` | High-impact surfaces like modals, dropdowns, and overlays. |
-
-### 2. Layout Primitives
-Standardized layout patterns reduce the need for repetitive flexbox and grid boilerplate. Components should compose these to manage their internal geometry.
-
-```css
-/* CardList.module.css */
-.list {
-  composes: cluster from global;
-  composes: cluster-md from global; /* Inherit spacing variant */
-  justify-content: center;
-}
-
-.form {
-  composes: stack from global;
-  composes: stack-lg from global;
+/* ❌ Avoid: Local styles before global */
+.myClass {
+  padding: var(--space-6);              /* Local first */
+  composes: glass-medium from global;   /* Global after - breaks cascade */
 }
 ```
 
-| Primitive | Usage |
-|-----------|-------|
-| `stack` | Vertical layout. Use with `-xs`, `-sm`, `-md`, `-lg`, `-xl` for spacing gaps. |
-| `cluster` | Horizontal wrapping layout. Use with `-sm`, `-md`, `-lg` for spacing gaps. |
-| `heroStage` | High-impact centered container with responsive min-height. |
-| `flex-center` | Utility for centering content in both directions. |
-| `grid-mosaic` | Responsive grid with dense packing (used for Masonry/NameGrid). |
+#### 2. Override Strategically
+```css
+/* ✅ Good: Override specific properties while preserving global behavior */
+.customGlass {
+  composes: glass-medium from global;
+  /* Only override what you need to change */
+  background: var(--glass-bg-strong);  /* Stronger opacity */
+  /* Blur and border inherited from glass-medium */
+}
 
-### 3. Card Surfaces
-Standardized card primitives handle borders, background, and common hover effects.
+/* ❌ Avoid: Redefining entire global classes */
+.customGlass {
+  /* Don't copy-paste global class definitions */
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+```
+
+#### 3. Theme-Aware Composition
+```css
+/* Global classes automatically adapt to themes */
+.themedCard {
+  composes: glass-medium from global;    /* Adapts to light/dark */
+  composes: elevatedCard from global;    /* Theme-aware shadows */
+  /* Your component-specific styles */
+}
+```
+
+#### 4. Performance Considerations
+- **GPU Acceleration**: Global classes use `transform` and `opacity` for animations
+- **Minimal Repaints**: Avoid animating properties that trigger layout recalculations
+- **Bundle Size**: Composing global classes prevents CSS duplication
+
+#### 5. Debugging Composition
+```css
+/* Add this temporarily to debug composition */
+.debugClass {
+  composes: glass-medium from global;
+  /* Visual debugging */
+  border: 2px solid red !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+```
+
+### Migration Examples
+
+#### From Inline Styles
+```tsx
+// Before
+<div style={{ background: 'rgba(15, 23, 42, 0.55)', backdropFilter: 'blur(18px)' }}>
+
+// After
+<div className={styles.glassPanel}>
+```
 
 ```css
-/* NameCard.module.css */
+/* Component.module.css */
+.glassPanel {
+  composes: glass-medium from global;
+}
+```
+
+#### From Repeated CSS
+```css
+/* Before: Repeated in multiple files */
 .card {
-  composes: elevatedCard from global;
-  /* Local component-specific styles */
-  min-width: var(--card-width-responsive);
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* After: Compose global primitives */
+.card {
+  composes: glass-medium from global;
+  composes: surfaceCard from global;
+  padding: var(--card-padding-md);
 }
 ```
-
-| Global Class | Usage |
-|--------------|-------|
-| `surfaceCard` | Base card style with borders and standard radius. |
-| `elevatedCard` | Inherits `surfaceCard` and adds shadow + hover lift effect. |
-| `card-base` | Utility card with standard padding and transitions. |
-| `card-mosaic` | Sharp-edged version (`radius-xs`) for mosaic/grid layouts. |

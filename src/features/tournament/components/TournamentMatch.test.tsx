@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import React from "react";
+import { FRAMER_MOTION_PROPS } from "../../../shared/test-utils";
 import TournamentMatch from "./TournamentMatch";
 
 // --- Mocks ---
@@ -16,61 +18,21 @@ vi.mock("../utils/tournamentUtils", () => ({
 	getRandomCatImage: () => "cat.jpg",
 }));
 
-// Smart Framer Motion Mock
-// Framer Motion specific props that should not be passed to DOM
-const FRAMER_MOTION_PROPS = new Set([
-	'layout',
-	'dragConstraints',
-	'dragElastic',
-	'whileHover',
-	'whileTap',
-	'initial',
-	'animate',
-	'exit',
-	'variants',
-	'transition',
-	'drag',
-	'dragDirectionLock',
-	'dragMomentum',
-	'dragPropagation',
-	'dragSnapToOrigin',
-	'layoutId',
-	'layoutDependency',
-	'onDrag',
-	'onDragStart',
-	'onDragEnd',
-	'onHoverStart',
-	'onHoverEnd',
-	'onTap',
-	'onTapStart',
-	'onTapCancel',
-]);
-
-interface MotionDivProps {
-	children?: React.ReactNode;
-	layout?: any;
-	dragConstraints?: any;
-	dragElastic?: any;
-	whileHover?: any;
-	whileTap?: any;
-	onDragEnd?: (event: any, info: { offset: { x: number; y: number } }) => void;
-	onClick?: (e: React.MouseEvent) => void;
-	[key: string]: any;
-}
-
+// Enhanced Framer Motion Mock with drag simulation
 vi.mock("framer-motion", () => ({
 	motion: {
-		div: ({ children, onDragEnd, onClick, ...props }: MotionDivProps) => {
+		div: ({ children, onDragEnd, onClick, ...props }: any) => {
 			// Filter out framer-motion specific props
 			const domProps = Object.fromEntries(
-				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+				Object.entries(props).filter(([key]: [string, any]) => !FRAMER_MOTION_PROPS.has(key))
 			);
 
+			// Create JSX element with drag simulation
 			return (
 				<div
 					{...domProps}
 					data-testid="motion-div"
-					onClick={(e) => {
+					onClick={(e: any) => {
 						// Meta Key = Simulate Swipe Right (+150px)
 						if (e.metaKey && onDragEnd) {
 							onDragEnd(e, { offset: { x: 150, y: 0 } });
@@ -90,7 +52,7 @@ vi.mock("framer-motion", () => ({
 			);
 		},
 	},
-	AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+	AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
 describe("TournamentMatch", () => {
