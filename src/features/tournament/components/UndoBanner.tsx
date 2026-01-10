@@ -49,7 +49,7 @@ export function UndoBanner({ undoExpiresAt, undoStartTime, onUndo }: UndoBannerP
 		<div className={undoStyles.undoBanner} role="status" aria-live="polite">
 			<div className={undoStyles.undoBannerContent}>
 				<span>
-					Vote recorded.
+					Choice made.
 					<span
 						className={undoStyles.undoTimer}
 						aria-hidden="true"

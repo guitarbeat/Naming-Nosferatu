@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import PropTypes from "prop-types";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Bracket from "../../../shared/components/Bracket/Bracket";
+import Bracket from "../../../shared/components/Bracket";
 import Button from "../../../shared/components/Button";
 import Card from "../../../shared/components/Card/Card";
 import {

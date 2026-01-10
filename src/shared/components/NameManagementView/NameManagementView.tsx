@@ -6,7 +6,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "../../providers";
-import { ErrorComponent } from "../Error";
+import { ErrorComponent } from "../ErrorComponent";
 import { ProfileMode } from "./modes/ProfileMode";
 import { type SwipeableCardsProps, TournamentMode } from "./modes/TournamentMode";
 import styles from "./NameManagementView.module.css";

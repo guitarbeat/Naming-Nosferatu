@@ -705,6 +705,20 @@
 	width: 100%;
 	max-width: 680px;
 	margin-top: clamp(var(--space-2), 1.5vw, var(--space-4));
+	/* Delayed fade-in: secondary options appear after user focuses on orbs */
+	animation: extraOptionsFadeIn var(--duration-slow) var(--ease-out) 400ms both;
+}
+
+/* Delayed fade-in for secondary voting options */
+@keyframes extraOptionsFadeIn {
+	from {
+		opacity: 0.4;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .extraOptionsButton {

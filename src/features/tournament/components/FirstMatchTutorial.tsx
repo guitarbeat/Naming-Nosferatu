@@ -51,7 +51,7 @@ export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps)
 					>
 						<div className={styles.tutorialHeader}>
 							<h2 id="tutorial-title" className={styles.tutorialTitle}>
-								🎯 How to Vote
+								🎯 The Ritual Begins
 							</h2>
 							<button
 								type="button"
@@ -98,7 +98,7 @@ export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps)
 
 						<div className={styles.tutorialFooter}>
 							<Button variant="primary" onClick={handleGotIt} className={styles.gotItButton}>
-								Got it! Let's start
+								Begin the ritual
 							</Button>
 							<button
 								type="button"

@@ -4,7 +4,7 @@ import { useRouting } from "../../../core/hooks/useRouting";
 // * Import components directly to maintain stability
 // Note: These are .jsx files, so we need to import them without extensions
 import type { NameItem, VoteData } from "../../../types/components";
-import { ErrorComponent } from "../Error";
+import { ErrorComponent } from "../ErrorComponent";
 import { Loading } from "../Loading";
 
 // * Lazy load heavy/hidden components

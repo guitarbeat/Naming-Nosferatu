@@ -1,6 +1,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { useNetworkStatus } from "../hooks/useBrowserState";
+
 // Styles consolidated in src/shared/styles/components-primitives.css
 
 interface OfflineIndicatorProps {

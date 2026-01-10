@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Lightbulb } from "lucide-react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
-import "./BottomNav.css";
 
 interface BottomNavProps {
 	onOpenSuggestName?: () => void;

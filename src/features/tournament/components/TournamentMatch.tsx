@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import type { NameItem } from "@/types/components";
 import Button from "../../../shared/components/Button";
-import { ErrorComponent } from "../../../shared/components/Error";
+import { ErrorComponent } from "../../../shared/components/ErrorComponent";
 import { playSound } from "../../../shared/utils/soundManager";
 import useMagneticPull from "../hooks/tournamentComponentHooks";
 import tournamentStyles from "../styles/Tournament.module.css";
@@ -376,9 +376,9 @@ function TournamentMatch({
 					aria-pressed={selectedOption === "both"}
 					aria-label="Vote for both names (Press Up arrow key)"
 				>
-					I Like Both!{" "}
+					Both are perfect!{" "}
 					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
-						(↑ Up)
+						(↑)
 					</span>
 				</Button>
 
@@ -388,11 +388,11 @@ function TournamentMatch({
 					variant={selectedOption === "neither" ? "primary" : "secondary"}
 					className={`${tournamentStyles.extraOptionsButton} ${selectedOption === "neither" ? tournamentStyles.selected : ""}`}
 					aria-pressed={selectedOption === "neither"}
-					aria-label="Skip this match (Press Down arrow key)"
+					aria-label="Pass on this match (Press Down arrow key)"
 				>
-					Skip{" "}
+					Pass{" "}
 					<span className={tournamentStyles.shortcutHint} aria-hidden="true">
-						(↓ Down)
+						(↓)
 					</span>
 				</Button>
 			</div>

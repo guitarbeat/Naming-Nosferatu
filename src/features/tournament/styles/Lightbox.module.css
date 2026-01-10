@@ -1,0 +1,220 @@
+/* Lightbox Styles included here for cohesiveness */
+.lightboxOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: calc(var(--z-modal) + 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--overlay-dark);
+	backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+	animation: lightboxFadeIn var(--duration-slow) var(--ease-out-expo);
+	pointer-events: auto;
+}
+
+@keyframes lightboxFadeIn {
+	from {
+		opacity: 0;
+		backdrop-filter: blur(0) saturate(100%);
+	}
+	to {
+		opacity: 1;
+		backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+	}
+}
+
+.lightboxContent {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	max-width: 95vw;
+	max-height: 95vh;
+	animation: lightboxScaleIn var(--duration-slow) var(--ease-out-expo);
+}
+
+@keyframes lightboxScaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.lightboxImageWrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 90vw;
+	max-height: 85vh;
+	animation: imageSlideIn var(--duration-normal) var(--ease-out-expo);
+}
+
+@keyframes imageSlideIn {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-5)) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.lightboxImageWrap.slideLeft {
+	animation: slideFromLeft var(--duration-normal) var(--ease-out-expo);
+}
+
+.lightboxImageWrap.slideRight {
+	animation: slideFromRight var(--duration-normal) var(--ease-out-expo);
+}
+
+@keyframes slideFromLeft {
+	from {
+		opacity: 0;
+		transform: translateX(calc(var(--space-15) * -1)) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+@keyframes slideFromRight {
+	from {
+		opacity: 0;
+		transform: translateX(var(--space-15)) scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
+}
+
+.lightboxImage {
+	max-width: 90vw;
+	max-height: 85vh;
+	object-fit: contain;
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-2xl);
+}
+
+.lightboxNav {
+	position: absolute;
+	top: 50%;
+	z-index: calc(var(--z-modal) + 2);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--space-13);
+	height: var(--space-13);
+	padding: 0;
+	font-size: var(--text-2xl);
+	line-height: 1;
+	color: var(--color-neutral-50);
+	cursor: pointer;
+	background: color-mix(in srgb, var(--color-neutral-900) 60%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	border-radius: var(--radius-full);
+	transform: translateY(-50%);
+	transition: var(--transition-all);
+	text-align: center;
+	vertical-align: middle;
+}
+
+.lightboxNav:hover {
+	background: var(--glass-bg-strong);
+	border-color: var(--glass-border);
+	transform: translateY(-50%) scale(1.15);
+}
+
+.lightboxNav.left {
+	left: var(--space-4);
+}
+.lightboxNav.right {
+	right: var(--space-4);
+}
+
+.lightboxClose {
+	position: absolute;
+	top: var(--space-4);
+	right: var(--space-4);
+	z-index: calc(var(--z-modal) + 2);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--space-12);
+	height: var(--space-12);
+	font-size: var(--text-2xl);
+	line-height: 1;
+	color: var(--color-neutral-50);
+	cursor: pointer;
+	background: color-mix(in srgb, var(--color-neutral-900) 60%, transparent);
+	border: var(--card-border-width) solid
+		color-mix(in srgb, var(--color-neutral-50) 30%, transparent);
+	border-radius: var(--radius-full);
+	transition: var(--transition-all);
+}
+
+.lightboxClose:hover {
+	background: var(--glass-bg-strong);
+	border-color: var(--glass-border);
+	transform: scale(1.1);
+}
+
+.lightboxCounter {
+	position: absolute;
+	bottom: var(--space-4);
+	left: 50%;
+	padding: var(--space-1) var(--space-3);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	color: var(--color-neutral-50);
+	background: var(--overlay-medium);
+	backdrop-filter: blur(var(--glass-blur));
+	border-radius: var(--radius-full);
+	transform: translateX(-50%);
+	z-index: calc(var(--z-modal) + 3);
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+@media (width <= 768px) {
+	.lightboxContent {
+		padding: var(--space-4);
+	}
+	.lightboxImageWrap {
+		max-width: min(94vw, 720px);
+		max-height: 70vh;
+	}
+	.lightboxNav {
+		width: var(--space-10);
+		height: var(--space-10);
+		font-size: var(--text-xl);
+	}
+	.lightboxNav.left {
+		left: var(--space-3);
+	}
+	.lightboxNav.right {
+		right: var(--space-3);
+	}
+	.lightboxClose {
+		top: var(--space-3);
+		right: var(--space-3);
+		width: var(--space-9);
+		height: var(--space-9);
+		font-size: var(--text-xl);
+	}
+	.lightboxCounter {
+		bottom: var(--space-3);
+		padding: var(--space-1) var(--space-2);
+		font-size: var(--text-xs);
+	}
+}

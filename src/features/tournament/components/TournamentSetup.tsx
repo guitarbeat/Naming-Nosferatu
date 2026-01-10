@@ -6,14 +6,16 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Dices } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { ErrorComponent } from "../../../shared/components/Error";
+import { ErrorComponent } from "../../../shared/components/ErrorComponent";
 import { NameManagementView } from "../../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../../shared/components/ValidatedInput/ValidatedInput";
 import { useGreeting } from "../../../shared/hooks/useGreeting";
 import type { NameItem } from "../../../types/components";
 import type { SummaryStats } from "../../analytics/types";
 import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
+import loginStyles from "../../auth/styles/LoginScene.module.css";
 import { useTournamentController } from "../hooks/useTournamentController";
+import photoStyles from "../styles/PhotoGallery.module.css";
 import setupStyles from "../styles/Setup.module.css";
 import {
 	AnalysisBulkActionsWrapper,
@@ -148,7 +150,7 @@ function TournamentSetupContent({
 			{!isLoggedIn && (
 				<motion.div
 					key="login"
-					className={setupStyles.loginWrapper}
+					className={loginStyles.loginWrapper}
 					initial={{ opacity: 0, scale: 0.95 }}
 					animate={{ opacity: 1, scale: 1 }}
 					exit={{
@@ -158,10 +160,10 @@ function TournamentSetupContent({
 					}}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
-					<div className={setupStyles.loginScene}>
+					<div className={loginStyles.loginScene}>
 						{/* Cat silhouette with eyes */}
 						<motion.div
-							className={setupStyles.loginCat}
+							className={loginStyles.loginCat}
 							ref={catRef}
 							initial={{ scale: 0, rotate: -10 }}
 							animate={{ scale: 1, rotate: 0 }}
@@ -174,7 +176,7 @@ function TournamentSetupContent({
 							}}
 						>
 							<motion.div
-								className={setupStyles.loginEye}
+								className={loginStyles.loginEye}
 								initial={{ opacity: 0 }}
 								animate={{
 									opacity: 1,
@@ -188,7 +190,7 @@ function TournamentSetupContent({
 								}}
 							/>
 							<motion.div
-								className={`${setupStyles.loginEye} ${setupStyles.loginEyeRight}`}
+								className={`${loginStyles.loginEye} ${loginStyles.loginEyeRight}`}
 								initial={{ opacity: 0 }}
 								animate={{
 									opacity: 1,
@@ -205,7 +207,7 @@ function TournamentSetupContent({
 
 						{/* Cat fact tape */}
 						<motion.div
-							className={setupStyles.loginTape}
+							className={loginStyles.loginTape}
 							initial={{ x: -300, opacity: 0 }}
 							animate={{ x: 0, opacity: 1 }}
 							transition={{
@@ -226,7 +228,7 @@ function TournamentSetupContent({
 
 						{/* Title */}
 						<motion.h1
-							className={setupStyles.loginTitle}
+							className={loginStyles.loginTitle}
 							initial={{ y: -50, opacity: 0 }}
 							animate={{ y: 0, opacity: 1 }}
 							transition={{
@@ -242,7 +244,7 @@ function TournamentSetupContent({
 
 						{/* Subtitle */}
 						<motion.p
-							className={setupStyles.loginSubtitle}
+							className={loginStyles.loginSubtitle}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 1.2 }}
@@ -252,7 +254,7 @@ function TournamentSetupContent({
 
 						{/* Input tray */}
 						<motion.div
-							className={setupStyles.loginInputTray}
+							className={loginStyles.loginInputTray}
 							initial={{ y: 40, opacity: 0 }}
 							animate={{ y: 0, opacity: 1 }}
 							transition={{
@@ -281,7 +283,7 @@ function TournamentSetupContent({
 
 						{/* Main button */}
 						<motion.button
-							className={setupStyles.loginBtn}
+							className={loginStyles.loginBtn}
 							onClick={handleLoginSubmit}
 							disabled={isLoginLoading}
 							whileHover={{ scale: 1.02 }}
@@ -301,7 +303,7 @@ function TournamentSetupContent({
 
 						{/* Reroll button */}
 						<motion.button
-							className={setupStyles.loginRerollBtn}
+							className={loginStyles.loginRerollBtn}
 							onClick={handleRandomName}
 							disabled={isLoginLoading}
 							whileHover={{ scale: 1.05 }}
@@ -344,10 +346,10 @@ function TournamentSetupContent({
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
 					<ToastContainer />
-					<div className={`${setupStyles.container} ${setupStyles.photosViewContainer}`}>
-						<div className={setupStyles.photosViewContent}>
-							<h2 className={setupStyles.photosViewTitle}>Photo Gallery</h2>
-							<p className={setupStyles.photosViewSubtitle}>Click any photo to view full size</p>
+					<div className={`${setupStyles.container} ${photoStyles.photosViewContainer}`}>
+						<div className={photoStyles.photosViewContent}>
+							<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
+							<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
 							<PhotoGallery {...photoGalleryProps} />
 						</div>
 					</div>

@@ -1,0 +1,543 @@
+/* Swipe Mode Styles */
+
+.swipeContainer {
+	/* composes: stack from "./layout.css"; - Removed invalid composition */
+	/* Actually Setup.module.css had `composes: stack from global;` which suggests a setup I might need to replicate or change.
+       "composes: stack from global;" is invalid standard CSS Modules syntax usually, it expects a file.
+       The original had `composes: stack from global;`. I should verify if that works or if I should just use `stack` class in global.
+       I will assume I should just use the properties or standard composition. 
+       Actually, I will just copy the properties from the original file for now to be safe, or omit composition if handled in TSX.
+       Original:
+       .swipeContainer {
+		composes: stack from global;
+		composes: stack-lg from global;
+        ...
+        }
+       I'll replicate the styles or just use the class in TSX.
+       Let's stick to copying the content but commenting out `composes` if it relies on a specific loader, or keeping it if the project supports it.
+       The project uses Vite + CSS Modules. `composes: global` isn't standard.
+       Wait, looking at the file content I viewed in Step 480:
+       Line 1432: `composes: stack from global;`
+       This is weird. `composes` requires a class name and a file. `global` isn't a file.
+       Maybe it was a placeholder in my thought process? No, it's in the file content I viewed!
+       Ah, `composes: stack from global` might be valid if `global` is an alias?
+       Or maybe I misread `composes: stack from "./layout.css"`.
+       Let's look at `Setup.module.css` line 1432 again.
+       Line 1432: `composes: stack from global;`
+       Okay, if it works there, I should keep it?
+       But `global` is likely not a valid path relative to the new file unless configured.
+       I'll replace `composes` with actual styles or ensure `stack` class is added in TSX.
+       For now I will copy the CSS as is but remove the `composes` lines and assume I will fix the TSX to include `stack stack-lg`.
+    */
+	display: flex;
+	flex-direction: column;
+	width: 100%; /* from stack */
+	gap: var(--space-6); /* from stack-lg */
+
+	align-items: center;
+	justify-content: center;
+	max-width: 100%;
+	min-height: var(--size-swipe-container-min-height, 320px);
+	padding: var(--space-6) 0;
+}
+
+.swipeStack {
+	position: relative;
+	width: min(100%, 420px);
+	height: clamp(360px, 70vh, 520px);
+	perspective: 1200px;
+}
+
+.swipeButtons {
+	/* composes: cluster from global; */
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-6); /* overrides cluster default */
+
+	justify-content: center;
+}
+
+.swipeUndoButton {
+	/* composes: buttonSecondary; */
+	/* Copy generic button styles + secondary + specific */
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+	color: var(--text-primary);
+	background: var(--surface-color);
+
+	min-width: var(--button-min-width-sm, 110px);
+	padding-block: var(--space-2);
+	font-size: var(--text-sm);
+}
+.swipeUndoButton:hover:not(:disabled) {
+	background: var(--card-hover);
+	box-shadow: var(--shadow-sm);
+	transform: var(--transform-hover-lift);
+}
+
+.swipeButton {
+	/* composes: buttonBase; */
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+
+	min-width: var(--button-min-width-md, 140px);
+	padding-block: var(--space-3);
+	font-size: var(--text-base);
+	color: var(--text-light);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neutral-900) 85%, transparent),
+		color-mix(in srgb, var(--color-neutral-800) 70%, transparent)
+	);
+	border-color: color-mix(in srgb, var(--color-neutral-400) 30%, transparent);
+	box-shadow: var(--shadow-lg);
+}
+
+.swipeButton:hover {
+	box-shadow: var(--shadow-xl);
+	transform: translateY(-2px);
+}
+
+.swipeLeftButton {
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-error) 90%, transparent),
+		color-mix(in srgb, var(--color-error) 80%, transparent)
+	);
+	border-color: color-mix(in srgb, var(--color-error) 45%, transparent);
+}
+
+.swipeRightButton {
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 85%, transparent),
+		color-mix(in srgb, var(--color-success) 80%, transparent)
+	);
+	border-color: color-mix(in srgb, var(--color-success) 45%, transparent);
+}
+
+.cardProgress {
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
+	padding: var(--space-2) var(--space-4);
+	font-weight: 600;
+	color: var(--text-secondary);
+}
+
+.swipeCardWrapper {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.swipeCard {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	padding: clamp(1.25rem, 3vw, 1.75rem);
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(1rem, 2.5vw, 1.75rem);
+	background: linear-gradient(135deg, var(--card-background), var(--surface-muted));
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: 0;
+	box-shadow:
+		var(--shadow-lg),
+		inset 0 0 0 1px var(--glass-border);
+	backdrop-filter: blur(20px);
+	overflow: hidden;
+	touch-action: none;
+	cursor: grab;
+	user-select: none;
+	will-change: transform, box-shadow, border-color;
+	transition:
+		box-shadow var(--duration-normal) var(--ease-out),
+		border-color var(--duration-normal) var(--ease-out),
+		background var(--duration-normal) var(--ease-out);
+	transform: translate3d(0, 0, 0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.swipeCard:not(.selected, :active):hover {
+		border-color: var(--border-color-hover);
+		box-shadow:
+			var(--shadow-xl),
+			inset 0 0 0 1px var(--glass-border-hover);
+		transform: translateY(-2px);
+	}
+}
+
+.swipeCard:active {
+	cursor: grabbing;
+}
+
+.swipeCard.withCatPictures {
+	padding: 0;
+}
+
+.swipeCard.withCatPictures .swipeCardContent {
+	padding: clamp(0.75rem, 1.5vw, 1rem);
+	gap: clamp(0.5rem, 1.5vw, 0.75rem);
+}
+
+.swipeCard.selected {
+	background: linear-gradient(135deg, var(--card-background), var(--surface-muted));
+	border-color: var(--accent-color, var(--color-warning));
+	border-width: var(--border-width-lg);
+	box-shadow:
+		var(--shadow-xl),
+		0 0 0 4px color-mix(in srgb, var(--color-warning) 15%, transparent),
+		0 0 24px color-mix(in srgb, var(--color-warning) 20%, transparent);
+	position: relative;
+}
+
+.swipeCard.selected::before {
+	content: "";
+	position: absolute;
+	inset: -2px;
+	border-radius: inherit;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-warning) 20%, transparent),
+		transparent
+	);
+	z-index: -1;
+	pointer-events: none;
+}
+
+.swipeCard.longPressing {
+	transform: scale(1.02);
+	border: var(--card-border-width) solid var(--mimosa, var(--color-warning));
+	box-shadow: var(--shadow-md);
+	animation: longPressPulse var(--duration-slow) var(--ease-in-out-expo) infinite alternate;
+}
+
+.swipeCard[data-direction="left"] {
+	border-color: color-mix(in srgb, var(--color-error) 60%, transparent);
+	box-shadow:
+		0 16px 40px color-mix(in srgb, var(--color-error) 30%, transparent),
+		0 0 0 2px color-mix(in srgb, var(--color-error) 20%, transparent);
+}
+
+.swipeCard[data-direction="right"] {
+	border-color: color-mix(in srgb, var(--color-success) 60%, transparent);
+	box-shadow:
+		0 16px 40px color-mix(in srgb, var(--color-success) 30%, transparent),
+		0 0 0 2px color-mix(in srgb, var(--color-success) 20%, transparent);
+}
+
+@keyframes longPressPulse {
+	0% {
+		box-shadow: var(--shadow-lg);
+	}
+	100% {
+		box-shadow: var(--shadow-xl);
+	}
+}
+
+.swipeCardContent {
+	position: relative;
+	z-index: var(--z-elevate);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: clamp(1rem, 2.5vw, 1.5rem);
+	min-height: 0;
+	flex: 1;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--border-color) transparent;
+}
+
+.swipeCardContent::-webkit-scrollbar {
+	width: var(--space-1);
+}
+.swipeCardContent::-webkit-scrollbar-track {
+	background: transparent;
+}
+.swipeCardContent::-webkit-scrollbar-thumb {
+	background: var(--border-color);
+	border-radius: var(--radius-sm);
+}
+.swipeCardContent::-webkit-scrollbar-thumb:hover {
+	background: var(--border-color-hover);
+}
+
+.swipeCardImageContainer {
+	position: relative;
+	aspect-ratio: 4 / 3;
+	overflow: hidden;
+	background: var(--card-background);
+	border-radius: 0;
+	flex-shrink: 0;
+}
+
+.swipeCardImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.swipeOverlay {
+	position: absolute;
+	inset: 0;
+	z-index: var(--z-drawer);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-4);
+	margin: 0;
+	font-size: clamp(1.5rem, 4vw, 2rem);
+	font-weight: 700;
+	color: var(--color-neutral-50);
+	letter-spacing: var(--tracking-wider);
+	text-align: center;
+	white-space: nowrap;
+	background: linear-gradient(
+		135deg,
+		transparent,
+		color-mix(in srgb, var(--color-neutral-900) 55%, transparent)
+	);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--duration-normal) var(--ease-out);
+	border-radius: inherit;
+}
+
+.swipeOverlay.active {
+	opacity: 1;
+}
+
+.swipeRight {
+	background: linear-gradient(
+		135deg,
+		transparent,
+		color-mix(in srgb, var(--color-success) 45%, transparent)
+	);
+}
+
+.swipeLeft {
+	background: linear-gradient(
+		135deg,
+		transparent,
+		color-mix(in srgb, var(--color-error) 45%, transparent)
+	);
+}
+
+.swipeText {
+	text-shadow: var(--text-shadow-md);
+}
+
+.swipeCardName {
+	margin: 0;
+	font-size: clamp(1.5rem, 5vw, 2.25rem);
+	font-weight: 900;
+	line-height: 1.15;
+	color: var(--text-primary);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wide);
+	text-shadow: var(--text-shadow-lg);
+	text-align: center;
+	flex-shrink: 0;
+	position: relative;
+}
+
+.swipeCardDescription {
+	margin: 0;
+	font-size: clamp(0.9375rem, 2.75vw, 1.1875rem);
+	font-weight: 400;
+	line-height: 1.65;
+	color: var(--text-secondary);
+	opacity: 0.9;
+	text-align: center;
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+	padding: 0 clamp(0.5rem, 2vw, 1rem);
+	transition: opacity var(--duration-normal) var(--ease-out);
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.swipeCardMetadata {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	justify-content: center;
+	align-items: center;
+	font-size: var(--text-xs);
+	color: var(--text-secondary);
+	margin-top: auto;
+	padding-top: var(--space-3);
+	border-top: var(--card-border-width) solid var(--border-color);
+	width: 100%;
+}
+
+.metadataItem {
+	display: inline-flex;
+	gap: var(--space-1);
+	align-items: center;
+	padding: var(--space-1) var(--space-2);
+	background: var(--surface-elevated);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-sm);
+	font-weight: 500;
+	transition: all var(--duration-fast) var(--ease-out);
+}
+
+.metadataItem:hover {
+	border-color: var(--border-color-hover);
+	transform: translateY(-1px);
+	padding: var(--space-1) var(--space-2);
+	background: color-mix(in srgb, var(--color-info) 6%, transparent);
+	border-radius: var(--radius-full);
+}
+
+.selectionIndicator {
+	position: absolute;
+	top: var(--space-3);
+	right: var(--space-3);
+	z-index: var(--z-10);
+	display: inline-flex;
+	gap: var(--space-1);
+	align-items: center;
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-xs);
+	font-weight: 700;
+	color: var(--success-700, var(--color-success));
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 15%, transparent),
+		color-mix(in srgb, var(--color-success) 10%, transparent)
+	);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--color-success) 40%, transparent);
+	border-radius: var(--radius-full);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	box-shadow: var(--shadow-md), var(--focus-ring);
+	backdrop-filter: blur(8px);
+	opacity: 0;
+	transform: translateY(calc(var(--space-2) * -1)) scale(0.9);
+	transition: var(--transition-base);
+}
+
+.selectionIndicator.selected {
+	opacity: 1;
+	transform: translateY(0) scale(1);
+	color: var(--success-600, var(--color-success));
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-success) 20%, transparent),
+		color-mix(in srgb, var(--color-success) 15%, transparent)
+	);
+	border-color: color-mix(in srgb, var(--color-success) 50%, transparent);
+	box-shadow: var(--shadow-lg), var(--focus-ring), var(--shadow-cyan);
+}
+
+.swipeModeInstructions {
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
+	padding: var(--space-3) var(--space-4);
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+	text-align: center;
+}
+
+/* Completion State */
+.swipeCompletion {
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	transition: all var(--duration-normal) var(--ease-standard);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4);
+	padding: var(--space-8);
+	text-align: center;
+	max-width: var(--max-width-content-sm, 400px);
+	margin: 0 auto;
+}
+
+.startTournamentButton {
+	/* composes: buttonPrimary buttonWide; */
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	font-size: var(--text-sm);
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	color: var(--button-text-light, var(--color-neutral-50));
+	background: var(--button-primary-bg, var(--primary-color));
+
+	width: 100%;
+	padding-block: var(--space-3);
+	min-height: var(--button-height-md);
+}
+.startTournamentButton:hover:not(:disabled) {
+	background: var(--button-primary-hover, var(--primary-dark));
+	box-shadow: var(--shadow-md);
+	transform: var(--transform-hover-lift);
+}
+
+.undoButton {
+	/* composes: buttonSecondary; */
+	display: inline-flex;
+	gap: var(--spacing-icon-gap);
+	align-items: center;
+	justify-content: center;
+	padding: var(--button-padding-y-md) var(--button-padding-x-md);
+	font-size: var(--text-sm);
+	font-weight: var(--button-font-weight);
+	line-height: var(--leading-tight);
+	cursor: pointer;
+	border: var(--card-border-width) solid transparent;
+	border-radius: var(--button-border-radius);
+	transition: var(--transition-base);
+	min-height: var(--button-height-md);
+	color: var(--text-primary);
+	background: var(--surface-color);
+	border-color: var(--border-color);
+
+	margin-top: var(--space-2);
+}
+.undoButton:hover:not(:disabled) {
+	background: var(--card-hover);
+	box-shadow: var(--shadow-sm);
+	transform: var(--transform-hover-lift);
+}

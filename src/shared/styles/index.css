@@ -18,6 +18,7 @@
 
 /* Component-level styles */
 @import url("./app-layout.css");
+@import url("./navigation.css");
 @import url("./analysis-mode-tokens.css");
 @import url("./analysis-mode-global.css");
 @import url("./analysis-mode-components.css");

@@ -16,7 +16,7 @@ import {
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "../../utils";
-import CardName from "../Card/CardName";
+import { CardName } from "../Card/Card";
 import { EmptyState } from "../EmptyState";
 import { Loading } from "../Loading";
 import styles from "./NameGrid.module.css";

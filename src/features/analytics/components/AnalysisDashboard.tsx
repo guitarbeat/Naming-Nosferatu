@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
-import { BumpChart } from "../../../shared/components/Charts/Charts";
+import { BumpChart } from "../../../shared/components/Charts";
 import {
 	CollapsibleContent,
 	CollapsibleHeader,

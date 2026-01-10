@@ -395,3 +395,1050 @@
 		opacity: 1;
 	}
 }
+/* Card Container - Wraps the card and admin controls */
+.nameCardContainer {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	align-items: stretch;
+	width: 100%;
+	height: 100%;
+}
+
+/* Admin Actions Overlay */
+.adminActionsOverlay {
+	position: absolute;
+	top: var(--space-2);
+	right: var(--space-2);
+	z-index: var(--z-20);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+	opacity: 0;
+	transform: translateX(clamp(var(--space-2), 2vw, var(--space-3)));
+	/* * Only transition non-transform properties to avoid conflicts */
+	transition: var(--transition-opacity);
+}
+
+.nameCardContainer:hover .adminActionsOverlay {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.actionButton {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: clamp(2.25rem, 6vw, 2.75rem);
+	height: clamp(2.25rem, 6vw, 2.75rem);
+	font-size: var(--text-base);
+	color: var(--text-primary);
+	cursor: pointer;
+	background: var(--card-background);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-md);
+	backdrop-filter: blur(8px);
+	/* * Using unified button transition tokens */
+	transition: var(--button-transition);
+}
+
+.actionButton:hover {
+	background: var(--card-hover);
+	border-color: var(--primary-300);
+	box-shadow: var(--shadow-lg);
+	transform: var(--button-hover-transform);
+}
+
+.actionButton:hover::after {
+	position: absolute;
+	bottom: 100%;
+	left: 50%;
+	z-index: var(--z-30);
+	padding: var(--space-1) var(--space-2);
+	margin-bottom: var(--space-1);
+	font-size: var(--text-xs);
+	color: white;
+	white-space: nowrap;
+	content: attr(title);
+	background: var(--gray-800);
+	border-radius: var(--radius-sm);
+	box-shadow: var(--shadow-md);
+	transform: translateX(-50%);
+}
+
+.actionButton.deleteButton {
+	color: var(--error-600);
+	background: var(--error-50);
+	border-color: var(--error-200);
+}
+
+.actionButton.deleteButton:hover {
+	color: var(--error-700);
+	background: var(--error-100);
+	border-color: var(--error-300);
+}
+
+/* Special styling for visibility toggle button */
+.actionButton:first-child {
+	color: var(--primary-600);
+	background: var(--primary-50);
+	border-color: var(--primary-200);
+}
+
+.actionButton:first-child:hover {
+	color: var(--primary-700);
+	background: var(--primary-100);
+	border-color: var(--primary-300);
+}
+
+/* Hidden state styling - Enhanced for better visibility */
+.nameCardHidden {
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(135deg, var(--warning-50), var(--warning-100));
+	border-color: var(--warning-400);
+	opacity: 0.85;
+	filter: grayscale(40%) sepia(20%);
+	animation: hidePulse var(--duration-slow) var(--ease-standard);
+}
+
+/* Diagonal stripe pattern for hidden cards */
+.nameCardHidden::after {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	content: "";
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 10px,
+		color-mix(in srgb, var(--color-warning) 5%, transparent) 10px,
+		color-mix(in srgb, var(--color-warning) 5%, transparent) 20px
+	);
+	opacity: 0.5;
+}
+
+.nameCardHidden::before {
+	position: absolute;
+	top: var(--space-2);
+	left: 50%;
+	z-index: var(--z-10);
+	padding: var(--space-1) var(--space-3);
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-bold);
+	color: white;
+	text-align: center;
+	letter-spacing: var(--tracking-wide);
+	content: "🔒 HIDDEN";
+	background: var(--warning-500);
+	border-radius: var(--radius-full);
+	box-shadow: var(--shadow-sm);
+	transform: translateX(-50%);
+	animation: slideDown var(--duration-normal) var(--ease-out) forwards;
+}
+
+.nameCardHidden .name {
+	margin-top: var(--space-6); /* Make room for the badge */
+	color: var(--warning-700);
+}
+
+.nameCardHidden .description {
+	color: var(--warning-600);
+	opacity: 0.8;
+}
+
+.nameCardHidden .metadata {
+	opacity: 0.6;
+	filter: blur(0.5px);
+	transition: filter 0.2s ease;
+}
+
+.nameCardHidden:hover .metadata {
+	filter: blur(0);
+}
+
+.nameCardHidden .metaItem {
+	color: var(--warning-700);
+	background: var(--warning-100);
+	border-color: var(--warning-200);
+}
+
+.nameCardHidden .categoryTag {
+	color: var(--warning-700);
+	background: var(--warning-100);
+	border-color: var(--warning-200);
+}
+
+.nameCardHidden .categoryMore {
+	color: var(--warning-600);
+	background: var(--warning-100);
+	border-color: var(--warning-200);
+}
+
+/* Enhanced hover effect for hidden cards */
+.nameCardHidden:hover {
+	box-shadow: var(--shadow-lg);
+	opacity: 0.95;
+	filter: grayscale(20%) sepia(10%);
+	transform: var(--transform-hover-lift);
+}
+
+.nameCardHidden:hover::before {
+	background: var(--warning-600);
+	transform: translateX(-50%) scale(1.05);
+}
+
+@keyframes hidePulse {
+	0% {
+		transform: scale(1);
+		filter: grayscale(0);
+	}
+
+	50% {
+		transform: scale(0.96);
+		filter: grayscale(80%);
+	}
+
+	100% {
+		transform: scale(1);
+		filter: grayscale(40%) sepia(20%);
+	}
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translate(-50%, -100%);
+	}
+
+	to {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+}
+
+/* Ensure card takes remaining space - Premium Design */
+.nameCard {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-1);
+	width: 100%; /* Required for masonry layout */
+	height: auto;
+	min-height: auto;
+	max-height: none;
+	padding: var(--space-2) var(--space-3);
+	overflow: visible;
+	font-family: inherit;
+	text-align: center;
+	cursor: pointer;
+
+	/* Reset button defaults */
+	background: linear-gradient(
+		135deg,
+		var(--card-background, color-mix(in srgb, var(--color-neutral-700) 50%, transparent)),
+		var(--surface-muted, color-mix(in srgb, var(--color-neutral-900) 40%, transparent))
+	);
+	border: var(--card-border-width) solid
+		var(--border-color, color-mix(in srgb, var(--color-neutral-400) 25%, transparent));
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
+
+	/* Enhanced visual hierarchy */
+	backdrop-filter: blur(16px);
+	/* * Transition only non-transform properties to avoid conflicts with tilt effect */
+	transition: all var(--transition-base);
+	will-change: transform, box-shadow;
+}
+
+/* Background mouse follow effect */
+.backgroundEffect {
+	position: absolute;
+	inset: 0;
+	z-index: var(--z-0);
+	pointer-events: none;
+	border-radius: var(--radius-lg);
+	mix-blend-mode: soft-light;
+	transition: var(--transition-color);
+}
+
+/* Enhanced content positioning */
+.name,
+.description,
+.checkMark,
+.metadata {
+	position: relative;
+	z-index: var(--z-elevate);
+	/* * Transform transitions removed to avoid conflicts with parent tilt effect */
+}
+
+/* Name styling - Compact for more cards */
+.name {
+	flex-shrink: 0;
+	margin: 0;
+	font-size: clamp(var(--text-base), 3vw, var(--text-2xl));
+	font-weight: var(--font-weight-bold);
+	line-height: var(--leading-tight);
+	text-align: center;
+	color: var(--text-primary);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-normal);
+	text-shadow: var(--shadow-xs);
+}
+
+/* Description styling - Compact for more cards */
+.description {
+	flex: 1;
+	min-height: auto;
+	margin: 0;
+	overflow: visible;
+	font-size: var(--text-xs);
+	text-align: center;
+	font-weight: var(--font-weight-normal);
+	line-height: var(--leading-tight);
+	color: var(--text-primary);
+	opacity: 1;
+	transition: var(--transition-opacity);
+}
+
+.nameCardSmall .description {
+	min-height: 2.5em; /* Reduced minimum height for small cards */
+	font-size: var(--text-xs);
+}
+
+.nameCardSmall .name {
+	font-size: clamp(var(--text-sm), 2.5vw, var(--text-xl));
+}
+
+/* Metadata Display - Compact spacing */
+.metadata {
+	display: flex;
+	flex-shrink: 0; /* Prevent metadata from shrinking */
+	flex-direction: column;
+	gap: var(--space-1);
+	margin-top: auto;
+}
+
+.metaItem {
+	display: flex;
+	gap: var(--space-1);
+	align-items: center;
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-secondary);
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-sm);
+	transition: var(--transition-base);
+}
+
+.metaItem:hover {
+	color: var(--text-primary);
+	background: var(--surface-hover);
+	border-color: var(--accent-color);
+}
+
+/* Categories Display */
+.categories {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
+	margin-top: var(--space-1);
+}
+
+.categoryTag {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-accent);
+	background: var(--accent-color-alpha);
+	border: var(--card-border-width) solid var(--accent-color);
+	border-radius: var(--radius-sm);
+	transition: var(--transition-base);
+}
+
+.categoryTag:hover {
+	color: var(--text-on-accent);
+	background: var(--accent-color);
+}
+
+.categoryMore {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-tertiary);
+	background: var(--surface-color);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-sm);
+}
+
+/* Responsive metadata for small cards */
+.nameCardSmall .metadata {
+	gap: var(--space-2);
+}
+
+.nameCardSmall .metaItem {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+}
+
+.nameCardSmall .categories {
+	gap: var(--space-1);
+}
+
+/* Enhanced hover effects for better description visibility */
+.nameCard:hover .description {
+	color: var(--text-primary);
+	opacity: 1;
+}
+
+/* Dynamic mouse position variables */
+.nameCard {
+	--mouse-x: 50%;
+	--mouse-y: 50%;
+}
+
+/* Enhanced depth on hover */
+.nameCard:not(.nameCardDisabled):hover {
+	cursor: pointer;
+	border-color: var(--accent-color, var(--color-warning));
+	box-shadow: var(--shadow-lg);
+	/* * Transform handled by tilt effect - don't apply translateY here */
+}
+
+.nameCard:not(.nameCardDisabled):hover .name {
+	color: var(--accent-color, var(--color-warning));
+}
+
+.nameCard:not(.nameCardDisabled):hover .description {
+	color: var(--text-primary);
+}
+
+.nameCard:not(.nameCardDisabled):hover .checkMark {
+	transform: scale(1.1);
+}
+
+/* Tilt effect only - no float animation */
+.nameCard:not(.nameCardDisabled) {
+	cursor: pointer;
+	perspective: 1000px;
+	/* * Only transition non-transform properties to avoid conflicts with tilt effect */
+	transition: var(--transition-base);
+	/* * Transform transitions are handled by tilt effect */
+}
+
+/* Selection styles handled by Framer Motion animations in NameGrid */
+.nameCardSelected {
+	border: var(--card-border-width) solid var(--accent-color, var(--color-warning));
+}
+
+.nameCardSelected .name {
+	color: var(--accent-color, var(--color-warning));
+	text-shadow: var(--text-shadow-lg);
+}
+
+.nameCardSelected:hover {
+	border-color: var(--highlight-color, var(--color-warning));
+}
+
+.nameCardSelected:hover .name {
+	color: var(--highlight-color, var(--color-warning));
+}
+
+.nameCardSelected .description {
+	color: var(--text-primary);
+	opacity: 1;
+}
+
+.checkMark {
+	position: absolute;
+	top: var(--space-3);
+	right: var(--space-3);
+	font-size: var(--text-2xl);
+	color: var(--hot-pink);
+	opacity: 0;
+	filter: drop-shadow(var(--text-shadow-sm));
+	transform: scale(0.5) rotate(-10deg);
+	transition: var(--transition-base);
+}
+
+.nameCardSelected .checkMark {
+	opacity: 1;
+	transform: scale(1.1) rotate(0deg);
+}
+
+.nameCardDisabled {
+	cursor: not-allowed;
+	background: var(--card-background);
+	border-color: var(--border-color);
+	box-shadow: none;
+	opacity: 0.6;
+	filter: grayscale(30%);
+	transform: none;
+}
+
+.nameCardDisabled:hover {
+	background: var(--card-background);
+	border-color: var(--border-color);
+	box-shadow: none;
+	transform: none;
+}
+
+.nameCardDisabled .name,
+.nameCardDisabled .description {
+	color: var(--text-tertiary);
+}
+
+.rippleEffect {
+	position: absolute;
+	z-index: var(--z-elevate);
+	pointer-events: none;
+	background: radial-gradient(circle, var(--primary-300), var(--primary-200));
+	border-radius: 50%;
+	transform: scale(0);
+	animation: ripple 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes ripple {
+	0% {
+		opacity: 1;
+		transform: scale(0);
+	}
+
+	50% {
+		opacity: 0.6;
+	}
+
+	100% {
+		opacity: 0;
+		transform: scale(4);
+	}
+}
+
+/* Dark mode adjustments - removed in favor of global theme tokens */
+
+/* Responsive Adjustments */
+@media (width <= 768px) {
+	.nameCard {
+		min-height: auto;
+		padding: clamp(var(--card-padding-md), 2.5vw, var(--card-padding-lg));
+		background: linear-gradient(
+			135deg,
+			var(--card-background, color-mix(in srgb, var(--color-neutral-700) 50%, transparent)),
+			var(--surface-muted, color-mix(in srgb, var(--color-neutral-900) 40%, transparent))
+		);
+		border-color: var(
+			--border-color,
+			color-mix(in srgb, var(--color-neutral-400) 25%, transparent)
+		);
+		box-shadow: var(--shadow-md);
+	}
+
+	.nameCard:hover {
+		background: linear-gradient(
+			135deg,
+			var(--card-background, rgb(31 41 55 / 60%)),
+			var(--surface-muted, rgb(15 23 42 / 50%))
+		);
+		border-color: var(--accent-color, var(--color-warning));
+		box-shadow: var(--shadow-xl);
+		transform: var(--transform-hover-lift) var(--transform-hover-scale);
+	}
+
+	.name {
+		font-size: clamp(var(--text-lg), 3.5vw, var(--text-2xl));
+	}
+
+	.description {
+		font-size: clamp(var(--text-sm), 2vw, var(--text-base));
+	}
+
+	.nameCardSmall {
+		min-height: auto;
+	}
+
+	.nameCard:active {
+		background: linear-gradient(
+			135deg,
+			var(--card-background, color-mix(in srgb, var(--color-neutral-700) 60%, transparent)),
+			var(--surface-muted, color-mix(in srgb, var(--color-neutral-900) 50%, transparent))
+		);
+		box-shadow: var(--shadow-lg);
+		transform: scale(0.98);
+	}
+}
+
+@media (width <= 480px) {
+	.nameCard {
+		min-height: 120px;
+		padding: var(--space-2);
+		border-radius: var(--radius-lg);
+	}
+
+	.name {
+		font-size: var(--text-base);
+	}
+
+	.description {
+		font-size: var(--text-xs);
+	}
+
+	.checkMark {
+		top: var(--space-2);
+		right: var(--space-2);
+	}
+}
+
+/* iPhone-specific adjustments */
+@media (width <= 430px) {
+	.nameCard {
+		min-height: 110px;
+		padding: var(--space-2);
+		background: var(--mobile-card-background, var(--card-background));
+		border: 2px solid var(--mobile-card-border, var(--card-border));
+	}
+
+	.nameCard:hover {
+		border-color: var(--primary-color);
+		transform: translateY(-1px);
+	}
+
+	.name {
+		font-size: var(--text-sm);
+		font-weight: 600;
+	}
+
+	.description {
+		font-size: var(--text-xs);
+		line-height: 1.4;
+	}
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+	.nameCard {
+		/* * Only transition non-transform properties to avoid conflicts with tilt */
+		transition: background-color 0.1s ease;
+	}
+
+	.nameCard:active {
+		background: var(--mobile-card-hover, var(--card-hover));
+		transform: scale(0.98);
+	}
+
+	.nameCard:hover {
+		box-shadow: var(--shadow-sm);
+		/* * Transform handled by tilt effect */
+	}
+
+	/* Enhanced touch feedback for selected state */
+	.nameCardSelected:active {
+		background: var(--primary-100);
+		border-color: var(--primary-400);
+		transform: scale(0.98);
+	}
+
+	/* Dark mode adjustments - removed in favor of global theme tokens */
+
+	/* Disable tilt on touch devices */
+	.backgroundEffect {
+		opacity: 0.3;
+	}
+}
+
+/* High contrast mode for mobile */
+@media (prefers-contrast: more) {
+	@media (width <= 768px) {
+		.nameCard {
+			border-color: var(--text-primary);
+			border-width: 2px;
+		}
+
+		.nameCard:hover {
+			border-color: var(--primary-color);
+			border-width: 3px;
+		}
+
+		.nameCardSelected {
+			border-color: var(--primary-color);
+			border-width: 3px;
+		}
+
+		.name {
+			font-weight: 700;
+		}
+
+		.description {
+			opacity: 1;
+		}
+	}
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+	.nameCard,
+	.checkMark,
+	.description {
+		transition: none;
+	}
+
+	.nameCard:hover {
+		transform: none;
+	}
+
+	.nameCard:active {
+		transform: none;
+	}
+
+	/* Disable tilt effects for reduced motion */
+	.backgroundEffect {
+		opacity: 0;
+	}
+
+	.nameCard:not(.nameCardDisabled) {
+		transition: none;
+	}
+}
+
+/* Card Image Container */
+.nameCardImageContainer {
+	position: relative;
+	width: 100%;
+	height: 150px; /* Taller to showcase the image */
+	margin-bottom: var(--space-3);
+	overflow: hidden;
+	background:
+		radial-gradient(
+			circle at 30% 25%,
+			color-mix(in srgb, var(--color-neutral-500) 55%, transparent) 0%,
+			color-mix(in srgb, var(--color-neutral-900) 90%, transparent) 70%
+		),
+		var(--surface-color); /* Neutral background for letterboxing */
+
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
+	transition:
+		box-shadow var(--duration-normal) var(--ease-out),
+		transform var(--duration-normal) var(--ease-out);
+}
+
+/* Blurred background fill to avoid blank space when the image uses contain */
+.nameCardImageContainer::before {
+	position: absolute;
+	inset: 0;
+	z-index: var(--z-0);
+	content: "";
+	background-image: var(--bg-image);
+	background-position: 50% var(--image-pos-y, 20%);
+	background-size: cover;
+	opacity: 0; /* hidden by default */
+	filter: blur(18px) brightness(0.92) saturate(112%);
+	transform: scale(1.08); /* prevent blur edges */
+	transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.nameCardImageContainer::after {
+	position: absolute;
+	inset: 0;
+	z-index: var(--z-0);
+	content: "";
+	background: linear-gradient(
+		180deg,
+		hsl(var(--background) / 0%) 0%,
+		hsl(var(--background) / 6%) 100%
+	);
+	opacity: 0; /* hidden by default */
+	transition: opacity var(--duration-normal) var(--ease-out);
+}
+
+.nameCardImage {
+	position: relative;
+	z-index: var(--z-elevate); /* above blurred bg */
+	width: 100%;
+	height: 100%;
+	object-fit: var(--cat-image-fit, cover); /* default: fill container */
+	object-position: 50% var(--image-pos-y, 20%); /* Use computed focal point */
+	image-rendering: auto;
+	opacity: 0;
+	filter: drop-shadow(var(--shadow-lg));
+	transform: scale(1.03);
+	transition:
+		transform var(--duration-normal) var(--ease-out),
+		opacity 0.2s ease;
+}
+
+/* Hover/F4A: zoom out to show full cat and reveal blurred backdrop */
+.hasImage:hover .nameCardImageContainer,
+.hasImage:focus-within .nameCardImageContainer {
+	box-shadow: var(--shadow-xl);
+	/* * Transform removed to avoid conflicts with parent tilt effect */
+}
+
+.nameCardImageContainer[data-loaded="true"]::before,
+.nameCardImageContainer[data-loaded="true"]::after {
+	opacity: 1;
+}
+
+.nameCardImageContainer[data-loaded="true"] .nameCardImage {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.nameCardImageContainer[data-orientation="portrait"] {
+	height: 240px;
+}
+
+.nameCardImageContainer[data-orientation="landscape"] {
+	height: 180px;
+}
+
+.nameCardImageContainer[data-orientation="square"] {
+	height: 210px;
+}
+
+.hasImage:hover .nameCardImage,
+.hasImage:focus-within .nameCardImage {
+	object-fit: contain;
+	transform: scale(0.98);
+}
+
+.nameCardImage:hover {
+	transform: scale(1.05);
+}
+
+/* Enhanced card styling when image is present */
+.nameCard:has(.nameCardImageContainer) {
+	/* * Make cards taller when images are present */
+	min-height: 300px;
+	padding-top: var(--space-4);
+}
+
+/* * Special styling for cards with images - Tinder-style layout */
+.hasImage {
+	/* * Increase card height for better image display */
+	min-height: auto;
+	padding: clamp(1rem, 2vw, 1.5rem);
+	overflow: hidden;
+
+	/* * Enhanced Tinder-style appearance */
+	border: 2px solid var(--border-color);
+	border-radius: var(--card-border-radius-mosaic); /* * Use design token */
+	box-shadow: var(--shadow-xl);
+	perspective: none;
+
+	/* * Simplified transforms when images are present */
+}
+
+.hasImage:hover {
+	box-shadow: var(--shadow-2xl);
+
+	/* * Simpler hover effect for cards with images */
+}
+
+.hasImage .backgroundEffect {
+	/* * Simplified background effect for cards with images */
+	opacity: 0.5;
+}
+
+/* * Ensure images are properly positioned */
+.hasImage .nameCardImageContainer {
+	position: relative;
+	z-index: var(--z-elevate);
+
+	/* * Match swipe card image height */
+	height: 180px; /* Reduced from 220px for smaller cards */
+	margin-bottom: var(--space-3);
+}
+
+/* * Enhanced spacing for cards with images */
+.hasImage .name {
+	margin-top: var(--space-3);
+	font-size: var(--text-xl);
+	font-weight: 700;
+}
+
+.hasImage .description {
+	margin-top: var(--space-2);
+	line-height: 1.6;
+}
+
+.hasImage .metadata {
+	margin-top: var(--space-4);
+}
+
+/* Mobile responsive styles for card images */
+@media (width <= 768px) {
+	.nameCardImageContainer {
+		height: 120px;
+		margin-bottom: var(--space-2);
+	}
+
+	.hasImage .nameCardImageContainer {
+		height: 120px;
+	}
+
+	.hasImage {
+		min-height: auto;
+	}
+
+	.nameCard:has(.nameCardImageContainer) {
+		min-height: auto;
+	}
+}
+
+/* * Tooltip Styles */
+.tooltip {
+	position: fixed;
+	z-index: var(--z-sticky);
+	max-width: 300px;
+	padding: var(--space-4);
+	pointer-events: none;
+	background: var(--card-background);
+	border: var(--card-border-width) solid var(--border-color);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
+	opacity: 0;
+	transform: translateY(var(--space-2));
+	transition: all var(--duration-fast) var(--ease-out);
+	animation: tooltipFadeIn var(--duration-normal) var(--ease-out) forwards;
+}
+
+@keyframes tooltipFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(var(--space-2));
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.tooltipContent {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+.tooltipHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: var(--space-2);
+	margin-bottom: var(--space-2);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.tooltipName {
+	margin: 0;
+	font-size: var(--text-lg);
+	font-weight: var(--font-semibold);
+	color: var(--text-primary);
+}
+
+.tooltipRank {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-medium);
+	color: var(--primary-700);
+	background: var(--primary-100);
+	border-radius: var(--radius-md);
+}
+
+.tooltipDescription {
+	margin: 0;
+	font-size: var(--text-sm);
+	line-height: 1.4;
+	color: var(--text-secondary);
+}
+
+.tooltipStats {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-2);
+	margin: var(--space-2) 0;
+}
+
+.tooltipStat {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+}
+
+.tooltipLabel {
+	font-size: var(--text-xs);
+	font-weight: var(--font-medium);
+	color: var(--text-tertiary);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.tooltipValue {
+	font-size: var(--text-sm);
+	font-weight: var(--font-semibold);
+	color: var(--text-primary);
+}
+
+.tooltipCategories {
+	padding-top: var(--space-2);
+	margin-top: var(--space-2);
+	border-top: 1px solid var(--border-color);
+}
+
+.tooltipCategoriesLabel {
+	display: block;
+	margin-bottom: var(--space-1);
+	font-size: var(--text-xs);
+	font-weight: var(--font-medium);
+	color: var(--text-tertiary);
+}
+
+.tooltipCategoryTags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
+}
+
+.tooltipCategoryTag {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+	font-weight: var(--font-medium);
+	color: var(--primary-700);
+	background: var(--primary-50);
+	border-radius: var(--radius-sm);
+}
+
+/* Mobile-specific enhancements */
+@media (width <= 768px) {
+	.nameCard {
+		padding: var(--mobile-card-padding);
+		border-radius: var(--mobile-border-radius);
+	}
+
+	.name {
+		font-size: 1.25rem;
+	}
+
+	.description {
+		font-size: 0.875rem;
+	}
+
+	.tooltip {
+		display: none;
+	}
+
+	.nameCard:hover {
+		box-shadow: var(--shadow-md);
+		transform: none;
+	}
+
+	.nameCard:active {
+		transform: scale(0.98);
+	}
+}

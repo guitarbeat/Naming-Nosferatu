@@ -4,9 +4,9 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
-import { useBrowserState } from "../../hooks/useBrowserState";
-import LiquidGlass from "../LiquidGlass/LiquidGlass";
-import styles from "./Error.module.css";
+import { useBrowserState } from "../hooks/useBrowserState";
+import styles from "./ErrorComponent.module.css";
+import LiquidGlass from "./LiquidGlass/LiquidGlass";
 
 const DEFAULT_MAX_RETRIES = 3;
 

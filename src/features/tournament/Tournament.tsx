@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
-import { ErrorComponent } from "../../shared/components/Error";
+import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { getVisibleNames } from "../../shared/utils";

@@ -602,3 +602,61 @@ textarea,
 		outline-offset: 4px;
 	}
 }
+
+/* ==========================================================================
+   UTILITY CLASSES - Explicit interaction patterns
+   ========================================================================== */
+
+/* Lift Effect - For cards and clickable containers */
+.interact-lift {
+	transition:
+		transform var(--duration-normal) var(--ease-standard),
+		box-shadow var(--duration-normal) var(--ease-standard);
+	will-change: transform, box-shadow;
+}
+
+.interact-lift:hover:not(:disabled) {
+	transform: translateY(var(--lift-small));
+	box-shadow: var(--shadow-lg);
+}
+
+.interact-lift:active:not(:disabled) {
+	transform: translateY(var(--lift-micro));
+	transition-duration: var(--duration-fast);
+}
+
+/* Bounce Effect - For icons and small buttons */
+.interact-bounce {
+	transition: transform var(--duration-fast) var(--ease-spring);
+}
+
+.interact-bounce:hover:not(:disabled) {
+	transform: scale(1.1);
+}
+
+.interact-bounce:active:not(:disabled) {
+	transform: scale(0.9);
+}
+
+/* Press Effect - For flat buttons */
+.interact-press {
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.interact-press:active:not(:disabled) {
+	transform: scale(0.96);
+}
+
+/* Glow Effect - For primary actions */
+.interact-glow {
+	transition: box-shadow var(--duration-normal) ease;
+}
+
+.interact-glow:hover:not(:disabled) {
+	box-shadow: 0 0 15px var(--color-neon-cyan, rgba(0, 255, 255, 0.5));
+}
+
+.interact-glow:focus-visible {
+	outline: 2px solid var(--color-neon-cyan);
+	outline-offset: 2px;
+}

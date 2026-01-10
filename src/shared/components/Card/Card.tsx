@@ -1,11 +1,13 @@
 /**
  * @module Card
- * @description Reusable card component with flexible styling options
+ * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
 import PropTypes from "prop-types";
-import React, { memo, useId } from "react";
+import React, { memo, useEffect, useId, useState } from "react";
+import { TIMING } from "../../../core/constants";
 import { cn } from "../../utils";
+import CatImage from "../CatImage";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass/LiquidGlass";
 
 import styles from "./Card.module.css";
@@ -96,7 +98,7 @@ const buildContentClasses = (
 		.join(" ");
 };
 
-const Card = memo(
+export const Card = memo(
 	React.forwardRef<HTMLDivElement, CardProps>(
 		(
 			{
@@ -287,8 +289,352 @@ CardStats.propTypes = {
 	emojiClassName: PropTypes.string,
 };
 
+/* ========================================= */
+/*              CardName Component             */
+/* ========================================= */
+
+interface NameMetadata {
+	rating?: number;
+	popularity?: number;
+	tournaments?: number;
+	categories?: string[];
+	wins?: number;
+	losses?: number;
+	totalMatches?: number;
+	winRate?: number;
+	rank?: number;
+	description?: string;
+	[key: string]: unknown;
+}
+
+export interface CardNameProps {
+	name: string;
+	description?: string;
+	isSelected?: boolean;
+	onClick?: () => void;
+	disabled?: boolean;
+	shortcutHint?: string;
+	className?: string;
+	size?: "small" | "medium";
+	metadata?: NameMetadata;
+	isAdmin?: boolean;
+	isHidden?: boolean;
+	_onToggleVisibility?: (id: string) => void;
+	_onDelete?: (name: unknown) => void;
+	onSelectionChange?: (selected: boolean) => void;
+	image?: string;
+}
+
+const CardNameBase = memo(function CardName({
+	name,
+	description,
+	isSelected,
+	onClick,
+	disabled = false,
+	shortcutHint,
+	className = "",
+	size = "medium",
+	metadata,
+	isAdmin = false,
+	isHidden = false,
+	onSelectionChange,
+	image,
+}: CardNameProps) {
+	const [rippleStyle, setRippleStyle] = useState({});
+	const [isRippling, setIsRippling] = useState(false);
+	const [showTooltip, setShowTooltip] = useState(false);
+	const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+	const cardRef = React.useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (isRippling) {
+			const timer = setTimeout(() => setIsRippling(false), TIMING.RIPPLE_ANIMATION_DURATION_MS);
+			return () => clearTimeout(timer);
+		}
+		return undefined;
+	}, [isRippling]);
+
+	const hasMetadata =
+		metadata &&
+		(metadata.rating ||
+			metadata.wins !== undefined ||
+			metadata.losses !== undefined ||
+			metadata.popularity ||
+			metadata.tournaments ||
+			(metadata.categories && metadata.categories.length > 0));
+
+	useEffect(() => {
+		const card = cardRef.current;
+		if (!card || disabled || !hasMetadata) {
+			return undefined;
+		}
+
+		const handleMouseMove = (e: MouseEvent) => {
+			if (typeof e.clientX === "number" && typeof e.clientY === "number") {
+				setTooltipPosition({ x: e.clientX, y: e.clientY });
+				setShowTooltip(true);
+			}
+		};
+
+		const handleMouseLeave = () => {
+			setShowTooltip(false);
+		};
+
+		card.addEventListener("mousemove", handleMouseMove);
+		card.addEventListener("mouseleave", handleMouseLeave);
+
+		return () => {
+			card.removeEventListener("mousemove", handleMouseMove);
+			card.removeEventListener("mouseleave", handleMouseLeave);
+		};
+	}, [disabled, hasMetadata]);
+
+	const handleFocus = () => {
+		if (!cardRef.current || disabled || !hasMetadata) {
+			return;
+		}
+
+		const rect = cardRef.current.getBoundingClientRect();
+		setTooltipPosition({
+			x: rect.right > 0 ? rect.right - 20 : 100,
+			y: rect.top > 0 ? rect.top + 20 : 100,
+		});
+		setShowTooltip(true);
+	};
+
+	const handleBlur = () => {
+		setShowTooltip(false);
+	};
+
+	const handleInteraction = (event: React.MouseEvent | React.KeyboardEvent) => {
+		if (disabled) {
+			return;
+		}
+
+		if (
+			event.type === "click" ||
+			(event.type === "keydown" &&
+				((event as React.KeyboardEvent).key === "Enter" ||
+					(event as React.KeyboardEvent).key === " "))
+		) {
+			event.preventDefault();
+
+			const rect = event.currentTarget.getBoundingClientRect();
+			const { clientX, clientY } = event as React.MouseEvent;
+
+			const x = clientX ? clientX - rect.left : rect.width / 2;
+			const y = clientY ? clientY - rect.top : rect.height / 2;
+
+			setRippleStyle({
+				left: `${x}px`,
+				top: `${y}px`,
+			});
+
+			setIsRippling(true);
+
+			if (isAdmin && onSelectionChange) {
+				onSelectionChange(!isSelected);
+			}
+
+			onClick?.();
+		}
+	};
+
+	const getAriaLabel = () => {
+		let label = name;
+		if (description) {
+			label += ` - ${description}`;
+		}
+		if (isSelected) {
+			label += " - selected";
+		}
+		if (disabled) {
+			label += " - disabled";
+		}
+		if (isHidden) {
+			label += " - hidden";
+		}
+		return label;
+	};
+
+	const getSafeId = (text: string) => {
+		return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
+	};
+
+	// Use updated class names from Card.module.css (formerly CardName.module.css)
+	const cardClasses = [
+		styles.nameCard,
+		styles[size === "small" ? "nameCardSmall" : "medium"], // Map small to nameCardSmall
+		isSelected && styles.nameCardSelected,
+		disabled && styles.nameCardDisabled,
+		isHidden && styles.nameCardHidden,
+		image && styles.hasImage,
+		className,
+	]
+		.filter(Boolean)
+		.join(" ");
+
+	const isInteractive = !disabled && (!!onClick || (isAdmin && !!onSelectionChange));
+	const Component = isInteractive ? "button" : "div";
+
+	return (
+		<div className={styles.nameCardContainer}>
+			<Card
+				as={Component}
+				ref={cardRef}
+				className={`${cardClasses} ${isInteractive ? "" : styles.nonInteractive}`}
+				onClick={
+					isInteractive ? (handleInteraction as unknown as React.MouseEventHandler) : undefined
+				}
+				onKeyDown={
+					isInteractive ? (handleInteraction as unknown as React.KeyboardEventHandler) : undefined
+				}
+				onFocus={handleFocus}
+				onBlur={handleBlur}
+				// @ts-expect-error - Card props might not fully match HTML attributes
+				disabled={isInteractive ? disabled : undefined}
+				aria-pressed={isInteractive ? isSelected : undefined}
+				aria-label={getAriaLabel()}
+				aria-describedby={description ? `${getSafeId(name)}-description` : undefined}
+				aria-labelledby={`${getSafeId(name)}-title`}
+				type={isInteractive ? "button" : undefined}
+				role={isInteractive ? undefined : "article"}
+				variant={isSelected ? "primary" : "default"}
+				padding={size === "small" ? "small" : "medium"}
+				interactive={isInteractive}
+			>
+				{image && (
+					<CatImage
+						src={image}
+						containerClassName={styles.nameCardImageContainer}
+						imageClassName={styles.nameCardImage}
+					/>
+				)}
+
+				<h3 className={styles.name} id={`${getSafeId(name)}-title`}>
+					{name}
+				</h3>
+				{description && (
+					<p id={`${getSafeId(name)}-description`} className={styles.description}>
+						{description}
+					</p>
+				)}
+
+				{metadata && (
+					<div className={styles.metadata}>
+						{metadata.rating && (
+							<span className={styles.metaItem} title="Average Rating">
+								⭐ {metadata.rating}
+							</span>
+						)}
+						{metadata.popularity && (
+							<span className={styles.metaItem} title="Popularity Score">
+								🔥 {metadata.popularity}
+							</span>
+						)}
+						{metadata.tournaments && (
+							<span className={styles.metaItem} title="Tournament Appearances">
+								🏆 {metadata.tournaments}
+							</span>
+						)}
+						{metadata.categories && metadata.categories.length > 0 && (
+							<div className={styles.categories}>
+								{metadata.categories.slice(0, 2).map((category, index) => (
+									<span key={index} className={styles.categoryTag}>
+										{category}
+									</span>
+								))}
+								{metadata.categories.length > 2 && (
+									<span className={styles.categoryMore}>+{metadata.categories.length - 2}</span>
+								)}
+							</div>
+						)}
+					</div>
+				)}
+
+				{shortcutHint && (
+					<span className={styles.shortcutHint} aria-hidden="true">
+						{shortcutHint}
+					</span>
+				)}
+				{isSelected && (
+					<span className={styles.checkMark} aria-hidden="true">
+						✓
+					</span>
+				)}
+				{isRippling && isInteractive && (
+					<span className={styles.rippleEffect} style={rippleStyle} aria-hidden="true" />
+				)}
+			</Card>
+
+			{showTooltip && metadata && tooltipPosition.x > 0 && tooltipPosition.y > 0 && (
+				<div
+					className={styles.tooltip}
+					style={{
+						left: Math.min(
+							tooltipPosition.x + 10,
+							typeof window !== "undefined" ? window.innerWidth - 320 : tooltipPosition.x + 10,
+						),
+						top: Math.max(tooltipPosition.y - 10, 10),
+						zIndex: 1000,
+					}}
+				>
+					<div className={styles.tooltipContent}>
+						<div className={styles.tooltipHeader}>
+							<h3 className={styles.tooltipName}>{name}</h3>
+							{metadata.rank && <span className={styles.tooltipRank}>#{metadata.rank}</span>}
+						</div>
+
+						{metadata.description && (
+							<p className={styles.tooltipDescription}>{metadata.description}</p>
+						)}
+
+						<div className={styles.tooltipStats}>
+							{[
+								{ key: "rating", label: "Rating" },
+								{ key: "wins", label: "Wins" },
+								{ key: "losses", label: "Losses" },
+								{ key: "totalMatches", label: "Total Matches" },
+								{ key: "winRate", label: "Win Rate", suffix: "%" },
+							].map(({ key, label, suffix }) => {
+								const value = metadata[key];
+								return value !== undefined && value !== null ? (
+									<div key={key} className={styles.tooltipStat}>
+										<span className={styles.tooltipLabel}>{label}</span>
+										<span className={styles.tooltipValue}>
+											{String(value)}
+											{suffix}
+										</span>
+									</div>
+								) : null;
+							})}
+						</div>
+
+						{metadata.categories && metadata.categories.length > 0 && (
+							<div className={styles.tooltipCategories}>
+								<span className={styles.tooltipCategoriesLabel}>Categories:</span>
+								<div className={styles.tooltipCategoryTags}>
+									{metadata.categories.map((category, index) => (
+										<span key={index} className={styles.tooltipCategoryTag}>
+											{category}
+										</span>
+									))}
+								</div>
+							</div>
+						)}
+					</div>
+				</div>
+			)}
+		</div>
+	);
+});
+
+CardNameBase.displayName = "CardName";
+
+export const CardName = CardNameBase;
+
 // Add sub-component to Card
 // biome-ignore lint/style/useNamingConvention: Component name, PascalCase is appropriate
-const CardWithStats = Object.assign(Card, { Stats: CardStats });
+const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });
 
 export default CardWithStats;

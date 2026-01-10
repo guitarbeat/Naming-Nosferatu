@@ -281,7 +281,7 @@
 	letter-spacing: var(--tracking-tight);
 	color: var(--color-neutral-50);
 	font-style: italic;
-	opacity: 0.8;
+	opacity: 0.5;
 	pointer-events: none;
 	line-height: 1;
 }

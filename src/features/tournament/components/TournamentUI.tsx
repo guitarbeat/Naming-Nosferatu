@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronRight, Keyboard } from "lucide-react";
 import React, { memo, useEffect } from "react";
-import Bracket from "../../../shared/components/Bracket/Bracket";
+import Bracket from "../../../shared/components/Bracket";
 import Button from "../../../shared/components/Button";
 import Card from "../../../shared/components/Card/Card";
 import type { BracketMatch } from "../../../types/components";

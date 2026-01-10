@@ -18,9 +18,9 @@ import {
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { ScrollToTopButton } from "./shared/components/Button";
-import CatBackground from "./shared/components/CatBackground/CatBackground";
-import { ErrorComponent } from "./shared/components/Error";
+import CatBackground from "./shared/components/CatBackground";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
+import { ErrorComponent } from "./shared/components/ErrorComponent";
 import { Loading } from "./shared/components/Loading";
 import { NameSuggestionModal } from "./shared/components/NameSuggestionModal/NameSuggestionModal";
 import { BottomNav } from "./shared/components/Navigation/BottomNav";
