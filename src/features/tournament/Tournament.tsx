@@ -13,7 +13,7 @@ import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { FirstMatchTutorial } from "./components/FirstMatchTutorial";
 import TournamentControls from "./components/TournamentControls";
-import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
+import TournamentMatch from "./components/TournamentMatch";
 import {
 	MatchResult,
 	ProgressMilestone,

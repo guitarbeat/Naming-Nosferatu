@@ -7,12 +7,12 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import type { NameItem } from "@/types/components";
-import Button from "../../../../shared/components/Button";
-import { ErrorComponent } from "../../../../shared/components/Error";
-import { playSound } from "../../../../shared/utils/soundManager";
-import useMagneticPull from "../../hooks/tournamentComponentHooks";
-import tournamentStyles from "../../styles/Tournament.module.css";
-import { getRandomCatImage } from "../../utils/tournamentUtils";
+import Button from "../../../shared/components/Button";
+import { ErrorComponent } from "../../../shared/components/Error";
+import { playSound } from "../../../shared/utils/soundManager";
+import useMagneticPull from "../hooks/tournamentComponentHooks";
+import tournamentStyles from "../styles/Tournament.module.css";
+import { getRandomCatImage } from "../utils/tournamentUtils";
 import styles from "./FerrofluidMatch.module.css";
 
 interface TournamentMatchProps {
