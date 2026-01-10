@@ -79,7 +79,9 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 			? CATEGORIES.find(c => c.id === categoryId)
 			: CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
-		if (!category) return;
+		if (!category || !category.id) {
+			return;
+		}
 
 		const randomName = category.examples[Math.floor(Math.random() * category.examples.length)];
 		setGeneratedName(randomName);
@@ -247,3 +249,5 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 		</div>
 	);
 }
+
+export default RandomGenerator;

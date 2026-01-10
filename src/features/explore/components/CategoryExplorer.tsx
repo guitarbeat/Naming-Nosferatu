@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Grid3X3, List } from "lucide-react";
+import { Grid3X3, List, Search } from "lucide-react";
+import { useState } from "react";
 import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
 import { Loading } from "../../../shared/components/Loading";
-import { catNamesAPI } from "../../../../shared/services/supabase/client";
+import { catNamesAPI } from "../../../../shared/services/supabase/modules/general";
 import styles from "./CategoryExplorer.module.css";
 
 interface CategoryExplorerProps {
@@ -71,7 +71,7 @@ const CATEGORIES: NameCategory[] = [
 	}
 ];
 
-export function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
+function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 	const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 	const [searchTerm, setSearchTerm] = useState("");
@@ -140,45 +140,7 @@ export function CategoryExplorer({ userName: _userName }: CategoryExplorerProps)
 				</div>
 			</div>
 
-			{!selectedCategory ? (
-				<div className={`${styles.categories} ${viewMode === "list" ? styles.listView : styles.gridView}`}>
-					{filteredCategories.map(category => (
-						<Card
-							key={category.id}
-							className={styles.categoryCard}
-							background="glass"
-							padding="large"
-							shadow="small"
-							onClick={() => setSelectedCategory(category.id)}
-							style={{
-								"--category-color": category.color
-							} as React.CSSProperties}
-						>
-							<div className={styles.categoryContent}>
-								<div className={styles.categoryHeader}>
-									<div className={styles.categoryIcon}>
-										{category.icon}
-									</div>
-									<h3 className={styles.categoryName}>{category.name}</h3>
-								</div>
-								<p className={styles.categoryDesc}>{category.description}</p>
-								<div className={styles.namePreview}>
-									{category.filteredNames.slice(0, 4).map(name => (
-										<span key={name} className={styles.nameTag}>
-											{name}
-										</span>
-									))}
-									{category.filteredNames.length > 4 && (
-										<span className={styles.moreNames}>
-											+{category.filteredNames.length - 4} more
-										</span>
-									)}
-								</div>
-							</div>
-						</Card>
-					))}
-				</div>
-			) : (
+			{selectedCategory ? (
 				<div className={styles.categoryDetail}>
 					<div className={styles.detailHeader}>
 						<Button
@@ -219,7 +181,47 @@ export function CategoryExplorer({ userName: _userName }: CategoryExplorerProps)
 						))}
 					</div>
 				</div>
+			) : (
+				<div className={`${styles.categories} ${viewMode === "list" ? styles.listView : styles.gridView}`}>
+					{filteredCategories.map(category => (
+						<Card
+							key={category.id}
+							className={styles.categoryCard}
+							background="glass"
+							padding="large"
+							shadow="small"
+							onClick={() => setSelectedCategory(category.id)}
+							style={{
+								"--category-color": category.color
+							} as React.CSSProperties}
+						>
+							<div className={styles.categoryContent}>
+								<div className={styles.categoryHeader}>
+									<div className={styles.categoryIcon}>
+										{category.icon}
+									</div>
+									<h3 className={styles.categoryName}>{category.name}</h3>
+								</div>
+								<p className={styles.categoryDesc}>{category.description}</p>
+								<div className={styles.namePreview}>
+									{category.filteredNames.slice(0, 4).map(name => (
+										<span key={name} className={styles.nameTag}>
+											{name}
+										</span>
+									))}
+									{category.filteredNames.length > 4 && (
+										<span className={styles.moreNames}>
+											+{category.filteredNames.length - 4} more
+										</span>
+									)}
+								</div>
+							</div>
+						</Card>
+					))}
+				</div>
 			)}
 		</div>
 	);
 }
+
+export default CategoryExplorer;
