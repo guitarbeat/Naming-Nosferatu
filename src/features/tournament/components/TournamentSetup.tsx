@@ -32,6 +32,7 @@ interface TournamentSetupProps {
 	userName?: string;
 	isLoggedIn: boolean;
 	enableAnalysisMode?: boolean;
+	onOpenSuggestName?: () => void;
 
 	onNameChange?: (name: string) => void;
 	existingRatings?: Record<string, number>;
@@ -43,6 +44,7 @@ function TournamentSetupContent({
 	userName = "",
 	isLoggedIn,
 	enableAnalysisMode = false,
+	onOpenSuggestName,
 
 	onNameChange,
 	existingRatings: _existingRatings,
@@ -328,6 +330,27 @@ function TournamentSetupContent({
 							/>
 							[ RE-ROLL IDENTITY 🎲 ]
 						</motion.button>
+
+						{/* Suggest Name Button */}
+						{onOpenSuggestName && (
+							<motion.button
+								className={loginStyles.loginSuggestBtn}
+								onClick={onOpenSuggestName}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								aria-label="Suggest a new cat name"
+								initial={{ x: -50, opacity: 0 }}
+								animate={{ x: 0, opacity: 1 }}
+								transition={{
+									duration: 0.5,
+									delay: 2.0,
+									type: "spring",
+									stiffness: 150,
+								}}
+							>
+								💡 [ SUGGEST NAME ]
+							</motion.button>
+						)}
 					</div>
 				</motion.div>
 			)}

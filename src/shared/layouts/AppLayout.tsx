@@ -116,6 +116,7 @@ export function AppLayout({
 							onVote={(vote: unknown) =>
 								tournamentActions.addVote(vote as import("../../types/components").VoteData)
 							}
+							onOpenSuggestName={onOpenSuggestName}
 						/>
 					</SwipeNavigation>
 

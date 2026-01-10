@@ -40,6 +40,7 @@ interface ViewRouterProps {
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	onVote: (vote: unknown) => void;
+	onOpenSuggestName?: () => void;
 }
 
 /**
@@ -99,6 +100,7 @@ export default function ViewRouter({
 	onTournamentSetup,
 	onTournamentComplete,
 	onVote,
+	onOpenSuggestName,
 }: ViewRouterProps) {
 	const { currentRoute } = useRouting();
 	const normalizedPath = useMemo(() => normalizeRoutePath(currentRoute), [currentRoute]);
@@ -132,6 +134,7 @@ export default function ViewRouter({
 						userName={userName}
 						isLoggedIn={isLoggedIn}
 						existingRatings={existingRatings}
+						onOpenSuggestName={onOpenSuggestName}
 					/>
 				</Suspense>
 			);
