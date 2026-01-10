@@ -1,0 +1,95 @@
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: var(--z-modal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(4px);
+}
+
+.modal {
+	width: 100%;
+	max-width: 500px;
+	background: var(--glass-bg-strong);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-xl);
+	padding: var(--space-6);
+	outline: none;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-6);
+}
+
+.title {
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-bold);
+	color: var(--color-text-primary);
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.closeBtn {
+	background: transparent;
+	border: none;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	padding: var(--space-1);
+	border-radius: var(--radius-full);
+	transition: all var(--duration-fast);
+}
+
+.closeBtn:hover {
+	background: var(--color-bg-tertiary);
+	color: var(--color-text-primary);
+}
+
+.shortcutGrid {
+	display: grid;
+	gap: var(--space-3);
+}
+
+.shortcutRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-2) 0;
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.shortcutRow:last-child {
+	border-bottom: none;
+}
+
+.description {
+	color: var(--color-text-secondary);
+	font-size: var(--text-sm);
+}
+
+.keys {
+	display: flex;
+	align-items: center;
+	gap: var(--space-1);
+}
+
+.key {
+	background: var(--color-bg-tertiary);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-sm);
+	padding: 2px 8px;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--color-text-primary);
+	min-width: 24px;
+	text-align: center;
+}

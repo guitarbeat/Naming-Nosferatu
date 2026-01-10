@@ -620,6 +620,8 @@
 
 /* Bottom Nav Styles - Primary Navigation */
 .bottom-nav {
+	/* Hidden on desktop by default */
+	display: none;
 	position: fixed;
 	bottom: 0;
 	left: 0;

@@ -132,158 +132,210 @@
 	--tt-backdrop-saturate: 170%;
 
 	/* Surface Colors */
-	--tt-surface: hsl(var(--card) / 92%);
-	--tt-surface-strong: hsl(var(--card) / 98%);
-	--tt-surface-results-count: hsl(var(--card) / 80%);
+	--tt-surface: color-mix(in srgb, var(--card-background) 92%, transparent);
+	--tt-surface-strong: color-mix(in srgb, var(--card-background) 98%, transparent);
+	--tt-surface-results-count: color-mix(in srgb, var(--card-background) 80%, transparent);
 
 	/* Border Colors */
-	--tt-border: 1px solid hsl(var(--border) / 70%);
+	--tt-border: 1px solid color-mix(in srgb, var(--border-color) 70%, transparent);
 	--tt-border-toggle-inactive: var(--tt-border-width-medium) solid
-		hsl(var(--border) / var(--tt-opacity-border-inactive));
+		color-mix(in srgb, var(--border-color) var(--tt-opacity-border-inactive), transparent);
 	--tt-border-toggle-hover: var(--tt-border-width-medium) solid
-		hsl(var(--border) / var(--tt-opacity-border-hover));
+		color-mix(in srgb, var(--border-color) var(--tt-opacity-border-hover), transparent);
 	--tt-border-toggle-active: var(--tt-border-width-medium) solid
-		hsl(var(--neon-cyan) / var(--tt-opacity-border-active));
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-border-active), transparent);
 	--tt-border-toggle-active-hover: var(--tt-border-width-medium) solid
-		hsl(var(--neon-cyan) / var(--tt-opacity-border-active-hover));
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-border-active-hover), transparent);
 	--tt-border-thumb-inactive: var(--tt-border-width-medium) solid
-		hsl(var(--border) / var(--tt-opacity-border-hover));
+		color-mix(in srgb, var(--border-color) var(--tt-opacity-border-hover), transparent);
 	--tt-border-thumb-active: var(--tt-border-width-medium) solid
-		hsl(var(--neon-cyan) / var(--tt-opacity-border-hover));
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-border-hover), transparent);
 
 	/* Shadow Definitions */
 	--tt-shadow-container:
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-massive)
-		hsl(var(--background) / var(--tt-opacity-shadow-strong)),
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-strong), transparent),
 		0 var(--tt-shadow-blur-small) var(--tt-shadow-blur-stronger)
-		hsl(var(--background) / var(--tt-opacity-shadow-medium)),
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-medium), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-soft));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-soft), transparent);
 	--tt-shadow-button-default:
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-hugest)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-stronger), transparent),
 		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
-		hsl(var(--hot-pink) / var(--tt-opacity-shadow-strong)),
+		color-mix(in srgb, var(--color-hot-pink) var(--tt-opacity-shadow-strong), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-strong), transparent);
 	--tt-shadow-button-hover:
-		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive) hsl(var(--neon-cyan) / 50%),
-		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-huge) hsl(var(--hot-pink) / 42%),
+		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
+		color-mix(in srgb, var(--color-neon-cyan) 50%, transparent),
+		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-huge)
+		color-mix(in srgb, var(--color-hot-pink) 42%, transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-stronger));
+		color-mix(
+			in srgb,
+			var(--text-primary) var(--tt-opacity-shadow-foreground-stronger),
+			transparent
+		);
 	--tt-shadow-button-active:
-		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest) hsl(var(--neon-cyan) / 36%),
-		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large) hsl(var(--hot-pink) / 30%),
+		0 var(--tt-shadow-blur-strong) var(--tt-shadow-blur-largest)
+		color-mix(in srgb, var(--color-neon-cyan) 36%, transparent),
+		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
+		color-mix(in srgb, var(--color-hot-pink) 30%, transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-medium), transparent);
 	--tt-shadow-toggle-inactive:
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-strong), transparent),
 		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
-		hsl(var(--background) / var(--tt-opacity-shadow-stronger)),
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-stronger), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-spread-tiny)
-		hsl(var(--border) / var(--tt-opacity-shadow-strong));
+		color-mix(in srgb, var(--border-color) var(--tt-opacity-shadow-strong), transparent);
 	--tt-shadow-toggle-active:
 		0 var(--tt-shadow-blur-large) var(--tt-shadow-blur-hugest)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-strong)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-neon-strong), transparent),
 		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-extra-large)
-		hsl(var(--hot-pink) / var(--tt-opacity-shadow-neon-medium)),
+		color-mix(in srgb, var(--color-hot-pink) var(--tt-opacity-shadow-neon-medium), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-spread-small)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-outline)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-neon-outline), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-small)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-medium), transparent);
 	--tt-shadow-toggle-active-hover:
 		0 var(--tt-shadow-blur-larger) var(--tt-shadow-blur-massive)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-stronger)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-neon-stronger), transparent),
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
-		hsl(var(--hot-pink) / 28%),
+		color-mix(in srgb, var(--color-hot-pink) 28%, transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-spread-small)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-outline-hover)),
+		color-mix(
+			in srgb,
+			var(--color-neon-cyan) var(--tt-opacity-shadow-neon-outline-hover),
+			transparent
+		),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-small)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-strong), transparent);
 	--tt-shadow-thumb-inactive:
 		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-large)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-strong),
+			transparent
+		),
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-strong)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-medium), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-strong));
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-strong), transparent);
 	--tt-shadow-thumb-active:
 		0 var(--tt-shadow-blur-stronger) var(--tt-shadow-blur-largest)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-background-strong)),
+		color-mix(
+			in srgb,
+			var(--color-neon-cyan) var(--tt-opacity-shadow-background-strong),
+			transparent
+		),
 		0 var(--tt-shadow-blur-medium) var(--tt-shadow-blur-strongest)
-		hsl(var(--hot-pink) / var(--tt-opacity-shadow-stronger)),
+		color-mix(in srgb, var(--color-hot-pink) var(--tt-opacity-shadow-stronger), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny)
 		var(--tt-shadow-offset-small)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-foreground-medium)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-foreground-medium), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none)
 		var(--tt-shadow-spread-larger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-neon-soft));
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-neon-soft), transparent);
 	--tt-shadow-label-inactive:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-stronger),
+			transparent
+		),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
-		hsl(var(--background) / var(--tt-opacity-shadow-strong));
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-strong), transparent);
 	--tt-shadow-label-hover:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong) hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
+		color-mix(in srgb, var(--card-background) 50%, transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-stronger),
+			transparent
+		);
 	--tt-shadow-label-active:
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-strong), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small) hsl(var(--background) / 50%);
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-soft), transparent),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
+		color-mix(in srgb, var(--card-background) 50%, transparent);
 	--tt-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-strong),
+			transparent
+		),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
-		hsl(var(--background) / var(--tt-opacity-shadow-stronger));
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-stronger), transparent);
 	--tt-shadow-focus:
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-medium), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-offset-none) var(--tt-shadow-offset-small)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-strong), transparent),
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-stronger));
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-stronger), transparent);
 
 	/* Text Shadow Definitions */
 	--tt-text-shadow-label-inactive:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger)),
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-stronger),
+			transparent
+		),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
-		hsl(var(--background) / var(--tt-opacity-shadow-strong));
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-strong), transparent);
 	--tt-text-shadow-label-hover:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong) hsl(var(--background) / 50%),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
+		color-mix(in srgb, var(--card-background) 50%, transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-stronger),
+			transparent
+		);
 	--tt-text-shadow-label-active:
 		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-strong)),
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-strong), transparent),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
-		hsl(var(--neon-cyan) / var(--tt-opacity-shadow-soft)),
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small) hsl(var(--background) / 50%);
+		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-soft), transparent),
+		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
+		color-mix(in srgb, var(--card-background) 50%, transparent);
 	--tt-text-shadow-label-inactive-dimmed:
 		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-strong)),
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-strong),
+			transparent
+		),
 		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
-		hsl(var(--background) / var(--tt-opacity-shadow-stronger));
+		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-stronger), transparent);
 }
 
 :root[data-theme="light"] {
-	--tt-surface: hsl(var(--card) / 98%);
-	--tt-surface-strong: hsl(var(--card) / 100%);
+	--tt-surface: color-mix(in srgb, var(--card-background) 98%, transparent);
+	--tt-surface-strong: var(--card-background);
 	--tt-shadow-container:
 		0 var(--tt-shadow-blur-large) var(--tt-shadow-blur-massive)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-medium)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-medium), transparent),
 		0 var(--tt-shadow-strong) var(--tt-shadow-blur-large)
-		hsl(var(--foreground) / var(--tt-opacity-shadow-soft)),
+		color-mix(in srgb, var(--text-primary) var(--tt-opacity-shadow-soft), transparent),
 		inset var(--tt-shadow-offset-none) var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-none)
-		hsl(var(--background) / var(--tt-opacity-shadow-background-stronger));
+		color-mix(
+			in srgb,
+			var(--card-background) var(--tt-opacity-shadow-background-stronger),
+			transparent
+		);
 }
 
 /* ==========================================================================
@@ -363,9 +415,17 @@
 	text-transform: uppercase;
 	color: white;
 	background:
-		linear-gradient(135deg, hsl(var(--secondary-800) / 65%), hsl(var(--secondary-700) / 55%)),
-		radial-gradient(circle at 20% 20%, hsl(var(--neon-cyan) / 25%), transparent 40%);
-	border: 1px solid hsl(var(--foreground) / 22%);
+		linear-gradient(
+			135deg,
+			color-mix(in srgb, var(--color-neutral-800) 65%, transparent),
+			color-mix(in srgb, var(--color-neutral-700) 55%, transparent)
+		),
+		radial-gradient(
+			circle at 20% 20%,
+			color-mix(in srgb, var(--color-neon-cyan) 25%, transparent),
+			transparent 40%
+		);
+	border: 1px solid color-mix(in srgb, var(--text-primary) 22%, transparent);
 	border-radius: 999px;
 	cursor: pointer;
 	transition:
@@ -373,16 +433,16 @@
 		box-shadow var(--transition-base),
 		filter var(--transition-base);
 	box-shadow:
-		0 10px 30px hsl(var(--secondary-800) / 30%),
-		0 6px 18px hsl(var(--primary-600) / 18%),
+		0 10px 30px color-mix(in srgb, var(--color-neutral-800) 30%, transparent),
+		0 6px 18px color-mix(in srgb, var(--primary-600) 18%, transparent),
 		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 35%, transparent);
 }
 
 .tournament-toolbar-start-button:hover {
 	transform: var(--tt-transform-hover-lift);
 	box-shadow:
-		0 16px 40px hsl(var(--secondary-800) / 36%),
-		0 8px 20px hsl(var(--primary-600) / 22%),
+		0 16px 40px color-mix(in srgb, var(--color-neutral-800) 36%, transparent),
+		0 8px 20px color-mix(in srgb, var(--primary-600) 22%, transparent),
 		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 45%, transparent);
 	filter: brightness(1.03);
 }
@@ -390,8 +450,8 @@
 .tournament-toolbar-start-button:active {
 	transform: var(--tt-transform-active-reset);
 	box-shadow:
-		0 12px 28px hsl(var(--secondary-800) / 28%),
-		0 6px 16px hsl(var(--primary-600) / 18%),
+		0 12px 28px color-mix(in srgb, var(--color-neutral-800) 28%, transparent),
+		0 6px 16px color-mix(in srgb, var(--primary-600) 18%, transparent),
 		inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 35%, transparent);
 }
 

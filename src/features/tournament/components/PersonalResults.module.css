@@ -126,18 +126,6 @@
 	text-align: center;
 }
 
-.statCard:hover {
-	/* Let the StatsCard component handle hover effects */
-}
-
-.statCard h3 {
-	/* Let the StatsCard component handle label styling */
-}
-
-.statValue {
-	/* Let the StatsCard component handle value styling */
-}
-
 .actions {
 	display: flex;
 	flex-direction: column;
@@ -194,15 +182,15 @@
 	0%,
 	100% {
 		box-shadow:
-			0 6px 16px hsl(var(--neon-cyan) / 30%),
-			0 3px 8px hsl(var(--hot-pink) / 20%),
+			0 6px 16px color-mix(in srgb, var(--color-neon-cyan) 30%, transparent),
+			0 3px 8px color-mix(in srgb, var(--color-hot-pink) 20%, transparent),
 			inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 60%, transparent);
 	}
 
 	50% {
 		box-shadow:
-			0 8px 24px hsl(var(--neon-cyan) / 45%),
-			0 6px 16px hsl(var(--hot-pink) / 30%),
+			0 8px 24px color-mix(in srgb, var(--color-neon-cyan) 45%, transparent),
+			0 6px 16px color-mix(in srgb, var(--color-hot-pink) 30%, transparent),
 			inset 0 1px 0 color-mix(in srgb, var(--color-neutral-50) 70%, transparent);
 	}
 }
@@ -446,8 +434,8 @@
 	min-width: 140px;
 	padding: var(--space-3) var(--space-4);
 	border-radius: var(--radius-lg);
-	border: var(--card-border-width) solid hsl(var(--border) / 40%);
-	background: hsl(var(--card) / 60%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--border-color) 40%, transparent);
+	background: color-mix(in srgb, var(--card-background) 60%, transparent);
 	color: var(--text-secondary);
 	font-weight: var(--font-weight-medium);
 	transition: var(--transition-base);
@@ -455,15 +443,15 @@
 }
 
 .viewModeBtn:hover:not(:disabled) {
-	background: hsl(var(--card) / 80%);
-	border-color: hsl(var(--primary) / 60%);
+	background: color-mix(in srgb, var(--card-background) 80%, transparent);
+	border-color: color-mix(in srgb, var(--primary-500) 60%, transparent);
 	transform: translateY(-1px);
 }
 
 .viewModeBtn.active {
-	background: hsl(var(--primary) / 20%);
-	border-color: hsl(var(--primary));
-	color: hsl(var(--primary-foreground));
+	background: color-mix(in srgb, var(--primary-500) 20%, transparent);
+	border-color: var(--primary-500);
+	color: var(--primary-50);
 }
 
 .viewModeBtn:disabled {
@@ -482,8 +470,8 @@
 .dataViewBtn {
 	padding: var(--space-2) var(--space-4);
 	border-radius: var(--radius-md);
-	border: var(--card-border-width) solid hsl(var(--border) / 30%);
-	background: hsl(var(--card) / 50%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--border-color) 30%, transparent);
+	background: color-mix(in srgb, var(--card-background) 50%, transparent);
 	color: var(--text-secondary);
 	font-size: var(--text-sm);
 	transition: var(--transition-base);
@@ -491,14 +479,14 @@
 }
 
 .dataViewBtn:hover {
-	background: hsl(var(--card) / 70%);
-	border-color: hsl(var(--border) / 50%);
+	background: color-mix(in srgb, var(--card-background) 70%, transparent);
+	border-color: color-mix(in srgb, var(--border-color) 50%, transparent);
 }
 
 .dataViewBtn.active {
-	background: hsl(var(--accent) / 15%);
-	border-color: hsl(var(--accent));
-	color: hsl(var(--accent-foreground));
+	background: color-mix(in srgb, var(--color-neon-cyan) 15%, transparent);
+	border-color: var(--color-neon-cyan);
+	color: var(--color-neon-cyan);
 }
 
 /* * Empty state */
@@ -513,9 +501,9 @@
 .chartContainer {
 	margin: var(--space-4) 0;
 	padding: var(--space-4);
-	background: hsl(var(--card) / 50%);
+	background: color-mix(in srgb, var(--card-background) 50%, transparent);
 	border-radius: var(--radius-lg);
-	border: var(--card-border-width) solid hsl(var(--border) / 30%);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--border-color) 30%, transparent);
 }
 
 /* * Table container */
@@ -533,17 +521,17 @@
 .leaderboardTable td {
 	padding: var(--space-3);
 	text-align: left;
-	border-bottom: 1px solid hsl(var(--border) / 20%);
+	border-bottom: 1px solid color-mix(in srgb, var(--border-color) 20%, transparent);
 }
 
 .leaderboardTable th {
 	font-weight: var(--font-weight-semibold);
 	color: var(--text-primary);
-	background: hsl(var(--card) / 40%);
+	background: color-mix(in srgb, var(--card-background) 40%, transparent);
 }
 
 .leaderboardTable tbody tr:hover {
-	background: hsl(var(--accent) / 8%);
+	background: color-mix(in srgb, var(--color-neon-cyan) 8%, transparent);
 }
 
 /* * Bracket section */

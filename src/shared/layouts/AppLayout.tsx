@@ -14,6 +14,7 @@ import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSuggestionModal";
 import { BottomNav } from "../components/Navigation/BottomNav";
+import { DesktopNav } from "../components/Navigation/DesktopNav";
 import { SwipeNavigation } from "../components/Navigation/SwipeNavigation";
 import { OfflineIndicator } from "../components/OfflineIndicator";
 import ViewRouter from "../components/ViewRouter/ViewRouter";
@@ -44,7 +45,7 @@ export function AppLayout({
 	onOpenSuggestName,
 }: AppLayoutProps) {
 	// Get state from store (no prop drilling!)
-	const { user, tournament, errors, tournamentActions, errorActions } = useAppStore();
+	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
 	const { isLoggedIn } = user;
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
@@ -71,8 +72,16 @@ export function AppLayout({
 				{/* Static cat-themed background */}
 				<CatBackground />
 
-				{/* Primary Bottom Navigation */}
-				{isLoggedIn && <BottomNav onOpenSuggestName={onOpenSuggestName} />}
+				{/* Primary Navigation (Desktop & Mobile) */}
+				{isLoggedIn && (
+					<>
+						<DesktopNav
+							onLogout={() => userActions.logout()}
+							onOpenSuggestName={onOpenSuggestName}
+						/>
+						<BottomNav onOpenSuggestName={onOpenSuggestName} />
+					</>
+				)}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (
