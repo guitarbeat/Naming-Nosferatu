@@ -167,15 +167,15 @@
 }
 
 .pastel {
-	--cat-primary: hsl(350 100% 85%);
-	--cat-secondary: hsl(135 100% 85%);
-	--cat-accent: hsl(210 100% 85%);
+	--cat-primary: color-mix(in srgb, var(--color-hot-pink) 30%, white);
+	--cat-secondary: color-mix(in srgb, var(--color-neon-cyan) 30%, white);
+	--cat-accent: color-mix(in srgb, var(--color-info) 30%, white);
 }
 
 .warm {
-	--cat-primary: hsl(30 100% 82%);
-	--cat-secondary: hsl(350 100% 85%);
-	--cat-accent: hsl(35 100% 87%);
+	--cat-primary: color-mix(in srgb, var(--color-mimosa) 80%, white);
+	--cat-secondary: color-mix(in srgb, var(--color-hot-pink) 20%, white);
+	--cat-accent: var(--color-gold);
 }
 
 /* PAW VARIANT */

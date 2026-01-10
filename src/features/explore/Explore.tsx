@@ -19,7 +19,9 @@ export default function Explore({ userName }: ExploreProps) {
 	const { currentRoute } = useRouting();
 	const [isPending, startTransition] = useTransition();
 	const [activeTab, setActiveTab] = useState<"stats" | "photos">(() => {
-		if (currentRoute?.includes("/explore/photos")) return "photos";
+		if (currentRoute?.includes("/explore/photos")) {
+			return "photos";
+		}
 		return "stats";
 	});
 
@@ -39,7 +41,7 @@ export default function Explore({ userName }: ExploreProps) {
 		} else if (currentRoute?.includes("/explore/stats") && activeTab !== "stats") {
 			setActiveTab("stats");
 		}
-	}, [currentRoute, activeTab, setActiveTab]);
+	}, [currentRoute, activeTab]);
 
 	return (
 		<div className={styles.container}>

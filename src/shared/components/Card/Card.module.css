@@ -6,10 +6,10 @@
 	background-color: var(--card-background);
 	border: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
 	border-radius: var(--radius-lg);
-	transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	transition: all var(--duration-slow) cubic-bezier(0.16, 1, 0.3, 1);
 	box-shadow:
-		0 2px 4px rgba(0, 0, 0, 0.05),
-		0 0 0 1px inset rgba(255, 255, 255, 0.05);
+		var(--shadow-sm),
+		0 0 0 1px inset color-mix(in srgb, var(--color-neutral-50) 5%, transparent);
 }
 
 .card::before {
@@ -337,7 +337,7 @@
 .interactive:hover {
 	transform: translateY(-8px) scale(1.02);
 	box-shadow:
-		0 20px 40px rgba(0, 0, 0, 0.2),
+		var(--shadow-xl),
 		0 0 0 1px color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
 	border-color: color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
 }
