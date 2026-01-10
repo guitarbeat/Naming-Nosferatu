@@ -27,7 +27,7 @@ const CATEGORIES: NameCategory[] = [
 		description: "Delicious names inspired by tasty treats",
 		icon: "🍪",
 		names: ["Cookie", "Mochi", "Nacho", "Pickle", "Toffee", "Waffles"],
-		color: "#F59E0B"
+		color: "#F59E0B",
 	},
 	{
 		id: "nature",
@@ -35,7 +35,7 @@ const CATEGORIES: NameCategory[] = [
 		description: "Names from the beauty of the natural world",
 		icon: "🌿",
 		names: ["River", "Storm", "Sage", "Willow", "Breeze", "Forest"],
-		color: "#10B981"
+		color: "#10B981",
 	},
 	{
 		id: "colors",
@@ -43,7 +43,7 @@ const CATEGORIES: NameCategory[] = [
 		description: "Vibrant names inspired by colors",
 		icon: "🎨",
 		names: ["Amber", "Crimson", "Indigo", "Onyx", "Ruby", "Sapphire"],
-		color: "#8B5CF6"
+		color: "#8B5CF6",
 	},
 	{
 		id: "mythical",
@@ -51,7 +51,7 @@ const CATEGORIES: NameCategory[] = [
 		description: "Magical names from legends and folklore",
 		icon: "🧙‍♀️",
 		names: ["Phoenix", "Luna", "Atlas", "Nova", "Orion", "Echo"],
-		color: "#EC4899"
+		color: "#EC4899",
 	},
 	{
 		id: "cute",
@@ -59,7 +59,7 @@ const CATEGORIES: NameCategory[] = [
 		description: "Sweet and charming names",
 		icon: "🐾",
 		names: ["Whiskers", "Mittens", "Snuggles", "Paws", "Fluffy", "Cuddles"],
-		color: "#FF6B9D"
+		color: "#FF6B9D",
 	},
 	{
 		id: "noble",
@@ -67,8 +67,8 @@ const CATEGORIES: NameCategory[] = [
 		description: "Regal names fit for feline royalty",
 		icon: "👑",
 		names: ["Duke", "Princess", "Lord", "Empress", "Baron", "Queen"],
-		color: "#F59E0B"
-	}
+		color: "#F59E0B",
+	},
 ];
 
 function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
@@ -82,19 +82,20 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 		staleTime: 5 * 60 * 1000,
 	});
 
-	const filteredCategories = CATEGORIES.map(category => ({
+	const filteredCategories = CATEGORIES.map((category) => ({
 		...category,
 		// Filter names based on search term
-		filteredNames: category.names.filter(name =>
-			name.toLowerCase().includes(searchTerm.toLowerCase())
-		)
-	})).filter(category =>
-		// Only show categories that have matching names or if no search term
-		!searchTerm || category.filteredNames.length > 0
+		filteredNames: category.names.filter((name) =>
+			name.toLowerCase().includes(searchTerm.toLowerCase()),
+		),
+	})).filter(
+		(category) =>
+			// Only show categories that have matching names or if no search term
+			!searchTerm || category.filteredNames.length > 0,
 	);
 
 	const selectedCategoryData = selectedCategory
-		? filteredCategories.find(c => c.id === selectedCategory)
+		? filteredCategories.find((c) => c.id === selectedCategory)
 		: null;
 
 	if (isLoading) {
@@ -152,16 +153,14 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 							← Back to Categories
 						</Button>
 						<div className={styles.categoryTitle}>
-							<span className={styles.categoryIcon}>
-								{selectedCategoryData?.icon}
-							</span>
+							<span className={styles.categoryIcon}>{selectedCategoryData?.icon}</span>
 							<h2>{selectedCategoryData?.name}</h2>
 						</div>
 						<p>{selectedCategoryData?.description}</p>
 					</div>
 
 					<div className={styles.namesGrid}>
-						{selectedCategoryData?.filteredNames.map(name => (
+						{selectedCategoryData?.filteredNames.map((name) => (
 							<Card
 								key={name}
 								className={styles.nameCard}
@@ -182,8 +181,10 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 					</div>
 				</div>
 			) : (
-				<div className={`${styles.categories} ${viewMode === "list" ? styles.listView : styles.gridView}`}>
-					{filteredCategories.map(category => (
+				<div
+					className={`${styles.categories} ${viewMode === "list" ? styles.listView : styles.gridView}`}
+				>
+					{filteredCategories.map((category) => (
 						<Card
 							key={category.id}
 							className={styles.categoryCard}
@@ -191,20 +192,20 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 							padding="large"
 							shadow="small"
 							onClick={() => setSelectedCategory(category.id)}
-							style={{
-								"--category-color": category.color
-							} as React.CSSProperties}
+							style={
+								{
+									"--category-color": category.color,
+								} as React.CSSProperties
+							}
 						>
 							<div className={styles.categoryContent}>
 								<div className={styles.categoryHeader}>
-									<div className={styles.categoryIcon}>
-										{category.icon}
-									</div>
+									<div className={styles.categoryIcon}>{category.icon}</div>
 									<h3 className={styles.categoryName}>{category.name}</h3>
 								</div>
 								<p className={styles.categoryDesc}>{category.description}</p>
 								<div className={styles.namePreview}>
-									{category.filteredNames.slice(0, 4).map(name => (
+									{category.filteredNames.slice(0, 4).map((name) => (
 										<span key={name} className={styles.nameTag}>
 											{name}
 										</span>

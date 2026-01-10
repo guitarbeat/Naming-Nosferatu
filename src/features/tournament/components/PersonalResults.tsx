@@ -244,10 +244,10 @@ function PersonalResults({
 						id: nameToIdMap.get(name),
 						name,
 						rating: Math.round(typeof rating === "number" ? rating : ratingObj?.rating || 1500),
-						wins: ratingObj?.wins || 0,
-						losses: ratingObj?.losses || 0,
+						wins: (ratingObj as any)?.wins || 0,
+						losses: (ratingObj as any)?.losses || 0,
 						change: 0,
-						is_hidden: ratingObj?.is_hidden || false,
+						is_hidden: (ratingObj as any)?.is_hidden || false,
 					};
 				})
 				.sort((a, b) => b.rating - a.rating);

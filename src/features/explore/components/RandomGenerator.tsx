@@ -1,5 +1,5 @@
+import { Copy, Heart, RefreshCw, Shuffle } from "lucide-react";
 import { useState } from "react";
-import { Shuffle, RefreshCw, Heart, Copy } from "lucide-react";
 import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
 import { Loading } from "../../../shared/components/Loading";
@@ -28,8 +28,8 @@ const CATEGORIES: NameCategory[] = [
 		examples: ["Whiskers", "Mittens", "Snuggles", "Paws", "Fluffy"],
 		colors: {
 			primary: "#FF6B9D",
-			secondary: "#FFE5F0"
-		}
+			secondary: "#FFE5F0",
+		},
 	},
 	{
 		id: "mysterious",
@@ -38,8 +38,8 @@ const CATEGORIES: NameCategory[] = [
 		examples: ["Shadow", "Phantom", "Luna", "Raven", "Ghost"],
 		colors: {
 			primary: "#6366F1",
-			secondary: "#E0E7FF"
-		}
+			secondary: "#E0E7FF",
+		},
 	},
 	{
 		id: "royal",
@@ -48,8 +48,8 @@ const CATEGORIES: NameCategory[] = [
 		examples: ["Princess", "Duke", "Queen", "Lord", "Emperor"],
 		colors: {
 			primary: "#F59E0B",
-			secondary: "#FEF3C7"
-		}
+			secondary: "#FEF3C7",
+		},
 	},
 	{
 		id: "nature",
@@ -58,9 +58,9 @@ const CATEGORIES: NameCategory[] = [
 		examples: ["River", "Forest", "Storm", "Ocean", "Sage"],
 		colors: {
 			primary: "#10B981",
-			secondary: "#D1FAE5"
-		}
-	}
+			secondary: "#D1FAE5",
+		},
+	},
 ];
 
 function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
@@ -73,17 +73,19 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 		setIsGenerating(true);
 
 		// Simulate API delay
-		await new Promise(resolve => setTimeout(resolve, 800));
+		await new Promise((resolve) => setTimeout(resolve, 800));
 
 		const category = categoryId
-			? CATEGORIES.find(c => c.id === categoryId)
+			? CATEGORIES.find((c) => c.id === categoryId)
 			: CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
 
 		if (!category || !category.id) {
 			return;
 		}
 
-		const randomName = category.examples[Math.floor(Math.random() * category.examples.length)];
+		const randomName =
+			category.examples[Math.floor(Math.random() * category.examples.length)] ||
+			"No name available";
 		setGeneratedName(randomName);
 		setSelectedCategory(category.id);
 		setIsGenerating(false);
@@ -99,7 +101,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 	};
 
 	const toggleFavorite = (name: string) => {
-		setFavorites(prev => {
+		setFavorites((prev) => {
 			const newFavorites = new Set(prev);
 			if (newFavorites.has(name)) {
 				newFavorites.delete(name);
@@ -111,7 +113,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 	};
 
 	const selectedCategoryData = selectedCategory
-		? CATEGORIES.find(c => c.id === selectedCategory)
+		? CATEGORIES.find((c) => c.id === selectedCategory)
 		: null;
 
 	return (
@@ -124,7 +126,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 			<div className={styles.categories}>
 				<h3>Choose a Theme</h3>
 				<div className={styles.categoryGrid}>
-					{CATEGORIES.map(category => (
+					{CATEGORIES.map((category) => (
 						<Card
 							key={category.id}
 							className={`${styles.categoryCard} ${selectedCategory === category.id ? styles.selected : ""}`}
@@ -132,16 +134,18 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 							padding="medium"
 							shadow="small"
 							onClick={() => generateName(category.id)}
-							style={{
-								"--category-primary": category.colors.primary,
-								"--category-secondary": category.colors.secondary
-							} as React.CSSProperties}
+							style={
+								{
+									"--category-primary": category.colors.primary,
+									"--category-secondary": category.colors.secondary,
+								} as React.CSSProperties
+							}
 						>
 							<div className={styles.categoryContent}>
 								<h4 className={styles.categoryName}>{category.name}</h4>
 								<p className={styles.categoryDesc}>{category.description}</p>
 								<div className={styles.examples}>
-									{category.examples.slice(0, 3).map(example => (
+									{category.examples.slice(0, 3).map((example) => (
 										<span key={example} className={styles.example}>
 											{example}
 										</span>
@@ -170,7 +174,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 											className={styles.categoryBadge}
 											style={{
 												backgroundColor: selectedCategoryData.colors.secondary,
-												color: selectedCategoryData.colors.primary
+												color: selectedCategoryData.colors.primary,
 											}}
 										>
 											{selectedCategoryData.name}
@@ -231,7 +235,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 				<div className={styles.favorites}>
 					<h3>Your Favorites</h3>
 					<div className={styles.favoriteList}>
-						{Array.from(favorites).map(name => (
+						{Array.from(favorites).map((name) => (
 							<div key={name} className={styles.favoriteItem}>
 								<span>{name}</span>
 								<button
