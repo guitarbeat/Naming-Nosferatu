@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import type { NameItem } from "@/types/components";
 import { useTournamentSelectionSaver } from "../../../../features/tournament/hooks/useTournamentSelectionSaver";
 

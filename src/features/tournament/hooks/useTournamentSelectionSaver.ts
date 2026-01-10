@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import type { NameItem } from "@/types/components";
 import { ErrorManager } from "../../../shared/services/errorManager/index";
 import { tournamentsAPI } from "../services/tournamentService";
