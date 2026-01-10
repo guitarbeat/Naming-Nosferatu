@@ -85,19 +85,12 @@
 }
 
 .statsGrid {
+	composes: elevatedCard from global;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	gap: var(--space-4);
 	padding: var(--space-4);
 	margin: var(--space-4) auto;
-	background: linear-gradient(135deg, var(--glass-bg-light) 0%, var(--glass-bg) 100%);
-	border: var(--card-border-width) solid var(--glass-border);
-	border-radius: var(--radius-xl);
-	backdrop-filter: blur(var(--glass-blur));
-	box-shadow:
-		var(--shadow-lg),
-		inset 0 1px 0 var(--glass-border);
-	transition: var(--transition-base);
 	max-width: 1100px;
 }
 

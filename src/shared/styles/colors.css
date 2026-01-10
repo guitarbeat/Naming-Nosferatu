@@ -1,14 +1,14 @@
 /* New Brand Color Palette */
 :root {
-	--charcoal: #2c3e40;
-	--blue-gray: #809fb0;
-	--mimosa: #e8bf76;
-	--gold: #f1a438;
+	--charcoal: var(--color-charcoal);
+	--blue-gray: var(--color-blue-gray);
+	--mimosa: var(--color-mimosa);
+	--gold: var(--color-gold);
 
 	/* * New Vibrant Colors */
-	--neon-cyan: #2ff3e0;
-	--hot-pink: #fa26a0;
-	--fire-red: #f51720;
+	--neon-cyan: var(--color-neon-cyan);
+	--hot-pink: var(--color-hot-pink);
+	--fire-red: var(--color-fire-red);
 
 	/* * Vibrant Color Variations */
 	--neon-cyan-50: rgb(47 243 224 / 10%);

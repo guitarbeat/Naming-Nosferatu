@@ -12,6 +12,7 @@
 
 /* Floating tooltip hint */
 .inlineHint {
+	composes: elevatedCard from global;
 	position: fixed;
 	bottom: calc(50% + 180px);
 	left: 50%;
@@ -21,13 +22,10 @@
 	align-items: center;
 	gap: var(--space-2);
 	padding: var(--space-3) var(--space-4);
-	background: var(--glass-bg-strong);
-	border: var(--card-border-width) solid var(--glass-border);
 	border-radius: var(--radius-full);
 	box-shadow:
 		var(--shadow-lg),
 		0 0 20px color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
-	backdrop-filter: blur(var(--glass-blur-strong));
 }
 
 .hintIcon {

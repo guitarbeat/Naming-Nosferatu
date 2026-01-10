@@ -237,7 +237,7 @@ export function useTournamentRoutingSync({
 
 		// * Allow "explore" view
 		if (currentView === "explore") {
-			if (normalizedPath !== "/explore") {
+			if (!normalizedPath.startsWith("/explore")) {
 				navigateTo("/explore");
 			}
 			return;
@@ -290,7 +290,7 @@ export function useTournamentRoutingSync({
 				return;
 			}
 
-			if (normalizedPath === "/explore" && currentView !== "explore") {
+			if (normalizedPath.startsWith("/explore") && currentView !== "explore") {
 				lastViewRef.current = "explore";
 				onViewChange("explore");
 				previousRouteRef.current = currentRoute;

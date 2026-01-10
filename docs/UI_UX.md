@@ -37,6 +37,7 @@
 7. [Usability & Onboarding](#7-usability--onboarding)
 8. [Best Practices](#8-best-practices)
 9. [Migration Checklist](#9-migration-checklist)
+10. [CSS Composition Guide](#10-css-composition-guide)
 
 ---
 
@@ -627,3 +628,75 @@ width: 100px;
 1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks
 2. **Standardize Breakpoints**: Use `var(--breakpoint-md)` instead of hardcoded `768px`
 3. **Print Styles**: Add print-specific CSS for tournament results and rankings
+
+---
+
+## 10. CSS Composition Guide
+
+To maintain a DRY (Don't Repeat Yourself) styling architecture and leverage centralized primitives, the project uses **CSS Modules Composition**. This allows developers to inherit styles from global utility classes while keeping local component styles focused and manageable.
+
+### Rule of Thumb
+Use `composes: [CLASS] from global;` as the **first line** in your CSS module class definition. This brings in global styles from `src/shared/styles/` without needing to import individual CSS files.
+
+### 1. Glass Surfaces
+Centralized glassmorphism styles ensure consistent blur, border, and background across the application.
+
+```css
+/* MyComponent.module.css */
+.container {
+  composes: glass-medium from global;
+  /* Local overrides or additions */
+  padding: var(--space-6);
+  max-width: 600px;
+}
+```
+
+| Global Class | Usage |
+|--------------|-------|
+| `glass-light` | Subtle background for low-priority panels. |
+| `glass-medium` | Standard surface for cards, navigation, and content sections. |
+| `glass-strong` | High-impact surfaces like modals, dropdowns, and overlays. |
+
+### 2. Layout Primitives
+Standardized layout patterns reduce the need for repetitive flexbox and grid boilerplate. Components should compose these to manage their internal geometry.
+
+```css
+/* CardList.module.css */
+.list {
+  composes: cluster from global;
+  composes: cluster-md from global; /* Inherit spacing variant */
+  justify-content: center;
+}
+
+.form {
+  composes: stack from global;
+  composes: stack-lg from global;
+}
+```
+
+| Primitive | Usage |
+|-----------|-------|
+| `stack` | Vertical layout. Use with `-xs`, `-sm`, `-md`, `-lg`, `-xl` for spacing gaps. |
+| `cluster` | Horizontal wrapping layout. Use with `-sm`, `-md`, `-lg` for spacing gaps. |
+| `heroStage` | High-impact centered container with responsive min-height. |
+| `flex-center` | Utility for centering content in both directions. |
+| `grid-mosaic` | Responsive grid with dense packing (used for Masonry/NameGrid). |
+
+### 3. Card Surfaces
+Standardized card primitives handle borders, background, and common hover effects.
+
+```css
+/* NameCard.module.css */
+.card {
+  composes: elevatedCard from global;
+  /* Local component-specific styles */
+  min-width: var(--card-width-responsive);
+}
+```
+
+| Global Class | Usage |
+|--------------|-------|
+| `surfaceCard` | Base card style with borders and standard radius. |
+| `elevatedCard` | Inherits `surfaceCard` and adds shadow + hover lift effect. |
+| `card-base` | Utility card with standard padding and transitions. |
+| `card-mosaic` | Sharp-edged version (`radius-xs`) for mosaic/grid layouts. |
