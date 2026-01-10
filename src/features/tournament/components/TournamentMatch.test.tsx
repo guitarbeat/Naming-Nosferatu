@@ -17,19 +17,57 @@ vi.mock("../utils/tournamentUtils", () => ({
 }));
 
 // Smart Framer Motion Mock
-interface MotionDivProps {
+// Framer Motion specific props that should not be passed to DOM
+const FRAMER_MOTION_PROPS = new Set([
+	'layout',
+	'dragConstraints',
+	'dragElastic',
+	'whileHover',
+	'whileTap',
+	'initial',
+	'animate',
+	'exit',
+	'variants',
+	'transition',
+	'drag',
+	'dragDirectionLock',
+	'dragMomentum',
+	'dragPropagation',
+	'dragSnapToOrigin',
+	'layoutId',
+	'layoutDependency',
+	'onDrag',
+	'onDragStart',
+	'onDragEnd',
+	'onHoverStart',
+	'onHoverEnd',
+	'onTap',
+	'onTapStart',
+	'onTapCancel',
+]);
+
+interface MotionDivProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode;
+	layout?: any;
+	dragConstraints?: any;
+	dragElastic?: any;
+	whileHover?: any;
+	whileTap?: any;
 	onDragEnd?: (event: any, info: { offset: { x: number; y: number } }) => void;
-	onClick?: (e: React.MouseEvent) => void;
 	[key: string]: any;
 }
 
 vi.mock("framer-motion", () => ({
 	motion: {
 		div: ({ children, onDragEnd, onClick, ...props }: MotionDivProps) => {
+			// Filter out framer-motion specific props
+			const domProps = Object.fromEntries(
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+			);
+
 			return (
 				<div
-					{...props}
+					{...domProps}
 					data-testid="motion-div"
 					onClick={(e) => {
 						// Meta Key = Simulate Swipe Right (+150px)

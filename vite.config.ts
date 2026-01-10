@@ -89,10 +89,20 @@ export default defineConfig(({ mode }) => {
 			rollupOptions: {
 				output: {
 					format: "es",
-					// * Keep inlineDynamicImports for stability - maintains existing behavior
-					inlineDynamicImports: true,
+					// * Enable code splitting for better performance
+					inlineDynamicImports: false,
 					// * Single entry file name (no chunks)
 					entryFileNames: "assets/js/[name]-[hash].js",
+					// * Enable manual chunking for better caching
+					manualChunks: {
+						// Vendor chunks for better caching
+						'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
+						'animation-vendor': ['framer-motion'],
+						'ui-vendor': ['lucide-react', '@radix-ui/react-slot', 'class-variance-authority'],
+						'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query', 'zustand'],
+						'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+						'utils-vendor': ['immer'],
+					},
 					assetFileNames: (assetInfo) => {
 						if (!assetInfo.name) {
 							return "assets/[name]-[hash][extname]";

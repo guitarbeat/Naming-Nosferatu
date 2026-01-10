@@ -1,3 +1,4 @@
+import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import TournamentSetup from "./TournamentSetup";
@@ -5,20 +6,55 @@ import TournamentSetup from "./TournamentSetup";
 // --- Mocks ---
 
 // Mock Framer Motion
-interface MotionProps {
-	children?: React.ReactNode;
-	[key: string]: any;
-}
+vi.mock("framer-motion", () => {
+	// Framer Motion specific props that should not be passed to DOM
+	const FRAMER_MOTION_PROPS = new Set([
+		'layout',
+		'dragConstraints',
+		'dragElastic',
+		'whileHover',
+		'whileTap',
+		'initial',
+		'animate',
+		'exit',
+		'variants',
+		'transition',
+		'drag',
+		'dragDirectionLock',
+		'dragMomentum',
+		'dragPropagation',
+		'dragSnapToOrigin',
+		'layoutId',
+		'layoutDependency',
+		'onDrag',
+		'onDragStart',
+		'onDragEnd',
+		'onHoverStart',
+		'onHoverEnd',
+		'onTap',
+		'onTapStart',
+		'onTapCancel',
+	]);
 
-vi.mock("framer-motion", () => ({
-	motion: {
-		div: ({ children, ...props }: MotionProps) => <div {...props}>{children}</div>,
-		h1: ({ children, ...props }: MotionProps) => <h1 {...props}>{children}</h1>,
-		p: ({ children, ...props }: MotionProps) => <p {...props}>{children}</p>,
-		button: ({ children, ...props }: MotionProps) => <button {...props}>{children}</button>,
-	},
-	AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
-}));
+	const createFilteredElement = (Tag: keyof JSX.IntrinsicElements) =>
+		({ children, ...props }: any) => {
+			// Filter out framer-motion specific props
+			const domProps = Object.fromEntries(
+				Object.entries(props).filter(([key]: [string, any]) => !FRAMER_MOTION_PROPS.has(key))
+			);
+			return React.createElement(Tag, domProps, children);
+		};
+
+	return {
+		motion: {
+			div: createFilteredElement('div'),
+			h1: createFilteredElement('h1'),
+			p: createFilteredElement('p'),
+			button: createFilteredElement('button'),
+		},
+		AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
+	};
+});
 
 // Mock Hooks
 const mockLoginController = {
@@ -88,7 +124,7 @@ vi.mock("../../../shared/components/NameManagementView/NameManagementView", () =
 }));
 
 vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
-	ValidatedInput: (props: ValidatedInputProps) => (
+	ValidatedInput: ({ externalError, externalTouched, ...props }: ValidatedInputProps) => (
 		<input data-testid="validated-input" {...props} />
 	),
 }));

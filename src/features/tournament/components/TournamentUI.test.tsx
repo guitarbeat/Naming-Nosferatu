@@ -3,11 +3,54 @@ import { describe, expect, it, vi } from "vitest";
 import { ProgressMilestone, TournamentFooter, TournamentHeader } from "./TournamentUI";
 
 // Mock Framer Motion
+// Framer Motion specific props that should not be passed to DOM
+const FRAMER_MOTION_PROPS = new Set([
+	'layout',
+	'dragConstraints',
+	'dragElastic',
+	'whileHover',
+	'whileTap',
+	'initial',
+	'animate',
+	'exit',
+	'variants',
+	'transition',
+	'drag',
+	'dragDirectionLock',
+	'dragMomentum',
+	'dragPropagation',
+	'dragSnapToOrigin',
+	'layoutId',
+	'layoutDependency',
+	'onDrag',
+	'onDragStart',
+	'onDragEnd',
+	'onHoverStart',
+	'onHoverEnd',
+	'onTap',
+	'onTapStart',
+	'onTapCancel',
+]);
+
+interface MotionProps extends React.HTMLAttributes<HTMLDivElement> {
+	children?: React.ReactNode;
+	layout?: any;
+	whileHover?: any;
+	whileTap?: any;
+	[key: string]: any;
+}
+
 vi.mock("framer-motion", () => ({
 	motion: {
-		div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+		div: ({ children, ...props }: MotionProps) => {
+			// Filter out framer-motion specific props
+			const domProps = Object.fromEntries(
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+			);
+			return <div {...domProps}>{children}</div>;
+		},
 	},
-	AnimatePresence: ({ children }: any) => <>{children}</>,
+	AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 }));
 
 vi.mock("./KeyboardHelp", () => ({
