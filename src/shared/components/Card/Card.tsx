@@ -4,6 +4,7 @@
  */
 
 import React, { memo, useEffect, useId, useState } from "react";
+import { cva } from "class-variance-authority";
 import { TIMING } from "../../../core/constants";
 import { cn } from "../../utils";
 import CatImage from "../CatImage";
@@ -28,6 +29,55 @@ type CardVariant =
 type CardPadding = "none" | "small" | "medium" | "large" | "xl";
 type CardShadow = "none" | "small" | "medium" | "large" | "xl";
 type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+
+// CVA variant for Card component
+const cardVariants = cva(styles.card, {
+	variants: {
+		variant: {
+			default: styles.default,
+			elevated: styles.elevated,
+			outlined: styles.outlined,
+			filled: styles.filled,
+			primary: styles.primary,
+			success: styles.success,
+			warning: styles.warning,
+			info: styles.info,
+			danger: styles.danger,
+			secondary: styles.secondary,
+		},
+		padding: {
+			none: styles["padding-none"],
+			small: styles["padding-small"],
+			medium: styles["padding-medium"],
+			large: styles["padding-large"],
+			xl: styles["padding-xl"],
+		},
+		shadow: {
+			none: styles["shadow-none"],
+			small: styles["shadow-small"],
+			medium: styles["shadow-medium"],
+			large: styles["shadow-large"],
+			xl: styles["shadow-xl"],
+		},
+		bordered: {
+			true: styles.bordered,
+			false: "",
+		},
+		background: {
+			solid: "",
+			glass: "",
+			gradient: styles["background-gradient"],
+			transparent: styles["background-transparent"],
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+		padding: "medium",
+		shadow: "none",
+		bordered: false,
+		background: "solid",
+	},
+});
 
 interface GlassConfig {
 	width?: number;
@@ -54,6 +104,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	interactive?: boolean;
 }
 
+// Legacy function for backward compatibility with complex background logic
 const buildCardClasses = (
 	variant: CardVariant,
 	padding: CardPadding,
@@ -63,38 +114,22 @@ const buildCardClasses = (
 	liquidGlass: boolean | GlassConfig | undefined,
 	className: string,
 ) => {
-	return [
-		styles.card,
-		styles[variant],
-		styles[`padding-${padding}`],
-		styles[`shadow-${shadow}`],
-		border ? styles.bordered : "",
-		background !== "solid" && background !== "glass" && !liquidGlass
-			? styles[`background-${background}`]
-			: "",
-		// Add color variant support
-		styles[variant], // This will pick up primary, success, etc. if defined
+	// Use CVA for most cases, but handle complex background logic
+	const cvaClasses = cardVariants({
+		variant,
+		padding,
+		shadow,
+		bordered: border,
+		background: background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
 		className,
-	]
-		.filter(Boolean)
-		.join(" ");
-};
+	});
 
-const buildContentClasses = (
-	variant: CardVariant,
-	padding: CardPadding,
-	shadow: CardShadow,
-	border: boolean,
-) => {
-	return [
-		styles.card,
-		styles[variant],
-		styles[`padding-${padding}`],
-		styles[`shadow-${shadow}`],
-		border ? styles.bordered : "",
-	]
-		.filter(Boolean)
-		.join(" ");
+	// Handle special cases for glass/liquid glass backgrounds
+	if (background === "glass" || liquidGlass) {
+		return cn(cvaClasses);
+	}
+
+	return cvaClasses;
 };
 
 export const Card = memo(

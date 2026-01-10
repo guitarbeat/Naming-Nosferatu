@@ -417,6 +417,30 @@
 }
 
 /* ==========================================================================
+   SURFACE LEVEL SYSTEM
+   Standardized surface levels for consistent visual hierarchy
+   ========================================================================== */
+:root {
+	/* Surface Base - Default surface level for cards, panels, and content areas */
+	--surface-base-bg: var(--glass-bg);
+	--surface-base-border: var(--glass-border);
+	--surface-base-shadow: var(--shadow-sm);
+	--surface-base-radius: var(--radius-lg);
+
+	/* Surface Elevated - For modals, dialogs, and prominent content */
+	--surface-elevated-bg: var(--glass-bg-strong);
+	--surface-elevated-border: var(--glass-border-hover);
+	--surface-elevated-shadow: var(--shadow-lg);
+	--surface-elevated-radius: var(--radius-xl);
+
+	/* Surface Floating - For tooltips, dropdowns, and overlays */
+	--surface-floating-bg: var(--glass-bg-strong);
+	--surface-floating-border: var(--glass-border-hover);
+	--surface-floating-shadow: var(--shadow-xl);
+	--surface-floating-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
    SHIMMER EFFECTS (merged from shimmer.css)
    ========================================================================== */
 :root {
