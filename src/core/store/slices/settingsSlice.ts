@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
-import type { AppState, UIState } from "../../../types/store";
+import { siteSettingsAPI } from "../../../shared/services/supabase/client";
+import type { AppState, CatChosenName, UIState } from "../../../types/store";
 import { updateSlice } from "../utils";
 
 const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
@@ -23,10 +24,13 @@ const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	};
 };
 
-export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" | "uiActions">> = (
-	set,
-	get,
-) => ({
+export const createSettingsSlice: StateCreator<
+	AppState,
+	[],
+	[],
+	Pick<AppState, "ui" | "siteSettings" | "uiActions" | "siteSettingsActions">
+> = (set, get) => ({
+	// UI state (from uiSlice)
 	ui: {
 		...getInitialThemeState(),
 		showGlobalAnalytics: false,
@@ -36,6 +40,13 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 		showCatPictures: false,
 	},
 
+	// Site settings state (from siteSettingsSlice)
+	siteSettings: {
+		catChosenName: null,
+		isLoaded: false,
+	},
+
+	// Combined actions
 	uiActions: {
 		setMatrixMode: (enabled) => updateSlice(set, "ui", { matrixMode: enabled }),
 
@@ -67,7 +78,6 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 
 				// Handle system theme listener
 				if (isSystem) {
-					// Define the listener
 					const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 					const listener = (e: MediaQueryListEvent) => {
 						// Only update if preference is still system
@@ -88,5 +98,25 @@ export const createUISlice: StateCreator<AppState, [], [], Pick<AppState, "ui" |
 				get().uiActions.setTheme(storedTheme);
 			}
 		},
+	},
+
+	siteSettingsActions: {
+		loadCatChosenName: async () => {
+			try {
+				const data = (await siteSettingsAPI.getCatChosenName()) as CatChosenName | null;
+				updateSlice(set, "siteSettings", {
+					catChosenName: data,
+					isLoaded: true,
+				});
+				return data;
+			} catch (error) {
+				console.error("Error loading cat chosen name:", error);
+				updateSlice(set, "siteSettings", { isLoaded: true });
+				return null;
+			}
+		},
+
+		updateCatChosenName: (nameData) =>
+			updateSlice(set, "siteSettings", { catChosenName: nameData }),
 	},
 });

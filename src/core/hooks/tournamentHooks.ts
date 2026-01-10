@@ -1,5 +1,6 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { NavigateFunction } from "react-router-dom";
 import { tournamentsAPI } from "../../features/tournament/services/tournamentService";
 import {
 	buildComparisonsMap,
@@ -47,7 +48,7 @@ export interface UseTournamentProps {
 export interface UseTournamentHandlersProps {
 	userName: string | null;
 	tournamentActions: AppState["tournamentActions"];
-	navigateTo: (path: string) => void;
+	navigateTo: NavigateFunction;
 }
 
 // Utility functions

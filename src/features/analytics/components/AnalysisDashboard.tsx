@@ -205,25 +205,25 @@ export function AnalysisDashboard({
 
 			<CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
 				{isLoading ? (
-					<div className={panelStyles.loading} role="status">
+					<div className={styles.analysisPanel} role="status">
 						Loading top names...
 					</div>
 				) : error ? (
-					<div className={panelStyles.error} role="alert">
+					<div className={styles.analysisPanel} role="alert">
 						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className={panelStyles.empty}>
+					<div className={styles.analysisPanel}>
 						No names available yet. Start a tournament to see results here!
 					</div>
 				) : (
 					<>
-						<div className={viewToggleStyles.viewToggle}>
+						<div className={styles.viewToggle}>
 							{["chart", "table", "insights"].map((mode) => (
 								<button
 									key={mode}
 									type="button"
-									className={`${viewToggleStyles.viewBtn} ${viewMode === mode ? viewToggleStyles.active : ""}`}
+									className={`${styles.viewBtn} ${viewMode === mode ? styles.active : ""}`}
 									onClick={() => setViewMode(mode)}
 									aria-pressed={viewMode === mode}
 								>
@@ -237,7 +237,7 @@ export function AnalysisDashboard({
 						</div>
 
 						{viewMode === "chart" && rankingHistory && (
-							<div className={viewToggleStyles.chartContainer}>
+							<div className={styles.chartContainer}>
 								<BumpChart
 									data={filteredRankingData}
 									labels={rankingHistory.timeLabels}

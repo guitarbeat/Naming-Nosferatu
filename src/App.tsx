@@ -8,12 +8,8 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
-import {
-	useKeyboardShortcuts,
-	useRouting,
-	useTournamentRoutingSync,
-} from "./core/hooks/useRouting";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
@@ -26,7 +22,6 @@ import {
 	devError,
 	initializePerformanceMonitoring,
 } from "./shared/utils";
-import type { AppState } from "./types/store";
 
 /**
  * Root application component that wires together global state, routing, and
@@ -52,28 +47,54 @@ function App() {
 	// Centralized store
 	const { user, tournament, ui, tournamentActions } = useAppStore();
 
-	// Explicitly select currentView to ensure re-renders when it changes
-	const currentView = useAppStore((state: AppState) => state.tournament.currentView);
+	// React Router hooks
+	const navigateTo = useNavigate();
+	const location = useLocation();
+	const currentRoute = location.pathname + location.search;
 
-	// Simple URL routing helpers
-	const { currentRoute, navigateTo } = useRouting();
+	// Simplified routing logic - handle basic navigation based on login state and tournament completion
+	useEffect(() => {
+		if (!user.isLoggedIn) {
+			// Redirect to home if not logged in and not already there
+			if (currentRoute !== "/" && !currentRoute.startsWith("/?")) {
+				navigateTo("/", { replace: true });
+			}
+			return;
+		}
 
-	useTournamentRoutingSync({
-		currentRoute,
-		navigateTo,
-		isLoggedIn: user.isLoggedIn,
-		currentView,
-		onViewChange: tournamentActions.setView,
-		isTournamentComplete: tournament.isComplete,
-	});
+		// If logged in and on home page, redirect to tournament
+		if (currentRoute === "/" || currentRoute === "/?") {
+			navigateTo("/tournament", { replace: true });
+		}
 
-	// Keyboard shortcuts
-	useKeyboardShortcuts({
-		navigateTo,
-		onAnalysisToggle: () => {
-			// Analysis toggle handled via URL
-		},
-	});
+		// Handle tournament completion - redirect to results
+		if (tournament.isComplete && currentRoute === "/tournament") {
+			navigateTo("/results", { replace: true });
+		}
+	}, [user.isLoggedIn, currentRoute, tournament.isComplete, navigateTo]);
+
+	// Keyboard shortcuts - simplified to just handle analysis toggle
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
+			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
+				event.preventDefault();
+				const searchParams = new URLSearchParams(location.search);
+				const hasAnalysis = searchParams.has("analysis");
+				if (hasAnalysis) {
+					searchParams.delete("analysis");
+				} else {
+					searchParams.set("analysis", "true");
+				}
+				const newSearch = searchParams.toString();
+				const newPath = `${location.pathname}${newSearch ? `?${newSearch}` : ""}`;
+				navigateTo(newPath, { replace: true });
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [location, navigateTo]);
 
 	// Theme synchronization
 	useEffect(() => {
@@ -114,10 +135,6 @@ function App() {
 	);
 
 	// Modal handlers
-	const handleOpenSuggestName = useCallback(() => {
-		setIsSuggestNameModalOpen(true);
-	}, []);
-
 	const handleCloseSuggestName = useCallback(() => {
 		setIsSuggestNameModalOpen(false);
 	}, []);
@@ -141,7 +158,6 @@ function App() {
 				handleTournamentComplete={handleTournamentComplete}
 				isSuggestNameModalOpen={isSuggestNameModalOpen}
 				onCloseSuggestName={handleCloseSuggestName}
-				onOpenSuggestName={handleOpenSuggestName}
 			/>
 		</ToastProvider>
 	);

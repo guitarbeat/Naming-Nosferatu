@@ -30,7 +30,6 @@ interface AppLayoutProps {
 	) => Promise<void>;
 	isSuggestNameModalOpen: boolean;
 	onCloseSuggestName: () => void;
-	onOpenSuggestName: () => void;
 }
 
 export function AppLayout({
@@ -41,22 +40,10 @@ export function AppLayout({
 	handleTournamentComplete,
 	isSuggestNameModalOpen,
 	onCloseSuggestName,
-	onOpenSuggestName,
 }: AppLayoutProps) {
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
 	const { isLoggedIn } = user;
-
-	// Detect mobile vs desktop for conditional rendering
-	useEffect(() => {
-		const mediaQuery = window.matchMedia("(max-width: 768px)");
-		const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-
-		setIsMobile(mediaQuery.matches);
-		mediaQuery.addEventListener("change", handleChange);
-
-		return () => mediaQuery.removeEventListener("change", handleChange);
-	}, []);
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
@@ -86,7 +73,6 @@ export function AppLayout({
 				{isLoggedIn && (
 					<AdaptiveNav
 						onLogout={() => userActions.logout()}
-						onOpenSuggestName={onOpenSuggestName}
 					/>
 				)}
 
@@ -113,7 +99,6 @@ export function AppLayout({
 							onVote={(vote: unknown) =>
 								tournamentActions.addVote(vote as import("../../types/components").VoteData)
 							}
-							onOpenSuggestName={onOpenSuggestName}
 						/>
 					</SwipeWrapper>
 

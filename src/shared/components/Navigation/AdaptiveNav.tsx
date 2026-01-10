@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import { KeyboardShortcutsOverlay } from "./KeyboardShortcutsOverlay";
-import styles from "./AdaptiveNav.module.css";
+import styles from "./navigation.module.css";
 
 interface AdaptiveNavProps {
 	onLogout?: () => void;
@@ -84,33 +84,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 		if (route === "/") return location.pathname === "/";
 		return exact ? location.pathname === route : location.pathname.startsWith(route);
 	};
-
-	// Swipe navigation handler
-	const handleSwipe = (direction: number) => {
-		const navItems = BOTTOM_NAV_ITEMS.map((key) =>
-			MAIN_NAV_ITEMS.find((item) => item.key === key),
-		).filter((item): item is (typeof MAIN_NAV_ITEMS)[0] => Boolean(item));
-
-		const currentIndex = navItems.findIndex((item) => {
-			if (item.route === "/") {
-				return location.pathname === "/";
-			}
-			return location.pathname.startsWith(item.route || "");
-		});
-
-		if (currentIndex === -1) return;
-
-		const nextIndex = currentIndex + direction;
-
-		if (nextIndex >= 0 && nextIndex < navItems.length) {
-			const nextItem = navItems[nextIndex];
-			if (nextItem?.route) {
-				if (navigator.vibrate) navigator.vibrate(10);
-				navigate(nextItem.route);
-			}
-		}
-	};
-
 
 	// Filter bottom nav items based on tournament completion
 	const tournamentComplete = true; // TODO: Get from store

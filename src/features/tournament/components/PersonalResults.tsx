@@ -338,7 +338,7 @@ function PersonalResults({
 						name,
 						rating: Math.round(rating),
 						wins: existingRatingObj?.wins || 0,
-						losses: existingRatingObj?.losses || 0,
+						losses: 0, // TODO: Add losses tracking if needed
 					};
 				});
 

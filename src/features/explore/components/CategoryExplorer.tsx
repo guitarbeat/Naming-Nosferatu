@@ -78,7 +78,7 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 
 	const { isLoading } = useQuery({
 		queryKey: ["all-names"],
-		queryFn: () => catNamesAPI.getNames(),
+		queryFn: () => catNamesAPI.getNamesWithDescriptions(),
 		staleTime: 5 * 60 * 1000,
 	});
 

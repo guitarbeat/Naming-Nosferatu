@@ -18,7 +18,7 @@ const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...
 export default defineConfig(({ mode }) => {
 	// Use system environment variables directly (skip .env file loading to avoid permission issues)
 	const env = { ...process.env };
-	const isProd = mode === "production";
+	const _isProd = mode === "production";
 
 	const serverPort = Number(env.VITE_PORT) || 5173; // Default to 5173 (standard Vite) to avoid macOS AirPlay conflict on 5000
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;

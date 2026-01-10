@@ -2,9 +2,8 @@ import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
 import type { AppState } from "../../types/store";
 import { createErrorSlice } from "./slices/errorSlice";
-import { createSiteSettingsSlice } from "./slices/siteSettingsSlice";
+import { createSettingsSlice } from "./slices/settingsSlice";
 import { createTournamentSlice } from "./slices/tournamentSlice";
-import { createUISlice } from "./slices/uiSlice";
 import { createUserSlice } from "./slices/userSlice";
 
 // * Devtools middleware disabled entirely to avoid prod crashes
@@ -21,8 +20,7 @@ const useAppStore = create<AppState>()(
 	applyDevtools((...a) => ({
 		...createTournamentSlice(...a),
 		...createUserSlice(...a),
-		...createUISlice(...a),
-		...createSiteSettingsSlice(...a),
+		...createSettingsSlice(...a),
 		...createErrorSlice(...a),
 
 		// * Computed Selectors

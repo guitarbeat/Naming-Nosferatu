@@ -18,15 +18,15 @@ function NameDiscovery({ userName: _userName }: NameDiscoveryProps) {
 		queryKey: ["popular-names"],
 		queryFn: async () => {
 			// For now, we'll fetch all names and simulate popularity
-			const names = await catNamesAPI.getNames();
+			const names = await catNamesAPI.getNamesWithDescriptions();
 			return names
-				.map((name: any) => ({
+				.map((name) => ({
 					id: name.id,
 					name: name.name,
 					voteCount: Math.floor(Math.random() * 100) + 1, // Mock popularity
 					trending: Math.random() > 0.7, // Mock trending status
 				}))
-				.sort((a: any, b: any) => b.voteCount - a.voteCount)
+				.sort((a, b) => b.voteCount - a.voteCount)
 				.slice(0, 20);
 		},
 		staleTime: 5 * 60 * 1000, // 5 minutes
@@ -54,7 +54,7 @@ function NameDiscovery({ userName: _userName }: NameDiscoveryProps) {
 			</div>
 
 			<div className={styles.grid}>
-				{popularNames?.map((name: any, index: number) => (
+				{popularNames?.map((name, index: number) => (
 					<Card
 						key={name.id}
 						className={`${styles.nameCard} ${name.trending ? styles.trending : ""}`}

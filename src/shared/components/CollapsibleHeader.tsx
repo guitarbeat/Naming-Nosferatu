@@ -5,9 +5,36 @@
  */
 
 import { useId } from "react";
+import { cva } from "class-variance-authority";
 import { useCollapsible } from "../../core/hooks/useStorage";
 import LiquidGlass, { HEADER_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass/LiquidGlass";
 import "./CollapsibleHeader.css";
+
+// CVA variant for collapsible header
+const collapsibleHeaderVariants = cva(
+	"collapsible-header",
+	{
+		variants: {
+			variant: {
+				default: "collapsible-header--default",
+				compact: "collapsible-header--compact",
+			},
+			state: {
+				expanded: "",
+				collapsed: "collapsible-header--collapsed",
+			},
+			sortable: {
+				true: "collapsible-header--sortable",
+				false: "",
+			},
+		},
+		defaultVariants: {
+			variant: "default",
+			state: "expanded",
+			sortable: false,
+		},
+	}
+);
 
 /**
  * Chevron icon component - simple SVG for better control
@@ -83,7 +110,12 @@ export function CollapsibleHeader({
 	const headerContent = (
 		<>
 			<header
-				className={`collapsible-header collapsible-header--${variant} ${isCollapsed ? "collapsible-header--collapsed" : ""} ${isCollapsible ? "collapsible-header--sortable" : ""} ${className}`}
+				className={collapsibleHeaderVariants({
+					variant,
+					state: isCollapsed ? "collapsed" : "expanded",
+					sortable: isCollapsible,
+					className,
+				})}
 			>
 				{isCollapsible ? (
 					<button

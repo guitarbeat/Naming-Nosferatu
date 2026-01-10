@@ -1,6 +1,6 @@
 import { lazy, Suspense, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { getRouteConfig, ROUTES, type ViewState } from "../../../core/config/routeConfig";
-import { useRouting } from "../../../core/hooks/useRouting";
 import { normalizeRoutePath } from "../../../shared/utils";
 import type { NameItem, VoteData } from "../../../types/components";
 import { ErrorComponent } from "../ErrorComponent";
@@ -39,7 +39,6 @@ interface ViewRouterProps {
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	onVote: (vote: unknown) => void;
-	onOpenSuggestName?: () => void;
 }
 
 /**
@@ -99,9 +98,9 @@ export default function ViewRouter({
 	onTournamentSetup,
 	onTournamentComplete,
 	onVote,
-	onOpenSuggestName,
 }: ViewRouterProps) {
-	const { currentRoute } = useRouting();
+	const location = useLocation();
+	const currentRoute = location.pathname + location.search;
 	const normalizedPath = useMemo(() => normalizeRoutePath(currentRoute), [currentRoute]);
 
 	// Determine current view from route
