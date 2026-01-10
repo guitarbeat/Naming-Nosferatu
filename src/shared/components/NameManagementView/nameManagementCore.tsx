@@ -5,8 +5,8 @@
  */
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "../../../core/constants";
-import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
 import type { NameItem } from "../../../types/components";
 import { applyNameFilters, mapFilterStatusToVisibility } from "../../utils";
@@ -219,7 +219,7 @@ export function useNameManagementView({
 	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [activeTab, setActiveTab] = useState("manage");
 
-	const { navigateTo } = useRouting();
+	const navigate = useNavigate();
 
 	const handleAnalysisModeToggle = useCallback(() => {
 		const newValue = !analysisMode;
@@ -238,8 +238,8 @@ export function useNameManagementView({
 
 		const newSearch = currentSearch.toString();
 		const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
-		navigateTo(newUrl);
-	}, [navigateTo, setAnalysisMode, analysisMode]);
+		navigate(newUrl);
+	}, [navigate, setAnalysisMode, analysisMode]);
 
 	const filteredNamesForSwipe = useMemo(() => {
 		if (mode !== "tournament") {
