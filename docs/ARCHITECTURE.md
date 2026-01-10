@@ -398,11 +398,11 @@ src/
 │   ├── names/               # Name lifecycle management
 │   ├── profile/             # User profile
 │   ├── tournament/          # Tournament competition logic
-│       ├── components/      # Flat component structure (no nested subdirs)
-│       ├── hooks/           # Tournament-specific hooks
-│       ├── services/        # Tournament services
-│       ├── styles/          # Tournament CSS modules
-│       └── utils/           # Tournament utilities
+│   │   ├── components/      # Flat component structure
+│   │   ├── hooks/           # Tournament hooks
+│   │   ├── services/        # Tournament services
+│   │   ├── styles/          # Tournament CSS modules
+│   │   └── utils/           # Tournament utilities
 │   └── explore/             # Global data and photo discovery
 ├── shared/                  # Shared utilities
 │   ├── components/          # Reusable components
