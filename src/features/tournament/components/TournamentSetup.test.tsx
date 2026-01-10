@@ -129,6 +129,51 @@ vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
 	),
 }));
 
+// Mock the name management context hook
+vi.mock("../../../shared/components/NameManagementView/nameManagementCore", () => ({
+	useNameManagementContextSafe: () => ({
+		names: [],
+		isLoading: false,
+		isError: false,
+		error: null,
+		dataError: null,
+		refetch: vi.fn(),
+		clearErrors: vi.fn(),
+		setNames: vi.fn(),
+		setHiddenIds: vi.fn(),
+		selectedNames: [],
+		selectedIds: new Set(),
+		isSelectionMode: false,
+		setIsSelectionMode: vi.fn(),
+		toggleName: vi.fn(),
+		toggleNameById: vi.fn(),
+		toggleNamesByIds: vi.fn(),
+		clearSelection: vi.fn(),
+		selectAll: vi.fn(),
+		isSelected: vi.fn(() => false),
+		selectedCount: 0,
+		searchQuery: "",
+		setSearchQuery: vi.fn(),
+		filterStatus: "all",
+		setFilterStatus: vi.fn(),
+		sortBy: "name",
+		setSortBy: vi.fn(),
+		sortOrder: "asc",
+		setSortOrder: vi.fn(),
+		visibleNames: [],
+		hiddenIds: new Set(),
+		hasHiddenNames: false,
+		totalCount: 0,
+		visibleCount: 0,
+		hiddenCount: 0,
+		fetchNames: vi.fn(),
+		toggleVisibility: vi.fn(),
+		deleteName: vi.fn(),
+		updateName: vi.fn(),
+		createName: vi.fn(),
+	}),
+}));
+
 describe("TournamentSetup", () => {
 	const defaultProps = {
 		onLogin: vi.fn(),
