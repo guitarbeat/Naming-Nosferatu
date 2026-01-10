@@ -4,7 +4,7 @@
  * Extracted from App.tsx to improve maintainability.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import type { NameItem } from "../../types/components";
 import { ScrollToTopButton } from "../components/Button";
@@ -49,6 +49,18 @@ export function AppLayout({
 	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
 	const { isLoggedIn } = user;
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const [isMobile, setIsMobile] = useState(false);
+
+	// Detect mobile vs desktop for conditional rendering
+	useEffect(() => {
+		const mediaQuery = window.matchMedia("(max-width: 768px)");
+		const handleChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+
+		setIsMobile(mediaQuery.matches);
+		mediaQuery.addEventListener("change", handleChange);
+
+		return () => mediaQuery.removeEventListener("change", handleChange);
+	}, []);
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
 
@@ -77,19 +89,29 @@ export function AppLayout({
 				{/* Primary Navigation (Desktop & Mobile) */}
 				{isLoggedIn && (
 					<>
-						<DesktopNav
-							onLogout={() => userActions.logout()}
-							onOpenSuggestName={onOpenSuggestName}
-						/>
-						<BottomNav
-							onOpenSuggestName={onOpenSuggestName}
-							onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-						/>
-						<MobileMenu
-							isOpen={isMobileMenuOpen}
-							onClose={() => setIsMobileMenuOpen(false)}
-							onLogout={() => userActions.logout()}
-						/>
+						{/* Desktop Navigation */}
+						{!isMobile && (
+							<DesktopNav
+								onLogout={() => userActions.logout()}
+								onOpenSuggestName={onOpenSuggestName}
+							/>
+						)}
+
+						{/* Mobile Navigation */}
+						{isMobile && (
+							<>
+								<BottomNav
+									onOpenSuggestName={onOpenSuggestName}
+									onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
+									onLogout={() => userActions.logout()}
+								/>
+								<MobileMenu
+									isOpen={isMobileMenuOpen}
+									onClose={() => setIsMobileMenuOpen(false)}
+									onLogout={() => userActions.logout()}
+								/>
+							</>
+						)}
 					</>
 				)}
 

@@ -9,7 +9,7 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import Button from "../../../shared/components/Button";
 import {
 	NameManagementContext,
-	useNameManagementContextSafe,
+	useNameManagementContextOptional,
 } from "../../../shared/components/NameManagementView/nameManagementCore";
 import {
 	devError,
@@ -141,7 +141,7 @@ export const createAnalysisDashboardWrapper = (
 	return function AnalysisDashboardWrapperWithProps() {
 		// * Get context inside the component - it's available here because this component
 		// * is rendered inside NameManagementView's context provider
-		const context = useNameManagementContextSafe();
+		const context = useNameManagementContextOptional();
 		const handleNameHidden =
 			onNameHidden ||
 			(() => {
@@ -272,7 +272,11 @@ export function AnalysisBulkActionsWrapper({
 	showSuccess,
 	showError,
 }: AnalysisBulkActionsWrapperProps) {
-	const context = useNameManagementContextSafe();
+	const context = useNameManagementContextOptional();
+
+	if (!context) {
+		return null;
+	}
 
 	const selectedCount = context.selectedCount ?? 0;
 	const selectedNamesValue = context.selectedNames;

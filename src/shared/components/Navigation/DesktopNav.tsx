@@ -1,5 +1,5 @@
 import { useMotionValueEvent, useScroll } from "framer-motion";
-import { HelpCircle, LogOut } from "lucide-react";
+import { HelpCircle, Lightbulb, LogOut } from "lucide-react";
 import { useState } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { MAIN_NAV_ITEMS } from "../../navigation/config";
@@ -11,8 +11,7 @@ interface DesktopNavProps {
 	onOpenSuggestName?: () => void;
 }
 
-// biome-ignore lint/correctness/noUnusedVariables: onOpenSuggestName might be used in future or mobile view
-export function DesktopNav({ onLogout, onOpenSuggestName: _ }: DesktopNavProps) {
+export function DesktopNav({ onLogout, onOpenSuggestName }: DesktopNavProps) {
 	const { currentRoute, navigateTo } = useRouting();
 	const [hidden, setHidden] = useState(false);
 	const { scrollY } = useScroll();
@@ -122,6 +121,17 @@ export function DesktopNav({ onLogout, onOpenSuggestName: _ }: DesktopNavProps) 
 
 					{/* Right Section: Utilities */}
 					<div className={styles.rightSection}>
+						{onOpenSuggestName && (
+							<button
+								className={styles.utilityBtn}
+								onClick={onOpenSuggestName}
+								aria-label="Suggest a name"
+								title="Suggest a new cat name"
+							>
+								<Lightbulb size={20} />
+							</button>
+						)}
+
 						<button
 							className={styles.utilityBtn}
 							onClick={() => setShowShortcuts(true)}

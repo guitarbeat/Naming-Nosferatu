@@ -153,7 +153,7 @@ export const createCommonMocks = () => ({
 
 	// Context mocks
 	contexts: {
-		useNameManagementContextSafe: () => ({
+		useNameManagementContextOptional: () => ({
 			names: [],
 			isLoading: false,
 			isError: false,

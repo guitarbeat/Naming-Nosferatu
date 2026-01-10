@@ -105,7 +105,7 @@ vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
 vi.mock("../../../shared/components/NameManagementView/nameManagementCore", () => {
 	const { contexts } = createCommonMocks();
 	return {
-		useNameManagementContextSafe: contexts.useNameManagementContextSafe,
+		useNameManagementContextOptional: contexts.useNameManagementContextOptional,
 	};
 });
 

@@ -60,11 +60,13 @@ export function NameManagementProvider({
 	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
 }
 
-export function useNameManagementContextSafe() {
+
+/**
+ * Optional version of useNameManagementContextSafe that returns null instead of throwing
+ * when no provider is available. Useful for components that can work standalone.
+ */
+export function useNameManagementContextOptional(): UseNameManagementViewResult | null {
 	const context = useContext(NameManagementContext);
-	if (!context) {
-		throw new Error("useNameManagementContextSafe must be used within NameManagementProvider");
-	}
 	return context;
 }
 

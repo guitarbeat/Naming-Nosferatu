@@ -48,6 +48,42 @@
 	perspective: 1200px;
 }
 
+/* Stack indicator showing remaining cards */
+.stackIndicator {
+	position: absolute;
+	top: var(--space-2);
+	left: var(--space-2);
+	z-index: var(--z-popover);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-1) var(--space-2);
+	background: color-mix(in srgb, var(--color-neutral-900) 80%, transparent);
+	border: var(--card-border-width) solid color-mix(in srgb, var(--border-color) 40%, transparent);
+	border-radius: var(--radius-md);
+	backdrop-filter: blur(8px);
+	font-size: var(--text-xs);
+	font-weight: 600;
+	color: var(--text-secondary);
+	text-align: center;
+	line-height: 1.2;
+	box-shadow: var(--shadow-sm);
+}
+
+.stackCount {
+	font-size: var(--text-sm);
+	font-weight: 700;
+	color: var(--color-neon-cyan);
+	text-shadow: 0 0 4px var(--overlay-cyan);
+}
+
+.stackLabel {
+	font-size: var(--text-xs);
+	opacity: 0.8;
+	text-transform: lowercase;
+}
+
 .swipeButtons {
 	/* composes: cluster from global; */
 	display: flex;
@@ -228,6 +264,30 @@
 	);
 	z-index: -1;
 	pointer-events: none;
+}
+
+/* Stacked card styles for better visibility of cards underneath */
+.swipeCard.stacked {
+	box-shadow:
+		var(--shadow-xl),
+		0 8px 32px color-mix(in srgb, var(--color-neutral-900) 40%, transparent),
+		inset 0 0 0 1px color-mix(in srgb, var(--glass-border) 60%, transparent);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--card-background) 80%, transparent),
+		color-mix(in srgb, var(--surface-muted) 70%, transparent)
+	);
+	border-color: color-mix(in srgb, var(--border-color) 60%, transparent);
+	backdrop-filter: blur(16px);
+}
+
+.swipeCard.stacked .swipeCardContent {
+	opacity: 0.7;
+}
+
+.swipeCard.stacked .swipeCardName {
+	font-weight: 700;
+	text-shadow: var(--text-shadow-sm);
 }
 
 .swipeCard.longPressing {

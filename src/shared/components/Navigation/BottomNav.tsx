@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Lightbulb, Menu } from "lucide-react";
+import { Lightbulb, LogOut, Menu } from "lucide-react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import useAppStore from "../../../core/store/useAppStore";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
@@ -7,9 +7,10 @@ import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navig
 interface BottomNavProps {
 	onOpenSuggestName?: () => void;
 	onOpenMobileMenu?: () => void;
+	onLogout?: () => void;
 }
 
-export function BottomNav({ onOpenSuggestName, onOpenMobileMenu }: BottomNavProps) {
+export function BottomNav({ onOpenSuggestName, onOpenMobileMenu, onLogout }: BottomNavProps) {
 	const { currentRoute, navigateTo } = useRouting();
 	const isComplete = useAppStore((state) => state.tournament.isComplete);
 
@@ -98,6 +99,24 @@ export function BottomNav({ onOpenSuggestName, onOpenMobileMenu }: BottomNavProp
 					>
 						<Menu className="bottom-nav__icon" aria-hidden={true} />
 						<span className="bottom-nav__label">Menu</span>
+					</button>
+				)}
+
+				{/* Logout Action */}
+				{onLogout && (
+					<button
+						className="bottom-nav__item bottom-nav__item--action"
+						onClick={() => {
+							if (navigator.vibrate) {
+								navigator.vibrate(10);
+							}
+							onLogout();
+						}}
+						aria-label="Log out"
+						title="Log out"
+					>
+						<LogOut className="bottom-nav__icon" aria-hidden={true} />
+						<span className="bottom-nav__label">Logout</span>
 					</button>
 				)}
 			</nav>

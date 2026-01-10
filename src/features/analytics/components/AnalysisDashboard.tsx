@@ -14,7 +14,7 @@ import {
 	CollapsibleContent,
 	CollapsibleHeader,
 } from "../../../shared/components/CollapsibleHeader";
-import { useNameManagementContextSafe } from "../../../shared/components/NameManagementView/nameManagementCore";
+import { useNameManagementContextOptional } from "../../../shared/components/NameManagementView/nameManagementCore";
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";
 import { clearAllCaches, devError } from "../../../shared/utils";
@@ -60,7 +60,7 @@ export function AnalysisDashboard({
 	);
 
 	// Get context for filtering (with fallback for standalone usage)
-	const toolbarContext = useNameManagementContextSafe();
+	const toolbarContext = useNameManagementContextOptional();
 	const filterConfig = toolbarContext?.filterConfig;
 	const userFilter = filterConfig?.userFilter || "all";
 	const dateFilter = filterConfig?.dateFilter || "all";
@@ -172,28 +172,28 @@ export function AnalysisDashboard({
 			onFilterChange={
 				(toolbarContext.handleFilterChange as (name: string, value: string) => void) ||
 				((name: string, value: string) => {
-					if (name === "searchTerm" && toolbarContext.setSearchQuery) {
+					if (name === "searchTerm" && toolbarContext?.setSearchQuery) {
 						toolbarContext.setSearchQuery(value);
 					}
-					if (name === "category" && toolbarContext.setSelectedCategory) {
+					if (name === "category" && toolbarContext?.setSelectedCategory) {
 						toolbarContext.setSelectedCategory(value || "");
 					}
-					if (name === "sortBy" && toolbarContext.setSortBy) {
+					if (name === "sortBy" && toolbarContext?.setSortBy) {
 						toolbarContext.setSortBy(value || "alphabetical");
 					}
-					if (name === "filterStatus" && toolbarContext.setFilterStatus) {
+					if (name === "filterStatus" && toolbarContext?.setFilterStatus) {
 						toolbarContext.setFilterStatus(value);
 					}
-					if (name === "userFilter" && toolbarContext.setUserFilter) {
+					if (name === "userFilter" && toolbarContext?.setUserFilter) {
 						toolbarContext.setUserFilter(value as "all" | "user" | "other");
 					}
-					if (name === "selectionFilter" && toolbarContext.setSelectionFilter) {
+					if (name === "selectionFilter" && toolbarContext?.setSelectionFilter) {
 						toolbarContext.setSelectionFilter(value as "all" | "selected" | "unselected");
 					}
-					if (name === "dateFilter" && toolbarContext.setDateFilter) {
+					if (name === "dateFilter" && toolbarContext?.setDateFilter) {
 						toolbarContext.setDateFilter(value as "all" | "today" | "week" | "month");
 					}
-					if (name === "sortOrder" && toolbarContext.setSortOrder) {
+					if (name === "sortOrder" && toolbarContext?.setSortOrder) {
 						toolbarContext.setSortOrder(value as "asc" | "desc");
 					}
 				})

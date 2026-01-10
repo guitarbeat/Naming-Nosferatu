@@ -172,6 +172,13 @@ export function SwipeableCards({
 
 			{/* Card Stack */}
 			<div className={styles.swipeStack}>
+				{/* Stack indicator */}
+				{visibleCards.length > 1 && (
+					<div className={styles.stackIndicator}>
+						<span className={styles.stackCount}>{visibleCards.length - 1}</span>
+						<span className={styles.stackLabel}>more cards</span>
+					</div>
+				)}
 				<AnimatePresence mode="wait">
 					{visibleCards.length > 0 ? (
 						visibleCards.map((card, index) => {
@@ -182,7 +189,7 @@ export function SwipeableCards({
 							return (
 								<div key={cardId} className={styles.swipeCardWrapper}>
 									<motion.div
-										className={`${styles.swipeCard} ${isCardSelected ? styles.selected : ""} ${isDragging ? styles.longPressing : ""}`}
+										className={`${styles.swipeCard} ${isCardSelected ? styles.selected : ""} ${isDragging ? styles.longPressing : ""} ${index > 0 ? styles.stacked : ""}`}
 										data-direction={isDragging ? dragDirection : undefined}
 										drag="x"
 										dragConstraints={{ left: 0, right: 0 }}
@@ -191,9 +198,10 @@ export function SwipeableCards({
 										onDragEnd={(_, info) => handleDragEnd(cardId, info)}
 										initial={{ opacity: 1, scale: 1 }}
 										animate={{
-											opacity: isDragging ? 0.9 : 1,
-											scale: isDragging ? 1.02 : index === 0 ? 1 : 0.95,
-											y: index === 0 ? 0 : index * 8,
+											opacity: isDragging ? 0.9 : index === 0 ? 1 : 0.85,
+											scale: isDragging ? 1.02 : index === 0 ? 1 : 0.92,
+											y: index === 0 ? 0 : index * 16,
+											rotate: index === 0 ? 0 : index * 2,
 											zIndex: visibleCards.length - index,
 										}}
 										exit={{
@@ -208,6 +216,7 @@ export function SwipeableCards({
 											inset: 0,
 											width: "100%",
 											height: "100%",
+											transformOrigin: "center bottom",
 										}}
 									>
 										{/* Card Content */}
@@ -224,7 +233,7 @@ export function SwipeableCards({
 											)}
 
 											{/* Name */}
-											<h2 className={styles.swipeCardName}>{String(card.name)}</h2>
+											<h2 className={styles.swipeCardName} data-card-name={String(card.name)} data-name-id={String(card.id)}>{String(card.name)}</h2>
 
 											{/* Description */}
 											{card.description && (

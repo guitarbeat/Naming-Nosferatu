@@ -30,6 +30,9 @@
 	font-size: var(--text-sm);
 	letter-spacing: var(--tracking-wide);
 	flex-wrap: wrap; /* Allow wrapping on mobile */
+	position: sticky;
+	top: 0;
+	z-index: var(--z-sticky);
 }
 
 @media (max-width: 480px) {
