@@ -32,7 +32,7 @@ import {
 import { useBracketTransformation } from "./hooks/useBracketTransformation";
 import { useTournamentUIHandlers } from "./hooks/useTournamentUIHandlers";
 import { useUndoWindow } from "./hooks/useUndoWindow";
-import layoutStyles from "./styles/Tournament.module.css";
+import layoutStyles from "./tournament.module.css";
 
 import { CAT_IMAGES } from "./utils/tournamentUtils";
 

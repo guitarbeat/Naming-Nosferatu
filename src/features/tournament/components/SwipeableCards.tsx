@@ -4,7 +4,7 @@ import Button from "../../../shared/components/Button";
 import CatImage from "../../../shared/components/CatImage";
 import { playSound } from "../../../shared/utils/soundManager";
 import type { NameItem } from "../../../types/components";
-import styles from "../styles/SwipeableCards.module.css";
+import styles from "../tournament.module.css";
 import { getRandomCatImage } from "../utils/tournamentUtils";
 
 interface SwipeableCardsProps {

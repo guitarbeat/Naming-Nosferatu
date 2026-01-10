@@ -1,0 +1,461 @@
+/* ==========================================================================
+   Analytics Module - Consolidated CSS
+   ========================================================================== */
+
+/* ==========================================================================
+   ANALYSIS DASHBOARD
+   ========================================================================== */
+
+.analysisContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: var(--space-4);
+}
+
+.analysisHeader {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	margin-bottom: var(--space-4);
+}
+
+.analysisTitle {
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	margin: 0;
+}
+
+.analysisSubtitle {
+	font-size: var(--text-base);
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+.analysisGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: var(--space-4);
+}
+
+.analysisPanel {
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	box-shadow: var(--shadow-md);
+	backdrop-filter: blur(var(--glass-blur));
+	transition: var(--transition-base);
+}
+
+.analysisPanel:hover {
+	border-color: var(--glass-border-hover);
+	box-shadow: var(--shadow-lg);
+}
+
+.panelHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-3);
+	padding-bottom: var(--space-2);
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.panelTitle {
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
+	margin: 0;
+}
+
+.panelActions {
+	display: flex;
+	gap: var(--space-2);
+}
+
+/* ==========================================================================
+   INSIGHTS SECTION
+   ========================================================================== */
+
+.insights {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin-bottom: var(--space-4);
+}
+
+.insightsPanel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	max-width: 1100px;
+	margin: 0 auto;
+}
+
+.insightsSection {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin-bottom: var(--space-4);
+}
+
+.sectionTitle {
+	font-size: var(--text-base);
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
+	margin: 0;
+	padding: var(--space-2) 0;
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.insightCards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: var(--space-2);
+}
+
+.insightCard {
+	padding: var(--space-4);
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--glass-border);
+	background: linear-gradient(135deg, var(--glass-bg-light) 0%, var(--glass-bg) 100%);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	transition: var(--transition-base);
+	backdrop-filter: blur(var(--glass-blur));
+	box-shadow: var(--shadow-md);
+}
+
+.insightCard:hover {
+	transform: translateY(-2px);
+	border-color: color-mix(in srgb, var(--color-neon-cyan) 25%, transparent);
+	box-shadow: var(--shadow-lg);
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--color-neon-cyan) 8%, transparent) 0%,
+		color-mix(in srgb, var(--color-hot-pink) 5%, transparent) 100%
+	);
+}
+
+.insightCard.warning {
+	border-color: color-mix(in srgb, var(--color-error) 30%, transparent);
+	background: color-mix(in srgb, var(--color-error) 8%, transparent);
+}
+
+.cardHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+}
+
+.cardName {
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	flex: 1;
+	min-width: 0;
+}
+
+.cardHideBtn {
+	padding: var(--space-1) var(--space-2);
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-medium);
+	color: var(--color-error);
+	background: transparent;
+	border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	transition: var(--transition-base);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.cardHideBtn:hover {
+	background: color-mix(in srgb, var(--color-error) 10%, transparent);
+	border-color: color-mix(in srgb, var(--color-error) 50%, transparent);
+	transform: scale(1.05);
+}
+
+.cardMetrics {
+	display: flex;
+	gap: var(--space-2);
+	flex-wrap: wrap;
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+}
+
+.cardTags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
+}
+
+.tag {
+	padding: var(--space-1) var(--space-2);
+	border-radius: var(--radius-full);
+	background: var(--glass-bg-light);
+	color: var(--text-primary);
+	font-size: var(--text-xs);
+	text-transform: capitalize;
+}
+
+.tag.warning {
+	background: color-mix(in srgb, var(--color-error) 20%, transparent);
+	color: var(--color-error);
+	border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.insight {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-3);
+	background: var(--glass-bg);
+	border-radius: var(--radius-md);
+	border-left: 4px solid transparent;
+	transition: var(--transition-base);
+}
+
+.insight:hover {
+	background: var(--glass-bg-light);
+	transform: translateX(4px);
+}
+
+.insight.top {
+	border-left-color: color-mix(in srgb, var(--color-neon-cyan) 50%, transparent);
+}
+
+.insight.popular {
+	border-left-color: color-mix(in srgb, var(--color-hot-pink) 50%, transparent);
+}
+
+.insight.quality {
+	border-left-color: color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
+}
+
+.insight.warning {
+	border-left-color: color-mix(in srgb, var(--color-error) 50%, transparent);
+	background: color-mix(in srgb, var(--color-error) 5%, transparent);
+}
+
+.insight.info {
+	border-left-color: color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
+}
+
+.insightIcon {
+	font-size: var(--text-lg);
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.insightText {
+	font-size: var(--text-sm);
+	color: var(--text-primary);
+	line-height: 1.4;
+}
+
+/* ==========================================================================
+   ANALYSIS TABLE
+   ========================================================================== */
+
+.tableContainer {
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+	backdrop-filter: blur(var(--glass-blur));
+}
+
+.table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.tableHeader {
+	background: var(--glass-bg-light);
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.tableHeader th {
+	padding: var(--space-3) var(--space-4);
+	text-align: left;
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-primary);
+	font-size: var(--text-sm);
+	border-bottom: 1px solid var(--glass-border);
+}
+
+.tableBody tr {
+	border-bottom: 1px solid var(--glass-border-light);
+	transition: var(--transition-fast);
+}
+
+.tableBody tr:hover {
+	background: var(--glass-bg-light);
+}
+
+.tableBody td {
+	padding: var(--space-3) var(--space-4);
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+}
+
+.tableCell {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.cellValue {
+	font-weight: var(--font-weight-medium);
+	color: var(--text-primary);
+}
+
+.cellRank {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: var(--glass-bg-light);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: var(--text-xs);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+}
+
+.cellRank.top3 {
+	background: linear-gradient(135deg, var(--color-neon-cyan), var(--color-hot-pink));
+	color: white;
+}
+
+/* ==========================================================================
+   VIEW TOGGLE
+   ========================================================================== */
+
+.viewToggle {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	margin-bottom: var(--space-4);
+}
+
+.toggleButton {
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--radius-md);
+	border: 1px solid var(--glass-border);
+	background: var(--glass-bg);
+	color: var(--text-secondary);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	cursor: pointer;
+	transition: var(--transition-base);
+}
+
+.toggleButton:hover {
+	background: var(--glass-bg-light);
+	color: var(--text-primary);
+}
+
+.toggleButton.active {
+	background: var(--primary-500);
+	color: white;
+	border-color: var(--primary-500);
+}
+
+/* ==========================================================================
+   STATS PANEL
+   ========================================================================== */
+
+.statsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: var(--space-3);
+}
+
+.statCard {
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	text-align: center;
+	transition: var(--transition-base);
+	box-shadow: var(--shadow-sm);
+}
+
+.statCard:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
+	border-color: var(--glass-border-hover);
+}
+
+.statValue {
+	font-size: var(--text-3xl);
+	font-weight: var(--font-weight-bold);
+	color: var(--text-primary);
+	margin-bottom: var(--space-1);
+}
+
+.statLabel {
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+	font-weight: var(--font-weight-medium);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.analysisContainer {
+		padding: var(--space-2);
+	}
+
+	.analysisGrid {
+		grid-template-columns: 1fr;
+		gap: var(--space-3);
+	}
+
+	.insightCards {
+		grid-template-columns: 1fr;
+	}
+
+	.tableContainer {
+		overflow-x: auto;
+	}
+
+	.table {
+		min-width: 600px;
+	}
+
+	.statsGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 480px) {
+	.statsGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.panelHeader {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--space-2);
+	}
+
+	.viewToggle {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.toggleButton {
+		text-align: center;
+	}
+}

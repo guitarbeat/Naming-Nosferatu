@@ -2,7 +2,7 @@ import { AlertCircle, Music, Volume2, VolumeX } from "lucide-react";
 import React, { useState } from "react";
 import Button, { IconButton } from "../../../shared/components/Button";
 import LiquidGlass from "../../../shared/components/LiquidGlass/LiquidGlass";
-import styles from "../styles/Tournament.module.css";
+import styles from "../tournament.module.css";
 
 interface TournamentControlsProps {
 	onEndEarly: () => void;

@@ -22,9 +22,8 @@ import { useAnalysisDisplayData } from "../hooks/useAnalysisDisplayData";
 import type { AnalysisDashboardProps, AnalyticsDataItem, LeaderboardItem } from "../types";
 import { AnalysisInsights } from "./AnalysisInsights";
 import { AnalysisPanel } from "./AnalysisPanel";
-import panelStyles from "./AnalysisPanel.module.css";
+import styles from "../analytics.module.css";
 import { AnalysisTable } from "./AnalysisTable";
-import viewToggleStyles from "./ViewToggle.module.css";
 
 export function AnalysisDashboard({
 	highlights,

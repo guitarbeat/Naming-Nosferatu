@@ -10,9 +10,9 @@ import Button from "../../../shared/components/Button";
 import { ErrorComponent } from "../../../shared/components/ErrorComponent";
 import { playSound } from "../../../shared/utils/soundManager";
 import useMagneticPull from "../hooks/tournamentComponentHooks";
-import tournamentStyles from "../styles/Tournament.module.css";
+import tournamentStyles from "../tournament.module.css";
 import { getRandomCatImage } from "../utils/tournamentUtils";
-import styles from "./FerrofluidMatch.module.css";
+import styles from "../tournament.module.css";
 
 interface TournamentMatchProps {
 	currentMatch: {

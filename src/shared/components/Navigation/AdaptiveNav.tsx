@@ -1,5 +1,5 @@
 import { useMotionValueEvent, useScroll } from "framer-motion";
-import { AnimatePresence, motion, PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, HelpCircle, Lightbulb, LogOut, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -111,17 +111,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	};
 
-	const handleDragEnd = (_: unknown, info: PanInfo) => {
-		if (!isMobile) return;
-
-		const swipeThreshold = 50;
-		const { offset, velocity } = info;
-
-		if (Math.abs(offset.x) > swipeThreshold || Math.abs(velocity.x) > 500) {
-			const direction = offset.x > 0 ? -1 : 1; // -1 for right (prev), 1 for left (next)
-			handleSwipe(direction);
-		}
-	};
 
 	// Filter bottom nav items based on tournament completion
 	const tournamentComplete = true; // TODO: Get from store
