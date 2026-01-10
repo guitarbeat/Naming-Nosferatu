@@ -116,7 +116,7 @@ export default function ViewRouter({
 	const isAnalysisMode = useMemo(() => {
 		if (typeof window !== "undefined") {
 			const urlParams = new URLSearchParams(window.location.search);
-			return urlParams.get("analysis") === "true" || normalizedPath === ROUTES.ANALYSIS;
+			return urlParams.get("analysis") === "true" || normalizedPath.startsWith(ROUTES.ANALYSIS);
 		}
 		return false;
 	}, [normalizedPath]);

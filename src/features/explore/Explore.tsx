@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState, useTransition } from "react";
+import { lazy, Suspense, useEffect, useState, useTransition } from "react";
+import { useRouting } from "../../core/hooks/useRouting";
 import Card from "../../shared/components/Card/Card";
 import { Loading } from "../../shared/components/Loading";
 import styles from "./Explore.module.css";
@@ -15,14 +16,30 @@ interface ExploreProps {
 }
 
 export default function Explore({ userName }: ExploreProps) {
+	const { currentRoute } = useRouting();
 	const [isPending, startTransition] = useTransition();
-	const [activeTab, setActiveTab] = useState<"stats" | "photos">("stats");
+	const [activeTab, setActiveTab] = useState<"stats" | "photos">(() => {
+		if (currentRoute?.includes("/explore/photos")) return "photos";
+		return "stats";
+	});
+
+	const { navigateTo } = useRouting();
 
 	const handleTabChange = (tab: "stats" | "photos") => {
 		startTransition(() => {
 			setActiveTab(tab);
+			navigateTo(tab === "photos" ? "/explore/photos" : "/explore/stats");
 		});
 	};
+
+	// Sync tab with URL changes (e.g. from sidebar)
+	useEffect(() => {
+		if (currentRoute?.includes("/explore/photos") && activeTab !== "photos") {
+			setActiveTab("photos");
+		} else if (currentRoute?.includes("/explore/stats") && activeTab !== "stats") {
+			setActiveTab("stats");
+		}
+	}, [currentRoute, activeTab, setActiveTab]);
 
 	return (
 		<div className={styles.container}>
