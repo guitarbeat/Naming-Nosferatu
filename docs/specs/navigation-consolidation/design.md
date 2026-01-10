@@ -257,10 +257,33 @@ export const UTILITY_NAV_ITEMS: NavItemConfig[] = [];
 export const BOTTOM_NAV_ITEMS: string[] = [
   "tournament",
   "results",
-  "analysis",
-  "gallery",
+  "explore",
 ];
 ```
+
+### Action Buttons
+
+In addition to route-based navigation items, the bottom navigation supports special **action buttons** that trigger modal dialogs or other UI interactions:
+
+```typescript
+// BottomNav.tsx - Action buttons alongside navigation
+{onOpenSuggestName && (
+  <button className="bottom-nav__item bottom-nav__item--action">
+    <Lightbulb className="bottom-nav__icon" />
+    <span className="bottom-nav__label">Suggest</span>
+  </button>
+)}
+```
+
+**Current Action Buttons:**
+- **Suggest Name**: 💡 Lightbulb icon - Opens `NameSuggestionModal` for contributing new cat names
+- **Mobile Menu**: ☰ Menu icon - Opens mobile navigation menu
+
+**Design Pattern:**
+- Action buttons use `bottom-nav__item--action` modifier class
+- They appear after route-based navigation items
+- They include haptic feedback on mobile devices
+- They use semantic icons and accessible labels
 
 ### Transform Module
 
