@@ -46,7 +46,7 @@ const FRAMER_MOTION_PROPS = new Set([
 	'onTapCancel',
 ]);
 
-interface MotionDivProps extends React.HTMLAttributes<HTMLDivElement> {
+interface MotionDivProps {
 	children?: React.ReactNode;
 	layout?: any;
 	dragConstraints?: any;
@@ -54,6 +54,7 @@ interface MotionDivProps extends React.HTMLAttributes<HTMLDivElement> {
 	whileHover?: any;
 	whileTap?: any;
 	onDragEnd?: (event: any, info: { offset: { x: number; y: number } }) => void;
+	onClick?: (e: React.MouseEvent) => void;
 	[key: string]: any;
 }
 

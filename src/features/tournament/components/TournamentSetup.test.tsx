@@ -36,11 +36,11 @@ vi.mock("framer-motion", () => {
 		'onTapCancel',
 	]);
 
-	const createFilteredElement = (Tag: keyof JSX.IntrinsicElements) =>
-		({ children, ...props }: any) => {
+	const createFilteredElement = (Tag: React.ElementType) =>
+		({ children, ...props }: React.PropsWithChildren<Record<string, any>>) => {
 			// Filter out framer-motion specific props
 			const domProps = Object.fromEntries(
-				Object.entries(props).filter(([key]: [string, any]) => !FRAMER_MOTION_PROPS.has(key))
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
 			);
 			return React.createElement(Tag, domProps, children);
 		};
@@ -124,7 +124,7 @@ vi.mock("../../../shared/components/NameManagementView/NameManagementView", () =
 }));
 
 vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
-	ValidatedInput: ({ externalError, externalTouched, ...props }: ValidatedInputProps) => (
+	ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched, ...props }: ValidatedInputProps) => (
 		<input data-testid="validated-input" {...props} />
 	),
 }));
