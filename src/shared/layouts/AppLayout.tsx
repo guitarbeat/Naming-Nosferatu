@@ -13,10 +13,8 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSuggestionModal";
-import { BottomNav } from "../components/Navigation/BottomNav";
-import { DesktopNav } from "../components/Navigation/DesktopNav";
-import { MobileMenu } from "../components/Navigation/MobileMenu";
-import { SwipeNavigation } from "../components/Navigation/SwipeNavigation";
+import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
+import { SwipeWrapper } from "../components/SwipeWrapper";
 import { OfflineIndicator } from "../components/OfflineIndicator";
 import ViewRouter from "../components/ViewRouter/ViewRouter";
 
@@ -86,33 +84,12 @@ export function AppLayout({
 				{/* Static cat-themed background */}
 				<CatBackground />
 
-				{/* Primary Navigation (Desktop & Mobile) */}
+				{/* Unified Adaptive Navigation */}
 				{isLoggedIn && (
-					<>
-						{/* Desktop Navigation */}
-						{!isMobile && (
-							<DesktopNav
-								onLogout={() => userActions.logout()}
-								onOpenSuggestName={onOpenSuggestName}
-							/>
-						)}
-
-						{/* Mobile Navigation */}
-						{isMobile && (
-							<>
-								<BottomNav
-									onOpenSuggestName={onOpenSuggestName}
-									onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
-									onLogout={() => userActions.logout()}
-								/>
-								<MobileMenu
-									isOpen={isMobileMenuOpen}
-									onClose={() => setIsMobileMenuOpen(false)}
-									onLogout={() => userActions.logout()}
-								/>
-							</>
-						)}
-					</>
+					<AdaptiveNav
+						onLogout={() => userActions.logout()}
+						onOpenSuggestName={onOpenSuggestName}
+					/>
 				)}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>

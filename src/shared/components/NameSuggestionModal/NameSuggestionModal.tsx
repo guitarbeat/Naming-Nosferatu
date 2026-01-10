@@ -3,7 +3,6 @@
  * @description Modal component for suggesting new cat names
  */
 
-import PropTypes from "prop-types";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "../../../core/constants";
@@ -307,7 +306,3 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 	);
 }
 
-NameSuggestionModal.propTypes = {
-	isOpen: PropTypes.bool.isRequired,
-	onClose: PropTypes.func.isRequired,
-};

@@ -43,7 +43,6 @@
  * --- END AUTO-GENERATED DOCSTRING ---
  */
 
-import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import styles from "./Bracket.module.css";
 
@@ -270,16 +269,5 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 
 Bracket.displayName = "Bracket";
 
-Bracket.propTypes = {
-	matches: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.number.isRequired,
-			name1: PropTypes.string.isRequired,
-			name2: PropTypes.string,
-			winner: PropTypes.number,
-			round: PropTypes.number,
-		}),
-	).isRequired,
-};
 
 export default memo(Bracket);

@@ -4,7 +4,6 @@
  */
 
 import { Plus } from "lucide-react";
-import PropTypes from "prop-types";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Bracket from "../../../shared/components/Bracket";
@@ -158,15 +157,6 @@ function CalendarButton({
 	);
 }
 
-CalendarButton.propTypes = {
-	rankings: PropTypes.array.isRequired,
-	userName: PropTypes.string.isRequired,
-	className: PropTypes.string,
-	variant: PropTypes.string,
-	size: PropTypes.string,
-	disabled: PropTypes.bool,
-	onClick: PropTypes.func,
-};
 
 import type { NameItem } from "../../../types/components";
 
@@ -502,13 +492,5 @@ function PersonalResults({
 	);
 }
 
-PersonalResults.propTypes = {
-	personalRatings: PropTypes.object,
-	currentTournamentNames: PropTypes.array,
-	voteHistory: PropTypes.arrayOf(PropTypes.object),
-	onStartNew: PropTypes.func.isRequired,
-	onUpdateRatings: PropTypes.func,
-	userName: PropTypes.string.isRequired,
-};
 
 export default PersonalResults;

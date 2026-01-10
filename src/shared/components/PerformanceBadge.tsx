@@ -4,7 +4,6 @@
  * Styles are consolidated in src/shared/styles/components-primitives.css
  */
 
-import PropTypes from "prop-types";
 
 // Insight category lookup - keys use snake_case to match insight tag strings
 const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
@@ -86,12 +85,6 @@ function PerformanceBadge({ type, label, variant = "md", className = "" }: Perfo
 	);
 }
 
-PerformanceBadge.propTypes = {
-	type: PropTypes.string.isRequired,
-	label: PropTypes.string,
-	variant: PropTypes.oneOf(["sm", "md"]),
-	className: PropTypes.string,
-};
 
 PerformanceBadge.displayName = "PerformanceBadge";
 
@@ -123,10 +116,6 @@ export function PerformanceBadges({ types = [], className = "" }: PerformanceBad
 	);
 }
 
-PerformanceBadges.propTypes = {
-	types: PropTypes.arrayOf(PropTypes.string),
-	className: PropTypes.string,
-};
 
 PerformanceBadges.displayName = "PerformanceBadges";
 
@@ -198,12 +187,5 @@ export function TrendIndicator({
 	);
 }
 
-TrendIndicator.propTypes = {
-	direction: PropTypes.oneOf(["up", "down", "stable"]),
-	percentChange: PropTypes.number,
-	compact: PropTypes.bool,
-	className: PropTypes.string,
-	animated: PropTypes.bool,
-};
 
 TrendIndicator.displayName = "TrendIndicator";

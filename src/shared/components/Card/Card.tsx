@@ -3,7 +3,6 @@
  * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
-import PropTypes from "prop-types";
 import React, { memo, useEffect, useId, useState } from "react";
 import { TIMING } from "../../../core/constants";
 import { cn } from "../../utils";
@@ -190,48 +189,6 @@ export const Card = memo(
 
 Card.displayName = "Card";
 
-// PropTypes for runtime validation (TypeScript handles compile-time)
-const CardWithPropTypes = Card as typeof Card & {
-	propTypes?: unknown;
-};
-
-(CardWithPropTypes as { propTypes: unknown }).propTypes = {
-	children: PropTypes.node.isRequired,
-	className: PropTypes.string,
-	variant: PropTypes.oneOf([
-		"default",
-		"elevated",
-		"outlined",
-		"filled",
-		"primary",
-		"success",
-		"warning",
-		"info",
-		"danger",
-		"secondary",
-	]),
-	padding: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
-	shadow: PropTypes.oneOf(["none", "small", "medium", "large", "xl"]),
-	border: PropTypes.bool,
-	background: PropTypes.oneOf(["solid", "glass", "gradient", "transparent"]),
-	as: PropTypes.elementType,
-	interactive: PropTypes.bool,
-	onClick: PropTypes.func,
-	liquidGlass: PropTypes.oneOfType([
-		PropTypes.bool,
-		PropTypes.shape({
-			width: PropTypes.number,
-			height: PropTypes.number,
-			radius: PropTypes.number,
-			scale: PropTypes.number,
-			saturation: PropTypes.number,
-			frost: PropTypes.number,
-			inputBlur: PropTypes.number,
-			outputBlur: PropTypes.number,
-		}),
-	]),
-};
-
 interface CardStatsProps extends CardProps {
 	title?: string;
 	label?: string;
@@ -278,16 +235,6 @@ const CardStats: React.FC<CardStatsProps> = ({
 	);
 };
 
-CardStats.propTypes = {
-	title: PropTypes.string,
-	label: PropTypes.string,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.node]).isRequired,
-	emoji: PropTypes.node,
-	className: PropTypes.string,
-	labelClassName: PropTypes.string,
-	valueClassName: PropTypes.string,
-	emojiClassName: PropTypes.string,
-};
 
 /* ========================================= */
 /*              CardName Component             */

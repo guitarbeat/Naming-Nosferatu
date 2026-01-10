@@ -3,7 +3,6 @@
  * @description Lightweight lightbox component with keyboard navigation and smooth transitions
  */
 
-import PropTypes from "prop-types";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TIMING } from "../../../core/constants";
 import styles from "../styles/Lightbox.module.css";
@@ -280,13 +279,6 @@ function Lightbox({
 	);
 }
 
-Lightbox.propTypes = {
-	images: PropTypes.arrayOf(PropTypes.string).isRequired,
-	currentIndex: PropTypes.number.isRequired,
-	onClose: PropTypes.func.isRequired,
-	onNavigate: PropTypes.func.isRequired,
-	preloadImages: PropTypes.arrayOf(PropTypes.string),
-};
 
 // ts-prune-ignore-next (used in TournamentSetup)
 export default Lightbox;

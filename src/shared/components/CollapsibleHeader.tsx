@@ -4,7 +4,6 @@
  * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
-import PropTypes from "prop-types";
 import { useId } from "react";
 import { useCollapsible } from "../../core/hooks/useStorage";
 import LiquidGlass, { HEADER_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass/LiquidGlass";
@@ -33,9 +32,6 @@ const ChevronIcon = ({ isCollapsed }: { isCollapsed: boolean }) => (
 	</svg>
 );
 
-ChevronIcon.propTypes = {
-	isCollapsed: PropTypes.bool.isRequired,
-};
 
 /**
  * Collapsible Header Component
@@ -183,31 +179,6 @@ export function CollapsibleHeader({
 	return headerContent;
 }
 
-CollapsibleHeader.propTypes = {
-	title: PropTypes.string.isRequired,
-	icon: PropTypes.string,
-	isCollapsed: PropTypes.bool.isRequired,
-	onToggle: PropTypes.func.isRequired,
-	summary: PropTypes.node,
-	actions: PropTypes.node,
-	contentId: PropTypes.string,
-	className: PropTypes.string,
-	variant: PropTypes.oneOf(["default", "compact"]),
-	toolbar: PropTypes.node,
-	liquidGlass: PropTypes.oneOfType([
-		PropTypes.bool,
-		PropTypes.shape({
-			width: PropTypes.number,
-			height: PropTypes.number,
-			radius: PropTypes.number,
-			scale: PropTypes.number,
-			saturation: PropTypes.number,
-			frost: PropTypes.number,
-			inputBlur: PropTypes.number,
-			outputBlur: PropTypes.number,
-		}),
-	]),
-};
 
 /**
  * Collapsible Content wrapper with animation
@@ -241,12 +212,6 @@ export function CollapsibleContent({
 	);
 }
 
-CollapsibleContent.propTypes = {
-	id: PropTypes.string,
-	isCollapsed: PropTypes.bool.isRequired,
-	children: PropTypes.node.isRequired,
-	className: PropTypes.string,
-};
 
 /**
  * Collapsible Section Component
@@ -318,28 +283,3 @@ export function CollapsibleSection({
 	);
 }
 
-CollapsibleSection.propTypes = {
-	title: PropTypes.string.isRequired,
-	icon: PropTypes.string,
-	summary: PropTypes.node,
-	actions: PropTypes.node,
-	children: PropTypes.node.isRequired,
-	storageKey: PropTypes.string,
-	defaultCollapsed: PropTypes.bool,
-	className: PropTypes.string,
-	variant: PropTypes.oneOf(["default", "compact"]),
-	toolbar: PropTypes.node,
-	liquidGlass: PropTypes.oneOfType([
-		PropTypes.bool,
-		PropTypes.shape({
-			width: PropTypes.number,
-			height: PropTypes.number,
-			radius: PropTypes.number,
-			scale: PropTypes.number,
-			saturation: PropTypes.number,
-			frost: PropTypes.number,
-			inputBlur: PropTypes.number,
-			outputBlur: PropTypes.number,
-		}),
-	]),
-};

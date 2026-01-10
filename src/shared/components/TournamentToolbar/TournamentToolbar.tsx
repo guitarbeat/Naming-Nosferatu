@@ -5,7 +5,6 @@
  */
 
 import { Plus } from "lucide-react";
-import PropTypes from "prop-types";
 import React, { useId, useMemo } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
@@ -571,45 +570,6 @@ function TournamentToolbar({
 		</div>
 	);
 }
-
-// ============================================================================
-// PROP TYPES
-// ============================================================================
-
-const filterShape = PropTypes.shape({
-	searchTerm: PropTypes.string,
-	category: PropTypes.string,
-	sortBy: PropTypes.string,
-	filterStatus: PropTypes.string,
-	userFilter: PropTypes.string,
-	selectionFilter: PropTypes.string,
-	sortOrder: PropTypes.string,
-	dateFilter: PropTypes.string,
-});
-
-const optionShape = PropTypes.shape({
-	value: PropTypes.string.isRequired,
-	label: PropTypes.string.isRequired,
-});
-
-TournamentToolbar.propTypes = {
-	mode: PropTypes.oneOf(["tournament", "profile", "hybrid"]),
-	filters: filterShape,
-	onFilterChange: PropTypes.func,
-	filteredCount: PropTypes.number,
-	totalCount: PropTypes.number,
-	categories: PropTypes.arrayOf(PropTypes.string),
-	showUserFilter: PropTypes.bool,
-	showSelectionFilter: PropTypes.bool,
-	userOptions: PropTypes.arrayOf(optionShape),
-	analysisMode: PropTypes.bool,
-	startTournamentButton: PropTypes.shape({
-		onClick: PropTypes.func.isRequired,
-		selectedCount: PropTypes.number.isRequired,
-	}),
-
-	className: PropTypes.string,
-};
 
 TournamentToolbar.displayName = "TournamentToolbar";
 

@@ -27,7 +27,6 @@
 		"tailwindcss",
 		"autoprefixer",
 		"@tailwindcss/postcss",
-		"babel-plugin-transform-react-remove-prop-types",
 		"eslint-config-prettier",
 		"glob",
 		"postcss-discard-unused",

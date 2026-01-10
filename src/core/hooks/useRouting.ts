@@ -262,8 +262,8 @@ export function useTournamentRoutingSync({
 		}
 
 		if (!isLoggedIn) {
-			if (normalizedPath !== "/login") {
-				navigateTo("/login", { replace: true });
+			if (normalizedPath !== "/" && normalizedPath !== "/tournament") {
+				navigateTo("/", { replace: true });
 			}
 			previousRouteRef.current = currentRoute;
 			return;

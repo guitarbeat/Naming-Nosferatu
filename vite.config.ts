@@ -6,7 +6,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
-import { componentTagger } from "lovable-tagger";
 import { defineConfig } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -27,14 +26,8 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [
-			react({
-				// * Strip PropTypes from production bundles to reduce size
-				babel: {
-					plugins: isProd ? [["transform-react-remove-prop-types", { removeImport: true }]] : [],
-				},
-			}),
-			mode === "development" && componentTagger(),
-		].filter(Boolean),
+			react(),
+		],
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds
 		base: "/",
@@ -92,7 +85,6 @@ export default defineConfig(({ mode }) => {
 						"ui-vendor": ["lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
 						"data-vendor": ["@supabase/supabase-js", "@tanstack/react-query", "zustand"],
 						"form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
-						"utils-vendor": ["immer"],
 					},
 					assetFileNames: (assetInfo) => {
 						if (!assetInfo.name) {

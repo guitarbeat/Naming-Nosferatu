@@ -5,7 +5,6 @@
  */
 
 import { motion } from "framer-motion";
-import PropTypes from "prop-types";
 import { memo, useMemo } from "react";
 import type { NameItem } from "@/types/components";
 import { useMasonryLayout } from "../../hooks/useMasonryLayout";
@@ -246,23 +245,3 @@ export function NameGrid({
 	);
 }
 
-NameGrid.propTypes = {
-	names: PropTypes.array.isRequired,
-	selectedNames: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(Set)]),
-	onToggleName: PropTypes.func,
-	filters: PropTypes.shape({
-		searchTerm: PropTypes.string,
-		category: PropTypes.string,
-		sortBy: PropTypes.string,
-		sortOrder: PropTypes.oneOf(["asc", "desc"]),
-		filterStatus: PropTypes.oneOf(["visible", "hidden", "all"]),
-	}),
-	isAdmin: PropTypes.bool,
-	showSelectedOnly: PropTypes.bool,
-	showCatPictures: PropTypes.bool,
-	imageList: PropTypes.array,
-	onToggleVisibility: PropTypes.func,
-	onDelete: PropTypes.func,
-	isLoading: PropTypes.bool,
-	className: PropTypes.string,
-};

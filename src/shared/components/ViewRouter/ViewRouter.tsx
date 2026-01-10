@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import { lazy, Suspense, useMemo } from "react";
 import { getRouteConfig, ROUTES, type ViewState } from "../../../core/config/routeConfig";
 import { useRouting } from "../../../core/hooks/useRouting";
@@ -72,9 +71,9 @@ function getViewFromRoute(
 	const normalizedPath = normalizeRoutePath(path);
 	const routeConfig = getRouteConfig(normalizedPath);
 
-	// Not logged in - always show login/setup
+	// Not logged in - show tournament view (handles login inline)
 	if (!isLoggedIn) {
-		return "login";
+		return "tournament";
 	}
 
 	// Use route config if available
@@ -125,20 +124,6 @@ export default function ViewRouter({
 
 	// Render based on current view
 	switch (currentView) {
-		case "login":
-			return (
-				<Suspense fallback={<Loading variant="spinner" text="Loading Setup..." />}>
-					<TournamentSetup
-						onLogin={onLogin as (name: string) => Promise<boolean>}
-						onStart={onTournamentSetup as (selectedNames: unknown) => void}
-						userName={userName}
-						isLoggedIn={isLoggedIn}
-						existingRatings={existingRatings}
-						onOpenSuggestName={onOpenSuggestName}
-					/>
-				</Suspense>
-			);
-
 		case "gallery":
 		case "photos":
 			return (
@@ -219,20 +204,3 @@ export default function ViewRouter({
 	}
 }
 
-ViewRouter.propTypes = {
-	isLoggedIn: PropTypes.bool.isRequired,
-	onLogin: PropTypes.func.isRequired,
-	tournament: PropTypes.shape({
-		names: PropTypes.arrayOf(PropTypes.object),
-		ratings: PropTypes.object.isRequired,
-		isComplete: PropTypes.bool.isRequired,
-		voteHistory: PropTypes.array.isRequired,
-		currentView: PropTypes.string.isRequired,
-	}).isRequired,
-	userName: PropTypes.string,
-	onStartNewTournament: PropTypes.func.isRequired,
-	onUpdateRatings: PropTypes.func.isRequired,
-	onTournamentSetup: PropTypes.func.isRequired,
-	onTournamentComplete: PropTypes.func.isRequired,
-	onVote: PropTypes.func.isRequired,
-};

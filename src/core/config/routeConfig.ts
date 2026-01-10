@@ -14,7 +14,6 @@ export const ROUTES = {
 	GALLERY: "/gallery",
 	ANALYSIS: "/analysis",
 	ANALYSIS_CATS: "/analysis/cats",
-	LOGIN: "/login",
 	EXPLORE: "/explore",
 	EXPLORE_STATS: "/explore/stats",
 	EXPLORE_PHOTOS: "/explore/photos",
@@ -24,7 +23,6 @@ export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
 
 // View states that map to routes
 export type ViewState =
-	| "login"
 	| "tournament"
 	| "results"
 	| "gallery"
@@ -97,13 +95,6 @@ export const ROUTE_CONFIGS: RouteConfig[] = [
 		requiresAuth: true,
 		lazyComponent: "Dashboard",
 		title: "Cat Analytics",
-	},
-	{
-		path: ROUTES.LOGIN,
-		view: "login",
-		requiresAuth: false,
-		lazyComponent: "TournamentSetup",
-		title: "Login",
 	},
 	{
 		path: ROUTES.EXPLORE,

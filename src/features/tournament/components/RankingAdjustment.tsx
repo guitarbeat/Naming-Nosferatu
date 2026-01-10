@@ -5,7 +5,6 @@
 
 import type { DropResult } from "@hello-pangea/dnd";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { TIMING } from "../../../core/constants";
 import Card from "../../../shared/components/Card/Card";
@@ -343,11 +342,6 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 
 RankingAdjustment.displayName = "RankingAdjustment";
 
-RankingAdjustment.propTypes = {
-	rankings: PropTypes.arrayOf(PropTypes.object).isRequired,
-	onSave: PropTypes.func.isRequired,
-	onCancel: PropTypes.func.isRequired,
-};
 
 // ts-prune-ignore-next (used in Dashboard)
 export default RankingAdjustment;

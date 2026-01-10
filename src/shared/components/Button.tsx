@@ -8,7 +8,6 @@
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
-import PropTypes from "prop-types";
 import React, { forwardRef, memo } from "react";
 import { cn } from "../utils";
 
@@ -73,9 +72,6 @@ const sizeMapping = {
 	medium: "default",
 	large: "lg",
 };
-
-const BUTTON_VARIANTS = ["primary", "secondary", "danger", "ghost", "login"];
-const BUTTON_SIZES = ["small", "medium", "large"];
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
@@ -146,20 +142,6 @@ const Button = ({
 	);
 };
 
-Button.propTypes = {
-	children: PropTypes.node.isRequired,
-	variant: PropTypes.oneOf(BUTTON_VARIANTS),
-	size: PropTypes.oneOf(BUTTON_SIZES),
-	disabled: PropTypes.bool,
-	loading: PropTypes.bool,
-	type: PropTypes.oneOf(["button", "submit", "reset"]),
-	className: PropTypes.string,
-	onClick: PropTypes.func,
-	startIcon: PropTypes.node,
-	endIcon: PropTypes.node,
-	iconOnly: PropTypes.bool,
-};
-
 Button.displayName = "Button";
 
 /**
@@ -213,17 +195,6 @@ const IconButton = ({
 			{icon}
 		</Button>
 	);
-};
-
-IconButton.propTypes = {
-	icon: PropTypes.node.isRequired,
-	variant: PropTypes.oneOf(BUTTON_VARIANTS),
-	size: PropTypes.oneOf(BUTTON_SIZES),
-	disabled: PropTypes.bool,
-	loading: PropTypes.bool,
-	onClick: PropTypes.func,
-	className: PropTypes.string,
-	ariaLabel: PropTypes.string.isRequired,
 };
 
 IconButton.displayName = "IconButton";
@@ -295,11 +266,6 @@ const ScrollToTopButton = ({
 			↑
 		</button>
 	);
-};
-
-ScrollToTopButton.propTypes = {
-	isLoggedIn: PropTypes.bool.isRequired,
-	className: PropTypes.string,
 };
 
 ScrollToTopButton.displayName = "ScrollToTopButton";

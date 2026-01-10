@@ -4,7 +4,6 @@
  * Combines Input, Select, and FormField functionality.
  */
 
-import PropTypes from "prop-types";
 import React from "react";
 import styles from "./Form.module.css";
 
@@ -76,16 +75,6 @@ const FormField = ({
 	);
 };
 
-FormField.propTypes = {
-	id: PropTypes.string,
-	name: PropTypes.string,
-	label: PropTypes.string,
-	error: PropTypes.string,
-	required: PropTypes.bool,
-	ariaDescribedBy: PropTypes.string,
-	children: PropTypes.element.isRequired,
-	className: PropTypes.string,
-};
 
 FormField.displayName = "FormField";
 
@@ -171,20 +160,6 @@ const Input = ({
 	);
 };
 
-Input.propTypes = {
-	type: PropTypes.oneOf(["text", "email", "password", "number", "tel", "url", "search"]),
-	name: PropTypes.string,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	onChange: PropTypes.func,
-	onBlur: PropTypes.func,
-	placeholder: PropTypes.string,
-	disabled: PropTypes.bool,
-	required: PropTypes.bool,
-	error: PropTypes.string,
-	label: PropTypes.string,
-	className: PropTypes.string,
-	ariaDescribedBy: PropTypes.string,
-};
 
 Input.displayName = "Input";
 
@@ -285,26 +260,6 @@ const Select = ({
 	);
 };
 
-Select.propTypes = {
-	name: PropTypes.string,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-	onChange: PropTypes.func,
-	onBlur: PropTypes.func,
-	options: PropTypes.arrayOf(
-		PropTypes.shape({
-			value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-			label: PropTypes.string.isRequired,
-			disabled: PropTypes.bool,
-		}),
-	),
-	disabled: PropTypes.bool,
-	required: PropTypes.bool,
-	error: PropTypes.string,
-	label: PropTypes.string,
-	placeholder: PropTypes.string,
-	className: PropTypes.string,
-	ariaDescribedBy: PropTypes.string,
-};
 
 Select.displayName = "Select";
 

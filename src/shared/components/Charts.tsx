@@ -4,7 +4,6 @@
  * Combines BarChart and BumpChart functionality
  */
 
-import PropTypes from "prop-types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TrendIndicator } from "./PerformanceBadge";
 
@@ -86,16 +85,6 @@ function BarChart({
 	);
 }
 
-BarChart.propTypes = {
-	title: PropTypes.string,
-	items: PropTypes.arrayOf(PropTypes.object),
-	valueKey: PropTypes.string,
-	labelKey: PropTypes.string,
-	maxItems: PropTypes.number,
-	showSecondaryValue: PropTypes.bool,
-	secondaryValueKey: PropTypes.string,
-	className: PropTypes.string,
-};
 
 // Animation configuration for BumpChart
 const ANIMATION_CONFIG = {
@@ -446,21 +435,3 @@ export function BumpChart({
 	);
 }
 
-BumpChart.propTypes = {
-	data: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.string,
-			name: PropTypes.string,
-			rankings: PropTypes.arrayOf(PropTypes.number),
-		}),
-	),
-	labels: PropTypes.arrayOf(PropTypes.string),
-	timeLabels: PropTypes.arrayOf(PropTypes.string),
-	title: PropTypes.string,
-	width: PropTypes.number,
-	height: PropTypes.number,
-	animated: PropTypes.bool,
-	showLegend: PropTypes.bool,
-	showTrends: PropTypes.bool,
-	className: PropTypes.string,
-};

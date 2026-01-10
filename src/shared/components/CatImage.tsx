@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
@@ -258,17 +257,5 @@ function CatImage({
 		</div>
 	);
 }
-
-CatImage.propTypes = {
-	src: PropTypes.string,
-	alt: PropTypes.string,
-	containerClassName: PropTypes.string,
-	imageClassName: PropTypes.string,
-	loading: PropTypes.oneOf(["lazy", "eager"]),
-	decoding: PropTypes.oneOf(["async", "auto", "sync"]),
-	containerStyle: PropTypes.object,
-	onLoad: PropTypes.func,
-	onError: PropTypes.func,
-};
 
 export default CatImage;

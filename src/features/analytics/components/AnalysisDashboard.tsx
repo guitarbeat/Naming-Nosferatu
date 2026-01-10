@@ -5,7 +5,6 @@
  * Includes a bump chart visualization showing ranking changes over time.
  */
 
-import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
@@ -26,20 +25,6 @@ import { AnalysisPanel } from "./AnalysisPanel";
 import panelStyles from "./AnalysisPanel.module.css";
 import { AnalysisTable } from "./AnalysisTable";
 import viewToggleStyles from "./ViewToggle.module.css";
-
-/**
- * Common ID type - can be string or number
- */
-const idType = PropTypes.oneOfType([PropTypes.string, PropTypes.number]);
-
-/**
- * Name item shape - used in rankings, highlights, charts
- */
-const nameItemShape = PropTypes.shape({
-	id: idType,
-	name: PropTypes.string.isRequired,
-	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-});
 
 export function AnalysisDashboard({
 	highlights,
@@ -295,14 +280,3 @@ export function AnalysisDashboard({
 	);
 }
 
-AnalysisDashboard.propTypes = {
-	isAdmin: PropTypes.bool,
-	userName: PropTypes.string,
-	onNameHidden: PropTypes.func,
-	highlights: PropTypes.shape({
-		topRated: PropTypes.arrayOf(nameItemShape),
-		mostWins: PropTypes.arrayOf(nameItemShape),
-	}),
-	showGlobalLeaderboard: PropTypes.bool,
-	defaultCollapsed: PropTypes.bool,
-};
