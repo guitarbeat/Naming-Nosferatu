@@ -189,7 +189,12 @@ export const Card = memo(
 
 				// * Separate wrapper classes (for LiquidGlass) from content classes
 				const wrapperClasses = [className].filter(Boolean).join(" ");
-				const contentClasses = buildContentClasses(variant, padding, shadow, border);
+				const contentClasses = cardVariants({
+					variant,
+					padding,
+					shadow,
+					bordered: border,
+				});
 
 				return (
 					<LiquidGlass
