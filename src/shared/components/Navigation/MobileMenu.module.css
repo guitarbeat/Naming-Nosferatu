@@ -80,7 +80,7 @@
 	cursor: pointer;
 	transition: all var(--duration-fast);
 	text-align: left;
-    min-height: 48px; /* Ensure 48px touch target */
+	min-height: 48px; /* Ensure 48px touch target */
 }
 
 .itemContent {
@@ -126,7 +126,7 @@
 	text-align: left;
 	cursor: pointer;
 	transition: all var(--duration-fast);
-    min-height: 48px; /* Ensure 48px touch target */
+	min-height: 48px; /* Ensure 48px touch target */
 }
 
 .childItem:hover {
@@ -155,7 +155,7 @@
 	font-weight: var(--font-weight-bold);
 	cursor: pointer;
 	transition: all var(--duration-fast);
-    min-height: 48px; /* Ensure 48px touch target */
+	min-height: 48px; /* Ensure 48px touch target */
 }
 
 .logoutButton:hover {

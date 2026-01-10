@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouting } from "../../../core/hooks/useRouting";
 import { MAIN_NAV_ITEMS } from "../../navigation/config";
@@ -67,11 +67,7 @@ export function MobileMenu({ isOpen, onClose, onLogout }: MobileMenuProps) {
 					>
 						<div className={styles.header}>
 							<span className={styles.title}>Menu</span>
-							<button
-								className={styles.closeButton}
-								onClick={onClose}
-								aria-label="Close menu"
-							>
+							<button className={styles.closeButton} onClick={onClose} aria-label="Close menu">
 								<X size={24} />
 							</button>
 						</div>
@@ -123,7 +119,7 @@ function MobileNavItem({
 
 	// Auto-expand if child is active
 	useEffect(() => {
-		if (hasChildren && item.children?.some(child => isActive(child.route))) {
+		if (hasChildren && item.children?.some((child) => isActive(child.route))) {
 			setIsExpanded(true);
 		}
 	}, [hasChildren, item.children]);
@@ -145,13 +141,12 @@ function MobileNavItem({
 				aria-expanded={hasChildren ? isExpanded : undefined}
 			>
 				<div className={styles.itemContent}>
-					{item.icon && <item.icon className={styles.icon} size={20} />}
+					{item.icon && <item.icon className={`${styles.icon} w-5 h-5`} />}
 					<span className={styles.label}>{item.label}</span>
 				</div>
 				{hasChildren && (
 					<ChevronDown
-						className={styles.chevron}
-						size={16}
+						className={`${styles.chevron} w-4 h-4`}
 						style={{
 							transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
 						}}
