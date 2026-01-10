@@ -1,11 +1,11 @@
 /**
  * @module FirstMatchTutorial
- * @description Tutorial overlay shown on the first match of a user's first tournament
+ * @description Minimal inline hint shown on the first match - replaces modal with contextual tooltip
  */
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../../core/constants";
-import Button from "../../../shared/components/Button";
 import styles from "./FirstMatchTutorial.module.css";
 
 interface FirstMatchTutorialProps {
@@ -14,13 +14,34 @@ interface FirstMatchTutorialProps {
 }
 
 export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps) {
-	const handleGotIt = () => {
+	const [showKeyboardHint, setShowKeyboardHint] = useState(false);
+
+	const handleDismiss = () => {
 		// Mark tutorial as seen
 		const userStorage = JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_STORAGE) || "{}");
 		userStorage.hasSeenFirstMatchTutorial = true;
 		localStorage.setItem(STORAGE_KEYS.USER_STORAGE, JSON.stringify(userStorage));
 		onClose();
 	};
+
+	// Show keyboard hint after a delay (progressive disclosure)
+	useEffect(() => {
+		if (isOpen) {
+			const timer = setTimeout(() => setShowKeyboardHint(true), 2000);
+			return () => clearTimeout(timer);
+		}
+		setShowKeyboardHint(false);
+		return undefined;
+	}, [isOpen]);
+
+	// Auto-dismiss after 8 seconds of no interaction
+	useEffect(() => {
+		if (isOpen) {
+			const timer = setTimeout(handleDismiss, 8000);
+			return () => clearTimeout(timer);
+		}
+		return undefined;
+	}, [isOpen]);
 
 	if (!isOpen) {
 		return null;
@@ -30,85 +51,51 @@ export function FirstMatchTutorial({ isOpen, onClose }: FirstMatchTutorialProps)
 		<AnimatePresence>
 			{isOpen && (
 				<>
+					{/* Subtle backdrop - click anywhere to dismiss */}
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className={styles.backdrop}
-						onClick={handleGotIt}
+						className={styles.inlineBackdrop}
+						onClick={handleDismiss}
 						aria-hidden="true"
 					/>
+
+					{/* Floating hint tooltip */}
 					<motion.div
-						initial={{ opacity: 0, scale: 0.9, y: 20 }}
-						animate={{ opacity: 1, scale: 1, y: 0 }}
-						exit={{ opacity: 0, scale: 0.9, y: 20 }}
-						transition={{ duration: 0.4, ease: [0.68, -0.55, 0.265, 1.55] }}
-						className={styles.tutorialCard}
-						role="dialog"
-						aria-labelledby="tutorial-title"
-						aria-describedby="tutorial-description"
-						aria-modal="true"
+						initial={{ opacity: 0, y: 10, scale: 0.95 }}
+						animate={{ opacity: 1, y: 0, scale: 1 }}
+						exit={{ opacity: 0, y: -10, scale: 0.95 }}
+						transition={{ duration: 0.3, ease: "easeOut" }}
+						className={styles.inlineHint}
+						role="tooltip"
+						aria-live="polite"
 					>
-						<div className={styles.tutorialHeader}>
-							<h2 id="tutorial-title" className={styles.tutorialTitle}>
-								🎯 The Ritual Begins
-							</h2>
-							<button
-								type="button"
-								className={styles.closeButton}
-								onClick={handleGotIt}
-								aria-label="Close tutorial"
-							>
-								×
-							</button>
-						</div>
+						<span className={styles.hintIcon}>👆</span>
+						<span className={styles.hintText}>Tap your favorite name</span>
 
-						<div id="tutorial-description" className={styles.tutorialContent}>
-							<div className={styles.tutorialStep}>
-								<span className={styles.stepNumber}>1</span>
-								<div className={styles.stepContent}>
-									<p className={styles.stepTitle}>Click a name to vote for it</p>
-									<p className={styles.stepDescription}>
-										Choose which cat name you prefer in this matchup
-									</p>
-								</div>
-							</div>
+						{/* Progressive keyboard hint */}
+						<AnimatePresence>
+							{showKeyboardHint && (
+								<motion.span
+									initial={{ opacity: 0, x: -5 }}
+									animate={{ opacity: 1, x: 0 }}
+									exit={{ opacity: 0 }}
+									className={styles.keyboardHint}
+								>
+									or use <kbd>←</kbd> <kbd>→</kbd>
+								</motion.span>
+							)}
+						</AnimatePresence>
 
-							<div className={styles.tutorialStep}>
-								<span className={styles.stepNumber}>2</span>
-								<div className={styles.stepContent}>
-									<p className={styles.stepTitle}>Use keyboard shortcuts</p>
-									<p className={styles.stepDescription}>
-										Press <kbd>←</kbd> or <kbd>→</kbd> to select, <kbd>↑</kbd> for both,{" "}
-										<kbd>↓</kbd> to skip
-									</p>
-								</div>
-							</div>
-
-							<div className={styles.tutorialStep}>
-								<span className={styles.stepNumber}>3</span>
-								<div className={styles.stepContent}>
-									<p className={styles.stepTitle}>Undo if needed</p>
-									<p className={styles.stepDescription}>
-										You can undo your last vote within 2 seconds (or press <kbd>Esc</kbd>)
-									</p>
-								</div>
-							</div>
-						</div>
-
-						<div className={styles.tutorialFooter}>
-							<Button variant="primary" onClick={handleGotIt} className={styles.gotItButton}>
-								Begin the ritual
-							</Button>
-							<button
-								type="button"
-								className={styles.skipButton}
-								onClick={handleGotIt}
-								aria-label="Skip tutorial"
-							>
-								Skip tutorial
-							</button>
-						</div>
+						<button
+							type="button"
+							className={styles.dismissButton}
+							onClick={handleDismiss}
+							aria-label="Dismiss hint"
+						>
+							✓
+						</button>
 					</motion.div>
 				</>
 			)}
