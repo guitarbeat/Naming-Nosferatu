@@ -59,7 +59,7 @@ export function AnalysisDashboard({
 		defaultCollapsed,
 	);
 
-	// Get context for filtering
+	// Get context for filtering (with fallback for standalone usage)
 	const toolbarContext = useNameManagementContextSafe();
 	const filterConfig = toolbarContext?.filterConfig;
 	const userFilter = filterConfig?.userFilter || "all";

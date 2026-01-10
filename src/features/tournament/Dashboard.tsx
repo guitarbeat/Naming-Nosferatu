@@ -9,9 +9,6 @@ import React, { useEffect, useState, useTransition } from "react";
 import Card from "../../shared/components/Card/Card";
 import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
-import {
-	NameManagementProvider,
-} from "../../shared/components/NameManagementView/nameManagementCore";
 /**
  * Unified Dashboard Component
  * @param {Object} props
@@ -142,86 +139,11 @@ function Dashboard({
 						userName={userName}
 					/>
 				) : (
-					<NameManagementProvider
-						value={{
-							names: [],
-							isLoading: false,
-							isError: false,
-							error: null,
-							dataError: null,
-							refetch: () => {},
-							clearErrors: () => {},
-							setNames: () => {},
-							setHiddenIds: () => {},
-							selectedNames: [],
-							selectedIds: new Set(),
-							isSelectionMode: false,
-							setIsSelectionMode: () => {},
-							toggleName: () => {},
-							toggleNameById: () => {},
-							toggleNamesByIds: () => {},
-							clearSelection: () => {},
-							selectAll: () => {},
-							isSelected: () => false,
-							selectedCount: 0,
-							searchQuery: "",
-							setSearchQuery: () => {},
-							filterStatus: "all",
-							setFilterStatus: () => {},
-							sortBy: "alphabetical",
-							setSortBy: () => {},
-							sortOrder: "asc",
-							setSortOrder: () => {},
-							selectedCategory: "",
-							setSelectedCategory: () => {},
-							showSelectedOnly: false,
-							setShowSelectedOnly: () => {},
-							selectionFilter: "all",
-							setSelectionFilter: () => {},
-							userFilter: "all",
-							setUserFilter: () => {},
-							dateFilter: "all",
-							setDateFilter: () => {},
-							isSwipeMode: false,
-							showCatPictures: false,
-								activeTab: "analysis",
-								setActiveTab: () => {},
-								setAnalysisMode: () => {},
-								sortedNames: [],
-								filteredNames: [],
-								filteredNamesForSwipe: [],
-								uniqueCategories: [],
-								stats: { total: 0, visible: 0, hidden: 0, selected: 0 },
-								filterConfig: {
-									userFilter: "all",
-									dateFilter: "all",
-									searchTerm: "",
-									category: "",
-									sortBy: "alphabetical",
-									filterStatus: "all",
-									selectionFilter: "all",
-									sortOrder: "asc",
-								},
-								handleFilterChange: () => {},
-								handleAnalysisModeToggle: () => {},
-								categories: [],
-								profileProps: {
-									showUserFilter: false,
-									selectionStats: undefined,
-									userOptions: [],
-									isAdmin: false,
-								},
-								tournamentProps: {},
-								extensions: {},
-								analysisMode: true,
-						}}
-					>
-						<AnalysisDashboard
-							userName={userName}
-							showGlobalLeaderboard={true}
-							defaultCollapsed={false}
-						/>
-					</NameManagementProvider>
+					<AnalysisDashboard
+						userName={userName}
+						showGlobalLeaderboard={true}
+						defaultCollapsed={false}
+					/>
 				)}
 			</div>
 
