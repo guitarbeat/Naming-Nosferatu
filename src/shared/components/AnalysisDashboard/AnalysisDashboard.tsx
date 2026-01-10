@@ -5,9 +5,9 @@
  * Includes a bump chart visualization showing ranking changes over time.
  */
 
+import { useQuery } from "@tanstack/react-query";
 import PropTypes from "prop-types";
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { STORAGE_KEYS } from "../../../core/constants";
 import { useCollapsible } from "../../../core/hooks/useStorage";
 import { nameItemShape } from "../../propTypes";

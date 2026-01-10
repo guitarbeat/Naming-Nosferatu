@@ -10,6 +10,8 @@ import Button from "../../shared/components/Button/Button";
 import { Error, Loading } from "../../shared/components/CommonUI";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import type { NameItem } from "../../shared/propTypes";
+import { getVisibleNames } from "../../shared/utils/core/export";
+import { calculateBracketRound } from "../../shared/utils/core/tournament";
 import TournamentMatch from "./components/TournamentMatch/TournamentMatch";
 import {
 	MatchResult,
@@ -460,6 +462,37 @@ function TournamentContent({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [setVotingError]);
 
+	// * Memoize callbacks for children to prevent unnecessary re-renders
+	const handleDismissError = useCallback(
+		() => setVotingError(null),
+		[setVotingError],
+	);
+	const handleVolumeChange = useCallback(
+		(type: "music" | "effects", value: number) => {
+			audioManager.handleVolumeChange(type, value);
+		},
+		[audioManager],
+	);
+	const handleToggleCatPictures = useCallback(
+		() => setShowCatPictures((prev) => !prev),
+		[],
+	);
+	const handleToggleBracket = useCallback(
+		() => setShowBracket((prev) => !prev),
+		[setShowBracket],
+	);
+	const handleToggleKeyboardHelp = useCallback(
+		() => setShowKeyboardHelp((prev) => !prev),
+		[setShowKeyboardHelp],
+	);
+
+	// * Memoize volume object to prevent re-renders in TournamentControls
+	const volumeObject = useMemo(() => {
+		return typeof audioManager.volume === "number"
+			? { music: audioManager.volume, effects: audioManager.volume }
+			: audioManager.volume;
+	}, [audioManager.volume]);
+
 	// * Keyboard controls
 	useKeyboardControls(
 		selectedOption,
@@ -595,16 +628,10 @@ function TournamentContent({
 				trackInfo={audioManager.trackInfo}
 				audioError={audioManager.audioError}
 				onRetryAudio={audioManager.retryAudio}
-				volume={
-					typeof audioManager.volume === "number"
-						? { music: audioManager.volume, effects: audioManager.volume }
-						: audioManager.volume
-				}
-				onVolumeChange={(type, value) =>
-					audioManager.handleVolumeChange(type, value)
-				}
+				volume={volumeObject}
+				onVolumeChange={handleVolumeChange}
 				showCatPictures={showCatPictures}
-				onToggleCatPictures={() => setShowCatPictures(!showCatPictures)}
+				onToggleCatPictures={handleToggleCatPictures}
 			/>
 
 			{/* Undo banner */}
@@ -647,7 +674,7 @@ function TournamentContent({
 					onNameCardClick={handleNameCardClick}
 					onVoteWithAnimation={handleVoteWithAnimation}
 					onVoteRetry={handleVoteRetry}
-					onDismissError={() => setVotingError(null)}
+					onDismissError={handleDismissError}
 					showCatPictures={showCatPictures}
 					imageList={CAT_IMAGES}
 				/>
@@ -657,8 +684,8 @@ function TournamentContent({
 					showBracket={showBracket}
 					showKeyboardHelp={showKeyboardHelp}
 					transformedMatches={transformedMatches}
-					onToggleBracket={() => setShowBracket(!showBracket)}
-					onToggleKeyboardHelp={() => setShowKeyboardHelp(!showKeyboardHelp)}
+					onToggleBracket={handleToggleBracket}
+					onToggleKeyboardHelp={handleToggleKeyboardHelp}
 				/>
 			</div>
 

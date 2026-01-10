@@ -745,11 +745,18 @@ class ErrorBoundary extends React.Component<
 	render() {
 		if (this.state.error) {
 			const Fallback = this.props.FallbackComponent;
+			const error = this.state.error;
+			const isError =
+				error &&
+				typeof error === "object" &&
+				"message" in error &&
+				"stack" in error;
+
 			return (
 				<Fallback
 					error={
-						this.state.error instanceof Error
-							? this.state.error
+						isError
+							? (this.state.error as Error)
 							: new Error(String(this.state.error))
 					}
 					resetErrorBoundary={this.reset}

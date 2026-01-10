@@ -18,6 +18,7 @@ export default defineConfig({
       VITE_SUPABASE_URL: "https://test.supabase.co",
       VITE_SUPABASE_ANON_KEY: "test-anon-key",
     },
+    setupFiles: ["src/setupTests.ts"],
   },
   resolve: {
     alias: {
