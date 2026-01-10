@@ -56,7 +56,6 @@ interface Ranking {
 	wins: number;
 	losses: number;
 	change: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden: boolean;
 }
 
@@ -177,7 +176,6 @@ interface PersonalResultsProps {
 		| {
 				rating?: number;
 				wins?: number;
-				losses?: number /* biome-ignore lint/style/useNamingConvention: Database column names must match exactly */;
 				is_hidden?: boolean;
 		  }
 		| number
@@ -249,7 +247,6 @@ function PersonalResults({
 						wins: ratingObj?.wins || 0,
 						losses: ratingObj?.losses || 0,
 						change: 0,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						is_hidden: ratingObj?.is_hidden || false,
 					};
 				})
@@ -339,7 +336,6 @@ function PersonalResults({
 					return {
 						...ranking,
 						change: oldRanking ? ranking.rating - oldRanking.rating : 0,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						is_hidden: oldRanking?.is_hidden ?? false,
 					} as Ranking;
 				});

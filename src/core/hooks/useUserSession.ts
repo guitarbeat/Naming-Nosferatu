@@ -49,7 +49,6 @@ const setSupabaseUserContext = async (activeSupabase: unknown, userName: string)
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		// RPC parameter names must match database function signature (snake_case required)
 		await (activeSupabase as any).rpc("set_user_context", {
-			// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 			user_name_param: trimmedName,
 		});
 	} catch (error) {
@@ -213,13 +212,9 @@ function useUserSession({
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					// RPC parameter names must match database function signature (snake_case required)
 					const { error: rpcError } = await (activeSupabase as any).rpc("create_user_account", {
-						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_user_name: trimmedName,
-						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_preferences: {
-							// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 							sound_enabled: true,
-							// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 							theme_preference: "dark",
 						},
 					});

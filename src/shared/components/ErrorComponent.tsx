@@ -254,7 +254,6 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 // ErrorBoundary Wrapper Class
 class ErrorBoundary extends React.Component<
 	{
-		// biome-ignore lint/style/useNamingConvention: Component prop, PascalCase is appropriate
 		FallbackComponent: React.ComponentType<ErrorBoundaryFallbackProps>;
 		onReset?: () => void;
 		children?: React.ReactNode;

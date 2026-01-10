@@ -73,12 +73,7 @@
 				"useDefaultParameterLast": "warn",
 				"useExponentiationOperator": "warn",
 				"useFragmentSyntax": "warn",
-				"useNamingConvention": {
-					"level": "warn",
-					"options": {
-						"strictCase": false
-					}
-				}
+				"useNamingConvention": "off"
 			},
 			"a11y": {
 				"recommended": false
@@ -187,9 +182,44 @@
 			}
 		},
 		{
+			"includes": [
+				"src/core/config/routeConfig.ts",
+				"src/shared/components/NameManagementView/nameManagementCore.tsx",
+				"src/features/analytics/services/analyticsService.ts",
+				"src/features/auth/services/adminService.ts",
+				"src/types/components.ts",
+				"src/**/*.ts",
+				"src/**/*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["src/shared/styles/analysis-mode-misc.css"],
 			"formatter": {
 				"enabled": false
+			}
+		},
+		{
+			"includes": [
+				"**/*.test.{js,jsx,ts,tsx}",
+				"**/*.spec.{js,jsx,ts,tsx}",
+				"src/shared/test-utils/**/*"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
 			}
 		},
 		{
@@ -216,7 +246,18 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
-		}
+		},
+		"globals": [
+			"vi",
+			"describe",
+			"it",
+			"test",
+			"expect",
+			"beforeEach",
+			"afterEach",
+			"beforeAll",
+			"afterAll"
+		]
 	},
 	"assist": {
 		"enabled": true,

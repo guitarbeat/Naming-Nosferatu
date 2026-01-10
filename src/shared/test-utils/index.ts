@@ -4,38 +4,36 @@ import { vi } from "vitest";
 
 // Framer Motion Props that should not be passed to DOM elements
 export const FRAMER_MOTION_PROPS = new Set([
-	'layout',
-	'dragConstraints',
-	'dragElastic',
-	'whileHover',
-	'whileTap',
-	'initial',
-	'animate',
-	'exit',
-	'variants',
-	'transition',
-	'drag',
-	'dragDirectionLock',
-	'dragMomentum',
-	'dragPropagation',
-	'dragSnapToOrigin',
-	'layoutId',
-	'layoutDependency',
-	'onDrag',
-	'onDragStart',
-	'onDragEnd',
-	'onHoverStart',
-	'onHoverEnd',
-	'onTap',
-	'onTapStart',
-	'onTapCancel',
+	"layout",
+	"dragConstraints",
+	"dragElastic",
+	"whileHover",
+	"whileTap",
+	"initial",
+	"animate",
+	"exit",
+	"variants",
+	"transition",
+	"drag",
+	"dragDirectionLock",
+	"dragMomentum",
+	"dragPropagation",
+	"dragSnapToOrigin",
+	"layoutId",
+	"layoutDependency",
+	"onDrag",
+	"onDragStart",
+	"onDragEnd",
+	"onHoverStart",
+	"onHoverEnd",
+	"onTap",
+	"onTapStart",
+	"onTapCancel",
 ]);
 
 // Utility function to filter out framer-motion specific props
 export const filterFramerMotionProps = (props: Record<string, any>) => {
-	return Object.fromEntries(
-		Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
-	);
+	return Object.fromEntries(Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key)));
 };
 
 // Common mock objects
@@ -89,7 +87,8 @@ export const createCommonMocks = () => ({
 	// Component mocks
 	components: {
 		NameManagementView: ({ onStartTournament: _onStartTournament }: any) => null,
-		ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched }: any) => null,
+		ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched }: any) =>
+			null,
 	},
 
 	// Context mocks
@@ -139,5 +138,5 @@ export const createCommonMocks = () => ({
 });
 
 // Re-export common testing utilities
-export { render, screen, fireEvent } from '@testing-library/react';
-export { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+export { fireEvent, render, screen } from "@testing-library/react";
+export { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

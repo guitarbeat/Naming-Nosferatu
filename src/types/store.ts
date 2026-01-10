@@ -34,19 +34,12 @@ export interface UIState {
 }
 
 export interface CatChosenName {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	first_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	middle_names: string[];
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	last_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	greeting_text: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	display_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_set: boolean;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	show_banner: boolean;
 }
 

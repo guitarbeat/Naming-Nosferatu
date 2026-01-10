@@ -4,11 +4,8 @@ import type { Database } from "../../../shared/services/supabase/types";
 
 // Constants use UPPER_CASE keys (intentional for role constants)
 const USER_ROLES = {
-	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	USER: "user",
-	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	MODERATOR: "moderator",
-	// biome-ignore lint/style/useNamingConvention: Role constants use UPPER_CASE convention
 	ADMIN: "admin",
 } as const;
 
@@ -58,7 +55,6 @@ const normalizeStatusCode = (value: unknown): number | null => {
 interface ErrorWithStatus {
 	status?: unknown;
 	statusCode?: unknown;
-	// biome-ignore lint/style/useNamingConvention: Matches HTTP error object structure
 	status_code?: unknown;
 	responseStatus?: unknown;
 	statusText?: unknown;
@@ -70,10 +66,8 @@ interface ErrorWithStatus {
 	sqlState?: unknown;
 	message?: unknown;
 	// Common error properties - snake_case matches actual error object structures
-	// biome-ignore lint/style/useNamingConvention: Matches error object structure from various sources
 	error_description?: unknown;
 	errorMessage?: unknown;
-	// biome-ignore lint/style/useNamingConvention: Matches error object structure from various sources
 	error_message?: unknown;
 	hint?: unknown;
 	details?: unknown;
@@ -476,13 +470,11 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 
 		if (state?.canUseRoleRpc) {
 			const rpcPayloads: Record<string, string>[] = [
-				// biome-ignore lint/style/useNamingConvention: RPC parameter names must match database function signature
 				{ _user_name: trimmedUserName, _role: normalizedRequiredRole },
 			];
 
 			if (isUuid(trimmedUserName)) {
 				rpcPayloads.push({
-					// biome-ignore lint/style/useNamingConvention: RPC parameter names must match database function signature
 					_user_id: trimmedUserName,
 					_role: normalizedRequiredRole,
 				});

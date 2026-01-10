@@ -47,15 +47,11 @@ export interface SummaryStats {
  * Database query result type - field names match Supabase column names (snake_case required)
  */
 export interface LeaderboardItem {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
 	wins?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string | null;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	date_submitted?: string | null;
 }
 
@@ -63,14 +59,10 @@ export interface LeaderboardItem {
  * Database query result type - field names match Supabase column names (snake_case required)
  */
 export interface SelectionPopularityItem {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	times_selected?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string | null;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	date_submitted?: string | null;
 }
 
@@ -78,18 +70,12 @@ export interface SelectionPopularityItem {
  * Database query result type - field names match Supabase column names (snake_case required)
  */
 export interface AnalyticsDataItem {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_wins?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	times_selected?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string | null;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	date_submitted?: string | null;
 }
 
@@ -97,7 +83,6 @@ export interface HighlightItem {
 	id: string;
 	name: string;
 	value?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
 }
 

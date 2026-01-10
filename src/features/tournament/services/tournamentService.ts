@@ -5,18 +5,12 @@ import { withSupabase } from "../../../shared/services/supabase/client";
  */
 export interface TournamentDisplayData {
 	id: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	tournament_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	selected_names: string[];
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	participant_names: Array<{ id: string | number; name: string }>;
 	status: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	completed_at: string;
 }
 
@@ -34,20 +28,15 @@ export const tournamentsAPI = {
 			async (client) => {
 				// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
 				await (client as any).rpc("create_user_account", {
-					// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 					p_user_name: userName,
 				});
 
 				return {
 					id: crypto.randomUUID(),
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_name: userName,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					tournament_name: tournamentName,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					participant_names: participantNames,
 					status: "in_progress",
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					created_at: new Date().toISOString(),
 				};
 			},
@@ -112,18 +101,12 @@ export const tournamentsAPI = {
 				if (!tournamentMap.has(row.tournament_id)) {
 					tournamentMap.set(row.tournament_id, {
 						id: row.tournament_id,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_name: row.user_name,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						tournament_name: `Tournament ${row.tournament_id.slice(0, 8)}`,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						selected_names: [],
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						participant_names: [],
 						status: "completed",
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						created_at: row.created_at,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						completed_at: row.selected_at,
 					});
 				}
@@ -152,7 +135,6 @@ export const tournamentsAPI = {
 		return withSupabase(
 			async (client) => {
 				await client.rpc("set_user_context", {
-					// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 					user_name_param: userName,
 				});
 
@@ -160,16 +142,11 @@ export const tournamentsAPI = {
 				const now = new Date().toISOString();
 
 				const selectionRecords = selectedNames.map((nameObj) => ({
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					user_name: userName,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					name_id: String(nameObj.id),
 					name: nameObj.name,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					tournament_id: finalTournamentId,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					selected_at: now,
-					// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 					selection_type: "tournament_setup",
 				}));
 
@@ -218,7 +195,6 @@ export const tournamentsAPI = {
 				try {
 					// biome-ignore lint/suspicious/noExplicitAny: RPC requires dynamic dispatch for custom functions
 					await (client as any).rpc("create_user_account", {
-						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						p_user_name: userName,
 					});
 				} catch {
@@ -227,7 +203,6 @@ export const tournamentsAPI = {
 
 				try {
 					await client.rpc("set_user_context", {
-						// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 						user_name_param: userName,
 					});
 				} catch {
@@ -249,14 +224,11 @@ export const tournamentsAPI = {
 				const ratingRecords = ratings
 					.filter((r) => nameToId.has(r.name))
 					.map((r) => ({
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						user_name: userName,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						name_id: String(nameToId.get(r.name)),
 						rating: Math.min(2400, Math.max(800, Math.round(r.rating))),
 						wins: r.wins || 0,
 						losses: r.losses || 0,
-						// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 						updated_at: now,
 					}));
 
@@ -285,7 +257,6 @@ export const tournamentsAPI = {
 						await client
 							.from("cat_name_options")
 							.update({
-								// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 								avg_rating: Math.round(avgRating),
 							})
 							.eq("id", record.name_id);

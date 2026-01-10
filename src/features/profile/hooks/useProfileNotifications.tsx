@@ -71,7 +71,6 @@ export function useProfileNotifications() {
 		showSuccess,
 		showError,
 		showToast,
-		// biome-ignore lint/style/useNamingConvention: Component reference, PascalCase is appropriate
 		ToastContainer,
 	};
 }

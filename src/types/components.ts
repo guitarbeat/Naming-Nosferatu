@@ -22,9 +22,7 @@ export interface NameItem {
 	avgRating?: number;
 	categories?: string[];
 	// Database fields (compatibility)
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_hidden?: boolean;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
 	// Ratings & Stats
 	wins?: number;

@@ -80,7 +80,7 @@ const TournamentControls = ({
 						disabled={isTransitioning}
 						title={isMuted ? "Unmute" : "Mute"}
 						className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`}
-					/>;
+					/>
 
 					{!isMuted && (
 						<div

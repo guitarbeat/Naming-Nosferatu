@@ -49,17 +49,11 @@ import styles from "./Bracket.module.css";
 
 // Constants use UPPER_CASE keys (intentional for match result constants)
 const MatchResult = {
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	PENDING: "pending",
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	FIRST_WIN: "first",
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SECOND_WIN: "second",
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	BOTH_ADVANCE: "both",
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	SKIPPED: "skip",
-	// biome-ignore lint/style/useNamingConvention: Match result constants use UPPER_CASE convention
 	NEITHER: "neither",
 } as const;
 

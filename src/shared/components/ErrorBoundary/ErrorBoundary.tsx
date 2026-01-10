@@ -1,5 +1,6 @@
+import { Copy } from "lucide-react";
 import type React from "react";
-import { Component, type ReactNode } from "react";
+import { Component, type ReactNode, useState } from "react";
 import { ErrorManager } from "../../services/errorManager";
 import styles from "./ErrorBoundary.module.css";
 
@@ -28,26 +29,65 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
 	errorId,
 	resetError,
 	context,
-}) => (
-	<div className={styles.errorBoundary}>
-		<div className={styles.errorContent}>
-			<h2>Something went wrong</h2>
-			<p>We encountered an unexpected error in {context}.</p>
-			<details className={styles.errorDetails}>
-				<summary>Error Details</summary>
-				<p>
-					<strong>ID:</strong> {errorId}
-				</p>
-				<p>
-					<strong>Message:</strong> {error?.message}
-				</p>
-			</details>
-			<button onClick={resetError} className={styles.retryButton}>
-				Try Again
-			</button>
+}) => {
+	const [copySuccess, setCopySuccess] = useState(false);
+
+	const copyErrorToClipboard = async () => {
+		const errorDetails = `
+Error ID: ${errorId}
+Context: ${context}
+Message: ${error?.message || "Unknown error"}
+Stack: ${error?.stack || "No stack trace available"}
+Timestamp: ${new Date().toISOString()}
+		`.trim();
+
+		try {
+			await navigator.clipboard.writeText(errorDetails);
+			setCopySuccess(true);
+			setTimeout(() => setCopySuccess(false), 2000);
+		} catch (err) {
+			console.error("Failed to copy error details:", err);
+		}
+	};
+
+	return (
+		<div className={styles.errorBoundary}>
+			<div className={styles.errorContent}>
+				<h2>Something went wrong</h2>
+				<p>We encountered an unexpected error in {context}.</p>
+				<details className={styles.errorDetails}>
+					<summary className={styles.errorSummary}>
+						Error Details
+						<button
+							onClick={copyErrorToClipboard}
+							className={styles.copyButton}
+							title="Copy error details to clipboard"
+							aria-label="Copy error details"
+						>
+							<Copy size={16} />
+							{copySuccess && <span className={styles.copySuccess}>Copied!</span>}
+						</button>
+					</summary>
+					<p>
+						<strong>ID:</strong> {errorId}
+					</p>
+					<p>
+						<strong>Message:</strong> {error?.message}
+					</p>
+					{error?.stack && (
+						<div className={styles.stackTrace}>
+							<strong>Stack Trace:</strong>
+							<pre>{error.stack}</pre>
+						</div>
+					)}
+				</details>
+				<button onClick={resetError} className={styles.retryButton}>
+					Try Again
+				</button>
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 export class ErrorBoundary extends Component<Props, State> {
 	constructor(props: Props) {

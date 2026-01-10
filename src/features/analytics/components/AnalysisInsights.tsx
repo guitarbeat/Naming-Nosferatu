@@ -112,11 +112,8 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 							// Priority keys match insight tag strings (snake_case required for consistency)
 							const priority: Record<string, number> = {
 								inactive: 0,
-								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								never_selected: 1,
-								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								worst_rated: 2,
-								// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 								poor_performer: 3,
 							};
 							const getP = (item: NameWithInsight) =>

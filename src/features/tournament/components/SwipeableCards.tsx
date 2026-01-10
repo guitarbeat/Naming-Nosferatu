@@ -74,6 +74,8 @@ export function SwipeableCards({
 				// Save to undo stack
 				undoStackRef.current = [...undoStackRef.current, card];
 
+				let shouldSelect = false;
+
 				// Right swipe: select card
 				if (offset > SwipeThreshold) {
 					setDragDirection("right");
@@ -81,7 +83,7 @@ export function SwipeableCards({
 
 					// Only select if not already selected
 					if (!isSelected(card)) {
-						onToggleName(card);
+						shouldSelect = true;
 					}
 				}
 				// Left swipe: skip card (just mark as swiped, no selection change)
@@ -90,11 +92,18 @@ export function SwipeableCards({
 					playSound("wow");
 				}
 
-				// Mark card as swiped and animate it out
+				// Mark card as swiped and animate it out, then update selection
+				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+
 				setTimeout(() => {
-					setSwipedIds((prev) => new Set([...prev, String(card.id)]));
 					setDraggedId(null);
 					setDragDirection(null);
+
+					// Update selection after animation completes to prevent reload
+					if (shouldSelect) {
+						onToggleName(card);
+					}
+
 					setIsProcessing(false);
 				}, 300);
 			} catch (error) {
@@ -179,97 +188,113 @@ export function SwipeableCards({
 						<span className={styles.stackLabel}>more cards</span>
 					</div>
 				)}
-				<AnimatePresence mode="wait">
-					{visibleCards.length > 0 ? (
-						visibleCards.map((card, index) => {
-							const cardId = String(card.id);
-							const isCardSelected = isSelected(card);
-							const isDragging = draggedId === cardId;
+				<AnimatePresence mode="popLayout">
+					{names.length > 0 ? (
+						(() => {
+							const visibleCards = names.filter((card) => !swipedIds.has(String(card.id)));
+							return visibleCards.map((card, index) => {
+								const cardId = String(card.id);
+								const isCardSelected = isSelected(card);
+								const isDragging = draggedId === cardId;
 
-							return (
-								<div key={cardId} className={styles.swipeCardWrapper}>
+								return (
 									<motion.div
-										className={`${styles.swipeCard} ${isCardSelected ? styles.selected : ""} ${isDragging ? styles.longPressing : ""} ${index > 0 ? styles.stacked : ""}`}
-										data-direction={isDragging ? dragDirection : undefined}
-										drag="x"
-										dragConstraints={{ left: 0, right: 0 }}
-										dragElastic={0.2}
-										onDragStart={() => setDraggedId(cardId)}
-										onDragEnd={(_, info) => handleDragEnd(cardId, info)}
+										key={cardId}
+										layout={true}
+										layoutId={cardId}
+										className={styles.swipeCardWrapper}
 										initial={{ opacity: 1, scale: 1 }}
-										animate={{
-											opacity: isDragging ? 0.9 : index === 0 ? 1 : 0.85,
-											scale: isDragging ? 1.02 : index === 0 ? 1 : 0.92,
-											y: index === 0 ? 0 : index * 16,
-											rotate: index === 0 ? 0 : index * 2,
-											zIndex: visibleCards.length - index,
-										}}
 										exit={{
 											opacity: 0,
 											scale: 0.8,
 											x: dragDirection === "right" ? 300 : -300,
 											transition: { duration: 0.3 },
 										}}
-										transition={{ type: "spring", stiffness: 300, damping: 30 }}
-										style={{
-											position: "absolute",
-											inset: 0,
-											width: "100%",
-											height: "100%",
-											transformOrigin: "center bottom",
-										}}
 									>
-										{/* Card Content */}
-										<div className={styles.swipeCardContent}>
-											{/* Image */}
-											{showCatPictures && card.id && (
-												<div className={styles.swipeCardImageContainer}>
-													<CatImage
-														src={getRandomCatImage(String(card.id), imageList)}
-														containerClassName={styles.swipeCardImageContainer}
-														imageClassName={styles.swipeCardImage}
-													/>
-												</div>
-											)}
-
-											{/* Name */}
-											<h2 className={styles.swipeCardName} data-card-name={String(card.name)} data-name-id={String(card.id)}>{String(card.name)}</h2>
-
-											{/* Description */}
-											{card.description && (
-												<p className={styles.swipeCardDescription}>{String(card.description)}</p>
-											)}
-
-											{/* Metadata */}
-											{card.categories && card.categories.length > 0 && (
-												<div className={styles.swipeCardMetadata}>
-													<span className={styles.metadataItem}>{card.categories[0]}</span>
-												</div>
-											)}
-										</div>
-
-										{/* Swipe Direction Overlay */}
-										{isDragging && (
-											<div
-												className={`${styles.swipeOverlay} ${dragDirection ? styles.active : ""} ${dragDirection === "right" ? styles.swipeRight : dragDirection === "left" ? styles.swipeLeft : ""}`}
-											>
-												<span className={styles.swipeText}>
-													{dragDirection === "right" ? "SELECT ✓" : "SKIP ✕"}
-												</span>
-											</div>
-										)}
-
-										{/* Selection Indicator */}
-										<div
-											className={`${styles.selectionIndicator} ${isCardSelected ? styles.selected : ""}`}
-											aria-hidden="true"
+										<motion.div
+											layout={true}
+											className={`${styles.swipeCard} ${isCardSelected ? styles.selected : ""} ${isDragging ? styles.longPressing : ""} ${index > 0 ? styles.stacked : ""}`}
+											data-direction={isDragging ? dragDirection : undefined}
+											drag="x"
+											dragConstraints={{ left: 0, right: 0 }}
+											dragElastic={0.2}
+											onDragStart={() => setDraggedId(cardId)}
+											onDragEnd={(_, info) => handleDragEnd(cardId, info)}
+											initial={{ opacity: 1, scale: 1 }}
+											animate={{
+												opacity: isDragging ? 0.9 : index === 0 ? 1 : 0.85,
+												scale: isDragging ? 1.02 : index === 0 ? 1 : 0.92,
+												y: index === 0 ? 0 : index * 16,
+												rotate: index === 0 ? 0 : index * 2,
+												zIndex: visibleCards.length - index,
+											}}
+											transition={{ type: "spring", stiffness: 300, damping: 30 }}
+											style={{
+												position: "absolute",
+												inset: 0,
+												width: "100%",
+												height: "100%",
+												transformOrigin: "center bottom",
+											}}
 										>
-											✓ Selected
-										</div>
+											{/* Card Content */}
+											<div className={styles.swipeCardContent}>
+												{/* Image */}
+												{showCatPictures && card.id && (
+													<div className={styles.swipeCardImageContainer}>
+														<CatImage
+															src={getRandomCatImage(String(card.id), imageList)}
+															containerClassName={styles.swipeCardImageContainer}
+															imageClassName={styles.swipeCardImage}
+														/>
+													</div>
+												)}
+
+												{/* Name */}
+												<h2
+													className={styles.swipeCardName}
+													data-card-name={String(card.name)}
+													data-name-id={String(card.id)}
+												>
+													{String(card.name)}
+												</h2>
+
+												{/* Description */}
+												{card.description && (
+													<p className={styles.swipeCardDescription}>{String(card.description)}</p>
+												)}
+
+												{/* Metadata */}
+												{card.categories && card.categories.length > 0 && (
+													<div className={styles.swipeCardMetadata}>
+														<span className={styles.metadataItem}>{card.categories[0]}</span>
+													</div>
+												)}
+											</div>
+
+											{/* Swipe Direction Overlay */}
+											{isDragging && (
+												<div
+													className={`${styles.swipeOverlay} ${dragDirection ? styles.active : ""} ${dragDirection === "right" ? styles.swipeRight : dragDirection === "left" ? styles.swipeLeft : ""}`}
+												>
+													<span className={styles.swipeText}>
+														{dragDirection === "right" ? "SELECT ✓" : "SKIP ✕"}
+													</span>
+												</div>
+											)}
+
+											{/* Selection Indicator */}
+											<div
+												className={`${styles.selectionIndicator} ${isCardSelected ? styles.selected : ""}`}
+												aria-hidden="true"
+											>
+												✓ Selected
+											</div>
+										</motion.div>
 									</motion.div>
-								</div>
-							);
-						})
+								);
+							});
+						})()
 					) : (
 						<motion.div
 							initial={{ opacity: 0 }}

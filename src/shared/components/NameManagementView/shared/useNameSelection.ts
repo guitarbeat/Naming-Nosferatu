@@ -1,8 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { tournamentsAPI } from "@/features/tournament/services/tournamentService";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { NameItem } from "@/types/components";
-import { ErrorManager } from "../../../services/errorManager/index";
+import { useTournamentSelectionSaver } from "../../../../features/tournament/hooks/useTournamentSelectionSaver";
 
 interface UseNameSelectionProps {
 	names?: NameItem[];
@@ -20,17 +18,7 @@ export function useNameSelection({
 	// Unify state to always use a Set of IDs (strings)
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	const lastSavedHashRef = useRef("");
 	const lastLogTsRef = useRef(0);
-
-	useEffect(() => {
-		return () => {
-			if (saveTimeoutRef.current) {
-				clearTimeout(saveTimeoutRef.current);
-			}
-		};
-	}, []);
 
 	// Derive the selectedNames array for components that expect it
 	const selectedNames = useMemo(() => {
@@ -39,59 +27,11 @@ export function useNameSelection({
 
 	const selectedCount = selectedIds.size;
 
-	const { mutate: saveTournamentSelections } = useMutation({
-		mutationFn: async (namesToSave: NameItem[]) => {
-			if (mode !== "tournament" || !userName) {
-				return;
-			}
-			const tournamentId = `selection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-			const result = await tournamentsAPI.saveTournamentSelections(
-				userName,
-				namesToSave,
-				tournamentId,
-			);
-			if (process.env.NODE_ENV === "development") {
-				console.log("🎮 TournamentSetup: Selections saved to database", result);
-			}
-			return result;
-		},
-		onError: (error) => {
-			ErrorManager.handleError(error, "Save Tournament Selections", {
-				isRetryable: true,
-				affectsUserData: false,
-				isCritical: false,
-			});
-		},
+	// Use the dedicated tournament selection saver
+	const { scheduleSave } = useTournamentSelectionSaver({
+		userName: mode === "tournament" ? userName : null,
+		enableAutoSave,
 	});
-
-	const scheduleSave = useCallback(
-		(namesToSave: NameItem[]) => {
-			if (mode !== "tournament" || !enableAutoSave || !userName) {
-				return;
-			}
-			if (!Array.isArray(namesToSave) || namesToSave.length === 0) {
-				return;
-			}
-
-			const hash = namesToSave
-				.map((n) => n.id || n.name)
-				.sort()
-				.join(",");
-
-			if (hash === lastSavedHashRef.current) {
-				return;
-			}
-
-			if (saveTimeoutRef.current) {
-				clearTimeout(saveTimeoutRef.current);
-			}
-			saveTimeoutRef.current = setTimeout(() => {
-				lastSavedHashRef.current = hash;
-				saveTournamentSelections(namesToSave);
-			}, 800);
-		},
-		[mode, userName, enableAutoSave, saveTournamentSelections],
-	);
 
 	const toggleName = useCallback(
 		(nameOrId: NameItem | string) => {

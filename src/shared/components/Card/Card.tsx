@@ -634,7 +634,6 @@ CardNameBase.displayName = "CardName";
 export const CardName = CardNameBase;
 
 // Add sub-component to Card
-// biome-ignore lint/style/useNamingConvention: Component name, PascalCase is appropriate
 const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });
 
 export default CardWithStats;

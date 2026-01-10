@@ -6,15 +6,11 @@ import type { NameItem } from "../../types/components";
 export interface ExportNameItem {
 	name: string;
 	description?: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_rating?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
 	rating?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_wins?: number;
 	wins?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_losses?: number;
 	losses?: number;
 	matches?: number;
@@ -145,7 +141,6 @@ export function exportTournamentResultsToCSV(
 		return {
 			name: nameItem.name,
 			rating: nameItem.rating || 0,
-			// biome-ignore lint/style/useNamingConvention: Database field name must match exactly
 			avg_rating: nameItem.avg_rating || nameItem.rating || 0,
 			wins: nameItem.wins || 0,
 			losses: nameItem.losses || 0,

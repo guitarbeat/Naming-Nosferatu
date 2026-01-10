@@ -20,7 +20,8 @@ export {
 } from "./tournamentComponentHooks";
 export { useBracketTransformation } from "./useBracketTransformation";
 export { useImageGallery } from "./useImageGallery";
-export { useTournamentController } from "./useTournamentController";
 export { useNameManagementCallbacks } from "./useTournamentSetupHooks";
+export { useTournamentController } from "./useTournamentController";
+export { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
 export { useTournamentUIHandlers } from "./useTournamentUIHandlers";
 export { useUndoWindow } from "./useUndoWindow";

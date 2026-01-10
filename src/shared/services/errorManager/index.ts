@@ -57,29 +57,19 @@ function createHash(value: unknown): string {
 
 // Constants use UPPER_CASE keys (intentional for error type constants)
 const ERROR_TYPES = {
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	NETWORK: "network",
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	VALIDATION: "validation",
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	AUTH: "auth",
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	DATABASE: "database",
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	RUNTIME: "runtime",
-	// biome-ignore lint/style/useNamingConvention: Error type constants use UPPER_CASE convention
 	UNKNOWN: "unknown",
 };
 
 // Constants use UPPER_CASE keys (intentional for severity constants)
 export const ERROR_SEVERITY = {
-	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	LOW: "low",
-	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	MEDIUM: "medium",
-	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	HIGH: "high",
-	// biome-ignore lint/style/useNamingConvention: Severity constants use UPPER_CASE convention
 	CRITICAL: "critical",
 };
 
@@ -300,7 +290,6 @@ function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string
 		"Tournament Completion": "Unable to complete tournament",
 		"Tournament Setup": "Unable to set up tournament",
 		"Rating Update": "Unable to update ratings",
-		// biome-ignore lint/style/useNamingConvention: Error message key, PascalCase for consistency with other keys
 		Login: "Unable to log in",
 		"Profile Load": "Unable to load profile",
 		"Save Rankings": "Unable to save rankings",
@@ -409,7 +398,6 @@ interface ErrorServiceLogData {
 
 function sendToErrorService(logData: ErrorServiceLogData): void {
 	const g = getGlobalScope() as typeof globalThis & {
-		// biome-ignore lint/style/useNamingConvention: External library (Sentry) uses PascalCase
 		Sentry?: { captureException?: (error: Error, options?: unknown) => void };
 	};
 	const sentry = g.Sentry;
@@ -556,7 +544,6 @@ export class ErrorManager {
 	}
 	static parseError = parseError;
 	static withRetry = withRetry;
-	// biome-ignore lint/style/useNamingConvention: Class name, PascalCase is appropriate
 	static CircuitBreaker = CircuitBreaker;
 	static createResilientFunction = createResilientFunction;
 

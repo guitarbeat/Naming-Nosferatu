@@ -145,7 +145,6 @@ export function useTournamentController({
 
 		// Refs/Components
 		handlersRef,
-		// biome-ignore lint/style/useNamingConvention: Component reference, PascalCase is appropriate
 		ToastContainer,
 	};
 }

@@ -7,7 +7,6 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { componentTagger } from "lovable-tagger";
-import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig } from "vite";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,14 +34,6 @@ export default defineConfig(({ mode }) => {
 				},
 			}),
 			mode === "development" && componentTagger(),
-			mode === "production" &&
-				visualizer({
-					filename: "stats.html",
-					open: false,
-					gzipSize: true,
-					brotliSize: true,
-					template: "treemap",
-				}),
 		].filter(Boolean),
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds
@@ -96,12 +87,12 @@ export default defineConfig(({ mode }) => {
 					// * Enable manual chunking for better caching
 					manualChunks: {
 						// Vendor chunks for better caching
-						'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
-						'animation-vendor': ['framer-motion'],
-						'ui-vendor': ['lucide-react', '@radix-ui/react-slot', 'class-variance-authority'],
-						'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query', 'zustand'],
-						'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
-						'utils-vendor': ['immer'],
+						"react-vendor": ["react", "react-dom", "react/jsx-runtime"],
+						"animation-vendor": ["framer-motion"],
+						"ui-vendor": ["lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
+						"data-vendor": ["@supabase/supabase-js", "@tanstack/react-query", "zustand"],
+						"form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
+						"utils-vendor": ["immer"],
 					},
 					assetFileNames: (assetInfo) => {
 						if (!assetInfo.name) {

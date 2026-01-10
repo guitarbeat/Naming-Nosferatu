@@ -6,7 +6,6 @@
 		"**/*.test.{js,jsx,ts,tsx}",
 		"**/*.spec.{js,jsx,ts,tsx}",
 		"**/setupTests.js",
-		"**/stats.html",
 		"**/*.md",
 		"**/README.md",
 		"**/IMPLEMENTATION.md",

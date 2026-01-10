@@ -251,11 +251,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					</div>
 
 					{/* Optional text */}
-					{text && (
-						<div className={styles.cardSkeletonFooter}>
-							{text}
-						</div>
-					)}
+					{text && <div className={styles.cardSkeletonFooter}>{text}</div>}
 				</div>
 			);
 		}

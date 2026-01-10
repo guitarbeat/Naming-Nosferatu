@@ -36,16 +36,11 @@ export const coreAPI = {
 
 			return (data as NameItem[]).map((item) => ({
 				...item,
-				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				updated_at: null,
-				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_rating: null,
-				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_wins: 0,
-				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				user_losses: 0,
 				isHidden: item.is_hidden || false,
-				// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 				has_user_rating: false,
 			}));
 		}, []);
@@ -60,7 +55,6 @@ export const coreAPI = {
 				if (userName?.trim()) {
 					try {
 						await client.rpc("set_user_context", {
-							// biome-ignore lint/style/useNamingConvention: RPC parameter must match database function signature
 							user_name_param: userName.trim(),
 						});
 					} catch {

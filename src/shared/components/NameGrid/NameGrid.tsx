@@ -168,11 +168,7 @@ export function NameGrid({
 				<div className={styles.namesGrid}>
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`skeleton-${i}`} className={styles.gridItem}>
-							<Loading
-								variant="card-skeleton"
-								cardSkeletonVariant="mosaic-card"
-								size="medium"
-							/>
+							<Loading variant="card-skeleton" cardSkeletonVariant="mosaic-card" size="medium" />
 						</div>
 					))}
 					{/* Loading text below the grid */}

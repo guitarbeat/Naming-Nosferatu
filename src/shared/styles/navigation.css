@@ -716,21 +716,6 @@
 
 /* Bottom nav is now conditionally rendered instead of controlled by CSS */
 
-	/* Hide top nav elements on mobile */
-	.app-navbar {
-		display: none;
-	}
-
-	.app-navbar__center-section {
-		display: none;
-	}
-
-	/* Adjust main content for bottom nav */
-	.app-main-wrapper {
-		padding-bottom: calc(64px + env(safe-area-inset-bottom));
-	}
-}
-
 /* Tooltip for collapsed state */
 @media (width > 640px) {
 	.app-navbar.collapsed .app-navbar__link:hover::after {

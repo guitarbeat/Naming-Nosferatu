@@ -60,7 +60,6 @@ export function NameManagementProvider({
 	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
 }
 
-
 /**
  * Optional version of useNameManagementContextSafe that returns null instead of throwing
  * when no provider is available. Useful for components that can work standalone.

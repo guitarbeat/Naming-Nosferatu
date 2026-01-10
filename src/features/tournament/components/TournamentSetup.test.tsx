@@ -1,28 +1,29 @@
-import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { FRAMER_MOTION_PROPS, createCommonMocks } from "../../../shared/test-utils";
+import { createCommonMocks, FRAMER_MOTION_PROPS } from "../../../shared/test-utils";
 import TournamentSetup from "./TournamentSetup";
 
 // --- Mocks ---
 
 // Mock Framer Motion
 vi.mock("framer-motion", () => {
-	const createFilteredElement = (Tag: React.ElementType) =>
+	const createFilteredElement =
+		(Tag: React.ElementType) =>
 		({ children, ...props }: React.PropsWithChildren<Record<string, any>>) => {
 			// Filter out framer-motion specific props using shared constant
 			const domProps = Object.fromEntries(
-				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key))
+				Object.entries(props).filter(([key]) => !FRAMER_MOTION_PROPS.has(key)),
 			);
 			return React.createElement(Tag, domProps, children);
 		};
 
 	return {
 		motion: {
-			div: createFilteredElement('div'),
-			h1: createFilteredElement('h1'),
-			p: createFilteredElement('p'),
-			button: createFilteredElement('button'),
+			div: createFilteredElement("div"),
+			h1: createFilteredElement("h1"),
+			p: createFilteredElement("p"),
+			button: createFilteredElement("button"),
 		},
 		AnimatePresence: ({ children }: { children?: React.ReactNode }) => <>{children}</>,
 	};
@@ -96,9 +97,11 @@ vi.mock("../../../shared/components/NameManagementView/NameManagementView", () =
 }));
 
 vi.mock("../../../shared/components/ValidatedInput/ValidatedInput", () => ({
-	ValidatedInput: ({ externalError: _externalError, externalTouched: _externalTouched, ...props }: ValidatedInputProps) => (
-		<input data-testid="validated-input" {...props} />
-	),
+	ValidatedInput: ({
+		externalError: _externalError,
+		externalTouched: _externalTouched,
+		...props
+	}: ValidatedInputProps) => <input data-testid="validated-input" {...props} />,
 }));
 
 // Mock Context

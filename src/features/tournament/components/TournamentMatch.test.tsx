@@ -23,7 +23,7 @@ vi.mock("framer-motion", () => ({
 		div: ({ children, onDragEnd, onClick, ...props }: any) => {
 			// Filter out framer-motion specific props
 			const domProps = Object.fromEntries(
-				Object.entries(props).filter(([key]: [string, any]) => !FRAMER_MOTION_PROPS.has(key))
+				Object.entries(props).filter(([key]: [string, any]) => !FRAMER_MOTION_PROPS.has(key)),
 			);
 
 			// Create JSX element with drag simulation
@@ -43,7 +43,9 @@ vi.mock("framer-motion", () => ({
 							return;
 						}
 						// Normal Click
-						if (onClick) { onClick(e); }
+						if (onClick) {
+							onClick(e);
+						}
 					}}
 				>
 					{children}

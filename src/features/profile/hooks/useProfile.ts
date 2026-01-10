@@ -25,33 +25,19 @@ import type { IdType, NameItem } from "../../../types/components";
  * These fields come directly from database queries and cannot be changed without breaking queries.
  */
 interface UserStats {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	hidden_count?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_losses?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_ratings?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_wins?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	win_rate?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	names_rated?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	active_ratings?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	hidden_ratings?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	avg_rating_given?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_tournaments?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	total_selections?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	unique_users?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	is_aggregate?: boolean;
 }
 
@@ -80,18 +66,12 @@ export interface SelectionStats {
  */
 interface TournamentSelection {
 	id?: number;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	name_id: string | number;
 	name?: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	tournament_id: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	selected_at: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	selection_type?: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string;
 }
 
@@ -99,17 +79,13 @@ interface TournamentSelection {
  * Database query result type - field names match Supabase column names (snake_case required)
  */
 interface UserWithRoles {
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_name: string;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	user_roles?:
 		| {
 				role: string;
 		  }[]
 		| null;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	created_at?: string | null;
-	// biome-ignore lint/style/useNamingConvention: Database column names must match exactly
 	updated_at?: string | null;
 }
 
@@ -160,25 +136,15 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 			const totalTournaments = new Set(selections?.map((s) => s.tournament_id) || []).size;
 
 			return {
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				names_rated: totalRatings,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				active_ratings: totalRatings,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				hidden_ratings: 0,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				avg_rating_given: avgRating,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				total_wins: totalWins,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				total_losses: totalLosses,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				total_tournaments: totalTournaments,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				total_selections: selections?.length || 0,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				unique_users: uniqueUsers,
-				// biome-ignore lint/style/useNamingConvention: Return type must match UserStats interface (database schema)
 				is_aggregate: true,
 			};
 		} catch (error) {

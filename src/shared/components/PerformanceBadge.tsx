@@ -8,19 +8,16 @@ import PropTypes from "prop-types";
 
 // Insight category lookup - keys use snake_case to match insight tag strings
 const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
-	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	top_rated: {
 		label: "Top Rated",
 		icon: "⭐",
 		description: "Among the highest rated names",
 	},
-	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_up: {
 		label: "Trending",
 		icon: "📈",
 		description: "Rising in popularity",
 	},
-	// biome-ignore lint/style/useNamingConvention: Keys must match insight tag strings exactly
 	trending_down: {
 		label: "Declining",
 		icon: "📉",
