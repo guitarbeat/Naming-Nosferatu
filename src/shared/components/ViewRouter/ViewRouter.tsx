@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import { getRouteConfig, ROUTES, type ViewState } from "../../../core/config/routeConfig";
 import { useRouting } from "../../../core/hooks/useRouting";
-// * Import components directly to maintain stability
-// Note: These are .jsx files, so we need to import them without extensions
+import { normalizeRoutePath } from "../../../shared/utils";
 import type { NameItem, VoteData } from "../../../types/components";
 import { ErrorComponent } from "../ErrorComponent";
 import { Loading } from "../Loading";
 
-// * Lazy load heavy/hidden components
+// Lazy load heavy/hidden components
 const Dashboard = lazy(() => import("../../../features/tournament/Dashboard"));
 const GalleryView = lazy(() => import("../../../features/gallery/GalleryView"));
 const Tournament = lazy(() => import("../../../features/tournament/Tournament"));
@@ -34,11 +34,58 @@ interface ViewRouterProps {
 	onUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => undefined | Promise<boolean>;
-	onTournamentSetup: (names?: import("../../../types/components").NameItem[]) => void;
+	onTournamentSetup: (names?: NameItem[]) => void;
 	onTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	onVote: (vote: unknown) => void;
+}
+
+/**
+ * Convert tournament ratings to simple number format
+ */
+function ratingsToNumbers(
+	ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+): Record<string, number> {
+	return Object.fromEntries(
+		Object.entries(ratings).map(([key, value]) => [
+			key,
+			typeof value === "object" && value !== null && "rating" in value
+				? value.rating
+				: typeof value === "number"
+					? value
+					: 0,
+		]),
+	);
+}
+
+/**
+ * Get current view from route path
+ */
+function getViewFromRoute(
+	path: string,
+	isLoggedIn: boolean,
+	isTournamentComplete: boolean,
+): ViewState {
+	const normalizedPath = normalizeRoutePath(path);
+	const routeConfig = getRouteConfig(normalizedPath);
+
+	// Not logged in - always show login/setup
+	if (!isLoggedIn) {
+		return "login";
+	}
+
+	// Use route config if available
+	if (routeConfig) {
+		// Special handling: results route when tournament is not complete
+		if (routeConfig.view === "results" && !isTournamentComplete) {
+			return "tournament";
+		}
+		return routeConfig.view;
+	}
+
+	// Default to tournament
+	return "tournament";
 }
 
 export default function ViewRouter({
@@ -53,119 +100,112 @@ export default function ViewRouter({
 	onVote,
 }: ViewRouterProps) {
 	const { currentRoute } = useRouting();
+	const normalizedPath = useMemo(() => normalizeRoutePath(currentRoute), [currentRoute]);
 
-	if (!isLoggedIn || tournament.names === null) {
-		// Convert ratings from Record<string, { rating: number }> to Record<string, number>
-		const existingRatings = Object.fromEntries(
-			Object.entries(tournament.ratings).map(([key, value]) => [
-				key,
-				typeof value === "object" && value !== null && "rating" in value
-					? value.rating
-					: typeof value === "number"
-						? value
-						: 0,
-			]),
-		);
-		return (
-			<Suspense fallback={<Loading variant="spinner" text="Loading Setup..." />}>
-				<TournamentSetup
-					onLogin={onLogin as (name: string) => Promise<boolean>}
-					onStart={onTournamentSetup as (selectedNames: unknown) => void}
-					userName={userName}
-					isLoggedIn={isLoggedIn}
-					existingRatings={existingRatings}
-				/>
-			</Suspense>
-		);
-	}
-
-	// * Show Dashboard (Results + Analysis) if on /results or /analysis routes
-	// * Check route path (without query params) to determine if we should show dashboard
-	const currentPath =
-		typeof window !== "undefined" && window.location && window.location.pathname
-			? window.location.pathname
-			: currentRoute.split("?")[0]?.split("#")[0] || "/";
-
-	if (currentPath === "/gallery") {
-		return (
-			<Suspense fallback={<Loading variant="spinner" text="Loading Gallery..." />}>
-				<GalleryView />
-			</Suspense>
-		);
-	}
-
-	const shouldShowDashboard = currentPath === "/results" || currentPath === "/analysis";
-
-	if (shouldShowDashboard) {
-		const hasPersonalData = tournament.isComplete && tournament.names !== null;
-
-		// * Check URL for analysis parameter to determine initial view mode
-		const urlParams =
-			typeof window !== "undefined"
-				? new URLSearchParams(window.location.search)
-				: new URLSearchParams();
-		const isAnalysisMode = urlParams.get("analysis") === "true";
-
-		// * Determine mode: if analysis path or analysis=true param, show global only
-		// * If /results, show personal (or both/global depending on having data)
-		const isGlobalAnalysis = currentPath === "/analysis" || isAnalysisMode;
-		const dashboardMode = isGlobalAnalysis ? "global" : hasPersonalData ? "personal" : "global";
-
-		return (
-			<Suspense fallback={<Loading variant="spinner" text="Loading Dashboard..." />}>
-				<Dashboard
-					personalRatings={
-						hasPersonalData
-							? Object.fromEntries(
-									Object.entries(tournament.ratings).map(([key, value]) => [
-										key,
-										typeof value === "object" && value !== null && "rating" in value
-											? (value as any).rating
-											: typeof value === "number"
-												? value
-												: 0,
-									]),
-								)
-							: undefined
-					}
-					currentTournamentNames={hasPersonalData ? tournament.names : undefined}
-					voteHistory={hasPersonalData ? tournament.voteHistory : undefined}
-					onStartNew={onStartNewTournament}
-					onUpdateRatings={onUpdateRatings as any}
-					userName={userName || ""}
-					mode={dashboardMode}
-				/>
-			</Suspense>
-		);
-	}
-
-	return (
-		<ErrorComponent variant="boundary" error={null}>
-			<Suspense fallback={<Loading variant="spinner" text="Loading Tournament..." />}>
-				<Tournament
-					names={tournament.names as NameItem[]}
-					existingRatings={Object.fromEntries(
-						Object.entries(tournament.ratings).map(([key, value]) => [
-							key,
-							typeof value === "object" && value !== null && "rating" in value
-								? value.rating
-								: typeof value === "number"
-									? value
-									: 0,
-						]),
-					)}
-					onComplete={(ratings: Record<string, number>) => {
-						const convertedRatings = Object.fromEntries(
-							Object.entries(ratings).map(([key, value]) => [key, { rating: value }]),
-						);
-						return onTournamentComplete(convertedRatings);
-					}}
-					userName={userName}
-					onVote={onVote}
-				/>
-			</Suspense>
-		</ErrorComponent>
+	// Determine current view from route
+	const currentView = useMemo(
+		() => getViewFromRoute(normalizedPath, isLoggedIn, tournament.isComplete),
+		[normalizedPath, isLoggedIn, tournament.isComplete],
 	);
+
+	// Convert ratings to simple format
+	const existingRatings = useMemo(() => ratingsToNumbers(tournament.ratings), [tournament.ratings]);
+
+	// Check URL for analysis parameter
+	const isAnalysisMode = useMemo(() => {
+		if (typeof window !== "undefined") {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get("analysis") === "true" || normalizedPath === ROUTES.ANALYSIS;
+		}
+		return false;
+	}, [normalizedPath]);
+
+	// Render based on current view
+	switch (currentView) {
+		case "login":
+			return (
+				<Suspense fallback={<Loading variant="spinner" text="Loading Setup..." />}>
+					<TournamentSetup
+						onLogin={onLogin as (name: string) => Promise<boolean>}
+						onStart={onTournamentSetup as (selectedNames: unknown) => void}
+						userName={userName}
+						isLoggedIn={isLoggedIn}
+						existingRatings={existingRatings}
+					/>
+				</Suspense>
+			);
+
+		case "gallery":
+		case "photos":
+			return (
+				<Suspense fallback={<Loading variant="spinner" text="Loading Gallery..." />}>
+					<GalleryView />
+				</Suspense>
+			);
+
+		case "results":
+		case "analysis": {
+			const hasPersonalData = tournament.isComplete && tournament.names !== null;
+			const dashboardMode =
+				currentView === "analysis" || isAnalysisMode
+					? "global"
+					: hasPersonalData
+						? "personal"
+						: "global";
+
+			return (
+				<Suspense fallback={<Loading variant="spinner" text="Loading Dashboard..." />}>
+					<Dashboard
+						personalRatings={hasPersonalData ? existingRatings : undefined}
+						currentTournamentNames={
+							hasPersonalData && tournament.names ? tournament.names : undefined
+						}
+						voteHistory={hasPersonalData ? tournament.voteHistory : undefined}
+						onStartNew={onStartNewTournament}
+						onUpdateRatings={onUpdateRatings as any}
+						userName={userName || ""}
+						mode={dashboardMode}
+					/>
+				</Suspense>
+			);
+		}
+
+		default:
+			// Show setup if no names selected yet
+			if (tournament.names === null) {
+				return (
+					<Suspense fallback={<Loading variant="spinner" text="Loading Setup..." />}>
+						<TournamentSetup
+							onLogin={onLogin as (name: string) => Promise<boolean>}
+							onStart={onTournamentSetup as (selectedNames: unknown) => void}
+							userName={userName}
+							isLoggedIn={isLoggedIn}
+							existingRatings={existingRatings}
+						/>
+					</Suspense>
+				);
+			}
+
+			// Show active tournament
+			return (
+				<ErrorComponent variant="boundary" error={null}>
+					<Suspense fallback={<Loading variant="spinner" text="Loading Tournament..." />}>
+						<Tournament
+							names={tournament.names as NameItem[]}
+							existingRatings={existingRatings}
+							onComplete={(ratings: Record<string, number>) => {
+								const convertedRatings = Object.fromEntries(
+									Object.entries(ratings).map(([key, value]) => [key, { rating: value }]),
+								);
+								return onTournamentComplete(convertedRatings);
+							}}
+							userName={userName}
+							onVote={onVote}
+						/>
+					</Suspense>
+				</ErrorComponent>
+			);
+	}
 }
 
 ViewRouter.propTypes = {

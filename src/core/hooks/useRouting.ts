@@ -5,6 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { normalizeRoutePath } from "../../shared/utils";
+import { TOURNAMENT_PATHS } from "../config/routeConfig";
 
 // ============================================================================
 // Keyboard Shortcuts Hook
@@ -172,8 +173,6 @@ export function useRouting() {
 // ============================================================================
 // Tournament Routing Sync Hook
 // ============================================================================
-
-const TOURNAMENT_PATHS = new Set(["/", "/tournament", "/results", "/gallery", "/analysis"]);
 
 interface UseTournamentRoutingSyncProps {
 	currentRoute: string;
