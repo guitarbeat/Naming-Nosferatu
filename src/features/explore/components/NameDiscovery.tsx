@@ -2,7 +2,7 @@ import { Heart, TrendingUp, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Card from "../../../shared/components/Card/Card";
 import { Loading } from "../../../shared/components/Loading";
-import { catNamesAPI } from "../../../../shared/services/supabase/modules/general";
+import { catNamesAPI } from "../../../shared/services/supabase/client";
 import styles from "./NameDiscovery.module.css";
 
 interface NameDiscoveryProps {

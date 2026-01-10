@@ -4,7 +4,7 @@ import { useState } from "react";
 import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
 import { Loading } from "../../../shared/components/Loading";
-import { catNamesAPI } from "../../../../shared/services/supabase/modules/general";
+import { catNamesAPI } from "../../../shared/services/supabase/client";
 import styles from "./CategoryExplorer.module.css";
 
 interface CategoryExplorerProps {
