@@ -16,7 +16,10 @@ function useMagneticPull(
   rightOrbRef: React.RefObject<HTMLElement | null>,
   enabled = true,
 ) {
-  const transformRef = useRef<{ left: string | null; right: string | null }>({ left: null, right: null });
+  // Use refs for state that updates frequently to avoid re-renders
+  const mousePosRef = useRef({ x: typeof window !== "undefined" ? window.innerWidth / 2 : 0, y: typeof window !== "undefined" ? window.innerHeight / 2 : 0 });
+  const isPressedRef = useRef({ left: false, right: false });
+  const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -26,45 +29,59 @@ function useMagneticPull(
 
     if (!leftOrb || !rightOrb) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-      const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+    // Animation loop to decouple DOM updates from mouse events
+    const update = () => {
+      const { x, y } = mousePosRef.current;
 
-      // Store transforms for click interaction
-      transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
-      transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
+      // Calculate offset based on center of screen
+      // Division by 40 controls the intensity of the magnetic pull
+      const xAxis = (window.innerWidth / 2 - x) / 40;
+      const yAxis = (window.innerHeight / 2 - y) / 40;
+
+      // Calculate transforms including scale if pressed
+      // We calculate this every frame to ensure smooth movement even while pressed
+      const leftTransform = `translate(${-xAxis}px, ${-yAxis}px)${isPressedRef.current.left ? " scale(0.9)" : ""}`;
+      const rightTransform = `translate(${xAxis}px, ${yAxis}px)${isPressedRef.current.right ? " scale(0.9)" : ""}`;
 
       // Apply transforms
-      leftOrb.style.transform = transformRef.current.left;
-      rightOrb.style.transform = transformRef.current.right;
+      leftOrb.style.transform = leftTransform;
+      rightOrb.style.transform = rightTransform;
+
+      requestRef.current = requestAnimationFrame(update);
     };
 
-    const handleMouseDown = (orb, isLeft) => {
+    // Start the animation loop
+    requestRef.current = requestAnimationFrame(update);
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Only update the data, don't touch the DOM
+      mousePosRef.current = { x: e.pageX, y: e.pageY };
+    };
+
+    const handleMouseDown = (orb: HTMLElement, isLeft: boolean) => {
       if (!orb) return;
       orb.style.transition = "transform 0.1s ease";
-      const currentTransform =
-        transformRef.current[isLeft ? "left" : "right"] || "";
-      orb.style.transform = `${currentTransform} scale(0.9)`;
+      if (isLeft) isPressedRef.current.left = true;
+      else isPressedRef.current.right = true;
     };
 
-    const handleMouseUp = (orb, isLeft) => {
+    const handleMouseUp = (orb: HTMLElement, isLeft: boolean) => {
       if (!orb) return;
       orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-      const currentTransform =
-        transformRef.current[isLeft ? "left" : "right"] || "";
-      orb.style.transform = currentTransform;
+      if (isLeft) isPressedRef.current.left = false;
+      else isPressedRef.current.right = false;
     };
 
-    // Add mouse move listener
+    // Add mouse move listener to document
     document.addEventListener("mousemove", handleMouseMove);
 
-    // Create bound handlers
+    // Create bound handlers for orb interactions
     const leftMouseDown = () => handleMouseDown(leftOrb, true);
     const leftMouseUp = () => handleMouseUp(leftOrb, true);
     const rightMouseDown = () => handleMouseDown(rightOrb, false);
     const rightMouseUp = () => handleMouseUp(rightOrb, false);
 
-    // Add click interaction
+    // Add click interaction listeners
     leftOrb.addEventListener("mousedown", leftMouseDown);
     leftOrb.addEventListener("mouseup", leftMouseUp);
     rightOrb.addEventListener("mousedown", rightMouseDown);
@@ -72,6 +89,9 @@ function useMagneticPull(
 
     // Cleanup function
     return () => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
       document.removeEventListener("mousemove", handleMouseMove);
 
       leftOrb.removeEventListener("mousedown", leftMouseDown);
@@ -79,7 +99,7 @@ function useMagneticPull(
       rightOrb.removeEventListener("mousedown", rightMouseDown);
       rightOrb.removeEventListener("mouseup", rightMouseUp);
 
-      // Reset transforms
+      // Reset styles
       if (leftOrb) {
         leftOrb.style.transform = "";
         leftOrb.style.transition = "";
