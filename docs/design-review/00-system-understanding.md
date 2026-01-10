@@ -107,7 +107,7 @@ src/
 
 ### Shared UI Elements
 - **Toast notifications** for user feedback
-- **Modal dialogs** (NameSuggestionModal)
+- **Modal dialogs** (NameSuggestionModal - accessed via "Suggest" button in bottom navigation)
 - **Empty states** for no-data scenarios
 - **Offline indicators** for connectivity status
 

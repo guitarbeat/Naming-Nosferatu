@@ -557,6 +557,7 @@ We focus on "Progressive Disclosure"—only showing complexity when the user is 
 - **First-Match Tutorial**: Small overlay explaining "Click to vote, ↑ for both, ↓ to skip."
 - **Progress Counter**: Clear "{x} of {n} names selected" messaging during setup.
 - **Milestone Celebrations**: Visual cues at 50% and 80% tournament completion.
+- **Name Suggestion Access**: 💡 "Suggest" button in bottom navigation (mobile/tablet) for contributing new cat names.
 
 ### Copy Guidelines
 
