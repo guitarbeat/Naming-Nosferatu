@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import styles from "./TabContainer.module.css";
 
 export interface TabItem {
@@ -70,7 +70,9 @@ export function TabContainer({
 
 	// Sync tab with URL changes
 	useEffect(() => {
-		if (!routeSync || activeTab === undefined) return;
+		if (!routeSync || activeTab === undefined) {
+			return;
+		}
 
 		const currentPath = location.pathname;
 		const pathAfterBase = currentPath.replace(routeSync, "").replace(/^\//, "");
@@ -86,11 +88,13 @@ export function TabContainer({
 		if (newTabKey !== activeTab) {
 			setActiveTab(newTabKey);
 		}
-	}, [location.pathname, routeSync, tabs, activeTab]);
+		}, [location.pathname, routeSync, tabs, activeTab]);
 
 	const handleTabChange = (tabKey: string) => {
 		const tab = tabs.find(t => t.key === tabKey);
-		if (!tab || tab.disabled) return;
+		if (!tab || tab.disabled) {
+			return;
+		}
 
 		startTransition(() => {
 			setActiveTab(tabKey);
