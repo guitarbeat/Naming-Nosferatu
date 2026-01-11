@@ -13,6 +13,7 @@ import useMagneticPull from "../hooks/tournamentComponentHooks";
 import tournamentStyles from "../tournament.module.css";
 import { getRandomCatImage } from "../utils/tournamentUtils";
 import styles from "../tournament.module.css";
+import RippleEffects, { type RippleHandle } from "./RippleEffects";
 
 interface TournamentMatchProps {
 	currentMatch: {
@@ -46,10 +47,11 @@ function TournamentMatch({
 }: TournamentMatchProps): React.ReactElement {
 	const leftOrbRef = useRef<HTMLDivElement>(null);
 	const rightOrbRef = useRef<HTMLDivElement>(null);
+	const leftRippleRef = useRef<RippleHandle>(null);
+	const rightRippleRef = useRef<RippleHandle>(null);
 	const [showVoteConfirmation, setShowVoteConfirmation] = React.useState<"left" | "right" | null>(
 		null,
 	);
-	const [ripples, setRipples] = React.useState<{ id: string; side: "left" | "right" }[]>([]);
 	const isEnabled = !isProcessing && !isTransitioning;
 
 	// Show vote confirmation checkmark
@@ -70,13 +72,11 @@ function TournamentMatch({
 
 	// Handle ripple effects on click
 	const createRipple = React.useCallback((side: "left" | "right") => {
-		const rippleId = `${side}-${Date.now()}`;
-		setRipples((prev) => [...prev, { id: rippleId, side }]);
-
-		// Remove ripple after animation completes
-		setTimeout(() => {
-			setRipples((prev) => prev.filter((ripple) => ripple.id !== rippleId));
-		}, 800);
+		if (side === "left") {
+			leftRippleRef.current?.trigger();
+		} else {
+			rightRippleRef.current?.trigger();
+		}
 	}, []);
 
 	// Handle swipe end
@@ -187,20 +187,7 @@ function TournamentMatch({
 					>
 						<div className={styles.spikes} aria-hidden="true" />
 						{/* Ripple Effects */}
-						<AnimatePresence>
-							{ripples
-								.filter((ripple) => ripple.side === "left")
-								.map((ripple) => (
-									<motion.div
-										key={ripple.id}
-										className={styles.ripple}
-										initial={{ scale: 0, opacity: 1 }}
-										animate={{ scale: 2.5, opacity: 0 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.8, ease: "easeOut" }}
-									/>
-								))}
-						</AnimatePresence>
+						<RippleEffects ref={leftRippleRef} />
 						<div className={styles.fighterContent}>
 							{leftImage && (
 								<motion.div
@@ -292,20 +279,7 @@ function TournamentMatch({
 					>
 						<div className={styles.spikes} aria-hidden="true" />
 						{/* Ripple Effects */}
-						<AnimatePresence>
-							{ripples
-								.filter((ripple) => ripple.side === "right")
-								.map((ripple) => (
-									<motion.div
-										key={ripple.id}
-										className={styles.ripple}
-										initial={{ scale: 0, opacity: 1 }}
-										animate={{ scale: 2.5, opacity: 0 }}
-										exit={{ opacity: 0 }}
-										transition={{ duration: 0.8, ease: "easeOut" }}
-									/>
-								))}
-						</AnimatePresence>
+						<RippleEffects ref={rightRippleRef} />
 						<div className={styles.fighterContent}>
 							{rightImage && (
 								<motion.div
