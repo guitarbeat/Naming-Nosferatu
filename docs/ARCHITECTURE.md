@@ -12,12 +12,14 @@
 ### Tech Stack
 
 - **Framework**: React 19.2.3 (Actions, `use` hook)
-- **Build Tool**: Vite 7.3.0
+- **Build Tool**: Vite 7.3.1
 - **State Management**: Zustand (Global) + TanStack Query (Server)
-- **Routing**: Custom route management with `useRouting` hook
-- **Styling**: TailwindCSS 4 + CSS Modules
+- **Routing**: React Router DOM v6.30.3 (programmatic navigation, route protection)
+- **Styling**: CSS Modules + Class Variance Authority (CVA) + Design Tokens
 - **Backend**: Supabase (PostgreSQL, Auth, Realtime)
 - **Domain Logic**: TypeScript with strict invariants
+- **Animations**: Framer Motion 11.18.1
+- **Forms**: React Hook Form with validation
 
 ---
 
