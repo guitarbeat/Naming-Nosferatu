@@ -1,5 +1,4 @@
-import { useMotionValueEvent, useScroll } from "framer-motion";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, HelpCircle, Lightbulb, LogOut, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";

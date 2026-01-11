@@ -37,6 +37,7 @@ export default defineConfig(({ mode }) => {
 		},
 		css: {
 			postcss: resolveFromRoot("config/postcss.config.js"),
+			devSourcemap: true,
 		},
 		resolve: {
 			alias: {
@@ -78,13 +79,38 @@ export default defineConfig(({ mode }) => {
 					// * Single entry file name (no chunks)
 					entryFileNames: "assets/js/[name]-[hash].js",
 					// * Enable manual chunking for better caching
-					manualChunks: {
+					manualChunks: (id) => {
 						// Vendor chunks for better caching
-						"react-vendor": ["react", "react-dom", "react/jsx-runtime"],
-						"animation-vendor": ["framer-motion"],
-						"ui-vendor": ["lucide-react", "@radix-ui/react-slot", "class-variance-authority"],
-						"data-vendor": ["@supabase/supabase-js", "@tanstack/react-query", "zustand"],
-						"form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
+						if (id.includes("node_modules")) {
+							if (id.includes("react") || id.includes("react-dom") || id.includes("jsx-runtime")) {
+								return "react-vendor";
+							}
+							if (id.includes("framer-motion")) {
+								return "animation-vendor";
+							}
+							if (id.includes("lucide-react") || id.includes("class-variance-authority")) {
+								return "ui-vendor";
+							}
+							if (id.includes("@supabase") || id.includes("@tanstack") || id.includes("zustand")) {
+								return "data-vendor";
+							}
+							if (id.includes("react-hook-form") || id.includes("zod")) {
+								return "form-vendor";
+							}
+							// Group other vendor libraries
+							return "vendor";
+						}
+
+						// Feature-based chunks for better caching
+						// Group related features to avoid circular dependencies
+						if (id.includes("features/")) {
+							if (id.includes("tournament") || id.includes("analytics") || id.includes("gallery")) {
+								return "core-features";
+							}
+							if (id.includes("explore") || id.includes("auth")) {
+								return "secondary-features";
+							}
+						}
 					},
 					assetFileNames: (assetInfo) => {
 						if (!assetInfo.name) {
@@ -112,12 +138,18 @@ export default defineConfig(({ mode }) => {
 					drop_console: mode === "production", // * Remove console.log in production
 					drop_debugger: true,
 					pure_funcs: mode === "production" ? ["console.log", "console.info", "console.debug"] : [],
-					passes: 2, // * Multiple passes for better compression
-					// * Disable unsafe optimizations to prevent module export issues
+					passes: 3, // * Increased passes for better compression
+					// * Safe optimizations only
 					unsafe: false,
 					unsafe_comps: false,
 					unsafe_math: false,
 					unsafe_methods: false,
+					// * Additional optimizations
+					collapse_vars: true,
+					reduce_vars: true,
+					pure_getters: true,
+					booleans: true,
+					loops: true,
 				},
 				format: {
 					comments: false, // * Remove comments
@@ -128,6 +160,10 @@ export default defineConfig(({ mode }) => {
 					safari10: true, // * Fix Safari 10 issues
 					// * Preserve module exports to prevent undefined object errors
 					reserved: ["exports", "module"],
+					// * More aggressive mangling
+					properties: {
+						regex: /^_[A-Za-z]/, // * Mangle private properties
+					},
 				},
 			},
 			// * Chunk size warnings threshold (500kb)

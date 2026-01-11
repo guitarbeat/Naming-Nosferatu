@@ -3,18 +3,14 @@ import {
 	leaderboardAPI,
 	statsAPI,
 } from "../../../../features/analytics/services/analyticsService";
-import { adminAPI } from "../../../../features/auth/services/adminService";
-import { imagesAPI } from "../../../../features/gallery/services/imageService";
 import { coreAPI, hiddenNamesAPI } from "../../../../features/names/services/nameService";
 import { siteSettingsAPI } from "./siteSettingsService";
 
 // Re-export everything for backward compatibility
 export {
-	adminAPI,
 	analyticsAPI,
 	leaderboardAPI,
 	statsAPI,
-	imagesAPI,
 	coreAPI,
 	hiddenNamesAPI,
 	siteSettingsAPI,

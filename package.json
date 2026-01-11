@@ -79,7 +79,6 @@
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^5.1.2",
-		"@vitejs/plugin-react-swc": "^4.2.2",
 		"autoprefixer": "^10.4.23",
 		"jsdom": "^27.4.0",
 		"knip": "^5.80.0",

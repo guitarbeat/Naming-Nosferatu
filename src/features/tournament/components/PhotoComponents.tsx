@@ -5,7 +5,7 @@
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { imagesAPI } from "../../../shared/services/supabase/client";
+import { imagesAPI } from "../../gallery/services/imageService";
 import { compressImageFile, devError } from "../../../shared/utils";
 import styles from "../styles/PhotoGallery.module.css";
 import { GALLERY_IMAGE_SIZES } from "../utils/tournamentUtils";

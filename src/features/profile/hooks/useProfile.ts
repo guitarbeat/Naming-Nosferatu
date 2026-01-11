@@ -7,8 +7,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
+import { adminAPI } from "../../auth/services/adminService";
 import {
-	adminAPI,
 	catNamesAPI,
 	deleteName,
 	hiddenNamesAPI,

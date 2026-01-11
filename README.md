@@ -285,9 +285,7 @@ src/
 import {
   catNamesAPI,
   tournamentsAPI,
-  adminAPI,
   siteSettingsAPI,
-  imagesAPI,
 } from "@/shared/services/supabase/api";
 
 // Get all cat names with descriptions
