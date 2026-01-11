@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useTransition } from "react";
+import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styles from "./TabContainer.module.css";
 
@@ -41,8 +41,11 @@ export function TabContainer({
 	const location = useLocation();
 	const [isPending, startTransition] = useTransition();
 
-	// Initialize active tab from props or URL
-	const [activeTab, setActiveTab] = useState(() => {
+	// Initialize active tab from props or URL (moved to avoid Router context issues)
+	const [activeTab, setActiveTab] = useState<string | undefined>();
+
+	// Initialize active tab after Router context is ready
+	const initialActiveTab = useMemo(() => {
 		if (routeSync) {
 			// Extract tab from URL
 			const currentPath = location.pathname;
@@ -56,11 +59,18 @@ export function TabContainer({
 			}
 		}
 		return defaultActiveTab || tabs[0]?.key || "";
-	});
+	}, [routeSync, location.pathname, defaultActiveTab, tabs]);
+
+	// Set initial active tab once Router context is ready
+	useEffect(() => {
+		if (activeTab === undefined && initialActiveTab) {
+			setActiveTab(initialActiveTab);
+		}
+	}, [activeTab, initialActiveTab]);
 
 	// Sync tab with URL changes
 	useEffect(() => {
-		if (!routeSync) return;
+		if (!routeSync || activeTab === undefined) return;
 
 		const currentPath = location.pathname;
 		const pathAfterBase = currentPath.replace(routeSync, "").replace(/^\//, "");
@@ -92,6 +102,11 @@ export function TabContainer({
 			}
 		});
 	};
+
+	// Don't render until activeTab is initialized to prevent Router context issues
+	if (activeTab === undefined) {
+		return null;
+	}
 
 	const activeTabData = tabs.find(tab => tab.key === activeTab);
 
