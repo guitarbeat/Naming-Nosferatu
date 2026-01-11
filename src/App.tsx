@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 // * Core state and routing hooks
@@ -17,6 +17,8 @@ import { Loading } from "./shared/components/Loading";
 import { AppLayout } from "./shared/layouts/AppLayout";
 import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
+import styles from "./App.module.css";
+import { Toast } from "./shared/components/Toast";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
@@ -46,6 +48,12 @@ function App() {
 
 	// Centralized store
 	const { user, tournament, ui, tournamentActions } = useAppStore();
+
+	// Toast state management
+	const [toasts, setToasts] = useState<any[]>([]);
+	const removeToast = useCallback((id: string) => {
+		setToasts((prev) => prev.filter((toast) => toast.id !== id));
+	}, []);
 
 	// React Router hooks - with safety check for Router context availability
 	const [navigateTo, setNavigateTo] = useState<ReturnType<typeof useNavigate> | null>(null);
@@ -174,17 +182,27 @@ function App() {
 		);
 	}
 
+	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
+
 	return (
 		<ToastProvider>
-			<AppLayout
-				handleLogin={handleLogin}
-				handleStartNewTournament={handleStartNewTournament}
-				handleUpdateRatings={handleUpdateRatings}
-				handleTournamentSetup={handleTournamentSetup}
-				handleTournamentComplete={handleTournamentComplete}
-				isSuggestNameModalOpen={isSuggestNameModalOpen}
-				onCloseSuggestName={handleCloseSuggestName}
-			/>
+			<div className={appClassName}>
+				<AppLayout
+					handleLogin={handleLogin}
+					handleStartNewTournament={handleStartNewTournament}
+					handleUpdateRatings={handleUpdateRatings}
+					handleTournamentSetup={handleTournamentSetup}
+					handleTournamentComplete={handleTournamentComplete}
+					isSuggestNameModalOpen={isSuggestNameModalOpen}
+					onCloseSuggestName={handleCloseSuggestName}
+				/>
+				<Toast
+					variant="container"
+					toasts={toasts}
+					removeToast={removeToast}
+					className={styles.toastContainer}
+				/>
+			</div>
 		</ToastProvider>
 	);
 }

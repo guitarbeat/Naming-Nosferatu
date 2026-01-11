@@ -236,7 +236,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 /*             UNIFIED TOAST                 */
 /* ========================================= */
 
-export interface ToastProps extends ToastItemProps, ToastContainerProps {
+export interface ToastProps extends Partial<ToastItemProps>, ToastContainerProps {
 	variant?: "item" | "container";
 }
 
