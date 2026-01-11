@@ -47,47 +47,56 @@ function App() {
 	// Centralized store
 	const { user, tournament, ui, tournamentActions } = useAppStore();
 
-	// React Router hooks
-	const navigateTo = useNavigate();
-	const location = useLocation();
-	const currentRoute = location.pathname + location.search;
+	// React Router hooks - with safety check for Router context availability
+	const [navigateTo, setNavigateTo] = useState<ReturnType<typeof useNavigate> | null>(null);
+	const [location, setLocation] = useState<ReturnType<typeof useLocation> | null>(null);
+
+	// Initialize navigation hooks when Router context becomes available
+	useEffect(() => {
+		try {
+			setNavigateTo(useNavigate());
+			setLocation(useLocation());
+		} catch {
+			// Router context still not ready, will retry on next render
+			console.warn("Router context not ready yet, retrying navigation hook initialization");
+		}
+	}, []);
 
 	// Simplified routing logic - handle basic navigation based on login state and tournament completion
 	useEffect(() => {
-		// Small delay to ensure Router context is fully established
-		const timeoutId = setTimeout(() => {
-			if (!navigateTo) return; // Safety check
+		// Only run navigation logic when Router context is available
+		if (!navigateTo || !location) return;
 
-			if (!user.isLoggedIn) {
-				// Redirect to home if not logged in and not already there
-				if (currentRoute !== "/" && !currentRoute.startsWith("/?")) {
-					navigateTo("/", { replace: true });
-				}
-				return;
+		const _currentRoute = location.pathname + location.search;
+
+		if (!user.isLoggedIn) {
+			// Redirect to home if not logged in and not already there
+			if (_currentRoute !== "/" && !_currentRoute.startsWith("/?")) {
+				navigateTo("/", { replace: true });
 			}
+			return;
+		}
 
-			// If logged in and on home page, redirect to tournament
-			if (currentRoute === "/" || currentRoute === "/?") {
-				navigateTo("/tournament", { replace: true });
-			}
+		// If logged in and on home page, redirect to tournament
+		if (_currentRoute === "/" || _currentRoute === "/?") {
+			navigateTo("/tournament", { replace: true });
+		}
 
-			// Handle tournament completion - redirect to results
-			if (tournament.isComplete && currentRoute === "/tournament") {
-				navigateTo("/results", { replace: true });
-			}
-		}, 0);
-
-		return () => clearTimeout(timeoutId);
-	}, [user.isLoggedIn, currentRoute, tournament.isComplete, navigateTo]);
+		// Handle tournament completion - redirect to results
+		if (tournament.isComplete && _currentRoute === "/tournament") {
+			navigateTo("/results", { replace: true });
+		}
+	}, [user.isLoggedIn, tournament.isComplete, navigateTo, location]);
 
 	// Keyboard shortcuts - simplified to just handle analysis toggle
 	useEffect(() => {
+		// Only set up keyboard shortcuts when Router context is available
+		if (!navigateTo || !location) return;
+
 		const handleKeyDown = (event: KeyboardEvent) => {
 			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
 			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
 				event.preventDefault();
-
-				if (!navigateTo) return; // Safety check
 
 				const searchParams = new URLSearchParams(location.search);
 				const hasAnalysis = searchParams.has("analysis");
@@ -118,17 +127,24 @@ function App() {
 		}
 	}, [ui.theme]);
 
-	// Tournament handlers
+	// Tournament handlers - only initialize when navigation is available
+	const tournamentHandlers = navigateTo ? useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+		navigateTo,
+	}) : {
+		handleTournamentComplete: () => Promise.resolve(),
+		handleStartNewTournament: () => {},
+		handleTournamentSetup: () => {},
+		handleUpdateRatings: () => Promise.resolve(false),
+	};
+
 	const {
 		handleTournamentComplete,
 		handleStartNewTournament,
 		handleTournamentSetup,
 		handleUpdateRatings,
-	} = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
-		navigateTo,
-	});
+	} = tournamentHandlers;
 
 	// Handle user login
 	const handleLogin = useCallback(
