@@ -54,23 +54,30 @@ function App() {
 
 	// Simplified routing logic - handle basic navigation based on login state and tournament completion
 	useEffect(() => {
-		if (!user.isLoggedIn) {
-			// Redirect to home if not logged in and not already there
-			if (currentRoute !== "/" && !currentRoute.startsWith("/?")) {
-				navigateTo("/", { replace: true });
+		// Small delay to ensure Router context is fully established
+		const timeoutId = setTimeout(() => {
+			if (!navigateTo) return; // Safety check
+
+			if (!user.isLoggedIn) {
+				// Redirect to home if not logged in and not already there
+				if (currentRoute !== "/" && !currentRoute.startsWith("/?")) {
+					navigateTo("/", { replace: true });
+				}
+				return;
 			}
-			return;
-		}
 
-		// If logged in and on home page, redirect to tournament
-		if (currentRoute === "/" || currentRoute === "/?") {
-			navigateTo("/tournament", { replace: true });
-		}
+			// If logged in and on home page, redirect to tournament
+			if (currentRoute === "/" || currentRoute === "/?") {
+				navigateTo("/tournament", { replace: true });
+			}
 
-		// Handle tournament completion - redirect to results
-		if (tournament.isComplete && currentRoute === "/tournament") {
-			navigateTo("/results", { replace: true });
-		}
+			// Handle tournament completion - redirect to results
+			if (tournament.isComplete && currentRoute === "/tournament") {
+				navigateTo("/results", { replace: true });
+			}
+		}, 0);
+
+		return () => clearTimeout(timeoutId);
 	}, [user.isLoggedIn, currentRoute, tournament.isComplete, navigateTo]);
 
 	// Keyboard shortcuts - simplified to just handle analysis toggle
@@ -79,6 +86,9 @@ function App() {
 			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
 			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
 				event.preventDefault();
+
+				if (!navigateTo) return; // Safety check
+
 				const searchParams = new URLSearchParams(location.search);
 				const hasAnalysis = searchParams.has("analysis");
 				if (hasAnalysis) {
