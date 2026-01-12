@@ -336,21 +336,25 @@ export function useKeyboardControls(
 			const { key } = event;
 
 			if (key === "ArrowLeft") {
+				event.preventDefault();
 				options.onSelectLeft?.();
 				return;
 			}
 
 			if (key === "ArrowRight") {
+				event.preventDefault();
 				options.onSelectRight?.();
 				return;
 			}
 
 			if (key === "ArrowUp") {
+				event.preventDefault();
 				handleVoteWithAnimation?.("both");
 				return;
 			}
 
 			if (key === "ArrowDown") {
+				event.preventDefault();
 				handleVoteWithAnimation?.("neither");
 				return;
 			}
