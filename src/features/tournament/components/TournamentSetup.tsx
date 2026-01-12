@@ -14,9 +14,8 @@ import type { NameItem } from "../../../types/components";
 import type { SummaryStats } from "../../analytics/types";
 import { useCatFact, useEyeTracking, useLoginController } from "../../auth/hooks/authHooks";
 import loginStyles from "../../auth/styles/LoginScene.module.css";
-import { useTournamentController } from "../hooks/useTournamentController";
-import photoStyles from "../styles/PhotoGallery.module.css";
-import setupStyles from "../styles/Setup.module.css";
+import { useTournamentManager } from "../hooks/useTournamentManager";
+import styles from "../tournament.module.css";
 import {
 	AnalysisBulkActionsWrapper,
 	AnalysisHandlersProvider,
@@ -76,7 +75,7 @@ function TournamentSetupContent({
 	const greeting = useGreeting();
 
 	// Tournament setup state and handlers (only when logged in)
-	const tournamentController = useTournamentController({
+	const tournamentManager = useTournamentManager({
 		userName: isLoggedIn ? userName : "",
 		onNameChange,
 		enableAnalysisMode,
@@ -110,7 +109,7 @@ function TournamentSetupContent({
 		showToast,
 		handlersRef,
 		ToastContainer,
-	} = tournamentController;
+	} = tournamentManager;
 
 	const catFact = useCatFact();
 
@@ -368,11 +367,11 @@ function TournamentSetupContent({
 					}}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
-					<ToastContainer />
-					<div className={`${setupStyles.container} ${photoStyles.photosViewContainer}`}>
-						<div className={photoStyles.photosViewContent}>
-							<h2 className={photoStyles.photosViewTitle}>Photo Gallery</h2>
-							<p className={photoStyles.photosViewSubtitle}>Click any photo to view full size</p>
+				<ToastContainer />
+					<div className={`${styles.container} ${styles.photosViewContainer}`}>
+						<div className={styles.photosViewContent}>
+							<h2 className={styles.photosViewTitle}>Photo Gallery</h2>
+							<p className={styles.photosViewSubtitle}>Click any photo to view full size</p>
 							<PhotoGallery {...photoGalleryProps} />
 						</div>
 					</div>
@@ -395,10 +394,10 @@ function TournamentSetupContent({
 				>
 					<ToastContainer />
 					<div className="stack stack-md">
-						{/* Name Identity Section */}
-						<div className={setupStyles.identitySection}>
+					{/* Name Identity Section */}
+						<div className={styles.identitySection}>
 							{isEditingName ? (
-								<form onSubmit={handleNameSubmit} className={setupStyles.identityForm}>
+								<form onSubmit={handleNameSubmit} className={styles.identityForm}>
 									<ValidatedInput
 										type="text"
 										value={tempName}
@@ -419,17 +418,17 @@ function TournamentSetupContent({
 										maxLength={30}
 										aria-label="Edit name"
 										schema={nameSchema}
-										className={setupStyles.identityInputWrapper}
+										className={styles.identityInputWrapper}
 									/>
-									<button type="submit" className={setupStyles.identitySaveBtn}>
+									<button type="submit" className={styles.identitySaveBtn}>
 										✓
 									</button>
 								</form>
 							) : (
-								<div className={setupStyles.identityDisplay}>
-									<span className={setupStyles.identityName}>{userName}</span>
+								<div className={styles.identityDisplay}>
+									<span className={styles.identityName}>{userName}</span>
 									<button
-										className={setupStyles.identityEditBtn}
+										className={styles.identityEditBtn}
 										onClick={() => toggleEditingName(true)}
 										aria-label="Change Name"
 									>
@@ -440,9 +439,9 @@ function TournamentSetupContent({
 						</div>
 
 						{/* Cat Fact Tape / System Feed */}
-						<div className={setupStyles.catFactSection}>
-							<div className={setupStyles.tapeDecorator} />
-							<span className={setupStyles.tapeContent}>
+						<div className={styles.catFactSection}>
+							<div className={styles.tapeDecorator} />
+							<span className={styles.tapeContent}>
 								{catFact ? catFact.toUpperCase() : "SYNCING FELINE DATABASE..."}
 							</span>
 						</div>
