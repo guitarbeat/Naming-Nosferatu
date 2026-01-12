@@ -135,17 +135,12 @@ function App() {
 		}
 	}, [ui.theme]);
 
-	// Tournament handlers - only initialize when navigation is available
-	const tournamentHandlers = navigateTo ? useTournamentHandlers({
+	// Tournament handlers - always call hook unconditionally
+	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo,
-	}) : {
-		handleTournamentComplete: () => Promise.resolve(),
-		handleStartNewTournament: () => {},
-		handleTournamentSetup: () => {},
-		handleUpdateRatings: () => Promise.resolve(false),
-	};
+		navigateTo: navigateTo || (() => {}),
+	});
 
 	const {
 		handleTournamentComplete,
