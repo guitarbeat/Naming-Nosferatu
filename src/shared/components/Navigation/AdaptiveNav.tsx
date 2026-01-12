@@ -152,21 +152,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 							<span className={styles.bottomNavLabel}>Menu</span>
 						</button>
 
-						{/* Logout Action */}
-						{onLogout && (
-							<button
-								className={`${styles.bottomNavItem} ${styles.bottomNavAction}`}
-								onClick={() => {
-									if (navigator.vibrate) navigator.vibrate(10);
-									onLogout();
-								}}
-								aria-label="Log out"
-								title="Log out"
-							>
-								<LogOut className={styles.bottomNavIcon} aria-hidden={true} />
-								<span className={styles.bottomNavLabel}>Logout</span>
-							</button>
-						)}
 					</nav>
 				</motion.div>
 
