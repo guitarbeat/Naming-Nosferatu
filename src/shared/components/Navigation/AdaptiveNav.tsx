@@ -14,7 +14,7 @@ interface AdaptiveNavProps {
  * Unified Adaptive Navigation Component
  * Consolidates DesktopNav, BottomNav, MobileMenu, and SwipeNavigation into a single responsive component
  */
-export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
+export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(false);
