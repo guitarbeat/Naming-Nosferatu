@@ -436,8 +436,10 @@ const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, us
 				return normalizeRole(result.role as string);
 			}
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
-				console.error(`Error fetching user role from Supabase source "${source}":`, error);
+			// Log the error but continue trying other sources
+			if (import.meta.env.DEV) {
+				const errorMsg = error instanceof Error ? error.message : String(error);
+				console.error(`Error fetching user role from Supabase source "${source}": ${errorMsg}`);
 			}
 		}
 	}
