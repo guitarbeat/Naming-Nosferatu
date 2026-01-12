@@ -61,9 +61,6 @@ function App() {
 
 	// Simplified routing logic - handle basic navigation based on login state and tournament completion
 	useEffect(() => {
-		// Only run navigation logic when Router context is available
-		if (!navigateTo || !location) return;
-
 		const _currentRoute = location.pathname + location.search;
 
 		if (!user.isLoggedIn) {
