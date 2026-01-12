@@ -151,6 +151,8 @@ function App() {
 		setIsSuggestNameModalOpen(false);
 	}, []);
 
+	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
+
 	// Show loading screen while initializing
 	if (!isInitialized) {
 		return (
@@ -159,8 +161,6 @@ function App() {
 			</div>
 		);
 	}
-
-	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
 
 	return (
 		<ToastProvider>
