@@ -55,20 +55,9 @@ function App() {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
-	// React Router hooks - with safety check for Router context availability
-	const [navigateTo, setNavigateTo] = useState<ReturnType<typeof useNavigate> | null>(null);
-	const [location, setLocation] = useState<ReturnType<typeof useLocation> | null>(null);
-
-	// Initialize navigation hooks when Router context becomes available
-	useEffect(() => {
-		try {
-			setNavigateTo(useNavigate());
-			setLocation(useLocation());
-		} catch {
-			// Router context still not ready, will retry on next render
-			console.warn("Router context not ready yet, retrying navigation hook initialization");
-		}
-	}, []);
+	// React Router hooks - call at top level (not conditionally or in effects)
+	const navigateTo = useNavigate();
+	const location = useLocation();
 
 	// Simplified routing logic - handle basic navigation based on login state and tournament completion
 	useEffect(() => {
