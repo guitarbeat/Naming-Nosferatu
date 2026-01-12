@@ -139,7 +139,7 @@ function App() {
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo: navigateTo || (() => {}),
+		navigateTo: navigateTo as ReturnType<typeof useNavigate>,
 	});
 
 	const {
