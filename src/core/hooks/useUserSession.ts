@@ -124,7 +124,11 @@ function useUserSession({
 				.then((adminStatus: boolean) => {
 					userActions.setAdminStatus(adminStatus);
 				})
-				.catch(() => {
+				.catch((error) => {
+					// Log error but don't fail - user can still function without admin status
+					if (import.meta.env.DEV) {
+						console.warn("Failed to check admin status:", error);
+					}
 					userActions.setAdminStatus(false);
 				});
 		} else {
