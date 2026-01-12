@@ -124,11 +124,11 @@ function App() {
 		}
 	}, [ui.theme]);
 
-	// Tournament handlers - always call hook unconditionally
+	// Tournament handlers
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo: navigateTo as ReturnType<typeof useNavigate>,
+		navigateTo,
 	});
 
 	const {
