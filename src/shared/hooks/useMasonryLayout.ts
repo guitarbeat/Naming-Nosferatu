@@ -131,19 +131,38 @@ export function useMasonryLayout<T extends HTMLElement>(
 		};
 	}, [calculateLayout]);
 
+	// Batch layout updates to prevent thrashing
+	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
+
 	// Set item ref callback
 	const setItemRef = useCallback(
 		(index: number) => (el: HTMLDivElement | null) => {
 			if (itemRefs.current[index] !== el) {
 				itemRefs.current[index] = el;
-				// Trigger recalculation after ref is set
-				setTimeout(() => {
+
+				// Batch recalculations
+				if (layoutTimeoutRef.current) {
+					clearTimeout(layoutTimeoutRef.current);
+				}
+
+				// Small delay (10ms) allows capturing multiple ref updates in a single layout pass
+				layoutTimeoutRef.current = setTimeout(() => {
 					calculateLayout();
-				}, 0);
+					layoutTimeoutRef.current = null;
+				}, 10);
 			}
 		},
 		[calculateLayout],
 	);
+
+	// Cleanup timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (layoutTimeoutRef.current) {
+				clearTimeout(layoutTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	return {
 		containerRef,
