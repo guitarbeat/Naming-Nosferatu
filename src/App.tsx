@@ -84,9 +84,6 @@ function App() {
 
 	// Keyboard shortcuts - simplified to just handle analysis toggle
 	useEffect(() => {
-		// Only set up keyboard shortcuts when Router context is available
-		if (!navigateTo || !location) return;
-
 		const handleKeyDown = (event: KeyboardEvent) => {
 			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
 			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
