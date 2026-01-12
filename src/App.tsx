@@ -55,26 +55,12 @@ function App() {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
-	// React Router hooks - with safety check for Router context availability
-	const [navigateTo, setNavigateTo] = useState<ReturnType<typeof useNavigate> | null>(null);
-	const [location, setLocation] = useState<ReturnType<typeof useLocation> | null>(null);
-
-	// Initialize navigation hooks when Router context becomes available
-	useEffect(() => {
-		try {
-			setNavigateTo(useNavigate());
-			setLocation(useLocation());
-		} catch {
-			// Router context still not ready, will retry on next render
-			console.warn("Router context not ready yet, retrying navigation hook initialization");
-		}
-	}, []);
+	// React Router hooks - call at top level (not conditionally or in effects)
+	const navigateTo = useNavigate();
+	const location = useLocation();
 
 	// Simplified routing logic - handle basic navigation based on login state and tournament completion
 	useEffect(() => {
-		// Only run navigation logic when Router context is available
-		if (!navigateTo || !location) return;
-
 		const _currentRoute = location.pathname + location.search;
 
 		if (!user.isLoggedIn) {
@@ -98,9 +84,6 @@ function App() {
 
 	// Keyboard shortcuts - simplified to just handle analysis toggle
 	useEffect(() => {
-		// Only set up keyboard shortcuts when Router context is available
-		if (!navigateTo || !location) return;
-
 		const handleKeyDown = (event: KeyboardEvent) => {
 			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
 			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
@@ -135,17 +118,12 @@ function App() {
 		}
 	}, [ui.theme]);
 
-	// Tournament handlers - only initialize when navigation is available
-	const tournamentHandlers = navigateTo ? useTournamentHandlers({
+	// Tournament handlers
+	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 		navigateTo,
-	}) : {
-		handleTournamentComplete: () => Promise.resolve(),
-		handleStartNewTournament: () => {},
-		handleTournamentSetup: () => {},
-		handleUpdateRatings: () => Promise.resolve(false),
-	};
+	});
 
 	const {
 		handleTournamentComplete,
@@ -173,6 +151,8 @@ function App() {
 		setIsSuggestNameModalOpen(false);
 	}, []);
 
+	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
+
 	// Show loading screen while initializing
 	if (!isInitialized) {
 		return (
@@ -181,8 +161,6 @@ function App() {
 			</div>
 		);
 	}
-
-	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
 
 	return (
 		<ToastProvider>

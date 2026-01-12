@@ -192,7 +192,6 @@ export function SwipeableCards({
 				<AnimatePresence mode="popLayout">
 					{names.length > 0 ? (
 						(() => {
-							const visibleCards = names.filter((card) => !swipedIds.has(String(card.id)));
 							return visibleCards.map((card, index) => {
 								const cardId = String(card.id);
 								const isCardSelected = isSelected(card);

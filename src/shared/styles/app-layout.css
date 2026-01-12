@@ -55,6 +55,9 @@
 	/* Horizontal navbar on top - use padding-top, no left padding */
 	padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) var(--app-main-side-padding)
 		var(--app-main-bottom-padding) var(--app-main-side-padding);
+
+	/* Center all content horizontally */
+	align-items: center;
 }
 
 /* ============================================================================
