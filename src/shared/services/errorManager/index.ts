@@ -209,6 +209,17 @@ function determineErrorType(error: unknown): string {
 }
 
 function parseError(error: unknown): ParsedError {
+	// Temporary debug logging to diagnose unknown errors
+	if (!error || (typeof error === "object" && !((error as Record<string, unknown>).message))) {
+		console.debug("[ErrorManager] parseError called with non-standard error:", {
+			errorValue: error,
+			errorType: typeof error,
+			isNull: error === null,
+			isUndefined: error === undefined,
+			stack: new Error().stack?.split("\n").slice(1, 4).join("\n"),
+		});
+	}
+
 	if (error instanceof Error) {
 		return {
 			message: error.message,
