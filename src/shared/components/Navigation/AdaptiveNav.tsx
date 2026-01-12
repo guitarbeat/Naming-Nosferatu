@@ -202,20 +202,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 									))}
 								</nav>
 
-								{onLogout && (
-									<div className={styles.mobileMenuFooter}>
-										<button
-											className={styles.mobileMenuLogoutButton}
-											onClick={() => {
-												if (navigator.vibrate) navigator.vibrate(10);
-												onLogout();
-												setIsMobileMenuOpen(false);
-											}}
-										>
-											Log Out
-										</button>
-									</div>
-								)}
 							</motion.div>
 						</>
 					)}
