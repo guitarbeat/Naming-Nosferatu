@@ -7,7 +7,6 @@ import { KeyboardShortcutsOverlay } from "./KeyboardShortcutsOverlay";
 import styles from "./navigation.module.css";
 
 interface AdaptiveNavProps {
-	onLogout?: () => void;
 	onOpenSuggestName?: () => void;
 }
 
