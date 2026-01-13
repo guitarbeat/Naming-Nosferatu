@@ -25,7 +25,6 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 
 	const [imageError, setImageError] = useState(false);
 	const [imageLoading, setImageLoading] = useState(true);
-	const [tiltStyle, setTiltStyle] = useState({});
 
 	const handleImageLoad = useCallback(() => {
 		setImageLoading(false);
@@ -38,6 +37,7 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 	}, []);
 
 	// * 3D tilt effect that follows mouse
+	// * Optimization: Use direct DOM manipulation instead of state to prevent re-renders on mousemove
 	useEffect(() => {
 		const element = elementRef.current;
 		if (!element || imageError) {
@@ -55,17 +55,14 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 			const rotateX = ((y - centerY) / centerY) * -5; // * Max 5 degrees
 			const rotateY = ((x - centerX) / centerX) * 5; // * Max 5 degrees
 
-			setTiltStyle({
-				transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-				transition: "transform 0.1s ease-out",
-			});
+			element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+			element.style.transition = "transform 0.1s ease-out";
 		};
 
 		const handleMouseLeave = () => {
-			setTiltStyle({
-				transform: "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)",
-				transition: "transform 0.3s ease-out",
-			});
+			element.style.transform =
+				"perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+			element.style.transition = "transform 0.3s ease-out";
 		};
 
 		element.addEventListener("mousemove", handleMouseMove);
@@ -115,7 +112,6 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 			onClick={handleClick}
 			aria-label={`Open cat photo ${index + 1}`}
 			disabled={imageError}
-			style={tiltStyle}
 		>
 			{imageError ? (
 				<div className={styles.imageErrorPlaceholder}>
