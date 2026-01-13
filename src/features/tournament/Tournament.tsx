@@ -218,38 +218,6 @@ function TournamentContent({
 		audioManager,
 	});
 
-	// * Keyboard controls
-	useKeyboardControls(
-		selectedOption,
-		isProcessing,
-		isTransitioning,
-		audioManager.isMuted,
-		handleVoteSync,
-		globalEventListeners,
-		{
-			onToggleHelp: handleToggleKeyboardHelp,
-			onUndo: () => {
-				if (canUndoNow) {
-					if (handleUndo) {
-						handleUndo();
-					}
-					clearUndo();
-				}
-			},
-			onClearSelection: () => setSelectedOption(null),
-			onSelectLeft: () => {
-				if (!isProcessing && !isTransitioning) {
-					setSelectedOption("left");
-				}
-			},
-			onSelectRight: () => {
-				if (!isProcessing && !isTransitioning) {
-					setSelectedOption("right");
-				}
-			},
-			onToggleCatPictures: handleToggleCatPictures,
-		},
-	);
 
 	// * Transform match history for bracket
 	const transformedMatches = useBracketTransformation(matchHistory, visibleNames);
