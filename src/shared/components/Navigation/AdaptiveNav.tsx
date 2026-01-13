@@ -261,8 +261,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 			{/* Spacing to prevent content from jumping when nav is fixed */}
 			<div style={{ height: "64px", display: "none" }} className="desktop-spacer" />
 
-			<KeyboardShortcutsOverlay isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
-		</>
+			</>
 	);
 }
 
