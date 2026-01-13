@@ -254,15 +254,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 								<Lightbulb size={20} />
 							</button>
 						)}
-
-						<button
-							className={styles.desktopNavUtilityBtn}
-							onClick={() => setShowShortcuts(true)}
-							aria-label="Keyboard Shortcuts"
-							title="Press '?' for keyboard shortcuts"
-						>
-							<HelpCircle size={20} />
-						</button>
 					</div>
 				</div>
 			</header>
