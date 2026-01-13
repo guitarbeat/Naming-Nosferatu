@@ -25,7 +25,6 @@ import { UndoBanner } from "./components/UndoBanner";
 import type { EventListener } from "./hooks/tournamentComponentHooks";
 import {
 	useAudioManager,
-	useKeyboardControls,
 	useTournamentState,
 	useTournamentVote,
 } from "./hooks/tournamentComponentHooks";
