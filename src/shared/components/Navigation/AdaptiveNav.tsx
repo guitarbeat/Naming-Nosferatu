@@ -18,7 +18,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const [showShortcuts, setShowShortcuts] = useState(false);
 	const [hidden, setHidden] = useState(false);
 	const { scrollY } = useScroll();
 
