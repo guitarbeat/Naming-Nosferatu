@@ -70,8 +70,6 @@ function TournamentContent({
 		setShowMatchResult,
 		showBracket,
 		setShowBracket,
-		showKeyboardHelp,
-		setShowKeyboardHelp,
 		showRoundTransition,
 		nextRoundNumber,
 		votingError,
