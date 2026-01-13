@@ -286,17 +286,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 						>
 							<HelpCircle size={20} />
 						</button>
-
-						{onLogout && (
-							<button
-								className={styles.desktopNavUtilityBtn}
-								onClick={onLogout}
-								aria-label="Log Out"
-								title="Log Out"
-							>
-								<LogOut size={20} />
-							</button>
-						)}
 					</div>
 				</div>
 			</header>
