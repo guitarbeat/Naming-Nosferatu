@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Card from "../../../shared/components/Card/Card";
 import { Loading } from "../../../shared/components/Loading";
 import { catNamesAPI } from "../../../shared/services/supabase/client";
-import styles from "./NameDiscovery.module.css";
+import styles from "../explore.module.css";
 
 interface NameDiscoveryProps {
 	userName: string;
@@ -17,19 +17,18 @@ function NameDiscovery({ userName: _userName }: NameDiscoveryProps) {
 	} = useQuery({
 		queryKey: ["popular-names"],
 		queryFn: async () => {
-			// For now, we'll fetch all names and simulate popularity
 			const names = await catNamesAPI.getNamesWithDescriptions();
 			return names
 				.map((name) => ({
 					id: name.id,
 					name: name.name,
-					voteCount: Math.floor(Math.random() * 100) + 1, // Mock popularity
-					trending: Math.random() > 0.7, // Mock trending status
+					voteCount: Math.floor(Math.random() * 100) + 1,
+					trending: Math.random() > 0.7,
 				}))
 				.sort((a, b) => b.voteCount - a.voteCount)
 				.slice(0, 20);
 		},
-		staleTime: 5 * 60 * 1000, // 5 minutes
+		staleTime: 5 * 60 * 1000,
 	});
 
 	if (isLoading) {

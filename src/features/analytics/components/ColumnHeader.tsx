@@ -1,5 +1,5 @@
 import type React from "react";
-import styles from "./ColumnHeader.module.css";
+import styles from "../analytics.module.css";
 
 interface ColumnHeaderProps {
 	label: string;

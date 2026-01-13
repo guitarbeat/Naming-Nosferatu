@@ -2,9 +2,8 @@ import type React from "react";
 import { PerformanceBadges } from "../../../shared/components/PerformanceBadge";
 import { devError, formatDate, getMetricLabel, getRankDisplay } from "../../../shared/utils";
 import type { ConsolidatedName, SummaryStats } from "../types";
-import styles from "./AnalysisTable.module.css";
+import styles from "../analytics.module.css";
 import { ColumnHeader } from "./ColumnHeader";
-import columnHeaderStyles from "./ColumnHeader.module.css";
 
 interface AnalysisTableProps {
 	names: ConsolidatedName[];
@@ -35,11 +34,6 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 	};
 
 	const handleSort = (field: string, _direction: "asc" | "desc") => {
-		// onSort expects just field, direction is managed by parent usually or we pass it
-		// But in original code, onSort(field) toggles logic.
-		// AnalysisTable props says onSort: (field: string) => void.
-		// ColumnHeader passes (field, direction).
-		// We should adapt.
 		onSort(field);
 	};
 
@@ -110,7 +104,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 						</th>
 						{isAdmin && (
 							<th scope="col">
-								<span className={columnHeaderStyles.columnHeaderLabel}>Insights</span>
+								<span className={styles.columnHeaderLabel}>Insights</span>
 							</th>
 						)}
 						<th
@@ -158,7 +152,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 									</span>
 								</td>
 								<td className={styles.colName}>{item.name}</td>
-								<td className={styles.colRating}>
+								<td>
 									{isAdmin ? (
 										<div>
 											<span
@@ -183,7 +177,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 										</div>
 									)}
 								</td>
-								<td className={styles.colWins}>
+								<td>
 									{isAdmin ? (
 										<span className={styles.metricValue} aria-label={`Wins: ${item.wins}`}>
 											{item.wins}
@@ -203,7 +197,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 										</div>
 									)}
 								</td>
-								<td className={styles.colSelected}>
+								<td>
 									{isAdmin ? (
 										<div>
 											<span
@@ -239,7 +233,7 @@ export const AnalysisTable: React.FC<AnalysisTableProps> = ({
 										/>
 									</td>
 								)}
-								<td className={styles.colDate}>
+								<td>
 									{item.dateSubmitted ? (
 										<span
 											className={styles.metricValue}
