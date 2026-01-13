@@ -3,7 +3,6 @@ import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
-import { KeyboardShortcutsOverlay } from "./KeyboardShortcutsOverlay";
 import styles from "./navigation.module.css";
 
 interface AdaptiveNavProps {
