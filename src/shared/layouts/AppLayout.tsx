@@ -71,7 +71,7 @@ export function AppLayout({
 
 				{/* Unified Adaptive Navigation */}
 				{isLoggedIn && (
-				<AdaptiveNav />
+					<AdaptiveNav />
 				)}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
