@@ -5,7 +5,7 @@ import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
 import { Loading } from "../../../shared/components/Loading";
 import { catNamesAPI } from "../../../shared/services/supabase/client";
-import styles from "./CategoryExplorer.module.css";
+import styles from "../explore.module.css";
 
 interface CategoryExplorerProps {
 	userName: string;
@@ -84,15 +84,10 @@ function CategoryExplorer({ userName: _userName }: CategoryExplorerProps) {
 
 	const filteredCategories = CATEGORIES.map((category) => ({
 		...category,
-		// Filter names based on search term
 		filteredNames: category.names.filter((name) =>
 			name.toLowerCase().includes(searchTerm.toLowerCase()),
 		),
-	})).filter(
-		(category) =>
-			// Only show categories that have matching names or if no search term
-			!searchTerm || category.filteredNames.length > 0,
-	);
+	})).filter((category) => !searchTerm || category.filteredNames.length > 0);
 
 	const selectedCategoryData = selectedCategory
 		? filteredCategories.find((c) => c.id === selectedCategory)

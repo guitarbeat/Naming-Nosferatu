@@ -1,8 +1,7 @@
 import type React from "react";
 import { devError } from "../../../shared/utils";
 import type { NameWithInsight, SummaryStats } from "../types";
-import styles from "./AnalysisInsights.module.css";
-import statsStyles from "./AnalysisStats.module.css";
+import styles from "../analytics.module.css";
 
 interface AnalysisInsightsProps {
 	namesWithInsights: NameWithInsight[];
@@ -28,21 +27,21 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 
 		if (isAdmin) {
 			return (
-				<div className={statsStyles.statsSummary}>
-					<div className={statsStyles.statCard}>
-						<div className={statsStyles.statLabel}>Total Names</div>
-						<div className={statsStyles.statValue}>{summaryStats.totalNames || 0}</div>
-						<div className={statsStyles.statSubtext}>{summaryStats.activeNames || 0} active</div>
+				<div className={styles.statsSummary}>
+					<div className={styles.statCard}>
+						<div className={styles.statLabel}>Total Names</div>
+						<div className={styles.statValue}>{summaryStats.totalNames || 0}</div>
+						<div className={styles.statSubtext}>{summaryStats.activeNames || 0} active</div>
 					</div>
-					<div className={statsStyles.statCard}>
-						<div className={statsStyles.statLabel}>Avg Rating</div>
-						<div className={statsStyles.statValue}>{summaryStats.avgRating}</div>
-						<div className={statsStyles.statSubtext}>Global Average</div>
+					<div className={styles.statCard}>
+						<div className={styles.statLabel}>Avg Rating</div>
+						<div className={styles.statValue}>{summaryStats.avgRating}</div>
+						<div className={styles.statSubtext}>Global Average</div>
 					</div>
-					<div className={statsStyles.statCard}>
-						<div className={statsStyles.statLabel}>Total Votes</div>
-						<div className={statsStyles.statValue}>{summaryStats.totalRatings || 0}</div>
-						<div className={statsStyles.statSubtext}>
+					<div className={styles.statCard}>
+						<div className={styles.statLabel}>Total Votes</div>
+						<div className={styles.statValue}>{summaryStats.totalRatings || 0}</div>
+						<div className={styles.statSubtext}>
 							{summaryStats.totalSelections || 0} selections
 						</div>
 					</div>
@@ -51,21 +50,21 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 		}
 
 		return (
-			<div className={statsStyles.statsSummary}>
-				<div className={statsStyles.statCard}>
-					<div className={statsStyles.statLabel}>Top Rating</div>
-					<div className={statsStyles.statValue}>{summaryStats.maxRating ?? 0}</div>
-					<div className={statsStyles.statName}>{summaryStats.topName?.name}</div>
+			<div className={styles.statsSummary}>
+				<div className={styles.statCard}>
+					<div className={styles.statLabel}>Top Rating</div>
+					<div className={styles.statValue}>{summaryStats.maxRating ?? 0}</div>
+					<div className={styles.statName}>{summaryStats.topName?.name}</div>
 				</div>
-				<div className={statsStyles.statCard}>
-					<div className={statsStyles.statLabel}>Avg Rating</div>
-					<div className={statsStyles.statValue}>{summaryStats.avgRating}</div>
-					<div className={statsStyles.statSubtext}>Across {namesWithInsights.length} names</div>
+				<div className={styles.statCard}>
+					<div className={styles.statLabel}>Avg Rating</div>
+					<div className={styles.statValue}>{summaryStats.avgRating}</div>
+					<div className={styles.statSubtext}>Across {namesWithInsights.length} names</div>
 				</div>
-				<div className={statsStyles.statCard}>
-					<div className={statsStyles.statLabel}>Total Selected</div>
-					<div className={statsStyles.statValue}>{summaryStats.totalSelected ?? 0}</div>
-					<div className={statsStyles.statSubtext}>
+				<div className={styles.statCard}>
+					<div className={styles.statLabel}>Total Selected</div>
+					<div className={styles.statValue}>{summaryStats.totalSelected ?? 0}</div>
+					<div className={styles.statSubtext}>
 						{(summaryStats.maxSelected ?? 0) > 0
 							? `Most: ${summaryStats.maxSelected}x`
 							: "No selections yet"}
@@ -109,7 +108,6 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 				<div className={styles.insightCards}>
 					{lowPerformers
 						.sort((a, b) => {
-							// Priority keys match insight tag strings (snake_case required for consistency)
 							const priority: Record<string, number> = {
 								inactive: 0,
 								never_selected: 1,

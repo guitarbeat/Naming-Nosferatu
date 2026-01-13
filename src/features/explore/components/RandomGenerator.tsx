@@ -3,7 +3,7 @@ import { useState } from "react";
 import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
 import { Loading } from "../../../shared/components/Loading";
-import styles from "./RandomGenerator.module.css";
+import styles from "../explore.module.css";
 
 interface RandomGeneratorProps {
 	userName: string;
@@ -72,7 +72,6 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 	const generateName = async (categoryId?: string) => {
 		setIsGenerating(true);
 
-		// Simulate API delay
 		await new Promise((resolve) => setTimeout(resolve, 800));
 
 		const category = categoryId
@@ -94,7 +93,6 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 	const copyToClipboard = async (name: string) => {
 		try {
 			await navigator.clipboard.writeText(name);
-			// Could add a toast notification here
 		} catch (err) {
 			console.error("Failed to copy:", err);
 		}
@@ -123,38 +121,36 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 				<p>Discover creative cat names with a touch of magic</p>
 			</div>
 
-			<div className={styles.categories}>
+			<div className={styles.categoryGrid}>
 				<h3>Choose a Theme</h3>
-				<div className={styles.categoryGrid}>
-					{CATEGORIES.map((category) => (
-						<Card
-							key={category.id}
-							className={`${styles.categoryCard} ${selectedCategory === category.id ? styles.selected : ""}`}
-							background="glass"
-							padding="medium"
-							shadow="small"
-							onClick={() => generateName(category.id)}
-							style={
-								{
-									"--category-primary": category.colors.primary,
-									"--category-secondary": category.colors.secondary,
-								} as React.CSSProperties
-							}
-						>
-							<div className={styles.categoryContent}>
-								<h4 className={styles.categoryName}>{category.name}</h4>
-								<p className={styles.categoryDesc}>{category.description}</p>
-								<div className={styles.examples}>
-									{category.examples.slice(0, 3).map((example) => (
-										<span key={example} className={styles.example}>
-											{example}
-										</span>
-									))}
-								</div>
+				{CATEGORIES.map((category) => (
+					<Card
+						key={category.id}
+						className={`${styles.categoryCard} ${selectedCategory === category.id ? styles.selected : ""}`}
+						background="glass"
+						padding="medium"
+						shadow="small"
+						onClick={() => generateName(category.id)}
+						style={
+							{
+								"--category-primary": category.colors.primary,
+								"--category-secondary": category.colors.secondary,
+							} as React.CSSProperties
+						}
+					>
+						<div className={styles.categoryContent}>
+							<h4 className={styles.categoryName}>{category.name}</h4>
+							<p className={styles.categoryDesc}>{category.description}</p>
+							<div className={styles.examples}>
+								{category.examples.slice(0, 3).map((example) => (
+									<span key={example} className={styles.example}>
+										{example}
+									</span>
+								))}
 							</div>
-						</Card>
-					))}
-				</div>
+						</div>
+					</Card>
+				))}
 			</div>
 
 			<Card className={styles.generator} background="glass" padding="large" shadow="medium">
@@ -211,7 +207,7 @@ function RandomGenerator({ userName: _userName }: RandomGeneratorProps) {
 						)}
 					</div>
 
-					<div className={styles.controls}>
+					<div>
 						<Button
 							variant="primary"
 							onClick={() => generateName()}
