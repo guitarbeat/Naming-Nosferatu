@@ -319,8 +319,7 @@ function TournamentContent({
 				{/* Tournament Footer with Controls, Keyboard Help, and Bracket */}
 				<TournamentFooter
 					showBracket={showBracket}
-					showKeyboardHelp={showKeyboardHelp}
-					transformedMatches={transformedMatches}
+						transformedMatches={transformedMatches}
 					onToggleBracket={handleToggleBracket}
 					onToggleKeyboardHelp={handleToggleKeyboardHelp}
 				/>
