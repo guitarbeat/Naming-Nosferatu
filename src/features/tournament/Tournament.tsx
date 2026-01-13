@@ -321,8 +321,7 @@ function TournamentContent({
 					showBracket={showBracket}
 						transformedMatches={transformedMatches}
 					onToggleBracket={handleToggleBracket}
-					onToggleKeyboardHelp={handleToggleKeyboardHelp}
-				/>
+					/>
 			</div>
 
 			{/* Progress Milestone Celebrations */}
