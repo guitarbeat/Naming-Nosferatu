@@ -43,27 +43,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	});
 
-	// Global keyboard listener for shortcuts overlay
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Don't trigger if typing in an input
-			if (
-				e.target instanceof HTMLInputElement ||
-				e.target instanceof HTMLTextAreaElement ||
-				e.target instanceof HTMLSelectElement
-			) {
-				return;
-			}
-
-			if (e.key === "?") {
-				e.preventDefault();
-				setShowShortcuts((prev) => !prev);
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, []);
 
 	const handleNavClick = (route?: string) => {
 		if (route) {
