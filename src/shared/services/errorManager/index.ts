@@ -211,7 +211,7 @@ function determineErrorType(error: unknown): string {
 function parseError(error: unknown): ParsedError {
 	if (error instanceof Error) {
 		return {
-			message: error.message,
+			message: error.message || "An error occurred",
 			name: error.name,
 			stack: error.stack || null,
 			type: determineErrorType(error),
@@ -220,7 +220,7 @@ function parseError(error: unknown): ParsedError {
 	}
 	if (typeof error === "string") {
 		return {
-			message: error,
+			message: error || "An error occurred",
 			name: "StringError",
 			stack: null,
 			type: ERROR_TYPES.UNKNOWN,
@@ -228,8 +228,15 @@ function parseError(error: unknown): ParsedError {
 	}
 	if (error && typeof error === "object") {
 		const o = error as Record<string, unknown>;
+		const message =
+			(o.message as string) ||
+			(o.error as string) ||
+			(o.detail as string) ||
+			(o.error_description as string) ||
+			(o.hint as string) ||
+			"An unexpected error occurred";
 		return {
-			message: (o.message as string) || (o.error as string) || "Unknown error",
+			message,
 			name: (o.name as string) || "ObjectError",
 			stack: (o.stack as string) || null,
 			type: determineErrorType(error),
@@ -238,8 +245,9 @@ function parseError(error: unknown): ParsedError {
 			cause: o.cause || null,
 		};
 	}
+	// Handle null, undefined, and other non-object types
 	return {
-		message: "An unexpected error occurred",
+		message: "An unexpected error occurred. Please try again.",
 		name: "UnknownError",
 		stack: null,
 		type: ERROR_TYPES.UNKNOWN,

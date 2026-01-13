@@ -1,13 +1,11 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { ChevronDown, HelpCircle, Lightbulb, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
-import { KeyboardShortcutsOverlay } from "./KeyboardShortcutsOverlay";
 import styles from "./navigation.module.css";
 
 interface AdaptiveNavProps {
-	onLogout?: () => void;
 	onOpenSuggestName?: () => void;
 }
 
@@ -15,12 +13,11 @@ interface AdaptiveNavProps {
  * Unified Adaptive Navigation Component
  * Consolidates DesktopNav, BottomNav, MobileMenu, and SwipeNavigation into a single responsive component
  */
-export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
+export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isMobile, setIsMobile] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-	const [showShortcuts, setShowShortcuts] = useState(false);
 	const [hidden, setHidden] = useState(false);
 	const { scrollY } = useScroll();
 
@@ -46,27 +43,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	});
 
-	// Global keyboard listener for shortcuts overlay
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Don't trigger if typing in an input
-			if (
-				e.target instanceof HTMLInputElement ||
-				e.target instanceof HTMLTextAreaElement ||
-				e.target instanceof HTMLSelectElement
-			) {
-				return;
-			}
-
-			if (e.key === "?") {
-				e.preventDefault();
-				setShowShortcuts((prev) => !prev);
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, []);
 
 	const handleNavClick = (route?: string) => {
 		if (route) {
@@ -153,21 +129,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 							<span className={styles.bottomNavLabel}>Menu</span>
 						</button>
 
-						{/* Logout Action */}
-						{onLogout && (
-							<button
-								className={`${styles.bottomNavItem} ${styles.bottomNavAction}`}
-								onClick={() => {
-									if (navigator.vibrate) navigator.vibrate(10);
-									onLogout();
-								}}
-								aria-label="Log out"
-								title="Log out"
-							>
-								<LogOut className={styles.bottomNavIcon} aria-hidden={true} />
-								<span className={styles.bottomNavLabel}>Logout</span>
-							</button>
-						)}
 					</nav>
 				</motion.div>
 
@@ -218,20 +179,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 									))}
 								</nav>
 
-								{onLogout && (
-									<div className={styles.mobileMenuFooter}>
-										<button
-											className={styles.mobileMenuLogoutButton}
-											onClick={() => {
-												if (navigator.vibrate) navigator.vibrate(10);
-												onLogout();
-												setIsMobileMenuOpen(false);
-											}}
-										>
-											Log Out
-										</button>
-									</div>
-								)}
 							</motion.div>
 						</>
 					)}
@@ -307,26 +254,6 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 								<Lightbulb size={20} />
 							</button>
 						)}
-
-						<button
-							className={styles.desktopNavUtilityBtn}
-							onClick={() => setShowShortcuts(true)}
-							aria-label="Keyboard Shortcuts"
-							title="Press '?' for keyboard shortcuts"
-						>
-							<HelpCircle size={20} />
-						</button>
-
-						{onLogout && (
-							<button
-								className={styles.desktopNavUtilityBtn}
-								onClick={onLogout}
-								aria-label="Log Out"
-								title="Log Out"
-							>
-								<LogOut size={20} />
-							</button>
-						)}
 					</div>
 				</div>
 			</header>
@@ -334,8 +261,7 @@ export function AdaptiveNav({ onLogout, onOpenSuggestName }: AdaptiveNavProps) {
 			{/* Spacing to prevent content from jumping when nav is fixed */}
 			<div style={{ height: "64px", display: "none" }} className="desktop-spacer" />
 
-			<KeyboardShortcutsOverlay isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
-		</>
+			</>
 	);
 }
 

@@ -82,29 +82,6 @@ function App() {
 		}
 	}, [user.isLoggedIn, tournament.isComplete, navigateTo, location]);
 
-	// Keyboard shortcuts - simplified to just handle analysis toggle
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			// Analysis mode toggle (Ctrl+Shift+A or Cmd+Shift+A)
-			if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === "A") {
-				event.preventDefault();
-
-				const searchParams = new URLSearchParams(location.search);
-				const hasAnalysis = searchParams.has("analysis");
-				if (hasAnalysis) {
-					searchParams.delete("analysis");
-				} else {
-					searchParams.set("analysis", "true");
-				}
-				const newSearch = searchParams.toString();
-				const newPath = `${location.pathname}${newSearch ? `?${newSearch}` : ""}`;
-				navigateTo(newPath, { replace: true });
-			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [location, navigateTo]);
 
 	// Theme synchronization
 	useEffect(() => {

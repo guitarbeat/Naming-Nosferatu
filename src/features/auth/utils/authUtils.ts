@@ -436,8 +436,10 @@ const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, us
 				return normalizeRole(result.role as string);
 			}
 		} catch (error) {
-			if (process.env.NODE_ENV === "development") {
-				console.error(`Error fetching user role from Supabase source "${source}":`, error);
+			// Log the error but continue trying other sources
+			if (import.meta.env.DEV) {
+				const errorMsg = error instanceof Error ? error.message : String(error);
+				console.error(`Error fetching user role from Supabase source "${source}": ${errorMsg}`);
 			}
 		}
 	}
@@ -505,7 +507,14 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 					break;
 				}
 
-				throw error;
+				// Create a proper error with a message if the error doesn't have one
+				const errorWithMessage = error instanceof Error ? error : new Error(
+					(error as Record<string, unknown>)?.message as string ||
+					(error as Record<string, unknown>)?.hint as string ||
+					(error as Record<string, unknown>)?.detail as string ||
+					"Failed to check user role",
+				);
+				throw errorWithMessage;
 			}
 
 			if (lastRpcError && isMissingResourceError(lastRpcError)) {
@@ -523,6 +532,7 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 		if (process.env.NODE_ENV === "development") {
 			console.error("Error checking user role:", error);
 		}
+		// Return false on error instead of throwing to prevent app crashes
 		return false;
 	}
 }

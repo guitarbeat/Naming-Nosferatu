@@ -25,7 +25,6 @@ import { UndoBanner } from "./components/UndoBanner";
 import type { EventListener } from "./hooks/tournamentComponentHooks";
 import {
 	useAudioManager,
-	useKeyboardControls,
 	useTournamentState,
 	useTournamentVote,
 } from "./hooks/tournamentComponentHooks";
@@ -71,8 +70,6 @@ function TournamentContent({
 		setShowMatchResult,
 		showBracket,
 		setShowBracket,
-		showKeyboardHelp,
-		setShowKeyboardHelp,
 		showRoundTransition,
 		nextRoundNumber,
 		votingError,
@@ -203,14 +200,12 @@ function TournamentContent({
 		handleVoteRetry,
 		handleDismissError,
 		handleToggleBracket,
-		handleToggleKeyboardHelp,
 		handleToggleCatPictures,
 		handleVolumeChange,
 	} = useTournamentUIHandlers({
 		setIsProcessing,
 		setVotingError,
 		setShowBracket,
-		setShowKeyboardHelp,
 		setShowCatPictures,
 		getCurrentRatings,
 		existingRatings,
@@ -218,38 +213,6 @@ function TournamentContent({
 		audioManager,
 	});
 
-	// * Keyboard controls
-	useKeyboardControls(
-		selectedOption,
-		isProcessing,
-		isTransitioning,
-		audioManager.isMuted,
-		handleVoteSync,
-		globalEventListeners,
-		{
-			onToggleHelp: handleToggleKeyboardHelp,
-			onUndo: () => {
-				if (canUndoNow) {
-					if (handleUndo) {
-						handleUndo();
-					}
-					clearUndo();
-				}
-			},
-			onClearSelection: () => setSelectedOption(null),
-			onSelectLeft: () => {
-				if (!isProcessing && !isTransitioning) {
-					setSelectedOption("left");
-				}
-			},
-			onSelectRight: () => {
-				if (!isProcessing && !isTransitioning) {
-					setSelectedOption("right");
-				}
-			},
-			onToggleCatPictures: handleToggleCatPictures,
-		},
-	);
 
 	// * Transform match history for bracket
 	const transformedMatches = useBracketTransformation(matchHistory, visibleNames);
@@ -356,11 +319,9 @@ function TournamentContent({
 				{/* Tournament Footer with Controls, Keyboard Help, and Bracket */}
 				<TournamentFooter
 					showBracket={showBracket}
-					showKeyboardHelp={showKeyboardHelp}
-					transformedMatches={transformedMatches}
+						transformedMatches={transformedMatches}
 					onToggleBracket={handleToggleBracket}
-					onToggleKeyboardHelp={handleToggleKeyboardHelp}
-				/>
+					/>
 			</div>
 
 			{/* Progress Milestone Celebrations */}
