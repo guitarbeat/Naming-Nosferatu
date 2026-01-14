@@ -20,7 +20,6 @@ interface TournamentState {
 	isComplete: boolean;
 	isLoading: boolean;
 	voteHistory: import("./components").VoteData[];
-	currentView: string;
 }
 
 export interface UIState {
