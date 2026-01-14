@@ -80,7 +80,7 @@ function App() {
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo: undefined, // Not needed with declarative routing
+		navigateTo: navigate,
 	});
 
 	const {
