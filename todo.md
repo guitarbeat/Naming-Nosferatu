@@ -2,6 +2,17 @@
 
 ## Completed Cleanup ✅
 
+### SPA Conversion (Latest)
+- [x] Removed React Router - now pure state-based view switching
+- [x] Created ViewRenderer with Framer Motion transitions
+- [x] Updated navigation to use Zustand store actions
+- [x] Deleted routeConfig.ts, useRouting.ts, ViewRouter.tsx
+- [x] Simplified navigation config (removed route paths)
+
+### CSS Consolidation
+
+## Completed Cleanup ✅
+
 ### CSS Consolidation
 - [x] Merged tournament CSS modules into `tournament.module.css`
 - [x] Merged analytics CSS modules into `analytics.module.css`

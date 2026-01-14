@@ -2,20 +2,18 @@ import { BarChart2, CheckCircle, Compass, Image, Trophy } from "lucide-react";
 import type { NavItemConfig } from "./types";
 
 /**
- * Main navigation items
+ * Main navigation items - now view-key based instead of route-based
  */
 export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "tournament",
 		label: "Vote",
-		route: "/",
 		icon: CheckCircle,
 		type: "primary",
 		children: [
 			{
 				key: "vote",
 				label: "Vote",
-				route: "/",
 				type: "secondary",
 			},
 		],
@@ -23,26 +21,22 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "results",
 		label: "Results",
-		route: "/results",
 		icon: Trophy,
 		type: "primary",
 		children: [
 			{
 				key: "overview",
 				label: "Overview",
-				route: "/results",
 				type: "secondary",
 			},
 			{
 				key: "leaderboard",
 				label: "Leaderboard",
-				route: "/results/leaderboard",
 				type: "secondary",
 			},
 			{
 				key: "matchups",
 				label: "Matchup History",
-				route: "/results/matchups",
 				type: "secondary",
 			},
 		],
@@ -50,20 +44,17 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "analysis",
 		label: "Analyze Data",
-		route: "/analysis",
 		icon: BarChart2,
 		type: "primary",
 		children: [
 			{
 				key: "global",
 				label: "Global Trends",
-				route: "/analysis",
 				type: "secondary",
 			},
 			{
 				key: "cats",
 				label: "Cat Analytics",
-				route: "/analysis/cats",
 				type: "secondary",
 			},
 		],
@@ -71,14 +62,12 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "gallery",
 		label: "Browse Gallery",
-		route: "/gallery",
 		icon: Image,
 		type: "primary",
 		children: [
 			{
 				key: "grid",
 				label: "Grid View",
-				route: "/gallery",
 				type: "secondary",
 			},
 		],
@@ -86,20 +75,17 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	{
 		key: "explore",
 		label: "Explore",
-		route: "/explore",
 		icon: Compass,
 		type: "primary",
 		children: [
 			{
 				key: "stats",
 				label: "Statistics",
-				route: "/explore/stats",
 				type: "secondary",
 			},
 			{
 				key: "photos",
 				label: "Photos",
-				route: "/explore/photos",
 				type: "secondary",
 			},
 		],
