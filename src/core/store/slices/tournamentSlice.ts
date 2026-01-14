@@ -14,7 +14,6 @@ export const createTournamentSlice: StateCreator<
 		isComplete: false,
 		isLoading: false,
 		voteHistory: [],
-		currentView: "tournament",
 	},
 
 	tournamentActions: {
@@ -49,9 +48,6 @@ export const createTournamentSlice: StateCreator<
 				isComplete: false,
 				voteHistory: [],
 				isLoading: false,
-				currentView: "tournament",
 			}),
-
-		setView: (view) => updateSlice(set, "tournament", { currentView: view }),
 	},
 });

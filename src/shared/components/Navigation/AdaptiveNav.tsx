@@ -1,8 +1,8 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAppStore from "../../../core/store/useAppStore";
-import type { ViewState } from "../ViewRenderer/ViewRenderer";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import styles from "./navigation.module.css";
 
@@ -12,12 +12,12 @@ interface AdaptiveNavProps {
 
 /**
  * Unified Adaptive Navigation Component
- * Uses state-based view switching instead of URL routing
+ * Uses React Router for navigation
  */
 export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
-	const { tournament, tournamentActions } = useAppStore();
-	const currentView = tournament.currentView as ViewState;
-
+	const navigate = useNavigate();
+	const location = useLocation();
+	const { tournament } = useAppStore();
 	const [isMobile, setIsMobile] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [hidden, setHidden] = useState(false);
@@ -45,43 +45,42 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	});
 
-	// Map nav item keys to view states
-	const keyToView: Record<string, ViewState> = {
-		tournament: "tournament",
-		vote: "tournament",
-		results: "results",
-		overview: "results",
-		leaderboard: "results",
-		matchups: "results",
-		analysis: "analysis",
-		global: "analysis",
-		cats: "analysis",
-		gallery: "gallery",
-		grid: "gallery",
-		explore: "explore",
-		stats: "explore",
-		photos: "explore",
+	// Map nav item keys to routes
+	const keyToRoute: Record<string, string> = {
+		tournament: "/tournament",
+		vote: "/tournament",
+		results: "/results",
+		overview: "/results",
+		leaderboard: "/results",
+		matchups: "/results",
+		analysis: "/analysis",
+		global: "/analysis",
+		cats: "/analysis",
+		gallery: "/gallery",
+		grid: "/gallery",
+		explore: "/explore",
+		stats: "/explore",
+		photos: "/explore",
 	};
 
 	const handleNavClick = (key: string) => {
-		const view = keyToView[key];
-		if (view) {
+		const route = keyToRoute[key];
+		if (route) {
 			if (isMobile && navigator.vibrate) {
 				navigator.vibrate(10);
 			}
-			tournamentActions.setView(view);
+			navigate(route);
 			setIsMobileMenuOpen(false);
 		}
 	};
 
 	const isActive = (key: string) => {
-		const view = keyToView[key];
-		return view === currentView;
+		const route = keyToRoute[key];
+		return location.pathname === route;
 	};
 
 	// Filter bottom nav items based on tournament completion
-	const tournamentComplete = tournament.isComplete;
-	const visibleBottomItems = tournamentComplete
+	const visibleBottomItems = tournament.isComplete
 		? BOTTOM_NAV_ITEMS
 		: BOTTOM_NAV_ITEMS.filter((key) => key !== "results");
 	const bottomNavItems = getBottomNavItems(MAIN_NAV_ITEMS, visibleBottomItems);
@@ -237,9 +236,8 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 											{item.children.map((child) => (
 												<button
 													key={child.key}
-													className={`${styles.desktopNavDropdownItem} ${
-														isActive(child.key) ? styles.active : ""
-													}`}
+													className={`${styles.desktopNavDropdownItem} ${isActive(child.key) ? styles.active : ""
+														}`}
 													onClick={(e) => {
 														e.stopPropagation();
 														handleNavClick(child.key);

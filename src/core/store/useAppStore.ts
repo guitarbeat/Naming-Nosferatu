@@ -31,7 +31,6 @@ const useAppStore = create<AppState>()(
 			getIsComplete: () => a[1]().tournament.isComplete,
 			getIsLoading: () => a[1]().tournament.isLoading,
 			getVoteHistory: () => a[1]().tournament.voteHistory,
-			getCurrentView: () => a[1]().tournament.currentView,
 			getUserName: () => a[1]().user.name,
 			getIsLoggedIn: () => a[1]().user.isLoggedIn,
 			getIsAdmin: () => a[1]().user.isAdmin,

@@ -40,8 +40,8 @@ export function useTournamentManager({
 	onComplete,
 	audioManager,
 }: Omit<TournamentManagerProps, 'names' | 'onVote'>) {
-	// Store state
-	const currentView = useAppStore((state) => state.tournament.currentView);
+	// Local view state for tournament setup (photos vs tournament-setup views)
+	const [currentView, setCurrentView] = useState<"tournament" | "photos">("tournament");
 
 	// Identity state
 	const [isEditingName, setIsEditingName] = useState(false);
@@ -197,6 +197,7 @@ export function useTournamentManager({
 	return {
 		// States
 		currentView,
+		setCurrentView,
 		isEditingName,
 		tempName,
 		setTempName,

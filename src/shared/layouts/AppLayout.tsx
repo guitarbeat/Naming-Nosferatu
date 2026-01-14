@@ -1,12 +1,11 @@
 /**
  * @module AppLayout
  * @description Main application layout component.
- * Uses state-based ViewRenderer instead of route-based ViewRouter.
+ * Accepts children from React Router instead of managing routing internally.
  */
 
 import { useMemo } from "react";
 import useAppStore from "../../core/store/useAppStore";
-import type { NameItem } from "../../types/components";
 import { ScrollToTopButton } from "../components/Button";
 import CatBackground from "../components/CatBackground";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -16,8 +15,6 @@ import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSugge
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { SwipeWrapper } from "../components/SwipeWrapper";
 import { OfflineIndicator } from "../components/OfflineIndicator";
-import ViewRenderer from "../components/ViewRenderer/ViewRenderer";
-import type { ViewState } from "../components/ViewRenderer/ViewRenderer";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;
@@ -25,25 +22,22 @@ interface AppLayoutProps {
 	handleUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<boolean> | undefined;
-	handleTournamentSetup: (names?: NameItem[]) => void;
+	handleTournamentSetup: (names?: any) => void;
 	handleTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	isSuggestNameModalOpen: boolean;
 	onCloseSuggestName: () => void;
+	children: React.ReactNode;
 }
 
 export function AppLayout({
-	handleLogin,
-	handleStartNewTournament,
-	handleUpdateRatings,
-	handleTournamentSetup,
-	handleTournamentComplete,
 	isSuggestNameModalOpen,
 	onCloseSuggestName,
+	children,
 }: AppLayoutProps) {
-	// Get state from store
-	const { user, tournament, errors, tournamentActions, errorActions } = useAppStore();
+	// Get state from store (no prop drilling!)
+	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
@@ -83,22 +77,7 @@ export function AppLayout({
 							/>
 						</div>
 					)}
-					<SwipeWrapper>
-						<ViewRenderer
-							currentView={tournament.currentView as ViewState}
-							isLoggedIn={isLoggedIn}
-							onLogin={handleLogin}
-							tournament={tournament}
-							userName={user.name}
-							onStartNewTournament={handleStartNewTournament}
-							onUpdateRatings={handleUpdateRatings}
-							onTournamentSetup={handleTournamentSetup}
-							onTournamentComplete={handleTournamentComplete}
-							onVote={(vote: unknown) =>
-								tournamentActions.addVote(vote as import("../../types/components").VoteData)
-							}
-						/>
-					</SwipeWrapper>
+					<SwipeWrapper>{children}</SwipeWrapper>
 
 					{/* Global loading overlay */}
 					{tournament.isLoading && (

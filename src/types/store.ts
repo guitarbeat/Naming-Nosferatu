@@ -20,7 +20,6 @@ interface TournamentState {
 	isComplete: boolean;
 	isLoading: boolean;
 	voteHistory: import("./components").VoteData[];
-	currentView: string;
 }
 
 export interface UIState {
@@ -69,7 +68,6 @@ export interface AppState {
 		setLoading: (isLoading: boolean) => void;
 		addVote: (vote: import("./components").VoteData) => void;
 		resetTournament: () => void;
-		setView: (view: string) => void;
 	};
 
 	userActions: {
@@ -107,7 +105,6 @@ export interface AppState {
 		getIsComplete: () => boolean;
 		getIsLoading: () => boolean;
 		getVoteHistory: () => import("./components").VoteData[];
-		getCurrentView: () => string;
 		getUserName: () => string;
 		getIsLoggedIn: () => boolean;
 		getIsAdmin: () => boolean;
