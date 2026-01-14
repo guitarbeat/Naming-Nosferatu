@@ -63,8 +63,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	};
 
 	// Filter bottom nav items based on tournament completion
-	const tournamentComplete = true; // TODO: Get from store
-	const visibleBottomItems = tournamentComplete
+	const visibleBottomItems = tournament.isComplete
 		? BOTTOM_NAV_ITEMS
 		: BOTTOM_NAV_ITEMS.filter((key) => key !== "results");
 	const bottomNavItems = getBottomNavItems(MAIN_NAV_ITEMS, visibleBottomItems);
