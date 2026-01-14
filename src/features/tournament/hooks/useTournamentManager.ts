@@ -197,6 +197,7 @@ export function useTournamentManager({
 	return {
 		// States
 		currentView,
+		setCurrentView,
 		isEditingName,
 		tempName,
 		setTempName,
