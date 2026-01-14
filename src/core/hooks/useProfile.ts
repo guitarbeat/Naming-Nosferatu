@@ -4,17 +4,17 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FILTER_OPTIONS } from "../../../core/constants";
-import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
-import { resolveSupabaseClient } from "../../../shared/services/supabase/client";
-import { adminAPI } from "../../auth/services/adminService";
+import { FILTER_OPTIONS } from "../constants";
+import { useAdminStatus } from "../../shared/hooks/useAppHooks";
+import { resolveSupabaseClient } from "../../shared/services/supabase/client";
+import { adminAPI } from "../../features/auth/services/adminService";
 import {
 	catNamesAPI,
 	deleteName,
 	hiddenNamesAPI,
-} from "../../../shared/services/supabase/modules/general";
-import { clearAllCaches, devError, devLog } from "../../../shared/utils";
-import type { IdType, NameItem } from "../../../types/components";
+} from "../../shared/services/supabase/modules/general";
+import { clearAllCaches, devError, devLog } from "../../shared/utils";
+import type { IdType, NameItem } from "../../types/components";
 
 // ============================================================================
 // Internal Types
