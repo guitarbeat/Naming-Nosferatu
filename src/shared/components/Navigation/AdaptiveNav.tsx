@@ -17,6 +17,7 @@ interface AdaptiveNavProps {
 export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { tournament } = useAppStore();
 	const [isMobile, setIsMobile] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [hidden, setHidden] = useState(false);
