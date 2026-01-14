@@ -1,8 +1,8 @@
 import type React from "react";
 import { PerformanceBadges } from "../../../shared/components/PerformanceBadge";
 import { devError, formatDate, getMetricLabel, getRankDisplay } from "../../../shared/utils";
-import type { ConsolidatedName, SummaryStats } from "../types";
 import styles from "../analytics.module.css";
+import type { ConsolidatedName, SummaryStats } from "../types";
 import { ColumnHeader } from "./ColumnHeader";
 
 interface AnalysisTableProps {

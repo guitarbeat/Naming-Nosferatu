@@ -213,7 +213,6 @@ function TournamentContent({
 		audioManager,
 	});
 
-
 	// * Transform match history for bracket
 	const transformedMatches = useBracketTransformation(matchHistory, visibleNames);
 
@@ -319,9 +318,9 @@ function TournamentContent({
 				{/* Tournament Footer with Controls, Keyboard Help, and Bracket */}
 				<TournamentFooter
 					showBracket={showBracket}
-						transformedMatches={transformedMatches}
+					transformedMatches={transformedMatches}
 					onToggleBracket={handleToggleBracket}
-					/>
+				/>
 			</div>
 
 			{/* Progress Milestone Celebrations */}

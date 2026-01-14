@@ -508,12 +508,15 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 				}
 
 				// Create a proper error with a message if the error doesn't have one
-				const errorWithMessage = error instanceof Error ? error : new Error(
-					(error as Record<string, unknown>)?.message as string ||
-					(error as Record<string, unknown>)?.hint as string ||
-					(error as Record<string, unknown>)?.detail as string ||
-					"Failed to check user role",
-				);
+				const errorWithMessage =
+					error instanceof Error
+						? error
+						: new Error(
+								((error as Record<string, unknown>)?.message as string) ||
+									((error as Record<string, unknown>)?.hint as string) ||
+									((error as Record<string, unknown>)?.detail as string) ||
+									"Failed to check user role",
+							);
 				throw errorWithMessage;
 			}
 

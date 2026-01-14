@@ -1,7 +1,7 @@
 import { Copy, Heart, RefreshCw, Shuffle } from "lucide-react";
 import { useState } from "react";
-import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
+import Card from "../../../shared/components/Card/Card";
 import { Loading } from "../../../shared/components/Loading";
 import styles from "../explore.module.css";
 

@@ -79,7 +79,16 @@ function Dashboard({
 		}
 
 		return availableTabs;
-	}, [mode, hasPersonalData, personalRatings, currentTournamentNames, voteHistory, onStartNew, onUpdateRatings, userName]);
+	}, [
+		mode,
+		hasPersonalData,
+		personalRatings,
+		currentTournamentNames,
+		voteHistory,
+		onStartNew,
+		onUpdateRatings,
+		userName,
+	]);
 
 	// Determine default tab based on mode and data availability
 	const defaultActiveTab = useMemo(() => {
@@ -123,6 +132,5 @@ function Dashboard({
 }
 
 Dashboard.displayName = "Dashboard";
-
 
 export default React.memo(Dashboard);

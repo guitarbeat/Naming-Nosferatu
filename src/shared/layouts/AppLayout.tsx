@@ -13,8 +13,8 @@ import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSuggestionModal";
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
-import { SwipeWrapper } from "../components/SwipeWrapper";
 import { OfflineIndicator } from "../components/OfflineIndicator";
+import { SwipeWrapper } from "../components/SwipeWrapper";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;

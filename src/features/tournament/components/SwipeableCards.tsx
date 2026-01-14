@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
 import type { PanInfo } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useMemo, useRef, useState } from "react";
 import Button from "../../../shared/components/Button";
 import CatImage from "../../../shared/components/CatImage";

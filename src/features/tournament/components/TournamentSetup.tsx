@@ -367,7 +367,7 @@ function TournamentSetupContent({
 					}}
 					transition={{ duration: 0.4, ease: "easeOut" }}
 				>
-				<ToastContainer />
+					<ToastContainer />
 					<div className={`${styles.container} ${styles.photosViewContainer}`}>
 						<div className={styles.photosViewContent}>
 							<h2 className={styles.photosViewTitle}>Photo Gallery</h2>
@@ -394,7 +394,7 @@ function TournamentSetupContent({
 				>
 					<ToastContainer />
 					<div className="stack stack-md">
-					{/* Name Identity Section */}
+						{/* Name Identity Section */}
 						<div className={styles.identitySection}>
 							{isEditingName ? (
 								<form onSubmit={handleNameSubmit} className={styles.identityForm}>

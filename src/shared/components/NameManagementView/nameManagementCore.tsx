@@ -5,7 +5,7 @@
  */
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
 import type { NameItem } from "../../../types/components";

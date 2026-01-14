@@ -5,12 +5,11 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useAppStore from "../../../core/store/useAppStore";
+import { useProfile } from "../../../core/hooks/useProfile";
+import { useProfileNotifications } from "../../../core/hooks/useProfileNotifications";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import { useLightboxState } from "../../../shared/hooks/useLightboxState";
 import type { NameItem } from "../../../types/components";
-import { useProfile } from "../../../core/hooks/useProfile";
-import { useProfileNotifications } from "../../../core/hooks/useProfileNotifications";
 import { useImageGallery } from "./useImageGallery";
 
 interface TournamentManagerProps {
@@ -39,7 +38,7 @@ export function useTournamentManager({
 	existingRatings = {},
 	onComplete,
 	audioManager,
-}: Omit<TournamentManagerProps, 'names' | 'onVote'>) {
+}: Omit<TournamentManagerProps, "names" | "onVote">) {
 	// Local view state for tournament setup (photos vs tournament-setup views)
 	const [currentView, setCurrentView] = useState<"tournament" | "photos">("tournament");
 
@@ -53,7 +52,9 @@ export function useTournamentManager({
 	}, [userName]);
 
 	// UI state
-	const [selectedOption, setSelectedOption] = useState<"left" | "right" | "both" | "neither" | null>(null);
+	const [selectedOption, setSelectedOption] = useState<
+		"left" | "right" | "both" | "neither" | null
+	>(null);
 	const [isTransitioning, setIsTransitioning] = useState(false);
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [votingError, setVotingError] = useState<unknown>(null);
@@ -172,18 +173,15 @@ export function useTournamentManager({
 	);
 
 	// Tournament voting logic
-	const handleVote = useCallback(
-		(option: "left" | "right" | "both" | "neither") => {
-			setSelectedOption(option);
-			setIsTransitioning(true);
-			// Voting logic would go here
-			setTimeout(() => {
-				setIsTransitioning(false);
-				setSelectedOption(null);
-			}, 500);
-		},
-		[],
-	);
+	const handleVote = useCallback((option: "left" | "right" | "both" | "neither") => {
+		setSelectedOption(option);
+		setIsTransitioning(true);
+		// Voting logic would go here
+		setTimeout(() => {
+			setIsTransitioning(false);
+			setSelectedOption(null);
+		}, 500);
+	}, []);
 
 	// Refs
 	const handlersRef = useRef<{

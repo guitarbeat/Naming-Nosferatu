@@ -342,6 +342,5 @@ function RankingAdjustment({ rankings, onSave, onCancel }: RankingAdjustmentProp
 
 RankingAdjustment.displayName = "RankingAdjustment";
 
-
 // ts-prune-ignore-next (used in Dashboard)
 export default RankingAdjustment;

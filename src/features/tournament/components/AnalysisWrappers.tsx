@@ -6,6 +6,7 @@
 
 import type React from "react";
 import { useCallback, useContext, useEffect, useMemo } from "react";
+import { type SelectionStats, useProfile } from "../../../core/hooks/useProfile";
 import Button from "../../../shared/components/Button";
 import {
 	NameManagementContext,
@@ -23,7 +24,6 @@ import {
 import type { NameItem } from "../../../types/components";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import type { HighlightItem, SummaryStats } from "../../analytics/types";
-import { type SelectionStats, useProfile } from "../../../core/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
 
 interface AnalysisHandlers {
@@ -265,19 +265,18 @@ interface AnalysisBulkActionsWrapperProps {
 	onExport?: () => void;
 }
 
-export function AnalysisBulkActionsWrapper({
+interface AnalysisBulkActionsContentProps extends AnalysisBulkActionsWrapperProps {
+	context: NonNullable<ReturnType<typeof useNameManagementContextOptional>>;
+}
+
+function AnalysisBulkActionsContent({
 	activeUser,
 	canManageActiveUser,
 	isAdmin,
 	showSuccess,
 	showError,
-}: AnalysisBulkActionsWrapperProps) {
-	const context = useNameManagementContextOptional();
-
-	if (!context) {
-		return null;
-	}
-
+	context,
+}: AnalysisBulkActionsContentProps) {
 	const selectedCount = context.selectedCount ?? 0;
 	const selectedNamesValue = context.selectedNames;
 	// * Keep both Set format for selection logic and original array for bulk operations
@@ -424,4 +423,14 @@ export function AnalysisBulkActionsWrapper({
 			totalCount={filteredAndSortedNames.length}
 		/>
 	);
+}
+
+export function AnalysisBulkActionsWrapper(props: AnalysisBulkActionsWrapperProps) {
+	const context = useNameManagementContextOptional();
+
+	if (!context) {
+		return null;
+	}
+
+	return <AnalysisBulkActionsContent context={context} {...props} />;
 }

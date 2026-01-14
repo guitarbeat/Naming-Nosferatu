@@ -203,7 +203,8 @@
 
 .nameCard.trending {
 	border: 1px solid transparent;
-	background: linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+	background:
+		linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
 		linear-gradient(135deg, var(--color-neon-cyan), var(--color-hot-pink)) border-box;
 }
 

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Grid3X3, List, Search } from "lucide-react";
 import { useState } from "react";
-import Card from "../../../shared/components/Card/Card";
 import Button from "../../../shared/components/Button";
+import Card from "../../../shared/components/Card/Card";
 import { Loading } from "../../../shared/components/Loading";
 import { catNamesAPI } from "../../../shared/services/supabase/client";
 import styles from "../explore.module.css";

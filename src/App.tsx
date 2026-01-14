@@ -7,20 +7,20 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { PageTransition } from "./shared/components/PageTransition";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import styles from "./App.module.css";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import { Loading } from "./shared/components/Loading";
+import { PageTransition } from "./shared/components/PageTransition";
+import { ProtectedRoute } from "./shared/components/ProtectedRoute";
+import { Toast } from "./shared/components/Toast";
 import { AppLayout } from "./shared/layouts/AppLayout";
 import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
-import { Toast } from "./shared/components/Toast";
-import styles from "./App.module.css";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
@@ -145,7 +145,7 @@ function App() {
 										path="/"
 										element={
 											user.isLoggedIn ? (
-												<Navigate to="/tournament" replace />
+												<Navigate to="/tournament" replace={true} />
 											) : (
 												<TournamentSetup
 													onLogin={handleLogin}
@@ -171,36 +171,28 @@ function App() {
 														userName={user.name}
 														isLoggedIn={user.isLoggedIn}
 														existingRatings={Object.fromEntries(
-															Object.entries(tournament.ratings).map(
-																([key, value]) => [
-																	key,
-																	typeof value === "object" &&
-																		value !== null &&
-																		"rating" in value
-																		? value.rating
-																		: typeof value === "number"
-																			? value
-																			: 0,
-																],
-															),
+															Object.entries(tournament.ratings).map(([key, value]) => [
+																key,
+																typeof value === "object" && value !== null && "rating" in value
+																	? value.rating
+																	: typeof value === "number"
+																		? value
+																		: 0,
+															]),
 														)}
 													/>
 												) : (
 													<Tournament
 														names={tournament.names}
 														existingRatings={Object.fromEntries(
-															Object.entries(tournament.ratings).map(
-																([key, value]) => [
-																	key,
-																	typeof value === "object" &&
-																		value !== null &&
-																		"rating" in value
-																		? value.rating
-																		: typeof value === "number"
-																			? value
-																			: 0,
-																],
-															),
+															Object.entries(tournament.ratings).map(([key, value]) => [
+																key,
+																typeof value === "object" && value !== null && "rating" in value
+																	? value.rating
+																	: typeof value === "number"
+																		? value
+																		: 0,
+															]),
 														)}
 														onComplete={async (ratings: Record<string, number>) => {
 															const convertedRatings = Object.fromEntries(
@@ -209,9 +201,7 @@ function App() {
 																	{ rating: value },
 																]),
 															);
-															return handleTournamentComplete(
-																convertedRatings,
-															);
+															return handleTournamentComplete(convertedRatings);
 														}}
 														userName={user.name}
 														onVote={(vote: unknown) =>
@@ -231,18 +221,14 @@ function App() {
 												tournament.isComplete && tournament.names !== null ? (
 													<Dashboard
 														personalRatings={Object.fromEntries(
-															Object.entries(tournament.ratings).map(
-																([key, value]) => [
-																	key,
-																	typeof value === "object" &&
-																		value !== null &&
-																		"rating" in value
-																		? value.rating
-																		: typeof value === "number"
-																			? value
-																			: 0,
-																],
-															),
+															Object.entries(tournament.ratings).map(([key, value]) => [
+																key,
+																typeof value === "object" && value !== null && "rating" in value
+																	? value.rating
+																	: typeof value === "number"
+																		? value
+																		: 0,
+															]),
 														)}
 														currentTournamentNames={tournament.names}
 														voteHistory={tournament.voteHistory}
@@ -252,7 +238,7 @@ function App() {
 														mode="personal"
 													/>
 												) : (
-													<Navigate to="/tournament" replace />
+													<Navigate to="/tournament" replace={true} />
 												)
 											}
 										/>
@@ -265,19 +251,15 @@ function App() {
 													personalRatings={
 														tournament.isComplete && tournament.names !== null
 															? Object.fromEntries(
-																Object.entries(tournament.ratings).map(
-																	([key, value]) => [
+																	Object.entries(tournament.ratings).map(([key, value]) => [
 																		key,
-																		typeof value === "object" &&
-																			value !== null &&
-																			"rating" in value
+																		typeof value === "object" && value !== null && "rating" in value
 																			? value.rating
 																			: typeof value === "number"
 																				? value
 																				: 0,
-																	],
-																),
-															)
+																	]),
+																)
 															: undefined
 													}
 													currentTournamentNames={
@@ -285,11 +267,7 @@ function App() {
 															? tournament.names
 															: undefined
 													}
-													voteHistory={
-														tournament.isComplete
-															? tournament.voteHistory
-															: undefined
-													}
+													voteHistory={tournament.isComplete ? tournament.voteHistory : undefined}
 													onStartNew={handleStartNewTournament}
 													onUpdateRatings={handleUpdateRatings as any}
 													userName={user.name || ""}
@@ -306,7 +284,7 @@ function App() {
 									</Route>
 
 									{/* Catch-all - redirect to home */}
-									<Route path="*" element={<Navigate to="/" replace />} />
+									<Route path="*" element={<Navigate to="/" replace={true} />} />
 								</Routes>
 							</PageTransition>
 						</AnimatePresence>

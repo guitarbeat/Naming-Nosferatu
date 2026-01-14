@@ -1,5 +1,5 @@
-import { Heart, TrendingUp, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Heart, TrendingUp, Users } from "lucide-react";
 import Card from "../../../shared/components/Card/Card";
 import { Loading } from "../../../shared/components/Loading";
 import { catNamesAPI } from "../../../shared/services/supabase/client";

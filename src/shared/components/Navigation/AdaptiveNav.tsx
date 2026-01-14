@@ -93,7 +93,11 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 					animate={{ y: 0 }}
 					transition={{ duration: 0.3 }}
 				>
-					<nav className={styles.bottomNavContainer} role="navigation" aria-label="Mobile navigation">
+					<nav
+						className={styles.bottomNavContainer}
+						role="navigation"
+						aria-label="Mobile navigation"
+					>
 						{bottomNavItems.map((item) => {
 							const itemActive = isActive(item.key);
 
@@ -212,10 +216,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 				<div className={styles.desktopNavContainer}>
 					<div className={styles.desktopNavLeft}>
 						{/* Logo */}
-						<button
-							className={styles.desktopNavLogo}
-							onClick={() => handleNavClick("tournament")}
-						>
+						<button className={styles.desktopNavLogo} onClick={() => handleNavClick("tournament")}>
 							Naming Nosferatu
 						</button>
 

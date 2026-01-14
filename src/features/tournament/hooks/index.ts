@@ -6,8 +6,6 @@
  *   import { useTournamentManager } from './hooks'
  */
 
-export { useTournamentManager } from "./useTournamentManager";
-
 // Component hooks
 export {
 	default as useMagneticPull,
@@ -18,7 +16,8 @@ export {
 } from "./tournamentComponentHooks";
 export { useBracketTransformation } from "./useBracketTransformation";
 export { useImageGallery } from "./useImageGallery";
-export { useNameManagementCallbacks } from "./useTournamentSetupHooks";
+export { useTournamentManager } from "./useTournamentManager";
 export { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
+export { useNameManagementCallbacks } from "./useTournamentSetupHooks";
 export { useTournamentUIHandlers } from "./useTournamentUIHandlers";
 export { useUndoWindow } from "./useUndoWindow";

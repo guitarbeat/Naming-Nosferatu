@@ -305,4 +305,3 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		</>
 	);
 }
-

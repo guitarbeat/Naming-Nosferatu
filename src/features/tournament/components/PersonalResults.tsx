@@ -157,7 +157,6 @@ function CalendarButton({
 	);
 }
 
-
 import type { NameItem } from "../../../types/components";
 
 interface PersonalResultsProps {
@@ -491,6 +490,5 @@ function PersonalResults({
 		</div>
 	);
 }
-
 
 export default PersonalResults;

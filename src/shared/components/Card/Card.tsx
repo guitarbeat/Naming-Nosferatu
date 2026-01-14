@@ -3,8 +3,8 @@
  * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
-import React, { memo, useEffect, useId, useState } from "react";
 import { cva } from "class-variance-authority";
+import React, { memo, useEffect, useId, useState } from "react";
 import { TIMING } from "../../../core/constants";
 import { cn } from "../../utils";
 import CatImage from "../CatImage";
@@ -120,7 +120,8 @@ const buildCardClasses = (
 		padding,
 		shadow,
 		bordered: border,
-		background: background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
+		background:
+			background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
 		className,
 	});
 
@@ -274,7 +275,6 @@ const CardStats: React.FC<CardStatsProps> = ({
 		</Card>
 	);
 };
-
 
 /* ========================================= */
 /*              CardName Component             */

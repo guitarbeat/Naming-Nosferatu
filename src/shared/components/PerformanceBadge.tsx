@@ -4,7 +4,6 @@
  * Styles are consolidated in src/shared/styles/components-primitives.css
  */
 
-
 // Insight category lookup - keys use snake_case to match insight tag strings
 const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
 	top_rated: {
@@ -85,7 +84,6 @@ function PerformanceBadge({ type, label, variant = "md", className = "" }: Perfo
 	);
 }
 
-
 PerformanceBadge.displayName = "PerformanceBadge";
 
 interface PerformanceBadgesProps {
@@ -115,7 +113,6 @@ export function PerformanceBadges({ types = [], className = "" }: PerformanceBad
 		</div>
 	);
 }
-
 
 PerformanceBadges.displayName = "PerformanceBadges";
 
@@ -186,6 +183,5 @@ export function TrendIndicator({
 		</span>
 	);
 }
-
 
 TrendIndicator.displayName = "TrendIndicator";

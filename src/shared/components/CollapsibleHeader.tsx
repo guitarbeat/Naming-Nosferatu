@@ -4,37 +4,34 @@
  * KISS principle: minimal props, clear structure, consistent behavior.
  */
 
-import { useId } from "react";
 import { cva } from "class-variance-authority";
+import { useId } from "react";
 import { useCollapsible } from "../../core/hooks/useStorage";
 import LiquidGlass, { HEADER_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass/LiquidGlass";
 import "./CollapsibleHeader.css";
 
 // CVA variant for collapsible header
-const collapsibleHeaderVariants = cva(
-	"collapsible-header",
-	{
-		variants: {
-			variant: {
-				default: "collapsible-header--default",
-				compact: "collapsible-header--compact",
-			},
-			state: {
-				expanded: "",
-				collapsed: "collapsible-header--collapsed",
-			},
-			sortable: {
-				true: "collapsible-header--sortable",
-				false: "",
-			},
+const collapsibleHeaderVariants = cva("collapsible-header", {
+	variants: {
+		variant: {
+			default: "collapsible-header--default",
+			compact: "collapsible-header--compact",
 		},
-		defaultVariants: {
-			variant: "default",
-			state: "expanded",
-			sortable: false,
+		state: {
+			expanded: "",
+			collapsed: "collapsible-header--collapsed",
 		},
-	}
-);
+		sortable: {
+			true: "collapsible-header--sortable",
+			false: "",
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+		state: "expanded",
+		sortable: false,
+	},
+});
 
 /**
  * Chevron icon component - simple SVG for better control
@@ -58,7 +55,6 @@ const ChevronIcon = ({ isCollapsed }: { isCollapsed: boolean }) => (
 		/>
 	</svg>
 );
-
 
 /**
  * Collapsible Header Component
@@ -211,7 +207,6 @@ export function CollapsibleHeader({
 	return headerContent;
 }
 
-
 /**
  * Collapsible Content wrapper with animation
  * @param {Object} props
@@ -243,7 +238,6 @@ export function CollapsibleContent({
 		</div>
 	);
 }
-
 
 /**
  * Collapsible Section Component
@@ -314,4 +308,3 @@ export function CollapsibleSection({
 		</div>
 	);
 }
-

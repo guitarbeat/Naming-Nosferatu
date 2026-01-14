@@ -5,8 +5,8 @@
  */
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { imagesAPI } from "../../gallery/services/imageService";
 import { compressImageFile, devError } from "../../../shared/utils";
+import { imagesAPI } from "../../gallery/services/imageService";
 import styles from "../tournament.module.css";
 import { GALLERY_IMAGE_SIZES } from "../utils/tournamentUtils";
 

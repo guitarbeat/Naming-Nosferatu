@@ -17,12 +17,12 @@ import { useNameManagementContextOptional } from "../../../shared/components/Nam
 import { TournamentToolbar } from "../../../shared/components/TournamentToolbar/TournamentToolbar"; // Corrected path assumption
 import { hiddenNamesAPI } from "../../../shared/services/supabase/client";
 import { clearAllCaches, devError } from "../../../shared/utils";
+import styles from "../analytics.module.css";
 import { useAnalysisData } from "../hooks/useAnalysisData";
 import { useAnalysisDisplayData } from "../hooks/useAnalysisDisplayData";
 import type { AnalysisDashboardProps, AnalyticsDataItem, LeaderboardItem } from "../types";
 import { AnalysisInsights } from "./AnalysisInsights";
 import { AnalysisPanel } from "./AnalysisPanel";
-import styles from "../analytics.module.css";
 import { AnalysisTable } from "./AnalysisTable";
 
 export function AnalysisDashboard({
@@ -278,4 +278,3 @@ export function AnalysisDashboard({
 		</AnalysisPanel>
 	);
 }
-

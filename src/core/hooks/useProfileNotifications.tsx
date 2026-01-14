@@ -4,10 +4,10 @@
  */
 
 import { useCallback } from "react";
-import { NOTIFICATION } from "../constants";
 import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { devError, devLog } from "../../shared/utils";
+import { NOTIFICATION } from "../constants";
 
 /**
  * * Hook for profile notification functions with toast UI

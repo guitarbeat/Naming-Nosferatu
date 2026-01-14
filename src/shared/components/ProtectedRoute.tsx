@@ -25,12 +25,12 @@ export function ProtectedRoute({ requireTournamentComplete = false }: ProtectedR
 
 	// Check authentication
 	if (!user.isLoggedIn) {
-		return <Navigate to="/" replace />;
+		return <Navigate to="/" replace={true} />;
 	}
 
 	// Check tournament completion if required
 	if (requireTournamentComplete && !tournament.isComplete) {
-		return <Navigate to="/tournament" replace />;
+		return <Navigate to="/tournament" replace={true} />;
 	}
 
 	// User is authorized, render the nested routes

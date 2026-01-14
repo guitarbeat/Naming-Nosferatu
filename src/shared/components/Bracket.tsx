@@ -269,5 +269,4 @@ function Bracket({ matches }: { matches: MatchData[] }) {
 
 Bracket.displayName = "Bracket";
 
-
 export default memo(Bracket);

@@ -52,7 +52,7 @@ export function TabContainer({
 			const routeMatch = currentPath.startsWith(routeSync) ? currentPath : null;
 			if (routeMatch) {
 				const pathAfterBase = currentPath.replace(routeSync, "").replace(/^\//, "");
-				const matchingTab = tabs.find(tab => pathAfterBase === tab.key || pathAfterBase === "");
+				const matchingTab = tabs.find((tab) => pathAfterBase === tab.key || pathAfterBase === "");
 				if (matchingTab) {
 					return matchingTab.key;
 				}
@@ -79,7 +79,7 @@ export function TabContainer({
 
 		let newTabKey = tabs[0]?.key || "";
 		if (pathAfterBase) {
-			const matchingTab = tabs.find(tab => pathAfterBase === tab.key);
+			const matchingTab = tabs.find((tab) => pathAfterBase === tab.key);
 			if (matchingTab) {
 				newTabKey = matchingTab.key;
 			}
@@ -88,10 +88,10 @@ export function TabContainer({
 		if (newTabKey !== activeTab) {
 			setActiveTab(newTabKey);
 		}
-		}, [location.pathname, routeSync, tabs, activeTab]);
+	}, [location.pathname, routeSync, tabs, activeTab]);
 
 	const handleTabChange = (tabKey: string) => {
-		const tab = tabs.find(t => t.key === tabKey);
+		const tab = tabs.find((t) => t.key === tabKey);
 		if (!tab || tab.disabled) {
 			return;
 		}
@@ -112,7 +112,7 @@ export function TabContainer({
 		return null;
 	}
 
-	const activeTabData = tabs.find(tab => tab.key === activeTab);
+	const activeTabData = tabs.find((tab) => tab.key === activeTab);
 
 	const resolvedTitle = typeof title === "function" ? title(activeTab) : title;
 
@@ -127,7 +127,7 @@ export function TabContainer({
 
 					{tabs.length > 1 && (
 						<div className={styles.tabs}>
-							{tabs.map(tab => (
+							{tabs.map((tab) => (
 								<button
 									key={tab.key}
 									type="button"
@@ -145,9 +145,7 @@ export function TabContainer({
 				</div>
 			)}
 
-			<div className={`${styles.content} ${contentClassName}`}>
-				{activeTabData?.content}
-			</div>
+			<div className={`${styles.content} ${contentClassName}`}>{activeTabData?.content}</div>
 		</div>
 	);
 }

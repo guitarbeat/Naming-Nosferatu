@@ -1,7 +1,7 @@
 import { Search, Shuffle, Sparkles, TrendingUp } from "lucide-react";
 import { lazy, Suspense } from "react";
-import { TabContainer } from "../../shared/components/TabContainer";
 import { Loading } from "../../shared/components/Loading";
+import { TabContainer } from "../../shared/components/TabContainer";
 
 const AnalysisDashboard = lazy(() =>
 	import("../analytics/components/AnalysisDashboard").then((m) => ({

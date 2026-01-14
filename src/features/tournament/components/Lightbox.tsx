@@ -279,6 +279,5 @@ function Lightbox({
 	);
 }
 
-
 // ts-prune-ignore-next (used in TournamentSetup)
 export default Lightbox;

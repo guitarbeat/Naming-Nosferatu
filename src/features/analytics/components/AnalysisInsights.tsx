@@ -1,7 +1,7 @@
 import type React from "react";
 import { devError } from "../../../shared/utils";
-import type { NameWithInsight, SummaryStats } from "../types";
 import styles from "../analytics.module.css";
+import type { NameWithInsight, SummaryStats } from "../types";
 
 interface AnalysisInsightsProps {
 	namesWithInsights: NameWithInsight[];
@@ -41,9 +41,7 @@ export const AnalysisInsights: React.FC<AnalysisInsightsProps> = ({
 					<div className={styles.statCard}>
 						<div className={styles.statLabel}>Total Votes</div>
 						<div className={styles.statValue}>{summaryStats.totalRatings || 0}</div>
-						<div className={styles.statSubtext}>
-							{summaryStats.totalSelections || 0} selections
-						</div>
+						<div className={styles.statSubtext}>{summaryStats.totalSelections || 0} selections</div>
 					</div>
 				</div>
 			);

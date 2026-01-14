@@ -668,7 +668,9 @@
 	max-width: 600px;
 	margin-inline: auto;
 	justify-content: center;
-	box-shadow: var(--shadow-md), inset 0 1px 0 var(--glass-border);
+	box-shadow:
+		var(--shadow-md),
+		inset 0 1px 0 var(--glass-border);
 }
 
 .viewBtn,
@@ -703,7 +705,9 @@
 .toggleButton.active {
 	background: linear-gradient(135deg, var(--overlay-cyan-medium), var(--overlay-pink-medium));
 	color: var(--text-primary);
-	box-shadow: var(--shadow-md), inset 0 1px 0 var(--glass-border);
+	box-shadow:
+		var(--shadow-md),
+		inset 0 1px 0 var(--glass-border);
 	border: var(--card-border-width) solid color-mix(in srgb, var(--color-neon-cyan) 30%, transparent);
 }
 

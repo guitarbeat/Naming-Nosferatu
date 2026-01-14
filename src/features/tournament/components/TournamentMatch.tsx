@@ -11,8 +11,8 @@ import { ErrorComponent } from "../../../shared/components/ErrorComponent";
 import { playSound } from "../../../shared/utils/soundManager";
 import useMagneticPull from "../hooks/tournamentComponentHooks";
 import tournamentStyles from "../tournament.module.css";
-import { getRandomCatImage } from "../utils/tournamentUtils";
 import styles from "../tournament.module.css";
+import { getRandomCatImage } from "../utils/tournamentUtils";
 import RippleEffects, { type RippleHandle } from "./RippleEffects";
 
 interface TournamentMatchProps {
@@ -388,6 +388,5 @@ function TournamentMatch({
 		</div>
 	);
 }
-
 
 export default React.memo(TournamentMatch);

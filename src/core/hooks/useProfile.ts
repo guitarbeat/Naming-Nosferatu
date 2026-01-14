@@ -4,10 +4,9 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FILTER_OPTIONS } from "../constants";
+import { adminAPI } from "../../features/auth/services/adminService";
 import { useAdminStatus } from "../../shared/hooks/useAppHooks";
 import { resolveSupabaseClient } from "../../shared/services/supabase/client";
-import { adminAPI } from "../../features/auth/services/adminService";
 import {
 	catNamesAPI,
 	deleteName,
@@ -15,6 +14,7 @@ import {
 } from "../../shared/services/supabase/modules/general";
 import { clearAllCaches, devError, devLog } from "../../shared/utils";
 import type { IdType, NameItem } from "../../types/components";
+import { FILTER_OPTIONS } from "../constants";
 
 // ============================================================================
 // Internal Types
