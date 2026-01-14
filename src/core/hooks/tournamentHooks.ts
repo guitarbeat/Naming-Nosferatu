@@ -188,8 +188,6 @@ export function useTournamentHandlers({
 			}
 
 			tournamentActions.setNames(processedNames);
-			// Ensure we are on the tournament view after starting
-			tournamentActions.setView("tournament");
 
 			// * Use setTimeout to ensure the loading state is visible and prevent flashing
 			setTimeout(() => {
