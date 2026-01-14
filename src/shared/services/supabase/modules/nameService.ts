@@ -1,5 +1,5 @@
-import { withSupabase } from "../../../shared/services/supabase/client";
-import type { NameItem } from "../../../types/components";
+import { withSupabase } from "../client";
+import type { NameItem } from "../../../../types/components";
 
 /**
  * Database query result type - field names match Supabase column names (snake_case required)

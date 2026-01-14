@@ -23,7 +23,7 @@ import {
 import type { NameItem } from "../../../types/components";
 import { AnalysisDashboard } from "../../analytics/components/AnalysisDashboard";
 import type { HighlightItem, SummaryStats } from "../../analytics/types";
-import { type SelectionStats, useProfile } from "../../profile/hooks/useProfile";
+import { type SelectionStats, useProfile } from "../../../core/hooks/useProfile";
 import { useNameManagementCallbacks } from "../hooks/useTournamentSetupHooks";
 
 interface AnalysisHandlers {

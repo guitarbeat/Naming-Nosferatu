@@ -9,8 +9,8 @@ import useAppStore from "../../../core/store/useAppStore";
 import { useAdminStatus } from "../../../shared/hooks/useAppHooks";
 import { useLightboxState } from "../../../shared/hooks/useLightboxState";
 import type { NameItem } from "../../../types/components";
-import { useProfile } from "../../profile/hooks/useProfile";
-import { useProfileNotifications } from "../../profile/hooks/useProfileNotifications";
+import { useProfile } from "../../../core/hooks/useProfile";
+import { useProfileNotifications } from "../../../core/hooks/useProfileNotifications";
 import { useImageGallery } from "./useImageGallery";
 
 interface TournamentManagerProps {
