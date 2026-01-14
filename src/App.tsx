@@ -1,29 +1,37 @@
 /**
  * @module App
  * @description Main application component for the cat name tournament app.
- * Refactored to use centralized state management and services for better maintainability.
+ * Refactored to use declarative React Router routing with centralized auth guards.
  *
  * @component
  * @returns {JSX.Element} The complete application UI
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Navigate, Routes, Route } from "react-router-dom";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
+import { ProtectedRoute } from "./shared/components/ProtectedRoute";
 import { Loading } from "./shared/components/Loading";
 import { AppLayout } from "./shared/layouts/AppLayout";
 import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
-import styles from "./App.module.css";
 import { Toast } from "./shared/components/Toast";
+import styles from "./App.module.css";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
 } from "./shared/utils";
+
+// Lazy load route components
+const TournamentSetup = lazy(() => import("./features/tournament/components/TournamentSetup"));
+const Tournament = lazy(() => import("./features/tournament/Tournament"));
+const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
+const GalleryView = lazy(() => import("./features/gallery/GalleryView"));
+const Explore = lazy(() => import("./features/explore/Explore"));
 
 /**
  * Root application component that wires together global state, routing, and
@@ -55,34 +63,6 @@ function App() {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
-	// React Router hooks - call at top level (not conditionally or in effects)
-	const navigateTo = useNavigate();
-	const location = useLocation();
-
-	// Simplified routing logic - handle basic navigation based on login state and tournament completion
-	useEffect(() => {
-		const _currentRoute = location.pathname + location.search;
-
-		if (!user.isLoggedIn) {
-			// Redirect to home if not logged in and not already there
-			if (_currentRoute !== "/" && !_currentRoute.startsWith("/?")) {
-				navigateTo("/", { replace: true });
-			}
-			return;
-		}
-
-		// If logged in and on home page, redirect to tournament
-		if (_currentRoute === "/" || _currentRoute === "/?") {
-			navigateTo("/tournament", { replace: true });
-		}
-
-		// Handle tournament completion - redirect to results
-		if (tournament.isComplete && _currentRoute === "/tournament") {
-			navigateTo("/results", { replace: true });
-		}
-	}, [user.isLoggedIn, tournament.isComplete, navigateTo, location]);
-
-
 	// Theme synchronization
 	useEffect(() => {
 		if (typeof window !== "undefined") {
@@ -99,7 +79,7 @@ function App() {
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo,
+		navigateTo: undefined, // Not needed with declarative routing
 	});
 
 	const {
@@ -150,7 +130,180 @@ function App() {
 					handleTournamentComplete={handleTournamentComplete}
 					isSuggestNameModalOpen={isSuggestNameModalOpen}
 					onCloseSuggestName={handleCloseSuggestName}
-				/>
+				>
+					<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+						<Routes>
+							{/* Public routes */}
+							<Route
+								path="/"
+								element={
+									user.isLoggedIn ? (
+										<Navigate to="/tournament" replace />
+									) : (
+										<TournamentSetup
+											onLogin={handleLogin}
+											onStart={handleTournamentSetup}
+											userName={user.name}
+											isLoggedIn={false}
+											existingRatings={{}}
+										/>
+									)
+								}
+							/>
+
+							{/* Protected routes - require authentication */}
+							<Route element={<ProtectedRoute />}>
+								{/* Tournament routes */}
+								<Route
+									path="/tournament"
+									element={
+										tournament.names === null ? (
+											<TournamentSetup
+												onLogin={handleLogin}
+												onStart={handleTournamentSetup}
+												userName={user.name}
+												isLoggedIn={user.isLoggedIn}
+												existingRatings={Object.fromEntries(
+													Object.entries(tournament.ratings).map(
+														([key, value]) => [
+															key,
+															typeof value === "object" &&
+															value !== null &&
+															"rating" in value
+																? value.rating
+																: typeof value === "number"
+																	? value
+																	: 0,
+														],
+													),
+												)}
+											/>
+										) : (
+											<Tournament
+												names={tournament.names}
+												existingRatings={Object.fromEntries(
+													Object.entries(tournament.ratings).map(
+														([key, value]) => [
+															key,
+															typeof value === "object" &&
+															value !== null &&
+															"rating" in value
+																? value.rating
+																: typeof value === "number"
+																	? value
+																	: 0,
+														],
+													),
+												)}
+												onComplete={async (ratings: Record<string, number>) => {
+													const convertedRatings = Object.fromEntries(
+														Object.entries(ratings).map(([key, value]) => [
+															key,
+															{ rating: value },
+														]),
+													);
+													return handleTournamentComplete(
+														convertedRatings,
+													);
+												}}
+												userName={user.name}
+												onVote={(vote: unknown) =>
+													tournamentActions.addVote(
+														vote as import("./types/components").VoteData,
+													)
+												}
+											/>
+										)
+									}
+								/>
+
+								{/* Results route - tournament must be complete */}
+								<Route
+									path="/results"
+									element={
+										tournament.isComplete && tournament.names !== null ? (
+											<Dashboard
+												personalRatings={Object.fromEntries(
+													Object.entries(tournament.ratings).map(
+														([key, value]) => [
+															key,
+															typeof value === "object" &&
+															value !== null &&
+															"rating" in value
+																? value.rating
+																: typeof value === "number"
+																	? value
+																	: 0,
+														],
+													),
+												)}
+												currentTournamentNames={tournament.names}
+												voteHistory={tournament.voteHistory}
+												onStartNew={handleStartNewTournament}
+												onUpdateRatings={handleUpdateRatings as any}
+												userName={user.name || ""}
+												mode="personal"
+											/>
+										) : (
+											<Navigate to="/tournament" replace />
+										)
+									}
+								/>
+
+								{/* Analysis route - always shows global data */}
+								<Route
+									path="/analysis"
+									element={
+										<Dashboard
+											personalRatings={
+												tournament.isComplete && tournament.names !== null
+													? Object.fromEntries(
+														Object.entries(tournament.ratings).map(
+															([key, value]) => [
+																key,
+																typeof value === "object" &&
+																value !== null &&
+																"rating" in value
+																	? value.rating
+																	: typeof value === "number"
+																		? value
+																		: 0,
+															],
+														),
+													)
+													: undefined
+											}
+											currentTournamentNames={
+												tournament.isComplete && tournament.names !== null
+													? tournament.names
+													: undefined
+											}
+											voteHistory={
+												tournament.isComplete
+													? tournament.voteHistory
+													: undefined
+											}
+											onStartNew={handleStartNewTournament}
+											onUpdateRatings={handleUpdateRatings as any}
+											userName={user.name || ""}
+											mode="global"
+										/>
+									}
+								/>
+
+								{/* Gallery route */}
+								<Route path="/gallery" element={<GalleryView />} />
+
+								{/* Explore route */}
+								<Route path="/explore" element={<Explore userName={user.name || ""} />} />
+							</Route>
+
+							{/* Catch-all - redirect to home */}
+							<Route path="*" element={<Navigate to="/" replace />} />
+						</Routes>
+					</Suspense>
+				</AppLayout>
+
 				<Toast
 					variant="container"
 					toasts={toasts}
