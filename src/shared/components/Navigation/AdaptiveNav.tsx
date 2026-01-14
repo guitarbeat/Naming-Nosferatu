@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-
 import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import useAppStore from "../../core/store/useAppStore";
+import useAppStore from "../../../core/store/useAppStore";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import styles from "./navigation.module.css";
 
