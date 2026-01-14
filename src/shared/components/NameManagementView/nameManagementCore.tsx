@@ -5,7 +5,7 @@
  */
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
 import type { NameItem } from "../../../types/components";
@@ -220,15 +220,14 @@ export function useNameManagementView({
 	const [activeTab, setActiveTab] = useState("manage");
 
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const handleAnalysisModeToggle = useCallback(() => {
 		const newValue = !analysisMode;
 		setAnalysisMode(newValue);
-		if (typeof window === "undefined") {
-			return;
-		}
-		const currentPath = window.location.pathname;
-		const currentSearch = new URLSearchParams(window.location.search);
+
+		const currentPath = location.pathname;
+		const currentSearch = new URLSearchParams(location.search);
 
 		if (newValue) {
 			currentSearch.set("analysis", "true");
@@ -239,7 +238,7 @@ export function useNameManagementView({
 		const newSearch = currentSearch.toString();
 		const newUrl = newSearch ? `${currentPath}?${newSearch}` : currentPath;
 		navigate(newUrl);
-	}, [navigate, setAnalysisMode, analysisMode]);
+	}, [navigate, setAnalysisMode, analysisMode, location]);
 
 	const filteredNamesForSwipe = useMemo(() => {
 		if (mode !== "tournament") {

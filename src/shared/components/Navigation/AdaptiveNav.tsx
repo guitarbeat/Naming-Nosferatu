@@ -1,5 +1,11 @@
+/**
+ * @module AdaptiveNav
+ * @description Unified navigation component - flat structure for SPA
+ * Adapts between mobile bottom nav and desktop header nav
+ */
+
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
-import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
+import { Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import useAppStore from "../../../core/store/useAppStore";
@@ -10,9 +16,18 @@ interface AdaptiveNavProps {
 	onOpenSuggestName?: () => void;
 }
 
+// Simple map from nav keys to routes
+const keyToRoute: Record<string, string> = {
+	tournament: "/tournament",
+	results: "/results",
+	analysis: "/analysis",
+	gallery: "/gallery",
+	explore: "/explore",
+};
+
 /**
  * Unified Adaptive Navigation Component
- * Uses React Router for navigation
+ * Clean, flat navigation without submenus
  */
 export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 	const navigate = useNavigate();
@@ -45,24 +60,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	});
 
-	// Map nav item keys to routes
-	const keyToRoute: Record<string, string> = {
-		tournament: "/tournament",
-		vote: "/tournament",
-		results: "/results",
-		overview: "/results",
-		leaderboard: "/results",
-		matchups: "/results",
-		analysis: "/analysis",
-		global: "/analysis",
-		cats: "/analysis",
-		gallery: "/gallery",
-		grid: "/gallery",
-		explore: "/explore",
-		stats: "/explore",
-		photos: "/explore",
-	};
-
 	const handleNavClick = (key: string) => {
 		const route = keyToRoute[key];
 		if (route) {
@@ -85,6 +82,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 		: BOTTOM_NAV_ITEMS.filter((key) => key !== "results");
 	const bottomNavItems = getBottomNavItems(MAIN_NAV_ITEMS, visibleBottomItems);
 
+	// Mobile Navigation
 	if (isMobile) {
 		return (
 			<>
@@ -187,12 +185,16 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 
 								<nav className={styles.mobileMenuNav}>
 									{MAIN_NAV_ITEMS.map((item) => (
-										<MobileNavItem
+										<button
 											key={item.key}
-											item={item}
-											isActive={isActive}
-											onNavClick={handleNavClick}
-										/>
+											className={`${styles.mobileNavItem} ${isActive(item.key) ? styles.active : ""}`}
+											onClick={() => handleNavClick(item.key)}
+										>
+											<div className={styles.mobileNavItemContent}>
+												{item.icon && <item.icon className={styles.mobileNavIcon} />}
+												<span className={styles.mobileNavLabel}>{item.label}</span>
+											</div>
+										</button>
 									))}
 								</nav>
 							</motion.div>
@@ -217,38 +219,18 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 							Naming Nosferatu
 						</button>
 
-						{/* Primary Navigation */}
+						{/* Primary Navigation - flat, no dropdowns */}
 						<nav className={styles.desktopNavLinks} role="navigation">
 							{MAIN_NAV_ITEMS.map((item) => (
-								<div key={item.key} className={styles.desktopNavItem}>
-									<button
-										className={`${styles.desktopNavLink} ${isActive(item.key) ? styles.active : ""}`}
-										onClick={() => handleNavClick(item.key)}
-										aria-expanded={false}
-									>
-										{item.icon && <item.icon className={styles.desktopNavIcon} />}
-										{item.label}
-									</button>
-
-									{/* Dropdown for children */}
-									{item.children && item.children.length > 0 && (
-										<div className={styles.desktopNavDropdown}>
-											{item.children.map((child) => (
-												<button
-													key={child.key}
-													className={`${styles.desktopNavDropdownItem} ${isActive(child.key) ? styles.active : ""
-														}`}
-													onClick={(e) => {
-														e.stopPropagation();
-														handleNavClick(child.key);
-													}}
-												>
-													{child.label}
-												</button>
-											))}
-										</div>
-									)}
-								</div>
+								<button
+									key={item.key}
+									className={`${styles.desktopNavLink} ${isActive(item.key) ? styles.active : ""}`}
+									onClick={() => handleNavClick(item.key)}
+									aria-label={item.ariaLabel || item.label}
+								>
+									{item.icon && <item.icon className={styles.desktopNavIcon} />}
+									{item.label}
+								</button>
 							))}
 						</nav>
 					</div>
@@ -272,80 +254,5 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 			{/* Spacing to prevent content from jumping when nav is fixed */}
 			<div style={{ height: "64px", display: "none" }} className="desktop-spacer" />
 		</>
-	);
-}
-
-// Mobile Navigation Item Component
-function MobileNavItem({
-	item,
-	isActive,
-	onNavClick,
-}: {
-	item: (typeof MAIN_NAV_ITEMS)[0];
-	isActive: (key: string) => boolean;
-	onNavClick: (key: string) => void;
-}) {
-	const [isExpanded, setIsExpanded] = useState(false);
-	const hasChildren = item.children && item.children.length > 0;
-	const isItemActive = isActive(item.key);
-
-	// Auto-expand if child is active
-	useEffect(() => {
-		if (hasChildren && item.children?.some((child) => isActive(child.key))) {
-			setIsExpanded(true);
-		}
-	}, [hasChildren, item.children, isActive]);
-
-	const handleClick = () => {
-		if (navigator.vibrate) navigator.vibrate(10);
-		if (hasChildren) {
-			setIsExpanded(!isExpanded);
-		} else {
-			onNavClick(item.key);
-		}
-	};
-
-	return (
-		<div className={styles.mobileNavItemContainer}>
-			<button
-				className={`${styles.mobileNavItem} ${isItemActive ? styles.active : ""}`}
-				onClick={handleClick}
-				aria-expanded={hasChildren ? isExpanded : undefined}
-			>
-				<div className={styles.mobileNavItemContent}>
-					{item.icon && <item.icon className={styles.mobileNavIcon} />}
-					<span className={styles.mobileNavLabel}>{item.label}</span>
-				</div>
-				{hasChildren && (
-					<ChevronDown
-						className={styles.mobileNavChevron}
-						style={{
-							transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-						}}
-					/>
-				)}
-			</button>
-
-			<AnimatePresence>
-				{hasChildren && isExpanded && (
-					<motion.div
-						initial={{ height: 0, opacity: 0 }}
-						animate={{ height: "auto", opacity: 1 }}
-						exit={{ height: 0, opacity: 0 }}
-						className={styles.mobileNavChildrenContainer}
-					>
-						{item.children?.map((child) => (
-							<button
-								key={child.key}
-								className={`${styles.mobileNavChildItem} ${isActive(child.key) ? styles.active : ""}`}
-								onClick={() => onNavClick(child.key)}
-							>
-								{child.label}
-							</button>
-						))}
-					</motion.div>
-				)}
-			</AnimatePresence>
-		</div>
 	);
 }

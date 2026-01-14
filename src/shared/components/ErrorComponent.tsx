@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useBrowserState } from "../hooks/useBrowserState";
 import styles from "./ErrorComponent.module.css";
 import LiquidGlass from "./LiquidGlass/LiquidGlass";
@@ -28,6 +29,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 	const [retryCount, setRetryCount] = useState(0);
 	const [copied, setCopied] = useState(false);
 	const [_isDetailsOpen, _setIsDetailsOpen] = useState(false);
+	const navigate = useNavigate();
 	const { prefersReducedMotion, ...screenSize } = useBrowserState();
 	const mainContentRef = useRef<HTMLDivElement>(null);
 	const retryButtonRef = useRef<HTMLButtonElement>(null);
@@ -122,9 +124,7 @@ export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
 							{canRetry ? "Try Again" : "Reload"}
 						</button>
 						<button
-							onClick={() => {
-								window.location.href = "/";
-							}}
+							onClick={() => navigate("/", { replace: true })}
 							className={styles.boundaryHomeButton}
 						>
 							Home

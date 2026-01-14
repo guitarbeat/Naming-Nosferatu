@@ -8,7 +8,9 @@
  */
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate, Routes, Route, useNavigate } from "react-router-dom";
+import { Navigate, Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import { PageTransition } from "./shared/components/PageTransition";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
@@ -37,6 +39,7 @@ const Explore = lazy(() => import("./features/explore/Explore"));
  */
 function App() {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const { login, isInitialized } = useUserSession();
 	const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
@@ -134,175 +137,179 @@ function App() {
 					onCloseSuggestName={handleCloseSuggestName}
 				>
 					<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-						<Routes>
-							{/* Public routes */}
-							<Route
-								path="/"
-								element={
-									user.isLoggedIn ? (
-										<Navigate to="/tournament" replace />
-									) : (
-										<TournamentSetup
-											onLogin={handleLogin}
-											onStart={handleTournamentSetup}
-											userName={user.name}
-											isLoggedIn={false}
-											existingRatings={{}}
+						<AnimatePresence mode="wait">
+							<PageTransition key={location.pathname}>
+								<Routes location={location}>
+									{/* Public routes */}
+									<Route
+										path="/"
+										element={
+											user.isLoggedIn ? (
+												<Navigate to="/tournament" replace />
+											) : (
+												<TournamentSetup
+													onLogin={handleLogin}
+													onStart={handleTournamentSetup}
+													userName={user.name}
+													isLoggedIn={false}
+													existingRatings={{}}
+												/>
+											)
+										}
+									/>
+
+									{/* Protected routes - require authentication */}
+									<Route element={<ProtectedRoute />}>
+										{/* Tournament routes */}
+										<Route
+											path="/tournament"
+											element={
+												tournament.names === null ? (
+													<TournamentSetup
+														onLogin={handleLogin}
+														onStart={handleTournamentSetup}
+														userName={user.name}
+														isLoggedIn={user.isLoggedIn}
+														existingRatings={Object.fromEntries(
+															Object.entries(tournament.ratings).map(
+																([key, value]) => [
+																	key,
+																	typeof value === "object" &&
+																		value !== null &&
+																		"rating" in value
+																		? value.rating
+																		: typeof value === "number"
+																			? value
+																			: 0,
+																],
+															),
+														)}
+													/>
+												) : (
+													<Tournament
+														names={tournament.names}
+														existingRatings={Object.fromEntries(
+															Object.entries(tournament.ratings).map(
+																([key, value]) => [
+																	key,
+																	typeof value === "object" &&
+																		value !== null &&
+																		"rating" in value
+																		? value.rating
+																		: typeof value === "number"
+																			? value
+																			: 0,
+																],
+															),
+														)}
+														onComplete={async (ratings: Record<string, number>) => {
+															const convertedRatings = Object.fromEntries(
+																Object.entries(ratings).map(([key, value]) => [
+																	key,
+																	{ rating: value },
+																]),
+															);
+															return handleTournamentComplete(
+																convertedRatings,
+															);
+														}}
+														userName={user.name}
+														onVote={(vote: unknown) =>
+															tournamentActions.addVote(
+																vote as import("./types/components").VoteData,
+															)
+														}
+													/>
+												)
+											}
 										/>
-									)
-								}
-							/>
 
-							{/* Protected routes - require authentication */}
-							<Route element={<ProtectedRoute />}>
-								{/* Tournament routes */}
-								<Route
-									path="/tournament"
-									element={
-										tournament.names === null ? (
-											<TournamentSetup
-												onLogin={handleLogin}
-												onStart={handleTournamentSetup}
-												userName={user.name}
-												isLoggedIn={user.isLoggedIn}
-												existingRatings={Object.fromEntries(
-													Object.entries(tournament.ratings).map(
-														([key, value]) => [
-															key,
-															typeof value === "object" &&
-															value !== null &&
-															"rating" in value
-																? value.rating
-																: typeof value === "number"
-																	? value
-																	: 0,
-														],
-													),
-												)}
-											/>
-										) : (
-											<Tournament
-												names={tournament.names}
-												existingRatings={Object.fromEntries(
-													Object.entries(tournament.ratings).map(
-														([key, value]) => [
-															key,
-															typeof value === "object" &&
-															value !== null &&
-															"rating" in value
-																? value.rating
-																: typeof value === "number"
-																	? value
-																	: 0,
-														],
-													),
-												)}
-												onComplete={async (ratings: Record<string, number>) => {
-													const convertedRatings = Object.fromEntries(
-														Object.entries(ratings).map(([key, value]) => [
-															key,
-															{ rating: value },
-														]),
-													);
-													return handleTournamentComplete(
-														convertedRatings,
-													);
-												}}
-												userName={user.name}
-												onVote={(vote: unknown) =>
-													tournamentActions.addVote(
-														vote as import("./types/components").VoteData,
-													)
-												}
-											/>
-										)
-									}
-								/>
-
-								{/* Results route - tournament must be complete */}
-								<Route
-									path="/results"
-									element={
-										tournament.isComplete && tournament.names !== null ? (
-											<Dashboard
-												personalRatings={Object.fromEntries(
-													Object.entries(tournament.ratings).map(
-														([key, value]) => [
-															key,
-															typeof value === "object" &&
-															value !== null &&
-															"rating" in value
-																? value.rating
-																: typeof value === "number"
-																	? value
-																	: 0,
-														],
-													),
-												)}
-												currentTournamentNames={tournament.names}
-												voteHistory={tournament.voteHistory}
-												onStartNew={handleStartNewTournament}
-												onUpdateRatings={handleUpdateRatings as any}
-												userName={user.name || ""}
-												mode="personal"
-											/>
-										) : (
-											<Navigate to="/tournament" replace />
-										)
-									}
-								/>
-
-								{/* Analysis route - always shows global data */}
-								<Route
-									path="/analysis"
-									element={
-										<Dashboard
-											personalRatings={
-												tournament.isComplete && tournament.names !== null
-													? Object.fromEntries(
-														Object.entries(tournament.ratings).map(
-															([key, value]) => [
-																key,
-																typeof value === "object" &&
-																value !== null &&
-																"rating" in value
-																	? value.rating
-																	: typeof value === "number"
-																		? value
-																		: 0,
-															],
-														),
-													)
-													: undefined
+										{/* Results route - tournament must be complete */}
+										<Route
+											path="/results"
+											element={
+												tournament.isComplete && tournament.names !== null ? (
+													<Dashboard
+														personalRatings={Object.fromEntries(
+															Object.entries(tournament.ratings).map(
+																([key, value]) => [
+																	key,
+																	typeof value === "object" &&
+																		value !== null &&
+																		"rating" in value
+																		? value.rating
+																		: typeof value === "number"
+																			? value
+																			: 0,
+																],
+															),
+														)}
+														currentTournamentNames={tournament.names}
+														voteHistory={tournament.voteHistory}
+														onStartNew={handleStartNewTournament}
+														onUpdateRatings={handleUpdateRatings as any}
+														userName={user.name || ""}
+														mode="personal"
+													/>
+												) : (
+													<Navigate to="/tournament" replace />
+												)
 											}
-											currentTournamentNames={
-												tournament.isComplete && tournament.names !== null
-													? tournament.names
-													: undefined
-											}
-											voteHistory={
-												tournament.isComplete
-													? tournament.voteHistory
-													: undefined
-											}
-											onStartNew={handleStartNewTournament}
-											onUpdateRatings={handleUpdateRatings as any}
-											userName={user.name || ""}
-											mode="global"
 										/>
-									}
-								/>
 
-								{/* Gallery route */}
-								<Route path="/gallery" element={<GalleryView />} />
+										{/* Analysis route - always shows global data */}
+										<Route
+											path="/analysis"
+											element={
+												<Dashboard
+													personalRatings={
+														tournament.isComplete && tournament.names !== null
+															? Object.fromEntries(
+																Object.entries(tournament.ratings).map(
+																	([key, value]) => [
+																		key,
+																		typeof value === "object" &&
+																			value !== null &&
+																			"rating" in value
+																			? value.rating
+																			: typeof value === "number"
+																				? value
+																				: 0,
+																	],
+																),
+															)
+															: undefined
+													}
+													currentTournamentNames={
+														tournament.isComplete && tournament.names !== null
+															? tournament.names
+															: undefined
+													}
+													voteHistory={
+														tournament.isComplete
+															? tournament.voteHistory
+															: undefined
+													}
+													onStartNew={handleStartNewTournament}
+													onUpdateRatings={handleUpdateRatings as any}
+													userName={user.name || ""}
+													mode="global"
+												/>
+											}
+										/>
 
-								{/* Explore route */}
-								<Route path="/explore" element={<Explore userName={user.name || ""} />} />
-							</Route>
+										{/* Gallery route */}
+										<Route path="/gallery" element={<GalleryView />} />
 
-							{/* Catch-all - redirect to home */}
-							<Route path="*" element={<Navigate to="/" replace />} />
-						</Routes>
+										{/* Explore route */}
+										<Route path="/explore" element={<Explore userName={user.name || ""} />} />
+									</Route>
+
+									{/* Catch-all - redirect to home */}
+									<Route path="*" element={<Navigate to="/" replace />} />
+								</Routes>
+							</PageTransition>
+						</AnimatePresence>
 					</Suspense>
 				</AppLayout>
 
