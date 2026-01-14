@@ -105,7 +105,6 @@ export interface AppState {
 		getIsComplete: () => boolean;
 		getIsLoading: () => boolean;
 		getVoteHistory: () => import("./components").VoteData[];
-		getCurrentView: () => string;
 		getUserName: () => string;
 		getIsLoggedIn: () => boolean;
 		getIsAdmin: () => boolean;
