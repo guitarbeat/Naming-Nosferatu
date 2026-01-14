@@ -38,6 +38,7 @@ const Explore = lazy(() => import("./features/explore/Explore"));
  * layout providers for the cat name tournament experience.
  */
 function App() {
+	const navigate = useNavigate();
 	const { login, isInitialized } = useUserSession();
 	const [isSuggestNameModalOpen, setIsSuggestNameModalOpen] = useState(false);
 
