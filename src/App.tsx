@@ -8,7 +8,7 @@
  */
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Navigate, Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, useNavigate } from "react-router-dom";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
 // * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
