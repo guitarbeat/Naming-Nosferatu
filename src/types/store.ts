@@ -68,7 +68,6 @@ export interface AppState {
 		setLoading: (isLoading: boolean) => void;
 		addVote: (vote: import("./components").VoteData) => void;
 		resetTournament: () => void;
-		setView: (view: string) => void;
 	};
 
 	userActions: {
