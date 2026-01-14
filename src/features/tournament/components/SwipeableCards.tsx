@@ -44,6 +44,11 @@ export function SwipeableCards({
 		return names.filter((name) => !swipedIds.has(String(name.id)));
 	}, [names, swipedIds]);
 
+	// Optimization: Limit the number of rendered cards to improve performance
+	// rendering 50+ heavy components (with CatImage analysis) is wasteful
+	const MAX_VISIBLE_CARDS = 3;
+	const cardsToRender = visibleCards.slice(0, MAX_VISIBLE_CARDS);
+
 	const isSelected = useCallback(
 		(name: NameItem) => selectedNames.some((s) => s.id === name.id),
 		[selectedNames],
@@ -192,7 +197,7 @@ export function SwipeableCards({
 				<AnimatePresence mode="popLayout">
 					{names.length > 0 ? (
 						(() => {
-							return visibleCards.map((card, index) => {
+							return cardsToRender.map((card, index) => {
 								const cardId = String(card.id);
 								const isCardSelected = isSelected(card);
 								const isDragging = draggedId === cardId;
