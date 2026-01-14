@@ -1,7 +1,7 @@
 /**
  * @module AppLayout
  * @description Main application layout component.
- * Extracted from App.tsx to improve maintainability.
+ * Uses state-based ViewRenderer instead of route-based ViewRouter.
  */
 
 import { useMemo } from "react";
@@ -16,7 +16,8 @@ import { NameSuggestionModal } from "../components/NameSuggestionModal/NameSugge
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { SwipeWrapper } from "../components/SwipeWrapper";
 import { OfflineIndicator } from "../components/OfflineIndicator";
-import ViewRouter from "../components/ViewRouter/ViewRouter";
+import ViewRenderer from "../components/ViewRenderer/ViewRenderer";
+import type { ViewState } from "../components/ViewRenderer/ViewRenderer";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;
@@ -41,8 +42,8 @@ export function AppLayout({
 	isSuggestNameModalOpen,
 	onCloseSuggestName,
 }: AppLayoutProps) {
-	// Get state from store (no prop drilling!)
-	const { user, tournament, errors, tournamentActions, errorActions, userActions } = useAppStore();
+	// Get state from store
+	const { user, tournament, errors, tournamentActions, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
 
 	const appClassName = useMemo(() => (isLoggedIn ? "app" : "app app--login"), [isLoggedIn]);
@@ -70,9 +71,7 @@ export function AppLayout({
 				<CatBackground />
 
 				{/* Unified Adaptive Navigation */}
-				{isLoggedIn && (
-					<AdaptiveNav />
-				)}
+				{isLoggedIn && <AdaptiveNav />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (
@@ -85,7 +84,8 @@ export function AppLayout({
 						</div>
 					)}
 					<SwipeWrapper>
-						<ViewRouter
+						<ViewRenderer
+							currentView={tournament.currentView as ViewState}
 							isLoggedIn={isLoggedIn}
 							onLogin={handleLogin}
 							tournament={tournament}

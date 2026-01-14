@@ -1,16 +1,11 @@
 /**
  * @module App
  * @description Main application component for the cat name tournament app.
- * Refactored to use centralized state management and services for better maintainability.
- *
- * @component
- * @returns {JSX.Element} The complete application UI
+ * Now uses state-based view switching instead of React Router.
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
-// * Core state and routing hooks
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { Loading } from "./shared/components/Loading";
@@ -26,8 +21,7 @@ import {
 } from "./shared/utils";
 
 /**
- * Root application component that wires together global state, routing, and
- * layout providers for the cat name tournament experience.
+ * Root application component with state-based view switching
  */
 function App() {
 	const { login, isInitialized } = useUserSession();
@@ -55,33 +49,12 @@ function App() {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
-	// React Router hooks - call at top level (not conditionally or in effects)
-	const navigateTo = useNavigate();
-	const location = useLocation();
-
-	// Simplified routing logic - handle basic navigation based on login state and tournament completion
+	// Auto-navigate to results when tournament completes
 	useEffect(() => {
-		const _currentRoute = location.pathname + location.search;
-
-		if (!user.isLoggedIn) {
-			// Redirect to home if not logged in and not already there
-			if (_currentRoute !== "/" && !_currentRoute.startsWith("/?")) {
-				navigateTo("/", { replace: true });
-			}
-			return;
+		if (user.isLoggedIn && tournament.isComplete && tournament.currentView === "tournament") {
+			tournamentActions.setView("results");
 		}
-
-		// If logged in and on home page, redirect to tournament
-		if (_currentRoute === "/" || _currentRoute === "/?") {
-			navigateTo("/tournament", { replace: true });
-		}
-
-		// Handle tournament completion - redirect to results
-		if (tournament.isComplete && _currentRoute === "/tournament") {
-			navigateTo("/results", { replace: true });
-		}
-	}, [user.isLoggedIn, tournament.isComplete, navigateTo, location]);
-
+	}, [user.isLoggedIn, tournament.isComplete, tournament.currentView, tournamentActions]);
 
 	// Theme synchronization
 	useEffect(() => {
@@ -95,11 +68,23 @@ function App() {
 		}
 	}, [ui.theme]);
 
-	// Tournament handlers
+	// Tournament handlers - pass setView instead of navigateTo
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
-		navigateTo,
+		navigateTo: (route: string) => {
+			// Map routes to views for backward compatibility
+			const routeToView: Record<string, string> = {
+				"/": "tournament",
+				"/tournament": "tournament",
+				"/results": "results",
+				"/gallery": "gallery",
+				"/analysis": "analysis",
+				"/explore": "explore",
+			};
+			const view = routeToView[route] || "tournament";
+			tournamentActions.setView(view as any);
+		},
 	});
 
 	const {
@@ -128,7 +113,10 @@ function App() {
 		setIsSuggestNameModalOpen(false);
 	}, []);
 
-	const appClassName = useMemo(() => (user.isLoggedIn ? "app" : "app app--login"), [user.isLoggedIn]);
+	const appClassName = useMemo(
+		() => (user.isLoggedIn ? "app" : "app app--login"),
+		[user.isLoggedIn],
+	);
 
 	// Show loading screen while initializing
 	if (!isInitialized) {

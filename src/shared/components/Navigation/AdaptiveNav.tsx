@@ -1,7 +1,8 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { ChevronDown, Lightbulb, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import useAppStore from "../../../core/store/useAppStore";
+import type { ViewState } from "../ViewRenderer/ViewRenderer";
 import { BOTTOM_NAV_ITEMS, getBottomNavItems, MAIN_NAV_ITEMS } from "../../navigation";
 import styles from "./navigation.module.css";
 
@@ -11,11 +12,12 @@ interface AdaptiveNavProps {
 
 /**
  * Unified Adaptive Navigation Component
- * Consolidates DesktopNav, BottomNav, MobileMenu, and SwipeNavigation into a single responsive component
+ * Uses state-based view switching instead of URL routing
  */
 export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
-	const navigate = useNavigate();
-	const location = useLocation();
+	const { tournament, tournamentActions } = useAppStore();
+	const currentView = tournament.currentView as ViewState;
+
 	const [isMobile, setIsMobile] = useState(false);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [hidden, setHidden] = useState(false);
@@ -43,25 +45,42 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 		}
 	});
 
+	// Map nav item keys to view states
+	const keyToView: Record<string, ViewState> = {
+		tournament: "tournament",
+		vote: "tournament",
+		results: "results",
+		overview: "results",
+		leaderboard: "results",
+		matchups: "results",
+		analysis: "analysis",
+		global: "analysis",
+		cats: "analysis",
+		gallery: "gallery",
+		grid: "gallery",
+		explore: "explore",
+		stats: "explore",
+		photos: "explore",
+	};
 
-	const handleNavClick = (route?: string) => {
-		if (route) {
+	const handleNavClick = (key: string) => {
+		const view = keyToView[key];
+		if (view) {
 			if (isMobile && navigator.vibrate) {
 				navigator.vibrate(10);
 			}
-			navigate(route);
-			setIsMobileMenuOpen(false); // Close mobile menu on navigation
+			tournamentActions.setView(view);
+			setIsMobileMenuOpen(false);
 		}
 	};
 
-	const isActive = (route?: string, exact = false) => {
-		if (!route) return false;
-		if (route === "/") return location.pathname === "/";
-		return exact ? location.pathname === route : location.pathname.startsWith(route);
+	const isActive = (key: string) => {
+		const view = keyToView[key];
+		return view === currentView;
 	};
 
 	// Filter bottom nav items based on tournament completion
-	const tournamentComplete = true; // TODO: Get from store
+	const tournamentComplete = tournament.isComplete;
 	const visibleBottomItems = tournamentComplete
 		? BOTTOM_NAV_ITEMS
 		: BOTTOM_NAV_ITEMS.filter((key) => key !== "results");
@@ -79,13 +98,13 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 				>
 					<nav className={styles.bottomNavContainer} role="navigation" aria-label="Mobile navigation">
 						{bottomNavItems.map((item) => {
-							const itemActive = isActive(item?.route);
+							const itemActive = isActive(item.key);
 
 							return (
 								<button
 									key={item.key}
 									className={`${styles.bottomNavItem} ${itemActive ? styles.active : ""}`}
-									onClick={() => handleNavClick(item.route)}
+									onClick={() => handleNavClick(item.key)}
 									aria-current={itemActive ? "page" : undefined}
 									aria-label={item.ariaLabel || item.label}
 								>
@@ -128,7 +147,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 							<Menu className={styles.bottomNavIcon} aria-hidden={true} />
 							<span className={styles.bottomNavLabel}>Menu</span>
 						</button>
-
 					</nav>
 				</motion.div>
 
@@ -178,7 +196,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 										/>
 									))}
 								</nav>
-
 							</motion.div>
 						</>
 					)}
@@ -194,24 +211,20 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 				<div className={styles.desktopNavContainer}>
 					<div className={styles.desktopNavLeft}>
 						{/* Logo */}
-						<a
-							href="/"
+						<button
 							className={styles.desktopNavLogo}
-							onClick={(e) => {
-								e.preventDefault();
-								navigate("/");
-							}}
+							onClick={() => handleNavClick("tournament")}
 						>
 							Naming Nosferatu
-						</a>
+						</button>
 
 						{/* Primary Navigation */}
 						<nav className={styles.desktopNavLinks} role="navigation">
 							{MAIN_NAV_ITEMS.map((item) => (
 								<div key={item.key} className={styles.desktopNavItem}>
 									<button
-										className={`${styles.desktopNavLink} ${isActive(item.route) ? styles.active : ""}`}
-										onClick={() => handleNavClick(item.route)}
+										className={`${styles.desktopNavLink} ${isActive(item.key) ? styles.active : ""}`}
+										onClick={() => handleNavClick(item.key)}
 										aria-expanded={false}
 									>
 										{item.icon && <item.icon className={styles.desktopNavIcon} />}
@@ -225,11 +238,11 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 												<button
 													key={child.key}
 													className={`${styles.desktopNavDropdownItem} ${
-														isActive(child.route, true) ? styles.active : ""
+														isActive(child.key) ? styles.active : ""
 													}`}
 													onClick={(e) => {
 														e.stopPropagation();
-														handleNavClick(child.route);
+														handleNavClick(child.key);
 													}}
 												>
 													{child.label}
@@ -260,8 +273,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
 
 			{/* Spacing to prevent content from jumping when nav is fixed */}
 			<div style={{ height: "64px", display: "none" }} className="desktop-spacer" />
-
-			</>
+		</>
 	);
 }
 
@@ -272,16 +284,16 @@ function MobileNavItem({
 	onNavClick,
 }: {
 	item: (typeof MAIN_NAV_ITEMS)[0];
-	isActive: (route?: string) => boolean;
-	onNavClick: (route?: string) => void;
+	isActive: (key: string) => boolean;
+	onNavClick: (key: string) => void;
 }) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const hasChildren = item.children && item.children.length > 0;
-	const isItemActive = isActive(item.route);
+	const isItemActive = isActive(item.key);
 
 	// Auto-expand if child is active
 	useEffect(() => {
-		if (hasChildren && item.children?.some((child) => isActive(child.route))) {
+		if (hasChildren && item.children?.some((child) => isActive(child.key))) {
 			setIsExpanded(true);
 		}
 	}, [hasChildren, item.children, isActive]);
@@ -291,7 +303,7 @@ function MobileNavItem({
 		if (hasChildren) {
 			setIsExpanded(!isExpanded);
 		} else {
-			onNavClick(item.route);
+			onNavClick(item.key);
 		}
 	};
 
@@ -327,8 +339,8 @@ function MobileNavItem({
 						{item.children?.map((child) => (
 							<button
 								key={child.key}
-								className={`${styles.mobileNavChildItem} ${isActive(child.route) ? styles.active : ""}`}
-								onClick={() => onNavClick(child.route)}
+								className={`${styles.mobileNavChildItem} ${isActive(child.key) ? styles.active : ""}`}
+								onClick={() => onNavClick(child.key)}
 							>
 								{child.label}
 							</button>
