@@ -20,12 +20,11 @@ interface PhotoThumbnailProps {
 	onImageOpen: (image: string) => void;
 }
 
-const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps) => {
+export const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps) => {
 	const elementRef = useRef<HTMLButtonElement>(null);
 
 	const [imageError, setImageError] = useState(false);
 	const [imageLoading, setImageLoading] = useState(true);
-	const [tiltStyle, setTiltStyle] = useState({});
 
 	const handleImageLoad = useCallback(() => {
 		setImageLoading(false);
@@ -38,16 +37,24 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 	}, []);
 
 	// * 3D tilt effect that follows mouse
+	// * Optimized to use direct DOM manipulation and requestAnimationFrame
+	// * instead of React state to prevent re-renders on every mouse move
 	useEffect(() => {
 		const element = elementRef.current;
 		if (!element || imageError) {
 			return;
 		}
 
-		const handleMouseMove = (e: MouseEvent) => {
+		let rafId: number | null = null;
+		// Store mouse position to use latest coordinates in RAF callback
+		const mousePos = { x: 0, y: 0 };
+
+		const updateTilt = () => {
+			if (!element.isConnected) return;
+
 			const rect = element.getBoundingClientRect();
-			const x = e.clientX - rect.left;
-			const y = e.clientY - rect.top;
+			const x = mousePos.x - rect.left;
+			const y = mousePos.y - rect.top;
 
 			const centerX = rect.width / 2;
 			const centerY = rect.height / 2;
@@ -55,16 +62,33 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 			const rotateX = ((y - centerY) / centerY) * -5; // * Max 5 degrees
 			const rotateY = ((x - centerX) / centerX) * 5; // * Max 5 degrees
 
-			setTiltStyle({
-				transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-				transition: "transform 0.1s ease-out",
-			});
+			element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+			element.style.transition = "transform 0.1s ease-out";
+
+			rafId = null;
+		};
+
+		const handleMouseMove = (e: MouseEvent) => {
+			mousePos.x = e.clientX;
+			mousePos.y = e.clientY;
+
+			if (rafId === null) {
+				rafId = requestAnimationFrame(updateTilt);
+			}
 		};
 
 		const handleMouseLeave = () => {
-			setTiltStyle({
-				transform: "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)",
-				transition: "transform 0.3s ease-out",
+			if (rafId !== null) {
+				cancelAnimationFrame(rafId);
+				rafId = null;
+			}
+
+			// Use RAF for reset too to avoid layout thrashing
+			requestAnimationFrame(() => {
+				if (element.isConnected) {
+					element.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+					element.style.transition = "transform 0.3s ease-out";
+				}
 			});
 		};
 
@@ -74,6 +98,9 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 		return () => {
 			element.removeEventListener("mousemove", handleMouseMove);
 			element.removeEventListener("mouseleave", handleMouseLeave);
+			if (rafId !== null) {
+				cancelAnimationFrame(rafId);
+			}
 		};
 	}, [imageError]);
 
@@ -115,7 +142,6 @@ const PhotoThumbnail = memo(({ image, index, onImageOpen }: PhotoThumbnailProps)
 			onClick={handleClick}
 			aria-label={`Open cat photo ${index + 1}`}
 			disabled={imageError}
-			style={tiltStyle}
 		>
 			{imageError ? (
 				<div className={styles.imageErrorPlaceholder}>
