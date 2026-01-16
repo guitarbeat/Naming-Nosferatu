@@ -13,7 +13,7 @@ import { playSound } from "../../shared/utils/soundManager";
 import { NameManagementContext, useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
 import { useProfile } from "../../core/hooks/useProfile";
 
-import styles from "../tournament.module.css";
+import styles from "./tournament.module.css";
 import { getRandomCatImage } from "./TournamentLogic";
 import { useMagneticPull, useNameManagementCallbacks } from "./TournamentHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";

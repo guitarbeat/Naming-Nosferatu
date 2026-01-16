@@ -25,10 +25,10 @@ import {
 } from "./shared/utils";
 
 // Lazy load route components
-const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
-const GalleryView = lazy(() => import("./features/gallery/GalleryView"));
-const Explore = lazy(() => import("./features/explore/Explore"));
-const Dashboard = lazy(() => import("./features/tournament/TournamentDashboard"));
+import TournamentFlow from "./features/tournament/TournamentFlow";
+import GalleryView from "./features/gallery/GalleryView";
+import Explore from "./features/explore/Explore";
+import Dashboard from "./features/tournament/TournamentDashboard";
 
 /**
  * Root application component with Single Page Architecture (Vertical Scrolling)

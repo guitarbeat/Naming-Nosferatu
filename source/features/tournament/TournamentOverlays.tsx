@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import Button from "../../shared/components/Button";
 import Card from "../../shared/components/Card";
-import styles from "../tournament.module.css";
+import styles from "./tournament.module.css";
 
 export const KeyboardHelp = memo(({ show }: { show: boolean }) => (
     <AnimatePresence>
