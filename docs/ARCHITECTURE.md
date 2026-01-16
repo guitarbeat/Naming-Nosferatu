@@ -14,7 +14,7 @@
 - **Framework**: React 19.2.3 (Actions, `use` hook)
 - **Build Tool**: Vite 7.3.1
 - **State Management**: Zustand (Global) + TanStack Query (Server)
-- **Routing**: React Router DOM v6.30.3 (programmatic navigation, route protection)
+- **Routing**: Single Page Architecture (SPA) with Section Scrolling (removed React Router complexity)
 - **Styling**: CSS Modules + Class Variance Authority (CVA) + Design Tokens
 - **Backend**: Supabase (PostgreSQL, Auth, Realtime)
 - **Domain Logic**: TypeScript with strict invariants

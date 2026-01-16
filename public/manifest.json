@@ -9,9 +9,9 @@
 	"orientation": "portrait-primary",
 	"icons": [
 		{
-			"src": "/assets/images/black-cat-favicon.svg",
-			"sizes": "any",
-			"type": "image/svg+xml",
+			"src": "/assets/images/favicon.png",
+			"sizes": "192x192 512x512",
+			"type": "image/png",
 			"purpose": "any maskable"
 		}
 	]

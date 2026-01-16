@@ -41,14 +41,14 @@ export default defineConfig(({ mode }) => {
 		},
 		resolve: {
 			alias: {
-				"@": resolveFromRoot("src"),
-				"@components": resolveFromRoot("src/shared/components"),
-				"@hooks": resolveFromRoot("src/core/hooks"),
-				"@utils": resolveFromRoot("src/shared/utils"),
-				"@services": resolveFromRoot("src/shared/services"),
-				"@styles": resolveFromRoot("src/shared/styles"),
-				"@features": resolveFromRoot("src/features"),
-				"@core": resolveFromRoot("src/core"),
+				"@": resolveFromRoot("source"),
+				"@components": resolveFromRoot("source/shared/components"),
+				"@hooks": resolveFromRoot("source/core/hooks"),
+				"@utils": resolveFromRoot("source/shared/utils"),
+				"@services": resolveFromRoot("source/shared/services"),
+				"@styles": resolveFromRoot("source/shared/styles"),
+				"@features": resolveFromRoot("source/features"),
+				"@core": resolveFromRoot("source/core"),
 			},
 			// Ensure a single React instance to avoid hooks dispatcher being null
 			dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],

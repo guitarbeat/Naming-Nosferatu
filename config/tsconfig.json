@@ -2,7 +2,11 @@
 	"compilerOptions": {
 		"target": "ES2020",
 		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"lib": [
+			"ES2020",
+			"DOM",
+			"DOM.Iterable"
+		],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -28,25 +32,66 @@
 		"noPropertyAccessFromIndexSignature": false,
 		"exactOptionalPropertyTypes": false,
 		"baseUrl": "..",
-		"types": ["vite/client", "node"],
+		"types": [
+			"vite/client",
+			"node"
+		],
 		"paths": {
-			"@/*": ["src/*"],
-			"@components": ["src/shared/components"],
-			"@components/*": ["src/shared/components/*"],
-			"@hooks": ["src/core/hooks"],
-			"@hooks/*": ["src/core/hooks/*"],
-			"@utils": ["src/shared/utils"],
-			"@utils/*": ["src/shared/utils/*"],
-			"@services": ["src/shared/services"],
-			"@services/*": ["src/shared/services/*"],
-			"@styles": ["src/shared/styles"],
-			"@styles/*": ["src/shared/styles/*"],
-			"@features": ["src/features"],
-			"@features/*": ["src/features/*"],
-			"@core": ["src/core"],
-			"@core/*": ["src/core/*"]
+			"@/*": [
+				"source/*"
+			],
+			"@components": [
+				"source/shared/components"
+			],
+			"@components/*": [
+				"source/shared/components/*"
+			],
+			"@hooks": [
+				"source/core/hooks"
+			],
+			"@hooks/*": [
+				"source/core/hooks/*"
+			],
+			"@utils": [
+				"source/shared/utils"
+			],
+			"@utils/*": [
+				"source/shared/utils/*"
+			],
+			"@services": [
+				"source/shared/services"
+			],
+			"@services/*": [
+				"source/shared/services/*"
+			],
+			"@styles": [
+				"source/shared/styles"
+			],
+			"@styles/*": [
+				"source/shared/styles/*"
+			],
+			"@features": [
+				"source/features"
+			],
+			"@features/*": [
+				"source/features/*"
+			],
+			"@core": [
+				"source/core"
+			],
+			"@core/*": [
+				"source/core/*"
+			]
 		}
 	},
-	"include": ["../src/**/*", "../config/**/*", "../scripts/**/*"],
-	"exclude": ["../node_modules", "../build", "../dist"]
+	"include": [
+		"../source/**/*",
+		"../config/**/*",
+		"../scripts/**/*"
+	],
+	"exclude": [
+		"../node_modules",
+		"../build",
+		"../dist"
+	]
 }
