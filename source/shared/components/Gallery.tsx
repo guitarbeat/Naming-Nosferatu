@@ -1,6 +1,6 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import type React from "react";
-import { compressImageFile, devError, resolveSupabaseClient } from "../utils";
+import { compressImageFile, devError } from "../utils";
 import { imagesAPI } from "../services/supabase/client";
 
 /* =========================================================================
@@ -42,12 +42,9 @@ export function useImageGallery() {
             if (hasFetched) return;
             setIsLoading(true);
             try {
-                const supabaseClient = await resolveSupabaseClient();
                 let supa: string[] = [];
-                if (supabaseClient) {
-                    const list = await imagesAPI.list("");
-                    if (Array.isArray(list)) supa = list;
-                }
+                const list = await imagesAPI.list("");
+                if (Array.isArray(list)) supa = list.map((f) => typeof f === 'string' ? f : f.name);
 
                 let manifest: string[] = [];
                 try {

@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { RefObject } from "react";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { useTournament } from "../../core/hooks/tournamentHooks";
 import { shuffleArray } from "../../shared/utils";
-import type { NameItem, VoteData } from "../../types/components";
+import type { NameItem } from "../../types/components";
 import { useProfile } from "../../core/hooks/useProfile";
 import { useProfileNotifications } from "../../core/hooks/useProfileNotifications";
 import { useAdminStatus } from "../../shared/hooks/useAppHooks";
@@ -266,3 +265,40 @@ export function useTournamentVote({
 
     return { handleVoteWithAnimation };
 }
+
+/* =========================================================================
+   NAME MANAGEMENT CALLBACKS HOOK
+   ========================================================================= */
+
+export function useNameManagementCallbacks(context: any) {
+    const setAllNames = useCallback((names: NameItem[]) => {
+        if (context?.setAllNames) {
+            context.setAllNames(names);
+        }
+    }, [context]);
+
+    const fetchNames = useCallback(async () => {
+        if (context?.fetchNames) {
+            return context.fetchNames();
+        }
+    }, [context]);
+
+    return { setAllNames, fetchNames };
+}
+
+/* =========================================================================
+   TOURNAMENT SETUP HOOKS
+   ========================================================================= */
+
+export function useTournamentSetupHooks() {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<unknown>(null);
+
+    return {
+        isLoading,
+        setIsLoading,
+        error,
+        setError,
+    };
+}
+

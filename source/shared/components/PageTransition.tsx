@@ -23,7 +23,7 @@ const pageVariants = {
 		y: 0,
 		transition: {
 			duration: 0.25,
-			ease: [0.25, 0.46, 0.45, 0.94], // easeOutQuad
+			ease: [0.25, 0.46, 0.45, 0.94] as const, // easeOutQuad
 		},
 	},
 	exit: {
@@ -31,10 +31,10 @@ const pageVariants = {
 		y: -10,
 		transition: {
 			duration: 0.2,
-			ease: [0.25, 0.46, 0.45, 0.94],
+			ease: [0.25, 0.46, 0.45, 0.94] as const,
 		},
 	},
-};
+} as const;
 
 /**
  * PageTransition Component

@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { NameManagementView } from "../../../shared/components/NameManagementView/NameManagementView";
-import { ValidatedInput } from "../../../shared/components/ValidatedInput";
-import { useGreeting } from "../../../shared/hooks/useGreeting";
-import type { NameItem } from "../../../types/components";
-import { useLoginController } from "../../auth/hooks/authHooks";
-import loginStyles from "../../auth/styles/LoginScene.module.css";
+import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
+import { ValidatedInput } from "../../shared/components/ValidatedInput";
+import { useGreeting } from "../../shared/hooks/useGreeting";
+import type { NameItem } from "../../types/components";
+import { useLoginController } from "../auth/hooks/authHooks";
+import loginStyles from "../auth/styles/LoginScene.module.css";
 import { useTournamentManager } from "./TournamentHooks";
 import { PhotoGallery, Lightbox } from "../../shared/components/Gallery";
 import { SwipeableCards } from "./TournamentViews";

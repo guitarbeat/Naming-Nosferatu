@@ -1,15 +1,13 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Plus, Calendar } from "lucide-react";
 import { TabContainer } from "../../shared/components/TabContainer";
 import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
-import Button from "../../../shared/components/Button";
-import Card from "../../../shared/components/Card";
-import Bracket from "../../../shared/components/Bracket";
-import { CollapsibleHeader, CollapsibleContent } from "../../../shared/components/CollapsibleHeader";
-import { devError } from "../../../shared/utils";
-import type { NameItem } from "../../../types/components";
+import Button from "../../shared/components/Button";
+import Card from "../../shared/components/Card";
+import { CollapsibleHeader, CollapsibleContent } from "../../shared/components/CollapsibleHeader";
+import type { NameItem } from "../../types/components";
 import { RankingAdjustment } from "./TournamentViews";
 import styles from "./tournament.module.css";
 

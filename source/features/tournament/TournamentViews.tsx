@@ -15,7 +15,7 @@ import { useProfile } from "../../core/hooks/useProfile";
 import type { NameItem, BracketMatch } from "../../types/components";
 import styles from "../tournament.module.css";
 import { getRandomCatImage } from "./TournamentLogic";
-import { useMagneticPull, useTournamentSetupHooks } from "./TournamentHooks";
+import { useMagneticPull, useTournamentSetupHooks, useNameManagementCallbacks } from "./TournamentHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
 import { TIMING } from "../../core/constants";
 import { ErrorManager } from "../../shared/services/errorManager";
@@ -160,7 +160,7 @@ export const TournamentControls = memo(({ onEndEarly, isTransitioning, isMuted, 
         <LiquidGlass width={1200} height={140} radius={28} scale={-95} className={styles.tournamentControlsGlass} style={{ width: "100%", height: "auto", padding: 0 }}>
             <div className={styles.tournamentControls} role="toolbar">
                 <div className={styles.soundControls}>
-                    <IconButton onClick={audioError ? onRetryAudio : onToggleMute} icon={isMuted ? <VolumeX /> : <Volume2 />} variant={audioError ? "danger" : "ghost"} className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`} />
+                    <IconButton onClick={audioError ? onRetryAudio : onToggleMute} icon={isMuted ? <VolumeX /> : <Volume2 />} variant={audioError ? "danger" : "ghost"} ariaLabel={isMuted ? "Unmute" : "Mute"} className={`${styles.soundToggleButton} ${isMuted ? styles.muted : ""} ${audioError ? styles.error : ""}`} />
                     {!isMuted && (
                         <div className={styles.volumeContainer} onMouseEnter={() => setShowVolume(true)} onMouseLeave={() => setShowVolume(false)}>
                             <div className={`${styles.volumeControls} ${showVolume ? styles.show : ""}`}>
@@ -169,10 +169,10 @@ export const TournamentControls = memo(({ onEndEarly, isTransitioning, isMuted, 
                             </div>
                         </div>
                     )}
-                    {!isMuted && <IconButton onClick={onNextTrack} icon={<Music />} variant="ghost" title={trackInfo?.name || "Next"} className={styles.soundToggleButton} />}
-                    {!isMuted && <IconButton onClick={onToggleShuffle} icon={<span>🔀</span>} variant="ghost" className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`} />}
-                    <IconButton onClick={onToggleCatPictures} icon={<span>🐱</span>} variant="ghost" className={`${styles.soundToggleButton} ${showCatPictures ? styles.muted : ""}`} title="Toggle Cats" />
-                    {audioError && <IconButton onClick={onRetryAudio} icon={<AlertCircle />} variant="danger" title={audioError} className={styles.soundToggleButton} />}
+                    {!isMuted && <IconButton onClick={onNextTrack} icon={<Music />} variant="ghost" title={trackInfo?.name || "Next"} ariaLabel="Next track" className={styles.soundToggleButton} />}
+                    {!isMuted && <IconButton onClick={onToggleShuffle} icon={<span>🔀</span>} variant="ghost" ariaLabel="Toggle shuffle" className={`${styles.soundToggleButton} ${isShuffle ? styles.muted : ""}`} />}
+                    <IconButton onClick={onToggleCatPictures} icon={<span>🐱</span>} variant="ghost" ariaLabel="Toggle cats" className={`${styles.soundToggleButton} ${showCatPictures ? styles.muted : ""}`} title="Toggle Cats" />
+                    {audioError && <IconButton onClick={onRetryAudio} icon={<AlertCircle />} variant="danger" ariaLabel="Retry audio" title={audioError} className={styles.soundToggleButton} />}
                     {!isMuted && trackInfo?.name && <div className={styles.trackInfo}><span className={styles.trackName}>{trackInfo.name}</span></div>}
                 </div>
                 <Button onClick={() => setShowConfirmation(true)} variant="danger" disabled={isTransitioning} className={styles.controlButton}>End Tournament Early</Button>
@@ -193,7 +193,7 @@ export const TournamentControls = memo(({ onEndEarly, isTransitioning, isMuted, 
     );
 });
 
-export const TournamentFooter = memo(({ showBracket, showKeyboardHelp, transformedMatches, onToggleBracket, onToggleKeyboardHelp }: any) => (
+export const TournamentFooter = memo(({ showBracket, transformedMatches, onToggleBracket, onToggleKeyboardHelp }: any) => (
     <>
         <div className="sticky top-0 z-10 flex flex-wrap gap-3 items-center justify-center w-full p-0 m-0">
             <div className="relative w-full max-w-[800px]">
@@ -257,7 +257,8 @@ export const SwipeableCards = memo(({ names, selectedNames, onToggleName, showCa
    ANALYSIS WRAPPERS
    ========================================================================= */
 
-interface AnalysisHandlers {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type _AnalysisHandlersType = {
     handleToggleVisibility: ((nameId: string) => Promise<void>) | undefined;
     handleDelete: ((name: NameItem) => Promise<void>) | undefined;
 }
@@ -275,7 +276,7 @@ export function AnalysisHandlersProvider({
         showSuccess,
         showError,
         fetchNames,
-        setAllNames,
+        setAllNames: (names: NameItem[]) => setAllNames(names),
     });
 
     useEffect(() => {
@@ -288,8 +289,8 @@ export function AnalysisHandlersProvider({
 }
 
 export const createAnalysisDashboardWrapper = (
-    stats: any,
-    selectionStats: any,
+    _stats: unknown,
+    _selectionStats: unknown,
     isAdmin: boolean,
     activeUser: string | undefined,
     onNameHidden: (() => void) | undefined,
@@ -326,7 +327,7 @@ export function AnalysisBulkActionsWrapper(props: any) {
         showSuccess: props.showSuccess,
         showError: props.showError,
         fetchNames,
-        setAllNames,
+        setAllNames: (names: NameItem[]) => setAllNames(names),
     });
 
     const filteredAndSortedNames = useMemo(() => {
@@ -415,7 +416,7 @@ export const RankingAdjustment = memo(({ rankings, onSave, onCancel }: any) => {
                     setHasUnsavedChanges(false);
                     setSaveStatus("success");
                     setTimeout(() => { if (isMountedRef.current) setSaveStatus(""); }, 2000);
-                }).catch(e => {
+                }).catch((e: unknown) => {
                     if (!isMountedRef.current) return;
                     setSaveStatus("error");
                     ErrorManager.handleError(e, "Save Rankings");

@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { calculatePercentile } from "../../../shared/utils";
+import { calculatePercentile } from "../../shared/utils";
 import type {
 	AnalyticsDataItem,
 	ConsolidatedName,
 	HighlightItem,
 	LeaderboardItem,
 	SelectionPopularityItem,
-} from "../types";
+} from "./types";
 
 export interface UseAnalysisDisplayDataProps {
 	leaderboardData: LeaderboardItem[] | null;

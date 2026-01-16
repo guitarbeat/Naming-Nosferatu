@@ -34,7 +34,7 @@ export const coreAPI = {
 				return [];
 			}
 
-			return (data as NameItem[]).map((item) => ({
+			return ((data ?? []) as unknown as NameItem[]).map((item) => ({
 				...item,
 				updated_at: null,
 				user_rating: null,
@@ -63,6 +63,7 @@ export const coreAPI = {
 				}
 
 				const { data, error } = await client
+					.from("cat_name_options")
 					.insert([
 						{
 							name: name.trim(),

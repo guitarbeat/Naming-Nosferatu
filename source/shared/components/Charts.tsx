@@ -358,7 +358,7 @@ export function BumpChart({
 										{isPointHovered && (
 											<g pointerEvents="none">
 												<rect
-													x={x + 10}
+													x={(x ?? 0) + 10}
 													y={y - 30}
 													width={100}
 													height={24}
@@ -368,7 +368,7 @@ export function BumpChart({
 													strokeWidth={1}
 												/>
 												<text
-													x={x + 60}
+													x={(x ?? 0) + 60}
 													y={y - 14}
 													textAnchor="middle"
 													fontSize="12"

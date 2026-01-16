@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { catNamesAPI } from "../../../shared/services/supabase/client";
+import { catNamesAPI } from "../../shared/services/supabase/client";
 
 interface UseAnalysisDataProps {
 	userName?: string | null;
