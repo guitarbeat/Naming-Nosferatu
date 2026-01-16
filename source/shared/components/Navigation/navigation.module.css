@@ -14,29 +14,34 @@
 
 .bottomNav {
   position: fixed;
-  bottom: var(--space-4); /* Floating effect */
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100% - var(--space-8));
-  max-width: 500px; /* Dock width limit */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: none;
   background: var(--glass-bg-strong);
-  border: 1px solid var(--glass-border);
+  border-top: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
   z-index: var(--z-sticky);
-  padding: var(--space-2);
-  border-radius: var(--radius-full); /* Pill shape */
-  box-shadow: var(--shadow-2xl);
-  margin-bottom: env(safe-area-inset-bottom, 0);
+  padding: var(--space-1) 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom, var(--space-2));
   transition: transform var(--duration-normal) var(--ease-standard);
+  display: flex;
+  justify-content: center;
 }
 
 /* Center container */
 .bottomNavContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 0 var(--space-2);
+  max-width: 800px;
+  gap: var(--space-4);
+  padding: 0 var(--space-4);
 }
 
 .bottomNavItem {
@@ -44,24 +49,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px; /* Tighter gap */
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-full);
+  gap: 2px;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--radius-lg);
   background: transparent;
   border: none;
   color: var(--color-text-secondary);
-  font-size: 11px; /* Smaller label */
+  font-size: 12px;
   cursor: pointer;
   transition: all var(--duration-fast);
-  min-width: 56px;
-  height: 56px;
+  min-width: 72px;
+  height: 64px;
   position: relative;
 }
 
 .bottomNavItem:hover:not(.bottomNavAction) {
   color: var(--color-text-primary);
   background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-2px); /* Pop up effect */
+  transform: translateY(-2px);
+  /* Pop up effect */
 }
 
 .bottomNavItem.active {
@@ -78,7 +84,8 @@
 }
 
 .bottomNavIcon {
-  width: 22px; /* Slightly larger icon */
+  width: 22px;
+  /* Slightly larger icon */
   height: 22px;
   stroke-width: 2px;
 }
@@ -118,7 +125,8 @@
   position: fixed;
   top: var(--space-4);
   right: var(--space-4);
-  bottom: var(--space-4); /* Floating panel */
+  bottom: var(--space-4);
+  /* Floating panel */
   width: clamp(280px, 80vw, 360px);
   background: var(--glass-bg-strong);
   border: 1px solid var(--glass-border);
@@ -144,11 +152,9 @@
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-weight: var(--font-weight-bold);
-  background: linear-gradient(
-    135deg,
-    var(--color-neon-cyan),
-    var(--color-hot-pink)
-  );
+  background: linear-gradient(135deg,
+      var(--color-neon-cyan),
+      var(--color-hot-pink));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -229,9 +235,16 @@
     padding: var(--space-1);
   }
 
+  .bottomNavContainer {
+    justify-content: space-evenly;
+    gap: 0;
+    padding: 0;
+  }
+
   .bottomNavItem {
-    min-width: 48px;
-    height: 48px;
+    min-width: 64px;
+    height: 60px;
+    padding: var(--space-1) var(--space-2);
   }
 
   .bottomNavLabel {

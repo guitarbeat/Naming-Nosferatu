@@ -160,7 +160,7 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
             );
           })}
 
-          {/* Suggest Name Action Button */}
+          {/* Action Buttons Integrated into the same flow */}
           {onOpenSuggestName && (
             <button
               className={`${styles.bottomNavItem} ${styles.bottomNavAction}`}
@@ -176,7 +176,6 @@ export function AdaptiveNav({ onOpenSuggestName }: AdaptiveNavProps) {
             </button>
           )}
 
-          {/* Menu Toggle */}
           <button
             className={`${styles.bottomNavItem} ${styles.bottomNavAction}`}
             onClick={() => setIsMobileMenuOpen(true)}
