@@ -26,7 +26,7 @@ import { useImageGallery } from "../../shared/components/Gallery";
 
 export function useTournamentState(
     names: NameItem[] | null | undefined,
-    existingRatings: Record<string, number> | null | undefined,
+    existingRatings: Record<string, number | { rating: number; wins?: number; losses?: number }> | null | undefined,
     onComplete: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void,
     _onVote: (winner: NameItem, loser: NameItem) => void,
 ) {

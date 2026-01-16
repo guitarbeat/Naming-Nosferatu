@@ -8,7 +8,7 @@ import Tournament from "./Tournament";
 import TournamentDashboard from "./TournamentDashboard";
 
 
-export function TournamentFlow() {
+export default function TournamentFlow() {
     const { user, tournament, tournamentActions } = useAppStore();
     const { login } = useUserSession();
     const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup, handleUpdateRatings } = useTournamentHandlers({ userName: user.name, tournamentActions, navigateTo: () => { } });
@@ -22,14 +22,14 @@ export function TournamentFlow() {
                 currentTournamentNames={tournament.names}
                 voteHistory={tournament.voteHistory}
                 onStartNew={handleStartNewTournament}
-                onUpdateRatings={handleUpdateRatings as any}
+                onUpdateRatings={handleUpdateRatings}
                 userName={user.name || ""}
                 mode="personal"
             />
         );
     } else if (tournament.names !== null) {
         key = "active";
-        content = <Tournament names={tournament.names} existingRatings={tournament.ratings as any} onComplete={handleTournamentComplete} userName={user.name} onVote={tournamentActions.addVote} />;
+        content = <Tournament names={tournament.names} existingRatings={tournament.ratings} onComplete={handleTournamentComplete} userName={user.name} onVote={tournamentActions.addVote} />;
     } else {
         key = "setup";
         content = <TournamentSetup onLogin={login} onStart={handleTournamentSetup} userName={user.name} isLoggedIn={user.isLoggedIn} />;

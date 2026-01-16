@@ -25,7 +25,7 @@ import {
 } from "./shared/utils";
 
 // Lazy load route components
-const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow").then(module => ({ default: module.TournamentFlow })));
+const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
 const GalleryView = lazy(() => import("./features/gallery/GalleryView"));
 const Explore = lazy(() => import("./features/explore/Explore"));
 const Dashboard = lazy(() => import("./features/tournament/TournamentDashboard"));
