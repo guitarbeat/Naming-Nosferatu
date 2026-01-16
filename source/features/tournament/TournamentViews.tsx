@@ -1,5 +1,5 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
-import { AlertCircle, ChevronDown, ChevronRight, Keyboard, Music, Volume2, VolumeX, MoreHorizontal } from "lucide-react";
+import { AlertCircle, ChevronDown, ChevronRight, Keyboard, Music, Volume2, VolumeX } from "lucide-react";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, useContext } from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 
@@ -12,17 +12,14 @@ import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { playSound } from "../../shared/utils/soundManager";
 import { NameManagementContext, useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
 import { useProfile } from "../../core/hooks/useProfile";
-import type { NameItem, BracketMatch } from "../../types/components";
+import type { NameItem } from "../../types/components";
 import styles from "../tournament.module.css";
 import { getRandomCatImage } from "./TournamentLogic";
-import { useMagneticPull, useTournamentSetupHooks, useNameManagementCallbacks } from "./TournamentHooks";
+import { useMagneticPull, useNameManagementCallbacks } from "./TournamentHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
-import { TIMING } from "../../core/constants";
+
 import { ErrorManager } from "../../shared/services/errorManager";
 import {
-    devError,
-    devLog,
-    devWarn,
     exportTournamentResultsToCSV,
     extractNameIds,
     isNameHidden,
