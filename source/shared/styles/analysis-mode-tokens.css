@@ -10,67 +10,118 @@
    ANALYSIS MODE TOKENS
    ========================================================================== */
 :root {
-	/* * Accent color - singular, confident choice */
-	--analysis-accent: var(--color-neon-cyan);
-	--analysis-accent-rgb: 47, 243, 224;
-	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 15%, transparent);
-	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 8%, transparent);
-	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 25%, transparent);
+  /* * Accent color - singular, confident choice */
+  --analysis-accent: var(--color-neon-cyan);
+  --analysis-accent-rgb: 47, 243, 224;
+  --analysis-accent-muted: color-mix(
+    in srgb,
+    var(--analysis-accent) 15%,
+    transparent
+  );
+  --analysis-accent-subtle: color-mix(
+    in srgb,
+    var(--analysis-accent) 8%,
+    transparent
+  );
+  --analysis-accent-glow: 0 0 24px
+    color-mix(in srgb, var(--analysis-accent) 25%, transparent);
 
-	/* * Surface hierarchy - layered depth (references main design tokens) */
-	--analysis-surface-0: var(--background-color);
-	--analysis-surface-1: var(--card-background);
-	--analysis-surface-2: var(--surface-elevated, var(--surface-color));
-	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-50) 3%, transparent);
+  /* * Surface hierarchy - layered depth (references main design tokens) */
+  --analysis-surface-0: var(--background-color);
+  --analysis-surface-1: var(--card-background);
+  --analysis-surface-2: var(--surface-elevated, var(--surface-color));
+  --analysis-surface-elevated: color-mix(
+    in srgb,
+    var(--color-neutral-50) 3%,
+    transparent
+  );
 
-	/* * Border system - subtle definition */
-	--analysis-border: color-mix(in srgb, var(--color-neutral-50) 8%, transparent);
-	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 30%, transparent);
-	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 50%, transparent);
+  /* * Border system - subtle definition */
+  --analysis-border: color-mix(
+    in srgb,
+    var(--color-neutral-50) 8%,
+    transparent
+  );
+  --analysis-border-accent: color-mix(
+    in srgb,
+    var(--analysis-accent) 30%,
+    transparent
+  );
+  --analysis-border-hover: color-mix(
+    in srgb,
+    var(--analysis-accent) 50%,
+    transparent
+  );
 
-	/* * Typography - restrained scale (references main design tokens) */
-	--analysis-text-headline: var(--text-2xl);
-	--analysis-text-title: var(--text-lg);
-	--analysis-text-body: var(--text-sm);
-	--analysis-text-caption: var(--text-xs);
-	--analysis-text-mono: var(--font-mono);
+  /* * Typography - restrained scale (references main design tokens) */
+  --analysis-text-headline: var(--text-2xl);
+  --analysis-text-title: var(--text-lg);
+  --analysis-text-body: var(--text-sm);
+  --analysis-text-caption: var(--text-xs);
+  --analysis-text-mono: var(--font-mono);
 
-	/* * Spacing - tight, rhythmic (references main design tokens) */
-	--analysis-gap-xs: var(--space-1);
-	--analysis-gap-sm: var(--space-2);
-	--analysis-gap-md: var(--space-3);
-	--analysis-gap-lg: var(--space-4);
-	--analysis-gap-xl: var(--space-6);
+  /* * Spacing - tight, rhythmic (references main design tokens) */
+  --analysis-gap-xs: var(--space-1);
+  --analysis-gap-sm: var(--space-2);
+  --analysis-gap-md: var(--space-3);
+  --analysis-gap-lg: var(--space-4);
+  --analysis-gap-xl: var(--space-6);
 
-	/* * Motion - purposeful, quick (references main design tokens) */
-	--analysis-ease: cubic-bezier(0.22, 1, 0.36, 1);
-	--analysis-duration-fast: var(--duration-fast);
-	--analysis-duration-normal: var(--duration-normal);
-	--analysis-duration-slow: var(--duration-slow);
+  /* * Motion - purposeful, quick (references main design tokens) */
+  --analysis-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --analysis-duration-fast: var(--duration-fast);
+  --analysis-duration-normal: var(--duration-normal);
+  --analysis-duration-slow: var(--duration-slow);
 
-	/* * Shadows - depth without heaviness (references main design tokens) */
-	--analysis-shadow-sm: var(--shadow-sm);
-	--analysis-shadow-md: var(--shadow-md);
-	--analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
-	--analysis-shadow-glow: var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
+  /* * Shadows - depth without heaviness (references main design tokens) */
+  --analysis-shadow-sm: var(--shadow-sm);
+  --analysis-shadow-md: var(--shadow-md);
+  --analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
+  --analysis-shadow-glow:
+    var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
 
-	/* * Border radius (references main design tokens) */
-	--analysis-radius-sm: var(--radius-sm);
-	--analysis-radius-md: var(--radius-md);
-	--analysis-radius-lg: var(--radius-lg);
-	--analysis-radius-xl: var(--radius-xl);
-	--analysis-radius-full: var(--radius-full);
+  /* * Border radius (references main design tokens) */
+  --analysis-radius-sm: var(--radius-sm);
+  --analysis-radius-md: var(--radius-md);
+  --analysis-radius-lg: var(--radius-lg);
+  --analysis-radius-xl: var(--radius-xl);
+  --analysis-radius-full: var(--radius-full);
 }
 
 /* * Light theme adjustments */
 :root[data-theme="light"] {
-	--analysis-accent: #0891b2;
-	--analysis-accent-rgb: 8, 145, 178;
-	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 12%, transparent);
-	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 6%, transparent);
-	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 15%, transparent);
-	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-900) 2%, transparent);
-	--analysis-border: color-mix(in srgb, var(--color-neutral-900) 8%, transparent);
-	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 25%, transparent);
-	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 40%, transparent);
+  --analysis-accent: #0891b2;
+  --analysis-accent-rgb: 8, 145, 178;
+  --analysis-accent-muted: color-mix(
+    in srgb,
+    var(--analysis-accent) 12%,
+    transparent
+  );
+  --analysis-accent-subtle: color-mix(
+    in srgb,
+    var(--analysis-accent) 6%,
+    transparent
+  );
+  --analysis-accent-glow: 0 0 24px
+    color-mix(in srgb, var(--analysis-accent) 15%, transparent);
+  --analysis-surface-elevated: color-mix(
+    in srgb,
+    var(--color-neutral-900) 2%,
+    transparent
+  );
+  --analysis-border: color-mix(
+    in srgb,
+    var(--color-neutral-900) 8%,
+    transparent
+  );
+  --analysis-border-accent: color-mix(
+    in srgb,
+    var(--analysis-accent) 25%,
+    transparent
+  );
+  --analysis-border-hover: color-mix(
+    in srgb,
+    var(--analysis-accent) 40%,
+    transparent
+  );
 }

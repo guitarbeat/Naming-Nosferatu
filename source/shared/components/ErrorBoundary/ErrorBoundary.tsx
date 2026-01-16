@@ -5,35 +5,35 @@ import { ErrorManager } from "../../services/errorManager";
 import styles from "./ErrorBoundary.module.css";
 
 interface Props {
-	children: ReactNode;
-	fallback?: React.ComponentType<ErrorFallbackProps>;
-	onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
-	context?: string;
+  children: ReactNode;
+  fallback?: React.ComponentType<ErrorFallbackProps>;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+  context?: string;
 }
 
 interface State {
-	hasError: boolean;
-	error: Error | null;
-	errorId: string | null;
+  hasError: boolean;
+  error: Error | null;
+  errorId: string | null;
 }
 
 export interface ErrorFallbackProps {
-	error: Error | null;
-	errorId: string | null;
-	resetError: () => void;
-	context: string;
+  error: Error | null;
+  errorId: string | null;
+  resetError: () => void;
+  context: string;
 }
 
 const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
-	error,
-	errorId,
-	resetError,
-	context,
+  error,
+  errorId,
+  resetError,
+  context,
 }) => {
-	const [copySuccess, setCopySuccess] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
-	const copyErrorToClipboard = async () => {
-		const errorDetails = `
+  const copyErrorToClipboard = async () => {
+    const errorDetails = `
 Error ID: ${errorId}
 Context: ${context}
 Message: ${error?.message || "Unknown error"}
@@ -41,93 +41,95 @@ Stack: ${error?.stack || "No stack trace available"}
 Timestamp: ${new Date().toISOString()}
 		`.trim();
 
-		try {
-			await navigator.clipboard.writeText(errorDetails);
-			setCopySuccess(true);
-			setTimeout(() => setCopySuccess(false), 2000);
-		} catch (err) {
-			console.error("Failed to copy error details:", err);
-		}
-	};
+    try {
+      await navigator.clipboard.writeText(errorDetails);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy error details:", err);
+    }
+  };
 
-	return (
-		<div className={styles.errorBoundary}>
-			<div className={styles.errorContent}>
-				<h2>Something went wrong</h2>
-				<p>We encountered an unexpected error in {context}.</p>
-				<details className={styles.errorDetails}>
-					<summary className={styles.errorSummary}>
-						Error Details
-						<button
-							onClick={copyErrorToClipboard}
-							className={styles.copyButton}
-							title="Copy error details to clipboard"
-							aria-label="Copy error details"
-						>
-							<Copy size={16} />
-							{copySuccess && <span className={styles.copySuccess}>Copied!</span>}
-						</button>
-					</summary>
-					<p>
-						<strong>ID:</strong> {errorId}
-					</p>
-					<p>
-						<strong>Message:</strong> {error?.message}
-					</p>
-					{error?.stack && (
-						<div className={styles.stackTrace}>
-							<strong>Stack Trace:</strong>
-							<pre>{error.stack}</pre>
-						</div>
-					)}
-				</details>
-				<button onClick={resetError} className={styles.retryButton}>
-					Try Again
-				</button>
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.errorBoundary}>
+      <div className={styles.errorContent}>
+        <h2>Something went wrong</h2>
+        <p>We encountered an unexpected error in {context}.</p>
+        <details className={styles.errorDetails}>
+          <summary className={styles.errorSummary}>
+            Error Details
+            <button
+              onClick={copyErrorToClipboard}
+              className={styles.copyButton}
+              title="Copy error details to clipboard"
+              aria-label="Copy error details"
+            >
+              <Copy size={16} />
+              {copySuccess && (
+                <span className={styles.copySuccess}>Copied!</span>
+              )}
+            </button>
+          </summary>
+          <p>
+            <strong>ID:</strong> {errorId}
+          </p>
+          <p>
+            <strong>Message:</strong> {error?.message}
+          </p>
+          {error?.stack && (
+            <div className={styles.stackTrace}>
+              <strong>Stack Trace:</strong>
+              <pre>{error.stack}</pre>
+            </div>
+          )}
+        </details>
+        <button onClick={resetError} className={styles.retryButton}>
+          Try Again
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export class ErrorBoundary extends Component<Props, State> {
-	constructor(props: Props) {
-		super(props);
-		this.state = { hasError: false, error: null, errorId: null };
-	}
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorId: null };
+  }
 
-	static getDerivedStateFromError(error: Error): State {
-		return { hasError: true, error, errorId: null };
-	}
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error, errorId: null };
+  }
 
-	override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-		const { onError, context = "React Component" } = this.props;
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    const { onError, context = "React Component" } = this.props;
 
-		const formattedError = ErrorManager.handleError(error, context, {
-			componentStack: errorInfo.componentStack,
-			isCritical: true,
-		});
+    const formattedError = ErrorManager.handleError(error, context, {
+      componentStack: errorInfo.componentStack,
+      isCritical: true,
+    });
 
-		this.setState({ errorId: formattedError.id });
-		onError?.(error, errorInfo);
-	}
+    this.setState({ errorId: formattedError.id });
+    onError?.(error, errorInfo);
+  }
 
-	resetError = () => {
-		this.setState({ hasError: false, error: null, errorId: null });
-	};
+  resetError = () => {
+    this.setState({ hasError: false, error: null, errorId: null });
+  };
 
-	override render() {
-		if (this.state.hasError) {
-			const FallbackComponent = this.props.fallback || DefaultErrorFallback;
-			return (
-				<FallbackComponent
-					error={this.state.error}
-					errorId={this.state.errorId}
-					resetError={this.resetError}
-					context={this.props.context || "Application"}
-				/>
-			);
-		}
+  override render() {
+    if (this.state.hasError) {
+      const FallbackComponent = this.props.fallback || DefaultErrorFallback;
+      return (
+        <FallbackComponent
+          error={this.state.error}
+          errorId={this.state.errorId}
+          resetError={this.resetError}
+          context={this.props.context || "Application"}
+        />
+      );
+    }
 
-		return this.props.children;
-	}
+    return this.props.children;
+  }
 }

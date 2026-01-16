@@ -6,39 +6,39 @@ import { ThemeProvider } from "./ThemeProvider";
 import { ToastProvider } from "./ToastProvider";
 
 const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: 5 * 60 * 1000, // 5 minutes
-			gcTime: 10 * 60 * 1000, // 10 minutes
-			retry: (failureCount, error: unknown) => {
-				if (
-					error &&
-					typeof error === "object" &&
-					"status" in error &&
-					(error as { status: number }).status === 404
-				) {
-					return false;
-				}
-				return failureCount < 3;
-			},
-		},
-	},
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error: unknown) => {
+        if (
+          error &&
+          typeof error === "object" &&
+          "status" in error &&
+          (error as { status: number }).status === 404
+        ) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+  },
 });
 
 interface AppProvidersProps {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
-	return (
-		<ErrorBoundary context="App Providers">
-			<QueryClientProvider client={queryClient}>
-				<ThemeProvider>
-					<AuthProvider>
-						<ToastProvider>{children}</ToastProvider>
-					</AuthProvider>
-				</ThemeProvider>
-			</QueryClientProvider>
-		</ErrorBoundary>
-	);
+  return (
+    <ErrorBoundary context="App Providers">
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
 };

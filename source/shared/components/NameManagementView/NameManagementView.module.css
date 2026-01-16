@@ -2,284 +2,284 @@
 
 /* * Base container */
 .container {
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	width: 100%;
-	min-height: 100vh;
-	padding: var(--spacing-page-padding);
-	box-sizing: border-box;
-	overflow-x: visible;
-	min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--spacing-page-padding);
+  box-sizing: border-box;
+  overflow-x: visible;
+  min-width: 0;
 }
 
 /* * Section containers - using unified section utilities */
 .headerSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	margin-bottom: var(--spacing-component-gap);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-bottom: var(--spacing-component-gap);
 }
 
 .dashboardSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	margin-bottom: var(--spacing-component-gap);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-bottom: var(--spacing-component-gap);
 }
 
 .filtersSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	margin-bottom: var(--space-2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-bottom: var(--space-2);
 }
 
 .tournamentActions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--spacing-icon-gap);
-	align-items: center;
-	justify-content: flex-start;
-	padding: var(--spacing-component-padding);
-	background: var(--card-background);
-	border-radius: var(--radius-lg);
-	border: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-icon-gap);
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--spacing-component-padding);
+  background: var(--card-background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
 }
 
 .progressSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	padding: var(--space-2) var(--spacing-component-padding);
-	background: var(--card-background);
-	border-radius: var(--radius-md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  padding: var(--space-2) var(--spacing-component-padding);
+  background: var(--card-background);
+  border-radius: var(--radius-md);
 }
 
 .progressBar {
-	width: 100%;
-	height: var(--progress-height);
-	background: var(--surface-secondary);
-	border-radius: var(--radius-full);
-	overflow: hidden;
-	margin-bottom: var(--space-2);
+  width: 100%;
+  height: var(--progress-height);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
 }
 
 .progressFill {
-	height: 100%;
-	background: var(--gradient-primary);
-	transition: width var(--duration-normal) var(--ease-standard);
-	border-radius: var(--radius-full);
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: width var(--duration-normal) var(--ease-standard);
+  border-radius: var(--radius-full);
 }
 
 .progressText {
-	font-size: var(--text-sm);
-	font-weight: var(--font-weight-normal);
-	color: var(--text-secondary);
-	text-align: center;
-	display: block;
-	line-height: var(--leading-normal);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--text-secondary);
+  text-align: center;
+  display: block;
+  line-height: var(--leading-normal);
 }
 
 .progressHint {
-	font-size: var(--text-xs);
-	color: var(--text-tertiary);
-	opacity: 0.8;
-	font-style: italic;
-	font-weight: var(--font-weight-normal);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  opacity: 0.8;
+  font-style: italic;
+  font-weight: var(--font-weight-normal);
 }
 
 .bulkActionsSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	margin-bottom: var(--space-2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-bottom: var(--space-2);
 }
 
 .gridSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	min-height: 0;
-	min-width: 0;
-	gap: var(--spacing-card-gap);
-	overflow-x: visible;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  gap: var(--spacing-card-gap);
+  overflow-x: visible;
 }
 
 .navbarSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
 }
 
 .lightboxSection {
-	/* * Lightbox is typically rendered as a portal */
+  /* * Lightbox is typically rendered as a portal */
 }
 
 .nameSuggestionSection {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: var(--spacing-component-gap);
-	margin-top: var(--space-4);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-component-gap);
+  margin-top: var(--space-4);
 }
 
 /* * Tournament action buttons - using unified button tokens */
 .actionButton {
-	padding: var(--button-padding-y-sm) var(--button-padding-x-sm);
-	font-size: var(--text-sm);
-	font-weight: var(--button-font-weight);
-	color: var(--text-primary);
-	background: var(--surface-secondary);
-	border: var(--button-border-width) solid var(--border-color);
-	border-radius: var(--button-border-radius);
-	cursor: pointer;
-	transition: var(--button-transition);
+  padding: var(--button-padding-y-sm) var(--button-padding-x-sm);
+  font-size: var(--text-sm);
+  font-weight: var(--button-font-weight);
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+  border: var(--button-border-width) solid var(--border-color);
+  border-radius: var(--button-border-radius);
+  cursor: pointer;
+  transition: var(--button-transition);
 }
 
 .actionButton:hover {
-	background: var(--surface-tertiary);
-	border-color: var(--primary-400);
-	transform: var(--button-hover-transform);
+  background: var(--surface-tertiary);
+  border-color: var(--primary-400);
+  transform: var(--button-hover-transform);
 }
 
 .actionButton:active {
-	transform: var(--button-active-transform);
+  transform: var(--button-active-transform);
 }
 
 .actionButton:disabled {
-	opacity: var(--button-disabled-opacity);
-	cursor: not-allowed;
+  opacity: var(--button-disabled-opacity);
+  cursor: not-allowed;
 }
 
 .actionButtonActive {
-	background: var(--primary-500);
-	color: var(--text-on-primary);
-	border-color: var(--primary-500);
+  background: var(--primary-500);
+  color: var(--text-on-primary);
+  border-color: var(--primary-500);
 }
 
 .actionButtonActive:hover {
-	background: var(--primary-600);
-	border-color: var(--primary-600);
-	transform: var(--button-hover-transform);
+  background: var(--primary-600);
+  border-color: var(--primary-600);
+  transform: var(--button-hover-transform);
 }
 
 .startButton {
-	padding: var(--button-padding-y-md) var(--button-padding-x-lg);
-	font-size: var(--text-base);
-	font-weight: var(--button-font-weight);
-	letter-spacing: var(--button-letter-spacing);
-	color: var(--text-on-primary);
-	background: var(--gradient-primary);
-	border: none;
-	border-radius: var(--radius-lg);
-	cursor: pointer;
-	transition: var(--button-transition);
-	box-shadow: var(--shadow-md);
-	white-space: nowrap;
-	flex-shrink: 0;
+  padding: var(--button-padding-y-md) var(--button-padding-x-lg);
+  font-size: var(--text-base);
+  font-weight: var(--button-font-weight);
+  letter-spacing: var(--button-letter-spacing);
+  color: var(--text-on-primary);
+  background: var(--gradient-primary);
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: var(--button-transition);
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .startButton:hover {
-	transform: var(--button-hover-transform);
-	box-shadow: var(--shadow-lg);
+  transform: var(--button-hover-transform);
+  box-shadow: var(--shadow-lg);
 }
 
 .startButton:active {
-	transform: translateY(0);
+  transform: translateY(0);
 }
 
 /* * Error states */
 .errorMessage {
-	margin-top: var(--space-3);
-	font-size: var(--text-base);
-	color: var(--warning-500);
-	text-align: center;
+  margin-top: var(--space-3);
+  font-size: var(--text-base);
+  color: var(--warning-500);
+  text-align: center;
 }
 
 /* * Header styles */
 .header {
-	padding: var(--space-4);
-	background: var(--card-background);
-	border-radius: var(--radius-lg);
-	border: 1px solid var(--border-color);
+  padding: var(--space-4);
+  background: var(--card-background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
 }
 
 .header h2 {
-	margin: 0 0 var(--space-3);
-	font-size: var(--text-xl);
-	font-weight: 600;
-	color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* * Responsive adjustments */
 @media (width <= 768px) {
-	.container {
-		padding: var(--space-2);
-		gap: var(--space-3);
-	}
+  .container {
+    padding: var(--space-2);
+    gap: var(--space-3);
+  }
 
-	.tournamentActions {
-		flex-direction: column;
-		align-items: stretch;
-		gap: var(--space-2);
-		padding: var(--space-3);
-	}
+  .tournamentActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
 
-	.actionButton {
-		width: 100%;
-		min-height: var(--mobile-touch-target-min, 48px);
-		text-align: center;
-		padding: var(--space-3) var(--space-4);
-		font-size: var(--text-base);
-	}
+  .actionButton {
+    width: 100%;
+    min-height: var(--mobile-touch-target-min, 48px);
+    text-align: center;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+  }
 
-	.startButton {
-		width: 100%;
-		min-height: var(--mobile-touch-target-min, 48px);
-		padding: var(--space-3) var(--space-5);
-		font-size: var(--text-base);
-	}
+  .startButton {
+    width: 100%;
+    min-height: var(--mobile-touch-target-min, 48px);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+  }
 
-	.progressSection {
-		padding: var(--space-3);
-	}
+  .progressSection {
+    padding: var(--space-3);
+  }
 
-	.progressText {
-		font-size: var(--text-sm);
-	}
+  .progressText {
+    font-size: var(--text-sm);
+  }
 
-	.bulkActionsSection {
-		margin-bottom: var(--space-3);
-	}
+  .bulkActionsSection {
+    margin-bottom: var(--space-3);
+  }
 }
 
 @media (width <= 480px) {
-	.container {
-		padding: var(--space-2);
-		gap: var(--space-2);
-	}
+  .container {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
 
-	.tournamentActions {
-		padding: var(--space-2);
-		gap: var(--space-2);
-	}
+  .tournamentActions {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
 
-	.actionButton,
-	.startButton {
-		min-height: 52px;
-		padding: var(--space-3) var(--space-4);
-		font-size: var(--text-base);
-	}
+  .actionButton,
+  .startButton {
+    min-height: 52px;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-base);
+  }
 
-	.progressText {
-		font-size: var(--text-xs);
-	}
+  .progressText {
+    font-size: var(--text-xs);
+  }
 }

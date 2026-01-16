@@ -48,223 +48,232 @@ import styles from "./Bracket.module.css";
 
 // Constants use UPPER_CASE keys (intentional for match result constants)
 const MatchResult = {
-	PENDING: "pending",
-	FIRST_WIN: "first",
-	SECOND_WIN: "second",
-	BOTH_ADVANCE: "both",
-	SKIPPED: "skip",
-	NEITHER: "neither",
+  PENDING: "pending",
+  FIRST_WIN: "first",
+  SECOND_WIN: "second",
+  BOTH_ADVANCE: "both",
+  SKIPPED: "skip",
+  NEITHER: "neither",
 } as const;
 
 type MatchStatus = (typeof MatchResult)[keyof typeof MatchResult];
 
 export interface MatchData {
-	id: number;
-	name1: string;
-	name2?: string;
-	winner?: number;
-	round?: number;
-	[key: string]: unknown;
+  id: number;
+  name1: string;
+  name2?: string;
+  winner?: number;
+  round?: number;
+  [key: string]: unknown;
 }
 
-function Match({ match, isLastRound }: { match: MatchData; isLastRound: boolean }) {
-	const status = useMemo((): MatchStatus => {
-		if (!match.winner && match.winner !== 0) {
-			return MatchResult.PENDING;
-		}
-		if (match.winner === -1) {
-			return MatchResult.FIRST_WIN;
-		}
-		if (match.winner === 1) {
-			return MatchResult.SECOND_WIN;
-		}
-		if (match.winner === 0) {
-			return MatchResult.BOTH_ADVANCE;
-		}
-		if (match.winner === 2) {
-			return MatchResult.NEITHER;
-		}
-		return MatchResult.SKIPPED;
-	}, [match.winner]);
+function Match({
+  match,
+  isLastRound,
+}: {
+  match: MatchData;
+  isLastRound: boolean;
+}) {
+  const status = useMemo((): MatchStatus => {
+    if (!match.winner && match.winner !== 0) {
+      return MatchResult.PENDING;
+    }
+    if (match.winner === -1) {
+      return MatchResult.FIRST_WIN;
+    }
+    if (match.winner === 1) {
+      return MatchResult.SECOND_WIN;
+    }
+    if (match.winner === 0) {
+      return MatchResult.BOTH_ADVANCE;
+    }
+    if (match.winner === 2) {
+      return MatchResult.NEITHER;
+    }
+    return MatchResult.SKIPPED;
+  }, [match.winner]);
 
-	const getPlayerClass = (isFirst: boolean) => {
-		if (!match.winner && match.winner !== 0) {
-			return styles.player;
-		}
-		switch (status) {
-			case MatchResult.FIRST_WIN:
-				return isFirst ? styles.playerWinner : styles.playerLoser;
-			case MatchResult.SECOND_WIN:
-				return isFirst ? styles.playerLoser : styles.playerWinner;
-			case MatchResult.BOTH_ADVANCE:
-				return styles.playerBothWin;
-			case MatchResult.NEITHER:
-				return styles.playerNeither;
-			default:
-				return styles.player;
-		}
-	};
+  const getPlayerClass = (isFirst: boolean) => {
+    if (!match.winner && match.winner !== 0) {
+      return styles.player;
+    }
+    switch (status) {
+      case MatchResult.FIRST_WIN:
+        return isFirst ? styles.playerWinner : styles.playerLoser;
+      case MatchResult.SECOND_WIN:
+        return isFirst ? styles.playerLoser : styles.playerWinner;
+      case MatchResult.BOTH_ADVANCE:
+        return styles.playerBothWin;
+      case MatchResult.NEITHER:
+        return styles.playerNeither;
+      default:
+        return styles.player;
+    }
+  };
 
-	const getResultBadge = (isFirst: boolean) => {
-		switch (status) {
-			case MatchResult.FIRST_WIN:
-				return (
-					isFirst && (
-						<span className={styles.winnerBadge} title="Winner">
-							✓
-						</span>
-					)
-				);
-			case MatchResult.SECOND_WIN:
-				return (
-					!isFirst && (
-						<span className={styles.winnerBadge} title="Winner">
-							✓
-						</span>
-					)
-				);
-			case MatchResult.BOTH_ADVANCE:
-				return (
-					<span className={styles.tieBadge} title="Both Liked">
-						♥
-					</span>
-				);
-			case MatchResult.NEITHER:
-				return (
-					<span className={styles.skipBadge} title="Skipped">
-						⊘
-					</span>
-				);
-			default:
-				return null;
-		}
-	};
+  const getResultBadge = (isFirst: boolean) => {
+    switch (status) {
+      case MatchResult.FIRST_WIN:
+        return (
+          isFirst && (
+            <span className={styles.winnerBadge} title="Winner">
+              ✓
+            </span>
+          )
+        );
+      case MatchResult.SECOND_WIN:
+        return (
+          !isFirst && (
+            <span className={styles.winnerBadge} title="Winner">
+              ✓
+            </span>
+          )
+        );
+      case MatchResult.BOTH_ADVANCE:
+        return (
+          <span className={styles.tieBadge} title="Both Liked">
+            ♥
+          </span>
+        );
+      case MatchResult.NEITHER:
+        return (
+          <span className={styles.skipBadge} title="Skipped">
+            ⊘
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
 
-	return (
-		<div className={styles.match}>
-			<div className={styles.matchContent}>
-				<div className={getPlayerClass(true)}>
-					<span className={styles.playerName}>{match.name1}</span>
-					{getResultBadge(true)}
-				</div>
-				<div className={styles.vsDivider}>vs</div>
-				{match.name2 ? (
-					<div className={getPlayerClass(false)}>
-						<span className={styles.playerName}>{match.name2}</span>
-						{getResultBadge(false)}
-					</div>
-				) : (
-					<div className={styles.playerBye}>
-						<span className={styles.byeText}>Bye</span>
-					</div>
-				)}
-			</div>
-			{!isLastRound && <div className={styles.matchConnector} />}
-		</div>
-	);
+  return (
+    <div className={styles.match}>
+      <div className={styles.matchContent}>
+        <div className={getPlayerClass(true)}>
+          <span className={styles.playerName}>{match.name1}</span>
+          {getResultBadge(true)}
+        </div>
+        <div className={styles.vsDivider}>vs</div>
+        {match.name2 ? (
+          <div className={getPlayerClass(false)}>
+            <span className={styles.playerName}>{match.name2}</span>
+            {getResultBadge(false)}
+          </div>
+        ) : (
+          <div className={styles.playerBye}>
+            <span className={styles.byeText}>Bye</span>
+          </div>
+        )}
+      </div>
+      {!isLastRound && <div className={styles.matchConnector} />}
+    </div>
+  );
 }
 
 function Round({
-	matches,
-	roundNumber,
-	isLastRound,
+  matches,
+  roundNumber,
+  isLastRound,
 }: {
-	matches: MatchData[];
-	roundNumber: number;
-	isLastRound: boolean;
+  matches: MatchData[];
+  roundNumber: number;
+  isLastRound: boolean;
 }) {
-	return (
-		<div className={styles.round}>
-			<div className={styles.roundHeader}>
-				<span className={styles.roundTitle}>Round {roundNumber}</span>
-				<span className={styles.roundMatches}>
-					{matches.length} {matches.length === 1 ? "match" : "matches"}
-				</span>
-			</div>
-			<div className={styles.matches}>
-				{matches.map((match) => (
-					<Match key={match.id} match={match} isLastRound={isLastRound} />
-				))}
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.round}>
+      <div className={styles.roundHeader}>
+        <span className={styles.roundTitle}>Round {roundNumber}</span>
+        <span className={styles.roundMatches}>
+          {matches.length} {matches.length === 1 ? "match" : "matches"}
+        </span>
+      </div>
+      <div className={styles.matches}>
+        {matches.map((match) => (
+          <Match key={match.id} match={match} isLastRound={isLastRound} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function Bracket({ matches }: { matches: MatchData[] }) {
-	const tree = useMemo(() => {
-		if (!matches || matches.length === 0) {
-			return [];
-		}
+  const tree = useMemo(() => {
+    if (!matches || matches.length === 0) {
+      return [];
+    }
 
-		// If caller provides explicit round numbers, group by them.
-		const hasExplicitRounds = matches.some((m) => typeof m.round === "number");
-		if (hasExplicitRounds) {
-			const maxRound = Math.max(...matches.map((m) => (typeof m.round === "number" ? m.round : 1)));
-			interface Match {
-				id?: number;
-				round?: number;
-				[key: string]: unknown;
-			}
-			const grouped: Match[][] = Array.from({ length: maxRound }, () => []);
-			matches.forEach((m) => {
-				const idx = Math.max(1, Number(m.round) || 1) - 1;
-				// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays
-				grouped[idx]!.push(m);
-			});
-			// Sort within each round by id if present
-			grouped.forEach((round) => {
-				round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-			});
-			return grouped;
-		}
+    // If caller provides explicit round numbers, group by them.
+    const hasExplicitRounds = matches.some((m) => typeof m.round === "number");
+    if (hasExplicitRounds) {
+      const maxRound = Math.max(
+        ...matches.map((m) => (typeof m.round === "number" ? m.round : 1)),
+      );
+      interface Match {
+        id?: number;
+        round?: number;
+        [key: string]: unknown;
+      }
+      const grouped: Match[][] = Array.from({ length: maxRound }, () => []);
+      matches.forEach((m) => {
+        const idx = Math.max(1, Number(m.round) || 1) - 1;
+        // biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays
+        grouped[idx]!.push(m);
+      });
+      // Sort within each round by id if present
+      grouped.forEach((round) => {
+        round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+      });
+      return grouped;
+    }
 
-		// Fallback: heuristic grouping based on match id using log2
-		interface Match {
-			id?: number;
-			round?: number;
-			[key: string]: unknown;
-		}
-		const totalRounds = matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
-		const rounds: Match[][] = Array(totalRounds)
-			.fill(null)
-			.map(() => []);
+    // Fallback: heuristic grouping based on match id using log2
+    interface Match {
+      id?: number;
+      round?: number;
+      [key: string]: unknown;
+    }
+    const totalRounds =
+      matches.length > 0 ? Math.ceil(Math.log2(matches.length + 1)) : 1;
+    const rounds: Match[][] = Array(totalRounds)
+      .fill(null)
+      .map(() => []);
 
-		matches.forEach((match) => {
-			if (match?.id != null && match.id > 0) {
-				const roundIndex = Math.floor(Math.log2(match.id));
-				if (roundIndex >= 0 && roundIndex < totalRounds) {
-					// biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays and bounds checked
-					rounds[roundIndex]!.push(match);
-				}
-			}
-		});
+    matches.forEach((match) => {
+      if (match?.id != null && match.id > 0) {
+        const roundIndex = Math.floor(Math.log2(match.id));
+        if (roundIndex >= 0 && roundIndex < totalRounds) {
+          // biome-ignore lint/style/noNonNullAssertion: Array initialized with empty arrays and bounds checked
+          rounds[roundIndex]!.push(match);
+        }
+      }
+    });
 
-		// Sort matches within each round
-		rounds.forEach((round) => {
-			round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-		});
+    // Sort matches within each round
+    rounds.forEach((round) => {
+      round.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+    });
 
-		return rounds;
-	}, [matches]);
+    return rounds;
+  }, [matches]);
 
-	if (!matches || matches.length === 0) {
-		return <div className={styles.emptyState}>No matches to display yet</div>;
-	}
+  if (!matches || matches.length === 0) {
+    return <div className={styles.emptyState}>No matches to display yet</div>;
+  }
 
-	return (
-		<div className={styles.container}>
-			<div className={styles.bracket}>
-				{tree.map((roundMatches, index) => (
-					<Round
-						key={index}
-						matches={roundMatches as MatchData[]}
-						roundNumber={index + 1}
-						isLastRound={index === tree.length - 1}
-					/>
-				))}
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.container}>
+      <div className={styles.bracket}>
+        {tree.map((roundMatches, index) => (
+          <Round
+            key={index}
+            matches={roundMatches as MatchData[]}
+            roundNumber={index + 1}
+            isLastRound={index === tree.length - 1}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 Bracket.displayName = "Bracket";

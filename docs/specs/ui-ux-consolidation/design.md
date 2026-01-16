@@ -9,6 +9,7 @@ This design consolidates the UI/UX system for Naming Nosferatu by unifying docum
 ### Current State
 
 The UI/UX system is currently spread across:
+
 - `docs/UI_UX.md` - Visual design guide
 - `docs/ARCHITECTURE.md` - System design with UI sections
 - `.agent/workflows/ui-ux.md` - Development workflow
@@ -43,6 +44,7 @@ The consolidated `docs/UI_UX.md` will follow this structure:
 # UI/UX Design System
 
 ## Table of Contents
+
 1. Design Tokens
 2. Color System
 3. Typography
@@ -54,13 +56,14 @@ The consolidated `docs/UI_UX.md` will follow this structure:
 9. Migration Checklist
 
 ## 1. Design Tokens
+
 [Token reference with usage examples]
 
 ## 2. Color System
+
 [Brand colors, semantic colors, gradients]
 
 ...
-
 ```
 
 ### Token Migration Patterns
@@ -71,12 +74,20 @@ Replace hardcoded values with semantic tokens:
 
 ```css
 /* Before */
-.card { z-index: 1; }
-.modal { z-index: 100; }
+.card {
+  z-index: 1;
+}
+.modal {
+  z-index: 100;
+}
 
 /* After */
-.card { z-index: var(--z-elevate); }
-.modal { z-index: var(--z-modal); }
+.card {
+  z-index: var(--z-elevate);
+}
+.modal {
+  z-index: var(--z-modal);
+}
 ```
 
 #### Spacing Migration
@@ -85,10 +96,16 @@ Replace hardcoded spacing with token references:
 
 ```css
 /* Before */
-.component { padding: 16px; margin: 8px; }
+.component {
+  padding: 16px;
+  margin: 8px;
+}
 
 /* After */
-.component { padding: var(--space-4); margin: var(--space-2); }
+.component {
+  padding: var(--space-4);
+  margin: var(--space-2);
+}
 ```
 
 #### Breakpoint Migration
@@ -170,59 +187,59 @@ No data models are required for this consolidation effort. All changes are to CS
 
 ## Correctness Properties
 
-*A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
 
 ### Property 1: Z-Index Token Compliance
 
-*For any* CSS file in the project, all z-index declarations should use token references (`--z-*`) rather than hardcoded numeric values.
+_For any_ CSS file in the project, all z-index declarations should use token references (`--z-*`) rather than hardcoded numeric values.
 
 **Validates: Requirements 2.1**
 
 ### Property 2: Spacing Token Compliance
 
-*For any* CSS module file, spacing values (padding, margin, gap) should use `--space-*` tokens rather than hardcoded rem/px values.
+_For any_ CSS module file, spacing values (padding, margin, gap) should use `--space-*` tokens rather than hardcoded rem/px values.
 
 **Validates: Requirements 2.4**
 
 ### Property 3: Breakpoint Token Compliance
 
-*For any* media query in the project, breakpoint values should use `var(--breakpoint-*)` rather than hardcoded pixel values like `768px`.
+_For any_ media query in the project, breakpoint values should use `var(--breakpoint-*)` rather than hardcoded pixel values like `768px`.
 
 **Validates: Requirements 2.5**
 
 ### Property 4: Glass Token Theme Parity
 
-*For any* glass-related token (`--glass-*`), the token should be defined in both the light theme and dark theme blocks in `themes.css`.
+_For any_ glass-related token (`--glass-*`), the token should be defined in both the light theme and dark theme blocks in `themes.css`.
 
 **Validates: Requirements 3.3**
 
 ### Property 5: Focus State Token Compliance
 
-*For any* interactive element with a `:focus-visible` or `:focus` pseudo-class, the focus styling should use `--focus-ring` or related focus tokens.
+_For any_ interactive element with a `:focus-visible` or `:focus` pseudo-class, the focus styling should use `--focus-ring` or related focus tokens.
 
 **Validates: Requirements 4.1, 4.4**
 
 ### Property 6: Touch Target Minimum Size
 
-*For any* interactive element (button, link, input), the element should have a minimum touch target of 48px in both height and width.
+_For any_ interactive element (button, link, input), the element should have a minimum touch target of 48px in both height and width.
 
 **Validates: Requirements 4.2**
 
 ### Property 7: Reduced Motion Respect
 
-*For any* animation or transition in the project, there should be a corresponding `prefers-reduced-motion` media query that disables or reduces the animation.
+_For any_ animation or transition in the project, there should be a corresponding `prefers-reduced-motion` media query that disables or reduces the animation.
 
 **Validates: Requirements 4.3**
 
 ### Property 8: CSS Module Co-location
 
-*For any* React component file, if the component uses CSS modules, the `.module.css` file should exist in the same directory as the component.
+_For any_ React component file, if the component uses CSS modules, the `.module.css` file should exist in the same directory as the component.
 
 **Validates: Requirements 5.2**
 
 ### Property 9: Theme Transition Token Usage
 
-*For any* CSS rule that applies theme-related transitions (background-color, color, border-color on theme change), the transition should use `var(--transition-theme)`.
+_For any_ CSS rule that applies theme-related transitions (background-color, color, border-color on theme change), the transition should use `var(--transition-theme)`.
 
 **Validates: Requirements 6.4**
 
@@ -231,6 +248,7 @@ No data models are required for this consolidation effort. All changes are to CS
 ### Migration Errors
 
 When migrating hardcoded values to tokens:
+
 1. If a value doesn't map to an existing token, create a new semantic token
 2. Document any new tokens in the design tokens file with clear comments
 3. Ensure backward compatibility by keeping deprecated values temporarily
@@ -249,6 +267,7 @@ background: var(--glass-bg, rgba(15, 23, 42, 0.55));
 ### Unit Tests
 
 Unit tests will verify specific migration examples:
+
 - Verify `SetupCards.module.css` uses responsive card width tokens
 - Verify `SetupSwipe.module.css` uses color tokens
 - Verify `useMasonryLayout` hook uses design tokens
@@ -261,20 +280,24 @@ Property-based tests will use static analysis to verify token compliance across 
 **Testing Framework**: Custom Node.js scripts using regex patterns and AST parsing
 
 **Test Configuration**:
+
 - Minimum 100 iterations per property test
 - Each test tagged with: **Feature: ui-ux-consolidation, Property {N}: {description}**
 
 **Property Test Approach**:
 
 For CSS compliance properties (1-3, 5, 7, 9):
+
 - Parse all CSS/SCSS files in `src/`
 - Extract relevant declarations (z-index, spacing, breakpoints, focus, transitions)
 - Verify each declaration uses token references
 
 For structural properties (4, 8):
+
 - Enumerate all relevant files
 - Verify required patterns exist
 
 For accessibility properties (6):
+
 - Parse interactive element styles
 - Verify minimum size constraints

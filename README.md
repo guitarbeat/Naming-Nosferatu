@@ -2,7 +2,7 @@
 
 **The endless tournament for discovering your cat's true name.**
 
-*Compare. Eliminate. Obsess.* Find the perfect name through relentless, scientific ranking. Every decision matters. Every comparison reveals truth.
+_Compare. Eliminate. Obsess._ Find the perfect name through relentless, scientific ranking. Every decision matters. Every comparison reveals truth.
 
 [![Live Demo](https://img.shields.io/badge/Experience-Name_Nosferatu-8B5CF6.svg)](https://name-nosferatu.vercel.app)
 [![Bundle Size](https://img.shields.io/badge/Bundle-391KB_48%25_Optimized-10B981.svg)](https://name-nosferatu.vercel.app)
@@ -18,6 +18,7 @@
 Each tournament uses the same mathematical ranking system that ranks chess grandmasters. Your preferences update instantly. The names demand your full attention.
 
 ### The Obsession Loop
+
 1. **Choose names** from curated collections or add your own
 2. **Compare relentlessly** - two names at a time, no shortcuts
 3. **Watch rankings evolve** in real-time as you vote
@@ -29,12 +30,14 @@ Each tournament uses the same mathematical ranking system that ranks chess grand
 ## 🚀 Quick Start
 
 ### For Cat Parents
+
 1. **Visit** [name-nosferatu.vercel.app](https://name-nosferatu.vercel.app)
 2. **Get a suggestion** or choose from collections
 3. **Start comparing** - let the tournament begin
 4. **Save your history** and preferences
 
 ### For Developers
+
 ```bash
 git clone https://github.com/guitarbeat/name-nosferatu.git
 cd name-nosferatu
@@ -47,6 +50,7 @@ pnpm dev
 ## 🎮 How It Works
 
 ### The Name Lifecycle
+
 Every name in the system follows a deliberate path:
 
 - **🆕 Candidate**: New names awaiting consideration
@@ -56,12 +60,14 @@ Every name in the system follows a deliberate path:
 - **📚 Archive**: Preserved for future reference
 
 ### Tournament Science
+
 - **Elo Rating System**: Same algorithm that ranks chess players
 - **Real-time Updates**: Rankings change instantly as you vote
 - **Vote Provenance**: Every decision is tracked and analyzed
 - **Deterministic Results**: Same inputs always produce same winner
 
 ### Progressive Complexity
+
 - **Quick Mode**: Simple tournament for immediate results
 - **Expert Mode**: Advanced seeding, themes, and constraints
 - **Decision Limits**: Built-in breaks to prevent fatigue
@@ -73,6 +79,7 @@ Every name in the system follows a deliberate path:
 **Built for obsession, optimized for performance.**
 
 ### Core Stack
+
 - **React 19** + **TypeScript** - Modern, type-safe frontend
 - **Vite** - Lightning-fast builds and HMR
 - **Supabase** - PostgreSQL backend with real-time subscriptions
@@ -81,6 +88,7 @@ Every name in the system follows a deliberate path:
 - **Tailwind CSS** - Utility-first styling
 
 ### Performance Obsessed
+
 - **391KB bundle** (48% optimized)
 - **<500ms cold load** times
 - **Route-based code splitting**
@@ -88,6 +96,7 @@ Every name in the system follows a deliberate path:
 - **Edge deployment** on Vercel
 
 ### Quality Standards
+
 - **95%+ test coverage** on critical paths
 - **Zero security vulnerabilities**
 - **WCAG AA accessibility**
@@ -99,11 +108,12 @@ Every name in the system follows a deliberate path:
 ## 📊 The Data Model
 
 ### Core Entities
+
 ```typescript
 interface Name {
   id: string;
   name: string;
-  status: 'candidate' | 'intake' | 'tournament' | 'eliminated' | 'archived';
+  status: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
   addedBy: string;
   addedAt: Date;
   categories: string[];
@@ -127,6 +137,7 @@ interface Vote {
 ```
 
 ### Key Invariants
+
 - Every tournament produces exactly one winner
 - Vote totals always match ballot count
 - Names can only move forward in lifecycle
@@ -137,13 +148,16 @@ interface Vote {
 ## 🎨 Design Philosophy
 
 ### "Deliberate Obsession"
+
 Every interaction reinforces the theme of careful, relentless comparison:
+
 - **Animations feel measured**, not frantic
 - **Copy acknowledges the obsession**: "The names demand another comparison..."
 - **Progress feels meaningful**, not gamified
 - **Decisions carry weight** and consequence
 
 ### Progressive Disclosure
+
 - **Simple by default** - quick tournaments for immediate gratification
 - **Powerful when needed** - expert controls for serious name hunters
 - **Context-aware help** - guidance appears when you're stuck
@@ -154,12 +168,14 @@ Every interaction reinforces the theme of careful, relentless comparison:
 ## 🔬 Analytics & Insights
 
 ### Personal Discovery
+
 - **Voting patterns**: What themes do you consistently prefer?
 - **Name survival rates**: Which names keep winning for you?
 - **Decision confidence**: How quickly do you make choices?
 - **Category preferences**: Science fiction? Mythology? Pure vibes?
 
 ### System Intelligence
+
 - **Global trends**: What names are winning worldwide?
 - **Category performance**: Which themes dominate tournaments?
 - **Name provenance**: Track contribution and survival statistics
@@ -169,18 +185,21 @@ Every interaction reinforces the theme of careful, relentless comparison:
 ## 🚧 Roadmap v2.0
 
 ### Phase 1: Name Lifecycle Foundation (Q1 2026)
+
 - ✅ Explicit lifecycle states and transitions
 - ✅ Provenance tracking for all names
 - ✅ Progressive disclosure UI
 - ✅ Tournament invariants enforcement
 
 ### Phase 2: Obsession & Depth (Q2 2026)
+
 - 🔄 Advanced tournament modes and seeding
 - 🔄 Thematic coherence in copy and visuals
 - 🔄 Personal analytics dashboard
 - 🔄 Theme-based constraints and categories
 
 ### Phase 3: Scale & Polish (Q3 2026)
+
 - 📋 Route-level bundle optimization
 - 📋 95% test coverage on invariants
 - 📋 Performance monitoring dashboard
@@ -236,6 +255,7 @@ src/
 ### Schema Optimizations (January 2026)
 
 **Removed Columns:**
+
 - ❌ `cat_app_users.tournament_data` (migrated to `tournament_selections` table)
 - ❌ `cat_app_users.user_role` (migrated to `user_roles` table)
 - ❌ `cat_name_options.user_name` (names are global, not user-specific)
@@ -243,10 +263,12 @@ src/
 - ❌ `cat_name_options.total_tournaments` (calculated dynamically)
 
 **Removed Objects:**
+
 - ❌ `leaderboard_stats` materialized view (replaced with indexed queries)
 - ❌ `increment_selection` RPC function (no-op, unused)
 
 **Added Constraints:**
+
 - ✅ Unique constraint on `cat_name_ratings(user_name, name_id)` - prevents duplicate ratings
 - ✅ Check constraint on `cat_name_options.name` - length 1-100 characters
 - ✅ Check constraint on ratings - valid range validation
@@ -255,12 +277,14 @@ src/
 ### Key Indexes
 
 **Primary Indexes:**
+
 - `cat_app_users_pkey` - Primary key on user_name (573 scans)
 - `cat_name_options_pkey` - Primary key on id (653 scans)
 - `cat_name_ratings_pkey` - Composite primary key on (user_name, name_id) (125 scans)
 - `tournament_selections_pkey` - Primary key on id (3,125 scans)
 
 **Performance Indexes:**
+
 - `idx_ratings_leaderboard` - Covering index for leaderboard queries
 - `idx_ratings_user_stats` - Covering index for user statistics
 - `idx_tournament_user_recent` - Index for tournament history
@@ -268,6 +292,7 @@ src/
 - `idx_site_settings_key` - Index for settings retrieval
 
 ### Performance Metrics
+
 - **Query Speed**: 99%+ improvement over targets
 - **Tournament Queries**: 0.110ms (target: <100ms) ✅
 - **Leaderboard Queries**: 0.519ms (target: <150ms) ✅
@@ -339,6 +364,7 @@ pnpm run test
 ```
 
 ### Coverage Goals
+
 - **Unit Tests**: 95%+ for utilities and services
 - **Component Tests**: 90%+ for React components
 - **Integration Tests**: 85%+ for feature workflows
@@ -373,6 +399,7 @@ SUPABASE_ANON_KEY=your-anon-key
 ```
 
 **Getting Your Supabase Credentials:**
+
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
 2. Select your project
 3. Navigate to Settings > API
@@ -426,6 +453,7 @@ The application should now connect to Supabase successfully. Start the developme
 ### Alternative: Use Local Supabase
 
 If you prefer to run Supabase locally:
+
 1. Install Supabase CLI: `pnpm add -g supabase` (or use `npm install -g supabase` if preferred)
 2. Start local Supabase: `supabase start`
 3. Use the local URLs provided by the CLI
@@ -448,17 +476,17 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 
 ### Available Scripts
 
-| Command           | Description                                       |
-| ----------------- | ------------------------------------------------- |
-| `pnpm run dev`    | Start Vite dev server with HMR                    |
-| `pnpm run build`  | Vite production build                             |
-| `pnpm run preview`| Preview the built app via Vite                    |
-| `pnpm run test`   | Run Vitest suite                                  |
-| `pnpm run lint`   | Biome linter + TypeScript checks (src + scripts) |
-| `pnpm run lint:fix`| Auto-fix linting issues (src + scripts)          |
-| `pnpm run format` | Format code with Biome (src + scripts)           |
-| `pnpm run clean`  | Remove dist and Vite cache (`node_modules/.vite`) |
-| `pnpm run check`  | Run all checks (lint, types, limits, deps)        |
+| Command             | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `pnpm run dev`      | Start Vite dev server with HMR                    |
+| `pnpm run build`    | Vite production build                             |
+| `pnpm run preview`  | Preview the built app via Vite                    |
+| `pnpm run test`     | Run Vitest suite                                  |
+| `pnpm run lint`     | Biome linter + TypeScript checks (src + scripts)  |
+| `pnpm run lint:fix` | Auto-fix linting issues (src + scripts)           |
+| `pnpm run format`   | Format code with Biome (src + scripts)            |
+| `pnpm run clean`    | Remove dist and Vite cache (`node_modules/.vite`) |
+| `pnpm run check`    | Run all checks (lint, types, limits, deps)        |
 
 ### Code Quality
 
@@ -479,12 +507,14 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ## 🎨 Design System
 
 ### Theme Support
+
 - **Dark Mode**: Automatic detection with manual toggle
 - **Light Mode**: Clean, readable interface
 - **Accessibility**: WCAG AA compliant contrast ratios
 - **Responsive**: Mobile-first design approach
 
 ### Typography Scale
+
 ```css
 --text-xs: 0.75rem; /* 12px */
 --text-sm: 0.875rem; /* 14px */
@@ -495,6 +525,7 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ```
 
 ### Color Palette
+
 ```css
 --primary-gold: #e8bf76; /* Brand accent */
 --primary-blue: #3498db; /* Primary actions */
@@ -507,12 +538,14 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ## 📱 Mobile Experience
 
 ### Touch Optimizations
+
 - **48px minimum touch targets** (accessibility standard)
 - **Swipe gestures** for image galleries and navigation
 - **Safe areas** support for modern devices
 - **Battery optimization** with reduced animations
 
 ### Responsive Breakpoints
+
 ```css
 --mobile: 480px;
 --tablet: 768px;
@@ -525,11 +558,13 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ## 🔒 Security
 
 ### Authentication
+
 - **Supabase Auth**: Secure user authentication
 - **Row Level Security**: Database-level access control
 - **Session Management**: Secure token handling
 
 ### Data Protection
+
 - **HTTPS Only**: All communications encrypted
 - **Input Validation**: Client and server-side sanitization
 - **Error Handling**: No sensitive data in error messages
@@ -542,21 +577,25 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ### Common Issues
 
 #### Application Won't Load
+
 1. **Check Browser Console** for JavaScript errors
 2. **Hard Refresh** (Ctrl+F5) to clear cache
 3. **Verify Environment Variables** are set correctly
 
 #### Database Connection Issues
+
 1. **Check Supabase Dashboard** for service status
 2. **Verify API Keys** are correctly configured
 3. **Check Network Connectivity** and firewall settings
 
 #### Environment Issues
+
 1. **Make sure the `.env.local` file is in the project root directory**
 2. **Ensure there are no extra spaces or quotes around the environment variable values**
 3. **Verify your Supabase project is active and accessible**
 
 #### Performance Issues
+
 1. **Clear Browser Cache** completely
 2. **Disable Browser Extensions** temporarily
 3. **Check Network Speed** (minimum 1Mbps recommended)
@@ -564,6 +603,7 @@ pnpm exec vercel --prod   # Deploy to Vercel (requires Vercel CLI login)
 ### Development Issues
 
 #### Hot Module Replacement Not Working
+
 ```bash
 # Kill and restart dev server
 Ctrl+C
@@ -571,6 +611,7 @@ pnpm run dev
 ```
 
 #### Tests Failing
+
 ```bash
 # Clear node_modules and reinstall
 rm -rf node_modules
@@ -594,18 +635,21 @@ pnpm run test -- --clearCache
 ## 🤝 Contributing
 
 ### Development Philosophy
+
 - **Feature-driven development** - each PR delivers user value
 - **Test invariants, not implementations** - behaviors that survive refactors
 - **Progressive enhancement** - simple first, powerful when needed
 - **Documentation as code** - keep docs in sync with implementation
 
 ### Code Standards
+
 - **TypeScript strict mode** - no `any` types in application code
 - **Functional components** with descriptive variable names
 - **Single responsibility** - functions do one thing well
 - **Comprehensive testing** - especially around tournament logic
 
 ### Development Setup
+
 1. Fork the repository
 2. Clone your fork: `git clone <your-fork-url>`
 3. Install dependencies: `pnpm install`
@@ -613,6 +657,7 @@ pnpm run test -- --clearCache
 5. Create feature branch: `git checkout -b feature/amazing-feature`
 
 ### Pull Request Process
+
 1. Update documentation for new features
 2. Add tests for new functionality
 3. Ensure all tests pass
@@ -639,6 +684,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Current Version: 1.0.2
 
 ### Health Metrics
+
 - ✅ **Build Status**: Passing
 - ✅ **Test Coverage**: 85%
 - ✅ **Security Scan**: Clean
@@ -646,6 +692,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ✅ **Accessibility**: WCAG AA
 
 ### Upcoming Features
+
 - [ ] Enhanced mobile experience
 - [ ] Advanced tournament customization
 - [ ] Third-party integrations
@@ -655,4 +702,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with obsessive attention to the art of naming cats.** 🐱
 
-*Every great cat deserves a name discovered through relentless comparison.*
+_Every great cat deserves a name discovered through relentless comparison._

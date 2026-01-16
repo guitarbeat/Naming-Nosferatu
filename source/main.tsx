@@ -9,15 +9,17 @@ import "@styles/index.css";
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-	throw new Error("Root element #root not found");
+  throw new Error("Root element #root not found");
 }
 
 ReactDOM.createRoot(rootElement).render(
-	<React.StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-				<App />
-			</BrowserRouter>
-		</QueryClientProvider>
-	</React.StrictMode>,
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>,
 );

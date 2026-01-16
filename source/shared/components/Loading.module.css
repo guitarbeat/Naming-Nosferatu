@@ -1,93 +1,98 @@
 /* Loading Component Styles */
 
 .loadingContainer {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-3);
-	align-items: center;
-	justify-content: center;
-	padding: var(--spacing-component-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-component-padding);
 }
 
 .loadingGif {
-	max-width: var(--size-avatar-xl);
-	max-height: var(--size-avatar-xl);
-	width: auto;
-	height: auto;
-	object-fit: contain;
-	image-rendering: auto;
+  max-width: var(--size-avatar-xl);
+  max-height: var(--size-avatar-xl);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
 }
 
 .small {
-	font-size: var(--text-lg);
+  font-size: var(--text-lg);
 }
 
 .medium {
-	font-size: var(--text-2xl);
+  font-size: var(--text-2xl);
 }
 
 .large {
-	font-size: var(--text-4xl);
+  font-size: var(--text-4xl);
 }
 
 .loadingText {
-	margin: 0;
-	font-size: var(--text-sm);
-	font-weight: var(--font-weight-medium);
-	color: var(--text-color, var(--text-secondary));
-	text-align: center;
-	line-height: var(--leading-normal);
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color, var(--text-secondary));
+  text-align: center;
+  line-height: var(--leading-normal);
 }
 
 .srOnly {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	white-space: nowrap;
-	border-width: 0;
-	clip-path: inset(50%);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border-width: 0;
+  clip-path: inset(50%);
 }
 
 .loadingOverlay {
-	position: fixed;
-	inset: 0;
-	z-index: var(--z-modal);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--glass-bg-strong);
-	backdrop-filter: blur(var(--glass-blur));
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(var(--glass-blur));
 }
 
 .skeleton {
-	position: relative;
-	min-height: var(--space-4);
-	overflow: hidden;
-	background: var(--skeleton-bg, var(--color-neutral-100));
-	border-radius: var(--radius-sm);
+  position: relative;
+  min-height: var(--space-4);
+  overflow: hidden;
+  background: var(--skeleton-bg, var(--color-neutral-100));
+  border-radius: var(--radius-sm);
 }
 
 .skeletonShimmer {
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 40%), transparent);
-	animation: shimmer var(--duration-slower) infinite;
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--foreground) / 40%),
+    transparent
+  );
+  animation: shimmer var(--duration-slower) infinite;
 }
 
 @keyframes shimmer {
-	0% {
-		left: -100%;
-	}
+  0% {
+    left: -100%;
+  }
 
-	100% {
-		left: 100%;
-	}
+  100% {
+    left: 100%;
+  }
 }
 
 /* ============================================
@@ -95,182 +100,182 @@
    ============================================ */
 
 .cardSkeleton {
-	position: relative;
-	border-radius: var(--radius-card);
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
-	min-height: var(--card-width-responsive);
-	background: var(--glass-bg-light);
-	backdrop-filter: blur(var(--glass-blur));
-	border: 1px solid var(--glass-border);
-	transition: var(--transition-base);
+  position: relative;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--card-width-responsive);
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  transition: var(--transition-base);
 }
 
 .cardSkeletonBackground {
-	position: absolute;
-	inset: 0;
-	background: var(--glass-bg);
-	backdrop-filter: blur(var(--glass-blur));
+  position: absolute;
+  inset: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
 }
 
 .cardSkeletonShimmer {
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 100%;
-	height: 100%;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		color-mix(in srgb, var(--color-neon-cyan) 15%, transparent),
-		transparent
-	);
-	animation: shimmer var(--duration-slow) infinite;
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-neon-cyan) 15%, transparent),
+    transparent
+  );
+  animation: shimmer var(--duration-slow) infinite;
 }
 
 /* Card content structure */
 .cardSkeletonContent {
-	position: relative;
-	z-index: 1;
-	padding: var(--card-padding-md);
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-3);
-	flex: 1;
+  position: relative;
+  z-index: 1;
+  padding: var(--card-padding-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
 }
 
 /* Avatar/Icon placeholder */
 .cardSkeletonAvatar {
-	width: var(--size-avatar-md);
-	height: var(--size-avatar-md);
-	border-radius: var(--radius-full);
-	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
-	flex-shrink: 0;
+  width: var(--size-avatar-md);
+  height: var(--size-avatar-md);
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  flex-shrink: 0;
 }
 
 /* Text content placeholders */
 .cardSkeletonText {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-	flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 1;
 }
 
 .cardSkeletonTitle {
-	height: var(--space-4);
-	border-radius: var(--radius-xs);
-	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
+  height: var(--space-4);
+  border-radius: var(--radius-xs);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
 }
 
 .cardSkeletonSubtitle {
-	height: var(--space-3);
-	width: 70%;
-	border-radius: var(--radius-xs);
-	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
-	opacity: 0.7;
+  height: var(--space-3);
+  width: 70%;
+  border-radius: var(--radius-xs);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  opacity: 0.7;
 }
 
 /* Action placeholder */
 .cardSkeletonAction {
-	width: var(--space-8);
-	height: var(--space-6);
-	border-radius: var(--radius-md);
-	background: var(--glass-bg);
-	border: 1px solid var(--glass-border);
-	align-self: flex-end;
+  width: var(--space-8);
+  height: var(--space-6);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  align-self: flex-end;
 }
 
 /* Card skeleton variants */
 .name-card {
-	min-height: var(--card-width-responsive);
+  min-height: var(--card-width-responsive);
 }
 
 .elevated-card {
-	min-height: var(--card-width-responsive);
-	box-shadow: var(--shadow-md);
+  min-height: var(--card-width-responsive);
+  box-shadow: var(--shadow-md);
 }
 
 .mosaic-card {
-	min-height: var(--card-width-responsive);
-	border-radius: var(--radius-xs);
-	margin: var(--card-gap);
+  min-height: var(--card-width-responsive);
+  border-radius: var(--radius-xs);
+  margin: var(--card-gap);
 }
 
 .cardSkeletonFooter {
-	position: relative;
-	z-index: 1;
-	padding: var(--space-2) var(--card-padding-md) var(--card-padding-md);
-	font-size: var(--text-xs);
-	color: var(--text-secondary);
-	text-align: center;
-	opacity: 0.7;
+  position: relative;
+  z-index: 1;
+  padding: var(--space-2) var(--card-padding-md) var(--card-padding-md);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  text-align: center;
+  opacity: 0.7;
 }
 
 /* Responsive card skeletons */
 @media (width <= 640px) {
-	.cardSkeleton {
-		min-height: var(--card-width-xs);
-	}
+  .cardSkeleton {
+    min-height: var(--card-width-xs);
+  }
 
-	.cardSkeletonContent {
-		padding: var(--card-padding-sm);
-		gap: var(--space-2);
-	}
+  .cardSkeletonContent {
+    padding: var(--card-padding-sm);
+    gap: var(--space-2);
+  }
 
-	.cardSkeletonAvatar {
-		width: var(--size-avatar-sm);
-		height: var(--size-avatar-sm);
-	}
+  .cardSkeletonAvatar {
+    width: var(--size-avatar-sm);
+    height: var(--size-avatar-sm);
+  }
 
-	.cardSkeletonTitle {
-		height: var(--space-3);
-	}
+  .cardSkeletonTitle {
+    height: var(--space-3);
+  }
 
-	.cardSkeletonSubtitle {
-		height: var(--space-2);
-		width: 80%;
-	}
+  .cardSkeletonSubtitle {
+    height: var(--space-2);
+    width: 80%;
+  }
 
-	.cardSkeletonAction {
-		width: var(--space-6);
-		height: var(--space-4);
-	}
+  .cardSkeletonAction {
+    width: var(--space-6);
+    height: var(--space-4);
+  }
 }
 
 .loadingPlaceholder {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--space-8);
-	font-size: var(--text-sm);
-	color: var(--text-color, var(--text-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  font-size: var(--text-sm);
+  color: var(--text-color, var(--text-secondary));
 }
 
 @media (width <= 640px) {
-	.loadingContainer {
-		gap: var(--space-2);
-		padding: var(--space-3);
-	}
+  .loadingContainer {
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
 
-	.spinner {
-		font-size: var(--text-xl);
-	}
+  .spinner {
+    font-size: var(--text-xl);
+  }
 
-	.large {
-		font-size: var(--text-3xl);
-	}
+  .large {
+    font-size: var(--text-3xl);
+  }
 
-	.loadingText {
-		font-size: var(--text-xs);
-	}
+  .loadingText {
+    font-size: var(--text-xs);
+  }
 
-	.loadingOverlay {
-		padding: var(--space-4);
-	}
+  .loadingOverlay {
+    padding: var(--space-4);
+  }
 }
 
 /* ============================================
@@ -279,531 +284,531 @@
 
 /* Base Container */
 .catSpinner {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: var(--space-3);
-	padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
 
 .spinnerContainer {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Size Variants */
 .small {
-	--spinner-size: 32px;
-	font-size: var(--text-sm);
+  --spinner-size: 32px;
+  font-size: var(--text-sm);
 }
 
 .medium {
-	--spinner-size: 48px;
-	font-size: var(--text-base);
+  --spinner-size: 48px;
+  font-size: var(--text-base);
 }
 
 .large {
-	--spinner-size: 64px;
-	font-size: var(--text-lg);
+  --spinner-size: 64px;
+  font-size: var(--text-lg);
 }
 
 /* Color Themes */
 .neon {
-	--cat-primary: var(--color-neon-cyan);
-	--cat-secondary: var(--color-hot-pink);
-	--cat-accent: var(--color-fire-red);
+  --cat-primary: var(--color-neon-cyan);
+  --cat-secondary: var(--color-hot-pink);
+  --cat-accent: var(--color-fire-red);
 }
 
 .pastel {
-	--cat-primary: color-mix(in srgb, var(--color-hot-pink) 30%, white);
-	--cat-secondary: color-mix(in srgb, var(--color-neon-cyan) 30%, white);
-	--cat-accent: color-mix(in srgb, var(--color-info) 30%, white);
+  --cat-primary: color-mix(in srgb, var(--color-hot-pink) 30%, white);
+  --cat-secondary: color-mix(in srgb, var(--color-neon-cyan) 30%, white);
+  --cat-accent: color-mix(in srgb, var(--color-info) 30%, white);
 }
 
 .warm {
-	--cat-primary: color-mix(in srgb, var(--color-mimosa) 80%, white);
-	--cat-secondary: color-mix(in srgb, var(--color-hot-pink) 20%, white);
-	--cat-accent: var(--color-gold);
+  --cat-primary: color-mix(in srgb, var(--color-mimosa) 80%, white);
+  --cat-secondary: color-mix(in srgb, var(--color-hot-pink) 20%, white);
+  --cat-accent: var(--color-gold);
 }
 
 /* PAW VARIANT */
 .pawContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .paw {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	animation: pawWave 2s ease-in-out infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: pawWave 2s ease-in-out infinite;
 }
 
 .pawPad {
-	position: absolute;
-	width: calc(var(--spinner-size) * 0.25);
-	height: calc(var(--spinner-size) * 0.25);
-	background: var(--cat-primary);
-	border-radius: 50%;
-	animation: pawPadPulse 2s ease-in-out infinite;
+  position: absolute;
+  width: calc(var(--spinner-size) * 0.25);
+  height: calc(var(--spinner-size) * 0.25);
+  background: var(--cat-primary);
+  border-radius: 50%;
+  animation: pawPadPulse 2s ease-in-out infinite;
 }
 
 .pawPad:nth-child(1) {
-	top: 10%;
-	left: 10%;
-	animation-delay: 0s;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
 }
 
 .pawPad:nth-child(2) {
-	top: 10%;
-	right: 10%;
-	animation-delay: 0.5s;
+  top: 10%;
+  right: 10%;
+  animation-delay: 0.5s;
 }
 
 .pawPad:nth-child(3) {
-	bottom: 10%;
-	left: 10%;
-	animation-delay: 1s;
+  bottom: 10%;
+  left: 10%;
+  animation-delay: 1s;
 }
 
 .pawPad:nth-child(4) {
-	bottom: 10%;
-	right: 10%;
-	animation-delay: 1.5s;
+  bottom: 10%;
+  right: 10%;
+  animation-delay: 1.5s;
 }
 
 @keyframes pawWave {
-	0%,
-	100% {
-		transform: rotate(0deg) scale(1);
-	}
-	50% {
-		transform: rotate(5deg) scale(1.05);
-	}
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(5deg) scale(1.05);
+  }
 }
 
 @keyframes pawPadPulse {
-	0%,
-	100% {
-		transform: scale(1);
-		opacity: 0.7;
-	}
-	50% {
-		transform: scale(1.2);
-		opacity: 1;
-	}
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 
 /* TAIL VARIANT */
 .tailContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .tail {
-	position: relative;
-	width: calc(var(--spinner-size) * 0.8);
-	height: calc(var(--spinner-size) * 0.1);
-	background: var(--cat-primary);
-	border-radius: calc(var(--spinner-size) * 0.05);
-	transform-origin: left center;
-	animation: tailSwish 1.5s ease-in-out infinite;
+  position: relative;
+  width: calc(var(--spinner-size) * 0.8);
+  height: calc(var(--spinner-size) * 0.1);
+  background: var(--cat-primary);
+  border-radius: calc(var(--spinner-size) * 0.05);
+  transform-origin: left center;
+  animation: tailSwish 1.5s ease-in-out infinite;
 }
 
 .tailSegment {
-	position: absolute;
-	height: 100%;
-	background: inherit;
-	border-radius: inherit;
-	animation: tailSegmentWave 1.5s ease-in-out infinite;
+  position: absolute;
+  height: 100%;
+  background: inherit;
+  border-radius: inherit;
+  animation: tailSegmentWave 1.5s ease-in-out infinite;
 }
 
 .tailSegment:nth-child(1) {
-	width: 20%;
-	left: 0%;
-	animation-delay: 0s;
+  width: 20%;
+  left: 0%;
+  animation-delay: 0s;
 }
 
 .tailSegment:nth-child(2) {
-	width: 18%;
-	left: 20%;
-	animation-delay: 0.1s;
+  width: 18%;
+  left: 20%;
+  animation-delay: 0.1s;
 }
 
 .tailSegment:nth-child(3) {
-	width: 16%;
-	left: 38%;
-	animation-delay: 0.2s;
+  width: 16%;
+  left: 38%;
+  animation-delay: 0.2s;
 }
 
 .tailSegment:nth-child(4) {
-	width: 14%;
-	left: 54%;
-	animation-delay: 0.3s;
+  width: 14%;
+  left: 54%;
+  animation-delay: 0.3s;
 }
 
 .tailSegment:nth-child(5) {
-	width: 12%;
-	left: 68%;
-	animation-delay: 0.4s;
+  width: 12%;
+  left: 68%;
+  animation-delay: 0.4s;
 }
 
 @keyframes tailSwish {
-	0%,
-	100% {
-		transform: rotate(0deg);
-	}
-	25% {
-		transform: rotate(15deg);
-	}
-	75% {
-		transform: rotate(-15deg);
-	}
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  75% {
+    transform: rotate(-15deg);
+  }
 }
 
 @keyframes tailSegmentWave {
-	0%,
-	100% {
-		transform: scaleY(1);
-	}
-	50% {
-		transform: scaleY(1.3);
-	}
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.3);
+  }
 }
 
 /* BOUNCE VARIANT */
 .bounceContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .bouncingCat {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	animation: catBounce 1.2s ease-in-out infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: catBounce 1.2s ease-in-out infinite;
 }
 
 .catBody {
-	position: absolute;
-	bottom: 20%;
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(var(--spinner-size) * 0.6);
-	height: calc(var(--spinner-size) * 0.4);
-	background: var(--cat-primary);
-	border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--spinner-size) * 0.6);
+  height: calc(var(--spinner-size) * 0.4);
+  background: var(--cat-primary);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 }
 
 .catHead {
-	position: absolute;
-	top: 15%;
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(var(--spinner-size) * 0.4);
-	height: calc(var(--spinner-size) * 0.35);
-	background: var(--cat-primary);
-	border-radius: 50%;
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--spinner-size) * 0.4);
+  height: calc(var(--spinner-size) * 0.35);
+  background: var(--cat-primary);
+  border-radius: 50%;
 }
 
 @keyframes catBounce {
-	0%,
-	100% {
-		transform: translateY(0) scale(1);
-	}
-	50% {
-		transform: translateY(-20%) scale(1.1);
-	}
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20%) scale(1.1);
+  }
 }
 
 /* SPIN VARIANT */
 .spinContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .spinningCat {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	background: var(--cat-primary);
-	border-radius: 50%;
-	animation: catSpin 1s linear infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: var(--cat-primary);
+  border-radius: 50%;
+  animation: catSpin 1s linear infinite;
 }
 
 .withFace .spinContainer .spinningCat {
-	background: transparent;
+  background: transparent;
 }
 
 .ear {
-	position: absolute;
-	top: -15%;
-	width: calc(var(--spinner-size) * 0.15);
-	height: calc(var(--spinner-size) * 0.25);
-	background: var(--cat-primary);
-	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  position: absolute;
+  top: -15%;
+  width: calc(var(--spinner-size) * 0.15);
+  height: calc(var(--spinner-size) * 0.25);
+  background: var(--cat-primary);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 .ear:first-child {
-	left: 25%;
+  left: 25%;
 }
 
 .ear:last-child {
-	right: 25%;
+  right: 25%;
 }
 
 .eye {
-	position: absolute;
-	top: 35%;
-	width: calc(var(--spinner-size) * 0.08);
-	height: calc(var(--spinner-size) * 0.08);
-	background: var(--cat-secondary);
-	border-radius: 50%;
+  position: absolute;
+  top: 35%;
+  width: calc(var(--spinner-size) * 0.08);
+  height: calc(var(--spinner-size) * 0.08);
+  background: var(--cat-secondary);
+  border-radius: 50%;
 }
 
 .eye:first-child {
-	left: 35%;
+  left: 35%;
 }
 
 .eye:last-child {
-	right: 35%;
+  right: 35%;
 }
 
 .nose {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 0;
-	height: 0;
-	border-left: calc(var(--spinner-size) * 0.04) solid transparent;
-	border-right: calc(var(--spinner-size) * 0.04) solid transparent;
-	border-top: calc(var(--spinner-size) * 0.06) solid var(--cat-accent);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--spinner-size) * 0.04) solid transparent;
+  border-right: calc(var(--spinner-size) * 0.04) solid transparent;
+  border-top: calc(var(--spinner-size) * 0.06) solid var(--cat-accent);
 }
 
 @keyframes catSpin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* HEARTBEAT VARIANT */
 .heartbeatContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .heartCat {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	animation: heartBeat 1.4s ease-in-out infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: heartBeat 1.4s ease-in-out infinite;
 }
 
 .heartShape {
-	position: relative;
-	width: calc(var(--spinner-size) * 0.8);
-	height: calc(var(--spinner-size) * 0.7);
-	background: var(--cat-secondary);
-	transform: rotate(-45deg);
-	margin: 0 auto;
+  position: relative;
+  width: calc(var(--spinner-size) * 0.8);
+  height: calc(var(--spinner-size) * 0.7);
+  background: var(--cat-secondary);
+  transform: rotate(-45deg);
+  margin: 0 auto;
 }
 
 .heartShape::before,
 .heartShape::after {
-	content: "";
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background: inherit;
-	border-radius: 50%;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: inherit;
+  border-radius: 50%;
 }
 
 .heartShape::before {
-	top: -50%;
-	left: 0;
+  top: -50%;
+  left: 0;
 }
 
 .heartShape::after {
-	top: 0;
-	left: 50%;
+  top: 0;
+  left: 50%;
 }
 
 .heartEyes {
-	position: absolute;
-	top: 35%;
-	left: 50%;
-	transform: translateX(-50%);
-	display: flex;
-	gap: calc(var(--spinner-size) * 0.1);
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: calc(var(--spinner-size) * 0.1);
 }
 
 .heartEyes::before,
 .heartEyes::after {
-	content: "";
-	width: calc(var(--spinner-size) * 0.08);
-	height: calc(var(--spinner-size) * 0.08);
-	background: var(--cat-primary);
-	border-radius: 50%;
+  content: "";
+  width: calc(var(--spinner-size) * 0.08);
+  height: calc(var(--spinner-size) * 0.08);
+  background: var(--cat-primary);
+  border-radius: 50%;
 }
 
 @keyframes heartBeat {
-	0%,
-	50%,
-	100% {
-		transform: scale(1);
-	}
-	25% {
-		transform: scale(1.1);
-	}
-	75% {
-		transform: scale(0.95);
-	}
+  0%,
+  50%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(0.95);
+  }
 }
 
 /* ORBIT VARIANT */
 .orbitContainer {
-	position: relative;
-	width: var(--spinner-size);
-	height: var(--spinner-size);
+  position: relative;
+  width: var(--spinner-size);
+  height: var(--spinner-size);
 }
 
 .orbitRing {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	border: 3px solid var(--cat-primary);
-	border-radius: 50%;
-	animation: orbitRing 2s linear infinite;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--cat-primary);
+  border-radius: 50%;
+  animation: orbitRing 2s linear infinite;
 }
 
 .orbitCat {
-	position: absolute;
-	top: -6px;
-	left: 50%;
-	transform: translateX(-50%);
-	width: calc(var(--spinner-size) * 0.15);
-	height: calc(var(--spinner-size) * 0.15);
-	background: var(--cat-secondary);
-	border-radius: 50%;
-	animation: orbitCat 2s linear infinite;
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(var(--spinner-size) * 0.15);
+  height: calc(var(--spinner-size) * 0.15);
+  background: var(--cat-secondary);
+  border-radius: 50%;
+  animation: orbitCat 2s linear infinite;
 }
 
 @keyframes orbitRing {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes orbitCat {
-	from {
-		transform: translateX(-50%) rotate(0deg);
-	}
-	to {
-		transform: translateX(-50%) rotate(-360deg);
-	}
+  from {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateX(-50%) rotate(-360deg);
+  }
 }
 
 /* Common Cat Face */
 .catFace {
-	position: absolute;
-	bottom: calc(var(--spinner-size) * -0.3);
-	left: 50%;
-	transform: translateX(-50%);
-	font-size: calc(var(--spinner-size) * 0.8);
-	line-height: 1;
-	animation: catFaceBlink 3s ease-in-out infinite;
+  position: absolute;
+  bottom: calc(var(--spinner-size) * -0.3);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: calc(var(--spinner-size) * 0.8);
+  line-height: 1;
+  animation: catFaceBlink 3s ease-in-out infinite;
 }
 
 .catFace::before {
-	content: "🐱";
+  content: "🐱";
 }
 
 @keyframes catFaceBlink {
-	0%,
-	85%,
-	90%,
-	95%,
-	100% {
-		opacity: 1;
-		transform: translateX(-50%) scale(1);
-	}
-	87%,
-	92%,
-	97% {
-		opacity: 0.3;
-		transform: translateX(-50%) scale(0.9);
-	}
+  0%,
+  85%,
+  90%,
+  95%,
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  87%,
+  92%,
+  97% {
+    opacity: 0.3;
+    transform: translateX(-50%) scale(0.9);
+  }
 }
 
 /* Spinner Text */
 .spinnerText {
-	margin: 0;
-	font-size: var(--text-sm);
-	font-weight: var(--font-weight-medium);
-	color: var(--text-secondary);
-	text-align: center;
-	line-height: var(--leading-normal);
-	animation: textPulse 2s ease-in-out infinite;
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: var(--leading-normal);
+  animation: textPulse 2s ease-in-out infinite;
 }
 
 @keyframes textPulse {
-	0%,
-	100% {
-		opacity: 0.7;
-	}
-	50% {
-		opacity: 1;
-	}
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* Cat Spinner Responsive */
 @media (width <= 640px) {
-	.catSpinner {
-		padding: var(--space-3);
-		gap: var(--space-2);
-	}
+  .catSpinner {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
 
-	.small {
-		--spinner-size: 24px;
-	}
+  .small {
+    --spinner-size: 24px;
+  }
 
-	.medium {
-		--spinner-size: 36px;
-	}
+  .medium {
+    --spinner-size: 36px;
+  }
 
-	.large {
-		--spinner-size: 48px;
-	}
+  .large {
+    --spinner-size: 48px;
+  }
 }
 
 /* Cat Spinner Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-	.paw,
-	.pawPad,
-	.tail,
-	.tailSegment,
-	.bouncingCat,
-	.spinningCat,
-	.heartCat,
-	.orbitRing,
-	.orbitCat,
-	.catFace,
-	.spinnerText {
-		animation: none;
-	}
+  .paw,
+  .pawPad,
+  .tail,
+  .tailSegment,
+  .bouncingCat,
+  .spinningCat,
+  .heartCat,
+  .orbitRing,
+  .orbitCat,
+  .catFace,
+  .spinnerText {
+    animation: none;
+  }
 }

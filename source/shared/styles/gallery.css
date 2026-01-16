@@ -3,270 +3,271 @@
    ========================================================================== */
 
 .lightboxOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1001;
-    /* var(--z-modal) + 1 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px) saturate(150%);
-    animation: lightboxFadeIn 0.5s ease-out;
-    pointer-events: auto;
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  /* var(--z-modal) + 1 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px) saturate(150%);
+  animation: lightboxFadeIn 0.5s ease-out;
+  pointer-events: auto;
 }
 
 @keyframes lightboxFadeIn {
-    from {
-        opacity: 0;
-        backdrop-filter: blur(0) saturate(100%);
-    }
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0) saturate(100%);
+  }
 
-    to {
-        opacity: 1;
-        backdrop-filter: blur(8px) saturate(150%);
-    }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px) saturate(150%);
+  }
 }
 
 .lightboxContent {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    max-width: 95vw;
-    max-height: 95vh;
-    animation: lightboxScaleIn 0.5s ease-out-expo;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 95vw;
+  max-height: 95vh;
+  animation: lightboxScaleIn 0.5s ease-out-expo;
 }
 
 @keyframes lightboxScaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .lightboxImageWrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 90vw;
-    max-height: 85vh;
-    animation: imageSlideIn 0.3s ease-out;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 90vw;
+  max-height: 85vh;
+  animation: imageSlideIn 0.3s ease-out;
 }
 
 @keyframes imageSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .lightboxImage {
-    max-width: 90vw;
-    max-height: 85vh;
-    object-fit: contain;
-    border-radius: 12px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 .lightboxNav {
-    position: absolute;
-    top: 50%;
-    z-index: 1002;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    padding: 0;
-    font-size: 24px;
-    line-height: 1;
-    color: white;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transform: translateY(-50%);
-    transition: all 0.2s ease;
-    text-align: center;
+  position: absolute;
+  top: 50%;
+  z-index: 1002;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  color: white;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: all 0.2s ease;
+  text-align: center;
 }
 
 .lightboxNav:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-50%) scale(1.15);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-50%) scale(1.15);
 }
 
 .lightboxNav.left {
-    left: 16px;
+  left: 16px;
 }
 
 .lightboxNav.right {
-    right: 16px;
+  right: 16px;
 }
 
 .lightboxClose {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 1002;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    font-size: 24px;
-    line-height: 1;
-    color: white;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    transition: all 0.2s ease;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1002;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  line-height: 1;
+  color: white;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.2s ease;
 }
 
 .lightboxClose:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
 }
 
 .lightboxCounter {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    padding: 4px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    border-radius: 20px;
-    transform: translateX(-50%);
-    z-index: 1003;
-    white-space: nowrap;
-    pointer-events: none;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  padding: 4px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  transform: translateX(-50%);
+  z-index: 1003;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* Photo Gallery Grid */
 .photoGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
-    width: 100%;
-    margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+  perspective: 1000px;
 }
 
 .photoThumbnail {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 12px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    padding: 0;
-    cursor: pointer;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  padding: 0;
+  cursor: pointer;
 }
 
 .photoThumbnail:hover {
-    transform: scale(1.02) translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-500);
-    z-index: 10;
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-500);
+  z-index: 10;
 }
 
 .photoThumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .photoOverlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .photoThumbnail:hover .photoOverlay {
-    opacity: 1;
-    pointer-events: auto;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .photoGallery {
-    width: 100%;
+  width: 100%;
 }
 
 .photoGalleryHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .photoGalleryTitle {
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 700;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
 }
 
 .photoUploadButton {
-    display: inline-flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 16px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    background: var(--primary-600);
-    border: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: var(--primary-600);
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .photoUploadButton:hover {
-    background: var(--primary-700);
-    transform: translateY(-1px);
+  background: var(--primary-700);
+  transform: translateY(-1px);
 }
 
 .showAllPhotosButton {
-    display: block;
-    width: 100%;
-    margin-top: 12px;
-    padding: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    color: inherit;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .showAllPhotosButton:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--primary-500);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-500);
 }

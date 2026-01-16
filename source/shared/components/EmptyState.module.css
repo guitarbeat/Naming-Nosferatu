@@ -1,54 +1,54 @@
 .container {
-	background: var(--glass-bg-light);
-	backdrop-filter: blur(var(--glass-blur));
-	-webkit-backdrop-filter: blur(var(--glass-blur));
-	border: 1px solid var(--glass-border);
-	border-radius: var(--radius-lg);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	padding: var(--space-12) var(--space-6);
-	text-align: center;
-	border-style: dashed;
-	color: var(--text-secondary);
-	min-height: var(--space-50); /* Keep fixed for consistent empty state */
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  border-style: dashed;
+  color: var(--text-secondary);
+  min-height: var(--space-50); /* Keep fixed for consistent empty state */
 }
 
 .iconWrapper {
-	font-size: var(--text-3xl);
-	margin-bottom: var(--space-4);
-	opacity: 0.8;
-	animation: float var(--duration-slower) var(--ease-in-out-expo) infinite;
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+  opacity: 0.8;
+  animation: float var(--duration-slower) var(--ease-in-out-expo) infinite;
 }
 
 .title {
-	font-size: var(--text-xl);
-	font-weight: var(--font-weight-semibold);
-	color: var(--text-primary);
-	margin-bottom: var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
 }
 
 .description {
-	font-size: var(--text-base);
-	max-width: var(--max-width-content); /* Keep fixed for readability */
-	margin-bottom: var(--space-6);
-	line-height: var(--leading-normal);
+  font-size: var(--text-base);
+  max-width: var(--max-width-content); /* Keep fixed for readability */
+  margin-bottom: var(--space-6);
+  line-height: var(--leading-normal);
 }
 
 .actions {
-	display: flex;
-	gap: var(--space-4);
+  display: flex;
+  gap: var(--space-4);
 }
 
 @keyframes float {
-	0% {
-		transform: translateY(0px);
-	}
-	50% {
-		transform: translateY(calc(var(--space-1) * -1));
-	}
-	100% {
-		transform: translateY(0px);
-	}
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(calc(var(--space-1) * -1));
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }

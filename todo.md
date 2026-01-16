@@ -3,6 +3,7 @@
 ## Completed Cleanup ✅
 
 ### SPA Conversion (Latest)
+
 - [x] Removed React Router - now pure state-based view switching
 - [x] Created ViewRenderer with Framer Motion transitions
 - [x] Updated navigation to use Zustand store actions
@@ -14,18 +15,22 @@
 ## Completed Cleanup ✅
 
 ### CSS Consolidation
+
 - [x] Merged tournament CSS modules into `tournament.module.css`
 - [x] Merged analytics CSS modules into `analytics.module.css`
 - [x] Merged explore CSS modules into `explore.module.css`
 
 ### Hook Consolidation
+
 - [x] Removed deprecated `useTournamentController` hook
 - [x] Consolidated navigation into single `AdaptiveNav.tsx`
 
 ### Security
+
 - [x] Marked all security findings as intentionally ignored (prototype app)
 
 ### Structure Cleanup
+
 - [x] Moved `nameService.ts` to `src/shared/services/supabase/modules/`
 - [x] Moved profile hooks to `src/core/hooks/`
 - [x] Deleted empty `src/features/names/` folder
@@ -67,15 +72,18 @@ src/
 ## Optional Future Improvements
 
 ### CSS (Low Priority)
+
 - [ ] Merge `analysis-mode-*.css` files into single `analysis-mode.css`
 - [ ] Merge `form-controls.css` + `components-primitives.css` into `components.css`
 
 ### Code Quality (Low Priority)
+
 - [ ] Add more comprehensive error boundaries
 - [ ] Add loading skeletons for better UX
 - [ ] Consider lazy loading for route components
 
 ### Features (Nice to Have)
+
 - [ ] Add name suggestion favorites
 - [ ] Add tournament history view
 - [ ] Add export results feature

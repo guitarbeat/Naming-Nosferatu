@@ -1,420 +1,475 @@
 .container {
-	position: relative;
-	width: 100%;
-	padding: var(--space-4);
-	overflow-x: auto;
+  position: relative;
+  width: 100%;
+  padding: var(--space-4);
+  overflow-x: auto;
 
-	/* Prevent horizontal bounce on macOS */
-	overscroll-behavior-x: none;
-	background: var(--analysis-surface, transparent);
+  /* Prevent horizontal bounce on macOS */
+  overscroll-behavior-x: none;
+  background: var(--analysis-surface, transparent);
 
-	/* * Improved bracket grid background - more subtle */
-	background-image:
-		linear-gradient(var(--analysis-surface, transparent), var(--analysis-surface, transparent)),
-		repeating-linear-gradient(
-			to right,
-			var(--analysis-border, color-mix(in srgb, var(--border-color) 40%, transparent)) 0,
-			var(--analysis-border, color-mix(in srgb, var(--border-color) 40%, transparent)) 1px,
-			transparent 1px,
-			transparent 50px
-		),
-		repeating-linear-gradient(
-			to bottom,
-			var(--analysis-border, color-mix(in srgb, var(--border-color) 40%, transparent)) 0,
-			var(--analysis-border, color-mix(in srgb, var(--border-color) 40%, transparent)) 1px,
-			transparent 1px,
-			transparent 30px
-		);
-	border-radius: var(--radius-lg);
-	background-blend-mode: normal, multiply, multiply;
-	-webkit-overflow-scrolling: touch;
-	border: var(--card-border-width) solid
-		var(--analysis-border, color-mix(in srgb, var(--border-color) 60%, transparent));
+  /* * Improved bracket grid background - more subtle */
+  background-image:
+    linear-gradient(
+      var(--analysis-surface, transparent),
+      var(--analysis-surface, transparent)
+    ),
+    repeating-linear-gradient(
+      to right,
+      var(
+          --analysis-border,
+          color-mix(in srgb, var(--border-color) 40%, transparent)
+        )
+        0,
+      var(
+          --analysis-border,
+          color-mix(in srgb, var(--border-color) 40%, transparent)
+        )
+        1px,
+      transparent 1px,
+      transparent 50px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(
+          --analysis-border,
+          color-mix(in srgb, var(--border-color) 40%, transparent)
+        )
+        0,
+      var(
+          --analysis-border,
+          color-mix(in srgb, var(--border-color) 40%, transparent)
+        )
+        1px,
+      transparent 1px,
+      transparent 30px
+    );
+  border-radius: var(--radius-lg);
+  background-blend-mode: normal, multiply, multiply;
+  -webkit-overflow-scrolling: touch;
+  border: var(--card-border-width) solid
+    var(
+      --analysis-border,
+      color-mix(in srgb, var(--border-color) 60%, transparent)
+    );
 }
 
 /* Scroll edge hints */
 .container::before,
 .container::after {
-	position: sticky;
-	top: 0;
-	bottom: 0;
-	z-index: var(--z-elevate);
-	display: block;
-	width: 28px;
-	pointer-events: none;
-	content: "";
+  position: sticky;
+  top: 0;
+  bottom: 0;
+  z-index: var(--z-elevate);
+  display: block;
+  width: 28px;
+  pointer-events: none;
+  content: "";
 }
 
 .container::before {
-	left: 0;
-	background: linear-gradient(90deg, var(--overlay-light), transparent);
-	border-top-left-radius: inherit;
-	border-bottom-left-radius: inherit;
+  left: 0;
+  background: linear-gradient(90deg, var(--overlay-light), transparent);
+  border-top-left-radius: inherit;
+  border-bottom-left-radius: inherit;
 }
 
 .container::after {
-	margin-left: auto;
-	background: linear-gradient(270deg, var(--overlay-light), transparent);
-	border-top-right-radius: inherit;
-	border-bottom-right-radius: inherit;
+  margin-left: auto;
+  background: linear-gradient(270deg, var(--overlay-light), transparent);
+  border-top-right-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 
 .bracket {
-	position: relative;
-	display: flex;
-	gap: var(--space-8);
-	align-items: flex-start;
-	justify-content: flex-start;
-	min-width: min-content;
-	padding: var(--space-4);
+  position: relative;
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: min-content;
+  padding: var(--space-4);
 
-	/* Improve scrolling */
-	scroll-snap-type: x proximity;
-	transform-origin: center;
-	backface-visibility: hidden;
+  /* Improve scrolling */
+  scroll-snap-type: x proximity;
+  transform-origin: center;
+  backface-visibility: hidden;
 }
 
 .round {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	min-width: 240px;
-	scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  scroll-snap-align: start;
 }
 
 @media (max-width: 768px) {
-	.round {
-		min-width: 180px;
-	}
+  .round {
+    min-width: 180px;
+  }
 }
 
 /* First round specific styles */
 .round:first-child {
-	margin-right: var(--space-4);
+  margin-right: var(--space-4);
 }
 
 .roundHeader {
-	position: sticky;
-	top: 0;
-	z-index: var(--z-10);
-	padding: var(--space-3) var(--space-4);
-	margin-bottom: var(--space-4);
-	text-align: center;
-	background: var(
-		--analysis-surface-elevated,
-		color-mix(in srgb, var(--surface-color) 80%, transparent)
-	);
-	border: var(--card-border-width) solid
-		var(--analysis-border, color-mix(in srgb, var(--border-color) 60%, transparent));
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-sm);
-	backdrop-filter: blur(var(--glass-blur)) saturate(120%);
-	transition: var(--transition-base);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-10);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  text-align: center;
+  background: var(
+    --analysis-surface-elevated,
+    color-mix(in srgb, var(--surface-color) 80%, transparent)
+  );
+  border: var(--card-border-width) solid
+    var(
+      --analysis-border,
+      color-mix(in srgb, var(--border-color) 60%, transparent)
+    );
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+  transition: var(--transition-base);
 }
 
 .roundHeader:hover {
-	background: var(
-		--analysis-surface-elevated,
-		color-mix(in srgb, var(--color-neutral-50) 12%, transparent)
-	);
-	border-color: var(--analysis-border, color-mix(in srgb, var(--border-color) 80%, transparent));
+  background: var(
+    --analysis-surface-elevated,
+    color-mix(in srgb, var(--color-neutral-50) 12%, transparent)
+  );
+  border-color: var(
+    --analysis-border,
+    color-mix(in srgb, var(--border-color) 80%, transparent)
+  );
 }
 
 .roundTitle {
-	display: block;
-	margin-bottom: var(--space-1);
-	font-size: var(--text-sm);
-	font-weight: 700;
-	color: var(--analysis-accent, var(--color-neon-cyan));
-	text-transform: uppercase;
-	letter-spacing: var(--tracking-wide);
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--analysis-accent, var(--color-neon-cyan));
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
 }
 
 .roundMatches {
-	font-size: var(--text-sm);
-	color: var(--text-secondary);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 .matches {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 /* Progressive spacing between matches */
 .round:nth-child(2) .matches {
-	gap: var(--space-8);
-	padding-top: var(--space-4);
+  gap: var(--space-8);
+  padding-top: var(--space-4);
 }
 
 .round:nth-child(3) .matches {
-	gap: var(--space-16);
-	padding-top: var(--space-8);
+  gap: var(--space-16);
+  padding-top: var(--space-8);
 }
 
 .match {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-	animation: slideIn var(--duration-normal) var(--ease-out) forwards;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  animation: slideIn var(--duration-normal) var(--ease-out) forwards;
 }
 
 .matchConnector {
-	position: absolute;
-	top: 50%;
-	right: calc(var(--space-8) * -1);
-	width: var(--space-8);
-	height: 2px;
-	background: var(--primary-200);
-	opacity: 0.6;
-	transform: translateY(-50%);
-	transition: all var(--duration-normal) var(--ease-out);
+  position: absolute;
+  top: 50%;
+  right: calc(var(--space-8) * -1);
+  width: var(--space-8);
+  height: 2px;
+  background: var(--primary-200);
+  opacity: 0.6;
+  transform: translateY(-50%);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .match:hover .matchConnector {
-	background: var(--primary-400);
-	opacity: 1;
+  background: var(--primary-400);
+  opacity: 1;
 }
 
 .matchContent {
-	position: relative;
-	z-index: var(--z-10);
-	width: 100%;
-	padding: var(--space-4);
-	background: var(
-		--analysis-surface-elevated,
-		color-mix(in srgb, var(--card-background) 90%, transparent)
-	);
-	border: var(--card-border-width) solid
-		var(--analysis-border, color-mix(in srgb, var(--border-color) 60%, transparent));
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-xs);
-	transition: var(--transition-base);
+  position: relative;
+  z-index: var(--z-10);
+  width: 100%;
+  padding: var(--space-4);
+  background: var(
+    --analysis-surface-elevated,
+    color-mix(in srgb, var(--card-background) 90%, transparent)
+  );
+  border: var(--card-border-width) solid
+    var(
+      --analysis-border,
+      color-mix(in srgb, var(--border-color) 60%, transparent)
+    );
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition-base);
 }
 
 .matchContent:hover {
-	border-color: var(--analysis-accent, var(--color-neon-cyan));
-	background: var(--analysis-surface-elevated, var(--glass-bg-light));
-	box-shadow: var(--shadow-md), var(--focus-ring);
-	transform: translateY(calc(var(--space-1) * -1));
+  border-color: var(--analysis-accent, var(--color-neon-cyan));
+  background: var(--analysis-surface-elevated, var(--glass-bg-light));
+  box-shadow: var(--shadow-md), var(--focus-ring);
+  transform: translateY(calc(var(--space-1) * -1));
 }
 
 .player {
-	display: flex;
-	gap: var(--space-2);
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	padding: var(--space-3) var(--space-4);
-	margin-bottom: var(--space-2);
-	background: var(--surface-color);
-	border: 1px solid var(--border-color);
-	border-radius: var(--radius-md);
-	transition: all var(--duration-normal) var(--ease-out);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-normal) var(--ease-out);
 }
 
 .player:last-child {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .playerWinner {
-	composes: player;
-	font-weight: 600;
-	color: var(--analysis-accent, var(--color-neon-cyan));
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 15%, transparent),
-		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 8%, transparent)
-	);
-	border-color: var(--analysis-accent, var(--color-neon-cyan));
-	box-shadow: 0 2px 8px
-		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 20%, transparent);
+  composes: player;
+  font-weight: 600;
+  color: var(--analysis-accent, var(--color-neon-cyan));
+  background: linear-gradient(
+    135deg,
+    color-mix(
+      in srgb,
+      var(--analysis-accent, var(--color-neon-cyan)) 15%,
+      transparent
+    ),
+    color-mix(
+      in srgb,
+      var(--analysis-accent, var(--color-neon-cyan)) 8%,
+      transparent
+    )
+  );
+  border-color: var(--analysis-accent, var(--color-neon-cyan));
+  box-shadow: 0 2px 8px
+    color-mix(
+      in srgb,
+      var(--analysis-accent, var(--color-neon-cyan)) 20%,
+      transparent
+    );
 }
 
 .playerLoser {
-	composes: player;
-	color: var(--text-secondary);
-	background: var(--surface-color);
-	opacity: 0.65;
-	filter: saturate(0.85);
+  composes: player;
+  color: var(--text-secondary);
+  background: var(--surface-color);
+  opacity: 0.65;
+  filter: saturate(0.85);
 }
 
 .playerBothWin {
-	composes: player;
-	font-weight: 500;
-	color: var(--success-700);
-	background: linear-gradient(
-		180deg,
-		color-mix(in srgb, var(--color-success) 12%, transparent),
-		color-mix(in srgb, var(--color-success) 6%, transparent)
-	);
-	border-color: var(--success-300);
+  composes: player;
+  font-weight: 500;
+  color: var(--success-700);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-success) 12%, transparent),
+    color-mix(in srgb, var(--color-success) 6%, transparent)
+  );
+  border-color: var(--success-300);
 }
 
 .playerNeither {
-	composes: player;
-	color: var(--warning-700);
-	background: color-mix(in srgb, var(--color-warning) 5%, transparent);
-	border-color: var(--warning-200);
-	opacity: 0.8;
+  composes: player;
+  color: var(--warning-700);
+  background: color-mix(in srgb, var(--color-warning) 5%, transparent);
+  border-color: var(--warning-200);
+  opacity: 0.8;
 }
 
 .playerBye {
-	composes: player;
-	font-style: italic;
-	background: var(--surface-color);
-	border-style: dashed;
-	opacity: 0.5;
+  composes: player;
+  font-style: italic;
+  background: var(--surface-color);
+  border-style: dashed;
+  opacity: 0.5;
 }
 
 .playerName {
-	margin-right: var(--space-2);
-	font-weight: 500;
-	color: inherit;
-	transition: color var(--duration-normal) var(--ease-out);
+  margin-right: var(--space-2);
+  font-weight: 500;
+  color: inherit;
+  transition: color var(--duration-normal) var(--ease-out);
 }
 
 .player:hover .playerName {
-	color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .winnerBadge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 1.5rem;
-	padding: 0 var(--space-2);
-	font-size: var(--text-xs);
-	font-weight: 700;
-	line-height: 1.5;
-	color: var(--analysis-accent, var(--color-neon-cyan));
-	background: color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 20%, transparent);
-	border: 1.5px solid var(--analysis-accent, var(--color-neon-cyan));
-	border-radius: var(--radius-full);
-	box-shadow: 0 2px 6px
-		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 30%, transparent);
-	transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0 var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--analysis-accent, var(--color-neon-cyan));
+  background: color-mix(
+    in srgb,
+    var(--analysis-accent, var(--color-neon-cyan)) 20%,
+    transparent
+  );
+  border: 1.5px solid var(--analysis-accent, var(--color-neon-cyan));
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 6px
+    color-mix(
+      in srgb,
+      var(--analysis-accent, var(--color-neon-cyan)) 30%,
+      transparent
+    );
+  transition: all 0.2s ease;
 }
 
 .winnerBadge:hover {
-	transform: scale(1.1);
-	box-shadow: 0 4px 10px
-		color-mix(in srgb, var(--analysis-accent, var(--color-neon-cyan)) 40%, transparent);
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px
+    color-mix(
+      in srgb,
+      var(--analysis-accent, var(--color-neon-cyan)) 40%,
+      transparent
+    );
 }
 
 .tieBadge {
-	/* stylelint-disable-next-line value-keyword-case */
-	composes: winnerBadge;
-	color: var(--success-600);
-	background: var(--success-50);
-	border-color: var(--success-200);
+  /* stylelint-disable-next-line value-keyword-case */
+  composes: winnerBadge;
+  color: var(--success-600);
+  background: var(--success-50);
+  border-color: var(--success-200);
 }
 
 .skipBadge {
-	/* stylelint-disable-next-line value-keyword-case */
-	composes: winnerBadge;
-	color: var(--warning-600);
-	background: var(--warning-50);
-	border-color: var(--warning-200);
+  /* stylelint-disable-next-line value-keyword-case */
+  composes: winnerBadge;
+  color: var(--warning-600);
+  background: var(--warning-50);
+  border-color: var(--warning-200);
 }
 
 .vsDivider {
-	padding: var(--space-1) var(--space-2);
-	margin: var(--space-1) 0;
-	font-size: var(--text-xs);
-	font-weight: 700;
-	color: var(--text-secondary);
-	text-align: center;
-	text-transform: uppercase;
-	letter-spacing: 0.06em;
-	background: var(--card-background);
-	border: 1px solid var(--border-color);
-	border-radius: var(--radius-full);
-	opacity: 0.7;
+  padding: var(--space-1) var(--space-2);
+  margin: var(--space-1) 0;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  opacity: 0.7;
 }
 
 .byeText {
-	font-size: var(--text-sm);
-	color: var(--text-secondary);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
 }
 
 .emptyState {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--space-8);
-	font-size: var(--text-sm);
-	color: var(--text-secondary);
-	background: linear-gradient(
-		180deg,
-		var(--surface-color),
-		color-mix(in srgb, var(--color-neutral-900) 2%, transparent)
-	);
-	border: 1px dashed var(--border-color);
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  background: linear-gradient(
+    180deg,
+    var(--surface-color),
+    color-mix(in srgb, var(--color-neutral-900) 2%, transparent)
+  );
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Mobile optimizations */
 @media (width <= 768px) {
-	.bracket {
-		gap: var(--space-6);
-		padding: var(--space-2);
-	}
+  .bracket {
+    gap: var(--space-6);
+    padding: var(--space-2);
+  }
 
-	.round {
-		min-width: 180px;
-	}
+  .round {
+    min-width: 180px;
+  }
 
-	.matchContent {
-		padding: var(--space-3);
-	}
+  .matchContent {
+    padding: var(--space-3);
+  }
 
-	.player {
-		padding: var(--space-2) var(--space-3);
-	}
+  .player {
+    padding: var(--space-2) var(--space-3);
+  }
 
-	.matchConnector {
-		right: calc(var(--space-4) * -1);
-		width: var(--space-4);
-	}
+  .matchConnector {
+    right: calc(var(--space-4) * -1);
+    width: var(--space-4);
+  }
 }
 
 /* Fix Safari flexbox issues */
 @supports (-webkit-touch-callout: none) {
-	.matches {
-		height: auto;
-	}
+  .matches {
+    height: auto;
+  }
 
-	.round:first-child {
-		height: fit-content;
-	}
+  .round:first-child {
+    height: fit-content;
+  }
 }
 
 /* Dark mode adjustments - removed in favor of global theme tokens */
 
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
-	.matchContent:hover {
-		transform: none;
-	}
+  .matchContent:hover {
+    transform: none;
+  }
 
-	.match {
-		animation: none;
-	}
+  .match {
+    animation: none;
+  }
 }
 
 /* Animations */
 @keyframes slideIn {
-	from {
-		opacity: 0;
-		transform: translateX(-10px);
-	}
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
 
-	to {
-		opacity: 1;
-		transform: translateX(0);
-	}
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

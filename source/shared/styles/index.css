@@ -39,29 +39,29 @@
 @import url("./responsive-mobile.css");
 
 @theme {
-	/* Brand Colors */
-	--color-charcoal: var(--color-charcoal);
-	--color-blue-gray: var(--color-blue-gray);
-	--color-mimosa: var(--color-mimosa);
-	--color-gold: var(--color-gold);
+  /* Brand Colors */
+  --color-charcoal: var(--color-charcoal);
+  --color-blue-gray: var(--color-blue-gray);
+  --color-mimosa: var(--color-mimosa);
+  --color-gold: var(--color-gold);
 
-	/* Vibrant Colors */
-	--color-neon-cyan: var(--color-neon-cyan);
-	--color-hot-pink: var(--color-hot-pink);
-	--color-fire-red: var(--color-fire-red);
+  /* Vibrant Colors */
+  --color-neon-cyan: var(--color-neon-cyan);
+  --color-hot-pink: var(--color-hot-pink);
+  --color-fire-red: var(--color-fire-red);
 
-	/* Semantic Colors */
-	--color-success: var(--color-success);
-	--color-error: var(--color-error);
-	--color-warning: var(--color-warning);
-	--color-info: var(--color-info);
+  /* Semantic Colors */
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+  --color-info: var(--color-info);
 
-	/* Spacing System */
-	--spacing-component-padding: var(--spacing-component-padding);
-	--spacing-component-gap: var(--spacing-component-gap);
-	--spacing-page-padding: var(--spacing-page-padding);
+  /* Spacing System */
+  --spacing-component-padding: var(--spacing-component-padding);
+  --spacing-component-gap: var(--spacing-component-gap);
+  --spacing-page-padding: var(--spacing-page-padding);
 
-	/* Z-Index System */
-	--z-index-modal: var(--z-modal);
-	--z-index-toast: var(--z-toast);
+  /* Z-Index System */
+  --z-index-modal: var(--z-modal);
+  --z-index-toast: var(--z-toast);
 }

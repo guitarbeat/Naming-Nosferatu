@@ -6,46 +6,22 @@ import type { NavItemConfig } from "./types";
  * Each item maps directly to a route without submenus
  */
 export const MAIN_NAV_ITEMS: NavItemConfig[] = [
-	{
-		key: "tournament",
-		label: "Vote",
-		shortLabel: "Vote",
-		icon: CheckCircle,
-		type: "primary",
-		ariaLabel: "Vote on cat names",
-	},
-	{
-		key: "results",
-		label: "Results",
-		shortLabel: "Results",
-		icon: Trophy,
-		type: "primary",
-		ariaLabel: "View your tournament results",
-	},
-	{
-		key: "analysis",
-		label: "Analytics",
-		shortLabel: "Stats",
-		icon: BarChart2,
-		type: "primary",
-		ariaLabel: "View global analytics",
-	},
-	{
-		key: "gallery",
-		label: "Gallery",
-		shortLabel: "Gallery",
-		icon: Image,
-		type: "primary",
-		ariaLabel: "Browse cat gallery",
-	},
-	{
-		key: "explore",
-		label: "Explore",
-		shortLabel: "Explore",
-		icon: Compass,
-		type: "primary",
-		ariaLabel: "Explore cat names",
-	},
+  {
+    key: "tournament",
+    label: "Play",
+    shortLabel: "Play",
+    icon: CheckCircle,
+    type: "primary",
+    ariaLabel: "Play the tournament",
+  },
+  {
+    key: "analyze",
+    label: "Analyze",
+    shortLabel: "Analyze",
+    icon: BarChart2,
+    type: "primary",
+    ariaLabel: "Analyze results and discover names",
+  },
 ];
 
 /**
@@ -56,4 +32,4 @@ export const UTILITY_NAV_ITEMS: NavItemConfig[] = [];
 /**
  * Bottom navigation item keys (mobile) - show core actions
  */
-export const BOTTOM_NAV_ITEMS: string[] = ["tournament", "results", "gallery", "explore"];
+export const BOTTOM_NAV_ITEMS: string[] = ["tournament", "analyze"];

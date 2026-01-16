@@ -1,105 +1,105 @@
 .container {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-	width: 100%;
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  position: relative;
 }
 
 .inputWrapper {
-	position: relative;
-	display: flex;
-	align-items: center;
-	width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .input {
-	background: var(--glass-bg-light);
-	backdrop-filter: blur(var(--glass-blur));
-	-webkit-backdrop-filter: blur(var(--glass-blur));
-	border: 1px solid var(--glass-border);
-	border-radius: var(--radius-lg);
-	width: 100%;
-	padding: var(--space-3) var(--space-4);
-	border-radius: var(--radius-md);
-	color: var(--text-primary);
-	font-size: var(--text-base);
-	transition: var(--transition-base);
-	outline: none;
+  background: var(--glass-bg-light);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--text-base);
+  transition: var(--transition-base);
+  outline: none;
 }
 
 .input:focus {
-	background: var(--glass-bg);
-	border-color: var(--color-neon-cyan);
-	box-shadow: var(--focus-ring);
+  background: var(--glass-bg);
+  border-color: var(--color-neon-cyan);
+  box-shadow: var(--focus-ring);
 }
 
 .inputError {
-	border-color: color-mix(in srgb, var(--color-error) 50%, transparent);
-	background: color-mix(in srgb, var(--color-error) 5%, transparent);
+  border-color: color-mix(in srgb, var(--color-error) 50%, transparent);
+  background: color-mix(in srgb, var(--color-error) 5%, transparent);
 }
 
 .inputError:focus {
-	box-shadow: var(--focus-ring);
+  box-shadow: var(--focus-ring);
 }
 
 .inputSuccess {
-	border-color: color-mix(in srgb, var(--color-success) 50%, transparent);
+  border-color: color-mix(in srgb, var(--color-success) 50%, transparent);
 }
 
 .errorContainer {
-	overflow: hidden;
-	height: auto;
+  overflow: hidden;
+  height: auto;
 }
 
 .errorMessage {
-	color: var(--color-error);
-	font-size: var(--text-xs);
-	margin: 0;
-	display: block;
-	font-weight: var(--font-weight-medium);
-	text-shadow: 0 0 10px var(--overlay-red-medium);
+  color: var(--color-error);
+  font-size: var(--text-xs);
+  margin: 0;
+  display: block;
+  font-weight: var(--font-weight-medium);
+  text-shadow: 0 0 10px var(--overlay-red-medium);
 }
 
 .feedbackIcon {
-	position: absolute;
-	right: var(--space-4);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	pointer-events: none;
-	font-size: 1.2em; /* Relative to parent */
+  position: absolute;
+  right: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: 1.2em; /* Relative to parent */
 }
 
 .shake {
-	animation: shake var(--duration-slow) var(--ease-standard) both;
+  animation: shake var(--duration-slow) var(--ease-standard) both;
 }
 
 @keyframes shake {
-	10%,
-	90% {
-		transform: translate3d(-1px, 0, 0);
-	}
-	20%,
-	80% {
-		transform: translate3d(2px, 0, 0);
-	}
-	30%,
-	50%,
-	70% {
-		transform: translate3d(-4px, 0, 0);
-	}
-	40%,
-	60% {
-		transform: translate3d(4px, 0, 0);
-	}
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 
 /* Variant specifically for Login screen to match existing look */
 :global(.loginInput) {
-	/* This ensures the global class can be overridden/extended if needed */
+  /* This ensures the global class can be overridden/extended if needed */
 }
 
 .inputWrapper :global(.loginInput) {
-	/* Inherit shared validated input styles but keep login specific look */
+  /* Inherit shared validated input styles but keep login specific look */
 }
