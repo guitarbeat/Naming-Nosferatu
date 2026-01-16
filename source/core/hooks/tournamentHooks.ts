@@ -1,13 +1,7 @@
 // Consolidated imports from all merged files
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { NavigateFunction } from "react-router-dom";
-import { tournamentsAPI } from "../../features/tournament/services/tournamentService";
-import {
-	buildComparisonsMap,
-	calculateBracketRound,
-	EloRating,
-	PreferenceSorter,
-} from "../../features/tournament/utils/tournamentUtils";
+import { tournamentsAPI, EloRating, PreferenceSorter, buildComparisonsMap, calculateBracketRound } from "../../features/tournament/TournamentLogic";
 import { ErrorManager } from "../../shared/services/errorManager";
 
 import {

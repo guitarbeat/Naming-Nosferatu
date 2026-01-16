@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loading } from "../../shared/components/Loading";
 import { TabContainer } from "../../shared/components/TabContainer";
 import Button from "../../shared/components/Button";
-import { CardName } from "../../shared/components/Card";
+import Card, { CardName } from "../../shared/components/Card";
 import { catNamesAPI } from "../../shared/services/supabase/client";
 import styles from "./explore.module.css";
 

@@ -87,3 +87,24 @@ export function computeRating(old: number, next: number, played: number, max: nu
     const factor = Math.min(0.8, (played / max) * 0.9);
     return Math.round(factor * next + (1 - factor) * old);
 }
+
+/**
+ * Build a map of comparisons from match history
+ */
+export function buildComparisonsMap(history: Array<{ winner: string; loser: string }>): Map<string, number> {
+    const map = new Map<string, number>();
+    for (const h of history) {
+        map.set(`${h.winner}-${h.loser}`, 1);
+    }
+    return map;
+}
+
+/**
+ * Calculate bracket round based on number of names and current match
+ */
+export function calculateBracketRound(totalNames: number, currentMatch: number): number {
+    if (totalNames <= 2) return 1;
+    const matchesPerRound = Math.ceil(totalNames / 2);
+    return Math.ceil(currentMatch / matchesPerRound);
+}
+

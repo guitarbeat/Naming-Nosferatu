@@ -28,7 +28,7 @@ import {
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow").then(module => ({ default: module.TournamentFlow })));
 const GalleryView = lazy(() => import("./features/gallery/GalleryView"));
 const Explore = lazy(() => import("./features/explore/Explore"));
-const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
+const Dashboard = lazy(() => import("./features/tournament/TournamentDashboard").then(m => ({ default: m.TournamentDashboard })));
 
 /**
  * Root application component with Single Page Architecture (Vertical Scrolling)

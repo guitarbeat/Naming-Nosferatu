@@ -3,22 +3,22 @@ import { AlertCircle, ChevronDown, ChevronRight, Keyboard, Music, Volume2, Volum
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, useContext } from "react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 
-import Bracket from "../../../shared/components/Bracket";
-import Button, { IconButton } from "../../../shared/components/Button";
-import Card from "../../../shared/components/Card";
-import CatImage from "../../../shared/components/CatImage";
-import LiquidGlass from "../../../shared/components/LiquidGlass";
-import { ErrorComponent } from "../../../shared/components/ErrorComponent";
-import { playSound } from "../../../shared/utils/soundManager";
-import { NameManagementContext, useNameManagementContextOptional } from "../../../shared/components/NameManagementView/nameManagementCore";
-import { useProfile } from "../../../core/hooks/useProfile";
-import type { NameItem, BracketMatch } from "../../../types/components";
+import Bracket from "../../shared/components/Bracket";
+import Button, { IconButton } from "../../shared/components/Button";
+import Card from "../../shared/components/Card";
+import CatImage from "../../shared/components/CatImage";
+import LiquidGlass from "../../shared/components/LiquidGlass";
+import { ErrorComponent } from "../../shared/components/ErrorComponent";
+import { playSound } from "../../shared/utils/soundManager";
+import { NameManagementContext, useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
+import { useProfile } from "../../core/hooks/useProfile";
+import type { NameItem, BracketMatch } from "../../types/components";
 import styles from "../tournament.module.css";
 import { getRandomCatImage } from "./TournamentLogic";
 import { useMagneticPull, useTournamentSetupHooks } from "./TournamentHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
-import { TIMING } from "../../../core/constants";
-import { ErrorManager } from "../../../shared/services/errorManager";
+import { TIMING } from "../../core/constants";
+import { ErrorManager } from "../../shared/services/errorManager";
 import {
     devError,
     devLog,
@@ -27,8 +27,8 @@ import {
     extractNameIds,
     isNameHidden,
     selectedNamesToSet
-} from "../../../shared/utils";
-import { useNameManagementCallbacks } from "./TournamentHooks"; // Assuming this is where it's moved
+} from "../../shared/utils";
+// Note: useNameManagementCallbacks is defined in TournamentHooks but may not be exported yet
 
 import "./RankingAdjustment.css";
 
