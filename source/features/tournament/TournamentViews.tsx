@@ -12,7 +12,7 @@ import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { playSound } from "../../shared/utils/soundManager";
 import { NameManagementContext, useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
 import { useProfile } from "../../core/hooks/useProfile";
-import type { NameItem } from "../../types/components";
+
 import styles from "../tournament.module.css";
 import { getRandomCatImage } from "./TournamentLogic";
 import { useMagneticPull, useNameManagementCallbacks } from "./TournamentHooks";
@@ -87,6 +87,7 @@ export const TournamentMatch = memo(({ currentMatch, selectedOption, isProcessin
             const timer = setTimeout(() => setShowVoteConfirmation(null), 800);
             return () => clearTimeout(timer);
         }
+        return undefined;
     }, [selectedOption]);
 
     useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);
@@ -254,12 +255,6 @@ export const SwipeableCards = memo(({ names, selectedNames, onToggleName, showCa
    ANALYSIS WRAPPERS
    ========================================================================= */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type _AnalysisHandlersType = {
-    handleToggleVisibility: ((nameId: string) => Promise<void>) | undefined;
-    handleDelete: ((name: NameItem) => Promise<void>) | undefined;
-}
-
 export function AnalysisHandlersProvider({
     activeUser,
     handlersRef,
@@ -273,7 +268,7 @@ export function AnalysisHandlersProvider({
         showSuccess,
         showError,
         fetchNames,
-        setAllNames: (names: NameItem[]) => setAllNames(names),
+        setAllNames: (val) => setAllNames(val as any),
     });
 
     useEffect(() => {
@@ -324,7 +319,7 @@ export function AnalysisBulkActionsWrapper(props: any) {
         showSuccess: props.showSuccess,
         showError: props.showError,
         fetchNames,
-        setAllNames: (names: NameItem[]) => setAllNames(names),
+        setAllNames: (val) => setAllNames(val as any),
     });
 
     const filteredAndSortedNames = useMemo(() => {

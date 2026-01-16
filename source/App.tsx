@@ -9,7 +9,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTournamentHandlers } from "./core/hooks/tournamentHooks";
+import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
 import { Loading } from "./shared/components/Loading";

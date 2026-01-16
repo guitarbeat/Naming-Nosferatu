@@ -1,11 +1,11 @@
 import { Grid3X3, List, Search, Shuffle, Sparkles, TrendingUp, Heart, Users, Copy, RefreshCw } from "lucide-react";
-import { lazy, Suspense, useState, useMemo } from "react";
+import { lazy, Suspense, useState } from "react";
 import type React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "../../shared/components/Loading";
 import { TabContainer } from "../../shared/components/TabContainer";
 import Button from "../../shared/components/Button";
-import Card, { CardName } from "../../shared/components/Card";
+import Card from "../../shared/components/Card";
 import { catNamesAPI } from "../../shared/services/supabase/client";
 import styles from "./explore.module.css";
 

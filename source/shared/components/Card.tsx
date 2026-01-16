@@ -93,7 +93,7 @@ interface GlassConfig {
 }
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-	children: React.ReactNode;
+	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
 	shadow?: CardShadow;

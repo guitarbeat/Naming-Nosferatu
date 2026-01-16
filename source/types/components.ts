@@ -118,7 +118,7 @@ export interface VoteData {
 export interface TournamentProps {
 	names: NameItem[];
 	existingRatings?: Record<string, number>;
-	onComplete: (ratings: Record<string, number>) => void;
+	onComplete: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
 	userName?: string;
 	onVote?: (voteData: VoteData) => Promise<void> | void;
 }

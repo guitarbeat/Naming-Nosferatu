@@ -6,8 +6,8 @@ import { useToast } from "../../shared/hooks/useAppHooks";
 import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
 import Button from "../../shared/components/Button";
 import Card from "../../shared/components/Card";
-import { CollapsibleHeader, CollapsibleContent } from "../../shared/components/CollapsibleHeader";
-import type { NameItem } from "../../types/components";
+
+
 import { RankingAdjustment } from "./TournamentViews";
 import styles from "./tournament.module.css";
 
@@ -15,7 +15,7 @@ import styles from "./tournament.module.css";
    COMPONENTS
    ========================================================================= */
 
-const PersonalResults = ({ personalRatings, currentTournamentNames, voteHistory, onStartNew, onUpdateRatings, userName }: any) => {
+const PersonalResults = ({ personalRatings, currentTournamentNames, onStartNew, onUpdateRatings }: any) => {
     const [rankings, setRankings] = useState<any[]>([]);
     const { showToast } = useToast();
 

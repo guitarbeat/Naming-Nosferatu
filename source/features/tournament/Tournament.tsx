@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
@@ -6,7 +6,7 @@ import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { TournamentHeader, TournamentMatch, TournamentControls, TournamentFooter } from "./TournamentViews";
 import { MatchResult, RoundTransition, UndoBanner, KeyboardHelp } from "./TournamentOverlays";
-import { useAudioManager, useTournamentState, useTournamentVote, useTournamentManager } from "./TournamentHooks";
+import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES } from "./TournamentLogic";
 import styles from "./tournament.module.css";
 
@@ -22,7 +22,7 @@ function TournamentContent({ onComplete, existingRatings = {}, names = [], onVot
 		handleVote, tournament
 	} = useTournamentState(visibleNames, existingRatings, onComplete, onVote as any);
 
-	const { currentMatch, progress, roundNumber, currentMatchNumber, totalMatches, matchHistory, handleUndo } = tournament;
+	const { currentMatch, progress, roundNumber, currentMatchNumber, totalMatches, handleUndo } = tournament;
 	const { handleVoteWithAnimation } = useTournamentVote({
 		isProcessing, isTransitioning, currentMatch, handleVote, onVote, audioManager, setIsProcessing, setIsTransitioning,
 		setSelectedOption, setVotingError, setLastMatchResult, setShowMatchResult, showSuccess, showError

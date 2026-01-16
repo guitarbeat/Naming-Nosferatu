@@ -41,12 +41,22 @@ export class EloRating {
         const k = games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD ? this.kFactor * 2 : this.kFactor;
         return Math.round(r + k * (act - exp));
     }
-    calculateNewRatings(ra: number, rb: number, outcome: string) {
+    calculateNewRatings(ra: number, rb: number, outcome: string, stats?: { winsA: number; lossesA: number; winsB: number; lossesB: number }) {
         const expA = this.getExpectedScore(ra, rb);
         const expB = this.getExpectedScore(rb, ra);
         const actA = outcome === "left" ? 1 : outcome === "right" ? 0 : 0.5;
         const actB = outcome === "right" ? 1 : outcome === "left" ? 0 : 0.5;
-        return { newRatingA: this.updateRating(ra, expA, actA), newRatingB: this.updateRating(rb, expB, actB) };
+
+        const winsA = (stats?.winsA || 0) + (actA === 1 ? 1 : 0);
+        const lossesA = (stats?.lossesA || 0) + (actA === 0 ? 1 : 0);
+        const winsB = (stats?.winsB || 0) + (actB === 1 ? 1 : 0);
+        const lossesB = (stats?.lossesB || 0) + (actB === 0 ? 1 : 0);
+
+        return {
+            newRatingA: this.updateRating(ra, expA, actA),
+            newRatingB: this.updateRating(rb, expB, actB),
+            winsA, lossesA, winsB, lossesB
+        };
     }
 }
 
@@ -58,15 +68,38 @@ export class PreferenceSorter {
     preferences = new Map<string, number>();
     currentIndex = 0;
     pairs: Array<[string, string]> = [];
+    lastMatch: string | null = null;
+
     constructor(public items: string[]) {
-        for (let i = 0; i < items.length - 1; i++)
-            for (let j = i + 1; j < items.length; j++)
-                this.pairs.push([items[i], items[j]]);
+        for (let i = 0; i < items.length - 1; i++) {
+            for (let j = i + 1; j < items.length; j++) {
+                const itemI = items[i];
+                const itemJ = items[j];
+                if (itemI && itemJ) {
+                    this.pairs.push([itemI, itemJ]);
+                }
+            }
+        }
     }
-    addPreference(a: string, b: string, val: number) { this.preferences.set(`${a}-${b}`, val); }
+    addPreference(a: string, b: string, val: number) {
+        this.preferences.set(`${a}-${b}`, val);
+        this.lastMatch = `${a}-${b}`;
+    }
+    undoLastPreference() {
+        if (this.lastMatch && this.preferences.has(this.lastMatch)) {
+            this.preferences.delete(this.lastMatch);
+            this.lastMatch = null;
+            this.currentIndex = Math.max(0, this.currentIndex - 1);
+        }
+    }
     getNextMatch() {
         while (this.currentIndex < this.pairs.length) {
-            const [a, b] = this.pairs[this.currentIndex];
+            const pair = this.pairs[this.currentIndex];
+            if (!pair) {
+                this.currentIndex++;
+                continue;
+            }
+            const [a, b] = pair;
             if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) return { left: a, right: b };
             this.currentIndex++;
         }
