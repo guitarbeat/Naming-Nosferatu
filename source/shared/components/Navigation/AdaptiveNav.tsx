@@ -52,7 +52,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	// Track active section on scroll
 	useEffect(() => {
 		const handleScroll = () => {
-			const sections = ["play", "analysis", "gallery"];
+			const sections = ["pick", "play", "gallery", "analysis", "suggest"];
 
 			// Find the section that occupies the most screen space or is at the top
 			let current = activeSection;
