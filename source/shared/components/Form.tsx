@@ -21,59 +21,58 @@ import styles from "./Form.module.css";
  * @returns {JSX.Element} FormField wrapper
  */
 interface FormFieldProps {
-  id?: string;
-  name?: string;
-  label?: string;
-  error?: string;
-  required?: boolean;
-  ariaDescribedBy?: string;
-  children: React.ReactElement;
-  className?: string;
+	id?: string;
+	name?: string;
+	label?: string;
+	error?: string;
+	required?: boolean;
+	ariaDescribedBy?: string;
+	children: React.ReactElement;
+	className?: string;
 }
 
 const FormField = ({
-  id,
-  name,
-  label,
-  error = "",
-  required = false,
-  ariaDescribedBy = "",
-  children,
-  className = "",
+	id,
+	name,
+	label,
+	error = "",
+	required = false,
+	ariaDescribedBy = "",
+	children,
+	className = "",
 }: FormFieldProps) => {
-  const generatedId = React.useId();
-  const fieldId = id || `${name ? `${name}-field` : `field-${generatedId}`}`;
-  const errorId = error ? `${fieldId}-error` : null;
-  const describedBy =
-    [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
+	const generatedId = React.useId();
+	const fieldId = id || `${name ? `${name}-field` : `field-${generatedId}`}`;
+	const errorId = error ? `${fieldId}-error` : null;
+	const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
 
-  return (
-    <div className={`${styles.inputGroup} ${className}`.trim()}>
-      {label && (
-        <label htmlFor={fieldId} className={styles.label}>
-          {label}
-          {required && <span className={styles.required}>*</span>}
-        </label>
-      )}
-      {React.cloneElement(
-        children as React.ReactElement<{
-          id?: string;
-          "aria-invalid"?: boolean;
-          "aria-describedby"?: string;
-        }>,
-        {
-          id: fieldId,
-          "aria-invalid": !!error,
-          "aria-describedby": describedBy,
-        },
-      )}
-      {error && errorId && (
-        <div id={errorId} className={styles.errorText} role="alert">
-          {error}
-        </div>
-      )}
-    </div>
-  );
+	return (
+		<div className={`${styles.inputGroup} ${className}`.trim()}>
+			{label && (
+				<label htmlFor={fieldId} className={styles.label}>
+					{label}
+					{required && <span className={styles.required}>*</span>}
+				</label>
+			)}
+			{React.cloneElement(
+				children as React.ReactElement<{
+					id?: string;
+					"aria-invalid"?: boolean;
+					"aria-describedby"?: string;
+				}>,
+				{
+					id: fieldId,
+					"aria-invalid": !!error,
+					"aria-describedby": describedBy,
+				},
+			)}
+			{error && errorId && (
+				<div id={errorId} className={styles.errorText} role="alert">
+					{error}
+				</div>
+			)}
+		</div>
+	);
 };
 
 FormField.displayName = "FormField";
@@ -97,67 +96,67 @@ FormField.displayName = "FormField";
  * @returns {JSX.Element} Input component
  */
 interface InputProps {
-  type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
-  name?: string;
-  value?: string | number | null;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  label?: string;
-  className?: string;
-  ariaDescribedBy?: string;
+	type?: "text" | "email" | "password" | "number" | "tel" | "url" | "search";
+	name?: string;
+	value?: string | number | null;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+	placeholder?: string;
+	disabled?: boolean;
+	required?: boolean;
+	error?: string;
+	label?: string;
+	className?: string;
+	ariaDescribedBy?: string;
 }
 
 const Input = ({
-  type = "text",
-  name,
-  value,
-  onChange,
-  onBlur,
-  placeholder,
-  disabled = false,
-  required = false,
-  error = "",
-  label,
-  className = "",
-  ariaDescribedBy = "",
-  ...rest
+	type = "text",
+	name,
+	value,
+	onChange,
+	onBlur,
+	placeholder,
+	disabled = false,
+	required = false,
+	error = "",
+	label,
+	className = "",
+	ariaDescribedBy = "",
+	...rest
 }: InputProps) => {
-  const inputClasses = [
-    styles.input,
-    error && styles["input--error"],
-    disabled && styles["input--disabled"],
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+	const inputClasses = [
+		styles.input,
+		error && styles["input--error"],
+		disabled && styles["input--disabled"],
+		className,
+	]
+		.filter(Boolean)
+		.join(" ");
 
-  return (
-    <FormField
-      id={name}
-      name={name}
-      label={label}
-      error={error}
-      required={required}
-      ariaDescribedBy={ariaDescribedBy}
-    >
-      <input
-        type={type}
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        onBlur={onBlur}
-        placeholder={placeholder}
-        disabled={disabled}
-        required={required}
-        className={inputClasses}
-        {...rest}
-      />
-    </FormField>
-  );
+	return (
+		<FormField
+			id={name}
+			name={name}
+			label={label}
+			error={error}
+			required={required}
+			ariaDescribedBy={ariaDescribedBy}
+		>
+			<input
+				type={type}
+				name={name}
+				value={value ?? ""}
+				onChange={onChange}
+				onBlur={onBlur}
+				placeholder={placeholder}
+				disabled={disabled}
+				required={required}
+				className={inputClasses}
+				{...rest}
+			/>
+		</FormField>
+	);
 };
 
 Input.displayName = "Input";
@@ -181,86 +180,82 @@ Input.displayName = "Input";
  * @returns {JSX.Element} Select component
  */
 interface SelectOption {
-  value: string | number;
-  label: string;
-  disabled?: boolean;
+	value: string | number;
+	label: string;
+	disabled?: boolean;
 }
 
 interface SelectProps {
-  name?: string;
-  value?: string | number | null;
-  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
-  options?: SelectOption[];
-  disabled?: boolean;
-  required?: boolean;
-  error?: string;
-  label?: string;
-  placeholder?: string;
-  className?: string;
-  ariaDescribedBy?: string;
+	name?: string;
+	value?: string | number | null;
+	onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+	onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
+	options?: SelectOption[];
+	disabled?: boolean;
+	required?: boolean;
+	error?: string;
+	label?: string;
+	placeholder?: string;
+	className?: string;
+	ariaDescribedBy?: string;
 }
 
 const Select = ({
-  name,
-  value,
-  onChange,
-  onBlur,
-  options = [],
-  disabled = false,
-  required = false,
-  error = "",
-  label,
-  placeholder = "Choose an option",
-  className = "",
-  ariaDescribedBy = "",
-  ...rest
+	name,
+	value,
+	onChange,
+	onBlur,
+	options = [],
+	disabled = false,
+	required = false,
+	error = "",
+	label,
+	placeholder = "Choose an option",
+	className = "",
+	ariaDescribedBy = "",
+	...rest
 }: SelectProps) => {
-  const selectClasses = [
-    styles.select,
-    error && styles["select--error"],
-    disabled && styles["select--disabled"],
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
+	const selectClasses = [
+		styles.select,
+		error && styles["select--error"],
+		disabled && styles["select--disabled"],
+		className,
+	]
+		.filter(Boolean)
+		.join(" ");
 
-  return (
-    <FormField
-      id={name}
-      name={name}
-      label={label}
-      error={error}
-      required={required}
-      ariaDescribedBy={ariaDescribedBy}
-    >
-      <select
-        name={name}
-        value={value ?? ""}
-        onChange={onChange}
-        onBlur={onBlur}
-        disabled={disabled}
-        required={required}
-        className={selectClasses}
-        {...rest}
-      >
-        {placeholder && (
-          <option value="" disabled={true}>
-            {placeholder}
-          </option>
-        )}
-        {options.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            disabled={option.disabled}
-          >
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </FormField>
-  );
+	return (
+		<FormField
+			id={name}
+			name={name}
+			label={label}
+			error={error}
+			required={required}
+			ariaDescribedBy={ariaDescribedBy}
+		>
+			<select
+				name={name}
+				value={value ?? ""}
+				onChange={onChange}
+				onBlur={onBlur}
+				disabled={disabled}
+				required={required}
+				className={selectClasses}
+				{...rest}
+			>
+				{placeholder && (
+					<option value="" disabled={true}>
+						{placeholder}
+					</option>
+				)}
+				{options.map((option) => (
+					<option key={option.value} value={option.value} disabled={option.disabled}>
+						{option.label}
+					</option>
+				))}
+			</select>
+		</FormField>
+	);
 };
 
 Select.displayName = "Select";

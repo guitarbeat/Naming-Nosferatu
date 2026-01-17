@@ -15,65 +15,62 @@ import { NOTIFICATION } from "../constants";
  */
 // ts-prune-ignore-next (used in TournamentSetup)
 export function useProfileNotifications() {
-  const {
-    toasts,
-    showSuccess: showSuccessToast,
-    showError: showErrorToast,
-    showToast: showToastMessage,
-    removeToast,
-  } = useToast();
+	const {
+		toasts,
+		showSuccess: showSuccessToast,
+		showError: showErrorToast,
+		showToast: showToastMessage,
+		removeToast,
+	} = useToast();
 
-  const showSuccess = useCallback(
-    (message: string) => {
-      devLog("✅", message);
-      showSuccessToast(message, { duration: 5000 });
-    },
-    [showSuccessToast],
-  );
+	const showSuccess = useCallback(
+		(message: string) => {
+			devLog("✅", message);
+			showSuccessToast(message, { duration: 5000 });
+		},
+		[showSuccessToast],
+	);
 
-  const showError = useCallback(
-    (message: string) => {
-      devError("❌", message);
-      showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
-    },
-    [showErrorToast],
-  );
+	const showError = useCallback(
+		(message: string) => {
+			devError("❌", message);
+			showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
+		},
+		[showErrorToast],
+	);
 
-  const showToast = useCallback(
-    (
-      message: string,
-      type: "success" | "error" | "info" | "warning" = "info",
-    ) => {
-      devLog(`📢 [${type}]`, message);
-      showToastMessage({
-        message,
-        type,
-        duration: type === "error" ? 7000 : 5000,
-      });
-    },
-    [showToastMessage],
-  );
+	const showToast = useCallback(
+		(message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+			devLog(`📢 [${type}]`, message);
+			showToastMessage({
+				message,
+				type,
+				duration: type === "error" ? 7000 : 5000,
+			});
+		},
+		[showToastMessage],
+	);
 
-  const ToastContainer = useCallback(() => {
-    return (
-      <Toast
-        variant="container"
-        toasts={toasts}
-        removeToast={removeToast}
-        position="top-right"
-        maxToasts={NOTIFICATION.MAX_TOASTS}
-        onDismiss={() => {
-          // Intentional no-op: dismiss handled by component
-        }}
-        message=""
-      />
-    );
-  }, [toasts, removeToast]);
+	const ToastContainer = useCallback(() => {
+		return (
+			<Toast
+				variant="container"
+				toasts={toasts}
+				removeToast={removeToast}
+				position="top-right"
+				maxToasts={NOTIFICATION.MAX_TOASTS}
+				onDismiss={() => {
+					// Intentional no-op: dismiss handled by component
+				}}
+				message=""
+			/>
+		);
+	}, [toasts, removeToast]);
 
-  return {
-    showSuccess,
-    showError,
-    showToast,
-    ToastContainer,
-  };
+	return {
+		showSuccess,
+		showError,
+		showToast,
+		ToastContainer,
+	};
 }

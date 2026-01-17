@@ -1,287 +1,274 @@
 /* Toast Component Styles - Extracted from CommonUI.module.css */
 
 .toastGlass {
-  pointer-events: auto;
-  transform: translateX(100%);
-  transition: var(--transition-base);
-  animation: slideIn var(--duration-normal) var(--ease-out-expo) forwards;
+	pointer-events: auto;
+	transform: translateX(100%);
+	transition: var(--transition-base);
+	animation: slideIn var(--duration-normal) var(--ease-out-expo) forwards;
 }
 
 .toastGlass.exiting {
-  opacity: 0;
-  transform: translateX(100%);
+	opacity: 0;
+	transform: translateX(100%);
 }
 
 .toastItem {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: var(--z-10);
-  pointer-events: auto;
-  background: transparent;
-  border-left: var(--card-border-width) solid;
-  border-radius: inherit;
+	width: 100%;
+	height: 100%;
+	position: relative;
+	z-index: var(--z-10);
+	pointer-events: auto;
+	background: transparent;
+	border-left: var(--card-border-width) solid;
+	border-radius: inherit;
 }
 
 .toastItem.exiting {
-  opacity: 0;
-  transform: translateX(100%);
+	opacity: 0;
+	transform: translateX(100%);
 }
 
 .success {
-  color: var(--color-success);
-  background: color-mix(
-    in srgb,
-    var(--color-success) 5%,
-    var(--color-neutral-50)
-  );
-  border-left-color: var(--color-success);
+	color: var(--color-success);
+	background: color-mix(in srgb, var(--color-success) 5%, var(--color-neutral-50));
+	border-left-color: var(--color-success);
 }
 
 .error {
-  color: var(--color-error);
-  background: color-mix(
-    in srgb,
-    var(--color-error) 5%,
-    var(--color-neutral-50)
-  );
-  border-left-color: var(--color-error);
+	color: var(--color-error);
+	background: color-mix(in srgb, var(--color-error) 5%, var(--color-neutral-50));
+	border-left-color: var(--color-error);
 }
 
 .warning {
-  color: var(--color-warning);
-  background: color-mix(
-    in srgb,
-    var(--color-warning) 5%,
-    var(--color-neutral-50)
-  );
-  border-left-color: var(--color-warning);
+	color: var(--color-warning);
+	background: color-mix(in srgb, var(--color-warning) 5%, var(--color-neutral-50));
+	border-left-color: var(--color-warning);
 }
 
 .info {
-  color: var(--color-info);
-  background: color-mix(in srgb, var(--color-info) 5%, var(--color-neutral-50));
-  border-left-color: var(--color-info);
+	color: var(--color-info);
+	background: color-mix(in srgb, var(--color-info) 5%, var(--color-neutral-50));
+	border-left-color: var(--color-info);
 }
 
 .toastContent {
-  position: relative;
-  display: flex;
-  gap: var(--space-2);
-  align-items: center;
-  padding: var(--space-3) var(--space-4);
+	position: relative;
+	display: flex;
+	gap: var(--space-2);
+	align-items: center;
+	padding: var(--space-3) var(--space-4);
 }
 
 .icon {
-  flex-shrink: 0;
-  font-size: 1.2em;
+	flex-shrink: 0;
+	font-size: 1.2em;
 }
 
 .message {
-  flex: 1;
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--leading-normal);
+	flex: 1;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: var(--leading-normal);
 }
 
 .dismissButton {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: var(--icon-button-small);
-  height: var(--icon-button-small);
-  font-size: 1.2em;
-  font-weight: var(--font-weight-bold);
-  color: inherit;
-  cursor: pointer;
-  background: color-mix(in srgb, var(--color-neutral-50) 80%, transparent);
-  border: var(--card-border-width) solid currentcolor;
-  border-radius: var(--radius-sm);
-  transition: var(--transition-base);
-  transition-duration: var(--duration-fast);
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: var(--icon-button-small);
+	height: var(--icon-button-small);
+	font-size: 1.2em;
+	font-weight: var(--font-weight-bold);
+	color: inherit;
+	cursor: pointer;
+	background: color-mix(in srgb, var(--color-neutral-50) 80%, transparent);
+	border: var(--card-border-width) solid currentcolor;
+	border-radius: var(--radius-sm);
+	transition: var(--transition-base);
+	transition-duration: var(--duration-fast);
 }
 
 .dismissButton:hover {
-  background: var(--color-neutral-50);
-  transform: var(--transform-hover-scale);
-  transition: var(--transition-base);
-  transition-timing-function: var(--ease-elastic);
+	background: var(--color-neutral-50);
+	transform: var(--transform-hover-scale);
+	transition: var(--transition-base);
+	transition-timing-function: var(--ease-elastic);
 }
 
 .dismissButton:active {
-  transform: scale(0.95);
+	transform: scale(0.95);
 }
 
 .dismissButton:focus,
 .dismissButton:focus-visible {
-  outline: var(--focus-ring-width) solid currentcolor;
-  outline-offset: var(--focus-ring-offset);
+	outline: var(--focus-ring-width) solid currentcolor;
+	outline-offset: var(--focus-ring-offset);
 }
 
 .progressBar {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: var(--space-1);
-  overflow: hidden;
-  background: var(--overlay-light);
-  border-radius: 0 0 var(--radius-md) var(--radius-md);
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: var(--space-1);
+	overflow: hidden;
+	background: var(--overlay-light);
+	border-radius: 0 0 var(--radius-md) var(--radius-md);
 }
 
 .progressFill {
-  height: 100%;
-  background: currentcolor;
-  opacity: 0.6;
-  transform-origin: left;
-  animation: progressShrink linear forwards;
+	height: 100%;
+	background: currentcolor;
+	opacity: 0.6;
+	transform-origin: left;
+	animation: progressShrink linear forwards;
 }
 
 @keyframes progressShrink {
-  from {
-    transform: scaleX(1);
-  }
+	from {
+		transform: scaleX(1);
+	}
 
-  to {
-    transform: scaleX(0);
-  }
+	to {
+		transform: scaleX(0);
+	}
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.98);
-  }
+	from {
+		opacity: 0;
+		transform: translateX(100%) scale(0.98);
+	}
 
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
+	to {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+	}
 }
 
 .toastContainer {
-  position: fixed;
-  z-index: var(--z-toast);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  max-height: calc(100vh - var(--space-6));
-  overflow-y: auto;
-  pointer-events: none;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-neutral-50) 20%, transparent)
-    transparent;
+	position: fixed;
+	z-index: var(--z-toast);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	max-height: calc(100vh - var(--space-6));
+	overflow-y: auto;
+	pointer-events: none;
+	scrollbar-width: thin;
+	scrollbar-color: color-mix(in srgb, var(--color-neutral-50) 20%, transparent) transparent;
 }
 
 .topLeft {
-  top: var(--space-3);
-  left: var(--space-3);
+	top: var(--space-3);
+	left: var(--space-3);
 }
 
 .topCenter {
-  top: var(--space-3);
-  left: 50%;
-  transform: translateX(-50%);
+	top: var(--space-3);
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 .topRight {
-  top: var(--space-3);
-  right: var(--space-3);
+	top: var(--space-3);
+	right: var(--space-3);
 }
 
 .bottomLeft {
-  bottom: var(--space-3);
-  left: var(--space-3);
+	bottom: var(--space-3);
+	left: var(--space-3);
 }
 
 .bottomCenter {
-  bottom: var(--space-3);
-  left: 50%;
-  transform: translateX(-50%);
+	bottom: var(--space-3);
+	left: 50%;
+	transform: translateX(-50%);
 }
 
 .bottomRight {
-  right: var(--space-3);
-  bottom: var(--space-3);
+	right: var(--space-3);
+	bottom: var(--space-3);
 }
 
 .toastContainerItem {
-  margin: 0;
-  pointer-events: auto;
+	margin: 0;
+	pointer-events: auto;
 }
 
 .hiddenCount {
-  align-self: center;
-  padding: var(--space-2) var(--space-3);
-  margin-top: var(--space-1);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary, var(--color-neutral-700));
-  text-align: center;
-  pointer-events: none;
-  background: var(--overlay-dark);
-  border-radius: var(--radius-full);
+	align-self: center;
+	padding: var(--space-2) var(--space-3);
+	margin-top: var(--space-1);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	color: var(--text-primary, var(--color-neutral-700));
+	text-align: center;
+	pointer-events: none;
+	background: var(--overlay-dark);
+	border-radius: var(--radius-full);
 }
 
 @media (width <= 768px) {
-  .toastContainer {
-    top: var(--space-2);
-    right: var(--space-2);
-    left: var(--space-2);
-    min-width: auto;
-    max-width: none;
-    gap: var(--space-2);
-    max-height: calc(100vh - var(--space-5));
-  }
+	.toastContainer {
+		top: var(--space-2);
+		right: var(--space-2);
+		left: var(--space-2);
+		min-width: auto;
+		max-width: none;
+		gap: var(--space-2);
+		max-height: calc(100vh - var(--space-5));
+	}
 
-  .topLeft,
-  .topRight,
-  .topCenter {
-    top: var(--space-2);
-    right: var(--space-2);
-    left: var(--space-2);
-    transform: none;
-  }
+	.topLeft,
+	.topRight,
+	.topCenter {
+		top: var(--space-2);
+		right: var(--space-2);
+		left: var(--space-2);
+		transform: none;
+	}
 
-  .bottomLeft,
-  .bottomRight,
-  .bottomCenter {
-    right: var(--space-2);
-    bottom: var(--space-2);
-    left: var(--space-2);
-    transform: none;
-  }
+	.bottomLeft,
+	.bottomRight,
+	.bottomCenter {
+		right: var(--space-2);
+		bottom: var(--space-2);
+		left: var(--space-2);
+		transform: none;
+	}
 
-  .toastContent {
-    gap: var(--space-2);
-    padding: var(--space-3);
-  }
+	.toastContent {
+		gap: var(--space-2);
+		padding: var(--space-3);
+	}
 
-  .message {
-    font-size: var(--text-sm);
-  }
+	.message {
+		font-size: var(--text-sm);
+	}
 
-  .dismissButton {
-    width: var(--icon-button-small);
-    height: var(--icon-button-small);
-    font-size: 1em;
-  }
+	.dismissButton {
+		width: var(--icon-button-small);
+		height: var(--icon-button-small);
+		font-size: 1em;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .toastGlass,
-  .toastItem,
-  .toastContainer {
-    transition: none;
-    animation: none;
-  }
+	.toastGlass,
+	.toastItem,
+	.toastContainer {
+		transition: none;
+		animation: none;
+	}
 
-  .progressFill {
-    animation: none;
-  }
+	.progressFill {
+		animation: none;
+	}
 
-  .dismissButton:hover {
-    transform: none;
-  }
+	.dismissButton:hover {
+		transform: none;
+	}
 }

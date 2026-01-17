@@ -1,0 +1,62 @@
+.suggestionBox {
+	width: 100%;
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.inputGroup {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+.label {
+	font-size: var(--text-lg);
+	font-weight: 600;
+	color: var(--text-primary);
+}
+
+.inputWrapper {
+	display: flex;
+	gap: var(--space-2);
+}
+
+.input {
+	flex: 1;
+	padding: var(--space-3) var(--space-4);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-lg);
+	color: var(--text-primary);
+	font-size: var(--text-base);
+	transition: all var(--duration-normal) var(--ease-out);
+}
+
+.input:focus {
+	outline: none;
+	border-color: var(--primary-500);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-500) 20%, transparent);
+}
+
+.input:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.hint {
+	font-size: var(--text-sm);
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+@media (max-width: 480px) {
+	.inputWrapper {
+		flex-direction: column;
+	}
+}

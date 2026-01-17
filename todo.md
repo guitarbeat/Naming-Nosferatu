@@ -38,6 +38,13 @@
 - [x] Simplified route configuration (removed 5 redundant sub-routes)
 - [x] Deleted empty `src/features/tournament/styles/` directory
 
+### Type Safety & Linting
+- [x] Resolved all 22+ TypeScript errors across 10+ files
+- [x] Standardized tournament logic and hook return types
+- [x] Refined component prop types for better strictness
+- [x] Achieved clean `pnpm run lint:types` output
+- [x] Ran Biome check and auto-fixed 8+ files for consistency
+
 ---
 
 ## Current Project Structure

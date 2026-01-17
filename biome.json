@@ -1,277 +1,270 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
-  "files": {
-    "includes": ["**", "!!**/dist", "!!**/node_modules", "!!**/build"]
-  },
-  "formatter": {
-    "enabled": true,
-    "indentStyle": "tab",
-    "lineWidth": 100
-  },
-  "css": {
-    "parser": {
-      "cssModules": true,
-      "tailwindDirectives": true
-    }
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "complexity": {
-        "noStaticOnlyClass": "off",
-        "noUselessConstructor": "error",
-        "noUselessEmptyExport": "error",
-        "noUselessFragments": "error",
-        "noUselessLabel": "error",
-        "noUselessRename": "error",
-        "noUselessTypeConstraint": "error"
-      },
-      "suspicious": {
-        "noShadowRestrictedNames": "off",
-        "noImplicitAnyLet": "off",
-        "noArrayIndexKey": "off",
-        "noUnknownAtRules": "off",
-        "noExplicitAny": "warn",
-        "noAssignInExpressions": "error",
-        "noAsyncPromiseExecutor": "error",
-        "noCatchAssign": "error",
-        "noClassAssign": "error",
-        "noCommentText": "warn",
-        "noCompareNegZero": "error",
-        "noControlCharactersInRegex": "error",
-        "noDebugger": "error",
-        "noDoubleEquals": "error",
-        "noDuplicateCase": "error",
-        "noDuplicateClassMembers": "error",
-        "noDuplicateObjectKeys": "error",
-        "noDuplicateParameters": "error",
-        "noEmptyBlockStatements": "warn",
-        "noFallthroughSwitchClause": "error",
-        "noFunctionAssign": "error",
-        "noImportAssign": "error",
-        "noMisleadingCharacterClass": "error",
-        "noMisleadingInstantiator": "error",
-        "noPrototypeBuiltins": "warn",
-        "noRedeclare": "error",
-        "noUnsafeNegation": "error",
-        "useGetterReturn": "error"
-      },
-      "style": {
-        "noImplicitBoolean": "warn",
-        "noNegationElse": "warn",
-        "noParameterAssign": "warn",
-        "noRestrictedGlobals": "warn",
-        "noUnusedTemplateLiteral": "warn",
-        "useBlockStatements": "warn",
-        "useConst": "error",
-        "useDefaultParameterLast": "warn",
-        "useExponentiationOperator": "warn",
-        "useFragmentSyntax": "warn",
-        "useNamingConvention": "off"
-      },
-      "a11y": {
-        "recommended": false
-      },
-      "correctness": {
-        "useExhaustiveDependencies": "warn",
-        "noUnusedVariables": "warn",
-        "noUnusedImports": "error",
-        "noUnusedPrivateClassMembers": "warn",
-        "noUndeclaredVariables": "error"
-      },
-      "performance": {
-        "noAccumulatingSpread": "warn",
-        "noDelete": "warn"
-      },
-      "security": {
-        "noDangerouslySetInnerHtml": "warn"
-      }
-    }
-  },
-  "overrides": [
-    {
-      "includes": [
-        "src/core/hooks/useUserSession.ts",
-        "src/features/tournament/RankingAdjustment.tsx",
-        "src/features/tournament/Tournament.tsx",
-        "src/features/tournament/components/AnalysisWrappers.tsx",
-        "src/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
-        "src/features/tournament/TournamentSetup.tsx",
-        "src/features/tournament/Dashboard.tsx",
-        "src/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
-        "src/shared/components/ViewRouter/ViewRouter.tsx",
-        "src/features/tournament/components/PersonalResults.tsx",
-        "src/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
-        "src/features/tournament/hooks/useTournamentSetupHooks.ts",
-        "src/shared/utils/coreUtils.ts",
-        "src/shared/components/Bracket/Bracket.tsx",
-        "src/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
-        "src/shared/components/Card/components/CardName.tsx",
-        "src/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
-        "src/shared/components/NameManagementView/NameManagementView.tsx",
-        "src/shared/components/NameGrid/NameGrid.tsx",
-        "src/shared/propTypes.ts",
-        "src/shared/services/errorManager/index.ts",
-        "src/shared/services/supabase/supabaseClient.ts"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
-        "src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
-        "src/features/tournament/TournamentSetup.module.css",
-        "src/shared/styles/animations.css"
-      ],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noImportantStyles": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["scripts/**/*.js"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useConst": "warn"
-          },
-          "suspicious": {
-            "noExplicitAny": "off"
-          },
-          "correctness": {
-            "noUnusedVariables": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/core/constants/**/*.ts", "src/**/constants.ts"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useNamingConvention": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
-        "src/integrations/supabase/types.ts",
-        "src/shared/services/supabase/types.ts"
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useNamingConvention": "off"
-          }
-        }
-      },
-      "formatter": {
-        "enabled": false
-      }
-    },
-    {
-      "includes": [
-        "src/core/config/routeConfig.ts",
-        "src/shared/components/NameManagementView/nameManagementCore.tsx",
-        "src/features/analytics/services/analyticsService.ts",
-        "src/features/auth/services/adminService.ts",
-        "src/types/components.ts",
-        "src/**/*.ts",
-        "src/**/*.tsx"
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useNamingConvention": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["src/shared/styles/analysis-mode-misc.css"],
-      "formatter": {
-        "enabled": false
-      }
-    },
-    {
-      "includes": [
-        "**/*.test.{js,jsx,ts,tsx}",
-        "**/*.spec.{js,jsx,ts,tsx}",
-        "src/shared/test-utils/**/*"
-      ],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          },
-          "style": {
-            "useNamingConvention": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": [
-        "vite.config.ts",
-        "config/tailwind.config.js",
-        "config/vitest.config.mjs"
-      ],
-      "linter": {
-        "rules": {
-          "style": {
-            "useNamingConvention": "off"
-          }
-        }
-      }
-    },
-    {
-      "includes": ["**/*.tsx"],
-      "linter": {
-        "rules": {
-          "style": {
-            "useImportType": "off"
-          }
-        }
-      }
-    }
-  ],
-  "javascript": {
-    "formatter": {
-      "quoteStyle": "double"
-    },
-    "globals": [
-      "vi",
-      "describe",
-      "it",
-      "test",
-      "expect",
-      "beforeEach",
-      "afterEach",
-      "beforeAll",
-      "afterAll"
-    ]
-  },
-  "assist": {
-    "enabled": true,
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
-  }
+	"$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
+	"files": {
+		"includes": ["**", "!!**/dist", "!!**/node_modules", "!!**/build"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 100
+	},
+	"css": {
+		"parser": {
+			"cssModules": true,
+			"tailwindDirectives": true
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noStaticOnlyClass": "off",
+				"noUselessConstructor": "error",
+				"noUselessEmptyExport": "error",
+				"noUselessFragments": "error",
+				"noUselessLabel": "error",
+				"noUselessRename": "error",
+				"noUselessTypeConstraint": "error"
+			},
+			"suspicious": {
+				"noShadowRestrictedNames": "off",
+				"noImplicitAnyLet": "off",
+				"noArrayIndexKey": "off",
+				"noUnknownAtRules": "off",
+				"noExplicitAny": "warn",
+				"noAssignInExpressions": "error",
+				"noAsyncPromiseExecutor": "error",
+				"noCatchAssign": "error",
+				"noClassAssign": "error",
+				"noCommentText": "warn",
+				"noCompareNegZero": "error",
+				"noControlCharactersInRegex": "error",
+				"noDebugger": "error",
+				"noDoubleEquals": "error",
+				"noDuplicateCase": "error",
+				"noDuplicateClassMembers": "error",
+				"noDuplicateObjectKeys": "error",
+				"noDuplicateParameters": "error",
+				"noEmptyBlockStatements": "warn",
+				"noFallthroughSwitchClause": "error",
+				"noFunctionAssign": "error",
+				"noImportAssign": "error",
+				"noMisleadingCharacterClass": "error",
+				"noMisleadingInstantiator": "error",
+				"noPrototypeBuiltins": "warn",
+				"noRedeclare": "error",
+				"noUnsafeNegation": "error",
+				"useGetterReturn": "error"
+			},
+			"style": {
+				"noImplicitBoolean": "warn",
+				"noNegationElse": "warn",
+				"noParameterAssign": "warn",
+				"noRestrictedGlobals": "warn",
+				"noUnusedTemplateLiteral": "warn",
+				"useBlockStatements": "warn",
+				"useConst": "error",
+				"useDefaultParameterLast": "warn",
+				"useExponentiationOperator": "warn",
+				"useFragmentSyntax": "warn",
+				"useNamingConvention": "off"
+			},
+			"a11y": {
+				"recommended": false
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "warn",
+				"noUnusedVariables": "warn",
+				"noUnusedImports": "error",
+				"noUnusedPrivateClassMembers": "warn",
+				"noUndeclaredVariables": "error"
+			},
+			"performance": {
+				"noAccumulatingSpread": "warn",
+				"noDelete": "warn"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "warn"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": [
+				"src/core/hooks/useUserSession.ts",
+				"src/features/tournament/RankingAdjustment.tsx",
+				"src/features/tournament/Tournament.tsx",
+				"src/features/tournament/components/AnalysisWrappers.tsx",
+				"src/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
+				"src/features/tournament/TournamentSetup.tsx",
+				"src/features/tournament/Dashboard.tsx",
+				"src/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
+				"src/shared/components/ViewRouter/ViewRouter.tsx",
+				"src/features/tournament/components/PersonalResults.tsx",
+				"src/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
+				"src/features/tournament/hooks/useTournamentSetupHooks.ts",
+				"src/shared/utils/coreUtils.ts",
+				"src/shared/components/Bracket/Bracket.tsx",
+				"src/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
+				"src/shared/components/Card/components/CardName.tsx",
+				"src/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
+				"src/shared/components/NameManagementView/NameManagementView.tsx",
+				"src/shared/components/NameGrid/NameGrid.tsx",
+				"src/shared/propTypes.ts",
+				"src/shared/services/errorManager/index.ts",
+				"src/shared/services/supabase/supabaseClient.ts"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
+				"src/features/tournament/TournamentSetup.module.css",
+				"src/shared/styles/animations.css"
+			],
+			"linter": {
+				"rules": {
+					"complexity": {
+						"noImportantStyles": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["scripts/**/*.js"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "warn"
+					},
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/core/constants/**/*.ts", "src/**/constants.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/integrations/supabase/types.ts", "src/shared/services/supabase/types.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			},
+			"formatter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": [
+				"src/core/config/routeConfig.ts",
+				"src/shared/components/NameManagementView/nameManagementCore.tsx",
+				"src/features/analytics/services/analyticsService.ts",
+				"src/features/auth/services/adminService.ts",
+				"src/types/components.ts",
+				"src/**/*.ts",
+				"src/**/*.tsx"
+			],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/shared/styles/analysis-mode-misc.css"],
+			"formatter": {
+				"enabled": false
+			}
+		},
+		{
+			"includes": [
+				"**/*.test.{js,jsx,ts,tsx}",
+				"**/*.spec.{js,jsx,ts,tsx}",
+				"src/shared/test-utils/**/*"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["vite.config.ts", "config/tailwind.config.js", "config/vitest.config.mjs"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useNamingConvention": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					}
+				}
+			}
+		}
+	],
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		},
+		"globals": [
+			"vi",
+			"describe",
+			"it",
+			"test",
+			"expect",
+			"beforeEach",
+			"afterEach",
+			"beforeAll",
+			"afterAll"
+		]
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	}
 }

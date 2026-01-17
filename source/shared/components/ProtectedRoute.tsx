@@ -8,7 +8,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import useAppStore from "../../core/store/useAppStore";
 
 interface ProtectedRouteProps {
-  requireTournamentComplete?: boolean;
+	requireTournamentComplete?: boolean;
 }
 
 /**
@@ -20,21 +20,19 @@ interface ProtectedRouteProps {
  * @param requireTournamentComplete - If true, user must have completed a tournament to access
  * @returns Outlet if authorized, Navigate to "/" if not
  */
-export function ProtectedRoute({
-  requireTournamentComplete = false,
-}: ProtectedRouteProps) {
-  const { user, tournament } = useAppStore();
+export function ProtectedRoute({ requireTournamentComplete = false }: ProtectedRouteProps) {
+	const { user, tournament } = useAppStore();
 
-  // Check authentication
-  if (!user.isLoggedIn) {
-    return <Navigate to="/" replace={true} />;
-  }
+	// Check authentication
+	if (!user.isLoggedIn) {
+		return <Navigate to="/" replace={true} />;
+	}
 
-  // Check tournament completion if required
-  if (requireTournamentComplete && !tournament.isComplete) {
-    return <Navigate to="/tournament" replace={true} />;
-  }
+	// Check tournament completion if required
+	if (requireTournamentComplete && !tournament.isComplete) {
+		return <Navigate to="/tournament" replace={true} />;
+	}
 
-  // User is authorized, render the nested routes
-  return <Outlet />;
+	// User is authorized, render the nested routes
+	return <Outlet />;
 }

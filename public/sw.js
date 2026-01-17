@@ -4,56 +4,56 @@ const RUNTIME_CACHE = `harmonic-studio-runtime-${CACHE_VERSION}`;
 const HTML_CACHE = `harmonic-studio-html-${CACHE_VERSION}`;
 
 const STATIC_ASSETS = [
-  "/", // Basic shell; navigation responses use network-first to avoid staleness
+	"/", // Basic shell; navigation responses use network-first to avoid staleness
 ];
 
 const ASSET_REGEX =
-  /\.(?:css|js|mjs|woff2?|ttf|otf|eot|png|jpe?g|gif|webp|avif|svg|ico|mp4|webm|mp3|wav)$/i;
+	/\.(?:css|js|mjs|woff2?|ttf|otf|eot|png|jpe?g|gif|webp|avif|svg|ico|mp4|webm|mp3|wav)$/i;
 
 /**
  * * Skip waiting on install so new bundles take effect quickly.
  */
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(STATIC_CACHE)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
-      .catch(() => Promise.resolve())
-      .then(() => self.skipWaiting()),
-  );
+	event.waitUntil(
+		caches
+			.open(STATIC_CACHE)
+			.then((cache) => cache.addAll(STATIC_ASSETS))
+			.catch(() => Promise.resolve())
+			.then(() => self.skipWaiting()),
+	);
 });
 
 /**
  * * Clean up old caches when a new version activates.
  */
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys
-            .filter(
-              (key) =>
-                key.startsWith("harmonic-studio-") &&
-                key !== STATIC_CACHE &&
-                key !== RUNTIME_CACHE &&
-                key !== HTML_CACHE,
-            )
-            .map((key) => caches.delete(key)),
-        ),
-      )
-      .then(() => self.clients.claim()),
-  );
+	event.waitUntil(
+		caches
+			.keys()
+			.then((keys) =>
+				Promise.all(
+					keys
+						.filter(
+							(key) =>
+								key.startsWith("harmonic-studio-") &&
+								key !== STATIC_CACHE &&
+								key !== RUNTIME_CACHE &&
+								key !== HTML_CACHE,
+						)
+						.map((key) => caches.delete(key)),
+				),
+			)
+			.then(() => self.clients.claim()),
+	);
 });
 
 /**
  * * Handle update messages from the page to activate immediately.
  */
 self.addEventListener("message", (event) => {
-  if (event?.data?.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+	if (event?.data?.type === "SKIP_WAITING") {
+		self.skipWaiting();
+	}
 });
 
 /**
@@ -63,83 +63,83 @@ self.addEventListener("message", (event) => {
  * * - Other GET requests: stale-while-revalidate in a runtime cache.
  */
 self.addEventListener("fetch", (event) => {
-  const { request } = event;
+	const { request } = event;
 
-  if (request.method !== "GET") {
-    return;
-  }
+	if (request.method !== "GET") {
+		return;
+	}
 
-  const url = new URL(request.url);
-  const isSameOrigin = url.origin === self.location.origin;
+	const url = new URL(request.url);
+	const isSameOrigin = url.origin === self.location.origin;
 
-  if (request.mode === "navigate") {
-    event.respondWith(networkFirst(request, HTML_CACHE));
-    return;
-  }
+	if (request.mode === "navigate") {
+		event.respondWith(networkFirst(request, HTML_CACHE));
+		return;
+	}
 
-  if (isSameOrigin && ASSET_REGEX.test(url.pathname)) {
-    event.respondWith(cacheFirst(request, STATIC_CACHE));
-    return;
-  }
+	if (isSameOrigin && ASSET_REGEX.test(url.pathname)) {
+		event.respondWith(cacheFirst(request, STATIC_CACHE));
+		return;
+	}
 
-  event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
+	event.respondWith(staleWhileRevalidate(request, RUNTIME_CACHE));
 });
 
 async function networkFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  try {
-    const response = await fetch(request);
-    if (response?.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch (error) {
-    const cached = await cache.match(request);
-    if (cached) {
-      return cached;
-    }
-    throw error;
-  }
+	const cache = await caches.open(cacheName);
+	try {
+		const response = await fetch(request);
+		if (response?.ok) {
+			cache.put(request, response.clone());
+		}
+		return response;
+	} catch (error) {
+		const cached = await cache.match(request);
+		if (cached) {
+			return cached;
+		}
+		throw error;
+	}
 }
 
 async function cacheFirst(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  if (cached) {
-    fetchAndUpdate(request, cache).catch(() => {
-      /* Ignore fetch errors */
-    });
-    return cached;
-  }
-  const response = await fetch(request);
-  if (response?.ok) {
-    cache.put(request, response.clone());
-  }
-  return response;
+	const cache = await caches.open(cacheName);
+	const cached = await cache.match(request);
+	if (cached) {
+		fetchAndUpdate(request, cache).catch(() => {
+			/* Ignore fetch errors */
+		});
+		return cached;
+	}
+	const response = await fetch(request);
+	if (response?.ok) {
+		cache.put(request, response.clone());
+	}
+	return response;
 }
 
 async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  const fetchPromise = fetch(request)
-    .then((response) => {
-      if (response?.ok) {
-        cache.put(request, response.clone());
-      }
-      return response;
-    })
-    .catch(() => cached || fetch(request));
+	const cache = await caches.open(cacheName);
+	const cached = await cache.match(request);
+	const fetchPromise = fetch(request)
+		.then((response) => {
+			if (response?.ok) {
+				cache.put(request, response.clone());
+			}
+			return response;
+		})
+		.catch(() => cached || fetch(request));
 
-  return cached || fetchPromise;
+	return cached || fetchPromise;
 }
 
 async function fetchAndUpdate(request, cache) {
-  try {
-    const response = await fetch(request);
-    if (response?.ok) {
-      cache.put(request, response.clone());
-    }
-  } catch {
-    // * Network update failed; keep using cached response.
-  }
+	try {
+		const response = await fetch(request);
+		if (response?.ok) {
+			cache.put(request, response.clone());
+		}
+	} catch {
+		// * Network update failed; keep using cached response.
+	}
 }

@@ -12,8 +12,8 @@ export { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS, UTILITY_NAV_ITEMS } from "./config";
 export { buildNavItems, findNavItem, getBottomNavItems } from "./transform";
 // Types
 export type {
-  BuildNavItemsContext,
-  NavItem,
-  NavItemConfig,
-  NavItemType,
+	BuildNavItemsContext,
+	NavItem,
+	NavItemConfig,
+	NavItemType,
 } from "./types";

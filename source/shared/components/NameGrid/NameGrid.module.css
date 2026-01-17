@@ -1,105 +1,105 @@
 /* NameGrid Component Styles - CSS Columns for Masonry Effect */
 
 .gridContainer {
-  width: 100%;
-  padding: var(--space-4);
-  box-sizing: border-box;
+	width: 100%;
+	padding: var(--space-4);
+	box-sizing: border-box;
 }
 
 .namesGrid {
-  column-count: 4;
-  column-gap: var(--space-4);
-  width: 100%;
+	column-count: 4;
+	column-gap: var(--space-4);
+	width: 100%;
 }
 
 /* Responsive column counts */
 @media (max-width: 1200px) {
-  .namesGrid {
-    column-count: 3;
-  }
+	.namesGrid {
+		column-count: 3;
+	}
 }
 
 @media (max-width: 900px) {
-  .namesGrid {
-    column-count: 2;
-  }
+	.namesGrid {
+		column-count: 2;
+	}
 }
 
 @media (max-width: 600px) {
-  .namesGrid {
-    column-count: 1;
-  }
+	.namesGrid {
+		column-count: 1;
+	}
 
-  .gridContainer {
-    padding: var(--space-2);
-  }
+	.gridContainer {
+		padding: var(--space-2);
+	}
 }
 
 .gridItem {
-  break-inside: avoid;
-  margin-bottom: var(--space-4);
-  border-radius: var(--radius-lg);
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+	break-inside: avoid;
+	margin-bottom: var(--space-4);
+	border-radius: var(--radius-lg);
+	transition:
+		transform var(--duration-fast) var(--ease-out),
+		box-shadow var(--duration-fast) var(--ease-out);
 }
 
 .gridItem:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  z-index: 10;
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-lg);
+	z-index: 10;
 }
 
 /* Loading state styles */
 .loadingText {
-  column-span: all;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var(--space-6) 0;
-  margin-top: var(--space-4);
+	column-span: all;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: var(--space-6) 0;
+	margin-top: var(--space-4);
 }
 
 .gridItem:active {
-  transform: translateY(-2px) scale(0.98);
+	transform: translateY(-2px) scale(0.98);
 }
 
 .emptyState {
-  background: var(--glass-bg-light);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-16) var(--space-8);
-  text-align: center;
-  border-style: dashed;
-  margin: var(--space-8);
+	background: var(--glass-bg-light);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-16) var(--space-8);
+	text-align: center;
+	border-style: dashed;
+	margin: var(--space-8);
 }
 
 .emptyTitle {
-  font-size: var(--text-2xl);
-  margin-bottom: var(--space-2);
-  color: var(--text-primary);
+	font-size: var(--text-2xl);
+	margin-bottom: var(--space-2);
+	color: var(--text-primary);
 }
 
 .emptyMessage {
-  color: var(--text-secondary);
-  max-width: 400px;
+	color: var(--text-secondary);
+	max-width: 400px;
 }
 
 .loadingContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 400px;
+	width: 100%;
 }
 
 .hiddenCard {
-  opacity: 0.6;
-  filter: grayscale(0.4);
+	opacity: 0.6;
+	filter: grayscale(0.4);
 }

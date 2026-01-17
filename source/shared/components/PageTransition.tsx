@@ -9,31 +9,31 @@ import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 
 interface PageTransitionProps {
-  children: ReactNode;
+	children: ReactNode;
 }
 
 // Animation variants for page transitions
 const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  enter: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.25,
-      ease: [0.25, 0.46, 0.45, 0.94] as const, // easeOutQuad
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    transition: {
-      duration: 0.2,
-      ease: [0.25, 0.46, 0.45, 0.94] as const,
-    },
-  },
+	initial: {
+		opacity: 0,
+		y: 10,
+	},
+	enter: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.25,
+			ease: [0.25, 0.46, 0.45, 0.94] as const, // easeOutQuad
+		},
+	},
+	exit: {
+		opacity: 0,
+		y: -10,
+		transition: {
+			duration: 0.2,
+			ease: [0.25, 0.46, 0.45, 0.94] as const,
+		},
+	},
 } as const;
 
 /**
@@ -42,18 +42,18 @@ const pageVariants = {
  * Uses the current location pathname as the animation key.
  */
 export function PageTransition({ children }: PageTransitionProps) {
-  const location = useLocation();
+	const location = useLocation();
 
-  return (
-    <motion.div
-      key={location.pathname}
-      initial="initial"
-      animate="enter"
-      exit="exit"
-      variants={pageVariants}
-      style={{ width: "100%", height: "100%" }}
-    >
-      {children}
-    </motion.div>
-  );
+	return (
+		<motion.div
+			key={location.pathname}
+			initial="initial"
+			animate="enter"
+			exit="exit"
+			variants={pageVariants}
+			style={{ width: "100%", height: "100%" }}
+		>
+			{children}
+		</motion.div>
+	);
 }

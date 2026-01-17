@@ -1,104 +1,176 @@
 import { AnimatePresence, motion } from "framer-motion";
-
-import { useTournamentHandlers } from "./TournamentHooks";
-import useAppStore from "../../core/store/useAppStore";
 import useUserSession from "../../core/hooks/useUserSession";
-import TournamentSetup from "./TournamentSetup";
+import useAppStore from "../../core/store/useAppStore";
+import Button from "../../shared/components/Button";
+import Card from "../../shared/components/Card";
+import { PhotoGallery } from "../../shared/components/Gallery";
+import { NameSuggestion } from "../../shared/components/NameSuggestion/NameSuggestion";
 import Tournament from "./Tournament";
-import UnifiedDashboard, { PersonalResults } from "./UnifiedDashboard";
+import { useTournamentHandlers, useTournamentManager } from "./TournamentHooks";
+import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {
-  const { user, tournament, tournamentActions } = useAppStore();
-  const { login } = useUserSession();
-  const {
-    handleTournamentComplete,
-    handleStartNewTournament,
-    handleTournamentSetup,
-    handleUpdateRatings,
-  } = useTournamentHandlers({
-    userName: user.name,
-    tournamentActions,
-    navigateTo: () => {},
-  });
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { login } = useUserSession();
+	const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup } =
+		useTournamentHandlers({
+			userName: user.name,
+			tournamentActions,
+		});
 
-  let content, key;
-  if (tournament.isComplete && tournament.names !== null) {
-    key = "results";
-    content = (
-      <Card
-        background="glass"
-        padding="xl"
-        shadow="xl"
-        enableTilt
-        className="text-center max-w-2xl"
-      >
-        <h2 className="text-4xl font-bold mb-6 gradient-text">
-          Tournament Complete!
-        </h2>
-        <div className="flex justify-center mb-8">
-          <div className="text-6xl p-6 bg-purple-500/10 rounded-full border border-purple-500/20">
-            🏆
-          </div>
-        </div>
-        <p className="text-lg text-slate-300 mb-10">
-          Your personal rankings have been updated. Head over to the{" "}
-          <strong className="text-purple-400">Analyze</strong> section to see
-          the full breakdown and compare results!
-        </p>
-        <div className="flex gap-4 justify-center">
-          <Button
-            onClick={() =>
-              document
-                .getElementById("analysis")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-            variant="primary"
-          >
-            Analyze Results
-          </Button>
-          <Button onClick={handleStartNewTournament} variant="secondary">
-            Start New Tournament
-          </Button>
-        </div>
-      </Card>
-    );
-  } else if (tournament.names !== null) {
-    key = "active";
-    content = (
-      <Tournament
-        names={tournament.names}
-        existingRatings={tournament.ratings}
-        onComplete={handleTournamentComplete}
-        userName={user.name}
-        onVote={tournamentActions.addVote}
-      />
-    );
-  } else {
-    key = "setup";
-    content = (
-      <TournamentSetup
-        onLogin={login}
-        onStart={handleTournamentSetup}
-        userName={user.name}
-        isLoggedIn={user.isLoggedIn}
-      />
-    );
-  }
+	const {
+		galleryImages,
+		isAdmin,
+		handleImageOpen,
+		handleImagesUploaded,
+		showAllPhotos,
+		setShowAllPhotos,
+	} = useTournamentManager({
+		userName: user.name || "",
+	});
 
-  return (
-    <div className="w-full max-w-4xl mx-auto min-h-[80vh] flex flex-col items-center justify-center p-4">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={key}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="w-full"
-        >
-          {content}
-        </motion.div>
-      </AnimatePresence>
-    </div>
-  );
+	return (
+		<div className="w-full max-w-6xl mx-auto flex flex-col gap-32">
+			{/* Pick Section */}
+			<section
+				id="pick"
+				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+			>
+				<TournamentSetup
+					onLogin={login}
+					onStart={(setupData) => {
+						handleTournamentSetup(setupData);
+						// Scroll to play section after starting
+						setTimeout(() => {
+							document.getElementById("play")?.scrollIntoView({ behavior: "smooth" });
+						}, 100);
+					}}
+					userName={user.name}
+					isLoggedIn={user.isLoggedIn}
+				/>
+			</section>
+
+			{/* Gallery Section */}
+			<section
+				id="gallery"
+				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+			>
+				<div className="w-full max-w-6xl">
+					<h2 className="text-3xl md:text-5xl font-bold mb-8 text-center gradient-text">
+						Photo Gallery
+					</h2>
+					<PhotoGallery
+						galleryImages={galleryImages}
+						isAdmin={isAdmin}
+						userName={user.name || ""}
+						onImagesUploaded={handleImagesUploaded}
+						onImageOpen={handleImageOpen}
+						showAllPhotos={showAllPhotos}
+						onShowAllPhotosToggle={() => setShowAllPhotos(!showAllPhotos)}
+					/>
+				</div>
+			</section>
+
+			{/* Play Section */}
+			<section
+				id="play"
+				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+			>
+				<AnimatePresence mode="wait">
+					{tournament.isComplete && tournament.names !== null ? (
+						<motion.div
+							key="complete"
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.95 }}
+							className="w-full flex justify-center"
+						>
+							<Card
+								background="glass"
+								padding="xl"
+								shadow="xl"
+								enableTilt={true}
+								className="text-center max-w-2xl"
+							>
+								<h2 className="text-4xl font-bold mb-6 gradient-text">Tournament Complete!</h2>
+								<div className="flex justify-center mb-8">
+									<div className="text-6xl p-6 bg-purple-500/10 rounded-full border border-purple-500/20">
+										🏆
+									</div>
+								</div>
+								<p className="text-lg text-slate-300 mb-10">
+									Your personal rankings have been updated. Head over to the{" "}
+									<strong className="text-purple-400">Analyze</strong> section to see the full
+									breakdown and compare results!
+								</p>
+								<div className="flex gap-4 justify-center">
+									<Button
+										onClick={() =>
+											document.getElementById("analysis")?.scrollIntoView({ behavior: "smooth" })
+										}
+										variant="primary"
+									>
+										Analyze Results
+									</Button>
+									<Button onClick={handleStartNewTournament} variant="secondary">
+										Start New Tournament
+									</Button>
+								</div>
+							</Card>
+						</motion.div>
+					) : tournament.names !== null ? (
+						<motion.div
+							key="tournament"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -20 }}
+							className="w-full"
+						>
+							<Tournament
+								names={tournament.names}
+								existingRatings={tournament.ratings}
+								onComplete={handleTournamentComplete}
+								userName={user.name}
+								onVote={tournamentActions.addVote}
+							/>
+						</motion.div>
+					) : (
+						<motion.div
+							key="empty"
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							className="text-center py-20"
+						>
+							<div className="text-6xl mb-4 opacity-20">🎮</div>
+							<h3 className="text-xl text-slate-400">
+								Setup your tournament above to start playing!
+							</h3>
+							<Button
+								variant="secondary"
+								className="mt-6"
+								onClick={() =>
+									document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" })
+								}
+							>
+								Go to Pick
+							</Button>
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</section>
+
+			{/* Suggest Name Section (Now Inline) */}
+			<section
+				id="suggest"
+				className="min-h-[60vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+			>
+				<div className="w-full max-w-4xl">
+					<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
+						Suggest a Name
+					</h2>
+					<NameSuggestion />
+				</div>
+			</section>
+		</div>
+	);
 }
