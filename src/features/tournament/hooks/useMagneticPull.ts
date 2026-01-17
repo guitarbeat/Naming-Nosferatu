@@ -16,7 +16,11 @@ function useMagneticPull(
   rightOrbRef: React.RefObject<HTMLElement | null>,
   enabled = true,
 ) {
-  const transformRef = useRef<{ left: string | null; right: string | null }>({ left: null, right: null });
+  const transformRef = useRef<{ left: string | null; right: string | null }>({
+    left: null,
+    right: null,
+  });
+  const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -26,7 +30,7 @@ function useMagneticPull(
 
     if (!leftOrb || !rightOrb) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const updatePosition = (e: MouseEvent) => {
       const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
       const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
 
@@ -35,11 +39,19 @@ function useMagneticPull(
       transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
 
       // Apply transforms
-      leftOrb.style.transform = transformRef.current.left;
-      rightOrb.style.transform = transformRef.current.right;
+      if (leftOrb) leftOrb.style.transform = transformRef.current.left;
+      if (rightOrb) rightOrb.style.transform = transformRef.current.right;
+
+      rafIdRef.current = null;
     };
 
-    const handleMouseDown = (orb, isLeft) => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (rafIdRef.current === null) {
+        rafIdRef.current = requestAnimationFrame(() => updatePosition(e));
+      }
+    };
+
+    const handleMouseDown = (orb: HTMLElement, isLeft: boolean) => {
       if (!orb) return;
       orb.style.transition = "transform 0.1s ease";
       const currentTransform =
@@ -47,7 +59,7 @@ function useMagneticPull(
       orb.style.transform = `${currentTransform} scale(0.9)`;
     };
 
-    const handleMouseUp = (orb, isLeft) => {
+    const handleMouseUp = (orb: HTMLElement, isLeft: boolean) => {
       if (!orb) return;
       orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
       const currentTransform =
@@ -73,6 +85,10 @@ function useMagneticPull(
     // Cleanup function
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
 
       leftOrb.removeEventListener("mousedown", leftMouseDown);
       leftOrb.removeEventListener("mouseup", leftMouseUp);

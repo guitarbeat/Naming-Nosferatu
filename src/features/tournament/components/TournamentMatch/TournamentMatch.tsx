@@ -3,7 +3,7 @@
  * @description Component for displaying the current tournament match with ferrofluid-inspired design
  */
 
-import React, { useRef } from "react";
+import React, { useRef, useMemo, memo } from "react";
 import PropTypes from "prop-types";
 import Error from "../../../../shared/components/Error/Error";
 import { Button } from "../../../../shared/components/Button";
@@ -36,7 +36,7 @@ interface TournamentMatchProps {
   imageList?: string[];
 }
 
-function TournamentMatch({
+const TournamentMatch = memo(function TournamentMatch({
   currentMatch,
   selectedOption,
   isProcessing,
@@ -55,15 +55,17 @@ function TournamentMatch({
 
   useMagneticPull(leftOrbRef, rightOrbRef, isEnabled);
 
-  const leftImage =
-    showCatPictures && currentMatch.left?.id
+  const leftImage = useMemo(() => {
+    return showCatPictures && currentMatch.left?.id
       ? getRandomCatImage(currentMatch.left.id, imageList)
       : undefined;
+  }, [showCatPictures, currentMatch.left?.id, imageList]);
 
-  const rightImage =
-    showCatPictures && currentMatch.right?.id
+  const rightImage = useMemo(() => {
+    return showCatPictures && currentMatch.right?.id
       ? getRandomCatImage(currentMatch.right.id, imageList)
       : undefined;
+  }, [showCatPictures, currentMatch.right?.id, imageList]);
 
   return (
     <div
@@ -229,7 +231,7 @@ function TournamentMatch({
       )}
     </div>
   );
-}
+});
 
 TournamentMatch.propTypes = {
   currentMatch: PropTypes.shape({
