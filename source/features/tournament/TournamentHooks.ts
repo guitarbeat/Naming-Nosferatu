@@ -306,21 +306,24 @@ export function useTournamentManager({
 export function useAudioManager() {
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0.2);
-  return {
-    playAudioTrack: () => {},
-    isMuted,
-    handleToggleMute: () => setIsMuted((p) => !p),
-    handleNextTrack: () => {},
-    isShuffle: false,
-    handleToggleShuffle: () => {},
-    currentTrack: null,
-    trackInfo: null,
-    audioError: null,
-    retryAudio: () => {},
-    volume,
-    handleVolumeChange: (_: any, v: number) =>
-      setVolume(Math.min(1, Math.max(0, v))),
-  };
+  return useMemo(
+    () => ({
+      playAudioTrack: () => {},
+      isMuted,
+      handleToggleMute: () => setIsMuted((p) => !p),
+      handleNextTrack: () => {},
+      isShuffle: false,
+      handleToggleShuffle: () => {},
+      currentTrack: null,
+      trackInfo: null,
+      audioError: null,
+      retryAudio: () => {},
+      volume,
+      handleVolumeChange: (_: any, v: number) =>
+        setVolume(Math.min(1, Math.max(0, v))),
+    }),
+    [isMuted, volume],
+  );
 }
 
 export function useKeyboardControls(
