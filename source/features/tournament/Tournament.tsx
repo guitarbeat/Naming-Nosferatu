@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
@@ -89,6 +89,41 @@ function TournamentContent({
 
   const [showCatPictures, setShowCatPictures] = useState(true);
 
+  const handleEndEarly = useCallback(
+    () => onComplete(existingRatings as any),
+    [onComplete, existingRatings],
+  );
+
+  const handleToggleCatPictures = useCallback(
+    () => setShowCatPictures((p) => !p),
+    [],
+  );
+
+  const handleToggleBracket = useCallback(
+    () => setShowBracket((p) => !p),
+    [setShowBracket],
+  );
+
+  const handleToggleKeyboardHelp = useCallback(
+    () => setShowKeyboardHelp((p) => !p),
+    [setShowKeyboardHelp],
+  );
+
+  const volume = useMemo(
+    () => ({ music: audioManager.volume, effects: audioManager.volume }),
+    [audioManager.volume],
+  );
+
+  // Memoize undo timestamps to update only when the match changes,
+  // preventing UndoBanner re-renders on other state changes.
+  const undoTimestamps = useMemo(
+    () => ({
+      expires: Date.now() + 5000,
+      start: Date.now(),
+    }),
+    [currentMatch],
+  );
+
   if (!currentMatch)
     return (
       <div className={styles.tournament}>
@@ -106,20 +141,20 @@ function TournamentContent({
         progress={progress}
       />
       <TournamentControls
-        onEndEarly={() => onComplete(existingRatings as any)}
+        onEndEarly={handleEndEarly}
         isTransitioning={isTransitioning || isProcessing}
         isMuted={audioManager.isMuted}
         onToggleMute={audioManager.handleToggleMute}
         onNextTrack={audioManager.handleNextTrack}
-        volume={{ music: audioManager.volume, effects: audioManager.volume }}
+        volume={volume}
         onVolumeChange={audioManager.handleVolumeChange}
         showCatPictures={showCatPictures}
-        onToggleCatPictures={() => setShowCatPictures((p) => !p)}
+        onToggleCatPictures={handleToggleCatPictures}
       />
       <UndoBanner
         onUndo={handleUndo}
-        undoExpiresAt={Date.now() + 5000}
-        undoStartTime={Date.now()}
+        undoExpiresAt={undoTimestamps.expires}
+        undoStartTime={undoTimestamps.start}
       />
 
       <div className={styles.tournamentLayout}>
@@ -140,8 +175,8 @@ function TournamentContent({
           showBracket={showBracket}
           showKeyboardHelp={showKeyboardHelp}
           transformedMatches={[]}
-          onToggleBracket={() => setShowBracket((p) => !p)}
-          onToggleKeyboardHelp={() => setShowKeyboardHelp((p) => !p)}
+          onToggleBracket={handleToggleBracket}
+          onToggleKeyboardHelp={handleToggleKeyboardHelp}
         />
       </div>
 
