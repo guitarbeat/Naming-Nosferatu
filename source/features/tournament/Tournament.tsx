@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
@@ -15,6 +15,8 @@ import {
 } from "./TournamentViews";
 import styles from "./tournament.module.css";
 
+const EMPTY_MATCHES: any[] = [];
+
 function TournamentContent({
 	onComplete,
 	existingRatings = {},
@@ -22,7 +24,7 @@ function TournamentContent({
 	onVote,
 }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
-	const visibleNames = getVisibleNames(names);
+	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 
 	const audioManager = useAudioManager();
 	const {
@@ -69,6 +71,42 @@ function TournamentContent({
 
 	const [showCatPictures, setShowCatPictures] = useState(true);
 
+	const handleEndEarly = useCallback(() => {
+		onComplete(
+			existingRatings as Record<string, { rating: number; wins?: number; losses?: number }>,
+		);
+	}, [onComplete, existingRatings]);
+
+	const handleToggleCatPictures = useCallback(() => setShowCatPictures((p) => !p), []);
+	const handleToggleShuffle = useCallback(() => {
+		/* no-op */
+	}, []);
+	const handleRetryAudio = useCallback(() => {
+		/* no-op */
+	}, []);
+	const handleVoteRetry = useCallback(() => setVotingError(null), [setVotingError]);
+	const handleDismissError = useCallback(() => setVotingError(null), [setVotingError]);
+	const handleToggleBracket = useCallback(() => setShowBracket((p) => !p), [setShowBracket]);
+	const handleToggleKeyboardHelp = useCallback(
+		() => setShowKeyboardHelp((p) => !p),
+		[setShowKeyboardHelp],
+	);
+
+	const lastMatchTimestamp = useMemo(() => {
+		if (tournament.matchHistory && tournament.matchHistory.length > 0) {
+			const last = tournament.matchHistory[tournament.matchHistory.length - 1];
+			// timestamp is optional or might be number/string depending on impl, checking hook
+			// In hook: timestamp: Date.now()
+			return last.timestamp ? Number(last.timestamp) : 0;
+		}
+		return 0;
+	}, [tournament.matchHistory]);
+
+	const volumeSettings = useMemo(
+		() => ({ music: audioManager.volume, effects: audioManager.volume }),
+		[audioManager.volume],
+	);
+
 	if (!currentMatch) {
 		return (
 			<div className={styles.tournament}>
@@ -87,33 +125,25 @@ function TournamentContent({
 				progress={progress}
 			/>
 			<TournamentControls
-				onEndEarly={() =>
-					onComplete(
-						existingRatings as Record<string, { rating: number; wins?: number; losses?: number }>,
-					)
-				}
+				onEndEarly={handleEndEarly}
 				isTransitioning={isTransitioning || isProcessing}
 				isMuted={audioManager.isMuted}
 				onToggleMute={audioManager.handleToggleMute}
 				onNextTrack={audioManager.handleNextTrack}
-				volume={{ music: audioManager.volume, effects: audioManager.volume }}
+				volume={volumeSettings}
 				onVolumeChange={audioManager.handleVolumeChange}
 				showCatPictures={showCatPictures}
-				onToggleCatPictures={() => setShowCatPictures((p) => !p)}
+				onToggleCatPictures={handleToggleCatPictures}
 				isShuffle={false}
-				onToggleShuffle={() => {
-					/* no-op */
-				}}
+				onToggleShuffle={handleToggleShuffle}
 				trackInfo={null}
 				audioError={null}
-				onRetryAudio={() => {
-					/* no-op */
-				}}
+				onRetryAudio={handleRetryAudio}
 			/>
 			<UndoBanner
 				onUndo={handleUndo}
-				undoExpiresAt={Date.now() + 5000}
-				undoStartTime={Date.now()}
+				undoExpiresAt={lastMatchTimestamp ? lastMatchTimestamp + 5000 : 0}
+				undoStartTime={lastMatchTimestamp}
 			/>
 
 			<div className={styles.tournamentLayout}>
@@ -125,17 +155,17 @@ function TournamentContent({
 					votingError={votingError}
 					onNameCardClick={setSelectedOption}
 					onVoteWithAnimation={handleVoteWithAnimation}
-					onVoteRetry={() => setVotingError(null)}
-					onDismissError={() => setVotingError(null)}
+					onVoteRetry={handleVoteRetry}
+					onDismissError={handleDismissError}
 					showCatPictures={showCatPictures}
 					imageList={CAT_IMAGES}
 				/>
 				<TournamentFooter
 					showBracket={showBracket}
 					showKeyboardHelp={showKeyboardHelp}
-					transformedMatches={[]}
-					onToggleBracket={() => setShowBracket((p) => !p)}
-					onToggleKeyboardHelp={() => setShowKeyboardHelp((p) => !p)}
+					transformedMatches={EMPTY_MATCHES}
+					onToggleBracket={handleToggleBracket}
+					onToggleKeyboardHelp={handleToggleKeyboardHelp}
 				/>
 			</div>
 
