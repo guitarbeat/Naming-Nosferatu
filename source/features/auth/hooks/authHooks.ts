@@ -141,8 +141,8 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 				const error = err as Error;
 				setGlobalError(
 					formattedError.userMessage ||
-					error.message ||
-					"Unable to log in. Please check your connection and try again.",
+						error.message ||
+						"Unable to log in. Please check your connection and try again.",
 				);
 				throw err; // Re-throw to let the hook know submission failed
 			}

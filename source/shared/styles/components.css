@@ -1,12 +1,193 @@
-/* ==========================================================================
-   COMPONENT PRIMITIVES - Consolidated UI Elements
-   Consolidates badge, indicator, and empty state styles from individual files
-   ========================================================================== */
+/**
+ * @file components.css
+ * @description Consolidated UI Component Styles
+ *
+ * Merged from:
+ * - components-primitives.css
+ * - form-controls.css
+ */
 
 /* ==========================================================================
-   PERFORMANCE BADGES
+   1. FORM CONTROLS
+   ========================================================================== */
+.input-container {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	width: 100%;
+	position: relative;
+}
+
+.input-wrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+/* INPUT BASE STYLES */
+.form-input {
+	background: var(--glass-bg-light);
+	backdrop-filter: blur(var(--glass-blur));
+	-webkit-backdrop-filter: blur(var(--glass-blur));
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	width: 100%;
+	padding: var(--space-3) var(--space-4);
+	color: var(--text-primary);
+	font-size: var(--text-base);
+	transition: var(--transition-base);
+	outline: none;
+}
+
+.form-input:focus {
+	background: var(--glass-bg);
+	border-color: var(--color-neon-cyan);
+	box-shadow: var(--focus-ring);
+}
+
+.form-input::placeholder {
+	color: var(--text-tertiary);
+}
+
+/* INPUT STATES */
+.form-input.error {
+	border-color: color-mix(in srgb, var(--color-error) 50%, transparent);
+	background: color-mix(in srgb, var(--color-error) 5%, transparent);
+}
+
+.form-input.error:focus {
+	box-shadow: var(--focus-ring);
+}
+
+.form-input.success {
+	border-color: color-mix(in srgb, var(--color-success) 50%, transparent);
+}
+
+.form-input.success:focus {
+	box-shadow: var(--focus-ring);
+}
+
+.form-input:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	background: var(--overlay-light);
+}
+
+/* VALIDATION FEEDBACK */
+.error-container {
+	overflow: hidden;
+	height: auto;
+}
+
+.error-message {
+	color: var(--color-error);
+	font-size: var(--text-xs);
+	margin: 0;
+	display: block;
+	font-weight: var(--font-weight-medium);
+	text-shadow: 0 0 10px var(--overlay-red-medium);
+}
+
+.success-message {
+	color: var(--color-success);
+	font-size: var(--text-xs);
+	margin: 0;
+	display: block;
+	font-weight: var(--font-weight-medium);
+}
+
+.feedback-icon {
+	position: absolute;
+	right: var(--space-4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	font-size: 1.2em;
+}
+
+/* INPUT ANIMATIONS */
+.input-shake {
+	animation: input-shake var(--duration-slow) var(--ease-standard) both;
+}
+
+@keyframes input-shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}
+
+/* FORM GROUPS */
+.form-group {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin-bottom: var(--space-4);
+}
+
+.form-group:last-child {
+	margin-bottom: 0;
+}
+
+.form-label {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--text-secondary);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wide);
+}
+
+.form-label.required::after {
+	content: " *";
+	color: var(--color-error);
+}
+
+.form-hint {
+	font-size: var(--text-xs);
+	color: var(--text-tertiary);
+	margin-top: var(--space-1);
+}
+
+/* RESPONSIVE */
+@media (width <= 640px) {
+	.form-input {
+		padding: var(--space-3) var(--space-4);
+		min-height: 48px;
+	}
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+	.form-input,
+	.input-shake {
+		transition: none;
+		animation: none;
+	}
+}
+
+/* ==========================================================================
+   2. COMPONENT PRIMITIVES
    ========================================================================== */
 
+/* PERFORMANCE BADGES */
 .performance-badge {
 	display: inline-flex;
 	align-items: center;
@@ -183,10 +364,7 @@
 	color: var(--color-neutral-700);
 }
 
-/* ==========================================================================
-   TREND INDICATORS
-   ========================================================================== */
-
+/* TREND INDICATORS */
 .trend-indicator {
 	display: inline-flex;
 	align-items: center;
@@ -255,10 +433,7 @@
 	}
 }
 
-/* ==========================================================================
-   OFFLINE INDICATOR
-   ========================================================================== */
-
+/* OFFLINE INDICATOR */
 .indicator {
 	position: fixed;
 	left: 50%;
@@ -335,10 +510,7 @@
 	}
 }
 
-/* ==========================================================================
-   EMPTY STATE
-   ========================================================================== */
-
+/* EMPTY STATE */
 .empty-state {
 	background: var(--glass-bg-light);
 	backdrop-filter: blur(var(--glass-blur));
@@ -386,9 +558,11 @@
 	0% {
 		transform: translateY(0px);
 	}
+
 	50% {
 		transform: translateY(calc(var(--space-1) * -1));
 	}
+
 	100% {
 		transform: translateY(0px);
 	}

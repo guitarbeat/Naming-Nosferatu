@@ -43,12 +43,12 @@ export function buildNavItems(context: BuildNavItemsContext, items: NavItemConfi
 		const onClick =
 			config.route && onNavigate
 				? () => {
-					// We know config.route exists because of the condition above
-					const route = config.route;
-					if (route) {
-						onNavigate(route);
+						// We know config.route exists because of the condition above
+						const route = config.route;
+						if (route) {
+							onNavigate(route);
+						}
 					}
-				}
 				: undefined;
 
 		return {

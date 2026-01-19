@@ -1,16 +1,133 @@
 /**
- * @file analysis-mode-components.css
- * @description Consolidated Analysis Mode Component Styles
+ * @file analysis-mode.css
+ * @description Consolidated Analysis Mode Design System
  *
  * Merged from:
- * - analysis-mode-panels.css (panels, headers, collapsible sections)
- * - analysis-mode-buttons.css (buttons, filters, stats, charts)
- * - analysis-mode-misc.css (toggles, progress, loading, dashboard)
+ * - analysis-mode-tokens.css
+ * - analysis-mode-global.css
+ * - analysis-mode-components.css
  */
 
 /* ==========================================================================
-   ANALYSIS PANEL - Primary Container
+   1. TOKENS
    ========================================================================== */
+:root {
+	/* * Accent color - singular, confident choice */
+	--analysis-accent: var(--color-neon-cyan);
+	--analysis-accent-rgb: 47, 243, 224;
+	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 15%, transparent);
+	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 8%, transparent);
+	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 25%, transparent);
+
+	/* * Surface hierarchy - layered depth (references main design tokens) */
+	--analysis-surface-0: var(--background-color);
+	--analysis-surface-1: var(--card-background);
+	--analysis-surface-2: var(--surface-elevated, var(--surface-color));
+	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-50) 3%, transparent);
+
+	/* * Border system - subtle definition */
+	--analysis-border: color-mix(in srgb, var(--color-neutral-50) 8%, transparent);
+	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 30%, transparent);
+	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 50%, transparent);
+
+	/* * Typography - restrained scale (references main design tokens) */
+	--analysis-text-headline: var(--text-2xl);
+	--analysis-text-title: var(--text-lg);
+	--analysis-text-body: var(--text-sm);
+	--analysis-text-caption: var(--text-xs);
+	--analysis-text-mono: var(--font-mono);
+
+	/* * Spacing - tight, rhythmic (references main design tokens) */
+	--analysis-gap-xs: var(--space-1);
+	--analysis-gap-sm: var(--space-2);
+	--analysis-gap-md: var(--space-3);
+	--analysis-gap-lg: var(--space-4);
+	--analysis-gap-xl: var(--space-6);
+
+	/* * Motion - purposeful, quick (references main design tokens) */
+	--analysis-ease: cubic-bezier(0.22, 1, 0.36, 1);
+	--analysis-duration-fast: var(--duration-fast);
+	--analysis-duration-normal: var(--duration-normal);
+	--analysis-duration-slow: var(--duration-slow);
+
+	/* * Shadows - depth without heaviness (references main design tokens) */
+	--analysis-shadow-sm: var(--shadow-sm);
+	--analysis-shadow-md: var(--shadow-md);
+	--analysis-shadow-lg: var(--shadow-xl), 0 0 0 1px var(--analysis-border);
+	--analysis-shadow-glow: var(--shadow-cyan), 0 0 0 1px var(--analysis-border-accent);
+
+	/* * Border radius (references main design tokens) */
+	--analysis-radius-sm: var(--radius-sm);
+	--analysis-radius-md: var(--radius-md);
+	--analysis-radius-lg: var(--radius-lg);
+	--analysis-radius-xl: var(--radius-xl);
+	--analysis-radius-full: var(--radius-full);
+}
+
+/* * Light theme adjustments */
+:root[data-theme="light"] {
+	--analysis-accent: #0891b2;
+	--analysis-accent-rgb: 8, 145, 178;
+	--analysis-accent-muted: color-mix(in srgb, var(--analysis-accent) 12%, transparent);
+	--analysis-accent-subtle: color-mix(in srgb, var(--analysis-accent) 6%, transparent);
+	--analysis-accent-glow: 0 0 24px color-mix(in srgb, var(--analysis-accent) 15%, transparent);
+	--analysis-surface-elevated: color-mix(in srgb, var(--color-neutral-900) 2%, transparent);
+	--analysis-border: color-mix(in srgb, var(--color-neutral-900) 8%, transparent);
+	--analysis-border-accent: color-mix(in srgb, var(--analysis-accent) 25%, transparent);
+	--analysis-border-hover: color-mix(in srgb, var(--analysis-accent) 40%, transparent);
+}
+
+/* ==========================================================================
+   2. GLOBAL EFFECTS
+   ========================================================================== */
+/* * Subtle grid background when analysis mode is active */
+body:has(.analysis-mode-banner) {
+	background-image:
+		linear-gradient(
+			to right,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		),
+		linear-gradient(
+			to bottom,
+			var(--analysis-border) var(--card-border-width),
+			transparent var(--card-border-width)
+		);
+	background-size: var(--space-10) var(--space-10);
+	background-attachment: fixed;
+	/* * Smooth background transition */
+	transition: background-image var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+body:has(.analysis-mode-banner)::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	background: radial-gradient(
+		circle at 50% 0%,
+		color-mix(in srgb, var(--analysis-accent) 5%, transparent),
+		transparent 70%
+	);
+	pointer-events: none;
+	z-index: var(--z-negative);
+	/* * Smooth fade-in */
+	animation: analysis-bg-fade-in var(--analysis-duration-normal) var(--analysis-ease);
+}
+
+@keyframes analysis-bg-fade-in {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+/* ==========================================================================
+   3. COMPONENTS
+   ========================================================================== */
+/* ANALYSIS PANEL - Primary Container */
 .analysis-panel {
 	position: relative;
 	display: flex;
@@ -153,9 +270,7 @@
 	opacity: 1;
 }
 
-/* ==========================================================================
-   ANALYSIS HEADER - Mode Indicator
-   ========================================================================== */
+/* ANALYSIS HEADER - Mode Indicator */
 .analysis-header {
 	display: flex;
 	align-items: center;
@@ -230,9 +345,7 @@
 	border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
 }
 
-/* ==========================================================================
-   ANALYSIS STATS - Dashboard Metrics
-   ========================================================================== */
+/* ANALYSIS STATS - Dashboard Metrics */
 .analysis-stats {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -278,9 +391,7 @@
 	color: var(--analysis-accent);
 }
 
-/* ==========================================================================
-   ANALYSIS CHARTS - Visualizations
-   ========================================================================== */
+/* ANALYSIS CHARTS - Visualizations */
 .analysis-charts-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -356,9 +467,7 @@
 	margin-left: var(--analysis-gap-xs);
 }
 
-/* ==========================================================================
-   ANALYSIS TOOLBAR - Unified Controls
-   ========================================================================== */
+/* ANALYSIS TOOLBAR - Unified Controls */
 .analysis-toolbar {
 	position: sticky;
 	top: 0;
@@ -470,9 +579,7 @@
 	font-weight: var(--font-weight-medium);
 }
 
-/* ==========================================================================
-   ANALYSIS BUTTONS - Intentional Actions
-   ========================================================================== */
+/* ANALYSIS BUTTONS - Intentional Actions */
 .analysis-btn {
 	display: inline-flex;
 	align-items: center;
@@ -561,9 +668,7 @@
 	border-color: transparent;
 }
 
-/* ==========================================================================
-   ANALYSIS FILTERS - Compact Controls
-   ========================================================================== */
+/* ANALYSIS FILTERS - Compact Controls */
 .analysis-filters {
 	display: flex;
 	flex-wrap: wrap;
@@ -634,9 +739,7 @@
 	justify-content: center;
 }
 
-/* ==========================================================================
-   ANALYSIS HIGHLIGHTS - Top Items Display
-   ========================================================================== */
+/* ANALYSIS HIGHLIGHTS - Top Items Display */
 .analysis-highlights {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -691,9 +794,7 @@
 	color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   ANALYSIS PROGRESS - Visual Feedback
-   ========================================================================== */
+/* ANALYSIS PROGRESS - Visual Feedback */
 .analysis-progress {
 	display: flex;
 	align-items: center;
@@ -722,9 +823,7 @@
 	white-space: nowrap;
 }
 
-/* ==========================================================================
-   ANALYSIS TOGGLE - Navbar Mode Switch
-   ========================================================================== */
+/* ANALYSIS TOGGLE - Navbar Mode Switch */
 .analysis-toggle {
 	position: relative;
 	display: flex;
@@ -798,316 +897,4 @@
 	border-radius: var(--analysis-radius-sm);
 	opacity: 0.6;
 	transition: opacity var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.analysis-toggle:hover .analysis-toggle-shortcut {
-	opacity: 1;
-}
-
-.analysis-toggle--active .analysis-toggle-shortcut {
-	background: color-mix(in srgb, var(--analysis-accent) 20%, transparent);
-	border-color: var(--analysis-border-accent);
-	color: var(--analysis-accent);
-}
-
-/* ==========================================================================
-   ANALYSIS MODE INDICATOR BANNER
-   ========================================================================== */
-.analysis-mode-banner {
-	position: sticky;
-	top: 0;
-	z-index: var(--z-sticky);
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--analysis-gap-md);
-	padding: var(--analysis-gap-sm) var(--analysis-gap-lg);
-	background: linear-gradient(
-		135deg,
-		color-mix(in srgb, var(--analysis-accent) 12%, transparent) 0%,
-		color-mix(in srgb, var(--analysis-accent) 6%, transparent) 100%
-	);
-	border-bottom: var(--card-border-width) solid var(--analysis-border-accent);
-	backdrop-filter: blur(16px);
-	box-shadow: var(--analysis-shadow-sm);
-	animation: analysis-banner-slide-in var(--analysis-duration-fast)
-		cubic-bezier(0.34, 1.56, 0.64, 1);
-	transform-origin: top;
-}
-
-@keyframes analysis-banner-slide-in {
-	from {
-		opacity: 0;
-		transform: translateY(-100%);
-	}
-
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-.analysis-mode-banner-content {
-	display: flex;
-	align-items: center;
-	gap: var(--analysis-gap-sm);
-}
-
-.analysis-mode-banner-text-group {
-	display: flex;
-	flex-direction: column;
-	gap: var(--analysis-gap-xs);
-	flex: 1;
-}
-
-.analysis-mode-banner-text {
-	font-size: var(--analysis-text-body);
-	font-weight: var(--font-weight-semibold);
-	color: var(--text-primary);
-}
-
-.analysis-mode-banner-description {
-	font-size: var(--analysis-text-caption);
-	color: var(--text-secondary);
-	opacity: 0.85;
-}
-
-.analysis-mode-banner-shortcut {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--analysis-gap-xs);
-	padding: var(--analysis-gap-xs) var(--analysis-gap-sm);
-	font-family: var(--analysis-text-mono);
-	font-size: var(--analysis-text-caption);
-	color: var(--analysis-accent);
-	background: var(--analysis-accent-muted);
-	border: var(--card-border-width) solid var(--analysis-border-accent);
-	border-radius: var(--analysis-radius-md);
-}
-
-.analysis-mode-banner-close {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: var(--icon-button-small);
-	height: var(--icon-button-small);
-	padding: 0;
-	color: var(--text-secondary);
-	background: transparent;
-	border: none;
-	border-radius: var(--analysis-radius-md);
-	cursor: pointer;
-	transition:
-		color var(--analysis-duration-fast) var(--analysis-ease),
-		background var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.analysis-mode-banner-close:hover {
-	color: var(--text-primary);
-	background: var(--analysis-surface-elevated);
-}
-
-/* ==========================================================================
-   ANALYSIS LOADING STATE
-   ========================================================================== */
-.analysis-loading {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: var(--analysis-gap-xl);
-	font-size: var(--analysis-text-body);
-	color: var(--text-secondary);
-	animation: analysis-fade-in var(--analysis-duration-normal) var(--analysis-ease);
-}
-
-.analysis-loading::before {
-	content: "";
-	width: var(--space-4);
-	height: var(--space-4);
-	margin-right: var(--analysis-gap-sm);
-	border: var(--space-1) solid var(--analysis-border);
-	border-top-color: var(--analysis-accent);
-	border-radius: var(--analysis-radius-full);
-	animation: analysis-spin var(--duration-normal) linear infinite;
-}
-
-@keyframes analysis-spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
-
-@keyframes analysis-fade-in {
-	from {
-		opacity: 0;
-	}
-
-	to {
-		opacity: 1;
-	}
-}
-
-/* ==========================================================================
-   ANALYSIS DASHBOARD - Collapsible Header
-   ========================================================================== */
-.analysis-dashboard-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--analysis-gap-sm);
-	width: 100%;
-	padding: var(--analysis-gap-sm) var(--analysis-gap-md);
-	margin: calc(-1 * var(--analysis-gap-lg));
-	margin-bottom: 0;
-	font-size: var(--analysis-text-body);
-	font-weight: var(--font-weight-semibold);
-	color: var(--text-primary);
-	background: var(--analysis-surface-elevated);
-	border: none;
-	border-bottom: var(--card-border-width) solid var(--analysis-border);
-	border-radius: var(--analysis-radius-xl) var(--analysis-radius-xl) 0 0;
-	cursor: pointer;
-	transition:
-		background var(--analysis-duration-fast) var(--analysis-ease),
-		color var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.analysis-dashboard-header:hover {
-	background: var(--analysis-accent-subtle);
-}
-
-.analysis-dashboard-header:focus-visible {
-	outline: var(--focus-ring-width) solid var(--analysis-accent);
-	outline-offset: calc(var(--focus-ring-width) * -1);
-}
-
-.analysis-dashboard-title {
-	display: flex;
-	align-items: center;
-	gap: var(--analysis-gap-sm);
-	flex: 1;
-	min-width: 0;
-}
-
-.analysis-dashboard-chevron {
-	display: inline-flex;
-	font-size: 0.75em;
-	transition: transform var(--analysis-duration-fast) var(--analysis-ease);
-}
-
-.analysis-dashboard-chevron.collapsed {
-	transform: rotate(-90deg);
-}
-
-.analysis-dashboard-hint {
-	font-size: var(--analysis-text-caption);
-	font-weight: var(--font-weight-normal);
-	color: var(--text-tertiary);
-}
-
-.analysis-panel:has(.analysis-dashboard-header) {
-	padding-top: 0;
-}
-
-.analysis-dashboard-summary {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--analysis-gap-xs);
-	margin-left: var(--analysis-gap-md);
-	padding-left: var(--analysis-gap-md);
-	border-left: var(--card-border-width) solid var(--analysis-border);
-	font-size: var(--analysis-text-caption);
-	font-weight: var(--font-weight-normal);
-	color: var(--text-secondary);
-}
-
-.analysis-dashboard-summary-item {
-	white-space: nowrap;
-}
-
-.analysis-dashboard-summary-item strong {
-	color: var(--analysis-accent);
-	font-weight: var(--font-weight-semibold);
-}
-
-/* ==========================================================================
-   RESPONSIVE STYLES
-   ========================================================================== */
-@media (width <= 768px) {
-	.analysis-panel {
-		padding: var(--analysis-gap-md);
-		border-radius: var(--analysis-radius-lg);
-	}
-
-	.analysis-stats {
-		grid-template-columns: repeat(3, 1fr);
-	}
-
-	.analysis-toolbar {
-		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.analysis-toolbar-group {
-		justify-content: space-between;
-	}
-
-	.analysis-toolbar-divider {
-		width: 100%;
-		height: var(--card-border-width);
-		margin: var(--analysis-gap-xs) 0;
-	}
-
-	.analysis-filters {
-		flex-direction: column;
-	}
-
-	.analysis-filter {
-		min-width: 100%;
-	}
-}
-
-@media (width <= 640px) {
-	.analysis-stats {
-		grid-template-columns: repeat(3, 1fr);
-	}
-
-	.analysis-highlights {
-		grid-template-columns: 1fr;
-	}
-
-	.analysis-charts-grid {
-		grid-template-columns: 1fr;
-	}
-
-	.analysis-dashboard-summary {
-		display: none;
-	}
-}
-
-@media (width <= 400px) {
-	.analysis-toggle-shortcut {
-		display: none;
-	}
-}
-
-/* ==========================================================================
-   REDUCED MOTION
-   ========================================================================== */
-@media (prefers-reduced-motion: reduce) {
-	.analysis-badge::before,
-	.analysis-toggle-indicator {
-		animation: none;
-	}
-
-	.analysis-panel,
-	.analysis-stat,
-	.analysis-btn,
-	.analysis-input,
-	.analysis-select,
-	.analysis-toggle,
-	.analysis-progress-fill,
-	.analysis-chart-bar {
-		transition: none;
-	}
 }

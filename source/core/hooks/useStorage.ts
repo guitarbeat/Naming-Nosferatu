@@ -16,7 +16,7 @@ import { useCallback, useState } from "react";
  * @returns {Array} [storedValue, setValue] - Current value and setter function
  */
 export default function useLocalStorage<T>(key: string, initialValue: T) {
-	const [storedValue, setStoredValue] = useState(() => {
+	const [storedValue, setStoredValue] = useState<T>(() => {
 		if (typeof window === "undefined") {
 			return initialValue;
 		}
@@ -24,12 +24,12 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 			const storedJson = window.localStorage.getItem(key);
 			return storedJson
 				? (() => {
-					try {
-						return JSON.parse(storedJson);
-					} catch {
-						return storedJson;
-					}
-				})()
+						try {
+							return JSON.parse(storedJson) as T;
+						} catch {
+							return storedJson as unknown as T;
+						}
+					})()
 				: initialValue;
 		} catch (error) {
 			if (import.meta.env.DEV) {
@@ -57,7 +57,7 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 		[key, storedValue],
 	);
 
-	return [storedValue, setValue];
+	return [storedValue, setValue] as const;
 }
 
 // ============================================================================

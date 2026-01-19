@@ -1,7 +1,7 @@
 /**
  * @module EmptyState
  * @description A generic empty state component to provide feedback when no data is available.
- * Styles consolidated in src/shared/styles/components-primitives.css
+ * Styles consolidated in src/shared/styles/components.css
  */
 
 import type React from "react";

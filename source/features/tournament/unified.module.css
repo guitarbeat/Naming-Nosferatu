@@ -594,6 +594,90 @@
 }
 
 /* ==========================================================================
+   HISTORY VIEW
+   ========================================================================== */
+
+.historyContainer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.historyList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	max-height: 500px;
+	overflow-y: auto;
+	padding-right: var(--space-2);
+}
+
+.historyItem {
+	margin: 0;
+	transition: transform 0.2s;
+}
+
+.historyItem:hover {
+	transform: translateX(4px);
+}
+
+.historyContent {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+
+.matchup {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-weight: 500;
+}
+
+.vs {
+	color: var(--color-text-muted);
+	font-size: 0.9em;
+	font-style: italic;
+}
+
+.winner {
+	color: var(--color-success);
+	font-weight: bold;
+}
+
+.voteBoth {
+	color: var(--color-love);
+	font-weight: bold;
+}
+
+.voteNeither {
+	color: var(--color-text-muted);
+}
+
+.voteWinner {
+	color: var(--color-success);
+}
+
+.timestamp {
+	font-size: 0.8rem;
+	color: var(--color-text-muted);
+	margin-left: auto;
+}
+
+.emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4);
+	padding: var(--space-8);
+	text-align: center;
+	color: var(--color-text-muted);
+}
+
+/* ==========================================================================
    RESPONSIVE DESIGN
    ========================================================================== */
 

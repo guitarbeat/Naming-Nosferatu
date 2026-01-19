@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import useLocalStorage from "../../core/hooks/useStorage";
 import Button from "../../shared/components/Button";
 import Card from "../../shared/components/Card";
 import { Loading } from "../../shared/components/Loading";
@@ -109,9 +110,27 @@ export const PersonalResults = ({
 				<Button
 					variant="secondary"
 					startIcon={<Calendar />}
-					onClick={() => window.alert("Calendar export coming soon!")}
+					onClick={() => {
+						if (!rankings.length) return;
+						const headers = ["Name", "Rating", "Wins", "Losses"];
+						const rows = rankings.map((r) =>
+							[`"${r.name}"`, r.rating, r.wins || 0, r.losses || 0].join(","),
+						);
+						const csvContent = [headers.join(","), ...rows].join("\n");
+						const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+						const url = URL.createObjectURL(blob);
+						const link = document.createElement("a");
+						link.setAttribute("href", url);
+						link.setAttribute(
+							"download",
+							`cat_names_export_${new Date().toISOString().split("T")[0]}.csv`,
+						);
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+					}}
 				>
-					Export
+					Export CSV
 				</Button>
 			</div>
 		</div>
@@ -281,7 +300,8 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 	const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 	const [generatedName, setGeneratedName] = useState<string | null>(null);
 	const [isGenerating, setIsGenerating] = useState(false);
-	const [favorites, setFavorites] = useState<Set<string>>(new Set());
+	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>("cat_name_favorites", []);
+	const favorites = useMemo(() => new Set(storedFavorites), [storedFavorites]);
 
 	const generateName = async (categoryId?: string) => {
 		setIsGenerating(true);
@@ -310,15 +330,13 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 	};
 
 	const toggleFavorite = (name: string) => {
-		setFavorites((prev) => {
-			const newFavorites = new Set(prev);
-			if (newFavorites.has(name)) {
-				newFavorites.delete(name);
-			} else {
-				newFavorites.add(name);
-			}
-			return newFavorites;
-		});
+		const newFavorites = new Set(favorites);
+		if (newFavorites.has(name)) {
+			newFavorites.delete(name);
+		} else {
+			newFavorites.add(name);
+		}
+		setStoredFavorites(Array.from(newFavorites));
 	};
 
 	const selectedCategoryData = selectedCategory
@@ -670,6 +688,90 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
    MAIN COMPONENT: UnifiedDashboard
    ========================================================================= */
 
+/* =========================================================================
+   HistoryView Component
+   ========================================================================= */
+
+import { History } from "lucide-react";
+import type { VoteData } from "../../types/components";
+
+export const HistoryView: React.FC<{ voteHistory: unknown[] }> = ({ voteHistory }) => {
+	const history = (voteHistory as VoteData[]) || [];
+	const sortedHistory = [...history].sort(
+		(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+	);
+
+	if (sortedHistory.length === 0) {
+		return (
+			<Card background="glass" padding="large">
+				<div className={styles.emptyState}>
+					<History size={48} />
+					<h3>No History Yet</h3>
+					<p>Start voting to see your tournament history here!</p>
+				</div>
+			</Card>
+		);
+	}
+
+	const formatResult = (vote: VoteData) => {
+		const left = vote.match.left;
+		const right = vote.match.right;
+
+		if (left.outcome === "win" && right.outcome === "win") {
+			return <span className={styles.voteBoth}>❤️ Both Liked</span>;
+		}
+		if (left.outcome === "loss" && right.outcome === "loss") {
+			return <span className={styles.voteNeither}>🚫 Neither</span>;
+		}
+		if (vote.result === -1) {
+			return (
+				<span className={styles.voteWinner}>
+					Winner: <strong>{left.name}</strong>
+				</span>
+			);
+		}
+		if (vote.result === 1) {
+			return (
+				<span className={styles.voteWinner}>
+					Winner: <strong>{right.name}</strong>
+				</span>
+			);
+		}
+		return <span>Tie</span>;
+	};
+
+	return (
+		<div className={styles.historyContainer}>
+			<div className={styles.header}>
+				<h2>Voting History</h2>
+				<p>Your recent tournament decisions</p>
+			</div>
+
+			<div className={styles.historyList}>
+				{sortedHistory.map((vote, i) => (
+					<Card key={`${vote.timestamp}-${i}`} className={styles.historyItem} padding="medium">
+						<div className={styles.historyContent}>
+							<div className={styles.matchup}>
+								<span className={vote.match.left.outcome === "win" ? styles.winner : ""}>
+									{vote.match.left.name}
+								</span>
+								<span className={styles.vs}>vs</span>
+								<span className={vote.match.right.outcome === "win" ? styles.winner : ""}>
+									{vote.match.right.name}
+								</span>
+							</div>
+							<div className={styles.result}>{formatResult(vote)}</div>
+							<div className={styles.timestamp}>
+								{new Date(vote.timestamp).toLocaleTimeString()}
+							</div>
+						</div>
+					</Card>
+				))}
+			</div>
+		</div>
+	);
+};
+
 export default function UnifiedDashboard({
 	personalRatings,
 	currentTournamentNames,
@@ -709,6 +811,13 @@ export default function UnifiedDashboard({
 					/>
 				),
 				disabled: !hasPersonalData,
+			},
+			{
+				key: "history",
+				label: "History",
+				icon: <History size={16} />,
+				content: <HistoryView voteHistory={voteHistory || []} />,
+				disabled: !voteHistory || voteHistory.length === 0,
 			},
 			{
 				key: "discover",

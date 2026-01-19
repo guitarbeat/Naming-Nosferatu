@@ -7,14 +7,17 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./App.module.css";
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
+
 // Lazy load route components
-import TournamentFlow from "./features/tournament/TournamentFlow";
+const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
+const UnifiedDashboard = lazy(() => import("./features/tournament/UnifiedDashboard"));
+
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
-import UnifiedDashboard from "./features/tournament/UnifiedDashboard";
+import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { Toast } from "./shared/components/Toast";
 import { AppLayout } from "./shared/layouts/AppLayout";
@@ -128,7 +131,11 @@ function App() {
 						<div className="flex flex-col gap-8 pb-32">
 							{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
 							<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
-								<TournamentFlow />
+								<ErrorBoundary context="Tournament Flow">
+									<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+										<TournamentFlow />
+									</Suspense>
+								</ErrorBoundary>
 							</section>
 
 							{/* Analysis Section - Only visible after tournament completion */}
@@ -137,14 +144,18 @@ function App() {
 									<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
 										Analyze
 									</h2>
-									<UnifiedDashboard
-										personalRatings={tournament.ratings}
-										currentTournamentNames={tournament.names || undefined}
-										voteHistory={tournament.voteHistory}
-										onStartNew={handleStartNewTournament}
-										onUpdateRatings={handleUpdateRatings}
-										userName={user.name || ""}
-									/>
+									<ErrorBoundary context="Analysis Dashboard">
+										<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+											<UnifiedDashboard
+												personalRatings={tournament.ratings}
+												currentTournamentNames={tournament.names || undefined}
+												voteHistory={tournament.voteHistory}
+												onStartNew={handleStartNewTournament}
+												onUpdateRatings={handleUpdateRatings}
+												userName={user.name || ""}
+											/>
+										</Suspense>
+									</ErrorBoundary>
 								</section>
 							)}
 						</div>

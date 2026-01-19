@@ -61,7 +61,11 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
 			try {
 				setGlobalError("");
-				const submissionResult = await catNamesAPI.addName(values.name, values.description, userName);
+				const submissionResult = await catNamesAPI.addName(
+					values.name,
+					values.description,
+					userName,
+				);
 
 				if (!isMountedRef.current) {
 					return;

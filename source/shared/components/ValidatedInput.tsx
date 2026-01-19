@@ -3,7 +3,7 @@ import type React from "react";
 import { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
 
-// Styles consolidated in src/shared/styles/form-controls.css
+// Styles consolidated in src/shared/styles/components.css
 
 interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;

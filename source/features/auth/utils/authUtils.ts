@@ -512,11 +512,11 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 					error instanceof Error
 						? error
 						: new Error(
-							((error as Record<string, unknown>)?.message as string) ||
-							((error as Record<string, unknown>)?.hint as string) ||
-							((error as Record<string, unknown>)?.detail as string) ||
-							"Failed to check user role",
-						);
+								((error as Record<string, unknown>)?.message as string) ||
+									((error as Record<string, unknown>)?.hint as string) ||
+									((error as Record<string, unknown>)?.detail as string) ||
+									"Failed to check user role",
+							);
 				throw errorWithMessage;
 			}
 
