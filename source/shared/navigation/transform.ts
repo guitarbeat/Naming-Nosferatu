@@ -43,12 +43,12 @@ export function buildNavItems(context: BuildNavItemsContext, items: NavItemConfi
 		const onClick =
 			config.route && onNavigate
 				? () => {
-						// We know config.route exists because of the condition above
-						const route = config.route;
-						if (route) {
-							onNavigate(route);
-						}
+					// We know config.route exists because of the condition above
+					const route = config.route;
+					if (route) {
+						onNavigate(route);
 					}
+				}
 				: undefined;
 
 		return {
@@ -72,12 +72,12 @@ export function buildNavItems(context: BuildNavItemsContext, items: NavItemConfi
  * @returns The found navigation item or undefined
  */
 export function findNavItem(items: NavItemConfig[], key: string): NavItemConfig | undefined {
-	for (const item of items) {
-		if (item.key === key) {
-			return item;
+	for (const navItem of items) {
+		if (navItem.key === key) {
+			return navItem;
 		}
-		if (item.children) {
-			const found = findNavItem(item.children, key);
+		if (navItem.children) {
+			const found = findNavItem(navItem.children, key);
 			if (found) {
 				return found;
 			}

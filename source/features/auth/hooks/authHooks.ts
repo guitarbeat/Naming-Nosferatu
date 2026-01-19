@@ -32,10 +32,10 @@ export function useCatFact() {
 					throw new Error(`HTTP error! status: ${response.status}`);
 				}
 
-				const data = await response.json();
+				const catFactData = await response.json();
 
-				if (data && typeof data.fact === "string") {
-					setCatFact(data.fact);
+				if (catFactData && typeof catFactData.fact === "string") {
+					setCatFact(catFactData.fact);
 				} else {
 					throw new Error("Invalid response format from cat fact API");
 				}
@@ -141,8 +141,8 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 				const error = err as Error;
 				setGlobalError(
 					formattedError.userMessage ||
-						error.message ||
-						"Unable to log in. Please check your connection and try again.",
+					error.message ||
+					"Unable to log in. Please check your connection and try again.",
 				);
 				throw err; // Re-throw to let the hook know submission failed
 			}

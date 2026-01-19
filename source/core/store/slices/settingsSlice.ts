@@ -103,12 +103,12 @@ export const createSettingsSlice: StateCreator<
 	siteSettingsActions: {
 		loadCatChosenName: async () => {
 			try {
-				const data = (await siteSettingsAPI.getCatChosenName()) as CatChosenName | null;
+				const chosenNameData = (await siteSettingsAPI.getCatChosenName()) as CatChosenName | null;
 				updateSlice(set, "siteSettings", {
-					catChosenName: data,
+					catChosenName: chosenNameData,
 					isLoaded: true,
 				});
-				return data;
+				return chosenNameData;
 			} catch (error) {
 				console.error("Error loading cat chosen name:", error);
 				updateSlice(set, "siteSettings", { isLoaded: true });

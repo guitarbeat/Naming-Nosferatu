@@ -61,14 +61,14 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 
 			try {
 				setGlobalError("");
-				const res = await catNamesAPI.addName(values.name, values.description, userName);
+				const submissionResult = await catNamesAPI.addName(values.name, values.description, userName);
 
 				if (!isMountedRef.current) {
 					return;
 				}
 
-				if (res?.success === false) {
-					throw new Error(res.error || "Unable to add name. Please try again.");
+				if (submissionResult?.success === false) {
+					throw new Error(submissionResult.error || "Unable to add name. Please try again.");
 				}
 
 				setSuccess("Thank you for your suggestion!");

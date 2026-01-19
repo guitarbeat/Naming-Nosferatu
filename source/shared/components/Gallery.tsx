@@ -53,9 +53,9 @@ export function useImageGallery() {
 
 				let manifest: string[] = [];
 				try {
-					const res = await fetch("/assets/images/gallery.json");
-					if (res.ok) {
-						manifest = await res.json();
+					const manifestResponse = await fetch("/assets/images/gallery.json");
+					if (manifestResponse.ok) {
+						manifest = await manifestResponse.json();
 					}
 				} catch {
 					/* silent */
@@ -188,9 +188,9 @@ export function PhotoGallery({
 						maxHeight: 1600,
 						quality: 0.8,
 					});
-					const data = await imagesAPI.upload(compressed, userName || "anonymous");
-					if (data?.path) {
-						uploaded.push(data.path);
+					const uploadResult = await imagesAPI.upload(compressed, userName || "anonymous");
+					if (uploadResult?.path) {
+						uploaded.push(uploadResult.path);
 					}
 				}),
 			);

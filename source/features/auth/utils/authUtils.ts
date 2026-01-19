@@ -116,30 +116,30 @@ const extractErrorMetadata = (error: unknown) => {
 		}
 
 		// Use type assertion to a structural interface
-		const obj = current as ErrorWithStatus;
+		const errorObj = current as ErrorWithStatus;
 
 		// Extract Statuses
 		const candidateStatuses = [
-			obj.status,
-			obj.statusCode,
-			obj.status_code,
-			obj.responseStatus,
-			obj.statusText,
-			(obj.response as Record<string, unknown>)?.status,
-			(obj.response as Record<string, unknown>)?.statusCode,
-			(obj.response as Record<string, unknown>)?.status_code,
+			errorObj.status,
+			errorObj.statusCode,
+			errorObj.status_code,
+			errorObj.responseStatus,
+			errorObj.statusText,
+			(errorObj.response as Record<string, unknown>)?.status,
+			(errorObj.response as Record<string, unknown>)?.statusCode,
+			(errorObj.response as Record<string, unknown>)?.status_code,
 			// Deep nested checks
-			(obj.response as ErrorWithStatus)?.response?.status,
-			(obj.response as ErrorWithStatus)?.error?.status,
-			obj.error?.status,
-			obj.error?.statusCode,
-			obj.error?.status_code,
-			obj.originalError?.status,
-			obj.originalError?.statusCode,
-			obj.originalError?.status_code,
-			obj.data?.status,
-			obj.data?.statusCode,
-			obj.data?.status_code,
+			(errorObj.response as ErrorWithStatus)?.response?.status,
+			(errorObj.response as ErrorWithStatus)?.error?.status,
+			errorObj.error?.status,
+			errorObj.error?.statusCode,
+			errorObj.error?.status_code,
+			errorObj.originalError?.status,
+			errorObj.originalError?.statusCode,
+			errorObj.originalError?.status_code,
+			errorObj.data?.status,
+			errorObj.data?.statusCode,
+			errorObj.data?.status_code,
 		];
 
 		for (const candidate of candidateStatuses) {
@@ -151,13 +151,13 @@ const extractErrorMetadata = (error: unknown) => {
 
 		// Extract Codes
 		const candidateCodes = [
-			obj.code,
-			obj.sqlState,
-			obj.error?.code,
-			(obj.response as ErrorWithStatus)?.code,
-			(obj.response as ErrorWithStatus)?.error?.code,
-			obj.data?.code,
-			obj.originalError?.code,
+			errorObj.code,
+			errorObj.sqlState,
+			errorObj.error?.code,
+			(errorObj.response as ErrorWithStatus)?.code,
+			(errorObj.response as ErrorWithStatus)?.error?.code,
+			errorObj.data?.code,
+			errorObj.originalError?.code,
 		];
 
 		for (const candidate of candidateCodes) {
@@ -187,7 +187,7 @@ const extractErrorMetadata = (error: unknown) => {
 		];
 
 		for (const key of messageKeys) {
-			const value = obj[key];
+			const value = errorObj[key];
 			if (typeof value === "string") {
 				messages.add(value);
 			}
@@ -512,11 +512,11 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 					error instanceof Error
 						? error
 						: new Error(
-								((error as Record<string, unknown>)?.message as string) ||
-									((error as Record<string, unknown>)?.hint as string) ||
-									((error as Record<string, unknown>)?.detail as string) ||
-									"Failed to check user role",
-							);
+							((error as Record<string, unknown>)?.message as string) ||
+							((error as Record<string, unknown>)?.hint as string) ||
+							((error as Record<string, unknown>)?.detail as string) ||
+							"Failed to check user role",
+						);
 				throw errorWithMessage;
 			}
 

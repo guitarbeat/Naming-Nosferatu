@@ -21,15 +21,15 @@ export default function useLocalStorage<T>(key: string, initialValue: T) {
 			return initialValue;
 		}
 		try {
-			const item = window.localStorage.getItem(key);
-			return item
+			const storedJson = window.localStorage.getItem(key);
+			return storedJson
 				? (() => {
-						try {
-							return JSON.parse(item);
-						} catch {
-							return item;
-						}
-					})()
+					try {
+						return JSON.parse(storedJson);
+					} catch {
+						return storedJson;
+					}
+				})()
 				: initialValue;
 		} catch (error) {
 			if (import.meta.env.DEV) {
