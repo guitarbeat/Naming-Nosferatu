@@ -13,6 +13,7 @@ export default defineConfig({
 		environment: "jsdom",
 		globals: true,
 		testTimeout: 10000,
+		setupFiles: [pathResolve(projectRoot, "source/setupTests.ts")],
 		env: {
 			VITE_SUPABASE_URL: "https://test.supabase.co",
 			VITE_SUPABASE_ANON_KEY: "test-anon-key",
@@ -20,14 +21,14 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			"@": pathResolve(projectRoot, "src"),
-			"@components": pathResolve(projectRoot, "src/shared/components"),
-			"@hooks": pathResolve(projectRoot, "src/core/hooks"),
-			"@utils": pathResolve(projectRoot, "src/shared/utils"),
-			"@services": pathResolve(projectRoot, "src/shared/services"),
-			"@styles": pathResolve(projectRoot, "src/shared/styles"),
-			"@features": pathResolve(projectRoot, "src/features"),
-			"@core": pathResolve(projectRoot, "src/core"),
+			"@": pathResolve(projectRoot, "source"),
+			"@components": pathResolve(projectRoot, "source/shared/components"),
+			"@hooks": pathResolve(projectRoot, "source/core/hooks"),
+			"@utils": pathResolve(projectRoot, "source/shared/utils"),
+			"@services": pathResolve(projectRoot, "source/shared/services"),
+			"@styles": pathResolve(projectRoot, "source/shared/styles"),
+			"@features": pathResolve(projectRoot, "source/features"),
+			"@core": pathResolve(projectRoot, "source/core"),
 		},
 	},
 });

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { getVisibleNames } from "../../shared/utils";
-import type { TournamentProps } from "../../types/components";
+import type { BracketMatch, TournamentProps } from "../../types/components";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES } from "./TournamentLogic";
 import { KeyboardHelp, MatchResult, RoundTransition, UndoBanner } from "./TournamentOverlays";
@@ -14,6 +14,8 @@ import {
 	TournamentMatch,
 } from "./TournamentViews";
 import styles from "./tournament.module.css";
+
+const EMPTY_MATCHES: BracketMatch[] = [];
 
 function TournamentContent({
 	onComplete,
@@ -69,6 +71,13 @@ function TournamentContent({
 
 	const [showCatPictures, setShowCatPictures] = useState(true);
 
+	const handleToggleCatPictures = useCallback(() => setShowCatPictures((p) => !p), []);
+	const handleToggleBracket = useCallback(() => setShowBracket((p) => !p), [setShowBracket]);
+	const handleToggleKeyboardHelp = useCallback(
+		() => setShowKeyboardHelp((p) => !p),
+		[setShowKeyboardHelp],
+	);
+
 	if (!currentMatch) {
 		return (
 			<div className={styles.tournament}>
@@ -99,7 +108,7 @@ function TournamentContent({
 				volume={{ music: audioManager.volume, effects: audioManager.volume }}
 				onVolumeChange={audioManager.handleVolumeChange}
 				showCatPictures={showCatPictures}
-				onToggleCatPictures={() => setShowCatPictures((p) => !p)}
+				onToggleCatPictures={handleToggleCatPictures}
 				isShuffle={false}
 				onToggleShuffle={() => {
 					/* no-op */
@@ -110,10 +119,12 @@ function TournamentContent({
 					/* no-op */
 				}}
 			/>
+			{/* Passing constant truthy values because UndoBanner only checks for existence,
+			    not actual time. Previous code passed Date.now() which caused re-renders. */}
 			<UndoBanner
 				onUndo={handleUndo}
-				undoExpiresAt={Date.now() + 5000}
-				undoStartTime={Date.now()}
+				undoExpiresAt={1}
+				undoStartTime={1}
 			/>
 
 			<div className={styles.tournamentLayout}>
@@ -133,9 +144,9 @@ function TournamentContent({
 				<TournamentFooter
 					showBracket={showBracket}
 					showKeyboardHelp={showKeyboardHelp}
-					transformedMatches={[]}
-					onToggleBracket={() => setShowBracket((p) => !p)}
-					onToggleKeyboardHelp={() => setShowKeyboardHelp((p) => !p)}
+					transformedMatches={EMPTY_MATCHES}
+					onToggleBracket={handleToggleBracket}
+					onToggleKeyboardHelp={handleToggleKeyboardHelp}
 				/>
 			</div>
 
