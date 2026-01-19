@@ -4,7 +4,7 @@
  * Includes Types, Context, and Hooks for name data and selection management.
  */
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
@@ -192,7 +192,23 @@ export function useNameManagementView({
 		userName: userName ?? null,
 	});
 
-	const { errors, ui, errorActions } = useAppStore();
+	const { errors, ui, errorActions, tournamentActions, tournament } = useAppStore();
+
+	// * Sync selection with global store for Navbar access
+	useEffect(() => {
+		if (mode === "tournament" && tournamentActions?.setSelection) {
+			// Prevent infinite loop: Only update if selection actually changed
+			const currentStoreSelection = tournament.selectedNames || [];
+			const hasChanged =
+				selectedNames.length !== currentStoreSelection.length ||
+				selectedNames.some((n, i) => n.id !== currentStoreSelection[i]?.id);
+
+			if (hasChanged) {
+				tournamentActions.setSelection(selectedNames);
+			}
+		}
+	}, [selectedNames, tournamentActions, mode, tournament.selectedNames]);
+
 	const isError = mode === "tournament" && (!!errors.current || !!dataError);
 	const clearErrors =
 		errorActions?.clearError ??

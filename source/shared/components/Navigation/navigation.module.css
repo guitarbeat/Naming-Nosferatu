@@ -63,6 +63,24 @@
 	position: relative;
 }
 
+.bottomNavItem.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.bottomNavItem.highlight {
+	color: var(--color-neon-cyan);
+	background: rgba(var(--color-neon-cyan-rgb), 0.15);
+	border: 1px solid rgba(var(--color-neon-cyan-rgb), 0.4);
+	font-weight: var(--font-weight-bold);
+}
+
+.bottomNavItem.highlight:hover {
+	background: rgba(var(--color-neon-cyan-rgb), 0.25);
+	transform: translateY(-4px);
+}
+
 .bottomNavItem:hover:not(.bottomNavAction) {
 	color: var(--color-text-primary);
 	background: rgba(255, 255, 255, 0.08);

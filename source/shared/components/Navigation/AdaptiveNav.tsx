@@ -29,12 +29,56 @@ const keyToId: Record<string, string> = {
  * Renders as a floating pill at the bottom on all screen sizes
  */
 export function AdaptiveNav(_props: AdaptiveNavProps) {
-	const { tournament } = useAppStore();
+	const { tournament, tournamentActions } = useAppStore();
+	const { selectedNames } = tournament;
 	const [_isMobileMenuOpen, _setIsMobileMenuOpen] = useState(false);
 	const [activeSection, setActiveSection] = useState("play");
 
+	// * Check if tournament is ready to start
+	const { isComplete, names: tournamentNames } = tournament;
+
+	const isTournamentActive = !!tournamentNames;
+	const selectedCount = selectedNames?.length || 0;
+	const isReadyToStart = !isComplete && !isTournamentActive && selectedCount >= 2;
+
+	const handleStartTournament = () => {
+		// * Start Logic Replicated from TournamentHooks to avoid circular deps or hook overhead
+		// * 1. Clear State
+		tournamentActions.resetTournament();
+		tournamentActions.setLoading(true);
+
+		// * 2. Set Names (Assume already filtered by NameManagementView or filter here if needed)
+		// Selection comes from NameManagementView which generally handles visibility,
+		// but we can't easily filter hidden without importing utilities.
+		// Assuming selected items are valid.
+		if (selectedNames && selectedNames.length >= 2) {
+			tournamentActions.setNames(selectedNames);
+		}
+
+		// * 3. Finish Loading & Scroll
+		setTimeout(() => {
+			tournamentActions.setLoading(false);
+			const element = document.getElementById("play");
+			element?.scrollIntoView({ behavior: "smooth" });
+			setActiveSection("play");
+		}, 100);
+	};
+
 	// Scroll to section handler
 	const handleNavClick = (key: string) => {
+		if (key === "play") {
+			if (isReadyToStart) {
+				handleStartTournament();
+				return;
+			}
+			// If not ready and not active, maybe shake or show toast?
+			// For now, if disabled in UI, this click might not happen or should be blocked.
+			if (!isTournamentActive && !isComplete && selectedCount < 2) {
+				// Prevent navigation/action if not ready
+				return;
+			}
+		}
+
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
@@ -113,16 +157,58 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				{bottomNavItems.map((item) => {
 					const itemActive = isActive(item.key);
 
+					// * Special Handling for Play Button
+					let label = item.shortLabel || item.label;
+					let isDisabled = false;
+					let isHighlight = false;
+
+					if (item.key === "play") {
+						if (!isTournamentActive && !isComplete) {
+							if (selectedCount < 2) {
+								label = "Pick 2+";
+								isDisabled = true; // Visual grey out
+							} else {
+								label = `Start (${selectedCount})`;
+								isHighlight = true;
+							}
+						}
+					}
+
+					const isPlayReady = item.key === "play" && isHighlight;
+
 					return (
-						<button
+						<motion.button
 							key={item.key}
-							className={`${styles.bottomNavItem} ${itemActive ? styles.active : ""}`}
+							className={`${styles.bottomNavItem} ${itemActive ? styles.active : ""} ${isDisabled ? styles.disabled : ""} ${isHighlight ? styles.highlight : ""}`}
 							onClick={() => handleNavClick(item.key)}
 							aria-current={itemActive ? "page" : undefined}
 							aria-label={item.ariaLabel || item.label}
+							disabled={isDisabled}
+							type="button"
+							animate={
+								isPlayReady
+									? {
+											scale: [1, 1.05, 1],
+											boxShadow: [
+												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
+												"0 0 20px rgba(var(--color-neon-cyan-rgb), 0.6)",
+												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
+											],
+										}
+									: {}
+							}
+							transition={
+								isPlayReady
+									? {
+											duration: 2,
+											repeat: Infinity,
+											ease: "easeInOut",
+										}
+									: {}
+							}
 						>
 							{item.icon && <item.icon className={styles.bottomNavIcon} aria-hidden={true} />}
-							<span className={styles.bottomNavLabel}>{item.shortLabel || item.label}</span>
+							<span className={styles.bottomNavLabel}>{label}</span>
 							{itemActive && (
 								<motion.div
 									layoutId="dockIndicator"
@@ -131,7 +217,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 									transition={{ type: "spring", stiffness: 500, damping: 30 }}
 								/>
 							)}
-						</button>
+						</motion.button>
 					);
 				})}
 
@@ -141,6 +227,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					onClick={() => handleNavClick("suggest")}
 					aria-label="Suggest a name"
 					title="Suggest a name"
+					type="button"
 				>
 					<Lightbulb className={styles.bottomNavIcon} aria-hidden={true} />
 					<span className={styles.bottomNavLabel}>Suggest</span>

@@ -20,6 +20,7 @@ interface TournamentState {
 	isComplete: boolean;
 	isLoading: boolean;
 	voteHistory: import("./components").VoteData[];
+	selectedNames: NameItem[];
 }
 
 export interface UIState {
@@ -68,6 +69,7 @@ export interface AppState {
 		setLoading: (isLoading: boolean) => void;
 		addVote: (vote: import("./components").VoteData) => void;
 		resetTournament: () => void;
+		setSelection: (selectedNames: NameItem[]) => void;
 	};
 
 	userActions: {
@@ -110,5 +112,6 @@ export interface AppState {
 		getIsAdmin: () => boolean;
 		getTheme: () => string;
 		getCurrentError: () => Error | null;
+		getSelectedNames: () => NameItem[];
 	};
 }

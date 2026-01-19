@@ -36,6 +36,7 @@ const useAppStore = create<AppState>()(
 			getIsAdmin: () => a[1]().user.isAdmin,
 			getTheme: () => a[1]().ui.theme,
 			getCurrentError: () => a[1]().errors.current,
+			getSelectedNames: () => a[1]().tournament.selectedNames,
 		},
 	})),
 );

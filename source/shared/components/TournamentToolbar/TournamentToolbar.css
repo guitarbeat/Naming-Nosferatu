@@ -393,17 +393,24 @@
 .tournament-toolbar-toggle-switch {
 	display: flex;
 	align-items: center;
-	gap: var(--space-2);
-	padding: var(--space-2) var(--space-4);
+	gap: var(--space-3);
+	/* Increased gap */
+	padding: var(--space-2) var(--space-5);
+	/* Increased padding */
+	min-width: 140px;
+	/* Ensure minimum width for text */
 	background: rgba(255, 255, 255, 0.05);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: var(--radius-full);
 	color: var(--color-slate-400);
 	font-size: var(--text-sm);
-	font-weight: 500;
+	font-weight: 600;
+	/* Bolder text */
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	cursor: pointer;
 	position: relative;
+	overflow: hidden;
+	/* Contain inner elements */
 }
 
 .tournament-toolbar-toggle-switch:hover {
@@ -635,14 +642,18 @@
 	flex: 1;
 	text-align: center;
 	font-size: var(--text-sm);
-	font-weight: var(--font-weight-semibold);
+	font-weight: var(--font-weight-bold);
+	/* Bold for readability */
 	letter-spacing: var(--tt-letter-spacing-label);
 	color: var(--text-secondary);
 	text-shadow: var(--tt-text-shadow-label-inactive);
 	transition:
 		color var(--transition-base),
 		text-shadow var(--transition-base);
-	z-index: var(--z-0);
+	z-index: 1;
+	/* Ensure text is above background */
+	padding-left: 12px;
+	/* Offset for thumb */
 }
 
 .tournament-toolbar-toggle-switch-active .tournament-toolbar-toggle-label {

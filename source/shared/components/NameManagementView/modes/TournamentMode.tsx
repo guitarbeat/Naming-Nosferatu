@@ -83,14 +83,6 @@ export function TournamentMode({
 				showSelectionFilter={false}
 				totalCount={totalCount}
 				filteredCount={filteredCount}
-				startTournamentButton={
-					selectedCount >= 2 && onStartTournament
-						? {
-								onClick: () => onStartTournament(selectedNames),
-								selectedCount,
-							}
-						: undefined
-				}
 			/>
 
 			<div className={styles.container} data-mode="tournament">

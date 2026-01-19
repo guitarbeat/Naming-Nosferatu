@@ -14,6 +14,7 @@ export const createTournamentSlice: StateCreator<
 		isComplete: false,
 		isLoading: false,
 		voteHistory: [],
+		selectedNames: [],
 	},
 
 	tournamentActions: {
@@ -49,5 +50,8 @@ export const createTournamentSlice: StateCreator<
 				voteHistory: [],
 				isLoading: false,
 			}),
+
+		// * Global Selection State for Navbar
+		setSelection: (selectedNames) => updateSlice(set, "tournament", { selectedNames }),
 	},
 });

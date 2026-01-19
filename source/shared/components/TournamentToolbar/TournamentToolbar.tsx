@@ -428,10 +428,11 @@ function TournamentToolbar({
 	// Get swipe mode and cat pictures state from store
 	const { isSwipeMode, showCatPictures } = useAppStore((state) => state.ui);
 	const { setSwipeMode, setCatPictures } = useAppStore((state) => state.uiActions);
+	const { selectedNames } = useAppStore((state) => state.tournament);
+	const selectedCount = selectedNames?.length || 0;
 
 	// Tournament mode toolbar content
 	const renderTournamentMode = () => {
-		const selectedCount = startTournamentButton?.selectedCount ?? 0;
 		const isReady = selectedCount >= 2;
 
 		const buttonLabel = isReady
@@ -443,8 +444,12 @@ function TournamentToolbar({
 			: "Select at least 2 names to start a tournament. You can select up to 64 names.";
 
 		return (
-			<div className={styles.unifiedContainer} data-mode={mode}>
-				<div className={styles.toggleStack}>
+			<div
+				className={styles.unifiedContainer}
+				data-mode={mode}
+				style={{ flexDirection: "column", gap: "var(--space-3)", padding: "var(--space-4)" }}
+			>
+				<div className={styles.toggleStack} style={{ justifyContent: "center", width: "100%" }}>
 					<div className={styles.toggleWrapper}>
 						<button
 							type="button"
@@ -490,6 +495,28 @@ function TournamentToolbar({
 							</span>
 						</button>
 					</div>
+				</div>
+
+				{/* Guidance Hint for Legacy Users */}
+				<div
+					style={{
+						minHeight: "24px",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					{selectedCount > 0 && selectedCount < 2 && (
+						<div className={styles.startButtonHint}>Select at least 2 names to start</div>
+					)}
+					{selectedCount >= 2 && (
+						<div
+							className={styles.startButtonHint}
+							style={{ color: "var(--color-neon-cyan)", fontWeight: 600 }}
+						>
+							Ready! Click "Start" in the dock below ↓
+						</div>
+					)}
 				</div>
 
 				{startTournamentButton && (
