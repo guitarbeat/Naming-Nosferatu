@@ -73,10 +73,6 @@ export default defineConfig(({ mode }) => {
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds
 		base: "/",
-		// * Define process.env for compatibility
-		define: {
-			"process.env.NODE_ENV": JSON.stringify(mode === "production" ? "production" : "development"),
-		},
 		css: {
 			postcss: resolveFromRoot("config/postcss.config.js"),
 			devSourcemap: true,
@@ -113,43 +109,16 @@ export default defineConfig(({ mode }) => {
 		build: {
 			outDir: resolveFromRoot("dist"),
 			emptyOutDir: true,
+			minify: "esbuild",
+			chunkSizeWarningLimit: 1000,
+			reportCompressedSize: true,
+			target: "esnext",
+			sourcemap: mode === "development",
 			rollupOptions: {
 				output: {
 					format: "es",
-					inlineDynamicImports: false,
-					entryFileNames: "assets/js/[name]-[hash].js",
-					chunkFileNames: "assets/js/[name]-[hash].js",
-					manualChunks: {
-						"react-vendor": ["react", "react-dom", "react/jsx-runtime"],
-						"data-vendor": ["@supabase/supabase-js", "@tanstack/react-query", "zustand"],
-						"ui-vendor": ["lucide-react", "framer-motion", "class-variance-authority"],
-					},
-					assetFileNames: (assetInfo) => {
-						if (!assetInfo.name) {
-							return "assets/[name]-[hash][extname]";
-						}
-						const info = assetInfo.name.split(".");
-						const ext = info[info.length - 1];
-						if (/png|jpe?g|svg|gif|tiff|bmp|ico|avif|webp/i.test(ext)) {
-							return "assets/images/[name]-[hash][extname]";
-						}
-						if (/woff2?|eot|ttf|otf/i.test(ext)) {
-							return "assets/fonts/[name]-[hash][extname]";
-						}
-						if (/mp3|wav|ogg/i.test(ext)) {
-							return "assets/sounds/[name]-[hash][extname]";
-						}
-						return "assets/[name]-[hash][extname]";
-					},
 				},
 			},
-			minify: "esbuild",
-			chunkSizeWarningLimit: 1000,
-			cssCodeSplit: false,
-			assetsInlineLimit: 4096,
-			reportCompressedSize: true,
-			target: "esnext",
-			sourcemap: enableProdSourcemap || mode === "development",
 		},
 		// * Optimize dependency pre-bundling
 		optimizeDeps: {
