@@ -28,7 +28,6 @@ export default {
 				whimsical: ["Patrick Hand", "cursive"],
 			},
 			colors: {
-				primary: "#a65eed",
 				"background-light": "#f7f6f8",
 				"background-dark": "#080820",
 				glass: "rgba(255, 255, 255, 0.05)",

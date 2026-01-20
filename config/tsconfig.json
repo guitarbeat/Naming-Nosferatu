@@ -2,7 +2,11 @@
 	"compilerOptions": {
 		"target": "ES2020",
 		"useDefineForClassFields": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"lib": [
+			"ES2020",
+			"DOM",
+			"DOM.Iterable"
+		],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -27,19 +31,45 @@
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
 		"exactOptionalPropertyTypes": false,
-		"exactOptionalPropertyTypes": false,
-		"types": ["vite/client", "node"],
+		"types": [
+			"vite/client",
+			"node"
+		],
 		"paths": {
-			"@/*": ["../source/*"],
-			"@components/*": ["../source/shared/components/*"],
-			"@hooks/*": ["../source/core/hooks/*"],
-			"@utils/*": ["../source/shared/utils/*"],
-			"@services/*": ["../source/shared/services/*"],
-			"@styles/*": ["../source/shared/styles/*"],
-			"@features/*": ["../source/features/*"],
-			"@core/*": ["../source/core/*"]
+			"@/*": [
+				"../source/*"
+			],
+			"@components/*": [
+				"../source/shared/components/*"
+			],
+			"@hooks/*": [
+				"../source/core/hooks/*"
+			],
+			"@utils/*": [
+				"../source/shared/utils/*"
+			],
+			"@services/*": [
+				"../source/shared/services/*"
+			],
+			"@styles/*": [
+				"../source/shared/styles/*"
+			],
+			"@features/*": [
+				"../source/features/*"
+			],
+			"@core/*": [
+				"../source/core/*"
+			]
 		}
 	},
-	"include": ["../source/**/*", "../config/**/*", "../scripts/**/*"],
-	"exclude": ["../node_modules", "../build", "../dist"]
+	"include": [
+		"../source/**/*",
+		"../config/**/*",
+		"../scripts/**/*"
+	],
+	"exclude": [
+		"../node_modules",
+		"../build",
+		"../dist"
+	]
 }
