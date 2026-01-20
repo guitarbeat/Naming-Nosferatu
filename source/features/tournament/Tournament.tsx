@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
-import { useToast } from "../../shared/hooks/useAppHooks";
+import { useToast } from "../../shared/providers/ToastProvider";
 import { getVisibleNames } from "../../shared/utils";
 import type { TournamentProps } from "../../types/components";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "../../../core/constants";
 import useAppStore from "../../../core/store/useAppStore";
-import { useToast } from "../../hooks/useAppHooks";
+import { useToast } from "../../providers/ToastProvider";
 import { useValidatedForm } from "../../hooks/useValidatedForm";
 import { ErrorManager } from "../../services/errorManager/index";
 import { catNamesAPI } from "../../services/supabase/client";

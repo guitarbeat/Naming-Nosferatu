@@ -5,7 +5,7 @@
 
 import { useCallback } from "react";
 import { Toast } from "../../shared/components/Toast";
-import { useToast } from "../../shared/hooks/useAppHooks";
+import { useToast } from "../../shared/providers/ToastProvider";
 import { devError, devLog } from "../../shared/utils";
 import { NOTIFICATION } from "../constants";
 
@@ -42,9 +42,7 @@ export function useProfileNotifications() {
 	const showToast = useCallback(
 		(message: string, type: "success" | "error" | "info" | "warning" = "info") => {
 			devLog(`📢 [${type}]`, message);
-			showToastMessage({
-				message,
-				type,
+			showToastMessage(message, type, {
 				duration: type === "error" ? 7000 : 5000,
 			});
 		},

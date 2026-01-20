@@ -21,16 +21,10 @@ export function NameSuggestion() {
 		setIsSubmitting(true);
 		try {
 			await catNamesAPI.addName(name.trim(), user?.name || "anonymous");
-			showToast({
-				message: `"${name}" has been added to the database.`,
-				type: "success",
-			});
+			showToast(`"${name}" has been added to the database.`, "success");
 			setName("");
 		} catch {
-			showToast({
-				message: "Failed to suggest name. Please try again.",
-				type: "error",
-			});
+			showToast("Failed to suggest name. Please try again.", "error");
 		} finally {
 			setIsSubmitting(false);
 		}
