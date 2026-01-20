@@ -14,7 +14,7 @@ import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
-const UnifiedDashboard = lazy(() => import("./features/tournament/UnifiedDashboard"));
+const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
 
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
@@ -138,7 +138,7 @@ function App() {
 									</h2>
 									<ErrorBoundary context="Analysis Dashboard">
 										<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-											<UnifiedDashboard
+											<Dashboard
 												personalRatings={tournament.ratings}
 												currentTournamentNames={tournament.names || undefined}
 												voteHistory={tournament.voteHistory}

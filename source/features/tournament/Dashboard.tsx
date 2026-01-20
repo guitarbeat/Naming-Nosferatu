@@ -24,8 +24,8 @@ import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/hooks/useAppHooks";
 import { catNamesAPI } from "../../shared/services/supabase/client";
 import type { NameItem } from "../../types/components";
-import { RankingAdjustment } from "./TournamentViews";
-import styles from "./unified.module.css";
+import { RankingAdjustment } from "./TournamentComponents";
+import styles from "./Dashboard.module.css";
 
 const AnalysisDashboard = lazy(() =>
 	import("../analytics/AnalysisDashboard").then((m) => ({
@@ -111,7 +111,9 @@ export const PersonalResults = ({
 					variant="secondary"
 					startIcon={<Calendar />}
 					onClick={() => {
-						if (!rankings.length) return;
+						if (!rankings.length) {
+							return;
+						}
 						const headers = ["Name", "Rating", "Wins", "Losses"];
 						const rows = rankings.map((r) =>
 							[`"${r.name}"`, r.rating, r.wins || 0, r.losses || 0].join(","),
@@ -685,7 +687,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 };
 
 /* =========================================================================
-   MAIN COMPONENT: UnifiedDashboard
+   MAIN COMPONENT: Dashboard
    ========================================================================= */
 
 /* =========================================================================
@@ -772,7 +774,7 @@ export const HistoryView: React.FC<{ voteHistory: unknown[] }> = ({ voteHistory 
 	);
 };
 
-export default function UnifiedDashboard({
+export default function Dashboard({
 	personalRatings,
 	currentTournamentNames,
 	voteHistory,
@@ -874,7 +876,12 @@ export default function UnifiedDashboard({
 	);
 
 	return (
-		<>
+		<div className="relative min-h-screen w-full overflow-hidden">
+			{/* Decorative Background Blobs */}
+			<div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl -z-10 mix-blend-screen animate-pulse" />
+			<div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl -z-10 mix-blend-screen animate-pulse delay-700" />
+			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[100px] -z-10 mix-blend-screen" />
+
 			<TabContainer
 				tabs={tabs}
 				defaultActiveTab={hasPersonalData ? "personal" : defaultTab}
@@ -888,6 +895,6 @@ export default function UnifiedDashboard({
 				removeToast={removeToast}
 				position="bottom-right"
 			/>
-		</>
+		</div>
 	);
 }

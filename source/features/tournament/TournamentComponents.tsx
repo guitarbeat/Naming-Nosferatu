@@ -36,7 +36,7 @@ import { getRandomCatImage } from "./TournamentLogic";
 import styles from "./tournament.module.css";
 // Note: useNameManagementCallbacks is defined in TournamentHooks but may not be exported yet
 
-import "./RankingAdjustment.css";
+import "./TournamentRankingAdjustment.css";
 
 /* =========================================================================
    COMPONENTS

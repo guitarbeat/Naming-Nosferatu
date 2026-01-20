@@ -39,6 +39,7 @@ export const createSettingsSlice: StateCreator<
 		isSwipeMode: false,
 		showCatPictures: false,
 		showGallery: false,
+		isEditingProfile: false,
 	},
 
 	// Site settings state (from siteSettingsSlice)
@@ -60,6 +61,8 @@ export const createSettingsSlice: StateCreator<
 		setGalleryVisible: (visible) => updateSlice(set, "ui", { showGallery: visible }),
 
 		setUserComparison: (show) => updateSlice(set, "ui", { showUserComparison: show }),
+
+		setEditingProfile: (editing) => updateSlice(set, "ui", { isEditingProfile: editing }),
 
 		setTheme: (newTheme) => {
 			const isSystem = newTheme === "system";

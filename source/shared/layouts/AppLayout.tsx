@@ -14,6 +14,7 @@ import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { OfflineIndicator } from "../components/OfflineIndicator";
+import { ProfileEditorModal } from "../components/ProfileEditorModal";
 import { SwipeWrapper } from "../components/SwipeWrapper";
 
 interface AppLayoutProps {
@@ -29,7 +30,7 @@ interface AppLayoutProps {
 	children: React.ReactNode;
 }
 
-export function AppLayout({ children }: AppLayoutProps) {
+export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
@@ -88,6 +89,8 @@ export function AppLayout({ children }: AppLayoutProps) {
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
 				</main>
 			</div>
+			{/* Profile Editor Modal */}
+			<ProfileEditorModal onLogin={handleLogin} />
 		</ErrorBoundary>
 	);
 }

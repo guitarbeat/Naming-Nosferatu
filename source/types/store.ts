@@ -33,6 +33,7 @@ export interface UIState {
 	isSwipeMode: boolean;
 	showCatPictures: boolean;
 	showGallery: boolean;
+	isEditingProfile: boolean;
 }
 
 export interface CatChosenName {
@@ -92,6 +93,7 @@ export interface AppState {
 		setSwipeMode: (enabled: boolean) => void;
 		setCatPictures: (show: boolean) => void;
 		setGalleryVisible: (visible: boolean) => void;
+		setEditingProfile: (editing: boolean) => void;
 	};
 
 	errorActions: {

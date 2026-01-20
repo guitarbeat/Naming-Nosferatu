@@ -10,7 +10,7 @@ import type { NameItem } from "../../types/components";
 import { useLoginController } from "../auth/hooks/authHooks";
 import loginStyles from "../auth/styles/LoginScene.module.css";
 import { useTournamentManager } from "./TournamentHooks";
-import { SwipeableCards } from "./TournamentViews";
+import { SwipeableCards } from "./TournamentComponents";
 import styles from "./tournament.module.css";
 
 interface TournamentSetupProps {
