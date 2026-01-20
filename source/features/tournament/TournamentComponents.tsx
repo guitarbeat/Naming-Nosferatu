@@ -34,7 +34,6 @@ import { AnalysisDashboard } from "../analytics/AnalysisDashboard";
 import { useMagneticPull, useNameManagementCallbacks } from "./TournamentHooks";
 import { getRandomCatImage } from "./TournamentLogic";
 import styles from "./tournament.module.css";
-// Note: useNameManagementCallbacks is defined in TournamentHooks but may not be exported yet
 
 import "./TournamentRankingAdjustment.css";
 

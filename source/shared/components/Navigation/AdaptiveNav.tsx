@@ -1,6 +1,6 @@
 /**
  * @module AdaptiveNav
- * @description Unified navigation component - Floating "Dock" style for all screens
+ * @description Adaptive navigation component - Floating "Dock" style for all screens
  * Uses Scroll Navigation for Single Page Architecture
  */
 
@@ -25,7 +25,7 @@ const keyToId: Record<string, string> = {
 };
 
 /**
- * Unified Floating Dock Navigation
+ * Adaptive Floating Dock Navigation
  * Renders as a floating pill at the bottom on all screen sizes
  */
 export function AdaptiveNav(_props: AdaptiveNavProps) {

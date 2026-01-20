@@ -59,7 +59,7 @@ export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 				{/* Static cat-themed background */}
 				<CatBackground />
 
-				{/* Unified Adaptive Navigation */}
+				{/* Adaptive Navigation */}
 				{isLoggedIn && <AdaptiveNav />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>

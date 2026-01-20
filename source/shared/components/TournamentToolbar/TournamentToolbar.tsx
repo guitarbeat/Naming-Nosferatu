@@ -41,7 +41,7 @@ const TOOLBAR_GLASS_CONFIGS = {
 };
 
 const styles = {
-	unifiedContainer: "tournament-toolbar-unified-container",
+	toolbarContainer: "tournament-toolbar-container",
 	toggleStack: "tournament-toolbar-toggle-stack",
 	filtersContainer: "tournament-toolbar-filters-container",
 	startButton: "tournament-toolbar-start-button",

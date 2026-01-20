@@ -23,7 +23,7 @@ export interface TabContainerProps {
 }
 
 /**
- * Unified TabContainer component that consolidates tab logic from Explore and Dashboard
+ * TabContainer component that consolidates tab logic from various views
  * Handles state management, URL synchronization, and smooth transitions
  */
 export function TabContainer({

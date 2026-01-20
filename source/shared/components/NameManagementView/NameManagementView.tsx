@@ -1,6 +1,6 @@
 /**
  * @module NameManagementView
- * @description Unified view component that powers both Tournament Setup and Profile views.
+ * @description Shared view component that powers both Tournament Setup and Profile views.
  * Provides a consistent interface with mode-specific extensions.
  */
 

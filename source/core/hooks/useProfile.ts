@@ -81,10 +81,10 @@ interface TournamentSelection {
 interface UserWithRoles {
 	user_name: string;
 	user_roles?:
-		| {
-				role: string;
-		  }[]
-		| null;
+	| {
+		role: string;
+	}[]
+	| null;
 	created_at?: string | null;
 	updated_at?: string | null;
 }
@@ -242,7 +242,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 				const prevDate = sortedDates[i - 1];
 				const dayDiff = Math.floor(
 					(new Date(currentDate as string).getTime() - new Date(prevDate as string).getTime()) /
-						(1000 * 60 * 60 * 24),
+					(1000 * 60 * 60 * 24),
 				);
 				if (dayDiff === 1) {
 					tempStreak++;
@@ -357,7 +357,7 @@ async function listAllUsers(): Promise<UserWithRoles[]> {
 }
 
 /**
- * * Unified hook for all profile functionality
+ * * Comprehensive hook for all profile functionality
  */
 // ts-prune-ignore-next (used in TournamentSetup)
 export function useProfile(
