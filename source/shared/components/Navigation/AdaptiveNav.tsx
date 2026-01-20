@@ -166,6 +166,83 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 			transition={{ duration: 0.5, delay: 0.2 }}
 		>
 			<nav className={styles.bottomNavContainer} role="navigation" aria-label="Main navigation">
+				{/* Central Avatar Button - User Profile */}
+				<div
+					style={{
+						position: "relative",
+						margin: "0 0.5rem",
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "center",
+						gap: "0.125rem",
+					}}
+				>
+					<div
+						className="group cursor-pointer"
+						onClick={() => appStore.uiActions.setEditingProfile(true)}
+						title="Edit Profile"
+						style={{ position: "relative" }}
+					>
+						{/* Glow effect */}
+						<div
+							style={{
+								position: "absolute",
+								inset: "-0.125rem",
+								background:
+									"linear-gradient(to right, var(--primary), var(--neon-accent, #00f0ff))",
+								borderRadius: "9999px",
+								filter: "blur(4px)",
+								opacity: 0.5,
+								transition: "opacity 300ms",
+							}}
+							className="group-hover:opacity-100"
+						></div>
+						{/* Avatar container */}
+						<div
+							style={{
+								position: "relative",
+								width: "2.5rem",
+								height: "2.5rem",
+								borderRadius: "9999px",
+								border: "2px solid rgba(255, 255, 255, 0.3)",
+								overflow: "hidden",
+								boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+								backgroundColor: "rgb(15, 23, 42)",
+								zIndex: 10,
+							}}
+						>
+							<img
+								alt="User Profile"
+								style={{
+									width: "100%",
+									height: "100%",
+									objectFit: "cover",
+									transition: "transform 300ms",
+								}}
+								className="group-hover:scale-110"
+								src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
+							/>
+						</div>
+					</div>
+					{/* Username Label */}
+					<span
+						style={{
+							fontSize: "0.5625rem",
+							fontWeight: 600,
+							color: "rgba(255, 255, 255, 0.7)",
+							textTransform: "uppercase",
+							letterSpacing: "0.03em",
+							maxWidth: "5rem",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap",
+							textAlign: "center",
+						}}
+					>
+						{(appStore.user.name || "Profile").split(" ")[0]}
+					</span>
+				</div>
+
 				{bottomNavItems.map((item) => {
 					const itemActive = isActive(item.key);
 
