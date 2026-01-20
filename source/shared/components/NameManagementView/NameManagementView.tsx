@@ -64,21 +64,14 @@ export function NameManagementView({
 	// * Feedback Side Effects
 	useEffect(() => {
 		if (isError && dataError) {
-			showToast({
-				message: dataError.message || "An error occurred while loading data",
-				type: "error",
-			});
+			showToast(dataError.message || "An error occurred while loading data", "error");
 		}
 	}, [isError, dataError, showToast]);
 
 	const handleStartTournament = useCallback(
 		(namesToStart: NameItem[]) => {
 			if (onStartTournament) {
-				showToast({
-					message: "Starting tournament...",
-					type: "success",
-					duration: 2000,
-				});
+				showToast("Starting tournament...", "success", { duration: 2000 });
 				onStartTournament(namesToStart);
 			}
 		},

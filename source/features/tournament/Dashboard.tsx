@@ -21,7 +21,7 @@ import Card from "../../shared/components/Card";
 import { Loading } from "../../shared/components/Loading";
 import { TabContainer } from "../../shared/components/TabContainer";
 import { Toast } from "../../shared/components/Toast";
-import { useToast } from "../../shared/hooks/useAppHooks";
+import { useToast } from "../../shared/providers/ToastProvider";
 import { catNamesAPI } from "../../shared/services/supabase/client";
 import type { NameItem } from "../../types/components";
 import { RankingAdjustment } from "./TournamentComponents";
@@ -98,7 +98,7 @@ export const PersonalResults = ({
 						r.map((n) => [n.name, { rating: n.rating as number, wins: n.wins, losses: n.losses }]),
 					);
 					await onUpdateRatings(ratingsMap);
-					showToast({ message: "Updated!", type: "success" });
+					showToast("Updated!", "success");
 				}}
 				onCancel={onStartNew}
 			/>
@@ -793,7 +793,7 @@ export default function Dashboard({
 	userName: string | undefined;
 	defaultTab?: string;
 }) {
-	const { toasts, removeToast } = useToast({ maxToasts: 1 });
+	const { toasts, removeToast } = useToast();
 	const hasPersonalData = personalRatings && Object.keys(personalRatings).length > 0;
 
 	const tabs = useMemo(
