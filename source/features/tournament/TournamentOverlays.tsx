@@ -38,17 +38,10 @@ export const KeyboardHelp = memo(({ show }: { show: boolean }) => (
 
 export const UndoBanner = memo(
 	({
-		undoExpiresAt,
-		undoStartTime,
 		onUndo,
 	}: {
-		undoExpiresAt: number;
-		undoStartTime: number;
 		onUndo: () => void;
 	}) => {
-		if (!undoExpiresAt || !undoStartTime) {
-			return null;
-		}
 		return (
 			<div className={styles.undoBanner} role="status">
 				<div className={styles.undoBannerContent}>
