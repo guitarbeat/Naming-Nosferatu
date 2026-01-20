@@ -68,18 +68,6 @@ function App() {
 		setToasts((prev) => prev.filter((toast) => toast.id !== id));
 	}, []);
 
-	// Theme synchronization
-	useEffect(() => {
-		if (typeof window !== "undefined") {
-			document.documentElement.setAttribute("data-theme", ui.theme);
-			if (ui.theme === "dark") {
-				document.documentElement.classList.add("dark");
-			} else {
-				document.documentElement.classList.remove("dark");
-			}
-		}
-	}, [ui.theme]);
-
 	// Tournament handlers - mostly consumed by TournamentFlow now, but kept here for AppLayout props
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
@@ -142,8 +130,8 @@ function App() {
 								</ErrorBoundary>
 							</section>
 
-							{/* Analysis Section - Only visible after tournament completion */}
-							{tournament.isComplete && (
+							{/* Analysis Section - Only visible after tournament completion and if not in gallery mode */}
+							{tournament.isComplete && !ui.showGallery && (
 								<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
 									<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
 										Analyze

@@ -79,11 +79,11 @@ export function useTournamentState(
 		() =>
 			existingRatings
 				? Object.fromEntries(
-					Object.entries(existingRatings).map(([key, value]) => [
-						key,
-						typeof value === "number" ? { rating: value } : value,
-					]),
-				)
+						Object.entries(existingRatings).map(([key, value]) => [
+							key,
+							typeof value === "number" ? { rating: value } : value,
+						]),
+					)
 				: {},
 		[existingRatings],
 	);
@@ -696,7 +696,10 @@ export function useTournamentHandlers({
 				devLog("[App] Save ratings result:", saveResult);
 
 				if (!saveResult.success) {
-					devWarn("[App] Failed to save ratings to database:", (saveResult as { error?: string }).error);
+					devWarn(
+						"[App] Failed to save ratings to database:",
+						(saveResult as { error?: string }).error,
+					);
 					// We continue even if save fails, to show results locally
 				}
 

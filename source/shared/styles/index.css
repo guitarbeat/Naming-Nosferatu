@@ -21,7 +21,6 @@
 
 /* Component-level styles */
 @import url("./app-layout.css");
-@import url("./navigation.css");
 @import url("./analysis-mode.css");
 
 /* Component primitives and forms */

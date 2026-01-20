@@ -161,33 +161,42 @@
 	pointer-events: none;
 }
 
-/* Photo Gallery Grid */
+/* Photo Gallery Grid - Mosaic Style */
 .photoGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-	gap: 12px;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 16px;
 	width: 100%;
 	margin-top: 16px;
 	perspective: 1000px;
+	padding-bottom: 3rem;
+	/* Space for footer/nav */
 }
 
 .photoThumbnail {
 	position: relative;
 	width: 100%;
+	/* Aspect ratio handled by image natural size or inline style if needed, 
+	   but for a clean grid we often default to square or 4:3. 
+	   Let's allow auto-height if we use columns, but for Grid we need consistency or spans.
+	   Standardizing on square for now ensures "fitting", 
+	   or we can use 'aspect-ratio: auto' if we switched to columns. */
 	aspect-ratio: 1 / 1;
-	border-radius: 12px;
+	border-radius: 16px;
 	overflow: hidden;
 	background: rgba(0, 0, 0, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	transition: all 0.3s ease;
+	border: 2px solid rgba(255, 255, 255, 0.05);
+	/* Subtle border */
+	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 	padding: 0;
 	cursor: pointer;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .photoThumbnail:hover {
-	transform: scale(1.02) translateY(-2px);
-	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-	border-color: var(--primary-500);
+	transform: scale(1.03) translateY(-4px);
+	box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+	border-color: var(--primary-400);
 	z-index: 10;
 }
 
@@ -196,6 +205,11 @@
 	height: 100%;
 	object-fit: cover;
 	display: block;
+	transition: transform 0.5s ease;
+}
+
+.photoThumbnail:hover img {
+	transform: scale(1.1);
 }
 
 .photoOverlay {

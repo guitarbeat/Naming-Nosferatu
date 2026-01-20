@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useProfileNotifications } from "../../core/hooks/useProfileNotifications";
 import { tournamentsAPI } from "../../features/tournament/TournamentLogic";
+import { devError, devLog, devWarn } from "../../shared/utils";
 import { syncQueue } from "../services/sync/SyncQueue";
 
 export function useOfflineSync() {
@@ -34,7 +35,7 @@ export function useOfflineSync() {
 		let processedCount = 0;
 		const total = syncQueue.getQueue().length;
 
-		console.log(`[Sync] Processing ${total} items...`);
+		devLog(`[Sync] Processing ${total} items...`);
 
 		while (!syncQueue.isEmpty()) {
 			const item = syncQueue.peek();
@@ -49,13 +50,16 @@ export function useOfflineSync() {
 						syncQueue.dequeue();
 						processedCount++;
 					} else {
-						console.warn("[Sync] Failed to process item, keeping in queue", (result as { error?: string }).error);
+						devWarn(
+							"[Sync] Failed to process item, keeping in queue",
+							(result as { error?: string }).error,
+						);
 						// If permanent error, maybe remove? For now, we simple break to retry later
 						break;
 					}
 				}
 			} catch (e) {
-				console.error("[Sync] Error processing queue item", e);
+				devError("[Sync] Error processing queue item", e);
 				break;
 			}
 		}

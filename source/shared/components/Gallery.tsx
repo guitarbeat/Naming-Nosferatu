@@ -119,7 +119,7 @@ function GalleryThumbnail({ image, index, onImageOpen }: GalleryThumbnailProps) 
 			aria-label={`Open cat photo ${index + 1}`}
 			style={{
 				overflow: "hidden",
-				aspectRatio: "1 / 1",
+				/* aspectRatio removed here to let CSS control it */
 				border: "none",
 			}}
 		>
@@ -172,6 +172,7 @@ export function PhotoGallery({
 	userName?: string;
 	onImagesUploaded: (images: string[]) => void;
 }) {
+	/* Filter if not showing all (though we recommend showing all in fullscreen) */
 	const displayImages = showAllPhotos ? galleryImages : galleryImages.slice(0, 8);
 
 	const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,7 +206,10 @@ export function PhotoGallery({
 	return (
 		<div className="photoGallery">
 			<div className="photoGalleryHeader">
-				<h3 className="photoGalleryTitle">Cat Photos</h3>
+				<h3 className="photoGalleryTitle">
+					{/* Header hidden in fullscreen usually, or we can keep it */}
+					{/* Cat Photos */}
+				</h3>
 				{isAdmin && (
 					<label className="photoUploadButton">
 						<input
@@ -229,9 +233,10 @@ export function PhotoGallery({
 					/>
 				))}
 			</div>
-			{galleryImages.length > 8 && (
+			{/* Only show button if NOT in showAll mode (e.g. widget mode) */}
+			{!showAllPhotos && galleryImages.length > 8 && (
 				<button type="button" className="showAllPhotosButton" onClick={onShowAllPhotosToggle}>
-					{showAllPhotos ? "Show Less" : `Show All ${galleryImages.length} Photos`}
+					Show All {galleryImages.length} Photos
 				</button>
 			)}
 		</div>

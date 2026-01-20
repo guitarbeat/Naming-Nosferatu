@@ -24,10 +24,16 @@ export default {
 				sans: ["var(--font-sans)"],
 				serif: ["var(--font-serif)"],
 				mono: ["var(--font-mono)"],
-				hand: ["var(--font-sans)"],
-				marker: ["var(--font-serif)"],
+				display: ["Spline Sans", "sans-serif"],
+				whimsical: ["Patrick Hand", "cursive"],
 			},
 			colors: {
+				primary: "#a65eed",
+				"background-light": "#f7f6f8",
+				"background-dark": "#080820",
+				glass: "rgba(255, 255, 255, 0.05)",
+				stardust: "#4DC8F5",
+
 				charcoal: "hsl(var(--charcoal))",
 				"blue-gray": "hsl(var(--blue-gray))",
 				mimosa: "hsl(var(--mimosa))",

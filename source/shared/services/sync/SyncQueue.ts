@@ -1,9 +1,14 @@
+import { devError } from "../../utils";
 
+export interface SyncPayload {
+	userName: string;
+	ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>;
+}
 
 export interface SyncItem {
 	id: string;
 	type: "SAVE_RATINGS";
-	payload: any;
+	payload: SyncPayload;
 	timestamp: number;
 	retryCount: number;
 }
@@ -23,7 +28,7 @@ class SyncQueueService {
 				this.queue = JSON.parse(stored);
 			}
 		} catch (e) {
-			console.error("Failed to load sync queue", e);
+			devError("Failed to load sync queue", e);
 		}
 	}
 
@@ -31,11 +36,11 @@ class SyncQueueService {
 		try {
 			localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.queue));
 		} catch (e) {
-			console.error("Failed to save sync queue", e);
+			devError("Failed to save sync queue", e);
 		}
 	}
 
-	enqueue(type: SyncItem["type"], payload: any) {
+	enqueue(type: SyncItem["type"], payload: SyncPayload) {
 		const item: SyncItem = {
 			id: crypto.randomUUID(),
 			type,
@@ -71,4 +76,5 @@ class SyncQueueService {
 	}
 }
 
-export const syncQueue = new SyncQueueService();
+const syncQueueInstance = new SyncQueueService();
+export const syncQueue = syncQueueInstance;

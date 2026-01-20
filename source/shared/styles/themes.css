@@ -1,150 +1,34 @@
-/* Base theme scaffolding */
 :root {
-	color-scheme: light;
-	background-color: var(--background-color, #f1f5f9);
-	color: var(--text-primary, #0f172a);
-	transition:
-		background-color var(--transition-theme),
-		color var(--transition-theme),
-		border-color var(--transition-theme);
-}
+	/* * Enforced Dark/Celestial Theme */
+	color-scheme: dark;
 
-@media (prefers-color-scheme: dark) {
-	:root:not([data-theme]) {
-		color-scheme: dark;
-		background-color: #020617;
-		color: #f8fafc;
-	}
-}
-
-:root[data-theme] body {
-	transition:
-		background-color var(--transition-theme),
-		color var(--transition-theme);
-}
-
-@media (prefers-reduced-motion: reduce) {
-	:root,
-	:root body {
-		transition: none;
-	}
-}
-
-/* ===== LIGHT THEME ===== */
-:root[data-theme="light"] {
-	--primary-color: var(--primary-700);
-	--primary-light: var(--primary-300);
-	--primary-dark: var(--primary-800);
-	--surface-color: var(--secondary-50);
-	/* Journal Page BG */
-	--background-color: var(--secondary-100);
-	/* Journal Body BG */
-	--surface-muted: var(--secondary-50);
-	--surface-elevated: #fff;
-	--text-primary: var(--primary-700);
-	--text-secondary: var(--primary-500);
-	--text-tertiary: var(--primary-300);
-	--border-color: var(--secondary-200);
-	--card-background: #fff;
-	--card-border: var(--secondary-300);
-	--card-hover: var(--secondary-200);
-	--header-background: rgb(255 251 242 / 95%);
-	--header-border: var(--secondary-200);
-	--shadow-color: rgb(74 63 53 / 10%);
-	--shadow-color-light: rgb(74 63 53 / 5%);
-	--shadow-color-medium: rgb(74 63 53 / 15%);
-	--shadow-color-strong: rgb(74 63 53 / 25%);
-	--overlay-light: rgb(74 63 53 / 5%);
-	--overlay-medium: rgb(74 63 53 / 10%);
-	--overlay-dark: rgb(74 63 53 / 20%);
-	--overlay-darker: rgb(74 63 53 / 30%);
-
-	/* Glass surface tokens (light) */
-	--glass-bg: rgb(255 251 242 / 70%);
-	--glass-bg-light: rgb(255 251 242 / 50%);
-	--glass-bg-strong: rgb(255 251 242 / 85%);
-	--glass-border: rgb(74 63 53 / 10%);
-	--glass-border-hover: rgb(74 63 53 / 20%);
-	--glass-shadow: 3px 3px 0px rgba(0, 0, 0, 0.05);
-	--glass-shadow-colored: 3px 3px 0px var(--accent-400);
-	--glass-blur: 8px;
-	/* Less blur, more paper feel */
-	--glass-blur-strong: 12px;
-	--shadow-subtle: 2px 2px 0px rgba(0, 0, 0, 0.03);
-	--shadow-medium: 4px 4px 0px rgba(0, 0, 0, 0.05);
-
-	/* Synced light-mode variables */
-	--surface-light: var(--secondary-50);
-	--card-background-light: #fff;
-	--card-hover-light: var(--secondary-50);
-	--border-color-light: var(--secondary-200);
-	--text-primary-light: var(--primary-700);
-	--text-secondary-light: var(--primary-500);
-	--button-primary-bg: var(--primary-700);
-	--button-primary-hover: var(--primary-800);
-	--button-secondary-bg: transparent;
-	--button-secondary-hover: var(--secondary-200);
-	--button-text-light: white;
-
-	/* Start section colors */
-	--start-section-bg-start: var(--secondary-50);
-	--start-section-bg-end: var(--secondary-100);
-	--start-section-border: var(--secondary-200);
-	--start-section-pattern: var(--primary-300);
-	--accent-subtle: var(--accent-100);
-	--accent-medium: var(--accent-300);
-
-	/* NameCard selected state variables */
-	--namecard-selected-bg: var(--secondary-50);
-	--namecard-selected-border: var(--primary-700);
-	--namecard-selected-description: var(--primary-500);
-	--muted: var(--secondary-100);
-	--muted-foreground: var(--primary-400);
-
-	/* Navigation color tokens */
-	--nav-bg: rgb(255 251 242 / 95%);
-	--nav-text: var(--primary-700);
-	--nav-text-muted: var(--primary-500);
-	--nav-highlight: var(--primary-700);
-	--nav-accent: var(--accent-400);
-
-	color-scheme: light;
-}
-
-:root[data-theme="light"] body {
-	background-color: var(--background-color);
-	background-image: var(--paper-texture);
-	background-repeat: repeat;
-	background-attachment: fixed;
-	color: var(--text-primary);
-}
-
-/* ===== DARK THEME ===== */
-:root[data-theme="dark"] {
 	--primary-color: var(--primary-400);
 	--primary-light: var(--primary-700);
 	--primary-dark: var(--primary-200);
+
 	--surface-color: #0b1120;
 	--background-color: #020617;
 	--surface-muted: #0f172a;
 	--surface-elevated: #111c2e;
+
 	--text-primary: #f8fafc;
 	--text-secondary: #e2e8f0;
-	/* 8.5:1 on #020617 - passes */
 	--text-tertiary: #e2e8f0;
-	/* Improved from #cbd5e1 to meet 7:1 (now 8.5:1) */
+
 	--border-color: #334155;
-	/* Improved from #1e293b for better visibility (7.2:1 on dark) */
+
 	--card-background: #0b1220;
 	--card-border: #334155;
-	/* Improved from #1f2a3d for better visibility */
 	--card-hover: #1b2536;
+
 	--header-background: rgb(15 23 42 / 75%);
 	--header-border: rgb(59 72 99 / 55%);
+
 	--shadow-color: rgb(2 6 23 / 60%);
 	--shadow-color-light: rgb(2 6 23 / 35%);
 	--shadow-color-medium: rgb(2 6 23 / 50%);
 	--shadow-color-strong: rgb(2 6 23 / 65%);
+
 	--overlay-light: rgb(15 23 42 / 35%);
 	--overlay-medium: rgb(15 23 42 / 45%);
 	--overlay-dark: rgb(15 23 42 / 60%);
@@ -160,28 +44,28 @@
 	--glass-shadow-colored: 0 18px 40px rgb(47 243 224 / 18%), 0 14px 32px rgb(250 38 160 / 14%);
 	--glass-blur: 22px;
 	--glass-blur-strong: 32px;
+
 	--shadow-subtle: 0 8px 24px rgb(2 6 23 / 45%);
 	--shadow-medium: 0 24px 60px rgb(2 6 23 / 65%);
 
-	/* Synced light-mode variables for components using alternative names */
-	--surface-dark: #0b1220;
-	--card-background-dark: #0b1220;
-	--card-hover-dark: #152135;
-	--border-color-dark: #334155;
-	/* Improved contrast */
-	--text-primary-dark: #f8fafc;
-	--text-secondary-dark: #e2e8f0;
+	/* Synced light-mode variables aliases for compatibility */
+	--surface-light: var(--surface-color);
+	--card-background-light: var(--card-background);
+	--card-hover-light: var(--card-hover);
+	--border-color-light: var(--border-color);
+	--text-primary-light: var(--text-primary);
+	--text-secondary-light: var(--text-secondary);
+
 	--button-primary-bg: var(--primary-500);
 	--button-primary-hover: var(--primary-400);
 	--button-secondary-bg: rgb(255 255 255 / 16%);
 	--button-secondary-hover: rgb(255 255 255 / 28%);
 	--button-text-light: #0f1419;
 
-	/* * Start section colors for dark theme */
+	/* Start section colors */
 	--start-section-bg-start: #141c2f;
 	--start-section-bg-end: #1f2a3d;
 	--start-section-border: #334155;
-	/* Improved contrast */
 	--start-section-pattern: #3b4a63;
 	--accent-subtle: rgb(255 255 255 / 10%);
 	--accent-medium: rgb(255 255 255 / 18%);
@@ -192,62 +76,25 @@
 	--namecard-selected-description: var(--primary-300);
 	--muted: #111827;
 	--muted-foreground: #cbd5e1;
-	/* Improved from #94a3b8 to meet 7:1 (now 7.2:1 on dark) */
 
-	/* Navigation color tokens (dark theme) - high contrast for dark backgrounds */
+	/* Navigation color tokens */
 	--nav-bg: rgb(15 23 42 / 85%);
 	--nav-text: #f8fafc;
 	--nav-text-muted: #e2e8f0;
 	--nav-highlight: var(--color-neon-cyan);
 	--nav-accent: var(--color-hot-pink);
 
-	color-scheme: dark;
-}
-
-:root[data-theme="dark"] body {
+	/* Enforced body background */
+	background-color: var(--background-color);
 	background-image:
 		radial-gradient(circle at 15% -20%, rgb(var(--hot-pink-rgb), 0.24), transparent 55%),
 		radial-gradient(circle at 120% 10%, rgb(var(--neon-cyan-rgb), 0.18), transparent 55%),
 		radial-gradient(circle at -10% 70%, rgb(var(--fire-red-rgb), 0.12), transparent 60%);
 	background-repeat: no-repeat;
-	background-repeat: no-repeat;
 	background-attachment: fixed;
-	background-color: var(--background-color);
-	/* Ensure fallback color matches theme */
 }
 
-/* ===== HIGH CONTRAST MODE ===== */
-@media (prefers-contrast: more) {
-	:root {
-		--primary-600: #1a1f2e;
-		--error-600: #dc2626;
-		--success-600: #059669;
-		--warning-600: #b45309;
-
-		/* Enhanced contrast for high contrast mode */
-		--text-primary: #fff;
-		--text-secondary: #fff;
-		--background-color: #000;
-		--card-background: #1a1a1a;
-		--border-color: #fff;
-		--accent-color: #ff0;
-	}
-
-	/* Enhanced focus indicators for high contrast */
-	:focus-visible {
-		outline: 4px solid var(--accent-color);
-		outline-offset: 4px;
-	}
-
-	/* Enhanced button contrast */
-	button {
-		color: var(--text-primary);
-		background-color: var(--card-background);
-		border: 3px solid var(--border-color);
-	}
-
-	button:hover:not(:disabled) {
-		color: var(--background-color);
-		background-color: var(--accent-color);
-	}
+body {
+	background-color: var(--background-color);
+	color: var(--text-primary);
 }

@@ -39,7 +39,8 @@ export const tournamentsAPI = {
 		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
 			const { syncQueue } = await import("../../shared/services/sync/SyncQueue");
 			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
-			console.log("[TournamentLogic] Offline: Queued ratings save");
+			const { devLog } = await import("../../shared/utils");
+			devLog("[TournamentLogic] Offline: Queued ratings save");
 			return { success: true, savedCount: ratings.length, offline: true };
 		}
 

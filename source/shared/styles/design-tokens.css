@@ -122,21 +122,26 @@
    ========================================================================== */
 :root {
 	/* * Brand colors - use sparingly for emphasis */
-	--color-neon-cyan: #2ff3e0;
-	--color-hot-pink: #fa26a0;
+	/* * Celestial Theme Colors */
+	--color-neon-cyan: #4dc8f5;
+	/* Stardust */
+	--color-hot-pink: #a65eed;
+	/* Celestial Purple */
 	--color-fire-red: #f51720;
-	--color-charcoal: #2c3e40;
+	--color-charcoal: #080820;
+	/* Deep Space */
 	--color-blue-gray: #809fb0;
 	--color-mimosa: #e8bf76;
 	--color-gold: #f1a438;
 
-	/* * Semantic colors - consistent usage */
+	/* * Semantic colors */
 	--color-success: #10b981;
 	--color-error: #ef4444;
-	--color-warning: #f59e0b;
-	--color-info: #3b82f6;
+	--color-primary: var(--color-hot-pink);
+	--color-secondary: var(--color-neon-cyan);
+	--color-background: var(--color-charcoal);
 
-	/* * Neutral colors - primary palette */
+	/* * Neutral colors - Dark/Space Palette */
 	--color-neutral-50: #f8fafc;
 	--color-neutral-100: #f1f5f9;
 	--color-neutral-200: #e2e8f0;
@@ -239,29 +244,20 @@
 	--shadow-pink: 0 4px 16px var(--overlay-pink-medium);
 	--shadow-gradient: 0 8px 24px var(--overlay-cyan), 0 4px 12px var(--overlay-pink);
 
-	/* * Legacy shadow variables (from effects.css) */
-	--shadow-color: var(--overlay-dark);
-	--shadow-color-light: var(--overlay-light);
-	--shadow-color-medium: var(--overlay-medium);
-	--shadow-color-strong: var(--overlay-dark);
-
 	/* * Text shadows */
 	--text-shadow-sm: 0 2px 8px var(--overlay-light);
 	--text-shadow-lg: 0 2px 12px var(--overlay-medium);
 
-	/* * Overlay colors */
-	--overlay-light: color-mix(in srgb, var(--color-neutral-900) 25%, transparent);
-	--overlay-medium: color-mix(in srgb, var(--color-neutral-900) 40%, transparent);
-	--overlay-dark: color-mix(in srgb, var(--color-neutral-900) 55%, transparent);
-	--overlay-darker: color-mix(in srgb, var(--color-neutral-900) 65%, transparent);
+	/* * Celestial Overlay Colors */
+	--overlay-light: rgba(255, 255, 255, 0.05);
+	--overlay-medium: rgba(30, 28, 61, 0.4);
+	--overlay-dark: #080820;
 
-	/* * Vibrant overlay options */
-	--overlay-cyan: color-mix(in srgb, var(--color-neon-cyan) 10%, transparent);
-	--overlay-pink: color-mix(in srgb, var(--color-hot-pink) 10%, transparent);
-	--overlay-red: color-mix(in srgb, var(--color-fire-red) 10%, transparent);
-	--overlay-cyan-medium: color-mix(in srgb, var(--color-neon-cyan) 20%, transparent);
-	--overlay-pink-medium: color-mix(in srgb, var(--color-hot-pink) 20%, transparent);
-	--overlay-red-medium: color-mix(in srgb, var(--color-fire-red) 20%, transparent);
+	--glass-panel-bg: rgba(30, 28, 61, 0.4);
+	--glass-border: rgba(255, 255, 255, 0.1);
+
+	--overlay-cyan: rgba(77, 200, 245, 0.1);
+	--overlay-pink: rgba(166, 94, 237, 0.1);
 }
 
 /* ==========================================================================
@@ -403,24 +399,6 @@
    TRANSITIONS SYSTEM (merged from transitions.css)
    ========================================================================== */
 :root {
-	/* Legacy transition variables for backward compatibility */
-	--transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	--transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-	--transition-theme: 0.3s ease;
-
-	/* Easing (legacy aliases) */
-	--ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-	--ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
-	--ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-
-	/* Animation Duration (legacy aliases) */
-	--duration-fast: 150ms;
-	--duration-normal: 250ms;
-	--duration-slow: 350ms;
 }
 
 /* ==========================================================================

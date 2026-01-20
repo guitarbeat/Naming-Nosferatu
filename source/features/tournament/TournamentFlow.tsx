@@ -18,46 +18,37 @@ export default function TournamentFlow() {
 			tournamentActions,
 		});
 
-	const {
-		galleryImages,
-		isAdmin,
-		handleImageOpen,
-		handleImagesUploaded,
-		showAllPhotos,
-		setShowAllPhotos,
-	} = useTournamentManager({
+	const { galleryImages, isAdmin, handleImageOpen, handleImagesUploaded } = useTournamentManager({
 		userName: user.name || "",
 	});
 
+	// * Exclusive Rendering Logic: Gallery replaces everything else if active
+	if (ui.showGallery) {
+		return (
+			<motion.div
+				key="gallery"
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				exit={{ opacity: 0, y: -20 }}
+				transition={{ duration: 0.3 }}
+				className="w-full h-full min-h-screen p-4 flex flex-col"
+			>
+				<h2 className="text-4xl font-bold mb-8 text-center gradient-text">Photo Gallery</h2>
+				<PhotoGallery
+					galleryImages={galleryImages}
+					isAdmin={isAdmin}
+					userName={user.name || ""}
+					onImagesUploaded={handleImagesUploaded}
+					onImageOpen={handleImageOpen}
+					showAllPhotos={true} // Always show all in fullscreen mode
+					onShowAllPhotosToggle={() => {}} // No-op since we show all
+				/>
+			</motion.div>
+		);
+	}
+
 	return (
 		<div className="w-full max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh] py-8">
-			{/* Gallery Section - Toggled via Nav */}
-			<AnimatePresence>
-				{ui.showGallery && (
-					<motion.section
-						id="gallery"
-						className="w-full scroll-mt-24"
-						initial={{ height: 0, opacity: 0 }}
-						animate={{ height: "auto", opacity: 1 }}
-						exit={{ height: 0, opacity: 0 }}
-						transition={{ duration: 0.3 }}
-					>
-						<div className="w-full p-4 bg-[var(--surface-color)] rounded-xl border border-[var(--border-color)] shadow-sm">
-							<h2 className="text-3xl font-bold mb-6 text-center gradient-text">Photo Gallery</h2>
-							<PhotoGallery
-								galleryImages={galleryImages}
-								isAdmin={isAdmin}
-								userName={user.name || ""}
-								onImagesUploaded={handleImagesUploaded}
-								onImageOpen={handleImageOpen}
-								showAllPhotos={showAllPhotos}
-								onShowAllPhotosToggle={() => setShowAllPhotos(!showAllPhotos)}
-							/>
-						</div>
-					</motion.section>
-				)}
-			</AnimatePresence>
-
 			{/* Main Tournament Flow Area - Swaps between Setup and Play */}
 			<section
 				id="tournament-area"

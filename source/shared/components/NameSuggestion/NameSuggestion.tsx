@@ -3,7 +3,7 @@ import useAppStore from "../../../core/store/useAppStore";
 import { useToast } from "../../providers/ToastProvider";
 import { catNamesAPI } from "../../services/supabase/client";
 import Button from "../Button";
-import Card from "../Card";
+import LiquidGlass from "../LiquidGlass";
 import styles from "./NameSuggestion.module.css";
 
 export function NameSuggestion() {
@@ -37,8 +37,15 @@ export function NameSuggestion() {
 	};
 
 	return (
-		<Card background="glass" padding="xl" className={styles.suggestionBox}>
-			<form onSubmit={handleSubmit} className={styles.form}>
+		<LiquidGlass
+			className={styles.suggestionBox}
+			style={{ width: "100%", height: "auto", minHeight: "200px" }}
+			radius={24}
+			frost={0.2}
+			saturation={1.1}
+			outputBlur={0.8}
+		>
+			<form onSubmit={handleSubmit} className={styles.form} style={{ padding: "2rem" }}>
 				<div className={styles.inputGroup}>
 					<label htmlFor="suggest-name" className={styles.label}>
 						Got a great name in mind?
@@ -67,6 +74,6 @@ export function NameSuggestion() {
 					Your suggestion will be added to the pool for everyone to discover.
 				</p>
 			</form>
-		</Card>
+		</LiquidGlass>
 	);
 }
