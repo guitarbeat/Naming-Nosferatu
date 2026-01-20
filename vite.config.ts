@@ -116,43 +116,13 @@ export default defineConfig(({ mode }) => {
 			rollupOptions: {
 				output: {
 					format: "es",
-					// * Enable code splitting for better performance
 					inlineDynamicImports: false,
-					// * Single entry file name (no chunks)
 					entryFileNames: "assets/js/[name]-[hash].js",
-					// * Enable manual chunking for better caching
-					manualChunks: (id) => {
-						// Vendor chunks for better caching
-						if (id.includes("node_modules")) {
-							if (id.includes("react") || id.includes("react-dom") || id.includes("jsx-runtime")) {
-								return "react-vendor";
-							}
-							if (id.includes("framer-motion")) {
-								return "animation-vendor";
-							}
-							if (id.includes("lucide-react") || id.includes("class-variance-authority")) {
-								return "ui-vendor";
-							}
-							if (id.includes("@supabase") || id.includes("@tanstack") || id.includes("zustand")) {
-								return "data-vendor";
-							}
-							if (id.includes("react-hook-form") || id.includes("zod")) {
-								return "form-vendor";
-							}
-							// Group other vendor libraries
-							return "vendor";
-						}
-
-						// Feature-based chunks for better caching
-						// Group related features to avoid circular dependencies
-						if (id.includes("features/")) {
-							if (id.includes("tournament") || id.includes("analytics") || id.includes("gallery")) {
-								return "core-features";
-							}
-							if (id.includes("explore") || id.includes("auth")) {
-								return "secondary-features";
-							}
-						}
+					chunkFileNames: "assets/js/[name]-[hash].js",
+					manualChunks: {
+						"react-vendor": ["react", "react-dom", "react/jsx-runtime"],
+						"data-vendor": ["@supabase/supabase-js", "@tanstack/react-query", "zustand"],
+						"ui-vendor": ["lucide-react", "framer-motion", "class-variance-authority"],
 					},
 					assetFileNames: (assetInfo) => {
 						if (!assetInfo.name) {
@@ -173,52 +143,12 @@ export default defineConfig(({ mode }) => {
 					},
 				},
 			},
-			// * Minification settings
-			minify: "terser",
-			terserOptions: {
-				compress: {
-					drop_console: mode === "production", // * Remove console.log in production
-					drop_debugger: true,
-					pure_funcs: mode === "production" ? ["console.log", "console.info", "console.debug"] : [],
-					passes: 3, // * Increased passes for better compression
-					// * Safe optimizations only
-					unsafe: false,
-					unsafe_comps: false,
-					unsafe_math: false,
-					unsafe_methods: false,
-					// * Additional optimizations
-					collapse_vars: true,
-					reduce_vars: true,
-					pure_getters: true,
-					booleans: true,
-					loops: true,
-				},
-				format: {
-					comments: false, // * Remove comments
-					// * Preserve module structure to prevent export object issues
-					preserve_annotations: false,
-				},
-				mangle: {
-					safari10: true, // * Fix Safari 10 issues
-					// * Preserve module exports to prevent undefined object errors
-					reserved: ["exports", "module"],
-					// * More aggressive mangling
-					properties: {
-						regex: /^_[A-Za-z]/, // * Mangle private properties
-					},
-				},
-			},
-			// * Chunk size warnings threshold (500kb)
-			chunkSizeWarningLimit: 500,
-			// * Disable CSS code splitting - bundle all CSS into a single file
+			minify: "esbuild",
+			chunkSizeWarningLimit: 1000,
 			cssCodeSplit: false,
-			// * Optimize asset inlining threshold (4kb - smaller assets will be inlined)
 			assetsInlineLimit: 4096,
-			// * Enable gzip compression reporting
 			reportCompressedSize: true,
-			// * Target modern browsers for smaller bundles
 			target: "esnext",
-			// * Enable source maps in development; allow opt-in for production debugging
 			sourcemap: enableProdSourcemap || mode === "development",
 		},
 		// * Optimize dependency pre-bundling
