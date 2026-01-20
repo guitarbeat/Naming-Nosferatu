@@ -467,7 +467,7 @@ body:has(.analysis-mode-banner)::after {
 	margin-left: var(--analysis-gap-xs);
 }
 
-/* ANALYSIS TOOLBAR - Unified Controls */
+/* ANALYSIS TOOLBAR - Standardized Controls */
 .analysis-toolbar {
 	position: sticky;
 	top: 0;

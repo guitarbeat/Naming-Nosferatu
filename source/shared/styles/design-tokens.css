@@ -1,12 +1,12 @@
 /**
  * @file design-tokens.css
- * @description Unified design tokens system - single source of truth for spacing, typography, colors, and interactions
+ * @description Centralized design tokens system - single source of truth for spacing, typography, colors, and interactions
  *
  * Design Principles:
  * - Consistency: All components use these tokens
  * - Clarity: Clear visual hierarchy through systematic spacing and typography
  * - Minimalism: Restrained use of color and effects
- * - Cohesion: Unified interaction patterns
+ * - Cohesion: Standardized interaction patterns
  */
 
 /* ==========================================================================

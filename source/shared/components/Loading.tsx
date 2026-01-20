@@ -1,6 +1,6 @@
 /**
  * @module Loading
- * @description Unified loading component with spinner, cat, bongo, suspense, and skeleton variants.
+ * @description Comprehensive loading component with spinner, cat, bongo, suspense, and skeleton variants.
  */
 
 import type React from "react";

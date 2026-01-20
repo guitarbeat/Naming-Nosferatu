@@ -6,7 +6,7 @@
 
 import type React from "react";
 import { createContext, useCallback, useContext, useState } from "react";
-import { ToastContainer, type IToastItem } from "../components/Toast";
+import { type IToastItem, ToastContainer } from "../components/Toast";
 
 // ============================================================================
 // TYPES
@@ -65,7 +65,13 @@ interface ToastProviderProps {
 	/** Default duration in ms (default: 5000) */
 	defaultDuration?: number;
 	/** Toast container position */
-	position?: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
+	position?:
+		| "top-left"
+		| "top-center"
+		| "top-right"
+		| "bottom-left"
+		| "bottom-center"
+		| "bottom-right";
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({

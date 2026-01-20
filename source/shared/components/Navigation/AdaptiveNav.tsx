@@ -277,22 +277,22 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							animate={
 								isPlayReady
 									? {
-										scale: [1, 1.05, 1],
-										boxShadow: [
-											"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
-											"0 0 20px rgba(var(--color-neon-cyan-rgb), 0.6)",
-											"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
-										],
-									}
+											scale: [1, 1.05, 1],
+											boxShadow: [
+												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
+												"0 0 20px rgba(var(--color-neon-cyan-rgb), 0.6)",
+												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
+											],
+										}
 									: {}
 							}
 							transition={
 								isPlayReady
 									? {
-										duration: 2,
-										repeat: Infinity,
-										ease: "easeInOut",
-									}
+											duration: 2,
+											repeat: Infinity,
+											ease: "easeInOut",
+										}
 									: {}
 							}
 						>

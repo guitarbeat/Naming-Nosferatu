@@ -24,8 +24,8 @@ import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/providers/ToastProvider";
 import { catNamesAPI } from "../../shared/services/supabase/client";
 import type { NameItem } from "../../types/components";
-import { RankingAdjustment } from "./TournamentComponents";
 import styles from "./Dashboard.module.css";
+import { RankingAdjustment } from "./TournamentComponents";
 
 const AnalysisDashboard = lazy(() =>
 	import("../analytics/AnalysisDashboard").then((m) => ({

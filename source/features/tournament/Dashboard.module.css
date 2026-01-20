@@ -330,9 +330,11 @@
 
 .categoryCard.selected {
 	border-color: var(--category-primary, var(--primary-500));
-	background: linear-gradient(135deg,
-			color-mix(in srgb, var(--category-primary, var(--primary-500)) 10%, transparent),
-			var(--glass-bg));
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--category-primary, var(--primary-500)) 10%, transparent),
+		var(--glass-bg)
+	);
 }
 
 .categoryContent {

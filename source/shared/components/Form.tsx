@@ -1,6 +1,6 @@
 /**
  * @module Form
- * @description Unified form components with built-in error states and validation.
+ * @description Standardized form components with built-in error states and validation.
  * Combines Input, Select, and FormField functionality.
  */
 

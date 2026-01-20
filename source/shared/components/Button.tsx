@@ -1,6 +1,6 @@
 /**
  * @module Button
- * @description Unified button component system using shadcn/ui.
+ * @description Standardized button component system.
  * Provides consistent styling, accessibility, and behavior across the app.
  * This component wraps the shadcn Button and provides a consistent API.
  */

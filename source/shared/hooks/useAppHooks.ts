@@ -1,7 +1,7 @@
 /**
  * @module useAppHooks
  * @description Consolidated shared hooks for admin status
- * 
+ *
  * NOTE: useToast has been moved to ToastProvider for context-based state management.
  * Import useToast from "@/shared/providers" or "@/shared/providers/ToastProvider".
  */

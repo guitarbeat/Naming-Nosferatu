@@ -1,6 +1,6 @@
 /**
  * @module Charts
- * @description Unified chart components for data visualization
+ * @description Standardized chart components for data visualization
  * Combines BarChart and BumpChart functionality
  */
 

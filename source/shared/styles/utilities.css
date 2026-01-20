@@ -87,7 +87,7 @@
 	display: grid;
 }
 
-/* Unified Mosaic Grid - for cards, photos, and other variable-size items */
+/* Shared Mosaic Grid - for cards, photos, and other variable-size items */
 .grid-mosaic {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(var(--grid-min-column-width), 1fr));
