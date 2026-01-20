@@ -1,116 +1,16 @@
-/**
- * @module NameSuggestionModal
- * @description Modal component for suggesting new cat names
- */
-
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { z } from "zod";
-import { VALIDATION } from "../../../core/constants";
-import useAppStore from "../../../core/store/useAppStore";
-import { useToast } from "../../providers/ToastProvider";
-import { useValidatedForm } from "../../hooks/useValidatedForm";
-import { ErrorManager } from "../../services/errorManager/index";
-import { catNamesAPI } from "../../services/supabase/client";
+import { useCallback, useEffect, useId, useRef } from "react";
+import { useNameSuggestion } from "../../hooks/useNameSuggestion";
 import LiquidGlass from "../LiquidGlass";
 import { ValidatedInput } from "../ValidatedInput";
 import "./NameSuggestionModal.css";
 
 /**
- * Schema for name suggestion form validation
- */
-const SuggestionSchema = z.object({
-	name: z
-		.string()
-		.min(VALIDATION.MIN_CAT_NAME_LENGTH || 2, "Name must be at least 2 characters")
-		.max(VALIDATION.MAX_CAT_NAME_LENGTH || 50, "Name must be 50 characters or less"),
-	description: z
-		.string()
-		.min(
-			5, // * Low-Friction Validation: Relaxed from 10 to 5
-			"Description can be short!",
-		)
-		.max(VALIDATION.MAX_DESCRIPTION_LENGTH || 500, "Description must be 500 characters or less"),
-});
-
-/**
  * Modal component for suggesting new cat names
- * @param {Object} props
- * @param {boolean} props.isOpen - Whether the modal is open
- * @param {Function} props.onClose - Function to close the modal
  */
 export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-	const [globalError, setGlobalError] = useState("");
-	const [success, setSuccess] = useState("");
-	const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isMountedRef = useRef(true);
 	const nameInputRef = useRef<HTMLInputElement | null>(null);
 	const modalGlassId = useId();
-	const { showSuccess, showError } = useToast();
-
-	// * Get current user name from store for RLS context
-	const userName = useAppStore((state) => state.user.name);
-
-	const form = useValidatedForm<typeof SuggestionSchema.shape>({
-		schema: SuggestionSchema,
-		initialValues: { name: "", description: "" },
-		onSubmit: async (values) => {
-			if (!userName || !userName.trim()) {
-				setGlobalError("Please log in to suggest a name.");
-				return;
-			}
-
-			try {
-				setGlobalError("");
-				const submissionResult = await catNamesAPI.addName(
-					values.name,
-					values.description,
-					userName,
-				);
-
-				if (!isMountedRef.current) {
-					return;
-				}
-
-				if (submissionResult?.success === false) {
-					throw new Error(submissionResult.error || "Unable to add name. Please try again.");
-				}
-
-				setSuccess("Thank you for your suggestion!");
-				showSuccess("Name suggestion submitted!");
-				form.reset();
-
-				// * Clear success message after 3 seconds, then close modal
-				if (successTimeoutRef.current) {
-					clearTimeout(successTimeoutRef.current);
-				}
-				successTimeoutRef.current = setTimeout(() => {
-					if (isMountedRef.current) {
-						setSuccess("");
-						onClose();
-					}
-					successTimeoutRef.current = null;
-				}, 3000);
-			} catch (err) {
-				if (!isMountedRef.current) {
-					return;
-				}
-
-				const errorObj = err as { message?: string; error?: string } | null;
-				const errorMessage =
-					errorObj?.message ||
-					errorObj?.error ||
-					"Unable to submit your suggestion. Please try again.";
-				setGlobalError(errorMessage);
-				showError(errorMessage);
-
-				ErrorManager.handleError(err, "Add Name Suggestion", {
-					isRetryable: true,
-					affectsUserData: false,
-					isCritical: false,
-				});
-			}
-		},
-	});
 
 	const {
 		values,
@@ -122,17 +22,24 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		handleBlur,
 		handleSubmit,
 		reset,
-	} = form;
+		globalError,
+		successMessage: success,
+		setGlobalError,
+	} = useNameSuggestion({
+		onSuccess: () => {
+			setTimeout(() => {
+				if (isMountedRef.current) {
+					onClose();
+				}
+			}, 3000);
+		},
+	});
 
-	// * Track mount state and cleanup timeout on unmount
+	// * Track mount state
 	useEffect(() => {
 		isMountedRef.current = true;
 		return () => {
 			isMountedRef.current = false;
-			if (successTimeoutRef.current) {
-				clearTimeout(successTimeoutRef.current);
-				successTimeoutRef.current = null;
-			}
 		};
 	}, []);
 
@@ -168,9 +75,8 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 		}
 		reset();
 		setGlobalError("");
-		setSuccess("");
 		onClose();
-	}, [isSubmitting, onClose, reset]);
+	}, [isSubmitting, onClose, reset, setGlobalError]);
 
 	if (!isOpen) {
 		return null;
@@ -250,11 +156,7 @@ export function NameSuggestionModal({ isOpen, onClose }: { isOpen: boolean; onCl
 							}}
 							onBlur={() => handleBlur("name")}
 							placeholder="e.g., Whiskers"
-							disabled={isSubmitting}
 							maxLength={50}
-							schema={SuggestionSchema.shape.name}
-							externalError={errors.name}
-							externalTouched={touched.name}
 							showSuccess={true}
 						/>
 

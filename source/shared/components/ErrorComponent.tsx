@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBrowserState } from "../hooks/useBrowserState";
+import { ErrorBoundary } from "./ErrorBoundary/ErrorBoundary";
 import styles from "./ErrorComponent.module.css";
 import LiquidGlass from "./LiquidGlass";
 
@@ -251,36 +252,6 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	);
 };
 
-// ErrorBoundary Wrapper Class
-class ErrorBoundary extends React.Component<
-	{
-		FallbackComponent: React.ComponentType<ErrorBoundaryFallbackProps>;
-		onReset?: () => void;
-		children?: React.ReactNode;
-	},
-	{ error: Error | null }
-> {
-	override state: { error: Error | null } = { error: null };
-	static getDerivedStateFromError(error: unknown) {
-		// Use globalThis.Error to avoid conflict with exported Error alias
-		const NativeError = globalThis.Error;
-		return {
-			error: error instanceof NativeError ? error : new NativeError(String(error)),
-		};
-	}
-	reset = () => {
-		this.setState({ error: null });
-		this.props.onReset?.();
-	};
-	override render() {
-		if (this.state.error) {
-			const Fallback = this.props.FallbackComponent;
-			return <Fallback error={this.state.error} resetErrorBoundary={this.reset} />;
-		}
-		return this.props.children;
-	}
-}
-
 export const ErrorComponent: React.FC<ErrorProps> = ({
 	variant = "inline",
 	error,
@@ -293,7 +264,16 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 }) => {
 	if (variant === "boundary") {
 		return (
-			<ErrorBoundary FallbackComponent={ErrorBoundaryFallback} onReset={onRetry as () => void}>
+			<ErrorBoundary
+				fallback={({ error, resetError }) => (
+					<ErrorBoundaryFallback
+						error={error as Error}
+						resetErrorBoundary={resetError}
+						onRetry={onRetry as () => void}
+					/>
+				)}
+				context={context || "Component Boundary"}
+			>
 				{children}
 			</ErrorBoundary>
 		);

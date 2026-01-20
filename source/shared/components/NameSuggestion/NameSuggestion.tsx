@@ -1,33 +1,15 @@
-import { useState } from "react";
-import useAppStore from "../../../core/store/useAppStore";
-import { useToast } from "../../providers/ToastProvider";
-import { catNamesAPI } from "../../services/supabase/client";
+import { useNameSuggestion } from "../../hooks/useNameSuggestion";
 import Button from "../Button";
 import LiquidGlass from "../LiquidGlass";
 import styles from "./NameSuggestion.module.css";
 
 export function NameSuggestion() {
-	const { user } = useAppStore();
-	const { showToast } = useToast();
-	const [name, setName] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
+		useNameSuggestion();
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleLocalSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!name.trim()) {
-			return;
-		}
-
-		setIsSubmitting(true);
-		try {
-			await catNamesAPI.addName(name.trim(), user?.name || "anonymous");
-			showToast(`"${name}" has been added to the database.`, "success");
-			setName("");
-		} catch {
-			showToast("Failed to suggest name. Please try again.", "error");
-		} finally {
-			setIsSubmitting(false);
-		}
+		await handleSubmit();
 	};
 
 	return (
@@ -39,7 +21,7 @@ export function NameSuggestion() {
 			saturation={1.1}
 			outputBlur={0.8}
 		>
-			<form onSubmit={handleSubmit} className={styles.form} style={{ padding: "2rem" }}>
+			<form onSubmit={handleLocalSubmit} className={styles.form} style={{ padding: "2rem" }}>
 				<div className={styles.inputGroup}>
 					<label htmlFor="suggest-name" className={styles.label}>
 						Got a great name in mind?
@@ -48,8 +30,8 @@ export function NameSuggestion() {
 						<input
 							id="suggest-name"
 							type="text"
-							value={name}
-							onChange={(e) => setName(e.target.value)}
+							value={values.name}
+							onChange={(e) => handleChange("name", e.target.value)}
 							placeholder="Enter a cool cat name..."
 							className={styles.input}
 							disabled={isSubmitting}
@@ -57,13 +39,15 @@ export function NameSuggestion() {
 						<Button
 							type="submit"
 							variant="primary"
-							disabled={!name.trim() || isSubmitting}
+							disabled={!values.name.trim() || isSubmitting}
 							loading={isSubmitting}
 						>
 							Suggest
 						</Button>
 					</div>
 				</div>
+				{globalError && <p className={styles.error}>{globalError}</p>}
+				{successMessage && <p className={styles.success}>{successMessage}</p>}
 				<p className={styles.hint}>
 					Your suggestion will be added to the pool for everyone to discover.
 				</p>
