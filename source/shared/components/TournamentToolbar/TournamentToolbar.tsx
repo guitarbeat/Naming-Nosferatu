@@ -68,6 +68,7 @@ const styles = {
 	sortOrderButton: "tournament-toolbar-sort-order-button",
 	sortIcon: "tournament-toolbar-sort-icon",
 	suggestButton: "tournament-toolbar-suggest-button",
+	unifiedContainer: "tournament-toolbar-unified-container",
 };
 
 const FILTER_CONFIGS = {
