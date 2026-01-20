@@ -20,6 +20,13 @@ export default {
 			},
 		},
 		extend: {
+			fontFamily: {
+				sans: ["var(--font-sans)"],
+				serif: ["var(--font-serif)"],
+				mono: ["var(--font-mono)"],
+				hand: ["var(--font-sans)"],
+				marker: ["var(--font-serif)"],
+			},
 			colors: {
 				charcoal: "hsl(var(--charcoal))",
 				"blue-gray": "hsl(var(--blue-gray))",

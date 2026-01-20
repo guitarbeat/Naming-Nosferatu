@@ -141,6 +141,16 @@
 	color: var(--text-secondary);
 }
 
+.scribble-underline {
+	text-decoration: underline;
+	text-decoration-style: wavy;
+	text-decoration-color: var(--accent-400);
+}
+
+.cat-illustration {
+	filter: sepia(0.1) contrast(0.95);
+}
+
 /* ==========================================================================
    COLOR UTILITIES
    ========================================================================== */
@@ -265,8 +275,10 @@
 .card-base {
 	padding: var(--card-padding-md);
 	background: var(--card-background);
-	border: var(--card-border-width) solid var(--card-border);
-	border-radius: var(--card-border-radius);
+	border: 2px solid var(--border-color);
+	border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+	/* Hand-drawn look */
+	box-shadow: var(--shadow-medium);
 	transition: var(--transition-base);
 }
 
@@ -440,10 +452,12 @@
 	}
 
 	.btn-base {
-		min-height: 44px; /* Touch-friendly */
+		min-height: 44px;
+		/* Touch-friendly */
 	}
 
 	.form-input {
-		min-height: 48px; /* Touch-friendly */
+		min-height: 48px;
+		/* Touch-friendly */
 	}
 }

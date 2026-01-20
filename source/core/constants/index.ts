@@ -141,6 +141,7 @@ export const GESTURE_THRESHOLDS = {
 // ts-prune-ignore-next (used via barrel export from core/constants)
 export const STORAGE_KEYS = {
 	USER: "catNamesUser",
+	USER_AVATAR: "catNamesUserAvatar",
 	THEME: "theme",
 	TOURNAMENT: "tournament-storage",
 	USER_STORAGE: "user-storage",

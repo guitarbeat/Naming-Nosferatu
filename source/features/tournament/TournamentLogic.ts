@@ -33,7 +33,16 @@ export const tournamentsAPI = {
 	async saveTournamentRatings(
 		userName: string,
 		ratings: { name: string; rating: number; wins?: number; losses?: number }[],
+		skipQueue = false,
 	) {
+		// * Offline Handling
+		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
+			const { syncQueue } = await import("../../shared/services/sync/SyncQueue");
+			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
+			console.log("[TournamentLogic] Offline: Queued ratings save");
+			return { success: true, savedCount: ratings.length, offline: true };
+		}
+
 		return withSupabase(
 			async (client) => {
 				if (!userName || !ratings?.length) {

@@ -38,6 +38,7 @@ export const createSettingsSlice: StateCreator<
 		matrixMode: false,
 		isSwipeMode: false,
 		showCatPictures: false,
+		showGallery: false,
 	},
 
 	// Site settings state (from siteSettingsSlice)
@@ -55,6 +56,8 @@ export const createSettingsSlice: StateCreator<
 		setSwipeMode: (enabled) => updateSlice(set, "ui", { isSwipeMode: enabled }),
 
 		setCatPictures: (show) => updateSlice(set, "ui", { showCatPictures: show }),
+
+		setGalleryVisible: (visible) => updateSlice(set, "ui", { showGallery: visible }),
 
 		setUserComparison: (show) => updateSlice(set, "ui", { showUserComparison: show }),
 

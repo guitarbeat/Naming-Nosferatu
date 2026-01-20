@@ -11,6 +11,7 @@ export interface UserState {
 	name: string;
 	isLoggedIn: boolean;
 	isAdmin: boolean;
+	avatarUrl?: string;
 	preferences: UserPreferences;
 }
 
@@ -31,6 +32,7 @@ export interface UIState {
 	matrixMode: boolean;
 	isSwipeMode: boolean;
 	showCatPictures: boolean;
+	showGallery: boolean;
 }
 
 export interface CatChosenName {
@@ -77,6 +79,7 @@ export interface AppState {
 		login: (userName: string) => void;
 		logout: () => void;
 		setAdminStatus: (isAdmin: boolean) => void;
+		setAvatar: (url: string) => void;
 		initializeFromStorage: () => void;
 	};
 
@@ -88,6 +91,7 @@ export interface AppState {
 		initializeTheme: () => void;
 		setSwipeMode: (enabled: boolean) => void;
 		setCatPictures: (show: boolean) => void;
+		setGalleryVisible: (visible: boolean) => void;
 	};
 
 	errorActions: {

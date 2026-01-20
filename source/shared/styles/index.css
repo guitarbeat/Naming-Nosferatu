@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Schoolbell&family=Kalam:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
 
 /* Centralized stylesheet imports for the entire application.
  * The order matters – keep foundational layers before utilities and themes.

@@ -20,6 +20,7 @@ import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { Toast } from "./shared/components/Toast";
+import { useOfflineSync } from "./shared/hooks/useOfflineSync";
 import { AppLayout } from "./shared/layouts/AppLayout";
 import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
@@ -57,6 +58,9 @@ function App() {
 
 	// Centralized store
 	const { user, tournament, ui, tournamentActions } = useAppStore();
+
+	// Offline Sync Hook
+	useOfflineSync();
 
 	// Toast state management
 	const [toasts, setToasts] = useState<ToastMessage[]>([]);

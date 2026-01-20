@@ -103,17 +103,42 @@ export const createUserSlice: StateCreator<
 
 		setAdminStatus: (isAdmin) => updateSlice(set, "user", { isAdmin }),
 
+		setAvatar: (avatarUrl) => {
+			updateSlice(set, "user", { avatarUrl });
+			try {
+				if (avatarUrl) {
+					localStorage.setItem(STORAGE_KEYS.USER_AVATAR, avatarUrl);
+				} else {
+					localStorage.removeItem(STORAGE_KEYS.USER_AVATAR);
+				}
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.error("Error updating localStorage (avatar):", error);
+				}
+			}
+		},
+
 		// * Initialize user from localStorage
 		initializeFromStorage: () => {
 			try {
 				const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
+				const storedAvatar = localStorage.getItem(STORAGE_KEYS.USER_AVATAR);
+
+				const updates: Partial<UserState> = {};
+
 				if (storedUser && _get().user.name !== storedUser) {
 					// Update Supabase client headers for RLS policies
 					updateSupabaseUserContext(storedUser);
-					updateSlice(set, "user", {
-						name: storedUser,
-						isLoggedIn: true,
-					});
+					updates.name = storedUser;
+					updates.isLoggedIn = true;
+				}
+
+				if (storedAvatar && _get().user.avatarUrl !== storedAvatar) {
+					updates.avatarUrl = storedAvatar;
+				}
+
+				if (Object.keys(updates).length > 0) {
+					updateSlice(set, "user", updates);
 				}
 			} catch (error) {
 				if (import.meta.env.DEV) {

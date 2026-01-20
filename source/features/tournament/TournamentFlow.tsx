@@ -10,7 +10,7 @@ import { useTournamentHandlers, useTournamentManager } from "./TournamentHooks";
 import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {
-	const { user, tournament, tournamentActions } = useAppStore();
+	const { user, tournament, tournamentActions, ui } = useAppStore();
 	const { login } = useUserSession();
 	const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup } =
 		useTournamentHandlers({
@@ -30,51 +30,38 @@ export default function TournamentFlow() {
 	});
 
 	return (
-		<div className="w-full max-w-6xl mx-auto flex flex-col gap-32">
-			{/* Pick Section */}
-			<section
-				id="pick"
-				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
-			>
-				<TournamentSetup
-					onLogin={login}
-					onStart={(setupData) => {
-						handleTournamentSetup(setupData);
-						// Scroll to play section after starting
-						setTimeout(() => {
-							document.getElementById("play")?.scrollIntoView({ behavior: "smooth" });
-						}, 100);
-					}}
-					userName={user.name}
-					isLoggedIn={user.isLoggedIn}
-				/>
-			</section>
+		<div className="w-full max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh] py-8">
+			{/* Gallery Section - Toggled via Nav */}
+			<AnimatePresence>
+				{ui.showGallery && (
+					<motion.section
+						id="gallery"
+						className="w-full scroll-mt-24"
+						initial={{ height: 0, opacity: 0 }}
+						animate={{ height: "auto", opacity: 1 }}
+						exit={{ height: 0, opacity: 0 }}
+						transition={{ duration: 0.3 }}
+					>
+						<div className="w-full p-4 bg-[var(--surface-color)] rounded-xl border border-[var(--border-color)] shadow-sm">
+							<h2 className="text-3xl font-bold mb-6 text-center gradient-text">Photo Gallery</h2>
+							<PhotoGallery
+								galleryImages={galleryImages}
+								isAdmin={isAdmin}
+								userName={user.name || ""}
+								onImagesUploaded={handleImagesUploaded}
+								onImageOpen={handleImageOpen}
+								showAllPhotos={showAllPhotos}
+								onShowAllPhotosToggle={() => setShowAllPhotos(!showAllPhotos)}
+							/>
+						</div>
+					</motion.section>
+				)}
+			</AnimatePresence>
 
-			{/* Gallery Section */}
+			{/* Main Tournament Flow Area - Swaps between Setup and Play */}
 			<section
-				id="gallery"
-				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
-			>
-				<div className="w-full max-w-6xl">
-					<h2 className="text-3xl md:text-5xl font-bold mb-8 text-center gradient-text">
-						Photo Gallery
-					</h2>
-					<PhotoGallery
-						galleryImages={galleryImages}
-						isAdmin={isAdmin}
-						userName={user.name || ""}
-						onImagesUploaded={handleImagesUploaded}
-						onImageOpen={handleImageOpen}
-						showAllPhotos={showAllPhotos}
-						onShowAllPhotosToggle={() => setShowAllPhotos(!showAllPhotos)}
-					/>
-				</div>
-			</section>
-
-			{/* Play Section */}
-			<section
-				id="play"
-				className="min-h-[80vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+				id="tournament-area"
+				className="flex flex-col items-center justify-center p-4 min-h-[500px]"
 			>
 				<AnimatePresence mode="wait">
 					{tournament.isComplete && tournament.names !== null ? (
@@ -83,7 +70,7 @@ export default function TournamentFlow() {
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							exit={{ opacity: 0, scale: 0.95 }}
-							className="w-full flex justify-center"
+							className="w-full flex justify-center py-10"
 						>
 							<Card
 								background="glass"
@@ -119,11 +106,12 @@ export default function TournamentFlow() {
 							</Card>
 						</motion.div>
 					) : tournament.names !== null ? (
+						/* PLAY MODE */
 						<motion.div
 							key="tournament"
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -20 }}
+							initial={{ opacity: 0, x: 20 }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: -20 }}
 							className="w-full"
 						>
 							<Tournament
@@ -135,39 +123,35 @@ export default function TournamentFlow() {
 							/>
 						</motion.div>
 					) : (
+						/* SETUP MODE */
 						<motion.div
-							key="empty"
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center py-20"
+							key="setup"
+							initial={{ opacity: 0, x: -20 }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: 20 }}
+							className="w-full"
 						>
-							<div className="text-6xl mb-4 opacity-20">🎮</div>
-							<h3 className="text-xl text-slate-400">
-								Setup your tournament above to start playing!
-							</h3>
-							<Button
-								variant="secondary"
-								className="mt-6"
-								onClick={() =>
-									document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" })
-								}
-							>
-								Go to Pick
-							</Button>
+							<TournamentSetup
+								onLogin={login}
+								onStart={(setupData) => {
+									handleTournamentSetup(setupData);
+									// Seamless transition - no scroll needed
+								}}
+								userName={user.name}
+								isLoggedIn={user.isLoggedIn}
+							/>
 						</motion.div>
 					)}
 				</AnimatePresence>
 			</section>
 
-			{/* Suggest Name Section (Now Inline) */}
+			{/* Suggest Name Section */}
 			<section
 				id="suggest"
-				className="min-h-[60vh] flex flex-col items-center justify-center p-4 scroll-mt-20"
+				className="flex flex-col items-center justify-center p-4 mt-8 border-t border-slate-800/20 pt-12"
 			>
 				<div className="w-full max-w-4xl">
-					<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
-						Suggest a Name
-					</h2>
+					<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
 					<NameSuggestion />
 				</div>
 			</section>

@@ -32,93 +32,91 @@
 
 /* ===== LIGHT THEME ===== */
 :root[data-theme="light"] {
-	--primary-color: var(--primary-600);
-	--primary-light: var(--primary-100);
+	--primary-color: var(--primary-700);
+	--primary-light: var(--primary-300);
 	--primary-dark: var(--primary-800);
-	--surface-color: #f1f5f9;
-	--background-color: #e2e8f0;
-	--surface-muted: #f8fafc;
-	--surface-elevated: #f1f5f9;
-	--text-primary: #334155;
-	--text-secondary: #64748b;
-	/* Softer secondary text */
-	--text-tertiary: #94a3b8;
-	/* Very soft tertiary text */
-	--border-color: #cbd5e1;
-	--card-background: #f1f5f9;
-	--card-border: #cbd5e1;
-	--card-hover: #e2e8f0;
-	--header-background: rgb(241 245 249 / 85%);
-	--header-border: rgb(148 163 184 / 25%);
-	--shadow-color: rgb(15 23 42 / 8%);
-	--shadow-color-light: rgb(15 23 42 / 5%);
-	--shadow-color-medium: rgb(15 23 42 / 10%);
-	--shadow-color-strong: rgb(15 23 42 / 15%);
-	--overlay-light: rgb(15 23 42 / 3%);
-	--overlay-medium: rgb(15 23 42 / 6%);
-	--overlay-dark: rgb(15 23 42 / 10%);
-	--overlay-darker: rgb(15 23 42 / 15%);
+	--surface-color: var(--secondary-50);
+	/* Journal Page BG */
+	--background-color: var(--secondary-100);
+	/* Journal Body BG */
+	--surface-muted: var(--secondary-50);
+	--surface-elevated: #fff;
+	--text-primary: var(--primary-700);
+	--text-secondary: var(--primary-500);
+	--text-tertiary: var(--primary-300);
+	--border-color: var(--secondary-200);
+	--card-background: #fff;
+	--card-border: var(--secondary-300);
+	--card-hover: var(--secondary-200);
+	--header-background: rgb(255 251 242 / 95%);
+	--header-border: var(--secondary-200);
+	--shadow-color: rgb(74 63 53 / 10%);
+	--shadow-color-light: rgb(74 63 53 / 5%);
+	--shadow-color-medium: rgb(74 63 53 / 15%);
+	--shadow-color-strong: rgb(74 63 53 / 25%);
+	--overlay-light: rgb(74 63 53 / 5%);
+	--overlay-medium: rgb(74 63 53 / 10%);
+	--overlay-dark: rgb(74 63 53 / 20%);
+	--overlay-darker: rgb(74 63 53 / 30%);
 
-	/* Glass surface tokens (light) - Very soft and muted */
-	--glass-bg: rgb(241 245 249 / 60%);
-	--glass-bg-light: rgb(241 245 249 / 40%);
-	--glass-bg-strong: rgb(241 245 249 / 65%);
-	--glass-border: rgb(15 23 42 / 7%);
-	--glass-border-hover: rgb(15 23 42 / 12%);
-	--glass-shadow: 0 24px 45px rgb(15 23 42 / 6%);
-	--glass-shadow-colored: 0 12px 40px rgb(47 243 224 / 6%), 0 8px 24px rgb(250 38 160 / 5%);
-	--glass-blur: 18px;
-	--glass-blur-strong: 26px;
-	--shadow-subtle: 0 8px 20px rgb(15 23 42 / 3%);
-	--shadow-medium: 0 18px 40px rgb(15 23 42 / 8%);
+	/* Glass surface tokens (light) */
+	--glass-bg: rgb(255 251 242 / 70%);
+	--glass-bg-light: rgb(255 251 242 / 50%);
+	--glass-bg-strong: rgb(255 251 242 / 85%);
+	--glass-border: rgb(74 63 53 / 10%);
+	--glass-border-hover: rgb(74 63 53 / 20%);
+	--glass-shadow: 3px 3px 0px rgba(0, 0, 0, 0.05);
+	--glass-shadow-colored: 3px 3px 0px var(--accent-400);
+	--glass-blur: 8px;
+	/* Less blur, more paper feel */
+	--glass-blur-strong: 12px;
+	--shadow-subtle: 2px 2px 0px rgba(0, 0, 0, 0.03);
+	--shadow-medium: 4px 4px 0px rgba(0, 0, 0, 0.05);
 
-	/* Synced light-mode variables for components using alternative names */
-	--surface-light: #f1f5f9;
-	--card-background-light: #f1f5f9;
-	--card-hover-light: #e2e8f0;
-	--border-color-light: #cbd5e1;
-	--text-primary-light: #334155;
-	--text-secondary-light: #64748b;
-	/* Very soft */
-	--button-primary-bg: var(--primary-600);
-	--button-primary-hover: var(--primary-700);
-	--button-secondary-bg: rgb(15 23 42 / 4%);
-	--button-secondary-hover: rgb(15 23 42 / 8%);
+	/* Synced light-mode variables */
+	--surface-light: var(--secondary-50);
+	--card-background-light: #fff;
+	--card-hover-light: var(--secondary-50);
+	--border-color-light: var(--secondary-200);
+	--text-primary-light: var(--primary-700);
+	--text-secondary-light: var(--primary-500);
+	--button-primary-bg: var(--primary-700);
+	--button-primary-hover: var(--primary-800);
+	--button-secondary-bg: transparent;
+	--button-secondary-hover: var(--secondary-200);
 	--button-text-light: white;
 
-	/* * Start section colors for light theme - Very soft */
-	--start-section-bg-start: #f8fafc;
-	--start-section-bg-end: #e2e8f0;
-	--start-section-border: #cbd5e1;
-	--start-section-pattern: #94a3b8;
-	--accent-subtle: rgb(15 23 42 / 4%);
-	--accent-medium: rgb(15 23 42 / 8%);
+	/* Start section colors */
+	--start-section-bg-start: var(--secondary-50);
+	--start-section-bg-end: var(--secondary-100);
+	--start-section-border: var(--secondary-200);
+	--start-section-pattern: var(--primary-300);
+	--accent-subtle: var(--accent-100);
+	--accent-medium: var(--accent-300);
 
 	/* NameCard selected state variables */
-	--namecard-selected-bg: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-	--namecard-selected-border: var(--primary-400);
-	--namecard-selected-description: var(--primary-300);
-	--muted: #f8fafc;
-	--muted-foreground: #64748b;
-	/* Very soft, gentle appearance */
+	--namecard-selected-bg: var(--secondary-50);
+	--namecard-selected-border: var(--primary-700);
+	--namecard-selected-description: var(--primary-500);
+	--muted: var(--secondary-100);
+	--muted-foreground: var(--primary-400);
 
-	/* Navigation color tokens (light theme) */
-	--nav-bg: rgb(241 245 249 / 85%);
-	--nav-text: #334155;
-	--nav-text-muted: #64748b;
-	--nav-highlight: var(--primary-600);
-	--nav-accent: var(--color-neon-cyan);
+	/* Navigation color tokens */
+	--nav-bg: rgb(255 251 242 / 95%);
+	--nav-text: var(--primary-700);
+	--nav-text-muted: var(--primary-500);
+	--nav-highlight: var(--primary-700);
+	--nav-accent: var(--accent-400);
 
 	color-scheme: light;
 }
 
 :root[data-theme="light"] body {
-	background-image:
-		radial-gradient(circle at -10% -10%, rgb(var(--accent-rgb), 0.06), transparent 60%),
-		radial-gradient(circle at 120% -20%, rgb(var(--neon-cyan-rgb), 0.05), transparent 55%),
-		radial-gradient(circle at 10% 120%, rgb(var(--hot-pink-rgb), 0.04), transparent 60%);
-	background-repeat: no-repeat;
+	background-color: var(--background-color);
+	background-image: var(--paper-texture);
+	background-repeat: repeat;
 	background-attachment: fixed;
+	color: var(--text-primary);
 }
 
 /* ===== DARK THEME ===== */

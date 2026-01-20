@@ -7,6 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,7 +26,50 @@ export default defineConfig(({ mode }) => {
 	const enableProdSourcemap = env.VITE_ENABLE_PROD_SOURCEMAP === "true";
 
 	return {
-		plugins: [react()],
+		plugins: [
+			react(),
+			VitePWA({
+				registerType: "autoUpdate",
+				includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
+				manifest: {
+					name: "Naming Nosferatu",
+					short_name: "Nosferatu",
+					description: "Rank cat names and find the perfect one for your feline friend.",
+					theme_color: "#121212",
+					icons: [
+						{
+							src: "pwa-192x192.png",
+							sizes: "192x192",
+							type: "image/png",
+						},
+						{
+							src: "pwa-512x512.png",
+							sizes: "512x512",
+							type: "image/png",
+						},
+					],
+				},
+				workbox: {
+					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+					runtimeCaching: [
+						{
+							urlPattern: /^https:\/\/api\.thecatapi\.com\/.*/i,
+							handler: "CacheFirst",
+							options: {
+								cacheName: "cat-api-cache",
+								expiration: {
+									maxEntries: 50,
+									maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+								},
+								cacheableResponse: {
+									statuses: [0, 200],
+								},
+							},
+						},
+					],
+				},
+			}),
+		],
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds
 		base: "/",

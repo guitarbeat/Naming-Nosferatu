@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useAppStore from "../../core/store/useAppStore";
 import Button from "../../shared/components/Button";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { ValidatedInput } from "../../shared/components/ValidatedInput";
 import { useGreeting } from "../../shared/hooks/useGreeting";
+import { fetchCatAvatars } from "../../shared/utils/catApi";
 import type { NameItem } from "../../types/components";
 import { useLoginController } from "../auth/hooks/authHooks";
 import loginStyles from "../auth/styles/LoginScene.module.css";
@@ -29,12 +31,26 @@ export default function TournamentSetup({
 	const [editedName, setEditedName] = useState(userName);
 	const [analysisMode, setAnalysisMode] = useState(false);
 
+	const { user, userActions } = useAppStore();
+
+	useEffect(() => {
+		if (isLoggedIn && !user.avatarUrl) {
+			fetchCatAvatars(1).then((avatars) => {
+				if (avatars[0]) {
+					userActions.setAvatar(avatars[0]);
+				}
+			});
+		}
+	}, [isLoggedIn, user.avatarUrl, userActions]);
+
+	// ... login controller ...
 	const { name, isLoading, handleNameChange, handleSubmit } = useLoginController(
 		async (n: string) => {
 			await onLogin(n);
 		},
 	);
 
+	// ... handlers ...
 	const handleUpdateName = async () => {
 		if (!editedName.trim()) {
 			return;
@@ -72,6 +88,16 @@ export default function TournamentSetup({
 							</div>
 						) : (
 							<div className="flex gap-4 items-center">
+								{/* Avatar Display */}
+								{user.avatarUrl && (
+									<div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--primary-200)] shadow-sm">
+										<img
+											src={user.avatarUrl}
+											alt="User Avatar"
+											className="w-full h-full object-cover"
+										/>
+									</div>
+								)}
 								<span className={styles.identityName}>{userName}</span>
 								<button
 									className="text-xs text-slate-500 hover:text-slate-300"

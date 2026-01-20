@@ -15,24 +15,42 @@
 :root {
 	/* * Base spacing scale - 4px base unit for consistent rhythm */
 	--space-0: 0;
-	--space-1: 0.25rem; /* 4px */
-	--space-1_5: 0.375rem; /* 6px - Between space-1 and space-2 */
-	--space-2: 0.5rem; /* 8px */
-	--space-2_5: 0.625rem; /* 10px - Between space-2 and space-3 */
-	--space-3: 0.75rem; /* 12px */
-	--space-3_5: 0.875rem; /* 14px - Between space-3 and space-4 */
-	--space-4: 1rem; /* 16px */
-	--space-5: 1.25rem; /* 20px */
-	--space-6: 1.5rem; /* 24px */
-	--space-8: 2rem; /* 32px */
-	--space-10: 2.5rem; /* 40px */
-	--space-12: 3rem; /* 48px */
-	--space-16: 4rem; /* 64px */
-	--space-20: 5rem; /* 80px */
-	--space-24: 6rem; /* 96px */
-	--space-32: 8rem; /* 128px */
-	--space-40: 10rem; /* 160px */
-	--space-48: 12rem; /* 192px */
+	--space-1: 0.25rem;
+	/* 4px */
+	--space-1_5: 0.375rem;
+	/* 6px - Between space-1 and space-2 */
+	--space-2: 0.5rem;
+	/* 8px */
+	--space-2_5: 0.625rem;
+	/* 10px - Between space-2 and space-3 */
+	--space-3: 0.75rem;
+	/* 12px */
+	--space-3_5: 0.875rem;
+	/* 14px - Between space-3 and space-4 */
+	--space-4: 1rem;
+	/* 16px */
+	--space-5: 1.25rem;
+	/* 20px */
+	--space-6: 1.5rem;
+	/* 24px */
+	--space-8: 2rem;
+	/* 32px */
+	--space-10: 2.5rem;
+	/* 40px */
+	--space-12: 3rem;
+	/* 48px */
+	--space-16: 4rem;
+	/* 64px */
+	--space-20: 5rem;
+	/* 80px */
+	--space-24: 6rem;
+	/* 96px */
+	--space-32: 8rem;
+	/* 128px */
+	--space-40: 10rem;
+	/* 160px */
+	--space-48: 12rem;
+	/* 192px */
 
 	/* * Component spacing - semantic spacing for common patterns */
 	--spacing-component-padding: var(--space-4);
@@ -53,20 +71,33 @@
    ========================================================================== */
 :root {
 	/* * Font families */
-	--font-sans: "Inter", system-ui, -apple-system, sans-serif;
-	--font-serif: "Playfair Display", georgia, serif;
-	--font-mono: "JetBrains Mono", monospace;
+	--font-sans: "Patrick Hand", cursive;
+	--font-serif: "Kalam", cursive;
+	--font-mono: "Schoolbell", cursive;
+	/* Using Schoolbell as mono placeholder for this theme */
+
+	/* * Texture */
+	--paper-texture: url("https://www.transparenttextures.com/patterns/natural-paper.png");
 
 	/* * Font sizes - consistent scale */
-	--text-xs: 0.75rem; /* 12px */
-	--text-sm: 0.875rem; /* 14px */
-	--text-base: 1rem; /* 16px */
-	--text-lg: 1.125rem; /* 18px */
-	--text-xl: 1.25rem; /* 20px */
-	--text-2xl: 1.5rem; /* 24px */
-	--text-3xl: 1.875rem; /* 30px */
-	--text-4xl: 2.25rem; /* 36px */
-	--text-5xl: 3rem; /* 48px */
+	--text-xs: 0.75rem;
+	/* 12px */
+	--text-sm: 0.875rem;
+	/* 14px */
+	--text-base: 1rem;
+	/* 16px */
+	--text-lg: 1.125rem;
+	/* 18px */
+	--text-xl: 1.25rem;
+	/* 20px */
+	--text-2xl: 1.5rem;
+	/* 24px */
+	--text-3xl: 1.875rem;
+	/* 30px */
+	--text-4xl: 2.25rem;
+	/* 36px */
+	--text-5xl: 3rem;
+	/* 48px */
 
 	/* * Font weights - restrained scale */
 	--font-weight-normal: 400;
@@ -123,18 +154,25 @@
    ========================================================================== */
 :root {
 	--radius-none: 0;
-	--radius-xs: 0.125rem; /* 2px - for mosaic/sharp edges */
-	--radius-sm: 0.375rem; /* 6px */
-	--radius-md: 0.5rem; /* 8px */
-	--radius-lg: 0.75rem; /* 12px */
-	--radius-xl: 1rem; /* 16px */
-	--radius-2xl: 1.5rem; /* 24px */
+	--radius-xs: 0.125rem;
+	/* 2px - for mosaic/sharp edges */
+	--radius-sm: 0.375rem;
+	/* 6px */
+	--radius-md: 0.5rem;
+	/* 8px */
+	--radius-lg: 0.75rem;
+	/* 12px */
+	--radius-xl: 1rem;
+	/* 16px */
+	--radius-2xl: 1.5rem;
+	/* 24px */
 	--radius-full: 9999px;
 
 	/* * Component-specific radius */
 	--radius-button: var(--radius-md);
 	--radius-card: var(--radius-lg);
-	--radius-card-mosaic: var(--radius-xs); /* * Sharp edges for mosaic layouts */
+	--radius-card-mosaic: var(--radius-xs);
+	/* * Sharp edges for mosaic layouts */
 	--radius-input: var(--radius-md);
 	--radius-badge: var(--radius-full);
 }
@@ -157,7 +195,8 @@
 	--z-popover: 400;
 	--z-toast: 500;
 	--z-modal-backdrop: 1050;
-	--z-max: 10000; /* For skip links and critical overlays */
+	--z-max: 10000;
+	/* For skip links and critical overlays */
 }
 
 /* ==========================================================================
@@ -305,10 +344,13 @@
 	--card-padding-md: var(--space-4);
 	--card-padding-lg: var(--space-6);
 	--card-border-radius: var(--radius-card);
-	--card-border-radius-mosaic: var(--radius-card-mosaic); /* * 2px for mosaic */
+	--card-border-radius-mosaic: var(--radius-card-mosaic);
+	/* * 2px for mosaic */
 	--card-border-width: 1px;
-	--card-gap: var(--space-1); /* * Tighter gaps for mosaic layouts */
-	--card-gap-normal: var(--space-4); /* * Normal gaps for standard layouts */
+	--card-gap: var(--space-1);
+	/* * Tighter gaps for mosaic layouts */
+	--card-gap-normal: var(--space-4);
+	/* * Normal gaps for standard layouts */
 
 	/* * Input tokens */
 	--input-height-sm: 36px;
@@ -320,18 +362,28 @@
 	--input-border-width: 1px;
 
 	/* * Grid/Mosaic tokens */
-	--grid-gap-mosaic: var(--card-gap); /* * Tight gaps for mosaic */
-	--grid-gap-normal: var(--card-gap-normal); /* * Normal gaps */
-	--grid-row-unit: 20px; /* * Base row unit for flexible grid sizing */
-	--grid-min-column-width: 200px; /* * Minimum column width for responsive grids */
+	--grid-gap-mosaic: var(--card-gap);
+	/* * Tight gaps for mosaic */
+	--grid-gap-normal: var(--card-gap-normal);
+	/* * Normal gaps */
+	--grid-row-unit: 20px;
+	/* * Base row unit for flexible grid sizing */
+	--grid-min-column-width: 200px;
+	/* * Minimum column width for responsive grids */
 
 	/* * Tournament card width tokens */
-	--card-width-xs: 140px; /* * Mobile screens */
-	--card-width-sm: 160px; /* * Tablet screens */
-	--card-width-md: 180px; /* * Desktop screens */
-	--card-width-lg: 190px; /* * Large desktop screens */
-	--card-width-xl: 200px; /* * Extra large screens */
-	--card-width-responsive: clamp(140px, 12vw, 200px); /* * Responsive width using viewport units */
+	--card-width-xs: 140px;
+	/* * Mobile screens */
+	--card-width-sm: 160px;
+	/* * Tablet screens */
+	--card-width-md: 180px;
+	/* * Desktop screens */
+	--card-width-lg: 190px;
+	/* * Large desktop screens */
+	--card-width-xl: 200px;
+	/* * Extra large screens */
+	--card-width-responsive: clamp(140px, 12vw, 200px);
+	/* * Responsive width using viewport units */
 }
 
 /* ==========================================================================

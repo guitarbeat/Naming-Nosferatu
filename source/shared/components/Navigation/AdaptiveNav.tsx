@@ -29,7 +29,8 @@ const keyToId: Record<string, string> = {
  * Renders as a floating pill at the bottom on all screen sizes
  */
 export function AdaptiveNav(_props: AdaptiveNavProps) {
-	const { tournament, tournamentActions } = useAppStore();
+	const appStore = useAppStore();
+	const { tournament, tournamentActions } = appStore;
 	const { selectedNames } = tournament;
 	const [_isMobileMenuOpen, _setIsMobileMenuOpen] = useState(false);
 	const [activeSection, setActiveSection] = useState("play");
@@ -71,12 +72,23 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				handleStartTournament();
 				return;
 			}
-			// If not ready and not active, maybe shake or show toast?
-			// For now, if disabled in UI, this click might not happen or should be blocked.
 			if (!isTournamentActive && !isComplete && selectedCount < 2) {
-				// Prevent navigation/action if not ready
 				return;
 			}
+		}
+
+		if (key === "gallery") {
+			// Toggle Gallery Visibility
+			const isVisible = appStore.ui.showGallery;
+			appStore.uiActions.setGalleryVisible(!isVisible);
+
+			// If we are opening it, scroll to it
+			if (!isVisible) {
+				setTimeout(() => {
+					document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
+				}, 100);
+			}
+			return;
 		}
 
 		const id = keyToId[key];
