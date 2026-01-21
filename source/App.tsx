@@ -22,7 +22,6 @@ import { Loading } from "./shared/components/Loading";
 import { Toast } from "./shared/components/Toast";
 import { useOfflineSync } from "./shared/hooks/useOfflineSync";
 import { AppLayout } from "./shared/layouts/AppLayout";
-import { ToastProvider } from "./shared/providers/ToastProvider";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
@@ -110,58 +109,56 @@ function App() {
 	}
 
 	return (
-		<ToastProvider>
-			<div className={appClassName}>
-				<AppLayout
-					handleLogin={handleLogin}
-					handleStartNewTournament={handleStartNewTournament}
-					handleUpdateRatings={handleUpdateRatings}
-					handleTournamentSetup={handleTournamentSetup}
-					handleTournamentComplete={handleTournamentComplete}
-				>
-					<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-						<div className="flex flex-col gap-8 pb-32">
-							{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
-							<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
-								<ErrorBoundary context="Tournament Flow">
-									<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-										<TournamentFlow />
+		<div className={appClassName}>
+			<AppLayout
+				handleLogin={handleLogin}
+				handleStartNewTournament={handleStartNewTournament}
+				handleUpdateRatings={handleUpdateRatings}
+				handleTournamentSetup={handleTournamentSetup}
+				handleTournamentComplete={handleTournamentComplete}
+			>
+				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
+					<div className="flex flex-col gap-8 pb-32">
+						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
+						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
+							<ErrorBoundary context="Tournament Flow">
+								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+									<TournamentFlow />
+								</Suspense>
+							</ErrorBoundary>
+						</section>
+
+						{/* Analysis Section - Only visible after tournament completion and if not in gallery mode */}
+						{tournament.isComplete && !ui.showGallery && (
+							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
+								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
+									Analyze
+								</h2>
+								<ErrorBoundary context="Analysis Dashboard">
+									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+										<Dashboard
+											personalRatings={tournament.ratings}
+											currentTournamentNames={tournament.names || undefined}
+											voteHistory={tournament.voteHistory}
+											onStartNew={handleStartNewTournament}
+											onUpdateRatings={handleUpdateRatings}
+											userName={user.name || ""}
+										/>
 									</Suspense>
 								</ErrorBoundary>
 							</section>
+						)}
+					</div>
+				</Suspense>
+			</AppLayout>
 
-							{/* Analysis Section - Only visible after tournament completion and if not in gallery mode */}
-							{tournament.isComplete && !ui.showGallery && (
-								<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
-									<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
-										Analyze
-									</h2>
-									<ErrorBoundary context="Analysis Dashboard">
-										<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-											<Dashboard
-												personalRatings={tournament.ratings}
-												currentTournamentNames={tournament.names || undefined}
-												voteHistory={tournament.voteHistory}
-												onStartNew={handleStartNewTournament}
-												onUpdateRatings={handleUpdateRatings}
-												userName={user.name || ""}
-											/>
-										</Suspense>
-									</ErrorBoundary>
-								</section>
-							)}
-						</div>
-					</Suspense>
-				</AppLayout>
-
-				<Toast
-					variant="container"
-					toasts={toasts}
-					removeToast={removeToast}
-					className={styles.toastContainer}
-				/>
-			</div>
-		</ToastProvider>
+			<Toast
+				variant="container"
+				toasts={toasts}
+				removeToast={removeToast}
+				className={styles.toastContainer}
+			/>
+		</div>
 	);
 }
 
