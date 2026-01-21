@@ -48,10 +48,38 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export const useToast = (): ToastContextValue => {
 	const context = useContext(ToastContext);
-	if (!context) {
-		throw new Error("useToast must be used within ToastProvider");
+	if (context) {
+		return context;
 	}
-	return context;
+
+	// NOTE: In dev/HMR scenarios it's possible to hit a temporary provider mismatch
+	// (e.g. module hot-reload creating a new Context instance). For this prototype,
+	// we fail soft to avoid a blank screen.
+	if (import.meta.env.DEV) {
+		// eslint-disable-next-line no-console
+		console.warn(
+			"[ToastProvider] useToast called without an active ToastProvider. Returning no-op toast helpers to prevent a crash.",
+		);
+	}
+
+	const noopId = "";
+	return {
+		showToast: () => noopId,
+		hideToast: () => {
+			/* no-op */
+		},
+		clearToasts: () => {
+			/* no-op */
+		},
+		showSuccess: () => noopId,
+		showError: () => noopId,
+		showInfo: () => noopId,
+		showWarning: () => noopId,
+		toasts: [],
+		removeToast: () => {
+			/* no-op */
+		},
+	};
 };
 
 // ============================================================================
