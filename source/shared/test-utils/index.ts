@@ -91,9 +91,9 @@ export const createCommonMocks = () => ({
 		}: {
 			onStartTournament?: (names: unknown[]) => void;
 		}) => null,
-		ValidatedInput: ({
-			externalError: _externalError,
-			externalTouched: _externalTouched,
+		Input: ({
+			error: _error,
+			showSuccess: _showSuccess,
 		}: Record<string, unknown>) => null,
 	},
 
