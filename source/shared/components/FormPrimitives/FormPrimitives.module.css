@@ -1,0 +1,243 @@
+/**
+ * FormPrimitives - Unified form component styles
+ * Single source of truth for all form styling
+ */
+
+/* Form Field */
+.formField {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	width: 100%;
+}
+
+/* Labels */
+.label {
+	display: block;
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: var(--leading-normal);
+	color: var(--text-secondary);
+}
+
+:root[data-theme="light"] .label {
+	color: hsl(0deg 0% 15%);
+}
+
+:root[data-theme="dark"] .label {
+	color: hsl(0deg 0% 90%);
+}
+
+.required {
+	margin-left: var(--space-1);
+	color: var(--error-500);
+}
+
+/* Input Wrapper for feedback icons */
+.inputWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+/* Base Input Styles */
+.input,
+.textarea,
+.select {
+	width: 100%;
+	padding: var(--space-3) var(--space-4);
+	font-size: var(--text-base);
+	font-family: inherit;
+	color: var(--text-primary);
+	background: var(--surface-color);
+	border: 1px solid var(--border-color);
+	border-radius: var(--radius-md);
+	transition: all var(--duration-fast) var(--ease-out);
+	outline: none;
+}
+
+:root[data-theme="light"] .input,
+:root[data-theme="light"] .textarea,
+:root[data-theme="light"] .select {
+	color: hsl(0deg 0% 10%);
+	background: hsl(0deg 0% 100%);
+	border-color: hsl(0deg 0% 85%);
+}
+
+:root[data-theme="light"] .input::placeholder,
+:root[data-theme="light"] .textarea::placeholder {
+	color: hsl(0deg 0% 50%);
+}
+
+:root[data-theme="dark"] .input,
+:root[data-theme="dark"] .textarea,
+:root[data-theme="dark"] .select {
+	color: hsl(0deg 0% 98%);
+	background: hsl(0deg 0% 15%);
+	border-color: hsl(0deg 0% 30%);
+}
+
+:root[data-theme="dark"] .input::placeholder,
+:root[data-theme="dark"] .textarea::placeholder {
+	color: hsl(0deg 0% 60%);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+	border-color: var(--primary-500);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-500) 20%, transparent);
+}
+
+:root[data-theme="light"] .input:focus,
+:root[data-theme="light"] .textarea:focus,
+:root[data-theme="light"] .select:focus {
+	border-color: hsl(var(--primary) / 60%);
+	box-shadow: 0 0 0 3px hsl(var(--primary) / 15%);
+}
+
+:root[data-theme="dark"] .input:focus,
+:root[data-theme="dark"] .textarea:focus,
+:root[data-theme="dark"] .select:focus {
+	border-color: hsl(var(--primary) / 70%);
+	box-shadow: 0 0 0 3px hsl(var(--primary) / 20%);
+}
+
+.input:disabled,
+.textarea:disabled,
+.select:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Textarea specific */
+.textarea {
+	resize: vertical;
+	min-height: 100px;
+}
+
+/* Select specific */
+.select {
+	appearance: none;
+	cursor: pointer;
+	padding-right: calc(var(--space-4) + 20px);
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right var(--space-3) center;
+	background-size: 16px;
+}
+
+/* Error State */
+.inputError {
+	border-color: var(--error-500) !important;
+}
+
+.inputError:focus {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--error-500) 20%, transparent) !important;
+}
+
+/* Success State */
+.inputSuccess {
+	border-color: var(--success-500);
+}
+
+.inputSuccess:focus {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--success-500) 20%, transparent);
+}
+
+/* Error Text */
+.errorText {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-normal);
+	color: var(--color-error);
+}
+
+/* Feedback Icon */
+.feedbackIcon {
+	position: absolute;
+	right: var(--space-3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	font-size: 1rem;
+}
+
+/* Shake Animation */
+.shake {
+	animation: shake var(--duration-slow) var(--ease-standard) both;
+}
+
+@keyframes shake {
+	10%,
+	90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+	20%,
+	80% {
+		transform: translate3d(2px, 0, 0);
+	}
+	30%,
+	50%,
+	70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+	40%,
+	60% {
+		transform: translate3d(4px, 0, 0);
+	}
+}
+
+/* Form Actions */
+.formActions {
+	display: flex;
+	gap: var(--space-3);
+	align-items: center;
+	justify-content: flex-end;
+	margin-top: var(--space-4);
+}
+
+.actionsCenter {
+	justify-content: center;
+}
+
+.actionsStart {
+	justify-content: flex-start;
+}
+
+/* Mobile optimizations */
+@media (width <= 768px) {
+	.input,
+	.textarea,
+	.select {
+		padding: var(--space-3);
+		font-size: var(--text-base);
+	}
+
+	.formActions {
+		flex-direction: column;
+		align-items: stretch;
+	}
+}
+
+@media (width <= 480px) {
+	.input,
+	.textarea,
+	.select {
+		font-size: var(--text-sm);
+	}
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.input,
+	.textarea,
+	.select {
+		transition: none;
+	}
+
+	.shake {
+		animation: none;
+	}
+}

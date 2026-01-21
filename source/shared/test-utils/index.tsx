@@ -163,11 +163,11 @@ export const createCommonMocks = () => ({
 		}: {
 			onStartTournament?: (names: unknown[]) => void;
 		}) => <button onClick={() => onStartTournament?.([])}>Start Tournament Utils</button>,
-		ValidatedInput: ({
-			externalError: _externalError,
-			externalTouched: _externalTouched,
+		Input: ({
+			error: _error,
+			showSuccess: _showSuccess,
 			...props
-		}: Record<string, unknown>) => <input data-testid="validated-input" {...props} />,
+		}: Record<string, unknown>) => <input data-testid="input" {...props} />,
 	},
 
 	// Context mocks
