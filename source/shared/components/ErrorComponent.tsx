@@ -1,151 +1,12 @@
 /**
- * @module Error
+ * @module ErrorComponent
  * @description Error display components with multiple variants.
+ * Uses the consolidated ErrorBoundary from ./ErrorBoundary as the single source of truth.
  */
 
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useBrowserState } from "../hooks/useBrowserState";
-import { ErrorBoundary } from "./ErrorBoundary/ErrorBoundary";
+import type React from "react";
+import { ErrorBoundary, type ErrorFallbackProps } from "./ErrorBoundary/ErrorBoundary";
 import styles from "./ErrorComponent.module.css";
-import LiquidGlass from "./LiquidGlass";
-
-const DEFAULT_MAX_RETRIES = 3;
-
-/* ========================================= */
-/*       ERROR BOUNDARY FALLBACK             */
-/* ========================================= */
-
-export interface ErrorBoundaryFallbackProps {
-	error: Error;
-	resetErrorBoundary: () => void;
-	onRetry?: () => void;
-}
-
-export const ErrorBoundaryFallback: React.FC<ErrorBoundaryFallbackProps> = ({
-	error,
-	resetErrorBoundary,
-	onRetry,
-}) => {
-	const [retryCount, setRetryCount] = useState(0);
-	const [copied, setCopied] = useState(false);
-	const [_isDetailsOpen, _setIsDetailsOpen] = useState(false);
-	const navigate = useNavigate();
-	const { prefersReducedMotion, ...screenSize } = useBrowserState();
-	const mainContentRef = useRef<HTMLDivElement>(null);
-	const retryButtonRef = useRef<HTMLButtonElement>(null);
-
-	useEffect(() => {
-		if (mainContentRef.current) {
-			mainContentRef.current.focus();
-		}
-	}, []);
-
-	useEffect(() => {
-		const announcement = document.createElement("div");
-		announcement.setAttribute("role", "alert");
-		announcement.setAttribute("aria-live", "assertive");
-		announcement.className = styles.srOnly || "sr-only";
-		announcement.textContent = "An error has occurred.";
-		document.body.appendChild(announcement);
-		return () => {
-			if (document.body.contains(announcement)) {
-				document.body.removeChild(announcement);
-			}
-		};
-	}, []);
-
-	const canRetry = retryCount < DEFAULT_MAX_RETRIES;
-
-	const handleRetry = () => {
-		if (!canRetry) {
-			window.location.reload();
-			return;
-		}
-		setRetryCount((count) => count + 1);
-		onRetry?.();
-		resetErrorBoundary();
-	};
-
-	const handleCopyDiagnostics = async () => {
-		const diagnosticText = `Error: ${error.message || "Unknown error"}\nStack: ${error.stack || "No stack trace"}`;
-		try {
-			await navigator.clipboard.writeText(diagnosticText);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 2000);
-		} catch (err) {
-			console.error("Failed to copy", err);
-		}
-	};
-
-	const boundaryContentClassName = [
-		styles.boundaryContent,
-		prefersReducedMotion ? styles.boundaryContentNoMotion : "",
-		screenSize.isSmallMobile ? styles.boundaryContentSmallMobile : "",
-		screenSize.isMobile ? styles.boundaryContentMobile : "",
-		screenSize.isTablet ? styles.boundaryContentTablet : "",
-	]
-		.filter(Boolean)
-		.join(" ");
-
-	return (
-		<div
-			className={styles.boundary}
-			role="alert"
-			aria-labelledby="error-title"
-			aria-describedby="error-message"
-		>
-			<LiquidGlass
-				width={600}
-				height={400}
-				radius={24}
-				scale={-180}
-				saturation={1.2}
-				frost={0.08}
-				inputBlur={12}
-				outputBlur={0.8}
-				className={styles.boundaryGlass}
-				id="error-boundary-glass-filter"
-				style={{ width: "100%", maxWidth: "600px", height: "auto" }}
-			>
-				<div ref={mainContentRef} className={boundaryContentClassName} tabIndex={-1}>
-					<div className={styles.boundaryIcon} aria-hidden="true">
-						🐱
-					</div>
-					<h2 id="error-title" className={styles.boundaryTitle}>
-						Something went wrong
-					</h2>
-
-					<div className={styles.boundaryActions}>
-						<button
-							ref={retryButtonRef}
-							onClick={handleRetry}
-							className={styles.boundaryRetryButton}
-						>
-							{canRetry ? "Try Again" : "Reload"}
-						</button>
-						<button
-							onClick={() => navigate("/", { replace: true })}
-							className={styles.boundaryHomeButton}
-						>
-							Home
-						</button>
-						<button onClick={handleCopyDiagnostics} className={styles.boundaryCopyButton}>
-							{copied ? "Copied!" : "Copy Diagnostics"}
-						</button>
-					</div>
-
-					{process.env.NODE_ENV === "development" && error && (
-						<details className={styles.boundaryDetails}>
-							<summary>Error Details</summary>
-							<pre className={styles.boundaryErrorStack}>{error.toString()}</pre>
-						</details>
-					)}
-				</div>
-			</LiquidGlass>
-		</div>
-	);
-};
 
 /* ========================================= */
 /*             ERROR COMPONENTS              */
@@ -252,6 +113,10 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	);
 };
 
+/**
+ * Unified error component with boundary, list, and inline variants.
+ * Uses the consolidated ErrorBoundary from ErrorBoundary/ErrorBoundary.tsx.
+ */
 export const ErrorComponent: React.FC<ErrorProps> = ({
 	variant = "inline",
 	error,
@@ -265,14 +130,10 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 	if (variant === "boundary") {
 		return (
 			<ErrorBoundary
-				fallback={({ error, resetError }) => (
-					<ErrorBoundaryFallback
-						error={error as Error}
-						resetErrorBoundary={resetError}
-						onRetry={onRetry as () => void}
-					/>
-				)}
 				context={context || "Component Boundary"}
+				onError={(err) => {
+					if (onRetry) onRetry(err);
+				}}
 			>
 				{children}
 			</ErrorBoundary>
@@ -294,3 +155,6 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 };
 
 ErrorComponent.displayName = "ErrorComponent";
+
+// Re-export ErrorBoundary and its types for convenience
+export { ErrorBoundary, type ErrorFallbackProps };
