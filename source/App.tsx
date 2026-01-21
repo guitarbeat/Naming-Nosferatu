@@ -20,7 +20,7 @@ import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { Toast } from "./shared/components/Toast";
-import { useOfflineSync } from "./shared/hooks/useOfflineSync";
+import { useOfflineSync } from "./shared/hooks/useBrowserState";
 import { AppLayout } from "./shared/layouts/AppLayout";
 import { ErrorManager } from "./shared/services/errorManager";
 import {

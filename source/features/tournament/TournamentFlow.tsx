@@ -41,7 +41,9 @@ export default function TournamentFlow() {
 					onImagesUploaded={handleImagesUploaded}
 					onImageOpen={handleImageOpen}
 					showAllPhotos={true} // Always show all in fullscreen mode
-					onShowAllPhotosToggle={() => {}} // No-op since we show all
+					onShowAllPhotosToggle={() => {
+						/* No-op since we show all */
+					}}
 				/>
 			</motion.div>
 		);

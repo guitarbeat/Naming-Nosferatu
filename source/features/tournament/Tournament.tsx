@@ -79,9 +79,7 @@ function TournamentContent({
 			{/* Header Section */}
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
-					<div
-						className={`px-4 py-1.5 rounded-full flex items-center gap-2 ${styles.glassPanel}`}
-					>
+					<div className={`px-4 py-1.5 rounded-full flex items-center gap-2 ${styles.glassPanel}`}>
 						<span className="material-symbols-outlined text-primary text-sm">stars</span>
 						<span className="text-xs font-bold tracking-widest uppercase text-white/90">
 							Round {roundNumber}
@@ -112,9 +110,7 @@ function TournamentContent({
 
 			{/* Tournament Controls */}
 			<section className="mt-6 px-4">
-				<div
-					className={`p-2 rounded-xl flex items-center justify-between ${styles.glassPanel}`}
-				>
+				<div className={`p-2 rounded-xl flex items-center justify-between ${styles.glassPanel}`}>
 					<div className="flex gap-2">
 						<button
 							onClick={audioManager.handleToggleMute}
@@ -125,7 +121,9 @@ function TournamentContent({
 							</span>
 						</button>
 						<button
-							onClick={() => {}}
+							onClick={() => {
+								/* Skip functionality not implemented */
+							}}
 							className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
 						>
 							<span className="material-symbols-outlined">skip_next</span>

@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import Button from "../../shared/components/Button";
-import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { Input } from "../../shared/components/FormPrimitives";
-import { useGreeting } from "../../shared/hooks/useGreeting";
+import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
+import { getGreeting } from "../../shared/utils";
 import { fetchCatAvatars } from "../../shared/utils/catApi";
 import type { NameItem } from "../../types/components";
 import { useLoginController } from "../auth/hooks/authHooks";
@@ -58,7 +58,7 @@ export default function TournamentSetup({
 		await onLogin(editedName.trim());
 		setIsEditingName(false);
 	};
-	const greeting = useGreeting();
+	const greeting = getGreeting();
 	const manager = useTournamentManager({
 		userName: isLoggedIn ? userName : "",
 	});
@@ -71,14 +71,14 @@ export default function TournamentSetup({
 					<div className={styles.identitySection}>
 						{isEditingName ? (
 							<div className="flex gap-2 items-center">
-							<Input
-								type="text"
-								value={editedName}
-								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-									setEditedName(e.target.value)
-								}
-								placeholder="Your Name..."
-							/>
+								<Input
+									type="text"
+									value={editedName}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+										setEditedName(e.target.value)
+									}
+									placeholder="Your Name..."
+								/>
 								<Button onClick={handleUpdateName} variant="primary">
 									Save
 								</Button>
@@ -129,13 +129,13 @@ export default function TournamentSetup({
 					<h1 className={loginStyles.loginTitle}>Welcome!</h1>
 					<p className={loginStyles.loginSubtitle}>{greeting}, please enter your name.</p>
 					<div className={loginStyles.loginInputTray}>
-					<Input
-						type="text"
-						placeholder="NAME..."
-						value={name}
-						onChange={handleNameChange}
-						onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleSubmit()}
-					/>
+						<Input
+							type="text"
+							placeholder="NAME..."
+							value={name}
+							onChange={handleNameChange}
+							onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleSubmit()}
+						/>
 					</div>
 					<button className={loginStyles.loginBtn} onClick={handleSubmit} disabled={isLoading}>
 						STEP INSIDE

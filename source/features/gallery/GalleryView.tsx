@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import { Lightbox, PhotoGallery, useImageGallery } from "../../shared/components/Gallery";
-import { useAdminStatus } from "../../shared/hooks/useAppHooks";
+import { useAdminStatus } from "../auth/hooks/authHooks";
 import "../../shared/styles/gallery.css";
 
 export default function GalleryView() {

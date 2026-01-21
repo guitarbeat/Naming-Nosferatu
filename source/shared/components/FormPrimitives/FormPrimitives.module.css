@@ -130,11 +130,11 @@
 
 /* Error State */
 .inputError {
-	border-color: var(--error-500) !important;
+	border-color: var(--error-500);
 }
 
 .inputError:focus {
-	box-shadow: 0 0 0 3px color-mix(in srgb, var(--error-500) 20%, transparent) !important;
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--error-500) 20%, transparent);
 }
 
 /* Success State */

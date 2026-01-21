@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useProfileNotifications } from "../../core/hooks/useProfileNotifications";
+import { tournamentsAPI } from "../../features/tournament/TournamentLogic";
+import { devError, devLog, devWarn } from "../utils";
+import { syncQueue } from "../services/sync/SyncQueue";
 
 export interface BrowserState {
 	isMobile: boolean;
@@ -78,18 +82,77 @@ export const useBrowserState = (): BrowserState => {
 	return browserState;
 };
 
-// Backward compatibility exports
-export const useScreenSize = () => {
-	const { isMobile, isTablet, isDesktop, isSmallMobile } = useBrowserState();
-	return { isMobile, isTablet, isDesktop, isSmallMobile };
-};
+/**
+ * Hook for offline sync functionality - processes queued operations when coming back online
+ */
+export function useOfflineSync() {
+	const [isOnline, setIsOnline] = useState(navigator.onLine);
+	const { showToast } = useProfileNotifications();
 
-export const useReducedMotion = () => {
-	const { prefersReducedMotion } = useBrowserState();
-	return prefersReducedMotion;
-};
+	const processQueue = useCallback(async () => {
+		if (syncQueue.isEmpty()) {
+			return;
+		}
 
-export const useNetworkStatus = () => {
-	const { isOnline, isSlowConnection, connectionType } = useBrowserState();
-	return { isOnline, isSlowConnection, connectionType };
-};
+		let processedCount = 0;
+		const total = syncQueue.getQueue().length;
+
+		devLog(`[Sync] Processing ${total} items...`);
+
+		while (!syncQueue.isEmpty()) {
+			const item = syncQueue.peek();
+			if (!item) {
+				break;
+			}
+
+			try {
+				if (item.type === "SAVE_RATINGS") {
+					const { userName, ratings } = item.payload;
+					const result = await tournamentsAPI.saveTournamentRatings(userName, ratings, true); // true = skip queue check
+
+					if (result.success) {
+						syncQueue.dequeue();
+						processedCount++;
+					} else {
+						devWarn(
+							"[Sync] Failed to process item, keeping in queue",
+							(result as { error?: string }).error,
+						);
+						// If permanent error, maybe remove? For now, we simple break to retry later
+						break;
+					}
+				}
+			} catch (e) {
+				devError("[Sync] Error processing queue item", e);
+				break;
+			}
+		}
+
+		if (processedCount > 0) {
+			showToast(`Synced ${processedCount} offline updates to cloud`, "success");
+		}
+	}, [showToast]);
+
+	useEffect(() => {
+		const handleOnline = () => {
+			setIsOnline(true);
+			processQueue();
+		};
+		const handleOffline = () => setIsOnline(false);
+
+		window.addEventListener("online", handleOnline);
+		window.addEventListener("offline", handleOffline);
+
+		// Initial check
+		if (navigator.onLine) {
+			processQueue();
+		}
+
+		return () => {
+			window.removeEventListener("online", handleOnline);
+			window.removeEventListener("offline", handleOffline);
+		};
+	}, [processQueue]);
+
+	return { isOnline };
+}

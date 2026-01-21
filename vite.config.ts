@@ -77,17 +77,21 @@ export default defineConfig(({ mode }) => {
 			devSourcemap: true,
 		},
 		resolve: {
-			alias: {
-				"@db": resolveFromRoot("supabase"),
-				"@": resolveFromRoot("source"),
-				"@components": resolveFromRoot("source/shared/components"),
-				"@hooks": resolveFromRoot("source/core/hooks"),
-				"@utils": resolveFromRoot("source/shared/utils"),
-				"@services": resolveFromRoot("source/shared/services"),
-				"@styles": resolveFromRoot("source/shared/styles"),
-				"@features": resolveFromRoot("source/features"),
-				"@core": resolveFromRoot("source/core"),
-			},
+			alias: [
+				// Project @supabase/* aliases - must be specific to avoid conflicts with npm @supabase/supabase-js
+				{ find: "@supabase/client", replacement: resolveFromRoot("supabase/client.ts") },
+				{ find: "@supabase/types", replacement: resolveFromRoot("supabase/types.ts") },
+				// Other project aliases
+				{ find: "@db", replacement: resolveFromRoot("supabase") },
+				{ find: /^@\//, replacement: resolveFromRoot("source") + "/" },
+				{ find: "@components", replacement: resolveFromRoot("source/shared/components") },
+				{ find: "@hooks", replacement: resolveFromRoot("source/core/hooks") },
+				{ find: "@utils", replacement: resolveFromRoot("source/shared/utils") },
+				{ find: "@services", replacement: resolveFromRoot("source/shared/services") },
+				{ find: "@styles", replacement: resolveFromRoot("source/shared/styles") },
+				{ find: "@features", replacement: resolveFromRoot("source/features") },
+				{ find: "@core", replacement: resolveFromRoot("source/core") },
+			],
 			// Ensure a single React instance to avoid hooks dispatcher being null
 			dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
 		},

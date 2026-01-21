@@ -97,6 +97,21 @@ export function formatDate(date: Date | string | number, options: Intl.DateTimeF
 	});
 }
 
+/**
+ * Get a time-based greeting string
+ * @returns "Good morning", "Good afternoon", or "Good evening"
+ */
+export function getGreeting(): string {
+	const hour = new Date().getHours();
+	if (hour < 12) {
+		return "Good morning";
+	}
+	if (hour < 18) {
+		return "Good afternoon";
+	}
+	return "Good evening";
+}
+
 /* ==========================================================================
    LOGGING UTILITIES
    ========================================================================== */

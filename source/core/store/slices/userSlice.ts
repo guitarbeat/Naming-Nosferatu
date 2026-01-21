@@ -1,6 +1,6 @@
+import { updateSupabaseUserContext } from "@supabase/client";
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { updateSupabaseUserContext } from "@supabase/client";
 import type { AppState, UserState } from "../../../types/store";
 import { updateSlice } from "../useAppStore";
 

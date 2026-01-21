@@ -11,8 +11,8 @@ const FALLBACK_NAMES = [
 	{ id: "fallback-5", name: "Oliver" },
 ];
 
-import { ErrorManager } from "../../../services/errorManager";
 import { catNamesAPI } from "@supabase/client";
+import { ErrorManager } from "../../../services/errorManager";
 
 interface UseNameDataProps {
 	userName: string | null;

@@ -78,13 +78,13 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 							{/* Name Input */}
 							<div className={styles.inputSection}>
 								<label className={styles.label}>Your Name</label>
-							<Input
-								type="text"
-								value={editedName}
-								onChange={(e) => setEditedName(e.target.value)}
-								placeholder="Enter your name..."
-								onKeyDown={(e) => e.key === "Enter" && handleSave()}
-							/>
+								<Input
+									type="text"
+									value={editedName}
+									onChange={(e) => setEditedName(e.target.value)}
+									placeholder="Enter your name..."
+									onKeyDown={(e) => e.key === "Enter" && handleSave()}
+								/>
 							</div>
 
 							{/* Actions */}

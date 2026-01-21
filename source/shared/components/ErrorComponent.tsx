@@ -132,7 +132,9 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 			<ErrorBoundary
 				context={context || "Component Boundary"}
 				onError={(err) => {
-					if (onRetry) onRetry(err);
+					if (onRetry) {
+						onRetry(err);
+					}
 				}}
 			>
 				{children}

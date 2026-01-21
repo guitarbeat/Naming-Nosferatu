@@ -110,8 +110,8 @@ FormField.displayName = "FormField";
 
 interface InputProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">,
-	BaseFieldProps,
-	ValidationProps { }
+		BaseFieldProps,
+		ValidationProps {}
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
@@ -140,7 +140,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
 		const validate = useCallback(
 			(val: string) => {
-				if (!schema) return;
+				if (!schema) {
+					return;
+				}
 
 				const result = schema.safeParse(val);
 				if (result.success) {
@@ -156,7 +158,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		);
 
 		useEffect(() => {
-			if (!isTouched || !schema) return;
+			if (!isTouched || !schema) {
+				return;
+			}
 
 			setIsValidating(true);
 			const timer = setTimeout(() => {
@@ -181,7 +185,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
 		const hasError = currentTouched && currentError && !isValidating;
 		const isSuccess =
-			showSuccess && currentTouched && !currentError && !isValidating && String(value || "").length > 0;
+			showSuccess &&
+			currentTouched &&
+			!currentError &&
+			!isValidating &&
+			String(value || "").length > 0;
 
 		const inputClasses = [
 			styles.input,
@@ -243,8 +251,8 @@ Input.displayName = "Input";
 
 interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
-	BaseFieldProps,
-	ValidationProps { }
+		BaseFieldProps,
+		ValidationProps {}
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
@@ -273,7 +281,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
 		const validate = useCallback(
 			(val: string) => {
-				if (!schema) return;
+				if (!schema) {
+					return;
+				}
 
 				const result = schema.safeParse(val);
 				if (result.success) {
@@ -289,7 +299,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 		);
 
 		useEffect(() => {
-			if (!isTouched || !schema) return;
+			if (!isTouched || !schema) {
+				return;
+			}
 
 			setIsValidating(true);
 			const timer = setTimeout(() => {
@@ -314,7 +326,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 		const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
 		const hasError = currentTouched && currentError && !isValidating;
 		const isSuccess =
-			showSuccess && currentTouched && !currentError && !isValidating && String(value || "").length > 0;
+			showSuccess &&
+			currentTouched &&
+			!currentError &&
+			!isValidating &&
+			String(value || "").length > 0;
 
 		const textareaClasses = [
 			styles.textarea,
@@ -357,7 +373,7 @@ interface SelectOption {
 
 interface SelectProps
 	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className">,
-	BaseFieldProps {
+		BaseFieldProps {
 	options?: SelectOption[];
 	placeholder?: string;
 }
@@ -393,7 +409,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 					aria-describedby={error ? `${id}-error` : undefined}
 				>
 					{placeholder && (
-						<option value="" disabled>
+						<option value="" disabled={true}>
 							{placeholder}
 						</option>
 					)}
@@ -428,7 +444,9 @@ export const FormActions: React.FC<FormActionsProps> = ({
 	const alignmentClass =
 		align === "start" ? styles.actionsStart : align === "center" ? styles.actionsCenter : "";
 
-	return <div className={`${styles.formActions} ${alignmentClass} ${className}`.trim()}>{children}</div>;
+	return (
+		<div className={`${styles.formActions} ${alignmentClass} ${className}`.trim()}>{children}</div>
+	);
 };
 
 FormActions.displayName = "FormActions";

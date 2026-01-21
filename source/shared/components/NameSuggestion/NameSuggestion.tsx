@@ -137,7 +137,9 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 
 	// Handle Escape key to close modal
 	useEffect(() => {
-		if (!isOpen) return;
+		if (!isOpen) {
+			return;
+		}
 
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === "Escape") {
@@ -151,13 +153,17 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 	}, [isOpen, onClose, reset]);
 
 	const handleClose = useCallback(() => {
-		if (isSubmitting) return;
+		if (isSubmitting) {
+			return;
+		}
 		reset();
 		setGlobalError("");
 		onClose();
 	}, [isSubmitting, onClose, reset, setGlobalError]);
 
-	if (!isOpen) return null;
+	if (!isOpen) {
+		return null;
+	}
 
 	return (
 		<>
@@ -227,7 +233,9 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							value={values.name}
 							onChange={(e) => {
 								handleChange("name", e.target.value);
-								if (globalError) setGlobalError("");
+								if (globalError) {
+									setGlobalError("");
+								}
 							}}
 							onBlur={() => handleBlur("name")}
 							placeholder="e.g., Whiskers"
@@ -242,7 +250,9 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							value={values.description}
 							onChange={(e) => {
 								handleChange("description", e.target.value);
-								if (globalError) setGlobalError("");
+								if (globalError) {
+									setGlobalError("");
+								}
 							}}
 							onBlur={() => handleBlur("description")}
 							placeholder="Why is this name special? (e.g. 'He looks like a vampire!')"
@@ -283,9 +293,23 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 // UNIFIED EXPORT
 // ============================================================================
 
-export function NameSuggestion({ variant = "inline", isOpen = false, onClose }: NameSuggestionProps) {
+export function NameSuggestion({
+	variant = "inline",
+	isOpen = false,
+	onClose,
+}: NameSuggestionProps) {
 	if (variant === "modal") {
-		return <ModalNameSuggestion isOpen={isOpen} onClose={onClose || (() => {})} />;
+		return (
+			<ModalNameSuggestion
+				isOpen={isOpen}
+				onClose={
+					onClose ||
+					(() => {
+						/* No-op default */
+					})
+				}
+			/>
+		);
 	}
 	return <InlineNameSuggestion />;
 }

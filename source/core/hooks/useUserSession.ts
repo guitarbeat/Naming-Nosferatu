@@ -7,10 +7,10 @@
  * await logout();
  */
 
+import { resolveSupabaseClient } from "@supabase/client";
 import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
 import { isUserAdmin } from "../../features/auth/utils/authUtils";
-import { resolveSupabaseClient } from "@supabase/client";
 import useAppStore from "../store/useAppStore";
 
 let canUseSetUserContext = true;
@@ -46,7 +46,6 @@ const setSupabaseUserContext = async (activeSupabase: unknown, userName: string)
 			return;
 		}
 
-		// biome-ignore lint/suspicious/noExplicitAny: RPC call requires dynamic access to client
 		await (activeSupabase as any).rpc("set_user_context", {
 			user_name_param: trimmedName,
 		});
@@ -212,7 +211,6 @@ function useUserSession({
 					showToast?.({ message: "Logging in...", type: "info" });
 				} else {
 					// * Use the create_user_account RPC function which bypasses RLS
-					// biome-ignore lint/suspicious/noExplicitAny: RPC call requires dynamic access to client
 					const { error: rpcError } = await (activeSupabase as any).rpc("create_user_account", {
 						p_user_name: trimmedName,
 						p_preferences: {

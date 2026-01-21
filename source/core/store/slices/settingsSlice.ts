@@ -1,6 +1,6 @@
+import { siteSettingsAPI } from "@supabase/client";
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { siteSettingsAPI } from "@supabase/client";
 import type { AppState, CatChosenName, UIState } from "../../../types/store";
 import { updateSlice } from "../useAppStore";
 

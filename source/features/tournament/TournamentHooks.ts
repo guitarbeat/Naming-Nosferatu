@@ -6,7 +6,7 @@ import { useProfileNotifications } from "../../core/hooks/useProfileNotification
 import useLocalStorage from "../../core/hooks/useStorage";
 import useAppStore from "../../core/store/useAppStore";
 import { useImageGallery } from "../../shared/components/Gallery";
-import { useAdminStatus } from "../../shared/hooks/useAppHooks";
+import { useAdminStatus } from "../auth/hooks/authHooks";
 import { useLightboxState } from "../../shared/hooks/useLightboxState";
 import { ErrorManager } from "../../shared/services/errorManager";
 import {
@@ -45,7 +45,7 @@ export function useTournamentState(
 		| null
 		| undefined,
 	onComplete: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void,
-	_onVote?: any,
+	_onVote?: unknown,
 ) {
 	const [randomizedNames, setRandomizedNames] = useState<NameItem[]>([]);
 	const [selectedOption, setSelectedOption] = useState<

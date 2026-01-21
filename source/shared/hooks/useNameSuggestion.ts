@@ -1,10 +1,10 @@
+import { catNamesAPI } from "@supabase/client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import { useToast } from "../providers/ToastProvider";
 import { ErrorManager } from "../services/errorManager";
-import { catNamesAPI } from "@supabase/client";
 import { useValidatedForm } from "./useValidatedForm";
 
 /**
@@ -55,7 +55,9 @@ export function useNameSuggestion({ onSuccess, initialValues }: UseNameSuggestio
 				setGlobalError("");
 				const result = await catNamesAPI.addName(values.name, values.description, user.name);
 
-				if (!isMountedRef.current) return;
+				if (!isMountedRef.current) {
+					return;
+				}
 
 				if (result?.success === false) {
 					throw new Error(result.error || "Unable to add name. Please try again.");
@@ -76,7 +78,9 @@ export function useNameSuggestion({ onSuccess, initialValues }: UseNameSuggestio
 					successTimeoutRef.current = null;
 				}, 3000);
 			} catch (err) {
-				if (!isMountedRef.current) return;
+				if (!isMountedRef.current) {
+					return;
+				}
 
 				const errorMessage =
 					err instanceof Error

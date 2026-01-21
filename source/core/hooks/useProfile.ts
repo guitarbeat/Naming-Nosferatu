@@ -3,10 +3,10 @@
  * @description Consolidated hook for managing profile state, user context, and operations.
  */
 
+import { resolveSupabaseClient } from "@supabase/client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { adminAPI } from "../../features/auth/services/adminService";
-import { useAdminStatus } from "../../shared/hooks/useAppHooks";
-import { resolveSupabaseClient } from "@supabase/client";
+import { useAdminStatus } from "../../features/auth/hooks/authHooks";
 import {
 	catNamesAPI,
 	deleteName,
@@ -81,10 +81,10 @@ interface TournamentSelection {
 interface UserWithRoles {
 	user_name: string;
 	user_roles?:
-	| {
-		role: string;
-	}[]
-	| null;
+		| {
+				role: string;
+		  }[]
+		| null;
 	created_at?: string | null;
 	updated_at?: string | null;
 }
@@ -242,7 +242,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 				const prevDate = sortedDates[i - 1];
 				const dayDiff = Math.floor(
 					(new Date(currentDate as string).getTime() - new Date(prevDate as string).getTime()) /
-					(1000 * 60 * 60 * 24),
+						(1000 * 60 * 60 * 24),
 				);
 				if (dayDiff === 1) {
 					tempStreak++;

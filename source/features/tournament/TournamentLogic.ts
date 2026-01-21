@@ -1,5 +1,5 @@
-import { ELO_RATING } from "../../core/constants";
 import { withSupabase } from "@supabase/client";
+import { ELO_RATING } from "../../core/constants";
 import type { NameItem } from "../../types/components";
 
 /* =========================================================================
@@ -7,15 +7,47 @@ import type { NameItem } from "../../types/components";
    ========================================================================= */
 
 export const tournamentsAPI = {
-	async createTournament(userName: string, tournamentName: string, participantNames: NameItem[]) {
-		return withSupabase(
+	async createTournament(
+		userName: string,
+		tournamentName: string,
+		participantNames: NameItem[],
+	): Promise<
+		| {
+				success: true;
+				data: {
+					id: string;
+					user_name: string;
+					tournament_name: string;
+					participant_names: NameItem[];
+					status: string;
+					created_at: string;
+				};
+				error?: undefined;
+		  }
+		| { success: false; error: string; data?: undefined }
+	> {
+		type ResultType =
+			| {
+					success: true;
+					data: {
+						id: string;
+						user_name: string;
+						tournament_name: string;
+						participant_names: NameItem[];
+						status: string;
+						created_at: string;
+					};
+					error?: undefined;
+			  }
+			| { success: false; error: string; data?: undefined };
+		return withSupabase<ResultType>(
 			async (client) => {
 				// biome-ignore lint/suspicious/noExplicitAny: RPC call requires dynamic access to client
 				await (client as any).rpc("create_user_account", {
 					p_user_name: userName,
 				});
 				return {
-					success: true,
+					success: true as const,
 					data: {
 						id: crypto.randomUUID(),
 						user_name: userName,
@@ -24,10 +56,9 @@ export const tournamentsAPI = {
 						status: "in_progress",
 						created_at: new Date().toISOString(),
 					},
-					error: undefined as string | undefined, // Added for type consistency
 				};
 			},
-			{ success: false, error: "Supabase not configured", data: undefined as any },
+			{ success: false as const, error: "Supabase not configured" },
 		);
 	},
 	async saveTournamentRatings(
@@ -86,7 +117,7 @@ export class EloRating {
 	constructor(
 		public defaultRating = ELO_RATING.DEFAULT_RATING,
 		public kFactor = ELO_RATING.DEFAULT_K_FACTOR,
-	) { }
+	) {}
 	getExpectedScore(ra: number, rb: number) {
 		return 1 / (1 + 10 ** ((rb - ra) / ELO_RATING.RATING_DIVISOR));
 	}
@@ -132,7 +163,7 @@ export class PreferenceSorter {
 
 	// Total possible pairs is N * (N - 1) / 2
 	// We no longer store the `pairs` array to save memory (O(N^2) -> O(1))
-	constructor(public items: string[]) { }
+	constructor(public items: string[]) {}
 
 	/**
 	 * Calculates the pair indices (i, j) corresponding to the linear index k.
@@ -169,7 +200,9 @@ export class PreferenceSorter {
 		const n = this.items.length;
 		const totalPairs = (n * (n - 1)) / 2;
 
-		if (n < 2) return null;
+		if (n < 2) {
+			return null;
+		}
 
 		// We can optimize this loop by keeping track of i, j statefuly if needed,
 		// but since we usually just step forward, recalculating from currentIndex is fine
@@ -178,8 +211,10 @@ export class PreferenceSorter {
 
 		// However, to iterate efficiently from currentIndex forward:
 		// We calculate initial (i, j) for currentIndex
-		let indices = this.getIndicesFromIndex(this.currentIndex, n);
-		if (!indices) return null;
+		const indices = this.getIndicesFromIndex(this.currentIndex, n);
+		if (!indices) {
+			return null;
+		}
 
 		let { i, j } = indices;
 

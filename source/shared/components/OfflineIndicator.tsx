@@ -1,6 +1,6 @@
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useNetworkStatus } from "../hooks/useBrowserState";
+import { useBrowserState } from "../hooks/useBrowserState";
 
 // Styles consolidated in src/shared/styles/components.css
 
@@ -13,7 +13,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
 	showWhenOnline = false,
 	position = "top",
 }) => {
-	const { isOnline, isSlowConnection } = useNetworkStatus();
+	const { isOnline, isSlowConnection } = useBrowserState();
 	const [showIndicator, setShowIndicator] = useState(false);
 	const [justCameOnline, setJustCameOnline] = useState(false);
 

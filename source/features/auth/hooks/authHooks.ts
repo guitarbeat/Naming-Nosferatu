@@ -5,10 +5,70 @@ import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
 import { ErrorManager } from "../../../shared/services/errorManager";
 import { generateFunName } from "../../../shared/utils";
 import { playSound } from "../../../shared/utils/soundManager";
+import { isUserAdmin } from "../utils/authUtils";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
 const CAT_FACT_API_URL = "https://catfact.ninja/fact";
 const REQUEST_TIMEOUT_MS = 5000;
+
+// ============================================================================
+// Admin Status Hook
+// ============================================================================
+
+/**
+ * Custom hook for checking if a user is an admin
+ * @param userName - User name to check
+ * @returns { isAdmin, isLoading, error }
+ */
+export function useAdminStatus(userName: string | null) {
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<unknown>(null);
+
+	useEffect(() => {
+		let isMounted = true;
+
+		const checkAdminStatus = async () => {
+			if (!userName) {
+				if (isMounted) {
+					setIsAdmin(false);
+					setIsLoading(false);
+				}
+				return;
+			}
+
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const adminStatus = await isUserAdmin(userName);
+				if (isMounted) {
+					setIsAdmin(adminStatus);
+				}
+			} catch (err) {
+				if (isMounted) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error checking admin status:", err);
+					}
+					setIsAdmin(false);
+					setError(err);
+				}
+			} finally {
+				if (isMounted) {
+					setIsLoading(false);
+				}
+			}
+		};
+
+		checkAdminStatus();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [userName]);
+
+	return { isAdmin, isLoading, error };
+}
 
 /**
  * Hook to fetch and manage cat fact state

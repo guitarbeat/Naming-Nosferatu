@@ -1,3 +1,4 @@
+import { catNamesAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
 	Calendar,
@@ -22,7 +23,6 @@ import { Loading } from "../../shared/components/Loading";
 import { TabContainer } from "../../shared/components/TabContainer";
 import { Toast } from "../../shared/components/Toast";
 import { useToast } from "../../shared/providers/ToastProvider";
-import { catNamesAPI } from "@supabase/client";
 import type { NameItem } from "../../types/components";
 import styles from "./Dashboard.module.css";
 import { RankingAdjustment } from "./TournamentComponents";

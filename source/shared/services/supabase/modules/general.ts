@@ -19,10 +19,10 @@ export const catNamesAPI = {
 	...statsAPI,
 };
 
+// Re-export common helpers/types if needed by other modules
+export * from "@supabase/client";
 export * from "../../../../features/analytics/analyticsService";
 export * from "../../../../features/auth/services/adminService";
 export * from "../../../../features/gallery/imageService";
-// Re-export common helpers/types if needed by other modules
-export * from "@supabase/client";
 export * from "./nameService";
 export * from "./siteSettingsService";
