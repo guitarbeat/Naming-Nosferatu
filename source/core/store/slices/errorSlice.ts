@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "../../../types/store";
-import { updateSlice } from "../utils";
+import { updateSlice } from "../useAppStore";
 
 export const createErrorSlice: StateCreator<
 	AppState,

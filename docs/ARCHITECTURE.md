@@ -547,51 +547,6 @@ interface AnalyticsService {
 
 ---
 
-## 🧪 Testing Strategy
-
-### Invariant Tests
-
-```typescript
-describe("Tournament Invariants", () => {
-  test("every tournament produces exactly one winner", async () => {
-    const tournaments = await getCompletedTournaments();
-    tournaments.forEach((tournament) => {
-      expect(tournament.winnerId).toBeDefined();
-      expect(tournament.participantIds).toContain(tournament.winnerId);
-    });
-  });
-
-  test("vote totals always match expected ballot count", async () => {
-    const tournaments = await getAllTournaments();
-    tournaments.forEach((tournament) => {
-      const expectedVotes = calculateExpectedVotes(
-        tournament.participantIds.length,
-      );
-      expect(tournament.votes).toHaveLength(expectedVotes);
-    });
-  });
-});
-
-describe("Rating System Invariants", () => {
-  test("ratings are deterministic and reproducible", () => {
-    const initial = new Map([
-      ["a", 1500],
-      ["b", 1600],
-    ]);
-    const votes = [
-      /* vote data */
-    ];
-
-    const result1 = calculateEloRatings(initial, votes);
-    const result2 = calculateEloRatings(initial, votes);
-
-    expect(result1).toEqual(result2);
-  });
-});
-```
-
----
-
 ## 🚀 Migration Strategy
 
 ### Database Schema Evolution

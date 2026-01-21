@@ -5,11 +5,11 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { STORAGE_KEYS } from "../../../core/constants";
+import { STORAGE_KEYS } from "@/core/constants";
 import type { Database } from "./types";
 
 // Re-export modules
-export * from "./modules/general";
+export * from "@/shared/services/supabase/modules/general";
 
 // Re-export types
 export type { Database } from "./types";

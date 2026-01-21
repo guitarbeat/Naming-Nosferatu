@@ -73,11 +73,12 @@ export default defineConfig(({ mode }) => {
 		// * Ensure proper base path for production builds
 		base: "/",
 		css: {
-			postcss: resolveFromRoot("config/postcss.config.js"),
+			postcss: resolveFromRoot("postcss.config.js"),
 			devSourcemap: true,
 		},
 		resolve: {
 			alias: {
+				"@db": resolveFromRoot("supabase"),
 				"@": resolveFromRoot("source"),
 				"@components": resolveFromRoot("source/shared/components"),
 				"@hooks": resolveFromRoot("source/core/hooks"),

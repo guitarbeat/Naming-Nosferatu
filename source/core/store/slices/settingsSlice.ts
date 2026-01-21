@@ -1,8 +1,8 @@
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "../../../core/constants";
-import { siteSettingsAPI } from "../../../shared/services/supabase/client";
+import { siteSettingsAPI } from "@supabase/client";
 import type { AppState, CatChosenName, UIState } from "../../../types/store";
-import { updateSlice } from "../utils";
+import { updateSlice } from "../useAppStore";
 
 const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	if (typeof window !== "undefined") {

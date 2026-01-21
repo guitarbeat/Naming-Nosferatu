@@ -1,0 +1,71 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"entry": [
+		"source/main.tsx"
+	],
+	"project": [
+		"source/**/*.{js,jsx,ts,tsx}",
+		"scripts/**/*.{js,ts}"
+	],
+	"ignore": [
+		"**/*.md",
+		"**/README.md",
+		"**/IMPLEMENTATION.md",
+		"postcss.config.js",
+		"tailwind.config.js",
+		"source/types/shims.d.ts",
+		"source/shared/utils/performanceMonitor.d.ts",
+		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
+	],
+	"ignoreDependencies": [
+		"@types/*",
+		"vite",
+		"@vitejs/*",
+		"eslint",
+		"prettier",
+		"stylelint",
+		"postcss",
+		"tailwindcss",
+		"autoprefixer",
+		"@tailwindcss/postcss",
+		"eslint-config-prettier",
+		"glob",
+		"postcss-discard-unused",
+		"postcss-preset-env",
+		"stylelint-config-recess-order",
+		"stylelint-config-standard",
+		"stylelint-declaration-block-no-ignored-properties",
+		"stylelint-declaration-strict-value",
+		"supabase"
+	],
+	"ignoreBinaries": [
+		"vite"
+	],
+	"typescript": true,
+	"paths": {
+		"@/*": [
+			"./source/*"
+		],
+		"@components/*": [
+			"./source/shared/components/*"
+		],
+		"@hooks/*": [
+			"./source/core/hooks/*"
+		],
+		"@utils/*": [
+			"./source/shared/utils/*"
+		],
+		"@services/*": [
+			"./source/shared/services/*"
+		],
+		"@styles/*": [
+			"./source/shared/styles/*"
+		],
+		"@features/*": [
+			"./source/features/*"
+		],
+		"@core/*": [
+			"./source/core/*"
+		]
+	}
+}

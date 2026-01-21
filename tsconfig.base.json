@@ -36,40 +36,42 @@
 			"node"
 		],
 		"paths": {
+			"@supabase/*": [
+				"./supabase/*"
+			],
 			"@/*": [
-				"../source/*"
+				"./source/*"
 			],
 			"@components/*": [
-				"../source/shared/components/*"
+				"./source/shared/components/*"
 			],
 			"@hooks/*": [
-				"../source/core/hooks/*"
+				"./source/core/hooks/*"
 			],
 			"@utils/*": [
-				"../source/shared/utils/*"
+				"./source/shared/utils/*"
 			],
 			"@services/*": [
-				"../source/shared/services/*"
+				"./source/shared/services/*"
 			],
 			"@styles/*": [
-				"../source/shared/styles/*"
+				"./source/shared/styles/*"
 			],
 			"@features/*": [
-				"../source/features/*"
+				"./source/features/*"
 			],
 			"@core/*": [
-				"../source/core/*"
+				"./source/core/*"
 			]
 		}
 	},
 	"include": [
-		"../source/**/*",
-		"../config/**/*",
-		"../scripts/**/*"
+		"./source/**/*",
+		"./scripts/**/*"
 	],
 	"exclude": [
-		"../node_modules",
-		"../build",
-		"../dist"
+		"./node_modules",
+		"./build",
+		"./dist"
 	]
 }

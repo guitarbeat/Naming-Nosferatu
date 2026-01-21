@@ -1,4 +1,4 @@
-import { withSupabase } from "../../shared/services/supabase/client";
+import { withSupabase } from "@supabase/client";
 
 export interface FileObject {
 	name: string;

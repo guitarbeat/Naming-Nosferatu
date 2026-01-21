@@ -1,4 +1,4 @@
-import { withSupabase } from "../../../shared/services/supabase/client";
+import { withSupabase } from "@supabase/client";
 
 /**
  * Database query result type - field names match Supabase column names (snake_case required)

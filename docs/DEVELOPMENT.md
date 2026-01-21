@@ -1,8 +1,8 @@
 # Development Guide & Standards
 
-**Last Updated:** January 10, 2026
+**Last Updated:** January 21, 2026
 **Status:** Primary Reference for Developers
-**Latest Update:** Fixed unhandled promise rejection and removed unused dependencies (see CODE_QUALITY_REPORT.md)
+**Latest Update:** Removed test infrastructure from source directory (tests can be re-added as needed)
 
 This document provides a comprehensive guide for setting up, developing, maintaining, and optimizing the Naming Nosferatu application.
 
@@ -48,7 +48,6 @@ This document provides a comprehensive guide for setting up, developing, maintai
 | `pnpm run build` | Production build                           |
 | `pnpm run lint`  | Run Biome linter and TypeScript checks     |
 | `pnpm run fix`   | Auto-fix linting issues                    |
-| `pnpm run test`  | Run Vitest suite                           |
 | `pnpm run check` | Run all checks (lint, types, limits, deps) |
 
 ---
@@ -141,8 +140,6 @@ lovable-tagger    1.1.13  - Unknown purpose (check usage)
 
 - **@biomejs/biome 2.3.11** - Linter/formatter
 - **typescript 5.9.3** - Type checking
-- **vitest 4.0.16** - Testing
-- **@testing-library/react 16.3.1** - Component testing
 - **knip 5.80.0** - Dead code detection
 
 #### ❌ Legacy/Unused Dev Tools (5KB estimated savings)
@@ -167,11 +164,8 @@ pnpm remove prop-types immer lovable-tagger
 pnpm remove babel-plugin-transform-react-remove-prop-types
 ```
 
-**Verification Steps:**
-
 1. Run `pnpm run build` - ensure no build errors
-2. Run `pnpm run test` - ensure tests pass
-3. Check bundle size reduction
+2. Check bundle size reduction
 
 #### Phase 2: Icon Consolidation (Week 2 - ~8KB savings)
 

@@ -1,6 +1,6 @@
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { imagesAPI } from "../services/supabase/client";
+import { imagesAPI } from "@supabase/client";
 import { compressImageFile, devError } from "../utils";
 import Card from "./Card";
 

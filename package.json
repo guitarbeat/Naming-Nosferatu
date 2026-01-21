@@ -35,17 +35,16 @@
 		"build": "vite build --config vite.config.ts --outDir dist",
 		"build:dev": "vite build --config vite.config.ts --mode development --outDir dist",
 		"preview": "vite preview --config vite.config.ts",
-		"test": "vitest run --config config/vitest.config.mjs",
 		"lint": "pnpm run lint:quick && pnpm run lint:types",
 		"lint:quick": "oxlint",
 		"lint:full": "biome check source",
 		"lint:fix": "biome check --write source",
-		"lint:types": "tsc --noEmit --project config/tsconfig.json",
+		"lint:types": "tsc --noEmit --project tsconfig.base.json",
 		"format": "biome format --write source",
 		"fix": "pnpm run lint:fix",
 		"check": "pnpm run lint && pnpm run check:deps",
-		"check:deps": "knip --config config/knip.json",
-		"check:deps:fix": "knip --config config/knip.json --fix",
+		"check:deps": "knip --config knip.json",
+		"check:deps:fix": "knip --config knip.json --fix",
 		"check:outdated": "pnpm outdated",
 		"check:audit": "pnpm audit",
 		"update:check": "pnpm outdated --format table",
@@ -73,14 +72,11 @@
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",
 		"@tailwindcss/postcss": "^4.1.18",
-		"@testing-library/dom": "^10.4.1",
-		"@testing-library/react": "^16.3.1",
 		"@types/node": "^25.0.3",
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^5.1.2",
 		"autoprefixer": "^10.4.23",
-		"jsdom": "^27.4.0",
 		"knip": "^5.80.0",
 		"lefthook": "^2.0.13",
 		"oxlint": "^1.38.0",
@@ -93,8 +89,7 @@
 		"typescript": "^5.9.3",
 		"vercel": "^50.3.2",
 		"vite": "^7.3.1",
-		"vite-plugin-pwa": "^1.2.0",
-		"vitest": "^4.0.16"
+		"vite-plugin-pwa": "^1.2.0"
 	},
 	"browserslist": {
 		"production": [
@@ -124,7 +119,6 @@
 		"build",
 		"public",
 		"source",
-		"config",
 		"scripts",
 		"*.md",
 		"*.json"

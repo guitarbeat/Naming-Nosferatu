@@ -4,7 +4,7 @@ import { VALIDATION } from "../../core/constants";
 import useAppStore from "../../core/store/useAppStore";
 import { useToast } from "../providers/ToastProvider";
 import { ErrorManager } from "../services/errorManager";
-import { catNamesAPI } from "../services/supabase/client";
+import { catNamesAPI } from "@supabase/client";
 import { useValidatedForm } from "./useValidatedForm";
 
 /**

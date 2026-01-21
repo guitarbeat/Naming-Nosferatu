@@ -30,14 +30,33 @@ interface ValidationProps {
 }
 
 // ============================================================================
+// CONTEXT
+// ============================================================================
+
+interface FormFieldContextValue {
+	id: string;
+	errorId: string | undefined;
+	error: string | null;
+}
+
+const FormFieldContext = React.createContext<FormFieldContextValue | null>(null);
+
+export const useFormField = () => {
+	const context = React.useContext(FormFieldContext);
+	if (!context) {
+		throw new Error("Form components must be used within a FormField");
+	}
+	return context;
+};
+
+// ============================================================================
 // FORM FIELD WRAPPER
 // ============================================================================
 
 interface FormFieldProps extends BaseFieldProps {
-	children: React.ReactElement;
+	children: React.ReactNode;
 	id?: string;
 	name?: string;
-	ariaDescribedBy?: string;
 }
 
 export const FormField: React.FC<FormFieldProps> = ({
@@ -46,51 +65,40 @@ export const FormField: React.FC<FormFieldProps> = ({
 	label,
 	error,
 	required = false,
-	ariaDescribedBy = "",
 	children,
 	className = "",
 }) => {
 	const generatedId = useId();
 	const fieldId = id || (name ? `${name}-field` : `field-${generatedId}`);
-	const errorId = error ? `${fieldId}-error` : null;
-	const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
+	const errorId = error ? `${fieldId}-error` : undefined;
 
 	return (
-		<div className={`${styles.formField} ${className}`.trim()}>
-			{label && (
-				<label htmlFor={fieldId} className={styles.label}>
-					{label}
-					{required && <span className={styles.required}>*</span>}
-				</label>
-			)}
-			{React.cloneElement(
-				children as React.ReactElement<{
-					id?: string;
-					"aria-invalid"?: boolean;
-					"aria-describedby"?: string;
-				}>,
-				{
-					id: fieldId,
-					"aria-invalid": !!error,
-					"aria-describedby": describedBy,
-				},
-			)}
-			<AnimatePresence mode="wait">
-				{error && errorId && (
-					<motion.div
-						id={errorId}
-						key={error}
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -10 }}
-						className={styles.errorText}
-						role="alert"
-					>
-						{error}
-					</motion.div>
+		<FormFieldContext.Provider value={{ id: fieldId, errorId, error: error || null }}>
+			<div className={`${styles.formField} ${className}`.trim()}>
+				{label && (
+					<label htmlFor={fieldId} className={styles.label}>
+						{label}
+						{required && <span className={styles.required}>*</span>}
+					</label>
 				)}
-			</AnimatePresence>
-		</div>
+				{children}
+				<AnimatePresence mode="wait">
+					{error && errorId && (
+						<motion.div
+							id={errorId}
+							key={error}
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -10 }}
+							className={styles.errorText}
+							role="alert"
+						>
+							{error}
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
+		</FormFieldContext.Provider>
 	);
 };
 
@@ -102,8 +110,8 @@ FormField.displayName = "FormField";
 
 interface InputProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">,
-		BaseFieldProps,
-		ValidationProps {}
+	BaseFieldProps,
+	ValidationProps { }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
@@ -190,12 +198,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 				<div className={styles.inputWrapper}>
 					<input
 						{...props}
+						id={id}
 						ref={ref}
 						value={value}
 						onChange={handleChange}
 						onBlur={handleBlur}
 						className={inputClasses}
-						disabled={props.disabled}
+						aria-invalid={hasError || undefined}
+						aria-describedby={hasError ? `${id}-error` : undefined}
 					/>
 					<AnimatePresence>
 						{isSuccess && (
@@ -233,8 +243,8 @@ Input.displayName = "Input";
 
 interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
-		BaseFieldProps,
-		ValidationProps {}
+	BaseFieldProps,
+	ValidationProps { }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
@@ -319,12 +329,14 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
 				<textarea
 					{...props}
+					id={id}
 					ref={ref}
 					value={value}
 					onChange={handleChange}
 					onBlur={handleBlur}
 					className={textareaClasses}
-					disabled={props.disabled}
+					aria-invalid={hasError || undefined}
+					aria-describedby={hasError ? `${id}-error` : undefined}
 				/>
 			</FormField>
 		);
@@ -345,7 +357,7 @@ interface SelectOption {
 
 interface SelectProps
 	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className">,
-		BaseFieldProps {
+	BaseFieldProps {
 	options?: SelectOption[];
 	placeholder?: string;
 }
@@ -372,7 +384,14 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
 		return (
 			<FormField id={id} label={label} error={error} required={required}>
-				<select {...props} ref={ref} className={selectClasses} disabled={props.disabled}>
+				<select
+					{...props}
+					id={id}
+					ref={ref}
+					className={selectClasses}
+					aria-invalid={!!error}
+					aria-describedby={error ? `${id}-error` : undefined}
+				>
 					{placeholder && (
 						<option value="" disabled>
 							{placeholder}
