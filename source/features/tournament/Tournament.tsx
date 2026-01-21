@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import { useState } from "react";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
@@ -75,16 +74,13 @@ function TournamentContent({
 
 	return (
 		<div
-			className={clsx(
-				"relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30",
-				styles.starBg,
-			)}
+			className={`relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30 ${styles.starBg}`}
 		>
 			{/* Header Section */}
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
 					<div
-						className={clsx("px-4 py-1.5 rounded-full flex items-center gap-2", styles.glassPanel)}
+						className={`px-4 py-1.5 rounded-full flex items-center gap-2 ${styles.glassPanel}`}
 					>
 						<span className="material-symbols-outlined text-primary text-sm">stars</span>
 						<span className="text-xs font-bold tracking-widest uppercase text-white/90">
@@ -117,7 +113,7 @@ function TournamentContent({
 			{/* Tournament Controls */}
 			<section className="mt-6 px-4">
 				<div
-					className={clsx("p-2 rounded-xl flex items-center justify-between", styles.glassPanel)}
+					className={`p-2 rounded-xl flex items-center justify-between ${styles.glassPanel}`}
 				>
 					<div className="flex gap-2">
 						<button
@@ -137,10 +133,7 @@ function TournamentContent({
 					</div>
 					<button
 						onClick={() => setShowCatPictures(!showCatPictures)}
-						className={clsx(
-							"flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg",
-							showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10",
-						)}
+						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 					>
 						<span className="material-symbols-outlined text-sm">pets</span>
 						<span>Cats: {showCatPictures ? "On" : "Off"}</span>
@@ -154,17 +147,11 @@ function TournamentContent({
 					{/* Card Left */}
 					<div
 						onClick={() => handleVoteWithAnimation("left")}
-						className={clsx(
-							"rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95",
-							styles.glassPanel,
-						)}
+						className={`rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95 ${styles.glassPanel}`}
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 						<div
-							className={clsx(
-								"w-full aspect-square rounded-xl overflow-hidden border-0 mb-4",
-								styles.glassPanel,
-							)}
+							className={`w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 ${styles.glassPanel}`}
 						>
 							{leftImg && (
 								<div
@@ -188,10 +175,7 @@ function TournamentContent({
 					{/* VS Badge */}
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
 						<div
-							className={clsx(
-								"size-14 rounded-full flex items-center justify-center border-2 border-white/30",
-								styles.vsBadge,
-							)}
+							className={`size-14 rounded-full flex items-center justify-center border-2 border-white/30 ${styles.vsBadge}`}
 						>
 							<span className="font-bold text-xl italic tracking-tighter">VS</span>
 						</div>
@@ -200,17 +184,11 @@ function TournamentContent({
 					{/* Card Right */}
 					<div
 						onClick={() => handleVoteWithAnimation("right")}
-						className={clsx(
-							"rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95",
-							styles.glassPanel,
-						)}
+						className={`rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95 ${styles.glassPanel}`}
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 						<div
-							className={clsx(
-								"w-full aspect-square rounded-xl overflow-hidden border-0 mb-4",
-								styles.glassPanel,
-							)}
+							className={`w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 ${styles.glassPanel}`}
 						>
 							{rightImg && (
 								<div
@@ -247,10 +225,7 @@ function TournamentContent({
 			{/* Bottom Navigation */}
 			<nav className="pb-8 px-6">
 				<div
-					className={clsx(
-						"rounded-2xl flex items-center justify-around py-3 px-2 border-t border-white/10",
-						styles.glassPanel,
-					)}
+					className={`rounded-2xl flex items-center justify-around py-3 px-2 border-t border-white/10 ${styles.glassPanel}`}
 				>
 					<button className="flex flex-col items-center gap-1 group">
 						<div className="size-10 rounded-xl flex items-center justify-center bg-primary shadow-[0_0_15px_rgba(166,94,237,0.4)]">

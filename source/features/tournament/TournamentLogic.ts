@@ -128,24 +128,34 @@ export class EloRating {
 export class PreferenceSorter {
 	preferences = new Map<string, number>();
 	currentIndex = 0;
-	pairs: Array<[string, string]> = [];
 	lastMatch: string | null = null;
 
-	constructor(public items: string[]) {
-		for (let i = 0; i < items.length - 1; i++) {
-			for (let j = i + 1; j < items.length; j++) {
-				const itemI = items[i];
-				const itemJ = items[j];
-				if (itemI && itemJ) {
-					this.pairs.push([itemI, itemJ]);
-				}
+	// Total possible pairs is N * (N - 1) / 2
+	// We no longer store the `pairs` array to save memory (O(N^2) -> O(1))
+	constructor(public items: string[]) {}
+
+	/**
+	 * Calculates the pair indices (i, j) corresponding to the linear index k.
+	 * This avoids generating the O(N^2) pairs array.
+	 */
+	private getIndicesFromIndex(index: number, n: number) {
+		let current = index;
+		// Iterate through rows (i)
+		for (let i = 0; i < n - 1; i++) {
+			const pairsInRow = n - 1 - i;
+			if (current < pairsInRow) {
+				return { i, j: i + 1 + current };
 			}
+			current -= pairsInRow;
 		}
+		return null; // Index out of bounds
 	}
+
 	addPreference(a: string, b: string, val: number) {
 		this.preferences.set(`${a}-${b}`, val);
 		this.lastMatch = `${a}-${b}`;
 	}
+
 	undoLastPreference() {
 		if (this.lastMatch && this.preferences.has(this.lastMatch)) {
 			this.preferences.delete(this.lastMatch);
@@ -153,18 +163,43 @@ export class PreferenceSorter {
 			this.currentIndex = Math.max(0, this.currentIndex - 1);
 		}
 	}
+
 	getNextMatch() {
-		while (this.currentIndex < this.pairs.length) {
-			const pair = this.pairs[this.currentIndex];
-			if (!pair) {
-				this.currentIndex++;
-				continue;
+		// Calculate total pairs: N * (N - 1) / 2
+		const n = this.items.length;
+		const totalPairs = (n * (n - 1)) / 2;
+
+		if (n < 2) return null;
+
+		// We can optimize this loop by keeping track of i, j statefuly if needed,
+		// but since we usually just step forward, recalculating from currentIndex is fine
+		// unless currentIndex is very large, but the inner calculation is O(N) max.
+		// For N=1000, calculating indices is cheap.
+
+		// However, to iterate efficiently from currentIndex forward:
+		// We calculate initial (i, j) for currentIndex
+		let indices = this.getIndicesFromIndex(this.currentIndex, n);
+		if (!indices) return null;
+
+		let { i, j } = indices;
+
+		while (this.currentIndex < totalPairs) {
+			const a = this.items[i];
+			const b = this.items[j];
+
+			if (a && b) {
+				if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
+					return { left: a, right: b };
+				}
 			}
-			const [a, b] = pair;
-			if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
-				return { left: a, right: b };
-			}
+
+			// Advance to next pair
 			this.currentIndex++;
+			j++;
+			if (j >= n) {
+				i++;
+				j = i + 1;
+			}
 		}
 		return null;
 	}
