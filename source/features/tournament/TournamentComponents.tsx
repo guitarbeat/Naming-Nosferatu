@@ -346,15 +346,32 @@ function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boo
 }
 
 const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => (
-	<>
-		<div className="rank-badge">{index + 1}</div>
-		<div className="card-content">
-			<h3 className="name">{item.name}</h3>
-			<div className="stats">
-				<span className="rating">Rating: {Math.round(item.rating as number)}</span>
+	<div className="flex items-center gap-4 w-full">
+		{/* Drag Handle */}
+		<div className="flex-shrink-0 text-white/40 hover:text-white/60 transition-colors cursor-grab active:cursor-grabbing">
+			<GripVertical size={20} />
+		</div>
+
+		{/* Rank Badge */}
+		<Chip
+			className="flex-shrink-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-white font-bold min-w-[3rem]"
+			size="lg"
+			variant="flat"
+		>
+			#{index + 1}
+		</Chip>
+
+		{/* Name and Stats */}
+		<div className="flex-1 min-w-0">
+			<h3 className="text-lg font-semibold text-white truncate mb-1">{item.name}</h3>
+			<div className="flex items-center gap-3 text-sm">
+				<span className="text-white/60">
+					Rating:{" "}
+					<span className="text-white/90 font-medium">{Math.round(item.rating as number)}</span>
+				</span>
 			</div>
 		</div>
-	</>
+	</div>
 ));
 RankingItemContent.displayName = "RankingItemContent";
 
@@ -442,42 +459,84 @@ export const RankingAdjustment = memo(
 
 		return (
 			<Card
-				className={`ranking-adjustment ${isDragging ? "is-dragging" : ""}`}
-				padding="xl"
-				shadow="xl"
+				className={cn(
+					"w-full max-w-4xl mx-auto",
+					"bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-purple-900/20",
+					"backdrop-blur-xl border border-white/10",
+					"shadow-2xl shadow-purple-500/10",
+					isDragging && "ring-2 ring-purple-500/50",
+				)}
 			>
-				<header className="ranking-header">
-					<h2>Your Cat Name Rankings</h2>
-					{saveStatus && (
-						<div className={`save-status ${saveStatus}`}>
-							{saveStatus === "saving"
-								? "Saving..."
-								: saveStatus === "success"
-									? "Saved!"
-									: "Error saving"}
-						</div>
-					)}
-				</header>
-				<div className="rankings-grid">
+				<CardHeader className="flex flex-col gap-3 pb-4">
+					<div className="flex items-center justify-between w-full">
+						<h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+							Your Cat Name Rankings
+						</h2>
+						{saveStatus && (
+							<Chip
+								className={cn(
+									"transition-all duration-300",
+									saveStatus === "saving" &&
+										"bg-blue-500/20 border-blue-500/30 text-blue-300 animate-pulse",
+									saveStatus === "success" && "bg-green-500/20 border-green-500/30 text-green-300",
+									saveStatus === "error" && "bg-red-500/20 border-red-500/30 text-red-300",
+								)}
+								variant="flat"
+								startContent={
+									saveStatus === "saving" ? (
+										<Loader2 size={14} className="animate-spin" />
+									) : saveStatus === "success" ? (
+										<Save size={14} />
+									) : null
+								}
+							>
+								{saveStatus === "saving"
+									? "Saving..."
+									: saveStatus === "success"
+										? "Saved!"
+										: "Error saving"}
+							</Chip>
+						)}
+					</div>
+					<p className="text-white/60 text-sm">Drag and drop to reorder your favorite cat names</p>
+				</CardHeader>
+
+				<Divider className="bg-white/10" />
+
+				<CardBody className="gap-3 p-6">
 					<DragDropContext onDragStart={() => setIsDragging(true)} onDragEnd={handleDragEnd}>
 						<Droppable droppableId="rankings">
-							{(provided) => (
-								<div {...provided.droppableProps} ref={provided.innerRef} className="rankings-list">
+							{(provided: any) => (
+								<div
+									{...provided.droppableProps}
+									ref={provided.innerRef}
+									className="flex flex-col gap-3"
+								>
 									{items.map((item: NameItem, index: number) => (
 										<Draggable
 											key={item.id || item.name}
 											draggableId={String(item.id || item.name)}
 											index={index}
 										>
-											{(provided, snapshot) => (
-												<div
+											{(provided: any, snapshot: any) => (
+												<motion.div
 													ref={provided.innerRef}
 													{...provided.draggableProps}
 													{...provided.dragHandleProps}
-													className={`ranking-card ${snapshot.isDragging ? "dragging" : ""}`}
+													initial={{ opacity: 0, y: 20 }}
+													animate={{ opacity: 1, y: 0 }}
+													transition={{ delay: index * 0.05 }}
+													className={cn(
+														"p-4 rounded-xl transition-all duration-200",
+														"bg-gradient-to-br from-white/5 to-white/[0.02]",
+														"border border-white/10",
+														"hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10",
+														snapshot.isDragging &&
+															"shadow-2xl shadow-purple-500/30 border-purple-500/50 scale-105 rotate-2",
+													)}
 												>
 													<RankingItemContent item={item} index={index} />
-												</div>
+												</motion.div>
 											)}
 										</Draggable>
 									))}
@@ -486,9 +545,16 @@ export const RankingAdjustment = memo(
 							)}
 						</Droppable>
 					</DragDropContext>
-				</div>
-				<div className="adjustment-controls">
-					<Button onClick={onCancel} variant="secondary">
+				</CardBody>
+
+				<Divider className="bg-white/10" />
+
+				<div className="p-6 flex justify-end">
+					<Button
+						onClick={onCancel}
+						variant="flat"
+						className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+					>
 						Back to Tournament
 					</Button>
 				</div>
