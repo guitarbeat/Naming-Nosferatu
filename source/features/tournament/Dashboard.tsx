@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import useLocalStorage from "../../core/hooks/useStorage";
-import Button from "../../shared/components/Button";
-import Card from "../../shared/components/Card";
-import { Loading } from "../../shared/components/Loading";
-import { TabContainer } from "../../shared/components/TabContainer";
-import { Toast } from "../../shared/components/Toast";
-import { useToast } from "../../shared/providers/ToastProvider";
-import type { NameItem } from "../../types/components";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { Loading } from "@/components/Loading";
+import { TabContainer } from "@/components/TabContainer";
+import { Toast } from "@/components/Toast";
+import useLocalStorage from "@/hooks/useStorage";
+import { useToast } from "@/providers/ToastProvider";
+import type { NameItem } from "@/types/components";
 import styles from "./Dashboard.module.css";
 import { RankingAdjustment } from "./TournamentComponents";
 
@@ -695,7 +695,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
    ========================================================================= */
 
 import { History } from "lucide-react";
-import type { VoteData } from "../../types/components";
+import type { VoteData } from "@/types/components";
 
 export const HistoryView: React.FC<{ voteHistory: unknown[] }> = ({ voteHistory }) => {
 	const history = (voteHistory as VoteData[]) || [];

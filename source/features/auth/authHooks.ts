@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-import { STORAGE_KEYS, VALIDATION } from "../../core/constants";
-import { useValidatedForm } from "../../shared/hooks/useValidatedForm";
-import { ErrorManager } from "../../shared/services/errorManager";
-import { generateFunName } from "../../shared/utils";
-import { playSound } from "../../shared/utils/soundManager";
+import { STORAGE_KEYS, VALIDATION } from "@/constants";
+import { useValidatedForm } from "@/hooks/useValidatedForm";
+import { ErrorManager } from "@/services/errorManager";
+import { generateFunName } from "@/utils";
+import { playSound } from "@/utils/soundManager";
 import { isUserAdmin } from "./authUtils";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
@@ -73,7 +73,7 @@ export function useAdminStatus(userName: string | null) {
 /**
  * Hook to fetch and manage cat fact state
  */
-export function useCatFact() {
+function useCatFact() {
 	const [catFact, setCatFact] = useState<string | null>(null);
 
 	useEffect(() => {

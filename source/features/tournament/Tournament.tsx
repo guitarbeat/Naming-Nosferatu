@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { ErrorComponent } from "../../shared/components/ErrorComponent";
-import { Loading } from "../../shared/components/Loading";
-import { useToast } from "../../shared/providers/ToastProvider";
-import { getVisibleNames } from "../../shared/utils";
-import type { TournamentProps } from "../../types/components";
+import { ErrorComponent } from "@/components/ErrorComponent";
+import { Loading } from "@/components/Loading";
+import { useToast } from "@/providers/ToastProvider";
+import type { TournamentProps } from "@/types/components";
+import { getVisibleNames } from "@/utils";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
 import styles from "./tournament.module.css";

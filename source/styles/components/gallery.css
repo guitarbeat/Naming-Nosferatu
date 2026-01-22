@@ -1,0 +1,210 @@
+/* ==========================================================================
+   SHARED GALLERY & LIGHTBOX STYLES
+   ========================================================================== */
+
+.lightboxOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1001;
+	/* var(--z-modal) + 1 */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.85);
+	backdrop-filter: blur(8px) saturate(150%);
+	animation: lightboxFadeIn 0.5s ease-out;
+	pointer-events: auto;
+}
+
+@keyframes lightboxFadeIn {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+.lightboxContent {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	max-width: 95vw;
+	max-height: 95vh;
+	animation: lightboxScaleIn 0.5s ease-out-expo;
+}
+
+@keyframes lightboxScaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.lightboxImageWrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 90vw;
+	max-height: 85vh;
+	animation: imageSlideIn 0.3s ease-out;
+}
+
+@keyframes imageSlideIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.lightboxImage {
+	max-width: 90vw;
+	max-height: 85vh;
+	object-fit: contain;
+	border-radius: 12px;
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.lightboxNav {
+	position: absolute;
+	top: 50%;
+	z-index: 1002;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 52px;
+	padding: 0;
+	font-size: 24px;
+	line-height: 1;
+	color: white;
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	transform: translateY(-50%);
+	transition: all 0.2s ease;
+	text-align: center;
+}
+
+.lightboxNav:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: translateY(-50%) scale(1.15);
+}
+
+.lightboxClose {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	z-index: 1002;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 48px;
+	height: 48px;
+	font-size: 24px;
+	line-height: 1;
+	color: white;
+	cursor: pointer;
+	background: rgba(0, 0, 0, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	transition: all 0.2s ease;
+}
+
+.lightboxClose:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: scale(1.1);
+}
+
+.lightboxCounter {
+	position: absolute;
+	bottom: 16px;
+	left: 50%;
+	padding: 4px 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: white;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(8px);
+	border-radius: 20px;
+	transform: translateX(-50%);
+	z-index: 1003;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+/* Photo Gallery Grid - now handled by ImageGrid component */
+.photoGallery {
+	width: 100%;
+}
+
+.photoGalleryHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.photoGalleryTitle {
+	margin: 0;
+	font-size: 1.125rem;
+	font-weight: 700;
+}
+
+.photoUploadButton {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+	padding: 8px 16px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: white;
+	cursor: pointer;
+	background: hsl(var(--primary));
+	border: none;
+	border-radius: 8px;
+	transition: all 0.3s ease;
+}
+
+.photoUploadButton:hover {
+	background: hsl(var(--primary) / 0.8);
+	transform: translateY(-1px);
+}
+
+.showAllPhotosButton {
+	display: block;
+	width: 100%;
+	margin-top: 12px;
+	padding: 8px;
+	background: hsl(var(--muted) / 0.3);
+	border: 1px solid hsl(var(--border));
+	border-radius: 8px;
+	color: inherit;
+	font-size: 0.875rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.showAllPhotosButton:hover {
+	background: hsl(var(--muted) / 0.5);
+	border-color: hsl(var(--primary));
+}

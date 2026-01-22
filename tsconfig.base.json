@@ -31,13 +31,13 @@
 		"paths": {
 			"@supabase/*": ["./supabase/*"],
 			"@/*": ["./source/*"],
-			"@components/*": ["./source/shared/components/*"],
-			"@hooks/*": ["./source/core/hooks/*"],
-			"@utils/*": ["./source/shared/utils/*"],
-			"@services/*": ["./source/shared/services/*"],
-			"@styles/*": ["./source/shared/styles/*"],
+			"@components/*": ["./source/components/*"],
+			"@hooks/*": ["./source/hooks/*"],
+			"@utils/*": ["./source/utils/*"],
+			"@services/*": ["./source/services/*"],
+			"@styles/*": ["./source/styles/*"],
 			"@features/*": ["./source/features/*"],
-			"@core/*": ["./source/core/*"]
+			"@core/*": ["./source/*"]
 		}
 	},
 	"include": ["./source/**/*", "./scripts/**/*"],

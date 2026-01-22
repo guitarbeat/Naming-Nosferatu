@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
-import useUserSession from "../../core/hooks/useUserSession";
-import useAppStore from "../../core/store/useAppStore";
-import Button from "../../shared/components/Button";
-import Card from "../../shared/components/Card";
-import { PhotoGallery } from "../../shared/components/Gallery";
-import { NameSuggestion } from "../../shared/components/NameSuggestion/NameSuggestion";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import { PhotoGallery } from "@/components/Gallery";
+import { NameSuggestion } from "@/components/NameSuggestion";
+import useUserSession from "@/hooks/useUserSession";
+import useAppStore from "@/store/useAppStore";
 import Tournament from "./Tournament";
 import { useTournamentHandlers, useTournamentManager } from "./TournamentHooks";
 import TournamentSetup from "./TournamentSetup";

@@ -1,0 +1,127 @@
+/* Consolidated Utilities - All utility classes in one place */
+
+/* ==========================================================================
+   LAYOUT UTILITIES
+   ========================================================================== */
+.container {
+	width: 100%;
+	max-width: clamp(70rem, 96vw, 100rem);
+	padding: 0 var(--space-4);
+	margin: 0 auto;
+}
+
+.fullScreenCenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+}
+
+/* ==========================================================================
+   FLEXBOX UTILITIES
+   ========================================================================== */
+
+.flex-col {
+	display: flex;
+	flex-direction: column;
+}
+
+.items-center {
+	align-items: center;
+}
+
+.items-end {
+	align-items: flex-end;
+}
+
+.justify-center {
+	justify-content: center;
+}
+
+.justify-between {
+	justify-content: space-between;
+}
+
+.flex-1 {
+	flex: 1;
+}
+
+/* ==========================================================================
+   GRID UTILITIES
+   ========================================================================== */
+.grid {
+	display: grid;
+}
+
+/* Shared Mosaic Grid - for cards, photos, and other variable-size items */
+
+/* Standard Grid - for uniform layouts */
+
+/* ==========================================================================
+   SPACING UTILITIES
+   ========================================================================== */
+.gap-2 {
+	gap: var(--space-2);
+}
+
+.gap-4 {
+	gap: var(--space-4);
+}
+
+/* ==========================================================================
+   TYPOGRAPHY UTILITIES
+   ========================================================================== */
+.text-center {
+	text-align: center;
+}
+
+.text-primary {
+	color: var(--text-primary);
+}
+
+/* ==========================================================================
+   COLOR UTILITIES
+   ========================================================================== */
+.bg-primary {
+	background-color: var(--primary-color);
+}
+
+/* ==========================================================================
+   STATE UTILITIES
+   ========================================================================== */
+.hidden {
+	display: none;
+}
+
+/* ==========================================================================
+   POSITION UTILITIES
+   ========================================================================== */
+.relative {
+	position: relative;
+}
+
+/* ==========================================================================
+   TRANSITION UTILITIES
+   ========================================================================== */
+.transition-all {
+	transition: var(--transition-all);
+}
+
+/* ==========================================================================
+   COMPONENT UTILITIES
+   ========================================================================== */
+
+/* Section utilities */
+
+/* Form utilities */
+
+/* Feedback utilities */
+
+/* ==========================================================================
+   RESPONSIVE UTILITIES
+   ========================================================================== */
+@media (width <= 640px) {
+	.container {
+		padding: 0 var(--space-3);
+	}
+}
