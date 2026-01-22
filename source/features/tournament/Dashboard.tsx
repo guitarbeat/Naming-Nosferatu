@@ -29,15 +29,14 @@ import {
 } from "@heroui/react";
 import type React from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
+
 import { Loading } from "@/components/Loading";
 import { TabContainer } from "@/components/TabContainer";
 import { Toast } from "@/components/Toast";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types/components";
-import styles from "./Dashboard.module.css";
+
 import { RankingAdjustment } from "./TournamentComponents";
 
 const AnalysisDashboard = lazy(() =>
@@ -411,132 +410,155 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 		: null;
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.header}>
-				<h2>Random Name Generator</h2>
-				<p>Discover creative cat names with a touch of magic</p>
+		<div className="flex flex-col gap-8 w-full">
+			<div className="flex flex-col gap-1">
+				<h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+					Random Name Generator
+				</h2>
+				<p className="text-white/60">Discover creative cat names with a touch of magic</p>
 			</div>
 
-			<div className={styles.categoryGrid}>
-				<h3>Choose a Theme</h3>
-				{GEN_CATEGORIES.map((category) => (
-					<Card
-						key={category.id}
-						className={`${styles.categoryCard} ${selectedCategory === category.id ? styles.selected : ""}`}
-						background="glass"
-						padding="medium"
-						shadow="small"
-						onClick={() => generateName(category.id)}
-						style={
-							{
-								"--category-primary": category.colors.primary,
-								"--category-secondary": category.colors.secondary,
-							} as React.CSSProperties
-						}
-					>
-						<div className={styles.categoryContent}>
-							<h4 className={styles.categoryName}>{category.name}</h4>
-							<p className={styles.categoryDesc}>{category.description}</p>
-							<div className={styles.examples}>
-								{category.examples.slice(0, 3).map((example) => (
-									<span key={example} className={styles.example}>
-										{example}
-									</span>
-								))}
-							</div>
-						</div>
-					</Card>
-				))}
+			{/* Category Grid */}
+			<div className="flex flex-col gap-4">
+				<h3 className="text-lg font-semibold text-white/80">Choose a Theme</h3>
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+					{GEN_CATEGORIES.map((category) => (
+						<HeroCard
+							key={category.id}
+							isPressable
+							onPress={() => generateName(category.id)}
+							className={cn(
+								"border transition-all duration-300",
+								selectedCategory === category.id
+									? "ring-2 ring-offset-2 ring-offset-black/50"
+									: "hover:scale-105",
+							)}
+							style={
+								{
+									borderColor: category.colors.primary,
+									backgroundColor: `color-mix(in srgb, ${category.colors.secondary}, transparent 90%)`,
+									"--ring-color": category.colors.primary,
+								} as React.CSSProperties
+							}
+						>
+							<CardBody className="p-4 flex flex-col gap-2 items-start text-left">
+								<h4 className="text-lg font-bold" style={{ color: category.colors.primary }}>
+									{category.name}
+								</h4>
+								<p className="text-xs text-white/60 line-clamp-2 min-h-[2.5em]">
+									{category.description}
+								</p>
+								<div className="flex flex-wrap gap-1 mt-2">
+									{category.examples.slice(0, 3).map((ex) => (
+										<span
+											key={ex}
+											className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-white/50"
+										>
+											{ex}
+										</span>
+									))}
+								</div>
+							</CardBody>
+						</HeroCard>
+					))}
+				</div>
 			</div>
 
-			<Card className={styles.generator} background="glass" padding="large" shadow="medium">
-				<div className={styles.generatorContent}>
-					<div className={styles.result}>
+			{/* Generator Area */}
+			<HeroCard className="w-full min-h-[300px] bg-gradient-to-br from-white/5 to-transparent border border-white/10 relative overflow-hidden">
+				<div className="absolute inset-0 bg-grid-white/[0.02] bg-[length:20px_20px]" />
+				<CardBody className="flex flex-col items-center justify-center gap-8 py-12 relative z-10">
+					<div className="text-center w-full max-w-md mx-auto min-h-[120px] flex flex-col items-center justify-center">
 						{isGenerating ? (
-							<div className={styles.generating}>
-								<Loading variant="spinner" size="small" />
-								<p>Generating magical name...</p>
+							<div className="flex flex-col items-center gap-4 animate-pulse">
+								<Spinner size="lg" color="secondary" />
+								<p className="text-purple-300">Generating magical name...</p>
 							</div>
 						) : generatedName ? (
-							<div className={styles.nameResult}>
-								<div className={styles.nameDisplay}>
-									<h3>{generatedName}</h3>
+							<div className="flex flex-col items-center gap-6 w-full animate-in zoom-in-95 duration-300">
+								<div className="relative">
+									<h3 className="text-5xl md:text-6xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent tracking-tight text-center drop-shadow-2xl">
+										{generatedName}
+									</h3>
 									{selectedCategoryData && (
-										<span
-											className={styles.categoryBadge}
+										<Chip
+											size="sm"
+											variant="flat"
+											className="absolute -top-4 -right-8 rotate-12"
 											style={{
 												backgroundColor: selectedCategoryData.colors.secondary,
 												color: selectedCategoryData.colors.primary,
 											}}
 										>
 											{selectedCategoryData.name}
-										</span>
+										</Chip>
 									)}
 								</div>
-								<div className={styles.actions}>
-									<Button
-										variant="secondary"
-										size="small"
-										onClick={() => toggleFavorite(generatedName)}
-										className={styles.actionBtn}
+
+								<div className="flex gap-2 mt-4">
+									<HeroButton
+										isIconOnly
+										variant="flat"
+										className="bg-white/5 hover:bg-white/10 text-white data-[hover=true]:text-pink-400"
+										onPress={() => toggleFavorite(generatedName)}
+										aria-label="Toggle favorite"
 									>
 										<Heart
-											size={16}
-											className={favorites.has(generatedName) ? styles.favorited : ""}
+											size={20}
+											className={cn(
+												"transition-colors",
+												favorites.has(generatedName) && "fill-pink-500 text-pink-500",
+											)}
 										/>
-									</Button>
-									<Button
-										variant="secondary"
-										size="small"
-										onClick={() => copyToClipboard(generatedName)}
-										className={styles.actionBtn}
+									</HeroButton>
+									<HeroButton
+										isIconOnly
+										variant="flat"
+										className="bg-white/5 hover:bg-white/10 text-white"
+										onPress={() => copyToClipboard(generatedName)}
+										aria-label="Copy to clipboard"
 									>
-										<Copy size={16} />
-									</Button>
+										<Copy size={20} />
+									</HeroButton>
 								</div>
 							</div>
 						) : (
-							<div className={styles.placeholder}>
-								<Shuffle size={32} />
-								<p>Select a category or generate randomly</p>
+							<div className="flex flex-col items-center gap-4 text-white/20">
+								<Shuffle size={48} strokeWidth={1} />
+								<p className="text-lg">Select a category or generate randomly</p>
 							</div>
 						)}
 					</div>
 
-					<div>
-						<Button
-							variant="primary"
-							onClick={() => generateName()}
-							disabled={isGenerating}
-							className={styles.generateBtn}
-						>
-							{isGenerating ? (
-								<>Generating...</>
-							) : (
-								<>
-									<RefreshCw size={18} /> Generate Random
-								</>
-							)}
-						</Button>
-					</div>
-				</div>
-			</Card>
+					<HeroButton
+						size="lg"
+						className="bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/20 font-bold px-8"
+						onPress={() => generateName()}
+						isDisabled={isGenerating}
+						startContent={!isGenerating && <RefreshCw size={20} />}
+					>
+						{isGenerating ? "Casting Spell..." : "Generate Random"}
+					</HeroButton>
+				</CardBody>
+			</HeroCard>
 
+			{/* Favorites */}
 			{favorites.size > 0 && (
-				<div className={styles.favorites}>
-					<h3>Your Favorites</h3>
-					<div className={styles.favoriteList}>
+				<div className="flex flex-col gap-4">
+					<h3 className="text-lg font-semibold text-white/80 flex items-center gap-2">
+						<Heart size={16} className="text-pink-500 fill-pink-500" />
+						Your Favorites
+					</h3>
+					<div className="flex flex-wrap gap-2">
 						{Array.from(favorites).map((name) => (
-							<div key={name} className={styles.favoriteItem}>
-								<span>{name}</span>
-								<button
-									onClick={() => toggleFavorite(name)}
-									className={styles.removeFavorite}
-									aria-label={`Remove ${name} from favorites`}
-								>
-									×
-								</button>
-							</div>
+							<Chip
+								key={name}
+								onClose={() => toggleFavorite(name)}
+								variant="flat"
+								className="bg-white/5 border border-white/10 hover:bg-white/10 transition-colors pl-2"
+							>
+								{name}
+							</Chip>
 						))}
 					</div>
 				</div>
@@ -631,119 +653,168 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 		: null;
 
 	if (isLoading) {
-		return <Loading variant="spinner" text="Loading name categories..." />;
+		return (
+			<div className="flex justify-center p-12">
+				<Spinner size="lg" color="secondary" />
+			</div>
+		);
 	}
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.header}>
-				<h2>Category Explorer</h2>
-				<p>Browse cat names organized by themes and styles</p>
+		<div className="flex flex-col gap-6 w-full">
+			<div className="flex flex-col gap-1">
+				<h2 className="text-2xl font-bold text-white">Category Explorer</h2>
+				<p className="text-white/60">Browse cat names organized by themes and styles</p>
 			</div>
-			<div className={styles.controls}>
-				<div className={styles.search}>
-					<Search size={18} />
+
+			<div className="flex flex-col md:flex-row gap-4 justify-between items-center sticky top-0 z-10 bg-black/20 backdrop-blur-xl p-4 rounded-xl border border-white/5">
+				<div className="relative w-full md:w-64">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={18} />
 					<input
 						type="text"
 						placeholder="Search names..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className={styles.searchInput}
+						className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/40 focus:ring-2 focus:ring-purple-500 outline-none transition-all"
 					/>
 				</div>
-				<div className={styles.viewToggle}>
-					<Button
-						variant={viewMode === "grid" ? "primary" : "secondary"}
-						size="small"
-						onClick={() => setViewMode("grid")}
-						className={styles.viewBtn}
-					>
-						<Grid3X3 size={16} />
-					</Button>
-					<Button
-						variant={viewMode === "list" ? "primary" : "secondary"}
-						size="small"
-						onClick={() => setViewMode("list")}
-						className={styles.viewBtn}
-					>
-						<List size={16} />
-					</Button>
+
+				<div className="flex gap-2">
+					<ButtonGroup variant="flat" className="bg-white/5 rounded-lg p-1">
+						<HeroButton
+							size="sm"
+							isIconOnly
+							className={cn(
+								viewMode === "grid" ? "bg-white/10 text-white" : "text-white/50 hover:text-white",
+							)}
+							onPress={() => setViewMode("grid")}
+						>
+							<Grid3X3 size={18} />
+						</HeroButton>
+						<HeroButton
+							size="sm"
+							isIconOnly
+							className={cn(
+								viewMode === "list" ? "bg-white/10 text-white" : "text-white/50 hover:text-white",
+							)}
+							onPress={() => setViewMode("list")}
+						>
+							<List size={18} />
+						</HeroButton>
+					</ButtonGroup>
 				</div>
 			</div>
 
 			{selectedCategory ? (
-				<div className={styles.categoryDetail}>
-					<div className={styles.detailHeader}>
-						<Button
-							variant="secondary"
-							size="small"
-							onClick={() => setSelectedCategory(null)}
-							className={styles.backBtn}
+				<div className="flex flex-col gap-6 animate-in slide-in-from-right duration-300">
+					<div className="flex items-center gap-4 border-b border-white/10 pb-4">
+						<HeroButton
+							variant="light"
+							onPress={() => setSelectedCategory(null)}
+							startContent={<span className="text-lg">←</span>}
+							className="text-white/60 hover:text-white"
 						>
-							← Back to Categories
-						</Button>
-						<div className={styles.categoryTitle}>
-							<span className={styles.categoryIcon}>{selectedCategoryData?.icon}</span>
-							<h2>{selectedCategoryData?.name}</h2>
+							Back
+						</HeroButton>
+						<div>
+							<div className="flex items-center gap-2">
+								<span className="text-2xl">{selectedCategoryData?.icon}</span>
+								<h2 className="text-2xl font-bold text-white">{selectedCategoryData?.name}</h2>
+							</div>
+							<p className="text-white/60 text-sm">{selectedCategoryData?.description}</p>
 						</div>
-						<p>{selectedCategoryData?.description}</p>
 					</div>
-					<div className={styles.namesGrid}>
+
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
 						{selectedCategoryData?.filteredNames.map((name) => (
-							<Card
+							<HeroCard
 								key={name}
-								className={styles.nameCard}
-								background="glass"
-								padding="medium"
-								shadow="small"
+								isPressable
+								className="bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 transition-all"
 							>
-								<div className={styles.nameContent}>
-									<h4 className={styles.name}>{name}</h4>
-									<div className={styles.nameActions}>
-										<Button variant="secondary" size="small">
-											❤️ Favorite
-										</Button>
-									</div>
-								</div>
-							</Card>
+								<CardBody className="p-3 flex flex-row justify-between items-center gap-2">
+									<span className="font-medium text-white truncate">{name}</span>
+									<HeroButton
+										isIconOnly
+										size="sm"
+										variant="light"
+										className="text-white/20 hover:text-pink-500 min-w-8 w-8 h-8"
+										aria-label="Favorite"
+									>
+										<Heart size={16} />
+									</HeroButton>
+								</CardBody>
+							</HeroCard>
 						))}
 					</div>
 				</div>
 			) : (
 				<div
-					className={`${styles.categories} ${viewMode === "list" ? styles.listView : styles.gridView}`}
+					className={cn(
+						"grid gap-4",
+						viewMode === "grid"
+							? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+							: "grid-cols-1",
+					)}
 				>
 					{filteredCategories.map((category) => (
-						<Card
+						<HeroCard
 							key={category.id}
-							className={styles.categoryCard}
-							background="glass"
-							padding="large"
-							shadow="small"
-							enableTilt={true}
-							onClick={() => setSelectedCategory(category.id)}
-							style={{ "--category-color": category.color } as React.CSSProperties}
+							isPressable
+							onPress={() => setSelectedCategory(category.id)}
+							className={cn(
+								"border group transition-all duration-300",
+								viewMode === "list" ? "flex-row items-center" : "flex-col",
+							)}
+							style={
+								{
+									borderColor: category.color,
+									backgroundColor: `color-mix(in srgb, ${category.color}, transparent 95%)`,
+								} as React.CSSProperties
+							}
 						>
-							<div className={styles.categoryContent}>
-								<div className={styles.categoryHeader}>
-									<div className={styles.categoryIcon}>{category.icon}</div>
-									<h3 className={styles.categoryName}>{category.name}</h3>
+							<CardBody
+								className={cn("p-5 gap-4", viewMode === "list" && "flex-row items-center w-full")}
+							>
+								<div className="flex items-center gap-3 min-w-[200px]">
+									<div className="text-3xl p-3 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform">
+										{category.icon}
+									</div>
+									<div>
+										<h3
+											className="text-lg font-bold text-white group-hover:text-[var(--category-color)]"
+											style={{ "--category-color": category.color } as React.CSSProperties}
+										>
+											{category.name}
+										</h3>
+										<p className="text-xs text-white/50 line-clamp-1">{category.description}</p>
+									</div>
 								</div>
-								<p className={styles.categoryDesc}>{category.description}</p>
-								<div className={styles.namePreview}>
-									{category.filteredNames.slice(0, 4).map((name) => (
-										<span key={name} className={styles.nameTag}>
+
+								<div
+									className={cn(
+										"flex flex-wrap gap-1.5",
+										viewMode === "list" ? "flex-1 justify-end" : "mt-auto",
+									)}
+								>
+									{category.filteredNames.slice(0, viewMode === "list" ? 8 : 4).map((name) => (
+										<Chip
+											key={name}
+											size="sm"
+											variant="flat"
+											className="bg-white/10 text-white/70 border border-white/5"
+										>
 											{name}
-										</span>
+										</Chip>
 									))}
-									{category.filteredNames.length > 4 && (
-										<span className={styles.moreNames}>
-											+{category.filteredNames.length - 4} more
+									{category.filteredNames.length > (viewMode === "list" ? 8 : 4) && (
+										<span className="text-xs text-white/40 self-center px-1">
+											+{category.filteredNames.length - (viewMode === "list" ? 8 : 4)} More
 										</span>
 									)}
 								</div>
-							</div>
-						</Card>
+							</CardBody>
+						</HeroCard>
 					))}
 				</div>
 			)}
@@ -770,13 +841,15 @@ export const HistoryView: React.FC<{ voteHistory: unknown[] }> = ({ voteHistory 
 
 	if (sortedHistory.length === 0) {
 		return (
-			<Card background="glass" padding="large">
-				<div className={styles.emptyState}>
+			<HeroCard className="max-w-md mx-auto bg-white/5 border border-white/10">
+				<CardBody className="p-12 flex flex-col items-center text-center gap-4 text-white/40">
 					<History size={48} />
-					<h3>No History Yet</h3>
-					<p>Start voting to see your tournament history here!</p>
-				</div>
-			</Card>
+					<div className="flex flex-col gap-1">
+						<h3 className="text-xl font-bold text-white/60">No History Yet</h3>
+						<p>Start voting to see your tournament history here!</p>
+					</div>
+				</CardBody>
+			</HeroCard>
 		);
 	}
 
@@ -785,54 +858,85 @@ export const HistoryView: React.FC<{ voteHistory: unknown[] }> = ({ voteHistory 
 		const right = vote.match.right;
 
 		if (left.outcome === "win" && right.outcome === "win") {
-			return <span className={styles.voteBoth}>❤️ Both Liked</span>;
+			return (
+				<Chip color="danger" variant="flat" size="sm">
+					❤️ Both Liked
+				</Chip>
+			);
 		}
 		if (left.outcome === "loss" && right.outcome === "loss") {
-			return <span className={styles.voteNeither}>🚫 Neither</span>;
+			return (
+				<Chip color="default" variant="flat" size="sm">
+					🚫 Neither
+				</Chip>
+			);
 		}
 		if (vote.result === -1) {
 			return (
-				<span className={styles.voteWinner}>
-					Winner: <strong>{left.name}</strong>
+				<span className="text-green-400 font-bold flex items-center gap-1">
+					Winner: <span className="text-white">{left.name}</span>
 				</span>
 			);
 		}
 		if (vote.result === 1) {
 			return (
-				<span className={styles.voteWinner}>
-					Winner: <strong>{right.name}</strong>
+				<span className="text-green-400 font-bold flex items-center gap-1">
+					Winner: <span className="text-white">{right.name}</span>
 				</span>
 			);
 		}
-		return <span>Tie</span>;
+		return (
+			<Chip variant="flat" size="sm">
+				Tie
+			</Chip>
+		);
 	};
 
 	return (
-		<div className={styles.historyContainer}>
-			<div className={styles.header}>
-				<h2>Voting History</h2>
-				<p>Your recent tournament decisions</p>
+		<div className="flex flex-col gap-6 w-full">
+			<div className="flex flex-col gap-1">
+				<h2 className="text-2xl font-bold text-white">Voting History</h2>
+				<p className="text-white/60">Your recent tournament decisions</p>
 			</div>
 
-			<div className={styles.historyList}>
+			<div className="flex flex-col gap-3">
 				{sortedHistory.map((vote, i) => (
-					<Card key={`${vote.timestamp}-${i}`} className={styles.historyItem} padding="medium">
-						<div className={styles.historyContent}>
-							<div className={styles.matchup}>
-								<span className={vote.match.left.outcome === "win" ? styles.winner : ""}>
+					<HeroCard key={`${vote.timestamp}-${i}`} className="bg-white/5 border border-white/5 p-2">
+						<CardBody className="p-3 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+							{/* Matchup */}
+							<div className="flex items-center justify-center md:justify-start gap-3 text-lg">
+								<span
+									className={cn(
+										"font-medium transition-colors",
+										vote.match.left.outcome === "win"
+											? "text-green-400 font-bold"
+											: "text-white/60",
+									)}
+								>
 									{vote.match.left.name}
 								</span>
-								<span className={styles.vs}>vs</span>
-								<span className={vote.match.right.outcome === "win" ? styles.winner : ""}>
+								<span className="text-white/20 text-sm">vs</span>
+								<span
+									className={cn(
+										"font-medium transition-colors",
+										vote.match.right.outcome === "win"
+											? "text-green-400 font-bold"
+											: "text-white/60",
+									)}
+								>
 									{vote.match.right.name}
 								</span>
 							</div>
-							<div className={styles.result}>{formatResult(vote)}</div>
-							<div className={styles.timestamp}>
+
+							{/* Result */}
+							<div className="flex justify-center">{formatResult(vote)}</div>
+
+							{/* Time */}
+							<div className="text-center md:text-right text-xs text-white/30 font-mono">
 								{new Date(vote.timestamp).toLocaleTimeString()}
 							</div>
-						</div>
-					</Card>
+						</CardBody>
+					</HeroCard>
 				))}
 			</div>
 		</div>
