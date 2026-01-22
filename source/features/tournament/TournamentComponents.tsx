@@ -1,19 +1,13 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-import Button from "@/components/Button";
-import Card from "@/components/Card";
+import { Card, CardBody, Progress, Button, Chip, cn } from "@heroui/react";
+import { Heart, X, Check, ChevronLeft, ChevronRight } from "lucide-react";
 import CatImage from "@/components/CatImage";
-
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
 import { playSound } from "@/utils/soundManager";
-
 import { getRandomCatImage } from "./TournamentLogic";
-import styles from "./tournament.module.css";
-
 import "./TournamentRankingAdjustment.css";
 
 /* =========================================================================
@@ -38,6 +32,8 @@ export const SwipeableCards = memo(
 	}) => {
 		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
 		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
+		const [dragOffset, setDragOffset] = useState(0);
+
 		const visibleCards = useMemo(
 			() => names.filter((n: NameItem) => !swipedIds.has(String(n.id))),
 			[names, swipedIds],
@@ -52,9 +48,12 @@ export const SwipeableCards = memo(
 			(card: NameItem, info: PanInfo) => {
 				const offset = info.offset.x;
 				const threshold = 100;
+				setDragOffset(0);
+
 				if (Math.abs(offset) < threshold) {
 					return;
 				}
+
 				if (offset > threshold) {
 					setDragDirection("right");
 					playSound("gameboy-pluck");
@@ -71,88 +70,249 @@ export const SwipeableCards = memo(
 			[isSelected, onToggleName],
 		);
 
+		const progressValue = (swipedIds.size / names.length) * 100;
+
 		return (
-			<div className={styles.swipeContainer}>
-				<div className={styles.cardProgress}>
-					<div
-						style={{
-							width: "100%",
-							height: "4px",
-							background: "rgba(255,255,255,0.1)",
-							borderRadius: "2px",
-						}}
-					>
-						<div
-							style={{
-								width: `${(swipedIds.size / names.length) * 100}%`,
-								height: "100%",
-								background: "var(--color-warning)",
+			<div className="flex flex-col gap-6 w-full max-w-2xl mx-auto p-4">
+				{/* Progress Header */}
+				<Card className="bg-white/5 border-1 border-white/10 backdrop-blur-xl">
+					<CardBody className="p-4 gap-3">
+						<div className="flex justify-between items-center">
+							<span className="text-sm font-bold text-default-500 uppercase tracking-wider">
+								Progress
+							</span>
+							<Chip size="sm" variant="flat" color="primary" className="font-bold">
+								{swipedIds.size} / {names.length}
+							</Chip>
+						</div>
+						<Progress
+							value={progressValue}
+							color="primary"
+							className="h-2"
+							classNames={{
+								indicator: "bg-gradient-to-r from-primary to-secondary",
 							}}
 						/>
-					</div>
-					<span>
-						{swipedIds.size} of {names.length} reviewed
-					</span>
-				</div>
-				<div className={styles.swipeStack}>
+					</CardBody>
+				</Card>
+
+				{/* Swipe Stack */}
+				<div className="relative w-full" style={{ minHeight: "500px" }}>
 					<AnimatePresence mode="popLayout">
 						{visibleCards.length > 0 ? (
 							cardsToRender.map((card: NameItem, index: number) => (
 								<motion.div
 									key={card.id}
-									layout={true}
+									layout
 									layoutId={String(card.id)}
-									className={styles.swipeCardWrapper}
+									className="absolute inset-0 flex items-center justify-center"
+									style={{ zIndex: 10 - index }}
 									exit={{
 										opacity: 0,
-										x: dragDirection === "right" ? 300 : -300,
+										x: dragDirection === "right" ? 400 : -400,
+										rotate: dragDirection === "right" ? 20 : -20,
+										transition: { duration: 0.3 },
 									}}
 								>
 									<motion.div
-										drag="x"
+										drag={index === 0 ? "x" : false}
 										dragConstraints={{ left: 0, right: 0 }}
-										onDragEnd={(_, info) => handleDragEnd(card, info)}
-										className={`${styles.swipeCard} ${isSelected(card) ? styles.selected : ""} ${index > 0 ? styles.stacked : ""}`}
-										animate={{
-											y: index * 16,
-											scale: 1 - index * 0.05,
-											opacity: 1 - index * 0.15,
-											zIndex: 10 - index,
+										onDrag={(_, info) => {
+											if (index === 0) {
+												setDragOffset(info.offset.x);
+											}
 										}}
+										onDragEnd={(_, info) => {
+											if (index === 0) {
+												handleDragEnd(card, info);
+											}
+										}}
+										animate={{
+											y: index * 12,
+											scale: 1 - index * 0.04,
+											opacity: 1 - index * 0.2,
+											rotate: index === 0 ? dragOffset / 20 : 0,
+										}}
+										transition={{ type: "spring", stiffness: 300, damping: 30 }}
+										className="w-full max-w-md"
 									>
-										<div className={styles.swipeCardContent}>
-											{showCatPictures && card.id && (
-												<div className={styles.swipeCardImageContainer}>
-													<CatImage src={getRandomCatImage(card.id, imageList)} />
+										<Card
+											className={cn(
+												"relative overflow-visible border-2 transition-all duration-200",
+												isSelected(card)
+													? "border-success/50 bg-success/5 shadow-[0_0_30px_rgba(var(--heroui-success-rgb),0.3)]"
+													: "border-white/10 bg-white/5",
+												index === 0 && "cursor-grab active:cursor-grabbing shadow-2xl",
+												index > 0 && "pointer-events-none",
+											)}
+										>
+											{/* Swipe Indicators */}
+											{index === 0 && (
+												<>
+													<motion.div
+														className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+														initial={{ opacity: 0, scale: 0.8 }}
+														animate={{
+															opacity: dragOffset < -50 ? 1 : 0,
+															scale: dragOffset < -50 ? 1 : 0.8,
+														}}
+													>
+														<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
+															<X size={24} className="text-white" />
+															<span className="text-white font-black text-lg uppercase">Nope</span>
+														</div>
+													</motion.div>
+
+													<motion.div
+														className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
+														initial={{ opacity: 0, scale: 0.8 }}
+														animate={{
+															opacity: dragOffset > 50 ? 1 : 0,
+															scale: dragOffset > 50 ? 1 : 0.8,
+														}}
+													>
+														<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
+															<Heart size={24} className="text-white fill-white" />
+															<span className="text-white font-black text-lg uppercase">Like</span>
+														</div>
+													</motion.div>
+												</>
+											)}
+
+											<CardBody className="p-8 gap-6 items-center text-center">
+												{showCatPictures && card.id && (
+													<div className="relative w-full aspect-square max-w-xs rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
+														<CatImage src={getRandomCatImage(card.id, imageList)} />
+													</div>
+												)}
+
+												<div className="flex flex-col gap-3">
+													<h2 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+														{card.name}
+													</h2>
+													{card.description && (
+														<p className="text-default-400 text-lg leading-relaxed max-w-md">
+															{card.description}
+														</p>
+													)}
 												</div>
-											)}
-											<h2 className={styles.swipeCardName}>{card.name}</h2>
-											{card.description && (
-												<p className={styles.swipeCardDescription}>{card.description}</p>
-											)}
-										</div>
+
+												{isSelected(card) && (
+													<Chip
+														size="lg"
+														color="success"
+														variant="shadow"
+														startContent={<Check size={18} />}
+														className="font-bold shadow-success/40"
+													>
+														Selected for Tournament
+													</Chip>
+												)}
+											</CardBody>
+										</Card>
 									</motion.div>
 								</motion.div>
 							))
 						) : (
-							<div className={styles.swipeCompletion}>
-								<h2>All clear!</h2>
-								{selectedNames.length >= 2 && (
-									<Button onClick={() => onStartTournament(selectedNames)}>Start Tournament</Button>
-								)}
-							</div>
+							<motion.div
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								className="flex flex-col items-center justify-center gap-6 p-12"
+							>
+								<Card className="bg-white/5 border-1 border-white/10 backdrop-blur-xl">
+									<CardBody className="p-12 gap-6 items-center text-center">
+										<div className="text-6xl">🎉</div>
+										<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+											All Clear!
+										</h2>
+										<p className="text-default-400 max-w-md">
+											You've reviewed all {names.length} names. Ready to start the tournament?
+										</p>
+										{selectedNames.length >= 2 && (
+											<Button
+												size="lg"
+												color="primary"
+												variant="shadow"
+												onClick={() => onStartTournament(selectedNames)}
+												className="font-bold text-lg px-8 shadow-primary/40"
+											>
+												Start Tournament ({selectedNames.length} names)
+											</Button>
+										)}
+									</CardBody>
+								</Card>
+							</motion.div>
 						)}
 					</AnimatePresence>
 				</div>
+
+				{/* Action Buttons */}
 				{visibleCards.length > 0 && (
-					<div className={styles.swipeButtons}>
+					<div className="flex gap-4 justify-center items-center">
 						<Button
+							isIconOnly
+							size="lg"
+							variant="flat"
+							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
+							onClick={() => {
+								const card = cardsToRender[0];
+								if (card) {
+									setDragDirection("left");
+									playSound("wow");
+									setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+									setTimeout(() => setDragDirection(null), 300);
+								}
+							}}
+						>
+							<X size={28} />
+						</Button>
+
+						<Button
+							size="lg"
+							color="primary"
+							variant="shadow"
 							onClick={() => onStartTournament(selectedNames)}
 							disabled={selectedNames.length < 2}
+							className="font-bold px-8 shadow-primary/40"
 						>
 							Start Tournament ({selectedNames.length})
 						</Button>
+
+						<Button
+							isIconOnly
+							size="lg"
+							variant="flat"
+							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"
+							onClick={() => {
+								const card = cardsToRender[0];
+								if (card) {
+									setDragDirection("right");
+									playSound("gameboy-pluck");
+									if (!isSelected(card)) {
+										onToggleName(card);
+									}
+									setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+									setTimeout(() => setDragDirection(null), 300);
+								}
+							}}
+						>
+							<Heart size={28} className="fill-success" />
+						</Button>
 					</div>
+				)}
+
+				{/* Swipe Hint */}
+				{visibleCards.length > 0 && swipedIds.size === 0 && (
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.5 }}
+						className="flex items-center justify-center gap-3 text-default-400 text-sm"
+					>
+						<ChevronLeft size={16} className="animate-pulse" />
+						<span className="font-medium">Swipe or tap buttons to review names</span>
+						<ChevronRight size={16} className="animate-pulse" />
+					</motion.div>
 				)}
 			</div>
 		);
