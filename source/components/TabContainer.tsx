@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import styles from "./TabContainer.module.css";
+import { Tabs, Tab, Card, CardBody } from "@heroui/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface TabItem {
 	key: string;
@@ -13,19 +14,15 @@ export interface TabItem {
 export interface TabContainerProps {
 	tabs: TabItem[];
 	defaultActiveTab?: string;
-	routeSync?: string; // Base route for URL sync, e.g. "/explore"
+	routeSync?: string;
 	className?: string;
 	headerClassName?: string;
 	contentClassName?: string;
 	title?: string | ((activeTab: string) => string);
 	subtitle?: ReactNode;
-	children?: ReactNode; // Additional content to render before tabs
+	children?: ReactNode;
 }
 
-/**
- * TabContainer component that consolidates tab logic from various views
- * Handles state management, URL synchronization, and smooth transitions
- */
 export function TabContainer({
 	tabs,
 	defaultActiveTab,
@@ -40,14 +37,10 @@ export function TabContainer({
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isPending, startTransition] = useTransition();
-
-	// Initialize active tab from props or URL (moved to avoid Router context issues)
 	const [activeTab, setActiveTab] = useState<string | undefined>();
 
-	// Initialize active tab after Router context is ready
 	const initialActiveTab = useMemo(() => {
 		if (routeSync) {
-			// Extract tab from URL
 			const currentPath = location.pathname;
 			const routeMatch = currentPath.startsWith(routeSync) ? currentPath : null;
 			if (routeMatch) {
@@ -61,14 +54,12 @@ export function TabContainer({
 		return defaultActiveTab || tabs[0]?.key || "";
 	}, [routeSync, location.pathname, defaultActiveTab, tabs]);
 
-	// Set initial active tab once Router context is ready
 	useEffect(() => {
 		if (activeTab === undefined && initialActiveTab) {
 			setActiveTab(initialActiveTab);
 		}
 	}, [activeTab, initialActiveTab]);
 
-	// Sync tab with URL changes
 	useEffect(() => {
 		if (!routeSync || activeTab === undefined) {
 			return;
@@ -90,7 +81,8 @@ export function TabContainer({
 		}
 	}, [location.pathname, routeSync, tabs, activeTab]);
 
-	const handleTabChange = (tabKey: string) => {
+	const handleTabChange = (key: React.Key) => {
+		const tabKey = key as string;
 		const tab = tabs.find((t) => t.key === tabKey);
 		if (!tab || tab.disabled) {
 			return;
@@ -99,7 +91,6 @@ export function TabContainer({
 		startTransition(() => {
 			setActiveTab(tabKey);
 
-			// Update URL if routeSync is provided
 			if (routeSync) {
 				const newPath = tabKey === tabs[0]?.key ? routeSync : `${routeSync}/${tabKey}`;
 				navigate(newPath, { replace: true });
@@ -107,45 +98,80 @@ export function TabContainer({
 		});
 	};
 
-	// Don't render until activeTab is initialized to prevent Router context issues
 	if (activeTab === undefined) {
 		return null;
 	}
 
-	const activeTabData = tabs.find((tab) => tab.key === activeTab);
-
 	const resolvedTitle = typeof title === "function" ? title(activeTab) : title;
 
 	return (
-		<div className={`${styles.container} ${className}`}>
+		<div className={`flex flex-col flex-1 w-full max-w-7xl mx-auto gap-6 ${className}`}>
 			{(resolvedTitle || subtitle || tabs.length > 0) && (
-				<div className={`${styles.header} ${headerClassName}`}>
-					{resolvedTitle && <h2 className={styles.title}>{resolvedTitle}</h2>}
-					{subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+				<Card
+					className={`bg-white/5 border-1 border-white/10 backdrop-blur-xl shadow-2xl p-4 md:p-6 ${headerClassName}`}
+				>
+					<CardBody className="p-0 overflow-visible flex flex-col items-center">
+						{resolvedTitle && (
+							<h2 className="text-2xl md:text-3xl font-bold text-center mb-2 tracking-tight bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent">
+								{resolvedTitle}
+							</h2>
+						)}
+						{subtitle && (
+							<p className="text-default-500 text-center mb-6 max-w-2xl text-sm md:text-base leading-relaxed">
+								{subtitle}
+							</p>
+						)}
 
-					{children}
+						{children}
 
-					{tabs.length > 1 && (
-						<div className={styles.tabs}>
-							{tabs.map((tab) => (
-								<button
-									key={tab.key}
-									type="button"
-									className={`${styles.tabBtn} ${activeTab === tab.key ? styles.active : ""} ${tab.disabled ? styles.disabled : ""}`}
-									onClick={() => handleTabChange(tab.key)}
-									disabled={tab.disabled || isPending}
-									aria-pressed={activeTab === tab.key}
-								>
-									{tab.icon}
-									<span>{tab.label}</span>
-								</button>
-							))}
-						</div>
-					)}
-				</div>
+						{tabs.length > 1 && (
+							<Tabs
+								selectedKey={activeTab}
+								onSelectionChange={handleTabChange}
+								aria-label="Selection tabs"
+								color="primary"
+								variant="underlined"
+								classNames={{
+									base: "w-full flex justify-center",
+									tabList: "gap-2 m-auto relative rounded-none p-0 border-b border-divider",
+									cursor: "w-full bg-primary",
+									tab: "max-w-fit px-4 h-12",
+									tabContent:
+										"group-data-[selected=true]:text-primary font-semibold text-sm uppercase tracking-wider",
+								}}
+							>
+								{tabs.map((tab) => (
+									<Tab
+										key={tab.key}
+										title={
+											<div className="flex items-center gap-2">
+												{tab.icon}
+												<span>{tab.label}</span>
+											</div>
+										}
+										disabled={tab.disabled || isPending}
+									/>
+								))}
+							</Tabs>
+						)}
+					</CardBody>
+				</Card>
 			)}
 
-			<div className={`${styles.content} ${contentClassName}`}>{activeTabData?.content}</div>
+			<div className={`flex-1 min-h-0 ${contentClassName}`}>
+				<AnimatePresence mode="wait">
+					<motion.div
+						key={activeTab}
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -10 }}
+						transition={{ duration: 0.3, ease: "easeOut" }}
+						className="h-full"
+					>
+						{tabs.find((t) => t.key === activeTab)?.content}
+					</motion.div>
+				</AnimatePresence>
+			</div>
 		</div>
 	);
 }
