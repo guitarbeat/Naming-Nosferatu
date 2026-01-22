@@ -141,7 +141,7 @@ function TournamentContent({
 
 			{/* Battle Main Area */}
 			<main className="flex-1 flex flex-col items-center justify-center px-4 relative my-4">
-				<div className="grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
+				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
 					{/* Card Left */}
 					<div
 						onClick={() => handleVoteWithAnimation("left")}
