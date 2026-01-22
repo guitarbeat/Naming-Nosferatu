@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
 import { Lightbox, PhotoGallery, useImageGallery } from "../../shared/components/Gallery";
 import { useAdminStatus } from "../auth/authHooks";
-import "../../shared/styles/gallery.css";
+import "../../shared/styles/components/gallery.css";
 
 export default function GalleryView() {
 	const userName = useAppStore((state) => state.user.name);

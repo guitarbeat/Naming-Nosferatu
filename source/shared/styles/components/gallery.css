@@ -17,15 +17,7 @@
 }
 
 @keyframes lightboxFadeIn {
-	from {
-		opacity: 0;
-		backdrop-filter: blur(0) saturate(100%);
-	}
 
-	to {
-		opacity: 1;
-		backdrop-filter: blur(8px) saturate(150%);
-	}
 }
 
 .lightboxContent {
@@ -41,15 +33,7 @@
 }
 
 @keyframes lightboxScaleIn {
-	from {
-		opacity: 0;
-		transform: scale(0.9);
-	}
 
-	to {
-		opacity: 1;
-		transform: scale(1);
-	}
 }
 
 .lightboxImageWrap {
@@ -63,15 +47,7 @@
 }
 
 @keyframes imageSlideIn {
-	from {
-		opacity: 0;
-		transform: translateY(20px) scale(0.95);
-	}
 
-	to {
-		opacity: 1;
-		transform: translateY(0) scale(1);
-	}
 }
 
 .lightboxImage {
@@ -110,13 +86,7 @@
 	transform: translateY(-50%) scale(1.15);
 }
 
-.lightboxNav.left {
-	left: 16px;
-}
 
-.lightboxNav.right {
-	right: 16px;
-}
 
 .lightboxClose {
 	position: absolute;

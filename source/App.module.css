@@ -2,8 +2,9 @@
 
 .toastContainer {
 	position: fixed;
-	bottom: 20px;
-	right: 20px;
-	z-index: 1000;
-	max-width: 400px;
+	bottom: var(--toast-container-bottom);
+	right: var(--toast-container-right);
+	max-width: var(--toast-container-max-width);
 }
+
+/* Using utility class: .z-toast (need to add this to utilities) */

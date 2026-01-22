@@ -1,0 +1,384 @@
+/* ==========================================================================
+   LAYOUT UTILITIES
+   Comprehensive layout utilities for common patterns
+   ========================================================================== */
+
+/* ==========================================================================
+   DISPLAY UTILITIES
+   ========================================================================== */
+
+.block {
+	display: block;
+}
+
+
+.inline {
+	display: inline;
+}
+
+.flex {
+	display: flex;
+}
+
+
+.grid {
+	display: grid;
+}
+
+
+.table {
+	display: table;
+}
+
+
+
+.hidden {
+	display: none;
+}
+
+/* ==========================================================================
+   FLEXBOX UTILITIES
+   ========================================================================== */
+
+/* Flex direction */
+
+
+.flex-col {
+	flex-direction: column;
+}
+
+
+/* Flex wrap */
+
+
+
+/* Flex grow/shrink */
+.flex-1 {
+	flex: 1 1 0%;
+}
+
+
+
+
+
+
+
+
+/* Justify content */
+
+
+.justify-center {
+	justify-content: center;
+}
+
+.justify-between {
+	justify-content: space-between;
+}
+
+.justify-around {
+	justify-content: space-around;
+}
+
+
+/* Align items */
+
+.items-end {
+	align-items: flex-end;
+}
+
+.items-center {
+	align-items: center;
+}
+
+
+
+/* Align content */
+
+
+
+
+
+
+/* Align self */
+
+
+
+
+
+
+/* Common flex patterns */
+
+
+
+
+
+/* ==========================================================================
+   GRID UTILITIES
+   ========================================================================== */
+
+/* Grid template columns */
+
+.grid-cols-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Auto-fit and auto-fill */
+
+
+/* Grid template rows */
+
+
+
+
+
+
+/* Grid column span */
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Grid row span */
+
+
+
+
+
+
+
+/* Grid auto flow */
+
+
+
+
+/* Grid alignment */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   POSITIONING UTILITIES
+   ========================================================================== */
+
+.static {
+	position: static;
+}
+
+
+.absolute {
+	position: absolute;
+}
+
+.relative {
+	position: relative;
+}
+
+
+/* Position values */
+.inset-0 {
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+
+
+
+
+
+.top-0 {
+	top: 0;
+}
+
+
+
+
+
+
+
+
+/* Common positioning patterns */
+
+
+
+
+/* ==========================================================================
+   OVERFLOW UTILITIES
+   ========================================================================== */
+
+
+.overflow-hidden {
+	overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Z-INDEX UTILITIES
+   ========================================================================== */
+
+
+
+.z-10 {
+	z-index: var(--z-10);
+}
+
+.z-20 {
+	z-index: var(--z-20);
+}
+
+.z-toast {
+	z-index: var(--z-toast);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   LAYOUT PRIMITIVES (Enhanced)
+   ========================================================================== */
+
+/**
+ * Stack Component
+ * @description Vertical layout with consistent spacing between children.
+ */
+.stack {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	align-items: stretch;
+}
+
+
+
+
+
+
+/* Stack alignment variants */
+
+
+
+/**
+ * Cluster Component
+ * @description Horizontal layout that wraps. Great for tags, buttons, or nav items.
+ */
+
+
+
+
+/* Cluster alignment variants */
+
+
+
+
+/**
+ * HeroStage Component
+ * @description A high-impact container for scenes or central focuses.
+ */
+
+/**
+ * Container Components
+ * @description Responsive containers with consistent max-widths
+ */
+.container {
+	width: 100%;
+	max-width: clamp(70rem, 96vw, 100rem);
+	padding: 0 var(--space-4);
+	margin: 0 auto;
+}
+
+
+
+
+
+
+
+/**
+ * Aspect Ratio Utilities
+ * @description Maintain consistent aspect ratios
+ */
+.aspect-square {
+	aspect-ratio: 1 / 1;
+}
+
+
+
+
+
+/**
+ * Mosaic Grid System
+ * @description Enhanced grid system for variable-size content
+ */
+
+
+/* Mosaic item sizes */
+
+
+
+
+/**
+ * Full Screen Utilities
+ * @description Common full-screen layout patterns
+ */
+.fullScreenCenter {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+}

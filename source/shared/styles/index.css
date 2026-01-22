@@ -7,59 +7,29 @@
  * All @import rules must precede @theme and other at-rules per CSS spec.
  */
 
-/* Base reset and primitives */
-@import url("./reset.css");
-@import url("./design-tokens.css");
-@import url("./colors.css");
+/* 1. Core foundational styles (reset, tokens, colors, themes) */
+@import url("./core/reset.css");
+@import url("./core/design-tokens.css");
+@import url("./core/colors.css");
+@import url("./core/themes.css");
 
-/* Effects & transitions (shimmer, glass, transitions, typography now in design-tokens.css) */
-@import url("./animations.css");
-@import url("./interactions.css");
+/* 2. Utility classes (layout, spacing, typography, responsive) */
+@import url("./utilities/layout.css");
+@import url("./utilities/spacing.css");
+@import url("./utilities/typography.css");
+@import url("./utilities/utilities.css");
+@import url("./utilities/responsive-utilities.css");
+@import url("./utilities/responsive-mobile.css");
 
-/* Buttons & interactive elements */
-/* * Button tokens consolidated into design-tokens.css */
+/* 3. Component styles (buttons, forms, cards, etc.) */
+@import url("./components/buttons.css");
+@import url("./components/forms.css");
+@import url("./components/cards.css");
+@import url("./components/components.css");
+@import url("./components/app-layout.css");
+@import url("./components/analysis-mode.css");
+@import url("./components/gallery.css");
 
-/* Component-level styles */
-@import url("./app-layout.css");
-@import url("./analysis-mode.css");
-
-/* Component primitives and forms */
-@import url("./components.css");
-
-/* Utility layers */
-@import url("./layout.css");
-@import url("./utilities.css");
-
-/* Theme variants */
-@import url("./themes.css");
-
-/* Responsive & device-specific tweaks */
-@import url("./responsive-mobile.css");
-
-@theme {
-	/* Brand Colors */
-	--color-charcoal: var(--color-charcoal);
-	--color-blue-gray: var(--color-blue-gray);
-	--color-mimosa: var(--color-mimosa);
-	--color-gold: var(--color-gold);
-
-	/* Vibrant Colors */
-	--color-neon-cyan: var(--color-neon-cyan);
-	--color-hot-pink: var(--color-hot-pink);
-	--color-fire-red: var(--color-fire-red);
-
-	/* Semantic Colors */
-	--color-success: var(--color-success);
-	--color-error: var(--color-error);
-	--color-warning: var(--color-warning);
-	--color-info: var(--color-info);
-
-	/* Spacing System */
-	--spacing-component-padding: var(--spacing-component-padding);
-	--spacing-component-gap: var(--spacing-component-gap);
-	--spacing-page-padding: var(--spacing-page-padding);
-
-	/* Z-Index System */
-	--z-index-modal: var(--z-modal);
-	--z-index-toast: var(--z-toast);
-}
+/* 4. Animations and interactions (applied last for proper cascade) */
+@import url("./animations/animations.css");
+@import url("./animations/interactions.css");

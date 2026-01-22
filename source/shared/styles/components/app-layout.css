@@ -8,74 +8,22 @@
    ROOT APP CONTAINER
    ============================================================================ */
 
-.app {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	height: 100vh;
-	height: 100dvh; /* * Use dynamic viewport height on mobile for better browser chrome handling */
-
-	/* Navbar offset calculations */
-	--app-navbar-offset-base: clamp(6rem, 16vw, 7.75rem);
-	--app-navbar-offset: calc(var(--app-navbar-offset-base) + env(safe-area-inset-top));
-}
 
 /* ============================================================================
    MAIN CONTENT WRAPPER
    ============================================================================ */
 
-.app-main-wrapper {
-	box-sizing: border-box;
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	width: 100%;
-	min-width: 0;
-	max-width: 100%;
-	min-height: 100vh;
-	padding: 0;
-	overflow: visible;
-	background: transparent;
-	border: none;
-	box-shadow: none;
-	transition: var(--transition-base);
-	position: relative;
-	z-index: var(--z-elevate);
-}
 
 /* ============================================================================
    STANDARD LAYOUT (Logged-in users)
    ============================================================================ */
 
-.app-main-wrapper:not(.app-main-wrapper--login) {
-	/* Spacing variables */
-	--app-main-side-padding: clamp(1.5rem, 6vw, 3rem);
-	--app-main-bottom-padding: clamp(2rem, 4vw, 3rem);
-
-	/* Horizontal navbar on top - use padding-top, no left padding */
-	padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) var(--app-main-side-padding)
-		var(--app-main-bottom-padding) var(--app-main-side-padding);
-
-	/* Center all content horizontally */
-	align-items: center;
-}
 
 /* ============================================================================
    LOGIN PAGE LAYOUT
    ============================================================================ */
 
-.app-main-wrapper--login {
-	gap: 0;
-	align-items: stretch;
-	justify-content: flex-start;
-	height: 100vh;
-	padding: max(var(--app-navbar-offset), clamp(5.5rem, 7vw, 6.5rem)) 0 0;
-}
 
-.app-main-wrapper--login > * {
-	width: 100%;
-	margin: 0;
-}
 
 /* ============================================================================
    NAVBAR VISIBILITY (Login page)
@@ -83,35 +31,11 @@
 
 /* Ensure navbar is always visible, including on login page */
 .app--login .navbar,
-.app--login .app-navbar {
-	display: flex;
-	visibility: visible;
-	opacity: 1;
-	z-index: var(--z-sticky);
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-}
 
 /* Ensure LiquidGlass wrapper is also visible */
-.app--login .app-navbar-glass {
-	display: block;
-	visibility: visible;
-	opacity: 1;
-	z-index: var(--z-sticky);
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-}
 
 /* Desktop: vertical navbar for login page */
 @media (width > 960px) {
-	.app--login .app-navbar-glass {
-		right: auto;
-		bottom: 0;
-	}
 }
 
 /* ============================================================================
@@ -127,24 +51,13 @@
 
 /* Content above background */
 .app-header,
-.app-main-wrapper {
-	position: relative;
-	z-index: var(--z-elevate);
-}
 
 /* ============================================================================
    RESPONSIVE ADJUSTMENTS
    ============================================================================ */
 
 @media (width <= 768px) {
-	.app-main-wrapper:not(.app-main-wrapper--login) {
-		padding: var(--app-navbar-offset) clamp(1rem, 4vw, 2rem)
-			calc(clamp(2rem, 5vw, 3rem) + 64px + env(safe-area-inset-bottom)) clamp(1rem, 4vw, 2rem);
-	}
 
-	.app-main-wrapper--login {
-		padding-top: var(--app-navbar-offset);
-	}
 }
 
 /* ============================================================================

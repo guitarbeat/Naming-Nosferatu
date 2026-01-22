@@ -1,0 +1,161 @@
+/**
+ * @file cards.css
+ * @description Consolidated Card Component System
+ * 
+ * Consolidates card patterns from utilities.css and layout.css and creates
+ * a comprehensive card system with consistent variants and states.
+ */
+
+/* ==========================================================================
+   BASE CARD STYLES
+   ========================================================================== */
+
+.card {
+   /* Base card foundation */
+   display: block;
+   padding: var(--card-padding-md);
+   background: var(--surface-color);
+   border: var(--card-border-width) solid var(--border-color);
+   border-radius: var(--card-border-radius);
+   transition: all var(--duration-normal) var(--ease-standard);
+   position: relative;
+   overflow: hidden;
+}
+
+.card:focus-visible {
+   outline: 2px solid var(--color-neon-cyan);
+   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   CARD VARIANTS
+   ========================================================================== */
+
+/* Standard Card */
+
+/* Elevated Card */
+
+
+/* Interactive Card */
+
+
+
+/* Mosaic Card (for grid layouts) */
+
+/* Hand-drawn Card (artistic style) */
+
+/* Glass Card */
+
+/* Outlined Card */
+
+/* Filled Card */
+
+/* ==========================================================================
+   CARD SIZES
+   ========================================================================== */
+
+
+
+
+
+
+/* Responsive card */
+
+/* ==========================================================================
+   CARD STATES
+   ========================================================================== */
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   CARD COMPONENTS
+   ========================================================================== */
+
+
+
+
+
+
+
+
+.card__media img {
+   width: 100%;
+   height: auto;
+   display: block;
+}
+
+/* ==========================================================================
+   CARD GROUPS AND LAYOUTS
+   ========================================================================== */
+
+
+
+
+/* Mosaic item sizes for cards */
+
+
+
+
+/* ==========================================================================
+   SPECIAL CARD TYPES
+   ========================================================================== */
+
+/* Analysis Mode Cards */
+
+
+
+/* Tournament Cards */
+
+/* Stat Cards */
+
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (width <=640px) {
+   .card {
+      padding: var(--card-padding-sm);
+   }
+
+   .card__header {
+      padding: var(--space-2);
+   }
+}
+
+@media (width <=480px) {
+
+   .card--xs,
+   .card--sm,
+   .card--md,
+   .card--lg {
+      padding: var(--space-2);
+   }
+}
+
+/* ==========================================================================
+   REDUCED MOTION SUPPORT
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+   .card,
+   .card--elevated,
+   .card--elevated:hover,
+   .card--interactive:hover,
+   .card--interactive:active {
+      transition: none;
+      transform: none;
+   }
+}
+
+/* ==========================================================================
+   LEGACY SUPPORT (for gradual migration)
+   ========================================================================== */
+
+/* Map old class names to new system */

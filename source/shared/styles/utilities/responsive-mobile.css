@@ -26,7 +26,8 @@
 /* ==========================================================================
    MOBILE GLOBAL STYLES (width <= 768px)
    ========================================================================== */
-@media (width <= 768px) {
+@media (width <=768px) {
+
 	/* Mobile navigation improvements */
 	.nav-menu button {
 		min-width: var(--mobile-touch-target-min);
@@ -43,21 +44,10 @@
 		border-color: var(--primary-300);
 	}
 
-	.nav-menu button.active {
-		color: var(--button-text-light);
-		background: var(--primary-500);
-		border-color: var(--primary-600);
-	}
-
 	/* Mobile header improvements */
 	header {
 		background: var(--header-background);
 		border-bottom: 2px solid var(--header-border);
-	}
-
-	.header-image {
-		border: 3px solid var(--primary-color);
-		box-shadow: 0 4px 12px var(--shadow-color-medium);
 	}
 
 	/* Mobile text improvements */
@@ -70,8 +60,8 @@
 
 	p,
 	span,
-	li {
-		color: var(--mobile-text-secondary, var(--text-secondary));
+	label {
+		color: var(--mobile-text-primary, var(--text-primary));
 	}
 
 	/* Mobile form improvements */
@@ -91,9 +81,6 @@
 	}
 
 	/* Ensure floating elements don't overlap content */
-	.main-content {
-		padding-bottom: var(--mobile-content-padding);
-	}
 
 	/* Ensure scroll-to-top button doesn't overlap content */
 	.scroll-to-top {
@@ -115,13 +102,9 @@
 	.clickable,
 	.name-card,
 	.card[role="button"],
-	.actionButton,
-	.photoThumbButton {
-		min-width: var(--mobile-touch-target-min);
+	.actionButton {
 		min-height: var(--mobile-touch-target-min);
-		touch-action: manipulation;
-		cursor: pointer;
-		-webkit-tap-highlight-color: var(--overlay-light);
+		min-width: var(--mobile-touch-target-min);
 	}
 
 	/* Form inputs should have minimum height for touch */
@@ -138,16 +121,13 @@
 	}
 
 	/* Ensure proper spacing between interactive elements */
-	button + button,
-	.btn + .btn,
-	input + input {
+	button+button,
+	.btn+.btn,
+	input+input {
 		margin-left: var(--space-3);
 	}
 
 	/* Improve form layout on mobile */
-	.form-group {
-		margin-bottom: var(--mobile-margin);
-	}
 
 	.form-group label {
 		display: block;
@@ -157,11 +137,8 @@
 
 	/* Ensure proper spacing for mobile cards */
 	.card,
-	.name-card,
-	.tournament-card {
-		padding: var(--mobile-card-padding);
-		margin-bottom: var(--mobile-margin);
-		border-radius: var(--mobile-border-radius);
+	.name-card {
+		margin-bottom: var(--space-3);
 	}
 
 	/* Improve mobile list spacing */
@@ -170,21 +147,13 @@
 		padding-left: var(--space-4);
 	}
 
-	li {
-		margin-bottom: var(--space-2);
-	}
 }
 
 /* ==========================================================================
    SMALL MOBILE DEVICES (width <= 430px)
    ========================================================================== */
-@media (width <= 430px) {
+@media (width <=430px) {
 	/* Enhanced small mobile colors */
-	.name-card {
-		padding: var(--space-3);
-		background: var(--mobile-card-background, var(--card-background));
-		border-radius: var(--radius-lg);
-	}
 
 	/* Small mobile text adjustments */
 	h1 {
@@ -204,10 +173,6 @@
 		padding: 0 var(--space-3);
 	}
 
-	.main-content {
-		padding: var(--space-3);
-	}
-
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing-small);
 		bottom: var(--mobile-safe-spacing-small);
@@ -218,7 +183,8 @@
    REDUCED MOTION - Mobile specific
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-	@media (width <= 768px) {
+	@media (width <=768px) {
+
 		.name-card,
 		.nav-menu button {
 			transition: none;
@@ -228,10 +194,6 @@
 		.nav-menu button:hover {
 			transform: none;
 		}
-
-		.header-image {
-			animation: none;
-		}
 	}
 }
 
@@ -239,25 +201,11 @@
    HIGH CONTRAST MODE - Mobile specific
    ========================================================================== */
 @media (prefers-contrast: more) {
-	@media (width <= 768px) {
-		.name-card {
-			border-color: var(--text-primary);
-			border-width: 3px;
-		}
+	@media (width <=768px) {
 
-		.nav-menu button {
-			border: 2px solid var(--border-color);
-		}
-
-		.input {
-			border-width: 3px;
-		}
-
-		/* Enhanced focus indicators */
-		.nav-menu button:focus,
-		.input:focus {
-			outline: 3px solid var(--primary-color);
-			outline-offset: 2px;
+		button,
+		.btn {
+			border-width: 2px;
 		}
 	}
 }
@@ -266,13 +214,7 @@
    SAFE AREA INSETS - Modern mobile devices
    ========================================================================== */
 @supports (padding: max(0px)) {
-	@media (width <= 768px) {
-		.main-content {
-			padding-right: max(var(--space-4), env(safe-area-inset-right));
-			padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-			padding-left: max(var(--space-4), env(safe-area-inset-left));
-		}
-
+	@media (width <=768px) {
 		header {
 			padding-right: max(var(--space-4), env(safe-area-inset-right));
 			padding-left: max(var(--space-4), env(safe-area-inset-left));
@@ -284,48 +226,10 @@
 		}
 
 		.scroll-to-top {
-			right: max(
-				var(--mobile-safe-spacing),
-				env(safe-area-inset-right) +
-				var(--mobile-safe-spacing)
-			);
-			bottom: max(
-				var(--mobile-safe-spacing),
-				env(safe-area-inset-bottom) +
-				var(--mobile-safe-spacing)
-			);
-		}
-	}
-
-	@media (width <= 430px) {
-		.main-content {
-			padding-right: max(var(--space-3), env(safe-area-inset-right));
-			padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
-			padding-left: max(var(--space-3), env(safe-area-inset-left));
-		}
-
-		header {
-			padding-right: max(var(--space-3), env(safe-area-inset-right));
-			padding-left: max(var(--space-3), env(safe-area-inset-left));
-		}
-
-		.container {
-			padding-right: max(var(--space-3), env(safe-area-inset-right));
-			padding-left: max(var(--space-3), env(safe-area-inset-left));
-		}
-
-		/* Adjust floating elements for small screens */
-		.scroll-to-top {
-			right: max(
-				var(--mobile-safe-spacing-small),
-				env(safe-area-inset-right) +
-				var(--mobile-safe-spacing-small)
-			);
-			bottom: max(
-				var(--mobile-safe-spacing-small),
-				env(safe-area-inset-bottom) +
-				var(--mobile-safe-spacing-small)
-			);
+			right: max(var(--mobile-safe-spacing),
+					env(safe-area-inset-right) + var(--mobile-safe-spacing));
+			bottom: max(var(--mobile-safe-spacing),
+					env(safe-area-inset-bottom) + var(--mobile-safe-spacing));
 		}
 	}
 }
@@ -333,11 +237,7 @@
 /* ==========================================================================
    LANDSCAPE MOBILE OPTIMIZATIONS
    ========================================================================== */
-@media screen and (width <= 768px) and (orientation: landscape) {
-	.main-content {
-		margin-top: 70px; /* Reduced margin for landscape */
-	}
-
+@media screen and (width <=768px) and (orientation: landscape) {
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing-small);
 		bottom: var(--mobile-safe-spacing-small);
