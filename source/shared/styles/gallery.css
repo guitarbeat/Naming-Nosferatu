@@ -161,74 +161,7 @@
 	pointer-events: none;
 }
 
-/* Photo Gallery Grid - Mosaic Style */
-.photoGrid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 16px;
-	width: 100%;
-	margin-top: 16px;
-	perspective: 1000px;
-	padding-bottom: 3rem;
-	/* Space for footer/nav */
-}
-
-.photoThumbnail {
-	position: relative;
-	width: 100%;
-	/* Aspect ratio handled by image natural size or inline style if needed, 
-	   but for a clean grid we often default to square or 4:3. 
-	   Let's allow auto-height if we use columns, but for Grid we need consistency or spans.
-	   Standardizing on square for now ensures "fitting", 
-	   or we can use 'aspect-ratio: auto' if we switched to columns. */
-	aspect-ratio: 1 / 1;
-	border-radius: 16px;
-	overflow: hidden;
-	background: rgba(0, 0, 0, 0.1);
-	border: 2px solid rgba(255, 255, 255, 0.05);
-	/* Subtle border */
-	transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-	padding: 0;
-	cursor: pointer;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.photoThumbnail:hover {
-	transform: scale(1.03) translateY(-4px);
-	box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-	border-color: var(--primary-400);
-	z-index: 10;
-}
-
-.photoThumbnail img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	display: block;
-	transition: transform 0.5s ease;
-}
-
-.photoThumbnail:hover img {
-	transform: scale(1.1);
-}
-
-.photoOverlay {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.6) 100%);
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 0.3s ease;
-}
-
-.photoThumbnail:hover .photoOverlay {
-	opacity: 1;
-	pointer-events: auto;
-}
-
+/* Photo Gallery Grid - now handled by ImageGrid component */
 .photoGallery {
 	width: 100%;
 }
@@ -256,14 +189,14 @@
 	font-weight: 600;
 	color: white;
 	cursor: pointer;
-	background: var(--primary-600);
+	background: hsl(var(--primary));
 	border: none;
 	border-radius: 8px;
 	transition: all 0.3s ease;
 }
 
 .photoUploadButton:hover {
-	background: var(--primary-700);
+	background: hsl(var(--primary) / 0.8);
 	transform: translateY(-1px);
 }
 
@@ -272,8 +205,8 @@
 	width: 100%;
 	margin-top: 12px;
 	padding: 8px;
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: hsl(var(--muted) / 0.3);
+	border: 1px solid hsl(var(--border));
 	border-radius: 8px;
 	color: inherit;
 	font-size: 0.875rem;
@@ -282,6 +215,6 @@
 }
 
 .showAllPhotosButton:hover {
-	background: rgba(255, 255, 255, 0.1);
-	border-color: var(--primary-500);
+	background: hsl(var(--muted) / 0.5);
+	border-color: hsl(var(--primary));
 }

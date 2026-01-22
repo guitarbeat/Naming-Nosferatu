@@ -1,8 +1,14 @@
+/**
+ * @module Gallery
+ * @description Gallery components: PhotoGallery, ImageGrid, Lightbox, and hooks.
+ * Uses masonry layout for responsive 2+ column grids on mobile.
+ */
+
 import { imagesAPI } from "@supabase/client";
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { compressImageFile, devError } from "../utils";
-import Card from "./Card";
+import { ImageGrid } from "./ImageGrid";
 
 /* =========================================================================
    HOOKS
@@ -95,65 +101,7 @@ export function useImageGallery() {
    COMPONENTS
    ========================================================================= */
 
-interface GalleryThumbnailProps {
-	image: string;
-	index: number;
-	onImageOpen: (image: string) => void;
-}
-
-function GalleryThumbnail({ image, index, onImageOpen }: GalleryThumbnailProps) {
-	const [imageLoading, setImageLoading] = useState(true);
-	const [imageError, setImageError] = useState(false);
-
-	if (!image || imageError) {
-		return null;
-	}
-
-	return (
-		<Card
-			as="button"
-			padding="none"
-			enableTilt={true}
-			className={`photoThumbnail ${imageLoading ? "loading" : ""}`}
-			onClick={() => onImageOpen(image)}
-			aria-label={`Open cat photo ${index + 1}`}
-			style={{
-				overflow: "hidden",
-				/* aspectRatio removed here to let CSS control it */
-				border: "none",
-			}}
-		>
-			<div
-				style={{
-					width: "100%",
-					height: "100%",
-					transform: "translateZ(50px)",
-					transformStyle: "preserve-3d",
-				}}
-			>
-				<img
-					src={image}
-					alt={`Cat photo ${index + 1}`}
-					style={{
-						width: "100%",
-						height: "100%",
-						objectFit: "cover",
-						display: "block",
-					}}
-					loading="lazy"
-					onLoad={() => setImageLoading(false)}
-					onError={() => {
-						setImageError(true);
-						setImageLoading(false);
-					}}
-				/>
-			</div>
-			<div className="photoOverlay" style={{ transform: "translateZ(75px)" }}>
-				<span className="photoIcon">👁️</span>
-			</div>
-		</Card>
-	);
-}
+/* GalleryThumbnail removed - now using ImageGrid component */
 
 export function PhotoGallery({
 	galleryImages = [],
@@ -223,16 +171,10 @@ export function PhotoGallery({
 					</label>
 				)}
 			</div>
-			<div className="photoGrid">
-				{displayImages.map((image, index) => (
-					<GalleryThumbnail
-						key={`${image}-${index}`}
-						image={image}
-						index={index}
-						onImageOpen={onImageOpen}
-					/>
-				))}
-			</div>
+			<ImageGrid
+				images={displayImages}
+				onImageOpen={onImageOpen}
+			/>
 			{/* Only show button if NOT in showAll mode (e.g. widget mode) */}
 			{!showAllPhotos && galleryImages.length > 8 && (
 				<button type="button" className="showAllPhotosButton" onClick={onShowAllPhotosToggle}>
