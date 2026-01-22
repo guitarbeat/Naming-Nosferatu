@@ -1,0 +1,154 @@
+/**
+ * @module ImageGrid
+ * @description Masonry-style image grid with responsive breakpoints.
+ * Mirrors NameGrid patterns for consistency.
+ */
+
+.imageGrid {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+}
+
+.gridContainer {
+  position: relative;
+  width: 100%;
+  transition: height 0.3s ease;
+}
+
+.gridItem {
+  position: absolute;
+  will-change: transform, opacity;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.imageCard {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: hsl(var(--muted) / 0.3);
+  cursor: pointer;
+  border: 1px solid hsl(var(--border) / 0.5);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+              box-shadow 0.3s ease,
+              border-color 0.2s ease;
+}
+
+.imageCard:hover {
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 12px 24px hsl(var(--foreground) / 0.15);
+  border-color: hsl(var(--primary) / 0.5);
+  z-index: 10;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.imageCard:hover .image {
+  transform: scale(1.08);
+}
+
+.imageOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, transparent 0%, hsl(var(--foreground) / 0.5) 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.imageCard:hover .imageOverlay {
+  opacity: 1;
+}
+
+.overlayIcon {
+  width: 32px;
+  height: 32px;
+  color: hsl(var(--background));
+  filter: drop-shadow(0 2px 4px hsl(var(--foreground) / 0.3));
+}
+
+/* Loading skeleton */
+.skeleton {
+  position: absolute;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.3) 25%,
+    hsl(var(--muted) / 0.5) 50%,
+    hsl(var(--muted) / 0.3) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+}
+
+.emptyIcon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: var(--text-base);
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .imageGrid {
+    padding: var(--space-1);
+  }
+  
+  .imageCard {
+    border-radius: var(--radius-md);
+  }
+  
+  .imageWrapper {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .imageGrid {
+    padding: var(--space-2);
+  }
+}
+
+@media (min-width: 901px) {
+  .imageGrid {
+    padding: var(--space-3);
+  }
+}
