@@ -491,9 +491,7 @@ function TournamentToolbar({
 							title="Toggle search and filters"
 						>
 							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>
-								🔍 {showFiltersInTournament ? "Hide Filters" : "Filter/Sort"}
-							</span>
+							<span className={styles.toggleLabel}>{showFiltersInTournament ? "❌" : "🔍"}</span>
 						</button>
 					</div>
 				</div>

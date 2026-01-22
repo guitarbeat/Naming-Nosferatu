@@ -45,15 +45,13 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 	return (
 		<AnimatePresence>
 			{isOpen && (
-				<>
-					{/* Backdrop */}
-					<motion.div
-						className={styles.backdrop}
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						exit={{ opacity: 0 }}
-						onClick={handleClose}
-					/>
+				<motion.div
+					className={styles.overlay}
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					onClick={handleClose}
+				>
 					{/* Modal */}
 					<motion.div
 						className={styles.modal}
@@ -61,6 +59,7 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.9, y: 20 }}
 						transition={{ type: "spring", damping: 25, stiffness: 300 }}
+						onClick={(e) => e.stopPropagation()}
 					>
 						<button className={styles.closeBtn} onClick={handleClose} aria-label="Close">
 							<X size={20} />
@@ -102,7 +101,7 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 							</div>
 						</div>
 					</motion.div>
-				</>
+				</motion.div>
 			)}
 		</AnimatePresence>
 	);
