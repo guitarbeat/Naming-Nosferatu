@@ -1,12 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TOURNAMENT_TIMING } from "../../core/constants";
-import { useProfile } from "../../core/hooks/useProfile";
-import { useProfileNotifications } from "../../core/hooks/useProfileNotifications";
-import useLocalStorage from "../../core/hooks/useStorage";
-import useAppStore from "../../core/store/useAppStore";
-import { useImageGallery } from "../../shared/components/Gallery";
-import { useLightboxState } from "../../shared/hooks/useLightboxState";
-import { ErrorManager } from "../../shared/services/errorManager";
+import { useImageGallery } from "@/components/Gallery";
+import { TOURNAMENT_TIMING } from "@/constants";
+import { useLightboxState } from "@/hooks/useLightboxState";
+import { useProfile } from "@/hooks/useProfile";
+import { useProfileNotifications } from "@/hooks/useProfileNotifications";
+import useLocalStorage from "@/hooks/useStorage";
+import { ErrorManager } from "@/services/errorManager";
+import useAppStore from "@/store/useAppStore";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentUIState,
+} from "@/types/components";
+import type { AppState } from "@/types/store";
 import {
 	clearTournamentCache,
 	devError,
@@ -16,15 +24,7 @@ import {
 	ratingsToArray,
 	ratingsToObject,
 	shuffleArray,
-} from "../../shared/utils";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	PersistentState,
-	TournamentUIState,
-} from "../../types/components";
-import type { AppState } from "../../types/store";
+} from "@/utils";
 import { useAdminStatus } from "../auth/authHooks";
 import {
 	calculateBracketRound,

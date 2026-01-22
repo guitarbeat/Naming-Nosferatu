@@ -9,20 +9,16 @@
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./App.module.css";
-import useUserSession from "./core/hooks/useUserSession";
-import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
+import { AppLayout } from "./AppLayout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { Loading } from "./components/Loading";
+import { Toast } from "./components/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
-import { AppLayout } from "./shared/AppLayout";
-import { ErrorBoundary } from "./shared/components/ErrorBoundary";
-import { Loading } from "./shared/components/Loading";
-import { Toast } from "./shared/components/Toast";
-import { useOfflineSync } from "./shared/hooks/useBrowserState";
-import { ErrorManager } from "./shared/services/errorManager";
-import {
-	cleanupPerformanceMonitoring,
-	devError,
-	initializePerformanceMonitoring,
-} from "./shared/utils";
+import { useOfflineSync } from "./hooks/useBrowserState";
+import useUserSession from "./hooks/useUserSession";
+import { ErrorManager } from "./services/errorManager";
+import useAppStore, { useAppStoreInitialization } from "./store/useAppStore";
+import { cleanupPerformanceMonitoring, devError, initializePerformanceMonitoring } from "./utils";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));

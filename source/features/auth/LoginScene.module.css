@@ -5,9 +5,11 @@
 
 .loginWrapper {
 	background: var(--surface-color);
-	background-image: radial-gradient(circle at 50% 50%,
-			color-mix(in srgb, var(--primary-color) 10%, transparent) 0%,
-			transparent 80%);
+	background-image: radial-gradient(
+		circle at 50% 50%,
+		color-mix(in srgb, var(--primary-color) 10%, transparent) 0%,
+		transparent 80%
+	);
 	font-family: "Courier New", Courier, monospace;
 	height: 100vh;
 	height: 100dvh;
@@ -29,7 +31,8 @@
 	border: var(--login-scene-border-width) solid var(--text-primary);
 	box-shadow:
 		var(--login-scene-shadow-offset) var(--login-scene-shadow-offset) 0 var(--text-primary),
-		var(--login-scene-shadow-offset-large) var(--login-scene-shadow-offset-large) 48px color-mix(in srgb, var(--color-neutral-900) 15%, transparent);
+		var(--login-scene-shadow-offset-large) var(--login-scene-shadow-offset-large) 48px
+		color-mix(in srgb, var(--color-neutral-900) 15%, transparent);
 	transform: rotate(var(--login-scene-rotation));
 	z-index: var(--z-elevate);
 	transition: var(--transition-login-scene);
@@ -64,24 +67,28 @@
 	width: var(--login-cat-width);
 	height: var(--login-cat-height);
 	background: var(--text-primary);
-	clip-path: polygon(25% 0%,
-			35% 25%,
-			65% 25%,
-			75% 0%,
-			95% 45%,
-			85% 95%,
-			100% 100%,
-			0% 100%,
-			15% 45%);
+	clip-path: polygon(
+		25% 0%,
+		35% 25%,
+		65% 25%,
+		75% 0%,
+		95% 45%,
+		85% 95%,
+		100% 100%,
+		0% 100%,
+		15% 45%
+	);
 	animation: catBobble var(--duration-animation-extra-long) ease-in-out infinite;
 	pointer-events: none;
-	filter: drop-shadow(var(--login-button-shadow-offset) var(--login-button-shadow-offset) 0 color-mix(in srgb, var(--color-neutral-900) 15%, transparent));
+	filter: drop-shadow(
+		var(--login-button-shadow-offset) var(--login-button-shadow-offset) 0
+			color-mix(in srgb, var(--color-neutral-900) 15%, transparent)
+	);
 }
 
 /* Using utility class: .z-10 */
 
 @keyframes catBobble {
-
 	0%,
 	100% {
 		transform: translateY(0) rotate(1.5deg) scaleX(1);
@@ -116,7 +123,6 @@
 }
 
 @keyframes blinkEye {
-
 	0%,
 	45%,
 	55%,

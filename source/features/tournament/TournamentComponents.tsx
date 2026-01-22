@@ -3,13 +3,13 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import Button from "../../shared/components/Button";
-import Card from "../../shared/components/Card";
-import CatImage from "../../shared/components/CatImage";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import CatImage from "@/components/CatImage";
 
-import { ErrorManager } from "../../shared/services/errorManager";
-import { playSound } from "../../shared/utils/soundManager";
-import type { NameItem } from "../../types/components";
+import { ErrorManager } from "@/services/errorManager";
+import type { NameItem } from "@/types/components";
+import { playSound } from "@/utils/soundManager";
 
 import { getRandomCatImage } from "./TournamentLogic";
 import styles from "./tournament.module.css";

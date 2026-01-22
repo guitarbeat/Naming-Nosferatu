@@ -8,20 +8,14 @@
 import { hiddenNamesAPI } from "@supabase/client";
 import type React from "react";
 import { useCallback, useMemo, useState } from "react";
-import { STORAGE_KEYS } from "../../core/constants";
-import { useCollapsible } from "../../core/hooks/useStorage";
-import { BumpChart } from "../../shared/components/Charts";
-import { CollapsibleContent, CollapsibleHeader } from "../../shared/components/CollapsibleHeader";
-import { useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
-import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
-import { TournamentToolbar } from "../../shared/components/TournamentToolbar/TournamentToolbar";
-import {
-	clearAllCaches,
-	devError,
-	formatDate,
-	getMetricLabel,
-	getRankDisplay,
-} from "../../shared/utils";
+import { BumpChart } from "@/components/Charts";
+import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
+import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
+import { PerformanceBadges } from "@/components/PerformanceBadge";
+import { TournamentToolbar } from "@/components/TournamentToolbar";
+import { STORAGE_KEYS } from "@/constants";
+import { useCollapsible } from "@/hooks/useStorage";
+import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";
 import styles from "./analytics.module.css";
 import type {
 	AnalysisDashboardProps,

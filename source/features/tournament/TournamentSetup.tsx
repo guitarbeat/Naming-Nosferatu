@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import useAppStore from "../../core/store/useAppStore";
-import { Input } from "../../shared/components/FormPrimitives";
-import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
-import { getGreeting } from "../../shared/utils";
-import { fetchCatAvatars } from "../../shared/utils/catApi";
-import type { NameItem } from "../../types/components";
+import { Input } from "@/components/FormPrimitives";
+import { NameManagementView } from "@/components/NameManagementView/NameManagementView";
+import useAppStore from "@/store/useAppStore";
+import type { NameItem } from "@/types/components";
+import { getGreeting } from "@/utils";
+import { fetchCatAvatars } from "@/utils/catApi";
 import { useLoginController } from "../auth/authHooks";
 import loginStyles from "../auth/LoginScene.module.css";
 import { SwipeableCards } from "./TournamentComponents";

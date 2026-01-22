@@ -6,10 +6,10 @@
  */
 
 // Export the base client implementation
-export * from "@/shared/services/supabase/clientBase";
+export * from "@/services/supabase/clientBase";
 
 // Export all feature modules (which now import from clientBase)
-export * from "@/shared/services/supabase/modules/general";
+export * from "@/services/supabase/modules/general";
 
 // Re-export types
 export type { Database } from "./types";

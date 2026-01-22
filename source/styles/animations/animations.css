@@ -1,0 +1,250 @@
+/**
+ * @file animations.css
+ * @description Consolidated Animation System
+ *
+ * Optimized keyframes and animation utilities with duplicate removal
+ * and performance improvements.
+ */
+
+/* ==========================================================================
+   CORE KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+/* Fade Animations */
+
+/* Slide Animations */
+
+/* Scale Animations */
+
+/* Rotation Animations */
+
+/* Bounce Animations */
+@keyframes bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-10px);
+	}
+}
+
+@keyframes bounce-subtle {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-4px);
+	}
+}
+
+/* Float Animation */
+@keyframes float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-6px);
+	}
+}
+
+/* Pulse Animations */
+@keyframes pulse-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-primary);
+	}
+
+	50% {
+		box-shadow: 0 0 20px var(--color-primary);
+	}
+}
+
+@keyframes pulse-opacity {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0.7;
+	}
+}
+
+/* Shake Animation */
+@keyframes shake {
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
+	10%,
+	30%,
+	50% {
+		transform: translateX(-4px);
+	}
+
+	20%,
+	40% {
+		transform: translateX(4px);
+	}
+}
+
+/* Shimmer Animation */
+
+/* Ripple Animation */
+
+/* ==========================================================================
+   PAGE TRANSITION ANIMATIONS
+   ========================================================================== */
+
+/* ==========================================================================
+   SPECIALIZED ANIMATIONS
+   ========================================================================== */
+
+/* Gradient Shift */
+@keyframes gradient-shift {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+/* Loading Shimmer */
+
+/* Twinkle Effect */
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.3;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+/* Matrix Scroll */
+
+/* Theme Switch */
+@keyframes cosmic-float {
+	0%,
+	100% {
+		transform: translateY(0) rotate(0);
+	}
+	50% {
+		transform: translateY(-8px) rotate(1deg);
+	}
+}
+
+/* Cat-themed Animations */
+@keyframes cat-bounce {
+	0%,
+	100% {
+		transform: translateY(0) scaleY(1);
+	}
+	50% {
+		transform: translateY(-15px) scaleY(0.9);
+	}
+}
+
+/* ==========================================================================
+   ANIMATION UTILITY CLASSES
+   ========================================================================== */
+
+/* Fade Utilities */
+
+/* Slide Utilities */
+
+/* Scale Utilities */
+
+/* Rotation Utilities */
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+/* Bounce Utilities */
+
+/* Float Utilities */
+
+/* Pulse Utilities */
+
+/* Shake Utilities */
+
+/* Shimmer Utilities */
+
+/* Twinkle Utilities */
+
+/* Page Transition Utilities */
+
+/* Specialized Utilities */
+
+/* ==========================================================================
+   ANIMATION MODIFIERS
+   ========================================================================== */
+
+/* Duration Modifiers */
+
+/* Delay Modifiers */
+
+/* Iteration Modifiers */
+
+/* Direction Modifiers */
+
+/* Fill Mode Modifiers */
+
+/* ==========================================================================
+   REDUCED MOTION SUPPORT
+   ========================================================================== */
+
+/* ==========================================================================
+   LEGACY SUPPORT (for gradual migration)
+   ========================================================================== */
+
+/* Legacy keyframe mappings */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes glowPulse {
+	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-primary);
+	}
+	50% {
+		box-shadow: 0 0 20px var(--color-primary);
+	}
+}
+
+@keyframes cosmicFloat {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
