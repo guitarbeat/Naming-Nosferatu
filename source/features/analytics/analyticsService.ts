@@ -1,4 +1,4 @@
-import { withSupabase } from "@supabase/client";
+import { withSupabase } from "../../shared/services/supabase/clientBase";
 
 export interface SelectionStats {
 	name_id: string | number;

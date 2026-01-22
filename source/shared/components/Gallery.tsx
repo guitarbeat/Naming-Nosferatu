@@ -171,10 +171,7 @@ export function PhotoGallery({
 					</label>
 				)}
 			</div>
-			<ImageGrid
-				images={displayImages}
-				onImageOpen={onImageOpen}
-			/>
+			<ImageGrid images={displayImages} onImageOpen={onImageOpen} />
 			{/* Only show button if NOT in showAll mode (e.g. widget mode) */}
 			{!showAllPhotos && galleryImages.length > 8 && (
 				<button type="button" className="showAllPhotosButton" onClick={onShowAllPhotosToggle}>

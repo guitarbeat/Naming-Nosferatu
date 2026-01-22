@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import useAppStore from "../../core/store/useAppStore";
-import Button from "../../shared/components/Button";
 import { Input } from "../../shared/components/FormPrimitives";
 import { NameManagementView } from "../../shared/components/NameManagementView/NameManagementView";
 import { getGreeting } from "../../shared/utils";
@@ -27,8 +26,6 @@ export default function TournamentSetup({
 	userName = "",
 	isLoggedIn,
 }: TournamentSetupProps) {
-	const [isEditingName, setIsEditingName] = useState(false);
-	const [editedName, setEditedName] = useState(userName);
 	const [analysisMode, setAnalysisMode] = useState(false);
 
 	const { user, userActions } = useAppStore();
@@ -50,14 +47,6 @@ export default function TournamentSetup({
 		},
 	);
 
-	// ... handlers ...
-	const handleUpdateName = async () => {
-		if (!editedName.trim()) {
-			return;
-		}
-		await onLogin(editedName.trim());
-		setIsEditingName(false);
-	};
 	const greeting = getGreeting();
 	const manager = useTournamentManager({
 		userName: isLoggedIn ? userName : "",
@@ -69,47 +58,19 @@ export default function TournamentSetup({
 			{isLoggedIn ? (
 				<motion.div key="setup" className="w-full">
 					<div className={styles.identitySection}>
-						{isEditingName ? (
-							<div className="flex gap-2 items-center">
-								<Input
-									type="text"
-									value={editedName}
-									onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-										setEditedName(e.target.value)
-									}
-									placeholder="Your Name..."
-								/>
-								<Button onClick={handleUpdateName} variant="primary">
-									Save
-								</Button>
-								<Button onClick={() => setIsEditingName(false)} variant="secondary">
-									Cancel
-								</Button>
-							</div>
-						) : (
-							<div className="flex gap-4 items-center">
-								{/* Avatar Display */}
-								{user.avatarUrl && (
-									<div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--primary-200)] shadow-sm">
-										<img
-											src={user.avatarUrl}
-											alt="User Avatar"
-											className="w-full h-full object-cover"
-										/>
-									</div>
-								)}
-								<span className={styles.identityName}>{userName}</span>
-								<button
-									className="text-xs text-slate-500 hover:text-slate-300"
-									onClick={() => {
-										setEditedName(userName);
-										setIsEditingName(true);
-									}}
-								>
-									Edit Name
-								</button>
-							</div>
-						)}
+						<div className="flex gap-4 items-center">
+							{/* Avatar Display */}
+							{user.avatarUrl && (
+								<div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[var(--primary-200)] shadow-sm">
+									<img
+										src={user.avatarUrl}
+										alt="User Avatar"
+										className="w-full h-full object-cover"
+									/>
+								</div>
+							)}
+							<span className={styles.identityName}>{userName}</span>
+						</div>
 					</div>
 
 					<NameManagementView
