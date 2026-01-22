@@ -83,7 +83,7 @@ export default defineConfig(({ mode }) => {
 				{ find: "@supabase/types", replacement: resolveFromRoot("supabase/types.ts") },
 				// Other project aliases
 				{ find: "@db", replacement: resolveFromRoot("supabase") },
-				{ find: /^@\//, replacement: resolveFromRoot("source") + "/" },
+				{ find: /^@\//, replacement: `${resolveFromRoot("source")}/` },
 				{ find: "@components", replacement: resolveFromRoot("source/shared/components") },
 				{ find: "@hooks", replacement: resolveFromRoot("source/core/hooks") },
 				{ find: "@utils", replacement: resolveFromRoot("source/shared/utils") },
@@ -99,11 +99,11 @@ export default defineConfig(({ mode }) => {
 			host: true,
 			port: serverPort,
 			strictPort: true,
-			allowedHosts: true, // Allow all hosts for Replit proxy compatibility
+			allowedHosts: true, // Allow all hosts for Replit/Lovable proxy compatibility
 			hmr: {
-				clientPort: serverPort,
-				port: serverPort,
-				overlay: false,
+				clientPort: 443, // Standard HTTPS port for sandboxes
+				protocol: "wss",
+				overlay: true, // Show errors in the browser
 			},
 		},
 		preview: {

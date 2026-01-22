@@ -47,6 +47,7 @@
 		transform: scale(0.9) translateY(40px) rotate(-3deg);
 		filter: blur(4px);
 	}
+
 	to {
 		opacity: 1;
 		transform: scale(1) translateY(0) rotate(-0.5deg);
@@ -87,12 +88,15 @@
 	100% {
 		transform: translateY(0) rotate(1.5deg) scaleX(1);
 	}
+
 	25% {
 		transform: translateY(-4px) rotate(0deg) scaleX(1.02);
 	}
+
 	50% {
 		transform: translateY(-8px) rotate(-1.5deg) scaleX(1);
 	}
+
 	75% {
 		transform: translateY(-4px) rotate(0deg) scaleX(0.98);
 	}
@@ -120,6 +124,7 @@
 	100% {
 		transform: scaleY(1);
 	}
+
 	50% {
 		transform: scaleY(0.1);
 	}
@@ -234,13 +239,10 @@
 	box-shadow: 0 4px 0 var(--text-primary);
 }
 
-.loginRerollBtn {
-	margin-top: var(--space-4);
+.secondaryBtnBase {
 	padding: var(--space-2);
 	text-align: center;
-	opacity: 0.7;
 	cursor: pointer;
-	color: var(--text-primary);
 	font-size: var(--text-sm);
 	background: transparent;
 	border: 2px solid transparent;
@@ -253,41 +255,36 @@
 	transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 	text-transform: uppercase;
 	letter-spacing: 1px;
+}
+
+.secondaryBtnBase:hover:not(:disabled) {
+	transform: translateY(-2px);
+}
+
+.loginRerollBtn {
+	composes: secondaryBtnBase;
+	margin-top: var(--space-4);
+	opacity: 0.7;
+	color: var(--text-primary);
 }
 
 .loginRerollBtn:hover:not(:disabled) {
 	opacity: 1;
 	background: color-mix(in srgb, var(--color-neutral-900) 8%, transparent);
 	border-color: var(--text-primary);
-	transform: translateY(-2px);
 }
 
 .loginSuggestBtn {
+	composes: secondaryBtnBase;
 	margin-top: var(--space-3);
-	padding: var(--space-2);
-	text-align: center;
 	opacity: 0.8;
-	cursor: pointer;
 	color: var(--color-neon-cyan);
-	font-size: var(--text-sm);
-	background: transparent;
-	border: 2px solid transparent;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-family: inherit;
-	font-weight: 800;
-	transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-	text-transform: uppercase;
-	letter-spacing: 1px;
 }
 
 .loginSuggestBtn:hover:not(:disabled) {
 	opacity: 1;
 	background: color-mix(in srgb, var(--color-neon-cyan) 8%, transparent);
 	border-color: var(--color-neon-cyan);
-	transform: translateY(-2px);
 }
 
 @media (max-width: 600px) {

@@ -498,7 +498,6 @@ function TournamentToolbar({
 					</div>
 				</div>
 
-				{/* Guidance Hint for Legacy Users */}
 				<div
 					style={{
 						minHeight: "24px",

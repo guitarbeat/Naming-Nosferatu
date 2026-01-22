@@ -5,12 +5,12 @@
 
 import { resolveSupabaseClient } from "@supabase/client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { adminAPI } from "../../features/auth/services/adminService";
-import { useAdminStatus } from "../../features/auth/hooks/authHooks";
+import { adminAPI } from "../../features/auth/adminService";
+import { useAdminStatus } from "../../features/auth/authHooks";
 import {
-	catNamesAPI,
 	deleteName,
 	hiddenNamesAPI,
+	statsAPI,
 } from "../../shared/services/supabase/modules/general";
 import { clearAllCaches, devError, devLog } from "../../shared/utils";
 import type { IdType, NameItem } from "../../types/components";
@@ -157,7 +157,7 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 		return null;
 	}
 	try {
-		const dbStats = await catNamesAPI.getUserStats(userName);
+		const dbStats = await statsAPI.getUserStats(userName);
 		return (dbStats as UserStats) || null;
 	} catch (error) {
 		devError("Error fetching user stats from DB:", error);

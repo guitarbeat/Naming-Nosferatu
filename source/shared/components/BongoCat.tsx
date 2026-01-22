@@ -232,5 +232,3 @@ export const BongoCat = memo(function BongoCat({
 });
 
 BongoCat.displayName = "BongoCat";
-
-export default BongoCat;

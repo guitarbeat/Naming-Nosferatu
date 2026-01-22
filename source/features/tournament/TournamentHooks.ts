@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { NavigateFunction } from "react-router-dom";
 import { TOURNAMENT_TIMING } from "../../core/constants";
 import { useProfile } from "../../core/hooks/useProfile";
 import { useProfileNotifications } from "../../core/hooks/useProfileNotifications";
 import useLocalStorage from "../../core/hooks/useStorage";
 import useAppStore from "../../core/store/useAppStore";
 import { useImageGallery } from "../../shared/components/Gallery";
-import { useAdminStatus } from "../auth/hooks/authHooks";
 import { useLightboxState } from "../../shared/hooks/useLightboxState";
 import { ErrorManager } from "../../shared/services/errorManager";
 import {
@@ -27,6 +25,7 @@ import type {
 	TournamentUIState,
 } from "../../types/components";
 import type { AppState } from "../../types/store";
+import { useAdminStatus } from "../auth/authHooks";
 import {
 	calculateBracketRound,
 	EloRating,
@@ -55,7 +54,7 @@ export function useTournamentState(
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [lastMatchResult, setLastMatchResult] = useState<string | null>(null);
 	const [showMatchResult, setShowMatchResult] = useState(false);
-	const [showBracket, setShowBracket] = useState(false);
+
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 	const [showRoundTransition, setShowRoundTransition] = useState(false);
 	const [nextRoundNumber, setNextRoundNumber] = useState<number | null>(null);
@@ -131,8 +130,7 @@ export function useTournamentState(
 		setLastMatchResult,
 		showMatchResult,
 		setShowMatchResult,
-		showBracket,
-		setShowBracket,
+
 		showKeyboardHelp,
 		setShowKeyboardHelp,
 		showRoundTransition,
@@ -190,7 +188,7 @@ export function useTournamentManager({
 
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [votingError, setVotingError] = useState<unknown>(null);
-	const [showBracket, setShowBracket] = useState(false);
+
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 	const [showCatPictures, setShowCatPictures] = useState(false);
 	const [showAllPhotos, setShowAllPhotos] = useState(false);
@@ -246,8 +244,7 @@ export function useTournamentManager({
 		setTempName,
 		isProcessing,
 		votingError,
-		showBracket,
-		setShowBracket,
+
 		showKeyboardHelp,
 		setShowKeyboardHelp,
 		showCatPictures,
@@ -284,7 +281,7 @@ export function useTournamentManager({
 		},
 		handleVoteRetry: () => setVotingError(null),
 		handleDismissError: () => setVotingError(null),
-		handleToggleBracket: () => setShowBracket((p) => !p),
+
 		handleToggleKeyboardHelp: () => setShowKeyboardHelp((p) => !p),
 		handleToggleCatPictures: () => setShowCatPictures((p) => !p),
 		handleVolumeChange: (type: "music" | "effects", value: number) =>
@@ -322,92 +319,6 @@ export function useAudioManager() {
 		volume,
 		handleVolumeChange: (_unused: unknown, v: number) => setVolume(Math.min(1, Math.max(0, v))),
 	};
-}
-
-export function useKeyboardControls(
-	selectedOption: string | null,
-	isProcessing: boolean,
-	isTransitioning: boolean,
-	isMuted: boolean | undefined,
-	handleVoteWithAnimation: ((option: "left" | "right" | "both" | "neither") => void) | undefined,
-	options: {
-		onSelectLeft?: () => void;
-		onSelectRight?: () => void;
-		onClearSelection?: () => void;
-		onToggleHelp?: () => void;
-		onUndo?: () => void;
-		onToggleCatPictures?: () => void;
-		onToggleMute?: () => void;
-	} = {},
-) {
-	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (isProcessing || isTransitioning) {
-				return;
-			}
-			const { key } = e;
-			if (key === "ArrowLeft") {
-				e.preventDefault();
-				options.onSelectLeft?.();
-			} else if (key === "ArrowRight") {
-				e.preventDefault();
-				options.onSelectRight?.();
-			} else if (key === "ArrowUp") {
-				e.preventDefault();
-				handleVoteWithAnimation?.("both");
-			} else if (key === "ArrowDown") {
-				e.preventDefault();
-				handleVoteWithAnimation?.("neither");
-			} else if (key === "Enter" && selectedOption) {
-				handleVoteWithAnimation?.(selectedOption as "left" | "right" | "both" | "neither");
-			} else if (key === "Escape") {
-				options.onClearSelection?.();
-			} else if (key === "h" || key === "H") {
-				options.onToggleHelp?.();
-			} else if (key === "u" || key === "U") {
-				options.onUndo?.();
-			} else if (key === "c" || key === "C") {
-				options.onToggleCatPictures?.();
-			} else if ((key === "m" || key === "M") && typeof isMuted === "boolean") {
-				options.onToggleMute?.();
-			}
-		};
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [selectedOption, isProcessing, isTransitioning, isMuted, handleVoteWithAnimation, options]);
-}
-
-export function useMagneticPull(
-	leftOrbRef: React.RefObject<HTMLElement | null>,
-	rightOrbRef: React.RefObject<HTMLElement | null>,
-	enabled = true,
-) {
-	const transformRef = useRef({ left: "", right: "" });
-	useEffect(() => {
-		if (!enabled) {
-			if (leftOrbRef.current) {
-				leftOrbRef.current.style.transform = "";
-			}
-			if (rightOrbRef.current) {
-				rightOrbRef.current.style.transform = "";
-			}
-			return;
-		}
-		const handleMouseMove = (e: MouseEvent) => {
-			const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-			const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
-			transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
-			transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
-			if (leftOrbRef.current) {
-				leftOrbRef.current.style.transform = transformRef.current.left;
-			}
-			if (rightOrbRef.current) {
-				rightOrbRef.current.style.transform = transformRef.current.right;
-			}
-		};
-		document.addEventListener("mousemove", handleMouseMove);
-		return () => document.removeEventListener("mousemove", handleMouseMove);
-	}, [enabled, leftOrbRef, rightOrbRef]);
 }
 
 /* =========================================================================
@@ -548,48 +459,8 @@ export function useTournamentVote({
 }
 
 /* =========================================================================
-   NAME MANAGEMENT CALLBACKS HOOK
-   ========================================================================= */
-
-export function useNameManagementCallbacks(
-	context: {
-		setNames?: (value: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
-		refetch?: () => void;
-	} | null,
-) {
-	const setNames = useCallback(
-		(value: NameItem[] | ((prev: NameItem[]) => NameItem[])) => {
-			if (context?.setNames) {
-				context.setNames(value);
-			}
-		},
-		[context],
-	);
-
-	const refetch = useCallback(async () => {
-		if (context?.refetch) {
-			return context.refetch();
-		}
-	}, [context]);
-
-	return { setAllNames: setNames, fetchNames: refetch };
-}
-
-/* =========================================================================
    TOURNAMENT SETUP HOOKS
    ========================================================================= */
-
-export function useTournamentSetupHooks() {
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<unknown>(null);
-
-	return {
-		isLoading,
-		setIsLoading,
-		error,
-		setError,
-	};
-}
 
 /* =========================================================================
    TYPES & UTILS
@@ -613,12 +484,11 @@ export interface UseTournamentProps {
 export interface UseTournamentHandlersProps {
 	userName: string | null;
 	tournamentActions: AppState["tournamentActions"];
-	navigateTo: NavigateFunction;
 }
 
 // Utility functions
 
-export function getNextMatch(
+function getNextMatch(
 	names: NameItem[],
 	sorter: unknown,
 	_matchNumber: number,

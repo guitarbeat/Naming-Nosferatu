@@ -11,11 +11,89 @@ export interface HiddenNameItem {
 	created_at: string;
 }
 
+/**
+ * Shared helper for updating hidden status of a single name
+ */
+async function updateHiddenStatus(userName: string, nameId: string | number, isHidden: boolean) {
+	return withSupabase(
+		async (client) => {
+			try {
+				await client.rpc("set_user_context", { user_name_param: userName });
+			} catch {
+				/* ignore */
+			}
+
+			const { error } = await client
+				.from("cat_name_options")
+				.update({ is_hidden: isHidden })
+				.eq("id", String(nameId));
+
+			if (error) {
+				throw error;
+			}
+			return { nameId, success: true } as {
+				nameId: string | number;
+				success: boolean;
+				error?: string;
+			};
+		},
+		{
+			nameId: String(nameId),
+			success: false,
+			error: "Supabase not configured",
+		} as {
+			nameId: string | number;
+			success: boolean;
+			error?: string;
+		},
+	);
+}
+
+/**
+ * Shared helper for updating hidden status of multiple names
+ */
+async function updateHiddenStatuses(
+	userName: string,
+	nameIds: (string | number)[],
+	isHidden: boolean,
+) {
+	return withSupabase(
+		async (client) => {
+			try {
+				await client.rpc("set_user_context", { user_name_param: userName });
+			} catch {
+				/* ignore */
+			}
+
+			const results = await Promise.all(
+				nameIds.map(async (id) => {
+					const { error } = await client
+						.from("cat_name_options")
+						.update({ is_hidden: isHidden })
+						.eq("id", String(id));
+					return { nameId: id, success: !error, error: error?.message };
+				}),
+			);
+			return results;
+		},
+		nameIds.map((id) => ({
+			nameId: id,
+			success: false,
+			error: "Supabase not configured",
+		})),
+	);
+}
+
 export const coreAPI = {
 	/**
 	 * Get all names with descriptions and ratings
 	 */
 	getNamesWithDescriptions: async (includeHidden: boolean = false) => {
+		const isAvailable = await import("@supabase/client").then((m) => m.isSupabaseAvailable());
+		if (!isAvailable) {
+			throw new Error("Supabase is not configured or unavailable");
+		}
+
 		return withSupabase(async (client) => {
 			let query = client
 				.from("cat_name_options")
@@ -33,7 +111,7 @@ export const coreAPI = {
 			const { data, error } = await query;
 			if (error) {
 				console.error("Error fetching names with descriptions:", error);
-				return [];
+				throw error;
 			}
 
 			return ((data ?? []) as unknown as NameItem[]).map((item) => ({
@@ -45,7 +123,7 @@ export const coreAPI = {
 				isHidden: item.is_hidden || false,
 				has_user_rating: false,
 			}));
-		}, []);
+		}, [] as NameItem[]);
 	},
 
 	/**
@@ -139,138 +217,28 @@ export async function deleteName(nameId: string | number) {
 
 export const hiddenNamesAPI = {
 	hideName: async (userName: string, nameId: string | number) => {
-		return withSupabase(
-			async (client) => {
-				try {
-					await client.rpc("set_user_context", { user_name_param: userName });
-				} catch {
-					/* ignore */
-				}
-
-				const { error } = await client
-					.from("cat_name_options")
-					.update({ is_hidden: true })
-					.eq("id", String(nameId));
-
-				if (error) {
-					throw error;
-				}
-				return { nameId, success: true } as {
-					nameId: string | number;
-					success: boolean;
-					error?: string;
-				};
-			},
-			{
-				nameId: String(nameId),
-				success: false,
-				error: "Supabase not configured",
-			} as {
-				nameId: string | number;
-				success: boolean;
-				error?: string;
-			},
-		);
+		return updateHiddenStatus(userName, nameId, true);
 	},
 
 	/**
 	 * Unhide a name globally for all users (admin only).
 	 */
 	unhideName: async (userName: string, nameId: string | number) => {
-		return withSupabase(
-			async (client) => {
-				try {
-					await client.rpc("set_user_context", { user_name_param: userName });
-				} catch {
-					/* ignore */
-				}
-
-				const { error } = await client
-					.from("cat_name_options")
-					.update({ is_hidden: false })
-					.eq("id", String(nameId));
-
-				if (error) {
-					throw error;
-				}
-				return { nameId, success: true } as {
-					nameId: string | number;
-					success: boolean;
-					error?: string;
-				};
-			},
-			{
-				nameId: String(nameId),
-				success: false,
-				error: "Supabase not configured",
-			} as {
-				nameId: string | number;
-				success: boolean;
-				error?: string;
-			},
-		);
+		return updateHiddenStatus(userName, nameId, false);
 	},
 
 	/**
 	 * Hide multiple names globally (admin only)
 	 */
 	hideNames: async (userName: string, nameIds: (string | number)[]) => {
-		return withSupabase(
-			async (client) => {
-				try {
-					await client.rpc("set_user_context", { user_name_param: userName });
-				} catch {
-					/* ignore */
-				}
-
-				const results = await Promise.all(
-					nameIds.map(async (id) => {
-						const { error } = await client
-							.from("cat_name_options")
-							.update({ is_hidden: true })
-							.eq("id", String(id));
-						return { nameId: id, success: !error, error: error?.message };
-					}),
-				);
-				return results;
-			},
-			nameIds.map((id) => ({
-				nameId: id,
-				success: false,
-				error: "Supabase not configured",
-			})),
-		);
+		return updateHiddenStatuses(userName, nameIds, true);
 	},
 
 	/**
 	 * Unhide multiple names globally (admin only)
 	 */
 	unhideNames: async (userName: string, nameIds: (string | number)[]) => {
-		return withSupabase(
-			async (client) => {
-				try {
-					await client.rpc("set_user_context", { user_name_param: userName });
-				} catch {
-					/* ignore */
-				}
-
-				const results = await Promise.all(
-					nameIds.map(async (id) => {
-						const { error } = await client
-							.from("cat_name_options")
-							.update({ is_hidden: false })
-							.eq("id", String(id));
-						return { nameId: id, success: !error, error: error?.message };
-					}),
-				);
-				return results;
-			},
-			nameIds.map((id) => ({
-				nameId: id,
-				success: false,
-				error: "Supabase not configured",
-			})),
-		);
+		return updateHiddenStatuses(userName, nameIds, false);
 	},
 
 	/**

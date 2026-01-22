@@ -1,4 +1,4 @@
-import { catNamesAPI } from "@supabase/client";
+import { coreAPI } from "@supabase/client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "../../core/constants";
@@ -53,7 +53,7 @@ export function useNameSuggestion({ onSuccess, initialValues }: UseNameSuggestio
 
 			try {
 				setGlobalError("");
-				const result = await catNamesAPI.addName(values.name, values.description, user.name);
+				const result = await coreAPI.addName(values.name, values.description, user.name);
 
 				if (!isMountedRef.current) {
 					return;

@@ -1,4 +1,4 @@
-import { catNamesAPI } from "@supabase/client";
+import { coreAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
 	Calendar,
@@ -150,7 +150,7 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 	} = useQuery({
 		queryKey: ["popular-names"],
 		queryFn: async () => {
-			const names = await catNamesAPI.getNamesWithDescriptions();
+			const names = await coreAPI.getNamesWithDescriptions();
 			return names
 				.map((name) => ({
 					id: name.id,
@@ -550,7 +550,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 
 	const { isLoading } = useQuery({
 		queryKey: ["all-names"],
-		queryFn: () => catNamesAPI.getNamesWithDescriptions(),
+		queryFn: () => coreAPI.getNamesWithDescriptions(),
 		staleTime: 5 * 60 * 1000,
 	});
 

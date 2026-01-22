@@ -48,14 +48,6 @@
 	--shadow-subtle: 0 8px 24px rgb(2 6 23 / 45%);
 	--shadow-medium: 0 24px 60px rgb(2 6 23 / 65%);
 
-	/* Synced light-mode variables aliases for compatibility */
-	--surface-light: var(--surface-color);
-	--card-background-light: var(--card-background);
-	--card-hover-light: var(--card-hover);
-	--border-color-light: var(--border-color);
-	--text-primary-light: var(--text-primary);
-	--text-secondary-light: var(--text-secondary);
-
 	--button-primary-bg: var(--primary-500);
 	--button-primary-hover: var(--primary-400);
 	--button-secondary-bg: rgb(255 255 255 / 16%);

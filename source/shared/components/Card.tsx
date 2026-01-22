@@ -11,8 +11,6 @@ import styles from "./Card.module.css";
 import CatImage from "./CatImage";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
 
-// Force refresh
-
 type CardVariant =
 	| "default"
 	| "elevated"
@@ -104,35 +102,6 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	enableTilt?: boolean;
 }
 
-// Legacy function for backward compatibility with complex background logic
-const buildCardClasses = (
-	variant: CardVariant,
-	padding: CardPadding,
-	shadow: CardShadow,
-	border: boolean,
-	background: CardBackground,
-	liquidGlass: boolean | GlassConfig | undefined,
-	className: string,
-) => {
-	// Use CVA for most cases, but handle complex background logic
-	const cvaClasses = cardVariants({
-		variant,
-		padding,
-		shadow,
-		bordered: border,
-		background:
-			background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
-		className,
-	});
-
-	// Handle special cases for glass/liquid glass backgrounds
-	if (background === "glass" || liquidGlass) {
-		return cn(cvaClasses);
-	}
-
-	return cvaClasses;
-};
-
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 export const Card = memo(
@@ -194,15 +163,15 @@ export const Card = memo(
 				onMouseLeave?.(e);
 			};
 
-			const cardClasses = buildCardClasses(
+			const cardClasses = cardVariants({
 				variant,
 				padding,
 				shadow,
-				border,
-				background,
-				liquidGlass,
+				bordered: border,
+				background:
+					background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
 				className,
-			);
+			});
 
 			const finalClasses = cn(
 				cardClasses,

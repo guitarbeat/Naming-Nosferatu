@@ -307,41 +307,11 @@
 		0 var(--tt-shadow-blur-strongest) var(--tt-shadow-blur-huger)
 		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-stronger), transparent);
 
-	/* Text Shadow Definitions */
-	--tt-text-shadow-label-inactive:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		color-mix(
-			in srgb,
-			var(--card-background) var(--tt-opacity-shadow-background-stronger),
-			transparent
-		),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-medium)
-		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-strong), transparent);
-	--tt-text-shadow-label-hover:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-strong)
-		color-mix(in srgb, var(--card-background) 50%, transparent),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-strong)
-		color-mix(
-			in srgb,
-			var(--card-background) var(--tt-opacity-shadow-background-stronger),
-			transparent
-		);
-	--tt-text-shadow-label-active:
-		0 var(--tt-shadow-offset-small) var(--tt-shadow-blur-medium)
-		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-strong), transparent),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-blur-stronger)
-		color-mix(in srgb, var(--color-neon-cyan) var(--tt-opacity-shadow-soft), transparent),
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		color-mix(in srgb, var(--card-background) 50%, transparent);
-	--tt-text-shadow-label-inactive-dimmed:
-		0 var(--tt-shadow-offset-tiny) var(--tt-shadow-offset-small)
-		color-mix(
-			in srgb,
-			var(--card-background) var(--tt-opacity-shadow-background-strong),
-			transparent
-		),
-		0 var(--tt-shadow-offset-none) var(--tt-shadow-strong)
-		color-mix(in srgb, var(--card-background) var(--tt-opacity-shadow-stronger), transparent);
+	/* Text Shadow Definitions - Pointing to existing shadow definitions to avoid duplication */
+	--tt-text-shadow-label-inactive: var(--tt-shadow-label-inactive);
+	--tt-text-shadow-label-hover: var(--tt-shadow-label-hover);
+	--tt-text-shadow-label-active: var(--tt-shadow-label-active);
+	--tt-text-shadow-label-inactive-dimmed: var(--tt-shadow-label-inactive-dimmed);
 }
 
 :root[data-theme="light"] {

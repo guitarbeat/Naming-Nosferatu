@@ -5,17 +5,17 @@
  */
 
 import { useMemo } from "react";
-import useAppStore from "../../core/store/useAppStore";
-import type { NameItem } from "../../types/components";
-import { ScrollToTopButton } from "../components/Button";
-import CatBackground from "../components/CatBackground";
-import { ErrorBoundary } from "../components/ErrorBoundary";
-import { ErrorComponent } from "../components/ErrorComponent";
-import { Loading } from "../components/Loading";
-import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
-import { OfflineIndicator } from "../components/OfflineIndicator";
-import { ProfileEditorModal } from "../components/ProfileEditorModal";
-import { SwipeWrapper } from "../components/SwipeWrapper";
+import useAppStore from "../core/store/useAppStore";
+import type { NameItem } from "../types/components";
+import { ScrollToTopButton } from "./components/Button";
+import CatBackground from "./components/CatBackground";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorComponent } from "./components/ErrorComponent";
+import { Loading } from "./components/Loading";
+import { AdaptiveNav } from "./components/Navigation/AdaptiveNav";
+import { OfflineIndicator } from "./components/OfflineIndicator";
+import { ProfileEditorModal } from "./components/ProfileEditorModal";
+import { SwipeWrapper } from "./components/SwipeWrapper";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;

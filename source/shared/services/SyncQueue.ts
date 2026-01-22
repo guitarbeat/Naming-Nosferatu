@@ -1,4 +1,4 @@
-import { devError } from "../../utils";
+import { devError } from "../utils";
 
 export interface SyncPayload {
 	userName: string;

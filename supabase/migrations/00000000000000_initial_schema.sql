@@ -263,22 +263,6 @@ $$;
 
 GRANT EXECUTE ON FUNCTION is_admin() TO authenticated, anon;
 
--- Legacy role check functions (for backward compatibility)
-CREATE OR REPLACE FUNCTION check_user_role(user_name_param TEXT, required_role TEXT)
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-AS $$
-  SELECT has_role(user_name_param, required_role);
-$$;
-
-CREATE OR REPLACE FUNCTION check_user_role_by_name(user_name_param TEXT, required_role TEXT)
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-AS $$
-  SELECT has_role(user_name_param, required_role);
-$$;
 
 
 -- ============================================================================
@@ -411,23 +395,6 @@ $$;
 
 GRANT EXECUTE ON FUNCTION get_top_names_by_category(TEXT, INTEGER) TO authenticated, anon;
 
--- Increment selection count
--- NOTE: popularity_score column was removed from cat_name_options
--- This function is kept for backward compatibility but does nothing
-CREATE OR REPLACE FUNCTION increment_selection(p_user_name TEXT, p_name_id UUID)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-BEGIN
-  -- Function kept for backward compatibility
-  -- popularity_score column no longer exists in cat_name_options
-  -- Selection tracking is now done via tournament_selections table
-  NULL;
-END;
-$$;
-
-GRANT EXECUTE ON FUNCTION increment_selection(TEXT, UUID) TO authenticated, anon;
 
 -- Refresh materialized views
 CREATE OR REPLACE FUNCTION refresh_materialized_views()

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
-import { STORAGE_KEYS, VALIDATION } from "../../../core/constants";
-import { useValidatedForm } from "../../../shared/hooks/useValidatedForm";
-import { ErrorManager } from "../../../shared/services/errorManager";
-import { generateFunName } from "../../../shared/utils";
-import { playSound } from "../../../shared/utils/soundManager";
-import { isUserAdmin } from "../utils/authUtils";
+import { STORAGE_KEYS, VALIDATION } from "../../core/constants";
+import { useValidatedForm } from "../../shared/hooks/useValidatedForm";
+import { ErrorManager } from "../../shared/services/errorManager";
+import { generateFunName } from "../../shared/utils";
+import { playSound } from "../../shared/utils/soundManager";
+import { isUserAdmin } from "./authUtils";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
 const CAT_FACT_API_URL = "https://catfact.ninja/fact";
@@ -120,48 +120,6 @@ export function useCatFact() {
 	return catFact;
 }
 
-// useEyeTracking hook - uses imports from top of file
-
-const EYE_MOVEMENT_MAX_PX = 4;
-
-/**
- * Hook to track mouse position and calculate eye position for cat SVG
- */
-export function useEyeTracking({
-	catRef,
-	catSvgRef,
-}: {
-	catRef: React.RefObject<HTMLElement | null>;
-	catSvgRef: React.RefObject<HTMLElement | null>;
-}) {
-	const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
-
-	useEffect(() => {
-		const handleMouseMove = (e: MouseEvent) => {
-			const target = catSvgRef?.current || catRef?.current;
-			if (target) {
-				const rect = target.getBoundingClientRect();
-				const catCenterX = rect.left + rect.width / 2;
-				const catCenterY = rect.top + rect.height / 2;
-				const deltaX = e.clientX - catCenterX;
-				const deltaY = e.clientY - catCenterY;
-				const maxDistance = Math.max(rect.width, rect.height) / 2;
-				const normalizedX = Math.max(-1, Math.min(1, deltaX / maxDistance));
-				const normalizedY = Math.max(-1, Math.min(1, deltaY / maxDistance));
-				setEyePosition({
-					x: normalizedX * EYE_MOVEMENT_MAX_PX,
-					y: normalizedY * EYE_MOVEMENT_MAX_PX,
-				});
-			}
-		};
-
-		window.addEventListener("mousemove", handleMouseMove);
-		return () => window.removeEventListener("mousemove", handleMouseMove);
-	}, [catRef, catSvgRef]);
-
-	return eyePosition;
-}
-
 // useLoginController hook - uses imports from top of file
 
 /**
@@ -185,7 +143,7 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 	const form = useValidatedForm<typeof LoginFormSchema.shape>({
 		schema: LoginFormSchema,
 		initialValues: { name: "" },
-		onSubmit: async (values) => {
+		onSubmit: async (values: z.infer<typeof LoginFormSchema>) => {
 			try {
 				setGlobalError("");
 				await onLogin(values.name);

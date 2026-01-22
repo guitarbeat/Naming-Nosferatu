@@ -10,7 +10,7 @@
 import { resolveSupabaseClient } from "@supabase/client";
 import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS } from "../../core/constants";
-import { isUserAdmin } from "../../features/auth/utils/authUtils";
+import { isUserAdmin } from "../../features/auth/authUtils";
 import useAppStore from "../store/useAppStore";
 
 let canUseSetUserContext = true;

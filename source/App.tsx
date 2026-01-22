@@ -11,23 +11,22 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react
 import styles from "./App.module.css";
 import useUserSession from "./core/hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./core/store/useAppStore";
-
-// Lazy load route components
-const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
-const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
-
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
+import { AppLayout } from "./shared/AppLayout";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { Toast } from "./shared/components/Toast";
 import { useOfflineSync } from "./shared/hooks/useBrowserState";
-import { AppLayout } from "./shared/layouts/AppLayout";
 import { ErrorManager } from "./shared/services/errorManager";
 import {
 	cleanupPerformanceMonitoring,
 	devError,
 	initializePerformanceMonitoring,
 } from "./shared/utils";
+
+// Lazy load route components
+const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
+const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
 
 /**
  * Root application component with Single Page Architecture (Vertical Scrolling)

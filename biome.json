@@ -6,12 +6,7 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": [
-			"**",
-			"!!**/dist",
-			"!!**/node_modules",
-			"!!**/build"
-		]
+		"includes": ["**", "!!**/dist", "!!**/node_modules", "!!**/build"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -148,9 +143,7 @@
 			}
 		},
 		{
-			"includes": [
-				"scripts/**/*.js"
-			],
+			"includes": ["scripts/**/*.js"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -166,10 +159,7 @@
 			}
 		},
 		{
-			"includes": [
-				"source/core/constants/**/*.ts",
-				"source/**/constants.ts"
-			],
+			"includes": ["source/core/constants/**/*.ts", "source/**/constants.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -179,10 +169,7 @@
 			}
 		},
 		{
-			"includes": [
-				"supabase/types.ts",
-				"source/shared/services/supabase/types.ts"
-			],
+			"includes": ["supabase/types.ts", "source/shared/services/supabase/types.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -230,11 +217,7 @@
 			}
 		},
 		{
-			"includes": [
-				"vite.config.ts",
-				"tailwind.config.js",
-				"vitest.config.mjs"
-			],
+			"includes": ["vite.config.ts", "tailwind.config.js", "vitest.config.mjs"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -244,9 +227,7 @@
 			}
 		},
 		{
-			"includes": [
-				"**/*.tsx"
-			],
+			"includes": ["**/*.tsx"],
 			"linter": {
 				"rules": {
 					"style": {

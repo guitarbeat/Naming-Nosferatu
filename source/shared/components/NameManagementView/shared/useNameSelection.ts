@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { NameItem } from "@/types/components";
-import { useTournamentSelectionSaver } from "../../../../features/tournament/hooks/useTournamentSelectionSaver";
+import { useTournamentSelectionSaver } from "../../../../features/tournament/useTournamentSelectionSaver";
 
 interface UseNameSelectionProps {
 	names?: NameItem[];
@@ -33,19 +33,13 @@ export function useNameSelection({
 		enableAutoSave,
 	});
 
-	const toggleName = useCallback(
-		(nameOrId: NameItem | string) => {
-			const id = typeof nameOrId === "string" ? nameOrId : String(nameOrId.id);
-
+	// Unified updater helper to handle side-effects consistently
+	const updateSelection = useCallback(
+		(updater: (prev: Set<string>) => Set<string>) => {
 			setSelectedIds((prev) => {
-				const newSet = new Set(prev);
-				if (newSet.has(id)) {
-					newSet.delete(id);
-				} else {
-					newSet.add(id);
-				}
+				const newSet = updater(prev);
 
-				// For tournament mode, we still want to schedule the save with full objects
+				// For tournament mode, schedule the save side-effect
 				if (mode === "tournament") {
 					const updatedList = names.filter((n) => newSet.has(String(n.id)));
 
@@ -62,26 +56,36 @@ export function useNameSelection({
 		[mode, names, scheduleSave],
 	);
 
+	const toggleName = useCallback(
+		(nameOrId: NameItem | string) => {
+			const id = typeof nameOrId === "string" ? nameOrId : String(nameOrId.id);
+			updateSelection((prev) => {
+				const newSet = new Set(prev);
+				if (newSet.has(id)) {
+					newSet.delete(id);
+				} else {
+					newSet.add(id);
+				}
+				return newSet;
+			});
+		},
+		[updateSelection],
+	);
+
 	const toggleNameById = useCallback(
 		(nameId: string, selected: boolean) => {
 			const id = String(nameId);
-			setSelectedIds((prev) => {
+			updateSelection((prev) => {
 				const newSet = new Set(prev);
 				if (selected) {
 					newSet.add(id);
 				} else {
 					newSet.delete(id);
 				}
-
-				if (mode === "tournament") {
-					const updatedList = names.filter((n) => newSet.has(String(n.id)));
-					scheduleSave(updatedList);
-				}
-
 				return newSet;
 			});
 		},
-		[mode, names, scheduleSave],
+		[updateSelection],
 	);
 
 	const toggleNamesByIds = useCallback(
@@ -89,8 +93,7 @@ export function useNameSelection({
 			if (!Array.isArray(nameIds) || nameIds.length === 0) {
 				return;
 			}
-
-			setSelectedIds((prev) => {
+			updateSelection((prev) => {
 				const newSet = new Set(prev);
 				nameIds.forEach((id) => {
 					if (shouldSelect) {
@@ -99,42 +102,22 @@ export function useNameSelection({
 						newSet.delete(String(id));
 					}
 				});
-
-				if (mode === "tournament") {
-					const updatedList = names.filter((n) => newSet.has(String(n.id)));
-					scheduleSave(updatedList);
-				}
-
 				return newSet;
 			});
 		},
-		[mode, names, scheduleSave],
+		[updateSelection],
 	);
 
 	const selectAll = useCallback(() => {
-		setSelectedIds((prev) => {
+		updateSelection((prev) => {
 			const allSelected = prev.size === names.length;
-			if (allSelected) {
-				if (mode === "tournament") {
-					scheduleSave([]);
-				}
-				return new Set();
-			}
-
-			const newSet = new Set(names.map((n) => String(n.id)));
-			if (mode === "tournament") {
-				scheduleSave(names);
-			}
-			return newSet;
+			return allSelected ? new Set() : new Set(names.map((n) => String(n.id)));
 		});
-	}, [mode, names, scheduleSave]);
+	}, [names, updateSelection]);
 
 	const clearSelection = useCallback(() => {
-		setSelectedIds(new Set());
-		if (mode === "tournament") {
-			scheduleSave([]);
-		}
-	}, [mode, scheduleSave]);
+		updateSelection(() => new Set());
+	}, [updateSelection]);
 
 	const isSelected = useCallback(
 		(nameOrId: NameItem | string) => {

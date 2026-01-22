@@ -66,7 +66,7 @@ const ERROR_TYPES = {
 };
 
 // Constants use UPPER_CASE keys (intentional for severity constants)
-export const ERROR_SEVERITY = {
+const ERROR_SEVERITY = {
 	LOW: "low",
 	MEDIUM: "medium",
 	HIGH: "high",
@@ -133,7 +133,7 @@ deepFreeze(RETRY_CONFIG);
 // Core Utility Logic (Internal)
 // ============================================================================
 
-export interface ParsedError {
+interface ParsedError {
 	message: string;
 	name: string;
 	stack: string | null;
@@ -143,7 +143,7 @@ export interface ParsedError {
 	status?: number | null;
 }
 
-export interface FormattedError {
+interface FormattedError {
 	id: string;
 	message: string;
 	userMessage: string;
@@ -278,20 +278,6 @@ function determineSeverity(errorInfo: ParsedError, metadata: Record<string, unkn
 /**
  * * Get the CSS class for a given error severity
  */
-export function getSeverityClass(severity: string, styles: Record<string, string>) {
-	switch (severity) {
-		case ERROR_SEVERITY.CRITICAL:
-			return styles.critical;
-		case ERROR_SEVERITY.HIGH:
-			return styles.high;
-		case ERROR_SEVERITY.MEDIUM:
-			return styles.medium;
-		case ERROR_SEVERITY.LOW:
-			return styles.low;
-		default:
-			return styles.medium;
-	}
-}
 
 function getUserFriendlyMessage(errorInfo: ParsedError, context: string): string {
 	const contextMap: Record<string, string> = {
@@ -576,9 +562,3 @@ export class ErrorManager {
 		};
 	}
 }
-
-export const createStandardizedError = (
-	error: unknown,
-	context: string = "Unknown",
-	metadata: Record<string, unknown> = {},
-): FormattedError => ErrorManager.handleError(error, context, metadata);

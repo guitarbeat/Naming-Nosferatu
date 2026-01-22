@@ -12,7 +12,7 @@ import styles from "./Toast.module.css";
 /*             TOAST ITEM                    */
 /* ========================================= */
 
-export interface ToastItemProps {
+interface ToastItemProps {
 	message: string;
 	type?: "success" | "error" | "info" | "warning";
 	duration?: number;
@@ -21,7 +21,7 @@ export interface ToastItemProps {
 	className?: string;
 }
 
-export const ToastItem: React.FC<ToastItemProps> = ({
+const ToastItem: React.FC<ToastItemProps> = ({
 	message,
 	type = "info",
 	duration = 5000,
@@ -152,7 +152,7 @@ export interface IToastItem {
 	autoDismiss?: boolean;
 }
 
-export interface ToastContainerProps {
+interface ToastContainerProps {
 	toasts?: IToastItem[];
 	removeToast?: (id: string) => void;
 	position?:

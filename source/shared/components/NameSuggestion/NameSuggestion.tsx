@@ -313,6 +313,3 @@ export function NameSuggestion({
 	}
 	return <InlineNameSuggestion />;
 }
-
-// Re-export for backward compatibility
-export { NameSuggestion as NameSuggestionModal };

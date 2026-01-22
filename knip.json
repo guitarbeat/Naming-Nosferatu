@@ -1,12 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
-	"entry": [
-		"source/main.tsx"
-	],
-	"project": [
-		"source/**/*.{js,jsx,ts,tsx}",
-		"scripts/**/*.{js,ts}"
-	],
+	"entry": ["source/main.tsx"],
+	"project": ["source/**/*.{js,jsx,ts,tsx}", "scripts/**/*.{js,ts}"],
 	"ignore": [
 		"**/*.md",
 		"**/README.md",
@@ -38,34 +33,16 @@
 		"stylelint-declaration-strict-value",
 		"supabase"
 	],
-	"ignoreBinaries": [
-		"vite"
-	],
+	"ignoreBinaries": ["vite"],
 	"typescript": true,
 	"paths": {
-		"@/*": [
-			"./source/*"
-		],
-		"@components/*": [
-			"./source/shared/components/*"
-		],
-		"@hooks/*": [
-			"./source/core/hooks/*"
-		],
-		"@utils/*": [
-			"./source/shared/utils/*"
-		],
-		"@services/*": [
-			"./source/shared/services/*"
-		],
-		"@styles/*": [
-			"./source/shared/styles/*"
-		],
-		"@features/*": [
-			"./source/features/*"
-		],
-		"@core/*": [
-			"./source/core/*"
-		]
+		"@/*": ["./source/*"],
+		"@components/*": ["./source/shared/components/*"],
+		"@hooks/*": ["./source/core/hooks/*"],
+		"@utils/*": ["./source/shared/utils/*"],
+		"@services/*": ["./source/shared/services/*"],
+		"@styles/*": ["./source/shared/styles/*"],
+		"@features/*": ["./source/features/*"],
+		"@core/*": ["./source/core/*"]
 	}
 }

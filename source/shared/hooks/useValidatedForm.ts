@@ -33,7 +33,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 
 	const values = watch();
 
-	// Backward compatibility wrapper for handleChange
 	const handleChange = useCallback(
 		(name: keyof T, value: unknown) => {
 			// biome-ignore lint/suspicious/noExplicitAny: setValue requires complex path types from react-hook-form
@@ -46,7 +45,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		[setValue],
 	);
 
-	// Backward compatibility wrapper for handleBlur
 	const handleBlur = useCallback(
 		(name: keyof T) => {
 			// biome-ignore lint/suspicious/noExplicitAny: trigger requires complex path types from react-hook-form
@@ -70,7 +68,6 @@ export function useValidatedForm<T extends z.ZodRawShape>({
 		[setValue],
 	);
 
-	// Map RHF errors to simple string map for backward compatibility
 	const formattedErrors = Object.keys(errors).reduce(
 		(acc, key) => {
 			const error = errors[key as keyof typeof errors];

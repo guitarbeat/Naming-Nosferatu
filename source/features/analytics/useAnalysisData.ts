@@ -1,4 +1,4 @@
-import { catNamesAPI } from "@supabase/client";
+import { analyticsAPI, leaderboardAPI, statsAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
 interface UseAnalysisDataProps {
@@ -21,7 +21,7 @@ export function useAnalysisData({
 	// 1. Leaderboard Data
 	const leaderboardQuery = useQuery({
 		queryKey: ["leaderboard"],
-		queryFn: () => catNamesAPI.getLeaderboard(null),
+		queryFn: () => leaderboardAPI.getLeaderboard(null),
 		enabled,
 		staleTime: 1000 * 60 * 5, // 5 minutes
 	});
@@ -29,7 +29,7 @@ export function useAnalysisData({
 	// 2. Selection Popularity
 	const popularityQuery = useQuery({
 		queryKey: ["selectionPopularity"],
-		queryFn: () => catNamesAPI.getSelectionPopularity(null),
+		queryFn: () => analyticsAPI.getSelectionPopularity(null),
 		enabled,
 		staleTime: 1000 * 60 * 5,
 	});
@@ -37,7 +37,7 @@ export function useAnalysisData({
 	// 3. Popularity Analytics (Admin only)
 	const analyticsQuery = useQuery({
 		queryKey: ["popularityAnalytics", userFilter, userName],
-		queryFn: () => catNamesAPI.getPopularityAnalytics(null, userFilter, userName),
+		queryFn: () => analyticsAPI.getPopularityAnalytics(null, userFilter, userName),
 		enabled: enabled && isAdmin,
 		staleTime: 1000 * 60 * 5,
 	});
@@ -46,7 +46,7 @@ export function useAnalysisData({
 	const rankingHistoryQuery = useQuery({
 		queryKey: ["rankingHistory", rankingPeriods, dateFilter],
 		queryFn: () =>
-			catNamesAPI.getRankingHistory(10, rankingPeriods, {
+			analyticsAPI.getRankingHistory(10, rankingPeriods, {
 				dateFilter,
 			}),
 		enabled,
@@ -56,7 +56,7 @@ export function useAnalysisData({
 	// 5. Site Stats (Admin only)
 	const siteStatsQuery = useQuery({
 		queryKey: ["siteStats"],
-		queryFn: () => catNamesAPI.getSiteStats(),
+		queryFn: () => statsAPI.getSiteStats(),
 		enabled: enabled && isAdmin,
 		staleTime: 1000 * 60 * 60, // 1 hour
 	});

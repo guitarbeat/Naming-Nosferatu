@@ -50,6 +50,70 @@ export const useFormField = () => {
 };
 
 // ============================================================================
+// HOOKS
+// ============================================================================
+
+const useFormValidation = (
+	schema: z.ZodSchema | undefined,
+	value: unknown,
+	onValidationChange?: (isValid: boolean) => void,
+	debounceMs = 300,
+	externalError?: string | null,
+	externalTouched?: boolean,
+) => {
+	const [internalError, setInternalError] = useState<string | null>(null);
+	const [isTouched, setIsTouched] = useState(false);
+	const [isValidating, setIsValidating] = useState(false);
+
+	const validate = useCallback(
+		(val: string) => {
+			if (!schema) {
+				return;
+			}
+
+			const result = schema.safeParse(val);
+			if (result.success) {
+				setInternalError(null);
+				onValidationChange?.(true);
+			} else {
+				setInternalError(result.error.issues[0]?.message || "Invalid input");
+				onValidationChange?.(false);
+			}
+			setIsValidating(false);
+		},
+		[schema, onValidationChange],
+	);
+
+	useEffect(() => {
+		if (!isTouched || !schema) {
+			return;
+		}
+
+		setIsValidating(true);
+		const timer = setTimeout(() => {
+			validate(String(value || ""));
+		}, debounceMs);
+
+		return () => clearTimeout(timer);
+	}, [value, isTouched, schema, validate, debounceMs]);
+
+	const currentError = externalError !== undefined ? externalError : internalError;
+	const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
+	const hasError = currentTouched && currentError && !isValidating;
+
+	return {
+		internalError,
+		isTouched,
+		setIsTouched,
+		isValidating,
+		validate,
+		currentError,
+		currentTouched,
+		hasError,
+	};
+};
+
+// ============================================================================
 // FORM FIELD WRAPPER
 // ============================================================================
 
@@ -117,7 +181,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
 		{
 			label,
-			error,
 			required,
 			schema,
 			value,
@@ -132,43 +195,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 		},
 		ref,
 	) => {
-		const [internalError, setInternalError] = useState<string | null>(null);
-		const [isTouched, setIsTouched] = useState(false);
-		const [isValidating, setIsValidating] = useState(false);
 		const internalId = useId();
 		const id = props.id || internalId;
-
-		const validate = useCallback(
-			(val: string) => {
-				if (!schema) {
-					return;
-				}
-
-				const result = schema.safeParse(val);
-				if (result.success) {
-					setInternalError(null);
-					onValidationChange?.(true);
-				} else {
-					setInternalError(result.error.issues[0]?.message || "Invalid input");
-					onValidationChange?.(false);
-				}
-				setIsValidating(false);
-			},
-			[schema, onValidationChange],
-		);
-
-		useEffect(() => {
-			if (!isTouched || !schema) {
-				return;
-			}
-
-			setIsValidating(true);
-			const timer = setTimeout(() => {
-				validate(String(value || ""));
-			}, debounceMs);
-
-			return () => clearTimeout(timer);
-		}, [value, isTouched, schema, validate, debounceMs]);
+		const { setIsTouched, validate, currentError, currentTouched, hasError, isValidating } =
+			useFormValidation(
+				schema,
+				value,
+				onValidationChange,
+				debounceMs,
+				externalError,
+				externalTouched,
+			);
 
 		const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 			setIsTouched(true);
@@ -181,9 +218,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 			props.onBlur?.(e);
 		};
 
-		const currentError = externalError !== undefined ? externalError : error || internalError;
-		const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
-		const hasError = currentTouched && currentError && !isValidating;
 		const isSuccess =
 			showSuccess &&
 			currentTouched &&
@@ -258,7 +292,6 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
 		{
 			label,
-			error,
 			required,
 			schema,
 			value,
@@ -273,43 +306,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 		},
 		ref,
 	) => {
-		const [internalError, setInternalError] = useState<string | null>(null);
-		const [isTouched, setIsTouched] = useState(false);
-		const [isValidating, setIsValidating] = useState(false);
 		const internalId = useId();
 		const id = props.id || internalId;
-
-		const validate = useCallback(
-			(val: string) => {
-				if (!schema) {
-					return;
-				}
-
-				const result = schema.safeParse(val);
-				if (result.success) {
-					setInternalError(null);
-					onValidationChange?.(true);
-				} else {
-					setInternalError(result.error.issues[0]?.message || "Invalid input");
-					onValidationChange?.(false);
-				}
-				setIsValidating(false);
-			},
-			[schema, onValidationChange],
-		);
-
-		useEffect(() => {
-			if (!isTouched || !schema) {
-				return;
-			}
-
-			setIsValidating(true);
-			const timer = setTimeout(() => {
-				validate(String(value || ""));
-			}, debounceMs);
-
-			return () => clearTimeout(timer);
-		}, [value, isTouched, schema, validate, debounceMs]);
+		const { setIsTouched, validate, currentError, currentTouched, hasError, isValidating } =
+			useFormValidation(
+				schema,
+				value,
+				onValidationChange,
+				debounceMs,
+				externalError,
+				externalTouched,
+			);
 
 		const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 			setIsTouched(true);
@@ -322,9 +329,6 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			props.onBlur?.(e);
 		};
 
-		const currentError = externalError !== undefined ? externalError : error || internalError;
-		const currentTouched = externalTouched !== undefined ? externalTouched : isTouched;
-		const hasError = currentTouched && currentError && !isValidating;
 		const isSuccess =
 			showSuccess &&
 			currentTouched &&

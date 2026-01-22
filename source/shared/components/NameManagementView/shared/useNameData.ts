@@ -11,7 +11,7 @@ const FALLBACK_NAMES = [
 	{ id: "fallback-5", name: "Oliver" },
 ];
 
-import { catNamesAPI } from "@supabase/client";
+import { coreAPI, statsAPI } from "@supabase/client";
 import { ErrorManager } from "../../../services/errorManager";
 
 interface UseNameDataProps {
@@ -39,12 +39,12 @@ export function useNameData({
 				let namesData: NameItem[];
 
 				if (mode === "tournament") {
-					namesData = (await catNamesAPI.getNamesWithDescriptions(true)) as NameItem[];
+					namesData = (await coreAPI.getNamesWithDescriptions(true)) as NameItem[];
 				} else {
 					if (!userName) {
 						return [];
 					}
-					const rawData = await catNamesAPI.getNamesWithUserRatings(userName);
+					const rawData = await statsAPI.getNamesWithUserRatings(userName);
 					namesData = (
 						rawData as Array<{
 							id: string;
