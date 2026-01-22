@@ -11,109 +11,123 @@
    ========================================================================== */
 
 /* Fade Animations */
-@keyframes fade-in {
+@keyframes fade-in {}
 
-}
-
-@keyframes fade-out {
-
-}
+@keyframes fade-out {}
 
 /* Slide Animations */
-@keyframes slide-up {
+@keyframes slide-up {}
 
-}
+@keyframes slide-down {}
 
-@keyframes slide-down {
+@keyframes slide-in-left {}
 
-}
-
-@keyframes slide-in-left {
-
-}
-
-@keyframes slide-in-right {
-
-}
+@keyframes slide-in-right {}
 
 /* Scale Animations */
-@keyframes scale-in {
+@keyframes scale-in {}
 
-}
-
-@keyframes scale-pop {
-
-}
+@keyframes scale-pop {}
 
 /* Rotation Animations */
-@keyframes spin {
-
-}
+@keyframes spin {}
 
 /* Bounce Animations */
 @keyframes bounce {
 
 	0%,
+	100% {
+		transform: translateY(0);
+	}
 
+	50% {
+		transform: translateY(-10px);
+	}
 }
 
 @keyframes bounce-subtle {
 
 	0%,
+	100% {
+		transform: translateY(0);
+	}
 
+	50% {
+		transform: translateY(-4px);
+	}
 }
 
 /* Float Animation */
 @keyframes float {
 
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+
+	50% {
+		transform: translateY(-6px);
+	}
 }
 
 /* Pulse Animations */
 @keyframes pulse-glow {
 
 	0%,
+	100% {
+		box-shadow: 0 0 5px var(--color-primary);
+	}
 
+	50% {
+		box-shadow: 0 0 20px var(--color-primary);
+	}
 }
 
 @keyframes pulse-opacity {
 
 	0%,
+	100% {
+		opacity: 1;
+	}
 
+	50% {
+		opacity: 0.7;
+	}
 }
 
 /* Shake Animation */
 @keyframes shake {
 
+	0%,
+	100% {
+		transform: translateX(0);
+	}
+
 	10%,
+	30%,
+	50% {
+		transform: translateX(-4px);
+	}
 
 	20%,
-
-	30%,
-	50%,
-
-	40%,
+	40% {
+		transform: translateX(4px);
+	}
 }
 
 /* Shimmer Animation */
-@keyframes shimmer {
-
-}
+@keyframes shimmer {}
 
 /* Ripple Animation */
-@keyframes ripple {
-}
+@keyframes ripple {}
 
 /* ==========================================================================
    PAGE TRANSITION ANIMATIONS
    ========================================================================== */
 
-@keyframes page-enter {
+@keyframes page-enter {}
 
-}
-
-@keyframes page-exit {
-
-}
+@keyframes page-exit {}
 
 /* ==========================================================================
    SPECIALIZED ANIMATIONS
@@ -127,9 +141,7 @@
 }
 
 /* Loading Shimmer */
-@keyframes loading-shimmer {
-
-}
+@keyframes loading-shimmer {}
 
 /* Twinkle Effect */
 @keyframes twinkle {
@@ -139,9 +151,7 @@
 }
 
 /* Matrix Scroll */
-@keyframes matrix-scroll {
-
-}
+@keyframes matrix-scroll {}
 
 /* Theme Switch */
 @keyframes cosmic-float {
@@ -150,9 +160,7 @@
 
 }
 
-@keyframes switch-entrance {
-
-}
+@keyframes switch-entrance {}
 
 /* Cat-themed Animations */
 @keyframes cat-bounce {
