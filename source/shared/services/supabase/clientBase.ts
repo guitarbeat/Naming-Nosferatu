@@ -61,6 +61,9 @@ const getSupabaseCredentials = (): { url: string; key: string } => {
 				console.error("💡 Create a .env.local file with:");
 				console.error("   VITE_SUPABASE_URL=your_supabase_url");
 				console.error("   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key");
+				console.error(
+					"💡 on Lovable/Vercel: Add these to your Project Settings > Environment Variables",
+				);
 			}
 		}
 
