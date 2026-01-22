@@ -177,6 +177,19 @@ function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boo
 	);
 }
 
+const RankingItemContent = memo(({ item, index }: { item: NameItem; index: number }) => (
+	<>
+		<div className="rank-badge">{index + 1}</div>
+		<div className="card-content">
+			<h3 className="name">{item.name}</h3>
+			<div className="stats">
+				<span className="rating">Rating: {Math.round(item.rating as number)}</span>
+			</div>
+		</div>
+	</>
+));
+RankingItemContent.displayName = "RankingItemContent";
+
 export const RankingAdjustment = memo(
 	({
 		rankings,
@@ -295,15 +308,7 @@ export const RankingAdjustment = memo(
 													{...provided.dragHandleProps}
 													className={`ranking-card ${snapshot.isDragging ? "dragging" : ""}`}
 												>
-													<div className="rank-badge">{index + 1}</div>
-													<div className="card-content">
-														<h3 className="name">{item.name}</h3>
-														<div className="stats">
-															<span className="rating">
-																Rating: {Math.round(item.rating as number)}
-															</span>
-														</div>
-													</div>
+													<RankingItemContent item={item} index={index} />
 												</div>
 											)}
 										</Draggable>
