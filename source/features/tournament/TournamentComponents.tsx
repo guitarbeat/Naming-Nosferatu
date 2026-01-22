@@ -1,14 +1,22 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Card, CardBody, Progress, Button, Chip, cn } from "@heroui/react";
-import { Heart, X, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Card, CardBody, CardHeader, Progress, Button, Chip, cn, Divider } from "@heroui/react";
+import {
+	Heart,
+	X,
+	Check,
+	ChevronLeft,
+	ChevronRight,
+	GripVertical,
+	Save,
+	Loader2,
+} from "lucide-react";
 import CatImage from "@/components/CatImage";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
 import { playSound } from "@/utils/soundManager";
 import { getRandomCatImage } from "./TournamentLogic";
-import "./TournamentRankingAdjustment.css";
 
 /* =========================================================================
    COMPONENTS
