@@ -1,8 +1,8 @@
 import { coreAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
-	Calendar,
 	Copy,
+	Download,
 	Grid3X3,
 	Heart,
 	List,
@@ -14,6 +14,19 @@ import {
 	TrendingUp,
 	Users,
 } from "lucide-react";
+import {
+	Button as HeroButton,
+	Card as HeroCard,
+	CardBody,
+	CardHeader,
+	Chip,
+	Tooltip,
+	Spinner,
+	Skeleton,
+	ButtonGroup,
+	Divider,
+	cn,
+} from "@heroui/react";
 import type React from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import Button from "@/components/Button";
@@ -79,18 +92,40 @@ export const PersonalResults = ({
 	}, [personalRatings, currentTournamentNames]);
 
 	return (
-		<div className={styles.personalResults}>
-			<div className={styles.statsGrid}>
-				<Card.Stats title="Winner" value={rankings[0]?.name || "-"} emoji="🏆" enableTilt={true} />
-				<Card.Stats
-					title="Top Score"
-					value={String(rankings[0]?.rating || 1500)}
-					emoji="⭐"
-					enableTilt={true}
-				/>
-				<Card.Stats title="Total Names" value={rankings.length} emoji="📝" enableTilt={true} />
+		<div className="flex flex-col gap-6 w-full">
+			{/* Stats Grid */}
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{/* Winner Card */}
+				<HeroCard className="bg-gradient-to-br from-yellow-900/20 via-amber-900/10 to-yellow-900/20 backdrop-blur-xl border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
+						<span className="text-4xl">🏆</span>
+						<h3 className="text-sm font-medium text-white/60">Winner</h3>
+						<p className="text-xl font-bold text-white truncate max-w-full">
+							{rankings[0]?.name || "-"}
+						</p>
+					</CardBody>
+				</HeroCard>
+
+				{/* Top Score Card */}
+				<HeroCard className="bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-purple-900/20 backdrop-blur-xl border border-purple-500/20 shadow-lg shadow-purple-500/10">
+					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
+						<span className="text-4xl">⭐</span>
+						<h3 className="text-sm font-medium text-white/60">Top Score</h3>
+						<p className="text-xl font-bold text-white">{String(rankings[0]?.rating || 1500)}</p>
+					</CardBody>
+				</HeroCard>
+
+				{/* Total Names Card */}
+				<HeroCard className="bg-gradient-to-br from-blue-900/20 via-cyan-900/10 to-blue-900/20 backdrop-blur-xl border border-blue-500/20 shadow-lg shadow-blue-500/10">
+					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
+						<span className="text-4xl">📝</span>
+						<h3 className="text-sm font-medium text-white/60">Total Names</h3>
+						<p className="text-xl font-bold text-white">{rankings.length}</p>
+					</CardBody>
+				</HeroCard>
 			</div>
 
+			{/* Ranking Adjustment */}
 			<RankingAdjustment
 				rankings={rankings}
 				onSave={async (r: NameItem[]) => {
@@ -103,13 +138,20 @@ export const PersonalResults = ({
 				onCancel={onStartNew}
 			/>
 
-			<div className={styles.actions}>
-				<Button onClick={onStartNew} startIcon={<Plus />}>
+			{/* Action Buttons */}
+			<div className="flex flex-wrap gap-3 justify-end">
+				<HeroButton
+					onClick={onStartNew}
+					variant="flat"
+					className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 text-white border border-purple-500/30"
+					startContent={<Plus size={18} />}
+				>
 					Start New
-				</Button>
-				<Button
-					variant="secondary"
-					startIcon={<Calendar />}
+				</HeroButton>
+				<HeroButton
+					variant="flat"
+					className="bg-white/5 hover:bg-white/10 text-white border border-white/10"
+					startContent={<Download size={18} />}
 					onClick={() => {
 						if (!rankings.length) {
 							return;
@@ -133,7 +175,7 @@ export const PersonalResults = ({
 					}}
 				>
 					Export CSV
-				</Button>
+				</HeroButton>
 			</div>
 		</div>
 	);
@@ -172,69 +214,92 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 
 	if (error) {
 		return (
-			<Card background="glass" padding="large">
-				<div className={styles.error}>
-					<p>Unable to load popular names right now. Please try again later.</p>
-				</div>
-			</Card>
+			<HeroCard className="max-w-md mx-auto bg-red-500/10 border border-red-500/20">
+				<CardBody className="p-6 text-center">
+					<p className="text-red-300">
+						Unable to load popular names right now. Please try again later.
+					</p>
+				</CardBody>
+			</HeroCard>
 		);
 	}
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.header}>
-				<h2>Popular Cat Names</h2>
-				<p>Discover names loved by the community</p>
+		<div className="flex flex-col gap-6 w-full">
+			<div className="flex flex-col gap-1">
+				<h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+					Popular Cat Names
+				</h2>
+				<p className="text-white/60">Discover names loved by the community</p>
 			</div>
 
-			<div className={styles.grid}>
-				{popularNames?.map((name, index: number) => (
-					<Card
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				{popularNames?.map((name, index) => (
+					<HeroCard
 						key={name.id}
-						className={`${styles.nameCard} ${name.trending ? styles.trending : ""}`}
-						background="glass"
-						padding="medium"
-						shadow="small"
-						enableTilt={true}
+						className={cn(
+							"border backdrop-blur-md bg-gradient-to-br from-white/5 to-white/[0.02]",
+							"border-white/10 hover:border-purple-500/30 transition-all duration-300",
+							name.trending &&
+								"ring-1 ring-pink-500/30 shadow-[0_0_15px_-5px_var(--tw-shadow-color)] shadow-pink-500/20",
+						)}
+						shadow="sm"
 					>
-						<div className={styles.nameContent}>
-							<div className={styles.nameHeader}>
-								<span className={styles.rank}>#{index + 1}</span>
+						<CardBody className="p-4 flex flex-col gap-3">
+							<div className="flex justify-between items-start">
+								<Chip
+									size="sm"
+									variant="flat"
+									className="bg-white/10 text-white/80 border border-white/10"
+								>
+									#{index + 1}
+								</Chip>
 								{name.trending && (
-									<div className={styles.trendingBadge}>
-										<TrendingUp size={12} />
-										<span>Trending</span>
-									</div>
-								)}
-							</div>
-							<h3 className={styles.name}>{name.name}</h3>
-
-							<div className={styles.lifecycle}>
-								<span className={`${styles.statusBadge} ${styles[name.status]}`}>
-									{name.status}
-								</span>
-								{name.provenance?.length > 0 && (
-									<div
-										className={styles.provenanceGhost}
-										title={`History: ${name.provenance.map((p: { action: string }) => p.action).join(" -> ")}`}
+									<Chip
+										size="sm"
+										className="bg-pink-500/20 text-pink-300 border border-pink-500/30"
+										variant="flat"
+										startContent={<TrendingUp size={12} />}
 									>
-										📜 {name.provenance.length}
-									</div>
+										Trending
+									</Chip>
 								)}
 							</div>
 
-							<div className={styles.stats}>
-								<div className={styles.stat}>
-									<Heart size={14} />
-									<span>{name.voteCount}</span>
+							<h3 className="text-xl font-bold text-white truncate">{name.name}</h3>
+
+							<div className="flex flex-wrap gap-2">
+								<Chip
+									size="sm"
+									variant="dot"
+									color={name.status === "candidate" ? "warning" : "success"}
+									className="capitalize border-none bg-black/20"
+								>
+									{name.status}
+								</Chip>
+								{name.provenance?.length > 0 && (
+									<Tooltip
+										content={`History: ${name.provenance.map((p: any) => p.action).join(" -> ")}`}
+									>
+										<Chip size="sm" variant="flat" className="bg-white/5 text-white/50 cursor-help">
+											📜 {name.provenance.length}
+										</Chip>
+									</Tooltip>
+								)}
+							</div>
+
+							<div className="flex items-center gap-4 text-sm text-white/50 mt-1 pt-2 border-t border-white/5">
+								<div className="flex items-center gap-1.5">
+									<Heart size={14} className="text-pink-400 fill-pink-400/20" />
+									<span className="font-medium">{name.voteCount}</span>
 								</div>
-								<div className={styles.stat}>
+								<div className="flex items-center gap-1.5">
 									<Users size={14} />
 									<span>loved</span>
 								</div>
 							</div>
-						</div>
-					</Card>
+						</CardBody>
+					</HeroCard>
 				))}
 			</div>
 		</div>
