@@ -21,6 +21,7 @@ import { getRandomCatImage } from "./TournamentLogic";
    COMPONENTS
    ========================================================================= */
 
+
 export const SwipeableCards = memo(
 	({
 		names,
