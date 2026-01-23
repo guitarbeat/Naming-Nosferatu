@@ -111,8 +111,10 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 			}
 
 			const { data: selections, error: selectionsError } = await supabaseClient
-				.from("tournament_selections")
+				.from("cat_tournament_selections" as any)
 				.select("user_name, tournament_id");
+
+			const typedSelections = selections as { user_name: string; tournament_id: string }[];
 
 			if (selectionsError) {
 				devError("Error fetching aggregate selections:", selectionsError);
@@ -173,7 +175,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 		}
 
 		let query = supabaseClient
-			.from("tournament_selections")
+			.from("cat_tournament_selections" as any)
 			.select("name_id, name, tournament_id, selected_at, user_name");
 		if (userName !== null) {
 			query = query.eq("user_name", userName);

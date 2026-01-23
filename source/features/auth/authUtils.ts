@@ -10,7 +10,7 @@ const USER_ROLES = {
 } as const;
 
 // Database table name - snake_case required
-const ROLE_SOURCES = ["user_roles"] as const;
+const ROLE_SOURCES = ["cat_user_roles"] as const;
 
 const ROLE_PRIORITY = {
 	[USER_ROLES.USER]: 0,
@@ -407,9 +407,9 @@ const fetchRoleFromSource = async (
 	const trimmedUserName = userName.trim?.() ?? userName;
 
 	if (source === "user_roles") {
-		// user_roles table exists in DB but may not be in auto-generated types
+		// cat_user_roles table exists in DB but may not be in auto-generated types
 		const { data, error } = await (activeSupabase as SupabaseClient)
-			.from("user_roles")
+			.from("cat_user_roles" as any)
 			.select("role")
 			.eq("user_name", trimmedUserName)
 			.order("role", { ascending: false })

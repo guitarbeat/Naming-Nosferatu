@@ -54,7 +54,7 @@ export const analyticsAPI = {
 	 */
 	getSelectionPopularity: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client.from("tournament_selections").select("name_id, name");
+			const { data, error } = await client.from("cat_tournament_selections" as any).select("name_id, name");
 			if (error) {
 				return [];
 			}
@@ -97,7 +97,7 @@ export const analyticsAPI = {
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client.from("tournament_selections").select("name_id, name, user_name");
+			let selectionsQuery = client.from("cat_tournament_selections" as any).select("name_id, name, user_name");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses, user_name");
@@ -224,7 +224,7 @@ export const analyticsAPI = {
 				startDate.setDate(startDate.getDate() - (periodCount - 1));
 
 				const { data: selections, error: selError } = await client
-					.from("tournament_selections")
+					.from("cat_tournament_selections" as any)
 					.select("name_id, name, selected_at")
 					.gte("selected_at", startDate.toISOString())
 					.order("selected_at", { ascending: true });
@@ -453,7 +453,7 @@ export const statsAPI = {
 						.eq("is_hidden", true),
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
-					client.from("tournament_selections").select("id", { count: "exact", head: true }),
+					client.from("cat_tournament_selections" as any).select("id", { count: "exact", head: true }),
 				]);
 
 			const totalNames = namesResult.count || 0;
@@ -513,7 +513,7 @@ export const statsAPI = {
 		return withSupabase(async (client) => {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
-				client.from("tournament_selections").select("*").eq("user_name", userName),
+				client.from("cat_tournament_selections" as any).select("*").eq("user_name", userName),
 			]);
 
 			const ratings = ratingsResult.data || [];
