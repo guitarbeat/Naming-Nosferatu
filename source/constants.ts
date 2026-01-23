@@ -127,15 +127,6 @@ export const ELO_RATING = {
 };
 
 // * Mobile Gesture Thresholds
-// ts-prune-ignore-next (used via barrel export from core/constants)
-export const GESTURE_THRESHOLDS = {
-	SWIPE_DISTANCE_PX: 50,
-	LONG_PRESS_DURATION_MS: 500,
-	DOUBLE_TAP_INTERVAL_MS: 300,
-	PINCH_SCALE_THRESHOLD: 0.1,
-	TOUCH_DISTANCE_THRESHOLD_PX: 10,
-	TOUCH_DURATION_THRESHOLD_MS: 300,
-};
 
 // * Local Storage Keys
 // ts-prune-ignore-next (used via barrel export from core/constants)

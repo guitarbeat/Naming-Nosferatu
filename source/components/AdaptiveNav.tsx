@@ -9,7 +9,7 @@ import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/useAppStore";
 import { cn } from "@/utils/cn";
-import { hapticNavTap } from "@/utils/ui";
+import { hapticNavTap, hapticTournamentStart } from "@/utils/ui";
 
 interface AdaptiveNavProps {
 	onOpenSuggestName?: () => void;

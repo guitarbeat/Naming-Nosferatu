@@ -16,11 +16,11 @@ const getRandomLoadingAsset = () => {
 	return LOADING_ASSETS[Math.floor(Math.random() * LOADING_ASSETS.length)];
 };
 
-export type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit";
-export type CatColor = "neon" | "pastel" | "warm";
-export type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
+type CatVariant = "paw" | "tail" | "bounce" | "spin" | "heartbeat" | "orbit";
+type CatColor = "neon" | "pastel" | "warm";
+type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
 
-export interface LoadingProps {
+interface LoadingProps {
 	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
 	/** Cat animation variant (only used when variant="cat") */
 	catVariant?: CatVariant;

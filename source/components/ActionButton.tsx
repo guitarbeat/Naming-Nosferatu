@@ -173,7 +173,7 @@ function getButtonConfig(
 }
 
 /**
- * Unified Action Button Component
+ * Action Button Component
  * Intelligently displays different actions based on current context and selection state
  */
 export function ActionButton({
@@ -308,4 +308,4 @@ export function ActionButton({
 	);
 }
 
-export default UnifiedActionButton;
+export default ActionButton;

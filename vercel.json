@@ -6,8 +6,8 @@
 	"buildCommand": "pnpm run build",
 	"outputDirectory": "dist",
 	"functions": {
-		"*.js": {
-			"runtime": "nodejs@20"
+		"api/**/*.js": {
+			"runtime": "@vercel/node"
 		}
 	},
 	"git": {

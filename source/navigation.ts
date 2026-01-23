@@ -14,7 +14,7 @@ import type { ComponentType } from "react";
 /**
  * Navigation item type classification
  */
-export type NavItemType = "primary" | "secondary" | "utility";
+type NavItemType = "primary" | "secondary" | "utility";
 
 /**
  * Base navigation item properties shared by config and runtime
@@ -29,7 +29,7 @@ interface BaseNavItem {
 /**
  * Configuration for a navigation item (declarative)
  */
-export interface NavItemConfig extends BaseNavItem {
+interface NavItemConfig extends BaseNavItem {
 	route?: string; // Navigation route
 	action?: string; // Action handler key
 	permissions?: string[]; // Required permissions
@@ -42,7 +42,7 @@ export interface NavItemConfig extends BaseNavItem {
 /**
  * Runtime navigation item (with computed state)
  */
-export interface NavItem extends BaseNavItem {
+interface NavItem extends BaseNavItem {
 	isActive: boolean; // Computed active state
 	onClick?: () => void; // Click handler
 	children?: NavItem[]; // Transformed children
@@ -50,20 +50,9 @@ export interface NavItem extends BaseNavItem {
 }
 
 /**
- * Context for building navigation items
- */
-export interface BuildNavItemsContext {
-	currentRoute?: string;
-	onNavigate?: (route: string) => void;
-	onOpenPhotos?: () => void;
-	onToggleAnalysis?: () => void;
-	isAnalysisMode?: boolean;
-}
-
-/**
  * Navigation context value
  */
-export interface NavbarContextValue {
+interface NavbarContextValue {
 	// View state
 	view: string;
 	setView: (view: string) => void;
@@ -125,10 +114,6 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	},
 ];
 
-/**
- * Utility navigation items (profile, settings, etc.)
- */
-export const UTILITY_NAV_ITEMS: NavItemConfig[] = [];
 
 /**
  * Bottom navigation item keys (mobile) - show core actions
@@ -153,41 +138,9 @@ function isRouteActive(route: string | undefined, currentRoute: string | undefin
 }
 
 /**
- * Transform navigation configuration into runtime navigation items
- */
-export function buildNavItems(context: BuildNavItemsContext, items: NavItemConfig[]): NavItem[] {
-	const { currentRoute, onNavigate } = context;
-
-	return items.map((config) => {
-		const isActive = isRouteActive(config.route, currentRoute);
-
-		const onClick =
-			config.route && onNavigate
-				? () => {
-						const route = config.route;
-						if (route) {
-							onNavigate(route);
-						}
-					}
-				: undefined;
-
-		return {
-			key: config.key,
-			label: config.label,
-			icon: config.icon,
-			type: config.type,
-			ariaLabel: config.ariaLabel || config.label,
-			isActive,
-			onClick,
-			children: config.children ? buildNavItems(context, config.children) : undefined,
-		};
-	});
-}
-
-/**
  * Find a navigation item by key (searches recursively)
  */
-export function findNavItem(items: NavItemConfig[], key: string): NavItemConfig | undefined {
+function findNavItem(items: NavItemConfig[], key: string): NavItemConfig | undefined {
 	for (const navItem of items) {
 		if (navItem.key === key) {
 			return navItem;

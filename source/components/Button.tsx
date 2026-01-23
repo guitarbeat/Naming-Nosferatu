@@ -158,46 +158,6 @@ Button.displayName = "Button";
  * @param {Object} props.rest - Additional props
  * @returns {JSX.Element} IconButton component
  */
-interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
-	icon: React.ReactNode;
-	variant?: "primary" | "secondary" | "danger" | "ghost" | "login";
-	size?: "small" | "medium" | "large";
-	disabled?: boolean;
-	loading?: boolean;
-	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-	className?: string;
-	ariaLabel: string;
-}
-
-const IconButton = ({
-	icon,
-	variant = "ghost",
-	size = "medium",
-	disabled = false,
-	loading = false,
-	onClick,
-	className = "",
-	ariaLabel,
-	...rest
-}: IconButtonProps) => {
-	return (
-		<Button
-			variant={variant}
-			size={size}
-			disabled={disabled}
-			loading={loading}
-			onClick={onClick}
-			className={className}
-			iconOnly={true}
-			aria-label={ariaLabel}
-			{...rest}
-		>
-			{icon}
-		</Button>
-	);
-};
-
-IconButton.displayName = "IconButton";
 
 /**
  * ScrollToTopButton component - floating button that scrolls to top of page
@@ -271,6 +231,6 @@ const ScrollToTopButton = ({
 ScrollToTopButton.displayName = "ScrollToTopButton";
 
 export default memo(Button);
-export { IconButton, ScrollToTopButton };
+export { ScrollToTopButton };
 // TournamentButton moved to features/tournament/components/TournamentButton/
 // CalendarButton moved to Dashboard.jsx as local component (only used there)
