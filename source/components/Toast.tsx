@@ -4,9 +4,36 @@
  */
 
 import type React from "react";
+import { cva } from "class-variance-authority";
 import { useCallback, useEffect, useId, useState } from "react";
+import { cn } from "@/utils";
 import LiquidGlass from "./LiquidGlass";
-import styles from "./Toast.module.css";
+
+/* ========================================= */
+/*             TOAST STYLES                  */
+/* ========================================= */
+
+const toastVariants = cva(
+	"relative flex items-center overflow-hidden rounded-xl border backdrop-blur-md shadow-lg transition-all duration-300",
+	{
+		variants: {
+			type: {
+				info: "bg-blue-500/10 border-blue-500/20 text-blue-100",
+				success: "bg-green-500/10 border-green-500/20 text-green-100",
+				warning: "bg-yellow-500/10 border-yellow-500/20 text-yellow-100",
+				error: "bg-red-500/10 border-red-500/20 text-red-100",
+			},
+			isExiting: {
+				true: "translate-x-full opacity-0",
+				false: "translate-x-0 opacity-100 animate-in slide-in-from-right-4 fade-in duration-300",
+			},
+		},
+		defaultVariants: {
+			type: "info",
+			isExiting: false,
+		},
+	}
+);
 
 /* ========================================= */
 /*             TOAST ITEM                    */
@@ -68,17 +95,11 @@ const ToastItem: React.FC<ToastItemProps> = ({
 		}
 	};
 
-	const getTypeClass = () => {
-		switch (type) {
-			case "success":
-				return styles.success;
-			case "error":
-				return styles.error;
-			case "warning":
-				return styles.warning;
-			default:
-				return styles.info;
-		}
+	const progressBarColor = {
+		info: "bg-blue-400",
+		success: "bg-green-400",
+		warning: "bg-yellow-400",
+		error: "bg-red-400",
 	};
 
 	return (
@@ -92,7 +113,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 			frost={0.02}
 			inputBlur={6}
 			outputBlur={0.4}
-			className={styles.toastGlass}
+			className="pointer-events-auto"
 			style={{
 				width: "auto",
 				height: "auto",
@@ -101,38 +122,51 @@ const ToastItem: React.FC<ToastItemProps> = ({
 			}}
 		>
 			<div
-				className={`
-          ${styles.toastItem}
-          ${getTypeClass()}
-          ${isExiting ? styles.exiting : ""}
-          ${className}
-        `}
+				className={cn(
+					toastVariants({ type, isExiting }),
+					className
+				)}
 				role="alert"
 				aria-live="polite"
 				aria-atomic="true"
 			>
-				<div className={styles.toastContent}>
-					<span className={styles.icon}>{getTypeIcon()}</span>
-					<span className={styles.message}>{message}</span>
+				<div className="flex items-start gap-3 p-4 w-full">
+					<span className="text-xl select-none leading-none pt-0.5">{getTypeIcon()}</span>
+					<span className="flex-1 text-sm font-medium leading-tight pt-0.5 break-words text-white/90 drop-shadow-sm">
+						{message}
+					</span>
+
 					<button
 						onClick={handleDismiss}
-						className={styles.dismissButton}
+						className="items-start -mt-1 -mr-2 p-1.5 text-white/50 hover:text-white rounded-full hover:bg-white/10 transition-colors"
 						aria-label="Dismiss notification"
 						type="button"
 					>
-						×
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+							<line x1="18" y1="6" x2="6" y2="18" />
+							<line x1="6" y1="6" x2="18" y2="18" />
+						</svg>
 					</button>
 				</div>
 
-				{autoDismiss && (
-					<div className={styles.progressBar}>
+				{autoDismiss && duration > 0 && (
+					<div className="absolute bottom-0 left-0 w-full h-[3px] bg-black/20">
 						<div
-							className={styles.progressFill}
+							className={cn(
+								"h-full transition-all ease-linear origin-left",
+								progressBarColor[type] || "bg-white"
+							)}
 							style={{
-								animationDuration: `${duration}ms`,
-								animationPlayState: isExiting ? "paused" : "running",
+								width: "100%",
+								animation: isExiting ? "none" : `progress-shrink ${duration}ms linear forwards`,
 							}}
 						/>
+						<style>{`
+							@keyframes progress-shrink {
+								from { transform: scaleX(1); }
+								to { transform: scaleX(0); }
+							}
+						`}</style>
 					</div>
 				)}
 			</div>
@@ -156,12 +190,12 @@ interface ToastContainerProps {
 	toasts?: IToastItem[];
 	removeToast?: (id: string) => void;
 	position?:
-		| "top-left"
-		| "top-center"
-		| "top-right"
-		| "bottom-left"
-		| "bottom-center"
-		| "bottom-right";
+	| "top-left"
+	| "top-center"
+	| "top-right"
+	| "bottom-left"
+	| "bottom-center"
+	| "bottom-right";
 	maxToasts?: number;
 	className?: string;
 }
@@ -175,23 +209,13 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 }) => {
 	const visibleToasts = toasts.slice(0, maxToasts);
 
-	const getPositionClass = () => {
-		switch (position) {
-			case "top-left":
-				return styles.topLeft;
-			case "top-center":
-				return styles.topCenter;
-			case "top-right":
-				return styles.topRight;
-			case "bottom-left":
-				return styles.bottomLeft;
-			case "bottom-center":
-				return styles.bottomCenter;
-			case "bottom-right":
-				return styles.bottomRight;
-			default:
-				return styles.topRight;
-		}
+	const positionClasses = {
+		"top-left": "top-4 left-4 items-start",
+		"top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
+		"top-right": "top-4 right-4 items-end",
+		"bottom-left": "bottom-4 left-4 items-start flex-col-reverse",
+		"bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
+		"bottom-right": "bottom-4 right-4 items-end flex-col-reverse",
 	};
 
 	const handleToastDismiss = useCallback(
@@ -207,7 +231,11 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 
 	return (
 		<div
-			className={`${styles.toastContainer} ${getPositionClass()} ${className}`}
+			className={cn(
+				"fixed z-[100] flex flex-col gap-3 pointer-events-none p-4 min-w-[320px] max-w-[100vw]",
+				positionClasses[position] || positionClasses["top-right"],
+				className
+			)}
 			role="region"
 			aria-label="Notifications"
 			aria-live="polite"
@@ -221,12 +249,14 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 					duration={toast.duration}
 					autoDismiss={toast.autoDismiss}
 					onDismiss={() => handleToastDismiss(toast.id)}
-					className={styles.toastContainerItem}
+					className="pointer-events-auto"
 				/>
 			))}
 
 			{toasts.length > maxToasts && (
-				<div className={styles.hiddenCount}>+{toasts.length - maxToasts} more</div>
+				<div className="bg-black/50 backdrop-blur-md text-white text-xs py-1 px-3 rounded-full border border-white/10 shadow-lg animate-in fade-in">
+					+{toasts.length - maxToasts} more
+				</div>
 			)}
 		</div>
 	);

@@ -14,10 +14,10 @@ import {
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "@/utils";
+import { cn } from "@/utils/cn";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
 import { Loading } from "./Loading";
-import styles from "./NameGrid.module.css";
 
 interface NameGridProps {
 	names: NameItem[];
@@ -80,7 +80,7 @@ const GridItem = memo(
 
 		return (
 			<motion.div
-				className={styles.gridItem}
+				className="w-full h-full"
 				initial={{ opacity: 0, y: 10 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{
@@ -97,12 +97,12 @@ const GridItem = memo(
 					metadata={
 						isAdmin
 							? {
-									rating: nameObj.avg_rating || 1500,
-									popularity: nameObj.popularity_score,
-								}
+								rating: nameObj.avg_rating || 1500,
+								popularity: nameObj.popularity_score,
+							}
 							: undefined
 					}
-					className={isHidden ? styles.hiddenCard : ""}
+					className={cn(isHidden && "opacity-50 grayscale")}
 					isAdmin={isAdmin}
 					isHidden={isHidden}
 					_onToggleVisibility={isAdmin ? () => onToggleVisibility?.(nameId) : undefined}
@@ -166,15 +166,15 @@ export function NameGrid({
 
 	if (isLoading) {
 		return (
-			<div className={`${styles.gridContainer} ${className}`}>
-				<div className={styles.namesGrid}>
+			<div className={cn("relative w-full mx-auto p-4 md:p-6 min-h-[50vh]", className)}>
+				<div className="relative w-full max-w-[1600px] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
 					{Array.from({ length: 8 }).map((_, i) => (
-						<div key={`skeleton-${i}`} className={styles.gridItem}>
+						<div key={`skeleton-${i}`} className="w-full h-40">
 							<Loading variant="card-skeleton" cardSkeletonVariant="mosaic-card" size="medium" />
 						</div>
 					))}
 					{/* Loading text below the grid */}
-					<div className={styles.loadingText}>
+					<div className="col-span-full flex justify-center py-8">
 						<Loading
 							variant="cat"
 							catVariant="paw"
@@ -190,7 +190,7 @@ export function NameGrid({
 
 	if (processedNames.length === 0) {
 		return (
-			<div className={`${styles.gridContainer} ${className}`}>
+			<div className={cn("relative w-full mx-auto p-4 md:p-6 min-h-[50vh]", className)}>
 				<EmptyState
 					title="No names found"
 					description={
@@ -205,9 +205,9 @@ export function NameGrid({
 	}
 
 	return (
-		<div className={`${styles.gridContainer} ${className}`}>
+		<div className={cn("relative w-full mx-auto p-4 md:p-6", className)}>
 			<div
-				className={styles.namesGrid}
+				className="relative w-full max-w-[1600px] mx-auto transition-height duration-300"
 				role="list"
 				ref={containerRef}
 				style={{ height: totalHeight || "auto", position: "relative" }}
@@ -219,7 +219,7 @@ export function NameGrid({
 					return (
 						<div
 							key={name.id}
-							className={styles.gridItemWrapper}
+							className="absolute top-0 left-0"
 							ref={setItemRef(index)}
 							style={{
 								position: "absolute",

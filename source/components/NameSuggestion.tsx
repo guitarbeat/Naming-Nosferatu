@@ -6,10 +6,10 @@
 
 import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNameSuggestion";
+import { cn } from "@/utils/cn";
 import Button from "./Button";
 import { Input, Textarea } from "./FormPrimitives";
 import LiquidGlass from "./LiquidGlass";
-import styles from "./NameSuggestion.module.css";
 
 // ============================================================================
 // TYPES
@@ -39,41 +39,52 @@ function InlineNameSuggestion() {
 
 	return (
 		<LiquidGlass
-			className={styles.suggestionBox}
+			className="w-full flex flex-col items-center justify-center p-8 backdrop-blur-md rounded-3xl"
 			style={{ width: "100%", height: "auto", minHeight: "200px" }}
 			radius={24}
 			frost={0.2}
 			saturation={1.1}
 			outputBlur={0.8}
 		>
-			<form onSubmit={handleLocalSubmit} className={styles.form} style={{ padding: "2rem" }}>
-				<div className={styles.inputGroup}>
-					<label htmlFor="suggest-name" className={styles.label}>
+			<form onSubmit={handleLocalSubmit} className="flex flex-col gap-6 w-full max-w-2xl mx-auto" style={{ padding: "2rem" }}>
+				<div className="flex flex-col gap-4">
+					<label htmlFor="suggest-name" className="text-xl font-bold text-center text-white/90 drop-shadow-sm">
 						Got a great name in mind?
 					</label>
-					<div className={styles.inputWrapper}>
-						<input
-							id="suggest-name"
-							type="text"
-							value={values.name}
-							onChange={(e) => handleChange("name", e.target.value)}
-							placeholder="Enter a cool cat name..."
-							className={styles.input}
-							disabled={isSubmitting}
-						/>
+					<div className="flex gap-3">
+						<div className="flex-1">
+							<input
+								id="suggest-name"
+								type="text"
+								value={values.name}
+								onChange={(e) => handleChange("name", e.target.value)}
+								placeholder="Enter a cool cat name..."
+								className="w-full h-[50px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all font-medium backdrop-blur-sm"
+								disabled={isSubmitting}
+							/>
+						</div>
 						<Button
 							type="submit"
 							variant="primary"
 							disabled={!values.name.trim() || isSubmitting}
 							loading={isSubmitting}
+							className="h-[50px] px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Suggest
 						</Button>
 					</div>
 				</div>
-				{globalError && <p className={styles.error}>{globalError}</p>}
-				{successMessage && <p className={styles.success}>{successMessage}</p>}
-				<p className={styles.hint}>
+				{globalError && (
+					<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium text-center animate-in fade-in slide-in-from-top-2">
+						{globalError}
+					</div>
+				)}
+				{successMessage && (
+					<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium text-center animate-in fade-in slide-in-from-top-2">
+						{successMessage}
+					</div>
+				)}
+				<p className="text-center text-sm text-white/50 font-medium">
 					Your suggestion will be added to the pool for everyone to discover.
 				</p>
 			</form>
@@ -167,7 +178,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 
 	return (
 		<>
-			<div className={styles.modalBackdrop} onClick={handleClose} aria-hidden="true" />
+			<div className="fixed inset-0 bg-black/60 z-[1050] backdrop-blur-sm animate-in fade-in duration-200" onClick={handleClose} aria-hidden="true" />
 			<LiquidGlass
 				id={`modal-glass-${modalGlassId.replace(/:/g, "-")}`}
 				width={500}
@@ -178,7 +189,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 				frost={0.08}
 				inputBlur={8}
 				outputBlur={1.2}
-				className={styles.modalGlass}
+				className="z-[1051] overflow-hidden"
 				style={{
 					position: "fixed",
 					top: "50%",
@@ -193,96 +204,112 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 				}}
 			>
 				<div
-					className={styles.modal}
+					className="flex flex-col h-full bg-black/40 text-white"
 					role="dialog"
 					aria-labelledby="suggest-name-title"
 					aria-describedby="suggest-name-description"
 					aria-modal="true"
 				>
-					<div className={styles.modalHeader}>
-						<h2 id="suggest-name-title" className={styles.modalTitle}>
+					<div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+						<h2 id="suggest-name-title" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
 							💡 Suggest a Name
 						</h2>
 						<button
 							type="button"
-							className={styles.modalClose}
+							className="flex items-center justify-center w-8 h-8 rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
 							onClick={handleClose}
 							aria-label="Close modal"
 							disabled={isSubmitting}
 						>
-							×
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+								<line x1="18" y1="6" x2="6" y2="18" />
+								<line x1="6" y1="6" x2="18" y2="18" />
+							</svg>
 						</button>
 					</div>
 
-					<p id="suggest-name-description" className={styles.modalDescription}>
-						Help us expand the list by suggesting new cat names!
-					</p>
+					<div className="p-6">
+						<p id="suggest-name-description" className="text-sm text-white/70 mb-6">
+							Help us expand the list by suggesting new cat names!
+						</p>
 
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							void handleSubmit();
-						}}
-						className={styles.modalForm}
-					>
-						<Input
-							id="modal-name-input"
-							label="Name"
-							ref={nameInputRef}
-							type="text"
-							value={values.name}
-							onChange={(e) => {
-								handleChange("name", e.target.value);
-								if (globalError) {
-									setGlobalError("");
-								}
+						<form
+							onSubmit={(e) => {
+								e.preventDefault();
+								void handleSubmit();
 							}}
-							onBlur={() => handleBlur("name")}
-							placeholder="e.g., Whiskers"
-							maxLength={50}
-							showSuccess={true}
-							error={touched.name ? errors.name : null}
-						/>
+							className="flex flex-col gap-5"
+						>
+							<Input
+								id="modal-name-input"
+								label="Name"
+								ref={nameInputRef}
+								type="text"
+								value={values.name}
+								onChange={(e) => {
+									handleChange("name", e.target.value);
+									if (globalError) {
+										setGlobalError("");
+									}
+								}}
+								onBlur={() => handleBlur("name")}
+								placeholder="e.g., Whiskers"
+								maxLength={50}
+								showSuccess={true}
+								error={touched.name ? errors.name : null}
+							/>
 
-						<Textarea
-							id="modal-description-input"
-							label="Description"
-							value={values.description}
-							onChange={(e) => {
-								handleChange("description", e.target.value);
-								if (globalError) {
-									setGlobalError("");
-								}
-							}}
-							onBlur={() => handleBlur("description")}
-							placeholder="Why is this name special? (e.g. 'He looks like a vampire!')"
-							disabled={isSubmitting}
-							maxLength={500}
-							rows={4}
-							error={touched.description ? errors.description : null}
-						/>
-
-						{globalError && <div className={styles.formError}>{globalError}</div>}
-						{success && <div className={styles.formSuccess}>{success}</div>}
-
-						<div className={styles.modalActions}>
-							<button
-								type="button"
-								onClick={handleClose}
-								className={styles.modalCancel}
+							<Textarea
+								id="modal-description-input"
+								label="Description"
+								value={values.description}
+								onChange={(e) => {
+									handleChange("description", e.target.value);
+									if (globalError) {
+										setGlobalError("");
+									}
+								}}
+								onBlur={() => handleBlur("description")}
+								placeholder="Why is this name special? (e.g. 'He looks like a vampire!')"
 								disabled={isSubmitting}
-							>
-								Cancel
-							</button>
-							<button
-								type="submit"
-								className={styles.modalSubmit}
-								disabled={isSubmitting || !isValid}
-							>
-								{isSubmitting ? "Submitting..." : "Submit Suggestion"}
-							</button>
-						</div>
-					</form>
+								maxLength={500}
+								rows={4}
+								error={touched.description ? errors.description : null}
+							/>
+
+							{globalError && (
+								<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+									{globalError}
+								</div>
+							)}
+							{success && (
+								<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium animate-in fade-in slide-in-from-top-2">
+									{success}
+								</div>
+							)}
+
+							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
+								<button
+									type="button"
+									onClick={handleClose}
+									className="px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+									disabled={isSubmitting}
+								>
+									Cancel
+								</button>
+								<button
+									type="submit"
+									className={cn(
+										"px-6 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
+										isSubmitting && "animate-pulse"
+									)}
+									disabled={isSubmitting || !isValid}
+								>
+									{isSubmitting ? "Submitting..." : "Submit Suggestion"}
+								</button>
+							</div>
+						</form>
+					</div>
 				</div>
 			</LiquidGlass>
 		</>

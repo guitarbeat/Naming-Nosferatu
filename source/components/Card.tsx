@@ -3,11 +3,12 @@
  * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
+import { Tooltip } from "@heroui/react";
 import { cva } from "class-variance-authority";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import { TIMING } from "@/constants";
 import { cn } from "@/utils";
-import styles from "./Card.module.css";
 import CatImage from "./CatImage";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
 
@@ -28,53 +29,56 @@ type CardShadow = "none" | "small" | "medium" | "large" | "xl";
 type CardBackground = "solid" | "glass" | "gradient" | "transparent";
 
 // CVA variant for Card component
-const cardVariants = cva(styles.card, {
-	variants: {
-		variant: {
-			default: styles.default,
-			elevated: styles.elevated,
-			outlined: styles.outlined,
-			filled: styles.filled,
-			primary: styles.primary,
-			success: styles.success,
-			warning: styles.warning,
-			info: styles.info,
-			danger: styles.danger,
-			secondary: styles.secondary,
+const cardVariants = cva(
+	"relative flex flex-col overflow-hidden rounded-xl transition-all duration-300 backdrop-blur-md", // Base classes
+	{
+		variants: {
+			variant: {
+				default: "bg-white/5 border border-white/10",
+				elevated: "bg-white/5 border-none shadow-md",
+				outlined: "bg-transparent border border-white/20",
+				filled: "bg-white/10 border-none",
+				primary: "bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/30",
+				success: "bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/30",
+				warning: "bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 hover:border-yellow-500/30",
+				info: "bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 hover:border-cyan-500/30",
+				danger: "bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 hover:border-red-500/30",
+				secondary: "bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/20 hover:border-gray-500/30",
+			},
+			padding: {
+				none: "p-0",
+				small: "p-3",
+				medium: "p-5",
+				large: "p-8",
+				xl: "p-10",
+			},
+			shadow: {
+				none: "shadow-none",
+				small: "shadow-sm",
+				medium: "shadow-md",
+				large: "shadow-lg",
+				xl: "shadow-xl",
+			},
+			bordered: {
+				true: "border border-white/10",
+				false: "",
+			},
+			background: {
+				solid: "bg-black/40",
+				glass: "backdrop-blur-xl bg-white/5",
+				gradient: "bg-gradient-to-br from-white/10 to-white/5",
+				transparent: "bg-transparent",
+			},
 		},
-		padding: {
-			none: styles["padding-none"],
-			small: styles["padding-small"],
-			medium: styles["padding-medium"],
-			large: styles["padding-large"],
-			xl: styles["padding-xl"],
+		defaultVariants: {
+			variant: "default",
+			padding: "medium",
+			shadow: "none",
+			bordered: false,
+			background: "solid",
 		},
-		shadow: {
-			none: styles["shadow-none"],
-			small: styles["shadow-small"],
-			medium: styles["shadow-medium"],
-			large: styles["shadow-large"],
-			xl: styles["shadow-xl"],
-		},
-		bordered: {
-			true: styles.bordered,
-			false: "",
-		},
-		background: {
-			solid: "",
-			glass: "",
-			gradient: styles["background-gradient"],
-			transparent: styles["background-transparent"],
-		},
-	},
-	defaultVariants: {
-		variant: "default",
-		padding: "medium",
-		shadow: "none",
-		bordered: false,
-		background: "solid",
-	},
-});
+	}
+);
 
 interface GlassConfig {
 	width?: number;
@@ -101,8 +105,6 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	interactive?: boolean;
 	enableTilt?: boolean;
 }
-
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 export const Card = memo(
 	React.forwardRef<HTMLDivElement, CardProps>(
@@ -163,7 +165,7 @@ export const Card = memo(
 				onMouseLeave?.(e);
 			};
 
-			const cardClasses = cardVariants({
+			const cardRefClasses = cardVariants({
 				variant,
 				padding,
 				shadow,
@@ -174,9 +176,12 @@ export const Card = memo(
 			});
 
 			const finalClasses = cn(
-				cardClasses,
-				interactive && styles.interactive,
-				onClick && styles.interactive,
+				cardRefClasses,
+				interactive && "cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
+				interactive && onClick && "active:translate-y-0",
+				// Glow effect helper
+				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
+				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]"
 			);
 
 			// * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
@@ -199,7 +204,6 @@ export const Card = memo(
 					...glassProps
 				} = glassConfig;
 
-				// * Separate wrapper classes (for LiquidGlass) from content classes
 				const wrapperClasses = [className].filter(Boolean).join(" ");
 				const contentClasses = cardVariants({
 					variant,
@@ -236,16 +240,16 @@ export const Card = memo(
 
 			const motionProps = enableTilt
 				? {
-						style: {
-							rotateX,
-							rotateY,
-							transformStyle: "preserve-3d" as const,
-							...style,
-						},
-					}
+					style: {
+						rotateX,
+						rotateY,
+						transformStyle: "preserve-3d" as const,
+						...style,
+					},
+				}
 				: { style };
 
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic component selection between motion and standard div is complex to type perfectly
+			// biome-ignore lint/suspicious/noExplicitAny: Dynamic component selection
 			const CommonComponent = (enableTilt ? motion.div : Component) as any;
 
 			return (
@@ -259,12 +263,13 @@ export const Card = memo(
 					{...props}
 				>
 					<div
+						className="relative z-10" // Ensure content is above glow
 						style={
 							enableTilt
 								? {
-										transform: "translateZ(20px)",
-										transformStyle: "preserve-3d",
-									}
+									transform: "translateZ(20px)",
+									transformStyle: "preserve-3d",
+								}
 								: undefined
 						}
 					>
@@ -300,26 +305,60 @@ const CardStats: React.FC<CardStatsProps> = ({
 	labelClassName = "",
 	valueClassName = "",
 	emojiClassName = "",
+	variant = "default", // Default variant to invoke color styles
 	...props
 }) => {
 	const labelText = title || label || "Statistic";
 	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
 	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
 
+	// Determine top accent color based on variant
+	const accentGradient = {
+		default: "from-white/20 to-white/5",
+		primary: "from-purple-500 to-purple-700",
+		success: "from-green-500 to-green-700",
+		warning: "from-yellow-500 to-yellow-700",
+		info: "from-cyan-500 to-cyan-700",
+		danger: "from-red-500 to-red-700",
+		secondary: "from-gray-500 to-gray-700",
+		elevated: "from-white/20 to-white/5",
+		outlined: "from-transparent to-transparent",
+		filled: "from-transparent to-transparent",
+	};
+
+	const valueColor = {
+		default: "text-white",
+		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
+		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
+		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
+		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
+		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
+		secondary: "text-gray-400",
+		elevated: "text-white",
+		outlined: "text-white",
+		filled: "text-white",
+	};
+
 	return (
 		<Card
-			className={cn(styles.statsCard, className)}
+			variant={variant}
+			className={cn("flex flex-col items-center justify-center text-center min-h-[120px] relative pt-6", className)}
 			role="status"
 			aria-label={ariaLabel}
 			{...props}
 		>
-			{title ? (
-				<h3 className={cn(styles.statsLabel, labelClassName)}>{title}</h3>
-			) : (
-				<span className={cn(styles.statsLabel, labelClassName)}>{label}</span>
+			{/* Top accent bar */}
+			<div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`} />
+
+			{(title || label) && (
+				<span className={cn("text-xs font-semibold uppercase tracking-wider text-white/50 mb-2", labelClassName)}>
+					{title || label}
+				</span>
 			)}
-			<span className={cn(styles.statsValue, valueClassName)}>{value}</span>
-			{emoji && <span className={cn(styles.statsEmoji, emojiClassName)}>{emoji}</span>}
+			<span className={cn("text-4xl font-bold p-1 overflow-hidden", valueColor[variant] || valueColor.default, valueClassName)}>
+				{value}
+			</span>
+			{emoji && <span className={cn("text-2xl mt-2 drop-shadow-sm", emojiClassName)}>{emoji}</span>}
 		</Card>
 	);
 };
@@ -375,10 +414,8 @@ const CardNameBase = memo(function CardName({
 	onSelectionChange,
 	image,
 }: CardNameProps) {
-	const [rippleStyle, setRippleStyle] = useState({});
+	const [rippleStyle, setRippleStyle] = useState<React.CSSProperties>({});
 	const [isRippling, setIsRippling] = useState(false);
-	const [showTooltip, setShowTooltip] = useState(false);
-	const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 	const cardRef = React.useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -388,58 +425,6 @@ const CardNameBase = memo(function CardName({
 		}
 		return undefined;
 	}, [isRippling]);
-
-	const hasMetadata =
-		metadata &&
-		(metadata.rating ||
-			metadata.wins !== undefined ||
-			metadata.losses !== undefined ||
-			metadata.popularity ||
-			metadata.tournaments ||
-			(metadata.categories && metadata.categories.length > 0));
-
-	useEffect(() => {
-		const card = cardRef.current;
-		if (!card || disabled || !hasMetadata) {
-			return undefined;
-		}
-
-		const handleMouseMove = (e: MouseEvent) => {
-			if (typeof e.clientX === "number" && typeof e.clientY === "number") {
-				setTooltipPosition({ x: e.clientX, y: e.clientY });
-				setShowTooltip(true);
-			}
-		};
-
-		const handleMouseLeave = () => {
-			setShowTooltip(false);
-		};
-
-		card.addEventListener("mousemove", handleMouseMove);
-		card.addEventListener("mouseleave", handleMouseLeave);
-
-		return () => {
-			card.removeEventListener("mousemove", handleMouseMove);
-			card.removeEventListener("mouseleave", handleMouseLeave);
-		};
-	}, [disabled, hasMetadata]);
-
-	const handleFocus = () => {
-		if (!cardRef.current || disabled || !hasMetadata) {
-			return;
-		}
-
-		const rect = cardRef.current.getBoundingClientRect();
-		setTooltipPosition({
-			x: rect.right > 0 ? rect.right - 20 : 100,
-			y: rect.top > 0 ? rect.top + 20 : 100,
-		});
-		setShowTooltip(true);
-	};
-
-	const handleBlur = () => {
-		setShowTooltip(false);
-	};
 
 	const handleInteraction = (event: React.MouseEvent | React.KeyboardEvent) => {
 		if (disabled) {
@@ -455,10 +440,15 @@ const CardNameBase = memo(function CardName({
 			event.preventDefault();
 
 			const rect = event.currentTarget.getBoundingClientRect();
-			const { clientX, clientY } = event as React.MouseEvent;
+			// Fix: Correctly handle type narrowing for MouseEvent vs KeyboardEvent to access clientX/clientY
+			let x = rect.width / 2;
+			let y = rect.height / 2;
 
-			const x = clientX ? clientX - rect.left : rect.width / 2;
-			const y = clientY ? clientY - rect.top : rect.height / 2;
+			if ('clientX' in event) {
+				// It's a mouse event
+				x = event.clientX - rect.left;
+				y = event.clientY - rect.top;
+			}
 
 			setRippleStyle({
 				left: `${x}px`,
@@ -496,36 +486,34 @@ const CardNameBase = memo(function CardName({
 		return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
 	};
 
-	// Use updated class names from Card.module.css (formerly CardName.module.css)
-	const cardClasses = [
-		styles.nameCard,
-		styles[size === "small" ? "nameCardSmall" : "medium"], // Map small to nameCardSmall
-		isSelected && styles.nameCardSelected,
-		disabled && styles.nameCardDisabled,
-		isHidden && styles.nameCardHidden,
-		image && styles.hasImage,
-		className,
-	]
-		.filter(Boolean)
-		.join(" ");
-
 	const isInteractive = !disabled && (!!onClick || (isAdmin && !!onSelectionChange));
 	const Component = isInteractive ? "button" : "div";
 
-	return (
-		<div className={styles.nameCardContainer}>
+	const cardContent = (
+		<div className="relative w-full h-full">
 			<Card
 				as={Component}
-				ref={cardRef}
-				className={`${cardClasses} ${isInteractive ? "" : styles.nonInteractive}`}
+				ref={cardRef as React.Ref<HTMLDivElement>}
+				className={cn(
+					"w-full h-full relative flex flex-col items-center gap-1 text-center font-inherit cursor-pointer overflow-visible transition-all duration-300",
+					// Base style additions
+					"backdrop-blur-md rounded-xl border",
+					size === "small" ? "p-2 min-h-24" : "p-4 min-h-32",
+					// State styles
+					isSelected
+						? "border-purple-500 bg-gradient-to-br from-purple-900/40 to-purple-800/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+						: "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
+					disabled && "opacity-50 cursor-not-allowed filter grayscale",
+					isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
+					image && "min-h-[220px]", // Taller if image
+					className
+				)}
 				onClick={
 					isInteractive ? (handleInteraction as unknown as React.MouseEventHandler) : undefined
 				}
 				onKeyDown={
 					isInteractive ? (handleInteraction as unknown as React.KeyboardEventHandler) : undefined
 				}
-				onFocus={handleFocus}
-				onBlur={handleBlur}
 				// @ts-expect-error - Card props might not fully match HTML attributes
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
@@ -538,49 +526,71 @@ const CardNameBase = memo(function CardName({
 				padding={size === "small" ? "small" : "medium"}
 				interactive={isInteractive}
 			>
-				{image && (
-					<CatImage
-						src={image}
-						containerClassName={styles.nameCardImageContainer}
-						imageClassName={styles.nameCardImage}
-					/>
+				{/* Hidden Badge */}
+				{isHidden && (
+					<div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 px-2 py-0.5 text-[10px] font-bold text-black bg-amber-500 rounded-full shadow-sm animate-in slide-in-from-top-2 fade-in duration-300">
+						🔒 HIDDEN
+					</div>
 				)}
 
-				<h3 className={styles.name} id={`${getSafeId(name)}-title`}>
+				{image && (
+					<div className="w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner">
+						<CatImage
+							src={image}
+							containerClassName="w-full h-full"
+							imageClassName="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+						/>
+					</div>
+				)}
+
+				<h3
+					className={cn(
+						"font-bold leading-tight text-white m-0 z-10 tracking-tight",
+						size === "small" ? "text-sm" : "text-lg md:text-xl",
+						isHidden && "text-amber-500/80"
+					)}
+					id={`${getSafeId(name)}-title`}
+				>
 					{name}
 				</h3>
+
 				{description && (
-					<p id={`${getSafeId(name)}-description`} className={styles.description}>
+					<p
+						id={`${getSafeId(name)}-description`}
+						className={cn(
+							"flex-1 m-0 text-white/70 font-normal leading-tight z-10",
+							size === "small" ? "text-[10px] min-h-[2.5em]" : "text-xs",
+							isHidden && "text-amber-500/60"
+						)}
+					>
 						{description}
 					</p>
 				)}
 
 				{metadata && (
-					<div className={styles.metadata}>
-						{metadata.rating && (
-							<span className={styles.metaItem} title="Average Rating">
-								⭐ {metadata.rating}
-							</span>
-						)}
-						{metadata.popularity && (
-							<span className={styles.metaItem} title="Popularity Score">
-								🔥 {metadata.popularity}
-							</span>
-						)}
-						{metadata.tournaments && (
-							<span className={styles.metaItem} title="Tournament Appearances">
-								🏆 {metadata.tournaments}
-							</span>
-						)}
+					<div className="flex flex-col gap-1 mt-auto w-full z-10">
+						<div className="flex flex-wrap gap-1 justify-center mt-1">
+							{metadata.rating && (
+								<span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full" title="Average Rating">
+									⭐ {metadata.rating}
+								</span>
+							)}
+							{metadata.popularity && (
+								<span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full" title="Popularity Score">
+									🔥 {metadata.popularity}
+								</span>
+							)}
+						</div>
+
 						{metadata.categories && metadata.categories.length > 0 && (
-							<div className={styles.categories}>
+							<div className="flex flex-wrap gap-1 justify-center mt-1">
 								{metadata.categories.slice(0, 2).map((category, index) => (
-									<span key={index} className={styles.categoryTag}>
+									<span key={index} className="px-1.5 py-0.5 text-[10px] font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full">
 										{category}
 									</span>
 								))}
 								{metadata.categories.length > 2 && (
-									<span className={styles.categoryMore}>+{metadata.categories.length - 2}</span>
+									<span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 border border-white/5 rounded-full">+{metadata.categories.length - 2}</span>
 								)}
 							</div>
 						)}
@@ -588,79 +598,81 @@ const CardNameBase = memo(function CardName({
 				)}
 
 				{shortcutHint && (
-					<span className={styles.shortcutHint} aria-hidden="true">
+					<span className="absolute top-2 right-2 text-[10px] font-mono text-white/30 border border-white/10 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
 						{shortcutHint}
 					</span>
 				)}
+
 				{isSelected && (
-					<span className={styles.checkMark} aria-hidden="true">
+					<span className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs font-bold shadow-lg animate-in zoom-in spin-in-12 duration-300 z-20" aria-hidden="true">
 						✓
 					</span>
 				)}
+
 				{isRippling && isInteractive && (
-					<span className={styles.rippleEffect} style={rippleStyle} aria-hidden="true" />
+					<span
+						className="absolute rounded-full bg-white/20 pointer-events-none animate-ping"
+						style={{ ...rippleStyle, width: '100px', height: '100px', transform: 'translate(-50%, -50%)' }}
+						aria-hidden="true"
+					/>
 				)}
 			</Card>
+		</div>
+	);
 
-			{showTooltip && metadata && tooltipPosition.x > 0 && tooltipPosition.y > 0 && (
-				<div
-					className={styles.tooltip}
-					style={{
-						left: Math.min(
-							tooltipPosition.x + 10,
-							typeof window !== "undefined" ? window.innerWidth - 320 : tooltipPosition.x + 10,
-						),
-						top: Math.max(tooltipPosition.y - 10, 10),
-						zIndex: 1000,
-					}}
-				>
-					<div className={styles.tooltipContent}>
-						<div className={styles.tooltipHeader}>
-							<h3 className={styles.tooltipName}>{name}</h3>
-							{metadata.rank && <span className={styles.tooltipRank}>#{metadata.rank}</span>}
-						</div>
+	// Enhanced tooltip content for Name Cards
+	const TooltipContent = () => (
+		<div className="flex flex-col gap-2 p-1 min-w-[200px]">
+			<div className="flex justify-between items-center border-b border-white/10 pb-2">
+				<h3 className="font-bold text-white text-lg">{name}</h3>
+				{metadata?.rank && <span className="text-sm font-mono text-purple-400">#{metadata.rank}</span>}
+			</div>
 
-						{metadata.description && (
-							<p className={styles.tooltipDescription}>{metadata.description}</p>
-						)}
+			{metadata?.description && (
+				<p className="text-white/70 text-sm italic">{metadata.description}</p>
+			)}
 
-						<div className={styles.tooltipStats}>
-							{[
-								{ key: "rating", label: "Rating" },
-								{ key: "wins", label: "Wins" },
-								{ key: "losses", label: "Losses" },
-								{ key: "totalMatches", label: "Total Matches" },
-								{ key: "winRate", label: "Win Rate", suffix: "%" },
-							].map(({ key, label, suffix }) => {
-								const value = metadata[key];
-								return value !== undefined && value !== null ? (
-									<div key={key} className={styles.tooltipStat}>
-										<span className={styles.tooltipLabel}>{label}</span>
-										<span className={styles.tooltipValue}>
-											{String(value)}
-											{suffix}
-										</span>
-									</div>
-								) : null;
-							})}
-						</div>
-
-						{metadata.categories && metadata.categories.length > 0 && (
-							<div className={styles.tooltipCategories}>
-								<span className={styles.tooltipCategoriesLabel}>Categories:</span>
-								<div className={styles.tooltipCategoryTags}>
-									{metadata.categories.map((category, index) => (
-										<span key={index} className={styles.tooltipCategoryTag}>
-											{category}
-										</span>
-									))}
-								</div>
+			{metadata && (
+				<div className="grid grid-cols-2 gap-2 mt-2">
+					{[
+						{ key: "rating", label: "Rating" },
+						{ key: "wins", label: "Wins" },
+						{ key: "losses", label: "Losses" },
+						{ key: "totalMatches", label: "Matches" },
+						{ key: "winRate", label: "Win Rate", suffix: "%" },
+					].map(({ key, label, suffix }) => {
+						const value = metadata[key];
+						return value !== undefined && value !== null ? (
+							<div key={key} className="flex justify-between text-xs">
+								<span className="text-white/50">{label}</span>
+								<span className="font-mono text-white">
+									{String(value)}
+									{suffix}
+								</span>
 							</div>
-						)}
+						) : null;
+					})}
+				</div>
+			)}
+
+			{metadata?.categories && metadata.categories.length > 0 && (
+				<div className="mt-2 pt-2 border-t border-white/10">
+					<div className="flex flex-wrap gap-1">
+						{metadata.categories.map((category, index) => (
+							<span key={index} className="px-2 py-0.5 text-[10px] text-purple-300 bg-purple-900/30 rounded border border-purple-500/20">
+								{category}
+							</span>
+						))}
 					</div>
 				</div>
 			)}
 		</div>
+	);
+
+	return (
+		<Tooltip content={<TooltipContent />} delay={500} closeDelay={0} className="bg-neutral-900/90 border border-white/10 backdrop-blur-md p-4 rounded-xl shadow-xl">
+			{cardContent}
+		</Tooltip>
 	);
 });
 

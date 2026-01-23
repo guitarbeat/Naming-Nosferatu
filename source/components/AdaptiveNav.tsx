@@ -9,7 +9,7 @@ import { Lightbulb } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getBottomNavItems, MAIN_NAV_ITEMS } from "@/navigation";
 import useAppStore from "@/store/useAppStore";
-import styles from "./AdaptiveNav.module.css";
+import { cn } from "@/utils/cn";
 
 interface AdaptiveNavProps {
 	onOpenSuggestName?: () => void;
@@ -160,88 +160,44 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 
 	return (
 		<motion.div
-			className={styles.bottomNav}
+			className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[95vw]"
 			initial={{ y: 20, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ duration: 0.5, delay: 0.2 }}
 		>
-			<nav className={styles.bottomNavContainer} role="navigation" aria-label="Main navigation">
+			<nav
+				className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl"
+				role="navigation"
+				aria-label="Main navigation"
+			>
 				{/* Central Avatar Button - User Profile */}
-				<div
-					style={{
-						position: "relative",
-						margin: "0 0.5rem",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						gap: "0.125rem",
-					}}
-				>
+				<div className="flex flex-col items-center gap-0.5 mx-1 sm:mx-2 relative">
 					<div
-						className="group cursor-pointer"
+						className="group cursor-pointer relative"
 						onClick={() => appStore.uiActions.setEditingProfile(true)}
 						title="Edit Profile"
-						style={{ position: "relative" }}
 					>
 						{/* Glow effect */}
 						<div
-							style={{
-								position: "absolute",
-								inset: "-0.125rem",
-								background:
-									"linear-gradient(to right, var(--primary), var(--neon-accent, #00f0ff))",
-								borderRadius: "9999px",
-								filter: "blur(4px)",
-								opacity: 0.5,
-								transition: "opacity 300ms",
-							}}
-							className="group-hover:opacity-100"
+							className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300"
 						></div>
 						{/* Avatar container */}
-						<div
-							style={{
-								position: "relative",
-								width: "2.5rem",
-								height: "2.5rem",
-								borderRadius: "9999px",
-								border: "2px solid rgba(255, 255, 255, 0.3)",
-								overflow: "hidden",
-								boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-								backgroundColor: "rgb(15, 23, 42)",
-								zIndex: 10,
-							}}
-						>
+						<div className="relative w-10 h-10 rounded-full border-2 border-white/30 overflow-hidden shadow-lg bg-slate-900 z-10">
 							<img
 								alt="User Profile"
-								style={{
-									width: "100%",
-									height: "100%",
-									objectFit: "cover",
-									transition: "transform 300ms",
-								}}
-								className="group-hover:scale-110"
+								className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
 								src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
 							/>
 						</div>
 					</div>
 					{/* Username Label */}
-					<span
-						style={{
-							fontSize: "0.5625rem",
-							fontWeight: 600,
-							color: "rgba(255, 255, 255, 0.7)",
-							textTransform: "uppercase",
-							letterSpacing: "0.03em",
-							maxWidth: "5rem",
-							overflow: "hidden",
-							textOverflow: "ellipsis",
-							whiteSpace: "nowrap",
-							textAlign: "center",
-						}}
-					>
+					<span className="text-[9px] font-semibold text-white/70 uppercase tracking-wider max-w-[5rem] truncate text-center select-none pt-0.5">
 						{(appStore.user.name || "Profile").split(" ")[0]}
 					</span>
 				</div>
+
+				{/* Separator */}
+				<div className="w-px h-8 bg-white/10 mx-1" />
 
 				{bottomNavItems.map((item) => {
 					const itemActive = isActive(item.key);
@@ -268,7 +224,12 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					return (
 						<motion.button
 							key={item.key}
-							className={`${styles.bottomNavItem} ${itemActive ? styles.active : ""} ${isDisabled ? styles.disabled : ""} ${isHighlight ? styles.highlight : ""}`}
+							className={cn(
+								"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
+								itemActive ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
+								isDisabled && "opacity-40 cursor-not-allowed hover:bg-transparent hover:text-white/50",
+								isHighlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40"
+							)}
 							onClick={() => handleNavClick(item.key)}
 							aria-current={itemActive ? "page" : undefined}
 							aria-label={item.ariaLabel || item.label}
@@ -277,31 +238,31 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							animate={
 								isPlayReady
 									? {
-											scale: [1, 1.05, 1],
-											boxShadow: [
-												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
-												"0 0 20px rgba(var(--color-neon-cyan-rgb), 0.6)",
-												"0 0 12px rgba(var(--color-neon-cyan-rgb), 0.2)",
-											],
-										}
+										scale: [1, 1.05, 1],
+										boxShadow: [
+											"0 0 0 rgba(34, 211, 238, 0)",
+											"0 0 10px rgba(34, 211, 238, 0.3)",
+											"0 0 0 rgba(34, 211, 238, 0)",
+										],
+									}
 									: {}
 							}
 							transition={
 								isPlayReady
 									? {
-											duration: 2,
-											repeat: Infinity,
-											ease: "easeInOut",
-										}
+										duration: 2,
+										repeat: Infinity,
+										ease: "easeInOut",
+									}
 									: {}
 							}
 						>
-							{item.icon && <item.icon className={styles.bottomNavIcon} aria-hidden={true} />}
-							<span className={styles.bottomNavLabel}>{label}</span>
+							{item.icon && <item.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", isHighlight && "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]")} aria-hidden={true} />}
+							<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">{label}</span>
 							{itemActive && (
 								<motion.div
 									layoutId="dockIndicator"
-									className={styles.bottomNavIndicator}
+									className="absolute -bottom-1 w-8 h-1 bg-white/80 rounded-t-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
 									initial={false}
 									transition={{ type: "spring", stiffness: 500, damping: 30 }}
 								/>
@@ -312,18 +273,21 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 
 				{/* Inline Suggestion Trigger */}
 				<button
-					className={`${styles.bottomNavItem} ${isActive("suggest") ? styles.active : ""}`}
+					className={cn(
+						"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
+						isActive("suggest") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5"
+					)}
 					onClick={() => handleNavClick("suggest")}
 					aria-label="Suggest a name"
 					title="Suggest a name"
 					type="button"
 				>
-					<Lightbulb className={styles.bottomNavIcon} aria-hidden={true} />
-					<span className={styles.bottomNavLabel}>Suggest</span>
+					<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
+					<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">Suggest</span>
 					{isActive("suggest") && (
 						<motion.div
 							layoutId="dockIndicator"
-							className={styles.bottomNavIndicator}
+							className="absolute -bottom-1 w-8 h-1 bg-white/80 rounded-t-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
 							initial={false}
 							transition={{ type: "spring", stiffness: 500, damping: 30 }}
 						/>

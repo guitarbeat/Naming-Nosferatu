@@ -7,9 +7,9 @@
 import { ErrorComponent } from "@components/ErrorComponent";
 import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/providers";
+import { cn } from "@/utils/cn";
 import { ProfileMode } from "./modes/ProfileMode";
 import { type SwipeableCardsProps, TournamentMode } from "./modes/TournamentMode";
-import styles from "./NameManagementView.module.css";
 import {
 	type NameItem,
 	NameManagementProvider,
@@ -83,16 +83,16 @@ export function NameManagementView({
 		if (analysisMode && extensions.dashboard) {
 			return (
 				<div
-					className={`${styles.container} ${className}`}
+					className={cn("w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/5", className)}
 					data-component="name-management-view"
 					data-mode="analysis"
 				>
 					{extensions.header && (
-						<div className={styles.headerSection}>
+						<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
 							{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 						</div>
 					)}
-					<section className={styles.dashboardSection}>
+					<section className="w-full flex-1 min-h-[500px] animate-in fade-in zoom-in-95 duration-500 delay-100">
 						{React.isValidElement(extensions.dashboard)
 							? extensions.dashboard
 							: typeof extensions.dashboard === "function"

@@ -4,11 +4,11 @@
  * Provides responsive 2+ column layout on mobile, matching NameGrid patterns.
  */
 
+import { Skeleton, cn } from "@heroui/react";
 import { motion } from "framer-motion";
 import { ImageIcon, ZoomIn } from "lucide-react";
 import { memo, useMemo } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import styles from "./ImageGrid.module.css";
 
 interface ImageGridProps {
 	images: string[];
@@ -48,7 +48,7 @@ const ImageGridItem = memo(function ImageGridItem({
 	return (
 		<motion.div
 			ref={setRef}
-			className={styles.gridItem}
+			className="absolute top-0 left-0" // Masonry layout control
 			style={style}
 			custom={index}
 			variants={itemVariants}
@@ -58,20 +58,20 @@ const ImageGridItem = memo(function ImageGridItem({
 		>
 			<button
 				type="button"
-				className={styles.imageCard}
+				className="group relative w-full overflow-hidden rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 focus:outline-none focus:ring-2 focus:ring-purple-500"
 				onClick={onClick}
 				aria-label={`View image ${index + 1}`}
 			>
-				<div className={styles.imageWrapper}>
+				<div className="relative w-full h-full">
 					<img
 						src={src}
 						alt={`Gallery image ${index + 1}`}
-						className={styles.image}
+						className="w-full h-auto object-cover block"
 						loading="lazy"
 						decoding="async"
 					/>
-					<div className={styles.imageOverlay}>
-						<ZoomIn className={styles.overlayIcon} />
+					<div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+						<ZoomIn className="text-white opacity-0 transform scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 drop-shadow-md" />
 					</div>
 				</div>
 			</button>
@@ -104,14 +104,16 @@ function LoadingSkeleton({
 			{skeletons.map((pos, i) => (
 				<div
 					key={`skeleton-${i}`}
-					className={styles.skeleton}
+					className="absolute rounded-xl overflow-hidden bg-white/5 border border-white/5"
 					style={{
 						left: pos.left,
 						top: pos.top,
 						width: pos.width,
 						height: pos.height,
 					}}
-				/>
+				>
+					<Skeleton className="w-full h-full rounded-xl" />
+				</div>
 			))}
 		</>
 	);
@@ -119,9 +121,9 @@ function LoadingSkeleton({
 
 function EmptyState() {
 	return (
-		<div className={styles.emptyState}>
-			<ImageIcon className={styles.emptyIcon} />
-			<p className={styles.emptyText}>No images yet</p>
+		<div className="flex flex-col items-center justify-center py-20 text-white/40">
+			<ImageIcon className="w-16 h-16 mb-4 opacity-50" />
+			<p className="text-lg font-medium">No images yet</p>
 		</div>
 	);
 }
@@ -144,10 +146,10 @@ export const ImageGrid = memo(function ImageGrid({
 	}
 
 	return (
-		<div className={`${styles.imageGrid} ${className}`}>
+		<div className={cn("w-full mb-8", className)}>
 			<div
 				ref={containerRef}
-				className={styles.gridContainer}
+				className="relative w-full transition-[height] duration-200"
 				style={{ height: totalHeight || "auto" }}
 			>
 				{isLoading && images.length === 0 ? (

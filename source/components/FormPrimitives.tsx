@@ -7,7 +7,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";
-import styles from "./FormPrimitives.module.css";
+import { cn } from "@/utils/cn";
 
 // ============================================================================
 // TYPES
@@ -114,6 +114,16 @@ const useFormValidation = (
 };
 
 // ============================================================================
+// STYLES
+// ============================================================================
+
+const inputBaseStyles =
+	"flex h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50 disabled:cursor-not-allowed disabled:opacity-50 transition-all text-white backdrop-blur-sm";
+
+const errorStyles = "border-red-500/50 focus-visible:ring-red-500/50 animate-pulse";
+const successStyles = "border-green-500/50 focus-visible:ring-green-500/50";
+
+// ============================================================================
 // FORM FIELD WRAPPER
 // ============================================================================
 
@@ -138,11 +148,11 @@ export const FormField: React.FC<FormFieldProps> = ({
 
 	return (
 		<FormFieldContext.Provider value={{ id: fieldId, errorId, error: error || null }}>
-			<div className={`${styles.formField} ${className}`.trim()}>
+			<div className={cn("flex flex-col gap-2 w-full", className)}>
 				{label && (
-					<label htmlFor={fieldId} className={styles.label}>
+					<label htmlFor={fieldId} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/80 ml-1">
 						{label}
-						{required && <span className={styles.required}>*</span>}
+						{required && <span className="text-red-400 ml-1">*</span>}
 					</label>
 				)}
 				{children}
@@ -151,10 +161,10 @@ export const FormField: React.FC<FormFieldProps> = ({
 						<motion.div
 							id={errorId}
 							key={error}
-							initial={{ opacity: 0, y: -10 }}
+							initial={{ opacity: 0, y: -5 }}
 							animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: -10 }}
-							className={styles.errorText}
+							exit={{ opacity: 0, y: -5 }}
+							className="text-xs font-medium text-red-400 ml-1"
 							role="alert"
 						>
 							{error}
@@ -174,8 +184,8 @@ FormField.displayName = "FormField";
 
 interface InputProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">,
-		BaseFieldProps,
-		ValidationProps {}
+	BaseFieldProps,
+	ValidationProps { }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
@@ -225,19 +235,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 			!isValidating &&
 			String(value || "").length > 0;
 
-		const inputClasses = [
-			styles.input,
-			hasError && styles.inputError,
-			isSuccess && styles.inputSuccess,
-			hasError && styles.shake,
-			className,
-		]
-			.filter(Boolean)
-			.join(" ");
-
 		return (
 			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
-				<div className={styles.inputWrapper}>
+				<div className="relative">
 					<input
 						{...props}
 						id={id}
@@ -245,7 +245,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 						value={value}
 						onChange={handleChange}
 						onBlur={handleBlur}
-						className={inputClasses}
+						className={cn(
+							inputBaseStyles,
+							hasError && errorStyles,
+							isSuccess && successStyles,
+							className
+						)}
 						aria-invalid={hasError || undefined}
 						aria-describedby={hasError ? `${id}-error` : undefined}
 					/>
@@ -255,7 +260,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className={styles.feedbackIcon}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-green-400 pointer-events-none"
 							>
 								✅
 							</motion.span>
@@ -265,7 +270,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 								initial={{ scale: 0, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0, opacity: 0 }}
-								className={styles.feedbackIcon}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-red-400 pointer-events-none"
 							>
 								❌
 							</motion.span>
@@ -285,8 +290,8 @@ Input.displayName = "Input";
 
 interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
-		BaseFieldProps,
-		ValidationProps {}
+	BaseFieldProps,
+	ValidationProps { }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
@@ -336,15 +341,6 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 			!isValidating &&
 			String(value || "").length > 0;
 
-		const textareaClasses = [
-			styles.textarea,
-			hasError && styles.inputError,
-			isSuccess && styles.inputSuccess,
-			className,
-		]
-			.filter(Boolean)
-			.join(" ");
-
 		return (
 			<FormField id={id} label={label} error={hasError ? currentError : null} required={required}>
 				<textarea
@@ -354,7 +350,13 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 					value={value}
 					onChange={handleChange}
 					onBlur={handleBlur}
-					className={textareaClasses}
+					className={cn(
+						inputBaseStyles,
+						"min-h-[80px] py-3",
+						hasError && errorStyles,
+						isSuccess && successStyles,
+						className
+					)}
 					aria-invalid={hasError || undefined}
 					aria-describedby={hasError ? `${id}-error` : undefined}
 				/>
@@ -377,7 +379,7 @@ interface SelectOption {
 
 interface SelectProps
 	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className">,
-		BaseFieldProps {
+	BaseFieldProps {
 	options?: SelectOption[];
 	placeholder?: string;
 }
@@ -398,31 +400,39 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 		const internalId = useId();
 		const id = props.id || internalId;
 
-		const selectClasses = [styles.select, error && styles.inputError, className]
-			.filter(Boolean)
-			.join(" ");
-
 		return (
 			<FormField id={id} label={label} error={error} required={required}>
-				<select
-					{...props}
-					id={id}
-					ref={ref}
-					className={selectClasses}
-					aria-invalid={!!error}
-					aria-describedby={error ? `${id}-error` : undefined}
-				>
-					{placeholder && (
-						<option value="" disabled={true}>
-							{placeholder}
-						</option>
-					)}
-					{options.map((option) => (
-						<option key={option.value} value={option.value} disabled={option.disabled}>
-							{option.label}
-						</option>
-					))}
-				</select>
+				<div className="relative">
+					<select
+						{...props}
+						id={id}
+						ref={ref}
+						className={cn(
+							inputBaseStyles,
+							"appearance-none cursor-pointer",
+							error && errorStyles,
+							className
+						)}
+						aria-invalid={!!error}
+						aria-describedby={error ? `${id}-error` : undefined}
+					>
+						{placeholder && (
+							<option value="" disabled={true} className="text-gray-500 bg-neutral-900">
+								{placeholder}
+							</option>
+						)}
+						{options.map((option) => (
+							<option key={option.value} value={option.value} disabled={option.disabled} className="bg-neutral-900 text-white py-2">
+								{option.label}
+							</option>
+						))}
+					</select>
+					<div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/50">
+						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+							<path d="m6 9 6 6 6-6" />
+						</svg>
+					</div>
+				</div>
 			</FormField>
 		);
 	},
@@ -445,11 +455,11 @@ export const FormActions: React.FC<FormActionsProps> = ({
 	align = "end",
 	className = "",
 }) => {
-	const alignmentClass =
-		align === "start" ? styles.actionsStart : align === "center" ? styles.actionsCenter : "";
+	const justifyClass =
+		align === "start" ? "justify-start" : align === "center" ? "justify-center" : "justify-end";
 
 	return (
-		<div className={`${styles.formActions} ${alignmentClass} ${className}`.trim()}>{children}</div>
+		<div className={cn("flex items-center gap-4 mt-6", justifyClass, className)}>{children}</div>
 	);
 };
 

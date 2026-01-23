@@ -8,10 +8,10 @@ import { Plus } from "lucide-react";
 import React, { useId, useMemo } from "react";
 import { FILTER_OPTIONS } from "@/constants";
 import useAppStore from "@/store/useAppStore";
+import { cn } from "@/utils";
 import Button from "./Button";
 import { Select } from "./FormPrimitives";
 import LiquidGlass from "./LiquidGlass";
-import "./TournamentToolbar.css";
 
 // ============================================================================
 // CONFIGURATION
@@ -38,37 +38,6 @@ const TOOLBAR_GLASS_CONFIGS = {
 		inputBlur: 12,
 		outputBlur: 0.8,
 	},
-};
-
-const styles = {
-	toolbarContainer: "tournament-toolbar-container",
-	toggleStack: "tournament-toolbar-toggle-stack",
-	filtersContainer: "tournament-toolbar-filters-container",
-	startButton: "tournament-toolbar-start-button",
-	startButtonWrapper: "tournament-toolbar-start-button-wrapper",
-	startButtonHint: "tournament-toolbar-start-button-hint",
-	toggleWrapper: "tournament-toolbar-toggle-wrapper",
-	toggleSwitch: "tournament-toolbar-toggle-switch",
-	toggleSwitchActive: "tournament-toolbar-toggle-switch-active",
-	toggleThumb: "tournament-toolbar-toggle-thumb",
-	toggleLabel: "tournament-toolbar-toggle-label",
-	resultsCount: "tournament-toolbar-results-count",
-	count: "tournament-toolbar-count",
-	separator: "tournament-toolbar-separator",
-	total: "tournament-toolbar-total",
-	badge: "tournament-toolbar-badge",
-	badgeTotal: "tournament-toolbar-badge-total",
-	filtersGrid: "tournament-toolbar-filters-grid",
-	filterRow: "tournament-toolbar-filter-row",
-	filterGroup: "tournament-toolbar-filter-group",
-	sortGroup: "tournament-toolbar-sort-group",
-	filterLabel: "tournament-toolbar-filter-label",
-	filterSelect: "tournament-toolbar-filter-select",
-	sortControls: "tournament-toolbar-sort-controls",
-	sortOrderButton: "tournament-toolbar-sort-order-button",
-	sortIcon: "tournament-toolbar-sort-icon",
-	suggestButton: "tournament-toolbar-suggest-button",
-	unifiedContainer: "tournament-toolbar-unified-container",
 };
 
 const FILTER_CONFIGS = {
@@ -164,8 +133,8 @@ interface FilterSelectProps {
 
 function FilterSelect({ id, label, value, options, onChange }: FilterSelectProps) {
 	return (
-		<div className={styles.filterGroup}>
-			<label htmlFor={id} className={styles.filterLabel}>
+		<div className="flex flex-col gap-1.5 flex-1 min-w-[180px]">
+			<label htmlFor={id} className="text-xs font-semibold text-white/50 tracking-wide ml-1">
 				{label}
 			</label>
 			<Select
@@ -173,7 +142,7 @@ function FilterSelect({ id, label, value, options, onChange }: FilterSelectProps
 				value={value || ""}
 				onChange={(e: React.ChangeEvent<HTMLSelectElement>) => onChange(e.target.value || null)}
 				options={options}
-				className={styles.filterSelect}
+				className="w-full bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 hover:bg-white/10 transition-colors py-2 px-3"
 			/>
 		</div>
 	);
@@ -265,23 +234,23 @@ function FilterModeToolbar({
 	const isAsc = filters.sortOrder === FILTER_OPTIONS.ORDER.ASC;
 
 	return (
-		<div className={styles.filtersContainer}>
-			<div className={styles.resultsCount}>
-				<span className={styles.count}>{filteredCount.toLocaleString()}</span>
+		<div className="flex flex-col gap-3 p-4 bg-black/40 border border-white/10 rounded-xl backdrop-blur-md shadow-xl">
+			<div className="flex items-baseline gap-1.5 text-xs font-medium text-white/50 bg-white/5 px-3 py-1.5 rounded-lg w-fit">
+				<span className="text-base font-bold text-white tabular-nums">{filteredCount.toLocaleString()}</span>
 				{filteredCount !== totalCount && (
 					<>
-						<span className={styles.separator}>/</span>
-						<span className={styles.total}>{totalCount.toLocaleString()}</span>
-						<span className={styles.badge}>filtered</span>
+						<span className="opacity-50">/</span>
+						<span className="text-white/70">{totalCount.toLocaleString()}</span>
+						<span className="opacity-70">filtered</span>
 					</>
 				)}
 				{filteredCount === totalCount && (
-					<span className={`${styles.badge} ${styles.badgeTotal}`}>total</span>
+					<span className="opacity-70">total</span>
 				)}
 			</div>
 
 			{isHybrid && categories.length > 0 && (
-				<div className={styles.filterRow}>
+				<div className="flex flex-wrap gap-2">
 					<FilterSelect
 						id="filter-category"
 						label="Category"
@@ -293,8 +262,8 @@ function FilterModeToolbar({
 			)}
 
 			{showFilters && (
-				<div className={styles.filtersGrid}>
-					<div className={styles.filterRow}>
+				<div className="flex flex-col gap-3">
+					<div className="flex flex-wrap gap-2">
 						<FilterSelect
 							id="filter-status"
 							label="Status"
@@ -337,12 +306,12 @@ function FilterModeToolbar({
 							/>
 						)}
 					</div>
-					<div className={styles.filterRow}>
-						<div className={styles.sortGroup}>
-							<label htmlFor="filter-sort" className={styles.filterLabel}>
+					<div className="flex flex-wrap gap-2">
+						<div className="flex flex-col gap-1.5 flex-1 min-w-[180px]">
+							<label htmlFor="filter-sort" className="text-xs font-semibold text-white/50 tracking-wide ml-1">
 								Sort By
 							</label>
-							<div className={styles.sortControls}>
+							<div className="flex items-stretch gap-1">
 								<Select
 									name="filter-sort"
 									value={
@@ -353,7 +322,7 @@ function FilterModeToolbar({
 										onFilterChange?.("sortBy", e.target.value)
 									}
 									options={FILTER_CONFIGS.sort}
-									className={styles.filterSelect}
+									className="flex-1 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 hover:bg-white/10 transition-colors py-2 px-3"
 								/>
 								<button
 									type="button"
@@ -363,11 +332,11 @@ function FilterModeToolbar({
 											(isAsc ? FILTER_OPTIONS.ORDER.DESC : FILTER_OPTIONS.ORDER.ASC) as string,
 										)
 									}
-									className={styles.sortOrderButton}
+									className="flex items-center justify-center w-10 font-bold text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-purple-500/50 transition-all"
 									title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
 									aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
 								>
-									<SortOrderIcon direction={isAsc ? "asc" : "desc"} className={styles.sortIcon} />
+									<SortOrderIcon direction={isAsc ? "asc" : "desc"} className="w-4 h-4 opacity-70" />
 								</button>
 							</div>
 						</div>
@@ -432,6 +401,40 @@ function TournamentToolbar({
 	const { selectedNames } = useAppStore((state) => state.tournament);
 	const selectedCount = selectedNames?.length || 0;
 
+	// Toggle Button Helper
+	const ToggleButton = ({
+		active,
+		onClick,
+		label,
+		icon
+	}: {
+		active: boolean;
+		onClick: () => void;
+		label: string;
+		icon?: React.ReactNode
+	}) => (
+		<button
+			type="button"
+			onClick={onClick}
+			className={cn(
+				"relative flex items-center justify-between min-w-[100px] px-4 py-2 gap-2 text-sm font-medium rounded-full transition-all duration-200 border",
+				active
+					? "bg-purple-500/20 text-white border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:bg-purple-500/30"
+					: "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white"
+			)}
+		>
+			<span
+				className={cn(
+					"w-2 h-2 rounded-full transition-all duration-300",
+					active ? "bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" : "bg-white/20"
+				)}
+			/>
+			<span className="flex-1 text-center font-bold tracking-wide">
+				{icon} {label}
+			</span>
+		</button>
+	);
+
 	// Tournament mode toolbar content
 	const renderTournamentMode = () => {
 		const isReady = selectedCount >= 2;
@@ -446,71 +449,45 @@ function TournamentToolbar({
 
 		return (
 			<div
-				className={styles.unifiedContainer}
+				className="flex flex-col gap-3 p-4 w-full items-center justify-center max-w-3xl mx-auto"
 				data-mode={mode}
-				style={{ flexDirection: "column", gap: "var(--space-3)", padding: "var(--space-4)" }}
 			>
-				<div className={styles.toggleStack} style={{ justifyContent: "center", width: "100%" }}>
-					<div className={styles.toggleWrapper}>
-						<button
-							type="button"
+				{/* Toggle Stack */}
+				<div className="flex flex-wrap items-center justify-center gap-2 p-1 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg">
+					<div className="flex-0">
+						<ToggleButton
+							active={isSwipeMode}
 							onClick={() => setSwipeMode(!isSwipeMode)}
-							className={`${styles.toggleSwitch} ${isSwipeMode ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={isSwipeMode}
-							aria-label={isSwipeMode ? "Disable swipe mode" : "Enable swipe mode"}
-							title={isSwipeMode ? "Swipe mode: On" : "Swipe mode: Off"}
-						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>{isSwipeMode ? "Swipe Mode" : "Grid Mode"}</span>
-						</button>
+							label={isSwipeMode ? "Swipe Mode" : "Grid Mode"}
+						/>
 					</div>
-					<div className={styles.toggleWrapper}>
-						<button
-							type="button"
+					<div className="flex-0">
+						<ToggleButton
+							active={showCatPictures}
 							onClick={() => setCatPictures(!showCatPictures)}
-							className={`${styles.toggleSwitch} ${showCatPictures ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={showCatPictures}
-							aria-label={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
-							title={showCatPictures ? "Cat pictures: On" : "Cat pictures: Off"}
-						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>
-								🐱 {showCatPictures ? "Cats On" : "Cats Off"}
-							</span>
-						</button>
+							label={showCatPictures ? "Cats On" : "Cats Off"}
+							icon={showCatPictures ? "🐱" : ""}
+						/>
 					</div>
 
 					{/* Progressive Disclosure: Filter Toggle */}
-					<div className={styles.toggleWrapper}>
-						<button
-							type="button"
+					<div className="flex-0">
+						<ToggleButton
+							active={showFiltersInTournament}
 							onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
-							className={`${styles.toggleSwitch} ${showFiltersInTournament ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={showFiltersInTournament}
-							aria-label={showFiltersInTournament ? "Hide filters" : "Show filters"}
-							title="Toggle search and filters"
-						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>{showFiltersInTournament ? "❌" : "🔍"}</span>
-						</button>
+							label=""
+							icon={showFiltersInTournament ? "❌" : "🔍"}
+						/>
 					</div>
 				</div>
 
-				<div
-					style={{
-						minHeight: "24px",
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
+				<div className="min-h-[24px] flex items-center justify-center">
 					{selectedCount > 0 && selectedCount < 2 && (
-						<div className={styles.startButtonHint}>Select at least 2 names to start</div>
+						<div className="text-xs font-medium text-white/50 animate-pulse">Select at least 2 names to start</div>
 					)}
 					{selectedCount >= 2 && (
 						<div
-							className={styles.startButtonHint}
-							style={{ color: "var(--color-neon-cyan)", fontWeight: 600 }}
+							className="text-xs font-bold text-cyan-400 animate-bounce"
 						>
 							Ready! Click "Start" in the dock below ↓
 						</div>
@@ -518,18 +495,23 @@ function TournamentToolbar({
 				</div>
 
 				{startTournamentButton && (
-					<div className={styles.startButtonWrapper} title={tooltipText}>
+					<div className="relative flex flex-col items-center gap-1 w-full" title={tooltipText}>
 						<Button
 							onClick={startTournamentButton.onClick}
 							disabled={!isReady}
-							className={styles.startButton}
+							className={cn(
+								"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
+								isReady
+									? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
+									: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50"
+							)}
 							aria-label={buttonLabel}
 							startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
 						>
 							{buttonLabel}
 						</Button>
 						{!isReady && selectedCount > 0 && (
-							<span className={styles.startButtonHint} role="status" aria-live="polite">
+							<span className="text-xs text-white/30" role="status" aria-live="polite">
 								{selectedCount === 1
 									? "Select 1 more name"
 									: `Select ${2 - selectedCount} more names`}

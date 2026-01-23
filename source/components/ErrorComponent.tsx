@@ -5,8 +5,8 @@
  */
 
 import type React from "react";
+import { cn } from "@/utils/cn";
 import { ErrorBoundary, type ErrorFallbackProps } from "./ErrorBoundary";
-import styles from "./ErrorComponent.module.css";
 
 /* ========================================= */
 /*             ERROR COMPONENTS              */
@@ -63,21 +63,31 @@ const ErrorList: React.FC<ErrorListProps> = ({
 		return null;
 	}
 	return (
-		<div className={`${styles.list} ${className}`}>
+		<div className={cn("flex flex-col gap-2 w-full", className)}>
 			{onClearAll && (
-				<button onClick={onClearAll} className={styles.listClearAllButton}>
+				<button
+					onClick={onClearAll}
+					className="self-end text-xs font-medium text-red-300 hover:text-red-100 hover:scale-105 transition-all outline-none focus:ring-2 focus:ring-red-500/50 rounded px-1"
+				>
 					Clear All
 				</button>
 			)}
-			<div className={styles.listItems}>
+			<div className="flex flex-col gap-2">
 				{errors.map((err, i) => (
-					<div key={i} className={styles.listItem}>
-						<div className={styles.listMessage}>
+					<div
+						key={i}
+						className="relative flex items-center justify-between p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm animate-in fade-in slide-in-from-top-1 shadow-sm backdrop-blur-sm"
+					>
+						<div className="flex-1 break-words font-medium">
 							{/* biome-ignore lint/suspicious/noExplicitAny: Simple display */}
 							{(err as any).message || String(err)}
 						</div>
 						{onDismiss && (
-							<button onClick={() => onDismiss(i)} className={styles.listDismissButton}>
+							<button
+								onClick={() => onDismiss(i)}
+								className="ml-3 p-1 text-red-400 hover:text-red-100 rounded-full hover:bg-red-500/20 transition-colors"
+								aria-label="Dismiss error"
+							>
 								×
 							</button>
 						)}
@@ -104,11 +114,15 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	}
 	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
-		<div className={`${styles.inline} ${styles.inlineGeneral} ${className}`} role="alert">
-			<div className={styles.inlineContent}>
-				<span className={styles.inlineIcon}>⚠️</span>
-				<span className={styles.inlineMessage}>{msg}</span>
-			</div>
+		<div
+			className={cn(
+				"flex items-start gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-100 text-sm shadow-sm backdrop-blur-sm",
+				className
+			)}
+			role="alert"
+		>
+			<span className="text-lg leading-none select-none">⚠️</span>
+			<span className="font-medium pt-0.5 leading-tight">{msg}</span>
 		</div>
 	);
 };

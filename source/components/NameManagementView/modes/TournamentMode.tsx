@@ -3,7 +3,7 @@ import { NameGrid } from "@components/NameGrid";
 import { TournamentToolbar } from "@components/TournamentToolbar";
 import React from "react";
 import type { NameItem } from "@/types/components";
-import styles from "../NameManagementView.module.css";
+import { cn } from "@/utils/cn";
 import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 
 export interface SwipeableCardsProps {
@@ -85,23 +85,23 @@ export function TournamentMode({
 				filteredCount={filteredCount}
 			/>
 
-			<div className={styles.container} data-mode="tournament">
+			<div className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-6 px-4 pb-20" data-mode="tournament">
 				{/* Header Extension */}
 				{extensions.header && (
-					<div className={styles.headerSection}>
+					<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
 						{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 					</div>
 				)}
 
 				{/* Header Actions (Show Selected Toggle) */}
 				{!extensions.nameGrid && (
-					<nav className={styles.tournamentActions}>
+					<nav className="w-full flex justify-end gap-2 my-2">
 						{selectedCount > 0 && (
 							<Button
 								variant={showSelectedOnly ? "primary" : "secondary"}
 								size="small"
 								onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-								className={styles.actionButton}
+								className="font-medium whitespace-nowrap min-w-[140px]"
 							>
 								{showSelectedOnly ? "👁️ Show All Names" : "👀 Show Selected Only"}
 							</Button>
@@ -112,26 +112,27 @@ export function TournamentMode({
 				{/* Progress Bar */}
 				{!extensions.nameGrid && (
 					<div
-						className={styles.progressSection}
+						className="w-full my-4 flex flex-col gap-2"
 						role="progressbar"
 						aria-valuenow={selectedCount}
 						aria-valuemin={0}
 						aria-valuemax={names.length}
 						aria-label="Selection Progress"
 					>
-						<div className={styles.progressBar}>
+						<div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">
 							<div
-								className={styles.progressFill}
+								className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(168,85,247,0.4)]"
 								style={{
 									width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 5)}%`,
 								}}
 							/>
 						</div>
-						<span className={styles.progressText}>
-							{selectedCount} of {names.length} names selected
+						<span className="text-sm text-white/60 font-medium flex justify-between items-center px-1">
+							<span>
+								{selectedCount} of {names.length} names selected
+							</span>
 							{selectedCount < 2 && (
-								<span className={styles.progressHint} role="status" aria-live="polite">
-									{" "}
+								<span className="text-yellow-400 font-bold ml-1 animate-pulse" role="status" aria-live="polite">
 									(Need {2 - selectedCount} more to start tournament)
 								</span>
 							)}
@@ -140,7 +141,7 @@ export function TournamentMode({
 				)}
 
 				{/* Name Grid */}
-				<section className={styles.gridSection}>
+				<section className="w-full flex-1">
 					{extensions.nameGrid ? (
 						extensions.nameGrid
 					) : isSwipeMode && swipeableCards && !isLoading ? (

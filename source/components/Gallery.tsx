@@ -6,6 +6,7 @@
 
 import { imagesAPI } from "@supabase/client";
 import type React from "react";
+import { ChevronLeft, ChevronRight, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { compressImageFile, devError } from "@/utils";
 import { ImageGrid } from "./ImageGrid";
@@ -152,14 +153,14 @@ export function PhotoGallery({
 	};
 
 	return (
-		<div className="photoGallery">
-			<div className="photoGalleryHeader">
-				<h3 className="photoGalleryTitle">
+		<div className="flex flex-col gap-6 w-full">
+			<div className="flex justify-between items-center mb-2">
+				<h3 className="text-xl font-bold text-white">
 					{/* Header hidden in fullscreen usually, or we can keep it */}
 					{/* Cat Photos */}
 				</h3>
 				{isAdmin && (
-					<label className="photoUploadButton">
+					<label className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-all font-medium text-sm border border-purple-500/20 active:scale-95 shadow-lg shadow-purple-900/20">
 						<input
 							type="file"
 							accept="image/*"
@@ -167,14 +168,19 @@ export function PhotoGallery({
 							onChange={handleFileUpload}
 							style={{ display: "none" }}
 						/>
-						📤 Upload
+						<Upload size={16} />
+						<span>Upload</span>
 					</label>
 				)}
 			</div>
 			<ImageGrid images={displayImages} onImageOpen={onImageOpen} />
 			{/* Only show button if NOT in showAll mode (e.g. widget mode) */}
 			{!showAllPhotos && galleryImages.length > 8 && (
-				<button type="button" className="showAllPhotosButton" onClick={onShowAllPhotosToggle}>
+				<button
+					type="button"
+					className="w-full py-3 mt-2 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white border border-white/5 hover:border-white/10 rounded-xl transition-all font-medium text-sm"
+					onClick={onShowAllPhotosToggle}
+				>
 					Show All {galleryImages.length} Photos
 				</button>
 			)}
@@ -213,29 +219,40 @@ export function Lightbox({
 	}
 
 	return (
-		<div className="lightboxOverlay" onClick={onClose}>
-			<div className="lightboxContent" onClick={(e) => e.stopPropagation()}>
-				<button type="button" className="lightboxClose" onClick={onClose}>
-					×
+		<div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200" onClick={onClose}>
+			<div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+				<button
+					type="button"
+					className="absolute top-4 right-4 z-[110] p-3 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all"
+					onClick={onClose}
+				>
+					<X size={24} />
 				</button>
 				<button
 					type="button"
-					className="lightboxNav left"
+					className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1)}
 				>
-					‹
+					<ChevronLeft size={32} />
 				</button>
-				<div className="lightboxImageWrap">
-					<img src={current} alt={`Photo ${currentIndex + 1}`} className="lightboxImage" />
+
+				<div className="relative max-w-[95vw] max-h-[95vh] w-full h-full p-4 md:p-12 flex items-center justify-center">
+					<img
+						src={current}
+						alt={`Photo ${currentIndex + 1}`}
+						className="max-w-full max-h-full object-contain drop-shadow-2xl rounded-sm"
+					/>
 				</div>
+
 				<button
 					type="button"
-					className="lightboxNav right"
+					className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1)}
 				>
-					›
+					<ChevronRight size={32} />
 				</button>
-				<div className="lightboxCounter">
+
+				<div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 font-mono text-sm bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/5">
 					{currentIndex + 1} / {images.length}
 				</div>
 			</div>

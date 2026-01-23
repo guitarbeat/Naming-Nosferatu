@@ -2,7 +2,6 @@ import { useCallback, useState } from "react";
 import { Lightbox, PhotoGallery, useImageGallery } from "@/components/Gallery";
 import useAppStore from "@/store/useAppStore";
 import { useAdminStatus } from "../auth/authHooks";
-import "@/styles/components/gallery.css";
 
 export default function GalleryView() {
 	const userName = useAppStore((state) => state.user.name);
@@ -36,21 +35,12 @@ export default function GalleryView() {
 	);
 
 	return (
-		<div
-			className="gallery-page-container"
-			style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}
-		>
-			<div className="gallery-header-section" style={{ textAlign: "center", marginBottom: "3rem" }}>
-				<h2
-					style={{
-						fontSize: "2.5rem",
-						fontWeight: 800,
-						marginBottom: "0.5rem",
-					}}
-				>
+		<div className="w-full max-w-7xl mx-auto px-4 py-8 md:p-8">
+			<div className="text-center mb-12 space-y-2">
+				<h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-2 tracking-tight">
 					Photo Gallery
 				</h2>
-				<p style={{ opacity: 0.7 }}>Click any photo to view full size</p>
+				<p className="text-lg text-white/60">Click any photo to view full size</p>
 			</div>
 
 			<PhotoGallery

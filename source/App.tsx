@@ -8,7 +8,6 @@
  */
 
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import styles from "./App.module.css";
 import { AppLayout } from "./AppLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loading } from "./components/Loading";
@@ -19,6 +18,7 @@ import useUserSession from "./hooks/useUserSession";
 import { ErrorManager } from "./services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "./store/useAppStore";
 import { cleanupPerformanceMonitoring, devError, initializePerformanceMonitoring } from "./utils";
+import { cn } from "./utils/cn";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
@@ -89,22 +89,17 @@ function App() {
 		[login],
 	);
 
-	const appClassName = useMemo(
-		() => (user.isLoggedIn ? "app" : "app app--login"),
-		[user.isLoggedIn],
-	);
-
 	// Show loading screen while initializing
 	if (!isInitialized) {
 		return (
-			<div className="fullScreenCenter">
+			<div className="fixed inset-0 flex items-center justify-center bg-black">
 				<Loading variant="spinner" text="Loading..." />
 			</div>
 		);
 	}
 
 	return (
-		<div className={appClassName}>
+		<div className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30", !user.isLoggedIn && "overflow-hidden")}>
 			<AppLayout
 				handleLogin={handleLogin}
 				handleStartNewTournament={handleStartNewTournament}
@@ -126,7 +121,7 @@ function App() {
 						{/* Analysis Section - Only visible after tournament completion and if not in gallery mode */}
 						{tournament.isComplete && !ui.showGallery && (
 							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
-								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center gradient-text">
+								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
 									Analyze
 								</h2>
 								<ErrorBoundary context="Analysis Dashboard">
@@ -151,7 +146,7 @@ function App() {
 				variant="container"
 				toasts={toasts}
 				removeToast={removeToast}
-				className={styles.toastContainer}
+				className="fixed bottom-24 right-4 z-50 flex flex-col gap-2 pointer-events-none"
 			/>
 		</div>
 	);

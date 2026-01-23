@@ -5,8 +5,10 @@
 
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
+import { Skeleton, Spinner, cn } from "@heroui/react";
+import { motion } from "framer-motion";
+import { Cat, Heart, PawPrint } from "lucide-react";
 import { BongoCat } from "./BongoCat";
-import styles from "./Loading.module.css";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
 
@@ -37,110 +39,81 @@ export interface LoadingProps {
 	size?: "small" | "medium" | "large";
 }
 
-// Cat spinner sub-component
+// Cat spinner sub-component using Lucide icons and Framer Motion
 const CatSpinnerContent: React.FC<{
 	catVariant: CatVariant;
 	showFace: boolean;
-}> = memo(({ catVariant, showFace }) => {
+	size?: "small" | "medium" | "large";
+}> = memo(({ catVariant, showFace, size = "medium" }) => {
+	const iconSize = size === "large" ? 48 : size === "medium" ? 32 : 24;
+
 	switch (catVariant) {
 		case "paw":
 			return (
-				<>
-					<div className={styles.pawContainer}>
-						<div className={styles.paw}>
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-						</div>
-					</div>
-					{showFace && <div className={styles.catFace} />}
-				</>
+				<motion.div
+					animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+					transition={{ duration: 1.5, repeat: Infinity }}
+					className="text-pink-500"
+				>
+					<PawPrint size={iconSize} />
+				</motion.div>
 			);
 
 		case "tail":
-			return (
-				<>
-					<div className={styles.tailContainer}>
-						<div className={styles.tail}>
-							<div className={styles.tailSegment} />
-							<div className={styles.tailSegment} />
-							<div className={styles.tailSegment} />
-							<div className={styles.tailSegment} />
-							<div className={styles.tailSegment} />
-						</div>
-					</div>
-					{showFace && <div className={styles.catFace} />}
-				</>
-			);
-
 		case "bounce":
 			return (
-				<>
-					<div className={styles.bounceContainer}>
-						<div className={styles.bouncingCat}>
-							<div className={styles.catBody} />
-							<div className={styles.catHead} />
-						</div>
-					</div>
-					{showFace && <div className={styles.catFace} />}
-				</>
+				<motion.div
+					animate={{ y: [0, -10, 0] }}
+					transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+					className="text-purple-500"
+				>
+					<Cat size={iconSize} />
+				</motion.div>
 			);
 
 		case "spin":
 			return (
-				<div className={styles.spinContainer}>
-					<div className={styles.spinningCat}>
-						{showFace && (
-							<>
-								<div className={styles.ear} />
-								<div className={styles.ear} />
-								<div className={styles.eye} />
-								<div className={styles.eye} />
-								<div className={styles.nose} />
-							</>
-						)}
-					</div>
-				</div>
+				<motion.div
+					animate={{ rotate: 360 }}
+					transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+					className="text-cyan-500"
+				>
+					<Cat size={iconSize} />
+				</motion.div>
 			);
 
 		case "heartbeat":
 			return (
-				<>
-					<div className={styles.heartbeatContainer}>
-						<div className={styles.heartCat}>
-							<div className={styles.heartShape} />
-							<div className={styles.heartEyes} />
-						</div>
-					</div>
-					{showFace && <div className={styles.catFace} />}
-				</>
+				<div className="relative flex items-center justify-center">
+					<motion.div
+						animate={{ scale: [1, 1.3, 1] }}
+						transition={{ duration: 0.8, repeat: Infinity }}
+						className="text-red-500 absolute"
+					>
+						<Heart size={iconSize} fill="currentColor" />
+					</motion.div>
+					{showFace && <Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />}
+				</div>
 			);
 
 		case "orbit":
 			return (
-				<div className={styles.orbitContainer}>
-					<div className={styles.orbitRing}>
-						<div className={styles.orbitCat} />
-					</div>
-					{showFace && <div className={styles.catFace} />}
+				<div className="relative flex items-center justify-center w-12 h-12">
+					<motion.div
+						animate={{ rotate: 360 }}
+						transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+						className="absolute w-full h-full"
+					>
+						<div className="absolute top-0 left-1/2 -translate-x-1/2 text-yellow-500">
+							<Cat size={16} />
+						</div>
+					</motion.div>
+					{showFace && <div className="text-xl">🐱</div>}
 				</div>
 			);
 
 		default:
-			return (
-				<>
-					<div className={styles.pawContainer}>
-						<div className={styles.paw}>
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-							<div className={styles.pawPad} />
-						</div>
-					</div>
-					{showFace && <div className={styles.catFace} />}
-				</>
-			);
+			return <Spinner color="secondary" size={size === "small" ? "sm" : size === "large" ? "lg" : "md"} />;
 	}
 });
 
@@ -150,7 +123,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 	({
 		variant = "spinner",
 		catVariant = "paw",
-		catColor = "neon",
+		// catColor = "neon", // Deprecated but kept for direct prop compatibility if passed
 		showCatFace = true,
 		text,
 		overlay = false,
@@ -164,6 +137,13 @@ export const Loading: React.FC<LoadingProps> = memo(
 		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
 		const isVideo = (randomAsset || "").endsWith(".webm");
 
+		// Container classes
+		const containerClasses = cn(
+			"flex flex-col items-center justify-center gap-3 p-4",
+			overlay && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
+			className
+		);
+
 		// Suspense variant
 		if (variant === "suspense") {
 			if (!children) {
@@ -171,22 +151,20 @@ export const Loading: React.FC<LoadingProps> = memo(
 			}
 
 			const fallback = (
-				<div
-					className={`${styles.loadingContainer} ${overlay ? styles.loadingOverlay : ""} ${className}`}
-				>
+				<div className={containerClasses}>
 					{isVideo ? (
 						<video
 							src={randomAsset}
-							className={styles.loadingGif}
+							className="w-24 h-24 object-contain rounded-full bg-white/5 p-2"
 							autoPlay={true}
 							muted={true}
 							loop={true}
 						/>
 					) : (
-						<img src={randomAsset} alt="Loading..." className={styles.loadingGif} />
+						<img src={randomAsset} alt="Loading..." className="w-24 h-24 object-contain" />
 					)}
-					{text && <p className={styles.loadingText}>{text}</p>}
-					<span className={styles.srOnly}>Loading...</span>
+					{text && <p className="text-sm font-medium text-white/70 animate-pulse">{text}</p>}
+					<span className="sr-only">Loading...</span>
 				</div>
 			);
 
@@ -196,76 +174,49 @@ export const Loading: React.FC<LoadingProps> = memo(
 		// Skeleton variant
 		if (variant === "skeleton") {
 			return (
-				<div
-					className={`${styles.skeleton} ${className}`}
+				<Skeleton
+					className={cn("rounded-lg bg-white/5", className)}
 					style={{
 						width,
 						height: typeof height === "number" ? `${height}px` : height,
 					}}
-					role="presentation"
-					aria-hidden="true"
-				>
-					<div className={styles.skeletonShimmer} />
-				</div>
+				/>
 			);
 		}
 
 		// Card skeleton variant
 		if (variant === "card-skeleton") {
-			const cardClasses = [
-				styles.cardSkeleton,
-				styles[cardSkeletonVariant || "name-card"],
-				className,
-			]
-				.filter(Boolean)
-				.join(" ");
-
 			return (
 				<div
-					className={cardClasses}
-					role="presentation"
-					aria-hidden="true"
+					className={cn(
+						"rounded-xl overflow-hidden border border-white/5 bg-white/5 backdrop-blur-sm flex flex-col p-4 gap-3",
+						cardSkeletonVariant === "elevated-card" && "shadow-lg",
+						className
+					)}
 					style={{
 						width,
 						height: typeof height === "number" ? `${height}px` : height,
+						minHeight: typeof height === "number" ? `${height}px` : cardSkeletonVariant === "name-card" ? "200px" : "auto"
 					}}
 				>
-					{/* Card background with glass effect */}
-					<div className={styles.cardSkeletonBackground}>
-						<div className={styles.cardSkeletonShimmer} />
-					</div>
-
-					{/* Card content structure */}
-					<div className={styles.cardSkeletonContent}>
-						{/* Avatar/Icon placeholder */}
-						<div className={styles.cardSkeletonAvatar} />
-
-						{/* Text content placeholders */}
-						<div className={styles.cardSkeletonText}>
-							<div className={styles.cardSkeletonTitle} />
-							<div className={styles.cardSkeletonSubtitle} />
+					<div className="flex items-center gap-3">
+						<Skeleton className="rounded-full w-10 h-10" />
+						<div className="flex flex-col gap-2 flex-1">
+							<Skeleton className="h-4 w-3/4 rounded-lg" />
+							<Skeleton className="h-3 w-1/2 rounded-lg" />
 						</div>
-
-						{/* Action placeholder */}
-						<div className={styles.cardSkeletonAction} />
 					</div>
-
-					{/* Optional text */}
-					{text && <div className={styles.cardSkeletonFooter}>{text}</div>}
+					<Skeleton className="flex-1 rounded-lg w-full min-h-[100px]" />
+					<div className="flex justify-end pt-2">
+						<Skeleton className="h-8 w-20 rounded-lg" />
+					</div>
+					{text && <div className="text-center text-xs text-white/50 pt-2">{text}</div>}
 				</div>
 			);
 		}
 
 		// Bongo Cat variant
 		if (variant === "bongo") {
-			const containerClasses = [
-				styles.loadingContainer,
-				overlay ? styles.loadingOverlay : "",
-				className,
-			]
-				.filter(Boolean)
-				.join(" ");
-
 			return (
 				<div className={containerClasses}>
 					<BongoCat size={size} text={text} />
@@ -275,52 +226,27 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 		// Cat variant
 		if (variant === "cat") {
-			const containerClasses = [
-				styles.catSpinner,
-				styles[size],
-				styles[catVariant],
-				styles[catColor],
-				showCatFace && styles.withFace,
-				className,
-			]
-				.filter(Boolean)
-				.join(" ");
-
 			return (
 				<div className={containerClasses} role="status" aria-label="Loading">
-					<div className={styles.spinnerContainer}>
-						<CatSpinnerContent catVariant={catVariant} showFace={showCatFace} />
+					<div className="relative flex items-center justify-center p-4 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
+						<CatSpinnerContent catVariant={catVariant} showFace={showCatFace} size={size} />
 					</div>
-					{text && <p className={styles.spinnerText}>{text}</p>}
-					<span className={styles.srOnly}>Loading...</span>
+					{text && <p className="text-sm font-medium text-white/70 animate-pulse">{text}</p>}
+					<span className="sr-only">Loading...</span>
 				</div>
 			);
 		}
 
 		// Spinner variant (default)
-		const containerClasses = [
-			styles.loadingContainer,
-			overlay ? styles.loadingOverlay : "",
-			className,
-		]
-			.filter(Boolean)
-			.join(" ");
-
 		return (
 			<div className={containerClasses} role="status" aria-label="Loading">
-				{isVideo ? (
-					<video
-						src={randomAsset}
-						className={styles.loadingGif}
-						autoPlay={true}
-						muted={true}
-						loop={true}
-					/>
-				) : (
-					<img src={randomAsset} alt="Loading..." className={styles.loadingGif} />
-				)}
-				{text && <p className={styles.loadingText}>{text}</p>}
-				<span className={styles.srOnly}>Loading...</span>
+				<Spinner
+					color="secondary"
+					size={size === "small" ? "sm" : size === "large" ? "lg" : "md"}
+					label={text}
+					classNames={{ label: "text-white/70 font-medium mt-2" }}
+				/>
+				{!text && <span className="sr-only">Loading...</span>}
 			</div>
 		);
 	},
