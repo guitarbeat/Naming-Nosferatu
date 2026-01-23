@@ -149,7 +149,9 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	};
 
 	const handleUnifiedButtonClick = () => {
-		if (navigator.vibrate) navigator.vibrate(10);
+		if (navigator.vibrate) {
+			navigator.vibrate(10);
+		}
 
 		switch (buttonState.action) {
 			case "start":
@@ -287,7 +289,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 									buttonState.highlight &&
 										"text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
 								)}
-								aria-hidden
+								aria-hidden={true}
 							/>
 						</motion.div>
 					</AnimatePresence>
