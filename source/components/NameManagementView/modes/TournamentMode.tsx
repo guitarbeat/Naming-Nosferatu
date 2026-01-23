@@ -3,6 +3,7 @@ import { NameGrid } from "@components/NameGrid";
 import { TournamentToolbar } from "@components/TournamentToolbar";
 import React from "react";
 import type { NameItem } from "@/types/components";
+import { cn } from "@/utils/cn";
 
 import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 
@@ -96,19 +97,56 @@ export function TournamentMode({
 					</div>
 				)}
 
-				{/* Header Actions (Show Selected Toggle) */}
+				{/* Header Actions */}
 				{!extensions.nameGrid && (
 					<nav className="w-full flex justify-end gap-2 my-2">
-						{selectedCount > 0 && (
-							<Button
-								variant={showSelectedOnly ? "primary" : "secondary"}
-								size="small"
-								onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-								className="font-medium whitespace-nowrap min-w-[140px]"
-							>
-								{showSelectedOnly ? "👁️ Show All Names" : "👀 Show Selected Only"}
-							</Button>
-						)}
+						{(() => {
+							// Intelligent button logic based on selection count
+							if (selectedCount === 0) {
+								return (
+									<Button
+										variant="secondary"
+										size="small"
+										onClick={() => {
+											// Scroll to top to encourage selection
+											document.querySelector('[data-component="name-grid"]')?.scrollIntoView({ behavior: "smooth" });
+										}}
+										className="font-medium whitespace-nowrap min-w-[140px]"
+									>
+										Pick Names
+									</Button>
+								);
+							}
+
+							if (selectedCount < 2) {
+								return (
+									<Button
+										variant="secondary"
+										size="small"
+										onClick={() => setShowSelectedOnly(!showSelectedOnly)}
+										className="font-medium whitespace-nowrap min-w-[140px]"
+									>
+										{showSelectedOnly ? "👁️ Show All Names" : "👀 Show Selected Only"}
+									</Button>
+								);
+							}
+
+							// 2+ names selected - show start option
+							return (
+								<Button
+									variant="primary"
+									size="small"
+									onClick={() => onStartTournament?.(selectedNames)}
+									className={cn(
+										"font-bold whitespace-nowrap min-w-[140px]",
+										"bg-gradient-to-br from-purple-600 to-purple-800 text-white",
+										"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+									)}
+								>
+									Start Tournament ({selectedCount})
+								</Button>
+							);
+						})()}
 					</nav>
 				)}
 
@@ -117,9 +155,9 @@ export function TournamentMode({
 					<div
 						className="w-full my-4 flex flex-col gap-2"
 						role="progressbar"
-						aria-valuenow={selectedCount}
-						aria-valuemin={0}
-						aria-valuemax={names.length}
+						aria-valuenow={`${selectedCount}`}
+						aria-valuemin="0"
+						aria-valuemax={`${names.length}`}
 						aria-label="Selection Progress"
 					>
 						<div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">

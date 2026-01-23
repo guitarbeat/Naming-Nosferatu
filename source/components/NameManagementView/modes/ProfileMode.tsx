@@ -1,3 +1,4 @@
+import Button from "@components/Button";
 import { NameGrid } from "@components/NameGrid";
 import { TournamentToolbar } from "@components/TournamentToolbar";
 import React from "react";
@@ -70,6 +71,43 @@ export function ProfileMode({
 						totalCount={names.length}
 					/>
 				</div>
+			</section>
+
+			{/* Actions */}
+			<section className={cn("w-full flex justify-end gap-2 px-2")}>
+				{(() => {
+					// Intelligent button logic based on selection count
+					if (selectedNames.length === 0) {
+						return (
+							<Button
+								variant="secondary"
+								size="small"
+								onClick={() => {
+									// Scroll to top to encourage selection
+									document.querySelector('[data-component="name-grid"]')?.scrollIntoView({ behavior: "smooth" });
+								}}
+								className="font-medium whitespace-nowrap"
+							>
+								Select Names
+							</Button>
+						);
+					}
+
+					// Names selected - show view option
+					return (
+						<Button
+							variant="primary"
+							size="small"
+							onClick={() => {
+								// Could implement a modal or detailed view of selected names
+								console.log("View selected names:", selectedNames);
+							}}
+							className="font-medium whitespace-nowrap"
+						>
+							View Selected ({selectedNames.length})
+						</Button>
+					);
+				})()}
 			</section>
 
 			{/* Bulk Actions Extension */}

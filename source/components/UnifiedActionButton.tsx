@@ -4,12 +4,12 @@
  * Provides consistent behavior across tournament and profile modes.
  */
 
-import { Plus, Users, CheckCircle, Hand, Play } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle, Hand, Play, Plus, Users } from "lucide-react";
 import React from "react";
+import type { NameItem } from "@/types/components";
 import { cn } from "@/utils/cn";
 import Button from "./Button";
-import type { NameItem } from "@/types/components";
 
 export type ActionButtonMode = "tournament" | "profile" | "adaptive-nav";
 
@@ -29,7 +29,7 @@ export interface UnifiedActionButtonProps {
 	onAnalyze?: () => void;
 	className?: string;
 	size?: "small" | "medium" | "large";
-	variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login";
+	variant?: "primary" | "secondary" | "ghost" | "login" | "danger";
 	disabled?: boolean;
 	showIcon?: boolean;
 }
@@ -43,7 +43,7 @@ function getButtonConfig(
 ): {
 	label: string;
 	icon: React.ReactNode;
-	variant: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "login";
+	variant: "primary" | "secondary" | "ghost" | "login" | "danger";
 	disabled: boolean;
 	action: "pick" | "start" | "view" | "analyze";
 } {
@@ -55,7 +55,7 @@ function getButtonConfig(
 			return {
 				label: "Analyze Results",
 				icon: <CheckCircle className="w-4 h-4" />,
-				variant: "default",
+				variant: "primary",
 				disabled: false,
 				action: "analyze",
 			};
@@ -94,7 +94,7 @@ function getButtonConfig(
 		return {
 			label: `Start Tournament (${selectedCount})`,
 			icon: <Users className="w-4 h-4" />,
-			variant: "default",
+			variant: "primary",
 			disabled: false,
 			action: "start",
 		};
@@ -127,7 +127,7 @@ function getButtonConfig(
 			return {
 				label: "Analyze",
 				icon: null,
-				variant: "default",
+				variant: "primary",
 				disabled: false,
 				action: "analyze",
 			};
@@ -155,7 +155,7 @@ function getButtonConfig(
 
 		return {
 			label: `Start (${selectedCount})`,
-			icon: <Play className="w-5 h-5 sm:w-6 sm:h-6" />,
+			icon: null,
 			variant: "primary",
 			disabled: false,
 			action: "start",
@@ -228,7 +228,7 @@ export function UnifiedActionButton({
 					"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
 					finalDisabled
 						? "opacity-40 cursor-not-allowed text-white/50"
-						: finalVariant === "primary" || finalVariant === "default"
+						: finalVariant === "primary"
 							? "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40"
 							: "text-white/50 hover:text-white hover:bg-white/5",
 					className,
@@ -251,7 +251,7 @@ export function UnifiedActionButton({
 								layout: { duration: 0.4, ease: "easeInOut" },
 							}}
 							className={cn(
-								finalVariant === "default" &&
+								finalVariant === "primary" &&
 									"text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
 							)}
 							aria-hidden={true}
