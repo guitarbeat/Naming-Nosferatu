@@ -676,7 +676,7 @@ export function AnalysisDashboard({
 					}
 				})
 			}
-			categories={toolbarContext.categories || []}
+			categories={[]} // Remove categories from analysis
 			showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
 			showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
 			userOptions={toolbarContext.profileProps?.userOptions || []}
