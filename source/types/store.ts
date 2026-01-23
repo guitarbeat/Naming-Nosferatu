@@ -32,7 +32,6 @@ export interface UIState {
 	matrixMode: boolean;
 	isSwipeMode: boolean;
 	showCatPictures: boolean;
-	showGallery: boolean;
 	isEditingProfile: boolean;
 }
 
@@ -92,7 +91,6 @@ export interface AppState {
 		initializeTheme: () => void;
 		setSwipeMode: (enabled: boolean) => void;
 		setCatPictures: (show: boolean) => void;
-		setGalleryVisible: (visible: boolean) => void;
 		setEditingProfile: (editing: boolean) => void;
 	};
 

@@ -157,51 +157,7 @@ stylelint-config-standard                      39.0.1
 
 ### Dependency Optimization Phases
 
-#### Phase 1: Safe Removals (Immediate - ~10KB savings)
 
-```bash
-pnpm remove prop-types immer lovable-tagger
-pnpm remove babel-plugin-transform-react-remove-prop-types
-```
-
-1. Run `pnpm run build` - ensure no build errors
-2. Check bundle size reduction
-
-#### Phase 2: Icon Consolidation (Week 2 - ~8KB savings)
-
-1. **Audit current icon usage:**
-
-   ```bash
-   grep -r "@heroicons/react" src/ | wc -l
-   grep -r "lucide-react" src/ | wc -l
-   ```
-
-2. **Migration plan:**
-   - Map HeroIcons to Lucide equivalents
-   - Update imports systematically
-   - Test all icon usage
-
-3. **Remove @heroicons/react**
-
-#### Phase 3: Dev Tool Cleanup (Week 3 - ~5KB savings)
-
-1. **Verify Biome handles your CSS needs**
-2. **Remove stylelint** if coverage is adequate
-3. **Update build scripts** if needed
-
-### Bundle Size Projections
-
-- **Current:** 391KB total
-- **After Phase 1:** ~381KB (-10KB, -2.5%)
-- **After Phase 2:** ~373KB (-8KB, -2%)
-- **After Phase 3:** ~368KB (-5KB, -1.5%)
-- **Total Savings:** ~23KB (-6% of bundle)
-
-### Maintenance Benefits
-
-- **Fewer dependencies** = fewer security updates
-- **Single icon system** = consistent API
-- **Cleaner dev experience** = faster installs
 
 ---
 

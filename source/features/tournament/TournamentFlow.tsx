@@ -1,53 +1,21 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
-import { PhotoGallery } from "@/components/Gallery";
 import { NameSuggestion } from "@/components/NameSuggestion";
 import useUserSession from "@/hooks/useUserSession";
 import useAppStore from "@/store/useAppStore";
 import Tournament from "./Tournament";
-import { useTournamentHandlers, useTournamentManager } from "./TournamentHooks";
+import { useTournamentHandlers } from "./TournamentHooks";
 import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {
-	const { user, tournament, tournamentActions, ui } = useAppStore();
+	const { user, tournament, tournamentActions } = useAppStore();
 	const { login } = useUserSession();
 	const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup } =
 		useTournamentHandlers({
 			userName: user.name,
 			tournamentActions,
 		});
-
-	const { galleryImages, isAdmin, handleImageOpen, handleImagesUploaded } = useTournamentManager({
-		userName: user.name || "",
-	});
-
-	// * Exclusive Rendering Logic: Gallery replaces everything else if active
-	if (ui.showGallery) {
-		return (
-			<motion.div
-				key="gallery"
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				exit={{ opacity: 0, y: -20 }}
-				transition={{ duration: 0.3 }}
-				className="w-full h-full min-h-screen p-4 flex flex-col"
-			>
-				<h2 className="text-4xl font-bold mb-8 text-center gradient-text">Photo Gallery</h2>
-				<PhotoGallery
-					galleryImages={galleryImages}
-					isAdmin={isAdmin}
-					userName={user.name || ""}
-					onImagesUploaded={handleImagesUploaded}
-					onImageOpen={handleImageOpen}
-					showAllPhotos={true} // Always show all in fullscreen mode
-					onShowAllPhotosToggle={() => {
-						/* No-op since we show all */
-					}}
-				/>
-			</motion.div>
-		);
-	}
 
 	return (
 		<div className="w-full max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh] py-8">

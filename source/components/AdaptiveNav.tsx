@@ -20,7 +20,6 @@ const keyToId: Record<string, string> = {
 	pick: "pick",
 	play: "play",
 	analyze: "analysis",
-	gallery: "gallery",
 	suggest: "suggest",
 };
 
@@ -77,20 +76,6 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 			}
 		}
 
-		if (key === "gallery") {
-			// Toggle Gallery Visibility
-			const isVisible = appStore.ui.showGallery;
-			appStore.uiActions.setGalleryVisible(!isVisible);
-
-			// If we are opening it, scroll to it
-			if (!isVisible) {
-				setTimeout(() => {
-					document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
-				}, 100);
-			}
-			return;
-		}
-
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
@@ -108,7 +93,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	// Track active section on scroll
 	useEffect(() => {
 		const handleScroll = () => {
-			const sections = ["pick", "play", "gallery", "analysis", "suggest"];
+			const sections = ["pick", "play", "analysis", "suggest"];
 
 			// Find the section that occupies the most screen space or is at the top
 			let current = activeSection;
@@ -152,9 +137,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	};
 
 	// Filter bottom nav items based on tournament completion
-	const visibleBottomItems = tournament.isComplete
-		? ["pick", "gallery", "analyze"]
-		: ["pick", "gallery", "play"];
+	const visibleBottomItems = tournament.isComplete ? ["pick", "analyze"] : ["pick", "play"];
 
 	const bottomNavItems = getBottomNavItems(MAIN_NAV_ITEMS, visibleBottomItems);
 

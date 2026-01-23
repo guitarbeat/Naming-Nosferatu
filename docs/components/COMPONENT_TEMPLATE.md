@@ -1,4 +1,8 @@
-# Component Name
+# Component Documentation Template
+
+Use this template when creating documentation for new components in the Name Nosferatu codebase.
+
+## Component Name
 
 Brief description of what the component does.
 
@@ -43,3 +47,14 @@ import { ComponentName } from "@/shared/components/ComponentName";
 - What happens when text is too long?
 - How does it behave in loading/disabled states?
 - Mobile vs Desktop differences?
+
+## Related Components
+
+- Link to related or similar components
+- When to choose this component over alternatives
+
+## Implementation Notes
+
+- Any special implementation details
+- Performance considerations
+- Browser compatibility notes

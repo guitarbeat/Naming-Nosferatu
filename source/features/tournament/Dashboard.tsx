@@ -40,8 +40,6 @@ const AnalysisDashboard = lazy(() =>
 		default: m.AnalysisDashboard,
 	})),
 );
-const GalleryView = lazy(() => import("../gallery/GalleryView"));
-
 /* =========================================================================
    SUB-COMPONENTS
    ========================================================================= */
@@ -1018,16 +1016,6 @@ export default function Dashboard({
 				icon: <Shuffle size={16} />,
 				content: <RandomGenerator userName={userName || "anonymous"} />,
 			},
-			{
-				key: "photos",
-				label: "Photos",
-				icon: <>🖼️</>,
-				content: (
-					<Suspense fallback={<Loading variant="spinner" text="Loading Photos..." />}>
-						<GalleryView />
-					</Suspense>
-				),
-			},
 		],
 		[
 			hasPersonalData,
@@ -1052,7 +1040,7 @@ export default function Dashboard({
 				defaultActiveTab={hasPersonalData ? "personal" : defaultTab}
 				routeSync="/analyze"
 				title="Analyze Results"
-				subtitle={`Welcome, ${userName}. View your personal rankings, global stats, discover names, and browse the gallery.`}
+				subtitle={`Welcome, ${userName}. View your personal rankings, global stats, and discover names.`}
 			/>
 			<Toast
 				variant="container"

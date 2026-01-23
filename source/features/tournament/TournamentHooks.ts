@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useImageGallery } from "@/components/Gallery";
 import { TOURNAMENT_TIMING } from "@/constants";
-import { useLightboxState } from "@/hooks/useLightboxState";
 import { useProfile } from "@/hooks/useProfile";
 import { useProfileNotifications } from "@/hooks/useProfileNotifications";
 import useLocalStorage from "@/hooks/useStorage";
@@ -191,17 +189,6 @@ export function useTournamentManager({
 
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 	const [showCatPictures, setShowCatPictures] = useState(false);
-	const [showAllPhotos, setShowAllPhotos] = useState(false);
-
-	const { galleryImages, addImages } = useImageGallery();
-	const {
-		isOpen: lightboxOpen,
-		currentIndex: lightboxIndex,
-		handleOpen: handleImageOpen,
-		handleNavigate: handleLightboxNavigate,
-		handleClose: handleLightboxClose,
-		preloadImages,
-	} = useLightboxState({ galleryImages: galleryImages || [] });
 	const { isAdmin } = useAdminStatus(userName);
 	const { showSuccess, showError, showToast, ToastContainer } = useProfileNotifications();
 	const {
@@ -248,11 +235,6 @@ export function useTournamentManager({
 		showKeyboardHelp,
 		setShowKeyboardHelp,
 		showCatPictures,
-		showAllPhotos,
-		setShowAllPhotos,
-		lightboxOpen,
-		lightboxIndex,
-		galleryImages,
 		isAdmin,
 		profileIsAdmin,
 		activeUser,
@@ -263,13 +245,8 @@ export function useTournamentManager({
 		stats,
 		selectionStats,
 		shouldEnableAnalysisMode,
-		preloadImages,
 		handleNameSubmit,
 		toggleEditingName: setIsEditingName,
-		handleImageOpen,
-		handleImagesUploaded: addImages,
-		handleLightboxNavigate,
-		handleLightboxClose,
 		fetchSelectionStats,
 		showSuccess,
 		showError,

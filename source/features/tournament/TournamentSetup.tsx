@@ -9,7 +9,6 @@ import { fetchCatAvatars } from "@/utils/catApi";
 import { cn } from "@/utils/cn";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";
-import { useTournamentManager } from "./TournamentHooks";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;
@@ -47,11 +46,6 @@ export default function TournamentSetup({
 	);
 
 	const greeting = getGreeting();
-	const manager = useTournamentManager({
-		userName: isLoggedIn ? userName : "",
-	});
-	const { galleryImages } = manager;
-
 	return (
 		<AnimatePresence mode="wait">
 			{isLoggedIn ? (
@@ -88,7 +82,6 @@ export default function TournamentSetup({
 						setAnalysisMode={setAnalysisMode}
 						tournamentProps={{
 							swipeableCards: SwipeableCards,
-							imageList: galleryImages,
 						}}
 						onStartTournament={onStart}
 					/>

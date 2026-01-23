@@ -28,14 +28,14 @@ export const SwipeableCards = memo(
 		selectedNames,
 		onToggleName,
 		showCatPictures,
-		imageList,
+		imageList = [],
 		onStartTournament,
 	}: {
 		names: NameItem[];
 		selectedNames: NameItem[];
 		onToggleName: (name: NameItem) => void;
 		showCatPictures: boolean;
-		imageList: string[];
+		imageList?: string[];
 		onStartTournament: (names: NameItem[]) => void;
 	}) => {
 		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
@@ -188,7 +188,7 @@ export const SwipeableCards = memo(
 											)}
 
 											<CardBody className="p-8 gap-6 items-center text-center">
-												{showCatPictures && card.id && (
+												{showCatPictures && card.id && imageList.length > 0 && (
 													<div className="relative w-full aspect-square max-w-xs rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
 														<CatImage src={getRandomCatImage(card.id, imageList)} />
 													</div>

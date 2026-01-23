@@ -51,7 +51,7 @@ function App() {
 	useAppStoreInitialization();
 
 	// Centralized store
-	const { user, tournament, ui, tournamentActions } = useAppStore();
+	const { user, tournament, tournamentActions } = useAppStore();
 
 	// Offline Sync Hook
 	useOfflineSync();
@@ -123,8 +123,8 @@ function App() {
 							</ErrorBoundary>
 						</section>
 
-						{/* Analysis Section - Only visible after tournament completion and if not in gallery mode */}
-						{tournament.isComplete && !ui.showGallery && (
+						{/* Analysis Section - Only visible after tournament completion */}
+						{tournament.isComplete && (
 							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
 								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
 									Analyze

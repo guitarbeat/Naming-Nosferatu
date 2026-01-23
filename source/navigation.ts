@@ -1,4 +1,4 @@
-import { BarChart2, CheckCircle, Image, Trophy } from "lucide-react";
+import { BarChart2, CheckCircle, Trophy } from "lucide-react";
 import type { ComponentType } from "react";
 
 /**
@@ -106,14 +106,6 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 		icon: CheckCircle,
 		type: "primary",
 		ariaLabel: "Pick names for the tournament",
-	},
-	{
-		key: "gallery",
-		label: "Gallery",
-		shortLabel: "Gallery",
-		icon: Image,
-		type: "primary",
-		ariaLabel: "View photo gallery",
 	},
 	{
 		key: "play",
