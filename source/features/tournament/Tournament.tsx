@@ -72,9 +72,7 @@ function TournamentContent({
 			: null;
 
 	return (
-		<div
-			className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30"
-		>
+		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30">
 			{/* Header Section */}
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
@@ -147,9 +145,7 @@ function TournamentContent({
 						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-						<div
-							className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md"
-						>
+						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md">
 							{leftImg && (
 								<div
 									className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
@@ -171,9 +167,7 @@ function TournamentContent({
 
 					{/* VS Badge */}
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-						<div
-							className="size-14 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg"
-						>
+						<div className="size-14 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg">
 							<span className="font-bold text-xl italic tracking-tighter">VS</span>
 						</div>
 					</div>
@@ -184,9 +178,7 @@ function TournamentContent({
 						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-						<div
-							className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md"
-						>
+						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md">
 							{rightImg && (
 								<div
 									className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
@@ -221,9 +213,7 @@ function TournamentContent({
 
 			{/* Bottom Navigation */}
 			<nav className="pb-8 px-6">
-				<div
-					className="rounded-2xl flex items-center justify-around py-3 px-2 bg-white/10 backdrop-blur-md border-t border-white/10"
-				>
+				<div className="rounded-2xl flex items-center justify-around py-3 px-2 bg-white/10 backdrop-blur-md border-t border-white/10">
 					<button className="flex flex-col items-center gap-1 group">
 						<div className="size-10 rounded-xl flex items-center justify-center bg-primary shadow-[0_0_15px_rgba(166,94,237,0.4)]">
 							<span className="material-symbols-outlined text-white fill-1">bolt</span>
