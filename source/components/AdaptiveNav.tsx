@@ -4,10 +4,9 @@
  * Uses Scroll Navigation for Single Page Architecture
  */
 
-import { motion } from "framer-motion";
-import { Lightbulb } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getBottomNavItems, MAIN_NAV_ITEMS } from "@/navigation";
 import useAppStore from "@/store/useAppStore";
 import { cn } from "@/utils/cn";
 
@@ -23,6 +22,90 @@ const keyToId: Record<string, string> = {
 	suggest: "suggest",
 };
 
+type UnifiedButtonState = {
+	label: string;
+	icon: typeof CheckCircle;
+	action: "scroll-top" | "start" | "navigate-pick";
+	highlight: boolean;
+	disabled: boolean;
+};
+
+/**
+ * Get the unified button state based on current context
+ */
+const getUnifiedButtonState = (
+	activeSection: string,
+	selectedCount: number,
+	isTournamentActive: boolean,
+	isComplete: boolean,
+): UnifiedButtonState => {
+	const isOnPickSection = activeSection === "pick";
+	const hasEnoughNames = selectedCount >= 2;
+
+	// If tournament is complete, show Analyze
+	if (isComplete) {
+		return {
+			label: "Analyze",
+			icon: BarChart3,
+			action: "navigate-pick",
+			highlight: false,
+			disabled: false,
+		};
+	}
+
+	// If tournament is active, show Pick to go back
+	if (isTournamentActive) {
+		return {
+			label: "Pick",
+			icon: CheckCircle,
+			action: "navigate-pick",
+			highlight: false,
+			disabled: false,
+		};
+	}
+
+	// On pick section with enough names - ready to start
+	if (isOnPickSection && hasEnoughNames) {
+		return {
+			label: `Start (${selectedCount})`,
+			icon: Trophy,
+			action: "start",
+			highlight: true,
+			disabled: false,
+		};
+	}
+
+	// On pick section without enough names
+	if (isOnPickSection) {
+		return {
+			label: "Pick",
+			icon: CheckCircle,
+			action: "scroll-top",
+			highlight: false,
+			disabled: false,
+		};
+	}
+
+	// On other sections - show Start if ready, otherwise Pick
+	if (hasEnoughNames) {
+		return {
+			label: `Start (${selectedCount})`,
+			icon: Trophy,
+			action: "start",
+			highlight: true,
+			disabled: false,
+		};
+	}
+
+	return {
+		label: "Pick",
+		icon: CheckCircle,
+		action: "navigate-pick",
+		highlight: false,
+		disabled: false,
+	};
+};
+
 /**
  * Adaptive Bottom Navigation Bar
  * Renders as a full-width bottom navigation bar on all screen sizes
@@ -31,31 +114,28 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	const appStore = useAppStore();
 	const { tournament, tournamentActions } = appStore;
 	const { selectedNames } = tournament;
-	const [_isMobileMenuOpen, _setIsMobileMenuOpen] = useState(false);
-	const [activeSection, setActiveSection] = useState("play");
+	const [activeSection, setActiveSection] = useState("pick");
 
-	// * Check if tournament is ready to start
 	const { isComplete, names: tournamentNames } = tournament;
-
 	const isTournamentActive = !!tournamentNames;
 	const selectedCount = selectedNames?.length || 0;
-	const isReadyToStart = !isComplete && !isTournamentActive && selectedCount >= 2;
+
+	// Get unified button state
+	const buttonState = getUnifiedButtonState(
+		activeSection,
+		selectedCount,
+		isTournamentActive,
+		isComplete,
+	);
 
 	const handleStartTournament = () => {
-		// * Start Logic Replicated from TournamentHooks to avoid circular deps or hook overhead
-		// * 1. Clear State
 		tournamentActions.resetTournament();
 		tournamentActions.setLoading(true);
 
-		// * 2. Set Names (Assume already filtered by NameManagementView or filter here if needed)
-		// Selection comes from NameManagementView which generally handles visibility,
-		// but we can't easily filter hidden without importing utilities.
-		// Assuming selected items are valid.
 		if (selectedNames && selectedNames.length >= 2) {
 			tournamentActions.setNames(selectedNames);
 		}
 
-		// * 3. Finish Loading & Scroll
 		setTimeout(() => {
 			tournamentActions.setLoading(false);
 			const element = document.getElementById("play");
@@ -64,27 +144,31 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 		}, 100);
 	};
 
+	const handleUnifiedButtonClick = () => {
+		if (navigator.vibrate) navigator.vibrate(10);
+
+		switch (buttonState.action) {
+			case "start":
+				handleStartTournament();
+				break;
+			case "navigate-pick":
+				document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				setActiveSection("pick");
+				break;
+			case "scroll-top":
+				document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				break;
+		}
+	};
+
 	// Scroll to section handler
 	const handleNavClick = (key: string) => {
-		if (key === "play") {
-			if (isReadyToStart) {
-				handleStartTournament();
-				return;
-			}
-			if (!isTournamentActive && !isComplete && selectedCount < 2) {
-				return;
-			}
-		}
-
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
 			if (element) {
-				if (navigator.vibrate) {
-					navigator.vibrate(10);
-				}
+				if (navigator.vibrate) navigator.vibrate(10);
 				element.scrollIntoView({ behavior: "smooth" });
-				// Optimistically set active section
 				setActiveSection(id);
 			}
 		}
@@ -94,20 +178,14 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	useEffect(() => {
 		const handleScroll = () => {
 			const sections = ["pick", "play", "analysis", "suggest"];
-
-			// Find the section that occupies the most screen space or is at the top
 			let current = activeSection;
-
-			// Simple check for which section is closest to top of viewport
 			let minDistance = Infinity;
 
 			for (const id of sections) {
 				const element = document.getElementById(id);
 				if (element) {
 					const rect = element.getBoundingClientRect();
-					// We care about the section being active if it's generally in the middle of the screen
-					// or simply check if the top is near 0 or distinct overlap
-					const distance = Math.abs(rect.top); // absolute distance to top
+					const distance = Math.abs(rect.top);
 					if (distance < minDistance && distance < window.innerHeight * 0.6) {
 						minDistance = distance;
 						current = id;
@@ -115,31 +193,20 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				}
 			}
 
-			if (current === "play") {
-				// We are in the Play section
-			}
-
-			// Simplification: just store the section ID as the active state source of truth
-			// And active check determines if nav item maps to it.
 			setActiveSection(current);
 		};
 
 		window.addEventListener("scroll", handleScroll, { passive: true });
-		// Initial check
 		handleScroll();
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, [activeSection]);
 
-	// Custom isActive check
 	const isActive = (key: string) => {
 		const targetId = keyToId[key];
 		return activeSection === targetId;
 	};
 
-	// Filter bottom nav items based on tournament completion
-	const visibleBottomItems = tournament.isComplete ? ["pick", "analyze"] : ["pick", "play"];
-
-	const bottomNavItems = getBottomNavItems(MAIN_NAV_ITEMS, visibleBottomItems);
+	const IconComponent = buttonState.icon;
 
 	return (
 		<motion.div
@@ -153,15 +220,13 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				role="navigation"
 				aria-label="Main navigation"
 			>
-				{/* Central Avatar Button - User Profile */}
+				{/* Profile Avatar Button */}
 				<div className="flex flex-col items-center gap-0.5 relative flex-1 max-w-[80px]">
 					<div
 						className="group cursor-pointer relative"
 						onClick={() => appStore.uiActions.setEditingProfile(true)}
 					>
-						{/* Glow effect */}
-						<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
-						{/* Avatar container */}
+						<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
 						<div className="relative w-10 h-10 rounded-full border-2 border-white/30 overflow-hidden shadow-lg bg-slate-900 z-10">
 							<img
 								alt="User Profile"
@@ -170,99 +235,113 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							/>
 						</div>
 					</div>
-					{/* Username Label */}
 					<span className="text-[9px] font-semibold text-white/70 uppercase tracking-wider max-w-[5rem] truncate text-center select-none pt-0.5">
 						{(appStore.user.name || "Profile").split(" ")[0]}
 					</span>
 				</div>
 
-				{bottomNavItems.map((item) => {
-					const itemActive = isActive(item.key);
-
-					// * Special Handling for Play Button
-					let label = item.shortLabel || item.label;
-					let isDisabled = false;
-					let isHighlight = false;
-
-					if (item.key === "play") {
-						if (!isTournamentActive && !isComplete) {
-							if (selectedCount < 2) {
-								label = "Pick 2+";
-								isDisabled = true; // Visual grey out
-							} else {
-								label = `Start (${selectedCount})`;
-								isHighlight = true;
-							}
-						}
+				{/* Unified Pick/Start Button */}
+				<motion.button
+					className={cn(
+						"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
+						isActive("pick") && !buttonState.highlight
+							? "text-white bg-white/10"
+							: "text-white/50 hover:text-white hover:bg-white/5",
+						buttonState.highlight &&
+							"text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40",
+					)}
+					onClick={handleUnifiedButtonClick}
+					disabled={buttonState.disabled}
+					type="button"
+					animate={
+						buttonState.highlight
+							? {
+									scale: [1, 1.05, 1],
+									boxShadow: [
+										"0 0 0 rgba(34, 211, 238, 0)",
+										"0 0 12px rgba(34, 211, 238, 0.4)",
+										"0 0 0 rgba(34, 211, 238, 0)",
+									],
+								}
+							: {}
 					}
-
-					const isPlayReady = item.key === "play" && isHighlight;
-
-					return (
-						<motion.button
-							key={item.key}
-							className={cn(
-								"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
-								itemActive
-									? "text-white bg-white/10"
-									: "text-white/50 hover:text-white hover:bg-white/5",
-								isDisabled &&
-									"opacity-40 cursor-not-allowed hover:bg-transparent hover:text-white/50",
-								isHighlight &&
-									"text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40",
-							)}
-							onClick={() => handleNavClick(item.key)}
-							aria-current={itemActive ? "page" : undefined}
-							aria-label={item.ariaLabel || item.label}
-							disabled={isDisabled}
-							type="button"
-							animate={
-								isPlayReady
-									? {
-											scale: [1, 1.05, 1],
-											boxShadow: [
-												"0 0 0 rgba(34, 211, 238, 0)",
-												"0 0 10px rgba(34, 211, 238, 0.3)",
-												"0 0 0 rgba(34, 211, 238, 0)",
-											],
-										}
-									: {}
-							}
-							transition={
-								isPlayReady
-									? {
-											duration: 2,
-											repeat: Infinity,
-											ease: "easeInOut",
-										}
-									: {}
-							}
+					transition={
+						buttonState.highlight
+							? { duration: 2, repeat: Infinity, ease: "easeInOut" }
+							: {}
+					}
+				>
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={buttonState.icon.name}
+							initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+							animate={{ scale: 1, opacity: 1, rotate: 0 }}
+							exit={{ scale: 0.8, opacity: 0, rotate: 10 }}
+							transition={{ duration: 0.2 }}
 						>
-							{item.icon && (
-								<item.icon
-									className={cn(
-										"w-5 h-5 sm:w-6 sm:h-6",
-										isHighlight && "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
-									)}
-									aria-hidden={true}
-								/>
-							)}
-							<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
-								{label}
-							</span>
-							{itemActive && (
-								<motion.div
-									layoutId="dockIndicator"
-									className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-									initial={false}
-									transition={{ type: "spring", stiffness: 500, damping: 30 }}
-								/>
-							)}
-						</motion.button>
-					);
-				})}
+							<IconComponent
+								className={cn(
+									"w-5 h-5 sm:w-6 sm:h-6",
+									buttonState.highlight &&
+										"text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
+								)}
+								aria-hidden
+							/>
+						</motion.div>
+					</AnimatePresence>
+					<AnimatePresence mode="wait">
+						<motion.span
+							key={buttonState.label}
+							className="text-[10px] sm:text-xs font-medium tracking-wide leading-none"
+							initial={{ y: 5, opacity: 0 }}
+							animate={{ y: 0, opacity: 1 }}
+							exit={{ y: -5, opacity: 0 }}
+							transition={{ duration: 0.15 }}
+						>
+							{buttonState.label}
+						</motion.span>
+					</AnimatePresence>
+					{isActive("pick") && !buttonState.highlight && (
+						<motion.div
+							layoutId="dockIndicator"
+							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+							initial={false}
+							transition={{ type: "spring", stiffness: 500, damping: 30 }}
+						/>
+					)}
+				</motion.button>
 
-				{/* Inline Suggestion Trigger */}
+				{/* Analyze Button - only show when tournament is complete */}
+				{isComplete && (
+					<motion.button
+						className={cn(
+							"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
+							isActive("analyze")
+								? "text-white bg-white/10"
+								: "text-white/50 hover:text-white hover:bg-white/5",
+						)}
+						onClick={() => handleNavClick("analyze")}
+						type="button"
+						initial={{ scale: 0.9, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						transition={{ duration: 0.2 }}
+					>
+						<BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
+						<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
+							Analyze
+						</span>
+						{isActive("analyze") && (
+							<motion.div
+								layoutId="dockIndicator"
+								className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+								initial={false}
+								transition={{ type: "spring", stiffness: 500, damping: 30 }}
+							/>
+						)}
+					</motion.button>
+				)}
+
+				{/* Suggest Button */}
 				<button
 					className={cn(
 						"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
@@ -274,7 +353,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					aria-label="Suggest a name"
 					type="button"
 				>
-					<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
+					<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden />
 					<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
 						Suggest
 					</span>

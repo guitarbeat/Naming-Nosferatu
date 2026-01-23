@@ -14,36 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      audit_log: {
-        Row: {
-          created_at: string | null
-          id: string
-          new_values: Json | null
-          old_values: Json | null
-          operation: string
-          table_name: string
-          user_name: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          new_values?: Json | null
-          old_values?: Json | null
-          operation: string
-          table_name: string
-          user_name?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          new_values?: Json | null
-          old_values?: Json | null
-          operation?: string
-          table_name?: string
-          user_name?: string | null
-        }
-        Relationships: []
-      }
       cat_app_users: {
         Row: {
           created_at: string
@@ -62,6 +32,42 @@ export type Database = {
           preferences?: Json | null
           updated_at?: string
           user_name?: string
+        }
+        Relationships: []
+      }
+      cat_audit_log: {
+        Row: {
+          client_ip: unknown
+          created_at: string | null
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          table_name: string
+          user_agent: string | null
+          user_name: string | null
+        }
+        Insert: {
+          client_ip?: unknown
+          created_at?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          table_name: string
+          user_agent?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          client_ip?: unknown
+          created_at?: string | null
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          table_name?: string
+          user_agent?: string | null
+          user_name?: string | null
         }
         Relationships: []
       }
@@ -152,222 +158,37 @@ export type Database = {
           },
         ]
       }
-      charts: {
+      cat_rate_limit_events: {
         Row: {
-          created_at: string
+          blocked_until: string | null
+          event_count: number | null
+          event_type: string
+          first_seen: string | null
           id: string
-          name: string
-          user_id: string
+          identifier: string
+          last_seen: string | null
         }
         Insert: {
-          created_at?: string
+          blocked_until?: string | null
+          event_count?: number | null
+          event_type: string
+          first_seen?: string | null
           id?: string
-          name: string
-          user_id: string
+          identifier: string
+          last_seen?: string | null
         }
         Update: {
-          created_at?: string
+          blocked_until?: string | null
+          event_count?: number | null
+          event_type?: string
+          first_seen?: string | null
           id?: string
-          name?: string
-          user_id?: string
+          identifier?: string
+          last_seen?: string | null
         }
         Relationships: []
       }
-      flo_entries: {
-        Row: {
-          created_at: string
-          date: string
-          id: string
-          is_period_day: boolean
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          date: string
-          id?: string
-          is_period_day?: boolean
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          id?: string
-          is_period_day?: boolean
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "flo_entries_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "flo_entries_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      flo_shares: {
-        Row: {
-          created_at: string
-          id: string
-          owner_id: string
-          shared_with_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          owner_id: string
-          shared_with_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          owner_id?: string
-          shared_with_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "flo_shares_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "flo_shares_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "flo_shares_shared_with_id_fkey"
-            columns: ["shared_with_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "flo_shares_shared_with_id_fkey"
-            columns: ["shared_with_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          apps: string[] | null
-          avatar_url: string | null
-          created_at: string | null
-          display_name: string | null
-          email: string | null
-          first_name: string | null
-          has_custom_password: boolean
-          id: string
-          is_private: boolean
-          updated_at: string | null
-          username: string | null
-        }
-        Insert: {
-          apps?: string[] | null
-          avatar_url?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          email?: string | null
-          first_name?: string | null
-          has_custom_password?: boolean
-          id: string
-          is_private?: boolean
-          updated_at?: string | null
-          username?: string | null
-        }
-        Update: {
-          apps?: string[] | null
-          avatar_url?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          email?: string | null
-          first_name?: string | null
-          has_custom_password?: boolean
-          id?: string
-          is_private?: boolean
-          updated_at?: string | null
-          username?: string | null
-        }
-        Relationships: []
-      }
-      reflect_daily: {
-        Row: {
-          created_at: string
-          id: string
-          is_user: boolean
-          message: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          is_user?: boolean
-          message: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          is_user?: boolean
-          message?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      reflect_retrospectives: {
-        Row: {
-          content: Json | null
-          created_at: string
-          id: string
-          retrospective_date: string
-          retrospective_type: string
-          title: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          content?: Json | null
-          created_at?: string
-          id?: string
-          retrospective_date?: string
-          retrospective_type?: string
-          title: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          content?: Json | null
-          created_at?: string
-          id?: string
-          retrospective_date?: string
-          retrospective_type?: string
-          title?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      site_settings: {
+      cat_site_settings: {
         Row: {
           created_at: string | null
           id: string
@@ -394,7 +215,7 @@ export type Database = {
         }
         Relationships: []
       }
-      tournament_selections: {
+      cat_tournament_selections: {
         Row: {
           created_at: string
           id: number
@@ -427,7 +248,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "tournament_selections_name_id_fkey"
+            foreignKeyName: "cat_tournament_selections_name_id_fkey"
             columns: ["name_id"]
             isOneToOne: false
             referencedRelation: "cat_name_options"
@@ -435,57 +256,7 @@ export type Database = {
           },
         ]
       }
-      transactions: {
-        Row: {
-          created_at: string
-          date: string
-          enabled: boolean
-          fin_chart_id: string | null
-          id: string
-          inflow: number
-          name: string
-          outflow: number
-          person: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          date: string
-          enabled?: boolean
-          fin_chart_id?: string | null
-          id?: string
-          inflow?: number
-          name: string
-          outflow?: number
-          person: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          enabled?: boolean
-          fin_chart_id?: string | null
-          id?: string
-          inflow?: number
-          name?: string
-          outflow?: number
-          person?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transactions_fin_chart_id_fkey"
-            columns: ["fin_chart_id"]
-            isOneToOne: false
-            referencedRelation: "charts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_roles: {
+      cat_user_roles: {
         Row: {
           created_at: string | null
           id: string
@@ -509,41 +280,60 @@ export type Database = {
         }
         Relationships: []
       }
-    }
-    Views: {
-      public_profiles: {
+      flo_entries: {
         Row: {
-          apps: string[] | null
-          avatar_url: string | null
-          created_at: string | null
-          display_name: string | null
-          first_name: string | null
-          id: string | null
-          updated_at: string | null
-          username: string | null
+          created_at: string
+          date: string
+          id: string
+          is_period_day: boolean
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          apps?: string[] | null
-          avatar_url?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          first_name?: string | null
-          id?: string | null
-          updated_at?: string | null
-          username?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          is_period_day?: boolean
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          apps?: string[] | null
-          avatar_url?: string | null
-          created_at?: string | null
-          display_name?: string | null
-          first_name?: string | null
-          id?: string | null
-          updated_at?: string | null
-          username?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          is_period_day?: boolean
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
+      flo_shares: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          shared_with_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id: string
+          shared_with_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          shared_with_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
     }
     Functions: {
       add_app_access_to_user: { Args: { app_name: string }; Returns: undefined }
@@ -555,19 +345,43 @@ export type Database = {
         }
         Returns: number
       }
-      change_user_role: {
+      change_user_role:
+        | {
+            Args: {
+              new_role: Database["public"]["Enums"]["app_role"]
+              target_user_id: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: { new_role: string; target_user_id: string }
+            Returns: boolean
+          }
+      check_current_user_admin: { Args: never; Returns: boolean }
+      check_profile_access_rate_limit: { Args: never; Returns: boolean }
+      check_rate_limit: {
         Args: {
-          new_role: Database["public"]["Enums"]["app_role"]
-          target_user_id: string
+          p_block_minutes?: number
+          p_event_type: string
+          p_identifier: string
+          p_max_events?: number
+          p_window_minutes?: number
         }
         Returns: boolean
       }
-      check_current_user_admin: { Args: never; Returns: boolean }
-      check_profile_access_rate_limit: { Args: never; Returns: boolean }
-      check_user_role_by_name: {
-        Args: { required_role: string; user_name_param: string }
-        Returns: boolean
-      }
+      check_user_role_by_name:
+        | {
+            Args: {
+              required_role: Database["public"]["Enums"]["app_role"]
+              user_name_param: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: { required_role: string; user_name_param: string }
+            Returns: boolean
+          }
+      cleanup_old_rate_limits: { Args: never; Returns: number }
       cleanup_orphaned_auth_users: { Args: never; Returns: undefined }
       create_user_account: {
         Args: {
@@ -594,6 +408,7 @@ export type Database = {
           username: string
         }[]
       }
+      get_client_identifier: { Args: never; Returns: string }
       get_current_user_name: { Args: never; Returns: string }
       get_current_user_role: {
         Args: never
@@ -618,6 +433,14 @@ export type Database = {
         }[]
       }
       get_secure_profile: { Args: { target_user_id: string }; Returns: Json }
+      get_security_summary: {
+        Args: { hours_back?: number }
+        Returns: {
+          count: number
+          details: Json
+          metric: string
+        }[]
+      }
       get_top_names_by_category: {
         Args: { p_category: string; p_limit?: number }
         Returns: {
@@ -681,14 +504,14 @@ export type Database = {
             }
             Returns: boolean
           }
-        | { Args: { _role?: string; _user_name: string }; Returns: boolean }
         | {
             Args: {
-              p_role: Database["public"]["Enums"]["app_role"]
-              p_user_name: string
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_name: string
             }
             Returns: boolean
           }
+        | { Args: { _role: string; _user_name: string }; Returns: boolean }
       increment_selection: {
         Args: { p_name_id: string; p_user_name: string }
         Returns: undefined
@@ -710,6 +533,10 @@ export type Database = {
             Args: { p_hide: boolean; p_name_id: string; p_user_name?: string }
             Returns: boolean
           }
+      unblock_client: {
+        Args: { p_event_type: string; p_identifier: string }
+        Returns: boolean
+      }
       update_user_tournament_data: {
         Args: { p_tournament_data: Json; p_user_name: string }
         Returns: undefined
@@ -726,6 +553,14 @@ export type Database = {
       }
       user_has_app_access: {
         Args: { app_name: string; user_id_param: string }
+        Returns: boolean
+      }
+      validate_cat_name_suggestion: {
+        Args: { p_description?: string; p_name: string }
+        Returns: boolean
+      }
+      validate_cat_name_suggestion_with_rate_limit: {
+        Args: { p_description?: string; p_name: string }
         Returns: boolean
       }
       validate_environment_setup: { Args: never; Returns: boolean }
