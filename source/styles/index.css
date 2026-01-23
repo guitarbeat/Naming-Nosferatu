@@ -28,7 +28,6 @@
 @import url("./components/components.css");
 @import url("./components/app-layout.css");
 @import url("./components/analysis-mode.css");
-@import url("./components/gallery.css");
 
 /* 4. Animations and interactions (applied last for proper cascade) */
 @import url("./animations/animations.css");

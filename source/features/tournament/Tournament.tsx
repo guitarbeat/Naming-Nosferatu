@@ -6,7 +6,6 @@ import type { TournamentProps } from "@/types/components";
 import { getVisibleNames } from "@/utils";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
-import styles from "./tournament.module.css";
 
 function TournamentContent({
 	onComplete,
@@ -74,12 +73,12 @@ function TournamentContent({
 
 	return (
 		<div
-			className={`relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30 ${styles.starBg}`}
+			className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30"
 		>
 			{/* Header Section */}
 			<header className="pt-6 px-4 space-y-4">
 				<div className="flex items-center justify-between">
-					<div className={`px-4 py-1.5 rounded-full flex items-center gap-2 ${styles.glassPanel}`}>
+					<div className="px-4 py-1.5 rounded-full flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20">
 						<span className="material-symbols-outlined text-primary text-sm">stars</span>
 						<span className="text-xs font-bold tracking-widest uppercase text-white/90">
 							Round {roundNumber}
@@ -110,7 +109,7 @@ function TournamentContent({
 
 			{/* Tournament Controls */}
 			<section className="mt-6 px-4">
-				<div className={`p-2 rounded-xl flex items-center justify-between ${styles.glassPanel}`}>
+				<div className="p-2 rounded-xl flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20">
 					<div className="flex gap-2">
 						<button
 							onClick={audioManager.handleToggleMute}
@@ -145,11 +144,11 @@ function TournamentContent({
 					{/* Card Left */}
 					<div
 						onClick={() => handleVoteWithAnimation("left")}
-						className={`rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95 ${styles.glassPanel}`}
+						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 						<div
-							className={`w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 ${styles.glassPanel}`}
+							className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md"
 						>
 							{leftImg && (
 								<div
@@ -173,7 +172,7 @@ function TournamentContent({
 					{/* VS Badge */}
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
 						<div
-							className={`size-14 rounded-full flex items-center justify-center border-2 border-white/30 ${styles.vsBadge}`}
+							className="size-14 rounded-full flex items-center justify-center border-2 border-white/30 bg-primary/20 backdrop-blur-md shadow-lg"
 						>
 							<span className="font-bold text-xl italic tracking-tighter">VS</span>
 						</div>
@@ -182,11 +181,11 @@ function TournamentContent({
 					{/* Card Right */}
 					<div
 						onClick={() => handleVoteWithAnimation("right")}
-						className={`rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer border-t border-white/20 transition-all active:scale-95 ${styles.glassPanel}`}
+						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 						<div
-							className={`w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 ${styles.glassPanel}`}
+							className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md"
 						>
 							{rightImg && (
 								<div
@@ -223,7 +222,7 @@ function TournamentContent({
 			{/* Bottom Navigation */}
 			<nav className="pb-8 px-6">
 				<div
-					className={`rounded-2xl flex items-center justify-around py-3 px-2 border-t border-white/10 ${styles.glassPanel}`}
+					className="rounded-2xl flex items-center justify-around py-3 px-2 bg-white/10 backdrop-blur-md border-t border-white/10"
 				>
 					<button className="flex flex-col items-center gap-1 group">
 						<div className="size-10 rounded-xl flex items-center justify-center bg-primary shadow-[0_0_15px_rgba(166,94,237,0.4)]">
