@@ -4,7 +4,8 @@
  * Handles high-level layout, glass effects, and filtering/sorting logic
  */
 
-import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
+import { Cat, Grid3X3, Layers, Plus, Search, X } from "lucide-react";
 import React, { useId, useMemo } from "react";
 import { FILTER_OPTIONS } from "@/constants";
 import useAppStore from "@/store/useAppStore";
@@ -406,120 +407,172 @@ function TournamentToolbar({
 	const { selectedNames } = useAppStore((state) => state.tournament);
 	const selectedCount = selectedNames?.length || 0;
 
-	// Toggle Button Helper
-	const ToggleButton = ({
+	// Segmented Control Component - Modern iOS-style toggle
+	const SegmentedControl = ({
+		options,
+		value,
+		onChange,
+	}: {
+		options: { value: string; label: string; icon: React.ReactNode }[];
+		value: string;
+		onChange: (value: string) => void;
+	}) => {
+		const activeIndex = options.findIndex((opt) => opt.value === value);
+
+		return (
+			<div className="relative flex p-1 bg-white/5 rounded-xl border border-white/10">
+				{/* Sliding background */}
+				<motion.div
+					className="absolute top-1 bottom-1 bg-gradient-to-r from-cyan-500/30 to-purple-500/30 rounded-lg border border-white/20"
+					initial={false}
+					animate={{
+						left: `calc(${activeIndex * (100 / options.length)}% + 4px)`,
+						width: `calc(${100 / options.length}% - 8px)`,
+					}}
+					transition={{ type: "spring", stiffness: 400, damping: 30 }}
+				/>
+				{options.map((opt) => (
+					<button
+						key={opt.value}
+						type="button"
+						onClick={() => onChange(opt.value)}
+						className={cn(
+							"relative z-10 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors duration-200",
+							value === opt.value ? "text-white" : "text-white/40 hover:text-white/70",
+						)}
+					>
+						{opt.icon}
+						<span className="hidden sm:inline">{opt.label}</span>
+					</button>
+				))}
+			</div>
+		);
+	};
+
+	// Icon Toggle Button - Minimal square icon button
+	const IconToggle = ({
 		active,
 		onClick,
-		label,
 		icon,
+		activeIcon,
+		label,
 	}: {
 		active: boolean;
 		onClick: () => void;
+		icon: React.ReactNode;
+		activeIcon?: React.ReactNode;
 		label: string;
-		icon?: React.ReactNode;
 	}) => (
-		<button
+		<motion.button
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"relative flex items-center justify-between min-w-[100px] px-4 py-2 gap-2 text-sm font-medium rounded-full transition-all duration-200 border",
+				"relative flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200",
 				active
-					? "bg-purple-500/20 text-white border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:bg-purple-500/30"
-					: "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white",
+					? "bg-gradient-to-br from-cyan-500/20 to-purple-500/20 text-white border border-white/20 shadow-[0_0_20px_rgba(34,211,238,0.15)]"
+					: "bg-white/5 text-white/40 border border-transparent hover:bg-white/10 hover:text-white/70",
 			)}
+			whileTap={{ scale: 0.92 }}
+			aria-label={label}
 		>
-			<span
-				className={cn(
-					"w-2 h-2 rounded-full transition-all duration-300",
-					active ? "bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" : "bg-white/20",
-				)}
-			/>
-			<span className="flex-1 text-center font-bold tracking-wide">
-				{icon} {label}
-			</span>
-		</button>
+			{active && activeIcon ? activeIcon : icon}
+		</motion.button>
 	);
 
 	// Tournament mode toolbar content
 	const renderTournamentMode = () => {
-		const isReady = selectedCount >= 2;
-
-		const buttonLabel = isReady
-			? `Start Tournament (${selectedCount} names)`
-			: `Select at least 2 names (${selectedCount} selected)`;
-
 		return (
 			<div
-				className="flex flex-col gap-3 p-4 w-full items-center justify-center max-w-3xl mx-auto"
+				className="flex flex-col gap-3 p-3 w-full items-center justify-center max-w-2xl mx-auto"
 				data-mode={mode}
 			>
-				{/* Toggle Stack */}
-				<div className="flex flex-wrap items-center justify-center gap-2 p-1 bg-black/40 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg">
-					<div className="flex-0">
-						<ToggleButton
-							active={isSwipeMode}
-							onClick={() => setSwipeMode(!isSwipeMode)}
-							label={isSwipeMode ? "Swipe Mode" : "Grid Mode"}
-						/>
-					</div>
-					<div className="flex-0">
-						<ToggleButton
-							active={showCatPictures}
-							onClick={() => setCatPictures(!showCatPictures)}
-							label={showCatPictures ? "Cats On" : "Cats Off"}
-							icon={showCatPictures ? "🐱" : ""}
-						/>
-					</div>
+				{/* Modern Toolbar Row */}
+				<div className="flex items-center gap-3 px-3 py-2 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
+					{/* View Mode Segmented Control */}
+					<SegmentedControl
+						options={[
+							{ value: "grid", label: "Grid", icon: <Grid3X3 className="w-4 h-4" /> },
+							{ value: "swipe", label: "Cards", icon: <Layers className="w-4 h-4" /> },
+						]}
+						value={isSwipeMode ? "swipe" : "grid"}
+						onChange={(v) => setSwipeMode(v === "swipe")}
+					/>
 
-					{/* Progressive Disclosure: Filter Toggle */}
-					<div className="flex-0">
-						<ToggleButton
-							active={showFiltersInTournament}
-							onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
-							label=""
-							icon={showFiltersInTournament ? "❌" : "🔍"}
-						/>
-					</div>
+					{/* Divider */}
+					<div className="w-px h-6 bg-white/10" />
+
+					{/* Cat Pictures Toggle */}
+					<IconToggle
+						active={showCatPictures}
+						onClick={() => setCatPictures(!showCatPictures)}
+						icon={<Cat className="w-4 h-4" />}
+						label={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
+					/>
+
+					{/* Filter Toggle */}
+					<IconToggle
+						active={showFiltersInTournament}
+						onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
+						icon={<Search className="w-4 h-4" />}
+						activeIcon={<X className="w-4 h-4" />}
+						label={showFiltersInTournament ? "Hide filters" : "Show filters"}
+					/>
 				</div>
 
-				<div className="min-h-[24px] flex items-center justify-center">
+				{/* Selection Status */}
+				<div className="min-h-[20px] flex items-center justify-center">
 					{selectedCount > 0 && selectedCount < 2 && (
-						<div className="text-xs font-medium text-white/50 animate-pulse">
+						<motion.div
+							className="text-xs font-medium text-white/40"
+							initial={{ opacity: 0, y: -5 }}
+							animate={{ opacity: 1, y: 0 }}
+						>
 							Select at least 2 names to start
-						</div>
+						</motion.div>
 					)}
 					{selectedCount >= 2 && (
-						<div className="text-xs font-bold text-cyan-400 animate-bounce">
-							Ready! Click "Start" in the dock below ↓
-						</div>
+						<motion.div
+							className="text-xs font-semibold text-cyan-400/80"
+							initial={{ opacity: 0, y: -5 }}
+							animate={{ opacity: 1, y: 0 }}
+						>
+							Ready! Tap "Start" below ↓
+						</motion.div>
 					)}
 				</div>
 
-				{startTournamentButton && (
-					<div className="relative flex flex-col items-center gap-1 w-full">
-						<Button
-							onClick={startTournamentButton.onClick}
-							disabled={!isReady}
-							className={cn(
-								"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
-								isReady
-									? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
-									: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50",
+				{startTournamentButton && (() => {
+					const isReady = selectedCount >= 2;
+					const buttonLabel = isReady
+						? `Start Tournament (${selectedCount} names)`
+						: `Select at least 2 names (${selectedCount} selected)`;
+					
+					return (
+						<div className="relative flex flex-col items-center gap-1 w-full">
+							<Button
+								onClick={startTournamentButton.onClick}
+								disabled={!isReady}
+								className={cn(
+									"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
+									isReady
+										? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
+										: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50",
+								)}
+								aria-label={buttonLabel}
+								startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
+							>
+								{buttonLabel}
+							</Button>
+							{!isReady && selectedCount > 0 && (
+								<span className="text-xs text-white/30" role="status" aria-live="polite">
+									{selectedCount === 1
+										? "Select 1 more name"
+										: `Select ${2 - selectedCount} more names`}
+								</span>
 							)}
-							aria-label={buttonLabel}
-							startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
-						>
-							{buttonLabel}
-						</Button>
-						{!isReady && selectedCount > 0 && (
-							<span className="text-xs text-white/30" role="status" aria-live="polite">
-								{selectedCount === 1
-									? "Select 1 more name"
-									: `Select ${2 - selectedCount} more names`}
-							</span>
-						)}
-					</div>
-				)}
+						</div>
+					);
+				})()}
 			</div>
 		);
 	};
