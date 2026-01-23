@@ -70,12 +70,7 @@ function PerformanceBadge({ type, label, variant = "md", className = "" }: Perfo
 		`performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
 
 	return (
-		<span
-			className={badgeClass}
-			title={badgeDescription}
-			aria-label={`${badgeLabel}: ${badgeDescription}`}
-			role="status"
-		>
+		<span className={badgeClass} aria-label={`${badgeLabel}: ${badgeDescription}`} role="status">
 			<span className="badge-icon" aria-hidden="true">
 				{badgeIcon}
 			</span>
@@ -165,14 +160,14 @@ export function TrendIndicator({
 
 	if (compact) {
 		return (
-			<span className={trendClass} title={ariaLabel} aria-label={ariaLabel}>
+			<span className={trendClass} aria-label={ariaLabel}>
 				{renderIcon()}
 			</span>
 		);
 	}
 
 	return (
-		<span className={trendClass} title={ariaLabel} aria-label={ariaLabel}>
+		<span className={trendClass} aria-label={ariaLabel}>
 			{renderIcon()}
 			{percentChange !== 0 && (
 				<span className="trend-value">

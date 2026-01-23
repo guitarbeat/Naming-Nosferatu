@@ -1,11 +1,10 @@
-import { useState } from "react";
 import { ErrorComponent } from "@/components/ErrorComponent";
 import { Loading } from "@/components/Loading";
 import { useToast } from "@/providers/ToastProvider";
+import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types/components";
 import { getVisibleNames } from "@/utils";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
-import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
 
 function TournamentContent({
 	onComplete,
@@ -51,7 +50,8 @@ function TournamentContent({
 		showError,
 	});
 
-	const [showCatPictures, setShowCatPictures] = useState(true);
+	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
+	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 
 	if (!currentMatch) {
 		return (
@@ -61,15 +61,9 @@ function TournamentContent({
 		);
 	}
 
-	// Prepare images
-	const leftImg =
-		showCatPictures && currentMatch?.left && typeof currentMatch.left !== "string"
-			? getRandomCatImage(currentMatch.left.id, CAT_IMAGES)
-			: null;
-	const rightImg =
-		showCatPictures && currentMatch?.right && typeof currentMatch.right !== "string"
-			? getRandomCatImage(currentMatch.right.id, CAT_IMAGES)
-			: null;
+	// No images shown - gallery images removed from tournament view
+	const leftImg = null;
+	const rightImg = null;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 shadow-2xl font-display text-white selection:bg-primary/30">
@@ -127,7 +121,7 @@ function TournamentContent({
 						</button>
 					</div>
 					<button
-						onClick={() => setShowCatPictures(!showCatPictures)}
+						onClick={() => setCatPictures(!showCatPictures)}
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 					>
 						<span className="material-symbols-outlined text-sm">pets</span>
@@ -145,12 +139,18 @@ function TournamentContent({
 						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md">
-							{leftImg && (
+						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
+							{leftImg ? (
 								<div
 									className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
 									style={{ backgroundImage: `url('${leftImg}')` }}
 								/>
+							) : (
+								<span className="text-white/20 text-6xl font-bold select-none">
+									{typeof currentMatch.left === "object" && currentMatch.left?.name
+										? currentMatch.left.name[0]?.toUpperCase() || "?"
+										: "?"}
+								</span>
 							)}
 						</div>
 						<div className="text-center pb-4 z-10">
@@ -178,12 +178,18 @@ function TournamentContent({
 						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
 					>
 						<div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md">
-							{rightImg && (
+						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
+							{rightImg ? (
 								<div
 									className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
 									style={{ backgroundImage: `url('${rightImg}')` }}
 								/>
+							) : (
+								<span className="text-white/20 text-6xl font-bold select-none">
+									{typeof currentMatch.right === "object" && currentMatch.right?.name
+										? currentMatch.right.name[0]?.toUpperCase() || "?"
+										: "?"}
+								</span>
 							)}
 						</div>
 						<div className="text-center pb-4 z-10">
@@ -221,13 +227,6 @@ function TournamentContent({
 						<span className="text-[9px] font-bold text-primary uppercase tracking-tighter">
 							Pick
 						</span>
-					</button>
-					{/* Placeholder buttons for navigation - can be hooked up to routing if needed */}
-					<button className="flex flex-col items-center gap-1 group text-white/40 hover:text-white transition-colors">
-						<div className="size-10 flex items-center justify-center">
-							<span className="material-symbols-outlined">grid_view</span>
-						</div>
-						<span className="text-[9px] font-bold uppercase tracking-tighter">Gallery</span>
 					</button>
 					<button className="flex flex-col items-center gap-1 group text-white/40 hover:text-white transition-colors">
 						<div className="size-10 flex items-center justify-center">

@@ -12,7 +12,6 @@ import {
 	X,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import CatImage from "@/components/CatImage";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
 import { playSound } from "@/utils/soundManager";
@@ -83,8 +82,8 @@ export const SwipeableCards = memo(
 		return (
 			<div className="flex flex-col gap-6 w-full max-w-2xl mx-auto p-4">
 				{/* Progress Header */}
-				<Card className="bg-white/5 border-1 border-white/10 backdrop-blur-xl">
-					<CardBody className="p-4 gap-3">
+				<div className="p-4 rounded-xl bg-white/5 backdrop-blur-md border border-white/10">
+					<div className="gap-3 flex flex-col">
 						<div className="flex justify-between items-center">
 							<span className="text-sm font-bold text-default-500 uppercase tracking-wider">
 								Progress
@@ -101,8 +100,8 @@ export const SwipeableCards = memo(
 								indicator: "bg-gradient-to-r from-primary to-secondary",
 							}}
 						/>
-					</CardBody>
-				</Card>
+					</div>
+				</div>
 
 				{/* Swipe Stack */}
 				<div className="relative w-full" style={{ minHeight: "500px" }}>
@@ -144,13 +143,12 @@ export const SwipeableCards = memo(
 										transition={{ type: "spring", stiffness: 300, damping: 30 }}
 										className="w-full max-w-md"
 									>
-										<Card
+										<div
 											className={cn(
-												"relative overflow-visible border-2 transition-all duration-200",
-												isSelected(card)
-													? "border-success/50 bg-success/5 shadow-[0_0_30px_rgba(var(--heroui-success-rgb),0.3)]"
-													: "border-white/10 bg-white/5",
-												index === 0 && "cursor-grab active:cursor-grabbing shadow-2xl",
+												"relative rounded-2xl flex flex-col items-center justify-between p-4 overflow-hidden group bg-white/5 backdrop-blur-md border-t border-white/20 transition-all duration-200",
+												isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
+												index === 0 &&
+													"cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
 												index > 0 && "pointer-events-none",
 											)}
 										>
@@ -187,37 +185,44 @@ export const SwipeableCards = memo(
 												</>
 											)}
 
-											<CardBody className="p-8 gap-6 items-center text-center">
-												{showCatPictures && card.id && imageList.length > 0 && (
-													<div className="relative w-full aspect-square max-w-xs rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
-														<CatImage src={getRandomCatImage(card.id, imageList)} />
+											{/* Image Container */}
+											<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
+												{showCatPictures && card.id && imageList.length > 0 ? (
+													<div
+														className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
+														style={{
+															backgroundImage: `url('${getRandomCatImage(card.id, imageList)}')`,
+														}}
+													/>
+												) : (
+													<span className="text-white/20 text-6xl font-bold select-none">
+														{card.name[0]?.toUpperCase() || "?"}
+													</span>
+												)}
+											</div>
+
+											{/* Text Content */}
+											<div className="text-center pb-4 z-10">
+												<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
+													{card.name}
+												</h3>
+												{card.description && (
+													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2">
+														{card.description}
+													</p>
+												)}
+												{isSelected(card) && (
+													<div className="flex justify-center mt-3">
+														<div className="px-3 py-1 bg-success/20 backdrop-blur-md border border-success/30 rounded-full flex items-center gap-2">
+															<Check size={14} className="text-success" />
+															<span className="text-success font-bold text-xs tracking-widest uppercase">
+																Selected
+															</span>
+														</div>
 													</div>
 												)}
-
-												<div className="flex flex-col gap-3">
-													<h2 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
-														{card.name}
-													</h2>
-													{card.description && (
-														<p className="text-default-400 text-lg leading-relaxed max-w-md">
-															{card.description}
-														</p>
-													)}
-												</div>
-
-												{isSelected(card) && (
-													<Chip
-														size="lg"
-														color="success"
-														variant="shadow"
-														startContent={<Check size={18} />}
-														className="font-bold shadow-success/40"
-													>
-														Selected for Tournament
-													</Chip>
-												)}
-											</CardBody>
-										</Card>
+											</div>
+										</div>
 									</motion.div>
 								</motion.div>
 							))
@@ -227,28 +232,26 @@ export const SwipeableCards = memo(
 								animate={{ opacity: 1, scale: 1 }}
 								className="flex flex-col items-center justify-center gap-6 p-12"
 							>
-								<Card className="bg-white/5 border-1 border-white/10 backdrop-blur-xl">
-									<CardBody className="p-12 gap-6 items-center text-center">
-										<div className="text-6xl">🎉</div>
-										<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-											All Clear!
-										</h2>
-										<p className="text-default-400 max-w-md">
-											You've reviewed all {names.length} names. Ready to start the tournament?
-										</p>
-										{selectedNames.length >= 2 && (
-											<Button
-												size="lg"
-												color="primary"
-												variant="shadow"
-												onClick={() => onStartTournament(selectedNames)}
-												className="font-bold text-lg px-8 shadow-primary/40"
-											>
-												Start Tournament ({selectedNames.length} names)
-											</Button>
-										)}
-									</CardBody>
-								</Card>
+								<div className="p-12 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col items-center text-center gap-6">
+									<div className="text-6xl">🎉</div>
+									<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+										All Clear!
+									</h2>
+									<p className="text-white/60 max-w-md">
+										You've reviewed all {names.length} names. Ready to start the tournament?
+									</p>
+									{selectedNames.length >= 2 && (
+										<Button
+											size="lg"
+											color="primary"
+											variant="shadow"
+											onClick={() => onStartTournament(selectedNames)}
+											className="font-bold text-lg px-8 shadow-primary/40"
+										>
+											Start Tournament ({selectedNames.length} names)
+										</Button>
+									)}
+								</div>
 							</motion.div>
 						)}
 					</AnimatePresence>

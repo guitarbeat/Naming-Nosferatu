@@ -27,7 +27,7 @@
 	"license": "MIT",
 	"packageManager": "pnpm@10.27.0",
 	"engines": {
-		"node": ">=20.0.0",
+		"node": "20.x",
 		"pnpm": ">=9.0.0"
 	},
 	"scripts": {
@@ -111,6 +111,13 @@
 		"fetch-blob": "^3.2.0",
 		"undici": "^6.23.0",
 		"tar": "^7.5.4"
+	},
+	"pnpm": {
+		"overrides": {
+			"source-map": "^0.7.4",
+			"sourcemap-codec": "npm:@jridgewell/sourcemap-codec@^1.4.15",
+			"magic-string": "^0.30.21"
+		}
 	},
 	"funding": {
 		"type": "individual",

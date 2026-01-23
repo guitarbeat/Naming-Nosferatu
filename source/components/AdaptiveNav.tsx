@@ -1,6 +1,6 @@
 /**
  * @module AdaptiveNav
- * @description Adaptive navigation component - Floating "Dock" style for all screens
+ * @description Adaptive navigation component - Full-width bottom navigation bar for all screens
  * Uses Scroll Navigation for Single Page Architecture
  */
 
@@ -24,8 +24,8 @@ const keyToId: Record<string, string> = {
 };
 
 /**
- * Adaptive Floating Dock Navigation
- * Renders as a floating pill at the bottom on all screen sizes
+ * Adaptive Bottom Navigation Bar
+ * Renders as a full-width bottom navigation bar on all screen sizes
  */
 export function AdaptiveNav(_props: AdaptiveNavProps) {
 	const appStore = useAppStore();
@@ -143,22 +143,21 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 
 	return (
 		<motion.div
-			className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[95vw]"
+			className="fixed bottom-0 left-0 right-0 z-50 w-full"
 			initial={{ y: 20, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ duration: 0.5, delay: 0.2 }}
 		>
 			<nav
-				className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full shadow-2xl"
+				className="flex items-center justify-around gap-1 sm:gap-2 px-2 sm:px-4 py-3 bg-black/60 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]"
 				role="navigation"
 				aria-label="Main navigation"
 			>
 				{/* Central Avatar Button - User Profile */}
-				<div className="flex flex-col items-center gap-0.5 mx-1 sm:mx-2 relative">
+				<div className="flex flex-col items-center gap-0.5 relative flex-1 max-w-[80px]">
 					<div
 						className="group cursor-pointer relative"
 						onClick={() => appStore.uiActions.setEditingProfile(true)}
-						title="Edit Profile"
 					>
 						{/* Glow effect */}
 						<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -176,9 +175,6 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 						{(appStore.user.name || "Profile").split(" ")[0]}
 					</span>
 				</div>
-
-				{/* Separator */}
-				<div className="w-px h-8 bg-white/10 mx-1" />
 
 				{bottomNavItems.map((item) => {
 					const itemActive = isActive(item.key);
@@ -206,7 +202,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 						<motion.button
 							key={item.key}
 							className={cn(
-								"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
+								"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
 								itemActive
 									? "text-white bg-white/10"
 									: "text-white/50 hover:text-white hover:bg-white/5",
@@ -257,7 +253,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							{itemActive && (
 								<motion.div
 									layoutId="dockIndicator"
-									className="absolute -bottom-1 w-8 h-1 bg-white/80 rounded-t-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+									className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
 									initial={false}
 									transition={{ type: "spring", stiffness: 500, damping: 30 }}
 								/>
@@ -269,14 +265,13 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				{/* Inline Suggestion Trigger */}
 				<button
 					className={cn(
-						"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
+						"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
 						isActive("suggest")
 							? "text-white bg-white/10"
 							: "text-white/50 hover:text-white hover:bg-white/5",
 					)}
 					onClick={() => handleNavClick("suggest")}
 					aria-label="Suggest a name"
-					title="Suggest a name"
 					type="button"
 				>
 					<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
@@ -286,7 +281,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					{isActive("suggest") && (
 						<motion.div
 							layoutId="dockIndicator"
-							className="absolute -bottom-1 w-8 h-1 bg-white/80 rounded-t-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
 							initial={false}
 							transition={{ type: "spring", stiffness: 500, damping: 30 }}
 						/>

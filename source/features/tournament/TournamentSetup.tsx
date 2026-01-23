@@ -56,25 +56,6 @@ export default function TournamentSetup({
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -10 }}
 				>
-					<div className="flex justify-end mb-6 px-4 md:px-8 max-w-[1600px] mx-auto">
-						<div className="flex gap-4 items-center bg-black/30 backdrop-blur-md border border-white/5 py-2 px-4 rounded-full">
-							{/* Avatar Display */}
-							{user.avatarUrl && (
-								<div className="w-8 h-8 rounded-full overflow-hidden border border-white/20 shadow-sm relative">
-									<img
-										src={user.avatarUrl}
-										alt="User Avatar"
-										className="w-full h-full object-cover"
-									/>
-									<div className="absolute inset-0 rounded-full shadow-[inset_0_0_4px_rgba(0,0,0,0.5)]" />
-								</div>
-							)}
-							<span className="text-sm font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-pink-300 font-mono">
-								{userName}
-							</span>
-						</div>
-					</div>
-
 					<NameManagementView
 						mode="tournament"
 						userName={userName}

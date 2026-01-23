@@ -5,6 +5,11 @@
 	"installCommand": "pnpm install --no-frozen-lockfile",
 	"buildCommand": "pnpm run build",
 	"outputDirectory": "dist",
+	"functions": {
+		"*.js": {
+			"runtime": "nodejs20.x"
+		}
+	},
 	"git": {
 		"deploymentEnabled": {
 			"main": true,

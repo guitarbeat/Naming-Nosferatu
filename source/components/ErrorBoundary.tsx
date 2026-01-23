@@ -70,7 +70,6 @@ Timestamp: ${new Date().toISOString()}
 								copyErrorToClipboard();
 							}}
 							className="flex items-center gap-1.5 text-white/40 hover:text-white px-2 py-1 rounded transition-colors group-open:text-white/60"
-							title="Copy error details to clipboard"
 							aria-label="Copy error details"
 						>
 							<Copy size={14} />

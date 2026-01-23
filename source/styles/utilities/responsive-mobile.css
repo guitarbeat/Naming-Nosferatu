@@ -227,11 +227,7 @@
 				env(safe-area-inset-right) +
 				var(--mobile-safe-spacing)
 			);
-			bottom: max(
-				var(--mobile-safe-spacing),
-				env(safe-area-inset-bottom) +
-				var(--mobile-safe-spacing)
-			);
+			bottom: max(5.5rem, calc(90px + env(safe-area-inset-bottom) + var(--mobile-safe-spacing)));
 		}
 	}
 }
@@ -242,6 +238,6 @@
 @media screen and (width <= 768px) and (orientation: landscape) {
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing-small);
-		bottom: var(--mobile-safe-spacing-small);
+		bottom: max(5rem, calc(80px + env(safe-area-inset-bottom) + var(--mobile-safe-spacing-small)));
 	}
 }

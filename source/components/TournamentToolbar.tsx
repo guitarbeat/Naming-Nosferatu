@@ -336,7 +336,6 @@ function FilterModeToolbar({
 										)
 									}
 									className="flex items-center justify-center w-10 font-bold text-white bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 hover:border-purple-500/50 transition-all"
-									title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
 									aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
 								>
 									<SortOrderIcon
@@ -449,10 +448,6 @@ function TournamentToolbar({
 			? `Start Tournament (${selectedCount} names)`
 			: `Select at least 2 names (${selectedCount} selected)`;
 
-		const tooltipText = isReady
-			? `Start comparing ${selectedCount} names head-to-head`
-			: "Select at least 2 names to start a tournament. You can select up to 64 names.";
-
 		return (
 			<div
 				className="flex flex-col gap-3 p-4 w-full items-center justify-center max-w-3xl mx-auto"
@@ -501,7 +496,7 @@ function TournamentToolbar({
 				</div>
 
 				{startTournamentButton && (
-					<div className="relative flex flex-col items-center gap-1 w-full" title={tooltipText}>
+					<div className="relative flex flex-col items-center gap-1 w-full">
 						<Button
 							onClick={startTournamentButton.onClick}
 							disabled={!isReady}

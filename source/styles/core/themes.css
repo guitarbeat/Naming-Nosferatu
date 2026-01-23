@@ -48,12 +48,23 @@
 	--glass-bg-strong: color-mix(in srgb, var(--surface-muted) 70%, transparent);
 	--glass-border: color-mix(in srgb, var(--color-neutral-50) 12%, transparent);
 	--glass-border-hover: color-mix(in srgb, var(--color-neutral-50) 22%, transparent);
+	--glass-blur: 8px;
 	--glass-shadow: 0 30px 60px var(--shadow-color-strong);
 	--glass-shadow-colored:
 		0 18px 40px color-mix(in srgb, var(--color-neon-cyan) 18%, transparent),
 		0 14px 32px color-mix(in srgb, var(--color-hot-pink) 14%, transparent);
 
 	/* * Shadow utilities */
+	--shadow-sm: 0 1px 2px 0 var(--shadow-color-light);
+	--shadow: 0 1px 3px 0 var(--shadow-color-medium), 0 1px 2px -1px var(--shadow-color-medium);
+	--shadow-md: 0 4px 6px -1px var(--shadow-color-medium), 0 2px 4px -2px var(--shadow-color-medium);
+	--shadow-lg:
+		0 10px 15px -3px var(--shadow-color-medium), 0 4px 6px -4px var(--shadow-color-medium);
+	--shadow-xl:
+		0 20px 25px -5px var(--shadow-color-medium), 0 8px 10px -6px var(--shadow-color-medium);
+	--shadow-2xl: 0 25px 50px -12px var(--shadow-color-strong);
+	--shadow-inner: inset 0 2px 4px 0 var(--shadow-color-light);
+	--shadow-none: 0 0 #0000;
 	--shadow-subtle: 0 8px 24px var(--shadow-color-medium);
 	--shadow-medium: 0 24px 60px var(--shadow-color-strong);
 

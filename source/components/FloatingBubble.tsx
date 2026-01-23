@@ -143,20 +143,6 @@ export const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 							{profile.display_name?.[0]?.toUpperCase() || profile.username[0]?.toUpperCase()}
 						</div>
 					)}
-
-					{/* Hover overlay with name tooltip */}
-					<div
-						className="absolute inset-0 bg-white/20 backdrop-blur-[1px] flex items-center justify-center transition-opacity duration-200"
-						style={{ opacity: bubble.isHovered || isHighlighted ? 1 : 0 }}
-					>
-						<span
-							className={`text-xs font-semibold px-2 py-1 rounded-full shadow-sm animate-fade-in ${
-								isHighlighted ? "text-green-700 bg-green-50/90" : "text-coral bg-white/90"
-							}`}
-						>
-							{displayName}
-						</span>
-					</div>
 				</div>
 
 				{/* Pop out ring effect */}

@@ -113,7 +113,7 @@ function App() {
 				handleTournamentComplete={handleTournamentComplete}
 			>
 				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-					<div className="flex flex-col gap-8 pb-32">
+					<div className="flex flex-col gap-8 pb-[max(5rem,calc(80px+env(safe-area-inset-bottom)))]">
 						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
 						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
 							<ErrorBoundary context="Tournament Flow">
@@ -151,7 +151,7 @@ function App() {
 				variant="container"
 				toasts={toasts}
 				removeToast={removeToast}
-				className="fixed bottom-24 right-4 z-50 flex flex-col gap-2 pointer-events-none"
+				className="fixed bottom-[max(5.5rem,calc(90px+env(safe-area-inset-bottom)))] right-4 z-50 flex flex-col gap-2 pointer-events-none"
 			/>
 		</div>
 	);

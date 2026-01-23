@@ -65,7 +65,7 @@
 	/* Use .btn.btn--primary.btn--fab instead */
 	position: fixed;
 	right: var(--space-8);
-	bottom: var(--space-8);
+	bottom: max(5.5rem, calc(90px + env(safe-area-inset-bottom)));
 	z-index: var(--z-toast);
 	min-width: 3.25rem;
 	min-height: 3.25rem;
