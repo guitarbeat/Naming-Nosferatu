@@ -21,7 +21,6 @@ import { getRandomCatImage } from "./TournamentLogic";
    COMPONENTS
    ========================================================================= */
 
-
 export const SwipeableCards = memo(
 	({
 		names,
@@ -56,9 +55,9 @@ export const SwipeableCards = memo(
 			(card: NameItem, info: PanInfo) => {
 				const offset = info.offset.x;
 				const threshold = 100;
-				setDragOffset(0);
 
 				if (Math.abs(offset) < threshold) {
+					setDragOffset(0);
 					return;
 				}
 
@@ -73,7 +72,10 @@ export const SwipeableCards = memo(
 					playSound("wow");
 				}
 				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
-				setTimeout(() => setDragDirection(null), 300);
+				setTimeout(() => {
+					setDragDirection(null);
+					setDragOffset(0);
+				}, 300);
 			},
 			[isSelected, onToggleName],
 		);
@@ -124,7 +126,7 @@ export const SwipeableCards = memo(
 								>
 									<motion.div
 										drag={index === 0 ? "x" : false}
-										dragConstraints={{ left: 0, right: 0 }}
+										dragConstraints={{ left: -200, right: 200 }}
 										onDrag={(_, info) => {
 											if (index === 0) {
 												setDragOffset(info.offset.x);
