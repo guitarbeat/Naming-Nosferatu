@@ -216,10 +216,10 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 
 	return (
 		<>
-			{/* Profile Avatar - Centered above tournament controls */}
+			{/* Profile Avatar - Top center, above all content */}
 			<motion.div
-				className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-0.5"
-				initial={{ y: 20, opacity: 0 }}
+				className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-0.5"
+				initial={{ y: -20, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, delay: 0.1 }}
 			>
@@ -228,7 +228,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					onClick={() => appStore.uiActions.setEditingProfile(true)}
 				>
 					<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
-					<div className="relative w-10 h-10 rounded-full border-2 border-white/30 overflow-hidden shadow-lg bg-slate-900 z-10">
+					<div className="relative w-12 h-12 rounded-full border-2 border-white/40 overflow-hidden shadow-xl bg-slate-900 z-10">
 						<img
 							alt="User Profile"
 							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
@@ -236,8 +236,8 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 						/>
 					</div>
 				</div>
-				<span className="text-[9px] font-semibold text-white/70 uppercase tracking-wider max-w-[5rem] truncate text-center select-none pt-0.5">
-					{(appStore.user.name || "Profile").split(" ")[0]}
+				<span className="text-[10px] font-semibold text-white/90 uppercase tracking-wider max-w-[8rem] truncate text-center select-none pt-0.5">
+					{appStore.user.name || "Profile"}
 				</span>
 			</motion.div>
 
