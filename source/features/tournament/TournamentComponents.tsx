@@ -22,6 +22,102 @@ import { getRandomCatImage } from "./TournamentLogic";
    COMPONENTS
    ========================================================================= */
 
+const SwipeableCard = memo(
+	({
+		card,
+		index,
+		isSelected,
+		showCatPictures,
+		imageList,
+		dragOffset,
+	}: {
+		card: NameItem;
+		index: number;
+		isSelected: boolean;
+		showCatPictures: boolean;
+		imageList: string[];
+		dragOffset: number;
+	}) => {
+		return (
+			<Card
+				className={cn(
+					"relative overflow-visible border-2 transition-all duration-200",
+					isSelected
+						? "border-success/50 bg-success/5 shadow-[0_0_30px_rgba(var(--heroui-success-rgb),0.3)]"
+						: "border-white/10 bg-white/5",
+					index === 0 && "cursor-grab active:cursor-grabbing shadow-2xl",
+					index > 0 && "pointer-events-none",
+				)}
+			>
+				{/* Swipe Indicators */}
+				{index === 0 && (
+					<>
+						<motion.div
+							className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{
+								opacity: dragOffset < -50 ? 1 : 0,
+								scale: dragOffset < -50 ? 1 : 0.8,
+							}}
+						>
+							<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
+								<X size={24} className="text-white" />
+								<span className="text-white font-black text-lg uppercase">Nope</span>
+							</div>
+						</motion.div>
+
+						<motion.div
+							className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
+							initial={{ opacity: 0, scale: 0.8 }}
+							animate={{
+								opacity: dragOffset > 50 ? 1 : 0,
+								scale: dragOffset > 50 ? 1 : 0.8,
+							}}
+						>
+							<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
+								<Heart size={24} className="text-white fill-white" />
+								<span className="text-white font-black text-lg uppercase">Like</span>
+							</div>
+						</motion.div>
+					</>
+				)}
+
+				<CardBody className="p-8 gap-6 items-center text-center">
+					{showCatPictures && card.id && (
+						<div className="relative w-full aspect-square max-w-xs rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
+							<CatImage src={getRandomCatImage(card.id, imageList)} />
+						</div>
+					)}
+
+					<div className="flex flex-col gap-3">
+						<h2 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+							{card.name}
+						</h2>
+						{card.description && (
+							<p className="text-default-400 text-lg leading-relaxed max-w-md">
+								{card.description}
+							</p>
+						)}
+					</div>
+
+					{isSelected && (
+						<Chip
+							size="lg"
+							color="success"
+							variant="shadow"
+							startContent={<Check size={18} />}
+							className="font-bold shadow-success/40"
+						>
+							Selected for Tournament
+						</Chip>
+					)}
+				</CardBody>
+			</Card>
+		);
+	},
+);
+SwipeableCard.displayName = "SwipeableCard";
+
 export const SwipeableCards = memo(
 	({
 		names,
@@ -144,80 +240,14 @@ export const SwipeableCards = memo(
 										transition={{ type: "spring", stiffness: 300, damping: 30 }}
 										className="w-full max-w-md"
 									>
-										<Card
-											className={cn(
-												"relative overflow-visible border-2 transition-all duration-200",
-												isSelected(card)
-													? "border-success/50 bg-success/5 shadow-[0_0_30px_rgba(var(--heroui-success-rgb),0.3)]"
-													: "border-white/10 bg-white/5",
-												index === 0 && "cursor-grab active:cursor-grabbing shadow-2xl",
-												index > 0 && "pointer-events-none",
-											)}
-										>
-											{/* Swipe Indicators */}
-											{index === 0 && (
-												<>
-													<motion.div
-														className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
-														initial={{ opacity: 0, scale: 0.8 }}
-														animate={{
-															opacity: dragOffset < -50 ? 1 : 0,
-															scale: dragOffset < -50 ? 1 : 0.8,
-														}}
-													>
-														<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
-															<X size={24} className="text-white" />
-															<span className="text-white font-black text-lg uppercase">Nope</span>
-														</div>
-													</motion.div>
-
-													<motion.div
-														className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
-														initial={{ opacity: 0, scale: 0.8 }}
-														animate={{
-															opacity: dragOffset > 50 ? 1 : 0,
-															scale: dragOffset > 50 ? 1 : 0.8,
-														}}
-													>
-														<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
-															<Heart size={24} className="text-white fill-white" />
-															<span className="text-white font-black text-lg uppercase">Like</span>
-														</div>
-													</motion.div>
-												</>
-											)}
-
-											<CardBody className="p-8 gap-6 items-center text-center">
-												{showCatPictures && card.id && (
-													<div className="relative w-full aspect-square max-w-xs rounded-3xl overflow-hidden shadow-xl border-4 border-white/10">
-														<CatImage src={getRandomCatImage(card.id, imageList)} />
-													</div>
-												)}
-
-												<div className="flex flex-col gap-3">
-													<h2 className="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
-														{card.name}
-													</h2>
-													{card.description && (
-														<p className="text-default-400 text-lg leading-relaxed max-w-md">
-															{card.description}
-														</p>
-													)}
-												</div>
-
-												{isSelected(card) && (
-													<Chip
-														size="lg"
-														color="success"
-														variant="shadow"
-														startContent={<Check size={18} />}
-														className="font-bold shadow-success/40"
-													>
-														Selected for Tournament
-													</Chip>
-												)}
-											</CardBody>
-										</Card>
+										<SwipeableCard
+											card={card}
+											index={index}
+											isSelected={isSelected(card)}
+											showCatPictures={showCatPictures}
+											imageList={imageList}
+											dragOffset={index === 0 ? dragOffset : 0}
+										/>
 									</motion.div>
 								</motion.div>
 							))
