@@ -13,6 +13,7 @@ import { useEffect, useRef } from "react";
  */
 function useMagneticPull(leftOrbRef, rightOrbRef, enabled = true) {
   const transformRef = useRef({ left: null, right: null });
+  const rafRef = useRef(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -23,29 +24,37 @@ function useMagneticPull(leftOrbRef, rightOrbRef, enabled = true) {
     if (!leftOrb || !rightOrb) return;
 
     const handleMouseMove = (e) => {
-      const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
-      const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+      if (rafRef.current) return;
 
-      // Store transforms for click interaction
-      transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
-      transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
+      rafRef.current = requestAnimationFrame(() => {
+        const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+        const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
 
-      // Apply transforms
-      leftOrb.style.transform = transformRef.current.left;
-      rightOrb.style.transform = transformRef.current.right;
+        // Store transforms for click interaction
+        transformRef.current.left = `translate(${-xAxis}px, ${-yAxis}px)`;
+        transformRef.current.right = `translate(${xAxis}px, ${yAxis}px)`;
+
+        // Apply transforms
+        if (leftOrb) leftOrb.style.transform = transformRef.current.left;
+        if (rightOrb) rightOrb.style.transform = transformRef.current.right;
+
+        rafRef.current = null;
+      });
     };
 
     const handleMouseDown = (orb, isLeft) => {
       if (!orb) return;
       orb.style.transition = "transform 0.1s ease";
-      const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
+      const currentTransform =
+        transformRef.current[isLeft ? "left" : "right"] || "";
       orb.style.transform = `${currentTransform} scale(0.9)`;
     };
 
     const handleMouseUp = (orb, isLeft) => {
       if (!orb) return;
       orb.style.transition = "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)";
-      const currentTransform = transformRef.current[isLeft ? "left" : "right"] || "";
+      const currentTransform =
+        transformRef.current[isLeft ? "left" : "right"] || "";
       orb.style.transform = currentTransform;
     };
 
@@ -72,6 +81,11 @@ function useMagneticPull(leftOrbRef, rightOrbRef, enabled = true) {
       leftOrb.removeEventListener("mouseup", leftMouseUp);
       rightOrb.removeEventListener("mousedown", rightMouseDown);
       rightOrb.removeEventListener("mouseup", rightMouseUp);
+
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
 
       // Reset transforms
       if (leftOrb) {
