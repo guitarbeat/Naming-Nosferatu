@@ -99,7 +99,12 @@ function App() {
 	}
 
 	return (
-		<div className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30", !user.isLoggedIn && "overflow-hidden")}>
+		<div
+			className={cn(
+				"min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30",
+				!user.isLoggedIn && "overflow-hidden",
+			)}
+		>
 			<AppLayout
 				handleLogin={handleLogin}
 				handleStartNewTournament={handleStartNewTournament}

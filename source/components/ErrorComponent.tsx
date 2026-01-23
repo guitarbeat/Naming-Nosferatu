@@ -117,7 +117,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 		<div
 			className={cn(
 				"flex items-start gap-3 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-100 text-sm shadow-sm backdrop-blur-sm",
-				className
+				className,
 			)}
 			role="alert"
 		>

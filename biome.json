@@ -118,7 +118,9 @@
 				"source/shared/components/NameGrid/NameGrid.tsx",
 				"source/shared/propTypes.ts",
 				"source/shared/services/errorManager/index.ts",
-				"source/shared/services/supabase/supabaseClient.ts"
+				"source/shared/services/supabase/supabaseClient.ts",
+				"source/features/tournament/TournamentComponents.tsx",
+				"source/hooks/useUserSession.ts"
 			],
 			"linter": {
 				"rules": {

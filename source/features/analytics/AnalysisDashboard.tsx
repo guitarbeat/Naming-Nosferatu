@@ -5,28 +5,28 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
+import {
+	Button,
+	ButtonGroup,
+	Card,
+	CardBody,
+	Chip,
+	cn,
+	Progress,
+	Spinner,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
+} from "@heroui/react";
 import { hiddenNamesAPI } from "@supabase/client";
 import React, { useCallback, useMemo, useState } from "react";
 import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
 import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
 import { PerformanceBadges } from "@/components/PerformanceBadge";
-import {
-	Table,
-	TableHeader,
-	TableColumn,
-	TableBody,
-	TableRow,
-	TableCell,
-	Card,
-	CardBody,
-	Button,
-	ButtonGroup,
-	Chip,
-	Progress,
-	Spinner,
-	cn,
-} from "@heroui/react";
 import { TournamentToolbar } from "@/components/TournamentToolbar";
 import { STORAGE_KEYS } from "@/constants";
 import { useCollapsible } from "@/hooks/useStorage";
@@ -51,7 +51,6 @@ import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
  * ColumnHeader Component for sortable tables
  */
 
-
 /**
  * AnalysisTable Component showing local/global leaderboard
  */
@@ -74,28 +73,37 @@ const AnalysisTable: React.FC<{
 	onHideName,
 	summaryStats,
 }) => {
-		const columns = useMemo(() => {
-			const cols = [
-				{ key: "rank", label: "Rank" },
-				{ key: "name", label: "Name" },
-				{ key: "rating", label: isAdmin ? getMetricLabel("rating") : "Rating", sortable: true },
-				{ key: "wins", label: isAdmin ? getMetricLabel("total_wins") : "Wins", sortable: true },
-				{ key: "selected", label: isAdmin ? getMetricLabel("times_selected") : "Selected", sortable: true },
-			];
+	const columns = useMemo(() => {
+		const cols = [
+			{ key: "rank", label: "Rank" },
+			{ key: "name", label: "Name" },
+			{ key: "rating", label: isAdmin ? getMetricLabel("rating") : "Rating", sortable: true },
+			{ key: "wins", label: isAdmin ? getMetricLabel("total_wins") : "Wins", sortable: true },
+			{
+				key: "selected",
+				label: isAdmin ? getMetricLabel("times_selected") : "Selected",
+				sortable: true,
+			},
+		];
 
-			if (isAdmin) {
-				cols.push({ key: "insights", label: "Insights" });
-			}
+		if (isAdmin) {
+			cols.push({ key: "insights", label: "Insights" });
+		}
 
-			cols.push({ key: "dateSubmitted", label: isAdmin ? getMetricLabel("created_at") : "Date", sortable: true });
+		cols.push({
+			key: "dateSubmitted",
+			label: isAdmin ? getMetricLabel("created_at") : "Date",
+			sortable: true,
+		});
 
-			if (canHideNames) {
-				cols.push({ key: "actions", label: "Actions" });
-			}
-			return cols;
-		}, [isAdmin, canHideNames]);
+		if (canHideNames) {
+			cols.push({ key: "actions", label: "Actions" });
+		}
+		return cols;
+	}, [isAdmin, canHideNames]);
 
-		const renderCell = useCallback((item: ConsolidatedName, columnKey: React.Key) => {
+	const renderCell = useCallback(
+		(item: ConsolidatedName, columnKey: React.Key) => {
 			const rank = names.findIndex((n) => n.id === item.id) + 1;
 			const ratingPercent =
 				summaryStats && (summaryStats.maxRating ?? 0) > 0
@@ -173,10 +181,10 @@ const AnalysisTable: React.FC<{
 						<span className="text-xs text-white/50">
 							{item.dateSubmitted
 								? formatDate(item.dateSubmitted, {
-									month: "short",
-									day: "numeric",
-									year: "numeric",
-								})
+										month: "short",
+										day: "numeric",
+										year: "numeric",
+									})
 								: "—"}
 						</span>
 					);
@@ -200,42 +208,44 @@ const AnalysisTable: React.FC<{
 				default:
 					return null;
 			}
-		}, [names, summaryStats, isAdmin, canHideNames, onHideName]);
+		},
+		[names, summaryStats, isAdmin, canHideNames, onHideName],
+	);
 
-		return (
-			<div className="w-full overflow-x-auto">
-				<Table
-					aria-label="Analytics Table"
-					sortDescriptor={{
-						column: sortField,
-						direction: sortDirection === "asc" ? "ascending" : "descending",
-					}}
-					onSortChange={(descriptor) => onSort(descriptor.column as string)}
-					classNames={{
-						wrapper: "bg-white/5 border border-white/5",
-						th: "bg-white/10 text-white/60",
-						td: "text-white/80 py-3",
-					}}
-					removeWrapper
-				>
-					<TableHeader columns={columns}>
-						{(column) => (
-							<TableColumn key={column.key} allowsSorting={!!column.sortable}>
-								{column.label}
-							</TableColumn>
-						)}
-					</TableHeader>
-					<TableBody items={names}>
-						{(item) => (
-							<TableRow key={item.id}>
-								{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</div>
-		);
-	};
+	return (
+		<div className="w-full overflow-x-auto">
+			<Table
+				aria-label="Analytics Table"
+				sortDescriptor={{
+					column: sortField,
+					direction: sortDirection === "asc" ? "ascending" : "descending",
+				}}
+				onSortChange={(descriptor) => onSort(descriptor.column as string)}
+				classNames={{
+					wrapper: "bg-white/5 border border-white/5",
+					th: "bg-white/10 text-white/60",
+					td: "text-white/80 py-3",
+				}}
+				removeWrapper={true}
+			>
+				<TableHeader columns={columns}>
+					{(column) => (
+						<TableColumn key={column.key} allowsSorting={!!column.sortable}>
+							{column.label}
+						</TableColumn>
+					)}
+				</TableHeader>
+				<TableBody items={names}>
+					{(item) => (
+						<TableRow key={item.id}>
+							{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+		</div>
+	);
+};
 
 /**
  * AnalysisInsights Component showing data highlights
@@ -273,9 +283,7 @@ const AnalysisInsights: React.FC<{
 					<Card className="bg-white/5 border border-white/10">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Total Votes</div>
-							<div className="text-2xl font-bold text-white">
-								{summaryStats.totalRatings || 0}
-							</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.totalRatings || 0}</div>
 							<div className="text-xs text-white/40">
 								{summaryStats.totalSelections || 0} selections
 							</div>
@@ -290,29 +298,21 @@ const AnalysisInsights: React.FC<{
 				<Card className="bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20">
 					<CardBody className="gap-1">
 						<div className="text-yellow-500/80 text-sm">Top Rating</div>
-						<div className="text-2xl font-bold text-yellow-500">
-							{summaryStats.maxRating ?? 0}
-						</div>
-						<div className="text-xs text-yellow-500/60 truncate">
-							{summaryStats.topName?.name}
-						</div>
+						<div className="text-2xl font-bold text-yellow-500">{summaryStats.maxRating ?? 0}</div>
+						<div className="text-xs text-yellow-500/60 truncate">{summaryStats.topName?.name}</div>
 					</CardBody>
 				</Card>
 				<Card className="bg-white/5 border border-white/10">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Avg Rating</div>
 						<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
-						<div className="text-xs text-white/40">
-							Across {namesWithInsights.length} names
-						</div>
+						<div className="text-xs text-white/40">Across {namesWithInsights.length} names</div>
 					</CardBody>
 				</Card>
 				<Card className="bg-white/5 border border-white/10">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Total Selected</div>
-						<div className="text-2xl font-bold text-white">
-							{summaryStats.totalSelected ?? 0}
-						</div>
+						<div className="text-2xl font-bold text-white">{summaryStats.totalSelected ?? 0}</div>
 						<div className="text-xs text-white/40">
 							{(summaryStats.maxSelected ?? 0) > 0
 								? `Most: ${summaryStats.maxSelected}x`
@@ -699,11 +699,17 @@ export function AnalysisDashboard({
 
 			<CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
 				{isLoading ? (
-					<div className="flex justify-center p-8 bg-white/5 rounded-lg border border-white/5" role="status">
+					<div
+						className="flex justify-center p-8 bg-white/5 rounded-lg border border-white/5"
+						role="status"
+					>
 						<Spinner label="Loading top names..." color="secondary" />
 					</div>
 				) : error ? (
-					<div className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-lg text-red-200" role="alert">
+					<div
+						className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-lg text-red-200"
+						role="alert"
+					>
 						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
@@ -717,7 +723,11 @@ export function AnalysisDashboard({
 								{["chart", "table", "insights"].map((mode) => (
 									<Button
 										key={mode}
-										className={cn(viewMode === mode ? "bg-white/10 text-white" : "text-white/50 hover:text-white")}
+										className={cn(
+											viewMode === mode
+												? "bg-white/10 text-white"
+												: "text-white/50 hover:text-white",
+										)}
 										onPress={() => setViewMode(mode)}
 									>
 										{mode === "chart"

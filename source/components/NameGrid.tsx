@@ -97,9 +97,9 @@ const GridItem = memo(
 					metadata={
 						isAdmin
 							? {
-								rating: nameObj.avg_rating || 1500,
-								popularity: nameObj.popularity_score,
-							}
+									rating: nameObj.avg_rating || 1500,
+									popularity: nameObj.popularity_score,
+								}
 							: undefined
 					}
 					className={cn(isHidden && "opacity-50 grayscale")}

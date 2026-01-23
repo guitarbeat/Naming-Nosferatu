@@ -119,7 +119,7 @@ export default function TournamentSetup({
 								onChange={handleNameChange}
 								onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && handleSubmit()}
 								className="text-center text-lg h-14 bg-white/5 border-white/10 focus:border-purple-500/50 focus:bg-white/10"
-								autoFocus
+								autoFocus={true}
 							/>
 						</div>
 						<button
@@ -127,7 +127,7 @@ export default function TournamentSetup({
 								"w-full py-4 text-center font-black tracking-[0.2em] text-sm uppercase bg-white text-black rounded-xl",
 								"hover:bg-purple-50 hover:scale-[1.02] active:scale-[0.98]",
 								"transition-all duration-300 shadow-[0_0_30px_-5px_rgba(255,255,255,0.3)]",
-								isLoading && "opacity-50 cursor-not-allowed grayscale"
+								isLoading && "opacity-50 cursor-not-allowed grayscale",
 							)}
 							onClick={handleSubmit}
 							disabled={isLoading}

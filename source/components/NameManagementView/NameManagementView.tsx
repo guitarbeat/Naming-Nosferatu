@@ -83,7 +83,10 @@ export function NameManagementView({
 		if (analysisMode && extensions.dashboard) {
 			return (
 				<div
-					className={cn("w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/5", className)}
+					className={cn(
+						"w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/5",
+						className,
+					)}
 					data-component="name-management-view"
 					data-mode="analysis"
 				>

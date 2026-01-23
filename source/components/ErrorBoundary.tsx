@@ -2,7 +2,6 @@ import { Copy } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
 import { ErrorManager } from "@/services/errorManager";
 
-
 interface Props {
 	children: ReactNode;
 	fallback?: React.ComponentType<ErrorFallbackProps>;
@@ -53,8 +52,13 @@ Timestamp: ${new Date().toISOString()}
 		<div className="flex flex-col items-center justify-center p-8 bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/10 text-center min-h-[50vh] w-full max-w-2xl mx-auto my-8 shadow-2xl">
 			<div className="flex flex-col gap-6 w-full text-white items-center">
 				<div className="space-y-2">
-					<h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent">Something went wrong</h2>
-					<p className="text-white/60">We encountered an unexpected error in <span className="font-mono text-white/80">{context}</span>.</p>
+					<h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent">
+						Something went wrong
+					</h2>
+					<p className="text-white/60">
+						We encountered an unexpected error in{" "}
+						<span className="font-mono text-white/80">{context}</span>.
+					</p>
 				</div>
 
 				<details className="mt-2 text-left bg-black/40 p-4 rounded-xl text-xs font-mono w-full border border-white/5 overflow-hidden group">
@@ -70,7 +74,11 @@ Timestamp: ${new Date().toISOString()}
 							aria-label="Copy error details"
 						>
 							<Copy size={14} />
-							{copySuccess && <span className="text-green-400 font-bold ml-1 animate-in fade-in zoom-in">Copied!</span>}
+							{copySuccess && (
+								<span className="text-green-400 font-bold ml-1 animate-in fade-in zoom-in">
+									Copied!
+								</span>
+							)}
 						</button>
 					</summary>
 					<div className="mt-4 space-y-3 pt-2 border-t border-white/5">

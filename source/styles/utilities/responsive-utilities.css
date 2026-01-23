@@ -189,15 +189,15 @@
 /* Print Styles */
 @media print {
 	.no-print {
-		display: none !important;
+		display: none;
 	}
 	.print-only {
-		display: block !important;
+		display: block;
 	}
 
 	* {
-		color: black !important;
-		background: white !important;
+		color: black;
+		background: white;
 	}
 }
 
@@ -206,9 +206,9 @@
 	*,
 	*::before,
 	*::after {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
 	}
 }
 

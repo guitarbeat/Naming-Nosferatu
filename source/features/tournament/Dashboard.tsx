@@ -1,3 +1,13 @@
+import {
+	ButtonGroup,
+	CardBody,
+	Chip,
+	cn,
+	Button as HeroButton,
+	Card as HeroCard,
+	Spinner,
+	Tooltip,
+} from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -14,16 +24,6 @@ import {
 	TrendingUp,
 	Users,
 } from "lucide-react";
-import {
-	Button as HeroButton,
-	Card as HeroCard,
-	CardBody,
-	Chip,
-	Tooltip,
-	Spinner,
-	ButtonGroup,
-	cn,
-} from "@heroui/react";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 import { Loading } from "@/components/Loading";
@@ -236,7 +236,7 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 							"border backdrop-blur-md bg-gradient-to-br from-white/5 to-white/[0.02]",
 							"border-white/10 hover:border-purple-500/30 transition-all duration-300",
 							name.trending &&
-							"ring-1 ring-pink-500/30 shadow-[0_0_15px_-5px_var(--tw-shadow-color)] shadow-pink-500/20",
+								"ring-1 ring-pink-500/30 shadow-[0_0_15px_-5px_var(--tw-shadow-color)] shadow-pink-500/20",
 						)}
 						shadow="sm"
 					>
@@ -421,7 +421,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 					{GEN_CATEGORIES.map((category) => (
 						<HeroCard
 							key={category.id}
-							isPressable
+							isPressable={true}
 							onPress={() => generateName(category.id)}
 							className={cn(
 								"border transition-all duration-300",
@@ -493,7 +493,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 
 								<div className="flex gap-2 mt-4">
 									<HeroButton
-										isIconOnly
+										isIconOnly={true}
 										variant="flat"
 										className="bg-white/5 hover:bg-white/10 text-white data-[hover=true]:text-pink-400"
 										onPress={() => toggleFavorite(generatedName)}
@@ -508,7 +508,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 										/>
 									</HeroButton>
 									<HeroButton
-										isIconOnly
+										isIconOnly={true}
 										variant="flat"
 										className="bg-white/5 hover:bg-white/10 text-white"
 										onPress={() => copyToClipboard(generatedName)}
@@ -679,7 +679,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 					<ButtonGroup variant="flat" className="bg-white/5 rounded-lg p-1">
 						<HeroButton
 							size="sm"
-							isIconOnly
+							isIconOnly={true}
 							className={cn(
 								viewMode === "grid" ? "bg-white/10 text-white" : "text-white/50 hover:text-white",
 							)}
@@ -689,7 +689,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 						</HeroButton>
 						<HeroButton
 							size="sm"
-							isIconOnly
+							isIconOnly={true}
 							className={cn(
 								viewMode === "list" ? "bg-white/10 text-white" : "text-white/50 hover:text-white",
 							)}
@@ -725,13 +725,13 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 						{selectedCategoryData?.filteredNames.map((name) => (
 							<HeroCard
 								key={name}
-								isPressable
+								isPressable={true}
 								className="bg-white/5 hover:bg-white/10 border border-white/5 hover:border-purple-500/30 transition-all"
 							>
 								<CardBody className="p-3 flex flex-row justify-between items-center gap-2">
 									<span className="font-medium text-white truncate">{name}</span>
 									<HeroButton
-										isIconOnly
+										isIconOnly={true}
 										size="sm"
 										variant="light"
 										className="text-white/20 hover:text-pink-500 min-w-8 w-8 h-8"
@@ -756,7 +756,7 @@ const CategoryExplorer: React.FC<{ userName: string }> = ({ userName: _userName 
 					{filteredCategories.map((category) => (
 						<HeroCard
 							key={category.id}
-							isPressable
+							isPressable={true}
 							onPress={() => setSelectedCategory(category.id)}
 							className={cn(
 								"border group transition-all duration-300",

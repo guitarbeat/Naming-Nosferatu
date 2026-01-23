@@ -33,7 +33,10 @@ export function ProfileMode({
 	categories,
 }: ProfileModeProps) {
 	return (
-		<div className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 pb-32" data-mode="profile">
+		<div
+			className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 pb-32"
+			data-mode="profile"
+		>
 			{/* Header Extension */}
 			{extensions.header && (
 				<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -92,15 +95,15 @@ export function ProfileMode({
 					onToggleVisibility={
 						profileProps.onToggleVisibility
 							? (id: string | number) => {
-								profileProps.onToggleVisibility?.(String(id)).catch(console.error);
-							}
+									profileProps.onToggleVisibility?.(String(id)).catch(console.error);
+								}
 							: undefined
 					}
 					onDelete={
 						profileProps.onDelete
 							? (name: NameItem) => {
-								profileProps.onDelete?.(name).catch(console.error);
-							}
+									profileProps.onDelete?.(name).catch(console.error);
+								}
 							: undefined
 					}
 					isLoading={isLoading}

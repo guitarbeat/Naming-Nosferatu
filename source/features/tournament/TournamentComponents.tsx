@@ -1,17 +1,17 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
+import { Button, Card, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Card, CardBody, CardHeader, Progress, Button, Chip, cn, Divider } from "@heroui/react";
 import {
-	Heart,
-	X,
 	Check,
 	ChevronLeft,
 	ChevronRight,
 	GripVertical,
-	Save,
+	Heart,
 	Loader2,
+	Save,
+	X,
 } from "lucide-react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import CatImage from "@/components/CatImage";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
@@ -111,7 +111,7 @@ export const SwipeableCards = memo(
 							cardsToRender.map((card: NameItem, index: number) => (
 								<motion.div
 									key={card.id}
-									layout
+									layout={true}
 									layoutId={String(card.id)}
 									className="absolute inset-0 flex items-center justify-center"
 									style={{ zIndex: 10 - index }}
@@ -258,7 +258,7 @@ export const SwipeableCards = memo(
 				{visibleCards.length > 0 && (
 					<div className="flex gap-4 justify-center items-center">
 						<Button
-							isIconOnly
+							isIconOnly={true}
 							size="lg"
 							variant="flat"
 							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
@@ -287,7 +287,7 @@ export const SwipeableCards = memo(
 						</Button>
 
 						<Button
-							isIconOnly
+							isIconOnly={true}
 							size="lg"
 							variant="flat"
 							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"

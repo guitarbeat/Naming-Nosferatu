@@ -1,7 +1,7 @@
+import { Card, CardBody, Tab, Tabs } from "@heroui/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Tabs, Tab, Card, CardBody } from "@heroui/react";
-import { motion, AnimatePresence } from "framer-motion";
 
 export interface TabItem {
 	key: string;

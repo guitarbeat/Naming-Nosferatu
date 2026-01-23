@@ -236,7 +236,9 @@ function FilterModeToolbar({
 	return (
 		<div className="flex flex-col gap-3 p-4 bg-black/40 border border-white/10 rounded-xl backdrop-blur-md shadow-xl">
 			<div className="flex items-baseline gap-1.5 text-xs font-medium text-white/50 bg-white/5 px-3 py-1.5 rounded-lg w-fit">
-				<span className="text-base font-bold text-white tabular-nums">{filteredCount.toLocaleString()}</span>
+				<span className="text-base font-bold text-white tabular-nums">
+					{filteredCount.toLocaleString()}
+				</span>
 				{filteredCount !== totalCount && (
 					<>
 						<span className="opacity-50">/</span>
@@ -244,9 +246,7 @@ function FilterModeToolbar({
 						<span className="opacity-70">filtered</span>
 					</>
 				)}
-				{filteredCount === totalCount && (
-					<span className="opacity-70">total</span>
-				)}
+				{filteredCount === totalCount && <span className="opacity-70">total</span>}
 			</div>
 
 			{isHybrid && categories.length > 0 && (
@@ -308,7 +308,10 @@ function FilterModeToolbar({
 					</div>
 					<div className="flex flex-wrap gap-2">
 						<div className="flex flex-col gap-1.5 flex-1 min-w-[180px]">
-							<label htmlFor="filter-sort" className="text-xs font-semibold text-white/50 tracking-wide ml-1">
+							<label
+								htmlFor="filter-sort"
+								className="text-xs font-semibold text-white/50 tracking-wide ml-1"
+							>
 								Sort By
 							</label>
 							<div className="flex items-stretch gap-1">
@@ -336,7 +339,10 @@ function FilterModeToolbar({
 									title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
 									aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
 								>
-									<SortOrderIcon direction={isAsc ? "asc" : "desc"} className="w-4 h-4 opacity-70" />
+									<SortOrderIcon
+										direction={isAsc ? "asc" : "desc"}
+										className="w-4 h-4 opacity-70"
+									/>
 								</button>
 							</div>
 						</div>
@@ -406,12 +412,12 @@ function TournamentToolbar({
 		active,
 		onClick,
 		label,
-		icon
+		icon,
 	}: {
 		active: boolean;
 		onClick: () => void;
 		label: string;
-		icon?: React.ReactNode
+		icon?: React.ReactNode;
 	}) => (
 		<button
 			type="button"
@@ -420,13 +426,13 @@ function TournamentToolbar({
 				"relative flex items-center justify-between min-w-[100px] px-4 py-2 gap-2 text-sm font-medium rounded-full transition-all duration-200 border",
 				active
 					? "bg-purple-500/20 text-white border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:bg-purple-500/30"
-					: "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white"
+					: "bg-white/5 text-white/50 border-white/10 hover:bg-white/10 hover:text-white",
 			)}
 		>
 			<span
 				className={cn(
 					"w-2 h-2 rounded-full transition-all duration-300",
-					active ? "bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" : "bg-white/20"
+					active ? "bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" : "bg-white/20",
 				)}
 			/>
 			<span className="flex-1 text-center font-bold tracking-wide">
@@ -483,12 +489,12 @@ function TournamentToolbar({
 
 				<div className="min-h-[24px] flex items-center justify-center">
 					{selectedCount > 0 && selectedCount < 2 && (
-						<div className="text-xs font-medium text-white/50 animate-pulse">Select at least 2 names to start</div>
+						<div className="text-xs font-medium text-white/50 animate-pulse">
+							Select at least 2 names to start
+						</div>
 					)}
 					{selectedCount >= 2 && (
-						<div
-							className="text-xs font-bold text-cyan-400 animate-bounce"
-						>
+						<div className="text-xs font-bold text-cyan-400 animate-bounce">
 							Ready! Click "Start" in the dock below ↓
 						</div>
 					)}
@@ -503,7 +509,7 @@ function TournamentToolbar({
 								"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
 								isReady
 									? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
-									: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50"
+									: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50",
 							)}
 							aria-label={buttonLabel}
 							startIcon={isReady ? <Plus className="w-4 h-4" /> : null}

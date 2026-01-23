@@ -178,9 +178,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 						title="Edit Profile"
 					>
 						{/* Glow effect */}
-						<div
-							className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-						></div>
+						<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300"></div>
 						{/* Avatar container */}
 						<div className="relative w-10 h-10 rounded-full border-2 border-white/30 overflow-hidden shadow-lg bg-slate-900 z-10">
 							<img
@@ -226,9 +224,13 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							key={item.key}
 							className={cn(
 								"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
-								itemActive ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
-								isDisabled && "opacity-40 cursor-not-allowed hover:bg-transparent hover:text-white/50",
-								isHighlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40"
+								itemActive
+									? "text-white bg-white/10"
+									: "text-white/50 hover:text-white hover:bg-white/5",
+								isDisabled &&
+									"opacity-40 cursor-not-allowed hover:bg-transparent hover:text-white/50",
+								isHighlight &&
+									"text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40",
 							)}
 							onClick={() => handleNavClick(item.key)}
 							aria-current={itemActive ? "page" : undefined}
@@ -238,27 +240,37 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							animate={
 								isPlayReady
 									? {
-										scale: [1, 1.05, 1],
-										boxShadow: [
-											"0 0 0 rgba(34, 211, 238, 0)",
-											"0 0 10px rgba(34, 211, 238, 0.3)",
-											"0 0 0 rgba(34, 211, 238, 0)",
-										],
-									}
+											scale: [1, 1.05, 1],
+											boxShadow: [
+												"0 0 0 rgba(34, 211, 238, 0)",
+												"0 0 10px rgba(34, 211, 238, 0.3)",
+												"0 0 0 rgba(34, 211, 238, 0)",
+											],
+										}
 									: {}
 							}
 							transition={
 								isPlayReady
 									? {
-										duration: 2,
-										repeat: Infinity,
-										ease: "easeInOut",
-									}
+											duration: 2,
+											repeat: Infinity,
+											ease: "easeInOut",
+										}
 									: {}
 							}
 						>
-							{item.icon && <item.icon className={cn("w-5 h-5 sm:w-6 sm:h-6", isHighlight && "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]")} aria-hidden={true} />}
-							<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">{label}</span>
+							{item.icon && (
+								<item.icon
+									className={cn(
+										"w-5 h-5 sm:w-6 sm:h-6",
+										isHighlight && "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
+									)}
+									aria-hidden={true}
+								/>
+							)}
+							<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
+								{label}
+							</span>
 							{itemActive && (
 								<motion.div
 									layoutId="dockIndicator"
@@ -275,7 +287,9 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				<button
 					className={cn(
 						"relative flex flex-col items-center justify-center min-w-[60px] sm:min-w-[70px] h-full gap-1 p-2 rounded-xl transition-all duration-200",
-						isActive("suggest") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5"
+						isActive("suggest")
+							? "text-white bg-white/10"
+							: "text-white/50 hover:text-white hover:bg-white/5",
 					)}
 					onClick={() => handleNavClick("suggest")}
 					aria-label="Suggest a name"
@@ -283,7 +297,9 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					type="button"
 				>
 					<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
-					<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">Suggest</span>
+					<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
+						Suggest
+					</span>
 					{isActive("suggest") && (
 						<motion.div
 							layoutId="dockIndicator"

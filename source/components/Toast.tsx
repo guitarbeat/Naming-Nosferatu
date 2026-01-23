@@ -3,8 +3,8 @@
  * @description Toast notification components with multiple variants and positioning.
  */
 
-import type React from "react";
 import { cva } from "class-variance-authority";
+import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
 import { cn } from "@/utils";
 import LiquidGlass from "./LiquidGlass";
@@ -32,7 +32,7 @@ const toastVariants = cva(
 			type: "info",
 			isExiting: false,
 		},
-	}
+	},
 );
 
 /* ========================================= */
@@ -122,10 +122,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 			}}
 		>
 			<div
-				className={cn(
-					toastVariants({ type, isExiting }),
-					className
-				)}
+				className={cn(toastVariants({ type, isExiting }), className)}
 				role="alert"
 				aria-live="polite"
 				aria-atomic="true"
@@ -142,7 +139,16 @@ const ToastItem: React.FC<ToastItemProps> = ({
 						aria-label="Dismiss notification"
 						type="button"
 					>
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
 							<line x1="18" y1="6" x2="6" y2="18" />
 							<line x1="6" y1="6" x2="18" y2="18" />
 						</svg>
@@ -154,7 +160,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 						<div
 							className={cn(
 								"h-full transition-all ease-linear origin-left",
-								progressBarColor[type] || "bg-white"
+								progressBarColor[type] || "bg-white",
 							)}
 							style={{
 								width: "100%",
@@ -190,12 +196,12 @@ interface ToastContainerProps {
 	toasts?: IToastItem[];
 	removeToast?: (id: string) => void;
 	position?:
-	| "top-left"
-	| "top-center"
-	| "top-right"
-	| "bottom-left"
-	| "bottom-center"
-	| "bottom-right";
+		| "top-left"
+		| "top-center"
+		| "top-right"
+		| "bottom-left"
+		| "bottom-center"
+		| "bottom-right";
 	maxToasts?: number;
 	className?: string;
 }
@@ -234,7 +240,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 			className={cn(
 				"fixed z-[100] flex flex-col gap-3 pointer-events-none p-4 min-w-[320px] max-w-[100vw]",
 				positionClasses[position] || positionClasses["top-right"],
-				className
+				className,
 			)}
 			role="region"
 			aria-label="Notifications"

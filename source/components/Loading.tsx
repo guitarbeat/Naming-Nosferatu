@@ -3,11 +3,11 @@
  * @description Comprehensive loading component with spinner, cat, bongo, suspense, and skeleton variants.
  */
 
-import type React from "react";
-import { memo, Suspense, useMemo } from "react";
-import { Skeleton, Spinner, cn } from "@heroui/react";
+import { cn, Skeleton, Spinner } from "@heroui/react";
 import { motion } from "framer-motion";
 import { Cat, Heart, PawPrint } from "lucide-react";
+import type React from "react";
+import { memo, Suspense, useMemo } from "react";
 import { BongoCat } from "./BongoCat";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
@@ -92,7 +92,9 @@ const CatSpinnerContent: React.FC<{
 					>
 						<Heart size={iconSize} fill="currentColor" />
 					</motion.div>
-					{showFace && <Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />}
+					{showFace && (
+						<Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />
+					)}
 				</div>
 			);
 
@@ -113,7 +115,12 @@ const CatSpinnerContent: React.FC<{
 			);
 
 		default:
-			return <Spinner color="secondary" size={size === "small" ? "sm" : size === "large" ? "lg" : "md"} />;
+			return (
+				<Spinner
+					color="secondary"
+					size={size === "small" ? "sm" : size === "large" ? "lg" : "md"}
+				/>
+			);
 	}
 });
 
@@ -141,7 +148,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 		const containerClasses = cn(
 			"flex flex-col items-center justify-center gap-3 p-4",
 			overlay && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
-			className
+			className,
 		);
 
 		// Suspense variant
@@ -191,12 +198,17 @@ export const Loading: React.FC<LoadingProps> = memo(
 					className={cn(
 						"rounded-xl overflow-hidden border border-white/5 bg-white/5 backdrop-blur-sm flex flex-col p-4 gap-3",
 						cardSkeletonVariant === "elevated-card" && "shadow-lg",
-						className
+						className,
 					)}
 					style={{
 						width,
 						height: typeof height === "number" ? `${height}px` : height,
-						minHeight: typeof height === "number" ? `${height}px` : cardSkeletonVariant === "name-card" ? "200px" : "auto"
+						minHeight:
+							typeof height === "number"
+								? `${height}px`
+								: cardSkeletonVariant === "name-card"
+									? "200px"
+									: "auto",
 					}}
 				>
 					<div className="flex items-center gap-3">

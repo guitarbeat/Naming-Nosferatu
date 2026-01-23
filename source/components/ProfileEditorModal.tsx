@@ -79,7 +79,6 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 										className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
 									/>
 								</div>
-
 							</div>
 
 							{/* Name Input */}
@@ -97,11 +96,7 @@ export function ProfileEditorModal({ onLogin }: ProfileEditorModalProps) {
 
 							{/* Actions */}
 							<div className="flex gap-3 w-full mt-2">
-								<Button
-									variant="secondary"
-									onClick={handleClose}
-									className="flex-1"
-								>
+								<Button variant="secondary" onClick={handleClose} className="flex-1">
 									Cancel
 								</Button>
 								<Button

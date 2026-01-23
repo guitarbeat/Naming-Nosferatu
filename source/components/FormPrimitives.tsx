@@ -150,7 +150,10 @@ export const FormField: React.FC<FormFieldProps> = ({
 		<FormFieldContext.Provider value={{ id: fieldId, errorId, error: error || null }}>
 			<div className={cn("flex flex-col gap-2 w-full", className)}>
 				{label && (
-					<label htmlFor={fieldId} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/80 ml-1">
+					<label
+						htmlFor={fieldId}
+						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white/80 ml-1"
+					>
 						{label}
 						{required && <span className="text-red-400 ml-1">*</span>}
 					</label>
@@ -184,8 +187,8 @@ FormField.displayName = "FormField";
 
 interface InputProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">,
-	BaseFieldProps,
-	ValidationProps { }
+		BaseFieldProps,
+		ValidationProps {}
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
 	(
@@ -249,7 +252,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 							inputBaseStyles,
 							hasError && errorStyles,
 							isSuccess && successStyles,
-							className
+							className,
 						)}
 						aria-invalid={hasError || undefined}
 						aria-describedby={hasError ? `${id}-error` : undefined}
@@ -290,8 +293,8 @@ Input.displayName = "Input";
 
 interface TextareaProps
 	extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "className">,
-	BaseFieldProps,
-	ValidationProps { }
+		BaseFieldProps,
+		ValidationProps {}
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 	(
@@ -355,7 +358,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 						"min-h-[80px] py-3",
 						hasError && errorStyles,
 						isSuccess && successStyles,
-						className
+						className,
 					)}
 					aria-invalid={hasError || undefined}
 					aria-describedby={hasError ? `${id}-error` : undefined}
@@ -379,7 +382,7 @@ interface SelectOption {
 
 interface SelectProps
 	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className">,
-	BaseFieldProps {
+		BaseFieldProps {
 	options?: SelectOption[];
 	placeholder?: string;
 }
@@ -411,7 +414,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 							inputBaseStyles,
 							"appearance-none cursor-pointer",
 							error && errorStyles,
-							className
+							className,
 						)}
 						aria-invalid={!!error}
 						aria-describedby={error ? `${id}-error` : undefined}
@@ -422,13 +425,27 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 							</option>
 						)}
 						{options.map((option) => (
-							<option key={option.value} value={option.value} disabled={option.disabled} className="bg-neutral-900 text-white py-2">
+							<option
+								key={option.value}
+								value={option.value}
+								disabled={option.disabled}
+								className="bg-neutral-900 text-white py-2"
+							>
 								{option.label}
 							</option>
 						))}
 					</select>
 					<div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/50">
-						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
 							<path d="m6 9 6 6 6-6" />
 						</svg>
 					</div>

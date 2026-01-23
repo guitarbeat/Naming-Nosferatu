@@ -27,7 +27,11 @@ export const BongoCat = memo(function BongoCat({
 			role="status"
 			aria-label="Loading"
 		>
-			<svg className="w-full h-full drop-shadow-xl" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 787.3 433.8">
+			<svg
+				className="w-full h-full drop-shadow-xl"
+				xmlns="http://www.w3.org/2000/svg"
+				viewBox="0 0 787.3 433.8"
+			>
 				<defs>
 					<symbol id="bongo-eye" viewBox="0 0 19.2 18.7">
 						<circle cx="9.4" cy="9.1" r="8" fill="none" stroke="#000" strokeWidth="2" />
@@ -62,14 +66,34 @@ export const BongoCat = memo(function BongoCat({
 						strokeWidth="5"
 						strokeLinecap="round"
 					/>
-					<path d="M280.8,110.2c-5.4-23.8-22.5-44.2-22.5-44.2s11.5,31.1,16.9,54.9" fill="#ffd4df" stroke="none" />
-					<path d="M537.9,52.5c-5.4-23.8-22.5-44.2-22.5-44.2s35.5,8.8,40.9,32.7" fill="#ffd4df" stroke="none" />
+					<path
+						d="M280.8,110.2c-5.4-23.8-22.5-44.2-22.5-44.2s11.5,31.1,16.9,54.9"
+						fill="#ffd4df"
+						stroke="none"
+					/>
+					<path
+						d="M537.9,52.5c-5.4-23.8-22.5-44.2-22.5-44.2s35.5,8.8,40.9,32.7"
+						fill="#ffd4df"
+						stroke="none"
+					/>
 					<g id="bongo-face">
 						<use href="#bongo-eye" x="340" y="180" width="40" height="40" />
 						<use href="#bongo-eye" x="460" y="160" width="40" height="40" />
 						<ellipse cx="420" cy="240" rx="8" ry="6" fill="#ffa0b4" />
-						<path d="M420,246c0,0-15,20-30,15" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
-						<path d="M420,246c0,0,15,20,30,15" fill="none" stroke="#000" strokeWidth="3" strokeLinecap="round" />
+						<path
+							d="M420,246c0,0-15,20-30,15"
+							fill="none"
+							stroke="#000"
+							strokeWidth="3"
+							strokeLinecap="round"
+						/>
+						<path
+							d="M420,246c0,0,15,20,30,15"
+							fill="none"
+							stroke="#000"
+							strokeWidth="3"
+							strokeLinecap="round"
+						/>
 						<g>
 							<line x1="300" y1="230" x2="350" y2="240" stroke="#000" strokeWidth="2" />
 							<line x1="295" y1="250" x2="348" y2="255" stroke="#000" strokeWidth="2" />
@@ -87,14 +111,23 @@ export const BongoCat = memo(function BongoCat({
 				</g>
 
 				<g id="bongo-laptop">
-					<rect x="180" y="280" width="200" height="100" fill="#2d2d2d" stroke="#1a1a1a" strokeWidth="4" rx="5" />
+					<rect
+						x="180"
+						y="280"
+						width="200"
+						height="100"
+						fill="#2d2d2d"
+						stroke="#1a1a1a"
+						strokeWidth="4"
+						rx="5"
+					/>
 					<g>
 						{[
 							{ d: "M195,300 L330,300", color: "#3de0e8" },
 							{ d: "M195,315 L290,315", color: "#3de0e8" },
 							{ d: "M195,330 L360,330", color: "#3de0e8" },
 							{ d: "M195,345 L270,345", color: "#f97583" },
-							{ d: "M195,360 L320,360", color: "#b392f0" }
+							{ d: "M195,360 L320,360", color: "#b392f0" },
 						].map((line, i) => (
 							<motion.path
 								key={i}
@@ -108,8 +141,18 @@ export const BongoCat = memo(function BongoCat({
 							/>
 						))}
 					</g>
-					<path d="M160,380 L220,380 L200,390 L180,390 Z" fill="#c0c0c0" stroke="#a0a0a0" strokeWidth="2" />
-					<path d="M340,380 L400,380 L380,390 L360,390 Z" fill="#c0c0c0" stroke="#a0a0a0" strokeWidth="2" />
+					<path
+						d="M160,380 L220,380 L200,390 L180,390 Z"
+						fill="#c0c0c0"
+						stroke="#a0a0a0"
+						strokeWidth="2"
+					/>
+					<path
+						d="M340,380 L400,380 L380,390 L360,390 Z"
+						fill="#c0c0c0"
+						stroke="#a0a0a0"
+						strokeWidth="2"
+					/>
 					<rect x="170" y="375" width="240" height="8" fill="#e0e0e0" rx="2" />
 					<rect x="185" y="368" width="210" height="12" fill="#d0d0d0" rx="2" />
 				</g>

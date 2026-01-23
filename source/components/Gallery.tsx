@@ -5,8 +5,8 @@
  */
 
 import { imagesAPI } from "@supabase/client";
-import type React from "react";
 import { ChevronLeft, ChevronRight, Upload, X } from "lucide-react";
+import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { compressImageFile, devError } from "@/utils";
 import { ImageGrid } from "./ImageGrid";
@@ -219,8 +219,14 @@ export function Lightbox({
 	}
 
 	return (
-		<div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200" onClick={onClose}>
-			<div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+		<div
+			className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
+			onClick={onClose}
+		>
+			<div
+				className="relative w-full h-full flex items-center justify-center"
+				onClick={(e) => e.stopPropagation()}
+			>
 				<button
 					type="button"
 					className="absolute top-4 right-4 z-[110] p-3 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all"

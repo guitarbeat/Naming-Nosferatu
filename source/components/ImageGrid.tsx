@@ -4,7 +4,7 @@
  * Provides responsive 2+ column layout on mobile, matching NameGrid patterns.
  */
 
-import { Skeleton, cn } from "@heroui/react";
+import { cn, Skeleton } from "@heroui/react";
 import { motion } from "framer-motion";
 import { ImageIcon, ZoomIn } from "lucide-react";
 import { memo, useMemo } from "react";

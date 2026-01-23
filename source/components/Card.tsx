@@ -38,12 +38,17 @@ const cardVariants = cva(
 				elevated: "bg-white/5 border-none shadow-md",
 				outlined: "bg-transparent border border-white/20",
 				filled: "bg-white/10 border-none",
-				primary: "bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/30",
-				success: "bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/30",
-				warning: "bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 hover:border-yellow-500/30",
+				primary:
+					"bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 hover:border-purple-500/30",
+				success:
+					"bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/30",
+				warning:
+					"bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20 hover:border-yellow-500/30",
 				info: "bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 hover:border-cyan-500/30",
-				danger: "bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 hover:border-red-500/30",
-				secondary: "bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/20 hover:border-gray-500/30",
+				danger:
+					"bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20 hover:border-red-500/30",
+				secondary:
+					"bg-gradient-to-br from-gray-500/10 to-gray-500/5 border border-gray-500/20 hover:border-gray-500/30",
 			},
 			padding: {
 				none: "p-0",
@@ -77,7 +82,7 @@ const cardVariants = cva(
 			bordered: false,
 			background: "solid",
 		},
-	}
+	},
 );
 
 interface GlassConfig {
@@ -177,11 +182,12 @@ export const Card = memo(
 
 			const finalClasses = cn(
 				cardRefClasses,
-				interactive && "cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
+				interactive &&
+					"cursor-pointer hover:-translate-y-1 hover:shadow-lg active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-purple-500",
 				interactive && onClick && "active:translate-y-0",
 				// Glow effect helper
 				"before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500 before:pointer-events-none before:z-0",
-				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]"
+				"before:bg-[radial-gradient(circle_at_var(--mouse-x)_var(--mouse-y),rgba(168,85,247,0.15),transparent_50%)]",
 			);
 
 			// * If liquidGlass is enabled OR background is "glass", wrap content in LiquidGlass
@@ -240,13 +246,13 @@ export const Card = memo(
 
 			const motionProps = enableTilt
 				? {
-					style: {
-						rotateX,
-						rotateY,
-						transformStyle: "preserve-3d" as const,
-						...style,
-					},
-				}
+						style: {
+							rotateX,
+							rotateY,
+							transformStyle: "preserve-3d" as const,
+							...style,
+						},
+					}
 				: { style };
 
 			// biome-ignore lint/suspicious/noExplicitAny: Dynamic component selection
@@ -267,9 +273,9 @@ export const Card = memo(
 						style={
 							enableTilt
 								? {
-									transform: "translateZ(20px)",
-									transformStyle: "preserve-3d",
-								}
+										transform: "translateZ(20px)",
+										transformStyle: "preserve-3d",
+									}
 								: undefined
 						}
 					>
@@ -342,20 +348,36 @@ const CardStats: React.FC<CardStatsProps> = ({
 	return (
 		<Card
 			variant={variant}
-			className={cn("flex flex-col items-center justify-center text-center min-h-[120px] relative pt-6", className)}
+			className={cn(
+				"flex flex-col items-center justify-center text-center min-h-[120px] relative pt-6",
+				className,
+			)}
 			role="status"
 			aria-label={ariaLabel}
 			{...props}
 		>
 			{/* Top accent bar */}
-			<div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`} />
+			<div
+				className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${accentGradient[variant] || accentGradient.default}`}
+			/>
 
 			{(title || label) && (
-				<span className={cn("text-xs font-semibold uppercase tracking-wider text-white/50 mb-2", labelClassName)}>
+				<span
+					className={cn(
+						"text-xs font-semibold uppercase tracking-wider text-white/50 mb-2",
+						labelClassName,
+					)}
+				>
 					{title || label}
 				</span>
 			)}
-			<span className={cn("text-4xl font-bold p-1 overflow-hidden", valueColor[variant] || valueColor.default, valueClassName)}>
+			<span
+				className={cn(
+					"text-4xl font-bold p-1 overflow-hidden",
+					valueColor[variant] || valueColor.default,
+					valueClassName,
+				)}
+			>
 				{value}
 			</span>
 			{emoji && <span className={cn("text-2xl mt-2 drop-shadow-sm", emojiClassName)}>{emoji}</span>}
@@ -444,7 +466,7 @@ const CardNameBase = memo(function CardName({
 			let x = rect.width / 2;
 			let y = rect.height / 2;
 
-			if ('clientX' in event) {
+			if ("clientX" in event) {
 				// It's a mouse event
 				x = event.clientX - rect.left;
 				y = event.clientY - rect.top;
@@ -506,7 +528,7 @@ const CardNameBase = memo(function CardName({
 					disabled && "opacity-50 cursor-not-allowed filter grayscale",
 					isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
 					image && "min-h-[220px]", // Taller if image
-					className
+					className,
 				)}
 				onClick={
 					isInteractive ? (handleInteraction as unknown as React.MouseEventHandler) : undefined
@@ -547,7 +569,7 @@ const CardNameBase = memo(function CardName({
 					className={cn(
 						"font-bold leading-tight text-white m-0 z-10 tracking-tight",
 						size === "small" ? "text-sm" : "text-lg md:text-xl",
-						isHidden && "text-amber-500/80"
+						isHidden && "text-amber-500/80",
 					)}
 					id={`${getSafeId(name)}-title`}
 				>
@@ -560,7 +582,7 @@ const CardNameBase = memo(function CardName({
 						className={cn(
 							"flex-1 m-0 text-white/70 font-normal leading-tight z-10",
 							size === "small" ? "text-[10px] min-h-[2.5em]" : "text-xs",
-							isHidden && "text-amber-500/60"
+							isHidden && "text-amber-500/60",
 						)}
 					>
 						{description}
@@ -571,12 +593,18 @@ const CardNameBase = memo(function CardName({
 					<div className="flex flex-col gap-1 mt-auto w-full z-10">
 						<div className="flex flex-wrap gap-1 justify-center mt-1">
 							{metadata.rating && (
-								<span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full" title="Average Rating">
+								<span
+									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full"
+									title="Average Rating"
+								>
 									⭐ {metadata.rating}
 								</span>
 							)}
 							{metadata.popularity && (
-								<span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full" title="Popularity Score">
+								<span
+									className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-white/60 bg-white/5 border border-white/5 rounded-full"
+									title="Popularity Score"
+								>
 									🔥 {metadata.popularity}
 								</span>
 							)}
@@ -585,12 +613,17 @@ const CardNameBase = memo(function CardName({
 						{metadata.categories && metadata.categories.length > 0 && (
 							<div className="flex flex-wrap gap-1 justify-center mt-1">
 								{metadata.categories.slice(0, 2).map((category, index) => (
-									<span key={index} className="px-1.5 py-0.5 text-[10px] font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full">
+									<span
+										key={index}
+										className="px-1.5 py-0.5 text-[10px] font-medium text-purple-300 bg-purple-500/10 border border-purple-500/20 rounded-full"
+									>
 										{category}
 									</span>
 								))}
 								{metadata.categories.length > 2 && (
-									<span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 border border-white/5 rounded-full">+{metadata.categories.length - 2}</span>
+									<span className="px-1.5 py-0.5 text-[10px] font-medium text-white/40 bg-white/5 border border-white/5 rounded-full">
+										+{metadata.categories.length - 2}
+									</span>
 								)}
 							</div>
 						)}
@@ -598,13 +631,19 @@ const CardNameBase = memo(function CardName({
 				)}
 
 				{shortcutHint && (
-					<span className="absolute top-2 right-2 text-[10px] font-mono text-white/30 border border-white/10 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true">
+					<span
+						className="absolute top-2 right-2 text-[10px] font-mono text-white/30 border border-white/10 px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+						aria-hidden="true"
+					>
 						{shortcutHint}
 					</span>
 				)}
 
 				{isSelected && (
-					<span className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs font-bold shadow-lg animate-in zoom-in spin-in-12 duration-300 z-20" aria-hidden="true">
+					<span
+						className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-purple-500 text-white rounded-full text-xs font-bold shadow-lg animate-in zoom-in spin-in-12 duration-300 z-20"
+						aria-hidden="true"
+					>
 						✓
 					</span>
 				)}
@@ -612,7 +651,12 @@ const CardNameBase = memo(function CardName({
 				{isRippling && isInteractive && (
 					<span
 						className="absolute rounded-full bg-white/20 pointer-events-none animate-ping"
-						style={{ ...rippleStyle, width: '100px', height: '100px', transform: 'translate(-50%, -50%)' }}
+						style={{
+							...rippleStyle,
+							width: "100px",
+							height: "100px",
+							transform: "translate(-50%, -50%)",
+						}}
 						aria-hidden="true"
 					/>
 				)}
@@ -625,7 +669,9 @@ const CardNameBase = memo(function CardName({
 		<div className="flex flex-col gap-2 p-1 min-w-[200px]">
 			<div className="flex justify-between items-center border-b border-white/10 pb-2">
 				<h3 className="font-bold text-white text-lg">{name}</h3>
-				{metadata?.rank && <span className="text-sm font-mono text-purple-400">#{metadata.rank}</span>}
+				{metadata?.rank && (
+					<span className="text-sm font-mono text-purple-400">#{metadata.rank}</span>
+				)}
 			</div>
 
 			{metadata?.description && (
@@ -659,7 +705,10 @@ const CardNameBase = memo(function CardName({
 				<div className="mt-2 pt-2 border-t border-white/10">
 					<div className="flex flex-wrap gap-1">
 						{metadata.categories.map((category, index) => (
-							<span key={index} className="px-2 py-0.5 text-[10px] text-purple-300 bg-purple-900/30 rounded border border-purple-500/20">
+							<span
+								key={index}
+								className="px-2 py-0.5 text-[10px] text-purple-300 bg-purple-900/30 rounded border border-purple-500/20"
+							>
 								{category}
 							</span>
 						))}
@@ -670,7 +719,12 @@ const CardNameBase = memo(function CardName({
 	);
 
 	return (
-		<Tooltip content={<TooltipContent />} delay={500} closeDelay={0} className="bg-neutral-900/90 border border-white/10 backdrop-blur-md p-4 rounded-xl shadow-xl">
+		<Tooltip
+			content={<TooltipContent />}
+			delay={500}
+			closeDelay={0}
+			className="bg-neutral-900/90 border border-white/10 backdrop-blur-md p-4 rounded-xl shadow-xl"
+		>
 			{cardContent}
 		</Tooltip>
 	);

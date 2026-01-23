@@ -85,7 +85,10 @@ export function TournamentMode({
 				filteredCount={filteredCount}
 			/>
 
-			<div className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-6 px-4 pb-20" data-mode="tournament">
+			<div
+				className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-6 px-4 pb-20"
+				data-mode="tournament"
+			>
 				{/* Header Extension */}
 				{extensions.header && (
 					<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -132,7 +135,11 @@ export function TournamentMode({
 								{selectedCount} of {names.length} names selected
 							</span>
 							{selectedCount < 2 && (
-								<span className="text-yellow-400 font-bold ml-1 animate-pulse" role="status" aria-live="polite">
+								<span
+									className="text-yellow-400 font-bold ml-1 animate-pulse"
+									role="status"
+									aria-live="polite"
+								>
 									(Need {2 - selectedCount} more to start tournament)
 								</span>
 							)}
