@@ -90,6 +90,8 @@ export function TournamentMode({
 				className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-6 px-4 pb-20"
 				data-mode="tournament"
 			>
+				{/* Main content container */}
+				<div className="flex flex-col gap-3 p-3 w-full items-center justify-center max-w-2xl mx-auto">
 				{/* Header Extension */}
 				{extensions.header && (
 					<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -219,6 +221,7 @@ export function TournamentMode({
 						/>
 					)}
 				</section>
+				</div>
 			</div>
 		</>
 	);

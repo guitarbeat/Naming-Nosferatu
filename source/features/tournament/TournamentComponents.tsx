@@ -83,7 +83,7 @@ export const SwipeableCards = memo(
 		const progressValue = (swipedIds.size / names.length) * 100;
 
 		return (
-			<div className="flex flex-col gap-6 w-full max-w-2xl mx-auto p-4">
+			<div className="flex flex-col gap-6 w-full">
 				{/* Progress Header */}
 				<div className="p-4 rounded-xl bg-white/5 backdrop-blur-md border border-white/10">
 					<div className="gap-3 flex flex-col">
