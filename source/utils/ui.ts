@@ -120,3 +120,61 @@ export async function compressImageFile(
 		return file;
 	}
 }
+
+/* ==========================================================================
+   HAPTIC FEEDBACK UTILITIES
+   ========================================================================== */
+
+/**
+ * Type for haptic feedback vibration patterns
+ */
+export type HapticPattern = number[];
+
+/**
+ * Haptic feedback patterns for different user interactions
+ */
+export const HAPTIC_PATTERNS = {
+	/** Light tap for navigation and general UI interactions */
+	light: [10],
+	/** Medium feedback for secondary actions */
+	medium: [25],
+	/** Strong feedback for primary actions like starting tournaments */
+	strong: [50, 50, 50],
+	/** Success feedback with a pleasant double vibration */
+	success: [30, 100, 30],
+	/** Error feedback with an attention-grabbing pattern */
+	error: [100, 50, 100, 50, 100],
+} as const;
+
+/**
+ * Trigger haptic feedback with a specified pattern
+ * @param pattern - Array of vibration durations in milliseconds (alternating vibration/pause)
+ * @returns Promise that resolves when vibration completes
+ */
+export function triggerHapticFeedback(pattern: readonly number[]): Promise<void> {
+	return new Promise((resolve) => {
+		if (navigator.vibrate) {
+			navigator.vibrate(pattern);
+			// Resolve after the vibration pattern completes
+			const totalDuration = pattern.reduce((sum, duration) => sum + duration, 0);
+			setTimeout(resolve, totalDuration);
+		} else {
+			// No haptic support, resolve immediately
+			resolve();
+		}
+	});
+}
+
+/**
+ * Convenience function for navigation tap feedback
+ */
+export function hapticNavTap(): Promise<void> {
+	return triggerHapticFeedback(HAPTIC_PATTERNS.light);
+}
+
+/**
+ * Convenience function for tournament start feedback
+ */
+export function hapticTournamentStart(): Promise<void> {
+	return triggerHapticFeedback([...HAPTIC_PATTERNS.strong]);
+}

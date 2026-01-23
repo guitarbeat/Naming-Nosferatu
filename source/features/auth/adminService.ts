@@ -41,7 +41,8 @@ export const adminAPI = {
 						.in("user_name", userNames);
 
 					if (!rolesError && roles) {
-						const roleMap = new Map(roles.map((r) => [r.user_name, r.role]));
+						const typedRoles = roles as unknown as { user_name: string; role: string }[];
+						const roleMap = new Map(typedRoles.map((r) => [r.user_name, r.role]));
 						return {
 							users: data.map((u) => ({
 								...u,

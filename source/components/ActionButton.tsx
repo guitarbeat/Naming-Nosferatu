@@ -1,11 +1,11 @@
 /**
- * @module UnifiedActionButton
+ * @module ActionButton
  * @description A unified action button that intelligently changes based on selection count and current section.
  * Provides consistent behavior across tournament and profile modes.
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle, Hand, Play, Plus, Users } from "lucide-react";
+import { CheckCircle, Hand, Plus, Users } from "lucide-react";
 import React from "react";
 import type { NameItem } from "@/types/components";
 import { cn } from "@/utils/cn";
@@ -20,7 +20,7 @@ export type ActionButtonState = {
 	minSelectionRequired: number;
 };
 
-export interface UnifiedActionButtonProps {
+export interface ActionButtonProps {
 	mode: ActionButtonMode;
 	state: ActionButtonState;
 	onPickNames?: () => void;
@@ -176,7 +176,7 @@ function getButtonConfig(
  * Unified Action Button Component
  * Intelligently displays different actions based on current context and selection state
  */
-export function UnifiedActionButton({
+export function ActionButton({
 	mode,
 	state,
 	onPickNames,
@@ -188,7 +188,7 @@ export function UnifiedActionButton({
 	variant: overrideVariant,
 	disabled: overrideDisabled,
 	showIcon = true,
-}: UnifiedActionButtonProps) {
+}: ActionButtonProps) {
 	const config = getButtonConfig(mode, state);
 
 	// Allow overriding variant and disabled state

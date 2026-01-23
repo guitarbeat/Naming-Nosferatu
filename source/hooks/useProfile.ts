@@ -114,7 +114,10 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 				.from("cat_tournament_selections" as any)
 				.select("user_name, tournament_id");
 
-			const typedSelections = selections as { user_name: string; tournament_id: string }[];
+			const typedSelections = selections as unknown as {
+				user_name: string;
+				tournament_id: string;
+			}[];
 
 			if (selectionsError) {
 				devError("Error fetching aggregate selections:", selectionsError);
@@ -130,9 +133,9 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 					: 1500;
 			const uniqueUsers = new Set([
 				...(ratings?.map((r) => r.user_name) || []),
-				...(selections?.map((s) => s.user_name) || []),
+				...(typedSelections?.map((s) => s.user_name) || []),
 			]).size;
-			const totalTournaments = new Set(selections?.map((s) => s.tournament_id) || []).size;
+			const totalTournaments = new Set(typedSelections?.map((s) => s.tournament_id) || []).size;
 
 			return {
 				names_rated: totalRatings,
@@ -188,17 +191,20 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 			return null;
 		}
 
-		const totalSelections = selections.length;
-		const uniqueTournaments = new Set(selections.map((s) => s.tournament_id)).size;
-		const uniqueNames = new Set(selections.map((s) => s.name_id)).size;
-		const uniqueUsers = userName === null ? new Set(selections.map((s) => s.user_name)).size : 1;
+		const typedSelections = selections as unknown as TournamentSelection[];
+
+		const totalSelections = typedSelections.length;
+		const uniqueTournaments = new Set(typedSelections.map((s) => s.tournament_id)).size;
+		const uniqueNames = new Set(typedSelections.map((s) => s.name_id)).size;
+		const uniqueUsers =
+			userName === null ? new Set(typedSelections.map((s) => s.user_name)).size : 1;
 
 		const nameCounts: Record<string, number> = {};
 		const nameSelectionCounts: Record<string, number> = {};
 		const nameLastSelected: Record<string, string> = {};
 		const nameSelectionFrequency: Record<string, number> = {};
 
-		selections.forEach((s: TournamentSelection) => {
+		typedSelections.forEach((s) => {
 			if (s.name) {
 				nameCounts[s.name] = (nameCounts[s.name] || 0) + 1;
 			}
@@ -225,8 +231,8 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 
 		const mostSelectedName =
 			Object.entries(nameCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || "N/A";
-		const sortedDates = selections
-			.map((s: TournamentSelection) => new Date(s.selected_at || Date.now()).toDateString())
+		const sortedDates = typedSelections
+			.map((s) => new Date(s.selected_at || Date.now()).toDateString())
 			.sort()
 			.filter((d, i, a) => i === 0 || d !== a[i - 1]);
 
@@ -326,7 +332,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 					userName === null
 						? "Aggregate data from all users"
 						: generateSelectionPattern(totalSelections, uniqueTournaments),
-				preferredCategories: await generatePreferredCategories(selections),
+				preferredCategories: await generatePreferredCategories(typedSelections),
 				improvementTip:
 					userName === null
 						? `Total activity across ${uniqueUsers} users`

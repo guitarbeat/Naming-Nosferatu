@@ -541,38 +541,39 @@ function TournamentToolbar({
 					)}
 				</div>
 
-				{startTournamentButton && (() => {
-					const isReady = selectedCount >= 2;
-					const buttonLabel = isReady
-						? `Start Tournament (${selectedCount} names)`
-						: `Select at least 2 names (${selectedCount} selected)`;
-					
-					return (
-						<div className="relative flex flex-col items-center gap-1 w-full">
-							<Button
-								onClick={startTournamentButton.onClick}
-								disabled={!isReady}
-								className={cn(
-									"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
-									isReady
-										? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
-										: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50",
+				{startTournamentButton &&
+					(() => {
+						const isReady = selectedCount >= 2;
+						const buttonLabel = isReady
+							? `Start Tournament (${selectedCount} names)`
+							: `Select at least 2 names (${selectedCount} selected)`;
+
+						return (
+							<div className="relative flex flex-col items-center gap-1 w-full">
+								<Button
+									onClick={startTournamentButton.onClick}
+									disabled={!isReady}
+									className={cn(
+										"relative inline-flex items-center justify-center gap-2 min-h-[46px] px-8 py-2 font-bold uppercase tracking-wider rounded-full transition-all duration-300 border",
+										isReady
+											? "bg-gradient-to-br from-purple-600 to-purple-800 text-white border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(168,85,247,0.4)] hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(0,0,0,0.6),0_0_30px_rgba(168,85,247,0.6)]"
+											: "bg-neutral-800 text-white/30 border-white/5 cursor-not-allowed grayscale opacity-50",
+									)}
+									aria-label={buttonLabel}
+									startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
+								>
+									{buttonLabel}
+								</Button>
+								{!isReady && selectedCount > 0 && (
+									<span className="text-xs text-white/30" role="status" aria-live="polite">
+										{selectedCount === 1
+											? "Select 1 more name"
+											: `Select ${2 - selectedCount} more names`}
+									</span>
 								)}
-								aria-label={buttonLabel}
-								startIcon={isReady ? <Plus className="w-4 h-4" /> : null}
-							>
-								{buttonLabel}
-							</Button>
-							{!isReady && selectedCount > 0 && (
-								<span className="text-xs text-white/30" role="status" aria-live="polite">
-									{selectedCount === 1
-										? "Select 1 more name"
-										: `Select ${2 - selectedCount} more names`}
-								</span>
-							)}
-						</div>
-					);
-				})()}
+							</div>
+						);
+					})()}
 			</div>
 		);
 	};

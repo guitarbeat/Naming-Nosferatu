@@ -109,7 +109,9 @@ export function TournamentMode({
 										size="small"
 										onClick={() => {
 											// Scroll to top to encourage selection
-											document.querySelector('[data-component="name-grid"]')?.scrollIntoView({ behavior: "smooth" });
+											document
+												.querySelector('[data-component="name-grid"]')
+												?.scrollIntoView({ behavior: "smooth" });
 										}}
 										className="font-medium whitespace-nowrap min-w-[140px]"
 									>
@@ -140,7 +142,7 @@ export function TournamentMode({
 									className={cn(
 										"font-bold whitespace-nowrap min-w-[140px]",
 										"bg-gradient-to-br from-purple-600 to-purple-800 text-white",
-										"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200"
+										"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200",
 									)}
 								>
 									Start Tournament ({selectedCount})
@@ -155,9 +157,9 @@ export function TournamentMode({
 					<div
 						className="w-full my-4 flex flex-col gap-2"
 						role="progressbar"
-						aria-valuenow={`${selectedCount}`}
-						aria-valuemin="0"
-						aria-valuemax={`${names.length}`}
+						aria-valuenow={selectedCount}
+						aria-valuemin={0}
+						aria-valuemax={names.length}
 						aria-label="Selection Progress"
 					>
 						<div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">

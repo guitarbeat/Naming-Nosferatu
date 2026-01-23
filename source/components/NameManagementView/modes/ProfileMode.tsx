@@ -84,7 +84,9 @@ export function ProfileMode({
 								size="small"
 								onClick={() => {
 									// Scroll to top to encourage selection
-									document.querySelector('[data-component="name-grid"]')?.scrollIntoView({ behavior: "smooth" });
+									document
+										.querySelector('[data-component="name-grid"]')
+										?.scrollIntoView({ behavior: "smooth" });
 								}}
 								className="font-medium whitespace-nowrap"
 							>

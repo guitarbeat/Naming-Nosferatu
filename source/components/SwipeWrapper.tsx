@@ -2,6 +2,7 @@ import { motion, PanInfo } from "framer-motion";
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "@/navigation";
+import { hapticNavTap } from "@/utils/ui";
 
 interface SwipeWrapperProps {
 	children: ReactNode;
@@ -49,10 +50,8 @@ export function SwipeWrapper({ children }: SwipeWrapperProps) {
 		if (nextIndex >= 0 && nextIndex < navItems.length) {
 			const nextItem = navItems[nextIndex];
 			if (nextItem?.route) {
-				// Add haptic feedback
-				if (navigator.vibrate) {
-					navigator.vibrate(10);
-				}
+				// Add haptic feedback for swipe navigation
+				hapticNavTap();
 				navigate(nextItem.route);
 			}
 		}

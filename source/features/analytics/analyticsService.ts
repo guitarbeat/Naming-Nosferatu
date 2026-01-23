@@ -54,13 +54,17 @@ export const analyticsAPI = {
 	 */
 	getSelectionPopularity: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client.from("cat_tournament_selections" as any).select("name_id, name");
+			const { data, error } = await client
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name");
 			if (error) {
 				return [];
 			}
 
+			const typedData = data as unknown as SelectionRow[];
+
 			const selectionCounts = new Map<string | number, SelectionStats>();
-			(data || []).forEach((row) => {
+			(typedData || []).forEach((row) => {
 				const r = row as SelectionRow;
 				if (!selectionCounts.has(r.name_id)) {
 					selectionCounts.set(r.name_id, {
@@ -97,7 +101,9 @@ export const analyticsAPI = {
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client.from("cat_tournament_selections" as any).select("name_id, name, user_name");
+			let selectionsQuery = client
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name, user_name");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses, user_name");
@@ -120,7 +126,7 @@ export const analyticsAPI = {
 					.eq("is_hidden", false),
 			]);
 
-			const selections = selectionsResult.data || [];
+			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
@@ -234,6 +240,8 @@ export const analyticsAPI = {
 					return { data: [], timeLabels: [] };
 				}
 
+				const typedSelections = selections as unknown as SelectionRow[];
+
 				const { data: ratings } = await client
 					.from("cat_name_ratings")
 					.select("name_id, rating, wins");
@@ -262,8 +270,8 @@ export const analyticsAPI = {
 					}
 				>();
 
-				(selections || []).forEach((item) => {
-					const s = item as SelectionRow;
+				typedSelections.forEach((item) => {
+					const s = item;
 					const nameId = String(s.name_id);
 					const dateStr = new Date(s.selected_at).toISOString();
 					const [date] = dateStr.split("T");
@@ -453,7 +461,9 @@ export const statsAPI = {
 						.eq("is_hidden", true),
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
-					client.from("cat_tournament_selections" as any).select("id", { count: "exact", head: true }),
+					client
+						.from("cat_tournament_selections" as any)
+						.select("id", { count: "exact", head: true }),
 				]);
 
 			const totalNames = namesResult.count || 0;
@@ -513,7 +523,10 @@ export const statsAPI = {
 		return withSupabase(async (client) => {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
-				client.from("cat_tournament_selections" as any).select("*").eq("user_name", userName),
+				client
+					.from("cat_tournament_selections" as any)
+					.select("*")
+					.eq("user_name", userName),
 			]);
 
 			const ratings = ratingsResult.data || [];

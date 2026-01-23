@@ -9,6 +9,7 @@ import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/useAppStore";
 import { cn } from "@/utils/cn";
+import { hapticNavTap } from "@/utils/ui";
 
 interface AdaptiveNavProps {
 	onOpenSuggestName?: () => void;
@@ -129,6 +130,9 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 	);
 
 	const handleStartTournament = () => {
+		// Trigger distinctive haptic feedback for tournament start
+		hapticTournamentStart();
+
 		tournamentActions.resetTournament();
 		tournamentActions.setLoading(true);
 
@@ -167,7 +171,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 		if (id) {
 			const element = document.getElementById(id);
 			if (element) {
-				if (navigator.vibrate) navigator.vibrate(10);
+				hapticNavTap();
 				element.scrollIntoView({ behavior: "smooth" });
 				setActiveSection(id);
 			}
@@ -266,9 +270,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 							: {}
 					}
 					transition={
-						buttonState.highlight
-							? { duration: 2, repeat: Infinity, ease: "easeInOut" }
-							: {}
+						buttonState.highlight ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : {}
 					}
 				>
 					<AnimatePresence mode="wait">
