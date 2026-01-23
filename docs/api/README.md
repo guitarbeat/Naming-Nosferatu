@@ -56,16 +56,7 @@ const tournaments = await tournamentsAPI.getUserTournaments(userName);
 
 ### Tournament Hooks
 
-```javascript
-import { useTournament } from "@/core/hooks/useTournament";
-
-const tournament = useTournament({
-  names,
-  existingRatings,
-  onComplete: handleComplete,
-});
-// Returns: Tournament state and actions
-```
+**Note:** The `useTournament` and `useTournamentManager` hooks have been removed as they are no longer used in the application. Tournament functionality is now handled through the Zustand store and individual hooks like `useTournamentState`, `useTournamentVote`, and `useTournamentHandlers`.
 
 ### User Session Hook
 
