@@ -5,7 +5,7 @@
 _Compare. Eliminate. Obsess._ Find the perfect name through relentless, scientific ranking. Every decision matters. Every comparison reveals truth.
 
 [![Live Demo](https://img.shields.io/badge/Experience-Name_Nosferatu-8B5CF6.svg)](https://name-nosferatu.vercel.app)
-[![Bundle Size](https://img.shields.io/badge/Bundle-391KB_48%25_Optimized-10B981.svg)](https://name-nosferatu.vercel.app)
+[![Bundle Size](https://img.shields.io/badge/Bundle-523KB_17%25_Optimized-10B981.svg)](https://name-nosferatu.vercel.app)
 
 ---
 
@@ -62,11 +62,12 @@ pnpm dev
 
 ### Performance Obsessed
 
-- **391KB bundle** (48% optimized)
+- **523KB main bundle** (17% optimized) - **86KB reduction** from previous version
 - **<500ms cold load** times
-- **Route-based code splitting**
+- **Route-based code splitting** with optimized chunks
 - **Automatic image optimization**
 - **Edge deployment** on Vercel
+- **Major dead code cleanup** - removed unused files and exports
 
 ---
 

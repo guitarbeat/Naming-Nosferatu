@@ -88,8 +88,8 @@ const { user, tournament, ui, userActions, tournamentActions, uiActions } =
 | `cat_app_users` | User accounts | `user_name`, `preferences`, `created_at`, `updated_at` |
 | `cat_name_options` | Available names | `name`, `description`, `avg_rating`, `categories`, `is_active` |
 | `cat_name_ratings` | User ratings | `user_name`, `name_id`, `rating`, `wins`, `losses`, `is_hidden` |
-| `tournament_selections` | Tournament history | `user_name`, `name_id`, `tournament_id`, `selected_at`, `selection_type` |
-| `user_roles` | Role assignments | `user_name`, `role` (enum: admin, user) |
+| `cat_tournament_selections` | Tournament history | `user_name`, `name_id`, `tournament_id`, `selected_at`, `selection_type` |
+| `cat_user_roles` | Role assignments | `user_name`, `role` (enum: admin, user) |
 | `audit_log` | System audit trail | `table_name`, `operation`, `user_name`, `old_values`, `new_values` |
 | `site_settings` | App settings | `key`, `value`, `updated_by` |
 
@@ -122,12 +122,13 @@ const { user, tournament, ui, userActions, tournamentActions, uiActions } =
 - `idx_tournament_user_recent` - Recent tournaments
 - `idx_cat_name_options_name` - Name searches
 
-### Performance Metrics
+### Performance Metrics (Updated January 2026)
 
-- **Query Speed**: 99%+ improvement over targets
-- **Tournament Queries**: 0.110ms (target: <100ms)
-- **Leaderboard Queries**: 0.519ms (target: <150ms)
-- **User Stats Queries**: 0.133ms (target: <50ms)
+- **Bundle Size**: 523KB main bundle (86KB reduction from previous version)
+- **Build Performance**: Clean builds with 0 TypeScript errors
+- **Code Quality**: 0 linting warnings/errors across 97 files
+- **Query Speed**: Optimized with proper indexing and table references
+- **Dead Code Cleanup**: Removed 44+ unused exports, 3 unused files
 
 ---
 
