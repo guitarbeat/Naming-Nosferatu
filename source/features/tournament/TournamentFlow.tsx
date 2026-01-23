@@ -106,16 +106,18 @@ export default function TournamentFlow() {
 				</AnimatePresence>
 			</section>
 
-			{/* Suggest Name Section */}
-			<section
-				id="suggest"
-				className="flex flex-col items-center justify-center p-4 mt-8 border-t border-slate-800/20 pt-12"
-			>
-				<div className="w-full max-w-4xl">
-					<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
-					<NameSuggestion />
-				</div>
-			</section>
+			{/* Suggest Name Section - Hidden during active tournament play */}
+			{(tournament.names === null || tournament.isComplete) && (
+				<section
+					id="suggest"
+					className="flex flex-col items-center justify-center p-4 mt-8 border-t border-slate-800/20 pt-12"
+				>
+					<div className="w-full max-w-4xl">
+						<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
+						<NameSuggestion />
+					</div>
+				</section>
+			)}
 		</div>
 	);
 }
