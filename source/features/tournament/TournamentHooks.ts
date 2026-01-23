@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "@/constants";
-import { useProfile } from "@/hooks/useProfile";
-import { useProfileNotifications } from "@/hooks/useProfileNotifications";
 import useLocalStorage from "@/hooks/useStorage";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore from "@/store/useAppStore";
@@ -23,7 +21,6 @@ import {
 	ratingsToObject,
 	shuffleArray,
 } from "@/utils";
-import { useAdminStatus } from "../auth/authHooks";
 import {
 	calculateBracketRound,
 	EloRating,
@@ -159,113 +156,6 @@ export function useTournamentState(
 	};
 }
 
-/* =========================================================================
-   TOURNAMENT MANAGER HOOK
-   ========================================================================= */
-
-export function useTournamentManager({
-	userName,
-	onUserNameChange,
-	enableAnalysisMode,
-	existingRatings = {},
-	onComplete,
-	audioManager,
-}: {
-	userName: string;
-	onUserNameChange?: (name: string) => void;
-	enableAnalysisMode?: boolean;
-	existingRatings?: Record<string, number> | null;
-	onComplete?: (ratings: Record<string, number>) => void;
-	audioManager?: {
-		handleVolumeChange: (type: "music" | "effects", value: number) => void;
-	};
-}) {
-	const [currentView, setCurrentView] = useState<"tournament" | "photos">("tournament");
-	const [isEditingName, setIsEditingName] = useState(false);
-	const [tempName, setTempName] = useState(userName);
-
-	const [isProcessing, setIsProcessing] = useState(false);
-	const [votingError, setVotingError] = useState<unknown>(null);
-
-	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
-	const [showCatPictures, setShowCatPictures] = useState(false);
-	const { isAdmin } = useAdminStatus(userName);
-	const { showSuccess, showError, showToast, ToastContainer } = useProfileNotifications();
-	const {
-		isAdmin: profileIsAdmin,
-		activeUser,
-		canManageActiveUser,
-		userOptions,
-		userFilter,
-		setUserFilter,
-		stats,
-		selectionStats,
-		fetchSelectionStats,
-	} = useProfile(userName, { showSuccess, showError });
-
-	const shouldEnableAnalysisMode = useMemo(() => {
-		if (typeof window === "undefined") {
-			return !!enableAnalysisMode;
-		}
-		return (
-			!!enableAnalysisMode || new URLSearchParams(window.location.search).get("analysis") === "true"
-		);
-	}, [enableAnalysisMode]);
-
-	const handleNameSubmit = useCallback(
-		(e?: React.FormEvent) => {
-			e?.preventDefault();
-			if (tempName.trim()) {
-				onUserNameChange?.(tempName.trim());
-				setIsEditingName(false);
-			}
-		},
-		[tempName, onUserNameChange],
-	);
-
-	return {
-		currentView,
-		setCurrentView,
-		isEditingName,
-		tempName,
-		setTempName,
-		isProcessing,
-		votingError,
-
-		showKeyboardHelp,
-		setShowKeyboardHelp,
-		showCatPictures,
-		isAdmin,
-		profileIsAdmin,
-		activeUser,
-		canManageActiveUser,
-		userOptions,
-		userFilter,
-		setUserFilter,
-		stats,
-		selectionStats,
-		shouldEnableAnalysisMode,
-		handleNameSubmit,
-		toggleEditingName: setIsEditingName,
-		fetchSelectionStats,
-		showSuccess,
-		showError,
-		showToast,
-		handleEndEarly: async () => {
-			setIsProcessing(true);
-			await onComplete?.(existingRatings || {});
-			setIsProcessing(false);
-		},
-		handleVoteRetry: () => setVotingError(null),
-		handleDismissError: () => setVotingError(null),
-
-		handleToggleKeyboardHelp: () => setShowKeyboardHelp((p) => !p),
-		handleToggleCatPictures: () => setShowCatPictures((p) => !p),
-		handleVolumeChange: (type: "music" | "effects", value: number) =>
-			audioManager?.handleVolumeChange(type, value),
-		ToastContainer,
-	};
-}
 
 /* =========================================================================
    INTERACTION HOOKS
@@ -444,19 +334,6 @@ export function useTournamentVote({
    ========================================================================= */
 
 // Types
-export interface UseTournamentProps {
-	names?: NameItem[];
-	existingRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
-	onComplete?: (
-		results: Array<{
-			name: string;
-			id: string;
-			rating: number;
-			wins: number;
-			losses: number;
-		}>,
-	) => void;
-}
 
 export interface UseTournamentHandlersProps {
 	userName: string | null;

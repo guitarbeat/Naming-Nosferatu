@@ -39,46 +39,6 @@ interface NavItemConfig extends BaseNavItem {
 	ariaLabel?: string; // Accessibility label override
 }
 
-/**
- * Runtime navigation item (with computed state)
- */
-interface NavItem extends BaseNavItem {
-	isActive: boolean; // Computed active state
-	onClick?: () => void; // Click handler
-	children?: NavItem[]; // Transformed children
-	ariaLabel: string; // Always present (defaults to label)
-}
-
-/**
- * Navigation context value
- */
-interface NavbarContextValue {
-	// View state
-	view: string;
-	setView: (view: string) => void;
-
-	// Analysis mode
-	isAnalysisMode: boolean;
-	toggleAnalysis: () => void;
-
-	// UI state
-	isCollapsed: boolean;
-	toggleCollapse: () => void;
-	isMobileMenuOpen: boolean;
-	toggleMobileMenu: () => void;
-	closeMobileMenu: () => void;
-
-	// Actions
-	onOpenPhotos?: () => void;
-	onOpenSuggestName?: () => void;
-
-	// Auth state
-	isLoggedIn: boolean;
-	userName?: string;
-	isAdmin?: boolean;
-	onLogout: () => void;
-}
-
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
@@ -123,19 +83,6 @@ export const BOTTOM_NAV_ITEMS: string[] = ["pick", "play", "analyze"];
 // ============================================================================
 // TRANSFORMATIONS
 // ============================================================================
-
-/**
- * Check if a route is currently active
- */
-function isRouteActive(route: string | undefined, currentRoute: string | undefined): boolean {
-	if (!route || !currentRoute) {
-		return false;
-	}
-	if (route === "/") {
-		return currentRoute === "/";
-	}
-	return currentRoute.startsWith(route);
-}
 
 /**
  * Find a navigation item by key (searches recursively)
