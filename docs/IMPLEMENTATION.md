@@ -1,6 +1,6 @@
 # Implementation Guide & Consolidation History
 
-**Last Updated:** January 2026
+**Last Updated:** January 22, 2026
 **Status:** 📚 Reference Documentation
 
 This document consolidates implementation details, consolidation history, and key architectural decisions across the Name Nosferatu project.
@@ -281,6 +281,62 @@ import { shuffleArray, clearTournamentCache, formatDate, devLog } from "../utils
 - **Bundle optimization** with tree-shaking
 - **Image optimization** pipeline
 - **GPU-accelerated animations** (transform/opacity only)
+
+---
+
+## 🎯 Recent Features (January 2026)
+
+### ActionButton Component & Progress Indicator
+
+**Status:** ✅ **Implemented**
+
+**Overview:** Intelligent action button system with visual progress indicators that adapt based on user selection state and current application context.
+
+**Key Features:**
+- **Context-Aware Actions**: Button behavior dynamically changes based on tournament state, selection count, and current section
+- **Progress Indicators**: Mini progress badges showing `selectedCount/minimumRequired` (e.g., "1/2", "3/4")
+- **Visual Feedback**: Different styles for tournament mode, profile mode, and adaptive navigation
+- **Haptic Feedback**: Integrated vibration patterns for user interactions
+
+**Implementation Details:**
+
+**Progress Indicator Logic:**
+```typescript
+// Shows progress when selectedCount < minSelectionRequired
+const showProgress = selectedCount < minSelectionRequired;
+
+// Adaptive nav: small text indicator
+{showProgress && (
+  <span className="text-[8px] sm:text-[9px] font-bold text-orange-400 leading-none">
+    {selectedCount}/{minSelectionRequired}
+  </span>
+)}
+
+// Standard buttons: positioned badge
+{showProgress && (
+  <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 leading-none">
+    {selectedCount}/{minSelectionRequired}
+  </span>
+)}
+```
+
+**State-Based Button Configuration:**
+- **Tournament Mode**: "Pick Names", "Pick X More", "Start Tournament (X)", "Tournament Active", "Analyze Results"
+- **Profile Mode**: "Select Names", "View Selected (X)"
+- **Adaptive Nav**: Compact versions with contextual actions
+
+**Visual States:**
+- **Ready to Start**: Highlighted with cyan accent and pulsing animation
+- **Selection Incomplete**: Orange progress indicator with disabled styling
+- **Tournament Active**: Secondary styling indicating running tournament
+- **Analysis Available**: Green accent for completed tournament analysis
+
+**Files Modified:**
+- `source/components/ActionButton.tsx` - Main component implementation
+- `source/components/AdaptiveNav.tsx` - Integration with navigation system
+- `source/utils/ui.ts` - Enhanced haptic feedback utilities
+
+**Impact:** Improved user experience with clear visual feedback about selection requirements and tournament state, reducing user confusion and improving engagement.
 
 ---
 
