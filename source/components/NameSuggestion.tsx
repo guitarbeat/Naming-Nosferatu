@@ -81,10 +81,7 @@ function InlineNameSuggestion() {
 						</Button>
 					</div>
 					<div className="flex flex-col gap-2">
-						<label
-							htmlFor="suggest-description"
-							className="text-sm font-medium text-white/80"
-						>
+						<label htmlFor="suggest-description" className="text-sm font-medium text-white/80">
 							Why this name? (optional but encouraged)
 						</label>
 						<textarea
