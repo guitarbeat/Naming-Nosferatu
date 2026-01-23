@@ -1,8 +1,7 @@
 import { Copy } from "lucide-react";
-import type React from "react";
-import { Component, type ReactNode, useState } from "react";
+import React, { Component, type ReactNode, useState } from "react";
 import { ErrorManager } from "@/services/errorManager";
-import { cn } from "@/utils/cn";
+
 
 interface Props {
 	children: ReactNode;

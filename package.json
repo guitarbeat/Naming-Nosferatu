@@ -54,6 +54,7 @@
 	},
 	"dependencies": {
 		"@hello-pangea/dnd": "^18.0.1",
+		"@heroui/react": "^2.8.7",
 		"@hookform/resolvers": "^5.2.2",
 		"@radix-ui/react-slot": "^1.2.4",
 		"@supabase/supabase-js": "^2.91.0",

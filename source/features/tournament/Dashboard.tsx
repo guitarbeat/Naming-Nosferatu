@@ -18,17 +18,13 @@ import {
 	Button as HeroButton,
 	Card as HeroCard,
 	CardBody,
-	CardHeader,
 	Chip,
 	Tooltip,
 	Spinner,
-	Skeleton,
 	ButtonGroup,
-	Divider,
 	cn,
 } from "@heroui/react";
-import type React from "react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 import { Loading } from "@/components/Loading";
 import { TabContainer } from "@/components/TabContainer";
@@ -240,7 +236,7 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 							"border backdrop-blur-md bg-gradient-to-br from-white/5 to-white/[0.02]",
 							"border-white/10 hover:border-purple-500/30 transition-all duration-300",
 							name.trending &&
-								"ring-1 ring-pink-500/30 shadow-[0_0_15px_-5px_var(--tw-shadow-color)] shadow-pink-500/20",
+							"ring-1 ring-pink-500/30 shadow-[0_0_15px_-5px_var(--tw-shadow-color)] shadow-pink-500/20",
 						)}
 						shadow="sm"
 					>

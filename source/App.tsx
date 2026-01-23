@@ -7,7 +7,7 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { AppLayout } from "./AppLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Loading } from "./components/Loading";

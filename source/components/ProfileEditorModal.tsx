@@ -7,7 +7,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
 import useAppStore from "@/store/useAppStore";
-import { cn } from "@/utils/cn";
 import Button from "./Button";
 import { Input } from "./FormPrimitives";
 

@@ -53,3 +53,9 @@ The following components and features have been refactored to use Tailwind CSS u
 7.  **ProfileMode & TournamentMode**
     - Removed NameManagementView.module.css imports (which were broken after deletion)
     - Refactored layout, sticky filters, and progress bars to Tailwind.
+
+8.  **Dashboard & AnalysisDashboard**
+    - Resolved `JSX.IntrinsicElements` and component type errors by correcting React imports and syntax.
+    - Implemented `CollapsibleHeader` component to fix missing dependency in `AnalysisDashboard`.
+    - Refactored `AnalysisTable` in `AnalysisDashboard.tsx` to use dynamic column definitions, resolving strict `ReactElement` child type errors.
+    - Cleaned up unused imports across `App.tsx`, `ErrorBoundary.tsx`, `TournamentMode.tsx`, and `ProfileEditorModal.tsx`.
