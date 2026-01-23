@@ -73,12 +73,29 @@ function InlineNameSuggestion() {
 						<Button
 							type="submit"
 							variant="primary"
-							disabled={!values.name.trim() || isSubmitting}
+							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
 							className="h-[50px] px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Suggest
 						</Button>
+					</div>
+					<div className="flex flex-col gap-2">
+						<label
+							htmlFor="suggest-description"
+							className="text-sm font-medium text-white/80"
+						>
+							Why this name? (optional but encouraged)
+						</label>
+						<textarea
+							id="suggest-description"
+							value={values.description}
+							onChange={(e) => handleChange("description", e.target.value)}
+							placeholder="Share what makes this name special, its meaning, or why it fits your cat..."
+							rows={3}
+							className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all font-medium backdrop-blur-sm resize-none"
+							disabled={isSubmitting}
+						/>
 					</div>
 				</div>
 				{globalError && (
