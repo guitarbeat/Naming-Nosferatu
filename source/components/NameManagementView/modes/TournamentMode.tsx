@@ -74,7 +74,7 @@ export function TournamentMode({
 
 	return (
 		<>
-			{/* Tournament Page Title & Global Actions */}
+			{/* Toolbar: View Controls & Filters */}
 			<TournamentToolbar
 				mode="tournament"
 				filters={filterConfig}
@@ -86,36 +86,39 @@ export function TournamentMode({
 				filteredCount={filteredCount}
 			/>
 
-			<div
-				className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-6 px-4 pb-20"
+			{/* Main Content Area */}
+			<main
+				className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-4 px-4 pb-24"
+				data-component="tournament-setup"
 				data-mode="tournament"
 			>
-				{/* Main content container */}
-				<div className="flex flex-col gap-3 p-3 w-full items-center justify-center max-w-2xl mx-auto">
-					{/* Header Extension */}
+				{/* Content Container */}
+				<div className="flex flex-col gap-4 py-2 w-full items-center justify-center max-w-2xl mx-auto">
+					{/* Optional Header Extension */}
 					{extensions.header && (
-						<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+						<header className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
 							{typeof extensions.header === "function" ? extensions.header() : extensions.header}
-						</div>
+						</header>
 					)}
 
-					{/* Header Actions */}
+					{/* Quick Actions Bar */}
 					{!extensions.nameGrid && (
-						<nav className="w-full flex justify-end gap-2 my-2">
+						<nav
+							className="w-full flex justify-end gap-2 mt-2"
+							aria-label="Selection actions"
+						>
 							{(() => {
-								// Intelligent button logic based on selection count
 								if (selectedCount === 0) {
 									return (
 										<Button
 											variant="secondary"
 											size="small"
 											onClick={() => {
-												// Scroll to top to encourage selection
 												document
 													.querySelector('[data-component="name-grid"]')
 													?.scrollIntoView({ behavior: "smooth" });
 											}}
-											className="font-medium whitespace-nowrap min-w-[140px]"
+											className="font-medium whitespace-nowrap min-w-[120px]"
 										>
 											Pick Names
 										</Button>
@@ -130,12 +133,11 @@ export function TournamentMode({
 											onClick={() => setShowSelectedOnly(!showSelectedOnly)}
 											className="font-medium whitespace-nowrap min-w-[140px]"
 										>
-											{showSelectedOnly ? "👁️ Show All Names" : "👀 Show Selected Only"}
+											{showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
 										</Button>
 									);
 								}
 
-								// 2+ names selected - show start option
 								return (
 									<Button
 										variant="primary"
@@ -147,50 +149,54 @@ export function TournamentMode({
 											"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200",
 										)}
 									>
-										Start Tournament ({selectedCount})
+										Start ({selectedCount})
 									</Button>
 								);
 							})()}
 						</nav>
 					)}
 
-					{/* Progress Bar */}
+					{/* Selection Progress Indicator */}
 					{!extensions.nameGrid && (
 						<div
-							className="w-full my-4 flex flex-col gap-2"
+							className="w-full my-2 flex flex-col gap-1.5"
 							role="progressbar"
 							aria-valuenow={selectedCount}
 							aria-valuemin={0}
 							aria-valuemax={names.length}
-							aria-label="Selection Progress"
+							aria-label="Selection progress"
 						>
-							<div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 backdrop-blur-sm">
+							<div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
 								<div
-									className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500 ease-out shadow-[0_0_10px_rgba(168,85,247,0.4)]"
+									className="h-full bg-gradient-to-r from-purple-500/80 to-pink-500/80 transition-all duration-500 ease-out"
 									style={{
-										width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 5)}%`,
+										width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 3)}%`,
 									}}
 								/>
 							</div>
-							<span className="text-sm text-white/60 font-medium flex justify-between items-center px-1">
+							<p className="text-[11px] text-white/40 font-medium flex justify-between items-center px-0.5">
 								<span>
-									{selectedCount} of {names.length} names selected
+									{selectedCount} / {names.length} selected
 								</span>
 								{selectedCount < 2 && (
 									<span
-										className="text-yellow-400 font-bold ml-1 animate-pulse"
+										className="text-amber-400/70 font-semibold animate-pulse"
 										role="status"
 										aria-live="polite"
 									>
-										(Need {2 - selectedCount} more to start tournament)
+										Need {2 - selectedCount} more
 									</span>
 								)}
-							</span>
+							</p>
 						</div>
 					)}
 
-					{/* Name Grid */}
-					<section className="w-full flex-1">
+					{/* Name Selection Grid */}
+					<section
+						className="w-full flex-1"
+						data-component="name-grid"
+						aria-label="Name selection grid"
+					>
 						{extensions.nameGrid ? (
 							extensions.nameGrid
 						) : isSwipeMode && swipeableCards && !isLoading ? (
@@ -222,7 +228,7 @@ export function TournamentMode({
 						)}
 					</section>
 				</div>
-			</div>
+			</main>
 		</>
 	);
 }
