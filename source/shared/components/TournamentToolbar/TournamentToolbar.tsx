@@ -6,8 +6,8 @@
 
 import { Plus } from "lucide-react";
 import React, { useId, useMemo } from "react";
-import { FILTER_OPTIONS } from "../../../core/constants";
-import useAppStore from "../../../core/store/useAppStore";
+import { FILTER_OPTIONS } from "../../../constants";
+import useAppStore from "../../../store/useAppStore";
 import Button from "../Button";
 import { Select } from "../FormPrimitives";
 import LiquidGlass from "../LiquidGlass";

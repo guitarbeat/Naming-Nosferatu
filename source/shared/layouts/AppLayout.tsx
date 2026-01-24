@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from "react";
-import useAppStore from "../../core/store/useAppStore";
+import useAppStore from "../../store/useAppStore";
 import { ScrollToTopButton } from "../components/Button";
 import CatBackground from "../components/CatBackground";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -22,7 +22,7 @@ interface AppLayoutProps {
 	handleUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<boolean> | undefined;
-	handleTournamentSetup: (names?: any) => void;
+	handleTournamentSetup: (names?: unknown) => void;
 	handleTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
@@ -94,7 +94,11 @@ export function AppLayout({
 					)}
 
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
-					<NameSuggestion variant="modal" isOpen={isSuggestNameModalOpen} onClose={onCloseSuggestName} />
+					<NameSuggestion
+						variant="modal"
+						isOpen={isSuggestNameModalOpen}
+						onClose={onCloseSuggestName}
+					/>
 				</main>
 			</div>
 		</ErrorBoundary>
