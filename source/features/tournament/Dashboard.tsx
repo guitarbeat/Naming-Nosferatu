@@ -1,13 +1,10 @@
 import { CardBody, Chip, cn, Button as HeroButton, Card as HeroCard, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
-import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types/components";
-import { Loading } from "../../shared/components/Loading";
-import { useAdminStatus } from "../auth/authHooks";
-
 import { RankingAdjustment } from "./TournamentComponents";
 
 const AnalysisDashboard = lazy(() =>
@@ -27,7 +24,6 @@ export const PersonalResults = ({
 	currentTournamentNames,
 	onStartNew,
 	onUpdateRatings,
-	userName,
 }: {
 	personalRatings: Record<string, unknown> | undefined;
 	currentTournamentNames?: NameItem[];
@@ -36,7 +32,6 @@ export const PersonalResults = ({
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => void;
 	voteHistory?: unknown[];
-	userName?: string;
 }) => {
 	const [rankings, setRankings] = useState<NameItem[]>([]);
 	const { showToast } = useToast();

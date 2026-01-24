@@ -31,6 +31,7 @@ import { STORAGE_KEYS } from "@/constants";
 import { useCollapsible } from "@/hooks/useStorage";
 import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";
 import { TournamentToolbar } from "../../shared/components/TournamentToolbar";
+import { FloatingBubblesContainer } from "@components/FloatingBubblesContainer";
 
 import type {
 	AnalysisDashboardProps,
@@ -527,7 +528,7 @@ export function AnalysisDashboard({
 	isAdmin = false,
 	onNameHidden,
 }: AnalysisDashboardProps) {
-	const [viewMode, setViewMode] = useState("chart"); // "chart" | "table" | "insights"
+	const [viewMode, setViewMode] = useState("chart"); // "chart" | "table" | "insights" | "cloud"
 	const [sortField, setSortField] = useState("rating");
 	const [sortDirection, setSortDirection] = useState("desc");
 
@@ -717,7 +718,7 @@ export function AnalysisDashboard({
 					<>
 						<div className="flex justify-center mb-6">
 							<ButtonGroup variant="flat" className="bg-white/5 rounded-lg p-1">
-								{["chart", "table", "insights"].map((mode) => (
+								{["chart", "table", "insights", "cloud"].map((mode) => (
 									<Button
 										key={mode}
 										className={cn(
@@ -731,7 +732,9 @@ export function AnalysisDashboard({
 											? "📊 Bump Chart"
 											: mode === "table"
 												? "📋 Table"
-												: "💡 Insights"}
+												: mode === "insights"
+													? "💡 Insights"
+													: "🫧 Cloud"}
 									</Button>
 								))}
 							</ButtonGroup>
@@ -773,6 +776,19 @@ export function AnalysisDashboard({
 									canHideNames={isAdmin && !!onNameHidden}
 									onHideName={handleHideName}
 								/>
+							)}
+
+							{viewMode === "cloud" && (
+								<div className="p-4 bg-white/5 border border-white/5 rounded-xl h-[500px]">
+									<FloatingBubblesContainer
+										data={displayNames.map((n) => ({
+											id: String(n.id),
+											label: n.name,
+											value: n.rating,
+										}))}
+										height={460}
+									/>
+								</div>
 							)}
 						</div>
 					</>
