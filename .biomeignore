@@ -1,6 +1,0 @@
-src/shared/styles/reset.css
-**/node_modules/**
-**/dist/**
-**/build/**
-**/coverage/**
-**/.next/**
