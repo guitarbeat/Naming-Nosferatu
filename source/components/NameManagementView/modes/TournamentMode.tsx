@@ -1,9 +1,9 @@
-import Button from "@components/Button";
 import { NameGrid } from "@components/NameGrid";
-import { TournamentToolbar } from "@components/TournamentToolbar";
 import { cn } from "@utils/cn";
 import React from "react";
 import type { NameItem } from "@/types/components";
+import Button from "../../../shared/components/Button";
+import { TournamentToolbar } from "../../../shared/components/TournamentToolbar";
 
 import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 

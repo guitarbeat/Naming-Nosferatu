@@ -1,4 +1,3 @@
-import { Input } from "@components/FormPrimitives";
 import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -7,6 +6,7 @@ import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types/components";
 import { getGreeting } from "@/utils";
 import { fetchCatAvatars } from "@/utils/catApi";
+import { Input } from "../../shared/components/FormPrimitives";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";
 

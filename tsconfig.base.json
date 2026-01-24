@@ -2,11 +2,7 @@
 	"compilerOptions": {
 		"target": "ES2020",
 		"useDefineForClassFields": true,
-		"lib": [
-			"ES2020",
-			"DOM",
-			"DOM.Iterable"
-		],
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -31,73 +27,27 @@
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": false,
 		"exactOptionalPropertyTypes": false,
-		"types": [
-			"vite/client",
-			"node"
-		],
+		"types": ["vite/client", "node"],
 		"paths": {
-			"@supabase/client": [
-				"./source/shared/services/supabase/client.ts"
-			],
-			"@supabase/types": [
-				"./supabase/types.ts"
-			],
-			"@/*": [
-				"./source/*"
-			],
-			"@components": [
-				"./source/shared/components/index.ts",
-				"./source/components/index.ts"
-			],
-			"@components/*": [
-				"./source/shared/components/*",
-				"./source/components/*"
-			],
-			"@hooks": [
-				"./source/hooks/index.ts"
-			],
-			"@hooks/*": [
-				"./source/hooks/*"
-			],
-			"@utils": [
-				"./source/shared/utils/index.ts"
-			],
-			"@utils/*": [
-				"./source/shared/utils/*"
-			],
-			"@services": [
-				"./source/shared/services/index.ts"
-			],
-			"@services/*": [
-				"./source/shared/services/*"
-			],
-			"@styles": [
-				"./source/styles/index.ts"
-			],
-			"@styles/*": [
-				"./source/styles/*"
-			],
-			"@features": [
-				"./source/features/index.ts"
-			],
-			"@features/*": [
-				"./source/features/*"
-			],
-			"@core": [
-				"./source/index.ts"
-			],
-			"@core/*": [
-				"./source/*"
-			]
+			"@supabase/client": ["./source/shared/services/supabase/client.ts"],
+			"@supabase/types": ["./supabase/types.ts"],
+			"@/*": ["./source/*"],
+			"@components": ["./source/shared/components/index.ts", "./source/components/index.ts"],
+			"@components/*": ["./source/shared/components/*", "./source/components/*"],
+			"@hooks": ["./source/hooks/index.ts"],
+			"@hooks/*": ["./source/hooks/*"],
+			"@utils": ["./source/shared/utils/index.ts"],
+			"@utils/*": ["./source/shared/utils/*"],
+			"@services": ["./source/shared/services/index.ts"],
+			"@services/*": ["./source/shared/services/*"],
+			"@styles": ["./source/styles/index.ts"],
+			"@styles/*": ["./source/styles/*"],
+			"@features": ["./source/features/index.ts"],
+			"@features/*": ["./source/features/*"],
+			"@core": ["./source/index.ts"],
+			"@core/*": ["./source/*"]
 		}
 	},
-	"include": [
-		"./source/**/*",
-		"./scripts/**/*"
-	],
-	"exclude": [
-		"./node_modules",
-		"./build",
-		"./dist"
-	]
+	"include": ["./source/**/*", "./scripts/**/*"],
+	"exclude": ["./node_modules", "./build", "./dist"]
 }

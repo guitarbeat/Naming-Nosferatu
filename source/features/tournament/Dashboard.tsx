@@ -1,4 +1,3 @@
-import { Loading } from "@components/Loading";
 import { TabContainer } from "@components/TabContainer";
 import { Toast } from "@components/Toast";
 import {
@@ -31,6 +30,7 @@ import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types/components";
+import { Loading } from "../../shared/components/Loading";
 
 import { RankingAdjustment } from "./TournamentComponents";
 

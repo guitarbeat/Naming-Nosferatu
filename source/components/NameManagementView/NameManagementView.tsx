@@ -4,10 +4,10 @@
  * Provides a consistent interface with mode-specific extensions.
  */
 
-import { ErrorComponent } from "@components/ErrorComponent";
 import { cn } from "@utils/cn";
 import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/providers";
+import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { ProfileMode } from "./modes/ProfileMode";
 import { type SwipeableCardsProps, TournamentMode } from "./modes/TournamentMode";
 import {

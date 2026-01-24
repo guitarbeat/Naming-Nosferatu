@@ -4,7 +4,6 @@
  * Simplified from masonry layout for stability and performance.
  */
 
-import { Loading } from "@components/Loading";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -16,6 +15,7 @@ import { motion } from "framer-motion";
 import { memo, useMemo } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import type { NameItem } from "@/types/components";
+import { Loading } from "../shared/components/Loading";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
 
