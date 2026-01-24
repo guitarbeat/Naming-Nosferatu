@@ -1,6 +1,6 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { Button, Card, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
-import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { AnimatePresence, motion, type PanInfo, useMotionValue, useTransform } from "framer-motion";
 import {
 	Check,
 	ChevronLeft,
@@ -21,6 +21,146 @@ import { getRandomCatImage } from "./TournamentLogic";
    COMPONENTS
    ========================================================================= */
 
+interface SwipeableCardItemProps {
+	card: NameItem;
+	index: number;
+	isSelected: boolean;
+	showCatPictures: boolean;
+	imageList: string[];
+	handleDragEnd: (card: NameItem, info: PanInfo) => void;
+	dragDirection: "left" | "right" | null;
+}
+
+const SwipeableCardItem = memo(
+	({
+		card,
+		index,
+		isSelected,
+		showCatPictures,
+		imageList,
+		handleDragEnd,
+		dragDirection,
+	}: SwipeableCardItemProps) => {
+		const x = useMotionValue(0);
+		const rotate = useTransform(x, (v) => v / 20);
+		const nopeOpacity = useTransform(x, (v) => (v < -50 ? 1 : 0));
+		const nopeScale = useTransform(x, (v) => (v < -50 ? 1 : 0.8));
+		const likeOpacity = useTransform(x, (v) => (v > 50 ? 1 : 0));
+		const likeScale = useTransform(x, (v) => (v > 50 ? 1 : 0.8));
+
+		return (
+			<motion.div
+				layout={true}
+				layoutId={String(card.id)}
+				className="absolute inset-0 flex items-center justify-center"
+				style={{ zIndex: 10 - index }}
+				exit={{
+					opacity: 0,
+					x: dragDirection === "right" ? 400 : -400,
+					rotate: dragDirection === "right" ? 20 : -20,
+					transition: { duration: 0.3 },
+				}}
+			>
+				<motion.div
+					drag={index === 0 ? "x" : false}
+					dragConstraints={{ left: -200, right: 200 }}
+					dragSnapToOrigin
+					onDragEnd={(_, info) => {
+						if (index === 0) {
+							handleDragEnd(card, info);
+						}
+					}}
+					style={{
+						x: index === 0 ? x : 0,
+						rotate: index === 0 ? rotate : 0,
+					}}
+					animate={{
+						y: index * 12,
+						scale: 1 - index * 0.04,
+						opacity: 1 - index * 0.2,
+					}}
+					transition={{ type: "spring", stiffness: 300, damping: 30 }}
+					className="w-full max-w-md"
+				>
+					<div
+						className={cn(
+							"relative rounded-2xl flex flex-col items-center justify-between p-4 overflow-hidden group bg-white/5 backdrop-blur-md border-t border-white/20 transition-all duration-200",
+							isSelected ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
+							index === 0 && "cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
+							index > 0 && "pointer-events-none",
+						)}
+					>
+						{/* Swipe Indicators */}
+						{index === 0 && (
+							<>
+								<motion.div
+									className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
+									style={{ opacity: nopeOpacity, scale: nopeScale }}
+								>
+									<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
+										<X size={24} className="text-white" />
+										<span className="text-white font-black text-lg uppercase">Nope</span>
+									</div>
+								</motion.div>
+
+								<motion.div
+									className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
+									style={{ opacity: likeOpacity, scale: likeScale }}
+								>
+									<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
+										<Heart size={24} className="text-white fill-white" />
+										<span className="text-white font-black text-lg uppercase">Like</span>
+									</div>
+								</motion.div>
+							</>
+						)}
+
+						{/* Image Container */}
+						<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
+							{showCatPictures && card.id && imageList.length > 0 ? (
+								<div
+									className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
+									style={{
+										backgroundImage: `url('${getRandomCatImage(card.id, imageList)}')`,
+									}}
+								/>
+							) : (
+								<span className="text-white/20 text-6xl font-bold select-none">
+									{card.name[0]?.toUpperCase() || "?"}
+								</span>
+							)}
+						</div>
+
+						{/* Text Content */}
+						<div className="text-center pb-4 z-10">
+							<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
+								{card.name}
+							</h3>
+							{card.description && (
+								<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2">
+									{card.description}
+								</p>
+							)}
+							{isSelected && (
+								<div className="flex justify-center mt-3">
+									<div className="px-3 py-1 bg-success/20 backdrop-blur-md border border-success/30 rounded-full flex items-center gap-2">
+										<Check size={14} className="text-success" />
+										<span className="text-success font-bold text-xs tracking-widest uppercase">
+											Selected
+										</span>
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</motion.div>
+			</motion.div>
+		);
+	},
+);
+
+SwipeableCardItem.displayName = "SwipeableCardItem";
+
 export const SwipeableCards = memo(
 	({
 		names,
@@ -39,7 +179,6 @@ export const SwipeableCards = memo(
 	}) => {
 		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
 		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
-		const [dragOffset, setDragOffset] = useState(0);
 
 		const visibleCards = useMemo(
 			() => names.filter((n: NameItem) => !swipedIds.has(String(n.id))),
@@ -57,7 +196,7 @@ export const SwipeableCards = memo(
 				const threshold = 100;
 
 				if (Math.abs(offset) < threshold) {
-					setDragOffset(0);
+					// Snap back is handled by framer motion spring when drag ends
 					return;
 				}
 
@@ -74,7 +213,6 @@ export const SwipeableCards = memo(
 				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
 				setTimeout(() => {
 					setDragDirection(null);
-					setDragOffset(0);
 				}, 300);
 			},
 			[isSelected, onToggleName],
@@ -111,123 +249,16 @@ export const SwipeableCards = memo(
 					<AnimatePresence mode="popLayout">
 						{visibleCards.length > 0 ? (
 							cardsToRender.map((card: NameItem, index: number) => (
-								<motion.div
+								<SwipeableCardItem
 									key={card.id}
-									layout={true}
-									layoutId={String(card.id)}
-									className="absolute inset-0 flex items-center justify-center"
-									style={{ zIndex: 10 - index }}
-									exit={{
-										opacity: 0,
-										x: dragDirection === "right" ? 400 : -400,
-										rotate: dragDirection === "right" ? 20 : -20,
-										transition: { duration: 0.3 },
-									}}
-								>
-									<motion.div
-										drag={index === 0 ? "x" : false}
-										dragConstraints={{ left: -200, right: 200 }}
-										onDrag={(_, info) => {
-											if (index === 0) {
-												setDragOffset(info.offset.x);
-											}
-										}}
-										onDragEnd={(_, info) => {
-											if (index === 0) {
-												handleDragEnd(card, info);
-											}
-										}}
-										animate={{
-											y: index * 12,
-											scale: 1 - index * 0.04,
-											opacity: 1 - index * 0.2,
-											rotate: index === 0 ? dragOffset / 20 : 0,
-										}}
-										transition={{ type: "spring", stiffness: 300, damping: 30 }}
-										className="w-full max-w-md"
-									>
-										<div
-											className={cn(
-												"relative rounded-2xl flex flex-col items-center justify-between p-4 overflow-hidden group bg-white/5 backdrop-blur-md border-t border-white/20 transition-all duration-200",
-												isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
-												index === 0 &&
-													"cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
-												index > 0 && "pointer-events-none",
-											)}
-										>
-											{/* Swipe Indicators */}
-											{index === 0 && (
-												<>
-													<motion.div
-														className="absolute left-8 top-1/2 -translate-y-1/2 z-10"
-														initial={{ opacity: 0, scale: 0.8 }}
-														animate={{
-															opacity: dragOffset < -50 ? 1 : 0,
-															scale: dragOffset < -50 ? 1 : 0.8,
-														}}
-													>
-														<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
-															<X size={24} className="text-white" />
-															<span className="text-white font-black text-lg uppercase">Nope</span>
-														</div>
-													</motion.div>
-
-													<motion.div
-														className="absolute right-8 top-1/2 -translate-y-1/2 z-10"
-														initial={{ opacity: 0, scale: 0.8 }}
-														animate={{
-															opacity: dragOffset > 50 ? 1 : 0,
-															scale: dragOffset > 50 ? 1 : 0.8,
-														}}
-													>
-														<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
-															<Heart size={24} className="text-white fill-white" />
-															<span className="text-white font-black text-lg uppercase">Like</span>
-														</div>
-													</motion.div>
-												</>
-											)}
-
-											{/* Image Container */}
-											<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center">
-												{showCatPictures && card.id && imageList.length > 0 ? (
-													<div
-														className="w-full h-full bg-cover bg-center opacity-80 group-hover:scale-110 transition-transform duration-700"
-														style={{
-															backgroundImage: `url('${getRandomCatImage(card.id, imageList)}')`,
-														}}
-													/>
-												) : (
-													<span className="text-white/20 text-6xl font-bold select-none">
-														{card.name[0]?.toUpperCase() || "?"}
-													</span>
-												)}
-											</div>
-
-											{/* Text Content */}
-											<div className="text-center pb-4 z-10">
-												<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
-													{card.name}
-												</h3>
-												{card.description && (
-													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2">
-														{card.description}
-													</p>
-												)}
-												{isSelected(card) && (
-													<div className="flex justify-center mt-3">
-														<div className="px-3 py-1 bg-success/20 backdrop-blur-md border border-success/30 rounded-full flex items-center gap-2">
-															<Check size={14} className="text-success" />
-															<span className="text-success font-bold text-xs tracking-widest uppercase">
-																Selected
-															</span>
-														</div>
-													</div>
-												)}
-											</div>
-										</div>
-									</motion.div>
-								</motion.div>
+									card={card}
+									index={index}
+									isSelected={isSelected(card)}
+									showCatPictures={showCatPictures}
+									imageList={imageList}
+									handleDragEnd={handleDragEnd}
+									dragDirection={dragDirection}
+								/>
 							))
 						) : (
 							<motion.div
