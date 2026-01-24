@@ -114,7 +114,6 @@ export function NameManagementView({
 					// Pass specific props that might not be in state
 					handleFilterChange={state.handleFilterChange as (name: string, value: string) => void}
 					analysisMode={analysisMode}
-					categories={tournamentProps.categories as string[]}
 					onStartTournament={handleStartTournament}
 					extensions={extensions}
 					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
@@ -129,14 +128,7 @@ export function NameManagementView({
 		}
 
 		// 3. Profile Mode
-		return (
-			<ProfileMode
-				{...state}
-				extensions={extensions}
-				profileProps={profileProps}
-				categories={tournamentProps.categories as string[]} // Profile might use categories
-			/>
-		);
+		return <ProfileMode {...state} extensions={extensions} profileProps={profileProps} />;
 	};
 
 	return (

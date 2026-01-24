@@ -23,7 +23,6 @@ interface TournamentModeProps {
 	analysisMode: boolean;
 	filterConfig: TournamentFilters;
 	handleFilterChange: (name: string, value: string) => void;
-	categories?: string[];
 	totalCount: number;
 	filteredCount: number;
 	selectedCount: number;
@@ -48,7 +47,6 @@ export function TournamentMode({
 	analysisMode,
 	filterConfig,
 	handleFilterChange,
-	categories,
 	totalCount,
 	filteredCount,
 	selectedCount,
@@ -82,7 +80,7 @@ export function TournamentMode({
 				mode="tournament"
 				filters={filterConfig}
 				onFilterChange={handleFilterChange}
-				categories={categories || []}
+				// categories removed
 				showUserFilter={false}
 				showSelectionFilter={false}
 				totalCount={totalCount}

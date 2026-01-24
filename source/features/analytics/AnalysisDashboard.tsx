@@ -653,9 +653,6 @@ export function AnalysisDashboard({
 					if (name === "searchTerm" && toolbarContext?.setSearchQuery) {
 						toolbarContext.setSearchQuery(value);
 					}
-					if (name === "category" && toolbarContext?.setSelectedCategory) {
-						toolbarContext.setSelectedCategory(value || "");
-					}
 					if (name === "sortBy" && toolbarContext?.setSortBy) {
 						toolbarContext.setSortBy(value || "alphabetical");
 					}
@@ -676,7 +673,7 @@ export function AnalysisDashboard({
 					}
 				})
 			}
-			categories={[]} // Remove categories from analysis
+			// Categories removed
 			showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
 			showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
 			userOptions={toolbarContext.profileProps?.userOptions || []}

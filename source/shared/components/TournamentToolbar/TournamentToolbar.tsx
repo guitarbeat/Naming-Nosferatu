@@ -5,7 +5,7 @@
  */
 
 import { Plus } from "lucide-react";
-import React, { useId, useMemo } from "react";
+import React, { useId } from "react";
 import { FILTER_OPTIONS } from "../../../constants";
 import useAppStore from "../../../store/useAppStore";
 import Button from "../Button";
@@ -230,7 +230,7 @@ interface FilterModeToolbarProps {
 	onFilterChange?: (name: string, value: string) => void;
 	filteredCount: number;
 	totalCount: number;
-	categories: string[];
+	// categories removed
 	showUserFilter: boolean;
 	userOptions?: { value: string; label: string }[] | null;
 	showSelectionFilter: boolean;
@@ -244,22 +244,15 @@ function FilterModeToolbar({
 	onFilterChange,
 	filteredCount,
 	totalCount,
-	categories,
+	// categories removed
 	showUserFilter,
 	userOptions = null,
 	showSelectionFilter,
 	analysisMode,
-	isHybrid,
+	// isHybrid removed
 	showFilters,
 }: FilterModeToolbarProps) {
-	const categoryOptions = useMemo(
-		() =>
-			categories.map((cat) => ({
-				value: cat,
-				label: cat,
-			})),
-		[categories],
-	);
+	// categoryOptions removed
 
 	const isAsc = filters.sortOrder === FILTER_OPTIONS.ORDER.ASC;
 
@@ -278,18 +271,6 @@ function FilterModeToolbar({
 					<span className={`${styles.badge} ${styles.badgeTotal}`}>total</span>
 				)}
 			</div>
-
-			{isHybrid && categories.length > 0 && (
-				<div className={styles.filterRow}>
-					<FilterSelect
-						id="filter-category"
-						label="Category"
-						value={filters.category || null}
-						options={categoryOptions}
-						onChange={(value) => onFilterChange?.("category", value as string)}
-					/>
-				</div>
-			)}
 
 			{showFilters && (
 				<div className={styles.filtersGrid}>
@@ -387,7 +368,7 @@ interface TournamentToolbarProps {
 	onFilterChange?: (name: string, value: string) => void;
 	filteredCount?: number;
 	totalCount?: number;
-	categories?: string[];
+	// categories removed
 	showUserFilter?: boolean;
 	showSelectionFilter?: boolean;
 	userOptions?: { value: string; label: string }[] | null;
@@ -406,7 +387,7 @@ function TournamentToolbar({
 	onFilterChange,
 	filteredCount = 0,
 	totalCount = 0,
-	categories = [],
+	// categories removed
 	showUserFilter = false,
 	showSelectionFilter = false,
 	userOptions = null,
@@ -538,7 +519,7 @@ function TournamentToolbar({
 						onFilterChange={onFilterChange}
 						filteredCount={filteredCount}
 						totalCount={totalCount}
-						categories={categories}
+						// categories removed
 						showUserFilter={showUserFilter}
 						userOptions={userOptions}
 						showSelectionFilter={showSelectionFilter}
@@ -557,7 +538,7 @@ function TournamentToolbar({
 						onFilterChange={onFilterChange}
 						filteredCount={filteredCount}
 						totalCount={totalCount}
-						categories={categories}
+						// categories removed
 						// * Field Reduction: Hide complex filters in tournament mode
 						showUserFilter={false}
 						showSelectionFilter={false}

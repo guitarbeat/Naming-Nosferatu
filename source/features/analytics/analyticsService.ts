@@ -232,6 +232,7 @@ export const analyticsAPI = {
 				startDate.setDate(startDate.getDate() - (periodCount - 1));
 
 				const { data: selections, error: selError } = await client
+					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 					.from("cat_tournament_selections" as any)
 					.select("name_id, name, selected_at")
 					.gte("selected_at", startDate.toISOString())
@@ -364,22 +365,8 @@ export const leaderboardAPI = {
 	/**
 	 * Get leaderboard data
 	 */
-	getLeaderboard: async (limit: number | null = 50, categoryId: string | null = null) => {
+	getLeaderboard: async (limit: number | null = 50) => {
 		return withSupabase(async (client) => {
-			if (categoryId) {
-				const { data: topNames, error } = await client.rpc("get_top_names_by_category", {
-					p_category: categoryId,
-					p_limit: limit ?? undefined,
-				});
-				if (error) {
-					return [];
-				}
-				return (topNames || []).map((t) => ({
-					...t,
-					name_id: (t as { id: string | number }).id,
-				}));
-			}
-
 			const { data: ratings } = await client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses");

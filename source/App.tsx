@@ -138,7 +138,6 @@ function App() {
 										<Dashboard
 											personalRatings={tournament.ratings}
 											currentTournamentNames={tournament.names || undefined}
-											voteHistory={tournament.voteHistory}
 											onStartNew={handleStartNewTournament}
 											onUpdateRatings={handleUpdateRatings}
 											userName={user.name || ""}

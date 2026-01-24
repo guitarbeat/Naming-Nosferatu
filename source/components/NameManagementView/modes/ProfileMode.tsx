@@ -19,7 +19,6 @@ interface ProfileModeProps {
 	profileProps: NameManagementViewProfileProps;
 	selectedNames: NameItem[];
 	toggleName: (name: NameItem) => void;
-	categories?: string[];
 }
 
 export function ProfileMode({
@@ -31,7 +30,6 @@ export function ProfileMode({
 	profileProps,
 	selectedNames,
 	toggleName,
-	categories,
 }: ProfileModeProps) {
 	return (
 		<div
@@ -63,7 +61,7 @@ export function ProfileMode({
 						mode="profile"
 						filters={filterConfig}
 						onFilterChange={handleFilterChange as (name: string, value: string) => void}
-						categories={categories || []}
+						// categories removed
 						showUserFilter={profileProps.showUserFilter}
 						showSelectionFilter={!!profileProps.selectionStats}
 						userOptions={profileProps.userOptions}
