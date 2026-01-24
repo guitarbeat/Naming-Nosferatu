@@ -21,8 +21,8 @@ export default defineConfig(({ mode }) => {
         // Use system environment variables directly (skip .env file loading to avoid permission issues)
         const env = { ...process.env };
 
-        // IMPORTANT: Lovable sandbox requires port 8080
-        const serverPort = 8080;
+        // Port 5000 for Replit
+        const serverPort = 5000;
         const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 
         return {
