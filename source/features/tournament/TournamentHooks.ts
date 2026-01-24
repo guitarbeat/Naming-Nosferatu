@@ -29,6 +29,23 @@ import {
 } from "./TournamentLogic";
 
 /* =========================================================================
+   TYPES
+   ========================================================================= */
+
+interface TournamentResult {
+	name: string;
+	rating: number;
+	wins?: number;
+	losses?: number;
+}
+
+interface UseTournamentProps {
+	names?: NameItem[];
+	existingRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
+	onComplete?: (results: TournamentResult[]) => void;
+}
+
+/* =========================================================================
    CORE TOURNAMENT STATE HOOK
    ========================================================================= */
 
@@ -92,9 +109,9 @@ export function useTournamentState(
 			string,
 			{ rating: number; wins?: number; losses?: number }
 		>,
-		onComplete: (results) => {
+		onComplete: (results: TournamentResult[]) => {
 			const ratings = Object.fromEntries(
-				results.map((r) => [r.name, { rating: r.rating, wins: r.wins, losses: r.losses }]),
+				results.map((r: TournamentResult) => [r.name, { rating: r.rating, wins: r.wins, losses: r.losses }]),
 			);
 			onComplete(ratings);
 		},
@@ -718,7 +735,7 @@ export function useTournament({
 			return [];
 		}
 		return names
-			.map((name) => {
+			.map((name: NameItem) => {
 				const nameStr = name.name;
 				const rating = currentRatings?.[nameStr] || {
 					rating: 1500,
@@ -733,7 +750,7 @@ export function useTournament({
 					losses: rating.losses || 0,
 				};
 			})
-			.sort((a, b) => b.rating - a.rating);
+			.sort((a: TournamentResult, b: TournamentResult) => b.rating - a.rating);
 	}, [names, currentRatings]);
 
 	const handleVote = useCallback(
