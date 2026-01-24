@@ -120,7 +120,7 @@ function TournamentContent({
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 					>
 						<span className="material-symbols-outlined text-sm">pets</span>
-						<span>Cats: {showCatPictures ? "On" : "Off"}</span>
+						<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
 					</button>
 				</div>
 			</section>

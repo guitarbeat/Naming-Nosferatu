@@ -467,10 +467,10 @@ function TournamentToolbar({
 								? "bg-pink-500/10 border-pink-500/20 text-pink-200 hover:bg-pink-500/20"
 								: "bg-white/5 border-transparent text-white/40 hover:text-white/60 hover:bg-white/10",
 						)}
-						title={showCatPictures ? "Hide cat photos" : "Show cat photos"}
+						title={showCatPictures ? "Show Names Only" : "Show Cat Photos"}
 					>
 						{showCatPictures ? <Eye size={16} /> : <EyeOff size={16} />}
-						<span>{showCatPictures ? "Photos" : "No Photos"}</span>
+						<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
 					</button>
 
 					{/* Progressive Disclosure: Filter Toggle */}

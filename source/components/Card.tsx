@@ -422,6 +422,7 @@ export interface CardNameProps {
 	_onDelete?: (name: unknown) => void;
 	onSelectionChange?: (selected: boolean) => void;
 	image?: string;
+	onImageClick?: (e: React.MouseEvent) => void;
 }
 
 const CardNameBase = memo(function CardName({
@@ -438,6 +439,7 @@ const CardNameBase = memo(function CardName({
 	isHidden = false,
 	onSelectionChange,
 	image,
+	onImageClick,
 }: CardNameProps) {
 	const [rippleStyle, setRippleStyle] = useState<React.CSSProperties>({});
 	const [isRippling, setIsRippling] = useState(false);
@@ -559,12 +561,27 @@ const CardNameBase = memo(function CardName({
 				)}
 
 				{image && (
-					<div className="w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner">
+					<div
+						className="relative w-full aspect-square mb-2 rounded-lg overflow-hidden border border-white/10 shadow-inner group/image"
+						onClick={(e) => {
+							if (onImageClick) {
+								e.stopPropagation();
+								onImageClick(e);
+							}
+						}}
+					>
 						<CatImage
 							src={image}
 							containerClassName="w-full h-full"
 							imageClassName="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
 						/>
+						{onImageClick && (
+							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+								<span className="material-symbols-outlined text-white text-3xl drop-shadow-md">
+									zoom_in
+								</span>
+							</div>
+						)}
 					</div>
 				)}
 

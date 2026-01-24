@@ -4,7 +4,7 @@ export * from "./Card";
 export * from "./CollapsibleHeader";
 export * from "./EmptyState";
 export * from "./FloatingBubble";
-export * from "./Gallery";
+export * from "./FloatingBubblesContainer";
 export * from "./ImageGrid";
 export * from "./NameGrid";
 export * from "./PerformanceBadge";

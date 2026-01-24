@@ -1,12 +1,12 @@
 import { CardBody, Chip, cn, Button as HeroButton, Card as HeroCard, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
-import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import React, { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types/components";
 import { Loading } from "../../shared/components/Loading";
+import { useAdminStatus } from "../auth/authHooks";
 
 import { RankingAdjustment } from "./TournamentComponents";
 
@@ -27,6 +27,7 @@ export const PersonalResults = ({
 	currentTournamentNames,
 	onStartNew,
 	onUpdateRatings,
+	userName,
 }: {
 	personalRatings: Record<string, unknown> | undefined;
 	currentTournamentNames?: NameItem[];
@@ -135,73 +136,14 @@ export const PersonalResults = ({
 					Export CSV
 				</HeroButton>
 			</div>
+
 		</div>
 	);
 };
 
 /**
- * NameDiscovery Component
+ * NameDiscovery removed - Gallery moved to Results, Bubble Cloud added to Analysis
  */
-const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) => {
-	const {
-		data: popularNames,
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["trending-names"],
-		queryFn: async () => {
-			// Real data fetch instead of mocked/randomized
-			const names = await coreAPI.getTrendingNames();
-			// Sort by actual rating/popularity if available, otherwise just use the names list
-			return names.slice(0, 24).map((name) => ({
-				...name,
-				status: "candidate", // Default status as we removed the complex logic
-			}));
-		},
-		staleTime: 5 * 60 * 1000,
-	});
-
-	if (isLoading) {
-		return <Loading variant="spinner" text="Loading names..." />;
-	}
-
-	if (error) {
-		return (
-			<div className="p-6 text-center text-red-300 bg-red-500/10 border border-red-500/20 rounded-xl">
-				Unable to load names right now.
-			</div>
-		);
-	}
-
-	return (
-		<div className="flex flex-col w-full">
-			<h2 className="text-2xl font-bold text-white mb-1">Trending Names</h2>
-			<p className="text-white/60 mb-6">Community favorites</p>
-
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-				{popularNames?.map((name, index) => (
-					<HeroCard
-						key={name.id}
-						className="bg-white/5 hover:bg-white/10 border border-white/5 transition-colors"
-						shadow="sm"
-					>
-						<CardBody className="p-4 flex flex-col gap-3">
-							<div className="flex justify-between items-start">
-								<Chip size="sm" variant="flat" className="bg-white/10 text-white/50">
-									#{index + 1}
-								</Chip>
-							</div>
-							<h3 className="text-lg font-bold text-white truncate">{name.name}</h3>
-							<p className="text-sm text-white/40 line-clamp-2 min-h-[2.5em]">
-								{name.description || "No description available"}
-							</p>
-						</CardBody>
-					</HeroCard>
-				))}
-			</div>
-		</div>
-	);
-};
 
 /**
  * RandomGenerator Component (Simplified)
@@ -339,9 +281,8 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 
 // Simplified Tabs config
 const TABS = [
-	{ id: "results", label: "My Rankings", icon: "📊" },
+	{ id: "results", label: "My Ranking", icon: "📊" },
 	{ id: "community", label: "Global Ranks", icon: "🌍" },
-	{ id: "discover", label: "Inspiration", icon: "✨" }, // Renamed from Explore
 	{ id: "random", label: "Surprise Me", icon: "🎲" },
 ];
 
@@ -391,8 +332,6 @@ export default function Dashboard({
 						/>
 					</Suspense>
 				);
-			case "discover":
-				return <NameDiscovery userName={userName} />;
 			case "random":
 				return <RandomGenerator userName={userName} />;
 			default:

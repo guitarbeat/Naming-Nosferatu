@@ -37,7 +37,7 @@ export const createSettingsSlice: StateCreator<
 		showUserComparison: false,
 		matrixMode: false,
 		isSwipeMode: false,
-		showCatPictures: false,
+		showCatPictures: true,
 		isEditingProfile: false,
 	},
 

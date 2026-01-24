@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => {
 	// Use system environment variables directly (skip .env file loading to avoid permission issues)
 	const env = { ...process.env };
 
-	// Port 5000 for Replit
-	const serverPort = 5000;
+	// Port 3000 (avoiding 5000 which is used by macOS AirPlay)
+	const serverPort = 3000;
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 
 	return {

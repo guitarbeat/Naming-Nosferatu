@@ -12,12 +12,16 @@ import {
 } from "@utils";
 import { cn } from "@utils/cn";
 import { motion } from "framer-motion";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import type { NameItem } from "@/types/components";
 import { Loading } from "../shared/components/Loading";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
+import { Lightbox } from "../shared/components/Lightbox";
+import { imagesAPI } from "@supabase/client";
+import { compressImageFile, devError } from "@/utils";
+import { Upload } from "lucide-react";
 
 interface NameGridProps {
 	names: NameItem[];
@@ -53,6 +57,7 @@ const GridItem = memo(
 		imageList,
 		onToggleVisibility,
 		onDelete,
+		onImageClick,
 		index,
 	}: {
 		nameObj: NameItem;
@@ -63,6 +68,7 @@ const GridItem = memo(
 		imageList: string[];
 		onToggleVisibility?: (id: string | number) => void;
 		onDelete?: (name: NameItem) => void;
+		onImageClick: (image: string) => void;
 		index: number;
 	}) => {
 		const nameId = nameObj.id as string | number;
@@ -94,6 +100,7 @@ const GridItem = memo(
 					isSelected={isSelected}
 					onClick={() => onToggleName?.(nameObj)}
 					image={cardImage}
+					onImageClick={cardImage ? () => onImageClick(cardImage) : undefined}
 					metadata={
 						isAdmin
 							? {
@@ -131,6 +138,12 @@ export function NameGrid({
 	isLoading = false,
 	className = "",
 }: NameGridProps) {
+	const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+	const [suppImages, setSuppImages] = useState<string[]>([]);
+
+	// Merge provided imageList with any newly uploaded images
+	const finalImageList = useMemo(() => [...suppImages, ...imageList], [suppImages, imageList]);
+
 	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
 		useMasonryLayout<HTMLDivElement>(names.length, {
 			minColumnWidth: 280,
@@ -235,15 +248,73 @@ export function NameGrid({
 								onToggleName={onToggleName}
 								isAdmin={isAdmin}
 								showCatPictures={showCatPictures}
-								imageList={imageList}
+								imageList={finalImageList}
 								onToggleVisibility={onToggleVisibility}
 								onDelete={onDelete}
+								onImageClick={(image) => {
+									const idx = finalImageList.indexOf(image);
+									if (idx !== -1) {
+										setLightboxIndex(idx);
+									}
+								}}
 								index={index}
 							/>
 						</div>
 					);
 				})}
 			</div>
+
+			{/* Admin Image Upload */}
+			{isAdmin && (
+				<div className="flex justify-center mt-12 mb-8">
+					<label className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full transition-all font-bold tracking-wider uppercase text-sm border border-purple-500/20 active:scale-95 shadow-xl shadow-purple-900/30">
+						<input
+							type="file"
+							accept="image/*"
+							multiple={true}
+							onChange={async (e) => {
+								const files = Array.from(e.target.files || []);
+								if (!files.length) {
+									return;
+								}
+								try {
+									const uploaded: string[] = [];
+									await Promise.all(
+										files.map(async (f) => {
+											const compressed = await compressImageFile(f, {
+												maxWidth: 1600,
+												maxHeight: 1600,
+												quality: 0.8,
+											});
+											const result = await imagesAPI.upload(compressed, "admin");
+											if (result?.path) {
+												uploaded.push(result.path);
+											}
+										}),
+									);
+									if (uploaded.length > 0) {
+										setSuppImages((prev) => [...uploaded, ...prev]);
+									}
+								} catch (err) {
+									devError("Upload error", err);
+								}
+							}}
+							style={{ display: "none" }}
+						/>
+						<Upload size={20} />
+						<span>Upload New Cat Photos</span>
+					</label>
+				</div>
+			)}
+
+			{lightboxIndex !== null && (
+				<Lightbox
+					images={finalImageList}
+					currentIndex={lightboxIndex}
+					onClose={() => setLightboxIndex(null)}
+					onNavigate={setLightboxIndex}
+				/>
+			)}
 		</div>
 	);
 }

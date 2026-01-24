@@ -1,6 +1,7 @@
 import { withSupabase } from "@supabase/client";
 import { ELO_RATING } from "@/constants";
 import type { NameItem } from "@/types/components";
+import { CAT_IMAGES } from "@/config";
 
 /* =========================================================================
    SERVICE
@@ -13,6 +14,21 @@ export const tournamentsAPI = {
 		participantNames: NameItem[],
 	): Promise<
 		| {
+			success: true;
+			data: {
+				id: string;
+				user_name: string;
+				tournament_name: string;
+				participant_names: NameItem[];
+				status: string;
+				created_at: string;
+			};
+			error?: undefined;
+		}
+		| { success: false; error: string; data?: undefined }
+	> {
+		type ResultType =
+			| {
 				success: true;
 				data: {
 					id: string;
@@ -23,22 +39,7 @@ export const tournamentsAPI = {
 					created_at: string;
 				};
 				error?: undefined;
-		  }
-		| { success: false; error: string; data?: undefined }
-	> {
-		type ResultType =
-			| {
-					success: true;
-					data: {
-						id: string;
-						user_name: string;
-						tournament_name: string;
-						participant_names: NameItem[];
-						status: string;
-						created_at: string;
-					};
-					error?: undefined;
-			  }
+			}
 			| { success: false; error: string; data?: undefined };
 		return withSupabase<ResultType>(
 			async (client) => {
@@ -117,7 +118,7 @@ export class EloRating {
 	constructor(
 		public defaultRating = ELO_RATING.DEFAULT_RATING,
 		public kFactor = ELO_RATING.DEFAULT_K_FACTOR,
-	) {}
+	) { }
 	getExpectedScore(ra: number, rb: number) {
 		return 1 / (1 + 10 ** ((rb - ra) / ELO_RATING.RATING_DIVISOR));
 	}
@@ -163,7 +164,7 @@ export class PreferenceSorter {
 
 	// Total possible pairs is N * (N - 1) / 2
 	// We no longer store the `pairs` array to save memory (O(N^2) -> O(1))
-	constructor(public items: string[]) {}
+	constructor(public items: string[]) { }
 
 	/**
 	 * Calculates the pair indices (i, j) corresponding to the linear index k.
@@ -244,7 +245,7 @@ export class PreferenceSorter {
    GENERAL UTILS
    ========================================================================= */
 
-export const CAT_IMAGES = ["/assets/images/cat.gif", "/assets/images/bby-cat.GIF"];
+export { CAT_IMAGES };
 export function getRandomCatImage(id: string | number | null | undefined, images = CAT_IMAGES) {
 	const seed = typeof id === "string" ? id.length : Number(id);
 	return images[seed % images.length];
