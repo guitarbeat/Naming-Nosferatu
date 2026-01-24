@@ -1,8 +1,8 @@
+import { hapticNavTap } from "@utils/ui";
 import { motion, PanInfo } from "framer-motion";
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BOTTOM_NAV_ITEMS, MAIN_NAV_ITEMS } from "@/navigation";
-import { hapticNavTap } from "@/utils/ui";
 
 interface SwipeWrapperProps {
 	children: ReactNode;

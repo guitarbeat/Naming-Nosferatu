@@ -1,12 +1,12 @@
+import { Input } from "@components/FormPrimitives";
+import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Input } from "@/components/FormPrimitives";
 import { NameManagementView } from "@/components/NameManagementView/NameManagementView";
 import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types/components";
 import { getGreeting } from "@/utils";
 import { fetchCatAvatars } from "@/utils/catApi";
-import { cn } from "@/utils/cn";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";
 

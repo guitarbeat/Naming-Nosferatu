@@ -1,6 +1,6 @@
+import { cn } from "@utils/cn";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import React from "react";
-import { cn } from "@/utils/cn";
 
 interface CollapsibleHeaderProps {
 	title: string;

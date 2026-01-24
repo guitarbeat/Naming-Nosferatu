@@ -1,9 +1,9 @@
 import Button from "@components/Button";
 import { NameGrid } from "@components/NameGrid";
 import { TournamentToolbar } from "@components/TournamentToolbar";
+import { cn } from "@utils/cn";
 import React from "react";
 import type { NameItem } from "@/types/components";
-import { cn } from "@/utils/cn";
 
 import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
 
@@ -146,11 +146,15 @@ export function TournamentMode({
 					<div className="h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
 						<div
 							className="h-full bg-gradient-to-r from-purple-500/80 to-pink-500/80 transition-all duration-500"
-							style={{ width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 3)}%` }}
+							style={{
+								width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 3)}%`,
+							}}
 						/>
 					</div>
 					<p className="text-[11px] text-white/40 font-medium flex justify-between px-0.5">
-						<span>{selectedCount} / {names.length} selected</span>
+						<span>
+							{selectedCount} / {names.length} selected
+						</span>
 						{selectedCount < 2 && (
 							<span className="text-amber-400/70 font-semibold animate-pulse">
 								Need {2 - selectedCount} more

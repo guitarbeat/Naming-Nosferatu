@@ -1,6 +1,6 @@
+import { ErrorBoundary } from "@components/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type React from "react";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider } from "./AuthProvider";
 import { ThemeProvider } from "./ThemeProvider";
 import { ToastProvider } from "./ToastProvider";

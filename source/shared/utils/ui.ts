@@ -1,4 +1,3 @@
-
 export function getRankDisplay(rank: number): string {
 	if (rank === 1) {
 		return "🥇 1st";
@@ -117,3 +116,15 @@ export async function compressImageFile(
 		return file;
 	}
 }
+
+export const hapticNavTap = () => {
+	if (typeof navigator !== "undefined" && navigator.vibrate) {
+		navigator.vibrate(10);
+	}
+};
+
+export const hapticTournamentStart = () => {
+	if (typeof navigator !== "undefined" && navigator.vibrate) {
+		navigator.vibrate([50, 50, 50]);
+	}
+};

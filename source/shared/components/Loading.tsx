@@ -4,11 +4,11 @@
  */
 
 import { Skeleton, Spinner } from "@heroui/react";
+import { cn } from "@utils/cn";
 import { motion } from "framer-motion";
 import { Cat, Heart, PawPrint } from "lucide-react";
 import type React from "react";
 import { memo, Suspense, useMemo } from "react";
-import { cn } from "@utils/cn";
 import { BongoCat } from "./BongoCat";
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];

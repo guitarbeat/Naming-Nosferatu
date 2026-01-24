@@ -74,7 +74,6 @@ export const MAIN_NAV_ITEMS: NavItemConfig[] = [
 	},
 ];
 
-
 /**
  * Bottom navigation item keys (mobile) - show core actions
  */

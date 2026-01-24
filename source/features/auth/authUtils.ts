@@ -409,6 +409,7 @@ const fetchRoleFromSource = async (
 	if (source === "user_roles") {
 		// cat_user_roles table exists in DB but may not be in auto-generated types
 		const { data, error } = await (activeSupabase as SupabaseClient)
+			// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 			.from("cat_user_roles" as any)
 			.select("role")
 			.eq("user_name", trimmedUserName)

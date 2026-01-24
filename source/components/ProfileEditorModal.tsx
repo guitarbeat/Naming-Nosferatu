@@ -7,8 +7,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
 import useAppStore from "@/store/useAppStore";
-import Button from "./Button";
-import { Input } from "./FormPrimitives";
+import Button from "../shared/components/Button";
+import { Input } from "../shared/components/FormPrimitives";
 
 interface ProfileEditorModalProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

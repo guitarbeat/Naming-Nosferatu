@@ -36,6 +36,7 @@ export const adminAPI = {
 				if (data && data.length > 0) {
 					const userNames = data.map((u) => u.user_name);
 					const { data: roles, error: rolesError } = await client
+						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 						.from("cat_user_roles" as any)
 						.select("user_name, role")
 						.in("user_name", userNames);

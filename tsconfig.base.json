@@ -36,29 +36,55 @@
 			"node"
 		],
 		"paths": {
-			"@supabase/*": [
-				"./supabase/*"
+			"@supabase/client": [
+				"./source/shared/services/supabase/client.ts"
+			],
+			"@supabase/types": [
+				"./supabase/types.ts"
 			],
 			"@/*": [
 				"./source/*"
 			],
+			"@components": [
+				"./source/shared/components/index.ts",
+				"./source/components/index.ts"
+			],
 			"@components/*": [
+				"./source/shared/components/*",
 				"./source/components/*"
+			],
+			"@hooks": [
+				"./source/hooks/index.ts"
 			],
 			"@hooks/*": [
 				"./source/hooks/*"
 			],
+			"@utils": [
+				"./source/shared/utils/index.ts"
+			],
 			"@utils/*": [
 				"./source/shared/utils/*"
+			],
+			"@services": [
+				"./source/shared/services/index.ts"
 			],
 			"@services/*": [
 				"./source/shared/services/*"
 			],
+			"@styles": [
+				"./source/styles/index.ts"
+			],
 			"@styles/*": [
 				"./source/styles/*"
 			],
+			"@features": [
+				"./source/features/index.ts"
+			],
 			"@features/*": [
 				"./source/features/*"
+			],
+			"@core": [
+				"./source/index.ts"
 			],
 			"@core/*": [
 				"./source/*"

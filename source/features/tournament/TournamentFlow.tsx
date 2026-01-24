@@ -1,7 +1,7 @@
+import Button from "@components/Button";
+import Card from "@components/Card";
+import { NameSuggestion } from "@components/NameSuggestion";
 import { AnimatePresence, motion } from "framer-motion";
-import Button from "@/components/Button";
-import Card from "@/components/Card";
-import { NameSuggestion } from "@/components/NameSuggestion";
 import useUserSession from "@/hooks/useUserSession";
 import useAppStore from "@/store/useAppStore";
 import Tournament from "./Tournament";

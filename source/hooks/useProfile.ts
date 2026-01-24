@@ -3,15 +3,15 @@
  * @description Consolidated hook for managing profile state, user context, and operations.
  */
 
+import { statsAPI } from "@features/analytics/analyticsService";
+import { adminAPI } from "@features/auth/adminService";
+import { useAdminStatus } from "@features/auth/authHooks";
+import { deleteName, hiddenNamesAPI } from "@services/supabase/modules/general";
 import { resolveSupabaseClient } from "@supabase/client";
+import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS } from "@/constants";
-import { statsAPI } from "@/features/analytics/analyticsService";
-import { adminAPI } from "@/features/auth/adminService";
-import { useAdminStatus } from "@/features/auth/authHooks";
-import { deleteName, hiddenNamesAPI } from "@/services/supabase/modules/general";
 import type { IdType, NameItem } from "@/types/components";
-import { clearAllCaches, devError, devLog } from "@/utils";
 
 // ============================================================================
 // Internal Types
@@ -111,6 +111,7 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 			}
 
 			const { data: selections, error: selectionsError } = await supabaseClient
+				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
 				.select("user_name, tournament_id");
 
@@ -178,6 +179,7 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 		}
 
 		let query = supabaseClient
+			// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 			.from("cat_tournament_selections" as any)
 			.select("name_id, name, tournament_id, selected_at, user_name");
 		if (userName !== null) {

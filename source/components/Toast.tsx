@@ -3,11 +3,11 @@
  * @description Toast notification components with multiple variants and positioning.
  */
 
+import LiquidGlass from "@components/LiquidGlass";
+import { cn } from "@utils";
 import { cva } from "class-variance-authority";
 import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
-import { cn } from "@/utils";
-import LiquidGlass from "./LiquidGlass";
 
 /* ========================================= */
 /*             TOAST STYLES                  */

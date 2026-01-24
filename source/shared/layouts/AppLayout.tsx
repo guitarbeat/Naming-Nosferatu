@@ -5,13 +5,13 @@
  */
 
 import { useMemo } from "react";
+import type { NameItem } from "@/types/components";
 import useAppStore from "../../store/useAppStore";
 import { ScrollToTopButton } from "../components/Button";
 import CatBackground from "../components/CatBackground";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
-import { NameSuggestion } from "../components/NameSuggestion";
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { OfflineIndicator } from "../components/OfflineIndicator";
 import { SwipeWrapper } from "../components/SwipeWrapper";
@@ -22,22 +22,14 @@ interface AppLayoutProps {
 	handleUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<boolean> | undefined;
-	handleTournamentSetup: (names?: unknown) => void;
+	handleTournamentSetup: (names?: NameItem[]) => void;
 	handleTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
-	isSuggestNameModalOpen: boolean;
-	onCloseSuggestName: () => void;
-	onOpenSuggestName: () => void;
 	children: React.ReactNode;
 }
 
-export function AppLayout({
-	isSuggestNameModalOpen,
-	onCloseSuggestName,
-	onOpenSuggestName,
-	children,
-}: AppLayoutProps) {
+export function AppLayout({ children }: AppLayoutProps) {
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
@@ -67,7 +59,7 @@ export function AppLayout({
 				<CatBackground />
 
 				{/* Unified Adaptive Navigation */}
-				{isLoggedIn && <AdaptiveNav onOpenSuggestName={onOpenSuggestName} />}
+				{isLoggedIn && <AdaptiveNav />}
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (
@@ -94,11 +86,6 @@ export function AppLayout({
 					)}
 
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
-					<NameSuggestion
-						variant="modal"
-						isOpen={isSuggestNameModalOpen}
-						onClose={onCloseSuggestName}
-					/>
 				</main>
 			</div>
 		</ErrorBoundary>

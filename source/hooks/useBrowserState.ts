@@ -1,8 +1,8 @@
+import { tournamentsAPI } from "@features/tournament/TournamentLogic";
+import { useProfileNotifications } from "@hooks/useProfileNotifications";
+import { syncQueue } from "@services/SyncQueue";
+import { devError, devLog, devWarn } from "@utils";
 import { useCallback, useEffect, useState } from "react";
-import { tournamentsAPI } from "@/features/tournament/TournamentLogic";
-import { useProfileNotifications } from "@/hooks/useProfileNotifications";
-import { syncQueue } from "@/services/SyncQueue";
-import { devError, devLog, devWarn } from "@/utils";
 
 export interface BrowserState {
 	isMobile: boolean;

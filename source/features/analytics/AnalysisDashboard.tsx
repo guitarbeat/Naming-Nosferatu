@@ -5,6 +5,7 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
+import { TournamentToolbar } from "@components/TournamentToolbar/TournamentToolbar";
 import {
 	Button,
 	ButtonGroup,
@@ -27,7 +28,6 @@ import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
 import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
 import { PerformanceBadges } from "@/components/PerformanceBadge";
-import { TournamentToolbar } from "@/components/TournamentToolbar";
 import { STORAGE_KEYS } from "@/constants";
 import { useCollapsible } from "@/hooks/useStorage";
 import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";

@@ -4,9 +4,9 @@
  * Combines: array manipulation, caching, date formatting, and logging
  */
 
-import { STORAGE_KEYS } from "@/constants";
-import { queryClient } from "@/services/supabase/queryClient";
 import type { NameItem } from "@/types/components";
+import { STORAGE_KEYS } from "../../constants";
+import { queryClient } from "../services/supabase/queryClient";
 
 /* ==========================================================================
    ARRAY UTILITIES

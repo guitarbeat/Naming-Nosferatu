@@ -1,5 +1,6 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 import { Button, Card, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
+import { playSound } from "@utils/soundManager";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
 	Check,
@@ -14,7 +15,6 @@ import {
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
-import { playSound } from "@/utils/soundManager";
 import { getRandomCatImage } from "./TournamentLogic";
 
 /* =========================================================================

@@ -4,8 +4,8 @@
  * Uses the consolidated ErrorBoundary from ./ErrorBoundary as the single source of truth.
  */
 
+import { cn } from "@utils/cn";
 import type React from "react";
-import { cn } from "@/utils/cn";
 import { ErrorBoundary, type ErrorFallbackProps } from "./ErrorBoundary";
 
 /* ========================================= */

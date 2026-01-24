@@ -9,8 +9,11 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import { TIMING } from "@/constants";
 import { cn } from "@/utils";
-import CatImage from "./CatImage";
-import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
+import CatImage from "../shared/components/CatImage";
+import LiquidGlass, {
+	DEFAULT_GLASS_CONFIG,
+	resolveGlassConfig,
+} from "../shared/components/LiquidGlass";
 
 type CardVariant =
 	| "default"

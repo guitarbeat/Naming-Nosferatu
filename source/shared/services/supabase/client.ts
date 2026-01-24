@@ -4,11 +4,9 @@
  * Combines all database operations, real-time subscriptions, and utility functions.
  */
 
-// Re-export base client functionality
-export * from "./clientBase";
-
-// Re-export modules
-export * from "./modules/general";
-
 // Re-export types
 export type { Database } from "@supabase/types";
+// Re-export base client functionality
+export * from "./clientBase";
+// Re-export modules
+export * from "./modules/general";

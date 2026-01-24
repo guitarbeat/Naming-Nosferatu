@@ -4,16 +4,12 @@
  * Uses Scroll Navigation for Single Page Architecture
  */
 
+import { cn } from "@utils/cn";
+import { hapticNavTap, hapticTournamentStart } from "@utils/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAppStore from "@/store/useAppStore";
-import { cn } from "@/utils/cn";
-import { hapticNavTap, hapticTournamentStart } from "@/utils/ui";
-
-interface AdaptiveNavProps {
-	onOpenSuggestName?: () => void;
-}
 
 // Map nav keys to Section IDs
 const keyToId: Record<string, string> = {
@@ -111,7 +107,7 @@ const getUnifiedButtonState = (
  * Adaptive Bottom Navigation Bar
  * Renders as a full-width bottom navigation bar on all screen sizes
  */
-export function AdaptiveNav(_props: AdaptiveNavProps) {
+export function AdaptiveNav() {
 	const appStore = useAppStore();
 	const { tournament, tournamentActions } = appStore;
 	const { selectedNames } = tournament;
@@ -277,7 +273,7 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 						>
 							<IconComponent
 								className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
-								aria-hidden
+								aria-hidden={true}
 							/>
 						</motion.div>
 					</AnimatePresence>
@@ -295,14 +291,16 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 					<motion.button
 						className={cn(
 							"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-							isActive("analyze") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
+							isActive("analyze")
+								? "text-white bg-white/10"
+								: "text-white/50 hover:text-white hover:bg-white/5",
 						)}
 						onClick={() => handleNavClick("analyze")}
 						type="button"
 						initial={{ scale: 0.9, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
 					>
-						<BarChart3 className="w-5 h-5" aria-hidden />
+						<BarChart3 className="w-5 h-5" aria-hidden={true} />
 						<span className="text-[10px] font-medium tracking-wide">Analyze</span>
 						{isActive("analyze") && (
 							<motion.div
@@ -317,13 +315,15 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 				<button
 					className={cn(
 						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-						isActive("suggest") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
+						isActive("suggest")
+							? "text-white bg-white/10"
+							: "text-white/50 hover:text-white hover:bg-white/5",
 					)}
 					onClick={() => handleNavClick("suggest")}
 					type="button"
 					aria-label="Suggest a name"
 				>
-					<Lightbulb className="w-5 h-5" aria-hidden />
+					<Lightbulb className="w-5 h-5" aria-hidden={true} />
 					<span className="text-[10px] font-medium tracking-wide">Suggest</span>
 					{isActive("suggest") && (
 						<motion.div

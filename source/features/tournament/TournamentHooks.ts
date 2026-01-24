@@ -111,7 +111,10 @@ export function useTournamentState(
 		>,
 		onComplete: (results: TournamentResult[]) => {
 			const ratings = Object.fromEntries(
-				results.map((r: TournamentResult) => [r.name, { rating: r.rating, wins: r.wins, losses: r.losses }]),
+				results.map((r: TournamentResult) => [
+					r.name,
+					{ rating: r.rating, wins: r.wins, losses: r.losses },
+				]),
 			);
 			onComplete(ratings);
 		},
@@ -172,7 +175,6 @@ export function useTournamentState(
 		tournament,
 	};
 }
-
 
 /* =========================================================================
    INTERACTION HOOKS

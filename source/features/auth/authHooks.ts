@@ -1,10 +1,10 @@
+import { generateFunName } from "@utils";
+import { playSound } from "@utils/soundManager";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { STORAGE_KEYS, VALIDATION } from "@/constants";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
 import { ErrorManager } from "@/services/errorManager";
-import { generateFunName } from "@/utils";
-import { playSound } from "@/utils/soundManager";
 import { isUserAdmin } from "./authUtils";
 
 const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";

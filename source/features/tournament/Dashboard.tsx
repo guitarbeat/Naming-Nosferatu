@@ -1,3 +1,6 @@
+import { Loading } from "@components/Loading";
+import { TabContainer } from "@components/TabContainer";
+import { Toast } from "@components/Toast";
 import {
 	ButtonGroup,
 	CardBody,
@@ -25,10 +28,6 @@ import {
 	Users,
 } from "lucide-react";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
-
-import { Loading } from "@/components/Loading";
-import { TabContainer } from "@/components/TabContainer";
-import { Toast } from "@/components/Toast";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types/components";

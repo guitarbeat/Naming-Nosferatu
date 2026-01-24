@@ -4,20 +4,20 @@
  * Simplified from masonry layout for stability and performance.
  */
 
-import { motion } from "framer-motion";
-import { memo, useMemo } from "react";
-import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import type { NameItem } from "@/types/components";
+import { Loading } from "@components/Loading";
 import {
 	applyNameFilters,
 	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
-} from "@/utils";
-import { cn } from "@/utils/cn";
+} from "@utils";
+import { cn } from "@utils/cn";
+import { motion } from "framer-motion";
+import { memo, useMemo } from "react";
+import { useMasonryLayout } from "@/hooks/useMasonryLayout";
+import type { NameItem } from "@/types/components";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
-import { Loading } from "./Loading";
 
 interface NameGridProps {
 	names: NameItem[];

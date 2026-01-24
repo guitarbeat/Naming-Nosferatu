@@ -4,12 +4,12 @@
  * Provides consistent behavior across tournament and profile modes.
  */
 
+import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle, Hand, Plus, Users } from "lucide-react";
 import React from "react";
 import type { NameItem } from "@/types/components";
-import { cn } from "@/utils/cn";
-import Button from "./Button";
+import Button from "../shared/components/Button";
 
 export type ActionButtonMode = "tournament" | "profile" | "adaptive-nav";
 

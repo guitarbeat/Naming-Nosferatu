@@ -1,4 +1,4 @@
-import { withSupabase } from "@/services/supabase/clientBase";
+import { withSupabase } from "@services/supabase/clientBase";
 
 export interface SelectionStats {
 	name_id: string | number;
@@ -55,6 +55,7 @@ export const analyticsAPI = {
 	getSelectionPopularity: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
+				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
 				.select("name_id, name");
 			if (error) {
@@ -102,6 +103,7 @@ export const analyticsAPI = {
 	) => {
 		return withSupabase(async (client) => {
 			let selectionsQuery = client
+				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
 				.select("name_id, name, user_name");
 			let ratingsQuery = client
@@ -462,6 +464,7 @@ export const statsAPI = {
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
 					client
+						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 						.from("cat_tournament_selections" as any)
 						.select("id", { count: "exact", head: true }),
 				]);
@@ -524,6 +527,7 @@ export const statsAPI = {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
 				client
+					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 					.from("cat_tournament_selections" as any)
 					.select("*")
 					.eq("user_name", userName),
