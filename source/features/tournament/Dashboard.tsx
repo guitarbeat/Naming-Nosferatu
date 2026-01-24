@@ -65,7 +65,7 @@ export const PersonalResults = ({
 				<HeroCard className="bg-yellow-900/10 border border-yellow-500/20 backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">🏆</span>
-						<h3 className="text-sm font-medium text-white/60">Winner</h3>
+						<h3 className="text-sm font-medium text-white/60">Champion</h3>
 						<p className="text-xl font-bold text-white truncate max-w-full">
 							{rankings[0]?.name || "-"}
 						</p>
@@ -75,7 +75,7 @@ export const PersonalResults = ({
 				<HeroCard className="bg-purple-900/10 border border-purple-500/20 backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">⭐</span>
-						<h3 className="text-sm font-medium text-white/60">Top Score</h3>
+						<h3 className="text-sm font-medium text-white/60">Highest Rated</h3>
 						<p className="text-xl font-bold text-white">{String(rankings[0]?.rating || 1500)}</p>
 					</CardBody>
 				</HeroCard>
@@ -83,7 +83,7 @@ export const PersonalResults = ({
 				<HeroCard className="bg-blue-900/10 border border-blue-500/20 backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">📝</span>
-						<h3 className="text-sm font-medium text-white/60">Total Names</h3>
+						<h3 className="text-sm font-medium text-white/60">Names Ranked</h3>
 						<p className="text-xl font-bold text-white">{rankings.length}</p>
 					</CardBody>
 				</HeroCard>
@@ -108,7 +108,7 @@ export const PersonalResults = ({
 					className="bg-purple-500/20 hover:bg-purple-500/30 text-white"
 					startContent={<Plus size={18} />}
 				>
-					Start New
+					New Tournament
 				</HeroButton>
 				<HeroButton
 					variant="flat"
@@ -174,11 +174,9 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 	}
 
 	return (
-		<div className="flex flex-col gap-6">
-			<div>
-				<h2 className="text-2xl font-bold text-white">Popular Names</h2>
-				<p className="text-white/60">Community favorites</p>
-			</div>
+		<div className="flex flex-col w-full">
+			<h2 className="text-2xl font-bold text-white mb-1">Trending Names</h2>
+			<p className="text-white/60 mb-6">Community favorites</p>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 				{popularNames?.map((name, index) => (
@@ -254,11 +252,9 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 	};
 
 	return (
-		<div className="flex flex-col gap-8 max-w-2xl mx-auto w-full">
-			<div className="text-center space-y-2">
-				<h2 className="text-2xl font-bold text-white">Random Name Generator</h2>
-				<p className="text-white/60">Can't decide? Let fate decide for you.</p>
-			</div>
+		<div className="flex flex-col max-w-2xl mx-auto w-full">
+			<h2 className="text-2xl font-bold text-white text-center mb-2">Random Name Generator</h2>
+			<p className="text-white/60 text-center mb-8">Can't decide? Let fate decide for you.</p>
 
 			<HeroCard className="w-full min-h-[240px] bg-gradient-to-br from-white/5 to-transparent border border-white/10">
 				<CardBody className="flex flex-col items-center justify-center gap-8 py-12">
@@ -343,10 +339,10 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 
 // Simplified Tabs config
 const TABS = [
-	{ id: "results", label: "My Results", icon: "📊" },
-	{ id: "community", label: "Community", icon: "🌍" },
-	{ id: "discover", label: "Popular", icon: "✨" }, // Renamed from Explore
-	{ id: "random", label: "Random", icon: "🎲" },
+	{ id: "results", label: "My Rankings", icon: "📊" },
+	{ id: "community", label: "Global Ranks", icon: "🌍" },
+	{ id: "discover", label: "Inspiration", icon: "✨" }, // Renamed from Explore
+	{ id: "random", label: "Surprise Me", icon: "🎲" },
 ];
 
 export default function Dashboard({
@@ -407,24 +403,22 @@ export default function Dashboard({
 	return (
 		<div className="w-full max-w-[1200px] mx-auto px-4 pb-20 pt-8">
 			{/* Simple Tab Navigation */}
-			<div className="flex justify-center mb-8">
-				<div className="bg-white/5 p-1 rounded-xl flex gap-1 overflow-x-auto max-w-full">
-					{TABS.map((tab) => (
-						<button
-							key={tab.id}
-							onClick={() => setActiveTab(tab.id)}
-							className={cn(
-								"flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
-								activeTab === tab.id
-									? "bg-white/10 text-white shadow-sm"
-									: "text-white/50 hover:text-white/80 hover:bg-white/5",
-							)}
-						>
-							<span>{tab.icon}</span>
-							<span>{tab.label}</span>
-						</button>
-					))}
-				</div>
+			<div className="bg-white/5 p-1 rounded-xl flex gap-1 overflow-x-auto max-w-full mx-auto mb-8 justify-center">
+				{TABS.map((tab) => (
+					<button
+						key={tab.id}
+						onClick={() => setActiveTab(tab.id)}
+						className={cn(
+							"flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+							activeTab === tab.id
+								? "bg-white/10 text-white shadow-sm"
+								: "text-white/50 hover:text-white/80 hover:bg-white/5",
+						)}
+					>
+						<span>{tab.icon}</span>
+						<span>{tab.label}</span>
+					</button>
+				))}
 			</div>
 
 			<div className="animate-in fade-in slide-in-from-bottom-4 duration-300">

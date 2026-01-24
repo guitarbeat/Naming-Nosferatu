@@ -5,6 +5,7 @@ import { getVisibleNames } from "@/utils";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
+import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
 
 function TournamentContent({
 	onComplete,
@@ -62,8 +63,18 @@ function TournamentContent({
 	}
 
 	// No images shown - gallery images removed from tournament view
-	const leftImg = null;
-	const rightImg = null;
+	const leftImg = showCatPictures
+		? getRandomCatImage(
+				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+				CAT_IMAGES,
+			)
+		: null;
+	const rightImg = showCatPictures
+		? getRandomCatImage(
+				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+				CAT_IMAGES,
+			)
+		: null;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 font-display text-white selection:bg-primary/30">

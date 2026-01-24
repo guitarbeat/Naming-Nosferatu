@@ -4,7 +4,7 @@
  * Handles high-level layout, glass effects, and filtering/sorting logic
  */
 
-import { Plus } from "lucide-react";
+import { cn } from "@utils/cn";
 import React, { useId } from "react";
 import { FILTER_OPTIONS } from "../../../constants";
 import useAppStore from "../../../store/useAppStore";
@@ -16,6 +16,8 @@ import "./TournamentToolbar.css";
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
+
+import { Eye, EyeOff, GalleryHorizontal, LayoutGrid, Plus } from "lucide-react";
 
 const TOOLBAR_GLASS_CONFIGS = {
 	tournament: {
@@ -216,7 +218,6 @@ function ToolbarGlass({ mode, id, className, style, children }: ToolbarGlassProp
 
 interface TournamentFilters {
 	searchTerm?: string;
-	category?: string;
 	sortBy?: string;
 	filterStatus?: string;
 	userFilter?: string;
@@ -415,62 +416,79 @@ function TournamentToolbar({
 		const selectedCount = startTournamentButton?.selectedCount ?? 0;
 		const isReady = selectedCount >= 2;
 
-		const buttonLabel = isReady
-			? `Start Tournament (${selectedCount} names)`
-			: `Select at least 2 names (${selectedCount} selected)`;
+		const buttonLabel = isReady ? `Begin Tournament (${selectedCount})` : "Pick 2+ names to start";
 
 		const tooltipText = isReady
-			? `Start comparing ${selectedCount} names head-to-head`
-			: "Select at least 2 names to start a tournament. You can select up to 64 names.";
+			? `Start comparing ${selectedCount} names`
+			: "Select at least 2 names to start a tournament.";
 
 		return (
 			<div className={styles.unifiedContainer} data-mode={mode}>
-				<div className={styles.toggleStack}>
-					<div className={styles.toggleWrapper}>
+				<div className="flex items-center gap-2">
+					<div className="flex items-center bg-white/5 p-1 rounded-lg border border-white/10">
 						<button
 							type="button"
-							onClick={() => setSwipeMode(!isSwipeMode)}
-							className={`${styles.toggleSwitch} ${isSwipeMode ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={isSwipeMode}
-							aria-label={isSwipeMode ? "Disable swipe mode" : "Enable swipe mode"}
-							title={isSwipeMode ? "Swipe mode: On" : "Swipe mode: Off"}
+							onClick={() => setSwipeMode(false)}
+							className={cn(
+								"flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
+								isSwipeMode
+									? "text-white/40 hover:text-white/60 hover:bg-white/5"
+									: "bg-white/10 text-white shadow-sm",
+							)}
+							title="Switch to Grid View"
 						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>{isSwipeMode ? "Swipe Mode" : "Grid Mode"}</span>
+							<LayoutGrid size={16} />
+							<span>Grid</span>
 						</button>
-					</div>
-					<div className={styles.toggleWrapper}>
 						<button
 							type="button"
-							onClick={() => setCatPictures(!showCatPictures)}
-							className={`${styles.toggleSwitch} ${showCatPictures ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={showCatPictures}
-							aria-label={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
-							title={showCatPictures ? "Cat pictures: On" : "Cat pictures: Off"}
+							onClick={() => setSwipeMode(true)}
+							className={cn(
+								"flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
+								isSwipeMode
+									? "bg-purple-500/20 text-purple-200 shadow-sm ring-1 ring-purple-500/30"
+									: "text-white/40 hover:text-white/60 hover:bg-white/5",
+							)}
+							title="Switch to Swipe View"
 						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>
-								🐱 {showCatPictures ? "Cats On" : "Cats Off"}
-							</span>
+							<GalleryHorizontal size={16} />
+							<span>Swipe</span>
 						</button>
 					</div>
 
+					<div className="h-6 w-px bg-white/10 mx-2" />
+
+					<button
+						type="button"
+						onClick={() => setCatPictures(!showCatPictures)}
+						className={cn(
+							"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all",
+							showCatPictures
+								? "bg-pink-500/10 border-pink-500/20 text-pink-200 hover:bg-pink-500/20"
+								: "bg-white/5 border-transparent text-white/40 hover:text-white/60 hover:bg-white/10",
+						)}
+						title={showCatPictures ? "Hide cat photos" : "Show cat photos"}
+					>
+						{showCatPictures ? <Eye size={16} /> : <EyeOff size={16} />}
+						<span>{showCatPictures ? "Photos" : "No Photos"}</span>
+					</button>
+
 					{/* Progressive Disclosure: Filter Toggle */}
-					<div className={styles.toggleWrapper}>
-						<button
-							type="button"
-							onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
-							className={`${styles.toggleSwitch} ${showFiltersInTournament ? styles.toggleSwitchActive : ""}`}
-							aria-pressed={showFiltersInTournament}
-							aria-label={showFiltersInTournament ? "Hide filters" : "Show filters"}
-							title="Toggle search and filters"
-						>
-							<span className={styles.toggleThumb} />
-							<span className={styles.toggleLabel}>
-								🔍 {showFiltersInTournament ? "Hide Filters" : "Filter/Sort"}
-							</span>
-						</button>
-					</div>
+					<button
+						type="button"
+						onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
+						className={cn(
+							"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ml-auto",
+							showFiltersInTournament
+								? "bg-white/10 border-white/10 text-white"
+								: "bg-transparent border-transparent text-white/40 hover:text-white/60 hover:bg-white/5",
+						)}
+						title="Toggle search and filters"
+					>
+						<span className={styles.toggleLabel}>
+							{showFiltersInTournament ? "Hide Filters" : "Filters"}
+						</span>
+					</button>
 				</div>
 
 				{startTournamentButton && (

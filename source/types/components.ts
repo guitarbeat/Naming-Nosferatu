@@ -20,7 +20,6 @@ export interface NameItem {
 	isHidden?: boolean;
 	isSelected?: boolean;
 	avgRating?: number;
-	categories?: string[];
 	// Database fields (compatibility)
 	is_hidden?: boolean;
 	avg_rating?: number;
