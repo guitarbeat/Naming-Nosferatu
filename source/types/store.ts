@@ -11,6 +11,7 @@ export interface UserState {
 	name: string;
 	isLoggedIn: boolean;
 	isAdmin: boolean;
+	avatarUrl?: string;
 	preferences: UserPreferences;
 }
 
@@ -20,6 +21,7 @@ interface TournamentState {
 	isComplete: boolean;
 	isLoading: boolean;
 	voteHistory: import("./components").VoteData[];
+	selectedNames: NameItem[];
 }
 
 export interface UIState {
@@ -30,6 +32,7 @@ export interface UIState {
 	matrixMode: boolean;
 	isSwipeMode: boolean;
 	showCatPictures: boolean;
+	isEditingProfile: boolean;
 }
 
 export interface CatChosenName {
@@ -68,6 +71,7 @@ export interface AppState {
 		setLoading: (isLoading: boolean) => void;
 		addVote: (vote: import("./components").VoteData) => void;
 		resetTournament: () => void;
+		setSelection: (selectedNames: NameItem[]) => void;
 	};
 
 	userActions: {
@@ -75,6 +79,7 @@ export interface AppState {
 		login: (userName: string) => void;
 		logout: () => void;
 		setAdminStatus: (isAdmin: boolean) => void;
+		setAvatar: (url: string) => void;
 		initializeFromStorage: () => void;
 	};
 
@@ -86,6 +91,7 @@ export interface AppState {
 		initializeTheme: () => void;
 		setSwipeMode: (enabled: boolean) => void;
 		setCatPictures: (show: boolean) => void;
+		setEditingProfile: (editing: boolean) => void;
 	};
 
 	errorActions: {
@@ -110,5 +116,6 @@ export interface AppState {
 		getIsAdmin: () => boolean;
 		getTheme: () => string;
 		getCurrentError: () => Error | null;
+		getSelectedNames: () => NameItem[];
 	};
 }

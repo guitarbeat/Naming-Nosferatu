@@ -1,0 +1,157 @@
+/* ==========================================================================
+   TYPOGRAPHY UTILITIES
+   Comprehensive typography utilities based on design tokens
+   ========================================================================== */
+
+/* ==========================================================================
+   FONT SIZE UTILITIES
+   ========================================================================== */
+
+.text-xs {
+	font-size: var(--text-xs);
+}
+
+.text-sm {
+	font-size: var(--text-sm);
+}
+
+.text-lg {
+	font-size: var(--text-lg);
+}
+
+.text-xl {
+	font-size: var(--text-xl);
+}
+
+.text-2xl {
+	font-size: var(--text-2xl);
+}
+
+.text-3xl {
+	font-size: var(--text-3xl);
+}
+
+.text-4xl {
+	font-size: var(--text-4xl);
+}
+
+/* Responsive font sizes */
+
+/* ==========================================================================
+   FONT WEIGHT UTILITIES
+   ========================================================================== */
+
+.font-bold {
+	font-weight: var(--font-weight-bold);
+}
+
+/* ==========================================================================
+   FONT FAMILY UTILITIES
+   ========================================================================== */
+
+/* ==========================================================================
+   LINE HEIGHT UTILITIES
+   ========================================================================== */
+
+/* ==========================================================================
+   LETTER SPACING UTILITIES
+   ========================================================================== */
+
+.tracking-wide {
+	letter-spacing: var(--tracking-wide);
+}
+
+.tracking-wider {
+	letter-spacing: var(--tracking-wider);
+}
+
+/* ==========================================================================
+   TEXT ALIGNMENT UTILITIES
+   ========================================================================== */
+
+.text-center {
+	text-align: center;
+}
+
+/* ==========================================================================
+   TEXT DECORATION UTILITIES
+   ========================================================================== */
+
+/* Scribble underline (existing pattern) */
+
+/* ==========================================================================
+   TEXT TRANSFORM UTILITIES
+   ========================================================================== */
+
+.uppercase {
+	text-transform: uppercase;
+}
+
+/* ==========================================================================
+   TEXT COLOR UTILITIES
+   ========================================================================== */
+
+/* Primary text colors */
+.text-primary {
+	color: var(--text-primary);
+}
+
+/* Brand colors */
+
+/* Semantic colors */
+
+/* Neutral colors */
+
+/* Primary color scale */
+
+/* Secondary color scale */
+
+/* Accent color scale */
+
+/* Highlight color scale */
+
+/* Gray scale */
+
+/* ==========================================================================
+   TEXT SHADOW UTILITIES
+   ========================================================================== */
+
+/* ==========================================================================
+   WHITE SPACE UTILITIES
+   ========================================================================== */
+
+/* ==========================================================================
+   TEXT OVERFLOW UTILITIES
+   ========================================================================== */
+
+/* ==========================================================================
+   WORD BREAK UTILITIES
+   ========================================================================== */
+
+.break-words {
+	overflow-wrap: break-word;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY COMPONENT PATTERNS
+   Common typography combinations for consistent styling
+   ========================================================================== */
+
+/* Heading patterns */
+
+/* Body text patterns */
+
+/* Caption and label patterns */
+
+.label {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
+	line-height: var(--leading-normal);
+	letter-spacing: var(--tracking-wide);
+}
+
+/* Button text pattern */
+
+/* Link pattern */
+
+/* Code text pattern */

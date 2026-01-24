@@ -97,28 +97,30 @@
 	"overrides": [
 		{
 			"includes": [
-				"src/core/hooks/useUserSession.ts",
-				"src/features/tournament/RankingAdjustment.tsx",
-				"src/features/tournament/Tournament.tsx",
-				"src/features/tournament/components/AnalysisWrappers.tsx",
-				"src/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
-				"src/features/tournament/TournamentSetup.tsx",
-				"src/features/tournament/Dashboard.tsx",
-				"src/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
-				"src/shared/components/ViewRouter/ViewRouter.tsx",
-				"src/features/tournament/components/PersonalResults.tsx",
-				"src/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
-				"src/features/tournament/hooks/useTournamentSetupHooks.ts",
-				"src/shared/utils/coreUtils.ts",
-				"src/shared/components/Bracket/Bracket.tsx",
-				"src/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
-				"src/shared/components/Card/components/CardName.tsx",
-				"src/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
-				"src/shared/components/NameManagementView/NameManagementView.tsx",
-				"src/shared/components/NameGrid/NameGrid.tsx",
-				"src/shared/propTypes.ts",
-				"src/shared/services/errorManager/index.ts",
-				"src/shared/services/supabase/supabaseClient.ts"
+				"source/core/hooks/useUserSession.ts",
+				"source/features/tournament/RankingAdjustment.tsx",
+				"source/features/tournament/Tournament.tsx",
+				"source/features/tournament/components/AnalysisWrappers.tsx",
+				"source/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
+				"source/features/tournament/TournamentSetup.tsx",
+				"source/features/tournament/Dashboard.tsx",
+				"source/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
+				"source/shared/components/ViewRouter/ViewRouter.tsx",
+				"source/features/tournament/components/PersonalResults.tsx",
+				"source/features/tournament/components/TournamentHeader/TournamentHeader.tsx",
+				"source/features/tournament/hooks/useTournamentSetupHooks.ts",
+				"source/shared/utils/coreUtils.ts",
+				"source/shared/components/Bracket/Bracket.tsx",
+				"source/shared/components/AnalysisDashboard/AnalysisDashboard.tsx",
+				"source/shared/components/Card/components/CardName.tsx",
+				"source/features/tournament/components/TournamentSidebar/PhotoComponents.tsx",
+				"source/shared/components/NameManagementView/NameManagementView.tsx",
+				"source/shared/components/NameGrid/NameGrid.tsx",
+				"source/shared/propTypes.ts",
+				"source/shared/services/errorManager/index.ts",
+				"source/shared/services/supabase/supabaseClient.ts",
+				"source/features/tournament/TournamentComponents.tsx",
+				"source/hooks/useUserSession.ts"
 			],
 			"linter": {
 				"rules": {
@@ -130,9 +132,9 @@
 		},
 		{
 			"includes": [
-				"src/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
-				"src/features/tournament/TournamentSetup.module.css",
-				"src/shared/styles/animations.css"
+				"source/features/tournament/components/TournamentMatch/FerrofluidMatch.module.css",
+				"source/features/tournament/TournamentSetup.module.css",
+				"source/shared/styles/animations.css"
 			],
 			"linter": {
 				"rules": {
@@ -159,7 +161,7 @@
 			}
 		},
 		{
-			"includes": ["src/core/constants/**/*.ts", "src/**/constants.ts"],
+			"includes": ["source/core/constants/**/*.ts", "source/**/constants.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -169,7 +171,7 @@
 			}
 		},
 		{
-			"includes": ["src/integrations/supabase/types.ts", "src/shared/services/supabase/types.ts"],
+			"includes": ["supabase/types.ts", "source/shared/services/supabase/types.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -183,13 +185,13 @@
 		},
 		{
 			"includes": [
-				"src/core/config/routeConfig.ts",
-				"src/shared/components/NameManagementView/nameManagementCore.tsx",
-				"src/features/analytics/services/analyticsService.ts",
-				"src/features/auth/services/adminService.ts",
-				"src/types/components.ts",
-				"src/**/*.ts",
-				"src/**/*.tsx"
+				"source/core/config/routeConfig.ts",
+				"source/shared/components/NameManagementView/nameManagementCore.tsx",
+				"source/features/analytics/services/analyticsService.ts",
+				"source/features/auth/services/adminService.ts",
+				"source/types/components.ts",
+				"source/**/*.ts",
+				"source/**/*.tsx"
 			],
 			"linter": {
 				"rules": {
@@ -200,16 +202,10 @@
 			}
 		},
 		{
-			"includes": ["src/shared/styles/analysis-mode-misc.css"],
-			"formatter": {
-				"enabled": false
-			}
-		},
-		{
 			"includes": [
 				"**/*.test.{js,jsx,ts,tsx}",
 				"**/*.spec.{js,jsx,ts,tsx}",
-				"src/shared/test-utils/**/*"
+				"source/shared/test-utils/**/*"
 			],
 			"linter": {
 				"rules": {
@@ -223,7 +219,7 @@
 			}
 		},
 		{
-			"includes": ["vite.config.ts", "config/tailwind.config.js", "config/vitest.config.mjs"],
+			"includes": ["vite.config.ts", "tailwind.config.js", "vitest.config.mjs"],
 			"linter": {
 				"rules": {
 					"style": {

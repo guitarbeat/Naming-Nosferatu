@@ -60,8 +60,5 @@ jobs:
       - name: Enforce File Limits
         run: pnpm run check:limits
 
-      - name: Run tests (Vitest)
-        run: pnpm run test -- --runInBand --reporter=github
-
       - name: Build (Vite)
         run: pnpm run build

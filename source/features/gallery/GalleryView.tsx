@@ -1,8 +1,7 @@
 import { useCallback, useState } from "react";
-import useAppStore from "../../core/store/useAppStore";
-import { useAdminStatus } from "../../shared/hooks/useAppHooks";
-import { PhotoGallery, Lightbox, useImageGallery } from "../../shared/components/Gallery";
-import "../../shared/styles/gallery.css";
+import { Lightbox, PhotoGallery, useImageGallery } from "@/components/Gallery";
+import useAppStore from "@/store/useAppStore";
+import { useAdminStatus } from "../auth/authHooks";
 
 export default function GalleryView() {
 	const userName = useAppStore((state) => state.user.name);
@@ -16,7 +15,9 @@ export default function GalleryView() {
 
 	const handleImageOpen = useCallback(
 		(image: string) => {
-			if (!galleryImages) return;
+			if (!galleryImages) {
+				return;
+			}
 			const idx = galleryImages.indexOf(image);
 			if (idx !== -1) {
 				setLightboxIndex(idx);
@@ -34,10 +35,12 @@ export default function GalleryView() {
 	);
 
 	return (
-		<div className="gallery-page-container" style={{ padding: "2rem", maxWidth: "1200px", margin: "0 auto" }}>
-			<div className="gallery-header-section" style={{ textAlign: "center", marginBottom: "3rem" }}>
-				<h2 style={{ fontSize: "2.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>Photo Gallery</h2>
-				<p style={{ opacity: 0.7 }}>Click any photo to view full size</p>
+		<div className="w-full max-w-7xl mx-auto px-4 py-8 md:p-8">
+			<div className="text-center mb-12 space-y-2">
+				<h2 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-white/60 mb-2 tracking-tight">
+					Photo Gallery
+				</h2>
+				<p className="text-lg text-white/60">Click any photo to view full size</p>
 			</div>
 
 			<PhotoGallery

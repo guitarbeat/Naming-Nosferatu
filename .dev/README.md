@@ -22,12 +22,15 @@ This `.dev/` directory consolidates all development-related configuration, workf
 ## Purpose
 
 ### AI Instructions
+
 `.dev/` is primarily for AI assistant configuration, including system-level instructions and behavioral rules.
 
 ### Workflows
+
 Agent-specific process guides and checklists for automated or semi-automated task execution.
 
 ### Rules
+
 Tool usage rules and AI-specific coding guidelines that ensure consistent behavior and quality from AI coding partners.
 
 ## Documentation Hub
@@ -37,6 +40,7 @@ All primary project documentation, including standards, architectural specs, and
 ## Migration History
 
 This directory consolidates content from:
+
 - `.agent/` - AI assistant workflows and rules
 - `.cursor/` - IDE-specific rules and guidelines
 - Project specs and general rules have been moved to [docs/](file:///Users/aaron/Downloads/Naming-Nosferatu/docs/)
@@ -44,11 +48,13 @@ This directory consolidates content from:
 ## Usage
 
 ### For Developers
+
 - Reference `rules/` for coding standards and development guidelines
 - Follow `workflows/` for consistent development processes
 - Use `specs/` for understanding major architectural changes
 
 ### For AI Assistants
+
 - Read `prompt_instructions.md` for system-level context and expectations
 - Follow rules in `rules/` for appropriate tool usage and code standards
 - Reference `specs/` for detailed implementation guidance

@@ -1,4 +1,4 @@
-import { withSupabase } from "../../shared/services/supabase/client";
+import { withSupabase } from "@supabase/client";
 
 export interface FileObject {
 	name: string;
@@ -55,8 +55,9 @@ export const imagesAPI = {
 					continue;
 				}
 
-				if (nameMap.has(baseName)) {
-					nameMap.set(baseName, pickSmaller(nameMap.get(baseName)!, file));
+				const existing = nameMap.get(baseName);
+				if (existing) {
+					nameMap.set(baseName, pickSmaller(existing, file));
 				} else {
 					nameMap.set(baseName, file);
 				}

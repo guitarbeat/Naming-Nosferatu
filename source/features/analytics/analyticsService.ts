@@ -1,4 +1,4 @@
-import { withSupabase } from "../../shared/services/supabase/client";
+import { withSupabase } from "@/services/supabase/clientBase";
 
 export interface SelectionStats {
 	name_id: string | number;
@@ -54,16 +54,24 @@ export const analyticsAPI = {
 	 */
 	getSelectionPopularity: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client.from("tournament_selections").select("name_id, name");
+			const { data, error } = await client
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name");
 			if (error) {
 				return [];
 			}
 
+			const typedData = data as unknown as SelectionRow[];
+
 			const selectionCounts = new Map<string | number, SelectionStats>();
-			(data || []).forEach((row) => {
+			(typedData || []).forEach((row) => {
 				const r = row as SelectionRow;
 				if (!selectionCounts.has(r.name_id)) {
-					selectionCounts.set(r.name_id, { name_id: r.name_id, name: r.name, count: 0 });
+					selectionCounts.set(r.name_id, {
+						name_id: r.name_id,
+						name: r.name,
+						count: 0,
+					});
 				}
 				const sc = selectionCounts.get(r.name_id);
 				if (sc) {
@@ -93,7 +101,9 @@ export const analyticsAPI = {
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client.from("tournament_selections").select("name_id, name, user_name");
+			let selectionsQuery = client
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name, user_name");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses, user_name");
@@ -116,7 +126,7 @@ export const analyticsAPI = {
 					.eq("is_hidden", false),
 			]);
 
-			const selections = selectionsResult.data || [];
+			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
@@ -157,7 +167,10 @@ export const analyticsAPI = {
 
 			const analytics = names.map((item) => {
 				const name = item as NameRow;
-				const selStat = selectionStats.get(name.id) || { count: 0, users: new Set() };
+				const selStat = selectionStats.get(name.id) || {
+					count: 0,
+					users: new Set(),
+				};
 				const ratStat = ratingStats.get(name.id) || {
 					totalRating: 0,
 					count: 0,
@@ -217,7 +230,7 @@ export const analyticsAPI = {
 				startDate.setDate(startDate.getDate() - (periodCount - 1));
 
 				const { data: selections, error: selError } = await client
-					.from("tournament_selections")
+					.from("cat_tournament_selections" as any)
 					.select("name_id, name, selected_at")
 					.gte("selected_at", startDate.toISOString())
 					.order("selected_at", { ascending: true });
@@ -226,6 +239,8 @@ export const analyticsAPI = {
 					console.error("Error fetching selection history:", selError);
 					return { data: [], timeLabels: [] };
 				}
+
+				const typedSelections = selections as unknown as SelectionRow[];
 
 				const { data: ratings } = await client
 					.from("cat_name_ratings")
@@ -247,11 +262,16 @@ export const analyticsAPI = {
 				const dateGroups = new Map<string, Map<string, { name: string; count: number }>>();
 				const nameData = new Map<
 					string,
-					{ id: string; name: string; avgRating: number; totalSelections: number }
+					{
+						id: string;
+						name: string;
+						avgRating: number;
+						totalSelections: number;
+					}
 				>();
 
-				(selections || []).forEach((item) => {
-					const s = item as SelectionRow;
+				typedSelections.forEach((item) => {
+					const s = item;
 					const nameId = String(s.name_id);
 					const dateStr = new Date(s.selected_at).toISOString();
 					const [date] = dateStr.split("T");
@@ -352,7 +372,10 @@ export const leaderboardAPI = {
 				if (error) {
 					return [];
 				}
-				return (topNames || []).map((t) => ({ ...t, name_id: (t as { id: string | number }).id }));
+				return (topNames || []).map((t) => ({
+					...t,
+					name_id: (t as { id: string | number }).id,
+				}));
 			}
 
 			const { data: ratings } = await client
@@ -361,11 +384,21 @@ export const leaderboardAPI = {
 
 			const nameStatsMap = new Map<
 				string | number,
-				{ totalRating: number; count: number; totalWins: number; totalLosses: number }
+				{
+					totalRating: number;
+					count: number;
+					totalWins: number;
+					totalLosses: number;
+				}
 			>();
 			(ratings || []).forEach((r) => {
 				if (!nameStatsMap.has(r.name_id)) {
-					nameStatsMap.set(r.name_id, { totalRating: 0, count: 0, totalWins: 0, totalLosses: 0 });
+					nameStatsMap.set(r.name_id, {
+						totalRating: 0,
+						count: 0,
+						totalWins: 0,
+						totalLosses: 0,
+					});
 				}
 				const stats = nameStatsMap.get(r.name_id);
 				if (stats) {
@@ -428,7 +461,9 @@ export const statsAPI = {
 						.eq("is_hidden", true),
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
-					client.from("tournament_selections").select("id", { count: "exact", head: true }),
+					client
+						.from("cat_tournament_selections" as any)
+						.select("id", { count: "exact", head: true }),
 				]);
 
 			const totalNames = namesResult.count || 0;
@@ -488,7 +523,10 @@ export const statsAPI = {
 		return withSupabase(async (client) => {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
-				client.from("tournament_selections").select("*").eq("user_name", userName),
+				client
+					.from("cat_tournament_selections" as any)
+					.select("*")
+					.eq("user_name", userName),
 			]);
 
 			const ratings = ratingsResult.data || [];

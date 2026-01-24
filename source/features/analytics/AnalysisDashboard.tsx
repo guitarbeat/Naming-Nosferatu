@@ -5,31 +5,43 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
-import { useCallback, useMemo, useState } from "react";
-import type React from "react";
-import { STORAGE_KEYS } from "../../core/constants";
-import { useCollapsible } from "../../core/hooks/useStorage";
-import { BumpChart } from "../../shared/components/Charts";
 import {
-	CollapsibleContent,
-	CollapsibleHeader,
-} from "../../shared/components/CollapsibleHeader";
-import { useNameManagementContextOptional } from "../../shared/components/NameManagementView/nameManagementCore";
-import { TournamentToolbar } from "../../shared/components/TournamentToolbar/TournamentToolbar";
-import { PerformanceBadges } from "../../shared/components/PerformanceBadge";
-import { hiddenNamesAPI } from "../../shared/services/supabase/client";
-import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "../../shared/utils";
-import styles from "./analytics.module.css";
-import { useAnalysisData } from "./useAnalysisData";
-import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
+	Button,
+	ButtonGroup,
+	Card,
+	CardBody,
+	Chip,
+	cn,
+	Progress,
+	Spinner,
+	Table,
+	TableBody,
+	TableCell,
+	TableColumn,
+	TableHeader,
+	TableRow,
+} from "@heroui/react";
+import { hiddenNamesAPI } from "@supabase/client";
+import React, { useCallback, useMemo, useState } from "react";
+import { BumpChart } from "@/components/Charts";
+import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
+import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
+import { PerformanceBadges } from "@/components/PerformanceBadge";
+import { TournamentToolbar } from "@/components/TournamentToolbar";
+import { STORAGE_KEYS } from "@/constants";
+import { useCollapsible } from "@/hooks/useStorage";
+import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";
+
 import type {
 	AnalysisDashboardProps,
 	AnalyticsDataItem,
-	LeaderboardItem,
 	ConsolidatedName,
+	LeaderboardItem,
+	NameWithInsight,
 	SummaryStats,
-	NameWithInsight
 } from "./types";
+import { useAnalysisData } from "./useAnalysisData";
+import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
 
 /* =========================================================================
    SUB-COMPONENTS
@@ -38,80 +50,6 @@ import type {
 /**
  * ColumnHeader Component for sortable tables
  */
-const ColumnHeader: React.FC<{
-	label: string;
-	metricName?: string;
-	sortable?: boolean;
-	sorted?: boolean;
-	sortDirection?: "asc" | "desc";
-	onSort?: (field: string, direction: "asc" | "desc") => void;
-	className?: string;
-}> = ({
-	label,
-	metricName,
-	sortable = true,
-	sorted = false,
-	sortDirection = "desc",
-	onSort,
-	className = "",
-}) => {
-		const handleSort = () => {
-			if (!sortable || !onSort || !metricName) {
-				return;
-			}
-			const newDirection = sorted && sortDirection === "desc" ? "asc" : "desc";
-			onSort(metricName, newDirection);
-		};
-
-		const headerClass = [styles.columnHeaderButton, sorted ? styles.sorted : "", className]
-			.filter(Boolean)
-			.join(" ");
-
-		const content = (
-			<div className={styles.columnHeaderLabel}>
-				<span className={styles.columnHeaderText}>{label}</span>
-				{sortable && sorted && (
-					<span className={styles.columnHeaderSortIndicator} aria-hidden="true">
-						{sortDirection === "desc" ? "▼" : "▲"}
-					</span>
-				)}
-				{metricName && (
-					<span
-						title={`Metric: ${metricName}`}
-						style={{
-							marginLeft: "4px",
-							opacity: 0.7,
-							fontSize: "0.8em",
-							cursor: "help",
-						}}
-					>
-						ⓘ
-					</span>
-				)}
-			</div>
-		);
-
-		if (!sortable) {
-			return (
-				<div className={`${styles.columnHeader} ${className}`}>
-					<div className={styles.columnHeaderLabel}>
-						<span className={styles.columnHeaderText}>{label}</span>
-					</div>
-				</div>
-			);
-		}
-
-		return (
-			<button
-				className={headerClass}
-				onClick={handleSort}
-				aria-sort={sorted ? (sortDirection === "asc" ? "ascending" : "descending") : "none"}
-				type="button"
-			>
-				{content}
-			</button>
-		);
-	};
 
 /**
  * AnalysisTable Component showing local/global leaderboard
@@ -135,265 +73,179 @@ const AnalysisTable: React.FC<{
 	onHideName,
 	summaryStats,
 }) => {
-		const renderSortIndicator = (field: string) => {
-			if (sortField !== field) {
-				return null;
-			}
-			return <span className={styles.sortIndicator}>{sortDirection === "desc" ? "↓" : "↑"}</span>;
-		};
+	const columns = useMemo(() => {
+		const cols = [
+			{ key: "rank", label: "Rank" },
+			{ key: "name", label: "Name" },
+			{ key: "rating", label: isAdmin ? getMetricLabel("rating") : "Rating", sortable: true },
+			{ key: "wins", label: isAdmin ? getMetricLabel("total_wins") : "Wins", sortable: true },
+			{
+				key: "selected",
+				label: isAdmin ? getMetricLabel("times_selected") : "Selected",
+				sortable: true,
+			},
+		];
 
-		const handleSort = (field: string, _direction: "asc" | "desc") => {
-			onSort(field);
-		};
+		if (isAdmin) {
+			cols.push({ key: "insights", label: "Insights" });
+		}
 
-		return (
-			<div className={styles.tableWrapper}>
-				<table
-					className={styles.table}
-					role="table"
-					aria-label="Top performing cat names ranked by rating, wins, and selection count"
-				>
-					<thead>
-						<tr>
-							<th scope="col">Rank</th>
-							<th scope="col">Name</th>
-							<th
-								scope="col"
-								className={`${styles.sortable} ${styles.sortableHeader}`}
-								onClick={() => onSort("rating")}
-							>
-								{isAdmin ? (
-									<ColumnHeader
-										label={getMetricLabel("rating")}
-										metricName="rating"
-										sortable={true}
-										sorted={sortField === "rating"}
-										sortDirection={sortDirection as "asc" | "desc"}
-										onSort={handleSort}
-									/>
-								) : (
-									<>Rating {renderSortIndicator("rating")}</>
-								)}
-							</th>
-							<th
-								scope="col"
-								className={`${styles.sortable} ${styles.sortableHeader}`}
-								onClick={() => onSort("wins")}
-							>
-								{isAdmin ? (
-									<ColumnHeader
-										label={getMetricLabel("total_wins")}
-										metricName="total_wins"
-										sortable={true}
-										sorted={sortField === "wins"}
-										sortDirection={sortDirection as "asc" | "desc"}
-										onSort={handleSort}
-									/>
-								) : (
-									<>Wins {renderSortIndicator("wins")}</>
-								)}
-							</th>
-							<th
-								scope="col"
-								className={`${styles.sortable} ${styles.sortableHeader}`}
-								onClick={() => onSort("selected")}
-							>
-								{isAdmin ? (
-									<ColumnHeader
-										label={getMetricLabel("times_selected")}
-										metricName="times_selected"
-										sortable={true}
-										sorted={sortField === "selected"}
-										sortDirection={sortDirection as "asc" | "desc"}
-										onSort={handleSort}
-									/>
-								) : (
-									<>Selected {renderSortIndicator("selected")}</>
-								)}
-							</th>
-							{isAdmin && (
-								<th scope="col">
-									<span className={styles.columnHeaderLabel}>Insights</span>
-								</th>
+		cols.push({
+			key: "dateSubmitted",
+			label: isAdmin ? getMetricLabel("created_at") : "Date",
+			sortable: true,
+		});
+
+		if (canHideNames) {
+			cols.push({ key: "actions", label: "Actions" });
+		}
+		return cols;
+	}, [isAdmin, canHideNames]);
+
+	const renderCell = useCallback(
+		(item: ConsolidatedName, columnKey: React.Key) => {
+			const rank = names.findIndex((n) => n.id === item.id) + 1;
+			const ratingPercent =
+				summaryStats && (summaryStats.maxRating ?? 0) > 0
+					? Math.min((item.rating / (summaryStats.maxRating ?? 1)) * 100, 100)
+					: 0;
+			const winsPercent =
+				summaryStats && (summaryStats.maxWins ?? 0) > 0
+					? Math.min((item.wins / (summaryStats.maxWins ?? 1)) * 100, 100)
+					: 0;
+			const selectedPercent =
+				summaryStats && (summaryStats.maxSelected ?? 0) > 0
+					? Math.min((item.selected / (summaryStats.maxSelected ?? 1)) * 100, 100)
+					: 0;
+
+			switch (columnKey) {
+				case "rank":
+					return (
+						<Chip
+							size="sm"
+							variant="flat"
+							className={cn(
+								"border-none",
+								rank <= 3 ? "bg-yellow-500/20 text-yellow-300" : "bg-white/10 text-white/60",
 							)}
-							<th
-								scope="col"
-								className={`${styles.sortable} ${styles.sortableHeader}`}
-								onClick={() => onSort("dateSubmitted")}
-							>
-								{isAdmin ? (
-									<ColumnHeader
-										label={getMetricLabel("created_at")}
-										metricName="created_at"
-										sortable={true}
-										sorted={sortField === "dateSubmitted"}
-										sortDirection={sortDirection as "asc" | "desc"}
-										onSort={handleSort}
-									/>
-								) : (
-									<>Date {renderSortIndicator("dateSubmitted")}</>
-								)}
-							</th>
-							{canHideNames && <th scope="col">Actions</th>}
-						</tr>
-					</thead>
-					<tbody>
-						{names.map((item, index) => {
-							const rank = index + 1;
-							const ratingPercent =
-								summaryStats && (summaryStats.maxRating ?? 0) > 0
-									? Math.min((item.rating / (summaryStats.maxRating ?? 1)) * 100, 100)
-									: 0;
-							const winsPercent =
-								summaryStats && (summaryStats.maxWins ?? 0) > 0
-									? Math.min((item.wins / (summaryStats.maxWins ?? 1)) * 100, 100)
-									: 0;
-							const selectedPercent =
-								summaryStats && (summaryStats.maxSelected ?? 0) > 0
-									? Math.min((item.selected / (summaryStats.maxSelected ?? 1)) * 100, 100)
-									: 0;
+						>
+							{isAdmin ? getRankDisplay(rank) : rank}
+						</Chip>
+					);
+				case "name":
+					return <span className="font-bold text-white">{item.name}</span>;
+				case "rating":
+					return (
+						<div className="flex flex-col gap-1 min-w-[100px]">
+							<div className="flex justify-between text-xs">
+								<span>{Math.round(item.rating)}</span>
+								{isAdmin && <span className="text-white/40">{item.ratingPercentile}%ile</span>}
+							</div>
+							{!isAdmin && (
+								<Progress value={ratingPercent} color="warning" size="sm" aria-label="Rating" />
+							)}
+						</div>
+					);
+				case "wins":
+					return (
+						<div className="flex flex-col gap-1 min-w-[80px]">
+							<span className="text-xs">{item.wins}</span>
+							{!isAdmin && (
+								<Progress value={winsPercent} color="success" size="sm" aria-label="Wins" />
+							)}
+						</div>
+					);
+				case "selected":
+					return (
+						<div className="flex flex-col gap-1 min-w-[80px]">
+							<span className="text-xs">{item.selected}</span>
+							{isAdmin && <span className="text-white/40">{item.selectedPercentile}%ile</span>}
+							{!isAdmin && (
+								<Progress
+									value={selectedPercent}
+									color="secondary"
+									size="sm"
+									aria-label="Selected"
+								/>
+							)}
+						</div>
+					);
+				case "insights":
+					return isAdmin ? (
+						<PerformanceBadges
+							types={Array.isArray(item.insights) ? (item.insights as string[]) : []}
+						/>
+					) : null;
+				case "dateSubmitted":
+					return (
+						<span className="text-xs text-white/50">
+							{item.dateSubmitted
+								? formatDate(item.dateSubmitted, {
+										month: "short",
+										day: "numeric",
+										year: "numeric",
+									})
+								: "—"}
+						</span>
+					);
+				case "actions":
+					return canHideNames ? (
+						<Button
+							size="sm"
+							color="danger"
+							variant="light"
+							onPress={async () => {
+								try {
+									await onHideName(item.id, item.name);
+								} catch (error) {
+									devError("[AnalysisDashboard] Failed to hide name:", error);
+								}
+							}}
+						>
+							Hide
+						</Button>
+					) : null;
+				default:
+					return null;
+			}
+		},
+		[names, summaryStats, isAdmin, canHideNames, onHideName],
+	);
 
-							return (
-								<tr key={item.id || index} className={styles.tableRow}>
-									<td className={styles.colRank} scope="row">
-										<span className={`${styles.rankBadge} ${styles.top}`}>
-											{isAdmin ? getRankDisplay(rank) : rank}
-										</span>
-									</td>
-									<td className={styles.colName}>{item.name}</td>
-									<td>
-										{isAdmin ? (
-											<div>
-												<span
-													aria-label={`Rating: ${item.rating} (${item.ratingPercentile}th percentile)`}
-												>
-													{item.rating}
-												</span>
-												<span className={styles.percentileLabel}>{item.ratingPercentile}%ile</span>
-											</div>
-										) : (
-											<div className={styles.metricWithBar}>
-												<span className={styles.metricValue} aria-label={`Rating: ${item.rating}`}>
-													{item.rating}
-												</span>
-												<div className={styles.metricBar}>
-													<div
-														className={`${styles.metricBarFill} ${styles.rating}`}
-														style={{ width: `${ratingPercent}%` }}
-														aria-hidden="true"
-													/>
-												</div>
-											</div>
-										)}
-									</td>
-									<td>
-										{isAdmin ? (
-											<span className={styles.metricValue} aria-label={`Wins: ${item.wins}`}>
-												{item.wins}
-											</span>
-										) : (
-											<div className={styles.metricWithBar}>
-												<span className={styles.metricValue} aria-label={`Wins: ${item.wins}`}>
-													{item.wins}
-												</span>
-												<div className={styles.metricBar}>
-													<div
-														className={`${styles.metricBarFill} ${styles.wins}`}
-														style={{ width: `${winsPercent}%` }}
-														aria-hidden="true"
-													/>
-												</div>
-											</div>
-										)}
-									</td>
-									<td>
-										{isAdmin ? (
-											<div>
-												<span
-													className={styles.metricValue}
-													aria-label={`Selected ${item.selected} times (${item.selectedPercentile}th percentile)`}
-												>
-													{item.selected}
-												</span>
-												<span className={styles.percentileLabel}>{item.selectedPercentile}%ile</span>
-											</div>
-										) : (
-											<div className={styles.metricWithBar}>
-												<span
-													className={styles.metricValue}
-													aria-label={`Selected ${item.selected} times`}
-												>
-													{item.selected}
-												</span>
-												<div className={styles.metricBar}>
-													<div
-														className={`${styles.metricBarFill} ${styles.selected}`}
-														style={{ width: `${selectedPercent}%` }}
-														aria-hidden="true"
-													/>
-												</div>
-											</div>
-										)}
-									</td>
-									{isAdmin && (
-										<td>
-											<PerformanceBadges
-												types={Array.isArray(item.insights) ? (item.insights as string[]) : []}
-											/>
-										</td>
-									)}
-									<td>
-										{item.dateSubmitted ? (
-											<span
-												className={styles.metricValue}
-												aria-label={`Submitted: ${formatDate(item.dateSubmitted)}`}
-												title={formatDate(item.dateSubmitted, {
-													year: "numeric",
-													month: "long",
-													day: "numeric",
-												})}
-											>
-												{formatDate(item.dateSubmitted, {
-													month: "short",
-													day: "numeric",
-													year: "numeric",
-												})}
-											</span>
-										) : (
-											<span className={styles.dateUnknown} aria-label="Date unknown">
-												—
-											</span>
-										)}
-									</td>
-									{canHideNames && (
-										<td className={styles.colActions}>
-											<button
-												type="button"
-												className={styles.hideButton}
-												onClick={async (e) => {
-													e.preventDefault();
-													e.stopPropagation();
-													try {
-														await onHideName(item.id, item.name);
-													} catch (error) {
-														devError("[AnalysisDashboard] Failed to hide name:", error);
-													}
-												}}
-												aria-label={`Hide ${item.name}`}
-												title="Hide this name from tournaments"
-											>
-												<span aria-hidden="true">Hide</span>
-											</button>
-										</td>
-									)}
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
-			</div>
-		);
-	};
+	return (
+		<div className="w-full overflow-x-auto">
+			<Table
+				aria-label="Analytics Table"
+				sortDescriptor={{
+					column: sortField,
+					direction: sortDirection === "asc" ? "ascending" : "descending",
+				}}
+				onSortChange={(descriptor) => onSort(descriptor.column as string)}
+				classNames={{
+					wrapper: "bg-white/5 border border-white/5",
+					th: "bg-white/10 text-white/60",
+					td: "text-white/80 py-3",
+				}}
+				removeWrapper={true}
+			>
+				<TableHeader columns={columns}>
+					{(column) => (
+						<TableColumn key={column.key} allowsSorting={!!column.sortable}>
+							{column.label}
+						</TableColumn>
+					)}
+				</TableHeader>
+				<TableBody items={names}>
+					{(item) => (
+						<TableRow key={item.id}>
+							{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+		</div>
+	);
+};
 
 /**
  * AnalysisInsights Component showing data highlights
@@ -405,211 +257,243 @@ const AnalysisInsights: React.FC<{
 	isAdmin: boolean;
 	canHideNames: boolean;
 	onHideName: (id: string | number, name: string) => Promise<void>;
-}> = ({
-	namesWithInsights,
-	summaryStats,
-	generalInsights,
-	isAdmin,
-	canHideNames,
-	onHideName,
-}) => {
-		const renderStatsSummary = () => {
-			if (!summaryStats) {
-				return null;
-			}
+}> = ({ namesWithInsights, summaryStats, generalInsights, isAdmin, canHideNames, onHideName }) => {
+	const renderStatsSummary = () => {
+		if (!summaryStats) {
+			return null;
+		}
 
-			if (isAdmin) {
-				return (
-					<div className={styles.statsSummary}>
-						<div className={styles.statCard}>
-							<div className={styles.statLabel}>Total Names</div>
-							<div className={styles.statValue}>{summaryStats.totalNames || 0}</div>
-							<div className={styles.statSubtext}>{summaryStats.activeNames || 0} active</div>
-						</div>
-						<div className={styles.statCard}>
-							<div className={styles.statLabel}>Avg Rating</div>
-							<div className={styles.statValue}>{summaryStats.avgRating}</div>
-							<div className={styles.statSubtext}>Global Average</div>
-						</div>
-						<div className={styles.statCard}>
-							<div className={styles.statLabel}>Total Votes</div>
-							<div className={styles.statValue}>{summaryStats.totalRatings || 0}</div>
-							<div className={styles.statSubtext}>{summaryStats.totalSelections || 0} selections</div>
-						</div>
-					</div>
-				);
-			}
-
+		if (isAdmin) {
 			return (
-				<div className={styles.statsSummary}>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Top Rating</div>
-						<div className={styles.statValue}>{summaryStats.maxRating ?? 0}</div>
-						<div className={styles.statName}>{summaryStats.topName?.name}</div>
-					</div>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Avg Rating</div>
-						<div className={styles.statValue}>{summaryStats.avgRating}</div>
-						<div className={styles.statSubtext}>Across {namesWithInsights.length} names</div>
-					</div>
-					<div className={styles.statCard}>
-						<div className={styles.statLabel}>Total Selected</div>
-						<div className={styles.statValue}>{summaryStats.totalSelected ?? 0}</div>
-						<div className={styles.statSubtext}>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+					<Card className="bg-white/5 border border-white/10">
+						<CardBody className="gap-1">
+							<div className="text-white/60 text-sm">Total Names</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.totalNames || 0}</div>
+							<div className="text-xs text-white/40">{summaryStats.activeNames || 0} active</div>
+						</CardBody>
+					</Card>
+					<Card className="bg-white/5 border border-white/10">
+						<CardBody className="gap-1">
+							<div className="text-white/60 text-sm">Avg Rating</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
+							<div className="text-xs text-white/40">Global Average</div>
+						</CardBody>
+					</Card>
+					<Card className="bg-white/5 border border-white/10">
+						<CardBody className="gap-1">
+							<div className="text-white/60 text-sm">Total Votes</div>
+							<div className="text-2xl font-bold text-white">{summaryStats.totalRatings || 0}</div>
+							<div className="text-xs text-white/40">
+								{summaryStats.totalSelections || 0} selections
+							</div>
+						</CardBody>
+					</Card>
+				</div>
+			);
+		}
+
+		return (
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+				<Card className="bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20">
+					<CardBody className="gap-1">
+						<div className="text-yellow-500/80 text-sm">Top Rating</div>
+						<div className="text-2xl font-bold text-yellow-500">{summaryStats.maxRating ?? 0}</div>
+						<div className="text-xs text-yellow-500/60 truncate">{summaryStats.topName?.name}</div>
+					</CardBody>
+				</Card>
+				<Card className="bg-white/5 border border-white/10">
+					<CardBody className="gap-1">
+						<div className="text-white/60 text-sm">Avg Rating</div>
+						<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
+						<div className="text-xs text-white/40">Across {namesWithInsights.length} names</div>
+					</CardBody>
+				</Card>
+				<Card className="bg-white/5 border border-white/10">
+					<CardBody className="gap-1">
+						<div className="text-white/60 text-sm">Total Selected</div>
+						<div className="text-2xl font-bold text-white">{summaryStats.totalSelected ?? 0}</div>
+						<div className="text-xs text-white/40">
 							{(summaryStats.maxSelected ?? 0) > 0
 								? `Most: ${summaryStats.maxSelected}x`
 								: "No selections yet"}
 						</div>
-					</div>
-				</div>
-			);
-		};
+					</CardBody>
+				</Card>
+			</div>
+		);
+	};
 
-		const renderGeneralInsights = () => {
-			if (generalInsights.length === 0 || isAdmin) {
-				return null;
-			}
-			return (
-				<div className={styles.insights}>
-					{generalInsights.map((insight, idx) => (
-						<div key={idx} className={`${styles.insight} ${styles[insight.type] || styles.info}`}>
-							<span className={styles.insightIcon} aria-hidden="true">
-								{insight.icon}
-							</span>
-							<span className={styles.insightText}>{insight.message}</span>
-						</div>
-					))}
-				</div>
-			);
-		};
+	const renderGeneralInsights = () => {
+		if (generalInsights.length === 0 || isAdmin) {
+			return null;
+		}
+		return (
+			<div className="flex flex-col gap-3 mb-6">
+				{generalInsights.map((insight, idx) => (
+					<Card
+						key={idx}
+						className={cn(
+							"border",
+							insight.type === "warning"
+								? "bg-yellow-500/10 border-yellow-500/20"
+								: "bg-blue-500/10 border-blue-500/20",
+						)}
+					>
+						<CardBody className="flex flex-row items-center gap-3 p-3">
+							<span className="text-lg">{insight.icon}</span>
+							<span className="text-white/80 text-sm">{insight.message}</span>
+						</CardBody>
+					</Card>
+				))}
+			</div>
+		);
+	};
 
-		const renderActionableInsights = () => {
-			const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
-			const lowPerformers = namesWithInsights.filter((n) =>
-				n.insights.some((i: string) => highPriorityTags.includes(i)),
-			);
+	const renderActionableInsights = () => {
+		const highPriorityTags = ["worst_rated", "never_selected", "inactive", "poor_performer"];
+		const lowPerformers = namesWithInsights.filter((n) =>
+			n.insights.some((i: string) => highPriorityTags.includes(i)),
+		);
 
-			if (lowPerformers.length === 0) {
-				return null;
-			}
+		if (lowPerformers.length === 0) {
+			return null;
+		}
 
-			return (
-				<div className={styles.insightsSection}>
-					<h3 className={styles.sectionTitle}>⚠️ Names to Consider Hiding</h3>
-					<div className={styles.insightCards}>
-						{lowPerformers
-							.sort((a, b) => {
-								const priority: Record<string, number> = {
-									inactive: 0,
-									never_selected: 1,
-									worst_rated: 2,
-									poor_performer: 3,
-								};
-								const getP = (item: NameWithInsight) =>
-									Math.min(
-										...item.insights
-											.filter((i: string) => highPriorityTags.includes(i))
-											.map((i: string) => priority[i] ?? 99),
-									);
-								const pA = getP(a);
-								const pB = getP(b);
-								if (pA !== pB) {
-									return pA - pB;
-								}
-								return a.rating - b.rating;
-							})
-							.slice(0, 12)
-							.map((n) => (
-								<div key={n.id} className={`${styles.insightCard} ${styles.warning}`}>
-									<div className={styles.cardHeader}>
-										<div className={styles.cardName}>{n.name}</div>
+		return (
+			<div className="mb-6">
+				<h3 className="text-lg font-bold text-white mb-3">⚠️ Names to Consider Hiding</h3>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+					{lowPerformers
+						.sort((a, b) => {
+							const priority: Record<string, number> = {
+								inactive: 0,
+								never_selected: 1,
+								worst_rated: 2,
+								poor_performer: 3,
+							};
+							const getP = (item: NameWithInsight) =>
+								Math.min(
+									...item.insights
+										.filter((i: string) => highPriorityTags.includes(i))
+										.map((i: string) => priority[i] ?? 99),
+								);
+							const pA = getP(a);
+							const pB = getP(b);
+							if (pA !== pB) {
+								return pA - pB;
+							}
+							return a.rating - b.rating;
+						})
+						.slice(0, 12)
+						.map((n) => (
+							<Card
+								key={n.id}
+								className="bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-colors"
+							>
+								<CardBody className="p-3 gap-2">
+									<div className="flex justify-between items-start">
+										<div className="font-bold text-white truncate pr-2">{n.name}</div>
 										{canHideNames && (
-											<button
-												type="button"
-												className={styles.cardHideBtn}
-												onClick={async (e) => {
-													e.preventDefault();
-													e.stopPropagation();
+											<Button
+												size="sm"
+												color="danger"
+												variant="flat"
+												className="min-w-0 h-6 px-2 text-xs"
+												onPress={async () => {
 													try {
 														await onHideName(n.id, n.name);
 													} catch (error) {
 														devError("[AnalysisDashboard] Failed to hide name:", error);
 													}
 												}}
-												aria-label={`Hide ${n.name}`}
-												title="Hide this name"
 											>
 												Hide
-											</button>
+											</Button>
 										)}
 									</div>
-									<div className={styles.cardMetrics}>
+									<div className="flex gap-3 text-xs text-white/60">
 										<span>Rating {Math.round(n.rating)}</span>
-										<span>{n.selected} selected</span>
+										<span>{n.selected} sel</span>
 										{n.wins > 0 && <span>{n.wins} wins</span>}
 									</div>
-									<div className={styles.cardTags}>
+									<div className="flex flex-wrap gap-1 mt-1">
 										{n.insights
 											.filter((i: string) => highPriorityTags.includes(i))
 											.map((tag: string) => (
-												<span key={tag} className={`${styles.tag} ${styles.warning}`}>
+												<Chip
+													key={tag}
+													size="sm"
+													color="warning"
+													variant="flat"
+													className="h-5 text-[10px]"
+												>
 													{tag.replace("_", " ")}
-												</span>
+												</Chip>
 											))}
 									</div>
-								</div>
-							))}
-					</div>
-				</div>
-			);
-		};
-
-		const renderPositiveInsights = () => {
-			const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
-			const topPerformers = namesWithInsights.filter((n) =>
-				n.insights.some((i: string) => positiveTags.includes(i)),
-			);
-
-			if (topPerformers.length === 0) {
-				return null;
-			}
-
-			return (
-				<div className={styles.insightsSection}>
-					<h3 className={styles.sectionTitle}>✨ Top Performers (Keep)</h3>
-					<div className={styles.insightCards}>
-						{topPerformers.slice(0, 6).map((n) => (
-							<div key={n.id} className={styles.insightCard}>
-								<div className={styles.cardName}>{n.name}</div>
-								<div className={styles.cardMetrics}>
-									<span>Rating {Math.round(n.rating)}</span>
-									<span>{n.selected} selected</span>
-								</div>
-								<div className={styles.cardTags}>
-									{n.insights
-										.filter((i: string) => positiveTags.includes(i))
-										.map((tag: string) => (
-											<span key={tag} className={styles.tag}>
-												{tag.replace("_", " ")}
-											</span>
-										))}
-								</div>
-							</div>
+								</CardBody>
+							</Card>
 						))}
-					</div>
 				</div>
-			);
-		};
-
-		return (
-			<div className={styles.insightsPanel}>
-				{renderStatsSummary()}
-				{renderGeneralInsights()}
-				{renderActionableInsights()}
-				{renderPositiveInsights()}
 			</div>
 		);
 	};
+
+	const renderPositiveInsights = () => {
+		const positiveTags = ["top_rated", "most_selected", "underrated", "undefeated"];
+		const topPerformers = namesWithInsights.filter((n) =>
+			n.insights.some((i: string) => positiveTags.includes(i)),
+		);
+
+		if (topPerformers.length === 0) {
+			return null;
+		}
+
+		return (
+			<div className="mb-6">
+				<h3 className="text-lg font-bold text-white mb-3">✨ Top Performers (Keep)</h3>
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+					{topPerformers.slice(0, 6).map((n) => (
+						<Card key={n.id} className="bg-purple-500/5 border border-purple-500/10">
+							<CardBody className="p-3 gap-2">
+								<div className="font-bold text-white">{n.name}</div>
+								<div className="flex gap-3 text-xs text-white/60">
+									<span>Rating {Math.round(n.rating)}</span>
+									<span>{n.selected} sel</span>
+								</div>
+								<div className="flex flex-wrap gap-1 mt-1">
+									{n.insights
+										.filter((i: string) => positiveTags.includes(i))
+										.map((tag: string) => (
+											<Chip
+												key={tag}
+												size="sm"
+												color="secondary"
+												variant="flat"
+												className="h-5 text-[10px]"
+											>
+												{tag.replace("_", " ")}
+											</Chip>
+										))}
+								</div>
+							</CardBody>
+						</Card>
+					))}
+				</div>
+			</div>
+		);
+	};
+
+	return (
+		<div className="flex flex-col gap-6">
+			{renderStatsSummary()}
+			{renderGeneralInsights()}
+			{renderActionableInsights()}
+			{renderPositiveInsights()}
+		</div>
+	);
+};
 
 /**
  * AnalysisPanel Wrapper Component
@@ -621,22 +505,15 @@ const AnalysisPanel: React.FC<{
 	showHeader?: boolean;
 	toolbar?: React.ReactNode;
 	className?: string;
-}> = ({
-	children,
-	title,
-	actions,
-	showHeader = true,
-	toolbar,
-	className = "",
-}) => {
-		return (
-			<div className={`${styles.insightsPanel} ${className}`}>
-				{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
-				{toolbar && <div className={styles.viewToggle}>{toolbar}</div>}
-				{children}
-			</div>
-		);
-	};
+}> = ({ children, title, actions, showHeader = true, toolbar, className = "" }) => {
+	return (
+		<div className={cn("flex flex-col gap-4", className)}>
+			{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
+			{toolbar && <div className="flex gap-2">{toolbar}</div>}
+			{children}
+		</div>
+	);
+};
 
 /* =========================================================================
    MAIN COMPONENT
@@ -799,7 +676,7 @@ export function AnalysisDashboard({
 					}
 				})
 			}
-			categories={toolbarContext.categories || []}
+			categories={[]} // Remove categories from analysis
 			showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
 			showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
 			userOptions={toolbarContext.profileProps?.userOptions || []}
@@ -822,73 +699,85 @@ export function AnalysisDashboard({
 
 			<CollapsibleContent id="analysis-dashboard-content" isCollapsed={isCollapsed}>
 				{isLoading ? (
-					<div className={styles.analysisPanel} role="status">
-						Loading top names...
+					<div
+						className="flex justify-center p-8 bg-white/5 rounded-lg border border-white/5"
+						role="status"
+					>
+						<Spinner label="Loading top names..." color="secondary" />
 					</div>
 				) : error ? (
-					<div className={styles.analysisPanel} role="alert">
+					<div
+						className="p-8 text-center bg-red-500/10 border border-red-500/20 rounded-lg text-red-200"
+						role="alert"
+					>
 						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className={styles.analysisPanel}>
+					<div className="p-8 text-center bg-white/5 border border-white/5 rounded-lg text-white/50">
 						No names available yet. Start a tournament to see results here!
 					</div>
 				) : (
 					<>
-						<div className={styles.viewToggle}>
-							{["chart", "table", "insights"].map((mode) => (
-								<button
-									key={mode}
-									type="button"
-									className={`${styles.viewBtn} ${viewMode === mode ? styles.active : ""}`}
-									onClick={() => setViewMode(mode)}
-									aria-pressed={viewMode === mode}
-								>
-									{mode === "chart"
-										? "📊 Bump Chart"
-										: mode === "table"
-											? "📋 Table"
-											: "💡 Insights"}
-								</button>
-							))}
+						<div className="flex justify-center mb-6">
+							<ButtonGroup variant="flat" className="bg-white/5 rounded-lg p-1">
+								{["chart", "table", "insights"].map((mode) => (
+									<Button
+										key={mode}
+										className={cn(
+											viewMode === mode
+												? "bg-white/10 text-white"
+												: "text-white/50 hover:text-white",
+										)}
+										onPress={() => setViewMode(mode)}
+									>
+										{mode === "chart"
+											? "📊 Bump Chart"
+											: mode === "table"
+												? "📋 Table"
+												: "💡 Insights"}
+									</Button>
+								))}
+							</ButtonGroup>
 						</div>
 
-						{viewMode === "chart" && rankingHistory && (
-							<div className={styles.chartContainer}>
-								<BumpChart
-									data={filteredRankingData}
-									labels={rankingHistory.timeLabels}
-									timeLabels={rankingHistory.timeLabels}
-									title=""
-									height={320}
-									showLegend={true}
+						<div className="animate-in fade-in zoom-in-95 duration-300">
+							{viewMode === "chart" && rankingHistory && (
+								<div className="p-4 bg-white/5 border border-white/5 rounded-xl">
+									<BumpChart
+										data={filteredRankingData}
+										labels={rankingHistory.timeLabels}
+										timeLabels={rankingHistory.timeLabels}
+										title=""
+										height={320}
+										showLegend={true}
+									/>
+								</div>
+							)}
+
+							{viewMode === "table" && (
+								<AnalysisTable
+									names={namesWithInsights}
+									isAdmin={isAdmin}
+									canHideNames={isAdmin && !!onNameHidden}
+									sortField={sortField}
+									sortDirection={sortDirection}
+									onSort={handleSort}
+									onHideName={handleHideName}
+									summaryStats={summaryStats}
 								/>
-							</div>
-						)}
+							)}
 
-						{viewMode === "table" && (
-							<AnalysisTable
-								names={namesWithInsights}
-								isAdmin={isAdmin}
-								canHideNames={isAdmin && !!onNameHidden}
-								sortField={sortField}
-								sortDirection={sortDirection}
-								onSort={handleSort}
-								onHideName={handleHideName}
-								summaryStats={summaryStats}
-							/>
-						)}
-
-						{viewMode === "insights" && (
-							<AnalysisInsights
-								namesWithInsights={namesWithInsights}
-								summaryStats={isAdmin ? (siteStats ?? null) : summaryStats}
-								generalInsights={generalInsights}
-								isAdmin={isAdmin}
-								canHideNames={isAdmin && !!onNameHidden}
-								onHideName={handleHideName}
-							/>
-						)}
+							{viewMode === "insights" && (
+								<AnalysisInsights
+									namesWithInsights={namesWithInsights}
+									summaryStats={isAdmin ? (siteStats ?? null) : summaryStats}
+									generalInsights={generalInsights}
+									isAdmin={isAdmin}
+									canHideNames={isAdmin && !!onNameHidden}
+									onHideName={handleHideName}
+								/>
+							)}
+						</div>
 					</>
 				)}
 			</CollapsibleContent>
