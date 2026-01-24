@@ -29,7 +29,7 @@ export function useAnalysisData({
 	// 2. Selection Popularity
 	const popularityQuery = useQuery({
 		queryKey: ["selectionPopularity"],
-		queryFn: () => analyticsAPI.getSelectionPopularity(null),
+		queryFn: () => analyticsAPI.getTopSelectedNames(null),
 		enabled,
 		staleTime: 1000 * 60 * 5,
 	});
@@ -37,7 +37,7 @@ export function useAnalysisData({
 	// 3. Popularity Analytics (Admin only)
 	const analyticsQuery = useQuery({
 		queryKey: ["popularityAnalytics", userFilter, userName],
-		queryFn: () => analyticsAPI.getPopularityAnalytics(null, userFilter, userName),
+		queryFn: () => analyticsAPI.getPopularityScores(null, userFilter, userName),
 		enabled: enabled && isAdmin,
 		staleTime: 1000 * 60 * 5,
 	});

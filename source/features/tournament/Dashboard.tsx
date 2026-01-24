@@ -148,10 +148,10 @@ const NameDiscovery: React.FC<{ userName: string }> = ({ userName: _userName }) 
 		isLoading,
 		error,
 	} = useQuery({
-		queryKey: ["popular-names"],
+		queryKey: ["trending-names"],
 		queryFn: async () => {
 			// Real data fetch instead of mocked/randomized
-			const names = await coreAPI.getNamesWithDescriptions();
+			const names = await coreAPI.getTrendingNames();
 			// Sort by actual rating/popularity if available, otherwise just use the names list
 			return names.slice(0, 24).map((name) => ({
 				...name,
@@ -216,7 +216,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 		setIsGenerating(true);
 		try {
 			// Fetch a random name from the API or local set
-			const allNames = await coreAPI.getNamesWithDescriptions();
+			const allNames = await coreAPI.getTrendingNames();
 			if (allNames.length > 0) {
 				const random = allNames[Math.floor(Math.random() * allNames.length)];
 				if (random) {

@@ -39,12 +39,12 @@ export function useNameData({
 				let namesData: NameItem[];
 
 				if (mode === "tournament") {
-					namesData = (await coreAPI.getNamesWithDescriptions(true)) as NameItem[];
+					namesData = (await coreAPI.getTrendingNames(true)) as NameItem[];
 				} else {
 					if (!userName) {
 						return [];
 					}
-					const rawData = await statsAPI.getNamesWithUserRatings(userName);
+					const rawData = await statsAPI.getUserRatedNames(userName);
 					namesData = (
 						rawData as Array<{
 							id: string;

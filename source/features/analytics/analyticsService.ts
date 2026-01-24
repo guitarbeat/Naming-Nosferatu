@@ -50,9 +50,9 @@ interface NameRow {
 
 export const analyticsAPI = {
 	/**
-	 * Get selection popularity
+	 * Get top selected names based on selection history
 	 */
-	getSelectionPopularity: async (limit: number | null = 20) => {
+	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
 				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
@@ -94,9 +94,9 @@ export const analyticsAPI = {
 	},
 
 	/**
-	 * Get comprehensive popularity analytics
+	 * Get comprehensive popularity scores with weighting
 	 */
-	getPopularityAnalytics: async (
+	getPopularityScores: async (
 		limit: number | null = 20,
 		userFilter: string | null = "all",
 		currentUserName: string | null = null,
@@ -478,7 +478,7 @@ export const statsAPI = {
 	/**
 	 * Get all names with user-specific ratings
 	 */
-	getNamesWithUserRatings: async (userName: string) => {
+	getUserRatedNames: async (userName: string) => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
 				.from("cat_name_options")

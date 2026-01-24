@@ -88,7 +88,7 @@ export const coreAPI = {
 	/**
 	 * Get all names with descriptions and ratings
 	 */
-	getNamesWithDescriptions: async (includeHidden: boolean = false) => {
+	getTrendingNames: async (includeHidden: boolean = false) => {
 		const isAvailable = await import("@supabase/client").then((m) => m.isSupabaseAvailable());
 		if (!isAvailable) {
 			throw new Error("Supabase is not configured or unavailable");
@@ -175,9 +175,9 @@ export const coreAPI = {
 	},
 
 	/**
-	 * Remove a name option
+	 * Remove a name option by its name string
 	 */
-	removeName: async (name: string) => {
+	deleteByName: async (name: string) => {
 		return withSupabase(
 			async (client) => {
 				const { error } = await client.from("cat_name_options").delete().eq("name", name);
@@ -193,13 +193,13 @@ export const coreAPI = {
 		);
 	},
 
-	deleteName,
+	deleteById,
 };
 
 /**
  * Delete a name by ID
  */
-export async function deleteName(nameId: string | number) {
+export async function deleteById(nameId: string | number) {
 	return withSupabase(
 		async (client) => {
 			const { error } = await client.from("cat_name_options").delete().eq("id", String(nameId));

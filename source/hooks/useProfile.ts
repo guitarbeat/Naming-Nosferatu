@@ -6,7 +6,7 @@
 import { statsAPI } from "@features/analytics/analyticsService";
 import { adminAPI } from "@features/auth/adminService";
 import { useAdminStatus } from "@features/auth/authHooks";
-import { deleteName, hiddenNamesAPI } from "@services/supabase/modules/general";
+import { deleteById, hiddenNamesAPI } from "@services/supabase/modules/general";
 import { resolveSupabaseClient } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -535,7 +535,7 @@ export function useProfile(
 				return showError("Only admins can delete names");
 			}
 			try {
-				const { success, error } = await deleteName(String(name.id));
+				const { success, error } = await deleteById(String(name.id));
 				if (!success) {
 					throw new Error(error);
 				}
