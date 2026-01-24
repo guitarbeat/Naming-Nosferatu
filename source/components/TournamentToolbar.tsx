@@ -407,7 +407,7 @@ function TournamentToolbar({
 	const { selectedNames } = useAppStore((state) => state.tournament);
 	const selectedCount = selectedNames?.length || 0;
 
-	// Segmented Control Component - Modern iOS-style toggle
+	// LayoutSwitcher - Segmented control for view modes
 	const SegmentedControl = ({
 		options,
 		value,
@@ -420,25 +420,31 @@ function TournamentToolbar({
 		const activeIndex = options.findIndex((opt) => opt.value === value);
 
 		return (
-			<div className="relative flex p-1 bg-white/5 rounded-xl border border-white/10">
-				{/* Sliding background */}
+			<div
+				className="relative flex p-0.5 bg-white/[0.04] rounded-xl border border-white/[0.06]"
+				role="tablist"
+				aria-label="Layout options"
+			>
+				{/* Active indicator */}
 				<motion.div
-					className="absolute top-1 bottom-1 bg-gradient-to-r from-cyan-500/30 to-purple-500/30 rounded-lg border border-white/20"
+					className="absolute top-0.5 bottom-0.5 bg-gradient-to-br from-white/[0.12] to-white/[0.06] rounded-[10px] border border-white/[0.12]"
 					initial={false}
 					animate={{
-						left: `calc(${activeIndex * (100 / options.length)}% + 4px)`,
-						width: `calc(${100 / options.length}% - 8px)`,
+						left: `calc(${activeIndex * (100 / options.length)}% + 2px)`,
+						width: `calc(${100 / options.length}% - 4px)`,
 					}}
-					transition={{ type: "spring", stiffness: 400, damping: 30 }}
+					transition={{ type: "spring", stiffness: 500, damping: 35 }}
 				/>
 				{options.map((opt) => (
 					<button
 						key={opt.value}
 						type="button"
+						role="tab"
+						aria-selected={value === opt.value}
 						onClick={() => onChange(opt.value)}
 						className={cn(
-							"relative z-10 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors duration-200",
-							value === opt.value ? "text-white" : "text-white/40 hover:text-white/70",
+							"relative z-10 flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold tracking-wide uppercase rounded-[10px] transition-colors duration-150",
+							value === opt.value ? "text-white" : "text-white/30 hover:text-white/50",
 						)}
 					>
 						{opt.icon}
@@ -449,7 +455,7 @@ function TournamentToolbar({
 		);
 	};
 
-	// Icon Toggle Button - Minimal square icon button
+	// ActionToggle - Compact icon button for quick actions
 	const IconToggle = ({
 		active,
 		onClick,
@@ -467,13 +473,14 @@ function TournamentToolbar({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"relative flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-200",
+				"relative flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-150",
 				active
-					? "bg-gradient-to-br from-cyan-500/20 to-purple-500/20 text-white border border-white/20 shadow-[0_0_20px_rgba(34,211,238,0.15)]"
-					: "bg-white/5 text-white/40 border border-transparent hover:bg-white/10 hover:text-white/70",
+					? "bg-white/[0.1] text-white border border-white/[0.15]"
+					: "bg-transparent text-white/30 border border-transparent hover:bg-white/[0.06] hover:text-white/50",
 			)}
-			whileTap={{ scale: 0.92 }}
+			whileTap={{ scale: 0.9 }}
 			aria-label={label}
+			aria-pressed={active}
 		>
 			{active && activeIcon ? activeIcon : icon}
 		</motion.button>
@@ -483,61 +490,69 @@ function TournamentToolbar({
 	const renderTournamentMode = () => {
 		return (
 			<div
-				className="flex flex-col gap-3 p-3 w-full items-center justify-center max-w-2xl mx-auto"
+				className="flex flex-col gap-4 py-4 px-3 w-full items-center justify-center max-w-2xl mx-auto"
 				data-mode={mode}
+				data-component="tournament-toolbar"
 			>
-				{/* Modern Toolbar Row */}
-				<div className="flex items-center gap-3 px-3 py-2 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
-					{/* View Mode Segmented Control */}
+				{/* View Controls Bar */}
+				<nav
+					className="flex items-center gap-2 px-2 py-1.5 bg-black/60 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-2xl"
+					aria-label="View controls"
+				>
+					{/* Layout Switcher */}
 					<SegmentedControl
 						options={[
-							{ value: "grid", label: "Grid", icon: <Grid3X3 className="w-4 h-4" /> },
-							{ value: "swipe", label: "Cards", icon: <Layers className="w-4 h-4" /> },
+							{ value: "grid", label: "Grid View", icon: <Grid3X3 className="w-4 h-4" /> },
+							{ value: "swipe", label: "Card Stack", icon: <Layers className="w-4 h-4" /> },
 						]}
 						value={isSwipeMode ? "swipe" : "grid"}
 						onChange={(v) => setSwipeMode(v === "swipe")}
 					/>
 
-					{/* Divider */}
-					<div className="w-px h-6 bg-white/10" />
+					{/* Separator */}
+					<div className="w-px h-5 bg-white/[0.08]" aria-hidden="true" />
 
-					{/* Cat Pictures Toggle */}
-					<IconToggle
-						active={showCatPictures}
-						onClick={() => setCatPictures(!showCatPictures)}
-						icon={<Cat className="w-4 h-4" />}
-						label={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
-					/>
+					{/* Quick Actions */}
+					<div className="flex items-center gap-1.5" role="group" aria-label="Display options">
+						<IconToggle
+							active={showCatPictures}
+							onClick={() => setCatPictures(!showCatPictures)}
+							icon={<Cat className="w-4 h-4" />}
+							label={showCatPictures ? "Hide photos" : "Show photos"}
+						/>
+						<IconToggle
+							active={showFiltersInTournament}
+							onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
+							icon={<Search className="w-4 h-4" />}
+							activeIcon={<X className="w-4 h-4" />}
+							label={showFiltersInTournament ? "Close search" : "Search & filter"}
+						/>
+					</div>
+				</nav>
 
-					{/* Filter Toggle */}
-					<IconToggle
-						active={showFiltersInTournament}
-						onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
-						icon={<Search className="w-4 h-4" />}
-						activeIcon={<X className="w-4 h-4" />}
-						label={showFiltersInTournament ? "Hide filters" : "Show filters"}
-					/>
-				</div>
-
-				{/* Selection Status */}
-				<div className="min-h-[20px] flex items-center justify-center">
+				{/* Status Indicator */}
+				<div
+					className="min-h-[18px] flex items-center justify-center"
+					role="status"
+					aria-live="polite"
+				>
 					{selectedCount > 0 && selectedCount < 2 && (
-						<motion.div
-							className="text-xs font-medium text-white/40"
-							initial={{ opacity: 0, y: -5 }}
+						<motion.p
+							className="text-[11px] font-medium text-white/35 tracking-wide"
+							initial={{ opacity: 0, y: -4 }}
 							animate={{ opacity: 1, y: 0 }}
 						>
-							Select at least 2 names to start
-						</motion.div>
+							Pick at least 2 names to begin
+						</motion.p>
 					)}
 					{selectedCount >= 2 && (
-						<motion.div
-							className="text-xs font-semibold text-cyan-400/80"
-							initial={{ opacity: 0, y: -5 }}
+						<motion.p
+							className="text-[11px] font-semibold text-cyan-400/70 tracking-wide"
+							initial={{ opacity: 0, y: -4 }}
 							animate={{ opacity: 1, y: 0 }}
 						>
-							Ready! Tap "Start" below ↓
-						</motion.div>
+							Ready to start • Tap below ↓
+						</motion.p>
 					)}
 				</div>
 
