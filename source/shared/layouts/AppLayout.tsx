@@ -4,6 +4,7 @@
  * Accepts children from React Router instead of managing routing internally.
  */
 
+import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { useMemo } from "react";
 import type { NameItem } from "@/types/components";
 import useAppStore from "../../store/useAppStore";
@@ -14,7 +15,6 @@ import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { OfflineIndicator } from "../components/OfflineIndicator";
-import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { SwipeWrapper } from "../components/SwipeWrapper";
 
 interface AppLayoutProps {

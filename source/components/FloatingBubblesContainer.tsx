@@ -1,8 +1,8 @@
 import type React from "react";
-import { useEffect, useRef, useState, useCallback } from "react";
-import { FloatingBubble } from "./FloatingBubble";
-import type { BubbleState } from "./BubblePhysics";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { UserBubbleProfile } from "@/types/user";
+import type { BubbleState } from "./BubblePhysics";
+import { FloatingBubble } from "./FloatingBubble";
 
 interface BubbleData {
 	id: string;

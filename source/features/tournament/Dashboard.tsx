@@ -4,6 +4,7 @@ import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
+import { BongoCat } from "@/shared/components/BongoCat";
 import type { NameItem } from "@/types/components";
 import { RankingAdjustment } from "./TournamentComponents";
 
@@ -31,7 +32,7 @@ export const PersonalResults = ({
 	onUpdateRatings: (
 		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => void;
-	voteHistory?: unknown[];
+	userName?: string;
 }) => {
 	const [rankings, setRankings] = useState<NameItem[]>([]);
 	const { showToast } = useToast();
@@ -131,7 +132,6 @@ export const PersonalResults = ({
 					Export CSV
 				</HeroButton>
 			</div>
-
 		</div>
 	);
 };
@@ -315,7 +315,7 @@ export default function Dashboard({
 					<Suspense
 						fallback={
 							<div className="flex justify-center p-12">
-								<Spinner size="lg" color="secondary" />
+								<BongoCat text="Calculating rankings..." size="medium" />
 							</div>
 						}
 					>

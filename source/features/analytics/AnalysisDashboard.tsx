@@ -5,6 +5,7 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
+import { FloatingBubblesContainer } from "@components/FloatingBubblesContainer";
 import {
 	Button,
 	ButtonGroup,
@@ -25,13 +26,13 @@ import { hiddenNamesAPI } from "@supabase/client";
 import React, { useCallback, useMemo, useState } from "react";
 import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
+import { EmptyState } from "@/components/EmptyState";
 import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
 import { PerformanceBadges } from "@/components/PerformanceBadge";
 import { STORAGE_KEYS } from "@/constants";
 import { useCollapsible } from "@/hooks/useStorage";
 import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";
 import { TournamentToolbar } from "../../shared/components/TournamentToolbar";
-import { FloatingBubblesContainer } from "@components/FloatingBubblesContainer";
 
 import type {
 	AnalysisDashboardProps,
@@ -711,9 +712,12 @@ export function AnalysisDashboard({
 						Unable to load names. Please try refreshing the page.
 					</div>
 				) : displayNames.length === 0 ? (
-					<div className="p-8 text-center bg-white/5 border border-white/5 rounded-lg text-white/50">
-						No names available yet. Start a tournament to see results here!
-					</div>
+					<EmptyState
+						title="No names available yet"
+						description="Start a tournament to see results and analysis here!"
+						icon="📊"
+						className="p-8 bg-white/5 border border-white/5 rounded-lg"
+					/>
 				) : (
 					<>
 						<div className="flex justify-center mb-6">

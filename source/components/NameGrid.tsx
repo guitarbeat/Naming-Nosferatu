@@ -4,6 +4,7 @@
  * Simplified from masonry layout for stability and performance.
  */
 
+import { imagesAPI } from "@supabase/client";
 import {
 	applyNameFilters,
 	isNameHidden,
@@ -12,16 +13,15 @@ import {
 } from "@utils";
 import { cn } from "@utils/cn";
 import { motion } from "framer-motion";
+import { Upload } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import type { NameItem } from "@/types/components";
+import { compressImageFile, devError } from "@/utils";
+import { Lightbox } from "../shared/components/Lightbox";
 import { Loading } from "../shared/components/Loading";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
-import { Lightbox } from "../shared/components/Lightbox";
-import { imagesAPI } from "@supabase/client";
-import { compressImageFile, devError } from "@/utils";
-import { Upload } from "lucide-react";
 
 interface NameGridProps {
 	names: NameItem[];
