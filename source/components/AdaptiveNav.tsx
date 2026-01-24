@@ -216,169 +216,123 @@ export function AdaptiveNav(_props: AdaptiveNavProps) {
 
 	return (
 		<>
-			{/* Profile Avatar - Top center, above all content */}
+			{/* Profile Avatar */}
 			<motion.div
 				className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-0.5"
 				initial={{ y: -20, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, delay: 0.1 }}
 			>
-				<div
+				<button
 					className="group cursor-pointer relative"
 					onClick={() => appStore.uiActions.setEditingProfile(true)}
+					type="button"
+					aria-label="Edit profile"
 				>
-					<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-300" />
-					<div className="relative w-12 h-12 rounded-full border-2 border-white/40 overflow-hidden shadow-xl bg-slate-900 z-10">
+					<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity" />
+					<div className="relative w-12 h-12 rounded-full border-2 border-white/40 overflow-hidden shadow-xl bg-slate-900">
 						<img
 							alt="User Profile"
-							className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+							className="w-full h-full object-cover transition-transform group-hover:scale-110"
 							src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
 						/>
 					</div>
-				</div>
-				<span className="text-[10px] font-semibold text-white/90 uppercase tracking-wider max-w-[8rem] truncate text-center select-none pt-0.5">
+				</button>
+				<span className="text-[10px] font-semibold text-white/90 uppercase tracking-wider max-w-[8rem] truncate">
 					{appStore.user.name || "Profile"}
 				</span>
 			</motion.div>
 
-			{/* Bottom Navigation Bar */}
-			<motion.div
-				className="fixed bottom-0 left-0 right-0 z-[100] w-full"
+			{/* Bottom Navigation */}
+			<motion.nav
+				className="fixed bottom-0 inset-x-0 z-[100] flex items-center justify-around gap-1 px-2 py-3 bg-black/60 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+				role="navigation"
+				aria-label="Main navigation"
 				initial={{ y: 20, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, delay: 0.2 }}
 			>
-				<nav
-					className="flex items-center justify-around gap-1 sm:gap-2 px-2 sm:px-4 py-3 bg-black/60 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-					role="navigation"
-					aria-label="Main navigation"
+				{/* Unified Pick/Start Button */}
+				<motion.button
+					className={cn(
+						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+						isActive("pick") && !buttonState.highlight
+							? "text-white bg-white/10"
+							: "text-white/50 hover:text-white hover:bg-white/5",
+						buttonState.highlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30",
+					)}
+					onClick={handleUnifiedButtonClick}
+					disabled={buttonState.disabled}
+					type="button"
+					animate={buttonState.highlight ? { scale: [1, 1.05, 1] } : {}}
+					transition={buttonState.highlight ? { duration: 2, repeat: Infinity } : {}}
 				>
-					{/* Unified Pick/Start Button */}
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={buttonState.icon.name}
+							initial={{ scale: 0.8, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							exit={{ scale: 0.8, opacity: 0 }}
+							transition={{ duration: 0.2 }}
+						>
+							<IconComponent
+								className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+								aria-hidden
+							/>
+						</motion.div>
+					</AnimatePresence>
+					<span className="text-[10px] font-medium tracking-wide">{buttonState.label}</span>
+					{isActive("pick") && !buttonState.highlight && (
+						<motion.div
+							layoutId="dockIndicator"
+							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+						/>
+					)}
+				</motion.button>
+
+				{/* Analyze Button */}
+				{isComplete && (
 					<motion.button
 						className={cn(
-							"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
-							isActive("pick") && !buttonState.highlight
-								? "text-white bg-white/10"
-								: "text-white/50 hover:text-white hover:bg-white/5",
-							buttonState.highlight &&
-								"text-cyan-400 bg-cyan-950/30 border border-cyan-500/30 hover:bg-cyan-900/40",
+							"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+							isActive("analyze") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
 						)}
-						onClick={handleUnifiedButtonClick}
-						disabled={buttonState.disabled}
+						onClick={() => handleNavClick("analyze")}
 						type="button"
-						animate={
-							buttonState.highlight
-								? {
-										scale: [1, 1.05, 1],
-										boxShadow: [
-											"0 0 0 rgba(34, 211, 238, 0)",
-											"0 0 12px rgba(34, 211, 238, 0.4)",
-											"0 0 0 rgba(34, 211, 238, 0)",
-										],
-									}
-								: {}
-						}
-						transition={
-							buttonState.highlight ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : {}
-						}
+						initial={{ scale: 0.9, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
 					>
-						<AnimatePresence mode="wait">
-							<motion.div
-								key={buttonState.icon.name}
-								initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
-								animate={{ scale: 1, opacity: 1, rotate: 0 }}
-								exit={{ scale: 0.8, opacity: 0, rotate: 10 }}
-								transition={{ duration: 0.2 }}
-							>
-								<IconComponent
-									className={cn(
-										"w-5 h-5 sm:w-6 sm:h-6",
-										buttonState.highlight &&
-											"text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]",
-									)}
-									aria-hidden={true}
-								/>
-							</motion.div>
-						</AnimatePresence>
-						<AnimatePresence mode="wait">
-							<motion.span
-								key={buttonState.label}
-								className="text-[10px] sm:text-xs font-medium tracking-wide leading-none"
-								initial={{ y: 5, opacity: 0 }}
-								animate={{ y: 0, opacity: 1 }}
-								exit={{ y: -5, opacity: 0 }}
-								transition={{ duration: 0.15 }}
-							>
-								{buttonState.label}
-							</motion.span>
-						</AnimatePresence>
-						{isActive("pick") && !buttonState.highlight && (
+						<BarChart3 className="w-5 h-5" aria-hidden />
+						<span className="text-[10px] font-medium tracking-wide">Analyze</span>
+						{isActive("analyze") && (
 							<motion.div
 								layoutId="dockIndicator"
-								className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-								initial={false}
-								transition={{ type: "spring", stiffness: 500, damping: 30 }}
+								className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
 							/>
 						)}
 					</motion.button>
+				)}
 
-					{/* Analyze Button - only show when tournament is complete */}
-					{isComplete && (
-						<motion.button
-							className={cn(
-								"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
-								isActive("analyze")
-									? "text-white bg-white/10"
-									: "text-white/50 hover:text-white hover:bg-white/5",
-							)}
-							onClick={() => handleNavClick("analyze")}
-							type="button"
-							initial={{ scale: 0.9, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							transition={{ duration: 0.2 }}
-						>
-							<BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
-							<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
-								Analyze
-							</span>
-							{isActive("analyze") && (
-								<motion.div
-									layoutId="dockIndicator"
-									className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-									initial={false}
-									transition={{ type: "spring", stiffness: 500, damping: 30 }}
-								/>
-							)}
-						</motion.button>
+				{/* Suggest Button */}
+				<button
+					className={cn(
+						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+						isActive("suggest") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5",
 					)}
-
-					{/* Suggest Button */}
-					<button
-						className={cn(
-							"relative flex flex-col items-center justify-center flex-1 min-w-0 gap-1 p-2 rounded-xl transition-all duration-200",
-							isActive("suggest")
-								? "text-white bg-white/10"
-								: "text-white/50 hover:text-white hover:bg-white/5",
-						)}
-						onClick={() => handleNavClick("suggest")}
-						aria-label="Suggest a name"
-						type="button"
-					>
-						<Lightbulb className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden={true} />
-						<span className="text-[10px] sm:text-xs font-medium tracking-wide leading-none">
-							Suggest
-						</span>
-						{isActive("suggest") && (
-							<motion.div
-								layoutId="dockIndicator"
-								className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full shadow-[0_0_8px_rgba(255,255,255,0.8)]"
-								initial={false}
-								transition={{ type: "spring", stiffness: 500, damping: 30 }}
-							/>
-						)}
-					</button>
-				</nav>
-			</motion.div>
+					onClick={() => handleNavClick("suggest")}
+					type="button"
+					aria-label="Suggest a name"
+				>
+					<Lightbulb className="w-5 h-5" aria-hidden />
+					<span className="text-[10px] font-medium tracking-wide">Suggest</span>
+					{isActive("suggest") && (
+						<motion.div
+							layoutId="dockIndicator"
+							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+						/>
+					)}
+				</button>
+			</motion.nav>
 		</>
 	);
 }

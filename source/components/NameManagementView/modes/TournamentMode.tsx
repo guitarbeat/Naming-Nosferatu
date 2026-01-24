@@ -73,8 +73,11 @@ export function TournamentMode({
 	}
 
 	return (
-		<>
-			{/* Toolbar: View Controls & Filters */}
+		<main
+			className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-4 px-4 pb-24"
+			data-component="tournament-setup"
+		>
+			{/* Toolbar */}
 			<TournamentToolbar
 				mode="tournament"
 				filters={filterConfig}
@@ -86,149 +89,107 @@ export function TournamentMode({
 				filteredCount={filteredCount}
 			/>
 
-			{/* Main Content Area */}
-			<main
-				className="w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-4 px-4 pb-24"
-				data-component="tournament-setup"
-				data-mode="tournament"
-			>
-				{/* Content Container */}
-				<div className="flex flex-col gap-4 py-2 w-full items-center justify-center max-w-2xl mx-auto">
-					{/* Optional Header Extension */}
-					{extensions.header && (
-						<header className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-							{typeof extensions.header === "function" ? extensions.header() : extensions.header}
-						</header>
-					)}
+			{/* Optional Header Extension */}
+			{extensions.header &&
+				(typeof extensions.header === "function" ? extensions.header() : extensions.header)}
 
-					{/* Quick Actions Bar */}
-					{!extensions.nameGrid && (
-						<nav
-							className="w-full flex justify-end gap-2 mt-2"
-							aria-label="Selection actions"
+			{/* Quick Actions */}
+			{!extensions.nameGrid && (
+				<nav className="flex justify-end gap-2" aria-label="Selection actions">
+					{selectedCount === 0 ? (
+						<Button
+							variant="secondary"
+							size="small"
+							onClick={() =>
+								document
+									.querySelector('[data-component="name-grid"]')
+									?.scrollIntoView({ behavior: "smooth" })
+							}
+							className="font-medium whitespace-nowrap"
 						>
-							{(() => {
-								if (selectedCount === 0) {
-									return (
-										<Button
-											variant="secondary"
-											size="small"
-											onClick={() => {
-												document
-													.querySelector('[data-component="name-grid"]')
-													?.scrollIntoView({ behavior: "smooth" });
-											}}
-											className="font-medium whitespace-nowrap min-w-[120px]"
-										>
-											Pick Names
-										</Button>
-									);
-								}
-
-								if (selectedCount < 2) {
-									return (
-										<Button
-											variant="secondary"
-											size="small"
-											onClick={() => setShowSelectedOnly(!showSelectedOnly)}
-											className="font-medium whitespace-nowrap min-w-[140px]"
-										>
-											{showSelectedOnly ? "👁️ Show All" : "👀 Show Selected"}
-										</Button>
-									);
-								}
-
-								return (
-									<Button
-										variant="primary"
-										size="small"
-										onClick={() => onStartTournament?.(selectedNames)}
-										className={cn(
-											"font-bold whitespace-nowrap min-w-[140px]",
-											"bg-gradient-to-br from-purple-600 to-purple-800 text-white",
-											"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200",
-										)}
-									>
-										Start ({selectedCount})
-									</Button>
-								);
-							})()}
-						</nav>
+							Pick Names
+						</Button>
+					) : selectedCount < 2 ? (
+						<Button
+							variant="secondary"
+							size="small"
+							onClick={() => setShowSelectedOnly(!showSelectedOnly)}
+							className="font-medium whitespace-nowrap"
+						>
+							{showSelectedOnly ? "Show All" : "Show Selected"}
+						</Button>
+					) : (
+						<Button
+							variant="primary"
+							size="small"
+							onClick={() => onStartTournament?.(selectedNames)}
+							className={cn(
+								"font-bold whitespace-nowrap",
+								"bg-gradient-to-br from-purple-600 to-purple-800 text-white",
+								"hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200",
+							)}
+						>
+							Start ({selectedCount})
+						</Button>
 					)}
+				</nav>
+			)}
 
-					{/* Selection Progress Indicator */}
-					{!extensions.nameGrid && (
+			{/* Progress Bar */}
+			{!extensions.nameGrid && (
+				<div
+					className="flex flex-col gap-1"
+					role="progressbar"
+					aria-valuenow={selectedCount}
+					aria-valuemax={names.length}
+				>
+					<div className="h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
 						<div
-							className="w-full my-2 flex flex-col gap-1.5"
-							role="progressbar"
-							aria-valuenow={selectedCount}
-							aria-valuemin={0}
-							aria-valuemax={names.length}
-							aria-label="Selection progress"
-						>
-							<div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
-								<div
-									className="h-full bg-gradient-to-r from-purple-500/80 to-pink-500/80 transition-all duration-500 ease-out"
-									style={{
-										width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 3)}%`,
-									}}
-								/>
-							</div>
-							<p className="text-[11px] text-white/40 font-medium flex justify-between items-center px-0.5">
-								<span>
-									{selectedCount} / {names.length} selected
-								</span>
-								{selectedCount < 2 && (
-									<span
-										className="text-amber-400/70 font-semibold animate-pulse"
-										role="status"
-										aria-live="polite"
-									>
-										Need {2 - selectedCount} more
-									</span>
-								)}
-							</p>
-						</div>
-					)}
-
-					{/* Name Selection Grid */}
-					<section
-						className="w-full flex-1"
-						data-component="name-grid"
-						aria-label="Name selection grid"
-					>
-						{extensions.nameGrid ? (
-							extensions.nameGrid
-						) : isSwipeMode && swipeableCards && !isLoading ? (
-							React.createElement(swipeableCards, {
-								names: filteredNamesForSwipe,
-								selectedNames: selectedNames,
-								onToggleName: toggleName,
-								onRateName: (name: NameItem, rating: number) => {
-									console.log("Rate", name, rating);
-								},
-								isAdmin: !!isAdmin,
-								isSelectionMode: false,
-								showCatPictures: showCatPictures,
-								imageList: imageList,
-								onStartTournament: onStartTournament,
-							})
-						) : (
-							<NameGrid
-								names={names}
-								selectedNames={selectedNames}
-								onToggleName={toggleName}
-								filters={filterConfig}
-								isAdmin={isAdmin}
-								showSelectedOnly={showSelectedOnly}
-								showCatPictures={showCatPictures}
-								imageList={imageList}
-								isLoading={isLoading}
-							/>
+							className="h-full bg-gradient-to-r from-purple-500/80 to-pink-500/80 transition-all duration-500"
+							style={{ width: `${Math.max((selectedCount / Math.max(names.length, 1)) * 100, 3)}%` }}
+						/>
+					</div>
+					<p className="text-[11px] text-white/40 font-medium flex justify-between px-0.5">
+						<span>{selectedCount} / {names.length} selected</span>
+						{selectedCount < 2 && (
+							<span className="text-amber-400/70 font-semibold animate-pulse">
+								Need {2 - selectedCount} more
+							</span>
 						)}
-					</section>
+					</p>
 				</div>
-			</main>
-		</>
+			)}
+
+			{/* Name Grid */}
+			<section className="flex-1" data-component="name-grid" aria-label="Name selection">
+				{extensions.nameGrid ? (
+					extensions.nameGrid
+				) : isSwipeMode && swipeableCards && !isLoading ? (
+					React.createElement(swipeableCards, {
+						names: filteredNamesForSwipe,
+						selectedNames,
+						onToggleName: toggleName,
+						onRateName: (name: NameItem, rating: number) => console.log("Rate", name, rating),
+						isAdmin: !!isAdmin,
+						isSelectionMode: false,
+						showCatPictures,
+						imageList,
+						onStartTournament,
+					})
+				) : (
+					<NameGrid
+						names={names}
+						selectedNames={selectedNames}
+						onToggleName={toggleName}
+						filters={filterConfig}
+						isAdmin={isAdmin}
+						showSelectedOnly={showSelectedOnly}
+						showCatPictures={showCatPictures}
+						imageList={imageList}
+						isLoading={isLoading}
+					/>
+				)}
+			</section>
+		</main>
 	);
 }
