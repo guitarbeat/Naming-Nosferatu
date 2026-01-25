@@ -40,7 +40,9 @@ export default function TournamentFlow() {
 								enableTilt={true}
 								className="text-center max-w-2xl"
 							>
-								<h2 className="text-4xl font-bold mb-6 gradient-text">Tournament Complete!</h2>
+								<h2 className="text-4xl font-bold mb-6 gradient-text uppercase tracking-tighter">
+									A victor emerges from the eternal tournament
+								</h2>
 								<div className="flex justify-center mb-8">
 									<div className="text-6xl p-6 bg-purple-500/10 rounded-full border border-purple-500/20">
 										🏆

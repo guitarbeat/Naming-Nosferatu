@@ -52,8 +52,8 @@ Timestamp: ${new Date().toISOString()}
 		<div className="flex flex-col items-center justify-center p-8 bg-neutral-900/50 backdrop-blur-md rounded-2xl border border-white/10 text-center min-h-[50vh] w-full max-w-2xl mx-auto my-8 shadow-2xl">
 			<div className="flex flex-col gap-6 w-full text-white items-center">
 				<div className="space-y-2">
-					<h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent">
-						Something went wrong
+					<h2 className="text-3xl font-bold bg-gradient-to-r from-red-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+						The names demand another comparison
 					</h2>
 					<p className="text-white/60">
 						We encountered an unexpected error in{" "}

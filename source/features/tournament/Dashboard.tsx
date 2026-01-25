@@ -303,13 +303,7 @@ export default function Dashboard({
 				);
 			case "community":
 				return (
-					<Suspense
-						fallback={
-							<div className="flex justify-center p-12">
-								<BongoCat text="Calculating rankings..." size="medium" />
-							</div>
-						}
-					>
+					<Suspense fallback={<BongoCat text="Consulting the ancient rankings..." size="medium" />}>
 						<AnalysisDashboard
 							userName={userName}
 							showGlobalLeaderboard={true}

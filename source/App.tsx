@@ -97,7 +97,7 @@ function App() {
 	if (!isInitialized) {
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-black">
-				<Loading variant="spinner" text="Loading..." />
+				<Loading variant="spinner" text="Consulting the ancient rankings..." />
 			</div>
 		);
 	}
@@ -130,8 +130,8 @@ function App() {
 						{/* Analysis Section - Only visible after tournament completion */}
 						{tournament.isComplete && (
 							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
-								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-									Analyze
+								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+									The Victors Emerge
 								</h2>
 								<ErrorBoundary context="Analysis Dashboard">
 									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
