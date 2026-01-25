@@ -1,36 +1,49 @@
 # Component Documentation
 
-**Last Updated:** January 2026
+**Last Updated:** January 25, 2026
 
 ## Component Locations
 
 | Category | Location |
 |----------|----------|
-| **Shared UI** | `source/shared/components/` |
-| **Feature UI** | `source/features/*/` |
-| **Layouts** | `source/shared/layouts/` |
+| **UI Primitives** | `source/features/ui/` |
+| **Layout** | `source/features/layout/` |
+| **Tournament** | `source/features/tournament/` |
+| **Analytics** | `source/features/analytics/` |
+| **Auth** | `source/features/auth.ts` |
 
 ## Key Components
 
-### Shared Components
+### UI Primitives (`features/ui/`)
 
 | Component | Description |
 |-----------|-------------|
-| `AdaptiveNav` | Responsive navigation (mobile/desktop) |
 | `Button` | Primary button with CVA variants |
-| `ErrorBoundary` | Error boundary with fallback UI |
+| `Card` | Container component with variants |
+| `Error` | Error boundary with fallback UI |
 | `FormPrimitives` | Input, Select, Label components |
 | `LiquidGlass` | Glassmorphism effect |
-| `Loading` | Loading spinner/skeleton |
-| `TournamentToolbar` | Filter and action toolbar |
+| `StatusIndicators` | Loading spinners, badges |
+| `Toast` | Notification system |
+| `Charts` | Data visualization components |
+
+### Layout Components (`features/layout/`)
+
+| Component | Description |
+|-----------|-------------|
+| `AppLayout` | Main app shell and structure |
+| `AdaptiveNav` | Responsive navigation (mobile/desktop) |
+| `CollapsibleHeader` | Collapsible section headers |
+| `CatBackground` | Animated cat background |
+| `FloatingBubbles` | User bubble animations |
 
 ### Feature Components
 
 | Feature | Key Components |
 |---------|----------------|
-| **Tournament** | `Tournament`, `TournamentSetup`, `Dashboard` |
-| **Analytics** | `AnalysisDashboard`, `Charts` |
-| **Auth** | Login integrated into `TournamentSetup` |
+| **Tournament** | `Tournament`, `TournamentSetup`, `TournamentFlow`, `TournamentToolbar`, `Dashboard`, `NameGrid`, `ProfileMode` |
+| **Analytics** | `AnalysisDashboard` (with `analyticsHooks`, `analyticsService`) |
+| **Auth** | Consolidated in `features/auth.ts` |
 
 ---
 
@@ -65,7 +78,7 @@ ComponentName/
 When creating new components:
 
 ```tsx
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 
 interface ComponentNameProps {
   /** Description of prop */

@@ -10,7 +10,7 @@ import { FILTER_OPTIONS } from "@/constants";
 import Button from "@/features/ui/Button";
 import { Select } from "@/features/ui/FormPrimitives";
 import LiquidGlass from "@/features/ui/LiquidGlass";
-import useAppStore from "@/store/appSlice";
+import useAppStore from "@/store";
 import type { TournamentFilters } from "@/types";
 import "@/styles/tournament-toolbar.css";
 

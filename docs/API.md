@@ -1,7 +1,7 @@
 # API Reference
 
 **Status:** ✅ Active Documentation
-**Last Updated:** January 2026
+**Last Updated:** January 25, 2026
 
 This directory contains API reference documentation for Name Nosferatu's external interfaces, services, and integration points.
 
@@ -61,7 +61,7 @@ const tournaments = await tournamentsAPI.getUserTournaments(userName);
 ### User Session Hook
 
 ```javascript
-import { useUserSession } from "@/core/hooks/useUserSession";
+import { useUserSession } from "@hooks/useUserSession";
 
 const { isLoggedIn, user, login, logout } = useUserSession();
 // Returns: Authentication state and methods
@@ -70,7 +70,7 @@ const { isLoggedIn, user, login, logout } = useUserSession();
 ### Global Store Access
 
 ```javascript
-import useAppStore from "@/core/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 
 const { user, tournament, ui, userActions, tournamentActions, uiActions } =
   useAppStore();

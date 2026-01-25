@@ -1,6 +1,6 @@
 # Development Guide & Standards
 
-**Last Updated:** January 21, 2026
+**Last Updated:** January 25, 2026
 **Status:** Primary Reference for Developers
 **Latest Update:** Removed test infrastructure from source directory (tests can be re-added as needed)
 
@@ -294,9 +294,34 @@ Use these tools to keep the codebase clean:
 
 ## 📂 Directory Structure
 
-- `source/features/`: Domain-specific modules (analytics, auth, tournament)
-- `source/shared/`: Reusable UI, hooks, utils, and services
-- `source/store/`: Zustand store and slices
-- `source/types/`: Shared TypeScript definitions
-- `docs/`: Project documentation
-- `config/`: Tool configuration files
+```
+source/
+├── features/           # All application features (domain + UI)
+│   ├── analytics/      # Charts, leaderboards, insights
+│   ├── auth/           # Session, identity, admin checks (consolidated)
+│   ├── layout/         # App shell, navigation, backgrounds
+│   ├── tournament/     # Competition logic, name management, profiles
+│   └── ui/             # Design system primitives (Button, Card, Toast, etc.)
+├── hooks/              # Reusable React hooks
+├── providers/          # Context providers (Auth, Theme, Toast)
+├── services/           # Backend integration
+│   ├── errorManager.ts # Centralized error handling
+│   ├── SyncQueue.ts    # Offline-first queue
+│   └── supabase/       # Consolidated client and domain services
+├── store/              # Zustand store (consolidated appSlice.ts)
+├── styles/             # CSS (tokens, components, animations, responsive)
+├── types/              # TypeScript interfaces
+└── utils/              # Helper functions (cn, formatters, etc.)
+
+docs/                   # Project documentation
+config/                 # Tool configuration files
+supabase/               # Database migrations and types
+```
+
+### Key Consolidated Files
+
+| File | Contents |
+|------|----------|
+| `store/appSlice.ts` | All Zustand slices + store creation + initialization hook |
+| `services/supabase/client.ts` | Supabase client + TanStack Query client + service re-exports |
+| `features/auth/index.ts` | All authentication and authorization logic |

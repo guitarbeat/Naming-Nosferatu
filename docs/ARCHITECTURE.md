@@ -77,9 +77,16 @@ updateRating(r, expected, actual, games) = r + k * (actual - expected)
 
 ```
 source/
+├── App.tsx               # Root application component
+├── constants.ts          # Application constants
+├── main.tsx              # Entry point
+├── navigation.ts         # Route definitions
+├── store.ts              # Zustand store (consolidated)
+├── types.ts              # TypeScript interfaces
+├── shims.d.ts            # Module declarations
 ├── features/             # All application features (domain + UI)
 │   ├── analytics/        # Charts, leaderboards, insights
-│   ├── auth/             # Session, identity, admin checks (consolidated)
+│   ├── auth.ts           # Session, identity, admin checks (consolidated)
 │   ├── layout/           # App shell, navigation, backgrounds
 │   ├── tournament/       # Competition logic, name management, profiles
 │   └── ui/               # Design system primitives (Button, Card, Toast, etc.)
@@ -89,9 +96,7 @@ source/
 │   ├── errorManager.ts   # Centralized error handling
 │   ├── SyncQueue.ts      # Offline-first queue
 │   └── supabase/         # Supabase client and domain services
-├── store/                # Zustand store (consolidated appSlice)
 ├── styles/               # CSS (tokens, components, animations, responsive)
-├── types/                # TypeScript interfaces
 └── utils/                # Helper functions (cn, formatters, etc.)
 
 supabase/                 # Database
@@ -110,10 +115,11 @@ config/                   # Tool configuration
 | `features/layout/` | App shell: AppLayout, AdaptiveNav, CatBackground, FloatingBubbles |
 | `features/tournament/` | Tournament logic, name management, profiles, Elo ratings |
 | `features/analytics/` | Analysis dashboard, charts, leaderboards |
-| `features/auth/` | Authentication, authorization, admin checks (single file) |
+| `features/auth.ts` | Authentication, authorization, admin checks (single file) |
 | `hooks/` | Shared React hooks for browser state, forms, data fetching |
 | `services/` | API clients, error handling, offline sync |
-| `store/` | Global state management with Zustand |
+| `store.ts` | Global state management with Zustand |
+| `types.ts` | TypeScript type definitions |
 | `utils/` | Pure functions: array ops, formatting, metrics |
 
 ---
@@ -122,7 +128,7 @@ config/                   # Tool configuration
 
 ### Zustand Store
 
-All slices are consolidated in `store/appSlice.ts`:
+All state is consolidated in `store.ts`, which includes slice definitions, store creation, and the initialization hook:
 
 | Slice | Purpose |
 |-------|---------|
@@ -131,6 +137,11 @@ All slices are consolidated in `store/appSlice.ts`:
 | `ui` | Theme, matrix mode, cat pictures toggle |
 | `siteSettings` | Global site configuration |
 | `errors` | Error handling and history |
+
+Key exports from `store.ts`:
+- `useAppStore` - Main store hook (default export)
+- `useAppStoreInitialization` - Hook to initialize store from localStorage
+- `updateSlice` - Helper for nested state updates
 
 ### Data Flow
 
@@ -150,12 +161,17 @@ Services are located in `source/services/`:
 |---------|---------|
 | `errorManager.ts` | Centralized error handling with retry logic |
 | `SyncQueue.ts` | Offline-first queue for failed operations |
-| `supabase/client.ts` | Supabase client with `withSupabase` wrapper |
+| `supabase/client.ts` | Consolidated Supabase client, TanStack Query client, `withSupabase` wrapper, and service re-exports |
 | `supabase/nameService.ts` | Name CRUD operations |
 | `supabase/imageService.ts` | Image upload and management |
 | `supabase/siteSettingsService.ts` | Global configuration |
 
 All Supabase calls use `withSupabase()` for consistent error handling and offline support.
+
+The `supabase/client.ts` module consolidates:
+- Supabase client configuration and initialization
+- TanStack Query client setup (`queryClient`)
+- Re-exports from all service modules for convenient imports
 
 ---
 
@@ -165,5 +181,9 @@ All Supabase calls use `withSupabase()` for consistent error handling and offlin
 2. **CVA Variants** - Component variants via Class Variance Authority
 3. **Error Boundaries** - Graceful error handling at feature boundaries
 4. **Lazy Loading** - Dynamic imports for heavy components (Dashboard, Tournament)
-5. **Path Aliases** - `@/features/ui`, `@utils`, `@services` for clean imports
-6. **Consolidated Modules** - Related code merged into single files (auth, store)
+5. **Path Aliases** - `@/features/ui`, `@utils`, `@services`, `@store`, `@types`, `@supabase/client` for clean imports
+6. **Consolidated Modules** - Related code merged into single files:
+   - `store.ts` - All Zustand slices + store creation + initialization
+   - `types.ts` - All TypeScript type definitions
+   - `features/auth.ts` - All auth logic consolidated
+   - `services/supabase/client.ts` - Supabase client + query client + service re-exports

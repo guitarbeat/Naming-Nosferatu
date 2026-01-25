@@ -11,7 +11,7 @@ import { z } from "zod";
 import { VALIDATION } from "@/constants";
 import { useTournamentSelectionSaver } from "@/features/tournament/TournamentHooks";
 import { useToast } from "@/providers/ToastProvider";
-import useAppStore from "@/store/appSlice";
+import useAppStore from "@/store";
 import type { NameItem } from "@/types";
 import { useValidatedForm } from "./useValidatedForm";
 

@@ -25,7 +25,7 @@ declare module "@core/*" {
 	export = mod;
 }
 
-declare module "@core/store/useAppStore" {
+declare module "@store" {
 	const useAppStore: () => unknown;
 	export const useAppStoreInitialization: () => void;
 	export const __resetMockState: () => void;

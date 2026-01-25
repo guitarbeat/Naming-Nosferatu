@@ -1,5 +1,5 @@
 /**
- * @module appSlice
+ * @module store
  * @description Centralized state management for the entire application using Zustand.
  * Combined app-wide state: tournament, UI settings, site settings, error handling, and user state.
  * All Zustand slices consolidated into a single file.

@@ -9,7 +9,7 @@ import { useState } from "react";
 import Button from "@/features/ui/Button";
 import { Card } from "@/features/ui/Card";
 import { Input } from "@/features/ui/FormPrimitives";
-import useAppStore from "@/store/appSlice";
+import useAppStore from "@/store";
 
 interface ProfileEditorModalProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

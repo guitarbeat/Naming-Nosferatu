@@ -32,6 +32,8 @@
 			"@supabase/client": ["./source/services/supabase/client.ts"],
 			"@supabase/types": ["./supabase/types.ts"],
 			"@/*": ["./source/*"],
+			"@store": ["./source/store.ts"],
+			"@types": ["./source/types.ts"],
 			"@hooks": ["./source/hooks/index.ts"],
 			"@hooks/*": ["./source/hooks/*"],
 			"@utils": ["./source/utils/index.ts"],

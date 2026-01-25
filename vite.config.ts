@@ -93,6 +93,14 @@ export default defineConfig(({ mode }) => {
 					replacement: resolveFromRoot("supabase"),
 				},
 				{
+					find: "@store",
+					replacement: resolveFromRoot("source/store.ts"),
+				},
+				{
+					find: "@types",
+					replacement: resolveFromRoot("source/types.ts"),
+				},
+				{
 					find: /^@\//,
 					replacement: `${resolveFromRoot("source")}/`,
 				},

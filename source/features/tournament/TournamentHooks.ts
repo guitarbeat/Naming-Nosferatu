@@ -12,7 +12,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TOURNAMENT_TIMING } from "@/constants";
 import useLocalStorage from "@/hooks/useBrowserState";
-import useAppStore from "@/store/appSlice";
+import useAppStore from "@/store";
 import type {
 	AppState,
 	Match,
