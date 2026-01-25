@@ -15,13 +15,9 @@
 /* 2. Utility classes (layout, spacing, typography, responsive) */
 @import url("./layout.css");
 @import url("./typography.css");
-@import url("./utilities.css");
 @import url("./responsive.css");
 
-/* 3. Component styles (buttons, forms, cards, etc.) */
-@import url("./buttons.css");
-@import url("./forms.css");
-@import url("./cards.css");
+/* 3. Component styles (consolidated buttons, forms, cards, UI primitives) */
 @import url("./components.css");
 @import url("./analysis-mode.css");
 
