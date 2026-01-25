@@ -344,7 +344,17 @@ export function useNameManagementView({
 				sortOrder,
 			};
 		}
-	}, [mode, sortBy, filterStatus, userFilter, selectionFilter, dateFilter, sortOrder]);
+	}, [
+		mode,
+		sortBy,
+		filterStatus,
+		userFilter,
+		selectionFilter,
+		dateFilter,
+		sortOrder,
+		analysisMode,
+		searchTerm,
+	]);
 
 	const handleFilterChange = useCallback(
 		(name: keyof TournamentFilters, value: string | number | boolean) => {

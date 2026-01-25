@@ -29,10 +29,15 @@ export const createTournamentSlice: StateCreator<
 					})) || null,
 			}),
 
-		setRatings: (ratings) =>
+		setRatings: (ratingsOrFn) => {
+			const currentRatings = _get().tournament.ratings;
+			const newRatings =
+				typeof ratingsOrFn === "function" ? ratingsOrFn(currentRatings) : ratingsOrFn;
+
 			updateSlice(set, "tournament", {
-				ratings: { ..._get().tournament.ratings, ...ratings },
-			}),
+				ratings: { ...currentRatings, ...newRatings },
+			});
+		},
 
 		setComplete: (isComplete) => updateSlice(set, "tournament", { isComplete }),
 

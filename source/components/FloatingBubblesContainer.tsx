@@ -86,14 +86,22 @@ export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> =
 				vy *= 0.99;
 
 				// Impulse to keep moving
-				if (Math.abs(vx) < 0.1) vx += (Math.random() - 0.5) * 0.5;
-				if (Math.abs(vy) < 0.1) vy += (Math.random() - 0.5) * 0.5;
+				if (Math.abs(vx) < 0.1) {
+					vx += (Math.random() - 0.5) * 0.5;
+				}
+				if (Math.abs(vy) < 0.1) {
+					vy += (Math.random() - 0.5) * 0.5;
+				}
 
 				// Simple collision with other bubbles
 				for (let j = 0; j < prevBubbles.length; j++) {
-					if (i === j) continue;
+					if (i === j) {
+						continue;
+					}
 					const other = prevBubbles[j];
-					if (!other) continue;
+					if (!other) {
+						continue;
+					}
 					const dx = other.x - x;
 					const dy = other.y - y;
 					const distance = Math.sqrt(dx * dx + dy * dy);
@@ -118,7 +126,9 @@ export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> =
 	useEffect(() => {
 		requestRef.current = requestAnimationFrame(updatePhysics);
 		return () => {
-			if (requestRef.current) cancelAnimationFrame(requestRef.current);
+			if (requestRef.current) {
+				cancelAnimationFrame(requestRef.current);
+			}
 		};
 	}, [updatePhysics]);
 
@@ -129,10 +139,14 @@ export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> =
 		>
 			{bubbles.map((bubble, i) => {
 				const item = data[i];
-				if (!item) return null;
+				if (!item) {
+					return null;
+				}
 				const id = item.id;
 				const profile = profiles[id];
-				if (!profile) return null;
+				if (!profile) {
+					return null;
+				}
 
 				return (
 					<FloatingBubble

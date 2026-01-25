@@ -310,8 +310,10 @@ export function useTournamentVote({
 							},
 						},
 						result: option === "left" ? -1 : option === "right" ? 1 : 0.5,
+						ratings: Object.fromEntries(
+							Object.entries(rawRatings).map(([name, data]) => [name, data.rating]),
+						),
 						timestamp: new Date().toISOString(),
-						ratings: {},
 					});
 				}
 
@@ -788,7 +790,8 @@ export function useTournament({
 				loserName = leftName;
 			}
 
-			const newRatings = { ...currentRatings };
+			const currentStoreRatings = useAppStore.getState().tournament.ratings;
+			const newRatings = { ...currentStoreRatings };
 			if (elo) {
 				const leftRating = newRatings[leftName]?.rating || 1500;
 				const rightRating = newRatings[rightName]?.rating || 1500;
@@ -901,7 +904,6 @@ export function useTournament({
 		},
 		[
 			tState,
-			currentRatings,
 			elo,
 			tournamentActions,
 			updatePersistentState,

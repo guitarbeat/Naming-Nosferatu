@@ -56,14 +56,16 @@ export const SwipeableCards = memo(
 		const handleDragEnd = useCallback(
 			(card: NameItem, info: PanInfo) => {
 				const offset = info.offset.x;
+				const velocity = info.velocity.x;
 				const threshold = 100;
+				const velocityThreshold = 500;
 
-				if (Math.abs(offset) < threshold) {
+				if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
 					setDragOffset(0);
 					return;
 				}
 
-				if (offset > threshold) {
+				if (offset > threshold || velocity > velocityThreshold) {
 					setDragDirection("right");
 					playSound("gameboy-pluck");
 					if (!isSelected(card)) {
@@ -72,6 +74,9 @@ export const SwipeableCards = memo(
 				} else {
 					setDragDirection("left");
 					playSound("wow");
+					if (isSelected(card)) {
+						onToggleName(card);
+					}
 				}
 				setSwipedIds((prev) => new Set([...prev, String(card.id)]));
 				setTimeout(() => {

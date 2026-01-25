@@ -65,7 +65,11 @@ export interface AppState {
 	tournamentActions: {
 		setNames: (names: NameItem[] | null) => void;
 		setRatings: (
-			ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
+			ratingsOrFn:
+				| Record<string, { rating: number; wins?: number; losses?: number }>
+				| ((
+						prev: Record<string, { rating: number; wins?: number; losses?: number }>,
+				  ) => Record<string, { rating: number; wins?: number; losses?: number }>),
 		) => void;
 		setComplete: (isComplete: boolean) => void;
 		setLoading: (isLoading: boolean) => void;
