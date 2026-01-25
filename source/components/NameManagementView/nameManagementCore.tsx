@@ -104,8 +104,7 @@ export interface UseNameManagementViewResult {
 	setSortBy: (sortBy: string) => void;
 	sortOrder: "asc" | "desc";
 	setSortOrder: (order: "asc" | "desc") => void;
-	selectedCategory: string;
-	setSelectedCategory: (category: string) => void;
+
 	showSelectedOnly: boolean;
 	setShowSelectedOnly: (show: boolean) => void;
 	selectionFilter: string;
@@ -127,7 +126,7 @@ export interface UseNameManagementViewResult {
 	sortedNames: NameItem[];
 	filteredNames: NameItem[];
 	filteredNamesForSwipe: NameItem[];
-	uniqueCategories: string[];
+
 	stats: {
 		total: number;
 		visible: number;
@@ -139,7 +138,7 @@ export interface UseNameManagementViewResult {
 	handleAnalysisModeToggle: () => void;
 
 	// Additional properties
-	categories: string[];
+
 	profileProps: {
 		showUserFilter?: boolean;
 		selectionStats?: unknown;
@@ -217,7 +216,6 @@ export function useNameManagementView({
 		});
 
 	const [showSelectedOnly, setShowSelectedOnly] = useState(false);
-	const [selectedCategory, setSelectedCategory] = useState<string>("");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortBy, setSortBy] = useState("alphabetical");
 
@@ -265,7 +263,6 @@ export function useNameManagementView({
 
 		let result = applyNameFilters(names, {
 			searchTerm,
-			category: selectedCategory || undefined,
 			sortBy,
 			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
@@ -283,7 +280,6 @@ export function useNameManagementView({
 		analysisMode,
 		filterStatus,
 		searchTerm,
-		selectedCategory,
 		sortBy,
 		sortOrder,
 		profileProps.isAdmin,
@@ -297,7 +293,6 @@ export function useNameManagementView({
 
 		let result = applyNameFilters(names, {
 			searchTerm,
-			category: selectedCategory || undefined,
 			sortBy,
 			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
@@ -320,7 +315,6 @@ export function useNameManagementView({
 		analysisMode,
 		filterStatus,
 		searchTerm,
-		selectedCategory,
 		sortBy,
 		sortOrder,
 		profileProps.isAdmin,
@@ -332,7 +326,6 @@ export function useNameManagementView({
 		if (mode === "tournament" && analysisMode) {
 			return {
 				searchTerm,
-				category: selectedCategory,
 				sortBy,
 				filterStatus: filterStatus as "all" | "visible" | "hidden",
 				userFilter: userFilter as "all" | "user" | "other",
@@ -341,7 +334,7 @@ export function useNameManagementView({
 				sortOrder,
 			};
 		} else if (mode === "tournament") {
-			return { searchTerm, category: selectedCategory, sortBy, sortOrder };
+			return { searchTerm, sortBy, sortOrder };
 		} else {
 			return {
 				filterStatus: filterStatus as "all" | "visible" | "hidden",
@@ -351,18 +344,7 @@ export function useNameManagementView({
 				sortOrder,
 			};
 		}
-	}, [
-		mode,
-		analysisMode,
-		searchTerm,
-		selectedCategory,
-		sortBy,
-		filterStatus,
-		userFilter,
-		selectionFilter,
-		dateFilter,
-		sortOrder,
-	]);
+	}, [mode, sortBy, filterStatus, userFilter, selectionFilter, dateFilter, sortOrder]);
 
 	const handleFilterChange = useCallback(
 		(name: keyof TournamentFilters, value: string | number | boolean) => {
@@ -371,9 +353,7 @@ export function useNameManagementView({
 					case "searchTerm":
 						setSearchTerm(String(value) || "");
 						break;
-					case "category":
-						setSelectedCategory(String(value) || "");
-						break;
+
 					case "sortBy":
 						setSortBy(String(value) || "alphabetical");
 						break;
@@ -398,9 +378,7 @@ export function useNameManagementView({
 					case "searchTerm":
 						setSearchTerm(String(value) || "");
 						break;
-					case "category":
-						setSelectedCategory(String(value) || "");
-						break;
+
 					case "sortBy":
 						setSortBy(String(value) || "alphabetical");
 						break;
@@ -438,12 +416,6 @@ export function useNameManagementView({
 		}),
 		[names.length, filteredNames.length, selectedCount, names],
 	);
-
-	const uniqueCategories = useMemo(() => {
-		return Array.from(new Set(names.map((n: NameItem) => n.category || "Uncategorized"))).filter(
-			Boolean,
-		) as string[];
-	}, [names]);
 
 	return {
 		names,
@@ -486,8 +458,6 @@ export function useNameManagementView({
 		setSortBy,
 		sortOrder,
 		setSortOrder,
-		selectedCategory,
-		setSelectedCategory,
 		showSelectedOnly,
 		setShowSelectedOnly,
 		selectionFilter,
@@ -505,14 +475,12 @@ export function useNameManagementView({
 
 		filteredNames,
 		filteredNamesForSwipe,
-		uniqueCategories,
 		stats,
 		filterConfig,
 		handleFilterChange,
 		handleAnalysisModeToggle,
 
 		// Additional properties
-		categories: uniqueCategories,
 		profileProps,
 		tournamentProps,
 		analysisMode,

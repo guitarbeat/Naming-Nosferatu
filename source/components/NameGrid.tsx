@@ -160,7 +160,6 @@ export function NameGrid({
 
 		let result = applyNameFilters(names, {
 			searchTerm: filters.searchTerm,
-			category: filters.category,
 			sortBy: filters.sortBy,
 			sortOrder: filters.sortOrder || "desc",
 			visibility,

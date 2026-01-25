@@ -80,7 +80,7 @@ export function generateFunName() {
 
 export interface FilterOptions {
 	searchTerm?: string;
-	category?: string | null;
+
 	sortBy?: string;
 	sortOrder?: "asc" | "desc";
 	visibility?: "visible" | "hidden" | "all";
@@ -153,7 +153,7 @@ export function applyNameFilters(
 ): NameItem[] {
 	const {
 		searchTerm = "",
-		category = null,
+
 		sortBy = "rating",
 		sortOrder = "desc",
 		visibility = "visible",
@@ -164,10 +164,6 @@ export function applyNameFilters(
 		return [];
 	}
 	let result = filterByVisibility([...names], { visibility, isAdmin });
-
-	if (category) {
-		result = result.filter((n) => Array.isArray(n.categories) && n.categories.includes(category));
-	}
 
 	if (searchTerm) {
 		const term = searchTerm.toLowerCase();

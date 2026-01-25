@@ -211,128 +211,126 @@ export function AdaptiveNav() {
 	const IconComponent = buttonState.icon;
 
 	return (
-		<>
-			{/* Profile Avatar */}
-			<motion.div
-				className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-0.5"
-				initial={{ y: -20, opacity: 0 }}
-				animate={{ y: 0, opacity: 1 }}
-				transition={{ duration: 0.5, delay: 0.1 }}
+		<motion.nav
+			className={cn(
+				"fixed z-[100] flex items-center transition-all duration-500 ease-out",
+				// Mobile Styles: Bottom Sheet
+				"bottom-0 inset-x-0 justify-around gap-1 px-2 py-3 bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+				// Desktop Styles: Floating Dock
+				"md:bottom-8 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-[400px] md:justify-center md:gap-2 md:px-6 md:py-3 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl md:pb-3",
+			)}
+			role="navigation"
+			aria-label="Main navigation"
+			initial={{ y: 100, opacity: 0 }}
+			animate={{ y: 0, opacity: 1 }}
+			transition={{ type: "spring", stiffness: 260, damping: 20 }}
+		>
+			{/* Profile Button (Integrated) */}
+			<button
+				className="group relative flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all hover:bg-white/5 md:mr-2"
+				onClick={() => appStore.uiActions.setEditingProfile(true)}
+				type="button"
+				aria-label="Edit profile"
 			>
-				<button
-					className="group cursor-pointer relative"
-					onClick={() => appStore.uiActions.setEditingProfile(true)}
-					type="button"
-					aria-label="Edit profile"
-				>
-					<div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity" />
-					<div className="relative w-12 h-12 rounded-full border-2 border-white/40 overflow-hidden shadow-xl bg-slate-900">
-						<img
-							alt="User Profile"
-							className="w-full h-full object-cover transition-transform group-hover:scale-110"
-							src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
-						/>
-					</div>
-				</button>
-				<span className="text-[10px] font-semibold text-white/90 uppercase tracking-wider max-w-[8rem] truncate">
-					{appStore.user.name || "Profile"}
+				<div className="relative w-6 h-6 rounded-full border border-white/30 overflow-hidden shadow-sm bg-slate-900 group-hover:border-purple-400 transition-colors">
+					<img
+						alt="Profile"
+						className="w-full h-full object-cover"
+						src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
+					/>
+				</div>
+				<span className="text-[10px] font-medium tracking-wide text-white/50 group-hover:text-white/80 transition-colors">
+					Profile
 				</span>
-			</motion.div>
+			</button>
 
-			{/* Bottom Navigation */}
-			<motion.nav
-				className="fixed bottom-0 inset-x-0 z-[100] flex items-center justify-around gap-1 px-2 py-3 bg-black/60 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]"
-				role="navigation"
-				aria-label="Main navigation"
-				initial={{ y: 20, opacity: 0 }}
-				animate={{ y: 0, opacity: 1 }}
-				transition={{ duration: 0.5, delay: 0.2 }}
+			{/* Divider for Desktop */}
+			<div className="hidden md:block w-px h-8 bg-white/10 mx-2" />
+
+			{/* Unified Pick/Start Button */}
+			<motion.button
+				className={cn(
+					"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+					isActive("pick") && !buttonState.highlight
+						? "text-white bg-white/10"
+						: "text-white/50 hover:text-white hover:bg-white/5",
+					buttonState.highlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30",
+				)}
+				onClick={handleUnifiedButtonClick}
+				disabled={buttonState.disabled}
+				type="button"
+				animate={buttonState.highlight ? { scale: [1, 1.05, 1] } : {}}
+				transition={buttonState.highlight ? { duration: 2, repeat: Infinity } : {}}
 			>
-				{/* Unified Pick/Start Button */}
+				<AnimatePresence mode="wait">
+					<motion.div
+						key={buttonState.icon.name}
+						initial={{ scale: 0.8, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						exit={{ scale: 0.8, opacity: 0 }}
+						transition={{ duration: 0.2 }}
+					>
+						<IconComponent
+							className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+							aria-hidden={true}
+						/>
+					</motion.div>
+				</AnimatePresence>
+				<span className="text-[10px] font-medium tracking-wide">{buttonState.label}</span>
+				{isActive("pick") && !buttonState.highlight && (
+					<motion.div
+						layoutId="dockIndicator"
+						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+					/>
+				)}
+			</motion.button>
+
+			{/* Analyze Button */}
+			{isComplete && (
 				<motion.button
 					className={cn(
-						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-						isActive("pick") && !buttonState.highlight
+						"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+						isActive("analyze")
 							? "text-white bg-white/10"
 							: "text-white/50 hover:text-white hover:bg-white/5",
-						buttonState.highlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30",
 					)}
-					onClick={handleUnifiedButtonClick}
-					disabled={buttonState.disabled}
+					onClick={() => handleNavClick("analyze")}
 					type="button"
-					animate={buttonState.highlight ? { scale: [1, 1.05, 1] } : {}}
-					transition={buttonState.highlight ? { duration: 2, repeat: Infinity } : {}}
+					initial={{ scale: 0.9, opacity: 0 }}
+					animate={{ scale: 1, opacity: 1 }}
 				>
-					<AnimatePresence mode="wait">
-						<motion.div
-							key={buttonState.icon.name}
-							initial={{ scale: 0.8, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							exit={{ scale: 0.8, opacity: 0 }}
-							transition={{ duration: 0.2 }}
-						>
-							<IconComponent
-								className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
-								aria-hidden={true}
-							/>
-						</motion.div>
-					</AnimatePresence>
-					<span className="text-[10px] font-medium tracking-wide">{buttonState.label}</span>
-					{isActive("pick") && !buttonState.highlight && (
+					<BarChart3 className="w-5 h-5" aria-hidden={true} />
+					<span className="text-[10px] font-medium tracking-wide">Analyze</span>
+					{isActive("analyze") && (
 						<motion.div
 							layoutId="dockIndicator"
 							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
 						/>
 					)}
 				</motion.button>
+			)}
 
-				{/* Analyze Button */}
-				{isComplete && (
-					<motion.button
-						className={cn(
-							"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-							isActive("analyze")
-								? "text-white bg-white/10"
-								: "text-white/50 hover:text-white hover:bg-white/5",
-						)}
-						onClick={() => handleNavClick("analyze")}
-						type="button"
-						initial={{ scale: 0.9, opacity: 0 }}
-						animate={{ scale: 1, opacity: 1 }}
-					>
-						<BarChart3 className="w-5 h-5" aria-hidden={true} />
-						<span className="text-[10px] font-medium tracking-wide">Analyze</span>
-						{isActive("analyze") && (
-							<motion.div
-								layoutId="dockIndicator"
-								className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-							/>
-						)}
-					</motion.button>
+			{/* Suggest Button */}
+			<button
+				className={cn(
+					"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+					isActive("suggest")
+						? "text-white bg-white/10"
+						: "text-white/50 hover:text-white hover:bg-white/5",
 				)}
-
-				{/* Suggest Button */}
-				<button
-					className={cn(
-						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-						isActive("suggest")
-							? "text-white bg-white/10"
-							: "text-white/50 hover:text-white hover:bg-white/5",
-					)}
-					onClick={() => handleNavClick("suggest")}
-					type="button"
-					aria-label="Suggest a name"
-				>
-					<Lightbulb className="w-5 h-5" aria-hidden={true} />
-					<span className="text-[10px] font-medium tracking-wide">Suggest</span>
-					{isActive("suggest") && (
-						<motion.div
-							layoutId="dockIndicator"
-							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-						/>
-					)}
-				</button>
-			</motion.nav>
-		</>
+				onClick={() => handleNavClick("suggest")}
+				type="button"
+				aria-label="Suggest a name"
+			>
+				<Lightbulb className="w-5 h-5" aria-hidden={true} />
+				<span className="text-[10px] font-medium tracking-wide">Suggest</span>
+				{isActive("suggest") && (
+					<motion.div
+						layoutId="dockIndicator"
+						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+					/>
+				)}
+			</button>
+		</motion.nav>
 	);
 }
