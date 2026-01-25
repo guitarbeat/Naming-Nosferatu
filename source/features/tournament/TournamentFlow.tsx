@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Button from "@/features/ui/Button";
 import Card from "@/features/ui/Card";
 import useUserSession from "@/hooks/useUserSession";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 import { NameSuggestion } from "./NameSuggestion";
 import Tournament from "./Tournament";
 import { useTournamentHandlers } from "./TournamentHooks";

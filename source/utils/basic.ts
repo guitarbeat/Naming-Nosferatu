@@ -6,7 +6,7 @@
 
 import type { NameItem } from "@/types";
 import { STORAGE_KEYS } from "../constants";
-import { queryClient } from "../services/supabase/queryClient";
+import { queryClient } from "../services/supabase/client";
 
 /* ==========================================================================
    ARRAY UTILITIES

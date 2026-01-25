@@ -3,7 +3,7 @@ import { Card } from "@/features/ui/Card";
 import { ErrorComponent } from "@/features/ui/Error";
 import { Loading } from "@/features/ui/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 import type { TournamentProps } from "@/types";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";

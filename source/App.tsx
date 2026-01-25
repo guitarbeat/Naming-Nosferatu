@@ -16,7 +16,7 @@ import { Toast } from "@/features/ui/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
 import useUserSession from "./hooks/useUserSession";
-import useAppStore, { useAppStoreInitialization } from "./store/useAppStore";
+import useAppStore, { useAppStoreInitialization } from "./store/appSlice";
 import { cleanupPerformanceMonitoring, devError, initializePerformanceMonitoring } from "./utils";
 import { cn } from "./utils/ui";
 

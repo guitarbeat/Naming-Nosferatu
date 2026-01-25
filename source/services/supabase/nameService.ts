@@ -1,5 +1,5 @@
 import type { NameItem } from "@/types";
-import { withSupabase } from "./clientBase";
+import { withSupabase } from "./client";
 
 /**
  * Database query result type - field names match Supabase column names (snake_case required)

@@ -1,14 +1,40 @@
 /**
  * @module appSlice
- * @description Combined app-wide state: tournament, UI settings, site settings, error handling, and user state
+ * @description Centralized state management for the entire application using Zustand.
+ * Combined app-wide state: tournament, UI settings, site settings, error handling, and user state.
  * All Zustand slices consolidated into a single file.
  */
 
 import { siteSettingsAPI, updateSupabaseUserContext } from "@supabase/client";
-import type { StateCreator } from "zustand";
+import { useEffect } from "react";
+import { create, type StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/constants";
 import type { AppState, CatChosenName, UIState, UserState } from "@/types";
-import { updateSlice } from "./useAppStore";
+
+/* ==========================================================================
+   STORE UTILITIES
+   ========================================================================== */
+
+// * Devtools middleware disabled entirely to avoid prod crashes
+const applyDevtools = (storeImpl: StateCreator<AppState>) => {
+	return storeImpl;
+};
+
+/**
+ * Common helper for nested Zustand slice updates to reduce boilerplate spreading.
+ */
+export const updateSlice = <K extends keyof AppState>(
+	set: (fn: (state: AppState) => Partial<AppState> | AppState) => void,
+	key: K,
+	updates: Partial<AppState[K]>,
+) => {
+	set((state) => ({
+		[key]: {
+			...(state[key] as object),
+			...(updates as object),
+		},
+	}));
+};
 
 /* ==========================================================================
    TOURNAMENT STATE (merged from tournamentSlice.ts)
@@ -382,3 +408,44 @@ export const createUserSlice: StateCreator<
 		},
 	},
 });
+
+/* ==========================================================================
+   STORE CREATION
+   ========================================================================== */
+
+const useAppStore = create<AppState>()(
+	applyDevtools((...a) => ({
+		...createTournamentSlice(...a),
+		...createUserSlice(...a),
+		...createSettingsSlice(...a),
+		...createErrorSlice(...a),
+
+		// * Computed Selectors
+		// We define these here because they rely on the full store state access
+		selectors: {
+			getTournamentNames: () => a[1]().tournament.names,
+			getRatings: () => a[1]().tournament.ratings,
+			getIsComplete: () => a[1]().tournament.isComplete,
+			getIsLoading: () => a[1]().tournament.isLoading,
+			getVoteHistory: () => a[1]().tournament.voteHistory,
+			getUserName: () => a[1]().user.name,
+			getIsLoggedIn: () => a[1]().user.isLoggedIn,
+			getIsAdmin: () => a[1]().user.isAdmin,
+			getTheme: () => a[1]().ui.theme,
+			getCurrentError: () => a[1]().errors.current,
+			getSelectedNames: () => a[1]().tournament.selectedNames,
+		},
+	})),
+);
+
+// * Hook to initialize store from localStorage
+export const useAppStoreInitialization = () => {
+	const { userActions } = useAppStore();
+
+	useEffect(() => {
+		// * Initialize user state from localStorage on mount
+		userActions.initializeFromStorage();
+	}, [userActions]);
+};
+
+export default useAppStore;
