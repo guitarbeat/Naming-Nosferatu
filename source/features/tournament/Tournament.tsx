@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types/components";
@@ -14,7 +15,7 @@ function TournamentContent({
 	onVote,
 }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
-	const visibleNames = getVisibleNames(names);
+	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 	const audioManager = useAudioManager();
 
 	const {
@@ -63,18 +64,19 @@ function TournamentContent({
 	}
 
 	// No images shown - gallery images removed from tournament view
-	const leftImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-				CAT_IMAGES,
-			)
-		: null;
-	const rightImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-				CAT_IMAGES,
-			)
-		: null;
+	const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+	const rightId =
+		typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+
+	const leftImg = useMemo(
+		() => (showCatPictures ? getRandomCatImage(leftId, CAT_IMAGES) : null),
+		[showCatPictures, leftId],
+	);
+
+	const rightImg = useMemo(
+		() => (showCatPictures ? getRandomCatImage(rightId, CAT_IMAGES) : null),
+		[showCatPictures, rightId],
+	);
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 font-display text-white selection:bg-primary/30">
