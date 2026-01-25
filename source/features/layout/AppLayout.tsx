@@ -4,15 +4,15 @@
  * Accepts children from React Router instead of managing routing internally.
  */
 
-import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { useMemo } from "react";
+import { ProfileEditorModal } from "@/features/tournament/ProfileEditorModal";
+import { ScrollToTopButton } from "@/features/ui/Button";
+import { ErrorBoundary, ErrorComponent } from "@/features/ui/Error";
+import { Loading, OfflineIndicator } from "@/features/ui/StatusIndicators";
+import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types";
-import useAppStore from "../store/useAppStore";
 import { AdaptiveNav } from "./AdaptiveNav";
-import { ScrollToTopButton } from "./Button";
 import CatBackground from "./CatBackground";
-import { ErrorBoundary, ErrorComponent } from "./Error";
-import { Loading, OfflineIndicator } from "./StatusIndicators";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;

@@ -6,10 +6,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
+import Button from "@/features/ui/Button";
+import { Card } from "@/features/ui/Card";
+import { Input } from "@/features/ui/FormPrimitives";
 import useAppStore from "@/store/useAppStore";
-import Button from "./Button";
-import { Card } from "./Card";
-import { Input } from "./FormPrimitives";
 
 interface ProfileEditorModalProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

@@ -10,8 +10,8 @@ import { motion } from "framer-motion";
 import { Cat, Heart, PawPrint } from "lucide-react";
 import type React from "react";
 import { memo, Suspense, useEffect, useMemo, useState } from "react";
+import { BongoCat } from "@/features/tournament/CatVisuals";
 import { useBrowserState } from "@/hooks/useBrowserState";
-import { BongoCat } from "./CatVisuals";
 
 /* ==========================================================================
    LOADING COMPONENT

@@ -6,14 +6,13 @@
 
 import { cn } from "@utils";
 import React, { useId } from "react";
-
+import { FILTER_OPTIONS } from "@/constants";
+import Button from "@/features/ui/Button";
+import { Select } from "@/features/ui/FormPrimitives";
+import LiquidGlass from "@/features/ui/LiquidGlass";
+import useAppStore from "@/store/useAppStore";
 import type { TournamentFilters } from "@/types";
-import { FILTER_OPTIONS } from "../constants";
-import useAppStore from "../store/useAppStore";
-import Button from "./Button";
-import { Select } from "./FormPrimitives";
-import LiquidGlass from "./LiquidGlass";
-import "./TournamentToolbar.css";
+import "@/styles/tournament-toolbar.css";
 
 // ============================================================================
 // CONFIGURATION

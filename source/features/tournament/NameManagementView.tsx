@@ -6,8 +6,8 @@
 
 import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
+import { ErrorComponent } from "@/features/ui/Error";
 import { useToast } from "@/providers";
-import { ErrorComponent } from "./Error";
 import {
 	type NameItem,
 	NameManagementProvider,

@@ -20,6 +20,9 @@
 /* 3. Component styles (consolidated buttons, forms, cards, UI primitives) */
 @import url("./components.css");
 @import url("./analysis-mode.css");
+@import url("./liquid-glass.css");
+@import url("./cat-background.css");
+@import url("./tournament-toolbar.css");
 
 /* 4. Animations and interactions (applied last for proper cascade) */
 @import url("./motion.css");

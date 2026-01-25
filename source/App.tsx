@@ -9,10 +9,10 @@
 
 import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { AppLayout } from "./components/AppLayout";
-import { ErrorBoundary } from "./components/Error";
-import { Loading } from "./components/StatusIndicators";
-import { Toast } from "./components/Toast";
+import { AppLayout } from "@/features/layout/AppLayout";
+import { ErrorBoundary } from "@/features/ui/Error";
+import { Loading } from "@/features/ui/StatusIndicators";
+import { Toast } from "@/features/ui/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
 import useUserSession from "./hooks/useUserSession";

@@ -5,7 +5,6 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
-import { FloatingBubblesContainer } from "@components/FloatingBubbles";
 import {
 	Button,
 	ButtonGroup,
@@ -24,15 +23,16 @@ import {
 import { hiddenNamesAPI } from "@supabase/client";
 import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@utils";
 import React, { useCallback, useMemo, useState } from "react";
-import { Card } from "@/components/Card";
-import { BumpChart } from "@/components/Charts";
-import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
-import { EmptyState } from "@/components/EmptyState";
-import { useNameManagementContextOptional } from "@/components/nameManagementCore";
-import { PerformanceBadges } from "@/components/StatusIndicators";
 import { STORAGE_KEYS } from "@/constants";
+import { CollapsibleContent, CollapsibleHeader } from "@/features/layout/CollapsibleHeader";
+import { FloatingBubblesContainer } from "@/features/layout/FloatingBubbles";
+import { useNameManagementContextOptional } from "@/features/tournament/nameManagementCore";
+import { TournamentToolbar } from "@/features/tournament/TournamentToolbar";
+import { Card } from "@/features/ui/Card";
+import { BumpChart } from "@/features/ui/Charts";
+import { EmptyState } from "@/features/ui/EmptyState";
+import { PerformanceBadges } from "@/features/ui/StatusIndicators";
 import { useCollapsible } from "@/hooks/useBrowserState";
-import { TournamentToolbar } from "../../components/TournamentToolbar";
 import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
 import type {
 	AnalysisDashboardProps,

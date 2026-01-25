@@ -1,9 +1,9 @@
-import { NameGrid } from "@components/NameGrid";
 import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
+import Button from "@/features/ui/Button";
 import type { NameItem } from "@/types";
-import Button from "./Button";
+import { NameGrid } from "./NameGrid";
 import type { NameManagementViewExtensions, TournamentFilters } from "./nameManagementCore";
 import { TournamentToolbar } from "./TournamentToolbar";
 

@@ -1,10 +1,10 @@
 import { getVisibleNames } from "@utils";
-import { Card } from "@/components/Card";
+import { Card } from "@/features/ui/Card";
+import { ErrorComponent } from "@/features/ui/Error";
+import { Loading } from "@/features/ui/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types";
-import { ErrorComponent } from "../../components/Error";
-import { Loading } from "../../components/StatusIndicators";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
 

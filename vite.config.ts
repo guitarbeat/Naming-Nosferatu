@@ -97,10 +97,6 @@ export default defineConfig(({ mode }) => {
 					replacement: `${resolveFromRoot("source")}/`,
 				},
 				{
-					find: "@components",
-					replacement: resolveFromRoot("source/components"),
-				},
-				{
 					find: "@hooks",
 					replacement: resolveFromRoot("source/hooks"),
 				},

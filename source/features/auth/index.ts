@@ -1,15 +1,30 @@
-import { resolveSupabaseClient } from "@supabase/client";
+/**
+ * @module features/auth
+ * @description Authentication, authorization, and user role management
+ * Consolidated from adminService.ts, authUtils.ts, and authHooks.ts
+ */
+
+import { ErrorManager } from "@services/errorManager";
+import { resolveSupabaseClient, withSupabase } from "@supabase/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@supabase/types";
+import { generateFunName } from "@utils";
+import { playSound } from "@utils/ui";
+import { useCallback, useEffect, useState } from "react";
+import { z } from "zod";
+import { STORAGE_KEYS, VALIDATION } from "@/constants";
+import { useValidatedForm } from "@/hooks/useValidatedForm";
 
-// Constants use UPPER_CASE keys (intentional for role constants)
+/* ==========================================================================
+   CONSTANTS
+   ========================================================================== */
+
 const USER_ROLES = {
 	USER: "user",
 	MODERATOR: "moderator",
 	ADMIN: "admin",
 } as const;
 
-// Database table name - snake_case required
 const ROLE_SOURCES = ["cat_user_roles"] as const;
 
 const ROLE_PRIORITY = {
@@ -17,6 +32,14 @@ const ROLE_PRIORITY = {
 	[USER_ROLES.MODERATOR]: 1,
 	[USER_ROLES.ADMIN]: 2,
 };
+
+const FALLBACK_CAT_FACT = "Cats are amazing creatures with unique personalities!";
+const CAT_FACT_API_URL = "https://catfact.ninja/fact";
+const REQUEST_TIMEOUT_MS = 5000;
+
+/* ==========================================================================
+   ROLE UTILITIES
+   ========================================================================== */
 
 const normalizeRole = (role: string | null | undefined): string | null =>
 	role?.toLowerCase?.() ?? null;
@@ -29,29 +52,18 @@ const compareRoles = (
 	const required =
 		ROLE_PRIORITY[normalizeRole(requiredRole) as keyof typeof ROLE_PRIORITY] ??
 		Number.POSITIVE_INFINITY;
-
 	return current >= required;
 };
 
 const normalizeStatusCode = (value: unknown): number | null => {
-	if (typeof value === "number" && Number.isFinite(value)) {
-		return value;
-	}
-
+	if (typeof value === "number" && Number.isFinite(value)) return value;
 	if (typeof value === "string") {
 		const numericMatch = value.match(/\d{3}/);
-		if (numericMatch) {
-			return Number.parseInt(numericMatch[0], 10);
-		}
+		if (numericMatch) return Number.parseInt(numericMatch[0], 10);
 	}
-
 	return null;
 };
 
-/**
- * Error object structure matching various error sources (HTTP, database, etc.)
- * Snake_case fields match actual error object properties from different sources
- */
 interface ErrorWithStatus {
 	status?: unknown;
 	statusCode?: unknown;
@@ -65,7 +77,6 @@ interface ErrorWithStatus {
 	code?: unknown;
 	sqlState?: unknown;
 	message?: unknown;
-	// Common error properties - snake_case matches actual error object structures
 	error_description?: unknown;
 	errorMessage?: unknown;
 	error_message?: unknown;
@@ -82,43 +93,27 @@ const extractErrorMetadata = (error: unknown) => {
 	const statuses = new Set<number>();
 	const codes = new Set<string>();
 	const messages = new Set<string>();
-
 	const stack = [error];
 	const visited = new Set<unknown>();
 
 	while (stack.length) {
 		const current = stack.pop();
-
-		if (current == null) {
-			continue;
-		}
-
+		if (current == null) continue;
 		if (typeof current === "string") {
 			messages.add(current);
 			continue;
 		}
-
-		if (typeof current !== "object") {
-			continue;
-		}
-
-		if (visited.has(current)) {
-			continue;
-		}
-
+		if (typeof current !== "object") continue;
+		if (visited.has(current)) continue;
 		visited.add(current);
 
 		if (Array.isArray(current)) {
-			for (const entry of current) {
-				stack.push(entry);
-			}
+			for (const entry of current) stack.push(entry);
 			continue;
 		}
 
-		// Use type assertion to a structural interface
 		const errorObj = current as ErrorWithStatus;
 
-		// Extract Statuses
 		const candidateStatuses = [
 			errorObj.status,
 			errorObj.statusCode,
@@ -128,7 +123,6 @@ const extractErrorMetadata = (error: unknown) => {
 			(errorObj.response as Record<string, unknown>)?.status,
 			(errorObj.response as Record<string, unknown>)?.statusCode,
 			(errorObj.response as Record<string, unknown>)?.status_code,
-			// Deep nested checks
 			(errorObj.response as ErrorWithStatus)?.response?.status,
 			(errorObj.response as ErrorWithStatus)?.error?.status,
 			errorObj.error?.status,
@@ -144,12 +138,9 @@ const extractErrorMetadata = (error: unknown) => {
 
 		for (const candidate of candidateStatuses) {
 			const normalized = normalizeStatusCode(candidate);
-			if (normalized != null) {
-				statuses.add(normalized);
-			}
+			if (normalized != null) statuses.add(normalized);
 		}
 
-		// Extract Codes
 		const candidateCodes = [
 			errorObj.code,
 			errorObj.sqlState,
@@ -161,16 +152,11 @@ const extractErrorMetadata = (error: unknown) => {
 		];
 
 		for (const candidate of candidateCodes) {
-			if (candidate == null) {
-				continue;
-			}
+			if (candidate == null) continue;
 			const normalized = String(candidate).trim().toUpperCase();
-			if (normalized) {
-				codes.add(normalized);
-			}
+			if (normalized) codes.add(normalized);
 		}
 
-		// Extract Messages
 		const messageKeys: (keyof ErrorWithStatus)[] = [
 			"message",
 			"error",
@@ -188,17 +174,12 @@ const extractErrorMetadata = (error: unknown) => {
 
 		for (const key of messageKeys) {
 			const value = errorObj[key];
-			if (typeof value === "string") {
-				messages.add(value);
-			}
+			if (typeof value === "string") messages.add(value);
 		}
 
 		for (const value of Object.values(current)) {
-			if (value && typeof value === "object") {
-				stack.push(value);
-			} else if (typeof value === "string") {
-				messages.add(value);
-			}
+			if (value && typeof value === "object") stack.push(value);
+			else if (typeof value === "string") messages.add(value);
 		}
 	}
 
@@ -210,21 +191,17 @@ const extractErrorMetadata = (error: unknown) => {
 };
 
 const isMissingResourceError = (error: unknown): boolean => {
-	if (!error) {
-		return false;
-	}
+	if (!error) return false;
 	const { statuses, codes, messages } = extractErrorMetadata(error);
 
 	const normalizedStatuses = statuses
 		.map((value) => normalizeStatusCode(value))
 		.filter((value) => value != null);
-
 	const normalizedCodes = codes
 		.map((value) => String(value).trim().toUpperCase())
 		.filter((value) => value.length > 0);
 
 	const statusIndicatesMissing = normalizedStatuses.some((value) => value === 404 || value === 410);
-
 	const knownMissingCodes = new Set([
 		"404",
 		"PGRST301",
@@ -235,7 +212,6 @@ const isMissingResourceError = (error: unknown): boolean => {
 		"42704",
 		"42883",
 	]);
-
 	const codeIndicatesMissing = normalizedCodes.some((value) => knownMissingCodes.has(value));
 
 	const missingMessagePatterns = [
@@ -248,7 +224,6 @@ const isMissingResourceError = (error: unknown): boolean => {
 		"no function matches the given name and argument types",
 		'relation "',
 	];
-
 	const messageIndicatesMissing = messages.some((message) =>
 		missingMessagePatterns.some((pattern) => message.includes(pattern)),
 	);
@@ -257,17 +232,10 @@ const isMissingResourceError = (error: unknown): boolean => {
 };
 
 const isRpcParameterMismatchError = (error: unknown): boolean => {
-	if (!error) {
-		return false;
-	}
-
+	if (!error) return false;
 	const { codes, messages } = extractErrorMetadata(error);
-
 	const mismatchCodes = new Set(["42883", "42703"]);
-
-	if (codes.some((value) => mismatchCodes.has(value))) {
-		return true;
-	}
+	if (codes.some((value) => mismatchCodes.has(value))) return true;
 
 	const parameterMismatchPatterns = [
 		"missing required input parameter",
@@ -278,7 +246,6 @@ const isRpcParameterMismatchError = (error: unknown): boolean => {
 		"required parameter",
 		"function has_role(",
 	];
-
 	return messages.some((message) =>
 		parameterMismatchPatterns.some((pattern) => message.includes(pattern)),
 	);
@@ -287,6 +254,10 @@ const isRpcParameterMismatchError = (error: unknown): boolean => {
 const isUuid = (value: unknown): boolean =>
 	typeof value === "string" &&
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+
+/* ==========================================================================
+   CLIENT STATE MANAGEMENT
+   ========================================================================== */
 
 interface ClientState {
 	canUseRoleRpc: boolean;
@@ -304,9 +275,7 @@ const getClientState = (client: object | null) => {
 			disabledSources: new Set<string>(),
 		};
 	}
-
 	let state = clientStateMap.get(client);
-
 	if (!state) {
 		state = {
 			canUseRoleRpc: true,
@@ -315,62 +284,41 @@ const getClientState = (client: object | null) => {
 		};
 		clientStateMap.set(client, state);
 	}
-
 	return state;
 };
 
 const markSourceSuccessful = (state: ClientState | undefined, source: string) => {
-	if (!state) {
-		return;
-	}
+	if (!state) return;
 	state.disabledSources.delete(source);
 	state.preferredRoleSource = source;
 };
 
 const markSourceUnavailable = (state: ClientState | undefined, source: string) => {
-	if (!state) {
-		return;
-	}
+	if (!state) return;
 	state.disabledSources.add(source);
-
 	if (state.preferredRoleSource === source) {
 		const fallback = ROLE_SOURCES.find(
 			(candidate) => candidate !== source && !state.disabledSources.has(candidate),
 		);
-
-		if (fallback) {
-			state.preferredRoleSource = fallback;
-		}
+		if (fallback) state.preferredRoleSource = fallback;
 	}
 };
 
 const getRoleSourceOrder = (state: ClientState | undefined) => {
-	if (!state) {
-		return [...ROLE_SOURCES];
-	}
-
+	if (!state) return [...ROLE_SOURCES];
 	const orderedSources = new Set();
-
 	const preferred =
 		state.preferredRoleSource && !state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
-	if (preferred) {
-		orderedSources.add(preferred);
-	} else if (state.preferredRoleSource) {
-		orderedSources.add(state.preferredRoleSource);
-	}
+	if (preferred) orderedSources.add(preferred);
+	else if (state.preferredRoleSource) orderedSources.add(state.preferredRoleSource);
 
 	for (const source of ROLE_SOURCES) {
-		if (!state.disabledSources.has(source)) {
-			orderedSources.add(source);
-		}
+		if (!state.disabledSources.has(source)) orderedSources.add(source);
 	}
-
-	for (const source of ROLE_SOURCES) {
-		orderedSources.add(source);
-	}
+	for (const source of ROLE_SOURCES) orderedSources.add(source);
 
 	return [...orderedSources];
 };
@@ -389,7 +337,6 @@ const handleRoleResponse = (
 		}
 		throw error;
 	}
-
 	markSourceSuccessful(state, source);
 	return { role: data?.[roleKey] ?? null, handled: false };
 };
@@ -400,14 +347,11 @@ const fetchRoleFromSource = async (
 	source: string,
 	state: ClientState | undefined,
 ) => {
-	if (!activeSupabase) {
-		return { role: null, handled: true };
-	}
+	if (!activeSupabase) return { role: null, handled: true };
 
 	const trimmedUserName = userName.trim?.() ?? userName;
 
 	if (source === "user_roles") {
-		// cat_user_roles table exists in DB but may not be in auto-generated types
 		const { data, error } = await (activeSupabase as SupabaseClient)
 			// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 			.from("cat_user_roles" as any)
@@ -430,31 +374,22 @@ const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, us
 	for (const source of sources) {
 		try {
 			const result = await fetchRoleFromSource(activeSupabase, userName, source as string, state);
-			if (result?.handled) {
-				continue;
-			}
-			if (result?.role) {
-				return normalizeRole(result.role as string);
-			}
+			if (result?.handled) continue;
+			if (result?.role) return normalizeRole(result.role as string);
 		} catch (error) {
-			// Log the error but continue trying other sources
 			if (import.meta.env.DEV) {
 				const errorMsg = error instanceof Error ? error.message : String(error);
 				console.error(`Error fetching user role from Supabase source "${source}": ${errorMsg}`);
 			}
 		}
 	}
-
 	return null;
 };
 
 async function _hasRole(userName: string, requiredRole: string): Promise<boolean> {
-	if (!userName || !requiredRole) {
-		return false;
-	}
+	if (!userName || !requiredRole) return false;
 
 	const activeSupabase = await resolveSupabaseClient();
-
 	if (!activeSupabase) {
 		if (process.env.NODE_ENV === "development") {
 			console.warn("Supabase client is not configured. Role check will default to false.");
@@ -467,9 +402,7 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 		const normalizedRequiredRole = normalizeRole(requiredRole);
 		const state = getClientState(activeSupabase);
 
-		if (!normalizedRequiredRole) {
-			return false;
-		}
+		if (!normalizedRequiredRole) return false;
 
 		if (state?.canUseRoleRpc) {
 			const rpcPayloads: Record<string, string>[] = [
@@ -477,10 +410,7 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 			];
 
 			if (isUuid(trimmedUserName)) {
-				rpcPayloads.push({
-					_user_id: trimmedUserName,
-					_role: normalizedRequiredRole,
-				});
+				rpcPayloads.push({ _user_id: trimmedUserName, _role: normalizedRequiredRole });
 			}
 
 			// biome-ignore lint/suspicious/noExplicitAny: PostgrestError type varies
@@ -489,26 +419,19 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 			for (const payload of rpcPayloads) {
 				const { data, error } = await activeSupabase.rpc(
 					"has_role",
-					// biome-ignore lint/suspicious/noExplicitAny: has_role has multiple overloads, type system can't infer correct one
-					payload as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+					// biome-ignore lint/suspicious/noExplicitAny: has_role has multiple overloads
+					payload as any,
 				);
 
-				if (!error) {
-					return data === true;
-				}
-
+				if (!error) return data === true;
 				lastRpcError = error;
 
-				if (isRpcParameterMismatchError(error)) {
-					continue;
-				}
-
+				if (isRpcParameterMismatchError(error)) continue;
 				if (isMissingResourceError(error)) {
 					state.canUseRoleRpc = false;
 					break;
 				}
 
-				// Create a proper error with a message if the error doesn't have one
 				const errorWithMessage =
 					error instanceof Error
 						? error
@@ -527,20 +450,268 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 		}
 
 		const userRole = await fetchUserRole(activeSupabase, trimmedUserName);
-		if (!userRole) {
-			return false;
-		}
+		if (!userRole) return false;
 
 		return compareRoles(userRole, normalizedRequiredRole);
 	} catch (error) {
 		if (process.env.NODE_ENV === "development") {
 			console.error("Error checking user role:", error);
 		}
-		// Return false on error instead of throwing to prevent app crashes
 		return false;
 	}
 }
 
+/* ==========================================================================
+   EXPORTED FUNCTIONS
+   ========================================================================== */
+
 export async function isUserAdmin(userIdOrName: string): Promise<boolean> {
 	return _hasRole(userIdOrName, USER_ROLES.ADMIN);
+}
+
+/* ==========================================================================
+   ADMIN API
+   ========================================================================== */
+
+export const adminAPI = {
+	listUsers: async ({ searchTerm, limit = 200 }: { searchTerm?: string; limit?: number } = {}) => {
+		return withSupabase(
+			async (client) => {
+				let query = client
+					.from("cat_app_users")
+					.select("user_name, updated_at", { count: "exact" });
+
+				if (searchTerm) {
+					query = query.ilike("user_name", `%${searchTerm}%`);
+				}
+
+				const { data, count, error } = await query
+					.order("user_name", { ascending: true })
+					.limit(limit);
+
+				if (error) {
+					console.error("Error listing users:", error);
+					return { users: [], count: 0 };
+				}
+
+				if (data && data.length > 0) {
+					const userNames = data.map((u) => u.user_name);
+					const { data: roles, error: rolesError } = await client
+						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+						.from("cat_user_roles" as any)
+						.select("user_name, role")
+						.in("user_name", userNames);
+
+					if (!rolesError && roles) {
+						const typedRoles = roles as unknown as { user_name: string; role: string }[];
+						const roleMap = new Map(typedRoles.map((r) => [r.user_name, r.role]));
+						return {
+							users: data.map((u) => ({
+								...u,
+								role: roleMap.get(u.user_name) || "user",
+							})),
+							count: count || 0,
+						};
+					}
+				}
+
+				return {
+					users: (data || []).map((u) => ({ ...u, role: "user" })),
+					count: count || 0,
+				};
+			},
+			{ users: [], count: 0 },
+		);
+	},
+};
+
+/* ==========================================================================
+   HOOKS
+   ========================================================================== */
+
+export function useAdminStatus(userName: string | null) {
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<unknown>(null);
+
+	useEffect(() => {
+		let isMounted = true;
+
+		const checkAdminStatus = async () => {
+			if (!userName) {
+				if (isMounted) {
+					setIsAdmin(false);
+					setIsLoading(false);
+				}
+				return;
+			}
+
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const adminStatus = await isUserAdmin(userName);
+				if (isMounted) setIsAdmin(adminStatus);
+			} catch (err) {
+				if (isMounted) {
+					if (process.env.NODE_ENV === "development") {
+						console.error("Error checking admin status:", err);
+					}
+					setIsAdmin(false);
+					setError(err);
+				}
+			} finally {
+				if (isMounted) setIsLoading(false);
+			}
+		};
+
+		checkAdminStatus();
+		return () => {
+			isMounted = false;
+		};
+	}, [userName]);
+
+	return { isAdmin, isLoading, error };
+}
+
+function useCatFact() {
+	const [catFact, setCatFact] = useState<string | null>(null);
+
+	useEffect(() => {
+		const fetchCatFact = async () => {
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+			try {
+				const response = await fetch(CAT_FACT_API_URL, { signal: controller.signal });
+				clearTimeout(timeoutId);
+
+				if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+				const catFactData = await response.json();
+				if (catFactData && typeof catFactData.fact === "string") {
+					setCatFact(catFactData.fact);
+				} else {
+					throw new Error("Invalid response format from cat fact API");
+				}
+			} catch (error: unknown) {
+				const err = error as Error;
+				if (err.name !== "AbortError" && err.name !== "TimeoutError") {
+					ErrorManager.handleError(error, "Fetch Cat Fact", {
+						isRetryable: true,
+						affectsUserData: false,
+						isCritical: false,
+					});
+				}
+				setCatFact(FALLBACK_CAT_FACT);
+			}
+		};
+
+		fetchCatFact();
+	}, []);
+
+	return catFact;
+}
+
+const LoginFormSchema = z.object({
+	name: z
+		.string()
+		.min(VALIDATION.MIN_USERNAME_LENGTH || 2, "Name must be at least 2 characters")
+		.max(VALIDATION.MAX_USERNAME_LENGTH || 30, "Name must be under 30 characters")
+		.regex(/^[a-zA-Z0-9_-]+$/, "Only letters, numbers, - and _ are allowed"),
+});
+
+export function useLoginController(onLogin: (name: string) => Promise<void> | void) {
+	const [globalError, setGlobalError] = useState("");
+	const catFact = useCatFact();
+
+	const form = useValidatedForm<typeof LoginFormSchema.shape>({
+		schema: LoginFormSchema,
+		initialValues: { name: "" },
+		onSubmit: async (values: z.infer<typeof LoginFormSchema>) => {
+			try {
+				setGlobalError("");
+				await onLogin(values.name);
+				playSound("level-up");
+			} catch (err) {
+				const formattedError = ErrorManager.handleError(err, "User Login", {
+					isRetryable: true,
+					affectsUserData: false,
+					isCritical: false,
+				});
+				const error = err as Error;
+				setGlobalError(
+					formattedError.userMessage ||
+						error.message ||
+						"Unable to log in. Please check your connection and try again.",
+				);
+				throw err;
+			}
+		},
+	});
+
+	const {
+		values,
+		errors,
+		touched,
+		isSubmitting,
+		handleChange,
+		handleBlur,
+		handleSubmit,
+		setValues,
+	} = form;
+
+	const handleNameChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			handleChange("name", e.target.value);
+			if (globalError) setGlobalError("");
+		},
+		[handleChange, globalError],
+	);
+
+	useEffect(() => {
+		try {
+			const savedUser = localStorage.getItem(STORAGE_KEYS.USER_STORAGE);
+			if (savedUser) {
+				const parsed = JSON.parse(savedUser);
+				const name = parsed?.state?.user?.name;
+				if (name && typeof name === "string" && !values.name) {
+					setValues({ name });
+				}
+			}
+		} catch {
+			// Ignore storage errors
+		}
+	}, [setValues, values.name]);
+
+	const handleRandomName = useCallback(() => {
+		if (isSubmitting) return;
+		const funName = generateFunName();
+		setValues({ name: funName });
+		if (globalError) setGlobalError("");
+		playSound("surprise");
+	}, [isSubmitting, globalError, setValues]);
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent) => {
+			if (e.key === "Enter") void handleSubmit();
+		},
+		[handleSubmit],
+	);
+
+	return {
+		name: values.name,
+		setName: (val: string) => setValues({ name: val }),
+		isLoading: isSubmitting,
+		error: errors.name || globalError,
+		touched: touched.name,
+		handleNameChange,
+		handleBlur,
+		handleSubmit,
+		handleRandomName,
+		handleKeyDown,
+		clearError: () => setGlobalError(""),
+		catFact,
+		nameSchema: LoginFormSchema.shape.name,
+	};
 }

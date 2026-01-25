@@ -15,7 +15,7 @@ import {
 	X,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Card } from "@/components/Card";
+import { Card } from "@/features/ui/Card";
 import type { NameItem } from "@/types";
 import { getRandomCatImage } from "./TournamentLogic";
 
