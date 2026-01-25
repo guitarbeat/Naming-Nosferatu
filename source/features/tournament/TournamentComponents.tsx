@@ -1,6 +1,7 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
 
 import { Button, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
+import { ErrorManager } from "@services/errorManager";
 import { playSound } from "@utils/soundManager";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
@@ -15,7 +16,6 @@ import {
 } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/components/Card";
-import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
 import { getRandomCatImage } from "./TournamentLogic";
 

@@ -7,6 +7,8 @@
 import { imagesAPI } from "@supabase/client";
 import {
 	applyNameFilters,
+	compressImageFile,
+	devError,
 	getRandomCatImage,
 	isNameHidden,
 	mapFilterStatusToVisibility,
@@ -18,7 +20,6 @@ import { Upload } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import type { NameItem } from "@/types/components";
-import { compressImageFile, devError } from "@/utils";
 import { Lightbox } from "../shared/components/Lightbox";
 import { Loading } from "../shared/components/Loading";
 import { CardName } from "./Card";

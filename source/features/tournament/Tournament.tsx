@@ -1,8 +1,8 @@
+import { getVisibleNames } from "@utils";
 import { Card } from "@/components/Card";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types/components";
-import { getVisibleNames } from "@/utils";
 import { ErrorComponent } from "../../shared/components/ErrorComponent";
 import { Loading } from "../../shared/components/Loading";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";

@@ -1,6 +1,6 @@
+import { ErrorManager } from "@services/errorManager";
 import { Copy } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
-import { ErrorManager } from "@/services/errorManager";
 
 interface Props {
 	children: ReactNode;

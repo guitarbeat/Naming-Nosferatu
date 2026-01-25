@@ -1,5 +1,5 @@
+import { calculatePercentile } from "@utils";
 import { useMemo } from "react";
-import { calculatePercentile } from "@/utils";
 import type {
 	AnalyticsDataItem,
 	ConsolidatedName,

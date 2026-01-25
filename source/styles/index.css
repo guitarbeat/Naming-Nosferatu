@@ -7,10 +7,9 @@
  * All @import rules must precede @theme and other at-rules per CSS spec.
  */
 
-/* 1. Core foundational styles (reset, tokens, colors, themes) */
+/* 1. Core foundational styles (reset, tokens, themes) */
 @import url("./core/reset.css");
 @import url("./core/design-tokens.css");
-@import url("./core/colors.css");
 @import url("./core/themes.css");
 
 /* 2. Utility classes (layout, spacing, typography, responsive) */

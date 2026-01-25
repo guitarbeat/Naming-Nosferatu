@@ -3,10 +3,10 @@ import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import type { NameItem } from "@/types/components";
-import Button from "../../../shared/components/Button";
-import { TournamentToolbar } from "../../../shared/components/TournamentToolbar";
+import Button from "../shared/components/Button";
+import { TournamentToolbar } from "../shared/components/TournamentToolbar";
 
-import type { NameManagementViewExtensions, TournamentFilters } from "../nameManagementCore";
+import type { NameManagementViewExtensions, TournamentFilters } from "./nameManagementCore";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];

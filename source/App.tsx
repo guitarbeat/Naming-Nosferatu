@@ -7,12 +7,12 @@
  * @returns {JSX.Element} The complete application UI
  */
 
+import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Toast } from "./components/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
 import useUserSession from "./hooks/useUserSession";
-import { ErrorManager } from "./services/errorManager";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
 import { AppLayout } from "./shared/layouts/AppLayout";

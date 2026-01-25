@@ -1,4 +1,9 @@
 :root {
+	/* * Accent colors (merged from colors.css) */
+	--coral: 16 100% 66%;
+	--rose-pink: 322 81% 65%;
+	--lavender: 245 50% 90%;
+
 	/* * Enforced Dark/Celestial Theme */
 	color-scheme: dark;
 

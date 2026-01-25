@@ -8,11 +8,11 @@ import { cn } from "@utils/cn";
 import React, { useId } from "react";
 
 import type { TournamentFilters } from "@/types/components";
-import { FILTER_OPTIONS } from "../../../constants";
-import useAppStore from "../../../store/useAppStore";
-import Button from "../Button";
-import { Select } from "../FormPrimitives";
-import LiquidGlass from "../LiquidGlass";
+import { FILTER_OPTIONS } from "../../constants";
+import useAppStore from "../../store/useAppStore";
+import Button from "./Button";
+import { Select } from "./FormPrimitives";
+import LiquidGlass from "./LiquidGlass";
 import "./TournamentToolbar.css";
 
 // ============================================================================

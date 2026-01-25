@@ -3,11 +3,11 @@
  * @description Custom hook for profile notification functions with visible toast notifications.
  */
 
+import { devError, devLog } from "@utils";
 import { useCallback } from "react";
 import { Toast } from "@/components/Toast";
 import { NOTIFICATION } from "@/constants";
 import { useToast } from "@/providers/ToastProvider";
-import { devError, devLog } from "@/utils";
 
 /**
  * * Hook for profile notification functions with toast UI

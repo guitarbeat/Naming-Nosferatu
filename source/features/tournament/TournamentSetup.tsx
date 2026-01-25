@@ -1,13 +1,13 @@
+import { getGreeting } from "@utils";
+import { fetchCatAvatars } from "@utils/catApi";
 import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
-import { NameManagementView } from "@/components/NameManagementView/NameManagementView";
+import { NameManagementView } from "@/components/NameManagementView";
+import { CAT_IMAGES } from "@/config";
 import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types/components";
-import { getGreeting } from "@/utils";
-import { fetchCatAvatars } from "@/utils/catApi";
-import { CAT_IMAGES } from "@/config";
 import { Input } from "../../shared/components/FormPrimitives";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";

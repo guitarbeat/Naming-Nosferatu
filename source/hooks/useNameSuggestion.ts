@@ -1,9 +1,9 @@
+import { ErrorManager } from "@services/errorManager";
 import { coreAPI } from "@supabase/client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "@/constants";
 import { useToast } from "@/providers/ToastProvider";
-import { ErrorManager } from "@/services/errorManager";
 import useAppStore from "@/store/useAppStore";
 import { useValidatedForm } from "./useValidatedForm";
 

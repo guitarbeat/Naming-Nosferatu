@@ -8,12 +8,12 @@ import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { useMemo } from "react";
 import type { NameItem } from "@/types/components";
 import useAppStore from "../../store/useAppStore";
+import { AdaptiveNav } from "../components/AdaptiveNav";
 import { ScrollToTopButton } from "../components/Button";
 import CatBackground from "../components/CatBackground";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
-import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { OfflineIndicator } from "../components/OfflineIndicator";
 
 interface AppLayoutProps {

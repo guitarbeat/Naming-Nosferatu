@@ -1,16 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TOURNAMENT_TIMING } from "@/constants";
-import useLocalStorage from "@/hooks/useStorage";
-import { ErrorManager } from "@/services/errorManager";
-import useAppStore from "@/store/useAppStore";
-import type {
-	Match,
-	MatchRecord,
-	NameItem,
-	PersistentState,
-	TournamentUIState,
-} from "@/types/components";
-import type { AppState } from "@/types/store";
+import { ErrorManager } from "@services/errorManager";
 import {
 	clearTournamentCache,
 	devError,
@@ -20,7 +8,19 @@ import {
 	ratingsToArray,
 	ratingsToObject,
 	shuffleArray,
-} from "@/utils";
+} from "@utils";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { TOURNAMENT_TIMING } from "@/constants";
+import useLocalStorage from "@/hooks/useStorage";
+import useAppStore from "@/store/useAppStore";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentUIState,
+} from "@/types/components";
+import type { AppState } from "@/types/store";
 import {
 	calculateBracketRound,
 	EloRating,

@@ -4,15 +4,14 @@
  * Includes Types, Context, and Hooks for name data and selection management.
  */
 
+import { applyNameFilters, mapFilterStatusToVisibility } from "@utils";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants";
+import { useNameData } from "@/hooks/useNameData";
+import { useNameSelection } from "@/hooks/useNameSelection";
 import useAppStore from "@/store/useAppStore";
-import type { NameItem } from "@/types/components";
-import { applyNameFilters, mapFilterStatusToVisibility } from "@/utils";
-import type { TournamentFilters, UseNameManagementViewProps } from "./shared/types";
-import { useNameData } from "./shared/useNameData";
-import { useNameSelection } from "./shared/useNameSelection";
+import type { NameItem, TournamentFilters } from "@/types/components";
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -28,6 +27,19 @@ export interface NameManagementViewExtensions {
 	contextLogic?: React.ReactNode | (() => React.ReactNode);
 	nameGrid?: React.ReactNode;
 	navbar?: React.ReactNode | (() => React.ReactNode);
+}
+
+/**
+ * Props for useNameManagementView hook
+ */
+export interface UseNameManagementViewProps {
+	mode: "tournament" | "profile";
+	userName?: string | null;
+	profileProps?: Record<string, unknown>;
+	tournamentProps?: Record<string, unknown>;
+	analysisMode: boolean;
+	setAnalysisMode: (mode: boolean) => void;
+	extensions?: NameManagementViewExtensions;
 }
 
 /**
@@ -152,7 +164,7 @@ export interface UseNameManagementViewResult {
 	extensions: NameManagementViewExtensions;
 }
 
-export type { TournamentFilters, UseNameManagementViewProps, NameItem };
+export type { TournamentFilters, NameItem };
 
 // ============================================================================
 // HOOKS - Name Management View State

@@ -1,4 +1,4 @@
-import { devError } from "@/utils";
+import { devError } from "@utils";
 
 interface SyncPayload {
 	userName: string;

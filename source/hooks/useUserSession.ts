@@ -131,7 +131,7 @@ function useUserSession({
 				});
 		} else {
 			// * Auto-login as guest if no user found
-			import("@/utils")
+			import("@utils")
 				.then(({ generateFunName }) => {
 					const randomName = generateFunName();
 					// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?

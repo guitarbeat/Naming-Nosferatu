@@ -22,16 +22,16 @@ import {
 	TableRow,
 } from "@heroui/react";
 import { hiddenNamesAPI } from "@supabase/client";
+import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@utils";
 import React, { useCallback, useMemo, useState } from "react";
 import { Card } from "@/components/Card";
 import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
 import { EmptyState } from "@/components/EmptyState";
-import { useNameManagementContextOptional } from "@/components/NameManagementView/nameManagementCore";
+import { useNameManagementContextOptional } from "@/components/nameManagementCore";
 import { PerformanceBadges } from "@/components/PerformanceBadge";
 import { STORAGE_KEYS } from "@/constants";
 import { useCollapsible } from "@/hooks/useStorage";
-import { clearAllCaches, devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils";
 import { TournamentToolbar } from "../../shared/components/TournamentToolbar";
 
 import type {

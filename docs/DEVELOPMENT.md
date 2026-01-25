@@ -12,7 +12,7 @@ This document provides a comprehensive guide for setting up, developing, maintai
 
 ### Code Quality Improvements
 
-- **Fixed Critical Bug**: Unhandled promise rejection in `src/core/hooks/useUserSession.ts`
+- **Fixed Critical Bug**: Unhandled promise rejection in `source/hooks/useUserSession.ts`
   - Added `.catch()` handler to prevent "An unexpected error occurred" global error message
   - Added fallback login mechanism for import failures
 - **Modernized Routing**: Migrated from custom `useRouting` to React Router DOM v6
@@ -282,68 +282,21 @@ Working with AI agents works best in small, verifiable cycles:
 
 ---
 
-## 🗑️ Dead Code Analysis
+## 🗑️ Dead Code Prevention
 
-### Cleanup Completed (Last Updated: 2026-01-08)
+Use these tools to keep the codebase clean:
 
-#### Recent Consolidation (2026-01-08)
-
-- **`src/features/auth/Login.module.css`**: ✅ REMOVED - Merged into `Setup.module.css`
-- **`src/features/auth/components/Login.tsx`**: ✅ REMOVED - Inlined into `TournamentSetup.tsx`
-- **`src/features/tournament/utils/debugLogging.ts`**: ✅ REMOVED - Inlined into `Tournament.tsx`
-- **`src/features/tournament/components/TournamentErrorState.tsx`**: ✅ REMOVED - Unused (0 imports)
-- **`src/features/tournament/components/TournamentLoadingState.tsx`**: ✅ REMOVED - Inlined into `Tournament.tsx`
-- **`src/features/tournament/components/TournamentUI/`**: ✅ FLATTENED - Moved `KeyboardHelp.tsx` to components/
-- **`src/features/tournament/components/TournamentSidebar/`**: ✅ FLATTENED - Moved `PhotoComponents.tsx` to components/
-
-**Total savings:** ~319 LOC, 5 files, 2 directories
-
-#### Previous Cleanup (2026-01-07)
-
-- **`test/test-supabase-credentials.js`**: ✅ REMOVED - Security validation script that was a one-time verification tool with no references in package.json scripts or CI/CD.
-
-#### Removed Unused Dependencies
-
-- **`@heroui/react`**: ✅ REMOVED - Unused dependency identified by knip
-- **`clsx`**: ✅ REMOVED - Unused dependency identified by knip
-- **`ts-pattern`**: ✅ REMOVED - Unused dependency identified by knip
-- **`@testing-library/user-event`**: ✅ REMOVED - Unused dev dependency identified by knip
-
-#### Components Verified as Active
-
-- **`src/shared/components/Navigation/Breadcrumbs.tsx`**: ✅ CONFIRMED ACTIVE - Imported and used in `App.tsx` on line 300, displays when user is logged in.
-
-#### Remaining Cleanup Opportunities
-
-The codebase has several unused exports and types identified by knip, but these are intentionally kept for:
-
-- API compatibility and future features
-- Type safety and documentation
-- Component interfaces that may be used by external consumers
-
-#### Maintenance Notes
-
-- All exports are marked with `// ts-prune-ignore-next` comments to prevent false positives from automated dead code detection
-- The codebase appears well-maintained with minimal actual dead code
-- Most "unused" code is either:
-  - Intentionally kept for API compatibility
-  - Part of planned features
-  - Required by external systems (Vite, testing frameworks)
-
-### Dead Code Prevention
-
-- Use `pnpm run check:deps` to catch unused dependencies and exports
+- **`pnpm run check:deps`** - Catch unused dependencies and exports via knip
+- **`pnpm run lint`** - Biome linting catches unused variables
 - Review `// ts-prune-ignore-next` comments periodically
-- Remove TODO/FIXME comments after addressing issues
-- Consider using tools like `ts-prune` or `knip` for automated detection
 
 ---
 
 ## 📂 Directory Structure
 
-- `src/core/`: Global singletons (Store, API clients).
-- `src/features/`: Domain-specific modules (Auth, Tournament, Profile).
-- `src/shared/`: Reusable UI, hooks, and utils.
-- `src/types/`: Shared TypeScript definitions.
-- `docs/`: Strategic hubs for project documentation.
-- `.dev/`: Development configuration, workflows, and rules.
+- `source/features/`: Domain-specific modules (analytics, auth, tournament)
+- `source/shared/`: Reusable UI, hooks, utils, and services
+- `source/store/`: Zustand store and slices
+- `source/types/`: Shared TypeScript definitions
+- `docs/`: Project documentation
+- `config/`: Tool configuration files
