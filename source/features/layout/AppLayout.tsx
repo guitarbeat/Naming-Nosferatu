@@ -9,7 +9,7 @@ import { ProfileEditorModal } from "@/features/tournament/ProfileEditorModal";
 import { ScrollToTopButton } from "@/features/ui/Button";
 import { ErrorBoundary, ErrorComponent } from "@/features/ui/Error";
 import { Loading, OfflineIndicator } from "@/features/ui/StatusIndicators";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 import type { NameItem } from "@/types";
 import { AdaptiveNav } from "./AdaptiveNav";
 import CatBackground from "./CatBackground";

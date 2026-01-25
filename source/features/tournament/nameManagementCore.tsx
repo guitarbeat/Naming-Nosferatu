@@ -9,7 +9,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 import type { NameItem, TournamentFilters } from "@/types";
 
 // ============================================================================

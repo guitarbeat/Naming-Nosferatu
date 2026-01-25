@@ -9,7 +9,7 @@ import { hapticNavTap, hapticTournamentStart } from "@utils/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 
 // Map nav keys to Section IDs
 const keyToId: Record<string, string> = {

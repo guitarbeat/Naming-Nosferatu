@@ -4,7 +4,7 @@
  */
 
 import { statsAPI } from "@features/analytics/analyticsService";
-import { deleteById, hiddenNamesAPI } from "@services/supabase/general";
+import { deleteById, hiddenNamesAPI } from "@services/supabase/client";
 import { resolveSupabaseClient } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

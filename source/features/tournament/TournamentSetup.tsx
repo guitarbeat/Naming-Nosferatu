@@ -5,7 +5,7 @@ import { CAT_IMAGES } from "@/constants";
 import { useLoginController } from "@/features/auth";
 import { Card } from "@/features/ui/Card";
 import { Input } from "@/features/ui/FormPrimitives";
-import useAppStore from "@/store/useAppStore";
+import useAppStore from "@/store/appSlice";
 import type { NameItem } from "@/types";
 import { NameManagementView } from "./NameManagementView";
 import { SwipeableCards } from "./TournamentComponents";

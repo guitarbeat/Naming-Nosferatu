@@ -3,7 +3,7 @@
  * @description Analytics service and shared types for analysis dashboard
  */
 
-import { withSupabase } from "@services/supabase/clientBase";
+import { withSupabase } from "@services/supabase/client";
 
 /* ==========================================================================
    SHARED ANALYTICS TYPES

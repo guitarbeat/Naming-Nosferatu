@@ -1,4 +1,4 @@
-import { withSupabase } from "./clientBase";
+import { withSupabase } from "./client";
 
 /**
  * Database update payload - field names match Supabase column names (snake_case required)

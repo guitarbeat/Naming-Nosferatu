@@ -1,6 +1,6 @@
 # Architecture & System Design
 
-**Last Updated:** January 2026
+**Last Updated:** January 25, 2026
 
 > For visual design guidance and design tokens, see [UI_UX.md](./UI_UX.md).
 
@@ -77,18 +77,19 @@ updateRating(r, expected, actual, games) = r + k * (actual - expected)
 
 ```
 source/
-├── components/           # UI components (design system + app-specific)
-├── features/             # Domain modules (self-contained business logic)
+├── features/             # All application features (domain + UI)
 │   ├── analytics/        # Charts, leaderboards, insights
-│   ├── auth/             # Session, identity, admin checks
-│   └── tournament/       # Competition logic, Elo ratings
+│   ├── auth/             # Session, identity, admin checks (consolidated)
+│   ├── layout/           # App shell, navigation, backgrounds
+│   ├── tournament/       # Competition logic, name management, profiles
+│   └── ui/               # Design system primitives (Button, Card, Toast, etc.)
 ├── hooks/                # Reusable React hooks
 ├── providers/            # Context providers (Auth, Theme, Toast)
 ├── services/             # Backend integration
 │   ├── errorManager.ts   # Centralized error handling
 │   ├── SyncQueue.ts      # Offline-first queue
 │   └── supabase/         # Supabase client and domain services
-├── store/                # Zustand store slices
+├── store/                # Zustand store (consolidated appSlice)
 ├── styles/               # CSS (tokens, components, animations, responsive)
 ├── types/                # TypeScript interfaces
 └── utils/                # Helper functions (cn, formatters, etc.)
@@ -105,8 +106,11 @@ config/                   # Tool configuration
 
 | Directory | Purpose |
 |-----------|---------|
-| `components/` | Reusable UI: Button, Card, Toast, forms, visual effects |
-| `features/` | Domain logic: each feature owns its components, hooks, and services |
+| `features/ui/` | Design system: Button, Card, Toast, Error, StatusIndicators, etc. |
+| `features/layout/` | App shell: AppLayout, AdaptiveNav, CatBackground, FloatingBubbles |
+| `features/tournament/` | Tournament logic, name management, profiles, Elo ratings |
+| `features/analytics/` | Analysis dashboard, charts, leaderboards |
+| `features/auth/` | Authentication, authorization, admin checks (single file) |
 | `hooks/` | Shared React hooks for browser state, forms, data fetching |
 | `services/` | API clients, error handling, offline sync |
 | `store/` | Global state management with Zustand |
@@ -116,14 +120,17 @@ config/                   # Tool configuration
 
 ## State Management
 
-### Zustand Store Slices
+### Zustand Store
+
+All slices are consolidated in `store/appSlice.ts`:
 
 | Slice | Purpose |
 |-------|---------|
-| `tournamentSlice` | Tournament state and actions |
-| `userSlice` | User session and preferences |
-| `settingsSlice` | Site settings and UI state |
-| `errorSlice` | Error handling |
+| `tournament` | Tournament state, names, ratings, vote history |
+| `user` | User session, preferences, admin status |
+| `ui` | Theme, matrix mode, cat pictures toggle |
+| `siteSettings` | Global site configuration |
+| `errors` | Error handling and history |
 
 ### Data Flow
 
@@ -154,8 +161,9 @@ All Supabase calls use `withSupabase()` for consistent error handling and offlin
 
 ## Key Patterns
 
-1. **Feature Isolation** - Domain logic lives in `source/features/`
+1. **Feature-First Organization** - All code organized under `source/features/` by domain
 2. **CVA Variants** - Component variants via Class Variance Authority
 3. **Error Boundaries** - Graceful error handling at feature boundaries
-4. **Lazy Loading** - Dynamic imports for heavy components
-5. **Path Aliases** - `@utils`, `@services`, `@components` for clean imports
+4. **Lazy Loading** - Dynamic imports for heavy components (Dashboard, Tournament)
+5. **Path Aliases** - `@/features/ui`, `@utils`, `@services` for clean imports
+6. **Consolidated Modules** - Related code merged into single files (auth, store)

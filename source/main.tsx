@@ -1,4 +1,4 @@
-import { queryClient } from "@services/supabase/queryClient";
+import { queryClient } from "@services/supabase/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import React from "react";
