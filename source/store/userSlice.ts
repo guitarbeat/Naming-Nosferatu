@@ -2,7 +2,7 @@ import { updateSupabaseUserContext } from "@supabase/client";
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/constants";
 import type { AppState, UserState } from "@/types/store";
-import { updateSlice } from "../useAppStore";
+import { updateSlice } from "./useAppStore";
 
 const getInitialUserState = (): UserState => {
 	const defaultState: UserState = {

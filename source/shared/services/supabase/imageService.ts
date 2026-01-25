@@ -1,4 +1,4 @@
-import { withSupabase } from "../clientBase";
+import { withSupabase } from "./clientBase";
 
 /**
  * @module imageService

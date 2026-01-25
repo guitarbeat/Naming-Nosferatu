@@ -58,6 +58,26 @@ export default function TournamentSetup({
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: -10 }}
 				>
+					{/* Circular Profile Image */}
+					<div className="flex justify-center pt-6 pb-4">
+						<button
+							type="button"
+							onClick={() => useAppStore.getState().uiActions.setEditingProfile(true)}
+							className="group relative"
+							aria-label="Edit profile"
+						>
+							<div className="w-20 h-20 rounded-full border-2 border-white/20 overflow-hidden shadow-xl bg-slate-900 group-hover:border-purple-400 group-hover:scale-105 transition-all duration-300 ring-4 ring-purple-500/20 group-hover:ring-purple-500/40">
+								<img
+									alt="Profile"
+									className="w-full h-full object-cover"
+									src={user.avatarUrl || "https://placekitten.com/100/100"}
+								/>
+							</div>
+							<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/80 rounded-full text-[10px] text-white/60 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+								Edit
+							</div>
+						</button>
+					</div>
 					<NameManagementView
 						mode="tournament"
 						userName={userName}

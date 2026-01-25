@@ -6,7 +6,7 @@
 import { statsAPI } from "@features/analytics/analyticsService";
 import { adminAPI } from "@features/auth/adminService";
 import { useAdminStatus } from "@features/auth/authHooks";
-import { deleteById, hiddenNamesAPI } from "@services/supabase/modules/general";
+import { deleteById, hiddenNamesAPI } from "@services/supabase/general";
 import { resolveSupabaseClient } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";

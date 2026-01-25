@@ -13,9 +13,9 @@ import { Toast } from "./components/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
 import useUserSession from "./hooks/useUserSession";
+import { AppLayout } from "./shared/components/AppLayout";
 import { ErrorBoundary } from "./shared/components/ErrorBoundary";
 import { Loading } from "./shared/components/Loading";
-import { AppLayout } from "./shared/layouts/AppLayout";
 import {
 	cleanupPerformanceMonitoring,
 	devError,

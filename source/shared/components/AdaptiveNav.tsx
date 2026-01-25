@@ -229,28 +229,6 @@ export function AdaptiveNav() {
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
-			{/* Profile Button (Integrated) */}
-			<button
-				className="group relative flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all hover:bg-white/5 md:mr-2"
-				onClick={() => appStore.uiActions.setEditingProfile(true)}
-				type="button"
-				aria-label="Edit profile"
-			>
-				<div className="relative w-6 h-6 rounded-full border border-white/30 overflow-hidden shadow-sm bg-slate-900 group-hover:border-purple-400 transition-colors">
-					<img
-						alt="Profile"
-						className="w-full h-full object-cover"
-						src={appStore.user.avatarUrl || "https://placekitten.com/100/100"}
-					/>
-				</div>
-				<span className="text-[10px] font-medium tracking-wide text-white/50 group-hover:text-white/80 transition-colors">
-					Profile
-				</span>
-			</button>
-
-			{/* Divider for Desktop */}
-			<div className="hidden md:block w-px h-8 bg-white/10 mx-2" />
-
 			{/* Unified Pick/Start Button */}
 			<motion.button
 				className={cn(

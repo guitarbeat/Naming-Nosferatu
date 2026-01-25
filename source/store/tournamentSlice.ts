@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { AppState } from "@/types/store";
-import { updateSlice } from "../useAppStore";
+import { updateSlice } from "./useAppStore";
 
 export const createTournamentSlice: StateCreator<
 	AppState,

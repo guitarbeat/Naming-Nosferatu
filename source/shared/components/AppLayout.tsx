@@ -8,13 +8,13 @@ import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { useMemo } from "react";
 import type { NameItem } from "@/types/components";
 import useAppStore from "../../store/useAppStore";
-import { AdaptiveNav } from "../components/AdaptiveNav";
-import { ScrollToTopButton } from "../components/Button";
-import CatBackground from "../components/CatBackground";
-import { ErrorBoundary } from "../components/ErrorBoundary";
-import { ErrorComponent } from "../components/ErrorComponent";
-import { Loading } from "../components/Loading";
-import { OfflineIndicator } from "../components/OfflineIndicator";
+import { AdaptiveNav } from "./AdaptiveNav";
+import { ScrollToTopButton } from "./Button";
+import CatBackground from "./CatBackground";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { ErrorComponent } from "./ErrorComponent";
+import { Loading } from "./Loading";
+import { OfflineIndicator } from "./OfflineIndicator";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;

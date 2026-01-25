@@ -7,5 +7,5 @@
 // Re-export types
 // Re-export base client functionality
 export * from "./clientBase";
-// Re-export modules
-export * from "./modules/general";
+// Re-export services
+export * from "./general";
