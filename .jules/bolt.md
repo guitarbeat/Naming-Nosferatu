@@ -1,0 +1,3 @@
+## 2025-01-26 - [Cascade of O(N) Computations via Unstable References]
+**Learning:** In `TournamentContent`, `getVisibleNames(names)` was filtering an array on every render ($O(N)$). While this seems cheap, it produced a new array reference every time. This new reference was passed to `useTournamentState`, triggering its dependency array. Inside `useTournamentState`, `namesIdentity` ($O(N)$ string join) was re-computed because `names` reference changed. This created a cascade where a simple re-render triggered multiple $O(N)$ operations unnecessarily.
+**Action:** Always memoize derived array/object props passed to custom hooks, especially if those hooks use the prop in their own heavy `useMemo` or `useEffect` dependencies.
