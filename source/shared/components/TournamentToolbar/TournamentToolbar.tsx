@@ -457,7 +457,6 @@ function TournamentToolbar({
 					className={cn(
 						styles.toolbarToggle,
 						showFiltersInTournament && styles.toolbarToggleActive,
-						"ml-auto",
 					)}
 					title="Toggle search and filters"
 				>

@@ -1,10 +1,10 @@
 .tournament-toolbar-unified-container {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 	width: 100%;
 	padding: 0 1rem;
 	height: 100%;
+	gap: 0.5rem;
 }
 
 .tournament-toolbar-start-button-wrapper {
@@ -12,6 +12,7 @@
 	flex-direction: column;
 	align-items: flex-end;
 	gap: 0.25rem;
+	margin-left: auto;
 }
 
 .tournament-toolbar-start-button-hint {
