@@ -65,10 +65,10 @@ const styles = {
 	sortControls: "tournament-toolbar-sort-controls",
 	sortOrderButton: "tournament-toolbar-sort-order-button",
 	sortIcon: "tournament-toolbar-sort-icon",
+	// Consolidated Toggle Styles
 	toolbarToggle: "toolbar-toggle",
 	toolbarToggleActive: "toolbar-toggle--active",
 	toolbarToggleAccent: "toolbar-toggle--accent",
-	toolbarSegmented: "toolbar-segmented",
 	toolbarDivider: "toolbar-divider",
 };
 
@@ -414,26 +414,24 @@ function TournamentToolbar({
 
 		return (
 			<nav className={styles.unifiedContainer} data-mode={mode}>
-				<div className={styles.toolbarSegmented}>
-					<button
-						type="button"
-						onClick={() => setSwipeMode(false)}
-						className={cn(styles.toolbarToggle, !isSwipeMode && styles.toolbarToggleActive)}
-						title="Switch to Grid View"
-					>
-						<LayoutGrid size={16} />
-						<span>Grid</span>
-					</button>
-					<button
-						type="button"
-						onClick={() => setSwipeMode(true)}
-						className={cn(styles.toolbarToggle, isSwipeMode && styles.toolbarToggleActive)}
-						title="Switch to Swipe View"
-					>
-						<GalleryHorizontal size={16} />
-						<span>Swipe</span>
-					</button>
-				</div>
+				<button
+					type="button"
+					onClick={() => setSwipeMode(false)}
+					className={cn(styles.toolbarToggle, !isSwipeMode && styles.toolbarToggleActive)}
+					title="Switch to Grid View"
+				>
+					<LayoutGrid size={16} />
+					<span>Grid</span>
+				</button>
+				<button
+					type="button"
+					onClick={() => setSwipeMode(true)}
+					className={cn(styles.toolbarToggle, isSwipeMode && styles.toolbarToggleActive)}
+					title="Switch to Swipe View"
+				>
+					<GalleryHorizontal size={16} />
+					<span>Swipe</span>
+				</button>
 
 				<span className={styles.toolbarDivider} aria-hidden="true" />
 
@@ -442,7 +440,8 @@ function TournamentToolbar({
 					onClick={() => setCatPictures(!showCatPictures)}
 					className={cn(
 						styles.toolbarToggle,
-						showCatPictures && [styles.toolbarToggleActive, styles.toolbarToggleAccent],
+						styles.toolbarToggleAccent,
+						showCatPictures && styles.toolbarToggleActive,
 					)}
 					title={showCatPictures ? "Show Names Only" : "Show Cat Photos"}
 				>
