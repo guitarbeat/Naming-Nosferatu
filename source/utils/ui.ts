@@ -131,7 +131,7 @@ class SoundManager {
 	}
 
 	private preloadSounds() {
-		const sounds = ["gameboy-pluck", "level-up", "surprise", "wow"];
+		const sounds: string[] = [];
 
 		sounds.forEach((soundName) => {
 			const audio = new Audio(`/assets/sounds/${soundName}.mp3`);
