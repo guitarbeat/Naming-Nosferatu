@@ -15,7 +15,6 @@ import { ErrorComponent } from "../components/ErrorComponent";
 import { Loading } from "../components/Loading";
 import { AdaptiveNav } from "../components/Navigation/AdaptiveNav";
 import { OfflineIndicator } from "../components/OfflineIndicator";
-import { SwipeWrapper } from "../components/SwipeWrapper";
 
 interface AppLayoutProps {
 	handleLogin: (userName: string) => Promise<boolean>;
@@ -72,7 +71,7 @@ export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 							/>
 						</div>
 					)}
-					<SwipeWrapper>{children}</SwipeWrapper>
+					{children}
 
 					{/* Global loading overlay */}
 					{tournament.isLoading && (

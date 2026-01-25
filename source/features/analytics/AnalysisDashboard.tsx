@@ -9,7 +9,6 @@ import { FloatingBubblesContainer } from "@components/FloatingBubblesContainer";
 import {
 	Button,
 	ButtonGroup,
-	Card,
 	CardBody,
 	Chip,
 	cn,
@@ -24,6 +23,7 @@ import {
 } from "@heroui/react";
 import { hiddenNamesAPI } from "@supabase/client";
 import React, { useCallback, useMemo, useState } from "react";
+import { Card } from "@/components/Card";
 import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
 import { EmptyState } from "@/components/EmptyState";
@@ -268,21 +268,21 @@ const AnalysisInsights: React.FC<{
 		if (isAdmin) {
 			return (
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-					<Card className="bg-white/5 border border-white/10">
+					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Total Names</div>
 							<div className="text-2xl font-bold text-white">{summaryStats.totalNames || 0}</div>
 							<div className="text-xs text-white/40">{summaryStats.activeNames || 0} active</div>
 						</CardBody>
 					</Card>
-					<Card className="bg-white/5 border border-white/10">
+					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Avg Rating</div>
 							<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
 							<div className="text-xs text-white/40">Global Average</div>
 						</CardBody>
 					</Card>
-					<Card className="bg-white/5 border border-white/10">
+					<Card variant="default">
 						<CardBody className="gap-1">
 							<div className="text-white/60 text-sm">Total Votes</div>
 							<div className="text-2xl font-bold text-white">{summaryStats.totalRatings || 0}</div>
@@ -297,21 +297,21 @@ const AnalysisInsights: React.FC<{
 
 		return (
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-				<Card className="bg-gradient-to-br from-yellow-500/10 to-transparent border border-yellow-500/20">
+				<Card variant="warning">
 					<CardBody className="gap-1">
 						<div className="text-yellow-500/80 text-sm">Top Rating</div>
 						<div className="text-2xl font-bold text-yellow-500">{summaryStats.maxRating ?? 0}</div>
 						<div className="text-xs text-yellow-500/60 truncate">{summaryStats.topName?.name}</div>
 					</CardBody>
 				</Card>
-				<Card className="bg-white/5 border border-white/10">
+				<Card variant="default">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Avg Rating</div>
 						<div className="text-2xl font-bold text-white">{summaryStats.avgRating}</div>
 						<div className="text-xs text-white/40">Across {namesWithInsights.length} names</div>
 					</CardBody>
 				</Card>
-				<Card className="bg-white/5 border border-white/10">
+				<Card variant="default">
 					<CardBody className="gap-1">
 						<div className="text-white/60 text-sm">Total Selected</div>
 						<div className="text-2xl font-bold text-white">{summaryStats.totalSelected ?? 0}</div>
@@ -333,15 +333,7 @@ const AnalysisInsights: React.FC<{
 		return (
 			<div className="flex flex-col gap-3 mb-6">
 				{generalInsights.map((insight, idx) => (
-					<Card
-						key={idx}
-						className={cn(
-							"border",
-							insight.type === "warning"
-								? "bg-yellow-500/10 border-yellow-500/20"
-								: "bg-blue-500/10 border-blue-500/20",
-						)}
-					>
+					<Card key={idx} variant={insight.type === "warning" ? "warning" : "info"}>
 						<CardBody className="flex flex-row items-center gap-3 p-3">
 							<span className="text-lg">{insight.icon}</span>
 							<span className="text-white/80 text-sm">{insight.message}</span>
@@ -389,10 +381,7 @@ const AnalysisInsights: React.FC<{
 						})
 						.slice(0, 12)
 						.map((n) => (
-							<Card
-								key={n.id}
-								className="bg-red-500/5 border border-red-500/10 hover:bg-red-500/10 transition-colors"
-							>
+							<Card key={n.id} variant="danger">
 								<CardBody className="p-3 gap-2">
 									<div className="flex justify-between items-start">
 										<div className="font-bold text-white truncate pr-2">{n.name}</div>
@@ -457,7 +446,7 @@ const AnalysisInsights: React.FC<{
 				<h3 className="text-lg font-bold text-white mb-3">✨ Top Performers (Keep)</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
 					{topPerformers.slice(0, 6).map((n) => (
-						<Card key={n.id} className="bg-purple-500/5 border border-purple-500/10">
+						<Card key={n.id} variant="primary">
 							<CardBody className="p-3 gap-2">
 								<div className="font-bold text-white">{n.name}</div>
 								<div className="flex gap-3 text-xs text-white/60">

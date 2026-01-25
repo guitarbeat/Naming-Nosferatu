@@ -1,3 +1,4 @@
+import { Card } from "@/components/Card";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types/components";
@@ -104,7 +105,11 @@ function TournamentContent({
 
 			{/* Controls */}
 			<section className="mt-6 px-4">
-				<div className="p-2 rounded-xl flex items-center justify-between bg-white/10 backdrop-blur-md border border-white/20">
+				<Card
+					className="flex flex-row items-center justify-between"
+					padding="small"
+					variant="default"
+				>
 					<div className="flex gap-2">
 						<button
 							onClick={audioManager.handleToggleMute}
@@ -122,16 +127,18 @@ function TournamentContent({
 						<span className="material-symbols-outlined text-sm">pets</span>
 						<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
 					</button>
-				</div>
+				</Card>
 			</section>
 
 			{/* Battle Area */}
 			<main className="flex-1 flex flex-col items-center justify-center px-4 relative my-4">
 				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
 					{/* Left */}
-					<div
+					<Card
+						interactive={true}
 						onClick={() => handleVoteWithAnimation("left")}
-						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
+						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
+						variant="default"
 					>
 						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
 							{leftImg ? (
@@ -154,7 +161,7 @@ function TournamentContent({
 									: currentMatch.left}
 							</h3>
 						</div>
-					</div>
+					</Card>
 
 					{/* VS */}
 					<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
@@ -164,9 +171,11 @@ function TournamentContent({
 					</div>
 
 					{/* Right */}
-					<div
+					<Card
+						interactive={true}
 						onClick={() => handleVoteWithAnimation("right")}
-						className="rounded-2xl flex flex-col items-center justify-between p-4 relative overflow-hidden group cursor-pointer bg-white/5 backdrop-blur-md border-t border-white/20 transition-all active:scale-95"
+						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
+						variant="default"
 					>
 						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
 							{rightImg ? (
@@ -189,7 +198,7 @@ function TournamentContent({
 									: currentMatch.right}
 							</h3>
 						</div>
-					</div>
+					</Card>
 				</div>
 
 				{/* Undo */}
@@ -203,20 +212,6 @@ function TournamentContent({
 					</span>
 				</div>
 			</main>
-
-			{/* Nav */}
-			<nav className="pb-8 px-6">
-				<div className="rounded-2xl flex items-center justify-around py-3 px-2 bg-white/10 backdrop-blur-md border-t border-white/10">
-					<button className="flex flex-col items-center gap-1 group">
-						<div className="size-10 rounded-xl flex items-center justify-center bg-primary shadow-[0_0_15px_rgba(166,94,237,0.4)]">
-							<span className="material-symbols-outlined text-white fill-1">bolt</span>
-						</div>
-						<span className="text-[9px] font-bold text-primary uppercase tracking-tighter">
-							Pick
-						</span>
-					</button>
-				</div>
-			</nav>
 
 			{/* Background */}
 			<div className="absolute top-[-10%] left-[-10%] size-64 bg-primary/10 rounded-full blur-[100px] -z-10" />

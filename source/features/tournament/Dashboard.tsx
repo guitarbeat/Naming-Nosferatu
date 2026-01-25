@@ -1,7 +1,8 @@
-import { CardBody, Chip, cn, Button as HeroButton, Card as HeroCard, Spinner } from "@heroui/react";
+import { CardBody, Chip, cn, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Card } from "@/components/Card";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import { BongoCat } from "@/shared/components/BongoCat";
@@ -59,7 +60,7 @@ export const PersonalResults = ({
 	return (
 		<div className="flex flex-col gap-6 w-full">
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<HeroCard className="bg-yellow-900/10 border border-yellow-500/20 backdrop-blur-sm">
+				<Card variant="warning" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">🏆</span>
 						<h3 className="text-sm font-medium text-white/60">Champion</h3>
@@ -67,23 +68,23 @@ export const PersonalResults = ({
 							{rankings[0]?.name || "-"}
 						</p>
 					</CardBody>
-				</HeroCard>
+				</Card>
 
-				<HeroCard className="bg-purple-900/10 border border-purple-500/20 backdrop-blur-sm">
+				<Card variant="primary" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">⭐</span>
 						<h3 className="text-sm font-medium text-white/60">Highest Rated</h3>
 						<p className="text-xl font-bold text-white">{String(rankings[0]?.rating || 1500)}</p>
 					</CardBody>
-				</HeroCard>
+				</Card>
 
-				<HeroCard className="bg-blue-900/10 border border-blue-500/20 backdrop-blur-sm">
+				<Card variant="info" className="backdrop-blur-sm">
 					<CardBody className="flex flex-col items-center justify-center gap-2 p-6">
 						<span className="text-4xl select-none">📝</span>
 						<h3 className="text-sm font-medium text-white/60">Names Ranked</h3>
 						<p className="text-xl font-bold text-white">{rankings.length}</p>
 					</CardBody>
-				</HeroCard>
+				</Card>
 			</div>
 
 			<RankingAdjustment
@@ -193,7 +194,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 			<h2 className="text-2xl font-bold text-white text-center mb-2">Random Name Generator</h2>
 			<p className="text-white/60 text-center mb-8">Can't decide? Let fate decide for you.</p>
 
-			<HeroCard className="w-full min-h-[240px] bg-gradient-to-br from-white/5 to-transparent border border-white/10">
+			<Card className="w-full min-h-[240px]">
 				<CardBody className="flex flex-col items-center justify-center gap-8 py-12">
 					<div className="text-center w-full min-h-[100px] flex flex-col items-center justify-center">
 						{isGenerating ? (
@@ -244,7 +245,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 						{isGenerating ? "Generating..." : "Generate Name"}
 					</HeroButton>
 				</CardBody>
-			</HeroCard>
+			</Card>
 
 			{favorites.size > 0 && (
 				<div className="flex flex-col gap-4">

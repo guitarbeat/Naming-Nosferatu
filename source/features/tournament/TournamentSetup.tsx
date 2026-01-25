@@ -1,6 +1,7 @@
 import { cn } from "@utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Card } from "@/components/Card";
 import { NameManagementView } from "@/components/NameManagementView/NameManagementView";
 import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types/components";
@@ -84,7 +85,7 @@ export default function TournamentSetup({
 						</p>
 					</div>
 
-					<div className="w-full space-y-6 bg-black/40 backdrop-blur-xl p-8 rounded-3xl border border-white/5 shadow-2xl">
+					<Card className="w-full space-y-6" padding="large" background="glass">
 						<div className="space-y-4">
 							<Input
 								type="text"
@@ -108,7 +109,7 @@ export default function TournamentSetup({
 						>
 							{isLoading ? "Loading..." : "Step Inside"}
 						</button>
-					</div>
+					</Card>
 				</motion.div>
 			)}
 		</AnimatePresence>

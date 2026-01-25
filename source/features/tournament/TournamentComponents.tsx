@@ -1,5 +1,6 @@
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd";
-import { Button, Card, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
+
+import { Button, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
 import { playSound } from "@utils/soundManager";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
@@ -13,6 +14,7 @@ import {
 	X,
 } from "lucide-react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Card } from "@/components/Card";
 import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/components";
 import { getRandomCatImage } from "./TournamentLogic";
@@ -85,7 +87,8 @@ export const SwipeableCards = memo(
 		return (
 			<div className="flex flex-col gap-6 w-full">
 				{/* Progress Header */}
-				<div className="p-4 rounded-xl bg-white/5 backdrop-blur-md border border-white/10">
+				{/* Progress Header */}
+				<Card padding="small" variant="default">
 					<div className="gap-3 flex flex-col">
 						<div className="flex justify-between items-center">
 							<span className="text-sm font-bold text-default-500 uppercase tracking-wider">
@@ -104,7 +107,7 @@ export const SwipeableCards = memo(
 							}}
 						/>
 					</div>
-				</div>
+				</Card>
 
 				{/* Swipe Stack */}
 				<div className="relative w-full" style={{ minHeight: "500px" }}>
@@ -146,14 +149,16 @@ export const SwipeableCards = memo(
 										transition={{ type: "spring", stiffness: 300, damping: 30 }}
 										className="w-full max-w-md"
 									>
-										<div
+										<Card
 											className={cn(
-												"relative rounded-2xl flex flex-col items-center justify-between p-4 overflow-hidden group bg-white/5 backdrop-blur-md border-t border-white/20 transition-all duration-200",
+												"relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full",
 												isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
 												index === 0 &&
 													"cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
 												index > 0 && "pointer-events-none",
 											)}
+											variant="default"
+											padding="medium"
 										>
 											{/* Swipe Indicators */}
 											{index === 0 && (
@@ -205,12 +210,12 @@ export const SwipeableCards = memo(
 											</div>
 
 											{/* Text Content */}
-											<div className="text-center pb-4 z-10">
+											<div className="text-center pb-4 z-10 w-full">
 												<h3 className="font-whimsical text-2xl lg:text-3xl text-white tracking-wide drop-shadow-lg break-words w-full">
 													{card.name}
 												</h3>
 												{card.description && (
-													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2">
+													<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto">
 														{card.description}
 													</p>
 												)}
@@ -225,7 +230,7 @@ export const SwipeableCards = memo(
 													</div>
 												)}
 											</div>
-										</div>
+										</Card>
 									</motion.div>
 								</motion.div>
 							))
@@ -235,7 +240,7 @@ export const SwipeableCards = memo(
 								animate={{ opacity: 1, scale: 1 }}
 								className="flex flex-col items-center justify-center gap-6 p-12"
 							>
-								<div className="p-12 rounded-xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col items-center text-center gap-6">
+								<Card variant="default" className="flex flex-col items-center text-center gap-6">
 									<div className="text-6xl">🎉</div>
 									<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
 										All Clear!
@@ -254,7 +259,7 @@ export const SwipeableCards = memo(
 											Start Tournament ({selectedNames.length} names)
 										</Button>
 									)}
-								</div>
+								</Card>
 							</motion.div>
 						)}
 					</AnimatePresence>
@@ -465,13 +470,8 @@ export const RankingAdjustment = memo(
 
 		return (
 			<Card
-				className={cn(
-					"w-full max-w-4xl mx-auto",
-					"bg-gradient-to-br from-purple-900/20 via-pink-900/10 to-purple-900/20",
-					"backdrop-blur-xl border border-white/10",
-					"shadow-2xl shadow-purple-500/10",
-					isDragging && "ring-2 ring-purple-500/50",
-				)}
+				className={cn("w-full max-w-4xl mx-auto", isDragging && "ring-2 ring-purple-500/50")}
+				variant="primary"
 			>
 				<CardHeader className="flex flex-col gap-3 pb-4">
 					<div className="flex items-center justify-between w-full">

@@ -60,13 +60,13 @@ function InlineNameSuggestion() {
 					</label>
 					<div className="flex gap-3">
 						<div className="flex-1">
-							<input
+							<Input
 								id="suggest-name"
 								type="text"
 								value={values.name}
 								onChange={(e) => handleChange("name", e.target.value)}
 								placeholder="Enter a cool cat name..."
-								className="w-full h-[50px] px-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all font-medium backdrop-blur-sm"
+								className="w-full h-[50px] px-4 font-medium backdrop-blur-sm"
 								disabled={isSubmitting}
 							/>
 						</div>
@@ -84,13 +84,13 @@ function InlineNameSuggestion() {
 						<label htmlFor="suggest-description" className="text-sm font-medium text-white/80">
 							Why this name? (optional but encouraged)
 						</label>
-						<textarea
+						<Textarea
 							id="suggest-description"
 							value={values.description}
 							onChange={(e) => handleChange("description", e.target.value)}
 							placeholder="Share what makes this name special, its meaning, or why it fits your cat..."
 							rows={3}
-							className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all font-medium backdrop-blur-sm resize-none"
+							className="w-full px-4 py-3 font-medium backdrop-blur-sm resize-none"
 							disabled={isSubmitting}
 						/>
 					</div>

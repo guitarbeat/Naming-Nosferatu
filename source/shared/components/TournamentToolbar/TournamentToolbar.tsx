@@ -6,6 +6,7 @@
 
 import { cn } from "@utils/cn";
 import React, { useId } from "react";
+import { Card } from "@/components/Card";
 import { FILTER_OPTIONS } from "../../../constants";
 import useAppStore from "../../../store/useAppStore";
 import Button from "../Button";
@@ -423,7 +424,7 @@ function TournamentToolbar({
 			: "Select at least 2 names to start a tournament.";
 
 		return (
-			<div className={styles.unifiedContainer} data-mode={mode}>
+			<Card className={styles.unifiedContainer} data-mode={mode} variant="default" padding="small">
 				<div className="flex items-center gap-2">
 					<div className="flex items-center bg-white/5 p-1 rounded-lg border border-white/10">
 						<button
@@ -511,7 +512,7 @@ function TournamentToolbar({
 						)}
 					</div>
 				)}
-			</div>
+			</Card>
 		);
 	};
 
