@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import useLocalStorage from "@/hooks/useStorage";
 import { useToast } from "@/providers/ToastProvider";
 import { BongoCat } from "@/shared/components/BongoCat";
+import { exportTournamentResultsToCSV } from "@/shared/utils";
 import type { NameItem } from "@/types/components";
 import { RankingAdjustment } from "./TournamentComponents";
 
@@ -116,18 +117,7 @@ export const PersonalResults = ({
 						if (!rankings.length) {
 							return;
 						}
-						const headers = ["Name", "Rating", "Wins", "Losses"];
-						const rows = rankings.map((r) =>
-							[`"${r.name}"`, r.rating, r.wins || 0, r.losses || 0].join(","),
-						);
-						const csvContent = [headers.join(","), ...rows].join("\n");
-						const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-						const link = document.createElement("a");
-						link.href = URL.createObjectURL(blob);
-						link.setAttribute("download", `cat_names_${new Date().toISOString().slice(0, 10)}.csv`);
-						document.body.appendChild(link);
-						link.click();
-						document.body.removeChild(link);
+						exportTournamentResultsToCSV(rankings);
 					}}
 				>
 					Export CSV
