@@ -2,7 +2,7 @@ import { getVisibleNames } from "@utils";
 import { Card } from "@/components/Card";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
-import type { TournamentProps } from "@/types/components";
+import type { TournamentProps } from "@/types";
 import { ErrorComponent } from "../../components/Error";
 import { Loading } from "../../components/StatusIndicators";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";

@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
-import type { AppState } from "@/types/store";
-import { createErrorSlice, createSettingsSlice, createUserSlice } from "./appSlice";
-import { createTournamentSlice } from "./tournamentSlice";
+import type { AppState } from "@/types";
+import {
+	createErrorSlice,
+	createSettingsSlice,
+	createTournamentSlice,
+	createUserSlice,
+} from "./appSlice";
 
 // * Devtools middleware disabled entirely to avoid prod crashes
 const applyDevtools = (storeImpl: StateCreator<AppState>) => {

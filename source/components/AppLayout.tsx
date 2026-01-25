@@ -6,7 +6,7 @@
 
 import { ProfileEditorModal } from "@components/ProfileEditorModal";
 import { useMemo } from "react";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import useAppStore from "../store/useAppStore";
 import { AdaptiveNav } from "./AdaptiveNav";
 import { ScrollToTopButton } from "./Button";

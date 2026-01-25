@@ -1,13 +1,77 @@
 /**
  * @module appSlice
- * @description Combined app-wide state: UI settings, site settings, error handling, and user state
+ * @description Combined app-wide state: tournament, UI settings, site settings, error handling, and user state
+ * All Zustand slices consolidated into a single file.
  */
 
 import { siteSettingsAPI, updateSupabaseUserContext } from "@supabase/client";
 import type { StateCreator } from "zustand";
 import { STORAGE_KEYS } from "@/constants";
-import type { AppState, CatChosenName, UIState, UserState } from "@/types/store";
+import type { AppState, CatChosenName, UIState, UserState } from "@/types";
 import { updateSlice } from "./useAppStore";
+
+/* ==========================================================================
+   TOURNAMENT STATE (merged from tournamentSlice.ts)
+   ========================================================================== */
+
+export const createTournamentSlice: StateCreator<
+	AppState,
+	[],
+	[],
+	Pick<AppState, "tournament" | "tournamentActions">
+> = (set, _get) => ({
+	tournament: {
+		names: null,
+		ratings: {},
+		isComplete: false,
+		isLoading: false,
+		voteHistory: [],
+		selectedNames: [],
+	},
+
+	tournamentActions: {
+		setNames: (names) =>
+			updateSlice(set, "tournament", {
+				names:
+					names?.map((n) => ({
+						id: n.id,
+						name: n.name,
+						description: n.description,
+						rating: _get().tournament.ratings[n.name]?.rating || 1500,
+					})) || null,
+			}),
+
+		setRatings: (ratingsOrFn) => {
+			const currentRatings = _get().tournament.ratings;
+			const newRatings =
+				typeof ratingsOrFn === "function" ? ratingsOrFn(currentRatings) : ratingsOrFn;
+
+			updateSlice(set, "tournament", {
+				ratings: { ...currentRatings, ...newRatings },
+			});
+		},
+
+		setComplete: (isComplete) => updateSlice(set, "tournament", { isComplete }),
+
+		setLoading: (isLoading) => updateSlice(set, "tournament", { isLoading }),
+
+		addVote: (vote) =>
+			updateSlice(set, "tournament", {
+				voteHistory: [..._get().tournament.voteHistory, vote],
+			}),
+
+		resetTournament: () =>
+			updateSlice(set, "tournament", {
+				names: null,
+				isComplete: false,
+				voteHistory: [],
+				isLoading: false,
+			}),
+
+		// * Global Selection State for Navbar
+		setSelection: (selectedNames) => updateSlice(set, "tournament", { selectedNames }),
+	},
+});
 
 /* ==========================================================================
    UI & THEME STATE

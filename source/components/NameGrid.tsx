@@ -19,7 +19,7 @@ import { motion } from "framer-motion";
 import { Upload } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
 import { Lightbox } from "./Lightbox";

@@ -1,7 +1,7 @@
 import { NameGrid } from "@components/NameGrid";
 import { cn } from "@utils";
 import React from "react";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import Button from "./Button";
 import type {
 	NameManagementViewExtensions,

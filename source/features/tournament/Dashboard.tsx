@@ -6,7 +6,7 @@ import { Card } from "@/components/Card";
 import { BongoCat } from "@/components/CatVisuals";
 import useLocalStorage from "@/hooks/useBrowserState";
 import { useToast } from "@/providers/ToastProvider";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import { exportTournamentResultsToCSV } from "@/utils";
 import { RankingAdjustment } from "./TournamentComponents";
 

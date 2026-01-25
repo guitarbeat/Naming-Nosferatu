@@ -77,22 +77,21 @@ updateRating(r, expected, actual, games) = r + k * (actual - expected)
 
 ```
 source/
-├── components/           # UI components
-├── features/             # Domain modules
-│   ├── analytics/        # Charts and leaderboards
-│   ├── auth/             # Session and identity
-│   └── tournament/       # Competition logic
-├── hooks/                # Business logic hooks
-├── providers/            # Context providers
-├── shared/               # Reusable code
-│   ├── components/       # Design system (Button, AdaptiveNav, etc.)
-│   ├── layouts/          # Page wrappers
-│   ├── services/         # ErrorManager, SyncQueue, Supabase client
-│   └── utils/            # Helpers (cn, formatters)
-├── store/                # Zustand store
-│   └── slices/           # tournamentSlice, userSlice, settingsSlice, errorSlice
-├── styles/               # CSS (core, components, animations, utilities)
-└── types/                # TypeScript interfaces
+├── components/           # UI components (design system + app-specific)
+├── features/             # Domain modules (self-contained business logic)
+│   ├── analytics/        # Charts, leaderboards, insights
+│   ├── auth/             # Session, identity, admin checks
+│   └── tournament/       # Competition logic, Elo ratings
+├── hooks/                # Reusable React hooks
+├── providers/            # Context providers (Auth, Theme, Toast)
+├── services/             # Backend integration
+│   ├── errorManager.ts   # Centralized error handling
+│   ├── SyncQueue.ts      # Offline-first queue
+│   └── supabase/         # Supabase client and domain services
+├── store/                # Zustand store slices
+├── styles/               # CSS (tokens, components, animations, responsive)
+├── types/                # TypeScript interfaces
+└── utils/                # Helper functions (cn, formatters, etc.)
 
 supabase/                 # Database
 ├── migrations/           # SQL migrations
@@ -101,6 +100,17 @@ supabase/                 # Database
 docs/                     # Documentation
 config/                   # Tool configuration
 ```
+
+### Directory Roles
+
+| Directory | Purpose |
+|-----------|---------|
+| `components/` | Reusable UI: Button, Card, Toast, forms, visual effects |
+| `features/` | Domain logic: each feature owns its components, hooks, and services |
+| `hooks/` | Shared React hooks for browser state, forms, data fetching |
+| `services/` | API clients, error handling, offline sync |
+| `store/` | Global state management with Zustand |
+| `utils/` | Pure functions: array ops, formatting, metrics |
 
 ---
 
@@ -127,14 +137,16 @@ User Action → Component → Zustand Store ←→ TanStack Query → Supabase
 
 ## Service Layer
 
-Services are located in `source/shared/services/`:
+Services are located in `source/services/`:
 
 | Service | Purpose |
 |---------|---------|
-| `ErrorManager` | Centralized error handling with retry logic |
-| `SyncQueue` | Offline-first queue for failed operations |
-| `supabase/client` | Supabase client with `withSupabase` wrapper |
-| `supabase/modules/*` | Domain services (names, images, settings) |
+| `errorManager.ts` | Centralized error handling with retry logic |
+| `SyncQueue.ts` | Offline-first queue for failed operations |
+| `supabase/client.ts` | Supabase client with `withSupabase` wrapper |
+| `supabase/nameService.ts` | Name CRUD operations |
+| `supabase/imageService.ts` | Image upload and management |
+| `supabase/siteSettingsService.ts` | Global configuration |
 
 All Supabase calls use `withSupabase()` for consistent error handling and offline support.
 

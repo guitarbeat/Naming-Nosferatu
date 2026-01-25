@@ -13,7 +13,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Toast } from "@/components/Toast";
 import { FILTER_OPTIONS, NOTIFICATION } from "@/constants";
 import { useToast } from "@/providers/ToastProvider";
-import type { IdType, NameItem } from "@/types/components";
+import type { IdType, NameItem } from "@/types";
 
 // ============================================================================
 // Internal Types

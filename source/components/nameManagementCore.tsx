@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants";
 import { useNameData, useNameSelection } from "@/hooks/useNames";
 import useAppStore from "@/store/useAppStore";
-import type { NameItem, TournamentFilters } from "@/types/components";
+import type { NameItem, TournamentFilters } from "@/types";
 
 // ============================================================================
 // TYPE DEFINITIONS

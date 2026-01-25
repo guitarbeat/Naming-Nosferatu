@@ -1,4 +1,4 @@
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import { withSupabase } from "./clientBase";
 
 /**

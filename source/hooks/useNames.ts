@@ -12,7 +12,7 @@ import { VALIDATION } from "@/constants";
 import { useTournamentSelectionSaver } from "@/features/tournament/TournamentHooks";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import { useValidatedForm } from "./useValidatedForm";
 
 /* ==========================================================================

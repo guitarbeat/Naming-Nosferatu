@@ -7,7 +7,7 @@
 import { cn } from "@utils";
 import React, { useId } from "react";
 
-import type { TournamentFilters } from "@/types/components";
+import type { TournamentFilters } from "@/types";
 import { FILTER_OPTIONS } from "../constants";
 import useAppStore from "../store/useAppStore";
 import Button from "./Button";

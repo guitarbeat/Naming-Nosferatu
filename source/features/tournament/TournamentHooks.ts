@@ -14,13 +14,13 @@ import { TOURNAMENT_TIMING } from "@/constants";
 import useLocalStorage from "@/hooks/useBrowserState";
 import useAppStore from "@/store/useAppStore";
 import type {
+	AppState,
 	Match,
 	MatchRecord,
 	NameItem,
 	PersistentState,
 	TournamentUIState,
-} from "@/types/components";
-import type { AppState } from "@/types/store";
+} from "@/types";
 import {
 	calculateBracketRound,
 	EloRating,

@@ -1,5 +1,5 @@
 import { CAT_IMAGES } from "@/constants";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 
 /* ==========================================================================
    CAT IMAGE UTILITIES

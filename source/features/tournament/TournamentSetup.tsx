@@ -5,7 +5,7 @@ import { Card } from "@/components/Card";
 import { NameManagementView } from "@/components/NameManagementView";
 import { CAT_IMAGES } from "@/constants";
 import useAppStore from "@/store/useAppStore";
-import type { NameItem } from "@/types/components";
+import type { NameItem } from "@/types";
 import { Input } from "../../components/FormPrimitives";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";
