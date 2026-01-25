@@ -3,7 +3,7 @@ import { withSupabase } from "@supabase/client";
 /**
  * Database update payload - field names match Supabase column names (snake_case required)
  */
-export interface CatChosenNameUpdate {
+interface CatChosenNameUpdate {
 	first_name: string;
 	middle_names?: string | string[];
 	last_name?: string;

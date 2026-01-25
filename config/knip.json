@@ -1,7 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@5/schema.json",
 	"entry": ["source/main.tsx"],
-	"project": ["source/**/*.{js,jsx,ts,tsx}", "scripts/**/*.{js,ts}"],
+	"project": ["source/**/*.{js,jsx,ts,tsx}"],
 	"ignore": [
 		"**/*.md",
 		"**/README.md",
@@ -12,7 +12,7 @@
 		"source/shared/utils/performanceMonitor.d.ts",
 		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
 	],
-	"ignoreDependencies": ["supabase"],
+	"ignoreDependencies": [],
 	"typescript": true,
 	"paths": {
 		"@/*": ["./source/*"],

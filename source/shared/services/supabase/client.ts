@@ -5,7 +5,6 @@
  */
 
 // Re-export types
-export type { Database } from "@supabase/types";
 // Re-export base client functionality
 export * from "./clientBase";
 // Re-export modules

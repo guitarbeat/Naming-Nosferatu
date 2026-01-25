@@ -1,17 +1,17 @@
 import { withSupabase } from "@services/supabase/clientBase";
 
-export interface SelectionStats {
+interface SelectionStats {
 	name_id: string | number;
 	name: string;
 	count: number;
 }
 
-export interface AnalyticsSelectionStats {
+interface AnalyticsSelectionStats {
 	count: number;
 	users: Set<string>;
 }
 
-export interface RatingStats {
+interface RatingStats {
 	totalRating: number;
 	count: number;
 	wins: number;
@@ -19,7 +19,7 @@ export interface RatingStats {
 	users: Set<string>;
 }
 
-export interface RatingInfo {
+interface RatingInfo {
 	rating: number;
 	wins: number;
 }

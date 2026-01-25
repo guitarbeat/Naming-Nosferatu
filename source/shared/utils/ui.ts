@@ -14,48 +14,6 @@ export function getRankDisplay(rank: number): string {
 	return `${rank}th`;
 }
 
-export function normalizeRoutePath(routeValue: string): string {
-	if (!routeValue) {
-		return "/";
-	}
-	return routeValue.startsWith("/") ? routeValue : `/${routeValue}`;
-}
-
-const isBrowser = () => typeof window !== "undefined";
-const canUseMatchMedia = () => isBrowser() && typeof window.matchMedia === "function";
-
-export const getMediaQueryList = (query: string): MediaQueryList | null => {
-	if (!canUseMatchMedia()) {
-		return null;
-	}
-	try {
-		return window.matchMedia(query);
-	} catch (error) {
-		if (process.env.NODE_ENV === "development") {
-			console.warn("Invalid media query:", query, error);
-		}
-		return null;
-	}
-};
-
-export const attachMediaQueryListener = (
-	mediaQueryList: MediaQueryList | null,
-	listener: (event: MediaQueryListEvent) => void,
-): (() => void) => {
-	if (!mediaQueryList || typeof listener !== "function") {
-		return () => {
-			// Intentional no-op: invalid parameters, no cleanup needed
-		};
-	}
-	if (typeof mediaQueryList.addEventListener === "function") {
-		mediaQueryList.addEventListener("change", listener);
-		return () => mediaQueryList.removeEventListener("change", listener);
-	}
-	return () => {
-		// Intentional no-op: fallback for browsers without addEventListener
-	};
-};
-
 async function loadImageFromFile(file: File): Promise<HTMLImageElement> {
 	return new Promise((resolve, reject) => {
 		if (typeof window === "undefined") {

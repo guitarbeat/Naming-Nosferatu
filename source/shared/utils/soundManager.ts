@@ -92,8 +92,8 @@ class SoundManager {
 	}
 }
 
-// Create and export a singleton instance
-export const soundManager = new SoundManager();
+// Create a singleton instance
+const soundManager = new SoundManager();
 
 // Export convenience functions
 export const playSound = (soundName: string, config?: SoundConfig) => {

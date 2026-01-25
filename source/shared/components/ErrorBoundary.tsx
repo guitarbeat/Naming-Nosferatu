@@ -15,7 +15,7 @@ interface State {
 	errorId: string | null;
 }
 
-export interface ErrorFallbackProps {
+interface ErrorFallbackProps {
 	error: Error | null;
 	errorId: string | null;
 	resetError: () => void;

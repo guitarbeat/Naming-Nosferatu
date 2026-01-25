@@ -1,11 +1,11 @@
 import { devError } from "@/utils";
 
-export interface SyncPayload {
+interface SyncPayload {
 	userName: string;
 	ratings: Array<{ name: string; rating: number; wins?: number; losses?: number }>;
 }
 
-export interface SyncItem {
+interface SyncItem {
 	id: string;
 	type: "SAVE_RATINGS";
 	payload: SyncPayload;

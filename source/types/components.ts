@@ -87,24 +87,6 @@ export interface TournamentUIState {
 	sorter: unknown;
 }
 
-export interface TournamentActions {
-	setRatings: (ratings: Record<string, { rating: number; wins?: number; losses?: number }>) => void;
-	setComplete: (complete: boolean) => void;
-	resetTournament: () => void;
-	setLoading: (loading: boolean) => void;
-	setNames: (names: NameItem[]) => void;
-	setView: (view: string) => void;
-}
-
-export interface BracketMatch {
-	id: number;
-	name1: string;
-	name2?: string;
-	winner?: number;
-	round?: number;
-	[key: string]: unknown;
-}
-
 export interface VoteData {
 	match: {
 		left: {

@@ -6,7 +6,7 @@
 
 import { cn } from "@utils/cn";
 import type React from "react";
-import { ErrorBoundary, type ErrorFallbackProps } from "./ErrorBoundary";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 /* ========================================= */
 /*             ERROR COMPONENTS              */
@@ -173,4 +173,4 @@ export const ErrorComponent: React.FC<ErrorProps> = ({
 ErrorComponent.displayName = "ErrorComponent";
 
 // Re-export ErrorBoundary and its types for convenience
-export { ErrorBoundary, type ErrorFallbackProps };
+export { ErrorBoundary };

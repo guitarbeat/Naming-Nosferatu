@@ -1,4 +1,4 @@
-export interface InsightCategory {
+interface InsightCategory {
 	label: string;
 	description: string;
 	icon: string;

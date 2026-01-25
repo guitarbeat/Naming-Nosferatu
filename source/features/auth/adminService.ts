@@ -1,13 +1,5 @@
 import { withSupabase } from "@supabase/client";
 
-/**
- * Database query result type - field names match Supabase column names (snake_case required)
- */
-export interface UserRole {
-	user_name: string;
-	role: string;
-}
-
 export const adminAPI = {
 	/**
 	 * List application users

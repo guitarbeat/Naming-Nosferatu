@@ -4,7 +4,7 @@ import { withSupabase } from "../clientBase";
 /**
  * Database query result type - field names match Supabase column names (snake_case required)
  */
-export interface HiddenNameItem {
+interface HiddenNameItem {
 	id: string;
 	name: string;
 	description: string | null;

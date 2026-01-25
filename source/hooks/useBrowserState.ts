@@ -4,7 +4,7 @@ import { syncQueue } from "@services/SyncQueue";
 import { devError, devLog, devWarn } from "@utils";
 import { useCallback, useEffect, useState } from "react";
 
-export interface BrowserState {
+interface BrowserState {
 	isMobile: boolean;
 	isTablet: boolean;
 	isDesktop: boolean;

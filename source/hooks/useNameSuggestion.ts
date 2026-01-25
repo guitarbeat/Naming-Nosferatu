@@ -10,7 +10,7 @@ import { useValidatedForm } from "./useValidatedForm";
 /**
  * Schema for name suggestion form validation
  */
-export const SuggestionSchema = z.object({
+const SuggestionSchema = z.object({
 	name: z
 		.string()
 		.min(VALIDATION.MIN_CAT_NAME_LENGTH || 2, "Name must be at least 2 characters")
@@ -21,7 +21,7 @@ export const SuggestionSchema = z.object({
 		.max(VALIDATION.MAX_DESCRIPTION_LENGTH || 500, "Description must be 500 characters or less"),
 });
 
-export type SuggestionFormValues = z.infer<typeof SuggestionSchema>;
+type SuggestionFormValues = z.infer<typeof SuggestionSchema>;
 
 interface UseNameSuggestionProps {
 	onSuccess?: () => void;
