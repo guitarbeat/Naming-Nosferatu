@@ -235,11 +235,18 @@ function CatImage({
 	} as React.CSSProperties;
 
 	const renderImage = () => {
+		// Apply focal point positioning via inline style that reads CSS variables
+		const imageStyle: React.CSSProperties = {
+			objectPosition: "center var(--image-pos-y, 50%)",
+			objectFit: "var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"],
+		};
+
 		const commonProps = {
 			ref: imageRef,
 			src,
 			alt,
 			className: imageClassName,
+			style: imageStyle,
 			loading,
 			decoding,
 			onLoad: handleLoad,
