@@ -6,7 +6,7 @@
 
 import { cn } from "@utils/cn";
 import React, { useId } from "react";
-import { Card } from "@/components/Card";
+
 import type { TournamentFilters } from "@/types/components";
 import { FILTER_OPTIONS } from "../../../constants";
 import useAppStore from "../../../store/useAppStore";
@@ -46,16 +46,10 @@ const TOOLBAR_GLASS_CONFIGS = {
 
 const styles = {
 	unifiedContainer: "tournament-toolbar-unified-container",
-	toggleStack: "tournament-toolbar-toggle-stack",
 	filtersContainer: "tournament-toolbar-filters-container",
 	startButton: "tournament-toolbar-start-button",
 	startButtonWrapper: "tournament-toolbar-start-button-wrapper",
 	startButtonHint: "tournament-toolbar-start-button-hint",
-	toggleWrapper: "tournament-toolbar-toggle-wrapper",
-	toggleSwitch: "tournament-toolbar-toggle-switch",
-	toggleSwitchActive: "tournament-toolbar-toggle-switch-active",
-	toggleThumb: "tournament-toolbar-toggle-thumb",
-	toggleLabel: "tournament-toolbar-toggle-label",
 	resultsCount: "tournament-toolbar-results-count",
 	count: "tournament-toolbar-count",
 	separator: "tournament-toolbar-separator",
@@ -71,7 +65,11 @@ const styles = {
 	sortControls: "tournament-toolbar-sort-controls",
 	sortOrderButton: "tournament-toolbar-sort-order-button",
 	sortIcon: "tournament-toolbar-sort-icon",
-	suggestButton: "tournament-toolbar-suggest-button",
+	toolbarToggle: "toolbar-toggle",
+	toolbarToggleActive: "toolbar-toggle--active",
+	toolbarToggleAccent: "toolbar-toggle--accent",
+	toolbarSegmented: "toolbar-segmented",
+	toolbarDivider: "toolbar-divider",
 };
 
 const FILTER_CONFIGS = {
@@ -415,73 +413,56 @@ function TournamentToolbar({
 			: "Select at least 2 names to start a tournament.";
 
 		return (
-			<Card className={styles.unifiedContainer} data-mode={mode} variant="default" padding="small">
-				<div className="flex items-center gap-2">
-					<div className="flex items-center bg-white/5 p-1 rounded-lg border border-white/10">
-						<button
-							type="button"
-							onClick={() => setSwipeMode(false)}
-							className={cn(
-								"flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-								isSwipeMode
-									? "text-white/40 hover:text-white/60 hover:bg-white/5"
-									: "bg-white/10 text-white shadow-sm",
-							)}
-							title="Switch to Grid View"
-						>
-							<LayoutGrid size={16} />
-							<span>Grid</span>
-						</button>
-						<button
-							type="button"
-							onClick={() => setSwipeMode(true)}
-							className={cn(
-								"flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all",
-								isSwipeMode
-									? "bg-purple-500/20 text-purple-200 shadow-sm ring-1 ring-purple-500/30"
-									: "text-white/40 hover:text-white/60 hover:bg-white/5",
-							)}
-							title="Switch to Swipe View"
-						>
-							<GalleryHorizontal size={16} />
-							<span>Swipe</span>
-						</button>
-					</div>
-
-					<div className="h-6 w-px bg-white/10 mx-2" />
-
+			<nav className={styles.unifiedContainer} data-mode={mode}>
+				<div className={styles.toolbarSegmented}>
 					<button
 						type="button"
-						onClick={() => setCatPictures(!showCatPictures)}
-						className={cn(
-							"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all",
-							showCatPictures
-								? "bg-pink-500/10 border-pink-500/20 text-pink-200 hover:bg-pink-500/20"
-								: "bg-white/5 border-transparent text-white/40 hover:text-white/60 hover:bg-white/10",
-						)}
-						title={showCatPictures ? "Show Names Only" : "Show Cat Photos"}
+						onClick={() => setSwipeMode(false)}
+						className={cn(styles.toolbarToggle, !isSwipeMode && styles.toolbarToggleActive)}
+						title="Switch to Grid View"
 					>
-						{showCatPictures ? <Eye size={16} /> : <EyeOff size={16} />}
-						<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
+						<LayoutGrid size={16} />
+						<span>Grid</span>
 					</button>
-
-					{/* Progressive Disclosure: Filter Toggle */}
 					<button
 						type="button"
-						onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
-						className={cn(
-							"flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-all ml-auto",
-							showFiltersInTournament
-								? "bg-white/10 border-white/10 text-white"
-								: "bg-transparent border-transparent text-white/40 hover:text-white/60 hover:bg-white/5",
-						)}
-						title="Toggle search and filters"
+						onClick={() => setSwipeMode(true)}
+						className={cn(styles.toolbarToggle, isSwipeMode && styles.toolbarToggleActive)}
+						title="Switch to Swipe View"
 					>
-						<span className={styles.toggleLabel}>
-							{showFiltersInTournament ? "Hide Filters" : "Filters"}
-						</span>
+						<GalleryHorizontal size={16} />
+						<span>Swipe</span>
 					</button>
 				</div>
+
+				<span className={styles.toolbarDivider} aria-hidden="true" />
+
+				<button
+					type="button"
+					onClick={() => setCatPictures(!showCatPictures)}
+					className={cn(
+						styles.toolbarToggle,
+						showCatPictures && [styles.toolbarToggleActive, styles.toolbarToggleAccent],
+					)}
+					title={showCatPictures ? "Show Names Only" : "Show Cat Photos"}
+				>
+					{showCatPictures ? <Eye size={16} /> : <EyeOff size={16} />}
+					<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
+				</button>
+
+				{/* Progressive Disclosure: Filter Toggle */}
+				<button
+					type="button"
+					onClick={() => setShowFiltersInTournament(!showFiltersInTournament)}
+					className={cn(
+						styles.toolbarToggle,
+						showFiltersInTournament && styles.toolbarToggleActive,
+						"ml-auto",
+					)}
+					title="Toggle search and filters"
+				>
+					<span>{showFiltersInTournament ? "Hide Filters" : "Filters"}</span>
+				</button>
 
 				{startTournamentButton && (
 					<div className={styles.startButtonWrapper} title={tooltipText}>
@@ -503,7 +484,7 @@ function TournamentToolbar({
 						)}
 					</div>
 				)}
-			</Card>
+			</nav>
 		);
 	};
 
