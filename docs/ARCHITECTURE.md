@@ -14,12 +14,13 @@
 - **Framework**: React 19.2.3 (Actions, `use` hook)
 - **Build Tool**: Vite 7.3.1
 - **State Management**: Zustand (Global) + TanStack Query (Server)
-- **Routing**: Single Page Architecture (SPA) with Section Scrolling (removed React Router complexity)
-- **Styling**: CSS Modules + Class Variance Authority (CVA) + Design Tokens
+- **Routing**: `react-router-dom` v7 (Lazy loading and SPA navigation)
+- **Styling**: Tailwind CSS v4 + Class Variance Authority (CVA) + Design Tokens
 - **Backend**: Supabase (PostgreSQL, Auth, Realtime)
 - **Domain Logic**: TypeScript with strict invariants
-- **Animations**: Framer Motion 11.18.1
+- **Animations**: Framer Motion 12.29.0
 - **Forms**: React Hook Form with validation
+- **Integrations**: `@heroui/react`, `@hello-pangea/dnd`, `lovable-tagger`
 
 ---
 
@@ -33,113 +34,69 @@
 
 ### Core Entities
 
-#### Name
+#### NameItem
 
-The fundamental entity that flows through the lifecycle.
-
-```typescript
-interface Name {
-  id: string; // UUID
-  name: string; // The actual name text
-  status: NameStatus; // Current lifecycle position
-  addedBy: string; // User who added this name
-  addedAt: Date; // When it entered the system
-  categories: string[]; // Themes: science, mythology, vibes, etc.
-  syllableCount?: number; // Optional constraint for tournaments
-  provenance: ProvenanceEntry[]; // Complete history
-  metadata: NameMetadata; // Ratings, stats, etc.
-}
-
-type NameStatus =
-  | "candidate" // New, awaiting review
-  | "intake" // Categorized and tournament-ready
-  | "tournament" // Currently in active competition
-  | "eliminated" // Lost in tournament
-  | "archived"; // Preserved winner or notable name
-```
-
-#### Tournament
-
-A competition between names using Elo rating system.
+The fundamental entity for cat names.
 
 ```typescript
-interface Tournament {
-  id: string; // UUID
-  participantIds: string[]; // Name IDs competing
-  votes: Vote[]; // Complete voting history
-  status: TournamentStatus; // Current state
-  winnerId?: string; // Determined winner
-  constraints: TournamentConstraints; // Rules and limits
-  metadata: TournamentMetadata; // Performance stats
-  createdAt: Date;
-  completedAt?: Date;
-}
-
-type TournamentStatus =
-  | "setup" // Being configured
-  | "active" // Accepting votes
-  | "completed" // Winner determined
-  | "cancelled"; // Abandoned
-
-interface TournamentConstraints {
-  maxParticipants: number; // 4-16 names
-  theme?: string; // Optional category filter
-  syllableLimit?: number; // Optional length constraint
-  timeLimit?: number; // Minutes per session
-  expertMode: boolean; // Advanced features enabled
+export interface NameItem {
+  id: string | number;
+  name: string;
+  description?: string;
+  isHidden?: boolean;
+  isSelected?: boolean;
+  avgRating?: number;
+  wins?: number;
+  losses?: number;
+  status?: "candidate" | "intake" | "tournament" | "eliminated" | "archived";
+  provenance?: Array<{
+    action: string;
+    timestamp: string;
+    userId?: string;
+    details?: Record<string, unknown>;
+  }>;
 }
 ```
 
-#### Vote
+#### Tournament State (Global Store)
 
-An atomic comparison between two names.
+The current state of an active tournament session.
 
 ```typescript
-interface Vote {
-  id: string; // UUID
-  tournamentId: string; // Parent tournament
-  winnerId: string; // Name that won this comparison
-  loserId: string; // Name that lost
-  margin: number; // Elo rating change magnitude
-  userId: string; // Who made this decision
-  timestamp: Date; // When vote was cast
-  context: VoteContext; // Additional metadata
+interface TournamentState {
+  names: NameItem[] | null;
+  ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
+  isComplete: boolean;
+  isLoading: boolean;
+  voteHistory: VoteData[];
+  selectedNames: NameItem[];
 }
 
-interface VoteContext {
-  round: number; // Tournament round number
-  totalRounds: number; // Total rounds in tournament
-  timeToDecide: number; // Seconds taken to decide
-  confidence: number; // Self-reported confidence 1-5
+interface VoteData {
+  match: {
+    left: { name: string; id: string | number | null; outcome: string };
+    right: { name: string; id: string | number | null; outcome: string };
+  };
+  result: number; // -1 (left win), 1 (right win), 0.5 (draw)
+  ratings: Record<string, number>;
+  timestamp: string;
 }
 ```
 
-#### User
-
-A person participating in the naming obsession.
+#### User State
 
 ```typescript
-interface User {
-  id: string; // UUID from auth provider
-  username: string; // Display name
-  preferences: UserPreferences;
-  statistics: UserStatistics; // Voting patterns, preferences
-  createdAt: Date;
-}
-
-interface UserPreferences {
-  theme: "light" | "dark" | "auto";
-  showCatPictures: boolean;
-  decisionFatigueLimit: number; // Max votes per session
-  expertMode: boolean; // Show advanced features
-  notifications: boolean;
-}
-
-interface UserStatistics {
-  totalVotes: number;
-  favoriteCategories: string[];
-  averageDecisionTime: number;
-  consistencyScore: number; // How predictable their preferences are
+export interface UserState {
+  name: string;
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  avatarUrl?: string;
+  preferences: {
+    theme?: string;
+    notifications?: boolean;
+    showCatPictures?: boolean;
+    matrixMode?: boolean;
+  };
 }
 ```
 
@@ -161,76 +118,32 @@ candidate → intake → tournament → (eliminated | archived)
 
 ```typescript
 // Names enter as candidates
-const newName: Name = {
+const newName: NameItem = {
+  name: "Nosferatu",
   status: "candidate",
   provenance: [
     {
       action: "created",
-      userId: currentUser.id,
-      timestamp: new Date(),
-      details: { source: "user_input" | "suggestion" },
+      timestamp: new Date().toISOString(),
+      details: { source: "user_input" },
     },
   ],
 };
-
-// Move to intake after categorization
-function moveToIntake(name: Name): Name {
-  if (name.categories.length === 0) {
-    throw new Error("Names must be categorized before intake");
-  }
-
-  return {
-    ...name,
-    status: "intake",
-    provenance: [
-      ...name.provenance,
-      {
-        action: "categorized",
-        userId: currentUser.id,
-        timestamp: new Date(),
-        details: { categories: name.categories },
-      },
-    ],
-  };
-}
 ```
 
 #### Tournament Participation
 
 ```typescript
 // Names enter tournament from intake or archived
-function enterTournament(name: Name, tournamentId: string): Name {
-  if (!["intake", "archived"].includes(name.status)) {
-    throw new Error("Only intake/archived names can enter tournaments");
-  }
-
+function enterTournament(name: NameItem): NameItem {
   return {
     ...name,
     status: "tournament",
     provenance: [
-      ...name.provenance,
+      ...(name.provenance || []),
       {
         action: "entered_tournament",
-        tournamentId,
-        timestamp: new Date(),
-      },
-    ],
-  };
-}
-
-// Elimination or archiving after tournament
-function completeTournament(name: Name, result: "winner" | "eliminated"): Name {
-  const newStatus = result === "winner" ? "archived" : "eliminated";
-
-  return {
-    ...name,
-    status: newStatus,
-    provenance: [
-      ...name.provenance,
-      {
-        action: result === "winner" ? "archived_as_winner" : "eliminated",
-        timestamp: new Date(),
-        details: { tournamentId: currentTournament.id },
+        timestamp: new Date().toISOString(),
       },
     ],
   };
@@ -239,127 +152,40 @@ function completeTournament(name: Name, result: "winner" | "eliminated"): Name {
 
 ### Business Invariants
 
-#### Tournament Invariants
-
-```typescript
-// INVARIANT: Every tournament produces exactly one winner
-function validateTournamentCompletion(tournament: Tournament): boolean {
-  const completedTournaments = tournaments.filter(
-    (t) => t.status === "completed",
-  );
-  return completedTournaments.every(
-    (t) => t.winnerId && t.participantIds.includes(t.winnerId),
-  );
-}
-
-// INVARIANT: Vote totals always match ballot count
-function validateVoteIntegrity(tournament: Tournament): boolean {
-  const expectedVotes = calculateExpectedVotes(
-    tournament.participantIds.length,
-  );
-  return tournament.votes.length === expectedVotes;
-}
-
-// INVARIANT: Names can only move forward in lifecycle
-function validateLifecycleProgression(name: Name): boolean {
-  const statusOrder = [
-    "candidate",
-    "intake",
-    "tournament",
-    "eliminated",
-    "archived",
-  ];
-  const currentIndex = statusOrder.indexOf(name.status);
-
-  return name.provenance.every((entry) => {
-    const entryIndex = statusOrder.indexOf(entry.previousStatus || "candidate");
-    return entryIndex <= currentIndex;
-  });
-}
-```
-
-#### Rating System Invariants
-
-```typescript
-// INVARIANT: All ratings are deterministic and reproducible
-function validateRatingDeterminism(names: Name[], votes: Vote[]): boolean {
-  const initialRatings = new Map(names.map((n) => [n.id, 1500]));
-  const finalRatings = calculateEloRatings(initialRatings, votes);
-
-  // Re-running should produce identical results
-  const recalculated = calculateEloRatings(initialRatings, votes);
-  return deepEqual(finalRatings, recalculated);
-}
-
-// INVARIANT: No name can have infinite or NaN rating
-function validateRatingBounds(names: Name[]): boolean {
-  return names.every((name) => {
-    const rating = name.metadata.currentRating;
-    return Number.isFinite(rating) && rating >= 0 && rating <= 4000;
-  });
-}
-```
+- **Determinism**: All Elo ratings are calculated deterministically based on match history.
+- **Integrity**: Ratings must remain within bounds (800-2400) and are persisted to Supabase.
+- **Uniqueness**: Composite primary keys (`user_name`, `name_id`) ensure rating integrity.
 
 ### Core Algorithms
 
 #### Elo Rating System
 
+The system uses a standard Elo algorithm with a K-factor of 32 (doubled for new players) to calculate rating shifts after each comparison.
+
 ```typescript
-function calculateEloRatings(
-  initialRatings: Map<string, number>,
-  votes: Vote[],
-): Map<string, number> {
-  const ratings = new Map(initialRatings);
-
-  for (const vote of votes) {
-    const winnerRating = ratings.get(vote.winnerId)!;
-    const loserRating = ratings.get(vote.loserId)!;
-
-    const expectedWinner =
-      1 / (1 + Math.pow(10, (loserRating - winnerRating) / 400));
-    const expectedLoser = 1 - expectedWinner;
-
-    const kFactor = 32; // Standard Elo K-factor
-    const winnerNewRating = winnerRating + kFactor * (1 - expectedWinner);
-    const loserNewRating = loserRating + kFactor * (0 - expectedLoser);
-
-    ratings.set(vote.winnerId, winnerNewRating);
-    ratings.set(vote.loserId, loserNewRating);
+export class EloRating {
+  getExpectedScore(ra: number, rb: number) {
+    return 1 / (1 + 10 ** ((rb - ra) / 400));
   }
-
-  return ratings;
+  updateRating(r: number, exp: number, act: number, games = 0) {
+    const k = games < 10 ? 64 : 32;
+    return Math.round(r + k * (act - exp));
+  }
 }
 ```
 
-#### Tournament Bracket Generation
+#### Tournament Match Generation
+
+Matches are generated using the `PreferenceSorter`, which ensures every possible pair is compared exactly once (Round Robin) using a linear index calculation to save memory.
 
 ```typescript
-function generateBracket(
-  participants: Name[],
-  constraints: TournamentConstraints,
-): Bracket {
-  // Sort by current rating for seeding
-  const seeded = participants.sort(
-    (a, b) =>
-      (b.metadata.currentRating || 1500) - (a.metadata.currentRating || 1500),
-  );
-
-  // Apply theme/syllable constraints
-  const filtered = seeded.filter(
-    (name) =>
-      (!constraints.theme || name.categories.includes(constraints.theme)) &&
-      (!constraints.syllableLimit ||
-        (name.syllableCount || 0) <= constraints.syllableLimit),
-  );
-
-  if (filtered.length < 4) {
-    throw new Error("Insufficient participants meet constraints");
+export class PreferenceSorter {
+  getNextMatch() {
+    const n = this.items.length;
+    const totalPairs = (n * (n - 1)) / 2;
+    // ... index calculation logic ...
+    return { left: a, right: b };
   }
-
-  // Generate round-robin or single-elimination based on participant count
-  return constraints.expertMode
-    ? generateRoundRobin(filtered)
-    : generateSingleElimination(filtered);
 }
 ```
 
@@ -371,12 +197,13 @@ function generateBracket(
 
 | Table                   | Purpose                | Key Fields                                                             |
 | ----------------------- | ---------------------- | ---------------------------------------------------------------------- |
-| `cat_name_options`      | Available names        | `id`, `name`, `avg_rating`, `status`, `categories`, `provenance`       |
+| `cat_app_users`         | User profiles          | `user_name`, `preferences`, `created_at`, `updated_at`                 |
+| `user_roles`            | RBAC permissions       | `user_id`, `user_name`, `role`                                         |
+| `cat_name_options`      | Available names        | `id`, `name`, `avg_rating`, `is_active`, `is_hidden`, `categories`     |
 | `cat_name_ratings`      | User ratings           | `user_name`, `name_id`, `rating`, `wins`, `losses`                     |
 | `tournament_selections` | History                | `user_name`, `name_id`, `tournament_id`, `selection_type`              |
-| `tournaments`           | Tournament data        | `id`, `participant_ids`, `votes`, `status`, `winner_id`, `constraints` |
-| `votes`                 | Individual comparisons | `id`, `tournament_id`, `winner_id`, `loser_id`, `margin`, `context`    |
-| `cat_app_users`         | User profiles          | `user_name`, `preferences`, `statistics`, `updated_at`                 |
+| `site_settings`         | Global config          | `key`, `value`                                                         |
+| `audit_log`             | Audit trail            | `table_name`, `operation`, `old_values`, `new_values`                  |
 
 **Verification Status**: ✅ Migrations match database schema as of Jan 2026.
 
@@ -386,80 +213,55 @@ function generateBracket(
 
 ### 1. Decomposed Features
 
-Features are organized by domain in `src/features/`. Complex views like `NameManagement` are split into specialized "Modes" (Tournament vs. Profile).
+Features are organized by domain in `source/features/`. Complex views like `NameManagementView` are split into specialized "Modes" (Tournament vs. Profile).
 
 ### 2. Store Slices
 
-The global `useAppStore` is composed of focused slices:
+The global `useAppStore` (managed by Zustand) is composed of focused slices:
 
 - `tournamentSlice` - Tournament state and actions
 - `userSlice` - User session and preferences
 - `uiSlice` - UI state (modals, loading)
 - `errorSlice` - Error handling
-- `siteSettingsSlice` - Site-wide settings
+- `settingsSlice` - Site-wide settings
 
-### Service Layer (Supabase)
+### 3. Service Layer (Supabase)
 
-The service layer is decomposed into domain-specific modules located in `src/features/[feature]/services/` or `src/shared/services/supabase/modules/`.
+The service layer is decomposed into domain-specific modules located in `source/services/` or `source/features/[feature]/services/`.
 
 - **AdminService**: User management and roles.
-- **ImageService**: Cat picture uploading and management.
-- **NameService**: Name lifecycle management, CRUD, and visibility.
-- **AnalyticsService**: Leaderboards, popularity stats, and history.
-- **SiteSettingsService**: Global application configuration.
+- **ImageService**: Cat picture management.
+- **NameService**: Name lifecycle management.
+- **AnalyticsService**: Leaderboards and history.
+- **SiteSettingsService**: Global config.
 
-All services use a standardized `withSupabase` wrapper in `client.ts` to ensure consistent error handling, availability checks, and automatic user context propagation.
-
-### 4. Domain-Driven Architecture
-
-Business logic is organized around the name lifecycle:
-
-- **Features**: `src/features/names/` (lifecycle management), `src/features/tournament/` (competition logic)
-- **Invariants**: Business rules enforced through TypeScript types and runtime validation
-- **Provenance**: Complete audit trail of name evolution through states
-
-- **Provenance**: Complete audit trail of name evolution through states
-
-### 5. Simplicity & Consolidation
-
-**Objective**: Minimize Lines of Code (LOC) and Cognitive Load.
-
-- **Deduplication**: Prefer configurable shared components (e.g., `Button`) over specialized wrappers (e.g., `TournamentButton`).
-- **Direct Usage**: Use Tailwind utilities for one-off styles instead of creating unique component files.
-- **Flattened Structure**: Avoid deep nesting; co-locate related logic.
-- **YAGNI**: Remove unused features and dead code immediately.
-
+All services use a standardized `withSupabase` wrapper to ensure consistent error handling.
 ---
 
 ## 📁 Project Structure
 
 ```
-src/
-├── core/                    # Core application logic
-│   ├── constants/           # App-wide constants
-│   ├── hooks/               # Core hooks (routing, storage, session)
-│   └── store/               # Zustand store and slices
-├── features/                # Feature modules (domain-driven)
-│   ├── analytics/           # Analysis dashboard
-│   ├── auth/                # Authentication (hooks, utils, services)
-│   ├── gallery/             # Photo gallery view
-│   ├── names/               # Name lifecycle management
-│   ├── profile/             # User profile
-│   ├── tournament/          # Tournament competition logic
-│   │   ├── components/      # Flat component structure
-│   │   ├── hooks/           # Tournament hooks
-│   │   ├── services/        # Tournament services
-│   │   ├── styles/          # Tournament CSS modules
-│   │   └── utils/           # Tournament utilities
-│   └── explore/             # Global data and photo discovery
-├── shared/                  # Shared utilities
-│   ├── components/          # Reusable components
-│   ├── hooks/               # Shared hooks
-│   ├── providers/           # React context providers
-│   ├── services/            # External service integrations
-│   ├── styles/              # Global styles and tokens
-│   └── utils/               # Utility functions
-└── types/                   # TypeScript type definitions
+source/
+├── components/              # Core UI and layout views
+│   ├── NameManagementView/  # Complex name management logic
+│   └── ...
+├── core/                    # App initialization (if applicable)
+├── features/                # Domain-specific logic
+│   ├── analytics/           # Charts and leaderboards
+│   ├── auth/                # Session and identity
+│   └── tournament/          # Competition flow and loops
+├── hooks/                   # Business logic hooks
+├── providers/               # Context providers (Toast, Theme, etc)
+├── services/                # API and External integrations
+├── shared/                  # Reusable primitives
+│   ├── components/          # Design system atoms
+│   ├── hooks/               # Generic hooks (e.g., useStorage)
+│   ├── layouts/             # Page wrappers
+│   └── utils/               # Logic helpers (cn, formatters)
+├── store/                   # Zustand definitions
+│   └── slices/              # Focused state modules
+├── styles/                  # Global CSS and themes
+└── types/                   # Centralized TS interfaces
 ```
 
 ---
@@ -480,36 +282,29 @@ UI Update                    Supabase API (PostgreSQL)
 
 ---
 
-## 📊 Analytics & Insights
+### User & System Insights
 
-### User Analytics
+The analytics engine processes raw tournament data into actionable insights for both individuals and the global community.
 
 ```typescript
-interface UserInsights {
-  favoriteCategories: string[]; // Most preferred themes
-  decisionPatterns: {
-    averageTime: number; // Seconds per decision
-    confidenceTrend: number[]; // Confidence over time
-    consistencyScore: number; // 0-1, how predictable preferences are
-  };
-  namePreferences: {
-    syllablePreference: number; // Average preferred length
-    categorySuccess: Map<string, number>; // Win rates by category
-  };
+export interface NameWithInsight {
+  id: string | number;
+  name: string;
+  rating: number;
+  wins: number;
+  selected: number;
+  insights: string[];
 }
-```
 
-### System Analytics
-
-```typescript
-interface SystemInsights {
-  nameSurvivalRates: Map<string, number>; // Names that consistently win
-  categoryPerformance: Map<string, number>; // Which themes dominate
-  tournamentEfficiency: {
-    averageDuration: number; // Minutes to complete
-    averageVotes: number; // Votes per tournament
-    winnerConfidence: number; // How decisive winners are
+export interface SummaryStats {
+  avgRating: number;
+  totalSelected?: number;
+  topName?: {
+    name: string;
+    rating: number;
   };
+  totalUsers?: number;
+  totalRatings?: number;
 }
 ```
 
@@ -517,33 +312,14 @@ interface SystemInsights {
 
 ## 🔌 API Design
 
-### Core Service Interfaces
+### Core Service Pattern
 
-```typescript
-interface NameService {
-  createName(name: CreateNameRequest): Promise<Name>;
-  getNamesByStatus(status: NameStatus): Promise<Name[]>;
-  updateNameStatus(
-    id: string,
-    status: NameStatus,
-    reason: string,
-  ): Promise<Name>;
-  getNameProvenance(id: string): Promise<ProvenanceEntry[]>;
-}
+External services (primarily Supabase) are accessed through a standardized `withSupabase` wrapper that handles availability, authentication context, and error propagation.
 
-interface TournamentService {
-  createTournament(request: CreateTournamentRequest): Promise<Tournament>;
-  castVote(tournamentId: string, vote: VoteRequest): Promise<Tournament>;
-  getTournamentResults(id: string): Promise<TournamentResults>;
-  validateTournamentIntegrity(id: string): Promise<boolean>;
-}
-
-interface AnalyticsService {
-  getUserInsights(userId: string): Promise<UserInsights>;
-  getSystemInsights(): Promise<SystemInsights>;
-  getNameSurvivalStats(nameId: string): Promise<SurvivalStats>;
-}
-```
+- **`tournamentsAPI`**: Handles tournament creation and rating persistence.
+- **`ErrorManager`**: Centralized global error handling and UI notifications.
+- **`SiteSettingsService`**: Manages global application configuration.
+- **`AdminStatus`**: Validates user roles and permissions.
 
 ---
 
@@ -578,9 +354,9 @@ ADD COLUMN context jsonb;
 
 ## 🛠️ Technical Recommendations
 
-1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks
-2. **Feature Isolation**: Keep feature modules self-contained
-3. **Query Caching**: Leverage TanStack Query for server state caching
-4. **Error Boundaries**: Wrap feature modules in error boundaries
-5. **Invariant Enforcement**: Use TypeScript + runtime validation for business rules
-6. **Provenance Tracking**: Maintain complete audit trails for name lifecycle changes
+1. **Maintain Type Coverage**: Continue replacing `any` in legacy catch blocks.
+2. **Feature Isolation**: Keep feature modules self-contained in `source/features/`.
+3. **Query Caching**: Leverage TanStack Query for server state caching.
+4. **Error Boundaries**: Wrap feature modules in the shared `ErrorBoundary` component.
+5. **Invariant Enforcement**: Use TypeScript + Zod for runtime business rule validation.
+6. **Performance**: Use dynamic imports (lazy loading) for heavy domain components.
