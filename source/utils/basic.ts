@@ -5,7 +5,7 @@
  */
 
 import type { NameItem } from "@/types/components";
-import { STORAGE_KEYS } from "../../constants";
+import { STORAGE_KEYS } from "../constants";
 import { queryClient } from "../services/supabase/queryClient";
 
 /* ==========================================================================

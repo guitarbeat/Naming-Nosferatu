@@ -8,8 +8,7 @@ import { applyNameFilters, mapFilterStatusToVisibility } from "@utils";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants";
-import { useNameData } from "@/hooks/useNameData";
-import { useNameSelection } from "@/hooks/useNameSelection";
+import { useNameData, useNameSelection } from "@/hooks/useNames";
 import useAppStore from "@/store/useAppStore";
 import type { NameItem, TournamentFilters } from "@/types/components";
 

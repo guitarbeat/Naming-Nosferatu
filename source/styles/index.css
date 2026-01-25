@@ -14,20 +14,16 @@
 
 /* 2. Utility classes (layout, spacing, typography, responsive) */
 @import url("./layout.css");
-@import url("./spacing.css");
 @import url("./typography.css");
 @import url("./utilities.css");
-@import url("./responsive-utilities.css");
-@import url("./responsive-mobile.css");
+@import url("./responsive.css");
 
 /* 3. Component styles (buttons, forms, cards, etc.) */
 @import url("./buttons.css");
 @import url("./forms.css");
 @import url("./cards.css");
 @import url("./components.css");
-@import url("./app-layout.css");
 @import url("./analysis-mode.css");
 
 /* 4. Animations and interactions (applied last for proper cascade) */
-@import url("./animations.css");
-@import url("./interactions.css");
+@import url("./motion.css");

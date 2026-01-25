@@ -5,7 +5,7 @@
  * Displays a consolidated table, insights, and a bump chart.
  */
 
-import { FloatingBubblesContainer } from "@components/FloatingBubblesContainer";
+import { FloatingBubblesContainer } from "@components/FloatingBubbles";
 import {
 	Button,
 	ButtonGroup,
@@ -29,11 +29,11 @@ import { BumpChart } from "@/components/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/components/CollapsibleHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { useNameManagementContextOptional } from "@/components/nameManagementCore";
-import { PerformanceBadges } from "@/components/PerformanceBadge";
+import { PerformanceBadges } from "@/components/StatusIndicators";
 import { STORAGE_KEYS } from "@/constants";
-import { useCollapsible } from "@/hooks/useStorage";
-import { TournamentToolbar } from "../../shared/components/TournamentToolbar";
-
+import { useCollapsible } from "@/hooks/useBrowserState";
+import { TournamentToolbar } from "../../components/TournamentToolbar";
+import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
 import type {
 	AnalysisDashboardProps,
 	AnalyticsDataItem,
@@ -41,9 +41,7 @@ import type {
 	LeaderboardItem,
 	NameWithInsight,
 	SummaryStats,
-} from "./types";
-import { useAnalysisData } from "./useAnalysisData";
-import { useAnalysisDisplayData } from "./useAnalysisDisplayData";
+} from "./analyticsService";
 
 /* =========================================================================
    SUB-COMPONENTS

@@ -1,5 +1,46 @@
-import { CAT_IMAGES } from "@/config";
+import { CAT_IMAGES } from "@/constants";
 import type { NameItem } from "@/types/components";
+
+/* ==========================================================================
+   CAT IMAGE UTILITIES
+   ========================================================================== */
+
+interface CatImage {
+	id: string;
+	url: string;
+	width: number;
+	height: number;
+}
+
+/**
+ * Fallback cat avatar URLs when API fails
+ */
+const FALLBACK_CAT_AVATARS = [
+	"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1513360371669-4adf3dd7dff8?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1574158622682-e40e69881006?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1519052537078-e6302a4968d4?w=150&h=150&fit=crop&crop=face",
+	"https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=150&h=150&fit=crop&crop=face",
+];
+
+/**
+ * Fetch multiple random cat images from The Cat API
+ */
+export const fetchCatAvatars = async (count: number = 6): Promise<string[]> => {
+	try {
+		const response = await fetch(
+			`https://api.thecatapi.com/v1/images/search?limit=${count}&size=thumb`,
+		);
+		if (!response.ok) {
+			throw new Error("Failed to fetch cat images");
+		}
+		const cats = await response.json();
+		return cats.map((cat: CatImage) => cat.url);
+	} catch {
+		return FALLBACK_CAT_AVATARS;
+	}
+};
 
 /**
  * Get a deterministic random cat image based on ID
@@ -11,6 +52,10 @@ export function getRandomCatImage(id: string | number | null | undefined, images
 	const seed = typeof id === "string" ? id.length : Number(id);
 	return images[seed % images.length];
 }
+
+/* ==========================================================================
+   NAME SET UTILITIES
+   ========================================================================== */
 
 /**
  * Converts an array of selected names to a Set of IDs for O(1) lookup.
@@ -25,7 +70,9 @@ export function selectedNamesToSet(
 	return new Set(selectedNames.map((n) => n.id));
 }
 
-// --- Generation Utils ---
+/* ==========================================================================
+   NAME GENERATION UTILITIES
+   ========================================================================== */
 
 const FUNNY_PREFIXES = [
 	"Captain",
@@ -88,7 +135,9 @@ export function generateFunName() {
 	return generatedName || "Cat Judge";
 }
 
-// --- Filter Utils ---
+/* ==========================================================================
+   FILTER UTILITIES
+   ========================================================================== */
 
 export interface FilterOptions {
 	searchTerm?: string;

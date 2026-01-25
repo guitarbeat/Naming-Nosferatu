@@ -8,11 +8,8 @@ import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import { TIMING } from "@/constants";
-import CatImage from "../shared/components/CatImage";
-import LiquidGlass, {
-	DEFAULT_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../shared/components/LiquidGlass";
+import CatImage from "./CatVisuals";
+import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
 
 type CardVariant =
 	| "default"

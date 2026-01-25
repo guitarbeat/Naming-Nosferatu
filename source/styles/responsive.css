@@ -1,9 +1,20 @@
-/* Responsive Mobile Styles - Consolidated mobile and touch optimizations */
+/**
+ * @file responsive.css
+ * @description Consolidated responsive styles: breakpoints, mobile optimizations, and responsive utilities
+ */
 
 /* ==========================================================================
-   MOBILE VARIABLES
+   RESPONSIVE BREAKPOINTS & VARIABLES
    ========================================================================== */
+
 :root {
+	/* Standard Breakpoints */
+	--breakpoint-sm: 640px;
+	--breakpoint-md: 768px;
+	--breakpoint-lg: 1024px;
+	--breakpoint-xl: 1280px;
+	--breakpoint-2xl: 1536px;
+
 	/* Touch target sizes */
 	--mobile-touch-target-min: 48px;
 	--mobile-touch-target-large: clamp(3.5rem, 10vw, 3.75rem);
@@ -24,8 +35,191 @@
 }
 
 /* ==========================================================================
+   MOBILE FIRST RESPONSIVE UTILITIES
+   ========================================================================== */
+
+@media (min-width: 640px) {
+	.sm\:block {
+		display: block;
+	}
+	.sm\:flex {
+		display: flex;
+	}
+	.sm\:grid {
+		display: grid;
+	}
+	.sm\:hidden {
+		display: none;
+	}
+
+	.sm\:text-sm {
+		font-size: var(--text-sm);
+	}
+	.sm\:text-base {
+		font-size: var(--text-base);
+	}
+	.sm\:text-lg {
+		font-size: var(--text-lg);
+	}
+
+	.sm\:p-4 {
+		padding: var(--space-4);
+	}
+	.sm\:p-6 {
+		padding: var(--space-6);
+	}
+	.sm\:p-8 {
+		padding: var(--space-8);
+	}
+}
+
+@media (min-width: 768px) {
+	.md\:block {
+		display: block;
+	}
+	.md\:flex {
+		display: flex;
+	}
+	.md\:grid {
+		display: grid;
+	}
+	.md\:hidden {
+		display: none;
+	}
+
+	.md\:text-base {
+		font-size: var(--text-base);
+	}
+	.md\:text-lg {
+		font-size: var(--text-lg);
+	}
+	.md\:text-xl {
+		font-size: var(--text-xl);
+	}
+
+	.md\:p-6 {
+		padding: var(--space-6);
+	}
+	.md\:p-8 {
+		padding: var(--space-8);
+	}
+	.md\:p-12 {
+		padding: var(--space-12);
+	}
+}
+
+@media (min-width: 1024px) {
+	.lg\:block {
+		display: block;
+	}
+	.lg\:flex {
+		display: flex;
+	}
+	.lg\:grid {
+		display: grid;
+	}
+	.lg\:hidden {
+		display: none;
+	}
+
+	.lg\:text-lg {
+		font-size: var(--text-lg);
+	}
+	.lg\:text-xl {
+		font-size: var(--text-xl);
+	}
+	.lg\:text-2xl {
+		font-size: var(--text-2xl);
+	}
+
+	.lg\:p-8 {
+		padding: var(--space-8);
+	}
+	.lg\:p-12 {
+		padding: var(--space-12);
+	}
+	.lg\:p-16 {
+		padding: var(--space-16);
+	}
+}
+
+@media (min-width: 1280px) {
+	.xl\:block {
+		display: block;
+	}
+	.xl\:flex {
+		display: flex;
+	}
+	.xl\:grid {
+		display: grid;
+	}
+	.xl\:hidden {
+		display: none;
+	}
+
+	.xl\:text-xl {
+		font-size: var(--text-xl);
+	}
+	.xl\:text-2xl {
+		font-size: var(--text-2xl);
+	}
+	.xl\:text-3xl {
+		font-size: var(--text-3xl);
+	}
+
+	.xl\:p-12 {
+		padding: var(--space-12);
+	}
+	.xl\:p-16 {
+		padding: var(--space-16);
+	}
+	.xl\:p-20 {
+		padding: var(--space-20);
+	}
+}
+
+/* ==========================================================================
+   COMMON RESPONSIVE PATTERNS
+   ========================================================================== */
+
+@media (max-width: calc(768px - 1px)) {
+	.mobile-only {
+		display: block;
+	}
+	.desktop-only {
+		display: none;
+	}
+
+	.mobile-stack > * + * {
+		margin-top: var(--space-4);
+	}
+
+	.mobile-full-width {
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+	}
+}
+
+@media (min-width: 768px) {
+	.mobile-only {
+		display: none;
+	}
+	.desktop-only {
+		display: block;
+	}
+
+	.desktop-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: var(--space-6);
+	}
+}
+
+/* ==========================================================================
    MOBILE GLOBAL STYLES (width <= 768px)
    ========================================================================== */
+
 @media (width <= 768px) {
 	/* Mobile navigation improvements */
 	.nav-menu button {
@@ -79,9 +273,7 @@
 		box-shadow: 0 0 0 3px var(--primary-light);
 	}
 
-	/* Ensure floating elements don't overlap content */
-
-	/* Ensure scroll-to-top button doesn't overlap content */
+	/* Scroll-to-top button positioning */
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing);
 		bottom: var(--mobile-safe-spacing);
@@ -127,7 +319,6 @@
 	}
 
 	/* Improve form layout on mobile */
-
 	.form-group label {
 		display: block;
 		margin-bottom: var(--space-2);
@@ -150,9 +341,8 @@
 /* ==========================================================================
    SMALL MOBILE DEVICES (width <= 430px)
    ========================================================================== */
-@media (width <= 430px) {
-	/* Enhanced small mobile colors */
 
+@media (width <= 430px) {
 	/* Small mobile text adjustments */
 	h1 {
 		font-size: var(--text-2xl);
@@ -178,37 +368,9 @@
 }
 
 /* ==========================================================================
-   REDUCED MOTION - Mobile specific
-   ========================================================================== */
-@media (prefers-reduced-motion: reduce) {
-	@media (width <= 768px) {
-		.name-card,
-		.nav-menu button {
-			transition: none;
-		}
-
-		.name-card:hover,
-		.nav-menu button:hover {
-			transform: none;
-		}
-	}
-}
-
-/* ==========================================================================
-   HIGH CONTRAST MODE - Mobile specific
-   ========================================================================== */
-@media (prefers-contrast: more) {
-	@media (width <= 768px) {
-		button,
-		.btn {
-			border-width: 2px;
-		}
-	}
-}
-
-/* ==========================================================================
    SAFE AREA INSETS - Modern mobile devices
    ========================================================================== */
+
 @supports (padding: max(0px)) {
 	@media (width <= 768px) {
 		header {
@@ -235,9 +397,70 @@
 /* ==========================================================================
    LANDSCAPE MOBILE OPTIMIZATIONS
    ========================================================================== */
+
 @media screen and (width <= 768px) and (orientation: landscape) {
 	.scroll-to-top {
 		right: var(--mobile-safe-spacing-small);
 		bottom: max(5rem, calc(80px + env(safe-area-inset-bottom) + var(--mobile-safe-spacing-small)));
+	}
+}
+
+/* ==========================================================================
+   ACCESSIBILITY & PREFERENCE MEDIA QUERIES
+   ========================================================================== */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
+		transition-duration: 0.01ms;
+	}
+
+	@media (width <= 768px) {
+		.name-card,
+		.nav-menu button {
+			transition: none;
+		}
+
+		.name-card:hover,
+		.nav-menu button:hover {
+			transform: none;
+		}
+	}
+}
+
+/* High Contrast */
+@media (prefers-contrast: high) {
+	:root {
+		--color-border: #000000;
+		--color-text: #000000;
+		--color-background: #ffffff;
+	}
+}
+
+@media (prefers-contrast: more) {
+	@media (width <= 768px) {
+		button,
+		.btn {
+			border-width: 2px;
+		}
+	}
+}
+
+/* Print Styles */
+@media print {
+	.no-print {
+		display: none;
+	}
+	.print-only {
+		display: block;
+	}
+
+	* {
+		color: black;
+		background: white;
 	}
 }

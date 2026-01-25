@@ -4,12 +4,12 @@
  * Handles high-level layout, glass effects, and filtering/sorting logic
  */
 
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import React, { useId } from "react";
 
 import type { TournamentFilters } from "@/types/components";
-import { FILTER_OPTIONS } from "../../constants";
-import useAppStore from "../../store/useAppStore";
+import { FILTER_OPTIONS } from "../constants";
+import useAppStore from "../store/useAppStore";
 import Button from "./Button";
 import { Select } from "./FormPrimitives";
 import LiquidGlass from "./LiquidGlass";

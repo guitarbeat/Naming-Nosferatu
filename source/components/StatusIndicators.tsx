@@ -1,15 +1,21 @@
 /**
- * @module Loading
- * @description Comprehensive loading component with spinner, cat, bongo, suspense, and skeleton variants.
+ * @module StatusIndicators
+ * @description Status and loading indicator components: Loading, OfflineIndicator, PerformanceBadge, TrendIndicator
+ * Styles consolidated in source/styles/components.css
  */
 
 import { Skeleton, Spinner } from "@heroui/react";
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import { motion } from "framer-motion";
 import { Cat, Heart, PawPrint } from "lucide-react";
 import type React from "react";
-import { memo, Suspense, useMemo } from "react";
-import { BongoCat } from "./BongoCat";
+import { memo, Suspense, useEffect, useMemo, useState } from "react";
+import { useBrowserState } from "@/hooks/useBrowserState";
+import { BongoCat } from "./CatVisuals";
+
+/* ==========================================================================
+   LOADING COMPONENT
+   ========================================================================== */
 
 const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
 
@@ -23,13 +29,9 @@ type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
 
 interface LoadingProps {
 	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
-	/** Cat animation variant (only used when variant="cat") */
 	catVariant?: CatVariant;
-	/** Cat color theme (only used when variant="cat") */
 	catColor?: CatColor;
-	/** Show cat face (only used when variant="cat") */
 	showCatFace?: boolean;
-	/** Card skeleton variant (only used when variant="card-skeleton") */
 	cardSkeletonVariant?: CardSkeletonVariant;
 	text?: string;
 	overlay?: boolean;
@@ -40,7 +42,6 @@ interface LoadingProps {
 	size?: "small" | "medium" | "large";
 }
 
-// Cat spinner sub-component using Lucide icons and Framer Motion
 const CatSpinnerContent: React.FC<{
 	catVariant: CatVariant;
 	showFace: boolean;
@@ -131,7 +132,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 	({
 		variant = "spinner",
 		catVariant = "paw",
-		// catColor = "neon", // Deprecated but kept for direct prop compatibility if passed
 		showCatFace = true,
 		text,
 		overlay = false,
@@ -145,14 +145,12 @@ export const Loading: React.FC<LoadingProps> = memo(
 		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
 		const isVideo = (randomAsset || "").endsWith(".webm");
 
-		// Container classes
 		const containerClasses = cn(
 			"flex flex-col items-center justify-center gap-3 p-4",
 			overlay && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
 			className,
 		);
 
-		// Suspense variant
 		if (variant === "suspense") {
 			if (!children) {
 				return null;
@@ -179,7 +177,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 			return <Suspense fallback={fallback}>{children}</Suspense>;
 		}
 
-		// Skeleton variant
 		if (variant === "skeleton") {
 			return (
 				<Skeleton
@@ -192,7 +189,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 			);
 		}
 
-		// Card skeleton variant
 		if (variant === "card-skeleton") {
 			return (
 				<div
@@ -228,7 +224,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 			);
 		}
 
-		// Bongo Cat variant
 		if (variant === "bongo") {
 			return (
 				<div className={containerClasses}>
@@ -237,7 +232,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 			);
 		}
 
-		// Cat variant
 		if (variant === "cat") {
 			return (
 				<div className={containerClasses} role="status" aria-label="Loading">
@@ -250,7 +244,6 @@ export const Loading: React.FC<LoadingProps> = memo(
 			);
 		}
 
-		// Spinner variant (default)
 		return (
 			<div className={containerClasses} role="status" aria-label="Loading">
 				<Spinner
@@ -266,3 +259,237 @@ export const Loading: React.FC<LoadingProps> = memo(
 );
 
 Loading.displayName = "Loading";
+
+/* ==========================================================================
+   OFFLINE INDICATOR COMPONENT
+   ========================================================================== */
+
+interface OfflineIndicatorProps {
+	showWhenOnline?: boolean;
+	position?: "top" | "bottom";
+}
+
+export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
+	showWhenOnline = false,
+	position = "top",
+}) => {
+	const { isOnline, isSlowConnection } = useBrowserState();
+	const [showIndicator, setShowIndicator] = useState(false);
+	const [justCameOnline, setJustCameOnline] = useState(false);
+
+	useEffect(() => {
+		if (!isOnline) {
+			setShowIndicator(true);
+			setJustCameOnline(false);
+		} else if (showWhenOnline || justCameOnline) {
+			setShowIndicator(true);
+			if (!justCameOnline) {
+				setJustCameOnline(true);
+				setTimeout(() => {
+					setShowIndicator(false);
+					setJustCameOnline(false);
+				}, 3000);
+			}
+		} else {
+			setShowIndicator(false);
+		}
+	}, [isOnline, showWhenOnline, justCameOnline]);
+
+	if (!showIndicator) {
+		return null;
+	}
+
+	const getStatusMessage = () => {
+		if (!isOnline) {
+			return "You are offline";
+		}
+		if (justCameOnline) {
+			return "Back online";
+		}
+		if (isSlowConnection) {
+			return "Slow connection detected";
+		}
+		return "Connected";
+	};
+
+	const getStatusClass = () => {
+		if (!isOnline) {
+			return "offline";
+		}
+		if (justCameOnline) {
+			return "online";
+		}
+		if (isSlowConnection) {
+			return "slow";
+		}
+		return "online";
+	};
+
+	return (
+		<div className={`indicator ${position} ${getStatusClass()}`}>
+			<div className="indicator-content">
+				<span className="indicator-dot" />
+				<span className="indicator-message">{getStatusMessage()}</span>
+			</div>
+		</div>
+	);
+};
+
+/* ==========================================================================
+   PERFORMANCE BADGE COMPONENT
+   ========================================================================== */
+
+const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
+	top_rated: {
+		label: "Top Rated",
+		icon: "⭐",
+		description: "Among the highest rated names",
+	},
+	trending_up: {
+		label: "Trending",
+		icon: "📈",
+		description: "Rising in popularity",
+	},
+	trending_down: {
+		label: "Declining",
+		icon: "📉",
+		description: "Decreasing in popularity",
+	},
+	new: { label: "New", icon: "✨", description: "Recently added" },
+	undefeated: {
+		label: "Undefeated",
+		icon: "🏆",
+		description: "Has never lost a matchup",
+	},
+	popular: { label: "Popular", icon: "❤️", description: "Frequently selected" },
+	underdog: {
+		label: "Underdog",
+		icon: "🐕",
+		description: "Low rating but gaining traction",
+	},
+};
+
+const getInsightCategory = (type: string) => INSIGHT_CATEGORIES[type] || null;
+
+interface PerformanceBadgeProps {
+	type: string;
+	label?: string;
+	variant?: "sm" | "md";
+	className?: string;
+}
+
+function PerformanceBadge({ type, label, variant = "md", className = "" }: PerformanceBadgeProps) {
+	const category = getInsightCategory(type);
+
+	if (!category && !label) {
+		return null;
+	}
+
+	const badgeLabel = label || category?.label || type;
+	const badgeIcon = category?.icon || "•";
+	const badgeDescription = category?.description || "";
+	const badgeClass =
+		`performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
+
+	return (
+		<span className={badgeClass} aria-label={`${badgeLabel}: ${badgeDescription}`} role="status">
+			<span className="badge-icon" aria-hidden="true">
+				{badgeIcon}
+			</span>
+			<span className="badge-label">{badgeLabel}</span>
+		</span>
+	);
+}
+
+PerformanceBadge.displayName = "PerformanceBadge";
+
+interface PerformanceBadgesProps {
+	types?: string[];
+	className?: string;
+}
+
+export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
+	if (!types || types.length === 0) {
+		return null;
+	}
+
+	return (
+		<div className={`performance-badges ${className}`.trim()}>
+			{types.map((type) => (
+				<PerformanceBadge key={type} type={type} variant="sm" />
+			))}
+		</div>
+	);
+}
+
+PerformanceBadges.displayName = "PerformanceBadges";
+
+/* ==========================================================================
+   TREND INDICATOR COMPONENT
+   ========================================================================== */
+
+interface TrendIndicatorProps {
+	direction?: "up" | "down" | "stable";
+	percentChange?: number;
+	compact?: boolean;
+	className?: string;
+	animated?: boolean;
+}
+
+export function TrendIndicator({
+	direction = "stable",
+	percentChange = 0,
+	compact = false,
+	className = "",
+	animated = true,
+}: TrendIndicatorProps) {
+	const trendClass =
+		`trend-indicator trend-${direction} ${animated ? "trend-animated" : ""} ${className}`.trim();
+
+	const renderIcon = () => {
+		switch (direction) {
+			case "up":
+				return (
+					<span className="trend-icon" aria-hidden="true">
+						📈
+					</span>
+				);
+			case "down":
+				return (
+					<span className="trend-icon" aria-hidden="true">
+						📉
+					</span>
+				);
+			default:
+				return (
+					<span className="trend-icon" aria-hidden="true">
+						➡️
+					</span>
+				);
+		}
+	};
+
+	const ariaLabel = `${direction === "up" ? "Trending up" : direction === "down" ? "Trending down" : "Stable"} ${percentChange ? `by ${percentChange}%` : ""}`;
+
+	if (compact) {
+		return (
+			<span className={trendClass} aria-label={ariaLabel}>
+				{renderIcon()}
+			</span>
+		);
+	}
+
+	return (
+		<span className={trendClass} aria-label={ariaLabel}>
+			{renderIcon()}
+			{percentChange !== 0 && (
+				<span className="trend-value">
+					{direction === "up" ? "+" : direction === "down" ? "−" : ""}
+					{percentChange}%
+				</span>
+			)}
+		</span>
+	);
+}
+
+TrendIndicator.displayName = "TrendIndicator";

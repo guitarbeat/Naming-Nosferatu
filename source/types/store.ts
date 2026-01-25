@@ -1,5 +1,18 @@
 import type { NameItem } from "./components";
 
+/* ==========================================================================
+   USER TYPES
+   ========================================================================== */
+
+/**
+ * User bubble profile for floating bubbles display
+ */
+export interface UserBubbleProfile {
+	username: string;
+	display_name?: string;
+	avatar_url?: string;
+}
+
 export interface UserPreferences {
 	theme?: string;
 	notifications?: boolean;

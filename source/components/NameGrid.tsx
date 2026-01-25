@@ -7,6 +7,7 @@
 import { imagesAPI } from "@supabase/client";
 import {
 	applyNameFilters,
+	cn,
 	compressImageFile,
 	devError,
 	getRandomCatImage,
@@ -14,16 +15,15 @@ import {
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "@utils";
-import { cn } from "@utils/cn";
 import { motion } from "framer-motion";
 import { Upload } from "lucide-react";
 import { memo, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import type { NameItem } from "@/types/components";
-import { Lightbox } from "../shared/components/Lightbox";
-import { Loading } from "../shared/components/Loading";
 import { CardName } from "./Card";
 import { EmptyState } from "./EmptyState";
+import { Lightbox } from "./Lightbox";
+import { Loading } from "./StatusIndicators";
 
 interface NameGridProps {
 	names: NameItem[];

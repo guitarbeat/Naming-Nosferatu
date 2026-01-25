@@ -1,6 +1,5 @@
 import { withSupabase } from "@supabase/client";
-import { CAT_IMAGES } from "@/config";
-import { ELO_RATING } from "@/constants";
+import { CAT_IMAGES, ELO_RATING } from "@/constants";
 import type { NameItem } from "@/types/components";
 
 /* =========================================================================

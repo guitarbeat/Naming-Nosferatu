@@ -7,7 +7,7 @@ import { cn } from "@utils";
 import { cva } from "class-variance-authority";
 import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
-import LiquidGlass from "../shared/components/LiquidGlass";
+import LiquidGlass from "./LiquidGlass";
 
 /* ========================================= */
 /*             TOAST STYLES                  */

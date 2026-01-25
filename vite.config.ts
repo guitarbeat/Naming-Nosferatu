@@ -81,7 +81,7 @@ export default defineConfig(({ mode }) => {
 				// Project @supabase/* aliases - must be specific to avoid conflicts with npm @supabase/supabase-js
 				{
 					find: "@supabase/client",
-					replacement: resolveFromRoot("source/shared/services/supabase/client.ts"),
+					replacement: resolveFromRoot("source/services/supabase/client.ts"),
 				},
 				{
 					find: "@supabase/types",
@@ -106,11 +106,11 @@ export default defineConfig(({ mode }) => {
 				},
 				{
 					find: "@utils",
-					replacement: resolveFromRoot("source/shared/utils"),
+					replacement: resolveFromRoot("source/utils"),
 				},
 				{
 					find: "@services",
-					replacement: resolveFromRoot("source/shared/services"),
+					replacement: resolveFromRoot("source/services"),
 				},
 				{
 					find: "@styles",
@@ -126,7 +126,7 @@ export default defineConfig(({ mode }) => {
 				},
 			],
 			// Ensure a single React instance to avoid hooks dispatcher being null
-			dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
+			dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "framer-motion"],
 		},
 		server: {
 			host: true,
@@ -159,7 +159,7 @@ export default defineConfig(({ mode }) => {
 		},
 		// * Optimize dependency pre-bundling
 		optimizeDeps: {
-			include: ["react", "react-dom", "react/jsx-runtime"],
+			include: ["react", "react-dom", "react/jsx-runtime", "framer-motion"],
 			// * Exclude large dependencies from pre-bundling if needed
 			exclude: [],
 		},

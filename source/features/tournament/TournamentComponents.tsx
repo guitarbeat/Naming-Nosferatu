@@ -2,7 +2,7 @@ import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-p
 
 import { Button, CardBody, CardHeader, Chip, cn, Divider, Progress } from "@heroui/react";
 import { ErrorManager } from "@services/errorManager";
-import { playSound } from "@utils/soundManager";
+import { playSound } from "@utils/ui";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import {
 	Check,

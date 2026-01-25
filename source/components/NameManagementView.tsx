@@ -4,10 +4,10 @@
  * Provides a consistent interface with mode-specific extensions.
  */
 
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/providers";
-import { ErrorComponent } from "../shared/components/ErrorComponent";
+import { ErrorComponent } from "./Error";
 import {
 	type NameItem,
 	NameManagementProvider,

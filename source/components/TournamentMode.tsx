@@ -1,12 +1,11 @@
 import { NameGrid } from "@components/NameGrid";
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import type { NameItem } from "@/types/components";
-import Button from "../shared/components/Button";
-import { TournamentToolbar } from "../shared/components/TournamentToolbar";
-
+import Button from "./Button";
 import type { NameManagementViewExtensions, TournamentFilters } from "./nameManagementCore";
+import { TournamentToolbar } from "./TournamentToolbar";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];

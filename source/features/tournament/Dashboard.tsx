@@ -3,11 +3,11 @@ import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
 import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/Card";
-import useLocalStorage from "@/hooks/useStorage";
+import { BongoCat } from "@/components/CatVisuals";
+import useLocalStorage from "@/hooks/useBrowserState";
 import { useToast } from "@/providers/ToastProvider";
-import { BongoCat } from "@/shared/components/BongoCat";
-import { exportTournamentResultsToCSV } from "@/shared/utils";
 import type { NameItem } from "@/types/components";
+import { exportTournamentResultsToCSV } from "@/utils";
 import { RankingAdjustment } from "./TournamentComponents";
 
 const AnalysisDashboard = lazy(() =>

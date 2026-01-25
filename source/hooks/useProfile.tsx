@@ -10,7 +10,9 @@ import { deleteById, hiddenNamesAPI } from "@services/supabase/general";
 import { resolveSupabaseClient } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FILTER_OPTIONS } from "@/constants";
+import { Toast } from "@/components/Toast";
+import { FILTER_OPTIONS, NOTIFICATION } from "@/constants";
+import { useToast } from "@/providers/ToastProvider";
 import type { IdType, NameItem } from "@/types/components";
 
 // ============================================================================
@@ -656,5 +658,73 @@ export function useProfile(
 		handleBulkHide: (ids?: string[]) => handleBulkOperation(true, ids),
 		handleBulkUnhide: (ids?: string[]) => handleBulkOperation(false, ids),
 		fetchSelectionStats: refreshStats,
+	};
+}
+
+// ============================================================================
+// Profile Notifications Hook
+// ============================================================================
+
+/**
+ * Hook for profile notification functions with toast UI
+ * @returns {Object} Notification functions and Toast component
+ */
+// ts-prune-ignore-next (used in TournamentSetup)
+export function useProfileNotifications() {
+	const {
+		toasts,
+		showSuccess: showSuccessToast,
+		showError: showErrorToast,
+		showToast: showToastMessage,
+		removeToast,
+	} = useToast();
+
+	const showSuccess = useCallback(
+		(message: string) => {
+			devLog("✅", message);
+			showSuccessToast(message, { duration: 5000 });
+		},
+		[showSuccessToast],
+	);
+
+	const showError = useCallback(
+		(message: string) => {
+			devError("❌", message);
+			showErrorToast(message, { duration: NOTIFICATION.ERROR_DURATION_MS });
+		},
+		[showErrorToast],
+	);
+
+	const showToast = useCallback(
+		(message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+			devLog(`📢 [${type}]`, message);
+			showToastMessage(message, type, {
+				duration: type === "error" ? 7000 : 5000,
+			});
+		},
+		[showToastMessage],
+	);
+
+	const ToastContainer = useCallback(() => {
+		return (
+			<Toast
+				variant="container"
+				toasts={toasts}
+				removeToast={removeToast}
+				position="top-right"
+				maxToasts={NOTIFICATION.MAX_TOASTS}
+				onDismiss={() => {
+					// Intentional no-op: dismiss handled by component
+				}}
+				message=""
+			/>
+		);
+	}, [toasts, removeToast]);
+
+	return {
+		showSuccess,
+		showError,
+		showToast,
+		ToastContainer,
 	};
 }

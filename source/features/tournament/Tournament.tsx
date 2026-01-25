@@ -3,8 +3,8 @@ import { Card } from "@/components/Card";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store/useAppStore";
 import type { TournamentProps } from "@/types/components";
-import { ErrorComponent } from "../../shared/components/ErrorComponent";
-import { Loading } from "../../shared/components/Loading";
+import { ErrorComponent } from "../../components/Error";
+import { Loading } from "../../components/StatusIndicators";
 import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
 import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
 

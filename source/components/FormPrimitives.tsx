@@ -4,7 +4,7 @@
  * Single source of truth for all form components in the application.
  */
 
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { forwardRef, useCallback, useEffect, useId, useState } from "react";
 import type { z } from "zod";

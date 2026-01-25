@@ -1,4 +1,4 @@
-import { cn } from "@utils/cn";
+import { cn } from "@utils";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import React from "react";
 
