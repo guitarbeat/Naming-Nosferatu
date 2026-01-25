@@ -128,7 +128,15 @@ export function NameManagementView({
 		}
 
 		// 3. Profile Mode
-		return <ProfileMode {...state} extensions={extensions} profileProps={profileProps} />;
+		return (
+			<ProfileMode
+				{...state}
+				extensions={extensions}
+				profileProps={profileProps}
+				showCatPictures={state.showCatPictures}
+				imageList={state.tournamentProps.imageList as string[]}
+			/>
+		);
 	};
 
 	return (

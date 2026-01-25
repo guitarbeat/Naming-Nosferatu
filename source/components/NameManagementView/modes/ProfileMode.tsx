@@ -19,6 +19,8 @@ interface ProfileModeProps {
 	profileProps: NameManagementViewProfileProps;
 	selectedNames: NameItem[];
 	toggleName: (name: NameItem) => void;
+	showCatPictures?: boolean;
+	imageList?: string[];
 }
 
 export function ProfileMode({
@@ -30,6 +32,8 @@ export function ProfileMode({
 	profileProps,
 	selectedNames,
 	toggleName,
+	showCatPictures = false,
+	imageList = [],
 }: ProfileModeProps) {
 	return (
 		<div
@@ -144,6 +148,8 @@ export function ProfileMode({
 								}
 							: undefined
 					}
+					showCatPictures={showCatPictures}
+					imageList={imageList}
 					isLoading={isLoading}
 					className="min-h-[400px]"
 				/>

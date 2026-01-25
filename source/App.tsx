@@ -117,7 +117,7 @@ function App() {
 				handleTournamentComplete={handleTournamentComplete}
 			>
 				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-					<div className="flex flex-col gap-8 pb-[max(5rem,calc(80px+env(safe-area-inset-bottom)))]">
+					<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
 						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
 						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
 							<ErrorBoundary context="Tournament Flow">

@@ -446,7 +446,7 @@ function TournamentToolbar({
 					title={showCatPictures ? "Show Names Only" : "Show Cat Photos"}
 				>
 					{showCatPictures ? <Eye size={16} /> : <EyeOff size={16} />}
-					<span>{showCatPictures ? "Show Cats" : "Names Only"}</span>
+					<span>{showCatPictures ? "Names Only" : "Show Cats"}</span>
 				</button>
 
 				{/* Progressive Disclosure: Filter Toggle */}

@@ -3,7 +3,6 @@
  * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
-import { Tooltip } from "@heroui/react";
 import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
@@ -684,70 +683,7 @@ const CardNameBase = memo(function CardName({
 		</div>
 	);
 
-	// Enhanced tooltip content for Name Cards
-	const TooltipContent = () => (
-		<div className="flex flex-col gap-2 p-1 min-w-[200px]">
-			<div className="flex justify-between items-center border-b border-white/10 pb-2">
-				<h3 className="font-bold text-white text-lg">{name}</h3>
-				{metadata?.rank && (
-					<span className="text-sm font-mono text-purple-400">#{metadata.rank}</span>
-				)}
-			</div>
-
-			{metadata?.description && (
-				<p className="text-white/70 text-sm italic">{metadata.description}</p>
-			)}
-
-			{metadata && (
-				<div className="grid grid-cols-2 gap-2 mt-2">
-					{[
-						{ key: "rating", label: "Rating" },
-						{ key: "wins", label: "Wins" },
-						{ key: "losses", label: "Losses" },
-						{ key: "totalMatches", label: "Matches" },
-						{ key: "winRate", label: "Win Rate", suffix: "%" },
-					].map(({ key, label, suffix }) => {
-						const value = metadata[key];
-						return value !== undefined && value !== null ? (
-							<div key={key} className="flex justify-between text-xs">
-								<span className="text-white/50">{label}</span>
-								<span className="font-mono text-white">
-									{String(value)}
-									{suffix}
-								</span>
-							</div>
-						) : null;
-					})}
-				</div>
-			)}
-
-			{metadata?.categories && metadata.categories.length > 0 && (
-				<div className="mt-2 pt-2 border-t border-white/10">
-					<div className="flex flex-wrap gap-1">
-						{metadata.categories.map((category, index) => (
-							<span
-								key={index}
-								className="px-2 py-0.5 text-[10px] text-purple-300 bg-purple-900/30 rounded border border-purple-500/20"
-							>
-								{category}
-							</span>
-						))}
-					</div>
-				</div>
-			)}
-		</div>
-	);
-
-	return (
-		<Tooltip
-			content={<TooltipContent />}
-			delay={500}
-			closeDelay={0}
-			className="bg-neutral-900/90 border border-white/10 backdrop-blur-md p-4 rounded-xl shadow-xl"
-		>
-			{cardContent}
-		</Tooltip>
-	);
+	return cardContent;
 });
 
 CardNameBase.displayName = "CardName";

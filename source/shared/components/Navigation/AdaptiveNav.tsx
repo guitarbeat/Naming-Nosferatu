@@ -214,13 +214,17 @@ export function AdaptiveNav() {
 		<motion.nav
 			className={cn(
 				"fixed z-[100] flex items-center transition-all duration-500 ease-out",
+				"h-auto max-h-[120px]", // Limit height
 				// Mobile Styles: Bottom Sheet
-				"bottom-0 inset-x-0 justify-around gap-1 px-2 py-3 bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+				"bottom-0 !bottom-0 top-auto !top-auto inset-x-0 justify-around gap-1 px-2 py-3 bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]",
 				// Desktop Styles: Floating Dock
-				"md:bottom-8 md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-[400px] md:justify-center md:gap-2 md:px-6 md:py-3 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl md:pb-3",
+				"md:bottom-8 md:!bottom-8 md:top-auto md:!top-auto md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-[400px] md:justify-center md:gap-2 md:px-6 md:py-3 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl md:pb-3",
 			)}
-			role="navigation"
-			aria-label="Main navigation"
+			style={{
+				bottom: 0,
+				top: "auto",
+				maxHeight: "120px",
+			}}
 			initial={{ y: 100, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -268,7 +272,6 @@ export function AdaptiveNav() {
 						initial={{ scale: 0.8, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
 						exit={{ scale: 0.8, opacity: 0 }}
-						transition={{ duration: 0.2 }}
 					>
 						<IconComponent
 							className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}

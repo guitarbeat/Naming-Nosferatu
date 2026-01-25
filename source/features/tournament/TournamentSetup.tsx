@@ -7,6 +7,7 @@ import useAppStore from "@/store/useAppStore";
 import type { NameItem } from "@/types/components";
 import { getGreeting } from "@/utils";
 import { fetchCatAvatars } from "@/utils/catApi";
+import { CAT_IMAGES } from "@/config";
 import { Input } from "../../shared/components/FormPrimitives";
 import { useLoginController } from "../auth/authHooks";
 import { SwipeableCards } from "./TournamentComponents";
@@ -64,6 +65,7 @@ export default function TournamentSetup({
 						setAnalysisMode={setAnalysisMode}
 						tournamentProps={{
 							swipeableCards: SwipeableCards,
+							imageList: CAT_IMAGES,
 						}}
 						onStartTournament={onStart}
 					/>
