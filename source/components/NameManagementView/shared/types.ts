@@ -4,18 +4,10 @@
  * Note: NameItem is now consolidated in src/types/components.ts
  */
 
+import type { TournamentFilters } from "@/types/components";
 import type { NameManagementViewExtensions } from "../nameManagementCore";
 
-export interface TournamentFilters {
-	searchTerm?: string;
-	category?: string;
-	sortBy?: string;
-	filterStatus?: "all" | "visible" | "hidden";
-	userFilter?: string;
-	selectionFilter?: string;
-	sortOrder?: "asc" | "desc";
-	dateFilter?: string;
-}
+export type { TournamentFilters };
 
 export interface UseNameManagementViewProps {
 	mode: "tournament" | "profile";

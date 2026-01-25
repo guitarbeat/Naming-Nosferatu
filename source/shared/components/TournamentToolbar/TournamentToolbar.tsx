@@ -7,6 +7,7 @@
 import { cn } from "@utils/cn";
 import React, { useId } from "react";
 import { Card } from "@/components/Card";
+import type { TournamentFilters } from "@/types/components";
 import { FILTER_OPTIONS } from "../../../constants";
 import useAppStore from "../../../store/useAppStore";
 import Button from "../Button";
@@ -216,16 +217,6 @@ function ToolbarGlass({ mode, id, className, style, children }: ToolbarGlassProp
 // ============================================================================
 // FILTER TOOLBAR
 // ============================================================================
-
-interface TournamentFilters {
-	searchTerm?: string;
-	sortBy?: string;
-	filterStatus?: string;
-	userFilter?: string;
-	selectionFilter?: string;
-	sortOrder?: string;
-	dateFilter?: string;
-}
 
 interface FilterModeToolbarProps {
 	filters: TournamentFilters;

@@ -9,6 +9,17 @@
  */
 export type IdType = string | number;
 
+export interface TournamentFilters {
+	searchTerm?: string;
+	category?: string;
+	sortBy?: string;
+	filterStatus?: "all" | "visible" | "hidden";
+	userFilter?: string;
+	selectionFilter?: string;
+	sortOrder?: "asc" | "desc";
+	dateFilter?: string;
+}
+
 /**
  * Name item interface
  */

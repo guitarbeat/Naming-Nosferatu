@@ -1,5 +1,6 @@
 import { NameGrid } from "@components/NameGrid";
 import { cn } from "@utils/cn";
+import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import type { NameItem } from "@/types/components";
 import Button from "../../../shared/components/Button";
@@ -163,34 +164,67 @@ export function TournamentMode({
 			)}
 
 			{/* Name Grid */}
-			<section className="flex-1" data-component="name-grid" aria-label="Name selection">
-				{extensions.nameGrid ? (
-					extensions.nameGrid
-				) : isSwipeMode && swipeableCards && !isLoading ? (
-					React.createElement(swipeableCards, {
-						names: filteredNamesForSwipe,
-						selectedNames,
-						onToggleName: toggleName,
-						onRateName: (name: NameItem, rating: number) => console.log("Rate", name, rating),
-						isAdmin: !!isAdmin,
-						isSelectionMode: false,
-						showCatPictures,
-						imageList,
-						onStartTournament,
-					})
-				) : (
-					<NameGrid
-						names={names}
-						selectedNames={selectedNames}
-						onToggleName={toggleName}
-						filters={filterConfig}
-						isAdmin={isAdmin}
-						showSelectedOnly={showSelectedOnly}
-						showCatPictures={showCatPictures}
-						imageList={imageList}
-						isLoading={isLoading}
-					/>
-				)}
+			<section
+				className="flex-1 relative min-h-[500px]"
+				data-component="name-grid"
+				aria-label="Name selection"
+			>
+				<AnimatePresence mode="wait">
+					{extensions.nameGrid ? (
+						<motion.div
+							key="extension-grid"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -20 }}
+							transition={{ duration: 0.3 }}
+							className="w-full h-full"
+						>
+							{extensions.nameGrid}
+						</motion.div>
+					) : isSwipeMode && swipeableCards && !isLoading ? (
+						<motion.div
+							key="swipe-mode"
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.95 }}
+							transition={{ duration: 0.3 }}
+							className="w-full h-full"
+						>
+							{React.createElement(swipeableCards, {
+								names: filteredNamesForSwipe,
+								selectedNames,
+								onToggleName: toggleName,
+								onRateName: (name: NameItem, rating: number) => console.log("Rate", name, rating),
+								isAdmin: !!isAdmin,
+								isSelectionMode: false,
+								showCatPictures,
+								imageList,
+								onStartTournament,
+							})}
+						</motion.div>
+					) : (
+						<motion.div
+							key="grid-mode"
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.95 }}
+							transition={{ duration: 0.3 }}
+							className="w-full h-full"
+						>
+							<NameGrid
+								names={names}
+								selectedNames={selectedNames}
+								onToggleName={toggleName}
+								filters={filterConfig}
+								isAdmin={isAdmin}
+								showSelectedOnly={showSelectedOnly}
+								showCatPictures={showCatPictures}
+								imageList={imageList}
+								isLoading={isLoading}
+							/>
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</section>
 		</main>
 	);

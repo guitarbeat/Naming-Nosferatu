@@ -1,4 +1,14 @@
+import { CAT_IMAGES } from "@/config";
 import type { NameItem } from "@/types/components";
+
+/**
+ * Get a deterministic random cat image based on ID
+ */
+export function getRandomCatImage(id: string | number | null | undefined, images = CAT_IMAGES) {
+	if (!id) return images[0];
+	const seed = typeof id === "string" ? id.length : Number(id);
+	return images[seed % images.length];
+}
 
 /**
  * Converts an array of selected names to a Set of IDs for O(1) lookup.

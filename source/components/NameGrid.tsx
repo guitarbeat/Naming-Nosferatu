@@ -7,6 +7,7 @@
 import { imagesAPI } from "@supabase/client";
 import {
 	applyNameFilters,
+	getRandomCatImage,
 	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
@@ -79,9 +80,7 @@ const GridItem = memo(
 			if (!nameObj || !showCatPictures || !imageList.length) {
 				return undefined;
 			}
-			const idStr = String(nameObj.id);
-			const hash = idStr.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-			return imageList[Math.abs(hash) % imageList.length];
+			return getRandomCatImage(nameObj.id, imageList);
 		}, [nameObj, showCatPictures, imageList]);
 
 		return (
