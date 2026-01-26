@@ -1,20 +1,16 @@
-import { CardBody, Chip, cn, Button as HeroButton, Spinner } from "@heroui/react";
+import { CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
-import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
+import { RankingAdjustment } from "@/features/tournament/TournamentComponents";
 import { Card } from "@/features/ui/Card";
 import useLocalStorage from "@/hooks/useBrowserState";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types";
 import { exportTournamentResultsToCSV } from "@/utils";
-import { BongoCat } from "./CatVisuals";
-import { RankingAdjustment } from "./TournamentComponents";
+import { AnalysisDashboard } from "./AnalysisDashboard";
+import { usePersonalResults } from "./usePersonalResults";
 
-const AnalysisDashboard = lazy(() =>
-	import("../analytics/AnalysisDashboard").then((m) => ({
-		default: m.AnalysisDashboard,
-	})),
-);
 /* =========================================================================
    SUB-COMPONENTS
    ========================================================================= */
@@ -36,27 +32,8 @@ export const PersonalResults = ({
 	) => void;
 	userName?: string;
 }) => {
-	const [rankings, setRankings] = useState<NameItem[]>([]);
+	const { rankings } = usePersonalResults({ personalRatings, currentTournamentNames });
 	const { showToast } = useToast();
-
-	useEffect(() => {
-		if (!personalRatings) {
-			return;
-		}
-		const processed = Object.entries(personalRatings)
-			.map(([name, rating]: [string, unknown]) => {
-				const r = rating as { rating?: number; wins?: number; losses?: number } | number;
-				return {
-					name,
-					rating: Math.round(typeof r === "number" ? r : r?.rating || 1500),
-					wins: typeof r === "number" ? 0 : r?.wins || 0,
-					losses: typeof r === "number" ? 0 : r?.losses || 0,
-					id: currentTournamentNames?.find((n: NameItem) => n.name === name)?.id,
-				};
-			})
-			.sort((a, b) => b.rating - a.rating);
-		setRankings(processed as NameItem[]);
-	}, [personalRatings, currentTournamentNames]);
 
 	return (
 		<div className="flex flex-col gap-6 w-full">
@@ -128,11 +105,7 @@ export const PersonalResults = ({
 };
 
 /**
- * NameDiscovery removed - Gallery moved to Results, Bubble Cloud added to Analysis
- */
-
-/**
- * RandomGenerator Component (Simplified)
+ * RandomGenerator Component
  */
 const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }) => {
 	const [generatedName, setGeneratedName] = useState<string | null>(null);
@@ -143,7 +116,6 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 	const generateName = async () => {
 		setIsGenerating(true);
 		try {
-			// Fetch a random name from the API or local set
 			const allNames = await coreAPI.getTrendingNames();
 			if (allNames.length > 0) {
 				const random = allNames[Math.floor(Math.random() * allNames.length)];
@@ -151,11 +123,11 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 					setGeneratedName(random.name);
 				}
 			} else {
-				setGeneratedName("Luna"); // Fallback
+				setGeneratedName("Luna");
 			}
 		} catch (e) {
 			console.error(e);
-			setGeneratedName("Oliver"); // Fallback
+			setGeneratedName("Oliver");
 		} finally {
 			setIsGenerating(false);
 		}
@@ -205,7 +177,7 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 									>
 										<Heart
 											size={20}
-											className={cn(favorites.has(generatedName) && "fill-pink-500 text-pink-500")}
+											className={favorites.has(generatedName) ? "fill-pink-500 text-pink-500" : ""}
 										/>
 									</HeroButton>
 									<HeroButton
@@ -245,14 +217,17 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
 					</h3>
 					<div className="flex flex-wrap gap-2">
 						{Array.from(favorites).map((name) => (
-							<Chip
-								key={name}
-								onClose={() => toggleFavorite(name)}
-								variant="flat"
-								className="bg-white/5 border border-white/10 pl-2"
-							>
-								{name}
-							</Chip>
+							<React.Fragment key={name}>
+								<div className="bg-white/5 border border-white/10 pl-2 pr-1 py-1 rounded-full flex items-center gap-1">
+									<span className="text-sm">{name}</span>
+									<button
+										onClick={() => toggleFavorite(name)}
+										className="hover:bg-white/10 rounded-full p-1"
+									>
+										<span className="text-xs">✕</span>
+									</button>
+								</div>
+							</React.Fragment>
 						))}
 					</div>
 				</div>
@@ -265,14 +240,13 @@ const RandomGenerator: React.FC<{ userName: string }> = ({ userName: _userName }
    MAIN DASHBOARD COMPONENT
    ========================================================================= */
 
-// Simplified Tabs config
 const TABS = [
 	{ id: "results", label: "My Ranking", icon: "📊" },
 	{ id: "community", label: "Global Ranks", icon: "🌍" },
 	{ id: "random", label: "Surprise Me", icon: "🎲" },
 ];
 
-export default function Dashboard({
+export function UnifiedDashboard({
 	personalRatings,
 	currentTournamentNames,
 	onStartNew,
@@ -303,7 +277,13 @@ export default function Dashboard({
 				);
 			case "community":
 				return (
-					<Suspense fallback={<BongoCat text="Consulting the ancient rankings..." size="medium" />}>
+					<Suspense
+						fallback={
+							<div className="flex justify-center p-8">
+								<Spinner size="lg" color="secondary" />
+							</div>
+						}
+					>
 						<AnalysisDashboard
 							userName={userName}
 							showGlobalLeaderboard={true}
@@ -321,18 +301,16 @@ export default function Dashboard({
 
 	return (
 		<div className="w-full max-w-[1200px] mx-auto px-4 pb-20 pt-8">
-			{/* Simple Tab Navigation */}
 			<div className="bg-white/5 p-1 rounded-xl flex gap-1 overflow-x-auto max-w-full mx-auto mb-8 justify-center">
 				{TABS.map((tab) => (
 					<button
 						key={tab.id}
 						onClick={() => setActiveTab(tab.id)}
-						className={cn(
-							"flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap",
+						className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
 							activeTab === tab.id
 								? "bg-white/10 text-white shadow-sm"
-								: "text-white/50 hover:text-white/80 hover:bg-white/5",
-						)}
+								: "text-white/50 hover:text-white/80 hover:bg-white/5"
+						}`}
 					>
 						<span>{tab.icon}</span>
 						<span>{tab.label}</span>

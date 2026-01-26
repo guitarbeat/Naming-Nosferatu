@@ -246,8 +246,11 @@ export class PreferenceSorter {
 
 export { CAT_IMAGES };
 export function getRandomCatImage(id: string | number | null | undefined, images = CAT_IMAGES) {
-	const seed = typeof id === "string" ? id.length : Number(id);
-	return images[seed % images.length];
+	const seed =
+		typeof id === "string"
+			? id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+			: Number(id);
+	return images[Math.abs(seed) % images.length];
 }
 
 /**

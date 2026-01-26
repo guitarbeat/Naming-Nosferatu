@@ -22,7 +22,9 @@ import { cn } from "./utils/ui";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
-const Dashboard = lazy(() => import("./features/tournament/Dashboard"));
+const Dashboard = lazy(() =>
+	import("./features/analytics/UnifiedDashboard").then((m) => ({ default: m.UnifiedDashboard })),
+);
 
 /**
  * Root application component with Single Page Architecture (Vertical Scrolling)
