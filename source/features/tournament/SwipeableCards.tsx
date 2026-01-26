@@ -1,11 +1,11 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
-import { playSound } from "@utils/ui";
+import { playSound } from "@utils";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
-import { Card } from "@/features/ui/Card";
+import { Card } from "@/layout/Card";
 import type { NameItem } from "@/types";
-import { getRandomCatImage } from "../TournamentLogic";
+import { getRandomCatImage } from "./TournamentLogic";
 
 export const SwipeableCards = memo(
 	({

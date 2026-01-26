@@ -2,14 +2,14 @@ import { CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
 import React, { Suspense, useMemo, useState } from "react";
-import { RankingAdjustment } from "@/features/tournament/components/RankingAdjustment";
-import { Card } from "@/features/ui/Card";
+import { RankingAdjustment } from "@/features/tournament/RankingAdjustment";
 import useLocalStorage from "@/hooks/useBrowserState";
+import { Card } from "@/layout/Card";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types";
 import { exportTournamentResultsToCSV } from "@/utils";
-import { AnalysisDashboard } from "./AnalysisDashboard";
-import { usePersonalResults } from "./usePersonalResults";
+import { usePersonalResults } from "../tournament/usePersonalResults";
+import { AnalysisDashboard } from "./Dashboard";
 
 /* =========================================================================
    SUB-COMPONENTS

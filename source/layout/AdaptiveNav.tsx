@@ -4,8 +4,7 @@
  * Uses Scroll Navigation for Single Page Architecture
  */
 
-import { cn } from "@utils";
-import { hapticNavTap, hapticTournamentStart } from "@utils/ui";
+import { cn, hapticNavTap, hapticTournamentStart } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";

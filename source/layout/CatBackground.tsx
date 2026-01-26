@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef } from "react";
-import "@/styles/cat-background.css";
 
 /**
  * Star generation constants - using design system values

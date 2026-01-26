@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useUserSession } from "@/features/auth";
-import Button from "@/features/ui/Button";
-import Card from "@/features/ui/Card";
+import Button from "@/layout/Button";
+import Card from "@/layout/Card";
+import { useAuth } from "@/providers/AuthProvider";
 import useAppStore from "@/store";
 import { NameSuggestion } from "./NameSuggestion";
 import Tournament from "./Tournament";
@@ -10,7 +10,7 @@ import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { login } = useUserSession();
+	const { login } = useAuth();
 	const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup } =
 		useTournamentHandlers({
 			userName: user.name,
@@ -95,7 +95,10 @@ export default function TournamentFlow() {
 							className="w-full"
 						>
 							<TournamentSetup
-								onLogin={login}
+								onLogin={async (name) => {
+									await login({ name });
+									return true;
+								}}
 								onStart={(setupData) => {
 									handleTournamentSetup(setupData);
 									// Seamless transition - no scroll needed

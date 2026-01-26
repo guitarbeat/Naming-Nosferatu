@@ -2,9 +2,13 @@ import { cn } from "@utils";
 import React from "react";
 import { NameGrid } from "@/features/tournament/NameGrid";
 import { TournamentToolbar } from "@/features/tournament/TournamentToolbar";
-import Button from "@/features/ui/Button";
-import type { NameItem, TournamentFilters } from "@/types";
-import type { NameManagementViewExtensions, NameManagementViewProfileProps } from "./types";
+import Button from "@/layout/Button";
+import type {
+	NameItem,
+	NameManagementViewExtensions,
+	NameManagementViewProfileProps,
+	TournamentFilters,
+} from "@/types";
 
 interface ProfileModeProps {
 	filterConfig: TournamentFilters;

@@ -9,21 +9,25 @@
 
 import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { useUserSession } from "@/features/auth";
-import { AppLayout } from "@/features/layout/AppLayout";
-import { ErrorBoundary } from "@/features/ui/Error";
-import { Loading } from "@/features/ui/StatusIndicators";
-import { Toast } from "@/features/ui/Toast";
+import { AppLayout } from "@/layout/AppLayout";
+import { ErrorBoundary } from "@/layout/Error";
+import { Loading } from "@/layout/StatusIndicators";
+import { Toast } from "@/layout/Toast";
+import { useAuth } from "@/providers/AuthProvider";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
 import useAppStore, { useAppStoreInitialization } from "./store";
-import { cleanupPerformanceMonitoring, devError, initializePerformanceMonitoring } from "./utils";
-import { cn } from "./utils/ui";
+import {
+	cleanupPerformanceMonitoring,
+	cn,
+	devError,
+	initializePerformanceMonitoring,
+} from "./utils";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
 const Dashboard = lazy(() =>
-	import("./features/analytics/UnifiedDashboard").then((m) => ({ default: m.UnifiedDashboard })),
+	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
 );
 
 /**
@@ -37,7 +41,8 @@ interface ToastMessage {
 }
 function App() {
 	// Kept for now if needed by hooks, but mostly unused for nav
-	const { login, isInitialized } = useUserSession();
+	const { login, isLoading } = useAuth();
+	const isInitialized = !isLoading;
 
 	// Initialize performance monitoring and global error handling
 	useEffect(() => {
@@ -81,7 +86,7 @@ function App() {
 	const handleLogin = useCallback(
 		async (userName: string) => {
 			try {
-				const success = await login(userName);
+				const success = await login({ name: userName });
 				return success;
 			} catch (error) {
 				devError("Login error:", error);

@@ -6,9 +6,9 @@
 
 import { useMemo } from "react";
 import { ProfileEditorModal } from "@/features/tournament/ProfileEditorModal";
-import { ScrollToTopButton } from "@/features/ui/Button";
-import { ErrorBoundary, ErrorComponent } from "@/features/ui/Error";
-import { Loading, OfflineIndicator } from "@/features/ui/StatusIndicators";
+import { ScrollToTopButton } from "@/layout/Button";
+import { ErrorBoundary, ErrorComponent } from "@/layout/Error";
+import { Loading, OfflineIndicator } from "@/layout/StatusIndicators";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
 import { AdaptiveNav } from "./AdaptiveNav";

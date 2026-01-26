@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
-import "@/styles/liquid-glass.css";
 
 interface LiquidGlassProps {
 	children: React.ReactNode;

@@ -12,7 +12,7 @@ import { ErrorManager } from "@services/errorManager";
 import { motion } from "framer-motion";
 import { GripVertical, Loader2, Save } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { Card } from "@/features/ui/Card";
+import { Card } from "@/layout/Card";
 import type { NameItem } from "@/types";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {

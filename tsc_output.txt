@@ -1,0 +1,7 @@
+ WARN  Unsupported engine: wanted: {"node":"20.x"} (current: {"node":"v22.21.1","pnpm":"10.27.0"})
+
+> name-nosferatu@1.0.2 lint:types /Users/aaron/Downloads/Naming-Nosferatu
+> tsc --noEmit --project tsconfig.base.json
+
+source/providers/AuthProvider.tsx(359,41): error TS6133: 'name' is declared but its value is never read.
+ ELIFECYCLE  Command failed with exit code 2.

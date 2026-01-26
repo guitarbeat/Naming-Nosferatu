@@ -7,19 +7,18 @@
 import { cn } from "@utils";
 import React, { useId } from "react";
 import { FILTER_OPTIONS } from "@/constants";
-import Button from "@/features/ui/Button";
-import { Select } from "@/features/ui/FormPrimitives";
-import LiquidGlass from "@/features/ui/LiquidGlass";
+import Button from "@/layout/Button";
+import { Select } from "@/layout/FormPrimitives";
+import LiquidGlass from "@/layout/LiquidGlass";
 import useAppStore from "@/store";
 import type { TournamentFilters } from "@/types";
-import "@/styles/tournament-toolbar.css";
 
 // ============================================================================
 // CONFIGURATION
 // ============================================================================
 
 import { Eye, EyeOff, GalleryHorizontal, LayoutGrid, Plus, Search } from "lucide-react";
-import { Input } from "@/features/ui/FormPrimitives";
+import { Input } from "@/layout/FormPrimitives";
 
 const TOOLBAR_GLASS_CONFIGS = {
 	tournament: {

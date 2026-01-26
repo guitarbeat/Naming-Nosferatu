@@ -1,5 +1,0 @@
-rmdir: /s: No such file or directory
-rmdir: /q: No such file or directory
-rmdir: build: No such file or directory
-rmdir: dist: Directory not empty
-rmdir: node_modules.vite: No such file or directory

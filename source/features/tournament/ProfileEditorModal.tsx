@@ -6,9 +6,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { useState } from "react";
-import Button from "@/features/ui/Button";
-import { Card } from "@/features/ui/Card";
-import { Input } from "@/features/ui/FormPrimitives";
+import Button from "@/layout/Button";
+import { Card } from "@/layout/Card";
+import { Input } from "@/layout/FormPrimitives";
 import useAppStore from "@/store";
 
 interface ProfileEditorModalProps {

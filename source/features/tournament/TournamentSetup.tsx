@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { CAT_IMAGES } from "@/constants";
 import { useLoginController } from "@/features/auth";
-import { Card } from "@/features/ui/Card";
-import { Input } from "@/features/ui/FormPrimitives";
+import { Card } from "@/layout/Card";
+import { Input } from "@/layout/FormPrimitives";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
-import { SwipeableCards } from "./components/SwipeableCards";
 import { NameManagementView } from "./NameManagementView";
+import { SwipeableCards } from "./SwipeableCards";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

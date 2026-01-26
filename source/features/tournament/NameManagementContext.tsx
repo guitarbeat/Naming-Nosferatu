@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { UseNameManagementViewResult } from "../types";
+import type { UseNameManagementViewResult } from "@/types";
 
 // Context Definition
 export const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);

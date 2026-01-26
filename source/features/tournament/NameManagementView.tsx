@@ -6,14 +6,14 @@
 
 import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
-import { ErrorComponent } from "@/features/ui/Error";
-import { useToast } from "@/providers";
-import { NameManagementProvider } from "./context/NameManagementContext";
-import { useNameManagementView } from "./hooks/useNameManagementView";
+import { ErrorComponent } from "@/layout/Error";
+import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "@/types";
+import { useToast } from "../../providers";
+import { NameManagementProvider } from "./NameManagementContext";
 import { ProfileMode } from "./ProfileMode";
 import type { SwipeableCardsProps } from "./TournamentMode";
 import { TournamentMode } from "./TournamentMode";
-import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "./types";
+import { useNameManagementView } from "./useNameManagementView";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
@@ -28,23 +28,29 @@ export function NameManagementView({
 	mode = "tournament", // Default mode
 	userName,
 	onStartTournament,
+	analysisMode: propsAnalysisMode,
+	setAnalysisMode: propsSetAnalysisMode,
 
 	extensions = {},
 	tournamentProps = {},
 	profileProps = {},
 	className = "",
 }: NameManagementViewProps) {
-	// * Sync analysis mode with URL
-	const [analysisMode, setAnalysisMode] = useState(false);
+	// * Internal state as fallback if not provided by props (though required in interface)
+	const [internalAnalysisMode, setInternalAnalysisMode] = useState(false);
+
+	const analysisMode = propsAnalysisMode ?? internalAnalysisMode;
+	const setAnalysisMode = propsSetAnalysisMode ?? setInternalAnalysisMode;
+
 	const { showToast } = useToast();
 
 	useEffect(() => {
-		if (typeof window === "undefined") {
+		if (typeof window === "undefined" || propsAnalysisMode !== undefined) {
 			return;
 		}
 		const params = new URLSearchParams(window.location.search);
-		setAnalysisMode(params.get("analysis") === "true");
-	}, []);
+		setInternalAnalysisMode(params.get("analysis") === "true");
+	}, [propsAnalysisMode]);
 
 	const state = useNameManagementView({
 		mode,

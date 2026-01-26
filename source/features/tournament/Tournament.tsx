@@ -1,7 +1,7 @@
 import { getVisibleNames } from "@utils";
-import { Card } from "@/features/ui/Card";
-import { ErrorComponent } from "@/features/ui/Error";
-import { Loading } from "@/features/ui/StatusIndicators";
+import { Card } from "@/layout/Card";
+import { ErrorComponent } from "@/layout/Error";
+import { Loading } from "@/layout/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store";
 import type { TournamentProps } from "@/types";

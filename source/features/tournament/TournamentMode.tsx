@@ -1,11 +1,10 @@
 import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
-import Button from "@/features/ui/Button";
-import type { NameItem, TournamentFilters } from "@/types";
+import Button from "@/layout/Button";
+import type { NameItem, NameManagementViewExtensions, TournamentFilters } from "@/types";
 import { NameGrid } from "./NameGrid";
 import { TournamentToolbar } from "./TournamentToolbar";
-import type { NameManagementViewExtensions } from "./types";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];
