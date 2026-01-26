@@ -17,7 +17,7 @@ import {
 } from "@utils";
 import { motion } from "framer-motion";
 import { Upload } from "lucide-react";
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { CardName } from "@/features/ui/Card";
 import { EmptyState } from "@/features/ui/EmptyState";
 import { Lightbox } from "@/features/ui/Lightbox";
@@ -84,6 +84,12 @@ const GridItem = memo(
 			return getRandomCatImage(nameObj.id, imageList);
 		}, [nameObj, showCatPictures, imageList]);
 
+		const handleCardClick = useCallback(() => {
+			if (cardImage) {
+				onImageClick(cardImage);
+			}
+		}, [cardImage, onImageClick]);
+
 		return (
 			<motion.div
 				className="w-full h-full"
@@ -100,7 +106,7 @@ const GridItem = memo(
 					isSelected={isSelected}
 					onClick={() => onToggleName?.(nameObj)}
 					image={cardImage}
-					onImageClick={cardImage ? () => onImageClick(cardImage) : undefined}
+					onImageClick={cardImage ? handleCardClick : undefined}
 					metadata={
 						isAdmin
 							? {
@@ -143,6 +149,16 @@ export function NameGrid({
 
 	// Merge provided imageList with any newly uploaded images
 	const finalImageList = useMemo(() => [...suppImages, ...imageList], [suppImages, imageList]);
+
+	const handleImageClick = useCallback(
+		(image: string) => {
+			const idx = finalImageList.indexOf(image);
+			if (idx !== -1) {
+				setLightboxIndex(idx);
+			}
+		},
+		[finalImageList],
+	);
 
 	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
 		useMasonryLayout<HTMLDivElement>(names.length, {
@@ -250,12 +266,7 @@ export function NameGrid({
 								imageList={finalImageList}
 								onToggleVisibility={onToggleVisibility}
 								onDelete={onDelete}
-								onImageClick={(image) => {
-									const idx = finalImageList.indexOf(image);
-									if (idx !== -1) {
-										setLightboxIndex(idx);
-									}
-								}}
+								onImageClick={handleImageClick}
 								index={index}
 							/>
 						</div>
