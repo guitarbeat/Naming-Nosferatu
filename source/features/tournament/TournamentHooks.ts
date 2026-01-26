@@ -1,6 +1,5 @@
 import { ErrorManager } from "@services/errorManager";
 import {
-	clearTournamentCache,
 	devError,
 	devLog,
 	devWarn,
@@ -23,6 +22,7 @@ import type {
 } from "@/types";
 import {
 	calculateBracketRound,
+	clearTournamentCache,
 	EloRating,
 	PreferenceSorter,
 	tournamentsAPI,

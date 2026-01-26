@@ -113,14 +113,14 @@ config/                   # Tool configuration
 |-----------|---------|
 | `features/ui/` | Design system: Button, Card, Toast, Error, StatusIndicators, etc. |
 | `features/layout/` | App shell: AppLayout, AdaptiveNav, CatBackground, FloatingBubbles |
-| `features/tournament/` | Tournament logic, name management, profiles, Elo ratings |
+| `features/tournament/` | Tournament logic, name management, profiles, Elo ratings, consolidated utils |
 | `features/analytics/` | Analysis dashboard, charts, leaderboards |
 | `features/auth.ts` | Authentication, authorization, admin checks (single file) |
 | `hooks/` | Shared React hooks for browser state, forms, data fetching |
 | `services/` | API clients, error handling, offline sync |
 | `store.ts` | Global state management with Zustand |
 | `types.ts` | TypeScript type definitions |
-| `utils/` | Pure functions: array ops, formatting, metrics |
+| `utils/` | Pure functions: array ops (basic), name gen/filters (names), UI helpers (ui) |
 
 ---
 

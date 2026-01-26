@@ -17,7 +17,7 @@ import {
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/features/ui/Card";
 import type { NameItem } from "@/types";
-import { getRandomCatImage } from "./TournamentLogic";
+import { getRandomCatImage } from "@utils";
 
 /* =========================================================================
    COMPONENTS

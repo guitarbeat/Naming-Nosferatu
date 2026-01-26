@@ -1,5 +1,5 @@
-import { withSupabase } from "@supabase/client";
-import { CAT_IMAGES, ELO_RATING } from "@/constants";
+import { queryClient, withSupabase } from "@supabase/client";
+import { ELO_RATING, STORAGE_KEYS } from "@/constants";
 import type { NameItem } from "@/types";
 
 /* =========================================================================
@@ -244,12 +244,6 @@ export class PreferenceSorter {
    GENERAL UTILS
    ========================================================================= */
 
-export { CAT_IMAGES };
-export function getRandomCatImage(id: string | number | null | undefined, images = CAT_IMAGES) {
-	const seed = typeof id === "string" ? id.length : Number(id);
-	return images[seed % images.length];
-}
-
 /**
  * Calculate bracket round based on number of names and current match
  */
@@ -260,3 +254,83 @@ export function calculateBracketRound(totalNames: number, currentMatch: number):
 	const matchesPerRound = Math.ceil(totalNames / 2);
 	return Math.ceil(currentMatch / matchesPerRound);
 }
+
+/**
+ * Computes a new rating based on a weighted blend of existing rating and new position rating.
+ * The blend factor is determined by the number of matches played relative to the maximum expected matches.
+ *
+ * @param matchesPlayed - Number of matches played so far
+ * @param maxMatches - Maximum expected matches for the tournament/session
+ * @param newPositionRating - The rating derived from the current position/rank
+ * @param existingRating - The user's existing rating
+ * @returns The new calculated rating, clamped between 1000 and 2000
+ */
+export function computeRating(
+	matchesPlayed: number,
+	maxMatches: number,
+	newPositionRating: number,
+	existingRating: number,
+): number {
+	const safeMaxMatches = Math.max(1, maxMatches);
+
+	// Clamp matchesPlayed to maxMatches to prevent potential logical inconsistencies
+	// where the blend factor might be calculated based on an impossible number of matches.
+	// Although the blendFactor is capped at 0.8, this ensures the ratio never exceeds 1.0.
+	const clampedMatches = Math.min(matchesPlayed, safeMaxMatches);
+
+	const blendFactor = Math.min(0.8, (clampedMatches / safeMaxMatches) * 0.9);
+
+	const newRating = Math.round(
+		blendFactor * newPositionRating + (1 - blendFactor) * existingRating,
+	);
+
+	return Math.max(1000, Math.min(2000, newRating));
+}
+
+/**
+ * Clear tournament-related query cache
+ */
+export function clearTournamentCache() {
+	try {
+		queryClient.removeQueries({ queryKey: ["tournament"] });
+		queryClient.removeQueries({ queryKey: ["catNames"] });
+		return true;
+	} catch (error) {
+		console.error("Error clearing tournament cache:", error);
+		return false;
+	}
+}
+
+/**
+ * Exports tournament results to a CSV file.
+ *
+ * @param rankings Array of NameItems with rankings
+ * @param filename Optional filename (default: generated based on date)
+ */
+export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: string): void => {
+	if (!rankings.length) {
+		return;
+	}
+
+	const headers = ["Name", "Rating", "Wins", "Losses"];
+	const rows = rankings.map((r) =>
+		[`"${r.name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(","),
+	);
+
+	const csvContent = [headers.join(","), ...rows].join("\n");
+	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+	const link = document.createElement("a");
+
+	const downloadName = filename || `cat_names_${new Date().toISOString().slice(0, 10)}.csv`;
+
+	if (link.download !== undefined) {
+		const url = URL.createObjectURL(blob);
+		link.setAttribute("href", url);
+		link.setAttribute("download", downloadName);
+		link.style.visibility = "hidden";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	}
+};

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeRating } from './tournamentUtils';
+import { computeRating } from './TournamentLogic';
 
 describe('computeRating', () => {
   it('should clamp rating between 1000 and 2000', () => {

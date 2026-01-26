@@ -6,9 +6,9 @@ import { Card } from "@/features/ui/Card";
 import useLocalStorage from "@/hooks/useBrowserState";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem } from "@/types";
-import { exportTournamentResultsToCSV } from "@/utils";
 import { BongoCat } from "./CatVisuals";
 import { RankingAdjustment } from "./TournamentComponents";
+import { exportTournamentResultsToCSV } from "./TournamentLogic";
 
 const AnalysisDashboard = lazy(() =>
 	import("../analytics/AnalysisDashboard").then((m) => ({
