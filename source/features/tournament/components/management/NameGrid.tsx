@@ -18,12 +18,12 @@ import {
 import { motion } from "framer-motion";
 import { Upload } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
+import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import { CardName } from "@/layout/Card";
 import { EmptyState } from "@/layout/EmptyState";
 import { Lightbox } from "@/layout/Lightbox";
 import { Loading } from "@/layout/StatusIndicators";
 import type { NameItem } from "@/types";
-import { useMasonryLayout } from "../hooks/useMasonryLayout";
 
 interface NameGridProps {
 	names: NameItem[];

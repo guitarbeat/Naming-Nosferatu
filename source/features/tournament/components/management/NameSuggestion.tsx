@@ -6,7 +6,7 @@
 
 import { cn } from "@utils";
 import { useCallback, useEffect, useId, useRef } from "react";
-import { useNameSuggestion } from "@/features/tournament/hooks/useNames";
+import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
 import LiquidGlass from "@/layout/LiquidGlass";

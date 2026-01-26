@@ -5,7 +5,7 @@
  */
 
 import { useMemo } from "react";
-import { ProfileEditorModal } from "@/features/tournament/components/ProfileEditorModal";
+import { ProfileEditorModal } from "@/features/tournament/components/profile/ProfileEditorModal";
 import { ScrollToTopButton } from "@/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/layout/Error";
 import { Loading, OfflineIndicator } from "@/layout/StatusIndicators";

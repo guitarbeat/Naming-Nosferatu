@@ -6,17 +6,16 @@
 
 import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { hiddenNamesAPI } from "@supabase/client";
-import { Suspense, useCallback, useMemo, useState } from "react";
+import { createContext, Suspense, useCallback, useContext, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "@/constants";
-import { TournamentToolbar } from "@/features/tournament/components/TournamentToolbar";
-import { useNameManagementContextOptional } from "@/features/tournament/context/NameManagementContext";
+import { TournamentToolbar } from "@/features/tournament/components/Toolbar";
 import { useCollapsible } from "@/hooks/useBrowserState";
 import { Card } from "@/layout/Card";
 import { BumpChart } from "@/layout/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/layout/CollapsibleHeader";
 import { EmptyState } from "@/layout/EmptyState";
 import { FloatingBubblesContainer } from "@/layout/FloatingBubbles";
-import type { NameItem } from "@/types";
+import type { NameItem, UseNameManagementViewResult } from "@/types";
 import { clearAllCaches, devError } from "@/utils";
 import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisComponents";
 import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
@@ -26,6 +25,29 @@ import type {
 	LeaderboardItem,
 	SelectionPopularityItem,
 } from "./analyticsService";
+
+// Context Definition
+export const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);
+
+export function NameManagementProvider({
+	children,
+	value,
+}: {
+	children: React.ReactNode;
+	value: UseNameManagementViewResult;
+}) {
+	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
+}
+
+/**
+ * Optional version of useNameManagementContextSafe that returns null instead of throwing
+ * when no provider is available. Useful for components that can work standalone.
+ */
+export function useNameManagementContextOptional(): UseNameManagementViewResult | null {
+	const context = useContext(NameManagementContext);
+	return context;
+}
+
 // Modular Components
 import { PersonalResults } from "./PersonalResults";
 import { RandomGenerator } from "./RandomGenerator";

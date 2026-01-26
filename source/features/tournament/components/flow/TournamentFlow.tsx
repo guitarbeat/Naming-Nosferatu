@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { useTournamentHandlers } from "@/hooks/TournamentHooks";
 import Button from "@/layout/Button";
 import Card from "@/layout/Card";
 import { useAuth } from "@/providers/AuthProvider";
 import useAppStore from "@/store";
-import { useTournamentHandlers } from "../hooks/TournamentHooks";
-import { NameSuggestion } from "./NameSuggestion";
+import { NameSuggestion } from "../management/NameSuggestion";
 import Tournament from "./Tournament";
 import TournamentSetup from "./TournamentSetup";
 
