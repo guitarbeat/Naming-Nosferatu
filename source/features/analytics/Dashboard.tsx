@@ -16,16 +16,16 @@ import { BumpChart } from "@/layout/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/layout/CollapsibleHeader";
 import { EmptyState } from "@/layout/EmptyState";
 import { FloatingBubblesContainer } from "@/layout/FloatingBubbles";
+import type { NameItem } from "@/types";
+import { clearAllCaches, devError } from "@/utils";
+import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisComponents";
+import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
 import type {
 	AnalysisDashboardProps,
 	AnalyticsDataItem,
 	LeaderboardItem,
 	SelectionPopularityItem,
-} from "@/services/analyticsService";
-import type { NameItem } from "@/types";
-import { clearAllCaches, devError } from "@/utils";
-import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisComponents";
-import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
+} from "./analyticsService";
 // Modular Components
 import { PersonalResults } from "./PersonalResults";
 import { RandomGenerator } from "./RandomGenerator";

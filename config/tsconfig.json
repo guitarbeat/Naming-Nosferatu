@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"baseUrl": "../"
+	},
+	"include": [
+		"../source",
+		"../config",
+		"../scripts",
+		"vite.config.ts",
+		"../source/shims.d.ts"
+	]
+}

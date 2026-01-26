@@ -1,7 +1,3 @@
 {
-	"extends": "./tsconfig.base.json",
-	"compilerOptions": {
-		"baseUrl": "./"
-	},
-	"include": ["source", "config", "scripts", "vite.config.ts", "*.d.ts"]
+    "extends": "./config/tsconfig.json"
 }

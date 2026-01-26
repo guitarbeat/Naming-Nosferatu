@@ -11,7 +11,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = __dirname;
+const projectRoot = path.resolve(__dirname, "..");
 
 const resolveFromRoot = (...segments: string[]) => path.resolve(projectRoot, ...segments);
 
@@ -25,6 +25,8 @@ export default defineConfig(({ mode }) => {
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 
 	return {
+		root: resolveFromRoot("source"),
+		publicDir: resolveFromRoot("public"),
 		plugins: [
 			react(),
 			VitePWA({
@@ -73,7 +75,7 @@ export default defineConfig(({ mode }) => {
 		// * Ensure proper base path for production builds
 		base: "/",
 		css: {
-			postcss: resolveFromRoot("postcss.config.js"),
+			postcss: resolveFromRoot("config/postcss.config.js"),
 			devSourcemap: true,
 		},
 		resolve: {

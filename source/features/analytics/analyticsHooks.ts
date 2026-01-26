@@ -13,7 +13,7 @@ import type {
 	HighlightItem,
 	LeaderboardItem,
 	SelectionPopularityItem,
-} from "@/services/analyticsService";
+} from "./analyticsService";
 
 /* ==========================================================================
    DATA FETCHING HOOK

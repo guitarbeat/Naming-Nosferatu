@@ -37,65 +37,65 @@
 		],
 		"paths": {
 			"@supabase/client": [
-				"./source/services/supabase/client.ts"
+				"source/services/supabase/client.ts"
 			],
 			"@supabase/types": [
-				"./supabase/types.ts"
+				"supabase/types.ts"
 			],
 			"@/*": [
-				"./source/*"
+				"source/*"
 			],
 			"@store": [
-				"./source/store.ts"
+				"source/store.ts"
 			],
 			"@types": [
-				"./source/types.ts"
+				"source/types.ts"
 			],
 			"@hooks": [
-				"./source/hooks/index.ts"
+				"source/hooks/index.ts"
 			],
 			"@hooks/*": [
-				"./source/hooks/*"
+				"source/hooks/*"
 			],
 			"@utils": [
-				"./source/utils/index.ts"
+				"source/utils/index.ts"
 			],
 			"@utils/*": [
-				"./source/utils/*"
+				"source/utils/*"
 			],
 			"@services": [
-				"./source/services/index.ts"
+				"source/services/index.ts"
 			],
 			"@services/*": [
-				"./source/services/*"
+				"source/services/*"
 			],
 			"@styles": [
-				"./source/styles/index.ts"
+				"source/styles/index.ts"
 			],
 			"@styles/*": [
-				"./source/styles/*"
+				"source/styles/*"
 			],
 			"@features": [
-				"./source/features/index.ts"
+				"source/features/index.ts"
 			],
 			"@features/*": [
-				"./source/features/*"
+				"source/features/*"
 			],
 			"@core": [
-				"./source/index.ts"
+				"source/index.ts"
 			],
 			"@core/*": [
-				"./source/*"
+				"source/*"
 			]
 		}
 	},
 	"include": [
-		"./source/**/*",
-		"./scripts/**/*"
+		"../source/**/*",
+		"../scripts/**/*"
 	],
 	"exclude": [
-		"./node_modules",
-		"./build",
-		"./dist"
+		"../node_modules",
+		"../build",
+		"../dist"
 	]
 }
