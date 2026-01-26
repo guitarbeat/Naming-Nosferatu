@@ -9,13 +9,13 @@
 
 import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useUserSession } from "@/features/auth";
 import { AppLayout } from "@/features/layout/AppLayout";
 import { ErrorBoundary } from "@/features/ui/Error";
 import { Loading } from "@/features/ui/StatusIndicators";
 import { Toast } from "@/features/ui/Toast";
 import { useTournamentHandlers } from "./features/tournament/TournamentHooks";
 import { useOfflineSync } from "./hooks/useBrowserState";
-import useUserSession from "./hooks/useUserSession";
 import useAppStore, { useAppStoreInitialization } from "./store";
 import { cleanupPerformanceMonitoring, devError, initializePerformanceMonitoring } from "./utils";
 import { cn } from "./utils/ui";

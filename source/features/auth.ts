@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { STORAGE_KEYS, VALIDATION } from "@/constants";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
+import useAppStore from "@/store";
 
 /* ==========================================================================
    CONSTANTS
@@ -56,10 +57,14 @@ const compareRoles = (
 };
 
 const normalizeStatusCode = (value: unknown): number | null => {
-	if (typeof value === "number" && Number.isFinite(value)) return value;
+	if (typeof value === "number" && Number.isFinite(value)) {
+		return value;
+	}
 	if (typeof value === "string") {
 		const numericMatch = value.match(/\d{3}/);
-		if (numericMatch) return Number.parseInt(numericMatch[0], 10);
+		if (numericMatch) {
+			return Number.parseInt(numericMatch[0], 10);
+		}
 	}
 	return null;
 };
@@ -98,17 +103,25 @@ const extractErrorMetadata = (error: unknown) => {
 
 	while (stack.length) {
 		const current = stack.pop();
-		if (current == null) continue;
+		if (current == null) {
+			continue;
+		}
 		if (typeof current === "string") {
 			messages.add(current);
 			continue;
 		}
-		if (typeof current !== "object") continue;
-		if (visited.has(current)) continue;
+		if (typeof current !== "object") {
+			continue;
+		}
+		if (visited.has(current)) {
+			continue;
+		}
 		visited.add(current);
 
 		if (Array.isArray(current)) {
-			for (const entry of current) stack.push(entry);
+			for (const entry of current) {
+				stack.push(entry);
+			}
 			continue;
 		}
 
@@ -138,7 +151,9 @@ const extractErrorMetadata = (error: unknown) => {
 
 		for (const candidate of candidateStatuses) {
 			const normalized = normalizeStatusCode(candidate);
-			if (normalized != null) statuses.add(normalized);
+			if (normalized != null) {
+				statuses.add(normalized);
+			}
 		}
 
 		const candidateCodes = [
@@ -152,9 +167,13 @@ const extractErrorMetadata = (error: unknown) => {
 		];
 
 		for (const candidate of candidateCodes) {
-			if (candidate == null) continue;
+			if (candidate == null) {
+				continue;
+			}
 			const normalized = String(candidate).trim().toUpperCase();
-			if (normalized) codes.add(normalized);
+			if (normalized) {
+				codes.add(normalized);
+			}
 		}
 
 		const messageKeys: (keyof ErrorWithStatus)[] = [
@@ -174,12 +193,17 @@ const extractErrorMetadata = (error: unknown) => {
 
 		for (const key of messageKeys) {
 			const value = errorObj[key];
-			if (typeof value === "string") messages.add(value);
+			if (typeof value === "string") {
+				messages.add(value);
+			}
 		}
 
 		for (const value of Object.values(current)) {
-			if (value && typeof value === "object") stack.push(value);
-			else if (typeof value === "string") messages.add(value);
+			if (value && typeof value === "object") {
+				stack.push(value);
+			} else if (typeof value === "string") {
+				messages.add(value);
+			}
 		}
 	}
 
@@ -191,7 +215,9 @@ const extractErrorMetadata = (error: unknown) => {
 };
 
 const isMissingResourceError = (error: unknown): boolean => {
-	if (!error) return false;
+	if (!error) {
+		return false;
+	}
 	const { statuses, codes, messages } = extractErrorMetadata(error);
 
 	const normalizedStatuses = statuses
@@ -232,10 +258,14 @@ const isMissingResourceError = (error: unknown): boolean => {
 };
 
 const isRpcParameterMismatchError = (error: unknown): boolean => {
-	if (!error) return false;
+	if (!error) {
+		return false;
+	}
 	const { codes, messages } = extractErrorMetadata(error);
 	const mismatchCodes = new Set(["42883", "42703"]);
-	if (codes.some((value) => mismatchCodes.has(value))) return true;
+	if (codes.some((value) => mismatchCodes.has(value))) {
+		return true;
+	}
 
 	const parameterMismatchPatterns = [
 		"missing required input parameter",
@@ -288,37 +318,52 @@ const getClientState = (client: object | null) => {
 };
 
 const markSourceSuccessful = (state: ClientState | undefined, source: string) => {
-	if (!state) return;
+	if (!state) {
+		return;
+	}
 	state.disabledSources.delete(source);
 	state.preferredRoleSource = source;
 };
 
 const markSourceUnavailable = (state: ClientState | undefined, source: string) => {
-	if (!state) return;
+	if (!state) {
+		return;
+	}
 	state.disabledSources.add(source);
 	if (state.preferredRoleSource === source) {
 		const fallback = ROLE_SOURCES.find(
 			(candidate) => candidate !== source && !state.disabledSources.has(candidate),
 		);
-		if (fallback) state.preferredRoleSource = fallback;
+		if (fallback) {
+			state.preferredRoleSource = fallback;
+		}
 	}
 };
 
 const getRoleSourceOrder = (state: ClientState | undefined) => {
-	if (!state) return [...ROLE_SOURCES];
+	if (!state) {
+		return [...ROLE_SOURCES];
+	}
 	const orderedSources = new Set();
 	const preferred =
 		state.preferredRoleSource && !state.disabledSources.has(state.preferredRoleSource)
 			? state.preferredRoleSource
 			: ROLE_SOURCES.find((source) => !state.disabledSources.has(source));
 
-	if (preferred) orderedSources.add(preferred);
-	else if (state.preferredRoleSource) orderedSources.add(state.preferredRoleSource);
+	if (preferred) {
+		orderedSources.add(preferred);
+	} else if (state.preferredRoleSource) {
+		orderedSources.add(state.preferredRoleSource);
+	}
 
 	for (const source of ROLE_SOURCES) {
-		if (!state.disabledSources.has(source)) orderedSources.add(source);
+		if (!state.disabledSources.has(source)) {
+			orderedSources.add(source);
+		}
 	}
-	for (const source of ROLE_SOURCES) orderedSources.add(source);
+	for (const source of ROLE_SOURCES) {
+		orderedSources.add(source);
+	}
 
 	return [...orderedSources];
 };
@@ -347,7 +392,9 @@ const fetchRoleFromSource = async (
 	source: string,
 	state: ClientState | undefined,
 ) => {
-	if (!activeSupabase) return { role: null, handled: true };
+	if (!activeSupabase) {
+		return { role: null, handled: true };
+	}
 
 	const trimmedUserName = userName.trim?.() ?? userName;
 
@@ -374,8 +421,12 @@ const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, us
 	for (const source of sources) {
 		try {
 			const result = await fetchRoleFromSource(activeSupabase, userName, source as string, state);
-			if (result?.handled) continue;
-			if (result?.role) return normalizeRole(result.role as string);
+			if (result?.handled) {
+				continue;
+			}
+			if (result?.role) {
+				return normalizeRole(result.role as string);
+			}
 		} catch (error) {
 			if (import.meta.env.DEV) {
 				const errorMsg = error instanceof Error ? error.message : String(error);
@@ -387,7 +438,9 @@ const fetchUserRole = async (activeSupabase: SupabaseClient<Database> | null, us
 };
 
 async function _hasRole(userName: string, requiredRole: string): Promise<boolean> {
-	if (!userName || !requiredRole) return false;
+	if (!userName || !requiredRole) {
+		return false;
+	}
 
 	const activeSupabase = await resolveSupabaseClient();
 	if (!activeSupabase) {
@@ -402,7 +455,9 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 		const normalizedRequiredRole = normalizeRole(requiredRole);
 		const state = getClientState(activeSupabase);
 
-		if (!normalizedRequiredRole) return false;
+		if (!normalizedRequiredRole) {
+			return false;
+		}
 
 		if (state?.canUseRoleRpc) {
 			const rpcPayloads: Record<string, string>[] = [
@@ -423,10 +478,14 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 					payload as any,
 				);
 
-				if (!error) return data === true;
+				if (!error) {
+					return data === true;
+				}
 				lastRpcError = error;
 
-				if (isRpcParameterMismatchError(error)) continue;
+				if (isRpcParameterMismatchError(error)) {
+					continue;
+				}
 				if (isMissingResourceError(error)) {
 					state.canUseRoleRpc = false;
 					break;
@@ -450,7 +509,9 @@ async function _hasRole(userName: string, requiredRole: string): Promise<boolean
 		}
 
 		const userRole = await fetchUserRole(activeSupabase, trimmedUserName);
-		if (!userRole) return false;
+		if (!userRole) {
+			return false;
+		}
 
 		return compareRoles(userRole, normalizedRequiredRole);
 	} catch (error) {
@@ -551,7 +612,9 @@ export function useAdminStatus(userName: string | null) {
 
 			try {
 				const adminStatus = await isUserAdmin(userName);
-				if (isMounted) setIsAdmin(adminStatus);
+				if (isMounted) {
+					setIsAdmin(adminStatus);
+				}
 			} catch (err) {
 				if (isMounted) {
 					if (process.env.NODE_ENV === "development") {
@@ -561,7 +624,9 @@ export function useAdminStatus(userName: string | null) {
 					setError(err);
 				}
 			} finally {
-				if (isMounted) setIsLoading(false);
+				if (isMounted) {
+					setIsLoading(false);
+				}
 			}
 		};
 
@@ -586,7 +651,9 @@ function useCatFact() {
 				const response = await fetch(CAT_FACT_API_URL, { signal: controller.signal });
 				clearTimeout(timeoutId);
 
-				if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
 
 				const catFactData = await response.json();
 				if (catFactData && typeof catFactData.fact === "string") {
@@ -664,7 +731,9 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 	const handleNameChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
 			handleChange("name", e.target.value);
-			if (globalError) setGlobalError("");
+			if (globalError) {
+				setGlobalError("");
+			}
 		},
 		[handleChange, globalError],
 	);
@@ -685,16 +754,22 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 	}, [setValues, values.name]);
 
 	const handleRandomName = useCallback(() => {
-		if (isSubmitting) return;
+		if (isSubmitting) {
+			return;
+		}
 		const funName = generateFunName();
 		setValues({ name: funName });
-		if (globalError) setGlobalError("");
+		if (globalError) {
+			setGlobalError("");
+		}
 		playSound("surprise");
 	}, [isSubmitting, globalError, setValues]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent) => {
-			if (e.key === "Enter") void handleSubmit();
+			if (e.key === "Enter") {
+				void handleSubmit();
+			}
 		},
 		[handleSubmit],
 	);
@@ -712,6 +787,328 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 		handleKeyDown,
 		clearError: () => setGlobalError(""),
 		catFact,
-		nameSchema: LoginFormSchema.shape.name,
+	};
+}
+
+/* ==========================================================================
+   USER SESSION HOOK (Consolidated)
+   ========================================================================== */
+
+let canUseSetUserContext = true;
+
+const isRpcUnavailableError = (error: unknown) => {
+	if (!error || typeof error !== "object") {
+		return false;
+	}
+	const err = error as Record<string, unknown>;
+
+	const statusCode = typeof err.status === "number" ? err.status : null;
+	const errorCode = typeof err.code === "string" ? err.code.toUpperCase() : "";
+	const message = (err.message as string)?.toLowerCase?.() ?? "";
+
+	return (
+		statusCode === 404 ||
+		errorCode === "404" ||
+		errorCode === "PGRST301" ||
+		errorCode === "PGRST303" ||
+		message.includes("not found") ||
+		message.includes("does not exist")
+	);
+};
+
+const setSupabaseUserContext = async (activeSupabase: unknown, userName: string) => {
+	if (!canUseSetUserContext || !activeSupabase || !userName) {
+		return;
+	}
+
+	try {
+		const trimmedName = userName.trim?.() ?? userName;
+		if (!trimmedName) {
+			return;
+		}
+
+		await (activeSupabase as any).rpc("set_user_context", {
+			user_name_param: trimmedName,
+		});
+	} catch (error) {
+		if (isRpcUnavailableError(error)) {
+			canUseSetUserContext = false;
+			if (import.meta.env.DEV) {
+				console.info(
+					"Supabase set_user_context RPC is unavailable. Skipping future context calls.",
+				);
+			}
+		} else if (import.meta.env.DEV) {
+			console.warn("Failed to set Supabase user context:", error);
+		}
+	}
+};
+
+/**
+ * Normalize username to prevent duplicate accounts with different casing
+ * Capitalizes first letter, lowercases the rest
+ * @param {string} name - Raw username input
+ * @returns {string} Normalized username
+ */
+const normalizeUsername = (name: string) => {
+	if (!name || typeof name !== "string") {
+		return "";
+	}
+	const trimmed = name.trim();
+	if (!trimmed) {
+		return "";
+	}
+	// Capitalize first letter, lowercase the rest
+	return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+};
+
+export function useUserSession({
+	showToast,
+}: {
+	showToast?: (props: { message: string; type: string }) => void;
+} = {}) {
+	const [error, setError] = useState<string | null>(null);
+	const [isInitialized, setIsInitialized] = useState<boolean>(false);
+	const { user, userActions } = useAppStore();
+
+	// Initialize user from localStorage on mount
+	useEffect(() => {
+		let storedUserName: string | null = null;
+		try {
+			storedUserName = localStorage.getItem(STORAGE_KEYS.USER);
+		} catch (error) {
+			// localStorage might not be available (private browsing, etc.)
+			if (import.meta.env.DEV) {
+				console.warn("Unable to access localStorage:", error);
+			}
+		}
+
+		if (storedUserName?.trim()) {
+			userActions.login(storedUserName);
+
+			// Set username context for RLS policies (username-based auth)
+			(async () => {
+				try {
+					const activeSupabase = await resolveSupabaseClient();
+					await setSupabaseUserContext(activeSupabase, storedUserName);
+				} catch (error) {
+					if (import.meta.env.DEV) {
+						console.warn("Failed to initialize Supabase user context:", error);
+					}
+				}
+			})();
+
+			// Check admin status server-side
+			isUserAdmin(storedUserName)
+				.then((adminStatus: boolean) => {
+					userActions.setAdminStatus(adminStatus);
+				})
+				.catch((error) => {
+					// Log error but don't fail - user can still function without admin status
+					if (import.meta.env.DEV) {
+						console.warn("Failed to check admin status:", error);
+					}
+					userActions.setAdminStatus(false);
+				});
+		} else {
+			// * Auto-login as guest if no user found
+			import("@utils")
+				.then(({ generateFunName }) => {
+					const randomName = generateFunName();
+					// We don't save to localStorage here to keep it "ephemeral" until they maybe choose to keep it?
+					// Actually, for better UX let's save it so refresh works.
+					// If they want to be admin they can "re-login".
+					localStorage.setItem(STORAGE_KEYS.USER, randomName);
+					userActions.login(randomName);
+
+					// Also need to set the supabase context for this new guest
+					(async () => {
+						try {
+							const activeSupabase = await resolveSupabaseClient();
+							await setSupabaseUserContext(activeSupabase, randomName);
+						} catch {
+							// ignore
+						}
+					})();
+				})
+				.catch((error) => {
+					if (import.meta.env.DEV) {
+						console.warn("Failed to import utils for guest login:", error);
+					}
+					// Fallback: use a default guest name if import fails
+					const fallbackName = "Guest Cat";
+					localStorage.setItem(STORAGE_KEYS.USER, fallbackName);
+					userActions.login(fallbackName);
+				});
+		}
+		setIsInitialized(true);
+	}, [userActions]);
+
+	/**
+	 * Login with username only (no password required)
+	 * Creates user in database if doesn't exist
+	 * @param {string} userName - The user's chosen username
+	 */
+	const login = useCallback(
+		async (userName: string) => {
+			if (!userName || !userName.trim()) {
+				setError("Username is required");
+				return false;
+			}
+
+			try {
+				setError(null);
+				const trimmedName = normalizeUsername(userName);
+
+				const activeSupabase = await resolveSupabaseClient();
+
+				if (!activeSupabase) {
+					console.warn("Supabase client is not configured. Proceeding with local-only login.");
+
+					localStorage.setItem(STORAGE_KEYS.USER, trimmedName);
+					userActions.login(trimmedName);
+					return true;
+				}
+
+				// Ensure the RLS session uses the current username
+				await setSupabaseUserContext(activeSupabase, trimmedName);
+
+				// Check if user exists in database
+				const { data: existingUser, error: fetchError } = await activeSupabase
+					.from("cat_app_users")
+					.select("user_name, preferences")
+					.eq("user_name", trimmedName)
+					.maybeSingle();
+
+				if (fetchError) {
+					console.error("Error fetching user:", fetchError);
+					const errorMessage = fetchError.message || "Cannot verify existing user";
+					showToast?.({ message: errorMessage, type: "error" });
+					throw fetchError;
+				}
+
+				// Create user if doesn't exist using RPC function (bypasses RLS)
+				if (existingUser) {
+					showToast?.({ message: "Logging in...", type: "info" });
+				} else {
+					// * Use the create_user_account RPC function which bypasses RLS
+					const { error: rpcError } = await (activeSupabase as any).rpc("create_user_account", {
+						p_user_name: trimmedName,
+						p_preferences: {
+							sound_enabled: true,
+							theme_preference: "dark",
+						},
+					});
+
+					if (rpcError) {
+						// * Check if this is a duplicate key error (race condition)
+						// * PostgreSQL error code 23505 = unique_violation
+						// * Supabase may also return code "PGRST116" for unique constraint violations
+						const isDuplicateKeyError =
+							rpcError.code === "23505" ||
+							rpcError.code === "PGRST116" ||
+							rpcError.message?.includes("duplicate key") ||
+							rpcError.message?.includes("unique constraint") ||
+							rpcError.message?.includes("already exists");
+
+						if (isDuplicateKeyError) {
+							// * This is likely a race condition - verify if user was actually created
+							if (import.meta.env.DEV) {
+								console.warn(
+									"RPC create_user_account duplicate key error (race condition):",
+									rpcError,
+								);
+							}
+
+							const { data: verifyUser } = await activeSupabase
+								.from("cat_app_users")
+								.select("user_name")
+								.eq("user_name", trimmedName)
+								.maybeSingle();
+
+							if (verifyUser) {
+								// * User was created (race condition), continue
+								showToast?.({ message: "Logging in...", type: "info" });
+							} else {
+								// * Unexpected: duplicate key error but user doesn't exist
+								const errorMessage = rpcError.message || "Failed to create user account";
+								if (import.meta.env.DEV) {
+									console.error("Duplicate key error but user not found:", errorMessage);
+								}
+								showToast?.({ message: errorMessage, type: "error" });
+								throw rpcError;
+							}
+						} else {
+							// * Not a duplicate key error - this is a real error
+							const errorMessage = rpcError.message || "Failed to create user account";
+							if (import.meta.env.DEV) {
+								console.error("Error creating user:", errorMessage, rpcError);
+							}
+							showToast?.({ message: errorMessage, type: "error" });
+							throw rpcError;
+						}
+					} else {
+						showToast?.({
+							message: "Account created successfully!",
+							type: "success",
+						});
+					}
+				}
+
+				// Store username and update state
+				localStorage.setItem("catNamesUser", trimmedName);
+				userActions.login(trimmedName);
+
+				// Check admin status server-side
+				const adminStatus = await isUserAdmin(trimmedName);
+				userActions.setAdminStatus(adminStatus);
+
+				return true;
+			} catch (err: unknown) {
+				const error = err as Error;
+				let errorMessage = "Failed to login";
+
+				// Handle specific error types
+				if (error.message?.includes("fetch")) {
+					errorMessage = "Cannot connect to database. Please check your connection.";
+				} else if (error.message?.includes("JWT")) {
+					errorMessage = "Authentication error. Please try again.";
+				} else if (error.message) {
+					errorMessage = error.message;
+				}
+
+				console.error("Login error:", errorMessage);
+				setError(errorMessage);
+				showToast?.({ message: errorMessage, type: "error" });
+				return false;
+			}
+		},
+		[userActions, showToast],
+	);
+
+	/**
+	 * Logout current user
+	 */
+	const logout = useCallback(async () => {
+		try {
+			setError(null);
+			localStorage.removeItem(STORAGE_KEYS.USER);
+			userActions.logout();
+			return true;
+		} catch (err: unknown) {
+			const error = err as Error;
+			console.error("Logout error:", error);
+			setError(error.message || "Failed to logout");
+			return false;
+		}
+	}, [userActions]);
+
+	return {
+		userName: user.name,
+		isLoggedIn: user.isLoggedIn,
+		error,
+		login,
+		logout,
+		isInitialized,
 	};
 }

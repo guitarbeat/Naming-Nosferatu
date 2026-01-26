@@ -4,7 +4,7 @@
  */
 
 import { tournamentsAPI } from "@features/tournament/TournamentLogic";
-import { useProfileNotifications } from "@hooks/useProfile";
+import { useProfileNotifications } from "@features/tournament/useProfile";
 import { syncQueue } from "@services/SyncQueue";
 import { devError, devLog, devWarn } from "@utils";
 import { useCallback, useEffect, useState } from "react";
