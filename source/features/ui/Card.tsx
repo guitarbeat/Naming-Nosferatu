@@ -463,7 +463,6 @@ const CardNameBase = memo(function CardName({
 			event.preventDefault();
 
 			const rect = event.currentTarget.getBoundingClientRect();
-			// Fix: Correctly handle type narrowing for MouseEvent vs KeyboardEvent to access clientX/clientY
 			let x = rect.width / 2;
 			let y = rect.height / 2;
 
