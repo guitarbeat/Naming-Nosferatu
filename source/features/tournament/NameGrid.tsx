@@ -7,6 +7,7 @@
 import { imagesAPI } from "@supabase/client";
 import {
 	applyNameFilters,
+	asyncMapLimit,
 	cn,
 	compressImageFile,
 	devError,
@@ -289,19 +290,17 @@ export function NameGrid({
 								}
 								try {
 									const uploaded: string[] = [];
-									await Promise.all(
-										files.map(async (f) => {
-											const compressed = await compressImageFile(f, {
-												maxWidth: 1600,
-												maxHeight: 1600,
-												quality: 0.8,
-											});
-											const result = await imagesAPI.upload(compressed, "admin");
-											if (result?.path) {
-												uploaded.push(result.path);
-											}
-										}),
-									);
+									await asyncMapLimit(files, 3, async (f) => {
+										const compressed = await compressImageFile(f, {
+											maxWidth: 1600,
+											maxHeight: 1600,
+											quality: 0.8,
+										});
+										const result = await imagesAPI.upload(compressed, "admin");
+										if (result?.path) {
+											uploaded.push(result.path);
+										}
+									});
 									if (uploaded.length > 0) {
 										setSuppImages((prev) => [...uploaded, ...prev]);
 									}

@@ -170,3 +170,45 @@ export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: st
 		URL.revokeObjectURL(url);
 	}
 };
+
+/* ==========================================================================
+   CONCURRENCY UTILITIES
+   ========================================================================== */
+
+/**
+ * Process an array of items with a concurrency limit.
+ *
+ * @param items Array of items to process
+ * @param limit Maximum number of concurrent operations
+ * @param iterator Async function to process each item
+ * @returns Promise resolving to an array of results in the original order
+ */
+export async function asyncMapLimit<T, R>(
+	items: T[],
+	limit: number,
+	iterator: (item: T) => Promise<R>,
+): Promise<R[]> {
+	if (limit < 1) {
+		throw new Error("Limit must be at least 1");
+	}
+
+	const results: R[] = [];
+	let index = 0;
+
+	const next = async (): Promise<void> => {
+		while (index < items.length) {
+			const i = index++;
+			const item = items[i];
+			// biome-ignore lint/style/noNonNullAssertion: index check guarantees item existence
+			results[i] = await iterator(item!);
+		}
+	};
+
+	const threads: Promise<void>[] = [];
+	for (let i = 0; i < limit; i++) {
+		threads.push(next());
+	}
+
+	await Promise.all(threads);
+	return results;
+}
