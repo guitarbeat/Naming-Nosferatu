@@ -3,10 +3,10 @@
  * @description Browser state and storage hooks for responsive design, network status, and localStorage management
  */
 
-import { tournamentsAPI } from "@features/tournament/TournamentLogic";
+import { tournamentsAPI } from "@features/tournament/hooks/TournamentLogic";
 import { syncQueue } from "@services/SyncQueue";
 import { useCallback, useEffect, useState } from "react";
-import { useProfileNotifications } from "@/hooks/useProfile";
+import { useProfileNotifications } from "@/features/tournament/hooks/useProfile";
 import { devError, devLog, devWarn } from "@/utils/basic";
 
 // ============================================================================

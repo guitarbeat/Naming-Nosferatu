@@ -3,9 +3,9 @@ import Button from "@/layout/Button";
 import Card from "@/layout/Card";
 import { useAuth } from "@/providers/AuthProvider";
 import useAppStore from "@/store";
+import { useTournamentHandlers } from "../hooks/TournamentHooks";
 import { NameSuggestion } from "./NameSuggestion";
 import Tournament from "./Tournament";
-import { useTournamentHandlers } from "./TournamentHooks";
 import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {

@@ -3,7 +3,6 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FILTER_OPTIONS } from "@/constants";
-import { useNameData, useNameSelection } from "@/features/tournament/useNames";
 import useAppStore from "@/store";
 import type {
 	NameItem,
@@ -11,6 +10,7 @@ import type {
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
 } from "@/types";
+import { useNameData, useNameSelection } from "./useNames";
 
 export function useNameManagementView({
 	mode,

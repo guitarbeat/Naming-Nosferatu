@@ -5,8 +5,8 @@ import { Loading } from "@/layout/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store";
 import type { TournamentProps } from "@/types";
-import { useAudioManager, useTournamentState, useTournamentVote } from "./TournamentHooks";
-import { CAT_IMAGES, getRandomCatImage } from "./TournamentLogic";
+import { useAudioManager, useTournamentState, useTournamentVote } from "../hooks/TournamentHooks";
+import { CAT_IMAGES, getRandomCatImage } from "../hooks/TournamentLogic";
 
 function TournamentContent({
 	onComplete,

@@ -5,7 +5,7 @@ import { Check, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Card } from "@/layout/Card";
 import type { NameItem } from "@/types";
-import { getRandomCatImage } from "./TournamentLogic";
+import { getRandomCatImage } from "../hooks/TournamentLogic";
 
 export const SwipeableCards = memo(
 	({

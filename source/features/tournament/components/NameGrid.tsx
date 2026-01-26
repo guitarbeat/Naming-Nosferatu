@@ -23,7 +23,7 @@ import { EmptyState } from "@/layout/EmptyState";
 import { Lightbox } from "@/layout/Lightbox";
 import { Loading } from "@/layout/StatusIndicators";
 import type { NameItem } from "@/types";
-import { useMasonryLayout } from "./useMasonryLayout";
+import { useMasonryLayout } from "../hooks/useMasonryLayout";
 
 interface NameGridProps {
 	names: NameItem[];

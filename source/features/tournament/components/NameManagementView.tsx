@@ -7,13 +7,13 @@
 import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { ErrorComponent } from "@/layout/Error";
+import { useToast } from "@/providers/ToastProvider";
 import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "@/types";
-import { useToast } from "../../providers";
-import { NameManagementProvider } from "./NameManagementContext";
+import { NameManagementProvider } from "../context/NameManagementContext";
+import { useNameManagementView } from "../hooks/useNameManagementView";
 import { ProfileMode } from "./ProfileMode";
 import type { SwipeableCardsProps } from "./TournamentMode";
 import { TournamentMode } from "./TournamentMode";
-import { useNameManagementView } from "./useNameManagementView";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
