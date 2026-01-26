@@ -6,10 +6,10 @@
 
 import { cn } from "@utils";
 import { useCallback, useEffect, useId, useRef } from "react";
+import { useNameSuggestion } from "@/features/tournament/useNames";
 import Button from "@/features/ui/Button";
 import { Input, Textarea } from "@/features/ui/FormPrimitives";
 import LiquidGlass from "@/features/ui/LiquidGlass";
-import { useNameSuggestion } from "@/hooks/useNames";
 
 // ============================================================================
 // TYPES

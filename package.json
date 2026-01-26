@@ -88,7 +88,8 @@
 		"typescript": "^5.9.3",
 		"vercel": "^50.4.9",
 		"vite": "^7.3.1",
-		"vite-plugin-pwa": "^1.2.0"
+		"vite-plugin-pwa": "^1.2.0",
+		"vitest": "^4.0.18"
 	},
 	"browserslist": {
 		"production": [

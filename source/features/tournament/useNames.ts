@@ -1,5 +1,5 @@
 /**
- * @module useNames
+ * @module features/tournament/useNames
  * @description Consolidated name-related hooks: useNameData, useNameSelection, useNameSuggestion
  */
 
@@ -9,11 +9,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { VALIDATION } from "@/constants";
-import { useTournamentSelectionSaver } from "@/features/tournament/TournamentHooks";
+import { useValidatedForm } from "@/hooks/useValidatedForm";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
-import { useValidatedForm } from "./useValidatedForm";
+import { useTournamentSelectionSaver } from "./TournamentHooks";
 
 /* ==========================================================================
    USE NAME DATA HOOK
