@@ -172,7 +172,7 @@ async function fetchUserStats(userName: string | null): Promise<UserStats | null
 /**
  * * Calculate selection analytics using tournament_selections table
  */
-async function calculateSelectionStats(userName: string | null): Promise<SelectionStats | null> {
+export async function calculateSelectionStats(userName: string | null): Promise<SelectionStats | null> {
 	try {
 		const supabaseClient = await resolveSupabaseClient();
 		if (!supabaseClient) {
@@ -276,7 +276,9 @@ async function calculateSelectionStats(userName: string | null): Promise<Selecti
 
 		const generatePreferredCategories = async (sels: TournamentSelection[]) => {
 			try {
-				const nameIds = sels.map((s) => String(s.name_id)).filter(Boolean);
+				const nameIds = Array.from(
+					new Set(sels.map((s) => String(s.name_id)).filter(Boolean)),
+				);
 				const sb = await resolveSupabaseClient();
 				if (!sb || nameIds.length === 0) {
 					return "Analyzing your preferences...";
