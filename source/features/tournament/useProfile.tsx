@@ -4,11 +4,10 @@
  */
 
 import { deleteById, hiddenNamesAPI } from "@services/supabase/client";
-import { resolveSupabaseClient } from "@supabase/client";
+import { resolveSupabaseClient, statsAPI } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS, NOTIFICATION } from "@/constants";
-import { statsAPI } from "@/features/analytics/analyticsService";
 import { adminAPI, useAdminStatus } from "@/features/auth";
 import { Toast } from "@/features/ui/Toast";
 import { useToast } from "@/providers/ToastProvider";
