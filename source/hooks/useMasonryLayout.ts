@@ -134,25 +134,40 @@ export function useMasonryLayout<T extends HTMLElement>(
 	// Batch layout updates to prevent thrashing
 	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
 
+	// Cache the latest calculateLayout function to avoid dependency changes in callbacks
+	const calculateLayoutRef = useRef(calculateLayout);
+	useEffect(() => {
+		calculateLayoutRef.current = calculateLayout;
+	}, [calculateLayout]);
+
+	// Cache ref callbacks to prevent ref thrashing on every render
+	const refCallbacks = useRef<Map<number, (el: HTMLDivElement | null) => void>>(new Map());
+
 	// Set item ref callback
 	const setItemRef = useCallback(
-		(index: number) => (el: HTMLDivElement | null) => {
-			if (itemRefs.current[index] !== el) {
-				itemRefs.current[index] = el;
+		(index: number) => {
+			if (!refCallbacks.current.has(index)) {
+				refCallbacks.current.set(index, (el: HTMLDivElement | null) => {
+					if (itemRefs.current[index] !== el) {
+						itemRefs.current[index] = el;
 
-				// Batch recalculations
-				if (layoutTimeoutRef.current) {
-					clearTimeout(layoutTimeoutRef.current);
-				}
+						// Batch recalculations
+						if (layoutTimeoutRef.current) {
+							clearTimeout(layoutTimeoutRef.current);
+						}
 
-				// Small delay (10ms) allows capturing multiple ref updates in a single layout pass
-				layoutTimeoutRef.current = setTimeout(() => {
-					calculateLayout();
-					layoutTimeoutRef.current = null;
-				}, 10);
+						// Small delay (10ms) allows capturing multiple ref updates in a single layout pass
+						layoutTimeoutRef.current = setTimeout(() => {
+							// Use the latest calculateLayout function
+							calculateLayoutRef.current();
+							layoutTimeoutRef.current = null;
+						}, 10);
+					}
+				});
 			}
+			return refCallbacks.current.get(index)!;
 		},
-		[calculateLayout],
+		[], // Stable callback, never changes
 	);
 
 	// Cleanup timeout on unmount
