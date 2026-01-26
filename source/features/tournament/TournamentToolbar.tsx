@@ -18,7 +18,8 @@ import "@/styles/tournament-toolbar.css";
 // CONFIGURATION
 // ============================================================================
 
-import { Eye, EyeOff, GalleryHorizontal, LayoutGrid, Plus } from "lucide-react";
+import { Eye, EyeOff, GalleryHorizontal, LayoutGrid, Plus, Search } from "lucide-react";
+import { Input } from "@/features/ui/FormPrimitives";
 
 const TOOLBAR_GLASS_CONFIGS = {
 	tournament: {
@@ -33,7 +34,7 @@ const TOOLBAR_GLASS_CONFIGS = {
 	},
 	filter: {
 		width: 1200,
-		height: 300,
+		height: 100,
 		radius: 24,
 		scale: -180,
 		saturation: 1.2,
@@ -69,6 +70,7 @@ const styles = {
 	toolbarToggleActive: "toolbar-toggle--active",
 	toolbarToggleAccent: "toolbar-toggle--accent",
 	toolbarDivider: "toolbar-divider",
+	searchInput: "tournament-toolbar-search-input",
 };
 
 const FILTER_CONFIGS = {
@@ -246,104 +248,87 @@ function FilterModeToolbar({
 
 	const isAsc = filters.sortOrder === FILTER_OPTIONS.ORDER.ASC;
 
+	if (!showFilters) return null;
+
 	return (
 		<div className={styles.filtersContainer}>
-			<div className={styles.resultsCount}>
-				<span className={styles.count}>{filteredCount.toLocaleString()}</span>
-				{filteredCount !== totalCount && (
-					<>
-						<span className={styles.separator}>/</span>
-						<span className={styles.total}>{totalCount.toLocaleString()}</span>
-						<span className={styles.badge}>filtered</span>
-					</>
+			<div className={styles.filtersGrid}>
+				<FilterSelect
+					id="filter-status"
+					label="Status"
+					value={(filters.filterStatus as string) || FILTER_OPTIONS.VISIBILITY.VISIBLE}
+					options={FILTER_CONFIGS.visibility}
+					onChange={(value) =>
+						onFilterChange?.(
+							"filterStatus",
+							(value === "active"
+								? FILTER_OPTIONS.VISIBILITY.VISIBLE
+								: value || FILTER_OPTIONS.VISIBILITY.VISIBLE) as string,
+						)
+					}
+				/>
+				{showUserFilter && (
+					<FilterSelect
+						id="filter-user"
+						label="User"
+						value={(filters.userFilter as string) || FILTER_OPTIONS.USER.ALL}
+						options={userOptions || FILTER_CONFIGS.users}
+						onChange={(value) => onFilterChange?.("userFilter", value as string)}
+					/>
 				)}
-				{filteredCount === totalCount && (
-					<span className={`${styles.badge} ${styles.badgeTotal}`}>total</span>
+				{showSelectionFilter && (
+					<FilterSelect
+						id="filter-selection"
+						label="Selection"
+						value={(filters.selectionFilter as string) || "all"}
+						options={FILTER_CONFIGS.selection}
+						onChange={(value) => onFilterChange?.("selectionFilter", value as string)}
+					/>
 				)}
-			</div>
+				{analysisMode && (
+					<FilterSelect
+						id="filter-date"
+						label="Date"
+						value={(filters.dateFilter as string) || "all"}
+						options={FILTER_CONFIGS.date}
+						onChange={(value) => onFilterChange?.("dateFilter", value as string)}
+					/>
+				)}
 
-			{showFilters && (
-				<div className={styles.filtersGrid}>
-					<div className={styles.filterRow}>
-						<FilterSelect
-							id="filter-status"
-							label="Status"
-							value={(filters.filterStatus as string) || FILTER_OPTIONS.VISIBILITY.VISIBLE}
-							options={FILTER_CONFIGS.visibility}
-							onChange={(value) =>
+				<div className={styles.sortGroup}>
+					<label htmlFor="filter-sort" className={styles.filterLabel}>
+						Sort By
+					</label>
+					<div className={styles.sortControls}>
+						<Select
+							name="filter-sort"
+							value={
+								(filters.sortBy as string | number | null | undefined) ||
+								FILTER_OPTIONS.SORT.RATING
+							}
+							onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+								onFilterChange?.("sortBy", e.target.value)
+							}
+							options={FILTER_CONFIGS.sort}
+							className={styles.filterSelect}
+						/>
+						<button
+							type="button"
+							onClick={() =>
 								onFilterChange?.(
-									"filterStatus",
-									(value === "active"
-										? FILTER_OPTIONS.VISIBILITY.VISIBLE
-										: value || FILTER_OPTIONS.VISIBILITY.VISIBLE) as string,
+									"sortOrder",
+									(isAsc ? FILTER_OPTIONS.ORDER.DESC : FILTER_OPTIONS.ORDER.ASC) as string,
 								)
 							}
-						/>
-						{showUserFilter && (
-							<FilterSelect
-								id="filter-user"
-								label="User"
-								value={(filters.userFilter as string) || FILTER_OPTIONS.USER.ALL}
-								options={userOptions || FILTER_CONFIGS.users}
-								onChange={(value) => onFilterChange?.("userFilter", value as string)}
-							/>
-						)}
-						{showSelectionFilter && (
-							<FilterSelect
-								id="filter-selection"
-								label="Selection"
-								value={(filters.selectionFilter as string) || "all"}
-								options={FILTER_CONFIGS.selection}
-								onChange={(value) => onFilterChange?.("selectionFilter", value as string)}
-							/>
-						)}
-						{analysisMode && (
-							<FilterSelect
-								id="filter-date"
-								label="Date"
-								value={(filters.dateFilter as string) || "all"}
-								options={FILTER_CONFIGS.date}
-								onChange={(value) => onFilterChange?.("dateFilter", value as string)}
-							/>
-						)}
-					</div>
-					<div className={styles.filterRow}>
-						<div className={styles.sortGroup}>
-							<label htmlFor="filter-sort" className={styles.filterLabel}>
-								Sort By
-							</label>
-							<div className={styles.sortControls}>
-								<Select
-									name="filter-sort"
-									value={
-										(filters.sortBy as string | number | null | undefined) ||
-										FILTER_OPTIONS.SORT.RATING
-									}
-									onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-										onFilterChange?.("sortBy", e.target.value)
-									}
-									options={FILTER_CONFIGS.sort}
-									className={styles.filterSelect}
-								/>
-								<button
-									type="button"
-									onClick={() =>
-										onFilterChange?.(
-											"sortOrder",
-											(isAsc ? FILTER_OPTIONS.ORDER.DESC : FILTER_OPTIONS.ORDER.ASC) as string,
-										)
-									}
-									className={styles.sortOrderButton}
-									title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
-									aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
-								>
-									<SortOrderIcon direction={isAsc ? "asc" : "desc"} className={styles.sortIcon} />
-								</button>
-							</div>
-						</div>
+							className={styles.sortOrderButton}
+							title={`Sort ${isAsc ? "Descending" : "Ascending"}`}
+							aria-label={`Toggle sort order to ${isAsc ? "descending" : "ascending"}`}
+						>
+							<SortOrderIcon direction={isAsc ? "asc" : "desc"} className={styles.sortIcon} />
+						</button>
 					</div>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 }
@@ -413,6 +398,16 @@ function TournamentToolbar({
 
 		return (
 			<nav className={styles.unifiedContainer} data-mode={mode}>
+				<div className="tournament-toolbar-search-wrapper">
+					<Search className="tournament-toolbar-search-icon" size={16} />
+					<Input
+						placeholder="Search names..."
+						value={filters.searchTerm || ""}
+						onChange={(e) => onFilterChange?.("searchTerm", e.target.value)}
+						className={styles.searchInput}
+					/>
+				</div>
+
 				<button
 					type="button"
 					onClick={() => setSwipeMode(false)}
