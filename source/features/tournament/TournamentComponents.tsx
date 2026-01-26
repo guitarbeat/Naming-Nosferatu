@@ -48,6 +48,7 @@ export const SwipeableCards = memo(
 			[names, swipedIds],
 		);
 		const cardsToRender = visibleCards.slice(0, 3);
+		const currentCard = cardsToRender[0];
 		const isSelected = useCallback(
 			(n: NameItem) => selectedNames.some((s: NameItem) => s.id === n.id),
 			[selectedNames],
@@ -278,12 +279,12 @@ export const SwipeableCards = memo(
 							size="lg"
 							variant="flat"
 							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
+							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
 							onClick={() => {
-								const card = cardsToRender[0];
-								if (card) {
+								if (currentCard) {
 									setDragDirection("left");
 									playSound("wow");
-									setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
 									setTimeout(() => setDragDirection(null), 300);
 								}
 							}}
@@ -307,15 +308,15 @@ export const SwipeableCards = memo(
 							size="lg"
 							variant="flat"
 							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"
+							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
 							onClick={() => {
-								const card = cardsToRender[0];
-								if (card) {
+								if (currentCard) {
 									setDragDirection("right");
 									playSound("gameboy-pluck");
-									if (!isSelected(card)) {
-										onToggleName(card);
+									if (!isSelected(currentCard)) {
+										onToggleName(currentCard);
 									}
-									setSwipedIds((prev) => new Set([...prev, String(card.id)]));
+									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
 									setTimeout(() => setDragDirection(null), 300);
 								}
 							}}
