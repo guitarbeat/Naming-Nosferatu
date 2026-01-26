@@ -2,7 +2,7 @@ import { CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { coreAPI } from "@supabase/client";
 import { Copy, Download, Heart, Plus, Shuffle } from "lucide-react";
 import React, { Suspense, useMemo, useState } from "react";
-import { RankingAdjustment } from "@/features/tournament/TournamentComponents";
+import { RankingAdjustment } from "@/features/tournament/components/RankingAdjustment";
 import { Card } from "@/features/ui/Card";
 import useLocalStorage from "@/hooks/useBrowserState";
 import { useToast } from "@/providers/ToastProvider";

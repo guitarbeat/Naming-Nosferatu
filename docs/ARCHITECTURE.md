@@ -88,7 +88,11 @@ source/
 │   ├── analytics/        # Charts, leaderboards, insights
 │   ├── auth.ts           # Session, identity, admin checks (consolidated)
 │   ├── layout/           # App shell, navigation, backgrounds
-│   ├── tournament/       # Competition logic, name management, profiles
+│   ├── tournament/       # Competition logic, components, name management
+│   │   ├── components/   # Extracted UI components (SwipeableCards, RankingAdjustment)
+│   │   ├── context/      # Tournament-specific context
+│   │   ├── hooks/        # Tournament-specific hooks
+│   │   └── types.ts      # Tournament-specific types
 │   └── ui/               # Design system primitives (Button, Card, Toast, etc.)
 ├── hooks/                # Reusable React hooks
 ├── providers/            # Context providers (Auth, Theme, Toast)

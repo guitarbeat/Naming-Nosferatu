@@ -2,10 +2,10 @@ import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import Button from "@/features/ui/Button";
-import type { NameItem } from "@/types";
+import type { NameItem, TournamentFilters } from "@/types";
 import { NameGrid } from "./NameGrid";
-import type { NameManagementViewExtensions, TournamentFilters } from "./nameManagementCore";
 import { TournamentToolbar } from "./TournamentToolbar";
+import type { NameManagementViewExtensions } from "./types";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];
@@ -23,8 +23,6 @@ interface TournamentModeProps {
 	analysisMode: boolean;
 	filterConfig: TournamentFilters;
 	handleFilterChange: (name: string, value: string) => void;
-	totalCount: number;
-	filteredCount: number;
 	selectedCount: number;
 	onStartTournament?: (selectedNames: NameItem[]) => void;
 
@@ -47,8 +45,6 @@ export function TournamentMode({
 	analysisMode,
 	filterConfig,
 	handleFilterChange,
-	totalCount,
-	filteredCount,
 	selectedCount,
 	onStartTournament,
 
@@ -83,8 +79,6 @@ export function TournamentMode({
 				// categories removed
 				showUserFilter={false}
 				showSelectionFilter={false}
-				totalCount={totalCount}
-				filteredCount={filteredCount}
 			/>
 
 			{/* Optional Header Extension */}

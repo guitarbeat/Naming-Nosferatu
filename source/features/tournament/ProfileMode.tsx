@@ -1,14 +1,10 @@
 import { cn } from "@utils";
 import React from "react";
 import { NameGrid } from "@/features/tournament/NameGrid";
-import type {
-	NameManagementViewExtensions,
-	NameManagementViewProfileProps,
-	TournamentFilters,
-} from "@/features/tournament/nameManagementCore";
 import { TournamentToolbar } from "@/features/tournament/TournamentToolbar";
 import Button from "@/features/ui/Button";
-import type { NameItem } from "@/types";
+import type { NameItem, TournamentFilters } from "@/types";
+import type { NameManagementViewExtensions, NameManagementViewProfileProps } from "./types";
 
 interface ProfileModeProps {
 	filterConfig: TournamentFilters;
@@ -69,8 +65,6 @@ export function ProfileMode({
 						showUserFilter={profileProps.showUserFilter}
 						showSelectionFilter={!!profileProps.selectionStats}
 						userOptions={profileProps.userOptions}
-						filteredCount={names.length}
-						totalCount={names.length}
 					/>
 				</div>
 			</section>

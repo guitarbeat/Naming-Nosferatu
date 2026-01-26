@@ -7,8 +7,8 @@ import { Card } from "@/features/ui/Card";
 import { Input } from "@/features/ui/FormPrimitives";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
+import { SwipeableCards } from "./components/SwipeableCards";
 import { NameManagementView } from "./NameManagementView";
-import { SwipeableCards } from "./TournamentComponents";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

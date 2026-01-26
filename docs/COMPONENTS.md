@@ -41,7 +41,7 @@
 
 | Feature | Key Components |
 |---------|----------------|
-| **Tournament** | `Tournament`, `TournamentSetup`, `TournamentFlow`, `TournamentToolbar`, `Dashboard`, `NameGrid`, `ProfileMode` |
+| **Tournament** | `Tournament` (setup/mode/flow), `SwipeableCards`, `RankingAdjustment`, `NameGrid`, `NameManagementView` |
 | **Analytics** | `AnalysisDashboard` (with `analyticsHooks`, `analyticsService`) |
 | **Auth** | Consolidated in `features/auth.ts` |
 

@@ -8,15 +8,12 @@ import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { ErrorComponent } from "@/features/ui/Error";
 import { useToast } from "@/providers";
-import {
-	type NameItem,
-	NameManagementProvider,
-	type NameManagementViewExtensions,
-	type UseNameManagementViewProps,
-	useNameManagementView,
-} from "./nameManagementCore";
+import { NameManagementProvider } from "./context/NameManagementContext";
+import { useNameManagementView } from "./hooks/useNameManagementView";
 import { ProfileMode } from "./ProfileMode";
-import { type SwipeableCardsProps, TournamentMode } from "./TournamentMode";
+import type { SwipeableCardsProps } from "./TournamentMode";
+import { TournamentMode } from "./TournamentMode";
+import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "./types";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
@@ -59,7 +56,7 @@ export function NameManagementView({
 		extensions,
 	});
 
-	const { names, isError, dataError, clearErrors } = state;
+	const { isError, dataError, clearErrors } = state;
 
 	// * Feedback Side Effects
 	useEffect(() => {
@@ -121,8 +118,6 @@ export function NameManagementView({
 					swipeableCards={
 						tournamentProps.swipeableCards as React.ComponentType<SwipeableCardsProps>
 					}
-					totalCount={names.length}
-					filteredCount={state.filteredNamesForSwipe.length}
 				/>
 			);
 		}

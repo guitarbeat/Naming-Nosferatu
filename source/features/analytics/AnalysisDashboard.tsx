@@ -12,7 +12,7 @@ import { useCallback, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "@/constants";
 import { CollapsibleContent, CollapsibleHeader } from "@/features/layout/CollapsibleHeader";
 import { FloatingBubblesContainer } from "@/features/layout/FloatingBubbles";
-import { useNameManagementContextOptional } from "@/features/tournament/nameManagementCore";
+import { useNameManagementContextOptional } from "@/features/tournament/context/NameManagementContext";
 import { TournamentToolbar } from "@/features/tournament/TournamentToolbar";
 import { BumpChart } from "@/features/ui/Charts";
 import { EmptyState } from "@/features/ui/EmptyState";
@@ -190,8 +190,6 @@ export function AnalysisDashboard({
 			showUserFilter={toolbarContext.profileProps?.showUserFilter || false}
 			showSelectionFilter={!!toolbarContext.profileProps?.selectionStats}
 			userOptions={toolbarContext.profileProps?.userOptions || []}
-			filteredCount={displayNames.length}
-			totalCount={displayNames.length} // Simplified for now
 			analysisMode={true}
 		/>
 	) : null;

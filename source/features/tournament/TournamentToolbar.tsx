@@ -220,8 +220,6 @@ function ToolbarGlass({ mode, id, className, style, children }: ToolbarGlassProp
 interface FilterModeToolbarProps {
 	filters: TournamentFilters;
 	onFilterChange?: (name: string, value: string) => void;
-	filteredCount: number;
-	totalCount: number;
 	// categories removed
 	showUserFilter: boolean;
 	userOptions?: { value: string; label: string }[] | null;
@@ -234,8 +232,6 @@ interface FilterModeToolbarProps {
 function FilterModeToolbar({
 	filters,
 	onFilterChange,
-	filteredCount,
-	totalCount,
 	// categories removed
 	showUserFilter,
 	userOptions = null,
@@ -248,7 +244,9 @@ function FilterModeToolbar({
 
 	const isAsc = filters.sortOrder === FILTER_OPTIONS.ORDER.ASC;
 
-	if (!showFilters) return null;
+	if (!showFilters) {
+		return null;
+	}
 
 	return (
 		<div className={styles.filtersContainer}>
@@ -303,8 +301,7 @@ function FilterModeToolbar({
 						<Select
 							name="filter-sort"
 							value={
-								(filters.sortBy as string | number | null | undefined) ||
-								FILTER_OPTIONS.SORT.RATING
+								(filters.sortBy as string | number | null | undefined) || FILTER_OPTIONS.SORT.RATING
 							}
 							onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
 								onFilterChange?.("sortBy", e.target.value)
@@ -341,8 +338,6 @@ interface TournamentToolbarProps {
 	mode?: "tournament" | "profile" | "hybrid";
 	filters?: TournamentFilters;
 	onFilterChange?: (name: string, value: string) => void;
-	filteredCount?: number;
-	totalCount?: number;
 	// categories removed
 	showUserFilter?: boolean;
 	showSelectionFilter?: boolean;
@@ -360,8 +355,6 @@ function TournamentToolbar({
 	mode = "tournament",
 	filters = {},
 	onFilterChange,
-	filteredCount = 0,
-	totalCount = 0,
 	// categories removed
 	showUserFilter = false,
 	showSelectionFilter = false,
@@ -500,8 +493,6 @@ function TournamentToolbar({
 					<FilterModeToolbar
 						filters={filters}
 						onFilterChange={onFilterChange}
-						filteredCount={filteredCount}
-						totalCount={totalCount}
 						// categories removed
 						showUserFilter={showUserFilter}
 						userOptions={userOptions}
@@ -519,8 +510,6 @@ function TournamentToolbar({
 					<FilterModeToolbar
 						filters={filters}
 						onFilterChange={onFilterChange}
-						filteredCount={filteredCount}
-						totalCount={totalCount}
 						// categories removed
 						// * Field Reduction: Hide complex filters in tournament mode
 						showUserFilter={false}
