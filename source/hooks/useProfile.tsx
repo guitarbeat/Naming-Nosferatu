@@ -8,8 +8,8 @@ import { resolveSupabaseClient, statsAPI } from "@supabase/client";
 import { clearAllCaches, devError, devLog } from "@utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FILTER_OPTIONS, NOTIFICATION } from "@/constants";
-import { adminAPI, useAdminStatus } from "@/features/auth";
 import { Toast } from "@/layout/Toast";
+import { adminAPI, useAdminStatus } from "@/providers/AuthProvider";
 import { useToast } from "@/providers/ToastProvider";
 import type { IdType, NameItem } from "@/types";
 

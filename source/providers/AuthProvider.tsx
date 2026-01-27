@@ -297,6 +297,36 @@ export function useLoginController(onLogin: (name: string) => Promise<void> | vo
 	};
 }
 
+/**
+ * Hook to check admin status for a given user name.
+ */
+export function useAdminStatus(userName: string | null) {
+	const [isAdmin, setIsAdmin] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const check = async () => {
+			if (!userName) {
+				setIsAdmin(false);
+				setIsLoading(false);
+				return;
+			}
+			setIsLoading(true);
+			try {
+				const admin = await isUserAdmin(userName);
+				setIsAdmin(admin);
+			} catch {
+				setIsAdmin(false);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		void check();
+	}, [userName]);
+
+	return { isAdmin, isLoading };
+}
+
 /* ==========================================================================
    CONTEXT & PROVIDER
    ========================================================================== */
