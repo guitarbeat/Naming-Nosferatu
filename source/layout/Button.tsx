@@ -232,5 +232,5 @@ ScrollToTopButton.displayName = "ScrollToTopButton";
 
 export default memo(Button);
 export { ScrollToTopButton };
-// TournamentButton moved to features/tournament/components/TournamentButton/
+// TournamentButton moved to features/tournament/TournamentButton/
 // CalendarButton moved to Dashboard.jsx as local component (only used there)
