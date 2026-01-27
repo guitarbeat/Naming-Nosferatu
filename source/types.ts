@@ -5,31 +5,14 @@
  */
 
 /* ==========================================================================
-   COMMON TYPES
+   CORE DATA TYPES
    ========================================================================== */
 
-/**
- * Common ID type - can be string or number
- */
+/** Common ID type - can be string or number */
 export type IdType = string | number;
 
-/* ==========================================================================
-   COMPONENT TYPES (from components.ts)
-   ========================================================================== */
-
-export interface TournamentFilters {
-	searchTerm?: string;
-	category?: string;
-	sortBy?: string;
-	filterStatus?: "all" | "visible" | "hidden";
-	userFilter?: string;
-	selectionFilter?: string;
-	sortOrder?: "asc" | "desc";
-	dateFilter?: string;
-}
-
 /**
- * Name item interface
+ * Name item interface - The fundamental data unit of the app
  */
 export interface NameItem {
 	id: IdType;
@@ -58,6 +41,10 @@ export interface NameItem {
 	[key: string]: unknown;
 }
 
+/* ==========================================================================
+   TOURNAMENT FEATURE TYPES
+   ========================================================================== */
+
 export interface Match {
 	left: NameItem | string;
 	right: NameItem | string;
@@ -73,14 +60,32 @@ export interface MatchRecord {
 	timestamp: number;
 }
 
-export interface PersistentState {
-	matchHistory: MatchRecord[];
-	currentRound: number;
-	currentMatch: number;
-	totalMatches: number;
-	userName: string;
-	lastUpdated: number;
-	namesKey: string;
+export interface VoteData {
+	match: {
+		left: VoteParticipant;
+		right: VoteParticipant;
+	};
+	result: number;
+	ratings: Record<string, number>;
+	timestamp: string;
+}
+
+interface VoteParticipant {
+	name: string;
+	id: IdType | null;
+	description: string;
+	outcome: string;
+}
+
+export interface TournamentFilters {
+	searchTerm?: string;
+	category?: string;
+	sortBy?: string;
+	filterStatus?: "all" | "visible" | "hidden";
+	userFilter?: string;
+	selectionFilter?: string;
+	sortOrder?: "asc" | "desc";
+	dateFilter?: string;
 }
 
 export interface TournamentUIState {
@@ -95,26 +100,6 @@ export interface TournamentUIState {
 	sorter: unknown;
 }
 
-export interface VoteData {
-	match: {
-		left: {
-			name: string;
-			id: string | number | null;
-			description: string;
-			outcome: string;
-		};
-		right: {
-			name: string;
-			id: string | number | null;
-			description: string;
-			outcome: string;
-		};
-	};
-	result: number;
-	ratings: Record<string, number>;
-	timestamp: string;
-}
-
 export interface TournamentProps {
 	names: NameItem[];
 	existingRatings?: Record<string, number | { rating: number; wins?: number; losses?: number }>;
@@ -124,12 +109,10 @@ export interface TournamentProps {
 }
 
 /* ==========================================================================
-   TOURNAMENT VIEW TYPES
+   UI & VIEW MANAGEMENT TYPES
    ========================================================================== */
 
-/**
- * Extension points for customizing NameManagementView behavior
- */
+/** Extension points for customizing NameManagementView behavior */
 export interface NameManagementViewExtensions {
 	header?: React.ReactNode | (() => React.ReactNode);
 	dashboard?: React.ReactNode | (() => React.ReactNode) | React.ComponentType;
@@ -139,9 +122,6 @@ export interface NameManagementViewExtensions {
 	navbar?: React.ReactNode | (() => React.ReactNode);
 }
 
-/**
- * Props for useNameManagementView hook
- */
 export interface UseNameManagementViewProps {
 	mode: "tournament" | "profile";
 	userName?: string | null;
@@ -152,9 +132,6 @@ export interface UseNameManagementViewProps {
 	extensions?: NameManagementViewExtensions;
 }
 
-/**
- * Props specific to Profile mode
- */
 export interface NameManagementViewProfileProps {
 	showUserFilter?: boolean;
 	selectionStats?: {
@@ -169,9 +146,6 @@ export interface NameManagementViewProfileProps {
 	onDelete?: (name: NameItem) => Promise<void>;
 }
 
-/**
- * Hook return value type
- */
 export interface UseNameManagementViewResult {
 	// Core data
 	names: NameItem[];
@@ -239,8 +213,6 @@ export interface UseNameManagementViewResult {
 	handleFilterChange: (name: keyof TournamentFilters, value: string | number | boolean) => void;
 	handleAnalysisModeToggle: () => void;
 
-	// Additional properties
-
 	profileProps: {
 		showUserFilter?: boolean;
 		selectionStats?: unknown;
@@ -255,17 +227,8 @@ export interface UseNameManagementViewResult {
 }
 
 /* ==========================================================================
-   STORE TYPES (from store.ts)
+   STORE TYPES (Application State)
    ========================================================================== */
-
-/**
- * User bubble profile for floating bubbles display
- */
-export interface UserBubbleProfile {
-	username: string;
-	display_name?: string;
-	avatar_url?: string;
-}
 
 export interface UserPreferences {
 	theme?: string;
@@ -280,15 +243,6 @@ export interface UserState {
 	isAdmin: boolean;
 	avatarUrl?: string;
 	preferences: UserPreferences;
-}
-
-interface TournamentState {
-	names: NameItem[] | null;
-	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
-	isComplete: boolean;
-	isLoading: boolean;
-	voteHistory: VoteData[];
-	selectedNames: NameItem[];
 }
 
 export interface UIState {
@@ -312,6 +266,21 @@ export interface CatChosenName {
 	show_banner: boolean;
 }
 
+export interface UserBubbleProfile {
+	username: string;
+	display_name?: string;
+	avatar_url?: string;
+}
+
+interface TournamentState {
+	names: NameItem[] | null;
+	ratings: Record<string, { rating: number; wins?: number; losses?: number }>;
+	isComplete: boolean;
+	isLoading: boolean;
+	voteHistory: VoteData[];
+	selectedNames: NameItem[];
+}
+
 interface SiteSettingsState {
 	catChosenName: CatChosenName | null;
 	isLoaded: boolean;
@@ -322,6 +291,19 @@ interface ErrorState {
 	history: unknown[];
 }
 
+export interface PersistentState {
+	matchHistory: MatchRecord[];
+	currentRound: number;
+	currentMatch: number;
+	totalMatches: number;
+	userName: string;
+	lastUpdated: number;
+	namesKey: string;
+}
+
+/**
+ * Main Application State Interface
+ */
 export interface AppState {
 	tournament: TournamentState;
 	user: UserState;
