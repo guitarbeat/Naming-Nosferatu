@@ -8,7 +8,7 @@ import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/re
 import { hiddenNamesAPI } from "@supabase/client";
 import { createContext, Suspense, useCallback, useContext, useMemo, useState } from "react";
 import { STORAGE_KEYS } from "@/constants";
-import { TournamentToolbar } from "@/features/tournament/components/Toolbar";
+import { TournamentToolbar } from "@/features/tournament/components/TournamentToolbar";
 import { useCollapsible } from "@/hooks/useBrowserState";
 import { Card } from "@/layout/Card";
 import { BumpChart } from "@/layout/Charts";

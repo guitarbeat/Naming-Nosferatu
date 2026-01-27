@@ -4,7 +4,7 @@ import Button from "@/layout/Button";
 import Card from "@/layout/Card";
 import { useAuth } from "@/providers/AuthProvider";
 import useAppStore from "@/store";
-import { NameSuggestion } from "../management/NameSuggestion";
+import { NameSuggestion } from "./NameSuggestion";
 import Tournament from "./Tournament";
 import TournamentSetup from "./TournamentSetup";
 

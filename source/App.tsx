@@ -25,7 +25,7 @@ import {
 } from "./utils";
 
 // Lazy load route components
-const TournamentFlow = lazy(() => import("./features/tournament/components/flow/TournamentFlow"));
+const TournamentFlow = lazy(() => import("./features/tournament/components/TournamentFlow"));
 const Dashboard = lazy(() =>
 	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
 );

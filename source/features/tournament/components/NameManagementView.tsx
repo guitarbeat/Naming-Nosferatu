@@ -11,9 +11,9 @@ import { useNameManagementView } from "@/hooks/useNameManagementView";
 import { ErrorComponent } from "@/layout/Error";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "@/types";
-import type { SwipeableCardsProps } from "../flow/TournamentMode";
-import { TournamentMode } from "../flow/TournamentMode";
-import { ProfileMode } from "../profile/ProfileMode";
+import { ProfileMode } from "./ProfileMode";
+import type { SwipeableCardsProps } from "./TournamentMode";
+import { TournamentMode } from "./TournamentMode";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers

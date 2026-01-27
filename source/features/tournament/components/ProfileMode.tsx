@@ -7,8 +7,8 @@ import type {
 	NameManagementViewProfileProps,
 	TournamentFilters,
 } from "@/types";
-import { NameGrid } from "../management/NameGrid";
-import { TournamentToolbar } from "../Toolbar";
+import { NameGrid } from "./NameGrid";
+import { TournamentToolbar } from "./TournamentToolbar";
 
 interface ProfileModeProps {
 	filterConfig: TournamentFilters;

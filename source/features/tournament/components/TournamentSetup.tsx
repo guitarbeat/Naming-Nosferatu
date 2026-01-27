@@ -7,7 +7,7 @@ import { Card } from "@/layout/Card";
 import { Input } from "@/layout/FormPrimitives";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
-import { NameManagementView } from "../management/NameManagementView";
+import { NameManagementView } from "./NameManagementView";
 import { SwipeableCards } from "./SwipeableCards";
 
 interface TournamentSetupProps {
