@@ -366,9 +366,18 @@ export const analyticsAPI = {
 
 				const typedSelections = selections as unknown as SelectionRow[];
 
-				const { data: ratings } = await client
-					.from("cat_name_ratings")
-					.select("name_id, rating, wins");
+				const uniqueNameIds = Array.from(
+					new Set(typedSelections.map((s) => String(s.name_id))),
+				);
+
+				let ratings: any[] | null = [];
+				if (uniqueNameIds.length > 0) {
+					const { data } = await client
+						.from("cat_name_ratings")
+						.select("name_id, rating, wins")
+						.in("name_id", uniqueNameIds);
+					ratings = data;
+				}
 
 				const ratingMap = new Map<string, RatingInfo>();
 				(ratings || []).forEach((r) => {
