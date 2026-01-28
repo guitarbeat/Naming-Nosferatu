@@ -42,6 +42,12 @@
 			"@supabase/types": [
 				"supabase/types.ts"
 			],
+			"@db": [
+				"supabase"
+			],
+			"@db/*": [
+				"supabase/*"
+			],
 			"@/*": [
 				"source/*"
 			],

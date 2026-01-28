@@ -16,12 +16,23 @@
 	"typescript": true,
 	"paths": {
 		"@/*": ["./source/*"],
-		"@components/*": ["./source/components/*"],
+		"@db": ["./supabase"],
+		"@db/*": ["./supabase/*"],
+		"@store": ["./source/store.ts"],
+		"@types": ["./source/types.ts"],
+		"@hooks": ["./source/hooks/index.ts"],
 		"@hooks/*": ["./source/hooks/*"],
+		"@utils": ["./source/utils/index.ts"],
 		"@utils/*": ["./source/utils/*"],
+		"@services": ["./source/services/index.ts"],
 		"@services/*": ["./source/services/*"],
+		"@styles": ["./source/styles/index.ts"],
 		"@styles/*": ["./source/styles/*"],
+		"@features": ["./source/features/index.ts"],
 		"@features/*": ["./source/features/*"],
-		"@core/*": ["./source/*"]
+		"@core": ["./source/index.ts"],
+		"@core/*": ["./source/*"],
+		"@supabase/client": ["./source/services/supabase/client.ts"],
+		"@supabase/types": ["./supabase/types.ts"]
 	}
 }
