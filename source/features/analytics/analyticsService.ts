@@ -127,19 +127,6 @@ interface SelectionStats {
 	count: number;
 }
 
-interface AnalyticsSelectionStats {
-	count: number;
-	users: Set<string>;
-}
-
-interface RatingStats {
-	totalRating: number;
-	count: number;
-	wins: number;
-	losses: number;
-	users: Set<string>;
-}
-
 interface RatingInfo {
 	rating: number;
 	wins: number;
@@ -158,15 +145,6 @@ interface RatingRow {
 	wins: number;
 	losses: number;
 	user_name: string;
-}
-
-interface NameRow {
-	id: string | number;
-	name: string;
-	description: string;
-	avg_rating: number;
-	categories: string[];
-	created_at: string;
 }
 
 export const analyticsAPI = {
@@ -226,10 +204,10 @@ export const analyticsAPI = {
 			let selectionsQuery = client
 				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
 				.from("cat_tournament_selections" as any)
-				.select("name_id, name, user_name");
+				.select("name_id");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses, user_name");
+				.select("name_id, rating, wins");
 
 			if (userFilter && userFilter !== "all") {
 				const targetUser = userFilter === "current" ? currentUserName : userFilter;
@@ -239,34 +217,32 @@ export const analyticsAPI = {
 				}
 			}
 
-			const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
+			// Performance optimization: fetch minimal data for aggregation first
+			const [selectionsResult, ratingsResult, activeNamesResult] = await Promise.all([
 				selectionsQuery,
 				ratingsQuery,
 				client
 					.from("cat_name_options")
-					.select("id, name, description, avg_rating, categories, created_at")
+					.select("id")
 					.eq("is_active", true)
 					.eq("is_hidden", false),
 			]);
 
 			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
 			const ratings = ratingsResult.data || [];
-			const names = namesResult.data || [];
+			const activeNameIds = new Set((activeNamesResult.data || []).map((n) => n.id));
 
-			const selectionStats = new Map<string | number, AnalyticsSelectionStats>();
+			const selectionCounts = new Map<string | number, number>();
 			selections.forEach((item) => {
 				const s = item as SelectionRow;
-				if (!selectionStats.has(s.name_id)) {
-					selectionStats.set(s.name_id, { count: 0, users: new Set() });
-				}
-				const stat = selectionStats.get(s.name_id);
-				if (stat) {
-					stat.count += 1;
-					stat.users.add(s.user_name);
-				}
+				const count = selectionCounts.get(s.name_id) || 0;
+				selectionCounts.set(s.name_id, count + 1);
 			});
 
-			const ratingStats = new Map<string | number, RatingStats>();
+			const ratingStats = new Map<
+				string | number,
+				{ totalRating: number; count: number; wins: number }
+			>();
 			ratings.forEach((item) => {
 				const r = item as RatingRow;
 				if (!ratingStats.has(r.name_id)) {
@@ -274,8 +250,6 @@ export const analyticsAPI = {
 						totalRating: 0,
 						count: 0,
 						wins: 0,
-						losses: 0,
-						users: new Set(),
 					});
 				}
 				const stat = ratingStats.get(r.name_id);
@@ -283,45 +257,65 @@ export const analyticsAPI = {
 					stat.totalRating += Number(r.rating) || 1500;
 					stat.count += 1;
 					stat.wins += r.wins || 0;
-					stat.losses += r.losses || 0;
-					stat.users.add(r.user_name);
 				}
 			});
 
-			const analytics = names.map((item) => {
-				const name = item as NameRow;
-				const selStat = selectionStats.get(name.id) || {
-					count: 0,
-					users: new Set(),
-				};
-				const ratStat = ratingStats.get(name.id) || {
+			// Calculate scores for all active names
+			const scores = Array.from(activeNameIds).map((id) => {
+				const selCount = selectionCounts.get(id) || 0;
+				const ratStat = ratingStats.get(id) || {
 					totalRating: 0,
 					count: 0,
 					wins: 0,
-					losses: 0,
-					users: new Set(),
 				};
 
 				const avgRating =
 					ratStat.count > 0 ? Math.round(ratStat.totalRating / ratStat.count) : 1500;
 				const popularityScore = Math.round(
-					selStat.count * 2 + ratStat.wins * 1.5 + (avgRating - 1500) * 0.5,
+					selCount * 2 + ratStat.wins * 1.5 + (avgRating - 1500) * 0.5,
 				);
 
 				return {
-					name_id: name.id,
-					name: name.name,
-					description: name.description,
-					category: name.categories?.[0] || null,
-					times_selected: selStat.count,
-					avg_rating: avgRating,
-					popularity_score: popularityScore,
-					created_at: name.created_at || null,
+					id,
+					selCount,
+					avgRating,
+					popularityScore,
 				};
 			});
 
-			const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
-			return limit ? sorted.slice(0, limit) : sorted;
+			const sortedScores = scores.sort((a, b) => b.popularityScore - a.popularityScore);
+			const topItems = limit ? sortedScores.slice(0, limit) : sortedScores;
+			const topIds = topItems.map((item) => item.id);
+
+			if (topIds.length === 0) {
+				return [];
+			}
+
+			// Fetch full details only for top items
+			const { data: namesDetails } = await client
+				.from("cat_name_options")
+				.select("id, name, description, avg_rating, categories, created_at")
+				.in("id", topIds);
+
+			const detailsMap = new Map((namesDetails || []).map((n) => [n.id, n]));
+
+			return topItems
+				.map((item) => {
+					const details = detailsMap.get(item.id);
+					if (!details) return null;
+
+					return {
+						name_id: details.id,
+						name: details.name,
+						description: details.description,
+						category: details.categories?.[0] || null,
+						times_selected: item.selCount,
+						avg_rating: item.avgRating,
+						popularity_score: item.popularityScore,
+						created_at: details.created_at || null,
+					};
+				})
+				.filter((item): item is NonNullable<typeof item> => item !== null);
 		}, []);
 	},
 
