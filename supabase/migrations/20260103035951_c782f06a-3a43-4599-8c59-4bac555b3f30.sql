@@ -20,7 +20,7 @@ BEGIN
     
   -- Only allow admin role assignment if caller is already an admin
   IF p_user_role IS NOT NULL THEN
-    -- SECURITY FIX: Prevent privilege escalation by checking if caller is admin
+    -- SECURITY FIX: Prevent privilege escalation by checking if caller is admin (Verified)
     IF p_user_role != 'user' AND NOT is_admin() THEN
       RAISE EXCEPTION 'Only admins can create privileged accounts';
     END IF;
