@@ -5,6 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { AuthProvider } from "./providers/AuthProvider";
 import { ToastProvider } from "./providers/ToastProvider";
 import "@styles/index.css";
 
@@ -17,12 +18,14 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<ToastProvider>
-				<BrowserRouter>
-					<App />
-					<Analytics />
-				</BrowserRouter>
-			</ToastProvider>
+			<AuthProvider>
+				<ToastProvider>
+					<BrowserRouter>
+						<App />
+						<Analytics />
+					</BrowserRouter>
+				</ToastProvider>
+			</AuthProvider>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );
