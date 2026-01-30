@@ -1,6 +1,6 @@
+import { CAT_IMAGES, getRandomCatImage } from "@services/tournament";
 import { getVisibleNames } from "@utils";
-import { useAudioManager, useTournamentState, useTournamentVote } from "@/hooks/TournamentHooks";
-import { CAT_IMAGES, getRandomCatImage } from "@/hooks/TournamentLogic";
+import { useAudioManager, useTournamentState, useTournamentVote } from "@/hooks";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";

@@ -1,9 +1,9 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
+import { getRandomCatImage } from "@services/tournament";
 import { playSound } from "@utils";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
-import { getRandomCatImage } from "@/hooks/TournamentLogic";
 import { Card } from "@/layout/Card";
 import type { NameItem } from "@/types";
 

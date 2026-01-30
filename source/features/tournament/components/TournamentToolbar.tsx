@@ -7,12 +7,12 @@
 import { cn } from "@utils";
 import { Eye, EyeOff, GalleryHorizontal, LayoutGrid, Plus, Search } from "lucide-react";
 import React, { useId } from "react";
-import { FILTER_OPTIONS } from "@/constants";
 import Button from "@/layout/Button";
 import { Input, Select } from "@/layout/FormPrimitives";
 import LiquidGlass from "@/layout/LiquidGlass";
 import useAppStore from "@/store";
 import type { TournamentFilters } from "@/types";
+import { FILTER_OPTIONS } from "@/utils/constants";
 
 // ============================================================================
 // CONSTANTS & STYLES

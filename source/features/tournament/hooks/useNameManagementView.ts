@@ -2,7 +2,7 @@ import { applyNameFilters, mapFilterStatusToVisibility } from "@utils";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FILTER_OPTIONS } from "@/constants";
+import { useNameData, useNameSelection } from "@/hooks/useNames";
 import useAppStore from "@/store";
 import type {
 	NameItem,
@@ -10,7 +10,7 @@ import type {
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
 } from "@/types";
-import { useNameData, useNameSelection } from "./useNames";
+import { FILTER_OPTIONS } from "@/utils/constants";
 
 export function useNameManagementView({
 	mode,
@@ -54,7 +54,7 @@ export function useNameManagementView({
 			const currentStoreSelection = tournament.selectedNames || [];
 			const hasChanged =
 				selectedNames.length !== currentStoreSelection.length ||
-				selectedNames.some((n, i) => n.id !== currentStoreSelection[i]?.id);
+				selectedNames.some((n: NameItem, i: number) => n.id !== currentStoreSelection[i]?.id);
 
 			if (hasChanged) {
 				tournamentActions.setSelection(selectedNames);
@@ -291,8 +291,8 @@ export function useNameManagementView({
 		clearErrors,
 		setNames,
 		setHiddenIds: (ids: Set<string | number>) => {
-			setNames((prev) =>
-				prev.map((n) => ({
+			setNames((prev: NameItem[]) =>
+				prev.map((n: NameItem) => ({
 					...n,
 					is_hidden: ids.has(n.id),
 					isHidden: ids.has(n.id),

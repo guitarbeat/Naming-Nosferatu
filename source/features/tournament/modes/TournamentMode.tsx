@@ -3,8 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import Button from "@/layout/Button";
 import type { NameItem, NameManagementViewExtensions, TournamentFilters } from "@/types";
-import { NameGrid } from "./NameGrid";
-import { TournamentToolbar } from "./TournamentToolbar";
+import { NameGrid } from "../components/NameGrid";
+import { TournamentToolbar } from "../components/TournamentToolbar";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];

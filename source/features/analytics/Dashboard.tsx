@@ -7,8 +7,7 @@
 import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { hiddenNamesAPI } from "@supabase/client";
 import { createContext, Suspense, useCallback, useContext, useMemo, useState } from "react";
-import { STORAGE_KEYS } from "@/constants";
-import { TournamentToolbar } from "@/features/tournament/TournamentToolbar";
+import { TournamentToolbar } from "@/features/tournament/components/TournamentToolbar";
 import { useCollapsible } from "@/hooks/useBrowserState";
 import { Card } from "@/layout/Card";
 import { BumpChart } from "@/layout/Charts";
@@ -17,6 +16,7 @@ import { EmptyState } from "@/layout/EmptyState";
 import { FloatingBubblesContainer } from "@/layout/FloatingBubbles";
 import type { NameItem, UseNameManagementViewResult } from "@/types";
 import { clearAllCaches, devError } from "@/utils";
+import { STORAGE_KEYS } from "@/utils/constants";
 import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisComponents";
 import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
 import type {

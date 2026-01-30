@@ -9,7 +9,7 @@
 
 import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { useTournamentHandlers } from "@/hooks/TournamentHooks";
+import { useTournamentHandlers } from "@/hooks";
 import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
@@ -25,7 +25,7 @@ import {
 } from "./utils";
 
 // Lazy load route components
-const TournamentFlow = lazy(() => import("./features/tournament/TournamentFlow"));
+const TournamentFlow = lazy(() => import("@features/tournament/modes/TournamentFlow"));
 const Dashboard = lazy(() =>
 	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
 );

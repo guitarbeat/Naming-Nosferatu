@@ -8,6 +8,6 @@
 		"../config",
 		"../scripts",
 		"vite.config.ts",
-		"../source/shims.d.ts"
+		"../source/types/shims.d.ts"
 	]
 }

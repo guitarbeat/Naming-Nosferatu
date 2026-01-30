@@ -3,8 +3,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { generateFunName, playSound } from "@utils";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { z } from "zod";
-import { STORAGE_KEYS, VALIDATION } from "@/constants";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
+import { STORAGE_KEYS, VALIDATION } from "@/utils/constants";
 
 /* ==========================================================================
    CONSTANTS & CONFIG

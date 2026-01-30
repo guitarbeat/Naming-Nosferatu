@@ -4,9 +4,9 @@
  */
 
 import { syncQueue } from "@services/SyncQueue";
+import { tournamentsAPI } from "@services/tournament";
 import { useCallback, useEffect, useState } from "react";
-import { tournamentsAPI } from "@/hooks/TournamentLogic";
-import { useProfileNotifications } from "@/hooks/useProfile";
+import { useProfileNotifications } from "@/features/tournament/hooks/useProfile";
 import { devError, devLog, devWarn } from "@/utils/basic";
 
 // ============================================================================

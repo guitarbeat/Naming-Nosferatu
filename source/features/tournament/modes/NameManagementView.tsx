@@ -7,7 +7,7 @@
 import { cn } from "@utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { NameManagementProvider } from "@/features/analytics/Dashboard";
-import { useNameManagementView } from "@/hooks/useNameManagementView";
+import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
 import { ErrorComponent } from "@/layout/Error";
 import { useToast } from "@/providers/ToastProvider";
 import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "@/types";

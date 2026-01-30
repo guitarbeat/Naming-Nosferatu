@@ -5,13 +5,14 @@
 
 import { deleteById, hiddenNamesAPI } from "@services/supabase/client";
 import { resolveSupabaseClient, statsAPI } from "@supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { clearAllCaches, devError, devLog } from "@utils";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FILTER_OPTIONS, NOTIFICATION } from "@/constants";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Toast } from "@/layout/Toast";
 import { adminAPI, useAdminStatus } from "@/providers/AuthProvider";
 import { useToast } from "@/providers/ToastProvider";
 import type { IdType, NameItem } from "@/types";
+import { FILTER_OPTIONS, NOTIFICATION } from "@/utils/constants";
 
 // ============================================================================
 // Internal Types
@@ -384,21 +385,49 @@ export function useProfile(
 	const { isAdmin } = useAdminStatus(userName);
 	const [activeUser, setActiveUser] = useState<string | null>(userName);
 	const [userFilter, setUserFilter] = useState(FILTER_OPTIONS.USER.CURRENT);
-	const [availableUsers, setAvailableUsers] = useState<UserWithRoles[]>([]);
-	const [_userListLoading, setUserListLoading] = useState(false);
 
 	const canManageActiveUser = useMemo(
 		() => isAdmin && activeUser === userName,
 		[isAdmin, activeUser, userName],
 	);
 
+	const queryClient = useQueryClient();
+
 	// ==========================================================================
-	// Stats State (from useProfileStats)
+	// React Query Data Fetching
 	// ==========================================================================
-	const [stats, setStats] = useState<UserStats | null>(null);
-	const [statsLoading, setStatsLoading] = useState(true);
-	const [selectionStats, setSelectionStats] = useState<SelectionStats | null>(null);
-	const isMountedRef = useRef(true);
+
+	// Fetch users list (Admin only)
+	const { data: availableUsersRaw, isLoading: userListLoading } = useQuery({
+		queryKey: ["admin", "users"],
+		queryFn: listAllUsers,
+		enabled: !!isAdmin,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+	});
+	const availableUsers = availableUsersRaw || [];
+
+	// Fetch user stats
+	const { data: statsRaw, isLoading: statsLoading } = useQuery({
+		queryKey: ["profile", "stats", activeUser],
+		queryFn: () => fetchUserStats(activeUser),
+		staleTime: 60 * 1000,
+	});
+	const stats = statsRaw || null;
+
+	// Fetch selection stats
+	const { data: selectionStatsRaw } = useQuery({
+		queryKey: ["profile", "selectionStats", activeUser],
+		queryFn: () => calculateSelectionStats(activeUser),
+		staleTime: 60 * 1000,
+	});
+	const selectionStats = selectionStatsRaw || null;
+
+	const refreshStats = useCallback(async () => {
+		await Promise.all([
+			queryClient.invalidateQueries({ queryKey: ["profile", "stats", activeUser] }),
+			queryClient.invalidateQueries({ queryKey: ["profile", "selectionStats", activeUser] }),
+		]);
+	}, [queryClient, activeUser]);
 
 	// ==========================================================================
 	// Operations State (from useProfileNameOperations)
@@ -409,13 +438,6 @@ export function useProfile(
 	// ==========================================================================
 	// Effects & Loading Logic
 	// ==========================================================================
-
-	useEffect(() => {
-		isMountedRef.current = true;
-		return () => {
-			isMountedRef.current = false;
-		};
-	}, []);
 
 	// Sync activeUser with filter
 	useEffect(() => {
@@ -441,56 +463,8 @@ export function useProfile(
 		}
 	}, [isAdmin, userFilter, activeUser, userName]);
 
-	const refreshStats = useCallback(async () => {
-		setStatsLoading(true);
-		try {
-			const [userStats, selStats] = await Promise.all([
-				fetchUserStats(activeUser),
-				calculateSelectionStats(activeUser),
-			]);
-			if (!isMountedRef.current) {
-				return;
-			}
-			setStats(userStats);
-			setSelectionStats(selStats);
-		} catch (error) {
-			devError("Failed to load profile data:", error);
-		} finally {
-			if (isMountedRef.current) {
-				setStatsLoading(false);
-			}
-		}
-	}, [activeUser]);
-
-	// Load stats when activeUser changes
-	useEffect(() => {
-		void refreshStats();
-	}, [refreshStats]);
-
-	// Load users for admin
-	useEffect(() => {
-		if (!isAdmin) {
-			return;
-		}
-		const loadUsers = async () => {
-			setUserListLoading(true);
-			try {
-				const users = await listAllUsers();
-				if (!isMountedRef.current) {
-					return;
-				}
-				setAvailableUsers(users);
-			} finally {
-				if (isMountedRef.current) {
-					setUserListLoading(false);
-				}
-			}
-		};
-		void loadUsers();
-	}, [isAdmin]);
-
 	// ==========================================================================
-	// Handlers (from useProfileNameOperations)
+	// Handlers
 	// ==========================================================================
 
 	const handleToggleVisibility = useCallback(
@@ -520,13 +494,15 @@ export function useProfile(
 				setAllNames((prev: NameItem[]) =>
 					prev.map((n) => (n.id === nameId ? { ...n, isHidden: !currentlyHidden } : n)),
 				);
+				// Invalidate cache
+				queryClient.invalidateQueries({ queryKey: ["profile"] });
 				clearAllCaches();
 			} catch (e: unknown) {
 				const error = e instanceof Error ? e : new Error(String(e));
 				showError(`Unable to update visibility: ${error.message}`);
 			}
 		},
-		[canManageActiveUser, hiddenNames, userName, showSuccess, showError, setAllNames],
+		[canManageActiveUser, hiddenNames, userName, showSuccess, showError, setAllNames, queryClient],
 	);
 
 	const handleDelete = useCallback(
@@ -541,12 +517,14 @@ export function useProfile(
 				}
 				showSuccess(`"${name.name}" has been deleted`);
 				fetchNames(userName);
+				// Invalidate cache
+				queryClient.invalidateQueries({ queryKey: ["profile"] });
 			} catch (e: unknown) {
 				const error = e instanceof Error ? e : new Error(String(e));
 				showError(`Unable to delete name: ${error.message}`);
 			}
 		},
-		[canManageActiveUser, userName, showSuccess, showError, fetchNames],
+		[canManageActiveUser, userName, showSuccess, showError, fetchNames, queryClient],
 	);
 
 	const handleSelectionChange = useCallback((id: IdType, selected: boolean) => {
@@ -591,13 +569,14 @@ export function useProfile(
 				});
 				setSelectedNames(new Set());
 				clearAllCaches();
+				queryClient.invalidateQueries({ queryKey: ["profile"] });
 				fetchNames(userName);
 			} catch (e: unknown) {
 				const error = e instanceof Error ? e : new Error(String(e));
 				showError(`Unable to complete bulk operation: ${error.message}`);
 			}
 		},
-		[canManageActiveUser, selectedNames, userName, showSuccess, showError, fetchNames],
+		[canManageActiveUser, selectedNames, userName, showSuccess, showError, fetchNames, queryClient],
 	);
 
 	// ==========================================================================
@@ -644,7 +623,7 @@ export function useProfile(
 		canManageActiveUser,
 		userOptions,
 		stats,
-		statsLoading,
+		statsLoading: statsLoading || userListLoading,
 		selectionStats,
 		selectedNames,
 		setSelectedNames,

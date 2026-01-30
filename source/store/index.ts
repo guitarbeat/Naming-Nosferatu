@@ -7,8 +7,8 @@
 import { siteSettingsAPI, updateSupabaseUserContext } from "@supabase/client";
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
-import { STORAGE_KEYS } from "@/constants";
 import type { AppState, CatChosenName, UIState, UserState } from "@/types";
+import { STORAGE_KEYS } from "@/utils/constants";
 
 /* ==========================================================================
    STORE UTILITIES & HELPERS

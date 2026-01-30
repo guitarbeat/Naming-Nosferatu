@@ -1,14 +1,14 @@
 import { cn, fetchCatAvatars, getGreeting } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { CAT_IMAGES } from "@/constants";
 import { Card } from "@/layout/Card";
 import { Input } from "@/layout/FormPrimitives";
 import { useLoginController } from "@/providers/AuthProvider";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
+import { CAT_IMAGES } from "@/utils/constants";
+import { SwipeableCards } from "../components/SwipeableCards";
 import { NameManagementView } from "./NameManagementView";
-import { SwipeableCards } from "./SwipeableCards";
 
 interface TournamentSetupProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

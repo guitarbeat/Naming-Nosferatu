@@ -52,10 +52,10 @@
 				"source/*"
 			],
 			"@store": [
-				"source/store.ts"
+				"source/store/index.ts"
 			],
 			"@types": [
-				"source/types.ts"
+				"source/types/index.ts"
 			],
 			"@hooks": [
 				"source/hooks/index.ts"

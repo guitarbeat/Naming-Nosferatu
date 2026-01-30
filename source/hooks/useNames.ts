@@ -8,12 +8,12 @@ import { coreAPI, statsAPI } from "@supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
-import { VALIDATION } from "@/constants";
+import { useTournamentSelectionSaver } from "@/features/tournament/hooks/useTournamentSelectionSaver";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
 import { useToast } from "@/providers/ToastProvider";
 import useAppStore from "@/store";
 import type { NameItem } from "@/types";
-import { useTournamentSelectionSaver } from "./TournamentHooks";
+import { VALIDATION } from "@/utils/constants";
 
 /* ==========================================================================
    USE NAME DATA HOOK
