@@ -10,7 +10,7 @@ import type { UserBubbleProfile } from "@/types";
    BUBBLE PHYSICS TYPES
    ========================================================================== */
 
-export interface BubbleState {
+interface BubbleState {
 	x: number;
 	y: number;
 	radius: number;
@@ -31,7 +31,7 @@ interface FloatingBubbleProps {
 	isHighlighted?: boolean;
 }
 
-export const FloatingBubble: React.FC<FloatingBubbleProps> = ({
+const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 	bubble,
 	profile,
 	onAutofill,

@@ -1,8 +1,8 @@
 # Architecture & System Design
 
-**Last Updated:** January 25, 2026
+**Last Updated:** January 30, 2026
 
-> For visual design guidance and design tokens, see [UI_UX.md](./UI_UX.md).
+> For visual design guidance and design tokens, see [DESIGN.md](./DESIGN.md).
 
 ## System Overview
 
@@ -125,6 +125,53 @@ config/                   # Tool configuration
 | `store.ts` | Global state management with Zustand |
 | `types.ts` | TypeScript type definitions |
 | `utils/` | Pure functions: array ops, formatting, metrics |
+
+---
+
+## Component Architecture
+
+### Component Locations
+
+| Category | Location |
+|----------|----------|
+| **UI Primitives** | `source/features/ui/` |
+| **Layout** | `source/features/layout/` |
+| **Tournament** | `source/features/tournament/` |
+| **Analytics** | `source/features/analytics/` |
+| **Auth** | `source/features/auth.ts` |
+
+### Key Components
+
+#### UI Primitives (`features/ui/`)
+
+| Component | Description |
+|-----------|-------------|
+| `Button` | Primary button with CVA variants |
+| `Card` | Container component with variants |
+| `Error` | Error boundary with fallback UI |
+| `FormPrimitives` | Input, Select, Label components |
+| `LiquidGlass` | Glassmorphism effect |
+| `StatusIndicators` | Loading spinners, badges |
+| `Toast` | Notification system |
+| `Charts` | Data visualization components |
+
+#### Layout Components (`features/layout/`)
+
+| Component | Description |
+|-----------|-------------|
+| `AppLayout` | Main app shell and structure |
+| `AdaptiveNav` | Responsive navigation (mobile/desktop) |
+| `CollapsibleHeader` | Collapsible section headers |
+| `CatBackground` | Animated cat background |
+| `FloatingBubbles` | User bubble animations |
+
+#### Feature Components
+
+| Feature | Key Components |
+|---------|----------------|
+| **Tournament** | `Tournament` (setup/mode/flow), `SwipeableCards`, `RankingAdjustment`, `NameGrid`, `NameManagementView` |
+| **Analytics** | `AnalysisDashboard` (with `analyticsHooks`, `analyticsService`) |
+| **Auth** | Consolidated in `features/auth.ts` |
 
 ---
 

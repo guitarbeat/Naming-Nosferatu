@@ -1,13 +1,14 @@
 {
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		"baseUrl": "../"
+		"baseUrl": "../",
+		"allowJs": true,
+		"checkJs": true
 	},
 	"include": [
 		"../source",
 		"../config",
 		"../scripts",
-		"vite.config.ts",
-		"../source/types/shims.d.ts"
+		"vite.config.ts"
 	]
 }

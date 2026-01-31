@@ -39,7 +39,7 @@ interface UserStats {
 	is_aggregate?: boolean;
 }
 
-export interface SelectionStats {
+interface SelectionStats {
 	totalSelections: number;
 	totalTournaments: number;
 	avgSelectionsPerName: number;

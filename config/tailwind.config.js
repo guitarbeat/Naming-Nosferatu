@@ -2,7 +2,7 @@ import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: ["class"],
+	darkMode: "class",
 	content: [
 		"../source/**/*.{js,jsx,ts,tsx}",
 		"../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",

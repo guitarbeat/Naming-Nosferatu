@@ -41,14 +41,6 @@ interface FormFieldContextValue {
 
 const FormFieldContext = React.createContext<FormFieldContextValue | null>(null);
 
-export const useFormField = () => {
-	const context = React.useContext(FormFieldContext);
-	if (!context) {
-		throw new Error("Form components must be used within a FormField");
-	}
-	return context;
-};
-
 // ============================================================================
 // HOOKS
 // ============================================================================
@@ -460,24 +452,3 @@ Select.displayName = "Select";
 // ============================================================================
 // FORM ACTIONS
 // ============================================================================
-
-interface FormActionsProps {
-	children: React.ReactNode;
-	align?: "start" | "center" | "end";
-	className?: string;
-}
-
-export const FormActions: React.FC<FormActionsProps> = ({
-	children,
-	align = "end",
-	className = "",
-}) => {
-	const justifyClass =
-		align === "start" ? "justify-start" : align === "center" ? "justify-center" : "justify-end";
-
-	return (
-		<div className={cn("flex items-center gap-4 mt-6", justifyClass, className)}>{children}</div>
-	);
-};
-
-FormActions.displayName = "FormActions";

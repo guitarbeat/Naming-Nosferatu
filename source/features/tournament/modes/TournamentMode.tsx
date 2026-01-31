@@ -2,9 +2,8 @@ import { cn } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
 import React from "react";
 import Button from "@/layout/Button";
-import type { NameItem, NameManagementViewExtensions, TournamentFilters } from "@/types";
+import type { NameItem, NameManagementViewExtensions } from "@/types";
 import { NameGrid } from "../components/NameGrid";
-import { TournamentToolbar } from "../components/TournamentToolbar";
 
 export interface SwipeableCardsProps {
 	names: NameItem[];
@@ -20,8 +19,7 @@ export interface SwipeableCardsProps {
 
 interface TournamentModeProps {
 	analysisMode: boolean;
-	filterConfig: TournamentFilters;
-	handleFilterChange: (name: string, value: string) => void;
+
 	selectedCount: number;
 	onStartTournament?: (selectedNames: NameItem[]) => void;
 
@@ -42,8 +40,7 @@ interface TournamentModeProps {
 
 export function TournamentMode({
 	analysisMode,
-	filterConfig,
-	handleFilterChange,
+
 	selectedCount,
 	onStartTournament,
 
@@ -71,14 +68,7 @@ export function TournamentMode({
 			data-component="tournament-setup"
 		>
 			{/* Toolbar */}
-			<TournamentToolbar
-				mode="tournament"
-				filters={filterConfig}
-				onFilterChange={handleFilterChange}
-				// categories removed
-				showUserFilter={false}
-				showSelectionFilter={false}
-			/>
+			{/* Toolbar Removed */}
 
 			{/* Optional Header Extension */}
 			{extensions.header &&
@@ -207,7 +197,6 @@ export function TournamentMode({
 								names={names}
 								selectedNames={selectedNames}
 								onToggleName={toggleName}
-								filters={filterConfig}
 								isAdmin={isAdmin}
 								showSelectedOnly={showSelectedOnly}
 								showCatPictures={showCatPictures}

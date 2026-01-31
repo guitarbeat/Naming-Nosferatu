@@ -569,7 +569,7 @@ const CardNameBase = memo(function CardName({
 						<CatImage
 							src={image}
 							containerClassName="w-full h-full"
-							imageClassName="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+							imageClassName="w-full h-full object-cover scale-125 transition-transform duration-500 hover:scale-110"
 						/>
 						{onImageClick && (
 							<div className="absolute inset-0 bg-black/20 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">

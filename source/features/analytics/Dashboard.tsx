@@ -43,7 +43,7 @@ export function NameManagementProvider({
  * Optional version of useNameManagementContextSafe that returns null instead of throwing
  * when no provider is available. Useful for components that can work standalone.
  */
-export function useNameManagementContextOptional(): UseNameManagementViewResult | null {
+function useNameManagementContextOptional(): UseNameManagementViewResult | null {
 	const context = useContext(NameManagementContext);
 	return context;
 }
@@ -56,7 +56,7 @@ import { RandomGenerator } from "./RandomGenerator";
    ANALYSIS DASHBOARD COMPONENT (Merged AnalysisDashboard)
    ========================================================================= */
 
-export function AnalysisDashboard({
+function AnalysisDashboard({
 	highlights,
 	userName,
 	showGlobalLeaderboard = true,

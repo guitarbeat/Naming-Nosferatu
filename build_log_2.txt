@@ -1,0 +1,36 @@
+ WARN  Unsupported engine: wanted: {"node":"20.x"} (current: {"node":"v22.16.0","pnpm":"10.27.0"})
+
+> name-nosferatu@1.0.2 build C:\Users\alw4834\Documents\GitHub\Naming-Nosferatu
+> vite build --config config/vite.config.ts
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 3590 modules transformed.
+rendering chunks...
+[33m[plugin vite:reporter] 
+(!) C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/utils/index.ts is dynamically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/tournament.ts but also statically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/App.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/AnalysisComponents.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/Dashboard.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/PersonalResults.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/analyticsHooks.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/Tournament.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/components/NameGrid.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/components/NameSuggestion.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/components/SwipeableCards.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/components/TournamentToolbar.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useNameManagementView.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useProfile.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useTournamentHandlers.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useTournamentState.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/modes/NameManagementView.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/modes/ProfileMode.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/modes/TournamentMode.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/modes/TournamentSetup.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/hooks/useBrowserState.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/AdaptiveNav.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/Button.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/Card.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/CollapsibleHeader.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/Error.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/FormPrimitives.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/StatusIndicators.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/layout/Toast.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/providers/AuthProvider.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/SyncQueue.ts, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/supabase/client.ts is dynamically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/supabase/nameService.ts but also statically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/Dashboard.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/RandomGenerator.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/analyticsHooks.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/analytics/analyticsService.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/components/NameGrid.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useProfile.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/features/tournament/hooks/useProfile.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/hooks/useNames.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/main.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/providers/AuthProvider.tsx, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/supabase/imageService.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/supabase/nameService.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/supabase/siteSettingsService.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/tournament.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/store/index.ts, C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/utils/index.ts, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/SyncQueue.ts is dynamically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/services/tournament.ts but also statically imported by C:/Users/alw4834/Documents/GitHub/Naming-Nosferatu/source/hooks/useBrowserState.ts, dynamic import will not move module into another chunk.
+[39m
+computing gzip size...
+[2m../dist/[22m[32mregisterSW.js                      [39m[1m[2m  0.13 kB[22m[1m[22m
+[2m../dist/[22m[32mmanifest.webmanifest               [39m[1m[2m  0.39 kB[22m[1m[22m
+[2m../dist/[22m[32mindex.html                         [39m[1m[2m 11.99 kB[22m[1m[22m[2m │ gzip:   3.75 kB[22m
+[2m../dist/[22m[35massets/index-BJ5lSPht.css          [39m[1m[2m144.27 kB[22m[1m[22m[2m │ gzip:  22.51 kB[22m
+[2m../dist/[22m[36massets/index-Biqc7q4b.js           [39m[1m[2m  0.12 kB[22m[1m[22m[2m │ gzip:   0.13 kB[22m
+[2m../dist/[22m[36massets/TournamentFlow-P9qWeG4B.js  [39m[1m[2m 51.54 kB[22m[1m[22m[2m │ gzip:  15.47 kB[22m
+[2m../dist/[22m[36massets/index-Cxhc9PeV.js           [39m[1m[2m171.17 kB[22m[1m[22m[2m │ gzip:  44.72 kB[22m
+[2m../dist/[22m[36massets/Dashboard-B_ObeXvr.js       [39m[1m[2m504.64 kB[22m[1m[22m[2m │ gzip: 131.02 kB[22m
+[2m../dist/[22m[36massets/index-D3ZdQJ23.js           [39m[1m[2m640.25 kB[22m[1m[22m[2m │ gzip: 205.85 kB[22m
+[32m✓ built in 11.32s[39m
+
+PWA v1.2.0
+mode      generateSW
+precache  13 entries (14910.29 KiB)
+files generated
+  ../dist/sw.js
+  ../dist/workbox-daba6f28.js

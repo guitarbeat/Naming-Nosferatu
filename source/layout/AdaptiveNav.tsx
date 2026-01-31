@@ -212,15 +212,29 @@ export function AdaptiveNav() {
 	return (
 		<motion.nav
 			className={cn(
-				"fixed z-[100] flex items-center transition-all duration-500 ease-out",
-				"h-auto max-h-[120px]", // Limit height
-				// Mobile Styles: Bottom Sheet
-				"bottom-0 !bottom-0 top-auto !top-auto inset-x-0 justify-around gap-1 px-2 py-3 bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl pb-[max(0.75rem,env(safe-area-inset-bottom))]",
-				// Desktop Styles: Floating Dock
-				"md:bottom-8 md:!bottom-8 md:top-auto md:!top-auto md:inset-x-auto md:left-1/2 md:-translate-x-1/2 md:w-auto md:min-w-[400px] md:justify-center md:gap-2 md:px-6 md:py-3 md:rounded-2xl md:border md:border-white/10 md:shadow-2xl md:pb-3",
+				// Base positioning
+				"fixed z-[100] transition-all duration-500 ease-out",
+				// Flex container
+				"flex items-center",
+				// Height constraint
+				"h-auto max-h-[120px]",
+
+				// MOBILE: Full width bottom sheet
+				"bottom-0 left-0 right-0",
+				"justify-around gap-1 px-2 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+				"bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl",
+
+				// DESKTOP: Floating Dock
+				"md:bottom-8 md:top-auto md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-auto",
+				"md:min-w-[400px] md:justify-center md:gap-2",
+				"md:px-6 md:py-3 md:pb-3",
+				"md:rounded-2xl md:border md:border-white/10 md:shadow-2xl",
 			)}
 			style={{
-				bottom: 0,
+				position: "fixed",
+				bottom: 0, // Fallback for mobile
+				left: 0,
+				right: 0,
 				top: "auto",
 				maxHeight: "120px",
 			}}

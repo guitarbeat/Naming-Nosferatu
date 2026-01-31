@@ -57,7 +57,7 @@ export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 				<CatBackground />
 
 				{/* Unified Adaptive Navigation */}
-				{isLoggedIn && <AdaptiveNav />}
+				<AdaptiveNav />
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (

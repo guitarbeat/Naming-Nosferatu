@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		root: resolveFromRoot("source"),
+		envDir: projectRoot, // Point to where .env files are located
 		publicDir: resolveFromRoot("public"),
 		plugins: [
 			react(),
@@ -51,6 +52,7 @@ export default defineConfig(({ mode }) => {
 					],
 				},
 				workbox: {
+					maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB to accommodate large bg images
 					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
 					runtimeCaching: [
 						{
@@ -96,7 +98,7 @@ export default defineConfig(({ mode }) => {
 				},
 				{
 					find: "@store",
-					replacement: resolveFromRoot("source/store.ts"),
+					replacement: resolveFromRoot("source/store"),
 				},
 				{
 					find: "@types",
@@ -140,8 +142,6 @@ export default defineConfig(({ mode }) => {
 			strictPort: true,
 			allowedHosts: true, // Allow all hosts for Replit/Lovable proxy compatibility
 			hmr: {
-				clientPort: 443, // Standard HTTPS port for sandboxes
-				protocol: "wss",
 				overlay: true, // Show errors in the browser
 			},
 		},

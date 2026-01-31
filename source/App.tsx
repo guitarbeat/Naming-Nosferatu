@@ -8,21 +8,19 @@
  */
 
 import { ErrorManager } from "@services/errorManager";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { useTournamentHandlers } from "@/hooks";
+import { lazy, Suspense, useCallback, useEffect } from "react";
+import { useOfflineSync, useTournamentHandlers } from "@/hooks";
 import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
-import { Toast } from "@/layout/Toast";
 import { useAuth } from "@/providers/AuthProvider";
-import { useOfflineSync } from "./hooks/useBrowserState";
-import useAppStore, { useAppStoreInitialization } from "./store";
+import useAppStore, { useAppStoreInitialization } from "@/store";
 import {
 	cleanupPerformanceMonitoring,
 	cn,
 	devError,
 	initializePerformanceMonitoring,
-} from "./utils";
+} from "@/utils";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("@features/tournament/modes/TournamentFlow"));
@@ -34,11 +32,6 @@ const Dashboard = lazy(() =>
  * Root application component with Single Page Architecture (Vertical Scrolling)
  */
 
-interface ToastMessage {
-	id: string;
-	message: string;
-	type: "success" | "error" | "info" | "warning";
-}
 function App() {
 	// Kept for now if needed by hooks, but mostly unused for nav
 	const { login, isLoading } = useAuth();
@@ -62,12 +55,6 @@ function App() {
 
 	// Offline Sync Hook
 	useOfflineSync();
-
-	// Toast state management
-	const [toasts, setToasts] = useState<ToastMessage[]>([]);
-	const removeToast = useCallback((id: string) => {
-		setToasts((prev) => prev.filter((toast) => toast.id !== id));
-	}, []);
 
 	// Tournament handlers - mostly consumed by TournamentFlow now, but kept here for AppLayout props
 	const tournamentHandlers = useTournamentHandlers({
@@ -122,6 +109,7 @@ function App() {
 				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
 					<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
 						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
+						<div id="pick" className="absolute -top-20" />
 						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
 							<ErrorBoundary context="Tournament Flow">
 								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
@@ -152,13 +140,6 @@ function App() {
 					</div>
 				</Suspense>
 			</AppLayout>
-
-			<Toast
-				variant="container"
-				toasts={toasts}
-				removeToast={removeToast}
-				className="fixed bottom-[max(5.5rem,calc(90px+env(safe-area-inset-bottom)))] right-4 z-50 flex flex-col gap-2 pointer-events-none"
-			/>
 		</div>
 	);
 }

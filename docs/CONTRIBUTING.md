@@ -1,8 +1,7 @@
-# Development Guide & Standards
+# Contributing Guide
 
-**Last Updated:** January 25, 2026
+**Last Updated:** January 30, 2026
 **Status:** Primary Reference for Developers
-**Latest Update:** Removed test infrastructure from source directory (tests can be re-added as needed)
 
 This document provides a comprehensive guide for setting up, developing, maintaining, and optimizing the Naming Nosferatu application.
 
@@ -21,7 +20,7 @@ This document provides a comprehensive guide for setting up, developing, maintai
 - **Component Consolidation**: Unified 4 navigation components into single `AdaptiveNav`
 - **CVA Implementation**: Adopted Class Variance Authority for component variants
 - **Removed Unused Dependencies**: `sharp`, `lovable-tagger` (kept `react-router-dom` as actively used)
-- **Code Quality Report**: Comprehensive post-consolidation assessment (See `docs/CODE_QUALITY_REPORT.md`)
+- **Code Quality Report**: Comprehensive post-consolidation assessment (See `docs/archive/specs/css-dry-refactor/analysis/css-analysis-report.md`)
 
 ### How to Avoid Similar Issues
 
@@ -76,88 +75,6 @@ This document provides a comprehensive guide for setting up, developing, maintai
 - **zod 4.3.5** - Schema validation
 - **react-router-dom 6.21.3** - Routing
 - **tailwindcss 4.1.18** - Styling
-
-#### 🔄 Consolidation Opportunities
-
-**Icon Libraries (2 packages - 15KB estimated)**
-
-```
-@heroicons/react    2.2.0  - HeroIcons (React components)
-lucide-react       0.562.0 - Lucide icons (SVG-based)
-```
-
-**Recommendation:** Consolidate to `lucide-react` only
-
-- Lucide is more comprehensive (1,000+ icons vs HeroIcons 200+)
-- Tree-shakeable and smaller bundle impact
-- Consistent API across the app
-  **Savings:** ~8KB, 1 package removed
-
-**Form Handling (3 packages - 25KB estimated)**
-
-```
-react-hook-form     7.49.3  - Form state management
-@hookform/resolvers 5.2.2   - Validation resolvers
-zod                 4.3.5   - Schema validation (already kept)
-```
-
-**Recommendation:** Keep all - they're complementary
-
-- RHF handles form state, resolvers integrate Zod
-- Together they provide excellent DX and performance
-
-**Animation & Interaction (2 packages - 35KB estimated)**
-
-```
-framer-motion       12.24.10 - Animation library
-@hello-pangea/dnd   18.0.1   - Drag and drop
-```
-
-**Recommendation:** Keep both - distinct use cases
-
-- Framer Motion for UI animations/transitions
-- DND for tournament bracket reordering
-
-#### ❌ Safe Removals (10KB estimated savings)
-
-**Questionable Dependencies**
-
-```
-prop-types        15.8.1  - Runtime prop validation
-immer             11.1.3  - Immutable state updates
-lovable-tagger    1.1.13  - Unknown purpose (check usage)
-```
-
-**Recommendations:**
-
-- **prop-types:** Remove if using TypeScript consistently (you are)
-- **immer:** Remove if Zustand's immer middleware isn't used
-- **lovable-tagger:** Audit usage - may be dev tooling
-
-### Dev Dependencies Optimization
-
-#### ✅ Essential Tooling (Keep)
-
-- **@biomejs/biome 2.3.11** - Linter/formatter
-- **typescript 5.9.3** - Type checking
-- **knip 5.80.0** - Dead code detection
-
-#### ❌ Legacy/Unused Dev Tools (5KB estimated savings)
-
-```
-babel-plugin-transform-react-remove-prop-types 0.4.24
-stylelint                                      16.26.1
-stylelint-config-standard                      39.0.1
-```
-
-**Recommendations:**
-
-- **babel-plugin:** Remove if not using Babel (you're using SWC)
-- **stylelint:** Remove if Biome handles CSS linting adequately
-
-### Dependency Optimization Phases
-
-
 
 ---
 
@@ -317,11 +234,3 @@ docs/                   # Project documentation
 config/                 # Tool configuration files
 supabase/               # Database migrations and types
 ```
-
-### Key Consolidated Files
-
-| File | Contents |
-|------|----------|
-| `store/appSlice.ts` | All Zustand slices + store creation + initialization hook |
-| `services/supabase/client.ts` | Supabase client + TanStack Query client + service re-exports |
-| `features/auth/index.ts` | All authentication and authorization logic |

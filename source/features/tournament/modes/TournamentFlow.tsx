@@ -3,14 +3,14 @@ import Tournament from "@/features/tournament/Tournament";
 import { useTournamentHandlers } from "@/hooks";
 import Button from "@/layout/Button";
 import Card from "@/layout/Card";
-import { useAuth } from "@/providers/AuthProvider";
+
 import useAppStore from "@/store";
 import { NameSuggestion } from "../components/NameSuggestion";
 import TournamentSetup from "./TournamentSetup";
 
 export default function TournamentFlow() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { login } = useAuth();
+
 	const { handleTournamentComplete, handleStartNewTournament, handleTournamentSetup } =
 		useTournamentHandlers({
 			userName: user.name,
@@ -95,10 +95,6 @@ export default function TournamentFlow() {
 							className="w-full"
 						>
 							<TournamentSetup
-								onLogin={async (name) => {
-									await login({ name });
-									return true;
-								}}
 								onStart={(setupData) => {
 									handleTournamentSetup(setupData);
 									// Seamless transition - no scroll needed

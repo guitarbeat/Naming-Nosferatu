@@ -33,24 +33,15 @@
 	"scripts": {
 		"dev": "vite --config config/vite.config.ts",
 		"build": "vite build --config config/vite.config.ts",
-		"build:dev": "vite build --config config/vite.config.ts --mode development",
 		"preview": "vite preview --config config/vite.config.ts",
-		"lint": "pnpm run lint:quick && pnpm run lint:types",
-		"lint:quick": "oxlint",
 		"lint:full": "biome check source",
 		"lint:fix": "biome check --write source",
-		"lint:types": "tsc --noEmit --project config/tsconfig.json",
 		"format": "biome format --write source",
 		"fix": "pnpm run lint:fix",
 		"check": "pnpm run lint && pnpm run check:deps",
 		"check:deps": "knip --config config/knip.json",
 		"check:deps:fix": "knip --config config/knip.json --fix",
-		"check:outdated": "pnpm outdated",
-		"check:audit": "pnpm audit",
-		"update:check": "pnpm outdated --format table",
-		"clean": "rm -rf build dist node_modules/.vite",
-		"vercel:dev": "vercel dev",
-		"optimize:sounds": "node scripts/optimize-sounds.js"
+		"clean": "rm -rf build dist node_modules/.vite"
 	},
 	"dependencies": {
 		"@hello-pangea/dnd": "^18.0.1",
@@ -73,7 +64,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.11",
-		"@tailwindcss/postcss": "^4.1.18",
 		"@types/node": "^25.0.10",
 		"@types/react": "^19.2.9",
 		"@types/react-dom": "^19.2.3",
@@ -88,8 +78,7 @@
 		"typescript": "^5.9.3",
 		"vercel": "^50.9.6",
 		"vite": "^7.3.1",
-		"vite-plugin-pwa": "^1.2.0",
-		"vitest": "^4.0.18"
+		"vite-plugin-pwa": "^1.2.0"
 	},
 	"browserslist": {
 		"production": [

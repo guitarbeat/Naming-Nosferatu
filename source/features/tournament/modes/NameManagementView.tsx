@@ -115,7 +115,7 @@ export function NameManagementView({
 				<TournamentMode
 					{...state}
 					// Pass specific props that might not be in state
-					handleFilterChange={state.handleFilterChange as (name: string, value: string) => void}
+
 					analysisMode={analysisMode}
 					onStartTournament={handleStartTournament}
 					extensions={extensions}

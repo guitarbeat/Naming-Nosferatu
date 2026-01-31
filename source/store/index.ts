@@ -17,7 +17,7 @@ import { STORAGE_KEYS } from "@/utils/constants";
 /**
  * Common helper for nested Zustand slice updates to reduce boilerplate spreading.
  */
-export const updateSlice = <K extends keyof AppState>(
+const updateSlice = <K extends keyof AppState>(
 	set: (fn: (state: AppState) => Partial<AppState> | AppState) => void,
 	key: K,
 	updates: Partial<AppState[K]>,
@@ -34,7 +34,7 @@ export const updateSlice = <K extends keyof AppState>(
    TOURNAMENT SLICE
    ========================================================================== */
 
-export const createTournamentSlice: StateCreator<
+const createTournamentSlice: StateCreator<
 	AppState,
 	[],
 	[],
@@ -131,7 +131,7 @@ const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	return { theme: "dark", themePreference: "dark" };
 };
 
-export const createUserAndSettingsSlice: StateCreator<
+const createUserAndSettingsSlice: StateCreator<
 	AppState,
 	[],
 	[],
@@ -287,7 +287,7 @@ export const createUserAndSettingsSlice: StateCreator<
    ERROR SLICE
    ========================================================================== */
 
-export const createErrorSlice: StateCreator<
+const createErrorSlice: StateCreator<
 	AppState,
 	[],
 	[],

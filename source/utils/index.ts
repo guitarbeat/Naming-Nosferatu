@@ -28,23 +28,6 @@ export function shuffleArray<T>(array: T[]): T[] {
 	return newArray;
 }
 
-/**
- * Generate all possible pairs from a list of names
- */
-export function generatePairs(nameList: NameItem[]): [NameItem, NameItem][] {
-	const pairs: [NameItem, NameItem][] = [];
-	for (let i = 0; i < nameList.length; i++) {
-		for (let j = i + 1; j < nameList.length; j++) {
-			const nameA = nameList[i];
-			const nameB = nameList[j];
-			if (nameA && nameB) {
-				pairs.push([nameA, nameB]);
-			}
-		}
-	}
-	return pairs;
-}
-
 /* ==========================================================================
    CACHE UTILITIES
    ========================================================================== */
@@ -95,21 +78,6 @@ export function formatDate(date: Date | string | number, options: Intl.DateTimeF
 		day: "numeric",
 		...options,
 	});
-}
-
-/**
- * Get a time-based greeting string
- * @returns "Good morning", "Good afternoon", or "Good evening"
- */
-export function getGreeting(): string {
-	const hour = new Date().getHours();
-	if (hour < 12) {
-		return "Good morning";
-	}
-	if (hour < 18) {
-		return "Good afternoon";
-	}
-	return "Good evening";
 }
 
 /* ==========================================================================
@@ -219,8 +187,11 @@ export function getRandomCatImage(id: string | number | null | undefined, images
 	if (!id) {
 		return images[0];
 	}
-	const seed = typeof id === "string" ? id.length : Number(id);
-	return images[seed % images.length];
+	const seed =
+		typeof id === "string"
+			? id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
+			: Number(id);
+	return images[Math.abs(seed) % images.length];
 }
 
 /* ==========================================================================
@@ -243,67 +214,6 @@ export function selectedNamesToSet(
 /* ==========================================================================
    NAME GENERATION UTILITIES
    ========================================================================== */
-
-const FUNNY_PREFIXES = [
-	"Captain",
-	"Dr.",
-	"Professor",
-	"Lord",
-	"Lady",
-	"Sir",
-	"Duchess",
-	"Count",
-	"Princess",
-	"Chief",
-	"Master",
-	"Agent",
-	"Detective",
-	"Admiral",
-];
-
-const FUNNY_ADJECTIVES = [
-	"Whiskers",
-	"Purrington",
-	"Meowington",
-	"Pawsome",
-	"Fluffles",
-	"Scratchy",
-	"Naptastic",
-	"Furball",
-	"Cattastic",
-	"Pawdorable",
-	"Whiskertron",
-	"Purrfect",
-	"Fluffy",
-];
-
-/**
- * Sanitize a generated name to remove invalid characters
- */
-function sanitizeGeneratedName(value: string) {
-	return value
-		.replace(/[^a-zA-Z0-9 _-]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
-}
-
-/**
- * Generate a fun random name
- */
-export function generateFunName() {
-	let attempts = 0;
-	let generatedName = "";
-
-	while (!generatedName && attempts < 3) {
-		const prefix = FUNNY_PREFIXES[Math.floor(Math.random() * FUNNY_PREFIXES.length)];
-		const adjective = FUNNY_ADJECTIVES[Math.floor(Math.random() * FUNNY_ADJECTIVES.length)];
-
-		generatedName = sanitizeGeneratedName(`${prefix} ${adjective}`);
-		attempts += 1;
-	}
-
-	return generatedName || "Cat Judge";
-}
 
 /* ==========================================================================
    FILTER UTILITIES
@@ -633,68 +543,6 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 /* ==========================================================================
    METRICS UTILITIES
    ========================================================================== */
-
-interface InsightCategory {
-	label: string;
-	description: string;
-	icon: string;
-	color: string;
-}
-
-const INSIGHT_CATEGORIES: Record<string, InsightCategory> = {
-	top_rated: {
-		label: "Top Rated",
-		description: "In the top 10% by rating",
-		icon: "⭐",
-		color: "var(--color-gold, #f59e0b)",
-	},
-	trending_up: {
-		label: "Trending Up",
-		description: "Gaining popularity",
-		icon: "📈",
-		color: "var(--color-success, #22c55e)",
-	},
-	trending_down: {
-		label: "Trending Down",
-		description: "Losing popularity",
-		icon: "📉",
-		color: "var(--color-danger, #ef4444)",
-	},
-	most_selected: {
-		label: "Most Selected",
-		description: "One of the top selections",
-		icon: "👍",
-		color: "var(--color-info, #3b82f6)",
-	},
-	underrated: {
-		label: "Underrated",
-		description: "Good rating but low selections",
-		icon: "💎",
-		color: "var(--color-purple, #a855f7)",
-	},
-	new: {
-		label: "New",
-		description: "Recently added",
-		icon: "✨",
-		color: "var(--color-cyan, #06b6d4)",
-	},
-	undefeated: {
-		label: "Undefeated",
-		description: "No losses yet",
-		icon: "🏆",
-		color: "var(--color-gold, #f59e0b)",
-	},
-	undiscovered: {
-		label: "Undiscovered",
-		description: "Never selected yet",
-		icon: "🔍",
-		color: "var(--color-subtle, #6b7280)",
-	},
-};
-
-export function getInsightCategory(categoryKey: string): InsightCategory | null {
-	return INSIGHT_CATEGORIES[categoryKey] || null;
-}
 
 const METRIC_LABELS: Record<string, string> = {
 	rating: "Rating",
