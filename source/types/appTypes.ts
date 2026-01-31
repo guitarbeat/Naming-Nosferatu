@@ -132,20 +132,6 @@ export interface UseNameManagementViewProps {
 	extensions?: NameManagementViewExtensions;
 }
 
-export interface NameManagementViewProfileProps {
-	showUserFilter?: boolean;
-	selectionStats?: {
-		total: number;
-		selected: number;
-		visible: number;
-		hidden: number;
-	};
-	userOptions?: Array<{ value: string; label: string }>;
-	isAdmin?: boolean;
-	onToggleVisibility?: (nameId: string) => Promise<void>;
-	onDelete?: (name: NameItem) => Promise<void>;
-}
-
 export interface UseNameManagementViewResult {
 	// Core data
 	names: NameItem[];

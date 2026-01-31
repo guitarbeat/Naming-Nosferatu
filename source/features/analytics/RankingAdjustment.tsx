@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { GripVertical, Loader2, Save } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { Card } from "@/layout/Card";
-import type { NameItem } from "@/types";
+import type { NameItem } from "@/types/appTypes";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {
 	if (newItems.length !== oldRankings.length) {
@@ -194,24 +194,27 @@ export const RankingAdjustment = memo(
 											index={index}
 										>
 											{(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
-												<motion.div
+												<div
 													ref={provided.innerRef}
-													{...(provided.draggableProps as any)}
-													{...(provided.dragHandleProps as any)}
-													initial={{ opacity: 0, y: 10 }}
-													animate={{ opacity: 1, y: 0 }}
-													exit={{ opacity: 0, scale: 0.95 }}
-													className={cn(
-														"p-4 rounded-xl transition-all duration-200",
-														"bg-gradient-to-br from-white/5 to-white/[0.02]",
-														"border border-white/10",
-														"hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10",
-														snapshot.isDragging &&
-															"shadow-2xl shadow-purple-500/30 border-purple-500/50 scale-105 rotate-2",
-													)}
+													{...provided.draggableProps}
+													{...provided.dragHandleProps}
 												>
-													<RankingItemContent item={item} index={index} />
-												</motion.div>
+													<motion.div
+														initial={{ opacity: 0, y: 10 }}
+														animate={{ opacity: 1, y: 0 }}
+														exit={{ opacity: 0, scale: 0.95 }}
+														className={cn(
+															"p-4 rounded-xl transition-all duration-200",
+															"bg-gradient-to-br from-white/5 to-white/[0.02]",
+															"border border-white/10",
+															"hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10",
+															snapshot.isDragging &&
+																"shadow-2xl shadow-purple-500/30 border-purple-500/50 scale-105 rotate-2",
+														)}
+													>
+														<RankingItemContent item={item} index={index} />
+													</motion.div>
+												</div>
 											)}
 										</Draggable>
 									))}

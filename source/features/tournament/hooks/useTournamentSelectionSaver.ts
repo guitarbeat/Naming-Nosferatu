@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import type { NameItem } from "@/types";
+import type { NameItem } from "@/types/appTypes";
 
 /* =========================================================================
    TOURNAMENT SELECTION SAVER HOOK

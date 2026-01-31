@@ -6,10 +6,10 @@
  */
 
 import { Slot } from "@radix-ui/react-slot";
-import { cn } from "@utils";
 import { cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import React, { forwardRef, memo } from "react";
+import { cn } from "@/utils/basic";
 
 // Shadcn button variants (inlined from ui/button.tsx)
 const buttonVariants = cva(

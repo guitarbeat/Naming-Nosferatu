@@ -1,4 +1,4 @@
-import type { NameItem } from "@/types";
+import type { NameItem } from "@/types/appTypes";
 import { withSupabase } from "./client";
 
 /**
@@ -199,7 +199,7 @@ export const coreAPI = {
 /**
  * Delete a name by ID
  */
-export async function deleteById(nameId: string | number) {
+async function deleteById(nameId: string | number) {
 	return withSupabase(
 		async (client) => {
 			const { error } = await client.from("cat_name_options").delete().eq("id", String(nameId));

@@ -145,9 +145,7 @@ const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> 
 	}
 };
 
-export const getSupabaseClient = async (
-	retryCount = 0,
-): Promise<SupabaseClient<Database> | null> => {
+const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
 	if (supabaseInstance) {
 		return supabaseInstance;
 	}
@@ -187,7 +185,7 @@ export const updateSupabaseUserContext = (userName: string | null): void => {
 	}
 };
 
-export const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
+const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
 
 export const isSupabaseAvailable = async () => {
 	const client = await resolveSupabaseClient();
@@ -233,8 +231,6 @@ export { resolveSupabaseClient as supabase };
 
 // Re-export common helpers/types if needed by other modules
 export * from "@/features/analytics/analyticsService";
-export { adminAPI } from "@/providers/AuthProvider";
 export * from "./imageService";
 export * from "./nameService";
-export { deleteById, deleteById as deleteName } from "./nameService";
 export * from "./siteSettingsService";

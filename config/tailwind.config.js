@@ -1,6 +1,7 @@
 import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
+// ts-prune-ignore-next (entry point for Tailwind)
 export default {
 	darkMode: "class",
 	content: [

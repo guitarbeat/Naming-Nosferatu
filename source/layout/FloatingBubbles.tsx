@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { UserBubbleProfile } from "@/types";
+import type { UserBubbleProfile } from "@/types/appTypes";
 
 /* ==========================================================================
    BUBBLE PHYSICS TYPES

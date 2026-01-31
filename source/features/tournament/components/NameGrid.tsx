@@ -5,6 +5,15 @@
  */
 
 import { imagesAPI } from "@supabase/client";
+import { motion } from "framer-motion";
+import { Upload } from "lucide-react";
+import { memo, useCallback, useMemo, useState } from "react";
+import { useMasonryLayout } from "@/hooks/useMasonryLayout";
+import { CardName } from "@/layout/Card";
+import { EmptyState } from "@/layout/EmptyState";
+import { Lightbox } from "@/layout/Lightbox";
+import { Loading } from "@/layout/StatusIndicators";
+import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,
 	cn,
@@ -14,16 +23,7 @@ import {
 	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
-} from "@utils";
-import { motion } from "framer-motion";
-import { Upload } from "lucide-react";
-import { memo, useCallback, useMemo, useState } from "react";
-import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import { CardName } from "@/layout/Card";
-import { EmptyState } from "@/layout/EmptyState";
-import { Lightbox } from "@/layout/Lightbox";
-import { Loading } from "@/layout/StatusIndicators";
-import type { NameItem } from "@/types";
+} from "@/utils/basic";
 
 interface NameGridProps {
 	names: NameItem[];
@@ -39,6 +39,7 @@ interface NameGridProps {
 	isAdmin?: boolean;
 	showSelectedOnly?: boolean;
 	showCatPictures?: boolean;
+	onNamesUpdate?: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
 	imageList?: string[];
 	onToggleVisibility?: (id: string | number) => void;
 	onDelete?: (name: NameItem) => void;
@@ -148,11 +149,33 @@ export function NameGrid({
 	const [suppImages, setSuppImages] = useState<string[]>([]);
 
 	// Merge provided imageList with any newly uploaded images
-	const finalImageList = useMemo(() => [...suppImages, ...imageList], [suppImages, imageList]);
+	const finalImageList = useMemo(() => {
+		const base = Array.isArray(imageList) ? imageList : [];
+		return [...suppImages, ...base];
+	}, [suppImages, imageList]);
 
 	const handleImageClick = useCallback(
-		(image: string) => {
-			const idx = finalImageList.indexOf(image);
+		(imageOrEvent: string | React.MouseEvent) => {
+			// Handle both direct URL string and MouseEvent
+			let imageUrl: string | null = null;
+			if (typeof imageOrEvent === "string") {
+				imageUrl = imageOrEvent;
+			} else if (
+				imageOrEvent &&
+				typeof imageOrEvent === "object" &&
+				"stopPropagation" in imageOrEvent
+			) {
+				// It's a MouseEvent, though GridItem wraps it, CardName might call it directly
+				imageOrEvent.stopPropagation();
+				// In this case we don't have the URL easily, but handleCardClick in GridItem should have handled it
+				return;
+			}
+
+			if (!imageUrl) {
+				return;
+			}
+
+			const idx = finalImageList.indexOf(imageUrl);
 			if (idx !== -1) {
 				setLightboxIndex(idx);
 			}
@@ -195,7 +218,7 @@ export function NameGrid({
 	if (isLoading) {
 		return (
 			<div className={cn("relative w-full mx-auto p-4 md:p-6 min-h-[50vh]", className)}>
-				<div className="relative w-full max-w-[1600px] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+				<div className="relative w-full max-w-[95%] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`skeleton-${i}`} className="w-full h-40">
 							<Loading variant="card-skeleton" cardSkeletonVariant="mosaic-card" size="medium" />
@@ -235,7 +258,7 @@ export function NameGrid({
 	return (
 		<div className={cn("relative w-full mx-auto p-4 md:p-6", className)}>
 			<div
-				className="relative w-full max-w-[1600px] mx-auto transition-height duration-300"
+				className="relative w-full max-w-[95%] mx-auto transition-height duration-300"
 				role="list"
 				ref={containerRef}
 				style={{ height: totalHeight || "auto", position: "relative" }}

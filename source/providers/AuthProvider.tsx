@@ -1,6 +1,6 @@
-import { resolveSupabaseClient, supabase, withSupabase } from "@supabase/client";
+import { resolveSupabaseClient, supabase } from "@supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext } from "react";
 
 /* ==========================================================================
    CONSTANTS & CONFIG
@@ -77,7 +77,7 @@ const compareRoles = (
    AUTH LOGIC
    ========================================================================== */
 
-export async function isUserAdmin(userIdOrName: string): Promise<boolean> {
+async function isUserAdmin(userIdOrName: string): Promise<boolean> {
 	if (!userIdOrName) {
 		return false;
 	}
@@ -104,89 +104,6 @@ export async function isUserAdmin(userIdOrName: string): Promise<boolean> {
 		console.error("Error checking admin status", e);
 		return false;
 	}
-}
-
-export const adminAPI = {
-	listUsers: async ({ searchTerm, limit = 200 }: { searchTerm?: string; limit?: number } = {}) => {
-		return withSupabase(
-			async (client) => {
-				let query = client
-					.from("cat_app_users")
-					.select("user_name, updated_at", { count: "exact" });
-
-				if (searchTerm) {
-					query = query.ilike("user_name", `%${searchTerm}%`);
-				}
-
-				const { data, count, error } = await query
-					.order("user_name", { ascending: true })
-					.limit(limit);
-
-				if (error) {
-					console.error("Error listing users:", error);
-					return { users: [], count: 0 };
-				}
-
-				// Fetch roles
-				if (data && data.length > 0) {
-					const userNames = data.map((u) => u.user_name);
-					const { data: roles } = await client
-						.from("user_roles")
-						.select("user_name, role")
-						.in("user_name", userNames);
-
-					const roleMap = new Map(roles?.map((r: any) => [r.user_name, r.role]) || []);
-					return {
-						users: data.map((u) => ({
-							...u,
-							role: roleMap.get(u.user_name) || "user",
-						})),
-						count: count || 0,
-					};
-				}
-
-				return {
-					users: (data || []).map((u) => ({ ...u, role: "user" })),
-					count: count || 0,
-				};
-			},
-			{ users: [], count: 0 },
-		);
-	},
-};
-
-/* ==========================================================================
-   HOOKS (Exported)
-   ========================================================================== */
-
-/**
- * Hook to check admin status for a given user name.
- */
-export function useAdminStatus(userName: string | null) {
-	const [isAdmin, setIsAdmin] = useState(false);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		const check = async () => {
-			if (!userName) {
-				setIsAdmin(false);
-				setIsLoading(false);
-				return;
-			}
-			setIsLoading(true);
-			try {
-				const admin = await isUserAdmin(userName);
-				setIsAdmin(admin);
-			} catch {
-				setIsAdmin(false);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		void check();
-	}, [userName]);
-
-	return { isAdmin, isLoading };
 }
 
 /* ==========================================================================

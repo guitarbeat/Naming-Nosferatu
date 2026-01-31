@@ -5,8 +5,7 @@
  */
 
 import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/react";
-import { hiddenNamesAPI } from "@supabase/client";
-import { createContext, Suspense, useCallback, useContext, useMemo, useState } from "react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { TournamentToolbar } from "@/features/tournament/components/TournamentToolbar";
 import { useCollapsible } from "@/hooks/useBrowserState";
 import { Card } from "@/layout/Card";
@@ -14,9 +13,11 @@ import { BumpChart } from "@/layout/Charts";
 import { CollapsibleContent, CollapsibleHeader } from "@/layout/CollapsibleHeader";
 import { EmptyState } from "@/layout/EmptyState";
 import { FloatingBubblesContainer } from "@/layout/FloatingBubbles";
-import type { NameItem, UseNameManagementViewResult } from "@/types";
-import { clearAllCaches, devError } from "@/utils";
+import type { NameItem } from "@/types/appTypes";
+import { clearAllCaches, devError } from "@/utils/basic";
 import { STORAGE_KEYS } from "@/utils/constants";
+import { hiddenNamesAPI } from "../../services/supabase/client";
+import { useNameManagementContextOptional } from "../tournament/context/NameManagementContext";
 import { AnalysisInsights, AnalysisPanel, AnalysisTable } from "./AnalysisComponents";
 import { useAnalysisData, useAnalysisDisplayData } from "./analyticsHooks";
 import type {
@@ -25,28 +26,6 @@ import type {
 	LeaderboardItem,
 	SelectionPopularityItem,
 } from "./analyticsService";
-
-// Context Definition
-export const NameManagementContext = createContext<UseNameManagementViewResult | null>(null);
-
-export function NameManagementProvider({
-	children,
-	value,
-}: {
-	children: React.ReactNode;
-	value: UseNameManagementViewResult;
-}) {
-	return <NameManagementContext.Provider value={value}>{children}</NameManagementContext.Provider>;
-}
-
-/**
- * Optional version of useNameManagementContextSafe that returns null instead of throwing
- * when no provider is available. Useful for components that can work standalone.
- */
-function useNameManagementContextOptional(): UseNameManagementViewResult | null {
-	const context = useContext(NameManagementContext);
-	return context;
-}
 
 // Modular Components
 import { PersonalResults } from "./PersonalResults";
@@ -146,7 +125,7 @@ function AnalysisDashboard({
 	}
 
 	return (
-		<div className="w-full max-w-[1200px] mx-auto px-4 py-8 animate-in fade-in duration-500">
+		<div className="w-full max-w-[95%] mx-auto px-4 py-8 animate-in fade-in duration-500">
 			<FloatingBubblesContainer
 				data={(displayNames || []).map((n) => ({
 					id: String(n.id),
@@ -206,10 +185,12 @@ function AnalysisDashboard({
 									<div className="h-[300px] w-full">
 										{rankingHistory?.data && rankingHistory.data.length > 0 ? (
 											<BumpChart
-												data={(rankingHistory.data || []).map((d: any) => ({
-													...d,
-													rankings: (d.rankings || []).map((r: number | null) => r ?? 0),
-												}))}
+												data={(rankingHistory.data || []).map(
+													(d: { name: string; rankings?: (number | null)[] }) => ({
+														...d,
+														rankings: (d.rankings || []).map((r: number | null) => r ?? 0),
+													}),
+												)}
 												labels={rankingHistory.timeLabels}
 												title="Ranking History"
 											/>
@@ -334,7 +315,7 @@ export function Dashboard({
 	const [activeTab, setActiveTab] = useState("results");
 
 	return (
-		<div className="w-full max-w-[1200px] mx-auto px-4 pb-20 pt-8" id="analysis">
+		<div className="w-full max-w-[95%] mx-auto px-4 pb-20 pt-8" id="analysis">
 			<div className="bg-white/5 p-1 rounded-xl flex gap-1 overflow-x-auto max-w-full mx-auto mb-8 justify-center">
 				{TABS.map((tab) => (
 					<button

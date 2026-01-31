@@ -3,11 +3,11 @@
  * @description Reusable card component with flexible styling options and specialized sub-components
  */
 
-import { cn } from "@utils";
 import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/features/tournament/components/CatImage";
+import { cn } from "@/utils/basic";
 import { TIMING } from "@/utils/constants";
 import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
 
@@ -402,7 +402,7 @@ interface NameMetadata {
 	[key: string]: unknown;
 }
 
-export interface CardNameProps {
+interface CardNameProps {
 	name: string;
 	description?: string;
 	isSelected?: boolean;

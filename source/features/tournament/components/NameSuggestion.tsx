@@ -4,12 +4,12 @@
  * Uses the shared useNameSuggestion hook for consistent submission logic.
  */
 
-import { cn } from "@utils";
 import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
 import LiquidGlass from "@/layout/LiquidGlass";
+import { cn } from "@/utils/basic";
 
 // ============================================================================
 // TYPES

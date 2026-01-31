@@ -30,7 +30,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 	return (
 		<div
-			className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
+			className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
 			onClick={onClose}
 		>
 			<div

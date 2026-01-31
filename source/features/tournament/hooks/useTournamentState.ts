@@ -1,6 +1,6 @@
-import { shuffleArray } from "@utils";
 import { useEffect, useMemo, useState } from "react";
-import type { NameItem } from "@/types";
+import type { NameItem } from "@/types/appTypes";
+import { shuffleArray } from "@/utils/basic";
 import { TOURNAMENT_TIMING } from "@/utils/constants";
 import { useTournament } from "./useTournament";
 

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { memo } from "react";
 
-export interface BongoCatProps {
+interface BongoCatProps {
 	/** Optional text to display below the animation */
 	text?: string;
 	/** Size of the animation */

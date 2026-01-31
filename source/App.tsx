@@ -9,18 +9,20 @@
 
 import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect } from "react";
-import { useOfflineSync, useTournamentHandlers } from "@/hooks";
+import { ProfileSection } from "@/features/tournament/components/ProfileSection";
+import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
 import { useAuth } from "@/providers/AuthProvider";
-import useAppStore, { useAppStoreInitialization } from "@/store";
+import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
 	cleanupPerformanceMonitoring,
 	cn,
 	devError,
 	initializePerformanceMonitoring,
-} from "@/utils";
+} from "@/utils/basic";
 
 // Lazy load route components
 const TournamentFlow = lazy(() => import("@features/tournament/modes/TournamentFlow"));
@@ -62,12 +64,8 @@ function App() {
 		tournamentActions,
 	});
 
-	const {
-		handleTournamentComplete,
-		handleStartNewTournament,
-		handleTournamentSetup,
-		handleUpdateRatings,
-	} = tournamentHandlers;
+	const { handleTournamentComplete, handleStartNewTournament, handleUpdateRatings } =
+		tournamentHandlers;
 
 	// Handle user login
 	const handleLogin = useCallback(
@@ -94,18 +92,9 @@ function App() {
 
 	return (
 		<div
-			className={cn(
-				"min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30",
-				!user.isLoggedIn && "overflow-hidden",
-			)}
+			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout
-				handleLogin={handleLogin}
-				handleStartNewTournament={handleStartNewTournament}
-				handleUpdateRatings={handleUpdateRatings}
-				handleTournamentSetup={handleTournamentSetup}
-				handleTournamentComplete={handleTournamentComplete}
-			>
+			<AppLayout handleTournamentComplete={handleTournamentComplete}>
 				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
 					<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
 						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
@@ -137,6 +126,11 @@ function App() {
 								</ErrorBoundary>
 							</section>
 						)}
+
+						{/* Profile Section - Always visible single page area */}
+						<ErrorBoundary context="Profile Section">
+							<ProfileSection onLogin={handleLogin} />
+						</ErrorBoundary>
 					</div>
 				</Suspense>
 			</AppLayout>

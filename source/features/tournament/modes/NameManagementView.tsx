@@ -4,16 +4,18 @@
  * Provides a consistent interface with mode-specific extensions.
  */
 
-import { cn } from "@utils";
-import React, { useCallback, useEffect, useState } from "react";
-import { NameManagementProvider } from "@/features/analytics/Dashboard";
+import React, { useEffect, useState } from "react";
+import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
 import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
 import { ErrorComponent } from "@/layout/Error";
 import { useToast } from "@/providers/ToastProvider";
-import type { NameItem, NameManagementViewExtensions, UseNameManagementViewProps } from "@/types";
-import { ProfileMode } from "./ProfileMode";
-import type { SwipeableCardsProps } from "./TournamentMode";
-import { TournamentMode } from "./TournamentMode";
+import type {
+	NameItem,
+	NameManagementViewExtensions,
+	UseNameManagementViewProps,
+} from "@/types/appTypes";
+import { cn } from "@/utils/basic";
+import { ManagementMode } from "./ManagementMode";
 
 interface NameManagementViewProps extends UseNameManagementViewProps {
 	className?: string; // Kept for API compatibility, but might be unused if modes handle containers
@@ -27,7 +29,6 @@ interface NameManagementViewProps extends UseNameManagementViewProps {
 export function NameManagementView({
 	mode = "tournament", // Default mode
 	userName,
-	onStartTournament,
 	analysisMode: propsAnalysisMode,
 	setAnalysisMode: propsSetAnalysisMode,
 
@@ -71,23 +72,13 @@ export function NameManagementView({
 		}
 	}, [isError, dataError, showToast]);
 
-	const handleStartTournament = useCallback(
-		(namesToStart: NameItem[]) => {
-			if (onStartTournament) {
-				showToast("Starting tournament...", "success", { duration: 2000 });
-				onStartTournament(namesToStart);
-			}
-		},
-		[onStartTournament, showToast],
-	);
-
 	const renderContent = () => {
 		// 1. Dashboard Mode (Analysis or Profile Dashboard via extension)
 		if (analysisMode && extensions.dashboard) {
 			return (
 				<div
 					className={cn(
-						"w-full max-w-[1600px] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/5",
+						"w-full max-w-[95%] mx-auto min-h-[80vh] flex flex-col gap-8 px-4 md:px-8 bg-black/50 backdrop-blur-sm rounded-3xl border border-white/5",
 						className,
 					)}
 					data-component="name-management-view"
@@ -109,35 +100,8 @@ export function NameManagementView({
 			);
 		}
 
-		// 2. Tournament Mode
-		if (mode === "tournament") {
-			return (
-				<TournamentMode
-					{...state}
-					// Pass specific props that might not be in state
-
-					analysisMode={analysisMode}
-					onStartTournament={handleStartTournament}
-					extensions={extensions}
-					isAdmin={Boolean(profileProps.isAdmin || tournamentProps.isAdmin)}
-					imageList={tournamentProps.imageList as string[]}
-					swipeableCards={
-						tournamentProps.swipeableCards as React.ComponentType<SwipeableCardsProps>
-					}
-				/>
-			);
-		}
-
-		// 3. Profile Mode
-		return (
-			<ProfileMode
-				{...state}
-				extensions={extensions}
-				profileProps={profileProps}
-				showCatPictures={state.showCatPictures}
-				imageList={state.tournamentProps.imageList as string[]}
-			/>
-		);
+		// 2. Management Mode (Tournament Setup or Profile Grid)
+		return <ManagementMode {...state} mode={mode} />;
 	};
 
 	return (

@@ -1,14 +1,14 @@
 /**
- * @module AdaptiveNav
- * @description Adaptive navigation component - Full-width bottom navigation bar for all screens
- * Uses Scroll Navigation for Single Page Architecture
+ * @module FluidNav
+ * @description Fluid navigation component - Percentage-based floating navigation bar
+ * Uses relative units for fluid layout across all screen sizes
  */
 
-import { cn, hapticNavTap, hapticTournamentStart } from "@utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { BarChart3, CheckCircle, Lightbulb, Trophy } from "lucide-react";
+import { BarChart3, CheckCircle, Lightbulb, Trophy, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import useAppStore from "@/store";
+import useAppStore from "@/store/appStore";
+import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
 
 // Map nav keys to Section IDs
 const keyToId: Record<string, string> = {
@@ -16,6 +16,7 @@ const keyToId: Record<string, string> = {
 	play: "play",
 	analyze: "analysis",
 	suggest: "suggest",
+	profile: "profile",
 };
 
 type UnifiedButtonState = {
@@ -103,13 +104,14 @@ const getUnifiedButtonState = (
 };
 
 /**
- * Adaptive Bottom Navigation Bar
- * Renders as a full-width bottom navigation bar on all screen sizes
+ * Fluid Bottom Navigation Bar
+ * Renders as a fluid, percentage-width floating dock on all screen sizes
  */
-export function AdaptiveNav() {
+export function FluidNav() {
 	const appStore = useAppStore();
-	const { tournament, tournamentActions } = appStore;
+	const { tournament, tournamentActions, user } = appStore;
 	const { selectedNames } = tournament;
+	const { isLoggedIn, name: userName, avatarUrl } = user;
 	const [activeSection, setActiveSection] = useState("pick");
 
 	const { isComplete, names: tournamentNames } = tournament;
@@ -178,7 +180,7 @@ export function AdaptiveNav() {
 	// Track active section on scroll
 	useEffect(() => {
 		const handleScroll = () => {
-			const sections = ["pick", "play", "analysis", "suggest"];
+			const sections = ["pick", "play", "analysis", "suggest", "profile"];
 			let current = activeSection;
 			let minDistance = Infinity;
 
@@ -212,32 +214,19 @@ export function AdaptiveNav() {
 	return (
 		<motion.nav
 			className={cn(
-				// Base positioning
+				// Base positioning & Layout
 				"fixed z-[100] transition-all duration-500 ease-out",
-				// Flex container
-				"flex items-center",
-				// Height constraint
-				"h-auto max-h-[120px]",
+				"flex items-center justify-evenly gap-4",
+				"h-auto py-3 px-6",
 
-				// MOBILE: Full width bottom sheet
-				"bottom-0 left-0 right-0",
-				"justify-around gap-1 px-2 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
-				"bg-black/80 backdrop-blur-xl border-t border-white/10 rounded-t-2xl",
+				// Fluid Sizing & Positioning (The Core Requirement)
+				// Uses percentage width and centering instead of fixed breakpoints
+				"bottom-6 left-1/2 -translate-x-1/2",
+				"w-[95%]", // Fluid width: 95% of the viewport width
 
-				// DESKTOP: Floating Dock
-				"md:bottom-8 md:top-auto md:left-1/2 md:-translate-x-1/2 md:right-auto md:w-auto",
-				"md:min-w-[400px] md:justify-center md:gap-2",
-				"md:px-6 md:py-3 md:pb-3",
-				"md:rounded-2xl md:border md:border-white/10 md:shadow-2xl",
+				// Visual Styling (Glassmorphism)
+				"bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
 			)}
-			style={{
-				position: "fixed",
-				bottom: 0, // Fallback for mobile
-				left: 0,
-				right: 0,
-				top: "auto",
-				maxHeight: "120px",
-			}}
 			initial={{ y: 100, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -245,7 +234,7 @@ export function AdaptiveNav() {
 			{/* Unified Pick/Start Button */}
 			<motion.button
 				className={cn(
-					"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
 					isActive("pick") && !buttonState.highlight
 						? "text-white bg-white/10"
 						: "text-white/50 hover:text-white hover:bg-white/5",
@@ -283,7 +272,7 @@ export function AdaptiveNav() {
 			{isComplete && (
 				<motion.button
 					className={cn(
-						"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
 						isActive("analyze")
 							? "text-white bg-white/10"
 							: "text-white/50 hover:text-white hover:bg-white/5",
@@ -307,7 +296,7 @@ export function AdaptiveNav() {
 			{/* Suggest Button */}
 			<button
 				className={cn(
-					"relative flex flex-col items-center justify-center flex-1 md:flex-none md:w-24 gap-1 p-2 rounded-xl transition-all",
+					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
 					isActive("suggest")
 						? "text-white bg-white/10"
 						: "text-white/50 hover:text-white hover:bg-white/5",
@@ -319,6 +308,46 @@ export function AdaptiveNav() {
 				<Lightbulb className="w-5 h-5" aria-hidden={true} />
 				<span className="text-[10px] font-medium tracking-wide">Suggest</span>
 				{isActive("suggest") && (
+					<motion.div
+						layoutId="dockIndicator"
+						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+					/>
+				)}
+			</button>
+
+			{/* Profile/Login Button */}
+			<button
+				className={cn(
+					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
+					isActive("profile")
+						? "text-white bg-white/10"
+						: "text-white/50 hover:text-white hover:bg-white/5",
+				)}
+				onClick={() => {
+					hapticNavTap();
+					const element = document.getElementById("profile");
+					element?.scrollIntoView({ behavior: "smooth" });
+					setActiveSection("profile");
+				}}
+				type="button"
+				aria-label={isLoggedIn ? "Edit profile" : "Login"}
+			>
+				<div className="relative">
+					{isLoggedIn && avatarUrl ? (
+						<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+							<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+						</div>
+					) : (
+						<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+					)}
+					{isLoggedIn && (
+						<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+					)}
+				</div>
+				<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
+					{isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Login"}
+				</span>
+				{isActive("profile") && (
 					<motion.div
 						layoutId="dockIndicator"
 						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"

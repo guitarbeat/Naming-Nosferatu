@@ -1,5 +1,6 @@
 import discardUnused from "postcss-discard-unused";
 
+// ts-prune-ignore-next (entry point for PostCSS)
 export default {
 	plugins: {
 		"@tailwindcss/postcss": {},

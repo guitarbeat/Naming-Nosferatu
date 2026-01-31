@@ -4,9 +4,9 @@
  */
 
 import { ErrorManager } from "@services/errorManager";
-import { cn } from "@utils";
 import { Copy } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
+import { cn } from "@/utils/basic";
 
 /* ==========================================================================
    ERROR BOUNDARY
@@ -182,7 +182,7 @@ interface AppError {
 	context?: string;
 }
 
-export interface ErrorProps {
+interface ErrorProps {
 	variant?: "boundary" | "list" | "inline";
 	error?: AppError | string | unknown;
 	onRetry?: (...args: unknown[]) => void;

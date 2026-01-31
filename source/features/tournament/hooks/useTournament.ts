@@ -1,8 +1,14 @@
 import { calculateBracketRound, EloRating, PreferenceSorter } from "@services/tournament";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useLocalStorage from "@/hooks/useBrowserState";
-import useAppStore from "@/store";
-import type { Match, MatchRecord, NameItem, PersistentState, TournamentUIState } from "@/types";
+import useAppStore from "@/store/appStore";
+import type {
+	Match,
+	MatchRecord,
+	NameItem,
+	PersistentState,
+	TournamentUIState,
+} from "@/types/appTypes";
 
 export interface TournamentResult {
 	name: string;

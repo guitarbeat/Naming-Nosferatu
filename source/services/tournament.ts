@@ -1,5 +1,5 @@
 import { withSupabase } from "@supabase/client";
-import type { NameItem } from "@/types";
+import type { NameItem } from "@/types/appTypes";
 import { CAT_IMAGES, ELO_RATING } from "@/utils/constants";
 
 /* =========================================================================
@@ -70,7 +70,7 @@ export const tournamentsAPI = {
 		if (!skipQueue && typeof navigator !== "undefined" && !navigator.onLine) {
 			const { syncQueue } = await import("@services/SyncQueue");
 			syncQueue.enqueue("SAVE_RATINGS", { userName, ratings });
-			const { devLog } = await import("@/utils");
+			const { devLog } = await import("@/utils/basic");
 			devLog("[TournamentLogic] Offline: Queued ratings save");
 			return { success: true, savedCount: ratings.length, offline: true };
 		}
@@ -246,7 +246,7 @@ export class PreferenceSorter {
 
 export { CAT_IMAGES };
 
-export { getRandomCatImage } from "@/utils";
+export { getRandomCatImage } from "@/utils/basic";
 
 /**
  * Calculate bracket round based on number of names and current match

@@ -1,14 +1,11 @@
 /**
  * @module CatImage
- * @description Cat image component with smart focal detection
+ * @description Cat image component with smart focal detection and fallback support
  */
 
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-
-/* ==========================================================================
-   CAT IMAGE COMPONENT
-   ========================================================================== */
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CAT_IMAGES } from "@/utils/constants";
 
 interface CatImageProps {
 	src?: string;
@@ -22,11 +19,6 @@ interface CatImageProps {
 	onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 }
 
-/**
- * Shared cat image renderer used by multiple card components.
- * Handles responsive sources, fallback logging, and automatic
- * focal point detection so cat faces stay centered.
- */
 function CatImage({
 	src,
 	alt = "Cat picture",
@@ -40,6 +32,15 @@ function CatImage({
 }: CatImageProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const imageRef = useRef<HTMLImageElement>(null);
+	const [hasError, setHasError] = useState(false);
+
+	const fallbackUrl =
+		CAT_IMAGES && CAT_IMAGES.length > 0 ? (CAT_IMAGES[0] as string) : "/assets/images/bby-cat.GIF";
+
+	// Reset error state when src changes
+	useEffect(() => {
+		setHasError(false);
+	}, []);
 
 	const analyseImage = useMemo(
 		() => (imgEl: HTMLImageElement) => {
@@ -70,40 +71,38 @@ function CatImage({
 				const toGray = (r: number, g: number, b: number) => r * 0.299 + g * 0.587 + b * 0.114;
 				const idx = (x: number, y: number) => (y * w + x) * 4;
 
-				let totalR = 0;
-				let totalG = 0;
-				let totalB = 0;
+				let totalR = 0,
+					totalG = 0,
+					totalB = 0;
 
 				for (let y = 0; y < h; y += 1) {
 					let sum = 0;
 					for (let x = 0; x < w; x += 1) {
 						const base = idx(x, y);
-						const r = data[base] ?? 0;
-						const g = data[base + 1] ?? 0;
-						const b = data[base + 2] ?? 0;
-
+						const r = data[base] ?? 0,
+							g = data[base + 1] ?? 0,
+							b = data[base + 2] ?? 0;
 						totalR += r;
 						totalG += g;
 						totalB += b;
 
 						if (y > 0 && y < h - 1) {
-							const i1 = idx(x, y - 1);
-							const i2 = idx(x, y + 1);
+							const i1 = idx(x, y - 1),
+								i2 = idx(x, y + 1);
 							const g1 = toGray(data[i1] ?? 0, data[i1 + 1] ?? 0, data[i1 + 2] ?? 0);
 							const g2 = toGray(data[i2] ?? 0, data[i2 + 1] ?? 0, data[i2 + 2] ?? 0);
 							sum += Math.abs(g2 - g1);
 						}
 					}
-
 					if (y > 0 && y < h - 1) {
 						rowEnergy[y] = sum / w;
 					}
 				}
 
-				const start = Math.floor(h * 0.08);
-				const end = Math.floor(h * 0.7);
-				let bestY = start;
-				let bestVal = -Infinity;
+				const start = Math.floor(h * 0.08),
+					end = Math.floor(h * 0.7);
+				let bestY = start,
+					bestVal = -Infinity;
 
 				for (let y = start; y < end; y += 1) {
 					const e = (rowEnergy[y - 1] || 0) + rowEnergy[y] + (rowEnergy[y + 1] || 0);
@@ -114,12 +113,9 @@ function CatImage({
 				}
 
 				const pct = Math.min(60, Math.max(10, Math.round((bestY / h) * 100)));
-
 				const pixelCount = w * h;
 				const accent = pixelCount
-					? `${Math.round(totalR / pixelCount)} ${Math.round(
-							totalG / pixelCount,
-						)} ${Math.round(totalB / pixelCount)}`
+					? `${Math.round(totalR / pixelCount)} ${Math.round(totalG / pixelCount)} ${Math.round(totalB / pixelCount)}`
 					: undefined;
 
 				const orientation = (() => {
@@ -133,11 +129,7 @@ function CatImage({
 					return "square";
 				})();
 
-				return {
-					focal: pct,
-					accent,
-					orientation,
-				};
+				return { focal: pct, accent, orientation };
 			} catch (error) {
 				console.error("Failed to analyse cat image metadata", error);
 				return {};
@@ -157,29 +149,22 @@ function CatImage({
 			}
 
 			const { focal, accent, orientation } = analyseImage(imgEl);
-
 			if (focal != null) {
 				container.style.setProperty("--image-pos-y", `${focal}%`);
 			}
-
 			if (accent) {
 				container.style.setProperty("--cat-image-accent-rgb", accent);
 			}
-
 			if (orientation) {
 				container.dataset.orientation = orientation;
 			}
 
 			if (imgEl.naturalWidth && imgEl.naturalHeight && imgEl.naturalHeight > 0) {
 				const ratio = imgEl.naturalWidth / imgEl.naturalHeight;
-				const isPortrait = ratio <= 0.85;
-				const isUltraWide = ratio >= 1.9;
-				const fit = isPortrait || isUltraWide ? "contain" : "cover";
-
-				container.style.setProperty("--cat-image-fit", fit);
+				const steps = ratio <= 0.85 || ratio >= 1.9 ? "contain" : "cover";
+				container.style.setProperty("--cat-image-fit", steps);
 				container.style.setProperty("--cat-image-ratio", ratio.toFixed(3));
 			}
-
 			container.dataset.loaded = "true";
 		},
 		[analyseImage],
@@ -187,8 +172,7 @@ function CatImage({
 
 	const handleLoad = useCallback(
 		(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-			const target = event?.currentTarget || imageRef.current;
-			applyImageEnhancements(target);
+			applyImageEnhancements(event.currentTarget);
 			onLoad?.(event);
 		},
 		[applyImageEnhancements, onLoad],
@@ -196,9 +180,8 @@ function CatImage({
 
 	const handleError = useCallback(
 		(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-			if (event?.currentTarget?.src) {
-				console.error("Image failed to load:", event.currentTarget.src);
-			}
+			console.error("Image failed to load:", event.currentTarget.src);
+			setHasError(true);
 			onError?.(event);
 		},
 		[onError],
@@ -209,12 +192,9 @@ function CatImage({
 		if (!container) {
 			return;
 		}
-
 		container.dataset.loaded = "false";
 		delete container.dataset.orientation;
 		container.style.removeProperty("--image-pos-y");
-		container.style.removeProperty("--cat-image-fit");
-		container.style.removeProperty("--cat-image-ratio");
 		container.style.removeProperty("--cat-image-accent-rgb");
 
 		const imgEl = imageRef.current;
@@ -223,18 +203,18 @@ function CatImage({
 		}
 	}, [applyImageEnhancements]);
 
-	if (!src) {
+	if (!src && !hasError) {
 		return null;
 	}
 
+	const currentSrc = hasError ? fallbackUrl : src;
 	const containerClasses = [containerClassName].filter(Boolean).join(" ");
 	const mergedStyle = {
 		...containerStyle,
-		...(src ? { "--bg-image": `url(${src})` } : {}),
+		...(currentSrc ? { "--bg-image": `url(${currentSrc})` } : {}),
 	} as React.CSSProperties;
 
 	const renderImage = () => {
-		// Apply focal point positioning via inline style that reads CSS variables
 		const imageStyle: React.CSSProperties = {
 			objectPosition: "center var(--image-pos-y, 50%)",
 			objectFit: "var(--cat-image-fit, cover)" as React.CSSProperties["objectFit"],
@@ -242,8 +222,8 @@ function CatImage({
 
 		const commonProps = {
 			ref: imageRef,
-			src,
-			alt,
+			src: currentSrc || fallbackUrl,
+			alt: hasError ? "Fallback cat picture" : alt,
 			className: imageClassName,
 			style: imageStyle,
 			loading,
@@ -253,8 +233,8 @@ function CatImage({
 			crossOrigin: "anonymous" as const,
 		};
 
-		if (String(src).startsWith("/assets/images/")) {
-			const base = src.includes(".") ? src.replace(/\.[^.]+$/, "") : src;
+		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
+			const base = currentSrc.includes(".") ? currentSrc.replace(/\.[^.]+$/, "") : currentSrc;
 			return (
 				<picture>
 					<source type="image/avif" srcSet={`${base}.avif`} />
@@ -263,7 +243,6 @@ function CatImage({
 				</picture>
 			);
 		}
-
 		return <img {...commonProps} />;
 	};
 

@@ -10,8 +10,8 @@
 		"**/*.md",
 		"**/README.md",
 		"**/IMPLEMENTATION.md",
-		"postcss.config.js",
-		"tailwind.config.js",
+		"config/postcss.config.js",
+		"config/tailwind.config.js",
 		"source/shared/utils/performanceMonitor.d.ts",
 		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
 	],

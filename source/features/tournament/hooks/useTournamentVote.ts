@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import type { Match } from "@/types";
+import type { Match } from "@/types/appTypes";
 import { TOURNAMENT_TIMING } from "@/utils/constants";
 
 /* =========================================================================

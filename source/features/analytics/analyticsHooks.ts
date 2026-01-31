@@ -5,8 +5,8 @@
 
 import { analyticsAPI, leaderboardAPI, statsAPI } from "@supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { calculatePercentile } from "@utils";
 import { useMemo } from "react";
+import { calculatePercentile } from "@/utils/basic";
 import type {
 	AnalyticsDataItem,
 	ConsolidatedName,

@@ -1,12 +1,14 @@
 import { CAT_IMAGES, getRandomCatImage } from "@services/tournament";
-import { getVisibleNames } from "@utils";
-import { useAudioManager, useTournamentState, useTournamentVote } from "@/hooks";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
-import useAppStore from "@/store";
-import type { TournamentProps } from "@/types";
+import useAppStore from "@/store/appStore";
+import type { TournamentProps } from "@/types/appTypes";
+import { getVisibleNames } from "@/utils/basic";
+import { useAudioManager } from "./hooks/useAudioManager";
+import { useTournamentState } from "./hooks/useTournamentState";
+import { useTournamentVote } from "./hooks/useTournamentVote";
 
 function TournamentContent({
 	onComplete,

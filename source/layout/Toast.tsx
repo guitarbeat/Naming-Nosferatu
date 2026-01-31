@@ -3,11 +3,11 @@
  * @description Toast notification components with multiple variants and positioning.
  */
 
-import { cn } from "@utils";
 import { cva } from "class-variance-authority";
 import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
 import LiquidGlass from "@/layout/LiquidGlass";
+import { cn } from "@/utils/basic";
 
 /* ========================================= */
 /*             TOAST STYLES                  */
@@ -272,7 +272,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 /*             UNIFIED TOAST                 */
 /* ========================================= */
 
-export interface ToastProps extends Partial<ToastItemProps>, ToastContainerProps {
+interface ToastProps extends Partial<ToastItemProps>, ToastContainerProps {
 	variant?: "item" | "container";
 }
 

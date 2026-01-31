@@ -7,7 +7,7 @@ import { syncQueue } from "@services/SyncQueue";
 import { tournamentsAPI } from "@services/tournament";
 import { useCallback, useEffect, useState } from "react";
 import { useProfileNotifications } from "@/features/tournament/hooks/useProfile";
-import { devError, devLog, devWarn } from "@/utils";
+import { devError, devLog, devWarn } from "@/utils/basic";
 
 // ============================================================================
 // Browser State Hook

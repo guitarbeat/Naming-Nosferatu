@@ -6,7 +6,7 @@
 
 import type React from "react";
 
-export interface EmptyStateProps {
+interface EmptyStateProps {
 	/**
 	 * Main title of the empty state
 	 */

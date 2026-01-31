@@ -4,11 +4,11 @@
  * Recreated to fix missing import error.
  */
 
-import { cn } from "@utils";
 import React from "react";
 import Button from "@/layout/Button";
 import { Input, Select } from "@/layout/FormPrimitives";
-import type { TournamentFilters } from "@/types";
+import type { TournamentFilters } from "@/types/appTypes";
+import { cn } from "@/utils/basic";
 
 interface TournamentToolbarProps {
 	mode?: "profile" | "tournament";
@@ -35,10 +35,6 @@ export function TournamentToolbar({
 
 	const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		onFilterChange?.("sortBy", e.target.value);
-	};
-
-	const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		onFilterChange?.("category", e.target.value);
 	};
 
 	const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

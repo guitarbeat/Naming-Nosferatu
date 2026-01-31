@@ -5,29 +5,21 @@
  */
 
 import { useMemo } from "react";
-import { ProfileEditorModal } from "@/features/tournament/components/ProfileEditorModal";
 import { ScrollToTopButton } from "@/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/layout/Error";
 import { Loading, OfflineIndicator } from "@/layout/StatusIndicators";
-import useAppStore from "@/store";
-import type { NameItem } from "@/types";
-import { AdaptiveNav } from "./AdaptiveNav";
+import useAppStore from "@/store/appStore";
 import CatBackground from "./CatBackground";
+import { FluidNav } from "./FluidNav";
 
 interface AppLayoutProps {
-	handleLogin: (userName: string) => Promise<boolean>;
-	handleStartNewTournament: () => void;
-	handleUpdateRatings: (
-		ratings: Record<string, { rating: number; wins?: number; losses?: number }>,
-	) => Promise<boolean> | undefined;
-	handleTournamentSetup: (names?: NameItem[]) => void;
 	handleTournamentComplete: (
 		finalRatings: Record<string, { rating: number; wins?: number; losses?: number }>,
 	) => Promise<void>;
 	children: React.ReactNode;
 }
 
-export function AppLayout({ children, handleLogin }: AppLayoutProps) {
+export function AppLayout({ children }: AppLayoutProps) {
 	// Get state from store (no prop drilling!)
 	const { user, tournament, errors, errorActions } = useAppStore();
 	const { isLoggedIn } = user;
@@ -56,8 +48,8 @@ export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 				{/* Static cat-themed background */}
 				<CatBackground />
 
-				{/* Unified Adaptive Navigation */}
-				<AdaptiveNav />
+				{/* Fluid Navigation */}
+				<FluidNav />
 
 				<main id="main-content" className={mainWrapperClassName} tabIndex={-1}>
 					{errors.current && (
@@ -85,8 +77,6 @@ export function AppLayout({ children, handleLogin }: AppLayoutProps) {
 
 					<ScrollToTopButton isLoggedIn={isLoggedIn} />
 				</main>
-
-				<ProfileEditorModal onLogin={handleLogin} />
 			</div>
 		</ErrorBoundary>
 	);
