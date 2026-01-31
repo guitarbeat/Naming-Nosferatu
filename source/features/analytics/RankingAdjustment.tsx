@@ -8,11 +8,11 @@ import {
 	type DropResult,
 } from "@hello-pangea/dnd";
 import { Button, CardBody, CardHeader, Chip, cn, Divider } from "@heroui/react";
-import { ErrorManager } from "@services/errorManager";
 import { motion } from "framer-motion";
 import { GripVertical, Loader2, Save } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { Card } from "@/layout/Card";
+import { ErrorManager } from "@/services/errorManager";
 import type { NameItem } from "@/types/appTypes";
 
 function haveRankingsChanged(newItems: NameItem[], oldRankings: NameItem[]): boolean {

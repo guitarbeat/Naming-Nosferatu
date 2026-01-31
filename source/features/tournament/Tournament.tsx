@@ -1,8 +1,8 @@
-import { CAT_IMAGES, getRandomCatImage } from "@services/tournament";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
 import { useToast } from "@/providers/ToastProvider";
+import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";

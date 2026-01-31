@@ -97,40 +97,8 @@ export default defineConfig(({ mode }) => {
 					replacement: resolveFromRoot("supabase"),
 				},
 				{
-					find: "@store",
-					replacement: resolveFromRoot("source/store"),
-				},
-				{
-					find: "@types",
-					replacement: resolveFromRoot("source/types.ts"),
-				},
-				{
 					find: /^@\//,
 					replacement: `${resolveFromRoot("source")}/`,
-				},
-				{
-					find: "@hooks",
-					replacement: resolveFromRoot("source/hooks"),
-				},
-				{
-					find: "@utils",
-					replacement: resolveFromRoot("source/utils"),
-				},
-				{
-					find: "@services",
-					replacement: resolveFromRoot("source/services"),
-				},
-				{
-					find: "@styles",
-					replacement: resolveFromRoot("source/styles"),
-				},
-				{
-					find: "@features",
-					replacement: resolveFromRoot("source/features"),
-				},
-				{
-					find: "@core",
-					replacement: resolveFromRoot("source"),
 				},
 			],
 			// Ensure a single React instance to avoid hooks dispatcher being null

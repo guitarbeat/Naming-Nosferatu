@@ -50,48 +50,6 @@
 			],
 			"@/*": [
 				"source/*"
-			],
-			"@store": [
-				"source/store/index.ts"
-			],
-			"@types": [
-				"source/types/index.ts"
-			],
-			"@hooks": [
-				"source/hooks/index.ts"
-			],
-			"@hooks/*": [
-				"source/hooks/*"
-			],
-			"@utils": [
-				"source/utils/index.ts"
-			],
-			"@utils/*": [
-				"source/utils/*"
-			],
-			"@services": [
-				"source/services/index.ts"
-			],
-			"@services/*": [
-				"source/services/*"
-			],
-			"@styles": [
-				"source/styles/index.ts"
-			],
-			"@styles/*": [
-				"source/styles/*"
-			],
-			"@features": [
-				"source/features/index.ts"
-			],
-			"@features/*": [
-				"source/features/*"
-			],
-			"@core": [
-				"source/index.ts"
-			],
-			"@core/*": [
-				"source/*"
 			]
 		}
 	},

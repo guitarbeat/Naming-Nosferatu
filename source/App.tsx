@@ -7,7 +7,6 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { ErrorManager } from "@services/errorManager";
 import { lazy, Suspense, useCallback, useEffect } from "react";
 import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
@@ -16,6 +15,7 @@ import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
 import { useAuth } from "@/providers/AuthProvider";
+import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
 	cleanupPerformanceMonitoring,
@@ -25,7 +25,7 @@ import {
 } from "@/utils/basic";
 
 // Lazy load route components
-const TournamentFlow = lazy(() => import("@features/tournament/modes/TournamentFlow"));
+const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
 const Dashboard = lazy(() =>
 	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
 );

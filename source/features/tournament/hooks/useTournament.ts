@@ -1,6 +1,6 @@
-import { calculateBracketRound, EloRating, PreferenceSorter } from "@services/tournament";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useLocalStorage from "@/hooks/useBrowserState";
+import { calculateBracketRound, EloRating, PreferenceSorter } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type {
 	Match,

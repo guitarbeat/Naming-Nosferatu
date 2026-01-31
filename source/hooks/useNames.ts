@@ -3,7 +3,6 @@
  * @description Consolidated name-related hooks: useNameData, useNameSelection, useNameSuggestion
  */
 
-import { ErrorManager } from "@services/errorManager";
 import { coreAPI, statsAPI } from "@supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -11,6 +10,7 @@ import { z } from "zod";
 import { useTournamentSelectionSaver } from "@/features/tournament/hooks/useTournamentSelectionSaver";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
 import { useToast } from "@/providers/ToastProvider";
+import { ErrorManager } from "@/services/errorManager";
 import useAppStore from "@/store/appStore";
 import type { NameItem } from "@/types/appTypes";
 import { VALIDATION } from "@/utils/constants";
