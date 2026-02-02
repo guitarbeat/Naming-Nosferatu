@@ -130,35 +130,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const { data: user, isLoading } = useQuery({
 		queryKey: ["auth", "user"],
 		queryFn: async () => {
-			const client = await supabase();
-			if (!client) {
+			try {
+				const client = await supabase();
+				if (!client) {
+					return null;
+				}
+
+				const {
+					data: { user },
+				} = await client.auth.getUser();
+				if (!user) {
+					return null;
+				}
+
+				const { data: profile } = await client
+					.from("cat_app_users")
+					.select("user_name, preferences")
+					.eq("user_name", user.email ?? "")
+					.single();
+
+				const userName = profile?.user_name || user.email || "";
+				const isAdmin = userName ? await isUserAdmin(userName) : false;
+
+				return {
+					id: user.id,
+					name: userName,
+					email: user.email,
+					isAdmin,
+				};
+			} catch (error) {
+				console.error("AuthProvider: Error in auth query", error);
 				return null;
 			}
-
-			const {
-				data: { user },
-			} = await client.auth.getUser();
-			if (!user) {
-				return null;
-			}
-
-			const { data: profile } = await client
-				.from("cat_app_users")
-				.select("user_name, preferences")
-				.eq("user_name", user.email ?? "")
-				.single();
-
-			const userName = profile?.user_name || user.email || "";
-			const isAdmin = userName ? await isUserAdmin(userName) : false;
-
-			return {
-				id: user.id,
-				name: userName,
-				email: user.email,
-				isAdmin,
-			};
 		},
 		staleTime: Infinity,
+		retry: false, // Don't retry on error to avoid infinite loops
 	});
 
 	const loginMutation = useMutation({
