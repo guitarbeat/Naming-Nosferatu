@@ -53,7 +53,7 @@ export default defineConfig(({ mode }) => {
 				},
 				workbox: {
 					maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB to accommodate large bg images
-					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,gif,avif,webp}"],
 					runtimeCaching: [
 						{
 							urlPattern: /^https:\/\/api\.thecatapi\.com\/.*/i,

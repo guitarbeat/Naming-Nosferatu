@@ -17,7 +17,7 @@ import { cn } from "@/utils/basic";
    LOADING COMPONENT
    ========================================================================== */
 
-const LOADING_ASSETS = ["/assets/images/cat.gif", "/assets/images/cat.webm"];
+const LOADING_ASSETS = ["/assets/images/cat.gif"];
 
 const getRandomLoadingAsset = () => {
 	return LOADING_ASSETS[Math.floor(Math.random() * LOADING_ASSETS.length)];
