@@ -104,7 +104,9 @@ const getInitialUserState = (): UserState => {
 		preferences: {},
 	};
 
-	if (typeof window === "undefined") return defaultState;
+	if (typeof window === "undefined") {
+		return defaultState;
+	}
 
 	try {
 		const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
@@ -112,7 +114,9 @@ const getInitialUserState = (): UserState => {
 			return { ...defaultState, name: storedUser.trim(), isLoggedIn: true };
 		}
 	} catch (error) {
-		if (import.meta.env.DEV) console.warn("Failed to read user from localStorage", error);
+		if (import.meta.env.DEV) {
+			console.warn("Failed to read user from localStorage", error);
+		}
 	}
 	return defaultState;
 };
@@ -160,10 +164,15 @@ const createUserAndSettingsSlice: StateCreator<
 			updateSlice(set, "user", userData);
 			try {
 				const name = userData.name ?? get().user.name;
-				if (name) localStorage.setItem(STORAGE_KEYS.USER, name);
-				else localStorage.removeItem(STORAGE_KEYS.USER);
+				if (name) {
+					localStorage.setItem(STORAGE_KEYS.USER, name);
+				} else {
+					localStorage.removeItem(STORAGE_KEYS.USER);
+				}
 			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error updating user in localStorage:", error);
+				if (import.meta.env.DEV) {
+					console.error("Error updating user in localStorage:", error);
+				}
 			}
 		},
 
@@ -173,7 +182,9 @@ const createUserAndSettingsSlice: StateCreator<
 				localStorage.setItem(STORAGE_KEYS.USER, userName);
 				updateSupabaseUserContext(userName);
 			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error storing login in localStorage:", error);
+				if (import.meta.env.DEV) {
+					console.error("Error storing login in localStorage:", error);
+				}
 			}
 		},
 
@@ -182,7 +193,9 @@ const createUserAndSettingsSlice: StateCreator<
 				localStorage.removeItem(STORAGE_KEYS.USER);
 				updateSupabaseUserContext(null);
 			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error clearing login from localStorage:", error);
+				if (import.meta.env.DEV) {
+					console.error("Error clearing login from localStorage:", error);
+				}
 			}
 			set((state) => ({
 				user: { ...state.user, name: "", isLoggedIn: false, isAdmin: false },
@@ -195,10 +208,15 @@ const createUserAndSettingsSlice: StateCreator<
 		setAvatar: (avatarUrl) => {
 			updateSlice(set, "user", { avatarUrl });
 			try {
-				if (avatarUrl) localStorage.setItem(STORAGE_KEYS.USER_AVATAR, avatarUrl);
-				else localStorage.removeItem(STORAGE_KEYS.USER_AVATAR);
+				if (avatarUrl) {
+					localStorage.setItem(STORAGE_KEYS.USER_AVATAR, avatarUrl);
+				} else {
+					localStorage.removeItem(STORAGE_KEYS.USER_AVATAR);
+				}
 			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error storing avatar in localStorage:", error);
+				if (import.meta.env.DEV) {
+					console.error("Error storing avatar in localStorage:", error);
+				}
 			}
 		},
 
@@ -216,9 +234,13 @@ const createUserAndSettingsSlice: StateCreator<
 				if (storedAvatar && get().user.avatarUrl !== storedAvatar) {
 					updates.avatarUrl = storedAvatar;
 				}
-				if (Object.keys(updates).length > 0) updateSlice(set, "user", updates);
+				if (Object.keys(updates).length > 0) {
+					updateSlice(set, "user", updates);
+				}
 			} catch (error) {
-				if (import.meta.env.DEV) console.error("Error initializing from localStorage:", error);
+				if (import.meta.env.DEV) {
+					console.error("Error initializing from localStorage:", error);
+				}
 			}
 		},
 	},

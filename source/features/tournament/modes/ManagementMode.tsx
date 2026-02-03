@@ -69,7 +69,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 				{!isTournament && (
 					<ProfileSection
 						onLogin={
-							(profileProps.onLogin as any) || (profileProps.onUpdate as any) || (async () => true)
+							// biome-ignore lint/suspicious/noExplicitAny: Dynamic prop access
+							(profileProps.onLogin as any) ||
+							// biome-ignore lint/suspicious/noExplicitAny: Dynamic prop access
+							(profileProps.onUpdate as any) ||
+							(async () => true)
 						}
 					/>
 				)}
