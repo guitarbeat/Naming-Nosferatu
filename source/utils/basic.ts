@@ -220,10 +220,6 @@ export function selectedNamesToSet(
    ========================================================================== */
 
 export interface FilterOptions {
-	searchTerm?: string;
-
-	sortBy?: string;
-	sortOrder?: "asc" | "desc";
 	visibility?: "visible" | "hidden" | "all";
 	isAdmin?: boolean;
 }
@@ -286,61 +282,18 @@ function filterByVisibility(
 }
 
 /**
- * Apply all filters to names
+ * Apply visibility filter to names
  */
 export function applyNameFilters(
 	names: NameItem[] | null | undefined,
 	filters: FilterOptions = {},
 ): NameItem[] {
-	const {
-		searchTerm = "",
-
-		sortBy = "rating",
-		sortOrder = "desc",
-		visibility = "visible",
-		isAdmin = false,
-	} = filters;
+	const { visibility = "visible", isAdmin = false } = filters;
 
 	if (!names || !Array.isArray(names)) {
 		return [];
 	}
-	let result = filterByVisibility([...names], { visibility, isAdmin });
-
-	if (searchTerm) {
-		const term = searchTerm.toLowerCase();
-		result = result.filter(
-			(n) => n.name?.toLowerCase().includes(term) || n.description?.toLowerCase().includes(term),
-		);
-	}
-
-	const multiplier = sortOrder === "asc" ? 1 : -1;
-	result.sort((a, b) => {
-		let comp = 0;
-		const valA = a.avgRating ?? a.avg_rating ?? 1500;
-		const valB = b.avgRating ?? b.avg_rating ?? 1500;
-
-		switch (sortBy) {
-			case "rating":
-				comp = valA - valB;
-				break;
-			case "name":
-			case "alphabetical":
-				comp = (a.name || "").localeCompare(b.name || "");
-				break;
-			case "created_at":
-			case "date": {
-				const dateA = new Date((a.created_at as string) || (a.addedAt as string) || 0).getTime();
-				const dateB = new Date((b.created_at as string) || (b.addedAt as string) || 0).getTime();
-				comp = dateA - dateB;
-				break;
-			}
-			default:
-				comp = 0;
-		}
-		return comp * multiplier;
-	});
-
-	return result;
+	return filterByVisibility([...names], { visibility, isAdmin });
 }
 
 import { cx } from "class-variance-authority";

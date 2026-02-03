@@ -5,7 +5,6 @@ import { EmptyState } from "@/layout/EmptyState";
 import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
 import { NameGrid } from "../components/NameGrid";
 import { ProfileSection } from "../components/ProfileSection";
-import { TournamentToolbar } from "../components/TournamentToolbar";
 
 interface ManagementModeProps extends UseNameManagementViewResult {
 	mode: "tournament" | "profile";
@@ -16,7 +15,7 @@ interface ManagementModeProps extends UseNameManagementViewResult {
  * Consolidated view for both Tournament Setup and Profile/History management.
  * Replaces ProfileMode.tsx and TournamentMode.tsx
  */
-export const ManagementMode = memo(
+export const ManagementMode = memo<ManagementModeProps>(
 	({
 		mode,
 		names,
@@ -29,18 +28,17 @@ export const ManagementMode = memo(
 		toggleName,
 		selectedNames,
 		selectedCount,
-		filterConfig,
 		handleFilterChange,
 		showCatPictures,
 		tournamentProps = {},
 		profileProps = {},
 		setNames,
 		extensions = {} as NameManagementViewExtensions,
-	}: ManagementModeProps) => {
+	}: ManagementModeProps): React.ReactElement => {
 		const isTournament = mode === "tournament";
 
 		// Determine if we should show the progress bar (only in tournament setup with enough names)
-		const showProgress = isTournament && tournamentProps.showProgress && names.length > 0;
+		const showProgress = Boolean(isTournament && tournamentProps.showProgress && names.length > 0);
 		const targetSize = (tournamentProps.targetSize as number) || 16;
 
 		if (isError) {
@@ -77,22 +75,6 @@ export const ManagementMode = memo(
 				)}
 
 				<div className="flex flex-col gap-6">
-					{/* Optional Header Extension - header can be ReactNode or () => ReactNode; cast for strict return type */}
-					{/* @ts-expect-error extensions.header() may be inferred as unknown when passed from caller */}
-					{extensions.header &&
-						(typeof extensions.header === "function" ? extensions.header() : extensions.header)}
-
-					{/* Toolbar & Filters */}
-					<TournamentToolbar
-						mode={mode}
-						filters={filterConfig}
-						onFilterChange={handleFilterChange as any}
-						showUserFilter={!isTournament}
-						showSelectionFilter={isTournament}
-						className="animate-in fade-in slide-in-from-top-4 duration-500"
-					/>
-
-					{/* Progress Bar (Tournament Setup Only) */}
 					{showProgress && (
 						<div
 							className="flex flex-col gap-1 px-1 animate-in fade-in slide-in-from-left-4 duration-700"
@@ -132,21 +114,16 @@ export const ManagementMode = memo(
 							>
 								<EmptyState
 									title="No Names Found"
-									description={
-										filterConfig.searchTerm
-											? `We couldn't find any names matching "${filterConfig.searchTerm}"`
-											: "No names available for this criteria. Try clearing filters or adding some names!"
-									}
+									description="No names available for this criteria. Try clearing filters or adding some names!"
 									icon="search_off"
 									action={
 										<Button
 											variant="secondary"
 											onClick={() => {
-												handleFilterChange("searchTerm", "");
 												handleFilterChange("filterStatus", "visible");
 											}}
 										>
-											{filterConfig.searchTerm ? "Clear Search" : "Reset Filters"}
+											Reset Filters
 										</Button>
 									}
 								/>

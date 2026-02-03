@@ -70,8 +70,6 @@ export function useNameManagementView({
 		});
 
 	const [showSelectedOnly, setShowSelectedOnly] = useState(false);
-	const [searchTerm, setSearchTerm] = useState("");
-	const [sortBy, setSortBy] = useState("alphabetical");
 
 	const { isSwipeMode, showCatPictures } = ui;
 
@@ -82,7 +80,6 @@ export function useNameManagementView({
 		(profileProps.setUserFilter as React.Dispatch<
 			React.SetStateAction<"all" | "user" | "other">
 		>) ?? setLocalUserFilter;
-	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 	const [selectionFilter, setSelectionFilter] = useState<"all" | "selected" | "unselected">("all");
 	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [activeTab, setActiveTab] = useState("manage");
@@ -116,9 +113,6 @@ export function useNameManagementView({
 		const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
 
 		let result = applyNameFilters(names, {
-			searchTerm,
-			sortBy,
-			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
 			isAdmin: Boolean(profileProps.isAdmin),
 		});
@@ -133,9 +127,6 @@ export function useNameManagementView({
 		mode,
 		analysisMode,
 		filterStatus,
-		searchTerm,
-		sortBy,
-		sortOrder,
 		profileProps.isAdmin,
 		showSelectedOnly,
 		selectedNames,
@@ -146,9 +137,6 @@ export function useNameManagementView({
 		const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
 
 		let result = applyNameFilters(names, {
-			searchTerm,
-			sortBy,
-			sortOrder: sortOrder as "asc" | "desc",
 			visibility: activeVisibility,
 			isAdmin: Boolean(profileProps.isAdmin),
 		});
@@ -163,64 +151,31 @@ export function useNameManagementView({
 		}
 
 		return result;
-	}, [
-		names,
-		mode,
-		analysisMode,
-		filterStatus,
-		searchTerm,
-		sortBy,
-		sortOrder,
-		profileProps.isAdmin,
-		selectionFilter,
-		isSelected,
-	]);
+	}, [names, mode, analysisMode, filterStatus, profileProps.isAdmin, selectionFilter, isSelected]);
 
 	const filterConfig: TournamentFilters = useMemo(() => {
 		if (mode === "tournament" && analysisMode) {
 			return {
-				searchTerm,
-				sortBy,
 				filterStatus: filterStatus as "all" | "visible" | "hidden",
 				userFilter: userFilter as "all" | "user" | "other",
 				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
 				dateFilter: dateFilter as "all" | "today" | "week" | "month",
-				sortOrder,
 			};
 		} else if (mode === "tournament") {
-			return { searchTerm, sortBy, sortOrder };
+			return {};
 		} else {
 			return {
 				filterStatus: filterStatus as "all" | "visible" | "hidden",
 				userFilter: userFilter as "all" | "user" | "other",
 				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
-				sortBy,
-				sortOrder,
 			};
 		}
-	}, [
-		mode,
-		sortBy,
-		filterStatus,
-		userFilter,
-		selectionFilter,
-		dateFilter,
-		sortOrder,
-		analysisMode,
-		searchTerm,
-	]);
+	}, [mode, filterStatus, userFilter, selectionFilter, dateFilter, analysisMode]);
 
 	const handleFilterChange = useCallback(
 		(name: keyof TournamentFilters, value: string | number | boolean) => {
 			if (mode === "tournament" && analysisMode) {
 				switch (name) {
-					case "searchTerm":
-						setSearchTerm(String(value) || "");
-						break;
-
-					case "sortBy":
-						setSortBy(String(value) || "alphabetical");
-						break;
 					case "filterStatus":
 						setFilterStatus(String(value));
 						break;
@@ -233,20 +188,9 @@ export function useNameManagementView({
 					case "dateFilter":
 						setDateFilter((String(value) as "all" | "today" | "week" | "month") || "all");
 						break;
-					case "sortOrder":
-						setSortOrder(String(value) as "asc" | "desc");
-						break;
 				}
 			} else if (mode === "tournament") {
-				switch (name) {
-					case "searchTerm":
-						setSearchTerm(String(value) || "");
-						break;
-
-					case "sortBy":
-						setSortBy(String(value) || "alphabetical");
-						break;
-				}
+				// No filters for basic tournament mode
 			} else {
 				switch (name) {
 					case "filterStatus":
@@ -257,12 +201,6 @@ export function useNameManagementView({
 						break;
 					case "selectionFilter":
 						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
-						break;
-					case "sortBy":
-						setSortBy(String(value) || "alphabetical");
-						break;
-					case "sortOrder":
-						setSortOrder(String(value) as "asc" | "desc");
 						break;
 				}
 			}
@@ -314,14 +252,8 @@ export function useNameManagementView({
 		isSelected,
 		selectedCount,
 
-		searchQuery: searchTerm,
-		setSearchQuery: setSearchTerm,
 		filterStatus,
 		setFilterStatus,
-		sortBy,
-		setSortBy,
-		sortOrder,
-		setSortOrder,
 		showSelectedOnly,
 		setShowSelectedOnly,
 		selectionFilter,

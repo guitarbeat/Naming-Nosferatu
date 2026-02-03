@@ -3,7 +3,7 @@
  * @description Dedicated page section for user profile management (Login, Name, Avatar)
  */
 
-import { Camera, LogOut, Pencil } from "lucide-react";
+import { LogOut, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
@@ -57,17 +57,6 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 			className="min-h-[60vh] flex flex-col items-center justify-center p-4 py-20 scroll-mt-20 border-t border-white/5"
 		>
 			<div className="w-full max-w-2xl mx-auto">
-				<div className="text-center mb-12">
-					<h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter mb-4">
-						{user.isLoggedIn ? "Your Identity" : "Consult the Spirits"}
-					</h2>
-					<p className="text-slate-400">
-						{user.isLoggedIn
-							? "Manage your presence in the eternal tournament"
-							: "Enter your name to track your rankings across the multiverses"}
-					</p>
-				</div>
-
 				<Card
 					background="glass"
 					shadow="xl"
@@ -77,21 +66,14 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 					<div className="flex flex-col md:flex-row gap-8 items-center md:items-center py-2">
 						{/* Avatar Section */}
 						<div className="relative group shrink-0">
-							<div className="absolute -inset-2 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full blur opacity-10 group-hover:opacity-30 transition duration-500"></div>
-							<div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-white/10 shadow-2xl bg-neutral-900 group-hover:border-purple-500/50 transition-all duration-300">
+							<div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-white/10 shadow-2xl bg-neutral-900 transition-all duration-300">
 								<img
 									src={avatarSrc}
 									alt="Profile"
-									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+									className="w-full h-full object-cover"
 									onError={() => setAvatarSrc(CAT_IMAGES[0] ?? "")}
 								/>
-								<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-									<Camera className="text-white w-8 h-8" />
-								</div>
 							</div>
-							{user.isLoggedIn && (
-								<div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-black animate-pulse shadow-lg shadow-green-500/20" />
-							)}
 						</div>
 
 						{/* Content Section */}
@@ -99,14 +81,12 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 							{isEditing ? (
 								<div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
 									<div className="space-y-3">
-										<label className="text-[10px] font-black uppercase tracking-[0.2em] text-purple-400/80 ml-1">
-											Designation
-										</label>
+										<label className="text-sm font-medium text-white/70">Name</label>
 										<Input
 											type="text"
 											value={editedName}
 											onChange={(e) => setEditedName(e.target.value)}
-											placeholder="Who are you?"
+											placeholder="Enter your name"
 											onKeyDown={(e) => e.key === "Enter" && handleSave()}
 											className="text-xl font-bold bg-white/5 border-white/10 focus:border-purple-500/50 h-14 rounded-2xl px-6"
 											autoFocus={!user.isLoggedIn}
@@ -128,11 +108,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 											disabled={isSaving || !editedName.trim()}
 											className="flex-[2] h-12 bg-gradient-to-r from-purple-600 to-indigo-600 border-none shadow-xl shadow-purple-900/30 active:scale-95 transition-all font-bold tracking-tight rounded-xl"
 										>
-											{isSaving
-												? "Syncing..."
-												: user.isLoggedIn
-													? "Commit Changes"
-													: "Begin Journey"}
+											{isSaving ? "Saving..." : "Save"}
 										</Button>
 									</div>
 								</div>

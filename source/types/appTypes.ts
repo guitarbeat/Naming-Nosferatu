@@ -78,13 +78,10 @@ interface VoteParticipant {
 }
 
 export interface TournamentFilters {
-	searchTerm?: string;
 	category?: string;
-	sortBy?: string;
 	filterStatus?: "all" | "visible" | "hidden";
 	userFilter?: string;
 	selectionFilter?: string;
-	sortOrder?: "asc" | "desc";
 	dateFilter?: string;
 }
 
@@ -158,14 +155,8 @@ export interface UseNameManagementViewResult {
 	selectedCount: number;
 
 	// Filtering and sorting
-	searchQuery: string;
-	setSearchQuery: (query: string) => void;
 	filterStatus: string;
 	setFilterStatus: (status: string) => void;
-	sortBy: string;
-	setSortBy: (sortBy: string) => void;
-	sortOrder: "asc" | "desc";
-	setSortOrder: (order: "asc" | "desc") => void;
 
 	showSelectedOnly: boolean;
 	setShowSelectedOnly: (show: boolean) => void;

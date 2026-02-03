@@ -6,7 +6,6 @@
 
 import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { Suspense, useCallback, useMemo, useState } from "react";
-import { TournamentToolbar } from "@/features/tournament/components/TournamentToolbar";
 import { useCollapsible } from "@/hooks/useBrowserState";
 import { Card } from "@/layout/Card";
 import { BumpChart } from "@/layout/Charts";
@@ -133,12 +132,6 @@ function AnalysisDashboard({
 					value: n.rating,
 				}))}
 			/>
-
-			{!isCollapsed && (
-				<div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-					<TournamentToolbar mode="tournament" filters={filterConfig || {}} className="w-full" />
-				</div>
-			)}
 
 			<CollapsibleContent isCollapsed={isCollapsed}>
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

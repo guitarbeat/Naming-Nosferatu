@@ -30,10 +30,7 @@ interface NameGridProps {
 	selectedNames?: NameItem[] | Set<string | number>;
 	onToggleName?: (name: NameItem) => void;
 	filters?: {
-		searchTerm?: string;
 		category?: string;
-		sortBy?: string;
-		sortOrder?: "asc" | "desc";
 		filterStatus?: "visible" | "hidden" | "all";
 	};
 	isAdmin?: boolean;
@@ -198,9 +195,6 @@ export function NameGrid({
 		const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
 
 		let result = applyNameFilters(names, {
-			searchTerm: filters.searchTerm,
-			sortBy: filters.sortBy,
-			sortOrder: filters.sortOrder || "desc",
 			visibility,
 			isAdmin,
 		});
