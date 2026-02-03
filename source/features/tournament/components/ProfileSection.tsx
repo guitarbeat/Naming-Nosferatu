@@ -126,11 +126,12 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 											)}
 											<Button
 												type="submit"
-												variant="primary"
+												variant="gradient"
+												size="xl"
 												onClick={handleSave}
 												disabled={!editedName.trim() || isSaving}
 												loading={isSaving}
-												className="flex-[2] h-[50px] px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+												className="flex-[2]"
 											>
 												{user.isLoggedIn ? "Save" : "Begin Journey"}
 											</Button>

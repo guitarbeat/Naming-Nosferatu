@@ -9,7 +9,7 @@ import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
 import LiquidGlass from "@/layout/LiquidGlass";
-import { cn } from "@/utils/basic";
+
 
 // ============================================================================
 // TYPES
@@ -72,10 +72,10 @@ function InlineNameSuggestion() {
 						</div>
 						<Button
 							type="submit"
-							variant="primary"
+							variant="gradient"
+							size="xl"
 							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
-							className="h-[50px] px-8 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Suggest
 						</Button>
@@ -334,16 +334,15 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 								>
 									Cancel
 								</button>
-								<button
+								<Button
 									type="submit"
-									className={cn(
-										"px-6 py-2 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-										isSubmitting && "animate-pulse",
-									)}
+									variant="gradient"
 									disabled={isSubmitting || !isValid}
+									loading={isSubmitting}
+									className="px-6"
 								>
-									{isSubmitting ? "Submitting..." : "Submit Suggestion"}
-								</button>
+									Submit Suggestion
+								</Button>
 							</div>
 						</form>
 					</div>
