@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
 			react(),
 			VitePWA({
 				registerType: "autoUpdate",
-				includeAssets: ["favicon.ico", "robots.txt", "apple-touch-icon.png"],
+				includeAssets: ["favicon.ico", "robots.txt", "assets/images/favicon.png"],
 				manifest: {
 					name: "Naming Nosferatu",
 					short_name: "Nosferatu",
@@ -40,12 +40,12 @@ export default defineConfig(({ mode }) => {
 					theme_color: "#121212",
 					icons: [
 						{
-							src: "pwa-192x192.png",
+							src: "assets/images/favicon.png",
 							sizes: "192x192",
 							type: "image/png",
 						},
 						{
-							src: "pwa-512x512.png",
+							src: "assets/images/favicon.png",
 							sizes: "512x512",
 							type: "image/png",
 						},
