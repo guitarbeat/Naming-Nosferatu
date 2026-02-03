@@ -80,7 +80,7 @@ export const tournamentsAPI = {
 				if (!userName || !ratings?.length) {
 					return { success: false, error: "Missing data" };
 				}
-				const nameStrings = ratings.map((r) => r.name);
+				const nameStrings = Array.from(new Set(ratings.map((r) => r.name)));
 				const { data: nameData } = await client
 					.from("cat_name_options")
 					.select("id, name")
