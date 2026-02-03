@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 
 	return {
-		root: resolveFromRoot("source"),
+		root: projectRoot,
 		envDir: projectRoot, // Point to where .env files are located
 		publicDir: resolveFromRoot("public"),
 		plugins: [
