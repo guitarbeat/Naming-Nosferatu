@@ -28,6 +28,8 @@ const buttonVariants = cva(
 				link: "text-primary underline-offset-4 transition-colors hover:underline",
 				gradient:
 					"rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
+				secondaryGradient:
+					"rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
 				login:
 					"relative font-bold tracking-wide bg-[linear-gradient(135deg,var(--button-primary-bg,var(--primary-600)),var(--button-primary-hover,var(--primary-700)))] text-primary-foreground shadow-[0_4px_16px_var(--overlay-dark),0_2px_8px_var(--overlay-medium),0_0_20px_color-mix(in_srgb,var(--primary-600)_30%,transparent)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_8px_24px_var(--overlay-darker),0_4px_12px_var(--overlay-dark),0_0_30px_color-mix(in_srgb,var(--primary-600)_40%,transparent)] hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 active:shadow-[0_2px_8px_var(--overlay-dark),0_0_15px_color-mix(in_srgb,var(--primary-600)_25%,transparent)] before:absolute before:inset-0 before:content-[''] before:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-neutral-50)_10%,transparent),transparent_50%,color-mix(in_srgb,var(--color-neutral-50)_5%,transparent))] before:rounded-[inherit] before:opacity-0 before:transition-opacity before:duration-300 before:pointer-events-none hover:before:opacity-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-[0_2px_4px_var(--overlay-light)]",
 			},
@@ -47,7 +49,16 @@ const buttonVariants = cva(
 );
 
 interface ShadcnButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "gradient" | "login";
+	variant?:
+		| "default"
+		| "destructive"
+		| "outline"
+		| "secondary"
+		| "ghost"
+		| "link"
+		| "gradient"
+		| "secondaryGradient"
+		| "login";
 	size?: "default" | "sm" | "lg" | "xl" | "icon";
 	asChild?: boolean;
 }
@@ -68,6 +79,7 @@ const variantMapping = {
 	danger: "destructive",
 	ghost: "ghost",
 	gradient: "gradient",
+	secondaryGradient: "secondaryGradient",
 	login: "login",
 };
 
@@ -80,7 +92,14 @@ const sizeMapping = {
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
-	variant?: "primary" | "secondary" | "danger" | "ghost" | "gradient" | "login";
+	variant?:
+		| "primary"
+		| "secondary"
+		| "danger"
+		| "ghost"
+		| "gradient"
+		| "secondaryGradient"
+		| "login";
 	size?: "small" | "medium" | "large" | "xl";
 	disabled?: boolean;
 	loading?: boolean;
@@ -114,6 +133,7 @@ const Button = ({
 		| "ghost"
 		| "link"
 		| "gradient"
+		| "secondaryGradient"
 		| "login";
 	let shadcnSize = (sizeMapping[size] || "default") as "default" | "sm" | "lg" | "xl" | "icon";
 
