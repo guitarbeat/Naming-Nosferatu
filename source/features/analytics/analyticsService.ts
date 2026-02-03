@@ -366,13 +366,26 @@ export const analyticsAPI = {
 
 				const typedSelections = selections as unknown as SelectionRow[];
 
-				const { data: ratings } = await client
-					.from("cat_name_ratings")
-					.select("name_id, rating, wins");
+				const nameIds = new Set<string>();
+				typedSelections.forEach((s) => {
+					nameIds.add(String(s.name_id));
+				});
+				const uniqueIds = Array.from(nameIds);
+
+				let ratings: RatingRow[] = [];
+				if (uniqueIds.length > 0) {
+					const { data } = await client
+						.from("cat_name_ratings")
+						.select("name_id, rating, wins")
+						.in("name_id", uniqueIds);
+
+					if (data) {
+						ratings = data as unknown as RatingRow[];
+					}
+				}
 
 				const ratingMap = new Map<string, RatingInfo>();
-				(ratings || []).forEach((r) => {
-					const row = r as RatingRow;
+				ratings.forEach((row) => {
 					const nameId = String(row.name_id);
 					const existing = ratingMap.get(nameId);
 					if (!existing || (row.rating && row.rating > existing.rating)) {
