@@ -71,7 +71,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 						onLogin={
 							(profileProps.onLogin as (name: string) => Promise<boolean | undefined>) ||
 							(profileProps.onUpdate as (name: string) => Promise<boolean | undefined>) ||
-							(async () => true)
+							(async (): Promise<boolean> => Promise.resolve(true))
 						}
 					/>
 				)}
