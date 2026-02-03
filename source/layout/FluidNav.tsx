@@ -221,7 +221,7 @@ export function FluidNav() {
 
 				// Fluid Sizing & Positioning (The Core Requirement)
 				// Uses percentage width and centering instead of fixed breakpoints
-				"bottom-6 left-1/2 -translate-x-1/2",
+				"bottom-0 left-1/2 -translate-x-1/2",
 				"w-[95%]", // Fluid width: 95% of the viewport width
 
 				// Visual Styling (Glassmorphism)
