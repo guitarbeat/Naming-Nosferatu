@@ -195,6 +195,8 @@ export interface UseNameManagementViewResult {
 		selectionStats?: unknown;
 		userOptions?: Array<{ value: string; label: string }>;
 		isAdmin?: boolean;
+		onLogin?: (name: string) => Promise<boolean | undefined>;
+		onUpdate?: (name: string) => Promise<boolean | undefined>;
 		[key: string]: unknown;
 	};
 	tournamentProps: Record<string, unknown>;

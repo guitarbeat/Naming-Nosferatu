@@ -68,9 +68,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 				{/* Profile Section (Only in Profile Mode) */}
 				{!isTournament && (
 					<ProfileSection
-						onLogin={
-							(profileProps.onLogin as any) || (profileProps.onUpdate as any) || (async () => true)
-						}
+						onLogin={profileProps.onLogin || profileProps.onUpdate || (async () => true)}
 					/>
 				)}
 
