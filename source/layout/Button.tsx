@@ -47,7 +47,15 @@ const buttonVariants = cva(
 );
 
 interface ShadcnButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "gradient" | "login";
+	variant?:
+		| "default"
+		| "destructive"
+		| "outline"
+		| "secondary"
+		| "ghost"
+		| "link"
+		| "gradient"
+		| "login";
 	size?: "default" | "sm" | "lg" | "xl" | "icon";
 	asChild?: boolean;
 }

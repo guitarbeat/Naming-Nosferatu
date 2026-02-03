@@ -413,7 +413,6 @@ export function useTournament({
 			onComplete,
 			getCurrentRatings,
 			persistentState.matchHistory,
-			currentRatings,
 		],
 	);
 
