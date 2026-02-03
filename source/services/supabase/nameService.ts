@@ -65,16 +65,19 @@ async function updateHiddenStatuses(
 				/* ignore */
 			}
 
-			const results = await Promise.all(
-				nameIds.map(async (id) => {
-					const { error } = await client
-						.from("cat_name_options")
-						.update({ is_hidden: isHidden })
-						.eq("id", String(id));
-					return { nameId: id, success: !error, error: error?.message };
-				}),
-			);
-			return results;
+			const { error } = await client
+				.from("cat_name_options")
+				.update({ is_hidden: isHidden })
+				.in(
+					"id",
+					nameIds.map((id) => String(id)),
+				);
+
+			return nameIds.map((id) => ({
+				nameId: id,
+				success: !error,
+				error: error?.message,
+			}));
 		},
 		nameIds.map((id) => ({
 			nameId: id,
