@@ -73,9 +73,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 								<h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
 									Join the Council
 								</h2>
-								<p className="text-sm text-white/70">
-									Enter your name to track your rankings
-								</p>
+								<p className="text-sm text-white/70">Enter your name to track your rankings</p>
 							</div>
 						)}
 
@@ -98,9 +96,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 								{isEditing ? (
 									<div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
 										<div className="space-y-2">
-											<label className="text-sm font-medium text-white/80 block">
-												Your Name
-											</label>
+											<label className="text-sm font-medium text-white/80 block">Your Name</label>
 											<div className="relative">
 												<User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400/50" />
 												<Input
@@ -155,7 +151,10 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 											onClick={handleLogout}
 											className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400/70 hover:text-red-400 hover:bg-red-500/10 transition-colors group"
 										>
-											<LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" />
+											<LogOut
+												size={16}
+												className="group-hover:-translate-x-0.5 transition-transform"
+											/>
 											Logout
 										</button>
 									</div>

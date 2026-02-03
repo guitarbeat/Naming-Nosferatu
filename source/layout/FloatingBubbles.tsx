@@ -328,7 +328,9 @@ export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> =
 						key={id}
 						bubble={bubble}
 						profile={profile}
-						onAutofill={() => {}}
+						onAutofill={() => {
+							/* no-op */
+						}}
 						isHighlighted={false}
 					/>
 				);

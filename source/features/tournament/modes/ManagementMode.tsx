@@ -69,7 +69,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 				{!isTournament && (
 					<ProfileSection
 						onLogin={
-							(profileProps.onLogin as any) || (profileProps.onUpdate as any) || (async () => true)
+							// biome-ignore lint/suspicious/noExplicitAny: generic props need casting
+							(profileProps.onLogin as any) ||
+							// biome-ignore lint/suspicious/noExplicitAny: generic props need casting
+							(profileProps.onUpdate as any) ||
+							(async () => true)
 						}
 					/>
 				)}
