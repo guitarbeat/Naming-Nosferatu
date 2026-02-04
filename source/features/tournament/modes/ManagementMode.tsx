@@ -1,10 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React, { memo } from "react";
+import { Layers, LayoutGrid } from "lucide-react";
+import React, { memo, useCallback } from "react";
 import Button from "@/layout/Button";
 import { EmptyState } from "@/layout/EmptyState";
+import useAppStore from "@/store/appStore";
 import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
 import { NameGrid } from "../components/NameGrid";
 import { ProfileSection } from "../components/ProfileSection";
+import { SwipeableCards } from "../components/SwipeableCards";
 
 interface ManagementModeProps extends UseNameManagementViewResult {
 	mode: "tournament" | "profile";
@@ -36,6 +39,20 @@ export const ManagementMode = memo<ManagementModeProps>(
 		extensions = {} as NameManagementViewExtensions,
 	}: ManagementModeProps): React.ReactElement => {
 		const isTournament = mode === "tournament";
+
+		// Get swipe mode state from global store
+		const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
+		const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
+		const showCatPicturesGlobal = useAppStore((state) => state.ui.showCatPictures);
+
+		const handleToggleViewMode = useCallback(() => {
+			setSwipeMode(!isSwipeMode);
+		}, [isSwipeMode, setSwipeMode]);
+
+		// Get handlers from tournamentProps
+		const onStartTournament = tournamentProps.onStartTournament as
+			| ((names: typeof selectedNames) => void)
+			| undefined;
 
 		// Determine if we should show the progress bar (only in tournament setup with enough names)
 		const showProgress = Boolean(isTournament && tournamentProps.showProgress && names.length > 0);
@@ -69,16 +86,47 @@ export const ManagementMode = memo<ManagementModeProps>(
 				{!isTournament && (
 					<ProfileSection
 						onLogin={
-							// biome-ignore lint/suspicious/noExplicitAny: generic props need casting
-							(profileProps.onLogin as any) ||
-							// biome-ignore lint/suspicious/noExplicitAny: generic props need casting
-							(profileProps.onUpdate as any) ||
-							(async () => true)
+							(profileProps.onLogin as (name: string) => Promise<boolean | undefined>) ||
+							(profileProps.onUpdate as (name: string) => Promise<boolean | undefined>) ||
+							(async (): Promise<boolean> => Promise.resolve(true))
 						}
 					/>
 				)}
 
 				<div className="flex flex-col gap-6">
+					{/* View Mode Toggle - Only show in tournament mode */}
+					{isTournament && (
+						<div className="flex items-center justify-between gap-4 px-1 animate-in fade-in slide-in-from-top-4 duration-500">
+							<div className="flex items-center gap-2">
+								<button
+									type="button"
+									onClick={handleToggleViewMode}
+									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+										isSwipeMode
+											? "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+											: "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+									}`}
+								>
+									<LayoutGrid size={16} />
+									Grid
+								</button>
+								<button
+									type="button"
+									onClick={handleToggleViewMode}
+									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+										isSwipeMode
+											? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
+											: "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+									}`}
+								>
+									<Layers size={16} />
+									Swipe
+								</button>
+							</div>
+							<span className="text-xs text-white/40">{selectedCount} selected</span>
+						</div>
+					)}
+
 					{showProgress && (
 						<div
 							className="flex flex-col gap-1 px-1 animate-in fade-in slide-in-from-left-4 duration-700"
@@ -107,7 +155,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 						</div>
 					)}
 
-					{/* Main Grid Area */}
+					{/* Main Content Area - Grid or Swipe */}
 					<AnimatePresence mode="wait">
 						{filteredNames.length === 0 && !isLoading ? (
 							<motion.div
@@ -132,7 +180,26 @@ export const ManagementMode = memo<ManagementModeProps>(
 									}
 								/>
 							</motion.div>
+						) : isSwipeMode && isTournament && onStartTournament ? (
+							/* Swipeable Cards Mode */
+							<motion.div
+								key="swipe-view"
+								initial={{ opacity: 0, scale: 0.98 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.98 }}
+								className="flex-1 relative min-h-[500px]"
+							>
+								<SwipeableCards
+									names={filteredNames}
+									selectedNames={selectedNames}
+									onToggleName={toggleName}
+									showCatPictures={showCatPicturesGlobal}
+									imageList={(tournamentProps.imageList as string[]) || []}
+									onStartTournament={onStartTournament}
+								/>
+							</motion.div>
 						) : (
+							/* Grid Mode */
 							<motion.div
 								key="grid-view"
 								initial={{ opacity: 0, scale: 0.98 }}

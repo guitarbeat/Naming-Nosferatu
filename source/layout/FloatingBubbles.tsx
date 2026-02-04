@@ -329,7 +329,7 @@ export const FloatingBubblesContainer: React.FC<FloatingBubblesContainerProps> =
 						bubble={bubble}
 						profile={profile}
 						onAutofill={() => {
-							/* no-op */
+							/* Intentional no-op for visualization only */
 						}}
 						isHighlighted={false}
 					/>
