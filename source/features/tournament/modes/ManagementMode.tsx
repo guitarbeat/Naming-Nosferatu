@@ -47,11 +47,15 @@ export const ManagementMode = memo<ManagementModeProps>(
 
 		// Direct mode setters instead of toggle
 		const setGridMode = useCallback(() => {
-			if (isSwipeMode) setSwipeMode(false);
+			if (isSwipeMode) {
+				setSwipeMode(false);
+			}
 		}, [isSwipeMode, setSwipeMode]);
 
 		const setSwipeModeActive = useCallback(() => {
-			if (!isSwipeMode) setSwipeMode(true);
+			if (!isSwipeMode) {
+				setSwipeMode(true);
+			}
 		}, [isSwipeMode, setSwipeMode]);
 
 		// Get handlers from tournamentProps
