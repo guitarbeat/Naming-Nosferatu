@@ -41,17 +41,18 @@ export default function TournamentSetup({
 				animate={{ opacity: 1, y: 0 }}
 				exit={{ opacity: 0, y: -10 }}
 			>
-				<NameManagementView
-					mode="tournament"
-					userName={userName}
-					analysisMode={analysisMode}
-					setAnalysisMode={setAnalysisMode}
-					tournamentProps={{
-						swipeableCards: SwipeableCards,
-						imageList: CAT_IMAGES,
-					}}
-					onStartTournament={onStart}
-				/>
+			<NameManagementView
+				mode="tournament"
+				userName={userName}
+				analysisMode={analysisMode}
+				setAnalysisMode={setAnalysisMode}
+				tournamentProps={{
+					swipeableCards: SwipeableCards,
+					imageList: CAT_IMAGES,
+					onStartTournament: onStart,
+				}}
+				onStartTournament={onStart}
+			/>
 			</motion.div>
 		</AnimatePresence>
 	);
