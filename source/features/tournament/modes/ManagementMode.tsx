@@ -45,12 +45,17 @@ export const ManagementMode = memo<ManagementModeProps>(
 		const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
 		const showCatPicturesGlobal = useAppStore((state) => state.ui.showCatPictures);
 
-		const handleToggleViewMode = useCallback(() => {
-			setSwipeMode(!isSwipeMode);
+		// Direct mode setters instead of toggle
+		const setGridMode = useCallback(() => {
+			if (isSwipeMode) setSwipeMode(false);
+		}, [isSwipeMode, setSwipeMode]);
+		
+		const setSwipeModeActive = useCallback(() => {
+			if (!isSwipeMode) setSwipeMode(true);
 		}, [isSwipeMode, setSwipeMode]);
 
 		// Get handlers from tournamentProps
-		const onStartTournament = tournamentProps.onStartTournament as
+		const onStartTournament = (tournamentProps?.onStartTournament ?? tournamentProps?.onStart) as
 			| ((names: typeof selectedNames) => void)
 			| undefined;
 
@@ -98,9 +103,9 @@ export const ManagementMode = memo<ManagementModeProps>(
 					{isTournament && (
 						<div className="flex items-center justify-between gap-4 px-1 animate-in fade-in slide-in-from-top-4 duration-500">
 							<div className="flex items-center gap-2">
-								<button
+							<button
 									type="button"
-									onClick={handleToggleViewMode}
+									onClick={setGridMode}
 									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
 										!isSwipeMode
 											? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
@@ -112,7 +117,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 								</button>
 								<button
 									type="button"
-									onClick={handleToggleViewMode}
+									onClick={setSwipeModeActive}
 									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
 										isSwipeMode
 											? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
