@@ -5,8 +5,9 @@
  */
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BarChart3, CheckCircle, Lightbulb, Trophy, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { BarChart3, CheckCircle, Lightbulb, Trophy, User } from "@/icons";
 import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
 
@@ -109,10 +110,13 @@ const getUnifiedButtonState = (
  */
 export function FluidNav() {
 	const appStore = useAppStore();
+	const navigate = useNavigate();
+	const location = useLocation();
 	const { tournament, tournamentActions, user } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl } = user;
 	const [activeSection, setActiveSection] = useState("pick");
+	const isAnalysisRoute = location.pathname === "/analysis";
 
 	const { isComplete, names: tournamentNames } = tournament;
 	const isTournamentActive = !!tournamentNames;
@@ -127,16 +131,15 @@ export function FluidNav() {
 	);
 
 	const handleStartTournament = () => {
-		// Trigger distinctive haptic feedback for tournament start
 		hapticTournamentStart();
-
+		if (isAnalysisRoute) {
+			navigate("/");
+		}
 		tournamentActions.resetTournament();
 		tournamentActions.setLoading(true);
-
 		if (selectedNames && selectedNames.length >= 2) {
 			tournamentActions.setNames(selectedNames);
 		}
-
 		setTimeout(() => {
 			tournamentActions.setLoading(false);
 			const element = document.getElementById("play");
@@ -155,7 +158,11 @@ export function FluidNav() {
 				handleStartTournament();
 				break;
 			case "navigate-pick":
-				document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				if (isAnalysisRoute) {
+					navigate("/");
+				} else {
+					document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				}
 				setActiveSection("pick");
 				break;
 			case "scroll-top":
@@ -164,23 +171,43 @@ export function FluidNav() {
 		}
 	};
 
-	// Scroll to section handler
+	// Navigate or scroll to section
 	const handleNavClick = (key: string) => {
+		hapticNavTap();
+		if (key === "analyze") {
+			navigate("/analysis");
+			setActiveSection("analysis");
+			return;
+		}
+		if (key === "pick" && isAnalysisRoute) {
+			navigate("/");
+			setActiveSection("pick");
+			return;
+		}
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
 			if (element) {
-				hapticNavTap();
 				element.scrollIntoView({ behavior: "smooth" });
 				setActiveSection(id);
 			}
 		}
 	};
 
-	// Track active section on scroll
+	// Sync active section with route (analysis is route-based; home uses scroll)
 	useEffect(() => {
+		if (location.pathname === "/analysis") {
+			setActiveSection("analysis");
+		}
+	}, [location.pathname]);
+
+	// Track active section on scroll (home route only)
+	useEffect(() => {
+		if (location.pathname !== "/" || isAnalysisRoute) {
+			return;
+		}
 		const handleScroll = () => {
-			const sections = ["pick", "play", "analysis", "suggest", "profile"];
+			const sections = ["pick", "play", "suggest", "profile"];
 			let current = activeSection;
 			let minDistance = Infinity;
 
@@ -202,7 +229,7 @@ export function FluidNav() {
 		window.addEventListener("scroll", handleScroll, { passive: true });
 		handleScroll();
 		return () => window.removeEventListener("scroll", handleScroll);
-	}, [activeSection]);
+	}, [activeSection, location.pathname, isAnalysisRoute]);
 
 	const isActive = (key: string) => {
 		const targetId = keyToId[key];

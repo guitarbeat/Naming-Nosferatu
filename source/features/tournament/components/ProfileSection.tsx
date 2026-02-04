@@ -4,8 +4,8 @@
  * Uses LiquidGlass for consistent styling with NameSuggestion component.
  */
 
-import { LogOut, Pencil, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LogOut, Pencil, User } from "@/icons";
 import Button from "@/layout/Button";
 import { Input } from "@/layout/FormPrimitives";
 import LiquidGlass from "@/layout/LiquidGlass";

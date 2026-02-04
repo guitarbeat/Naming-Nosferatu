@@ -1,5 +1,5 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
 import React from "react";
+import { ChevronDown, ChevronRight } from "@/icons";
 import { cn } from "@/utils/basic";
 
 interface CollapsibleHeaderProps {
