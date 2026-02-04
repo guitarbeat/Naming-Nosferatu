@@ -10,7 +10,7 @@ import { Loading } from "@/layout/StatusIndicators";
 import useAppStore from "@/store/appStore";
 
 /* Lazy route chunks – loaded when user navigates to the route */
-export const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
+const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
 const DashboardLazy = lazy(() =>
 	import("@/features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
 );
