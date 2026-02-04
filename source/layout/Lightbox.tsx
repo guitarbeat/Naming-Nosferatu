@@ -1,5 +1,5 @@
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect } from "react";
+import { ChevronLeft, ChevronRight, X } from "@/icons";
 
 interface LightboxProps {
 	images: string[];

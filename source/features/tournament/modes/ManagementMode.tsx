@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { LayoutGrid, Layers } from "lucide-react";
 import React, { memo, useCallback } from "react";
+import { Layers, LayoutGrid } from "@/icons";
 import Button from "@/layout/Button";
 import { EmptyState } from "@/layout/EmptyState";
 import useAppStore from "@/store/appStore";
@@ -49,7 +49,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 		const setGridMode = useCallback(() => {
 			if (isSwipeMode) setSwipeMode(false);
 		}, [isSwipeMode, setSwipeMode]);
-		
+
 		const setSwipeModeActive = useCallback(() => {
 			if (!isSwipeMode) setSwipeMode(true);
 		}, [isSwipeMode, setSwipeMode]);
@@ -103,13 +103,13 @@ export const ManagementMode = memo<ManagementModeProps>(
 					{isTournament && (
 						<div className="flex items-center justify-between gap-4 px-1 animate-in fade-in slide-in-from-top-4 duration-500">
 							<div className="flex items-center gap-2">
-							<button
+								<button
 									type="button"
 									onClick={setGridMode}
 									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-										!isSwipeMode
-											? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-											: "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+										isSwipeMode
+											? "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+											: "bg-purple-500/20 text-purple-400 border border-purple-500/30"
 									}`}
 								>
 									<LayoutGrid size={16} />
@@ -128,9 +128,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 									Swipe
 								</button>
 							</div>
-							<span className="text-xs text-white/40">
-								{selectedCount} selected
-							</span>
+							<span className="text-xs text-white/40">{selectedCount} selected</span>
 						</div>
 					)}
 

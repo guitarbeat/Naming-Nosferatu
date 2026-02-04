@@ -135,6 +135,18 @@ const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 	return { theme: "dark", themePreference: "dark" };
 };
 
+const getInitialSwipeMode = (): boolean => {
+	if (typeof window === "undefined") return false;
+	try {
+		const stored = localStorage.getItem(STORAGE_KEYS.SWIPE_MODE);
+		if (stored === "true") return true;
+		if (stored === "false") return false;
+	} catch (e) {
+		if (import.meta.env.DEV) console.warn("Failed to read swipe mode from localStorage", e);
+	}
+	return false;
+};
+
 const createUserAndSettingsSlice: StateCreator<
 	AppState,
 	[],
@@ -150,7 +162,7 @@ const createUserAndSettingsSlice: StateCreator<
 		showGlobalAnalytics: false,
 		showUserComparison: false,
 		matrixMode: false,
-		isSwipeMode: false,
+		isSwipeMode: getInitialSwipeMode(),
 		showCatPictures: true,
 		isEditingProfile: false,
 	},
@@ -248,7 +260,18 @@ const createUserAndSettingsSlice: StateCreator<
 	uiActions: {
 		setMatrixMode: (enabled) => updateSlice(set, "ui", { matrixMode: enabled }),
 		setGlobalAnalytics: (show) => updateSlice(set, "ui", { showGlobalAnalytics: show }),
-		setSwipeMode: (enabled) => updateSlice(set, "ui", { isSwipeMode: enabled }),
+		setSwipeMode: (enabled) => {
+			updateSlice(set, "ui", { isSwipeMode: enabled });
+			try {
+				if (typeof window !== "undefined") {
+					localStorage.setItem(STORAGE_KEYS.SWIPE_MODE, enabled ? "true" : "false");
+				}
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					console.warn("Failed to persist swipe mode to localStorage", error);
+				}
+			}
+		},
 		setCatPictures: (show) => updateSlice(set, "ui", { showCatPictures: show }),
 		setUserComparison: (show) => updateSlice(set, "ui", { showUserComparison: show }),
 		setEditingProfile: (editing) => updateSlice(set, "ui", { isEditingProfile: editing }),
