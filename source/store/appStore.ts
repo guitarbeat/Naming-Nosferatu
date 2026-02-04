@@ -136,13 +136,21 @@ const getInitialThemeState = (): Pick<UIState, "theme" | "themePreference"> => {
 };
 
 const getInitialSwipeMode = (): boolean => {
-	if (typeof window === "undefined") return false;
+	if (typeof window === "undefined") {
+		return false;
+	}
 	try {
 		const stored = localStorage.getItem(STORAGE_KEYS.SWIPE_MODE);
-		if (stored === "true") return true;
-		if (stored === "false") return false;
+		if (stored === "true") {
+			return true;
+		}
+		if (stored === "false") {
+			return false;
+		}
 	} catch (e) {
-		if (import.meta.env.DEV) console.warn("Failed to read swipe mode from localStorage", e);
+		if (import.meta.env.DEV) {
+			console.warn("Failed to read swipe mode from localStorage", e);
+		}
 	}
 	return false;
 };

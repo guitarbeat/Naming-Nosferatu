@@ -41,6 +41,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute top-4 right-4 z-[110] p-3 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all"
 					onClick={onClose}
+					aria-label="Close lightbox"
 				>
 					<X size={24} />
 				</button>
@@ -48,6 +49,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1)}
+					aria-label="Previous image"
 				>
 					<ChevronLeft size={32} />
 				</button>
@@ -64,6 +66,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1)}
+					aria-label="Next image"
 				>
 					<ChevronRight size={32} />
 				</button>
