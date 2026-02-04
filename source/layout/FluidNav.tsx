@@ -179,6 +179,16 @@ export function FluidNav() {
 			setActiveSection("pick");
 			return;
 		}
+		// Suggest and Profile only exist on home; navigate first if on analysis
+		if ((key === "suggest" || key === "profile") && isAnalysisRoute) {
+			const id = keyToId[key];
+			navigate("/");
+			setActiveSection(id);
+			requestAnimationFrame(() => {
+				setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }), 100);
+			});
+			return;
+		}
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
@@ -192,6 +202,7 @@ export function FluidNav() {
 	// Sync active section with route (analysis is route-based; home uses scroll)
 	useEffect(() => {
 		if (location.pathname === "/analysis") setActiveSection("analysis");
+		else if (location.pathname === "/") setActiveSection("pick");
 	}, [location.pathname]);
 
 	// Track active section on scroll (home route only)
@@ -199,7 +210,7 @@ export function FluidNav() {
 		if (location.pathname !== "/" || isAnalysisRoute) return;
 		const handleScroll = () => {
 			const sections = ["pick", "play", "suggest", "profile"];
-			let current = activeSection;
+			let current = "pick";
 			let minDistance = Infinity;
 
 			for (const id of sections) {
@@ -220,7 +231,7 @@ export function FluidNav() {
 		window.addEventListener("scroll", handleScroll, { passive: true });
 		handleScroll();
 		return () => window.removeEventListener("scroll", handleScroll);
-	}, [activeSection, location.pathname, isAnalysisRoute]);
+	}, [location.pathname, isAnalysisRoute]);
 
 	const isActive = (key: string) => {
 		const targetId = keyToId[key];
@@ -341,12 +352,7 @@ export function FluidNav() {
 						? "text-white bg-white/10"
 						: "text-white/50 hover:text-white hover:bg-white/5",
 				)}
-				onClick={() => {
-					hapticNavTap();
-					const element = document.getElementById("profile");
-					element?.scrollIntoView({ behavior: "smooth" });
-					setActiveSection("profile");
-				}}
+				onClick={() => handleNavClick("profile")}
 				type="button"
 				aria-label={isLoggedIn ? "Edit profile" : "Login"}
 			>
