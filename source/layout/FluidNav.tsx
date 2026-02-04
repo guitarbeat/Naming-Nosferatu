@@ -132,7 +132,9 @@ export function FluidNav() {
 
 	const handleStartTournament = () => {
 		hapticTournamentStart();
-		if (isAnalysisRoute) navigate("/");
+		if (isAnalysisRoute) {
+			navigate("/");
+		}
 		tournamentActions.resetTournament();
 		tournamentActions.setLoading(true);
 		if (selectedNames && selectedNames.length >= 2) {
@@ -156,8 +158,11 @@ export function FluidNav() {
 				handleStartTournament();
 				break;
 			case "navigate-pick":
-				if (isAnalysisRoute) navigate("/");
-				else document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				if (isAnalysisRoute) {
+					navigate("/");
+				} else {
+					document.getElementById("pick")?.scrollIntoView({ behavior: "smooth" });
+				}
 				setActiveSection("pick");
 				break;
 			case "scroll-top":
@@ -201,13 +206,18 @@ export function FluidNav() {
 
 	// Sync active section with route (analysis is route-based; home uses scroll)
 	useEffect(() => {
-		if (location.pathname === "/analysis") setActiveSection("analysis");
-		else if (location.pathname === "/") setActiveSection("pick");
+		if (location.pathname === "/analysis") {
+			setActiveSection("analysis");
+		} else if (location.pathname === "/") {
+			setActiveSection("pick");
+		}
 	}, [location.pathname]);
 
 	// Track active section on scroll (home route only)
 	useEffect(() => {
-		if (location.pathname !== "/" || isAnalysisRoute) return;
+		if (location.pathname !== "/" || isAnalysisRoute) {
+			return;
+		}
 		const handleScroll = () => {
 			const sections = ["pick", "play", "suggest", "profile"];
 			let current = "pick";
