@@ -40,7 +40,7 @@ function CatImage({
 	// Reset error state when src changes
 	useEffect(() => {
 		setHasError(false);
-	}, []);
+	}, [src]);
 
 	const analyseImage = useMemo(
 		() => (imgEl: HTMLImageElement) => {
