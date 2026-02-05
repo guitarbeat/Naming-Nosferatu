@@ -6,6 +6,7 @@
 import { cva } from "class-variance-authority";
 import type React from "react";
 import { useCallback, useEffect, useId, useState } from "react";
+import { GLASS_PRESETS } from "@/layout/GlassPresets";
 import LiquidGlass from "@/layout/LiquidGlass";
 import { cn } from "@/utils/basic";
 
@@ -105,14 +106,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 	return (
 		<LiquidGlass
 			id={`toast-glass-${toastGlassId.replace(/:/g, "-")}`}
-			width={280}
-			height={60}
-			radius={10}
-			scale={-100}
-			saturation={1.0}
-			frost={0.02}
-			inputBlur={6}
-			outputBlur={0.4}
+			{...GLASS_PRESETS.toast}
 			className="pointer-events-auto"
 			style={{
 				width: "auto",

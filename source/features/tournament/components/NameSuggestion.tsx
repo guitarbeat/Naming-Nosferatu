@@ -8,6 +8,7 @@ import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
+import { GLASS_PRESETS } from "@/layout/GlassPresets";
 import LiquidGlass from "@/layout/LiquidGlass";
 
 // ============================================================================
@@ -40,10 +41,7 @@ function InlineNameSuggestion() {
 		<LiquidGlass
 			className="w-full flex flex-col items-center justify-center p-8 backdrop-blur-md rounded-3xl"
 			style={{ width: "100%", height: "auto", minHeight: "200px" }}
-			radius={24}
-			frost={0.2}
-			saturation={1.1}
-			outputBlur={0.8}
+			{...GLASS_PRESETS.card}
 		>
 			<form
 				onSubmit={handleLocalSubmit}
@@ -205,14 +203,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 			/>
 			<LiquidGlass
 				id={`modal-glass-${modalGlassId.replace(/:/g, "-")}`}
-				width={500}
-				height={600}
-				radius={20}
-				scale={-80}
-				saturation={1.05}
-				frost={0.08}
-				inputBlur={8}
-				outputBlur={1.2}
+				{...GLASS_PRESETS.modal}
 				className="z-[1051] overflow-hidden"
 				style={{
 					position: "fixed",
