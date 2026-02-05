@@ -111,6 +111,7 @@ export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", .
  * @param rankings Array of NameItems with rankings
  * @param filename Optional filename (default: generated based on date)
  */
+/** @public */
 export const generateCSVContent = (rankings: NameItem[]): string => {
 	const headers = ["Name", "Rating", "Wins", "Losses"];
 	const rows = rankings.map((r) => {
