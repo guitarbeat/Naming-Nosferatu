@@ -1,14 +1,11 @@
-export { Card } from "./Card/index";
 export type {
 	CardBackground,
+	CardNameProps,
 	CardPadding,
 	CardProps,
 	CardShadow,
+	CardStatsProps,
 	CardVariant,
 	GlassConfig,
 } from "./Card/index";
-export { CardName } from "./Card/index";
-export type { CardNameProps } from "./Card/index";
-export { CardStats } from "./Card/index";
-export type { CardStatsProps } from "./Card/index";
-export { default } from "./Card/index";
+export { Card, CardName, CardStats, default } from "./Card/index";

@@ -11,10 +11,10 @@ export type {
 	CardVariant,
 	GlassConfig,
 } from "./Card";
-export { CardName } from "./CardName";
 export type { CardNameProps } from "./CardName";
-export { CardStats } from "./CardStats";
+export { CardName } from "./CardName";
 export type { CardStatsProps } from "./CardStats";
+export { CardStats } from "./CardStats";
 
 const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });
 

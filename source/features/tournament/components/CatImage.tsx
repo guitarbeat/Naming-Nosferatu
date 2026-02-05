@@ -38,6 +38,7 @@ function CatImage({
 		CAT_IMAGES && CAT_IMAGES.length > 0 ? (CAT_IMAGES[0] as string) : "/assets/images/bby-cat.GIF";
 
 	// Reset error state when src changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: src changes should reset local error state
 	useEffect(() => {
 		setHasError(false);
 	}, [src]);

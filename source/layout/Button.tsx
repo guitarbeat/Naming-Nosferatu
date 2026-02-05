@@ -20,10 +20,13 @@ const buttonVariants = cva(
 				secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
 				danger: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
-				outline: "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+				outline:
+					"border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
 				link: "text-primary underline-offset-4 hover:underline",
-				gradient: "rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 active:scale-95 disabled:active:scale-100",
-				secondaryGradient: "rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-900/20 active:scale-95 disabled:active:scale-100",
+				gradient:
+					"rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 active:scale-95 disabled:active:scale-100",
+				secondaryGradient:
+					"rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-900/20 active:scale-95 disabled:active:scale-100",
 			},
 			size: {
 				small: "h-8 rounded-md px-3 text-xs",
@@ -40,7 +43,15 @@ const buttonVariants = cva(
 	},
 );
 
-export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "outline" | "link" | "gradient" | "secondaryGradient";
+export type ButtonVariant =
+	| "primary"
+	| "secondary"
+	| "danger"
+	| "ghost"
+	| "outline"
+	| "link"
+	| "gradient"
+	| "secondaryGradient";
 export type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
