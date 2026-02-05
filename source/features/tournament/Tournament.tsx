@@ -116,6 +116,7 @@ function TournamentContent({
 						<button
 							onClick={audioManager.handleToggleMute}
 							className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							aria-label={audioManager.isMuted ? "Unmute sounds" : "Mute sounds"}
 						>
 							<span className="material-symbols-outlined">
 								{audioManager.isMuted ? "volume_off" : "volume_up"}
@@ -125,6 +126,7 @@ function TournamentContent({
 					<button
 						onClick={() => setCatPictures(!showCatPictures)}
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
+						aria-pressed={showCatPictures}
 					>
 						<span className="material-symbols-outlined text-sm">pets</span>
 						<span>{showCatPictures ? "Names Only" : "Show Cats"}</span>
@@ -204,15 +206,17 @@ function TournamentContent({
 				</div>
 
 				{/* Undo */}
-				<div
+				<button
+					type="button"
 					onClick={handleUndo}
 					className="mt-6 glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
+					aria-label="Undo last vote"
 				>
 					<span className="material-symbols-outlined text-sm text-primary">undo</span>
 					<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
 						Undo
 					</span>
-				</div>
+				</button>
 			</main>
 
 			{/* Background */}
