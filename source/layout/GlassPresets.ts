@@ -82,12 +82,3 @@ export const GLASS_PRESETS = {
 		outputBlur: 0.3,
 	} satisfies GlassPreset,
 } as const;
-
-type GlassPresetKey = keyof typeof GLASS_PRESETS;
-
-/**
- * Get a glass preset by key with optional overrides
- */
-function getGlassPreset(key: GlassPresetKey, overrides?: Partial<GlassPreset>): GlassPreset {
-	return { ...GLASS_PRESETS[key], ...overrides };
-}

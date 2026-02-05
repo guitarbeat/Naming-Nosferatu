@@ -1,2 +1,1 @@
-;
-export { Card, CardName,  default } from "./Card/index";
+export { Card, CardName, default } from "./Card/index";
