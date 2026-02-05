@@ -111,17 +111,30 @@ export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", .
  * @param rankings Array of NameItems with rankings
  * @param filename Optional filename (default: generated based on date)
  */
+export const generateCSVContent = (rankings: NameItem[]): string => {
+	const headers = ["Name", "Rating", "Wins", "Losses"];
+	const rows = rankings.map((r) => {
+		let name = r.name;
+		// Security: Escape double quotes to prevent CSV injection
+		name = name.replace(/"/g, '""');
+		// Security: Prevent spreadsheet formula injection (CSV Injection)
+		if (/^[=+\-@]/.test(name)) {
+			name = `'${name}`;
+		}
+		return [`"${name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(
+			",",
+		);
+	});
+
+	return [headers.join(","), ...rows].join("\n");
+};
+
 export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: string): void => {
 	if (!rankings.length) {
 		return;
 	}
 
-	const headers = ["Name", "Rating", "Wins", "Losses"];
-	const rows = rankings.map((r) =>
-		[`"${r.name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(","),
-	);
-
-	const csvContent = [headers.join(","), ...rows].join("\n");
+	const csvContent = generateCSVContent(rankings);
 	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 	const link = document.createElement("a");
 
