@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
 import Button from "@/layout/Button";
 import { Input } from "@/layout/FormPrimitives";
+import { GLASS_PRESETS } from "@/layout/GlassPresets";
 import LiquidGlass from "@/layout/LiquidGlass";
 import useAppStore from "@/store/appStore";
 import { CAT_IMAGES } from "@/utils/constants";
@@ -61,10 +62,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 				<LiquidGlass
 					className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
 					style={{ width: "100%", height: "auto", minHeight: "200px" }}
-					radius={24}
-					frost={0.2}
-					saturation={1.1}
-					outputBlur={0.8}
+					{...GLASS_PRESETS.card}
 				>
 					<div className="flex flex-col gap-6 w-full p-8">
 						{/* Section Header - Only show when editing/logging in */}

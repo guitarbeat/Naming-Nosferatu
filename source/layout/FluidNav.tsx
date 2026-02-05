@@ -1,7 +1,6 @@
 /**
  * @module FluidNav
- * @description Fluid navigation component - Percentage-based floating navigation bar
- * Uses relative units for fluid layout across all screen sizes
+ * @description Fluid navigation component using NavButton for DRY code.
  */
 
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BarChart3, CheckCircle, Lightbulb, Trophy, User } from "@/icons";
 import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
+import { AnimatedNavButton, NavButton } from "./NavButton";
 
 // Map nav keys to Section IDs
 const keyToId: Record<string, string> = {
@@ -253,141 +253,88 @@ export function FluidNav() {
 	return (
 		<motion.nav
 			className={cn(
-				// Base positioning & Layout
 				"fixed z-[100] transition-all duration-500 ease-out",
 				"flex items-center justify-evenly gap-4",
 				"h-auto py-3 px-6",
-
-				// Fluid Sizing & Positioning (The Core Requirement)
-				// Uses percentage width and centering instead of fixed breakpoints
 				"bottom-0 left-1/2 -translate-x-1/2",
-				"w-[95%]", // Fluid width: 95% of the viewport width
-
-				// Visual Styling (Glassmorphism)
+				"w-[95%]",
 				"bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
 			)}
 			initial={{ y: 100, opacity: 0 }}
 			animate={{ y: 0, opacity: 1 }}
 			transition={{ type: "spring", stiffness: 260, damping: 20 }}
 		>
-			{/* Unified Pick/Start Button */}
-			<motion.button
-				className={cn(
-					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-					isActive("pick") && !buttonState.highlight
-						? "text-white bg-white/10"
-						: "text-white/50 hover:text-white hover:bg-white/5",
-					buttonState.highlight && "text-cyan-400 bg-cyan-950/30 border border-cyan-500/30",
-				)}
+			{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+			<AnimatedNavButton
+				id="pick"
+				icon={IconComponent}
+				label={buttonState.label}
+				isActive={isActive("pick")}
 				onClick={handleUnifiedButtonClick}
+				highlight={buttonState.highlight}
 				disabled={buttonState.disabled}
-				type="button"
-				animate={buttonState.highlight ? { scale: [1, 1.05, 1] } : {}}
-				transition={buttonState.highlight ? { duration: 2, repeat: Infinity } : {}}
-			>
-				<AnimatePresence mode="wait">
-					<motion.div
-						key={buttonState.icon.name}
-						initial={{ scale: 0.8, opacity: 0 }}
-						animate={{ scale: 1, opacity: 1 }}
-						exit={{ scale: 0.8, opacity: 0 }}
-					>
-						<IconComponent
-							className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
-							aria-hidden={true}
-						/>
-					</motion.div>
-				</AnimatePresence>
-				<span className="text-[10px] font-medium tracking-wide">{buttonState.label}</span>
-				{isActive("pick") && !buttonState.highlight && (
-					<motion.div
-						layoutId="dockIndicator"
-						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-					/>
-				)}
-			</motion.button>
-
-			{/* Analyze Button */}
-			{isComplete && (
-				<motion.button
-					className={cn(
-						"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-						isActive("analyze")
-							? "text-white bg-white/10"
-							: "text-white/50 hover:text-white hover:bg-white/5",
-					)}
-					onClick={() => handleNavClick("analyze")}
-					type="button"
-					initial={{ scale: 0.9, opacity: 0 }}
-					animate={{ scale: 1, opacity: 1 }}
-				>
-					<BarChart3 className="w-5 h-5" aria-hidden={true} />
-					<span className="text-[10px] font-medium tracking-wide">Analyze</span>
-					{isActive("analyze") && (
+				animateScale={buttonState.highlight}
+				customIcon={
+					<AnimatePresence mode="wait">
 						<motion.div
-							layoutId="dockIndicator"
-							className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-						/>
-					)}
-				</motion.button>
+							key={buttonState.icon.name}
+							initial={{ scale: 0.8, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							exit={{ scale: 0.8, opacity: 0 }}
+						>
+							<IconComponent
+								className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+								aria-hidden={true}
+							/>
+						</motion.div>
+					</AnimatePresence>
+				}
+			/>
+
+			{/* Analyze Button - Only shows when tournament complete */}
+			{isComplete && (
+				<NavButton
+					id="analyze"
+					icon={BarChart3}
+					label="Analyze"
+					isActive={isActive("analyze")}
+					onClick={() => handleNavClick("analyze")}
+				/>
 			)}
 
 			{/* Suggest Button */}
-			<button
-				className={cn(
-					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-					isActive("suggest")
-						? "text-white bg-white/10"
-						: "text-white/50 hover:text-white hover:bg-white/5",
-				)}
+			<NavButton
+				id="suggest"
+				icon={Lightbulb}
+				label="Suggest"
+				isActive={isActive("suggest")}
 				onClick={() => handleNavClick("suggest")}
-				type="button"
-				aria-label="Suggest a name"
-			>
-				<Lightbulb className="w-5 h-5" aria-hidden={true} />
-				<span className="text-[10px] font-medium tracking-wide">Suggest</span>
-				{isActive("suggest") && (
-					<motion.div
-						layoutId="dockIndicator"
-						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-					/>
-				)}
-			</button>
+				ariaLabel="Suggest a name"
+			/>
 
 			{/* Profile/Login Button */}
-			<button
-				className={cn(
-					"relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-					isActive("profile")
-						? "text-white bg-white/10"
-						: "text-white/50 hover:text-white hover:bg-white/5",
-				)}
+			<NavButton
+				id="profile"
+				icon={User}
+				label={isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Login"}
+				isActive={isActive("profile")}
 				onClick={() => handleNavClick("profile")}
-				type="button"
-				aria-label={isLoggedIn ? "Edit profile" : "Login"}
-			>
-				<div className="relative">
-					{isLoggedIn && avatarUrl ? (
+				ariaLabel={isLoggedIn ? "Edit profile" : "Login"}
+				customIcon={
+					isLoggedIn && avatarUrl ? (
 						<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
 							<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 						</div>
 					) : (
 						<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
-					)}
-					{isLoggedIn && (
+					)
+				}
+				badge={
+					isLoggedIn ? (
 						<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
-					)}
-				</div>
-				<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
-					{isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Login"}
-				</span>
-				{isActive("profile") && (
-					<motion.div
-						layoutId="dockIndicator"
-						className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
-					/>
-				)}
-			</button>
+					) : undefined
+				}
+			/>
 		</motion.nav>
 	);
 }
