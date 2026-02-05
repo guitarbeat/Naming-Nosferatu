@@ -234,7 +234,11 @@ function CatImage({
 		};
 
 		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
-			const base = currentSrc.includes(".") ? currentSrc.replace(/\.[^.]+$/, "") : currentSrc;
+			const extension = currentSrc.split(".").pop()?.toLowerCase();
+			if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
+				return <img {...commonProps} />;
+			}
+			const base = currentSrc.replace(/\.[^.]+$/, "");
 			return (
 				<picture>
 					<source type="image/avif" srcSet={`${base}.avif`} />
