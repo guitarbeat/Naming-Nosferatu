@@ -13,7 +13,9 @@
 		"config/postcss.config.js",
 		"config/tailwind.config.js",
 		"source/shared/utils/performanceMonitor.d.ts",
-		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
+		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts",
+		"source/utils/basic.test.ts",
+		"source/layout/Section.tsx"
 	],
 	"ignoreDependencies": [
 		"@tailwindcss/postcss",
