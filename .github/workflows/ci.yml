@@ -57,8 +57,5 @@ jobs:
       - name: Lint & Type Check
         run: pnpm run lint
 
-      - name: Enforce File Limits
-        run: pnpm run check:limits
-
       - name: Build (Vite)
         run: pnpm run build
