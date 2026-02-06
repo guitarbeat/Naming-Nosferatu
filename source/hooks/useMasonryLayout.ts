@@ -99,6 +99,11 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 	// Recalculate on mount, resize, or when items change
 	useEffect(() => {
+		// Clean up stale refs to prevent memory leaks and observing detached nodes
+		if (itemRefs.current.length > itemCount) {
+			itemRefs.current.length = itemCount;
+		}
+
 		// Initial calculation after a brief delay to ensure DOM is ready
 		const timeoutId = setTimeout(() => {
 			calculateLayout();
@@ -129,7 +134,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 			clearTimeout(resizeTimeout);
 			resizeObserver.disconnect();
 		};
-	}, [calculateLayout]);
+	}, [calculateLayout, itemCount]);
 
 	// Batch layout updates to prevent thrashing
 	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
