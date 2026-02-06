@@ -71,9 +71,10 @@ export function useMasonryLayout<T extends HTMLElement>(
 		const newPositions: MasonryPosition[] = [];
 
 		// Calculate position for each item
-		itemRefs.current.forEach((itemRef, index) => {
-			if (!itemRef || index >= itemCount) {
-				return;
+		for (let i = 0; i < itemCount; i++) {
+			const itemRef = itemRefs.current[i];
+			if (!itemRef) {
+				continue;
 			}
 
 			// Find the shortest column
@@ -83,7 +84,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 			const left = shortestColumnIndex * (actualColumnWidth + gap);
 			const top = heights[shortestColumnIndex];
 
-			newPositions[index] = {
+			newPositions[i] = {
 				column: shortestColumnIndex,
 				left,
 				top,
@@ -91,7 +92,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 			// Update column height
 			heights[shortestColumnIndex] += itemRef.offsetHeight + gap;
-		});
+		}
 
 		setPositions(newPositions);
 		setColumnHeights(heights);
@@ -118,18 +119,19 @@ export function useMasonryLayout<T extends HTMLElement>(
 		}
 
 		// Also observe individual items for size changes
-		itemRefs.current.forEach((itemRef) => {
+		for (let i = 0; i < itemCount; i++) {
+			const itemRef = itemRefs.current[i];
 			if (itemRef) {
 				resizeObserver.observe(itemRef);
 			}
-		});
+		}
 
 		return () => {
 			clearTimeout(timeoutId);
 			clearTimeout(resizeTimeout);
 			resizeObserver.disconnect();
 		};
-	}, [calculateLayout]);
+	}, [calculateLayout, itemCount]);
 
 	// Batch layout updates to prevent thrashing
 	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
