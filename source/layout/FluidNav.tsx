@@ -6,7 +6,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, CheckCircle, Lightbulb, Trophy, User } from "@/icons";
+import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/icons";
 import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
 import { AnimatedNavButton, NavButton } from "./NavButton";
@@ -112,9 +112,11 @@ export function FluidNav() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, tournamentActions, user } = appStore;
+	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl } = user;
+	const { isSwipeMode } = ui;
+	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState("pick");
 	const isAnalysisRoute = location.pathname === "/analysis";
 
@@ -290,6 +292,40 @@ export function FluidNav() {
 					</AnimatePresence>
 				}
 			/>
+
+			{/* View Mode Toggle - Shows when on pick section */}
+			{isActive("pick") && !isTournamentActive && (
+				<motion.button
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					exit={{ opacity: 0, scale: 0.8 }}
+					type="button"
+					onClick={() => setSwipeMode(!isSwipeMode)}
+					className={cn(
+						"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
+						"text-white/70 hover:text-white hover:bg-white/10",
+						isSwipeMode && "bg-purple-500/20 text-purple-400"
+					)}
+					aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+				>
+					<AnimatePresence mode="wait">
+						<motion.div
+							key={isSwipeMode ? "swipe" : "grid"}
+							initial={{ rotate: -90, opacity: 0 }}
+							animate={{ rotate: 0, opacity: 1 }}
+							exit={{ rotate: 90, opacity: 0 }}
+							transition={{ duration: 0.15 }}
+						>
+							{isSwipeMode ? (
+								<Layers className="w-5 h-5" aria-hidden={true} />
+							) : (
+								<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+							)}
+						</motion.div>
+					</AnimatePresence>
+					<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+				</motion.button>
+			)}
 
 			{/* Analyze Button - Only shows when tournament complete */}
 			{isComplete && (
