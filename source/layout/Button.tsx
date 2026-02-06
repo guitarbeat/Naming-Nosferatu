@@ -43,7 +43,7 @@ const buttonVariants = cva(
 	},
 );
 
-export type ButtonVariant =
+type ButtonVariant =
 	| "primary"
 	| "secondary"
 	| "danger"
@@ -52,7 +52,7 @@ export type ButtonVariant =
 	| "link"
 	| "gradient"
 	| "secondaryGradient";
-export type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
+type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
