@@ -106,6 +106,46 @@ export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", .
    ========================================================================== */
 
 /**
+ * Sanitizes a field for CSV export.
+ * - Escapes double quotes by replacing " with ""
+ * - Wraps the field in double quotes
+ * - Prepends ' if the field starts with =, +, -, @ to prevent formula injection
+ */
+function sanitizeCSVField(field: string | number | null | undefined): string {
+	if (field === null || field === undefined) {
+		return '""';
+	}
+	const stringField = String(field);
+
+	// Prevent formula injection (CSV Injection)
+	const unsafePrefixes = ["=", "+", "-", "@"];
+	const isUnsafe = unsafePrefixes.some((prefix) => stringField.startsWith(prefix));
+	const prefix = isUnsafe ? "'" : "";
+
+	// Escape double quotes
+	const escaped = stringField.replace(/"/g, '""');
+
+	return `"${prefix}${escaped}"`;
+}
+
+/**
+ * Generates CSV content from rankings
+ */
+function generateCSVContent(rankings: NameItem[]): string {
+	const headers = ["Name", "Rating", "Wins", "Losses"];
+	const rows = rankings.map((r) =>
+		[
+			sanitizeCSVField(r.name),
+			sanitizeCSVField(Math.round(Number(r.rating || 1500))),
+			sanitizeCSVField(r.wins || 0),
+			sanitizeCSVField(r.losses || 0),
+		].join(","),
+	);
+
+	return [headers.join(","), ...rows].join("\n");
+}
+
+/**
  * Exports tournament results to a CSV file.
  *
  * @param rankings Array of NameItems with rankings
@@ -116,12 +156,7 @@ export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: st
 		return;
 	}
 
-	const headers = ["Name", "Rating", "Wins", "Losses"];
-	const rows = rankings.map((r) =>
-		[`"${r.name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(","),
-	);
-
-	const csvContent = [headers.join(","), ...rows].join("\n");
+	const csvContent = generateCSVContent(rankings);
 	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 	const link = document.createElement("a");
 
