@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
 import Button from "@/layout/Button";
 import { Input } from "@/layout/FormPrimitives";
-import { GLASS_PRESETS } from "@/layout/GlassPresets";
+import { getGlassPreset } from "@/layout/GlassPresets";
 import LiquidGlass from "@/layout/LiquidGlass";
+import { Section } from "@/layout/Section";
 import useAppStore from "@/store/appStore";
 import { CAT_IMAGES } from "@/utils/constants";
 
@@ -54,16 +55,12 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 	};
 
 	return (
-		<section
-			id="profile"
-			className="min-h-[60vh] flex flex-col items-center justify-center p-4 py-20 scroll-mt-20 border-t border-white/5"
-		>
-			<div className="w-full max-w-2xl mx-auto">
-				<LiquidGlass
-					className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
-					style={{ width: "100%", height: "auto", minHeight: "200px" }}
-					{...GLASS_PRESETS.card}
-				>
+		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="2xl" separator>
+			<LiquidGlass
+				className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
+				style={{ width: "100%", height: "auto", minHeight: "200px" }}
+				{...getGlassPreset("card")}
+			>
 					<div className="flex flex-col gap-6 w-full p-8">
 						{/* Section Header - Only show when editing/logging in */}
 						{isEditing && !user.isLoggedIn && (
@@ -165,9 +162,8 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 								Your preferences are saved to track your cat name rankings.
 							</p>
 						)}
-					</div>
-				</LiquidGlass>
-			</div>
-		</section>
+				</div>
+			</LiquidGlass>
+		</Section>
 	);
 }
