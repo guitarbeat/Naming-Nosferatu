@@ -58,7 +58,7 @@ jobs:
         run: pnpm run lint
 
       - name: Enforce File Limits
-        run: pnpm run check:limits
+        run: pnpm run check:deps
 
       - name: Build (Vite)
         run: pnpm run build
