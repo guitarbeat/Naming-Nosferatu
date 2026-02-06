@@ -1,230 +1,115 @@
 
 
-# Layout UI/UX Code Review: Simplification & Reuse Opportunities
+# Making Swipe Mode Discoverable
 
-## Executive Summary
-After a thorough review of your layout components, I've identified several opportunities to simplify the codebase, eliminate redundancy, and create more reusable patterns. The current architecture is well-structured but has accumulated some duplication and inconsistent styling approaches.
+## The Problem
+You're right - the swipe functionality exists but it's **hidden from view**! The "Grid" and "Swipe" toggle buttons are rendered at the top of the tournament setup section, but they're:
+1. **Easily scrolled past** - they appear above the name cards
+2. **Not prominent enough** - small toggle buttons that blend into the header
+3. **Not integrated with the navigation** - should be accessible from the bottom nav bar
 
----
+## Proposed Solution
+Integrate the view mode toggle directly into the bottom navigation bar so you can switch between Grid and Swipe modes from anywhere.
 
-## Key Findings
+## Changes
 
-### 1. Duplicate Styling Systems
-**Issue:** Multiple approaches to glassmorphism/frosted effects coexist:
-- `LiquidGlass` component (SVG filter-based)
-- `Card` with `background="glass"` variant
-- Inline Tailwind classes (`bg-white/5 backdrop-blur-xl`)
-- CSS classes in `components.css` (`.empty-state` uses `--glass-bg-light`)
+### 1. Add View Mode Toggle to FluidNav
+Add a small toggle or icon button in the navigation bar that switches between Grid and Swipe modes when on the Pick section.
 
-**Files Affected:**
-- `source/layout/Card.tsx` (lines 192-243)
-- `source/layout/Toast.tsx` (uses LiquidGlass)
-- `source/layout/LiquidGlass.tsx`
-- `source/styles/components.css` (glass variables)
+**File:** `source/layout/FluidNav.tsx`
+- Add `Layers` icon import (swipe mode indicator)
+- When active section is "pick", show a small mode toggle button
+- Clicking the toggle switches `isSwipeMode` in the store
 
-### 2. Button Variant Overlap
-**Issue:** The `Button.tsx` has two parallel variant systems:
-```text
-ShadcnButton variants: default, destructive, outline, secondary, ghost, link, gradient, secondaryGradient, login
-Button variants: primary, secondary, danger, ghost, gradient, secondaryGradient, login
-```
-Plus a `variantMapping` to translate between them. This creates confusion.
+### 2. Improve Toggle Visibility in ManagementMode  
+Make the existing toggle more prominent and sticky so it doesn't scroll away.
 
-**Files Affected:**
-- `source/layout/Button.tsx` (lines 76-91)
+**File:** `source/features/tournament/modes/ManagementMode.tsx`
+- Add `sticky top-0` positioning to the toggle header
+- Increase visual prominence with better contrast
+- Add a subtle animation when the mode changes
 
-### 3. Card Component Bloat
-**Issue:** `Card.tsx` (693 lines) contains three distinct components that could be separate:
-- `Card` - Base card component
-- `CardStats` - Statistics display
-- `CardName` - Name card with image/metadata
-
-These have different concerns and the file is difficult to maintain.
-
-### 4. Inconsistent Container Patterns
-**Issue:** Glass containers are implemented differently:
-- `ProfileSection.tsx`: Uses `LiquidGlass` directly with specific props
-- `NameSuggestion.tsx`: Also uses `LiquidGlass` with same props
-- `Toast.tsx`: Uses `LiquidGlass` with different props
-- Some components use inline Tailwind glass styles
-
-**Repeated Pattern (should be extracted):**
-```tsx
-// ProfileSection.tsx & NameSuggestion.tsx both use:
-<LiquidGlass
-  radius={24}
-  frost={0.2}
-  saturation={1.1}
-  outputBlur={0.8}
-/>
-```
-
-### 5. Unused CSS Utility Classes
-**Issue:** `layout.css` (902 lines) contains many utility classes that duplicate Tailwind:
-- `.flex`, `.grid`, `.hidden` - Already in Tailwind
-- `.gap-1` through `.gap-8` - Already in Tailwind
-- `.p-2`, `.p-4`, `.p-6` - Already in Tailwind
-
-These add maintenance burden without benefit.
-
-### 6. Missing Standardized Section Container
-**Issue:** Full-section containers (Profile, Name Suggestion, Analytics) each define their own layout patterns. A reusable `Section` component would reduce duplication.
+### 3. Alternative: Add Swipe Icon to the Main Pick Button
+When on the Pick section, add a long-press or secondary action to switch modes.
 
 ---
 
-## Proposed Simplifications
-
-### Consolidation 1: Create Glass Container Presets
-
-Create standardized glass presets for common use cases:
+## Visual Flow
 
 ```text
-New file: source/layout/GlassPresets.ts
+┌─────────────────────────────────────────────┐
+│  Current State (Hard to Find)               │
+│                                             │
+│  [Grid] [Swipe]  ← Scrolled off screen      │
+│  ┌─────┐ ┌─────┐ ┌─────┐                    │
+│  │ Cat │ │ Cat │ │ Cat │  ← You see this    │
+│  └─────┘ └─────┘ └─────┘                    │
+│                                             │
+│  ═══════════════════════════════════════    │
+│  [Pick]  [Suggest]  [Profile]   ← No toggle │
+└─────────────────────────────────────────────┘
 
-Exports:
-- GLASS_PRESETS.card (for ProfileSection, NameSuggestion style)
-- GLASS_PRESETS.toast (for notifications)
-- GLASS_PRESETS.panel (for larger containers)
-- GLASS_PRESETS.subtle (minimal effect)
+┌─────────────────────────────────────────────┐
+│  Proposed State (Always Visible)            │
+│                                             │
+│  ┌─────┐ ┌─────┐ ┌─────┐                    │
+│  │ Cat │ │ Cat │ │ Cat │                    │
+│  └─────┘ └─────┘ └─────┘                    │
+│                                             │
+│  ═══════════════════════════════════════    │
+│  [Pick 📋]  [Suggest]  [Profile]            │
+│       ↑                                     │
+│   Long-press or tap icon to toggle:         │
+│   📋 Grid ↔ 🃏 Swipe                        │
+└─────────────────────────────────────────────┘
 ```
-
-**Impact:** Reduces 4+ places with duplicated glass config to 1 source of truth.
-
-### Consolidation 2: Simplify Button Variants
-
-Merge the two variant systems into one:
-
-```text
-Before: 
-- ShadcnButton (7 variants) + Button wrapper (7 variants) + mapping
-
-After:
-- Single Button with direct variant system
-- Remove variantMapping indirection
-- Deprecate rarely-used variants (login can merge with gradient)
-```
-
-**Impact:** Simpler API, less code, clearer intent.
-
-### Consolidation 3: Split Card.tsx
-
-Break the 693-line file into focused modules:
-
-```text
-source/layout/
-├── Card/
-│   ├── Card.tsx (~150 lines - base component)
-│   ├── CardStats.tsx (~100 lines - stats sub-component)  
-│   ├── CardName.tsx (~200 lines - name card variant)
-│   └── index.ts (re-exports for backwards compatibility)
-```
-
-**Impact:** Easier maintenance, clearer ownership, faster imports.
-
-### Consolidation 4: Remove Redundant CSS Utilities
-
-Audit and remove CSS utilities that duplicate Tailwind from `layout.css`:
-
-```text
-Remove:
-- .flex, .grid, .hidden, .block, .inline (~20 lines)
-- .gap-*, .p-*, .m-* utilities (~80 lines)
-- .justify-*, .items-* utilities (~15 lines)
-
-Keep:
-- .stack, .container (custom patterns)
-- .fullScreenCenter (semantic)
-- App-specific layout classes
-```
-
-**Impact:** ~115 fewer lines, no conflict with Tailwind.
-
-### Consolidation 5: Create Section Layout Component
-
-Extract common full-section patterns:
-
-```text
-New file: source/layout/Section.tsx
-
-<Section 
-  id="profile"
-  variant="glass" | "minimal" | "accent"
-  padding="comfortable" | "compact"
-  centered={true}
->
-  {children}
-</Section>
-```
-
-**Used by:** ProfileSection, NameSuggestion, Analytics panels
-
-**Impact:** Consistent section layouts, less repetition.
-
-### Consolidation 6: Standardize Nav Button Pattern
-
-The FluidNav buttons repeat the same pattern 4 times. Extract:
-
-```text
-Current (repeated 4x):
-<button className={cn(
-  "relative flex flex-col items-center justify-center flex-1 gap-1 p-2 rounded-xl transition-all",
-  isActive("pick") ? "text-white bg-white/10" : "text-white/50 hover:text-white hover:bg-white/5"
-)}>
-  ...
-</button>
-
-After:
-<NavButton 
-  id="pick" 
-  icon={CheckCircle} 
-  label="Pick" 
-  isActive={isActive("pick")}
-  onClick={() => handleNavClick("pick")} 
-/>
-```
-
-**Impact:** FluidNav.tsx reduced by ~80 lines.
 
 ---
 
-## Implementation Priority
+## Implementation Details
 
-| Priority | Task | Effort | Impact |
-|----------|------|--------|--------|
-| 1 | Create GlassPresets.ts | Low | High - Single source of truth |
-| 2 | Remove redundant CSS utilities | Low | Medium - Cleaner codebase |
-| 3 | Extract NavButton component | Low | Medium - DRY principle |
-| 4 | Simplify Button variants | Medium | Medium - Cleaner API |
-| 5 | Split Card.tsx into modules | Medium | High - Maintainability |
-| 6 | Create Section component | Medium | Medium - Consistency |
-
----
-
-## Technical Notes
-
-### Critical Build Issue
-Your project is missing an `index.html` file which is required for Vite to work properly. This should be created at `source/index.html` based on your Vite config.
-
-### Dependencies to Maintain
-- `class-variance-authority` (cva) is well-used for variants
-- `LiquidGlass` is a unique value-add - keep but standardize usage
-- `@heroui/react` provides Skeleton/Spinner - continue using
-
-### Backwards Compatibility
-All proposed changes maintain backwards compatibility through re-exports:
+### FluidNav.tsx Changes
 ```typescript
-// source/layout/Card/index.ts
-export { Card, CardStats, CardName } from './Card';
-export default Card;
+// Add swipe mode toggle when on pick section
+const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
+const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
+
+// In the Pick button, add a secondary tap target or replace icon based on mode
+<AnimatedNavButton
+  customIcon={
+    <motion.div className="relative">
+      {isSwipeMode ? <Layers /> : <LayoutGrid />}
+    </motion.div>
+  }
+  // Double-tap or swipe gesture to toggle mode
+/>
+```
+
+### ManagementMode.tsx Changes
+```typescript
+// Make toggle sticky and more prominent
+<div className="sticky top-0 z-10 flex items-center justify-between 
+                gap-4 px-4 py-3 bg-black/80 backdrop-blur-xl 
+                border-b border-white/10 rounded-t-2xl">
+  {/* Toggle buttons with better styling */}
+</div>
 ```
 
 ---
 
-## Summary
+## Quick Fix vs Full Solution
 
-The codebase has a solid foundation but has grown organically with some redundancy. The proposed 6 consolidations would:
-- Remove ~200+ lines of duplicate code
-- Create 3 new focused components (GlassPresets, NavButton, Section)
-- Split 1 bloated file (Card.tsx) into 4 focused modules
-- Establish clearer patterns for future development
+**Quick Fix (Recommended First):**
+- Make the existing toggle sticky so it stays visible when scrolling
+- This is a 1-line CSS change
+
+**Full Solution:**
+- Add view mode toggle to the navigation bar
+- More discoverable but requires more changes
+
+---
+
+## Files to Modify
+1. `source/features/tournament/modes/ManagementMode.tsx` - Make toggle sticky + more visible
+2. `source/layout/FluidNav.tsx` - Add view mode indicator/toggle to nav
 
