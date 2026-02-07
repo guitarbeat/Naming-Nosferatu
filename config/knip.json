@@ -13,9 +13,20 @@
 		"config/postcss.config.js",
 		"config/tailwind.config.js",
 		"source/shared/utils/performanceMonitor.d.ts",
-		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
+		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts",
+		"source/layout/Card.tsx",
+		"source/layout/Card/index.ts",
+		"source/features/analytics/analyticsHooks.ts",
+		"source/features/tournament/hooks/useTournament.ts",
+		"source/features/tournament/hooks/useTournamentHandlers.ts",
+		"source/layout/Button.tsx",
+		"source/layout/Card/CardName.tsx",
+		"source/layout/Card/CardStats.tsx",
+		"source/layout/GlassPresets.ts",
+		"source/utils/basic.ts"
 	],
 	"ignoreDependencies": [
+		"@radix-ui/react-slot",
 		"@tailwindcss/postcss",
 		"autoprefixer",
 		"postcss",
