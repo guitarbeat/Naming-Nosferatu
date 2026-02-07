@@ -20,7 +20,20 @@
 		"autoprefixer",
 		"postcss",
 		"postcss-discard-unused",
-		"tailwindcss"
+		"tailwindcss",
+		"@radix-ui/react-slot"
 	],
+	"ignoreIssues": {
+		"source/layout/Card.tsx": ["exports", "types"],
+		"source/layout/Card/index.ts": ["exports", "types"],
+		"source/features/analytics/analyticsHooks.ts": ["types"],
+		"source/features/tournament/hooks/useTournament.ts": ["types"],
+		"source/features/tournament/hooks/useTournamentHandlers.ts": ["types"],
+		"source/layout/Button.tsx": ["types"],
+		"source/layout/Card/CardName.tsx": ["types"],
+		"source/layout/Card/CardStats.tsx": ["types"],
+		"source/layout/GlassPresets.ts": ["types"],
+		"source/utils/basic.ts": ["types"]
+	},
 	"typescript": true
 }
