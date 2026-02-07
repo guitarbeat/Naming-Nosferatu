@@ -55,7 +55,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 	};
 
 	return (
-		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="2xl" separator>
+		<Section id="profile" variant="minimal" padding="comfortable" maxWidth="2xl" separator={true}>
 			<LiquidGlass
 				className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
 				style={{ width: "100%", height: "auto", minHeight: "200px" }}

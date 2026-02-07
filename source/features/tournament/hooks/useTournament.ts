@@ -10,14 +10,14 @@ import type {
 	TournamentUIState,
 } from "@/types/appTypes";
 
-export interface TournamentResult {
+interface TournamentResult {
 	name: string;
 	rating: number;
 	wins?: number;
 	losses?: number;
 }
 
-export interface UseTournamentProps {
+interface UseTournamentProps {
 	names?: NameItem[];
 	existingRatings?: Record<string, { rating: number; wins?: number; losses?: number }>;
 	onComplete?: (results: TournamentResult[]) => void;

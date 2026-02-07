@@ -16,6 +16,7 @@
 		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
 	],
 	"ignoreDependencies": [
+		"@radix-ui/react-slot",
 		"@tailwindcss/postcss",
 		"autoprefixer",
 		"postcss",
