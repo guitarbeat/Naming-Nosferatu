@@ -79,7 +79,7 @@ function App() {
 	if (!isInitialized) {
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-black">
-				<Loading variant="spinner" text="Consulting the ancient rankings..." />
+				<Loading variant="spinner" text="Preparing the tournament..." />
 			</div>
 		);
 	}
