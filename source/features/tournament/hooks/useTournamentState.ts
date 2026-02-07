@@ -32,14 +32,25 @@ export function useTournamentState(
 	const [votingError, setVotingError] = useState<unknown>(null);
 
 	const namesIdentity = useMemo(
-		() => (Array.isArray(names) ? names.map((n) => n.id || n.name).join(",") : ""),
+		() =>
+			Array.isArray(names)
+				? names
+						.map((n) => n.id || n.name)
+						.sort()
+						.join(",")
+				: "",
 		[names],
 	);
 
 	useEffect(() => {
 		if (Array.isArray(names) && names.length > 0) {
 			setRandomizedNames((prev) => {
-				const prevIds = Array.isArray(prev) ? prev.map((n) => n.id || n.name).join(",") : "";
+				const prevIds = Array.isArray(prev)
+					? prev
+							.map((n) => n.id || n.name)
+							.sort()
+							.join(",")
+					: "";
 				return prevIds === namesIdentity ? prev : shuffleArray([...names]);
 			});
 		}
