@@ -23,7 +23,7 @@ interface NameMetadata {
 	[key: string]: unknown;
 }
 
-export interface CardNameProps {
+interface CardNameProps {
 	name: string;
 	description?: string;
 	isSelected?: boolean;
