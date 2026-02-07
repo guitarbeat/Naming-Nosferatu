@@ -1,0 +1,4 @@
+## 2025-02-18 - Privilege Escalation via Unsecured Session Context
+**Vulnerability:** The `set_user_context` RPC allowed any user (anonymous or authenticated) to set their session identity (`app.user_name`) to any arbitrary string. Since authorization checks (`is_admin`) relied on this session variable, an attacker could spoof an admin username and gain administrative privileges.
+**Learning:** Reliance on client-provided session state for sensitive authorization decisions is a critical flaw, especially when combined with open RPCs. Trust boundaries were not enforced at the entry point (`set_user_context`).
+**Prevention:** Authorization context must always be derived from or verified against the authenticated user's credentials (JWT/session) on the server side. Never trust client inputs for identity assertion without verification.
