@@ -304,7 +304,7 @@ export function FluidNav() {
 					className={cn(
 						"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
 						"text-white/70 hover:text-white hover:bg-white/10",
-						isSwipeMode && "bg-purple-500/20 text-purple-400"
+						isSwipeMode && "bg-purple-500/20 text-purple-400",
 					)}
 					aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
 				>

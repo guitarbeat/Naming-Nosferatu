@@ -306,12 +306,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							)}
 
 							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
-								<Button
-									type="button"
-									variant="ghost"
-									onClick={handleClose}
-									disabled={isSubmitting}
-								>
+								<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 									Cancel
 								</Button>
 								<Button

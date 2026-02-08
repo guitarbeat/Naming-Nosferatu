@@ -185,9 +185,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 										<select
 											value={selectionFilter}
 											onChange={(event) =>
-												setSelectionFilter(
-													event.target.value as "all" | "selected" | "unselected",
-												)
+												setSelectionFilter(event.target.value as "all" | "selected" | "unselected")
 											}
 											className="tournament-toolbar-filter-select"
 										>

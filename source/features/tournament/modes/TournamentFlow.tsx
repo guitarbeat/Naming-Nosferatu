@@ -21,7 +21,13 @@ export default function TournamentFlow() {
 	return (
 		<div className="w-full flex flex-col gap-8">
 			{/* Main Tournament Flow Area - Swaps between Setup and Play */}
-			<Section id="tournament-area" variant="minimal" padding="compact" maxWidth="full" scrollMargin={false}>
+			<Section
+				id="tournament-area"
+				variant="minimal"
+				padding="compact"
+				maxWidth="full"
+				scrollMargin={false}
+			>
 				<AnimatePresence mode="wait">
 					{tournament.isComplete && tournament.names !== null ? (
 						<motion.div
@@ -32,7 +38,7 @@ export default function TournamentFlow() {
 							className="w-full flex justify-center py-10"
 						>
 							<Card
-								liquidGlass={{...getGlassPreset("card")} as GlassConfig}
+								liquidGlass={{ ...getGlassPreset("card") } as GlassConfig}
 								padding="xl"
 								shadow="xl"
 								enableTilt={true}
@@ -107,7 +113,15 @@ export default function TournamentFlow() {
 
 			{/* Suggest Name Section - Hidden during active tournament play */}
 			{(tournament.names === null || tournament.isComplete) && (
-				<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="xl" separator scrollMargin={false} compact>
+				<Section
+					id="suggest"
+					variant="minimal"
+					padding="comfortable"
+					maxWidth="xl"
+					separator={true}
+					scrollMargin={false}
+					compact={true}
+				>
 					<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
 					<NameSuggestion />
 				</Section>
