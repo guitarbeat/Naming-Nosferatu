@@ -8,7 +8,7 @@ import { Skeleton, Spinner } from "@heroui/react";
 import { motion } from "framer-motion";
 import type React from "react";
 import { memo, Suspense, useEffect, useMemo, useState } from "react";
-import { BongoCat } from "@/features/tournament/components/BongoCat";
+import { BongoCat } from "./BongoCat";
 import { useBrowserState } from "@/hooks/useBrowserState";
 import { Cat, Heart, PawPrint } from "@/icons";
 import { cn } from "@/utils/basic";
