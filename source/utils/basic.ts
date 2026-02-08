@@ -106,22 +106,50 @@ export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", .
    ========================================================================== */
 
 /**
+ * Sanitize CSV field to prevent formula injection
+ */
+export const sanitizeCSVField = (field: string): string => {
+	if (/^[=+\-@]/.test(field)) {
+		return `'${field}`;
+	}
+	return field;
+};
+
+/**
+ * Generates CSV content from rankings
+ */
+export const generateCSVContent = (rankings: NameItem[]): string => {
+	if (!rankings.length) {
+		return "";
+	}
+
+	const headers = ["Name", "Rating", "Wins", "Losses"];
+	const rows = rankings.map((r) => {
+		const name = sanitizeCSVField(r.name).replace(/"/g, '""');
+		return [
+			`"${name}"`,
+			Math.round(Number(r.rating || 1500)),
+			r.wins || 0,
+			r.losses || 0,
+		].join(",");
+	});
+
+	return [headers.join(","), ...rows].join("\n");
+};
+
+/**
  * Exports tournament results to a CSV file.
  *
  * @param rankings Array of NameItems with rankings
  * @param filename Optional filename (default: generated based on date)
  */
 export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: string): void => {
-	if (!rankings.length) {
+	const csvContent = generateCSVContent(rankings);
+
+	if (!csvContent) {
 		return;
 	}
 
-	const headers = ["Name", "Rating", "Wins", "Losses"];
-	const rows = rankings.map((r) =>
-		[`"${r.name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(","),
-	);
-
-	const csvContent = [headers.join(","), ...rows].join("\n");
 	const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 	const link = document.createElement("a");
 
