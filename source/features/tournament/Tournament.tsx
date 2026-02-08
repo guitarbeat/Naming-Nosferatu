@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
@@ -18,9 +17,7 @@ function TournamentContent({
 	onVote,
 }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
-	// Memoize visibleNames to prevent new array references on every render,
-	// which avoids expensive re-calculations in useTournamentState.
-	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
+	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
 	const {

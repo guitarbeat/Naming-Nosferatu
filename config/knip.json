@@ -22,5 +22,20 @@
 		"postcss-discard-unused",
 		"tailwindcss"
 	],
+	"ignoreExportsUsedInFile": true,
+	"ignore": [
+		"**/*.md",
+		"**/README.md",
+		"**/IMPLEMENTATION.md",
+		"config/postcss.config.js",
+		"config/tailwind.config.js",
+		"source/shared/utils/performanceMonitor.d.ts",
+		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts",
+		"source/layout/Button.tsx",
+		"source/layout/Card.tsx",
+		"source/layout/Card/index.ts",
+		"source/layout/Card/CardName.tsx",
+		"source/layout/Card/CardStats.tsx"
+	],
 	"typescript": true
 }
