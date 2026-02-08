@@ -113,7 +113,7 @@ export function useAnalysisData({
    DISPLAY DATA PROCESSING HOOK
    ========================================================================== */
 
-interface UseAnalysisDisplayDataProps {
+export interface UseAnalysisDisplayDataProps {
 	leaderboardData: LeaderboardItem[] | null;
 	selectionPopularity: SelectionPopularityItem[] | null;
 	analyticsData: AnalyticsDataItem[] | null;

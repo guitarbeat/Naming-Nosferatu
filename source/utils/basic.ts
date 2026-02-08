@@ -219,7 +219,7 @@ export function selectedNamesToSet(
    FILTER UTILITIES
    ========================================================================== */
 
-interface FilterOptions {
+export interface FilterOptions {
 	visibility?: "visible" | "hidden" | "all";
 	isAdmin?: boolean;
 }
@@ -535,17 +535,17 @@ export function calculatePercentile(
 	}
 }
 
-interface RatingData {
+export interface RatingData {
 	rating: number;
 	wins: number;
 	losses: number;
 }
 
-interface RatingItem extends RatingData {
+export interface RatingItem extends RatingData {
 	name: string;
 }
 
-interface RatingDataInput {
+export interface RatingDataInput {
 	rating: number;
 	wins?: number;
 	losses?: number;

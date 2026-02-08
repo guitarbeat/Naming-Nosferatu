@@ -12,7 +12,7 @@ import {
 	ratingsToObject,
 } from "@/utils/basic";
 
-interface UseTournamentHandlersProps {
+export interface UseTournamentHandlersProps {
 	userName: string | null;
 	tournamentActions: AppState["tournamentActions"];
 }
