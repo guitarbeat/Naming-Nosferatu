@@ -82,20 +82,22 @@ export const ManagementMode = memo<ManagementModeProps>(
 
 		if (isError) {
 			return (
-				<div className="flex flex-col items-center justify-center p-12 text-center bg-red-500/5 rounded-2xl border border-red-500/20 backdrop-blur-md">
-					<h3 className="text-xl font-bold text-red-500 mb-2">Error Loading Names</h3>
-					<p className="text-white/60 mb-6">{error?.message || "Please try again later"}</p>
-					<button
-						type="button"
-						onClick={() => {
-							clearErrors();
-							refetch();
-						}}
-						className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-					>
-						Retry
-					</button>
-				</div>
+				<EmptyState
+					title="Error Loading Names"
+					description={error?.message || "Please try again later"}
+					icon="⚠️"
+					action={
+						<Button
+							variant="danger"
+							onClick={() => {
+								clearErrors();
+								refetch();
+							}}
+						>
+							Retry
+						</Button>
+					}
+				/>
 			);
 		}
 
