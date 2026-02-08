@@ -107,13 +107,14 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 										</div>
 										<div className="flex gap-3">
 											{user.isLoggedIn && (
-												<button
+												<Button
 													type="button"
+													variant="ghost"
 													onClick={() => setIsEditing(false)}
-													className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+													className="flex-1"
 												>
 													Cancel
-												</button>
+												</Button>
 											)}
 											<Button
 												type="submit"
