@@ -57,8 +57,8 @@ jobs:
       - name: Lint & Type Check
         run: pnpm run lint
 
-      - name: Enforce File Limits
-        run: pnpm run check:limits
+      - name: Check Dependencies & Unused Files
+        run: pnpm run check:deps
 
       - name: Build (Vite)
         run: pnpm run build
