@@ -56,7 +56,7 @@ function InlineNameSuggestion() {
 					>
 						Got a great name in mind?
 					</label>
-					<div className="flex gap-3">
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 						<div className="flex-1">
 							<Input
 								id="suggest-name"
@@ -74,6 +74,7 @@ function InlineNameSuggestion() {
 							size="xl"
 							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
+							className="w-full sm:w-auto"
 						>
 							Suggest
 						</Button>
