@@ -58,12 +58,19 @@ export function useTournamentState(
 		[existingRatings],
 	);
 
+	// Memoize names to prevent unnecessary re-initialization in useTournament
+	const tournamentNames = useMemo(
+		() =>
+			randomizedNames.map((n) => ({
+				id: String(n.id || n.name || ""),
+				name: String(n.name || ""),
+				description: n.description as string,
+			})),
+		[randomizedNames],
+	);
+
 	const tournament = useTournament({
-		names: randomizedNames.map((n) => ({
-			id: String(n.id || n.name || ""),
-			name: String(n.name || ""),
-			description: n.description as string,
-		})),
+		names: tournamentNames,
 		existingRatings: convertedRatings as Record<
 			string,
 			{ rating: number; wins?: number; losses?: number }
