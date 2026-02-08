@@ -126,12 +126,9 @@ export const generateCSVContent = (rankings: NameItem[]): string => {
 	const headers = ["Name", "Rating", "Wins", "Losses"];
 	const rows = rankings.map((r) => {
 		const name = sanitizeCSVField(r.name).replace(/"/g, '""');
-		return [
-			`"${name}"`,
-			Math.round(Number(r.rating || 1500)),
-			r.wins || 0,
-			r.losses || 0,
-		].join(",");
+		return [`"${name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(
+			",",
+		);
 	});
 
 	return [headers.join(","), ...rows].join("\n");
