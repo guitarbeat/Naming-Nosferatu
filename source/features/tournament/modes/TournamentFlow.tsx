@@ -107,7 +107,7 @@ export default function TournamentFlow() {
 
 			{/* Suggest Name Section - Hidden during active tournament play */}
 			{(tournament.names === null || tournament.isComplete) && (
-				<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="xl" separator scrollMargin={false}>
+				<Section id="suggest" variant="minimal" padding="comfortable" maxWidth="xl" separator scrollMargin={false} compact>
 					<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
 					<NameSuggestion />
 				</Section>
