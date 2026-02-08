@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
@@ -6,7 +7,6 @@ import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
-import { useMemo } from "react";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
