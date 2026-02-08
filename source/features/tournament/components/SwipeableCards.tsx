@@ -1,6 +1,6 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { Card } from "@/layout/Card";
 import { getRandomCatImage } from "@/services/tournament";
@@ -37,6 +37,41 @@ export const SwipeableCards = memo(
 			(n: NameItem) => selectedNames.some((s: NameItem) => s.id === n.id),
 			[selectedNames],
 		);
+
+		const handleDiscard = useCallback(() => {
+			if (currentCard && !dragDirection) {
+				setDragDirection("left");
+				playSound("wow");
+				setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
+				setTimeout(() => setDragDirection(null), 300);
+			}
+		}, [currentCard, dragDirection]);
+
+		const handleKeep = useCallback(() => {
+			if (currentCard && !dragDirection) {
+				setDragDirection("right");
+				playSound("gameboy-pluck");
+				if (!isSelected(currentCard)) {
+					onToggleName(currentCard);
+				}
+				setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
+				setTimeout(() => setDragDirection(null), 300);
+			}
+		}, [currentCard, dragDirection, isSelected, onToggleName]);
+
+		useEffect(() => {
+			const handleKeyDown = (e: KeyboardEvent) => {
+				if (e.key === "ArrowLeft") {
+					e.preventDefault();
+					handleDiscard();
+				} else if (e.key === "ArrowRight") {
+					e.preventDefault();
+					handleKeep();
+				}
+			};
+			window.addEventListener("keydown", handleKeyDown);
+			return () => window.removeEventListener("keydown", handleKeyDown);
+		}, [handleDiscard, handleKeep]);
 
 		const handleDragEnd = useCallback(
 			(card: NameItem, info: PanInfo) => {
@@ -262,14 +297,7 @@ export const SwipeableCards = memo(
 							variant="flat"
 							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
 							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
-							onClick={() => {
-								if (currentCard) {
-									setDragDirection("left");
-									playSound("wow");
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
-								}
-							}}
+							onClick={handleDiscard}
 						>
 							<X size={28} />
 						</Button>
@@ -291,17 +319,7 @@ export const SwipeableCards = memo(
 							variant="flat"
 							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"
 							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
-							onClick={() => {
-								if (currentCard) {
-									setDragDirection("right");
-									playSound("gameboy-pluck");
-									if (!isSelected(currentCard)) {
-										onToggleName(currentCard);
-									}
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
-								}
-							}}
+							onClick={handleKeep}
 						>
 							<Heart size={28} className="fill-success" />
 						</Button>
@@ -317,7 +335,7 @@ export const SwipeableCards = memo(
 						className="flex items-center justify-center gap-3 text-default-400 text-sm"
 					>
 						<ChevronLeft size={16} className="animate-pulse" />
-						<span className="font-medium">Swipe or tap buttons to review names</span>
+						<span className="font-medium">Swipe, tap buttons, or use ← → keys to review</span>
 						<ChevronRight size={16} className="animate-pulse" />
 					</motion.div>
 				)}
