@@ -130,6 +130,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 									<button
 										type="button"
 										onClick={setGridMode}
+										aria-pressed={!isSwipeMode}
 										className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
 											isSwipeMode
 												? "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
@@ -142,6 +143,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 									<button
 										type="button"
 										onClick={setSwipeModeActive}
+										aria-pressed={isSwipeMode}
 										className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
 											isSwipeMode
 												? "bg-purple-500/30 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-500/10"
@@ -168,8 +170,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 										/>
 									</div>
 									<div className="tournament-toolbar-filter-group">
-										<span className="tournament-toolbar-filter-label">Visibility</span>
+										<label htmlFor="visibility-filter" className="tournament-toolbar-filter-label">
+											Visibility
+										</label>
 										<select
+											id="visibility-filter"
 											value={filterStatus}
 											onChange={(event) => setFilterStatus(event.target.value)}
 											className="tournament-toolbar-filter-select"
@@ -181,8 +186,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 										</select>
 									</div>
 									<div className="tournament-toolbar-filter-group">
-										<span className="tournament-toolbar-filter-label">Selection</span>
+										<label htmlFor="selection-filter" className="tournament-toolbar-filter-label">
+											Selection
+										</label>
 										<select
+											id="selection-filter"
 											value={selectionFilter}
 											onChange={(event) =>
 												setSelectionFilter(event.target.value as "all" | "selected" | "unselected")

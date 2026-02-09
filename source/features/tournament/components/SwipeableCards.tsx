@@ -1,6 +1,6 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { Card } from "@/layout/Card";
 import { getRandomCatImage } from "@/services/tournament";
@@ -72,6 +72,51 @@ export const SwipeableCards = memo(
 			[isSelected, onToggleName],
 		);
 
+		const handleSwipeLeft = useCallback(() => {
+			if (currentCard) {
+				setDragDirection("left");
+				playSound("wow");
+				setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
+				setTimeout(() => setDragDirection(null), 300);
+			}
+		}, [currentCard]);
+
+		const handleSwipeRight = useCallback(() => {
+			if (currentCard) {
+				setDragDirection("right");
+				playSound("gameboy-pluck");
+				if (!isSelected(currentCard)) {
+					onToggleName(currentCard);
+				}
+				setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
+				setTimeout(() => setDragDirection(null), 300);
+			}
+		}, [currentCard, isSelected, onToggleName]);
+
+		// Keyboard navigation
+		useEffect(() => {
+			const handleKeyDown = (e: KeyboardEvent) => {
+				const target = e.target as HTMLElement;
+				// Prevent swipe if focus is on an input or textarea
+				if (
+					target.tagName === "INPUT" ||
+					target.tagName === "TEXTAREA" ||
+					target.isContentEditable
+				) {
+					return;
+				}
+
+				if (e.key === "ArrowLeft") {
+					handleSwipeLeft();
+				} else if (e.key === "ArrowRight") {
+					handleSwipeRight();
+				}
+			};
+
+			window.addEventListener("keydown", handleKeyDown);
+			return () => window.removeEventListener("keydown", handleKeyDown);
+		}, [handleSwipeLeft, handleSwipeRight]);
+
 		const progressValue = (swipedIds.size / names.length) * 100;
 
 		return (
@@ -98,7 +143,12 @@ export const SwipeableCards = memo(
 				</Card>
 
 				{/* Swipe Stack */}
-				<div className="relative w-full" style={{ minHeight: "500px" }}>
+				<div
+					className="relative w-full"
+					style={{ minHeight: "500px" }}
+					aria-roledescription="card stack"
+					aria-label="Swipeable cards"
+				>
 					<AnimatePresence mode="popLayout">
 						{visibleCards.length > 0 ? (
 							cardsToRender.map((card: NameItem, index: number) => (
@@ -262,14 +312,7 @@ export const SwipeableCards = memo(
 							variant="flat"
 							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
 							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
-							onClick={() => {
-								if (currentCard) {
-									setDragDirection("left");
-									playSound("wow");
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
-								}
-							}}
+							onClick={handleSwipeLeft}
 						>
 							<X size={28} />
 						</Button>
@@ -291,17 +334,7 @@ export const SwipeableCards = memo(
 							variant="flat"
 							className="w-16 h-16 bg-success/10 hover:bg-success/20 border-2 border-success/30 text-success"
 							aria-label={currentCard ? `Keep ${currentCard.name}` : "Keep"}
-							onClick={() => {
-								if (currentCard) {
-									setDragDirection("right");
-									playSound("gameboy-pluck");
-									if (!isSelected(currentCard)) {
-										onToggleName(currentCard);
-									}
-									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
-									setTimeout(() => setDragDirection(null), 300);
-								}
-							}}
+							onClick={handleSwipeRight}
 						>
 							<Heart size={28} className="fill-success" />
 						</Button>

@@ -84,6 +84,10 @@ const Button = ({
 }: ButtonProps) => {
 	const finalSize = iconOnly ? "icon" : size;
 
+	if (process.env.NODE_ENV === "development" && iconOnly && !rest["aria-label"]) {
+		console.warn("Button: iconOnly is true but no aria-label provided.");
+	}
+
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (disabled || loading) {
 			event.preventDefault();
@@ -188,9 +192,8 @@ const ScrollToTopButton = ({
 			className={`scroll-to-top visible ${className}`.trim()}
 			onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
 			aria-label="Scroll to top"
-			tabIndex={0}
 		>
-			↑
+			<span aria-hidden="true">↑</span>
 		</button>
 	);
 };
