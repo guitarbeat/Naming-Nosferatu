@@ -1,9 +1,3 @@
-/**
- * @module ProfileSection
- * @description Dedicated page section for user profile management (Login, Name, Avatar)
- * Uses LiquidGlass for consistent styling with NameSuggestion component.
- */
-
 import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
 import Button from "@/layout/Button";
@@ -107,13 +101,14 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 									</div>
 									<div className="flex gap-3">
 										{user.isLoggedIn && (
-											<button
+											<Button
 												type="button"
+												variant="ghost"
 												onClick={() => setIsEditing(false)}
-												className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+												className="flex-1"
 											>
 												Cancel
-											</button>
+											</Button>
 										)}
 										<Button
 											type="submit"
