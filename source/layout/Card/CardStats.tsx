@@ -7,7 +7,7 @@ import React from "react";
 import { cn } from "@/utils/basic";
 import { Card, type CardProps, type CardVariant } from "./Card";
 
-interface CardStatsProps extends CardProps {
+export interface CardStatsProps extends CardProps {
 	title?: string;
 	label?: string;
 	value: string | number | React.ReactNode;
