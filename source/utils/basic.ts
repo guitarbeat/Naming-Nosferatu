@@ -423,6 +423,7 @@ interface SoundConfig {
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
 	private defaultVolume = 0.3;
+	private audioContext: AudioContext | null = null;
 
 	constructor() {
 		this.preloadSounds();
@@ -474,11 +475,15 @@ class SoundManager {
 		}
 
 		try {
+			if (this.audioContext) {
+				return this.audioContext.state !== "suspended";
+			}
+
 			const AudioContextClass =
 				window.AudioContext ||
 				(window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-			const audioContext = new AudioContextClass();
-			return audioContext.state !== "suspended";
+			this.audioContext = new AudioContextClass();
+			return this.audioContext.state !== "suspended";
 		} catch {
 			return false;
 		}
