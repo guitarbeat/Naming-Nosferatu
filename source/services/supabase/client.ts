@@ -33,64 +33,14 @@ declare global {
 	}
 }
 
-const getEnvVar = (key: string): string | undefined => {
-	interface ImportMetaWithEnv {
-		env: Record<string, string | undefined>;
-	}
-	if (typeof import.meta !== "undefined" && (import.meta as unknown as ImportMetaWithEnv).env) {
-		const viteKey = `VITE_${key}`;
-		if ((import.meta as unknown as ImportMetaWithEnv).env[viteKey]) {
-			return (import.meta as unknown as ImportMetaWithEnv).env[viteKey];
-		}
-		if ((import.meta as unknown as ImportMetaWithEnv).env[key]) {
-			return (import.meta as unknown as ImportMetaWithEnv).env[key];
-		}
-	}
-	if (typeof process !== "undefined" && process.env) {
-		if (process.env[key]) {
-			return process.env[key];
-		}
-		if (process.env[`VITE_${key}`]) {
-			return process.env[`VITE_${key}`];
-		}
-	}
-	return undefined;
-};
+// Environment variable helper removed - credentials are hardcoded (publishable keys)
 
-// Lazy validation - only check when actually creating the client
+// Hardcoded credentials (publishable/anon keys are safe to embed)
 const getSupabaseCredentials = (): { url: string; key: string } => {
-	const url = getEnvVar("SUPABASE_URL");
-	const key = getEnvVar("SUPABASE_ANON_KEY");
-
-	if (!url || !key) {
-		const missingVars: string[] = [];
-		if (!url) {
-			missingVars.push("VITE_SUPABASE_URL or SUPABASE_URL");
-		}
-		if (!key) {
-			missingVars.push("VITE_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY");
-		}
-
-		const errorMessage = `Missing required Supabase environment variables: ${missingVars.join(", ")}. Please set them in your .env.local file or environment.`;
-
-		if (typeof window !== "undefined") {
-			console.error("❌", errorMessage);
-			// In development, show a helpful error
-			if (process.env.NODE_ENV === "development") {
-				console.error("💡 Create a .env.local file with:");
-				console.error("   VITE_SUPABASE_URL=your_supabase_url");
-				console.error("   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key");
-				console.error(
-					"💡 on Lovable/Vercel: Add these to your Project Settings > Environment Variables",
-				);
-			}
-		}
-
-		// Throw error to prevent silent failures
-		throw new Error(errorMessage);
-	}
-
-	return { url, key };
+	return {
+		url: "https://ocghxwwwuubgmwsxgyoy.supabase.co",
+		key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0",
+	};
 };
 
 let supabaseInstance: SupabaseClient<Database> | null =
