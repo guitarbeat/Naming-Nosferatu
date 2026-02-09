@@ -1,6 +1,6 @@
 /**
  * @module FormPrimitives
- * @description Unified form system with validated inputs, selects, and textareas.
+ * @description Unified form system with validated inputs and textareas.
  * Single source of truth for all form components in the application.
  */
 
@@ -361,94 +361,3 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 );
 
 Textarea.displayName = "Textarea";
-
-// ============================================================================
-// SELECT COMPONENT
-// ============================================================================
-
-interface SelectOption {
-	value: string | number;
-	label: string;
-	disabled?: boolean;
-}
-
-interface SelectProps
-	extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "className">,
-		BaseFieldProps {
-	options?: SelectOption[];
-	placeholder?: string;
-}
-
-export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-	(
-		{
-			label,
-			error,
-			required,
-			options = [],
-			placeholder = "Choose an option",
-			className = "",
-			...props
-		},
-		ref,
-	) => {
-		const internalId = useId();
-		const id = props.id || internalId;
-
-		return (
-			<FormField id={id} label={label} error={error} required={required}>
-				<div className="relative">
-					<select
-						{...props}
-						id={id}
-						ref={ref}
-						className={cn(
-							inputBaseStyles,
-							"appearance-none cursor-pointer",
-							error && errorStyles,
-							className,
-						)}
-						aria-invalid={!!error}
-						aria-describedby={error ? `${id}-error` : undefined}
-					>
-						{placeholder && (
-							<option value="" disabled={true} className="text-gray-500 bg-neutral-900">
-								{placeholder}
-							</option>
-						)}
-						{options.map((option) => (
-							<option
-								key={option.value}
-								value={option.value}
-								disabled={option.disabled}
-								className="bg-neutral-900 text-white py-2"
-							>
-								{option.label}
-							</option>
-						))}
-					</select>
-					<div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-white/50">
-						<svg
-							width="12"
-							height="12"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-						>
-							<path d="m6 9 6 6 6-6" />
-						</svg>
-					</div>
-				</div>
-			</FormField>
-		);
-	},
-);
-
-Select.displayName = "Select";
-
-// ============================================================================
-// FORM ACTIONS
-// ============================================================================

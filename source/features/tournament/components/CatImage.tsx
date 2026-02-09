@@ -38,9 +38,10 @@ function CatImage({
 		CAT_IMAGES && CAT_IMAGES.length > 0 ? (CAT_IMAGES[0] as string) : "/assets/images/bby-cat.GIF";
 
 	// Reset error state when src changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: src changes should reset local error state
 	useEffect(() => {
 		setHasError(false);
-	}, []);
+	}, [src]);
 
 	const analyseImage = useMemo(
 		() => (imgEl: HTMLImageElement) => {
@@ -234,7 +235,11 @@ function CatImage({
 		};
 
 		if (currentSrc && typeof currentSrc === "string" && currentSrc.startsWith("/assets/images/")) {
-			const base = currentSrc.includes(".") ? currentSrc.replace(/\.[^.]+$/, "") : currentSrc;
+			const extension = currentSrc.split(".").pop()?.toLowerCase();
+			if (!extension || extension === "gif" || extension === "avif" || extension === "webp") {
+				return <img {...commonProps} />;
+			}
+			const base = currentSrc.replace(/\.[^.]+$/, "");
 			return (
 				<picture>
 					<source type="image/avif" srcSet={`${base}.avif`} />

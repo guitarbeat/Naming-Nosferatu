@@ -1,4 +1,4 @@
-import { withSupabase } from "@supabase/client";
+import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/types/appTypes";
 import { CAT_IMAGES, ELO_RATING } from "@/utils/constants";
 

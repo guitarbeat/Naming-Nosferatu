@@ -7,14 +7,15 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { lazy, Suspense, useCallback, useEffect } from "react";
-import { ProfileSection } from "@/features/tournament/components/ProfileSection";
+import { useCallback, useEffect } from "react";
+import { Outlet, Route, Routes } from "react-router-dom";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
 import { useAuth } from "@/providers/AuthProvider";
+import { AnalysisRoute, HomeRoute } from "@/routes";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
@@ -23,12 +24,6 @@ import {
 	devError,
 	initializePerformanceMonitoring,
 } from "@/utils/basic";
-
-// Lazy load route components
-const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
-const Dashboard = lazy(() =>
-	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
-);
 
 /**
  * Root application component with Single Page Architecture (Vertical Scrolling)
@@ -53,7 +48,7 @@ function App() {
 	useAppStoreInitialization();
 
 	// Centralized store
-	const { user, tournament, tournamentActions } = useAppStore();
+	const { user, tournamentActions } = useAppStore();
 
 	// Offline Sync Hook
 	useOfflineSync();
@@ -64,8 +59,7 @@ function App() {
 		tournamentActions,
 	});
 
-	const { handleTournamentComplete, handleStartNewTournament, handleUpdateRatings } =
-		tournamentHandlers;
+	const { handleTournamentComplete } = tournamentHandlers;
 
 	// Handle user login
 	const handleLogin = useCallback(
@@ -85,7 +79,7 @@ function App() {
 	if (!isInitialized) {
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-black">
-				<Loading variant="spinner" text="Consulting the ancient rankings..." />
+				<Loading variant="spinner" text="Preparing the tournament..." />
 			</div>
 		);
 	}
@@ -94,46 +88,37 @@ function App() {
 		<div
 			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout handleTournamentComplete={handleTournamentComplete}>
-				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-					<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
-						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
-						<div id="pick" className="absolute -top-20" />
-						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
-							<ErrorBoundary context="Tournament Flow">
-								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-									<TournamentFlow />
-								</Suspense>
-							</ErrorBoundary>
-						</section>
-
-						{/* Analysis Section - Only visible after tournament completion */}
-						{tournament.isComplete && (
-							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
-								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
-									The Victors Emerge
-								</h2>
-								<ErrorBoundary context="Analysis Dashboard">
-									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-										<Dashboard
-											personalRatings={tournament.ratings}
-											currentTournamentNames={tournament.names || undefined}
-											onStartNew={handleStartNewTournament}
-											onUpdateRatings={handleUpdateRatings}
-											userName={user.name || ""}
-										/>
-									</Suspense>
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<AppLayout handleTournamentComplete={handleTournamentComplete}>
+							<Outlet />
+						</AppLayout>
+					}
+				>
+					<Route
+						index={true}
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context="Tournament Flow">
+									<HomeRoute onLogin={handleLogin} />
 								</ErrorBoundary>
-							</section>
-						)}
-
-						{/* Profile Section - Always visible single page area */}
-						<ErrorBoundary context="Profile Section">
-							<ProfileSection onLogin={handleLogin} />
-						</ErrorBoundary>
-					</div>
-				</Suspense>
-			</AppLayout>
+							</div>
+						}
+					/>
+					<Route
+						path="analysis"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context="Analysis Dashboard">
+									<AnalysisRoute />
+								</ErrorBoundary>
+							</div>
+						}
+					/>
+				</Route>
+			</Routes>
 		</div>
 	);
 }

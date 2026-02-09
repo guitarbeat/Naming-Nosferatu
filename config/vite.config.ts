@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => {
 			react(),
 			VitePWA({
 				registerType: "autoUpdate",
-				includeAssets: ["favicon.ico", "robots.txt", "assets/images/favicon.png"],
+				includeAssets: ["favicon.ico", "robots.txt"],
 				manifest: {
 					name: "Naming Nosferatu",
 					short_name: "Nosferatu",
@@ -52,6 +52,9 @@ export default defineConfig(({ mode }) => {
 					],
 				},
 				workbox: {
+					cleanupOutdatedCaches: true,
+					clientsClaim: true,
+					skipWaiting: true,
 					maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB to accommodate large bg images
 					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,gif,avif,webp}"],
 					runtimeCaching: [

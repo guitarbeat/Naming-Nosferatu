@@ -1,7 +1,7 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
-import { Check, ChevronLeft, ChevronRight, Heart, X } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
+import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { Card } from "@/layout/Card";
 import { getRandomCatImage } from "@/services/tournament";
 import type { NameItem } from "@/types/appTypes";

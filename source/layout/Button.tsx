@@ -1,95 +1,63 @@
 /**
  * @module Button
- * @description Standardized button component system.
- * Provides consistent styling, accessibility, and behavior across the app.
- * This component wraps the shadcn Button and provides a consistent API.
+ * @description Simplified button component with direct variant API.
  */
 
-import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { Loader2 } from "lucide-react";
-import React, { forwardRef, memo } from "react";
+import React, { memo } from "react";
+import { Loader2 } from "@/icons";
 import { cn } from "@/utils/basic";
 
-// Shadcn button variants (inlined from ui/button.tsx)
+/**
+ * Unified button variants - single source of truth
+ */
 const buttonVariants = cva(
-	"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+	"inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 transition-all",
 	{
 		variants: {
 			variant: {
-				default: "bg-primary text-primary-foreground shadow transition-colors hover:bg-primary/90",
-				destructive:
-					"bg-destructive text-destructive-foreground shadow-sm transition-colors hover:bg-destructive/90",
+				primary: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+				secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+				danger: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+				ghost: "hover:bg-accent hover:text-accent-foreground",
 				outline:
-					"border border-input bg-background shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-				secondary:
-					"bg-secondary text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80",
-				ghost: "transition-colors hover:bg-accent hover:text-accent-foreground",
-				link: "text-primary underline-offset-4 transition-colors hover:underline",
+					"border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+				link: "text-primary underline-offset-4 hover:underline",
 				gradient:
-					"rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100",
-				login:
-					"relative font-bold tracking-wide bg-[linear-gradient(135deg,var(--button-primary-bg,var(--primary-600)),var(--button-primary-hover,var(--primary-700)))] text-primary-foreground shadow-[0_4px_16px_var(--overlay-dark),0_2px_8px_var(--overlay-medium),0_0_20px_color-mix(in_srgb,var(--primary-600)_30%,transparent)] transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_8px_24px_var(--overlay-darker),0_4px_12px_var(--overlay-dark),0_0_30px_color-mix(in_srgb,var(--primary-600)_40%,transparent)] hover:-translate-y-0.5 hover:scale-[1.02] active:translate-y-0 active:scale-100 active:shadow-[0_2px_8px_var(--overlay-dark),0_0_15px_color-mix(in_srgb,var(--primary-600)_25%,transparent)] before:absolute before:inset-0 before:content-[''] before:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-neutral-50)_10%,transparent),transparent_50%,color-mix(in_srgb,var(--color-neutral-50)_5%,transparent))] before:rounded-[inherit] before:opacity-0 before:transition-opacity before:duration-300 before:pointer-events-none hover:before:opacity-100 disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-[0_2px_4px_var(--overlay-light)]",
+					"rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold shadow-lg shadow-purple-900/20 active:scale-95 disabled:active:scale-100",
+				secondaryGradient:
+					"rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-900/20 active:scale-95 disabled:active:scale-100",
 			},
 			size: {
-				default: "h-9 px-4 py-2",
-				sm: "h-8 rounded-md px-3 text-xs",
-				lg: "h-10 rounded-md px-8",
+				small: "h-8 rounded-md px-3 text-xs",
+				medium: "h-9 px-4 py-2",
+				large: "h-10 rounded-md px-8",
 				xl: "h-[50px] px-8",
 				icon: "h-9 w-9",
 			},
 		},
 		defaultVariants: {
-			variant: "default",
-			size: "default",
+			variant: "primary",
+			size: "medium",
 		},
 	},
 );
 
-interface ShadcnButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?:
-		| "default"
-		| "destructive"
-		| "outline"
-		| "secondary"
-		| "ghost"
-		| "link"
-		| "gradient"
-		| "login";
-	size?: "default" | "sm" | "lg" | "xl" | "icon";
-	asChild?: boolean;
-}
-
-const ShadcnButton = forwardRef<HTMLButtonElement, ShadcnButtonProps>(
-	({ className, variant, size, asChild = false, ...props }, ref) => {
-		const Comp = asChild ? Slot : "button";
-		return (
-			<Comp className={cn(buttonVariants({ variant, size }), className)} ref={ref} {...props} />
-		);
-	},
-);
-ShadcnButton.displayName = "ShadcnButton";
-
-const variantMapping = {
-	primary: "default",
-	secondary: "secondary",
-	danger: "destructive",
-	ghost: "ghost",
-	gradient: "gradient",
-	login: "login",
-};
-
-const sizeMapping = {
-	small: "sm",
-	medium: "default",
-	large: "lg",
-	xl: "xl",
-};
+export type ButtonVariant =
+	| "primary"
+	| "secondary"
+	| "danger"
+	| "ghost"
+	| "outline"
+	| "link"
+	| "gradient"
+	| "secondaryGradient";
+export type ButtonSize = "small" | "medium" | "large" | "xl" | "icon";
 
 interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
 	children: React.ReactNode;
-	variant?: "primary" | "secondary" | "danger" | "ghost" | "gradient" | "login";
-	size?: "small" | "medium" | "large" | "xl";
+	variant?: ButtonVariant;
+	size?: ButtonSize;
 	disabled?: boolean;
 	loading?: boolean;
 	type?: "button" | "submit" | "reset";
@@ -106,7 +74,7 @@ const Button = ({
 	size = "medium",
 	disabled = false,
 	loading = false,
-	type = "button" as const,
+	type = "button",
 	className = "",
 	onClick,
 	startIcon = null,
@@ -114,20 +82,7 @@ const Button = ({
 	iconOnly = false,
 	...rest
 }: ButtonProps) => {
-	const shadcnVariant = (variantMapping[variant] || "default") as
-		| "default"
-		| "destructive"
-		| "outline"
-		| "secondary"
-		| "ghost"
-		| "link"
-		| "gradient"
-		| "login";
-	let shadcnSize = (sizeMapping[size] || "default") as "default" | "sm" | "lg" | "xl" | "icon";
-
-	if (iconOnly) {
-		shadcnSize = "icon";
-	}
+	const finalSize = iconOnly ? "icon" : size;
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (disabled || loading) {
@@ -138,12 +93,10 @@ const Button = ({
 	};
 
 	return (
-		<ShadcnButton
+		<button
 			type={type}
-			variant={shadcnVariant}
-			size={shadcnSize}
 			disabled={disabled || loading}
-			className={className}
+			className={cn(buttonVariants({ variant, size: finalSize }), className)}
 			onClick={handleClick}
 			{...rest}
 		>
@@ -152,7 +105,7 @@ const Button = ({
 			{!iconOnly && children}
 			{iconOnly && !startIcon && !loading && children}
 			{endIcon && !loading && <span className="ml-2">{endIcon}</span>}
-		</ShadcnButton>
+		</button>
 	);
 };
 

@@ -3,8 +3,8 @@
  * @description Consolidated error handling components: ErrorBoundary, ErrorComponent, and utilities
  */
 
-import { Copy } from "lucide-react";
 import React, { Component, type ReactNode, useState } from "react";
+import { Copy } from "@/icons";
 import { ErrorManager } from "@/services/errorManager";
 import { cn } from "@/utils/basic";
 
