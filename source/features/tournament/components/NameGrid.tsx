@@ -91,12 +91,12 @@ const GridItem = memo(
 		return (
 			<motion.div
 				className="w-full h-full"
-			initial={index < 12 ? { opacity: 0, y: 10 } : false}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{
-				duration: 0.25,
-				delay: index < 12 ? Math.min(index * 0.02, 0.3) : 0,
-			}}
+				initial={index < 12 ? { opacity: 0, y: 10 } : false}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{
+					duration: 0.25,
+					delay: index < 12 ? Math.min(index * 0.02, 0.3) : 0,
+				}}
 			>
 				<CardName
 					name={nameObj.name || ""}

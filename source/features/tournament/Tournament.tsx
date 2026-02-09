@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
@@ -17,7 +18,7 @@ function TournamentContent({
 	onVote,
 }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
-	const visibleNames = getVisibleNames(names);
+	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
 	const audioManager = useAudioManager();
 
 	const {
@@ -57,6 +58,32 @@ function TournamentContent({
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 
+	const handleToggleCatPictures = useCallback(() => {
+		setCatPictures(!showCatPictures);
+	}, [showCatPictures, setCatPictures]);
+
+	// No images shown - gallery images removed from tournament view
+	const leftImg = useMemo(
+		() =>
+			showCatPictures && currentMatch && currentMatch.left
+				? getRandomCatImage(
+						typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+						CAT_IMAGES,
+					)
+				: null,
+		[showCatPictures, currentMatch],
+	);
+	const rightImg = useMemo(
+		() =>
+			showCatPictures && currentMatch && currentMatch.right
+				? getRandomCatImage(
+						typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+						CAT_IMAGES,
+					)
+				: null,
+		[showCatPictures, currentMatch],
+	);
+
 	if (!currentMatch) {
 		return (
 			<div className="flex items-center justify-center min-h-[500px]">
@@ -64,20 +91,6 @@ function TournamentContent({
 			</div>
 		);
 	}
-
-	// No images shown - gallery images removed from tournament view
-	const leftImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-				CAT_IMAGES,
-			)
-		: null;
-	const rightImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-				CAT_IMAGES,
-			)
-		: null;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 font-display text-white selection:bg-primary/30">
@@ -128,7 +141,7 @@ function TournamentContent({
 					</div>
 					<button
 						type="button"
-						onClick={() => setCatPictures(!showCatPictures)}
+						onClick={handleToggleCatPictures}
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 						aria-pressed={showCatPictures}
 						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
