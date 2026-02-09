@@ -207,7 +207,7 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
+	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
 
 	if (isLoading) {
 		return (
