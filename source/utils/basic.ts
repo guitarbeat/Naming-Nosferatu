@@ -111,6 +111,44 @@ export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", .
  * @param rankings Array of NameItems with rankings
  * @param filename Optional filename (default: generated based on date)
  */
+/**
+ * Sanitizes a field for CSV export to prevent formula injection.
+ * Prepends a single quote if the field starts with =, +, -, or @
+ */
+export function sanitizeCSVField(field: string): string {
+	if (/^[=\+\-@]/.test(field)) {
+		return "'" + field;
+	}
+	return field;
+}
+
+/**
+ * Escapes a field for CSV format:
+ * 1. Sanitizes against formula injection
+ * 2. Wraps in quotes if it contains commas, newlines, or double quotes
+ * 3. Escapes double quotes by doubling them
+ */
+export function escapeCSVField(field: string | number | null | undefined): string {
+	if (field === null || field === undefined) {
+		return "";
+	}
+	let stringField = String(field);
+
+	// Apply formula injection protection first
+	stringField = sanitizeCSVField(stringField);
+
+	// Then apply standard CSV escaping
+	if (
+		stringField.includes('"') ||
+		stringField.includes(",") ||
+		stringField.includes("\n") ||
+		stringField.includes("\r")
+	) {
+		return `"${stringField.replace(/"/g, '""')}"`;
+	}
+	return stringField;
+}
+
 export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: string): void => {
 	if (!rankings.length) {
 		return;
@@ -118,7 +156,12 @@ export const exportTournamentResultsToCSV = (rankings: NameItem[], filename?: st
 
 	const headers = ["Name", "Rating", "Wins", "Losses"];
 	const rows = rankings.map((r) =>
-		[`"${r.name}"`, Math.round(Number(r.rating || 1500)), r.wins || 0, r.losses || 0].join(","),
+		[
+			escapeCSVField(r.name),
+			Math.round(Number(r.rating || 1500)),
+			r.wins || 0,
+			r.losses || 0,
+		].join(","),
 	);
 
 	const csvContent = [headers.join(","), ...rows].join("\n");

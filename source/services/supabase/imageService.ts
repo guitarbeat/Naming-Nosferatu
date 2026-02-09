@@ -32,7 +32,12 @@ export const imagesAPI = {
 	upload: async (file: File | Blob, userName: string) => {
 		return withSupabase(
 			async (client) => {
-				const fileName = `${Date.now()}-${userName}-${(file as File).name || "blob"}`;
+				// Sanitize userName and fileName to prevent path traversal and ensure safe filenames
+				const safeUserName = userName.replace(/[^a-zA-Z0-9._-]/g, "");
+				const originalName = (file as File).name || "blob";
+				const safeOriginalName = originalName.replace(/[^a-zA-Z0-9._-]/g, "");
+
+				const fileName = `${Date.now()}-${safeUserName}-${safeOriginalName}`;
 				const { data, error } = await client.storage.from("cat-photos").upload(fileName, file);
 
 				if (error) {
