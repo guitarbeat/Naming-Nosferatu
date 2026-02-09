@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Help Me Name My Cat!</title>
+
+  <!-- Mobile-specific meta tags for better navbar experience -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <!-- SEO -->
+  <meta name="description"
+    content="Pick the perfect cat name via a fun tournament. Save, compare, and share results." />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f7fb" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Name Nosferatu" />
+  <meta property="og:description" content="Tournament-style voting for cat names." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/images/IMG_4844.avif" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Name Nosferatu" />
+  <meta name="twitter:description" content="Tournament-style voting for cat names." />
+  <meta name="twitter:image" content="/assets/images/IMG_4844.avif" />
+
+  <!-- Font performance - single consolidated request -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="//ocghxwwwuubgmwsxgyoy.supabase.co" />
+  <link rel="preconnect" href="https://ocghxwwwuubgmwsxgyoy.supabase.co" crossorigin />
+  <!-- Critical fonts loaded synchronously -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+  <!-- Non-critical fonts loaded async -->
+  <link rel="preload"
+    href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&family=Sour+Gummy:wght@100&family=Patrick+Hand&family=Schoolbell&family=Kalam:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    as="style" onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Josefin+Slab:wght@400;600&family=Waiting+for+the+Sunrise&family=Sour+Gummy:wght@100&family=Patrick+Hand&family=Schoolbell&family=Kalam:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet" />
+  </noscript>
+  <!-- Custom cat favicon -->
+  <link rel="icon" href="/assets/images/favicon.png" type="image/png" />
+
+  <style>
+    html {
+      background-color: #050b16;
+    }
+
+    body {
+      background-color: #050b16;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    (function applyInitialTheme() {
+      const { documentElement, body } = document;
+      if (!documentElement) {
+        return;
+      }
+      const theme = "dark";
+      documentElement.dataset.theme = theme;
+      if (body) {
+        body.dataset.theme = theme;
+      }
+    })();
+  </script>
+  <div id="root"></div>
+  <script type="module" src="/source/main.tsx"></script>
+</body>
+
+</html>

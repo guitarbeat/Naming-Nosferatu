@@ -4,8 +4,8 @@ import { useCallback, useEffect, useRef } from "react";
  * Star generation constants - using design system values
  * These map to responsive design token considerations
  */
-const DEFAULT_STAR_COUNT = 120;
-const MOBILE_STAR_REDUCTION = 0.4; /* * Reduce star count by 40% on mobile for performance */
+const DEFAULT_STAR_COUNT = 60;
+const MOBILE_STAR_REDUCTION = 0.3; /* * Reduce star count for performance */
 const MOBILE_MAX_WIDTH = 600; /* * Mobile breakpoint threshold */
 const STAR_GLYPH = "✦";
 

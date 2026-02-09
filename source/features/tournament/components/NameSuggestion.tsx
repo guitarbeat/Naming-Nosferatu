@@ -6,8 +6,10 @@
 
 import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNames";
+import { X } from "@/icons";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
+import { getGlassPreset } from "@/layout/GlassPresets";
 import LiquidGlass from "@/layout/LiquidGlass";
 
 // ============================================================================
@@ -40,10 +42,7 @@ function InlineNameSuggestion() {
 		<LiquidGlass
 			className="w-full flex flex-col items-center justify-center p-8 backdrop-blur-md rounded-3xl"
 			style={{ width: "100%", height: "auto", minHeight: "200px" }}
-			radius={24}
-			frost={0.2}
-			saturation={1.1}
-			outputBlur={0.8}
+			{...getGlassPreset("card")}
 		>
 			<form
 				onSubmit={handleLocalSubmit}
@@ -57,7 +56,7 @@ function InlineNameSuggestion() {
 					>
 						Got a great name in mind?
 					</label>
-					<div className="flex gap-3">
+					<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 						<div className="flex-1">
 							<Input
 								id="suggest-name"
@@ -75,6 +74,7 @@ function InlineNameSuggestion() {
 							size="xl"
 							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
+							className="w-full sm:w-auto"
 						>
 							Suggest
 						</Button>
@@ -205,14 +205,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 			/>
 			<LiquidGlass
 				id={`modal-glass-${modalGlassId.replace(/:/g, "-")}`}
-				width={500}
-				height={600}
-				radius={20}
-				scale={-80}
-				saturation={1.05}
-				frost={0.08}
-				inputBlur={8}
-				outputBlur={1.2}
+				{...getGlassPreset("modal")}
 				className="z-[1051] overflow-hidden"
 				style={{
 					position: "fixed",
@@ -248,19 +241,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							aria-label="Close modal"
 							disabled={isSubmitting}
 						>
-							<svg
-								width="24"
-								height="24"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							>
-								<line x1="18" y1="6" x2="6" y2="18" />
-								<line x1="6" y1="6" x2="18" y2="18" />
-							</svg>
+							<X size={24} />
 						</button>
 					</div>
 
@@ -325,14 +306,9 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							)}
 
 							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
-								<button
-									type="button"
-									onClick={handleClose}
-									className="px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-									disabled={isSubmitting}
-								>
+								<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 									Cancel
-								</button>
+								</Button>
 								<Button
 									type="submit"
 									variant="gradient"

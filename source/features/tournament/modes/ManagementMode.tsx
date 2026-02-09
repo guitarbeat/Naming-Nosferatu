@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { memo, useCallback } from "react";
 import { Layers, LayoutGrid } from "@/icons";
 import Button from "@/layout/Button";
+import { CardStats } from "@/layout/Card";
 import { EmptyState } from "@/layout/EmptyState";
 import useAppStore from "@/store/appStore";
 import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
@@ -31,7 +32,18 @@ export const ManagementMode = memo<ManagementModeProps>(
 		toggleName,
 		selectedNames,
 		selectedCount,
+		stats,
+		filterStatus,
+		setFilterStatus,
+		selectionFilter,
+		setSelectionFilter,
+		searchTerm,
+		setSearchTerm,
+		setShowSelectedOnly,
+		showSelectedOnly,
 		handleFilterChange,
+		handleAnalysisModeToggle,
+		analysisMode,
 		showCatPictures,
 		tournamentProps = {},
 		profileProps = {},
@@ -44,14 +56,19 @@ export const ManagementMode = memo<ManagementModeProps>(
 		const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
 		const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
 		const showCatPicturesGlobal = useAppStore((state) => state.ui.showCatPictures);
+		const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 
 		// Direct mode setters instead of toggle
 		const setGridMode = useCallback(() => {
-			if (isSwipeMode) setSwipeMode(false);
+			if (isSwipeMode) {
+				setSwipeMode(false);
+			}
 		}, [isSwipeMode, setSwipeMode]);
 
 		const setSwipeModeActive = useCallback(() => {
-			if (!isSwipeMode) setSwipeMode(true);
+			if (!isSwipeMode) {
+				setSwipeMode(true);
+			}
 		}, [isSwipeMode, setSwipeMode]);
 
 		// Get handlers from tournamentProps
@@ -65,20 +82,22 @@ export const ManagementMode = memo<ManagementModeProps>(
 
 		if (isError) {
 			return (
-				<div className="flex flex-col items-center justify-center p-12 text-center bg-red-500/5 rounded-2xl border border-red-500/20 backdrop-blur-md">
-					<h3 className="text-xl font-bold text-red-500 mb-2">Error Loading Names</h3>
-					<p className="text-white/60 mb-6">{error?.message || "Please try again later"}</p>
-					<button
-						type="button"
-						onClick={() => {
-							clearErrors();
-							refetch();
-						}}
-						className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-					>
-						Retry
-					</button>
-				</div>
+				<EmptyState
+					title="Error Loading Names"
+					description={error?.message || "Please try again later"}
+					icon="⚠️"
+					action={
+						<Button
+							variant="danger"
+							onClick={() => {
+								clearErrors();
+								refetch();
+							}}
+						>
+							Retry
+						</Button>
+					}
+				/>
 			);
 		}
 
@@ -99,36 +118,142 @@ export const ManagementMode = memo<ManagementModeProps>(
 				)}
 
 				<div className="flex flex-col gap-6">
-					{/* View Mode Toggle - Only show in tournament mode */}
+					{/* View Mode Toggle - Sticky header for tournament mode */}
 					{isTournament && (
-						<div className="flex items-center justify-between gap-4 px-1 animate-in fade-in slide-in-from-top-4 duration-500">
-							<div className="flex items-center gap-2">
-								<button
-									type="button"
-									onClick={setGridMode}
-									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-										isSwipeMode
-											? "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
-											: "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-									}`}
-								>
-									<LayoutGrid size={16} />
-									Grid
-								</button>
-								<button
-									type="button"
-									onClick={setSwipeModeActive}
-									className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-										isSwipeMode
-											? "bg-purple-500/20 text-purple-400 border border-purple-500/30"
-											: "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
-									}`}
-								>
-									<Layers size={16} />
-									Swipe
-								</button>
+						<motion.div
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+							className="sticky top-0 z-20 flex flex-col gap-4 px-4 py-3 -mx-4 bg-black/90 backdrop-blur-xl border-b border-white/10"
+						>
+							<div className="flex items-center justify-between gap-4">
+								<div className="flex items-center gap-2">
+									<button
+										type="button"
+										onClick={setGridMode}
+										className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+											isSwipeMode
+												? "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+												: "bg-purple-500/30 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-500/10"
+										}`}
+									>
+										<LayoutGrid size={16} />
+										Grid
+									</button>
+									<button
+										type="button"
+										onClick={setSwipeModeActive}
+										className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
+											isSwipeMode
+												? "bg-purple-500/30 text-purple-300 border border-purple-500/40 shadow-lg shadow-purple-500/10"
+												: "bg-white/5 text-white/50 border border-white/10 hover:bg-white/10"
+										}`}
+									>
+										<Layers size={16} />
+										Swipe
+									</button>
+								</div>
+								<span className="text-xs text-white/50 font-medium">{selectedCount} selected</span>
 							</div>
-							<span className="text-xs text-white/40">{selectedCount} selected</span>
+							<div className="tournament-toolbar-filters-container">
+								<div className="tournament-toolbar-filters-grid">
+									<div className="tournament-toolbar-search-wrapper">
+										<span className="tournament-toolbar-search-icon">🔍</span>
+										<input
+											type="search"
+											placeholder="Search names"
+											value={searchTerm}
+											onChange={(event) => setSearchTerm(event.target.value)}
+											className="tournament-toolbar-search-input analysis-input"
+											aria-label="Search names"
+										/>
+									</div>
+									<div className="tournament-toolbar-filter-group">
+										<span className="tournament-toolbar-filter-label">Visibility</span>
+										<select
+											value={filterStatus}
+											onChange={(event) => setFilterStatus(event.target.value)}
+											className="tournament-toolbar-filter-select"
+											disabled={!analysisMode}
+										>
+											<option value="visible">Visible</option>
+											<option value="hidden">Hidden</option>
+											<option value="all">All</option>
+										</select>
+									</div>
+									<div className="tournament-toolbar-filter-group">
+										<span className="tournament-toolbar-filter-label">Selection</span>
+										<select
+											value={selectionFilter}
+											onChange={(event) =>
+												setSelectionFilter(event.target.value as "all" | "selected" | "unselected")
+											}
+											className="tournament-toolbar-filter-select"
+										>
+											<option value="all">All</option>
+											<option value="selected">Selected</option>
+											<option value="unselected">Unselected</option>
+										</select>
+									</div>
+									<div className="toolbar-segmented">
+										<button
+											type="button"
+											onClick={() => setShowSelectedOnly(!showSelectedOnly)}
+											className={`toolbar-toggle ${showSelectedOnly ? "toolbar-toggle--active" : ""}`}
+										>
+											{showSelectedOnly ? "Showing Selected" : "Show Selected"}
+										</button>
+										<div className="toolbar-divider" />
+										<button
+											type="button"
+											onClick={() => setCatPictures(!showCatPicturesGlobal)}
+											className={`toolbar-toggle ${showCatPicturesGlobal ? "toolbar-toggle--active" : ""}`}
+										>
+											{showCatPicturesGlobal ? "Cats On" : "Cats Off"}
+										</button>
+										<div className="toolbar-divider" />
+										<button
+											type="button"
+											onClick={handleAnalysisModeToggle}
+											className={`toolbar-toggle toolbar-toggle--accent ${analysisMode ? "toolbar-toggle--active" : ""}`}
+										>
+											{analysisMode ? "Exit Analysis" : "Enter Analysis"}
+										</button>
+									</div>
+								</div>
+							</div>
+						</motion.div>
+					)}
+
+					{isTournament && (
+						<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+							<CardStats
+								label="Total"
+								value={stats.total}
+								emoji="📇"
+								variant="primary"
+								className="min-h-[110px]"
+							/>
+							<CardStats
+								label="Visible"
+								value={stats.visible}
+								emoji="👀"
+								variant="info"
+								className="min-h-[110px]"
+							/>
+							<CardStats
+								label="Hidden"
+								value={stats.hidden}
+								emoji="🕵️"
+								variant="warning"
+								className="min-h-[110px]"
+							/>
+							<CardStats
+								label="Selected"
+								value={stats.selected}
+								emoji="✅"
+								variant="success"
+								className="min-h-[110px]"
+							/>
 						</div>
 					)}
 
