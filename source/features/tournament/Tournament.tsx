@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent } from "@/layout/Error";
 import { Loading } from "@/layout/StatusIndicators";
@@ -230,10 +231,12 @@ function TournamentContent({
 	);
 }
 
+const MemoizedTournament = memo(TournamentContent);
+
 export default function Tournament(props: TournamentProps) {
 	return (
 		<ErrorComponent variant="boundary">
-			<TournamentContent {...props} />
+			<MemoizedTournament {...props} />
 		</ErrorComponent>
 	);
 }
