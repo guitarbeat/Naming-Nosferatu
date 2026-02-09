@@ -220,29 +220,41 @@ export function FluidNav() {
 		if (location.pathname !== "/" || isAnalysisRoute) {
 			return;
 		}
+		let rafId: number | null = null;
 		const handleScroll = () => {
-			const sections = ["pick", "play", "suggest", "profile"];
-			let current = "pick";
-			let minDistance = Infinity;
+			if (rafId) {
+				return;
+			}
+			rafId = requestAnimationFrame(() => {
+				rafId = null;
+				const sections = ["pick", "play", "suggest", "profile"];
+				let current = "pick";
+				let minDistance = Infinity;
 
-			for (const id of sections) {
-				const element = document.getElementById(id);
-				if (element) {
-					const rect = element.getBoundingClientRect();
-					const distance = Math.abs(rect.top);
-					if (distance < minDistance && distance < window.innerHeight * 0.6) {
-						minDistance = distance;
-						current = id;
+				for (const id of sections) {
+					const element = document.getElementById(id);
+					if (element) {
+						const rect = element.getBoundingClientRect();
+						const distance = Math.abs(rect.top);
+						if (distance < minDistance && distance < window.innerHeight * 0.6) {
+							minDistance = distance;
+							current = id;
+						}
 					}
 				}
-			}
 
-			setActiveSection(current);
+				setActiveSection(current);
+			});
 		};
 
 		window.addEventListener("scroll", handleScroll, { passive: true });
 		handleScroll();
-		return () => window.removeEventListener("scroll", handleScroll);
+		return () => {
+			window.removeEventListener("scroll", handleScroll);
+			if (rafId) {
+				cancelAnimationFrame(rafId);
+			}
+		};
 	}, [location.pathname, isAnalysisRoute]);
 
 	const isActive = (key: string) => {
