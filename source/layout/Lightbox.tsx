@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "@/icons";
 
 interface LightboxProps {
@@ -9,6 +9,13 @@ interface LightboxProps {
 }
 
 export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
+	const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		closeButtonRef.current?.focus();
+	}, []);
+
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
 			if (e.key === "Escape") {
@@ -17,6 +24,22 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 				onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1);
 			} else if (e.key === "ArrowRight") {
 				onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1);
+			} else if (e.key === "Tab") {
+				const focusable = containerRef.current?.querySelectorAll<HTMLElement>(
+					'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
+				);
+				if (!focusable || focusable.length === 0) {
+					return;
+				}
+				const first = focusable[0];
+				const last = focusable[focusable.length - 1];
+				if (e.shiftKey && document.activeElement === first) {
+					e.preventDefault();
+					last?.focus();
+				} else if (!e.shiftKey && document.activeElement === last) {
+					e.preventDefault();
+					first?.focus();
+				}
 			}
 		};
 		window.addEventListener("keydown", onKey);
@@ -32,6 +55,10 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		<div
 			className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
 			onClick={onClose}
+			role="dialog"
+			aria-modal="true"
+			aria-label="Image viewer"
+			ref={containerRef}
 		>
 			<div
 				className="relative w-full h-full flex items-center justify-center"
@@ -41,6 +68,8 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute top-4 right-4 z-[110] p-3 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all"
 					onClick={onClose}
+					aria-label="Close image viewer"
+					ref={closeButtonRef}
 				>
 					<X size={24} />
 				</button>
@@ -48,6 +77,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1)}
+					aria-label="View previous image"
 				>
 					<ChevronLeft size={32} />
 				</button>
@@ -64,6 +94,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 					type="button"
 					className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
 					onClick={() => onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1)}
+					aria-label="View next image"
 				>
 					<ChevronRight size={32} />
 				</button>
