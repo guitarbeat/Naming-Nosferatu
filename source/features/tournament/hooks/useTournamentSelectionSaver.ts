@@ -32,18 +32,19 @@ export function useTournamentSelectionSaver({
 				clearTimeout(saveTimeoutRef.current);
 			}
 
-			// Create a hash of the current selection to detect changes
-			const selectionHash = selectedNames
-				.map((n) => n.id)
-				.sort()
-				.join(",");
-			if (selectionHash === lastSavedRef.current) {
-				return;
-			}
-
 			// Debounce the save operation
 			saveTimeoutRef.current = setTimeout(async () => {
 				try {
+					// Create a hash of the current selection to detect changes
+					const selectionHash = selectedNames
+						.map((n) => n.id)
+						.sort()
+						.join(",");
+
+					if (selectionHash === lastSavedRef.current) {
+						return;
+					}
+
 					// Save to localStorage as a simple persistence mechanism
 					localStorage.setItem(
 						`tournament_selection_${userName}`,
