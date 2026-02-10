@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import Tournament from "@/features/tournament/Tournament";
+import TournamentPlay from "@/features/tournament/modes/TournamentPlay";
 import Button from "@/layout/Button";
 import Card, { type GlassConfig } from "@/layout/Card";
 import { getGlassPreset } from "@/layout/GlassPresets";
@@ -81,7 +81,7 @@ export default function TournamentFlow() {
 							exit={{ opacity: 0, x: -20 }}
 							className="w-full"
 						>
-							<Tournament
+							<TournamentPlay
 								names={tournament.names}
 								existingRatings={tournament.ratings}
 								onComplete={handleTournamentComplete}
