@@ -21,7 +21,6 @@ ReactDOM.createRoot(rootElement).render(
 				<ToastProvider>
 					<BrowserRouter>
 						<App />
-						<Analytics />
 					</BrowserRouter>
 				</ToastProvider>
 			</AuthProvider>
