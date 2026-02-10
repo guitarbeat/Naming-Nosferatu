@@ -1,0 +1,26 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"entry": [
+		"source/main.tsx"
+	],
+	"project": [
+		"source/**/*.{js,jsx,ts,tsx}"
+	],
+	"ignore": [
+		"**/*.md",
+		"**/README.md",
+		"**/IMPLEMENTATION.md",
+		"config/postcss.config.js",
+		"config/tailwind.config.js",
+		"source/shared/utils/performanceMonitor.d.ts",
+		"source/shared/components/NameSuggestionModal/NameSuggestionModal.d.ts"
+	],
+	"ignoreDependencies": [
+		"@tailwindcss/postcss",
+		"autoprefixer",
+		"postcss",
+		"postcss-discard-unused",
+		"tailwindcss"
+	],
+	"typescript": true
+}

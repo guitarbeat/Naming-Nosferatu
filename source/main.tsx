@@ -1,11 +1,13 @@
 import { QueryClientProvider } from "@tanstack/react-query";
+import { Analytics } from "@vercel/analytics/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { queryClient } from "@/services/supabase/client";
 import App from "./App";
+import { AuthProvider } from "./providers/AuthProvider";
 import { ToastProvider } from "./providers/ToastProvider";
-import { queryClient } from "./services/supabase/queryClient";
-import "@styles/index.css";
+import "@/styles/index.css";
 
 const rootElement = document.getElementById("root");
 
@@ -16,11 +18,14 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<ToastProvider>
-				<BrowserRouter>
-					<App />
-				</BrowserRouter>
-			</ToastProvider>
+			<AuthProvider>
+				<ToastProvider>
+					<BrowserRouter>
+						<App />
+						<Analytics />
+					</BrowserRouter>
+				</ToastProvider>
+			</AuthProvider>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );

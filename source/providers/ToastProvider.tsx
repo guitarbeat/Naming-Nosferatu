@@ -6,7 +6,7 @@
 
 import type React from "react";
 import { createContext, useCallback, useContext, useState } from "react";
-import { type IToastItem, ToastContainer } from "@/components/Toast";
+import { type IToastItem, ToastContainer } from "@/layout/Toast";
 
 // ============================================================================
 // TYPES

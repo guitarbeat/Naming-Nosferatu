@@ -1,17 +1,138 @@
-import { withSupabase } from "@/services/supabase/clientBase";
+/**
+ * @module analyticsService
+ * @description Analytics service and shared types for analysis dashboard
+ */
 
-export interface SelectionStats {
+import { withSupabase } from "@/services/supabase/client";
+
+/* ==========================================================================
+   SHARED ANALYTICS TYPES
+   ========================================================================== */
+
+/**
+ * Types with snake_case properties match database column names from Supabase queries.
+ * These cannot be changed to camelCase without breaking database queries.
+ */
+
+export interface NameWithInsight {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins: number;
+	selected: number;
+	dateSubmitted: string | null;
+	insights: string[];
+	ratingPercentile?: number;
+	selectedPercentile?: number;
+}
+
+export interface SummaryStats {
+	maxRating?: number;
+	maxWins?: number;
+	maxSelected?: number;
+	avgRating: number;
+	avgWins?: number;
+	totalSelected?: number; // User view
+	totalSelections?: number; // Admin view
+	topName?: {
+		id: string | number;
+		name: string;
+		rating: number;
+		wins: number;
+		selected: number;
+		dateSubmitted: string | null;
+	};
+	// Admin specific
+	totalNames?: number;
+	hiddenNames?: number;
+	activeNames?: number;
+	totalUsers?: number;
+	totalRatings?: number;
+	neverSelectedCount?: number;
+	neverSelectedNames?: string[];
+}
+
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
+export interface LeaderboardItem {
+	name_id: string | number;
+	name: string;
+	avg_rating?: number;
+	wins?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
+export interface SelectionPopularityItem {
+	name_id: string | number;
+	name: string;
+	times_selected?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
+export interface AnalyticsDataItem {
+	name_id: string | number;
+	name: string;
+	avg_rating?: number;
+	total_wins?: number;
+	times_selected?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+export interface HighlightItem {
+	id: string;
+	name: string;
+	value?: number;
+	avg_rating?: number;
+}
+
+export interface ConsolidatedName {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins: number;
+	selected: number;
+	dateSubmitted: string | null;
+	insights?: string[];
+	ratingPercentile?: number;
+	selectedPercentile?: number;
+	[key: string]: unknown;
+}
+
+export interface AnalysisDashboardProps {
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] };
+	userName?: string | null;
+	showGlobalLeaderboard?: boolean;
+	defaultCollapsed?: boolean;
+	isAdmin?: boolean;
+	onNameHidden?: (id: string) => void;
+}
+
+/* ==========================================================================
+   INTERNAL SERVICE TYPES
+   ========================================================================== */
+
+interface SelectionStats {
 	name_id: string | number;
 	name: string;
 	count: number;
 }
 
-export interface AnalyticsSelectionStats {
+interface AnalyticsSelectionStats {
 	count: number;
 	users: Set<string>;
 }
 
-export interface RatingStats {
+interface RatingStats {
 	totalRating: number;
 	count: number;
 	wins: number;
@@ -19,7 +140,7 @@ export interface RatingStats {
 	users: Set<string>;
 }
 
-export interface RatingInfo {
+interface RatingInfo {
 	rating: number;
 	wins: number;
 }
@@ -50,17 +171,22 @@ interface NameRow {
 
 export const analyticsAPI = {
 	/**
-	 * Get selection popularity
+	 * Get top selected names based on selection history
 	 */
-	getSelectionPopularity: async (limit: number | null = 20) => {
+	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client.from("tournament_selections").select("name_id, name");
+			const { data, error } = await client
+				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name");
 			if (error) {
 				return [];
 			}
 
+			const typedData = data as unknown as SelectionRow[];
+
 			const selectionCounts = new Map<string | number, SelectionStats>();
-			(data || []).forEach((row) => {
+			(typedData || []).forEach((row) => {
 				const r = row as SelectionRow;
 				if (!selectionCounts.has(r.name_id)) {
 					selectionCounts.set(r.name_id, {
@@ -89,15 +215,18 @@ export const analyticsAPI = {
 	},
 
 	/**
-	 * Get comprehensive popularity analytics
+	 * Get comprehensive popularity scores with weighting
 	 */
-	getPopularityAnalytics: async (
+	getPopularityScores: async (
 		limit: number | null = 20,
 		userFilter: string | null = "all",
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client.from("tournament_selections").select("name_id, name, user_name");
+			let selectionsQuery = client
+				// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+				.from("cat_tournament_selections" as any)
+				.select("name_id, name, user_name");
 			let ratingsQuery = client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses, user_name");
@@ -120,7 +249,7 @@ export const analyticsAPI = {
 					.eq("is_hidden", false),
 			]);
 
-			const selections = selectionsResult.data || [];
+			const selections = (selectionsResult.data as unknown as SelectionRow[]) || [];
 			const ratings = ratingsResult.data || [];
 			const names = namesResult.data || [];
 
@@ -224,7 +353,8 @@ export const analyticsAPI = {
 				startDate.setDate(startDate.getDate() - (periodCount - 1));
 
 				const { data: selections, error: selError } = await client
-					.from("tournament_selections")
+					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+					.from("cat_tournament_selections" as any)
 					.select("name_id, name, selected_at")
 					.gte("selected_at", startDate.toISOString())
 					.order("selected_at", { ascending: true });
@@ -233,6 +363,8 @@ export const analyticsAPI = {
 					console.error("Error fetching selection history:", selError);
 					return { data: [], timeLabels: [] };
 				}
+
+				const typedSelections = selections as unknown as SelectionRow[];
 
 				const { data: ratings } = await client
 					.from("cat_name_ratings")
@@ -262,8 +394,8 @@ export const analyticsAPI = {
 					}
 				>();
 
-				(selections || []).forEach((item) => {
-					const s = item as SelectionRow;
+				typedSelections.forEach((item) => {
+					const s = item;
 					const nameId = String(s.name_id);
 					const dateStr = new Date(s.selected_at).toISOString();
 					const [date] = dateStr.split("T");
@@ -354,22 +486,8 @@ export const leaderboardAPI = {
 	/**
 	 * Get leaderboard data
 	 */
-	getLeaderboard: async (limit: number | null = 50, categoryId: string | null = null) => {
+	getLeaderboard: async (limit: number | null = 50) => {
 		return withSupabase(async (client) => {
-			if (categoryId) {
-				const { data: topNames, error } = await client.rpc("get_top_names_by_category", {
-					p_category: categoryId,
-					p_limit: limit ?? undefined,
-				});
-				if (error) {
-					return [];
-				}
-				return (topNames || []).map((t) => ({
-					...t,
-					name_id: (t as { id: string | number }).id,
-				}));
-			}
-
 			const { data: ratings } = await client
 				.from("cat_name_ratings")
 				.select("name_id, rating, wins, losses");
@@ -453,7 +571,10 @@ export const statsAPI = {
 						.eq("is_hidden", true),
 					client.from("cat_app_users").select("user_name", { count: "exact", head: true }),
 					client.from("cat_name_ratings").select("rating"),
-					client.from("tournament_selections").select("id", { count: "exact", head: true }),
+					client
+						// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+						.from("cat_tournament_selections" as any)
+						.select("id", { count: "exact", head: true }),
 				]);
 
 			const totalNames = namesResult.count || 0;
@@ -478,7 +599,7 @@ export const statsAPI = {
 	/**
 	 * Get all names with user-specific ratings
 	 */
-	getNamesWithUserRatings: async (userName: string) => {
+	getUserRatedNames: async (userName: string) => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
 				.from("cat_name_options")
@@ -513,7 +634,11 @@ export const statsAPI = {
 		return withSupabase(async (client) => {
 			const [ratingsResult, selectionsResult] = await Promise.all([
 				client.from("cat_name_ratings").select("*").eq("user_name", userName),
-				client.from("tournament_selections").select("*").eq("user_name", userName),
+				client
+					// biome-ignore lint/suspicious/noExplicitAny: Database schema dynamic
+					.from("cat_tournament_selections" as any)
+					.select("*")
+					.eq("user_name", userName),
 			]);
 
 			const ratings = ratingsResult.data || [];

@@ -103,7 +103,6 @@
 				"source/features/tournament/components/AnalysisWrappers.tsx",
 				"source/features/tournament/components/AnalysisBulkActionsWrapper.tsx",
 				"source/features/tournament/TournamentSetup.tsx",
-				"source/features/tournament/Dashboard.tsx",
 				"source/features/tournament/components/TournamentFooter/TournamentFooter.tsx",
 				"source/shared/components/ViewRouter/ViewRouter.tsx",
 				"source/features/tournament/components/PersonalResults.tsx",
@@ -118,7 +117,9 @@
 				"source/shared/components/NameGrid/NameGrid.tsx",
 				"source/shared/propTypes.ts",
 				"source/shared/services/errorManager/index.ts",
-				"source/shared/services/supabase/supabaseClient.ts"
+				"source/shared/services/supabase/supabaseClient.ts",
+				"source/features/tournament/TournamentComponents.tsx",
+				"source/hooks/useUserSession.ts"
 			],
 			"linter": {
 				"rules": {

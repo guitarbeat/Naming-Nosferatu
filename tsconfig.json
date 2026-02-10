@@ -1,7 +1,29 @@
 {
-	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		"baseUrl": "./"
+		"target": "ES2020",
+		"useDefineForClassFields": true,
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"types": ["vite/client", "node"],
+		"paths": {
+			"@supabase/client": ["./source/services/supabase/client.ts"],
+			"@supabase/types": ["./supabase/types.ts"],
+			"@db": ["./supabase"],
+			"@db/*": ["./supabase/*"],
+			"@/*": ["./source/*"]
+		}
 	},
-	"include": ["source", "config", "scripts", "vite.config.ts", "*.d.ts"]
+	"include": ["source/**/*", "config/**/*", "scripts/**/*"],
+	"exclude": ["node_modules", "build", "dist"]
 }
