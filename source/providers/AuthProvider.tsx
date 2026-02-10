@@ -168,21 +168,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	});
 
 	const loginMutation = useMutation({
-		mutationFn: async ({ email, password }: LoginCredentials) => {
+		mutationFn: async ({ email, password, name }: LoginCredentials) => {
 			const client = await supabase();
 			if (!client) {
 				throw new Error("Supabase client not available");
 			}
 
-			// Supporting both email/password and simple username login (if applicable)
+			// Supporting both email/password and simple username login
 			if (email && password) {
 				const { error } = await client.auth.signInWithPassword({ email, password });
 				if (error) {
 					throw error;
 				}
+				return true;
 			}
 
-			return true;
+			// Name-based login: ensure user exists in cat_app_users table
+			if (name) {
+				try {
+					const { data: existingUser } = await client
+						.from("cat_app_users")
+						.select("user_name")
+						.eq("user_name", name)
+						.single();
+
+					// Create user if doesn't exist
+					if (!existingUser) {
+						const { error: insertError } = await client
+							.from("cat_app_users")
+							.insert({ user_name: name });
+						if (insertError) {
+							console.error("Error creating user:", insertError);
+							throw insertError;
+						}
+					}
+
+					// Update Supabase context with the username
+					await updateSupabaseUserContext(name);
+					return true;
+				} catch (error) {
+					console.error("Error during name-based login:", error);
+					throw error;
+				}
+			}
+
+			throw new Error("No valid login credentials provided");
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["auth"] });
