@@ -6,9 +6,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import { EmptyState } from "@/layout/EmptyState";
-import { Lightbox } from "@/layout/Lightbox";
-import { Loading } from "@/layout/StatusIndicators";
+import { EmptyState, Lightbox, Loading } from "@/layout";
 import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,

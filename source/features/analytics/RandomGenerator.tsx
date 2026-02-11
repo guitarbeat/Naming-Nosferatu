@@ -3,7 +3,7 @@ import { coreAPI } from "@supabase/client";
 import React, { useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useBrowserState";
 import { Copy, Heart, Shuffle } from "@/icons";
-import { Card } from "@/layout/Card";
+import { Card } from "@/layout";
 
 interface RandomGeneratorProps {
 	userName: string;

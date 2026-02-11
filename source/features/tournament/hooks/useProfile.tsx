@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Toast } from "@/layout/Toast";
+import { Toast } from "@/layout";
 import { useToast } from "@/providers/ToastProvider";
 import { devError, devLog } from "@/utils/basic";
 import { NOTIFICATION } from "@/utils/constants";
