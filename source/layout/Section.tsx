@@ -8,7 +8,7 @@ import type React from "react";
 import { useId } from "react";
 import { cn } from "@/utils/basic";
 import { GLASS_PRESETS } from "./GlassPresets";
-import LiquidGlass from "./LayoutEffects";
+import LiquidGlass from "./LiquidGlass";
 
 type SectionVariant = "default" | "glass" | "minimal" | "accent";
 type SectionPadding = "none" | "compact" | "comfortable" | "spacious";

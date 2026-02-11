@@ -10,3 +10,6 @@
 
 /* 3. Components & Interactive Elements */
 @import "./components.css";
+
+/* 4. Glass Morphism Effects */
+@import "./liquid-glass.css";
