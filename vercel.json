@@ -5,6 +5,7 @@
 	"installCommand": "pnpm install --no-frozen-lockfile",
 	"buildCommand": "pnpm run build",
 	"outputDirectory": "dist",
+	"packageManager": "pnpm@10.27.0",
 	"git": {
 		"deploymentEnabled": {
 			"main": true,
@@ -95,9 +96,4 @@
 		"NODE_ENV": "production",
 		"CI": "true"
 	}
-},
-{
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "packageManager": "pnpm@10.27.0"
 }
