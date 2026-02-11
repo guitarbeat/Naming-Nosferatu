@@ -96,3 +96,8 @@
 		"CI": "true"
 	}
 }
+{
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "packageManager": "pnpm@10.27.0"
+}
