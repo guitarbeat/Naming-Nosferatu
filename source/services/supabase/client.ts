@@ -185,6 +185,4 @@ export { resolveSupabaseClient as supabase };
 
 // Re-export common helpers/types if needed by other modules
 export * from "@/features/analytics/analyticsService";
-export * from "./imageService";
-export * from "./nameService";
-export * from "./siteSettingsService";
+export * from "./api";
