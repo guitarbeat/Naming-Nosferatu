@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { TrendIndicator } from "@/layout/FeedbackComponents";
+import { TrendIndicator } from "@/layout";
 
 // Animation configuration for BumpChart
 const ANIMATION_CONFIG = {
