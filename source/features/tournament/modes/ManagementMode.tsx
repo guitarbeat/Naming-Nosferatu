@@ -1,9 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { memo, useCallback } from "react";
 import { Layers, LayoutGrid } from "@/icons";
-import Button from "@/layout/Button";
-import { CardStats } from "@/layout/Card";
-import { EmptyState } from "@/layout/EmptyState";
+import { Button, CardStats, EmptyState } from "@/layout";
 import useAppStore from "@/store/appStore";
 import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
 import { NameGrid } from "../components/NameGrid";
