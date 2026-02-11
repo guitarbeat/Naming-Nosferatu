@@ -2,7 +2,7 @@ import { CardBody, Button as HeroButton } from "@heroui/react";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
 import { Download, Plus } from "@/icons";
 import { Card } from "@/layout";
-import { useToast } from "@/providers/ToastProvider";
+import { useToast } from "@/providers/Providers";
 import type { NameItem } from "@/types/appTypes";
 import { exportTournamentResultsToCSV } from "@/utils/basic";
 import { RankingAdjustment } from "./RankingAdjustment";
