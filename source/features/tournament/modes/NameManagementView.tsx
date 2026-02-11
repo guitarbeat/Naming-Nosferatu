@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
 import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
-import { ErrorComponent } from "@/layout/Error";
+import { ErrorComponent } from "@/layout";
 import { useToast } from "@/providers/ToastProvider";
 import type {
 	NameItem,

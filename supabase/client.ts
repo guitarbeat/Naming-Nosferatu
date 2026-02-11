@@ -1,15 +1,11 @@
 /**
  * @module supabaseClient
- * @description Facade URL for Supabase client.
- * Re-exports the base client implementation and all feature modules.
- * This structure prevents circular dependencies between the client and feature services.
+ * @description Facade for Supabase client.
+ * Re-exports the Supabase client implementation and types.
  */
 
-// Export the base client implementation
-export * from "@/services/supabase/clientBase";
-
-// Export all feature modules (which now import from clientBase)
-export * from "@/services/supabase/modules/general";
+// Export the Supabase client implementation
+export * from "@/services/supabase/client";
 
 // Re-export types
 export type { Database } from "./types";
