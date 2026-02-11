@@ -1,9 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import TournamentPlay from "@/features/tournament/modes/TournamentPlay";
-import Button from "@/layout/Button";
-import Card, { type GlassConfig } from "@/layout/Card";
+import { Button, Card, Section, type GlassConfig } from "@/layout";
 import { getGlassPreset } from "@/layout/GlassPresets";
-import { Section } from "@/layout/Section";
 import useAppStore from "@/store/appStore";
 import { NameSuggestion } from "../components/NameSuggestion";
 import { useTournamentHandlers } from "../hooks/useTournamentHandlers";

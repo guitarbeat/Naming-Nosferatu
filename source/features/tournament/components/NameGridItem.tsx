@@ -8,7 +8,8 @@ import { motion } from "framer-motion";
 import { memo, useCallback, useMemo } from "react";
 import { CardName } from "@/layout/Card";
 import type { NameItem } from "@/types/appTypes";
-import { cn, getRandomCatImage, isNameHidden } from "@/utils/basic";
+import { getRandomCatImage } from "@/services/tournament";
+import { cn, isNameHidden } from "@/utils/basic";
 
 interface NameGridItemProps {
 	nameObj: NameItem;
