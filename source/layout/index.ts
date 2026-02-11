@@ -1,6 +1,6 @@
 // Layout primitive components - single source of truth for component imports
 export { default as Button, ScrollToTopButton } from "./Button";
-export { Card, CardName, CardStats, type CardProps, type CardNameProps, type CardStatsProps, type GlassConfig } from "./Card";
+export { Card, CardName, CardStats, type CardProps, type CardNameProps, type CardStatsProps, type GlassConfig } from "./Card/index";
 export { AppLayout } from "./AppLayout";
 export { BongoCat } from "./BongoCat";
 export { default as CatBackground } from "./CatBackground";
