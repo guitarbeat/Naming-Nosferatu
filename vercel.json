@@ -95,7 +95,7 @@
 		"NODE_ENV": "production",
 		"CI": "true"
 	}
-}
+},
 {
   "buildCommand": "pnpm run build",
   "installCommand": "pnpm install --no-frozen-lockfile",
