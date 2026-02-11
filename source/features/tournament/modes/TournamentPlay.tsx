@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Card, ErrorComponent, Loading } from "@/layout";
-import { useToast } from "@/providers/ToastProvider";
+import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";

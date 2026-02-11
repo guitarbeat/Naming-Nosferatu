@@ -12,7 +12,7 @@ import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/appConfig";
 import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout, ErrorBoundary, Loading } from "@/layout";
-import { useAuth } from "@/providers/AuthProvider";
+import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
