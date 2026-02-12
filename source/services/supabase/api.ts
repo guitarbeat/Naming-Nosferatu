@@ -1,5 +1,62 @@
+/**
+ * @module supabaseAPI
+ * @description Consolidated Supabase API combining image, name management, and site settings operations.
+ * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
+ */
+
 import type { NameItem } from "@/types/appTypes";
 import { withSupabase } from "./client";
+
+/* ==========================================================================
+   IMAGES API
+   ========================================================================== */
+
+export const imagesAPI = {
+	/**
+	 * List all images in the cat-photos bucket
+	 */
+	list: async (path = "") => {
+		return withSupabase(async (client) => {
+			const { data, error } = await client.storage.from("cat-photos").list(path);
+			if (error) {
+				console.error("Error listing images:", error);
+				return [];
+			}
+			// Map to public URLs
+			return data.map((file) => {
+				const { data: urlData } = client.storage
+					.from("cat-photos")
+					.getPublicUrl(`${path}${file.name}`);
+				return urlData.publicUrl;
+			});
+		}, [] as string[]);
+	},
+
+	/**
+	 * Upload an image to the cat-photos bucket
+	 */
+	upload: async (file: File | Blob, userName: string) => {
+		return withSupabase(
+			async (client) => {
+				const fileName = `${Date.now()}-${userName}-${(file as File).name || "blob"}`;
+				const { data, error } = await client.storage.from("cat-photos").upload(fileName, file);
+
+				if (error) {
+					console.error("Upload error:", error);
+					return { path: null, error: error.message };
+				}
+
+				const { data: urlData } = client.storage.from("cat-photos").getPublicUrl(data.path);
+				return { path: urlData.publicUrl, success: true };
+			},
+			{ path: null, error: "Supabase not configured" },
+		);
+	},
+};
+
+/* ==========================================================================
+   NAMES API
+   ========================================================================== */
 
 /**
  * Database query result type - field names match Supabase column names (snake_case required)
@@ -81,6 +138,25 @@ async function updateHiddenStatuses(
 			success: false,
 			error: "Supabase not configured",
 		})),
+	);
+}
+
+/**
+ * Delete a name by ID
+ */
+async function deleteById(nameId: string | number) {
+	return withSupabase(
+		async (client) => {
+			const { error } = await client.from("cat_name_options").delete().eq("id", String(nameId));
+			if (error) {
+				return {
+					success: false,
+					error: error.message || "Failed to delete name",
+				};
+			}
+			return { success: true };
+		},
+		{ success: false, error: "Supabase not configured" },
 	);
 }
 
@@ -196,25 +272,6 @@ export const coreAPI = {
 	deleteById,
 };
 
-/**
- * Delete a name by ID
- */
-async function deleteById(nameId: string | number) {
-	return withSupabase(
-		async (client) => {
-			const { error } = await client.from("cat_name_options").delete().eq("id", String(nameId));
-			if (error) {
-				return {
-					success: false,
-					error: error.message || "Failed to delete name",
-				};
-			}
-			return { success: true };
-		},
-		{ success: false, error: "Supabase not configured" },
-	);
-}
-
 export const hiddenNamesAPI = {
 	hideName: async (userName: string, nameId: string | number) => {
 		return updateHiddenStatus(userName, nameId, true);
@@ -257,5 +314,74 @@ export const hiddenNamesAPI = {
 			}
 			return (data || []) as unknown as HiddenNameItem[];
 		}, []);
+	},
+};
+
+/* ==========================================================================
+   SITE SETTINGS API
+   ========================================================================== */
+
+/**
+ * Database update payload - field names match Supabase column names (snake_case required)
+ */
+interface CatChosenNameUpdate {
+	first_name: string;
+	middle_names?: string | string[];
+	last_name?: string;
+	greeting_text?: string;
+	show_banner?: boolean;
+}
+
+export const siteSettingsAPI = {
+	/**
+	 * Get cat's chosen name
+	 */
+	getCatChosenName: async () => {
+		return withSupabase(async (client) => {
+			const { data, error } = await client
+				.from("cat_chosen_name")
+				.select("*")
+				.order("created_at", { ascending: false })
+				.limit(1)
+				.single();
+
+			if (error) {
+				console.error("Error fetching cat chosen name:", error);
+				return null;
+			}
+			return data;
+		}, null);
+	},
+
+	/**
+	 * Update cat's chosen name
+	 */
+	updateCatChosenName: async (nameData: CatChosenNameUpdate, userName: string) => {
+		return withSupabase(
+			async (client) => {
+				try {
+					await client.rpc("set_user_context", {
+						user_name_param: userName,
+					});
+				} catch (err) {
+					if (import.meta.env.DEV) {
+						console.warn("Could not set user context:", err);
+					}
+				}
+
+				const { data, error } = await client
+					.from("cat_chosen_name")
+					.insert([nameData])
+					.select()
+					.single();
+
+				if (error) {
+					console.error("Error updating cat chosen name:", error);
+					return { success: false, error: error.message };
+				}
+				return { success: true, data };
+			},
+			{ success: false, error: "Supabase not configured" },
+		);
 	},
 };

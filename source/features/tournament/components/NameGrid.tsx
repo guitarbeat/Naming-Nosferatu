@@ -4,26 +4,18 @@
  * Simplified from masonry layout for stability and performance.
  */
 
-import { imagesAPI } from "@supabase/client";
-import { motion } from "framer-motion";
-import { memo, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import { Upload } from "@/icons";
-import { CardName } from "@/layout/Card";
-import { EmptyState } from "@/layout/EmptyState";
-import { Lightbox } from "@/layout/Lightbox";
-import { Loading } from "@/layout/StatusIndicators";
+import { EmptyState, Lightbox, Loading } from "@/layout";
 import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,
 	cn,
-	compressImageFile,
-	devError,
-	getRandomCatImage,
-	isNameHidden,
 	mapFilterStatusToVisibility,
 	selectedNamesToSet,
 } from "@/utils/basic";
+import { NameGridItem } from "./NameGridItem";
+import { NameUploadForm } from "./NameUploadForm";
 
 interface NameGridProps {
 	names: NameItem[];
@@ -44,6 +36,7 @@ interface NameGridProps {
 	className?: string;
 }
 
+<<<<<<< HEAD
 /**
  * Individual Card wrapper with grid-specific styling
  */
@@ -128,6 +121,8 @@ const GridItem = memo(
 
 GridItem.displayName = "GridItem";
 
+=======
+>>>>>>> origin/main
 export function NameGrid({
 	names = [],
 	selectedNames = [],
@@ -152,26 +147,7 @@ export function NameGrid({
 	}, [suppImages, imageList]);
 
 	const handleImageClick = useCallback(
-		(imageOrEvent: string | React.MouseEvent) => {
-			// Handle both direct URL string and MouseEvent
-			let imageUrl: string | null = null;
-			if (typeof imageOrEvent === "string") {
-				imageUrl = imageOrEvent;
-			} else if (
-				imageOrEvent &&
-				typeof imageOrEvent === "object" &&
-				"stopPropagation" in imageOrEvent
-			) {
-				// It's a MouseEvent, though GridItem wraps it, CardName might call it directly
-				imageOrEvent.stopPropagation();
-				// In this case we don't have the URL easily, but handleCardClick in GridItem should have handled it
-				return;
-			}
-
-			if (!imageUrl) {
-				return;
-			}
-
+		(imageUrl: string) => {
 			const idx = finalImageList.indexOf(imageUrl);
 			if (idx !== -1) {
 				setLightboxIndex(idx);
@@ -207,7 +183,7 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [names, filters, isAdmin, showSelectedOnly, selectedSet]);
+	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
 
 	if (isLoading) {
 		return (
@@ -218,7 +194,6 @@ export function NameGrid({
 							<Loading variant="card-skeleton" cardSkeletonVariant="mosaic-card" size="medium" />
 						</div>
 					))}
-					{/* Loading text below the grid */}
 					<div className="col-span-full flex justify-center py-8">
 						<Loading
 							variant="cat"
@@ -274,7 +249,7 @@ export function NameGrid({
 								transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
 							}}
 						>
-							<GridItem
+							<NameGridItem
 								nameObj={name}
 								isSelected={isSelected}
 								onToggleName={onToggleName}
@@ -292,47 +267,10 @@ export function NameGrid({
 			</div>
 
 			{/* Admin Image Upload */}
-			{isAdmin && (
-				<div className="flex justify-center mt-12 mb-8">
-					<label className="cursor-pointer flex items-center gap-3 px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full transition-all font-bold tracking-wider uppercase text-sm border border-purple-500/20 active:scale-95 shadow-xl shadow-purple-900/30">
-						<input
-							type="file"
-							accept="image/*"
-							multiple={true}
-							onChange={async (e) => {
-								const files = Array.from(e.target.files || []);
-								if (!files.length) {
-									return;
-								}
-								try {
-									const uploaded: string[] = [];
-									await Promise.all(
-										files.map(async (f) => {
-											const compressed = await compressImageFile(f, {
-												maxWidth: 1600,
-												maxHeight: 1600,
-												quality: 0.8,
-											});
-											const result = await imagesAPI.upload(compressed, "admin");
-											if (result?.path) {
-												uploaded.push(result.path);
-											}
-										}),
-									);
-									if (uploaded.length > 0) {
-										setSuppImages((prev) => [...uploaded, ...prev]);
-									}
-								} catch (err) {
-									devError("Upload error", err);
-								}
-							}}
-							style={{ display: "none" }}
-						/>
-						<Upload size={20} />
-						<span>Upload New Cat Photos</span>
-					</label>
-				</div>
-			)}
+			<NameUploadForm
+				isAdmin={isAdmin}
+				onImagesUploaded={(uploaded) => setSuppImages((prev) => [...uploaded, ...prev])}
+			/>
 
 			{lightboxIndex !== null && (
 				<Lightbox

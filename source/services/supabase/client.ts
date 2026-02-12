@@ -33,14 +33,18 @@ declare global {
 	}
 }
 
-// Environment variable helper removed - credentials are hardcoded (publishable keys)
-
-// Hardcoded credentials (publishable/anon keys are safe to embed)
+// Get Supabase credentials from environment variables (publishable/anon keys are safe to embed)
 const getSupabaseCredentials = (): { url: string; key: string } => {
-	return {
-		url: "https://ocghxwwwuubgmwsxgyoy.supabase.co",
-		key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZ2h4d3d3dXViZ213c3hneW95Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwOTgzMjksImV4cCI6MjA2NTY3NDMyOX0.93cpwT3YCC5GTwhlw4YAzSBgtxbp6fGkjcfqzdKX4E0",
-	};
+	const url = import.meta.env.VITE_SUPABASE_URL;
+	const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+	if (!url || !key) {
+		throw new Error(
+			"Supabase credentials not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
+		);
+	}
+
+	return { url, key };
 };
 
 let supabaseInstance: SupabaseClient<Database> | null =
@@ -181,6 +185,4 @@ export { resolveSupabaseClient as supabase };
 
 // Re-export common helpers/types if needed by other modules
 export * from "@/features/analytics/analyticsService";
-export * from "./imageService";
-export * from "./nameService";
-export * from "./siteSettingsService";
+export * from "./api";

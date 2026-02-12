@@ -5,8 +5,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { queryClient } from "@/services/supabase/client";
 import App from "./App";
-import { AuthProvider } from "./providers/AuthProvider";
-import { ToastProvider } from "./providers/ToastProvider";
+import { Providers } from "./providers/Providers";
 import "@/styles/index.css";
 
 const rootElement = document.getElementById("root");
@@ -18,14 +17,12 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<AuthProvider>
-				<ToastProvider>
-					<BrowserRouter>
-						<App />
-						<Analytics />
-					</BrowserRouter>
-				</ToastProvider>
-			</AuthProvider>
+			<Providers>
+				<BrowserRouter>
+					<App />
+					<Analytics />
+				</BrowserRouter>
+			</Providers>
 		</QueryClientProvider>
 	</React.StrictMode>,
 );
