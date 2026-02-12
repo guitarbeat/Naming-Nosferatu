@@ -5,12 +5,8 @@
  */
 
 import { useMemo } from "react";
-import { ScrollToTopButton } from "@/layout/Button";
-import { ErrorBoundary, ErrorComponent } from "@/layout/Error";
-import { Loading, OfflineIndicator } from "@/layout/StatusIndicators";
+import { ScrollToTopButton, ErrorBoundary, ErrorComponent, Loading, OfflineIndicator, FluidNav, CatBackground } from "@/layout";
 import useAppStore from "@/store/appStore";
-import CatBackground from "./CatBackground";
-import { FluidNav } from "./FluidNav";
 
 interface AppLayoutProps {
 	handleTournamentComplete: (

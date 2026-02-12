@@ -1,8 +1,8 @@
 import { CardBody, Button as HeroButton } from "@heroui/react";
-import { Download, Plus } from "lucide-react";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
-import { Card } from "@/layout/Card";
-import { useToast } from "@/providers/ToastProvider";
+import { Download, Plus } from "@/icons";
+import { Card } from "@/layout";
+import { useToast } from "@/providers/Providers";
 import type { NameItem } from "@/types/appTypes";
 import { exportTournamentResultsToCSV } from "@/utils/basic";
 import { RankingAdjustment } from "./RankingAdjustment";

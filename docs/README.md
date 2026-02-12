@@ -10,7 +10,6 @@
 | [CONTRIBUTING.md](./CONTRIBUTING.md) | Setup, coding standards, workflow (formerly DEVELOPMENT.md) |
 | [DESIGN.md](./DESIGN.md) | Design system, tokens, visual patterns (formerly UI_UX.md) |
 | [API.md](./API.md) | API reference and database schema |
-| [ROADMAP.md](./ROADMAP.md) | Project milestones and future plans |
 
 ## Quick Links
 

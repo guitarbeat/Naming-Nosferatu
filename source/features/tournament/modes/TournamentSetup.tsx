@@ -49,6 +49,7 @@ export default function TournamentSetup({
 					tournamentProps={{
 						swipeableCards: SwipeableCards,
 						imageList: CAT_IMAGES,
+						onStartTournament: onStart,
 					}}
 					onStartTournament={onStart}
 				/>

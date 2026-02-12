@@ -161,6 +161,7 @@ export const STORAGE_KEYS = {
 	USER: "catNamesUser",
 	USER_AVATAR: "catNamesUserAvatar",
 	THEME: "theme",
+	SWIPE_MODE: "tournamentSwipeMode",
 	TOURNAMENT: "tournament-storage",
 	USER_STORAGE: "user-storage",
 	ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
