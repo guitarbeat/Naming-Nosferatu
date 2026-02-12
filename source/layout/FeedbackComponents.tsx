@@ -40,18 +40,22 @@ type CatColor = "neon" | "pastel" | "warm";
 type CardSkeletonVariant = "name-card" | "elevated-card" | "mosaic-card";
 
 interface LoadingProps {
-	variant?: "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
+	// Consolidated interface (Requirements 3.1, 3.2, 3.4)
+	variant?: "inline" | "fullscreen" | "spinner" | "cat" | "bongo" | "suspense" | "skeleton" | "card-skeleton";
+	size?: "sm" | "md" | "lg" | "small" | "medium" | "large"; // Support both naming conventions
+	message?: string;
+	
+	// Legacy/extended props for backward compatibility
 	catVariant?: CatVariant;
 	catColor?: CatColor;
 	showCatFace?: boolean;
 	cardSkeletonVariant?: CardSkeletonVariant;
-	text?: string;
-	overlay?: boolean;
+	text?: string; // Deprecated: use message instead
+	overlay?: boolean; // Deprecated: use variant="fullscreen" instead
 	className?: string;
 	children?: React.ReactNode;
 	width?: string | number;
 	height?: string | number;
-	size?: "small" | "medium" | "large";
 }
 
 const CatSpinnerContent: React.FC<{
@@ -142,28 +146,43 @@ CatSpinnerContent.displayName = "CatSpinnerContent";
 
 export const Loading: React.FC<LoadingProps> = memo(
 	({
-		variant = "spinner",
+		variant = "inline",
 		catVariant = "paw",
 		showCatFace = true,
 		text,
+		message,
 		overlay = false,
 		className = "",
 		children,
 		width = "100%",
 		height = 20,
-		size = "medium",
+		size = "md",
 		cardSkeletonVariant = "name-card",
 	}) => {
 		const randomAsset = useMemo(() => getRandomLoadingAsset(), []);
 		const isVideo = (randomAsset || "").endsWith(".webm");
+		
+		// Normalize size prop to support both conventions
+		const normalizedSize = size === "sm" || size === "small" ? "small" 
+			: size === "lg" || size === "large" ? "large" 
+			: "medium";
+		
+		// Support both message and text props (message takes precedence)
+		const displayMessage = message || text;
+		
+		// Determine if fullscreen mode (support both variant and overlay prop)
+		const isFullscreen = variant === "fullscreen" || overlay;
 
 		const containerClasses = cn(
 			"flex flex-col items-center justify-center gap-3 p-4",
-			overlay && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
+			isFullscreen && "fixed inset-0 z-50 bg-black/60 backdrop-blur-sm",
 			className,
 		);
+		
+		// Handle legacy variant names
+		const effectiveVariant = variant === "inline" ? "spinner" : variant === "fullscreen" ? "spinner" : variant;
 
-		if (variant === "suspense") {
+		if (effectiveVariant === "suspense") {
 			if (!children) {
 				return null;
 			}
@@ -181,7 +200,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 					) : (
 						<img src={randomAsset} alt="Loading..." className="w-24 h-24 object-contain" />
 					)}
-					{text && <p className="text-sm font-medium text-white/70 animate-pulse">{text}</p>}
+					{displayMessage && <p className="text-sm font-medium text-white/70 animate-pulse">{displayMessage}</p>}
 					<span className="sr-only">Loading...</span>
 				</div>
 			);
@@ -189,7 +208,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 			return <Suspense fallback={fallback}>{children}</Suspense>;
 		}
 
-		if (variant === "skeleton") {
+		if (effectiveVariant === "skeleton") {
 			return (
 				<Skeleton
 					className={cn("rounded-lg bg-white/5", className)}
@@ -201,7 +220,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 			);
 		}
 
-		if (variant === "card-skeleton") {
+		if (effectiveVariant === "card-skeleton") {
 			return (
 				<div
 					className={cn(
@@ -231,40 +250,41 @@ export const Loading: React.FC<LoadingProps> = memo(
 					<div className="flex justify-end pt-2">
 						<Skeleton className="h-8 w-20 rounded-lg" />
 					</div>
-					{text && <div className="text-center text-xs text-white/50 pt-2">{text}</div>}
+					{displayMessage && <div className="text-center text-xs text-white/50 pt-2">{displayMessage}</div>}
 				</div>
 			);
 		}
 
-		if (variant === "bongo") {
+		if (effectiveVariant === "bongo") {
 			return (
 				<div className={containerClasses}>
-					<BongoCat size={size} text={text} />
+					<BongoCat size={normalizedSize} text={displayMessage} />
 				</div>
 			);
 		}
 
-		if (variant === "cat") {
+		if (effectiveVariant === "cat") {
 			return (
 				<div className={containerClasses} role="status" aria-label="Loading">
 					<div className="relative flex items-center justify-center p-4 bg-white/5 rounded-full border border-white/10 backdrop-blur-sm">
-						<CatSpinnerContent catVariant={catVariant} showFace={showCatFace} size={size} />
+						<CatSpinnerContent catVariant={catVariant} showFace={showCatFace} size={normalizedSize} />
 					</div>
-					{text && <p className="text-sm font-medium text-white/70 animate-pulse">{text}</p>}
+					{displayMessage && <p className="text-sm font-medium text-white/70 animate-pulse">{displayMessage}</p>}
 					<span className="sr-only">Loading...</span>
 				</div>
 			);
 		}
 
+		// Default: spinner variant (handles both 'inline' and 'fullscreen')
 		return (
 			<div className={containerClasses} role="status" aria-label="Loading">
 				<Spinner
 					color="secondary"
-					size={size === "small" ? "sm" : size === "large" ? "lg" : "md"}
-					label={text}
+					size={normalizedSize === "small" ? "sm" : normalizedSize === "large" ? "lg" : "md"}
+					label={displayMessage}
 					classNames={{ label: "text-white/70 font-medium mt-2" }}
 				/>
-				{!text && <span className="sr-only">Loading...</span>}
+				{!displayMessage && <span className="sr-only">Loading...</span>}
 			</div>
 		);
 	},
