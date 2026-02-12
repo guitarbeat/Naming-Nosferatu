@@ -33,61 +33,15 @@ declare global {
 	}
 }
 
-const getEnvVar = (key: string): string | undefined => {
-	interface ImportMetaWithEnv {
-		env: Record<string, string | undefined>;
-	}
-	if (typeof import.meta !== "undefined" && (import.meta as unknown as ImportMetaWithEnv).env) {
-		const viteKey = `VITE_${key}`;
-		if ((import.meta as unknown as ImportMetaWithEnv).env[viteKey]) {
-			return (import.meta as unknown as ImportMetaWithEnv).env[viteKey];
-		}
-		if ((import.meta as unknown as ImportMetaWithEnv).env[key]) {
-			return (import.meta as unknown as ImportMetaWithEnv).env[key];
-		}
-	}
-	if (typeof process !== "undefined" && process.env) {
-		if (process.env[key]) {
-			return process.env[key];
-		}
-		if (process.env[`VITE_${key}`]) {
-			return process.env[`VITE_${key}`];
-		}
-	}
-	return undefined;
-};
-
-// Lazy validation - only check when actually creating the client
+// Get Supabase credentials from environment variables (publishable/anon keys are safe to embed)
 const getSupabaseCredentials = (): { url: string; key: string } => {
-	const url = getEnvVar("SUPABASE_URL");
-	const key = getEnvVar("SUPABASE_ANON_KEY");
+	const url = import.meta.env.VITE_SUPABASE_URL;
+	const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 	if (!url || !key) {
-		const missingVars: string[] = [];
-		if (!url) {
-			missingVars.push("VITE_SUPABASE_URL or SUPABASE_URL");
-		}
-		if (!key) {
-			missingVars.push("VITE_SUPABASE_ANON_KEY or SUPABASE_ANON_KEY");
-		}
-
-		const errorMessage = `Missing required Supabase environment variables: ${missingVars.join(", ")}. Please set them in your .env.local file or environment.`;
-
-		if (typeof window !== "undefined") {
-			console.error("❌", errorMessage);
-			// In development, show a helpful error
-			if (process.env.NODE_ENV === "development") {
-				console.error("💡 Create a .env.local file with:");
-				console.error("   VITE_SUPABASE_URL=your_supabase_url");
-				console.error("   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key");
-				console.error(
-					"💡 on Lovable/Vercel: Add these to your Project Settings > Environment Variables",
-				);
-			}
-		}
-
-		// Throw error to prevent silent failures
-		throw new Error(errorMessage);
+		throw new Error(
+			"Supabase credentials not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
+		);
 	}
 
 	return { url, key };
@@ -231,6 +185,4 @@ export { resolveSupabaseClient as supabase };
 
 // Re-export common helpers/types if needed by other modules
 export * from "@/features/analytics/analyticsService";
-export * from "./imageService";
-export * from "./nameService";
-export * from "./siteSettingsService";
+export * from "./api";

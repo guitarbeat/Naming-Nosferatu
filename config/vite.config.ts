@@ -6,6 +6,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
+import { componentTagger } from "lovable-tagger";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -21,17 +22,18 @@ export default defineConfig(({ mode }) => {
 	const env = { ...process.env };
 
 	// Port 3000 (avoiding 5000 which is used by macOS AirPlay)
-	const serverPort = 3000;
+	const serverPort = 8080;
 	const previewPort = Number(env.VITE_PREVIEW_PORT) || 4173;
 
 	return {
-		root: resolveFromRoot("source"),
-		envDir: projectRoot, // Point to where .env files are located
+		root: projectRoot,
+		envDir: projectRoot,
 		publicDir: resolveFromRoot("public"),
 		plugins: [
 			react(),
+			mode === "development" && componentTagger(),
 			VitePWA({
-				registerType: "autoUpdate",
+				registerType: "prompt",
 				includeAssets: ["favicon.ico", "robots.txt"],
 				manifest: {
 					name: "Naming Nosferatu",
@@ -53,9 +55,9 @@ export default defineConfig(({ mode }) => {
 				},
 				workbox: {
 					cleanupOutdatedCaches: true,
-					clientsClaim: true,
-					skipWaiting: true,
-					maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8MB to accommodate large bg images
+					clientsClaim: false,
+					skipWaiting: false,
+					maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
 					globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,gif,avif,webp}"],
 					runtimeCaching: [
 						{
@@ -65,7 +67,7 @@ export default defineConfig(({ mode }) => {
 								cacheName: "cat-api-cache",
 								expiration: {
 									maxEntries: 50,
-									maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+									maxAgeSeconds: 60 * 60 * 24 * 7,
 								},
 								cacheableResponse: {
 									statuses: [0, 200],
@@ -75,7 +77,7 @@ export default defineConfig(({ mode }) => {
 					],
 				},
 			}),
-		],
+		].filter(Boolean),
 		envPrefix: ["VITE_", "SUPABASE_"],
 		// * Ensure proper base path for production builds
 		base: "/",

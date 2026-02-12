@@ -83,6 +83,7 @@ export interface TournamentFilters {
 	userFilter?: string;
 	selectionFilter?: string;
 	dateFilter?: string;
+	searchTerm?: string;
 }
 
 export interface TournamentUIState {
@@ -166,6 +167,8 @@ export interface UseNameManagementViewResult {
 	setUserFilter: (filter: "all" | "user" | "other") => void;
 	dateFilter: "all" | "today" | "week" | "month";
 	setDateFilter: (filter: "all" | "today" | "week" | "month") => void;
+	searchTerm: string;
+	setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 
 	// UI state
 	isSwipeMode: boolean;

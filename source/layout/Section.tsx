@@ -8,7 +8,7 @@ import type React from "react";
 import { useId } from "react";
 import { cn } from "@/utils/basic";
 import { GLASS_PRESETS } from "./GlassPresets";
-import LiquidGlass from "./LiquidGlass";
+import LiquidGlass from "./LayoutEffects";
 
 type SectionVariant = "default" | "glass" | "minimal" | "accent";
 type SectionPadding = "none" | "compact" | "comfortable" | "spacious";
@@ -34,6 +34,8 @@ interface SectionProps {
 	scrollMargin?: boolean;
 	/** Whether to add top border separator */
 	separator?: boolean;
+	/** Disable min-height for compact sections */
+	compact?: boolean;
 }
 
 const paddingClasses: Record<SectionPadding, string> = {
@@ -63,11 +65,13 @@ export function Section({
 	contentClassName,
 	scrollMargin = true,
 	separator = false,
+	compact = false,
 }: SectionProps) {
 	const glassId = useId();
 
 	const sectionClasses = cn(
-		"min-h-[60vh] flex flex-col items-center justify-center",
+		!compact && "min-h-[60vh]",
+		"flex flex-col items-center justify-center",
 		paddingClasses[padding],
 		scrollMargin && "scroll-mt-20",
 		separator && "border-t border-white/5",

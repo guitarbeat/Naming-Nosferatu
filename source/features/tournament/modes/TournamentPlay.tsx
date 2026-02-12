@@ -5,11 +5,11 @@ import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
-import { useAudioManager } from "./hooks/useAudioManager";
-import { useTournamentState } from "./hooks/useTournamentState";
-import { useTournamentVote } from "./hooks/useTournamentVote";
+import { useAudioManager } from "../hooks/useAudioManager";
+import { useTournamentState } from "../hooks/useTournamentState";
+import { useTournamentVote } from "../hooks/useTournamentVote";
 
-function TournamentContent({
+function TournamentPlayContent({
 	onComplete,
 	existingRatings = {},
 	names = [],
@@ -20,7 +20,6 @@ function TournamentContent({
 	const audioManager = useAudioManager();
 
 	const {
-		// selectedOption,
 		setSelectedOption,
 		isTransitioning,
 		setIsTransitioning,
@@ -64,7 +63,6 @@ function TournamentContent({
 		);
 	}
 
-	// No images shown - gallery images removed from tournament view
 	const leftImg = showCatPictures
 		? getRandomCatImage(
 				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
@@ -229,12 +227,12 @@ function TournamentContent({
 	);
 }
 
-const MemoizedTournament = memo(TournamentContent);
+const MemoizedTournamentPlay = memo(TournamentPlayContent);
 
-export default function Tournament(props: TournamentProps) {
+export default function TournamentPlay(props: TournamentProps) {
 	return (
 		<ErrorComponent variant="boundary">
-			<MemoizedTournament {...props} />
+			<MemoizedTournamentPlay {...props} />
 		</ErrorComponent>
 	);
 }

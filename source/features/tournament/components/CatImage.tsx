@@ -173,7 +173,14 @@ function CatImage({
 
 	const handleLoad = useCallback(
 		(event: React.SyntheticEvent<HTMLImageElement, Event>) => {
-			applyImageEnhancements(event.currentTarget);
+			const imgEl = event.currentTarget;
+			// Defer focal analysis to idle time
+			const cb = () => applyImageEnhancements(imgEl);
+			if ("requestIdleCallback" in window) {
+				window.requestIdleCallback(cb);
+			} else {
+				setTimeout(cb, 50);
+			}
 			onLoad?.(event);
 		},
 		[applyImageEnhancements, onLoad],
