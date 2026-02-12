@@ -26,12 +26,11 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run dev"
+args = "pnpm run dev"
 waitForPort = 5000
 
 [[ports]]
 localPort = 5000
-externalPort = 80
 
 [deployment]
 deploymentTarget = "static"

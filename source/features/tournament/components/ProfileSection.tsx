@@ -6,10 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
-import Button from "@/layout/Button";
-import { Input } from "@/layout/FormPrimitives";
-import { LiquidGlass } from "@/layout/LayoutEffects";
-import { Section } from "@/layout/Section";
+import { Button, Input, LiquidGlass, Section } from "@/layout";
 import { getGlassPreset } from "@/layout/GlassPresets";
 import useAppStore from "@/store/appStore";
 import { CAT_IMAGES } from "@/utils/constants";

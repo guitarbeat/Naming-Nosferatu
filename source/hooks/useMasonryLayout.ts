@@ -71,10 +71,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 		const newPositions: MasonryPosition[] = [];
 
 		// Calculate position for each item
-		for (let i = 0; i < itemCount; i++) {
-			const itemRef = itemRefs.current[i];
-			if (!itemRef) {
-				continue;
+		itemRefs.current.forEach((itemRef, index) => {
+			if (!itemRef || index >= itemCount) {
+				return;
 			}
 
 			// Find the shortest column
@@ -84,7 +83,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 			const left = shortestColumnIndex * (actualColumnWidth + gap);
 			const top = heights[shortestColumnIndex];
 
-			newPositions[i] = {
+			newPositions[index] = {
 				column: shortestColumnIndex,
 				left,
 				top,
@@ -92,7 +91,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 			// Update column height
 			heights[shortestColumnIndex] += itemRef.offsetHeight + gap;
-		}
+		});
 
 		setPositions(newPositions);
 		setColumnHeights(heights);
@@ -108,9 +107,7 @@ export function useMasonryLayout<T extends HTMLElement>(
 		let resizeRafId: number | null = null;
 		const resizeObserver = new ResizeObserver(() => {
 			// Throttle resize calculations with rAF instead of setTimeout
-			if (resizeRafId) {
-				return;
-			}
+			if (resizeRafId) return;
 			resizeRafId = requestAnimationFrame(() => {
 				resizeRafId = null;
 				calculateLayout();
@@ -121,22 +118,14 @@ export function useMasonryLayout<T extends HTMLElement>(
 			resizeObserver.observe(containerRef.current);
 		}
 
-		// Also observe individual items for size changes (only up to itemCount for visible items)
-		for (let i = 0; i < itemCount; i++) {
-			const itemRef = itemRefs.current[i];
-			if (itemRef) {
-				resizeObserver.observe(itemRef);
-			}
-		}
+		// Only observe container, not individual items (reduces observer overhead)
 
 		return () => {
 			clearTimeout(timeoutId);
-			if (resizeRafId) {
-				cancelAnimationFrame(resizeRafId);
-			}
+			if (resizeRafId) cancelAnimationFrame(resizeRafId);
 			resizeObserver.disconnect();
 		};
-	}, [calculateLayout, itemCount]);
+	}, [calculateLayout]);
 
 	// Batch layout updates to prevent thrashing
 	const layoutTimeoutRef = useRef<ReturnType<typeof setTimeout>>(null);

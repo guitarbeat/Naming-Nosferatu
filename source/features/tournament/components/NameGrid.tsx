@@ -6,9 +6,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import { EmptyState } from "@/layout/EmptyState";
-import { Lightbox } from "@/layout/Lightbox";
-import { Loading } from "@/layout/FeedbackComponents";
+import { EmptyState, Lightbox, Loading } from "@/layout";
 import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,
@@ -71,6 +69,12 @@ export function NameGrid({
 		[finalImageList],
 	);
 
+	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
+		useMasonryLayout<HTMLDivElement>(names.length, {
+			minColumnWidth: 280,
+			gap: 16,
+		});
+
 	const selectedSet = useMemo(
 		() => selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
 		[selectedNames],
@@ -92,13 +96,7 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [names, filters.filterStatus, isAdmin, showSelectedOnly, selectedSet]);
-
-	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
-		useMasonryLayout<HTMLDivElement>(processedNames.length, {
-			minColumnWidth: 280,
-			gap: 16,
-		});
+	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
 
 	if (isLoading) {
 		return (

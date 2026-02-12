@@ -8,7 +8,7 @@ import { resolveSupabaseClient, supabase, updateSupabaseUserContext } from "@sup
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type React from "react";
 import { createContext, useCallback, useContext, useState } from "react";
-import { type IToastItem, ToastContainer } from "@/layout/FeedbackComponents";
+import { type IToastItem, ToastContainer } from "@/layout";
 
 /* ==========================================================================
    CONSTANTS & CONFIG
@@ -167,13 +167,7 @@ interface ProvidersProps {
 	children: React.ReactNode;
 	toastMaxToasts?: number;
 	toastDefaultDuration?: number;
-	toastPosition?:
-		| "top-left"
-		| "top-center"
-		| "top-right"
-		| "bottom-left"
-		| "bottom-center"
-		| "bottom-right";
+	toastPosition?: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
 }
 
 export const Providers: React.FC<ProvidersProps> = ({

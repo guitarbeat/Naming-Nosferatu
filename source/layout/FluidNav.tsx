@@ -222,9 +222,7 @@ export function FluidNav() {
 		}
 		let rafId: number | null = null;
 		const handleScroll = () => {
-			if (rafId) {
-				return;
-			}
+			if (rafId) return;
 			rafId = requestAnimationFrame(() => {
 				rafId = null;
 				const sections = ["pick", "play", "suggest", "profile"];
@@ -251,9 +249,7 @@ export function FluidNav() {
 		handleScroll();
 		return () => {
 			window.removeEventListener("scroll", handleScroll);
-			if (rafId) {
-				cancelAnimationFrame(rafId);
-			}
+			if (rafId) cancelAnimationFrame(rafId);
 		};
 	}, [location.pathname, isAnalysisRoute]);
 

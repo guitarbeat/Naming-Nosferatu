@@ -7,11 +7,7 @@
 import { ButtonGroup, CardBody, Button as HeroButton, Spinner } from "@heroui/react";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { useCollapsible } from "@/hooks/useBrowserState";
-import { BumpChart } from "@/layout/Charts";
-import { Card } from "@/layout/Card";
-import { CollapsibleContent, CollapsibleHeader } from "@/layout/CollapsibleHeader";
-import { EmptyState } from "@/layout/EmptyState";
-import { FloatingBubblesContainer } from "@/layout/LayoutEffects";
+import { Card, BumpChart, CollapsibleContent, CollapsibleHeader, EmptyState, FloatingBubblesContainer } from "@/layout";
 import type { NameItem } from "@/types/appTypes";
 import { clearAllCaches, devError } from "@/utils/basic";
 import { STORAGE_KEYS } from "@/utils/constants";
