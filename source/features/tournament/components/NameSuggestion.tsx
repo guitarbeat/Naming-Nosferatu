@@ -7,10 +7,8 @@
 import { useCallback, useEffect, useId, useRef } from "react";
 import { useNameSuggestion } from "@/hooks/useNames";
 import { X } from "@/icons";
-import Button from "@/layout/Button";
-import { Input, Textarea } from "@/layout/FormPrimitives";
+import { Button, Input, LiquidGlass, Textarea } from "@/layout";
 import { getGlassPreset } from "@/layout/GlassPresets";
-import LiquidGlass from "@/layout/LiquidGlass";
 
 // ============================================================================
 // TYPES
