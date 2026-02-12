@@ -9,8 +9,16 @@ export {
         type CardProps,
         CardStats,
         type CardStatsProps,
-} from "./Card/Card";
-export type { GlassConfig } from "./LayoutEffects";
+} from "./Card";
+export {
+        BongoCat,
+        DEFAULT_GLASS_CONFIG,
+        default as CatBackground,
+        FloatingBubblesContainer,
+        LiquidGlass,
+        resolveGlassConfig,
+} from "./LayoutEffects";
+export type { GlassConfig } from "./Card";
 export { BumpChart } from "./Charts";
 export { CollapsibleContent, CollapsibleHeader } from "./CollapsibleHeader";
 export { EmptyState } from "./EmptyState";
@@ -27,14 +35,6 @@ export {
 } from "./FeedbackComponents";
 export { FluidNav } from "./FluidNav";
 export { Input, Textarea } from "./FormPrimitives";
-export {
-        BongoCat,
-        DEFAULT_GLASS_CONFIG,
-        default as CatBackground,
-        FloatingBubblesContainer,
-        LiquidGlass,
-        resolveGlassConfig,
-} from "./LayoutEffects";
 export { Lightbox } from "./Lightbox";
 export { AnimatedNavButton, NavButton } from "./NavButton";
 export { Section } from "./Section";
