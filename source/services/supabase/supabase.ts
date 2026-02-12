@@ -1,15 +1,182 @@
 /**
- * @module supabaseAPI
- * @description Consolidated Supabase API combining image, name management, and site settings operations.
- * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
+ * @module Supabase
+ * @description Consolidated Supabase client and API operations
+ * Combines: client setup, API operations (images, names, site settings)
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { QueryClient } from "@tanstack/react-query";
 import type { NameItem } from "@/appTypes";
-import { withSupabase } from "./client";
+import { STORAGE_KEYS } from "@/constants";
+import type { Database } from "./types";
 
-/* ==========================================================================
+/* =========================================================================
+   TANSTACK QUERY CLIENT
+   ========================================================================= */
+
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 1000 * 60 * 5, // 5 minutes
+			retry: 1,
+			refetchOnWindowFocus: false,
+		},
+	},
+});
+
+/* =========================================================================
+   SUPABASE CLIENT CONFIGURATION
+   ========================================================================= */
+
+declare global {
+	interface Window {
+		__supabaseClient?: SupabaseClient<Database>;
+	}
+}
+
+const getSupabaseCredentials = (): { url: string; key: string } => {
+	const url = import.meta.env.VITE_SUPABASE_URL;
+	const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+	if (!url || !key) {
+		throw new Error(
+			"Supabase credentials not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
+		);
+	}
+
+	return { url, key };
+};
+
+let supabaseInstance: SupabaseClient<Database> | null =
+	typeof window !== "undefined" ? (window.__supabaseClient ?? null) : null;
+let initializationPromise: Promise<SupabaseClient<Database> | null> | null = null;
+
+const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
+	const { url: SupabaseUrl, key: SupabaseAnonKey } = getSupabaseCredentials();
+
+	try {
+		const { createClient } = await import("@supabase/supabase-js");
+		const authOptions = {
+			persistSession: true,
+			autoRefreshToken: true,
+			storage: (() => {
+				try {
+					return typeof window !== "undefined" ? window.localStorage : undefined;
+				} catch {
+					return undefined;
+				}
+			})(),
+		} as const;
+
+		let currentUserName: string | null = null;
+		try {
+			if (typeof window !== "undefined" && window.localStorage) {
+				currentUserName = window.localStorage.getItem(STORAGE_KEYS.USER);
+			}
+		} catch {
+			/* ignore */
+		}
+
+		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
+			auth: authOptions,
+			global: {
+				headers: {
+					"X-Client-Info": "cat-name-tournament",
+					...(currentUserName ? { "x-user-name": currentUserName } : {}),
+				},
+			},
+			db: { schema: "public" },
+		});
+
+		if (typeof window !== "undefined") {
+			window.__supabaseClient = client;
+		}
+		return client;
+	} catch (error) {
+		console.error("❌ Failed to create Supabase client:", error);
+		return null;
+	}
+};
+
+const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
+	if (supabaseInstance) {
+		return supabaseInstance;
+	}
+	if (!initializationPromise) {
+		initializationPromise = createSupabaseClient()
+			.then((client) => {
+				supabaseInstance = client;
+				return client;
+			})
+			.catch(async (_error) => {
+				initializationPromise = null;
+				if (retryCount < 3) {
+					await new Promise((r) => setTimeout(r, 1000 * 2 ** retryCount));
+					return getSupabaseClient(retryCount + 1);
+				}
+				return null;
+			});
+	}
+	return initializationPromise;
+};
+
+export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
+
+export const updateSupabaseUserContext = (userName: string | null): void => {
+	if (!supabaseInstance) {
+		return;
+	}
+	// @ts-expect-error - accessing internal property
+	if (supabaseInstance.rest?.headers) {
+		if (userName) {
+			// @ts-expect-error - Accessing internal Supabase client headers
+			supabaseInstance.rest.headers["x-user-name"] = userName;
+		} else {
+			// @ts-expect-error - Accessing internal Supabase client headers
+			supabaseInstance.rest.headers["x-user-name"] = undefined;
+		}
+	}
+};
+
+const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
+
+export const isSupabaseAvailable = async () => {
+	const client = await resolveSupabaseClient();
+	if (!client) {
+		if (isDev) {
+			console.warn("Supabase not configured. Some features may not work.");
+		}
+		return false;
+	}
+	return true;
+};
+
+export async function withSupabase<T>(
+	operation: (client: SupabaseClient<Database>) => Promise<T>,
+	fallback: T,
+): Promise<T> {
+	try {
+		if (!(await isSupabaseAvailable())) {
+			return fallback;
+		}
+		const client = await resolveSupabaseClient();
+		if (!client) {
+			return fallback;
+		}
+		return await operation(client);
+	} catch (error) {
+		if (isDev) {
+			console.error("Supabase operation failed:", error);
+		}
+		return fallback;
+	}
+}
+
+export { resolveSupabaseClient as supabase };
+
+/* =========================================================================
    IMAGES API
-   ========================================================================== */
+   ========================================================================= */
 
 export const imagesAPI = {
 	/**
@@ -22,7 +189,6 @@ export const imagesAPI = {
 				console.error("Error listing images:", error);
 				return [];
 			}
-			// Map to public URLs
 			return data.map((file) => {
 				const { data: urlData } = client.storage
 					.from("cat-photos")
@@ -54,13 +220,10 @@ export const imagesAPI = {
 	},
 };
 
-/* ==========================================================================
+/* =========================================================================
    NAMES API
-   ========================================================================== */
+   ========================================================================= */
 
-/**
- * Database query result type - field names match Supabase column names (snake_case required)
- */
 interface HiddenNameItem {
 	id: string;
 	name: string;
@@ -68,9 +231,6 @@ interface HiddenNameItem {
 	created_at: string;
 }
 
-/**
- * Shared helper for updating hidden status of a single name
- */
 async function updateHiddenStatus(userName: string, nameId: string | number, isHidden: boolean) {
 	return withSupabase(
 		async (client) => {
@@ -106,9 +266,6 @@ async function updateHiddenStatus(userName: string, nameId: string | number, isH
 	);
 }
 
-/**
- * Shared helper for updating hidden status of multiple names
- */
 async function updateHiddenStatuses(
 	userName: string,
 	nameIds: (string | number)[],
@@ -141,9 +298,6 @@ async function updateHiddenStatuses(
 	);
 }
 
-/**
- * Delete a name by ID
- */
 async function deleteById(nameId: string | number) {
 	return withSupabase(
 		async (client) => {
@@ -165,7 +319,7 @@ export const coreAPI = {
 	 * Get all names with descriptions and ratings
 	 */
 	getTrendingNames: async (includeHidden: boolean = false) => {
-		const isAvailable = await import("@supabase/client").then((m) => m.isSupabaseAvailable());
+		const isAvailable = await isSupabaseAvailable();
 		if (!isAvailable) {
 			throw new Error("Supabase is not configured or unavailable");
 		}
@@ -277,30 +431,18 @@ export const hiddenNamesAPI = {
 		return updateHiddenStatus(userName, nameId, true);
 	},
 
-	/**
-	 * Unhide a name globally for all users (admin only).
-	 */
 	unhideName: async (userName: string, nameId: string | number) => {
 		return updateHiddenStatus(userName, nameId, false);
 	},
 
-	/**
-	 * Hide multiple names globally (admin only)
-	 */
 	hideNames: async (userName: string, nameIds: (string | number)[]) => {
 		return updateHiddenStatuses(userName, nameIds, true);
 	},
 
-	/**
-	 * Unhide multiple names globally (admin only)
-	 */
 	unhideNames: async (userName: string, nameIds: (string | number)[]) => {
 		return updateHiddenStatuses(userName, nameIds, false);
 	},
 
-	/**
-	 * Get globally hidden names (admin-set)
-	 */
 	getHiddenNames: async () => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
@@ -317,13 +459,10 @@ export const hiddenNamesAPI = {
 	},
 };
 
-/* ==========================================================================
+/* =========================================================================
    SITE SETTINGS API
-   ========================================================================== */
+   ========================================================================= */
 
-/**
- * Database update payload - field names match Supabase column names (snake_case required)
- */
 interface CatChosenNameUpdate {
 	first_name: string;
 	middle_names?: string | string[];
@@ -385,3 +524,9 @@ export const siteSettingsAPI = {
 		);
 	},
 };
+
+/* =========================================================================
+   RE-EXPORTS
+   ========================================================================= */
+
+export * from "@/features/analytics/analyticsService";

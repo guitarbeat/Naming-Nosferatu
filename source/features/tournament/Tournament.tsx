@@ -1,5 +1,5 @@
 import { memo } from "react";
-import useAppStore from "@/appStore";
+import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/appTypes";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";

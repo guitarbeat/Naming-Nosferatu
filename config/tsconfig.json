@@ -1,13 +1,50 @@
 {
-	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": true
+		"target": "ES2020",
+		"useDefineForClassFields": true,
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": false,
+		"exactOptionalPropertyTypes": false,
+		"types": ["vite/client", "node"],
+		"paths": {
+			"@supabase/client": ["./source/services/supabase/client.ts"],
+			"@supabase/types": ["./source/services/supabase/types.ts"],
+			"@db": ["./source/services/supabase"],
+			"@db/*": ["./source/services/supabase/*"],
+			"@/icons": ["./source/utils/icons.ts"],
+			"@/constants": ["./source/utils/constants.ts"],
+			"@/utils/basic": ["./source/utils/basic.ts"],
+			"@/utils/cn": ["./source/utils/cn.ts"],
+			"@/utils/performance": ["./source/utils/performance.ts"],
+			"@/hooks/useBrowserState": ["./source/hooks/useBrowserState.ts"],
+			"@/hooks/useNames": ["./source/hooks/useNames.ts"],
+			"@/hooks/useMasonryLayout": ["./source/hooks/useMasonryLayout.ts"],
+			"@/hooks/useHooks": ["./source/hooks/useHooks.ts"],
+			"@/*": ["./source/*"]
+		}
 	},
-	"include": [
-		"../source",
-		"../config",
-		"../scripts",
-		"vite.config.ts"
-	]
+	"include": ["source/**/*", "config/**/*", "scripts/**/*"],
+	"exclude": ["node_modules", "build", "dist"]
 }

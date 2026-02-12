@@ -73,7 +73,8 @@
 				"useDefaultParameterLast": "warn",
 				"useExponentiationOperator": "warn",
 				"useFragmentSyntax": "warn",
-				"useNamingConvention": "off"
+				"useNamingConvention": "off",
+				"noNamespaceImport": "error"
 			},
 			"a11y": {
 				"recommended": false
