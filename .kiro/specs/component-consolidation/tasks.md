@@ -37,11 +37,11 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Run test suite to verify functionality
     - _Requirements: 1.4, 7.3_
 
-- [-] 3. Checkpoint - Ensure all tests pass
+- [x] 3. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 4. Consolidate Calendar components
-  - [~] 4.1 Create consolidated Calendar component
+- [x] 4. Consolidate Calendar components
+  - [x] 4.1 Create consolidated Calendar component
     - Merge Calendar.tsx and EmotionalCalendar.tsx functionality
     - Implement variant prop for 'default' and 'emotion-tracking' modes
     - Preserve forwardRef and imperative handle
@@ -59,19 +59,19 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - **Property 2: Functionality Preservation**
     - **Validates: Requirements 2.2, 3.4, 6.4**
   
-  - [~] 4.4 Update all Calendar imports
+  - [x] 4.4 Update all Calendar imports
     - Find all imports of Calendar and EmotionalCalendar
     - Update to use consolidated Calendar component
     - Add variant prop where needed
     - _Requirements: 2.4_
   
-  - [~] 4.5 Remove old Calendar components
+  - [x] 4.5 Remove old Calendar components
     - Delete Calendar.tsx and EmotionalCalendar.tsx
     - Verify no references remain
     - _Requirements: 2.1_
 
-- [~] 5. Consolidate Loading components
-  - [~] 5.1 Create consolidated Loading component
+- [x] 5. Consolidate Loading components
+  - [x] 5.1 Create consolidated Loading component
     - Merge LoadingScreen and LoadingSpinner functionality
     - Implement variant prop for 'inline' and 'fullscreen' modes
     - Support size prop (sm, md, lg)
@@ -89,18 +89,18 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - **Property 4: Variant Support**
     - **Validates: Requirements 3.2**
   
-  - [~] 5.4 Update all Loading imports
+  - [x] 5.4 Update all Loading imports
     - Find all imports of LoadingScreen and LoadingSpinner
     - Update to use consolidated Loading component
     - Add appropriate variant prop
     - _Requirements: 3.3_
   
-  - [~] 5.5 Remove old Loading components
+  - [x] 5.5 Remove old Loading components
     - Delete LoadingScreen.tsx and LoadingSpinner.tsx
     - Verify no references remain
     - _Requirements: 3.1_
 
-- [~] 6. Checkpoint - Ensure all tests pass
+- [-] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [~] 7. Standardize UI components
