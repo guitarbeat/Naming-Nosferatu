@@ -1,16 +1,16 @@
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useNameData, useNameSelection } from "@/hooks/useNames";
-import useAppStore from "@/store/appStore";
+import useAppStore from "@/appStore";
 import type {
 	NameItem,
 	TournamentFilters,
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
-} from "@/types/appTypes";
+} from "@/appTypes";
+import { FILTER_OPTIONS } from "@/constants";
+import { useNameData, useNameSelection } from "@/hooks/useNames";
 import { applyNameFilters, mapFilterStatusToVisibility } from "@/utils/basic";
-import { FILTER_OPTIONS } from "@/utils/constants";
 
 export function useNameManagementView({
 	mode,

@@ -6,8 +6,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAppStore from "@/appStore";
 import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/icons";
-import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
 import { AnimatedNavButton, NavButton } from "./NavButton";
 

@@ -1,12 +1,185 @@
 /**
+ * @module constants
+ * @description Centralized application configuration and constants for consistency and maintainability.
+ */
+
+/* ==========================================================================
+   CAT IMAGES
+   ========================================================================== */
+
+export const CAT_IMAGES = [
+	"/assets/images/bby-cat.GIF",
+	"/assets/images/cat.gif",
+	"/assets/images/IMG_4844.avif",
+	"/assets/images/IMG_4845.avif",
+	"/assets/images/IMG_4846.avif",
+	"/assets/images/IMG_4847.avif",
+	"/assets/images/IMG_5044.avif",
+	"/assets/images/IMG_5071.avif",
+	"/assets/images/IMG_0778.avif",
+	"/assets/images/IMG_0779.avif",
+	"/assets/images/IMG_0865.avif",
+	"/assets/images/IMG_0884.avif",
+	"/assets/images/IMG_0923.avif",
+	"/assets/images/IMG_1116.avif",
+	"/assets/images/IMG_7205.avif",
+	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
+];
+
+/* ==========================================================================
+   FILTER OPTIONS
+   ========================================================================== */
+
+// * Filter Options
+// * Simplified: names are either visible or hidden
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const FILTER_OPTIONS = {
+	VISIBILITY: {
+		ALL: "all",
+		VISIBLE: "visible", // Default - show non-hidden names
+		HIDDEN: "hidden", // Show only hidden names
+	},
+	USER: {
+		ALL: "all",
+		CURRENT: "current",
+		OTHER: "other",
+	},
+	SORT: {
+		RATING: "rating",
+		NAME: "name",
+		WINS: "wins",
+		LOSSES: "losses",
+		WIN_RATE: "winRate",
+		CREATED: "created",
+	},
+	ORDER: {
+		ASC: "asc",
+		DESC: "desc",
+	},
+};
+
+// * Validation Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const VALIDATION = {
+	MIN_NAME_LENGTH: 1,
+	MAX_NAME_LENGTH: 50,
+	MIN_DESCRIPTION_LENGTH: 0,
+	MAX_DESCRIPTION_LENGTH: 500,
+	USERNAME_PATTERN: /^[a-zA-Z0-9_-]+$/,
+	EMAIL_PATTERN: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+	// * Tournament validation
+	MIN_TOURNAMENT_SIZE: 2,
+	MAX_TOURNAMENT_SIZE: 64,
+	MIN_RATING: 0,
+	MAX_RATING: 3000,
+	// * Username validation
+	MIN_USERNAME_LENGTH: 2,
+	MAX_USERNAME_LENGTH: 50,
+	USERNAME_PATTERN_EXTENDED: /^[a-zA-Z0-9\s\-_]+$/,
+	// * Cat name validation
+	MIN_CAT_NAME_LENGTH: 1,
+	MAX_CAT_NAME_LENGTH: 100,
+	// * Description validation
+	MIN_DESCRIPTION_LENGTH_EXTENDED: 10,
+};
+
+// * Tournament Timing Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const TOURNAMENT_TIMING = {
+	VOTE_COOLDOWN: 150, // Reduced from 300ms for faster voting
+	UNDO_WINDOW_MS: 2000,
+	MATCH_RESULT_SHOW_DELAY: 200, // Reduced from 300ms
+	MATCH_RESULT_HIDE_DELAY: 800, // Reduced from 1200ms
+	TOAST_SUCCESS_DURATION: 1500, // Reduced from 2000ms
+	TOAST_ERROR_DURATION: 3000, // Reduced from 3500ms
+	RENDER_LOG_THROTTLE: 1000,
+	ROUND_TRANSITION_DELAY: 600, // Reduced from 1000ms
+	UNDO_UPDATE_INTERVAL: 200,
+	TRANSITION_DELAY_SHORT: 50, // Reduced from 80ms
+	TRANSITION_DELAY_MEDIUM: 100, // Reduced from 150ms
+};
+
+// * General Timing Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const TIMING = {
+	// Network and API timeouts
+	SUPABASE_CLIENT_TIMEOUT_MS: 10000,
+	// Animation durations
+	RIPPLE_ANIMATION_DURATION_MS: 600,
+	EAR_TWITCH_DURATION_MS: 150,
+	LIGHTBOX_TRANSITION_DURATION_MS: 300,
+	// Debounce and throttle delays
+	SAVE_DEBOUNCE_DELAY_MS: 500,
+	// Status message display durations
+	STATUS_SUCCESS_DISPLAY_DURATION_MS: 2000,
+	STATUS_ERROR_DISPLAY_DURATION_MS: 3000,
+	// Check intervals
+	PAUSE_CHECK_INTERVAL_MS: 1000,
+	LONG_PRESS_TIMEOUT_MS: 1000,
+	// Pause detection
+	IDLE_PAUSE_THRESHOLD_MS: 5000,
+};
+
+// * Toast and Notification Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const NOTIFICATION = {
+	DEFAULT_DURATION_MS: 5000,
+	ERROR_DURATION_MS: 7000,
+	SUCCESS_DURATION_MS: 5000,
+	MAX_TOASTS: 5,
+};
+
+// * Elo Rating System Constants
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const ELO_RATING = {
+	DEFAULT_RATING: 1500,
+	DEFAULT_K_FACTOR: 40,
+	MIN_RATING: 800,
+	MAX_RATING: 2400,
+	RATING_DIVISOR: 400,
+	// Rating thresholds for K-factor adjustment
+	LOW_RATING_THRESHOLD: 1400,
+	HIGH_RATING_THRESHOLD: 2000,
+	// Game count threshold for K-factor adjustment
+	NEW_PLAYER_GAME_THRESHOLD: 15,
+	// K-factor multipliers
+	NEW_PLAYER_K_MULTIPLIER: 2,
+	EXTREME_RATING_K_MULTIPLIER: 1.5,
+	// Match outcome scores
+	WIN_SCORE: 1,
+	LOSS_SCORE: 0,
+	BOTH_WIN_SCORE: 0.7,
+	NEITHER_WIN_SCORE: 0.3,
+	TIE_SCORE: 0.5,
+};
+
+// * Mobile Gesture Thresholds
+
+// * Local Storage Keys
+// ts-prune-ignore-next (used via barrel export from core/constants)
+export const STORAGE_KEYS = {
+	USER: "catNamesUser",
+	USER_AVATAR: "catNamesUserAvatar",
+	THEME: "theme",
+	SWIPE_MODE: "tournamentSwipeMode",
+	TOURNAMENT: "tournament-storage",
+	USER_STORAGE: "user-storage",
+	ANALYSIS_DASHBOARD_COLLAPSED: "analysis-dashboard-collapsed",
+	ADMIN_ANALYTICS_COLLAPSED: "admin-analytics-collapsed",
+	NAVBAR_COLLAPSED: "navbar-collapsed",
+	SOUND_ENABLED: "soundEnabled",
+	MUSIC_VOLUME: "musicVolume",
+	EFFECTS_VOLUME: "effectsVolume",
+} as const;
+
+/**
  * @file basic.ts
  * @description Consolidated basic utility functions for common tasks
  * Combines: array manipulation, caching, date formatting, and logging
  */
 
-import type { NameItem } from "@/types/appTypes";
-import { queryClient } from "../services/supabase/client";
-import { CAT_IMAGES, STORAGE_KEYS } from "./constants";
+import type { NameItem } from "@/appTypes";
+import { queryClient } from "./services/supabase/client";
 
 /* ==========================================================================
    ARRAY UTILITIES
@@ -584,3 +757,165 @@ export function ratingsToObject(ratingsArray: RatingItem[]): Record<string, Rati
 	);
 }
 export * from "./performance";
+
+const isDevelopment = process.env.NODE_ENV === "development";
+
+const performanceMetrics = {
+	metrics: {} as Record<string, number>,
+	observers: [] as PerformanceObserver[],
+};
+
+function reportNavigationMetrics() {
+	if (typeof window === "undefined") {
+		return;
+	}
+	const timing = (window.performance as unknown as { timing: PerformanceTiming })?.timing;
+	if (!timing) {
+		return;
+	}
+
+	const { navigationStart } = timing;
+	const domContentLoadedTime = timing.domContentLoadedEventEnd - navigationStart;
+	const loadCompleteTime = timing.loadEventEnd - navigationStart;
+	const connectTime = timing.responseEnd - timing.requestStart;
+
+	performanceMetrics.metrics.domContentLoaded = domContentLoadedTime;
+	performanceMetrics.metrics.loadComplete = loadCompleteTime;
+	performanceMetrics.metrics.connect = connectTime;
+
+	console.debug(`[Performance] DOM Content Loaded: ${domContentLoadedTime}ms`);
+	console.debug(`[Performance] Page Load Complete: ${loadCompleteTime}ms`);
+	console.debug(`[Performance] Server Connect Time: ${connectTime}ms`);
+}
+
+export function initializePerformanceMonitoring() {
+	if (!isDevelopment || typeof window === "undefined") {
+		return;
+	}
+
+	if (
+		window.performance &&
+		(window.performance as unknown as { timing: PerformanceTiming }).timing
+	) {
+		window.addEventListener("load", () => {
+			setTimeout(() => {
+				reportNavigationMetrics();
+			}, 0);
+		});
+	}
+
+	if ("PerformanceObserver" in window) {
+		try {
+			const lcpObserver = new PerformanceObserver((list) => {
+				const entries = list.getEntries();
+				const lastEntry = entries[entries.length - 1] as unknown as {
+					renderTime: number;
+					loadTime: number;
+				};
+				performanceMetrics.metrics.lcp = lastEntry.renderTime || lastEntry.loadTime;
+				console.debug(
+					`[Performance] Largest Contentful Paint: ${performanceMetrics.metrics.lcp}ms`,
+				);
+			});
+			lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
+			performanceMetrics.observers.push(lcpObserver);
+		} catch {
+			console.debug("LCP observer not supported");
+		}
+
+		try {
+			let clsValue = 0;
+			const clsObserver = new PerformanceObserver((list) => {
+				for (const entry of list.getEntries() as unknown as {
+					hadRecentInput: boolean;
+					value: number;
+				}[]) {
+					if (!entry.hadRecentInput) {
+						clsValue += entry.value;
+						performanceMetrics.metrics.cls = clsValue;
+						console.debug(`[Performance] Cumulative Layout Shift: ${clsValue.toFixed(3)}`);
+					}
+				}
+			});
+			clsObserver.observe({ type: "layout-shift", buffered: true });
+			performanceMetrics.observers.push(clsObserver);
+		} catch {
+			console.debug("CLS observer not supported");
+		}
+
+		try {
+			const fidObserver = new PerformanceObserver((list) => {
+				const entries = list.getEntries();
+				entries.forEach((entry: PerformanceEntry) => {
+					const eventEntry = entry as unknown as { processingDuration: number };
+					performanceMetrics.metrics.fid = eventEntry.processingDuration;
+					console.debug(`[Performance] First Input Delay: ${eventEntry.processingDuration}ms`);
+				});
+			});
+			fidObserver.observe({ type: "first-input", buffered: true });
+			performanceMetrics.observers.push(fidObserver);
+		} catch {
+			console.debug("FID observer not supported");
+		}
+
+		try {
+			const fcpObserver = new PerformanceObserver((list) => {
+				const entries = list.getEntries();
+				entries.forEach((entry) => {
+					if (entry.name === "first-contentful-paint") {
+						performanceMetrics.metrics.fcp = entry.startTime;
+						console.debug(`[Performance] First Contentful Paint: ${entry.startTime}ms`);
+					}
+				});
+			});
+			fcpObserver.observe({ type: "paint", buffered: true });
+			performanceMetrics.observers.push(fcpObserver);
+		} catch {
+			console.debug("FCP observer not supported");
+		}
+	}
+}
+
+export function cleanupPerformanceMonitoring() {
+	performanceMetrics.observers.forEach((observer) => {
+		try {
+			observer.disconnect();
+		} catch (error) {
+			console.debug("Error disconnecting observer:", error);
+		}
+	});
+	performanceMetrics.observers = [];
+}
+/**
+ * @module icons
+ * @description Single icon source for the app. All UI icons are re-exported from lucide-react here
+ * so we depend on one library and one import path. Swap or add icons in this file only.
+ */
+
+export {
+	BarChart3,
+	Cat,
+	Check,
+	CheckCircle,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Copy,
+	Download,
+	GripVertical,
+	Heart,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Loader2,
+	LogOut,
+	PawPrint,
+	Pencil,
+	Plus,
+	Save,
+	Shuffle,
+	Trophy,
+	Upload,
+	User,
+	X,
+} from "lucide-react";

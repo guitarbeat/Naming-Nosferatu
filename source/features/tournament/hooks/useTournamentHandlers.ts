@@ -1,7 +1,7 @@
 import { useCallback } from "react";
+import type { AppState, NameItem } from "@/appTypes";
 import { ErrorManager } from "@/services/errorManager";
 import { tournamentsAPI } from "@/services/tournament";
-import type { AppState, NameItem } from "@/types/appTypes";
 import {
 	clearTournamentCache,
 	devError,

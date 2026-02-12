@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import useAppStore from "@/store/appStore";
-import type { NameItem } from "@/types/appTypes";
+import useAppStore from "@/appStore";
+import type { NameItem } from "@/appTypes";
+import { CAT_IMAGES } from "@/constants";
 import { fetchCatAvatars } from "@/utils/basic";
-import { CAT_IMAGES } from "@/utils/constants";
 import { SwipeableCards } from "../components/SwipeableCards";
 import { NameManagementView } from "./NameManagementView";
 

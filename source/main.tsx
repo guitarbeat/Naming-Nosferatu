@@ -5,7 +5,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { queryClient } from "@/services/supabase/client";
 import App from "./App";
-import { Providers } from "./providers/Providers";
+import { Providers } from "./Providers";
 import "@/styles/index.css";
 
 const rootElement = document.getElementById("root");

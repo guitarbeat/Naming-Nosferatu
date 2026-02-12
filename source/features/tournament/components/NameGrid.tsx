@@ -5,11 +5,11 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
+import type { NameItem } from "@/appTypes";
 import { useMasonryLayout } from "@/hooks/useMasonryLayout";
 import { EmptyState } from "@/layout/EmptyState";
-import { Lightbox } from "@/layout/Lightbox";
 import { Loading } from "@/layout/FeedbackComponents";
-import type { NameItem } from "@/types/appTypes";
+import { Lightbox } from "@/layout/Lightbox";
 import {
 	applyNameFilters,
 	cn,

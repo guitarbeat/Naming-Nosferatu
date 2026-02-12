@@ -9,8 +9,8 @@ import { useNameSuggestion } from "@/hooks/useNames";
 import { X } from "@/icons";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
-import { LiquidGlass } from "@/layout/LayoutEffects";
 import { getGlassPreset } from "@/layout/GlassPresets";
+import { LiquidGlass } from "@/layout/LayoutEffects";
 
 // ============================================================================
 // TYPES

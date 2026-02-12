@@ -1,8 +1,8 @@
 import { useCallback } from "react";
+import { NOTIFICATION } from "@/constants";
 import { Toast } from "@/layout/FeedbackComponents";
-import { useToast } from "@/providers/Providers";
+import { useToast } from "@/Providers";
 import { devError, devLog } from "@/utils/basic";
-import { NOTIFICATION } from "@/utils/constants";
 
 // ============================================================================
 // Profile Notifications Hook

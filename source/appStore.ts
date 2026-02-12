@@ -7,8 +7,8 @@
 import { siteSettingsAPI, updateSupabaseUserContext } from "@supabase/client";
 import { useEffect } from "react";
 import { create, type StateCreator } from "zustand";
-import type { AppState, CatChosenName, UIState, UserState } from "@/types/appTypes";
-import { STORAGE_KEYS } from "@/utils/constants";
+import type { AppState, CatChosenName, UIState, UserState } from "@/appTypes";
+import { STORAGE_KEYS } from "@/constants";
 
 /* ==========================================================================
    STORE UTILITIES & HELPERS
@@ -416,3 +416,116 @@ export const useAppStoreInitialization = () => {
 };
 
 export default useAppStore;
+
+/**
+ * @module appConfig
+ * @description Centralized configuration for app routes and layout settings.
+ * This consolidates route definitions and layout configuration that was previously
+ * scattered across App.tsx, routes.tsx, and AppLayout.tsx.
+ */
+
+import { lazy } from "react";
+
+/* Lazy-loaded route components for code splitting */
+const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
+const DashboardLazy = lazy(() =>
+	import("@/features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
+);
+
+/** Route configuration with metadata */
+export const routes = {
+	home: {
+		path: "/",
+		label: "Tournament",
+	},
+	analysis: {
+		path: "/analysis",
+		label: "Analytics",
+	},
+} as const;
+
+/** Component padding and layout constants */
+export const layoutConfig = {
+	contentPadding: "max(8rem,calc(120px+env(safe-area-inset-bottom)))",
+	contentGap: "gap-8",
+	contentFlex: "flex flex-col",
+} as const;
+
+/** Lazy-loaded components for routes */
+export const routeComponents = {
+	TournamentFlow,
+	DashboardLazy,
+} as const;
+
+/** Error context labels for ErrorBoundary */
+export const errorContexts = {
+	tournamentFlow: "Tournament Flow",
+	analysisDashboard: "Analysis Dashboard",
+	mainLayout: "Main Application Layout",
+} as const;
+
+export type RouteKey = keyof typeof routes;
+
+/**
+ * @module navConfig
+ * @description Centralized configuration for navigation structure and section mapping.
+ * Extracted from FluidNav.tsx to consolidate nav configuration.
+ */
+
+import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/icons";
+
+/** Map navigation keys to section IDs (for scroll targeting) */
+export const keyToSectionId: Record<string, string> = {
+	pick: "pick",
+	play: "play",
+	analyze: "analysis",
+	suggest: "suggest",
+	profile: "profile",
+};
+
+/** Navigation section configuration */
+export const navSections = {
+	pick: {
+		id: "pick",
+		label: "Pick",
+		icon: CheckCircle,
+	},
+	play: {
+		id: "play",
+		label: "Play",
+		icon: Trophy,
+	},
+	analyze: {
+		id: "analyze",
+		label: "Analyze",
+		icon: BarChart3,
+	},
+	suggest: {
+		id: "suggest",
+		label: "Suggest",
+		icon: Lightbulb,
+	},
+	profile: {
+		id: "profile",
+		label: "Profile",
+		icon: User,
+	},
+} as const;
+
+/** View mode toggle icons */
+export const viewModeIcons = {
+	swipe: Layers,
+	grid: LayoutGrid,
+} as const;
+
+/** Navigation animation and display constants */
+export const navAnimations = {
+	navTransitionDuration: 500,
+	navSpringConfig: {
+		stiffness: 260,
+		damping: 20,
+	},
+	scrollSmoothBehavior: "smooth" as const,
+} as const;
+
+export type NavSectionKey = keyof typeof navSections;

@@ -103,19 +103,19 @@ This plan breaks down the component consolidation into incremental, safe steps. 
 - [-] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 7. Standardize UI components
-  - [~] 7.1 Audit existing Button and Card implementations
+- [ ] 7. Standardize UI components
+  - [ ] 7.1 Audit existing Button and Card implementations
     - Identify all Button and Card component files
     - Document which use shadcn/ui vs styled-components
     - List all props and features used
     - _Requirements: 4.1_
   
-  - [~] 7.2 Choose shadcn/ui as standard
+  - [ ] 7.2 Choose shadcn/ui as standard
     - Verify shadcn/ui Button and Card are installed
     - Document decision in design.md
     - _Requirements: 4.1, 4.3_
   
-  - [~] 7.3 Create compatibility wrappers
+  - [ ] 7.3 Create compatibility wrappers
     - Create LegacyButton wrapper that maps old props to shadcn/ui
     - Create LegacyCard wrapper that maps old props to shadcn/ui
     - Add deprecation notices in JSDoc
@@ -130,28 +130,28 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Test edge cases and default values
     - _Requirements: 4.2_
   
-  - [~] 7.6 Update imports to use shadcn/ui components
+  - [ ] 7.6 Update imports to use shadcn/ui components
     - Find all Button and Card imports
     - Update to use shadcn/ui versions
     - Use compatibility wrappers where immediate migration is complex
     - _Requirements: 4.1_
 
-- [~] 8. Consolidate Emotion Tracking components
-  - [~] 8.1 Create EmotionTracker component
+- [ ] 8. Consolidate Emotion Tracking components
+  - [ ] 8.1 Create EmotionTracker component
     - Implement core emotion logging functionality
     - Support emotion selector UI
     - Support quick log functionality
     - Add compact mode prop
     - _Requirements: 5.1, 5.2_
   
-  - [~] 8.2 Create EmotionAnalytics component
+  - [ ] 8.2 Create EmotionAnalytics component
     - Implement emotion insights and patterns
     - Support trend visualization
     - Support statistics display
     - Support date range filtering
     - _Requirements: 5.1, 5.3_
   
-  - [~] 8.3 Update EmotionTrackingDashboard
+  - [ ] 8.3 Update EmotionTrackingDashboard
     - Use new EmotionTracker component
     - Use new EmotionAnalytics component
     - Remove duplicate styled components
@@ -167,33 +167,33 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Test EmotionTrackingDashboard orchestration
     - _Requirements: 5.1, 5.2, 5.3, 5.4_
   
-  - [~] 8.6 Update emotion tracking imports
+  - [ ] 8.6 Update emotion tracking imports
     - Find all imports of old emotion components
     - Update to use new consolidated components
     - _Requirements: 5.1_
   
-  - [~] 8.7 Remove old emotion tracking components
+  - [ ] 8.7 Remove old emotion tracking components
     - Delete duplicate emotion component files
     - Verify no references remain
     - _Requirements: 5.1, 5.5_
 
-- [~] 9. Checkpoint - Ensure all tests pass
+- [ ] 9. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 10. Consolidate N8N Integration components
-  - [~] 10.1 Extract shared Alert component
+- [ ] 10. Consolidate N8N Integration components
+  - [ ] 10.1 Extract shared Alert component
     - Create reusable Alert component
     - Support variant prop (info, warning, error, success)
     - Support message and optional action props
     - _Requirements: 6.2_
   
-  - [~] 10.2 Extract shared StatusIndicator component
+  - [ ] 10.2 Extract shared StatusIndicator component
     - Create reusable StatusIndicator component
     - Support status prop (idle, loading, success, error)
     - Support optional label prop
     - _Requirements: 6.2_
   
-  - [~] 10.3 Create consolidated N8NIntegration component
+  - [ ] 10.3 Create consolidated N8NIntegration component
     - Merge N8NDataExport and N8NWorkflowManager functionality
     - Implement mode prop ('export', 'workflow', 'both')
     - Support workflowId prop for workflow mode
@@ -207,24 +207,24 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Test export and workflow functionality
     - _Requirements: 6.2, 6.3, 6.4_
   
-  - [~] 10.5 Update N8N imports
+  - [ ] 10.5 Update N8N imports
     - Find all imports of N8NDataExport and N8NWorkflowManager
     - Update to use consolidated N8NIntegration component
     - Add appropriate mode prop
     - _Requirements: 6.1_
   
-  - [~] 10.6 Remove old N8N components
+  - [ ] 10.6 Remove old N8N components
     - Delete N8NDataExport.tsx and N8NWorkflowManager.tsx
     - Verify no references remain
     - _Requirements: 6.1, 6.3_
 
-- [~] 11. Update test files and mocks
-  - [~] 11.1 Update test imports
+- [ ] 11. Update test files and mocks
+  - [ ] 11.1 Update test imports
     - Find all test files importing consolidated components
     - Update imports to reference new component locations
     - _Requirements: 8.1_
   
-  - [~] 11.2 Update component mocks
+  - [ ] 11.2 Update component mocks
     - Update mock files to reference consolidated components
     - Update mock implementations for new component APIs
     - _Requirements: 8.4_
@@ -233,44 +233,44 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - **Property 7: Test File Synchronization**
     - **Validates: Requirements 8.1, 8.4**
   
-  - [~] 11.4 Verify test coverage
+  - [ ] 11.4 Verify test coverage
     - Run test coverage report
     - Compare with baseline coverage
     - Ensure coverage is maintained or improved
     - _Requirements: 8.3_
 
-- [~] 12. Final verification and cleanup
-  - [~] 12.1 Run full build
+- [ ] 12. Final verification and cleanup
+  - [ ] 12.1 Run full build
     - Execute build command
     - Verify no compilation errors
     - Check bundle size
     - _Requirements: 7.4_
   
-  - [~] 12.2 Run full test suite
+  - [ ] 12.2 Run full test suite
     - Execute all tests
     - Verify all tests pass
     - Check for any warnings
     - _Requirements: 8.2_
   
-  - [~] 12.3 Verify no broken imports
+  - [ ] 12.3 Verify no broken imports
     - Run TypeScript compiler with strict checks
     - Use ESLint to check for unused imports
     - Verify no module resolution errors
     - _Requirements: 7.3_
   
-  - [~] 12.4 Clean up unused files
+  - [ ] 12.4 Clean up unused files
     - Remove any remaining old component files
     - Remove unused styled components
     - Update component index files
     - _Requirements: 1.2, 5.5_
   
-  - [~] 12.5 Update documentation
+  - [ ] 12.5 Update documentation
     - Document the new component structure
     - Create migration guide for deprecated components
     - Update component usage examples
     - _Requirements: 4.3, 4.4_
 
-- [~] 13. Final checkpoint - Ensure all tests pass
+- [ ] 13. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

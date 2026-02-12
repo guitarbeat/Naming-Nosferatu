@@ -5,14 +5,14 @@
  */
 
 import { useEffect, useState } from "react";
+import useAppStore from "@/appStore";
+import { CAT_IMAGES } from "@/constants";
 import { LogOut, Pencil, User } from "@/icons";
 import Button from "@/layout/Button";
 import { Input } from "@/layout/FormPrimitives";
+import { getGlassPreset } from "@/layout/GlassPresets";
 import { LiquidGlass } from "@/layout/LayoutEffects";
 import { Section } from "@/layout/Section";
-import { getGlassPreset } from "@/layout/GlassPresets";
-import useAppStore from "@/store/appStore";
-import { CAT_IMAGES } from "@/utils/constants";
 
 interface ProfileSectionProps {
 	onLogin: (name: string) => Promise<boolean | undefined>;

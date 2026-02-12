@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import type { NameItem } from "@/types/appTypes";
+import type { NameItem } from "@/appTypes";
+import { TOURNAMENT_TIMING } from "@/constants";
 import { shuffleArray } from "@/utils/basic";
-import { TOURNAMENT_TIMING } from "@/utils/constants";
 import { useTournament } from "./useTournament";
 
 /* =========================================================================

@@ -1,10 +1,10 @@
 import { memo } from "react";
+import useAppStore from "@/appStore";
+import type { TournamentProps } from "@/appTypes";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
-import { useToast } from "@/providers/Providers";
+import { useToast } from "@/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
-import useAppStore from "@/store/appStore";
-import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
 import { useAudioManager } from "../hooks/useAudioManager";
 import { useTournamentState } from "../hooks/useTournamentState";

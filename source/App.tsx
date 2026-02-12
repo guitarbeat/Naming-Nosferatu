@@ -10,15 +10,15 @@
 import { Suspense, useCallback, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/appConfig";
+import useAppStore, { useAppStoreInitialization } from "@/appStore";
 import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout } from "@/layout/AppLayout";
 import { ErrorBoundary, Loading } from "@/layout/FeedbackComponents";
 import { Section } from "@/layout/Section";
-import { useAuth } from "@/providers/Providers";
+import { useAuth } from "@/Providers";
 import { ErrorManager } from "@/services/errorManager";
-import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
 	cleanupPerformanceMonitoring,
 	cn,

@@ -4,11 +4,11 @@
  */
 
 import { lazy, Suspense } from "react";
+import useAppStore from "@/appStore";
 import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Section } from "@/layout/Section";
-import useAppStore from "@/store/appStore";
 
 /* Lazy route chunks – loaded when user navigates to the route */
 const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));

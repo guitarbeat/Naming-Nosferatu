@@ -5,7 +5,7 @@
 
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CAT_IMAGES } from "@/utils/constants";
+import { CAT_IMAGES } from "@/constants";
 
 interface CatImageProps {
 	src?: string;

@@ -1,9 +1,9 @@
 import { CardBody, Button as HeroButton } from "@heroui/react";
+import type { NameItem } from "@/appTypes";
 import { usePersonalResults } from "@/features/analytics/hooks/usePersonalResults";
 import { Download, Plus } from "@/icons";
 import { Card } from "@/layout/Card";
-import { useToast } from "@/providers/Providers";
-import type { NameItem } from "@/types/appTypes";
+import { useToast } from "@/Providers";
 import { exportTournamentResultsToCSV } from "@/utils/basic";
 import { RankingAdjustment } from "./RankingAdjustment";
 

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
-import type { Match } from "@/types/appTypes";
-import { TOURNAMENT_TIMING } from "@/utils/constants";
+import type { Match } from "@/appTypes";
+import { TOURNAMENT_TIMING } from "@/constants";
 
 /* =========================================================================
    VOTING LOGIC HOOK

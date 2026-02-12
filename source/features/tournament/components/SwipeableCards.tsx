@@ -1,10 +1,10 @@
 import { Button, Chip, cn, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { memo, useCallback, useMemo, useState } from "react";
+import type { NameItem } from "@/appTypes";
 import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/icons";
 import { Card } from "@/layout/Card";
 import { getRandomCatImage } from "@/services/tournament";
-import type { NameItem } from "@/types/appTypes";
 import { playSound } from "@/utils/basic";
 
 export const SwipeableCards = memo(

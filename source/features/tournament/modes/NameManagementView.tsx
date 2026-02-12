@@ -5,15 +5,15 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
-import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
-import { ErrorComponent } from "@/layout/FeedbackComponents";
-import { useToast } from "@/providers/Providers";
 import type {
 	NameItem,
 	NameManagementViewExtensions,
 	UseNameManagementViewProps,
-} from "@/types/appTypes";
+} from "@/appTypes";
+import { NameManagementProvider } from "@/features/tournament/context/NameManagementContext";
+import { useNameManagementView } from "@/features/tournament/hooks/useNameManagementView";
+import { ErrorComponent } from "@/layout/FeedbackComponents";
+import { useToast } from "@/Providers";
 import { cn } from "@/utils/basic";
 import { ManagementMode } from "./ManagementMode";
 

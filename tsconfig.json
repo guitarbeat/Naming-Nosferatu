@@ -18,9 +18,9 @@
 		"types": ["vite/client", "node"],
 		"paths": {
 			"@supabase/client": ["./source/services/supabase/client.ts"],
-			"@supabase/types": ["./supabase/types.ts"],
-			"@db": ["./supabase"],
-			"@db/*": ["./supabase/*"],
+			"@supabase/types": ["./source/services/supabase/types.ts"],
+			"@db": ["./source/services/supabase"],
+			"@db/*": ["./source/services/supabase/*"],
 			"@/*": ["./source/*"]
 		}
 	},
