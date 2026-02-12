@@ -44,7 +44,10 @@
 		"check": "pnpm run lint && pnpm run check:deps",
 		"check:deps": "knip --config config/knip.json",
 		"check:deps:fix": "knip --config config/knip.json --fix",
-		"clean": "rm -rf build dist node_modules/.vite"
+		"clean": "rm -rf build dist node_modules/.vite",
+		"consolidate:analyze": "tsx scripts/consolidation/analyze-dependencies.ts source",
+		"consolidate:verify": "tsx scripts/consolidation/test-runner.ts full",
+		"consolidate:type-check": "tsx scripts/consolidation/test-runner.ts type-check"
 	},
 	"dependencies": {
 		"@hello-pangea/dnd": "^18.0.1",
@@ -78,6 +81,7 @@
 		"postcss-discard-unused": "^7.0.4",
 		"tailwindcss": "^4.1.18",
 		"terser": "^5.46.0",
+		"tsx": "^4.19.2",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
 		"vite-plugin-pwa": "^1.2.0"
