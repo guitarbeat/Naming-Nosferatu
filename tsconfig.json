@@ -1,0 +1,42 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"useDefineForClassFields": true,
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"noPropertyAccessFromIndexSignature": false,
+		"exactOptionalPropertyTypes": false,
+		"types": ["vite/client", "node"],
+		"baseUrl": ".",
+		"paths": {
+			"@supabase/client": ["src/services/supabase-client/client.ts"],
+			"@supabase/types": ["src/services/supabase-client/types.ts"],
+			"@db": ["src/services/supabase-client"],
+			"@db/*": ["src/services/supabase-client/*"],
+			"@/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*", "vite.config.ts"],
+	"exclude": ["node_modules", "build", "dist"]
+}

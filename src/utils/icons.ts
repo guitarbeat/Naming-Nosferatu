@@ -1,0 +1,37 @@
+/**
+ * @module icons
+ * @description Single source of truth for all UI icons.
+ *
+ * Every icon used in the app is re-exported from `lucide-react` here.
+ * To add an icon, add it to the export list below — no other file should
+ * import directly from `lucide-react`.
+ */
+
+export type { LucideIcon, LucideProps } from "lucide-react";
+export {
+	BarChart3,
+	Cat,
+	Check,
+	CheckCircle,
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Copy,
+	Download,
+	GripVertical,
+	Heart,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	Loader2,
+	LogOut,
+	PawPrint,
+	Pencil,
+	Plus,
+	Save,
+	Shuffle,
+	Trophy,
+	Upload,
+	User,
+	X,
+} from "lucide-react";

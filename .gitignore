@@ -137,5 +137,9 @@ jscpd-report.html
 *.avi
 *.mkv
 *.webm
-*.m4v.smart-coding-cache/
+*.m4v
 .smart-coding-cache/
+
+# Supabase
+supabase/.temp/
+supabase/.branches/

@@ -10,20 +10,19 @@ A React application for helping name cats through tournament-style voting. Users
 - **Package Manager**: pnpm
 
 ## Project Structure
-- `source/` - Main application source code
+- `src/` - Main application source code
   - `App.tsx` - Root application component
   - `main.tsx` - Application entry point
-  - `components/` - Shared UI components
-  - `features/` - Feature modules (tournament, analytics, auth, etc.)
+  - `features/` - Feature modules (tournament, analytics, etc.)
   - `hooks/` - Custom React hooks
+  - `layout/` - Layout components
   - `providers/` - Context providers
+  - `routes/` - Route definitions
   - `services/` - API services
   - `store/` - Zustand state management
-  - `styles/` - CSS styles
   - `types/` - TypeScript type definitions
   - `utils/` - Utility functions
 - `supabase/` - Supabase client configuration and types
-- `config/` - Build and tool configurations
 - `public/` - Static assets
 
 ## Development
@@ -41,4 +40,4 @@ The app requires Supabase configuration:
 - `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
 
 ## Recent Changes
-- 2026-01-24: Fixed vite.config.ts duplicate code issue, updated path aliases to match current project structure, added @heroui/react dependency, configured Replit environment
+- 2026-02-12: Integrated configuration files from once-integrated-delete directory

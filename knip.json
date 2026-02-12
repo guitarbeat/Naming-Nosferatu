@@ -1,0 +1,21 @@
+{
+	"$schema": "https://unpkg.com/knip@5/schema.json",
+	"entry": [
+		"src/main.tsx"
+	],
+	"project": [
+		"src/**/*.{js,jsx,ts,tsx}"
+	],
+	"ignore": [
+		"**/*.md",
+		"**/README.md"
+	],
+	"ignoreDependencies": [
+		"@tailwindcss/postcss",
+		"autoprefixer",
+		"postcss",
+		"postcss-discard-unused",
+		"tailwindcss"
+	],
+	"typescript": true
+}
