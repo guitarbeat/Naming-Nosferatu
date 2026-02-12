@@ -105,20 +105,23 @@ export function useMasonryLayout<T extends HTMLElement>(
 			calculateLayout();
 		}, 0);
 
-		let resizeTimeout: ReturnType<typeof setTimeout>;
+		let resizeRafId: number | null = null;
 		const resizeObserver = new ResizeObserver(() => {
-			// Debounce resize calculations
-			clearTimeout(resizeTimeout);
-			resizeTimeout = setTimeout(() => {
+			// Throttle resize calculations with rAF instead of setTimeout
+			if (resizeRafId) {
+				return;
+			}
+			resizeRafId = requestAnimationFrame(() => {
+				resizeRafId = null;
 				calculateLayout();
-			}, 100);
+			});
 		});
 
 		if (containerRef.current) {
 			resizeObserver.observe(containerRef.current);
 		}
 
-		// Also observe individual items for size changes
+		// Also observe individual items for size changes (only up to itemCount for visible items)
 		for (let i = 0; i < itemCount; i++) {
 			const itemRef = itemRefs.current[i];
 			if (itemRef) {
@@ -128,7 +131,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 		return () => {
 			clearTimeout(timeoutId);
-			clearTimeout(resizeTimeout);
+			if (resizeRafId) {
+				cancelAnimationFrame(resizeRafId);
+			}
 			resizeObserver.disconnect();
 		};
 	}, [calculateLayout, itemCount]);

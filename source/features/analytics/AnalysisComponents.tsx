@@ -12,9 +12,7 @@ import {
 	TableRow,
 } from "@heroui/react";
 import React, { useCallback, useMemo } from "react";
-import { Card } from "@/layout/Card";
-import { CollapsibleHeader } from "@/layout/CollapsibleHeader";
-import { PerformanceBadges } from "@/layout/StatusIndicators";
+import { Card, CollapsibleHeader, PerformanceBadges } from "@/layout";
 import { devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils/basic";
 import type { ConsolidatedName, NameWithInsight, SummaryStats } from "./analyticsService";
 
@@ -38,9 +36,9 @@ export const AnalysisPanel: React.FC<AnalysisPanelProps> = ({
 	className = "",
 }) => {
 	return (
-		<div className={cn("flex flex-col gap-4", className)}>
+		<div className={cn("analysis-panel flex flex-col gap-4", className)}>
 			{showHeader && <CollapsibleHeader title={title || ""} actions={actions} variant="compact" />}
-			{toolbar && <div className="flex gap-2">{toolbar}</div>}
+			{toolbar && <div className="analysis-panel-toolbar flex gap-2">{toolbar}</div>}
 			{children}
 		</div>
 	);

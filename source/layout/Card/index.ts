@@ -1,20 +1,16 @@
-import { Card } from "./Card";
-import { CardName } from "./CardName";
-import { CardStats } from "./CardStats";
+import { Card, CardName, CardStats } from "./Card";
 
-export { Card };
+export { Card, CardName, CardStats };
 export type {
 	CardBackground,
+	CardNameProps,
 	CardPadding,
 	CardProps,
 	CardShadow,
+	CardStatsProps,
 	CardVariant,
 	GlassConfig,
 } from "./Card";
-export type { CardNameProps } from "./CardName";
-export { CardName } from "./CardName";
-export type { CardStatsProps } from "./CardStats";
-export { CardStats } from "./CardStats";
 
 const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });
 

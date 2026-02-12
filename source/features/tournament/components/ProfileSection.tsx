@@ -6,11 +6,8 @@
 
 import { useEffect, useState } from "react";
 import { LogOut, Pencil, User } from "@/icons";
-import Button from "@/layout/Button";
-import { Input } from "@/layout/FormPrimitives";
-import { GLASS_PRESETS } from "@/layout/GlassPresets";
-import LiquidGlass from "@/layout/LiquidGlass";
-import { Section } from "@/layout/Section";
+import { Button, Input, LiquidGlass, Section } from "@/layout";
+import { getGlassPreset } from "@/layout/GlassPresets";
 import useAppStore from "@/store/appStore";
 import { CAT_IMAGES } from "@/utils/constants";
 
@@ -59,7 +56,7 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 			<LiquidGlass
 				className="w-full flex flex-col items-center justify-center backdrop-blur-md rounded-3xl"
 				style={{ width: "100%", height: "auto", minHeight: "200px" }}
-				{...GLASS_PRESETS.card}
+				{...getGlassPreset("card")}
 			>
 				<div className="flex flex-col gap-6 w-full p-8">
 					{/* Section Header - Only show when editing/logging in */}
@@ -107,13 +104,14 @@ export function ProfileSection({ onLogin }: ProfileSectionProps) {
 									</div>
 									<div className="flex gap-3">
 										{user.isLoggedIn && (
-											<button
+											<Button
 												type="button"
+												variant="ghost"
 												onClick={() => setIsEditing(false)}
-												className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+												className="flex-1"
 											>
 												Cancel
-											</button>
+											</Button>
 										)}
 										<Button
 											type="submit"

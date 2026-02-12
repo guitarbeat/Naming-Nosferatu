@@ -739,13 +739,6 @@ export type Database = {
             }
             Returns: boolean
           }
-        | {
-            Args: {
-              _role: Database["public"]["Enums"]["app_role"]
-              _user_name: string
-            }
-            Returns: boolean
-          }
         | { Args: { _role: string; _user_name: string }; Returns: boolean }
       increment_selection: {
         Args: { p_name_id: string; p_user_name: string }

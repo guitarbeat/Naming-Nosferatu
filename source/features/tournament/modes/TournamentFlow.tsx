@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import Tournament from "@/features/tournament/Tournament";
-import Button from "@/layout/Button";
-import Card from "@/layout/Card";
+import TournamentPlay from "@/features/tournament/modes/TournamentPlay";
+import { Button, Card, type GlassConfig, Section } from "@/layout";
+import { getGlassPreset } from "@/layout/GlassPresets";
 import useAppStore from "@/store/appStore";
 import { NameSuggestion } from "../components/NameSuggestion";
 import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
@@ -17,11 +17,14 @@ export default function TournamentFlow() {
 		});
 
 	return (
-		<div className="w-full max-w-6xl mx-auto flex flex-col gap-8 min-h-[80vh] py-8">
+		<div className="w-full flex flex-col gap-8">
 			{/* Main Tournament Flow Area - Swaps between Setup and Play */}
-			<section
+			<Section
 				id="tournament-area"
-				className="flex flex-col items-center justify-center p-4 min-h-[500px]"
+				variant="minimal"
+				padding="compact"
+				maxWidth="full"
+				scrollMargin={false}
 			>
 				<AnimatePresence mode="wait">
 					{tournament.isComplete && tournament.names !== null ? (
@@ -33,7 +36,7 @@ export default function TournamentFlow() {
 							className="w-full flex justify-center py-10"
 						>
 							<Card
-								background="glass"
+								liquidGlass={{ ...getGlassPreset("card") } as GlassConfig}
 								padding="xl"
 								shadow="xl"
 								enableTilt={true}
@@ -76,7 +79,7 @@ export default function TournamentFlow() {
 							exit={{ opacity: 0, x: -20 }}
 							className="w-full"
 						>
-							<Tournament
+							<TournamentPlay
 								names={tournament.names}
 								existingRatings={tournament.ratings}
 								onComplete={handleTournamentComplete}
@@ -104,19 +107,22 @@ export default function TournamentFlow() {
 						</motion.div>
 					)}
 				</AnimatePresence>
-			</section>
+			</Section>
 
 			{/* Suggest Name Section - Hidden during active tournament play */}
 			{(tournament.names === null || tournament.isComplete) && (
-				<section
+				<Section
 					id="suggest"
-					className="flex flex-col items-center justify-center p-4 mt-8 border-t border-slate-800/20 pt-12"
+					variant="minimal"
+					padding="comfortable"
+					maxWidth="xl"
+					separator={true}
+					scrollMargin={false}
+					compact={true}
 				>
-					<div className="w-full max-w-4xl">
-						<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
-						<NameSuggestion />
-					</div>
-				</section>
+					<h2 className="text-2xl font-bold mb-8 text-center text-slate-400">Suggest a Name</h2>
+					<NameSuggestion />
+				</Section>
 			)}
 		</div>
 	);

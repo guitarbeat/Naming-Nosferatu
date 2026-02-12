@@ -83,6 +83,7 @@ export function useNameManagementView({
 	const [selectionFilter, setSelectionFilter] = useState<"all" | "selected" | "unselected">("all");
 	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [activeTab, setActiveTab] = useState("manage");
+	const [searchTerm, setSearchTerm] = useState("");
 
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -117,6 +118,14 @@ export function useNameManagementView({
 			isAdmin: Boolean(profileProps.isAdmin),
 		});
 
+		if (searchTerm.trim()) {
+			const normalizedSearch = searchTerm.trim().toLowerCase();
+			result = result.filter((name) => {
+				const content = `${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
+				return content.includes(normalizedSearch);
+			});
+		}
+
 		if (showSelectedOnly) {
 			result = result.filter((name) => selectedNames.some((s: NameItem) => s.id === name.id));
 		}
@@ -128,6 +137,7 @@ export function useNameManagementView({
 		analysisMode,
 		filterStatus,
 		profileProps.isAdmin,
+		searchTerm,
 		showSelectedOnly,
 		selectedNames,
 	]);
@@ -141,6 +151,14 @@ export function useNameManagementView({
 			isAdmin: Boolean(profileProps.isAdmin),
 		});
 
+		if (searchTerm.trim()) {
+			const normalizedSearch = searchTerm.trim().toLowerCase();
+			result = result.filter((name) => {
+				const content = `${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
+				return content.includes(normalizedSearch);
+			});
+		}
+
 		// Apply additional filters
 		if (selectionFilter !== "all") {
 			if (selectionFilter === "selected") {
@@ -151,7 +169,16 @@ export function useNameManagementView({
 		}
 
 		return result;
-	}, [names, mode, analysisMode, filterStatus, profileProps.isAdmin, selectionFilter, isSelected]);
+	}, [
+		names,
+		mode,
+		analysisMode,
+		filterStatus,
+		profileProps.isAdmin,
+		selectionFilter,
+		isSelected,
+		searchTerm,
+	]);
 
 	const filterConfig: TournamentFilters = useMemo(() => {
 		if (mode === "tournament" && analysisMode) {
@@ -160,17 +187,21 @@ export function useNameManagementView({
 				userFilter: userFilter as "all" | "user" | "other",
 				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
 				dateFilter: dateFilter as "all" | "today" | "week" | "month",
+				searchTerm,
 			};
 		} else if (mode === "tournament") {
-			return {};
+			return {
+				searchTerm,
+			};
 		} else {
 			return {
 				filterStatus: filterStatus as "all" | "visible" | "hidden",
 				userFilter: userFilter as "all" | "user" | "other",
 				selectionFilter: selectionFilter as "all" | "selected" | "unselected",
+				searchTerm,
 			};
 		}
-	}, [mode, filterStatus, userFilter, selectionFilter, dateFilter, analysisMode]);
+	}, [mode, filterStatus, userFilter, selectionFilter, dateFilter, analysisMode, searchTerm]);
 
 	const handleFilterChange = useCallback(
 		(name: keyof TournamentFilters, value: string | number | boolean) => {
@@ -188,6 +219,9 @@ export function useNameManagementView({
 					case "dateFilter":
 						setDateFilter((String(value) as "all" | "today" | "week" | "month") || "all");
 						break;
+					case "searchTerm":
+						setSearchTerm(String(value));
+						break;
 				}
 			} else if (mode === "tournament") {
 				// No filters for basic tournament mode
@@ -201,6 +235,9 @@ export function useNameManagementView({
 						break;
 					case "selectionFilter":
 						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
+						break;
+					case "searchTerm":
+						setSearchTerm(String(value));
 						break;
 				}
 			}
@@ -262,6 +299,8 @@ export function useNameManagementView({
 		setUserFilter,
 		dateFilter,
 		setDateFilter,
+		searchTerm,
+		setSearchTerm,
 
 		isSwipeMode,
 		showCatPictures,
