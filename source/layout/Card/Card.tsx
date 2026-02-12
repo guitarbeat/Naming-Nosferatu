@@ -10,7 +10,7 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/features/tournament/components/CatImage";
 import { cn } from "@/utils/basic";
 import { TIMING } from "@/utils/constants";
-import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
+import { DEFAULT_GLASS_CONFIG, LiquidGlass, resolveGlassConfig } from "../LayoutEffects";
 
 export type CardVariant =
 	| "default"

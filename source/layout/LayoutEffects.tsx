@@ -5,7 +5,7 @@
  */
 
 import { motion } from "framer-motion";
-import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { UserBubbleProfile } from "@/types/appTypes";
 
 /* ==========================================================================

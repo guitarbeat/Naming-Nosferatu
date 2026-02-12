@@ -108,7 +108,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 		let resizeRafId: number | null = null;
 		const resizeObserver = new ResizeObserver(() => {
 			// Throttle resize calculations with rAF instead of setTimeout
-			if (resizeRafId) return;
+			if (resizeRafId) {
+				return;
+			}
 			resizeRafId = requestAnimationFrame(() => {
 				resizeRafId = null;
 				calculateLayout();
@@ -129,7 +131,9 @@ export function useMasonryLayout<T extends HTMLElement>(
 
 		return () => {
 			clearTimeout(timeoutId);
-			if (resizeRafId) cancelAnimationFrame(resizeRafId);
+			if (resizeRafId) {
+				cancelAnimationFrame(resizeRafId);
+			}
 			resizeObserver.disconnect();
 		};
 	}, [calculateLayout, itemCount]);

@@ -10,8 +10,11 @@
 import { Suspense, useCallback, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/appConfig";
+import { ProfileSection } from "@/features/tournament/components/ProfileSection";
+import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout, ErrorBoundary, Loading } from "@/layout";
+import { Section } from "@/layout/Section";
 import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
@@ -21,9 +24,6 @@ import {
 	devError,
 	initializePerformanceMonitoring,
 } from "@/utils/basic";
-import { ProfileSection } from "@/features/tournament/components/ProfileSection";
-import { Section } from "@/layout/Section";
-import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -72,7 +72,9 @@ function App() {
 	}
 
 	return (
-		<div className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}>
+		<div
+			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
+		>
 			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete}>
 				<Routes>
 					<Route

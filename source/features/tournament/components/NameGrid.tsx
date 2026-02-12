@@ -90,7 +90,7 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
+	}, [names, filters.filterStatus, isAdmin, showSelectedOnly, selectedSet]);
 
 	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
 		useMasonryLayout<HTMLDivElement>(processedNames.length, {

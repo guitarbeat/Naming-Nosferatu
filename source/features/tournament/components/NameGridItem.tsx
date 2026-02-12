@@ -7,8 +7,8 @@
 import { motion } from "framer-motion";
 import { memo, useCallback, useMemo } from "react";
 import { CardName } from "@/layout/Card";
-import type { NameItem } from "@/types/appTypes";
 import { getRandomCatImage } from "@/services/tournament";
+import type { NameItem } from "@/types/appTypes";
 import { cn, isNameHidden } from "@/utils/basic";
 
 interface NameGridItemProps {
@@ -54,7 +54,9 @@ export const NameGridItem = memo(function NameGridItem({
 	}, [cardImage, onImageClick]);
 
 	return (
-		<motion.div className="w-full h-full" initial={index < 12 ? { opacity: 0, y: 10 } : false}
+		<motion.div
+			className="w-full h-full"
+			initial={index < 12 ? { opacity: 0, y: 10 } : false}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{
 				duration: 0.25,

@@ -7,13 +7,23 @@
 import { Skeleton, Spinner } from "@heroui/react";
 import { cva } from "class-variance-authority";
 import { motion } from "framer-motion";
-import React, { Component, type ReactNode, useCallback, useEffect, useId, useMemo, useState, memo, Suspense } from "react";
-import { BongoCat, LiquidGlass } from "./LayoutEffects";
-import { GLASS_PRESETS } from "./GlassPresets";
+import React, {
+	Component,
+	memo,
+	type ReactNode,
+	Suspense,
+	useCallback,
+	useEffect,
+	useId,
+	useMemo,
+	useState,
+} from "react";
 import { useBrowserState } from "@/hooks/useBrowserState";
 import { Cat, Copy, Heart, PawPrint } from "@/icons";
 import { ErrorManager } from "@/services/errorManager";
 import { cn } from "@/utils/basic";
+import { GLASS_PRESETS } from "./GlassPresets";
+import { BongoCat, LiquidGlass } from "./LayoutEffects";
 
 /* ==========================================================================
    LOADING COMPONENTS

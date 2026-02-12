@@ -167,7 +167,13 @@ interface ProvidersProps {
 	children: React.ReactNode;
 	toastMaxToasts?: number;
 	toastDefaultDuration?: number;
-	toastPosition?: "top-left" | "top-center" | "top-right" | "bottom-left" | "bottom-center" | "bottom-right";
+	toastPosition?:
+		| "top-left"
+		| "top-center"
+		| "top-right"
+		| "bottom-left"
+		| "bottom-center"
+		| "bottom-right";
 }
 
 export const Providers: React.FC<ProvidersProps> = ({
