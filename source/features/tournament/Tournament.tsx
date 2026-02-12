@@ -68,7 +68,7 @@ function TournamentContent({
 		);
 	}
 
-	// No images shown - gallery images removed from tournament view
+	// Memoize cat images to avoid expensive recalculation on every render
 	const leftImg = useMemo(
 		() =>
 			showCatPictures && currentMatch && currentMatch.left
