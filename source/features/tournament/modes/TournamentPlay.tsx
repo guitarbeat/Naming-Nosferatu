@@ -1,26 +1,25 @@
-import { memo, useCallback, useMemo } from "react";
+import { memo } from "react";
 import { Card, ErrorComponent, Loading } from "@/layout";
 import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
-import { useAudioManager } from "./hooks/useAudioManager";
-import { useTournamentState } from "./hooks/useTournamentState";
-import { useTournamentVote } from "./hooks/useTournamentVote";
+import { useAudioManager } from "../hooks/useAudioManager";
+import { useTournamentState } from "../hooks/useTournamentState";
+import { useTournamentVote } from "../hooks/useTournamentVote";
 
-function TournamentContent({
+function TournamentPlayContent({
 	onComplete,
 	existingRatings = {},
 	names = [],
 	onVote,
 }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
-	const visibleNames = useMemo(() => getVisibleNames(names), [names]);
+	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
 	const {
-		// selectedOption,
 		setSelectedOption,
 		isTransitioning,
 		setIsTransitioning,
@@ -56,10 +55,6 @@ function TournamentContent({
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 
-	const handleToggleCatPictures = useCallback(() => {
-		setCatPictures(!showCatPictures);
-	}, [showCatPictures, setCatPictures]);
-
 	if (!currentMatch) {
 		return (
 			<div className="flex items-center justify-center min-h-[500px]">
@@ -68,27 +63,18 @@ function TournamentContent({
 		);
 	}
 
-	// No images shown - gallery images removed from tournament view
-	const leftImg = useMemo(
-		() =>
-			showCatPictures && currentMatch && currentMatch.left
-				? getRandomCatImage(
-						typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-						CAT_IMAGES,
-					)
-				: null,
-		[showCatPictures, currentMatch],
-	);
-	const rightImg = useMemo(
-		() =>
-			showCatPictures && currentMatch && currentMatch.right
-				? getRandomCatImage(
-						typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-						CAT_IMAGES,
-					)
-				: null,
-		[showCatPictures, currentMatch],
-	);
+	const leftImg = showCatPictures
+		? getRandomCatImage(
+				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+				CAT_IMAGES,
+			)
+		: null;
+	const rightImg = showCatPictures
+		? getRandomCatImage(
+				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+				CAT_IMAGES,
+			)
+		: null;
 
 	return (
 		<div className="relative min-h-screen w-full flex flex-col overflow-hidden max-w-[430px] mx-auto border-x border-white/5 font-display text-white selection:bg-primary/30">
@@ -139,7 +125,7 @@ function TournamentContent({
 					</div>
 					<button
 						type="button"
-						onClick={handleToggleCatPictures}
+						onClick={() => setCatPictures(!showCatPictures)}
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
 						aria-pressed={showCatPictures}
 						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
@@ -241,12 +227,12 @@ function TournamentContent({
 	);
 }
 
-const MemoizedTournament = memo(TournamentContent);
+const MemoizedTournamentPlay = memo(TournamentPlayContent);
 
-export default function Tournament(props: TournamentProps) {
+export default function TournamentPlay(props: TournamentProps) {
 	return (
 		<ErrorComponent variant="boundary">
-			<MemoizedTournament {...props} />
+			<MemoizedTournamentPlay {...props} />
 		</ErrorComponent>
 	);
 }

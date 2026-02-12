@@ -185,21 +185,8 @@ $$;
 
 GRANT EXECUTE ON FUNCTION set_user_context(TEXT) TO authenticated, anon;
 
--- Check if user has specific role (app_role version)
-CREATE OR REPLACE FUNCTION has_role(_user_name TEXT, _role app_role)
-RETURNS BOOLEAN
-LANGUAGE SQL
-STABLE
-SECURITY DEFINER
-AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM user_roles 
-    WHERE user_name = _user_name 
-      AND role = _role
-  );
-$$;
-
 -- Check if user has specific role (text version for client compatibility)
+-- Note: Removed the app_role overload to avoid ambiguity when PostgreSQL tries to select between overloads
 CREATE OR REPLACE FUNCTION has_role(_user_name TEXT, _role TEXT)
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -207,13 +194,12 @@ STABLE
 SECURITY DEFINER
 AS $$
   SELECT EXISTS (
-    SELECT 1 FROM user_roles 
-    WHERE user_name = _user_name 
+    SELECT 1 FROM user_roles
+    WHERE user_name = _user_name
       AND role = _role::app_role
   );
 $$;
 
-GRANT EXECUTE ON FUNCTION has_role(TEXT, app_role) TO authenticated, anon;
 GRANT EXECUTE ON FUNCTION has_role(TEXT, TEXT) TO authenticated, anon;
 
 -- Get user's highest role
