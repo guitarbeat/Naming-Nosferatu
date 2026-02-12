@@ -55,6 +55,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 .enforcer/Enforcer_last_check.log
 .enforcer/Enforcer_stats.log
+biome_output.txt
 
 # Cache
 .cache/

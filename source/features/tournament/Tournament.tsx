@@ -1,7 +1,6 @@
-import { Card } from "@/layout/Card";
-import { ErrorComponent } from "@/layout/Error";
-import { Loading } from "@/layout/StatusIndicators";
-import { useToast } from "@/providers/ToastProvider";
+import { memo } from "react";
+import { Card, ErrorComponent, Loading } from "@/layout";
+import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
@@ -114,8 +113,12 @@ function TournamentContent({
 				>
 					<div className="flex gap-2">
 						<button
+							type="button"
 							onClick={audioManager.handleToggleMute}
 							className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-white/60 hover:text-white transition-colors"
+							aria-label={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
+							aria-pressed={!audioManager.isMuted}
+							title={audioManager.isMuted ? "Unmute audio" : "Mute audio"}
 						>
 							<span className="material-symbols-outlined">
 								{audioManager.isMuted ? "volume_off" : "volume_up"}
@@ -123,8 +126,11 @@ function TournamentContent({
 						</button>
 					</div>
 					<button
+						type="button"
 						onClick={() => setCatPictures(!showCatPictures)}
 						className={`flex items-center gap-2 px-4 h-10 rounded-lg font-bold text-xs uppercase tracking-wider shadow-lg ${showCatPictures ? "bg-primary shadow-primary/20" : "bg-white/10"}`}
+						aria-pressed={showCatPictures}
+						title={showCatPictures ? "Hide cat pictures" : "Show cat pictures"}
 					>
 						<span className="material-symbols-outlined text-sm">pets</span>
 						<span>{showCatPictures ? "Names Only" : "Show Cats"}</span>
@@ -204,7 +210,8 @@ function TournamentContent({
 				</div>
 
 				{/* Undo */}
-				<div
+				<button
+					type="button"
 					onClick={handleUndo}
 					className="mt-6 glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 				>
@@ -212,7 +219,7 @@ function TournamentContent({
 					<span className="text-[10px] font-bold text-white/60 tracking-widest uppercase">
 						Undo
 					</span>
-				</div>
+				</button>
 			</main>
 
 			{/* Background */}
@@ -222,10 +229,12 @@ function TournamentContent({
 	);
 }
 
+const MemoizedTournament = memo(TournamentContent);
+
 export default function Tournament(props: TournamentProps) {
 	return (
 		<ErrorComponent variant="boundary">
-			<TournamentContent {...props} />
+			<MemoizedTournament {...props} />
 		</ErrorComponent>
 	);
 }

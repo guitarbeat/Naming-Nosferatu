@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { useTournamentSelectionSaver } from "@/features/tournament/hooks/useTournamentSelectionSaver";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
-import { useToast } from "@/providers/ToastProvider";
+import { useToast } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore from "@/store/appStore";
 import type { NameItem } from "@/types/appTypes";

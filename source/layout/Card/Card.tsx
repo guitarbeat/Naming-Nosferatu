@@ -1,6 +1,7 @@
 /**
  * @module Card
- * @description Reusable card component with flexible styling options and specialized sub-components
+ * @description Reusable card component with flexible styling options
+ * Includes sub-components: CardStats and CardName
  */
 
 import { cva } from "class-variance-authority";
@@ -9,9 +10,9 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/features/tournament/components/CatImage";
 import { cn } from "@/utils/basic";
 import { TIMING } from "@/utils/constants";
-import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "./LiquidGlass";
+import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
-type CardVariant =
+export type CardVariant =
 	| "default"
 	| "elevated"
 	| "outlined"
@@ -23,9 +24,9 @@ type CardVariant =
 	| "danger"
 	| "secondary";
 
-type CardPadding = "none" | "small" | "medium" | "large" | "xl";
-type CardShadow = "none" | "small" | "medium" | "large" | "xl";
-type CardBackground = "solid" | "glass" | "gradient" | "transparent";
+export type CardPadding = "none" | "small" | "medium" | "large" | "xl";
+export type CardShadow = "none" | "small" | "medium" | "large" | "xl";
+export type CardBackground = "solid" | "glass" | "gradient" | "transparent";
 
 // CVA variant for Card component
 const cardVariants = cva(
@@ -84,7 +85,7 @@ const cardVariants = cva(
 	},
 );
 
-interface GlassConfig {
+export interface GlassConfig {
 	width?: number;
 	height?: number;
 	radius?: number;
@@ -97,7 +98,7 @@ interface GlassConfig {
 	[key: string]: unknown;
 }
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	children?: React.ReactNode;
 	variant?: CardVariant;
 	padding?: CardPadding;
@@ -110,7 +111,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 	enableTilt?: boolean;
 }
 
-export const Card = memo(
+const CardBase = memo(
 	React.forwardRef<HTMLDivElement, CardProps>(
 		(
 			{
@@ -286,9 +287,15 @@ export const Card = memo(
 	),
 );
 
-Card.displayName = "Card";
+CardBase.displayName = "Card";
 
-interface CardStatsProps extends CardProps {
+export const Card = CardBase;
+
+/* ============================================================================
+   CARD STATS SUB-COMPONENT
+   ============================================================================ */
+
+export interface CardStatsProps extends CardProps {
 	title?: string;
 	label?: string;
 	value: string | number | React.ReactNode;
@@ -298,10 +305,7 @@ interface CardStatsProps extends CardProps {
 	emojiClassName?: string;
 }
 
-/**
- * Stats sub-component for displaying statistics
- */
-const CardStats: React.FC<CardStatsProps> = ({
+const CardStatsBase = memo(function CardStats({
 	title,
 	label,
 	value,
@@ -310,15 +314,15 @@ const CardStats: React.FC<CardStatsProps> = ({
 	labelClassName = "",
 	valueClassName = "",
 	emojiClassName = "",
-	variant = "default", // Default variant to invoke color styles
+	variant = "default",
 	...props
-}) => {
+}: CardStatsProps) {
 	const labelText = title || label || "Statistic";
 	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
 	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
 
 	// Determine top accent color based on variant
-	const accentGradient = {
+	const accentGradient: Record<CardVariant, string> = {
 		default: "from-white/20 to-white/5",
 		primary: "from-purple-500 to-purple-700",
 		success: "from-green-500 to-green-700",
@@ -331,7 +335,7 @@ const CardStats: React.FC<CardStatsProps> = ({
 		filled: "from-transparent to-transparent",
 	};
 
-	const valueColor = {
+	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
 		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
 		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
@@ -382,11 +386,15 @@ const CardStats: React.FC<CardStatsProps> = ({
 			{emoji && <span className={cn("text-2xl mt-2 drop-shadow-sm", emojiClassName)}>{emoji}</span>}
 		</Card>
 	);
-};
+});
 
-/* ========================================= */
-/*              CardName Component             */
-/* ========================================= */
+CardStatsBase.displayName = "CardStats";
+
+export const CardStats = CardStatsBase;
+
+/* ============================================================================
+   CARD NAME SUB-COMPONENT
+   ============================================================================ */
 
 interface NameMetadata {
 	rating?: number;
@@ -402,7 +410,7 @@ interface NameMetadata {
 	[key: string]: unknown;
 }
 
-interface CardNameProps {
+export interface CardNameProps {
 	name: string;
 	description?: string;
 	isSelected?: boolean;
@@ -463,12 +471,10 @@ const CardNameBase = memo(function CardName({
 			event.preventDefault();
 
 			const rect = event.currentTarget.getBoundingClientRect();
-			// Fix: Correctly handle type narrowing for MouseEvent vs KeyboardEvent to access clientX/clientY
 			let x = rect.width / 2;
 			let y = rect.height / 2;
 
 			if ("clientX" in event) {
-				// It's a mouse event
 				x = event.clientX - rect.left;
 				y = event.clientY - rect.top;
 			}
@@ -519,16 +525,14 @@ const CardNameBase = memo(function CardName({
 				ref={cardRef as React.Ref<HTMLDivElement>}
 				className={cn(
 					"w-full h-full relative flex flex-col items-center gap-1 text-center font-inherit cursor-pointer overflow-visible transition-all duration-300",
-					// Base style additions
 					"backdrop-blur-md rounded-xl border",
 					size === "small" ? "p-2 min-h-24" : "p-4 min-h-32",
-					// State styles
 					isSelected
 						? "border-purple-500 bg-gradient-to-br from-purple-900/40 to-purple-800/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
 						: "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
 					disabled && "opacity-50 cursor-not-allowed filter grayscale",
 					isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
-					image && "min-h-[220px]", // Taller if image
+					image && "min-h-[220px]",
 					className,
 				)}
 				onClick={
@@ -686,8 +690,3 @@ const CardNameBase = memo(function CardName({
 CardNameBase.displayName = "CardName";
 
 export const CardName = CardNameBase;
-
-// Add sub-component to Card
-const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });
-
-export default CardWithStats;

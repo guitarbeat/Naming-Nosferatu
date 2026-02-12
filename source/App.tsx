@@ -1,20 +1,18 @@
 /**
  * @module App
- * @description Main application component for the cat name tournament app.
- * Refactored to use declarative React Router routing with centralized auth guards.
+ * @description Main application component with consolidated routing and layout.
+ * Routes, auth, and layout are now coordinated here.
  *
  * @component
  * @returns {JSX.Element} The complete application UI
  */
 
-import { lazy, Suspense, useCallback, useEffect } from "react";
-import { ProfileSection } from "@/features/tournament/components/ProfileSection";
-import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+import { Suspense, useCallback, useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import { errorContexts, routeComponents } from "@/appConfig";
 import { useOfflineSync } from "@/hooks/useBrowserState";
-import { AppLayout } from "@/layout/AppLayout";
-import { ErrorBoundary } from "@/layout/Error";
-import { Loading } from "@/layout/StatusIndicators";
-import { useAuth } from "@/providers/AuthProvider";
+import { AppLayout, ErrorBoundary, Loading } from "@/layout";
+import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import {
@@ -23,23 +21,17 @@ import {
 	devError,
 	initializePerformanceMonitoring,
 } from "@/utils/basic";
+import { ProfileSection } from "@/features/tournament/components/ProfileSection";
+import { Section } from "@/layout/Section";
+import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 
-// Lazy load route components
-const TournamentFlow = lazy(() => import("@/features/tournament/modes/TournamentFlow"));
-const Dashboard = lazy(() =>
-	import("./features/analytics/Dashboard").then((m) => ({ default: m.Dashboard })),
-);
-
-/**
- * Root application component with Single Page Architecture (Vertical Scrolling)
- */
+const TournamentFlow = routeComponents.TournamentFlow;
+const DashboardLazy = routeComponents.DashboardLazy;
 
 function App() {
-	// Kept for now if needed by hooks, but mostly unused for nav
 	const { login, isLoading } = useAuth();
 	const isInitialized = !isLoading;
 
-	// Initialize performance monitoring and global error handling
 	useEffect(() => {
 		initializePerformanceMonitoring();
 		const cleanup = ErrorManager.setupGlobalErrorHandling();
@@ -49,25 +41,15 @@ function App() {
 		};
 	}, []);
 
-	// Initialize store from localStorage
 	useAppStoreInitialization();
-
-	// Centralized store
-	const { user, tournament, tournamentActions } = useAppStore();
-
-	// Offline Sync Hook
+	const { user, tournamentActions } = useAppStore();
 	useOfflineSync();
 
-	// Tournament handlers - mostly consumed by TournamentFlow now, but kept here for AppLayout props
 	const tournamentHandlers = useTournamentHandlers({
 		userName: user.name,
 		tournamentActions,
 	});
 
-	const { handleTournamentComplete, handleStartNewTournament, handleUpdateRatings } =
-		tournamentHandlers;
-
-	// Handle user login
 	const handleLogin = useCallback(
 		async (userName: string) => {
 			try {
@@ -81,60 +63,80 @@ function App() {
 		[login],
 	);
 
-	// Show loading screen while initializing
 	if (!isInitialized) {
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-black">
-				<Loading variant="spinner" text="Consulting the ancient rankings..." />
+				<Loading variant="spinner" text="Preparing the tournament..." />
 			</div>
 		);
 	}
 
 	return (
-		<div
-			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
-		>
-			<AppLayout handleTournamentComplete={handleTournamentComplete}>
-				<Suspense fallback={<Loading variant="spinner" text="Loading..." />}>
-					<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
-						{/* Hero / Play Section - Handles Setup, Tournament, and Results */}
-						<div id="pick" className="absolute -top-20" />
-						<section id="play" className="min-h-[80vh] flex flex-col justify-center scroll-mt-20">
-							<ErrorBoundary context="Tournament Flow">
-								<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-									<TournamentFlow />
-								</Suspense>
-							</ErrorBoundary>
-						</section>
-
-						{/* Analysis Section - Only visible after tournament completion */}
-						{tournament.isComplete && (
-							<section id="analysis" className="min-h-screen pt-16 px-4 scroll-mt-20">
-								<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
-									The Victors Emerge
-								</h2>
-								<ErrorBoundary context="Analysis Dashboard">
-									<Suspense fallback={<Loading variant="skeleton" height={600} />}>
-										<Dashboard
-											personalRatings={tournament.ratings}
-											currentTournamentNames={tournament.names || undefined}
-											onStartNew={handleStartNewTournament}
-											onUpdateRatings={handleUpdateRatings}
-											userName={user.name || ""}
-										/>
-									</Suspense>
+		<div className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}>
+			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete}>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context={errorContexts.tournamentFlow}>
+									<HomeContent onLogin={handleLogin} />
 								</ErrorBoundary>
-							</section>
-						)}
-
-						{/* Profile Section - Always visible single page area */}
-						<ErrorBoundary context="Profile Section">
-							<ProfileSection onLogin={handleLogin} />
-						</ErrorBoundary>
-					</div>
-				</Suspense>
+							</div>
+						}
+					/>
+					<Route
+						path="/analysis"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<AnalysisContent />
+							</div>
+						}
+					/>
+				</Routes>
 			</AppLayout>
 		</div>
+	);
+}
+
+function HomeContent({ onLogin }: { onLogin: (name: string) => Promise<boolean | undefined> }) {
+	return (
+		<>
+			<div id="pick" className="absolute -top-20" />
+			<Section id="play" variant="minimal" padding="comfortable" maxWidth="full">
+				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+					<TournamentFlow />
+				</Suspense>
+			</Section>
+			<ProfileSection onLogin={onLogin} />
+		</>
+	);
+}
+
+function AnalysisContent() {
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
+
+	return (
+		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="full">
+			<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+				The Victors Emerge
+			</h2>
+			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+				<ErrorBoundary context={errorContexts.analysisDashboard}>
+					<DashboardLazy
+						personalRatings={tournament.ratings}
+						currentTournamentNames={tournament.names ?? undefined}
+						onStartNew={handleStartNewTournament}
+						onUpdateRatings={handleUpdateRatings}
+						userName={user.name ?? ""}
+					/>
+				</ErrorBoundary>
+			</Suspense>
+		</Section>
 	);
 }
 
