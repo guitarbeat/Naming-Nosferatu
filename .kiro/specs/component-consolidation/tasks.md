@@ -16,13 +16,13 @@ This plan breaks down the component consolidation into incremental, safe steps. 
   - **Property 1: Import Update Consistency**
   - **Validates: Requirements 1.1, 1.3, 2.4, 3.3, 7.1**
 
-- [ ] 2. Identify and remove re-export wrappers
-  - [-] 2.1 Scan codebase for re-export wrapper components
+- [x] 2. Identify and remove re-export wrappers
+  - [x] 2.1 Scan codebase for re-export wrapper components
     - Create script to identify files that only contain re-exports
     - Generate list of wrapper files and their targets
     - _Requirements: 1.1_
   
-  - [~] 2.2 Update imports for re-export wrappers
+  - [x] 2.2 Update imports for re-export wrappers
     - Use TypeScript language service to find all import references
     - Update imports to reference actual implementations
     - Remove wrapper files
@@ -32,15 +32,15 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - **Property 3: Wrapper Removal Completeness**
     - **Validates: Requirements 1.1, 1.2**
   
-  - [~] 2.4 Verify no broken imports
+  - [x] 2.4 Verify no broken imports
     - Run TypeScript compiler to check for errors
     - Run test suite to verify functionality
     - _Requirements: 1.4, 7.3_
 
-- [~] 3. Checkpoint - Ensure all tests pass
+- [-] 3. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Consolidate Calendar components
+- [~] 4. Consolidate Calendar components
   - [~] 4.1 Create consolidated Calendar component
     - Merge Calendar.tsx and EmotionalCalendar.tsx functionality
     - Implement variant prop for 'default' and 'emotion-tracking' modes
@@ -70,7 +70,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Verify no references remain
     - _Requirements: 2.1_
 
-- [ ] 5. Consolidate Loading components
+- [~] 5. Consolidate Loading components
   - [~] 5.1 Create consolidated Loading component
     - Merge LoadingScreen and LoadingSpinner functionality
     - Implement variant prop for 'inline' and 'fullscreen' modes
@@ -103,7 +103,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
 - [~] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Standardize UI components
+- [~] 7. Standardize UI components
   - [~] 7.1 Audit existing Button and Card implementations
     - Identify all Button and Card component files
     - Document which use shadcn/ui vs styled-components
@@ -136,7 +136,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Use compatibility wrappers where immediate migration is complex
     - _Requirements: 4.1_
 
-- [ ] 8. Consolidate Emotion Tracking components
+- [~] 8. Consolidate Emotion Tracking components
   - [~] 8.1 Create EmotionTracker component
     - Implement core emotion logging functionality
     - Support emotion selector UI
@@ -180,7 +180,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
 - [~] 9. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Consolidate N8N Integration components
+- [~] 10. Consolidate N8N Integration components
   - [~] 10.1 Extract shared Alert component
     - Create reusable Alert component
     - Support variant prop (info, warning, error, success)
@@ -218,7 +218,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Verify no references remain
     - _Requirements: 6.1, 6.3_
 
-- [ ] 11. Update test files and mocks
+- [~] 11. Update test files and mocks
   - [~] 11.1 Update test imports
     - Find all test files importing consolidated components
     - Update imports to reference new component locations
@@ -239,7 +239,7 @@ This plan breaks down the component consolidation into incremental, safe steps. 
     - Ensure coverage is maintained or improved
     - _Requirements: 8.3_
 
-- [ ] 12. Final verification and cleanup
+- [~] 12. Final verification and cleanup
   - [~] 12.1 Run full build
     - Execute build command
     - Verify no compilation errors

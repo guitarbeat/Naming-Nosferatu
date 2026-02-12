@@ -5,15 +5,10 @@
  */
 
 import { useMemo } from "react";
-import {
-	CatBackground,
-	ErrorBoundary,
-	ErrorComponent,
-	FluidNav,
-	Loading,
-	OfflineIndicator,
-	ScrollToTopButton,
-} from "@/layout";
+import CatBackground from "@/layout/LayoutEffects";
+import { ErrorBoundary, ErrorComponent, Loading, OfflineIndicator } from "@/layout/FeedbackComponents";
+import { FluidNav } from "@/layout/FluidNav";
+import { ScrollToTopButton } from "@/layout/Button";
 import useAppStore from "@/store/appStore";
 
 interface AppLayoutProps {

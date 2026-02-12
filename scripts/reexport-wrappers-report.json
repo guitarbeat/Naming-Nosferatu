@@ -1,0 +1,376 @@
+{
+  "timestamp": "2026-02-12T02:13:42.381Z",
+  "summary": {
+    "totalFiles": 72,
+    "scannedFiles": 67,
+    "wrappersFound": 3
+  },
+  "wrappers": [
+    {
+      "file": "source\\features\\tournament\\hooks\\index.ts",
+      "lineCount": 8,
+      "exportCount": 8,
+      "exports": [
+        {
+          "name": "useAudioManager",
+          "source": "./useAudioManager",
+          "type": "named"
+        },
+        {
+          "name": "useNameManagementView",
+          "source": "./useNameManagementView",
+          "type": "named"
+        },
+        {
+          "name": "useProfileNotifications",
+          "source": "./useProfile",
+          "type": "named"
+        },
+        {
+          "name": "useTournament",
+          "source": "./useTournament",
+          "type": "named"
+        },
+        {
+          "name": "useTournamentHandlers",
+          "source": "./useTournamentHandlers",
+          "type": "named"
+        },
+        {
+          "name": "useTournamentSelectionSaver",
+          "source": "./useTournamentSelectionSaver",
+          "type": "named"
+        },
+        {
+          "name": "useTournamentState",
+          "source": "./useTournamentState",
+          "type": "named"
+        },
+        {
+          "name": "useTournamentVote",
+          "source": "./useTournamentVote",
+          "type": "named"
+        }
+      ]
+    },
+    {
+      "file": "source\\icons.ts",
+      "lineCount": 27,
+      "exportCount": 25,
+      "exports": [
+        {
+          "name": "BarChart3",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Cat",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Check",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "CheckCircle",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "ChevronDown",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "ChevronLeft",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "ChevronRight",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Copy",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Download",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "GripVertical",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Heart",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Layers",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "LayoutGrid",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Lightbulb",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Loader2",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "LogOut",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "PawPrint",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Pencil",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Plus",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Save",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Shuffle",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Trophy",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "Upload",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "User",
+          "source": "lucide-react",
+          "type": "named"
+        },
+        {
+          "name": "X",
+          "source": "lucide-react",
+          "type": "named"
+        }
+      ]
+    },
+    {
+      "file": "source\\layout\\index.ts",
+      "lineCount": 38,
+      "exportCount": 36,
+      "exports": [
+        {
+          "name": "AppLayout",
+          "source": "./AppLayout",
+          "type": "named"
+        },
+        {
+          "name": "default",
+          "source": "./Button",
+          "type": "named"
+        },
+        {
+          "name": "ScrollToTopButton",
+          "source": "./Button",
+          "type": "named"
+        },
+        {
+          "name": "Card",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "CardName",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "CardNameProps",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "CardProps",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "CardStats",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "CardStatsProps",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "BongoCat",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "DEFAULT_GLASS_CONFIG",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "default",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "FloatingBubblesContainer",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "LiquidGlass",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "resolveGlassConfig",
+          "source": "./LayoutEffects",
+          "type": "named"
+        },
+        {
+          "name": "GlassConfig",
+          "source": "./Card",
+          "type": "named"
+        },
+        {
+          "name": "BumpChart",
+          "source": "./Charts",
+          "type": "named"
+        },
+        {
+          "name": "CollapsibleContent",
+          "source": "./CollapsibleHeader",
+          "type": "named"
+        },
+        {
+          "name": "CollapsibleHeader",
+          "source": "./CollapsibleHeader",
+          "type": "named"
+        },
+        {
+          "name": "EmptyState",
+          "source": "./EmptyState",
+          "type": "named"
+        },
+        {
+          "name": "ErrorBoundary",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "ErrorComponent",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "IToastItem",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "Loading",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "OfflineIndicator",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "PerformanceBadges",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "Toast",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "ToastContainer",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "TrendIndicator",
+          "source": "./FeedbackComponents",
+          "type": "named"
+        },
+        {
+          "name": "FluidNav",
+          "source": "./FluidNav",
+          "type": "named"
+        },
+        {
+          "name": "Input",
+          "source": "./FormPrimitives",
+          "type": "named"
+        },
+        {
+          "name": "Textarea",
+          "source": "./FormPrimitives",
+          "type": "named"
+        },
+        {
+          "name": "Lightbox",
+          "source": "./Lightbox",
+          "type": "named"
+        },
+        {
+          "name": "AnimatedNavButton",
+          "source": "./NavButton",
+          "type": "named"
+        },
+        {
+          "name": "NavButton",
+          "source": "./NavButton",
+          "type": "named"
+        },
+        {
+          "name": "Section",
+          "source": "./Section",
+          "type": "named"
+        }
+      ]
+    }
+  ]
+}
