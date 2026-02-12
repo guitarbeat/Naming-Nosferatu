@@ -69,12 +69,6 @@ export function NameGrid({
 		[finalImageList],
 	);
 
-	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
-		useMasonryLayout<HTMLDivElement>(names.length, {
-			minColumnWidth: 280,
-			gap: 16,
-		});
-
 	const selectedSet = useMemo(
 		() => selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
 		[selectedNames],
@@ -96,7 +90,13 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [names, filters.filterStatus, filters.category, isAdmin, showSelectedOnly, selectedSet]);
+	}, [names, filters.filterStatus, isAdmin, showSelectedOnly, selectedSet]);
+
+	const { containerRef, setItemRef, positions, totalHeight, columnWidth } =
+		useMasonryLayout<HTMLDivElement>(processedNames.length, {
+			minColumnWidth: 280,
+			gap: 16,
+		});
 
 	if (isLoading) {
 		return (

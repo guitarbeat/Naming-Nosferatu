@@ -6,7 +6,7 @@
 import { lazy, Suspense } from "react";
 import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
-import { Section, Loading } from "@/layout";
+import { Loading, Section } from "@/layout";
 import useAppStore from "@/store/appStore";
 
 /* Lazy route chunks – loaded when user navigates to the route */

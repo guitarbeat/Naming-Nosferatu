@@ -3,13 +3,13 @@ import { Card, CardName, CardStats } from "./Card";
 export { Card, CardName, CardStats };
 export type {
 	CardBackground,
+	CardNameProps,
 	CardPadding,
 	CardProps,
 	CardShadow,
+	CardStatsProps,
 	CardVariant,
 	GlassConfig,
-	CardNameProps,
-	CardStatsProps,
 } from "./Card";
 
 const CardWithStats = Object.assign(Card, { Stats: CardStats, Name: CardName });

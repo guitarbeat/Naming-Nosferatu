@@ -6,7 +6,7 @@
 
 export { useAudioManager } from "./useAudioManager";
 export { useNameManagementView } from "./useNameManagementView";
-export { useProfile } from "./useProfile";
+export { useProfileNotifications } from "./useProfile";
 export { useTournament } from "./useTournament";
 export { useTournamentHandlers } from "./useTournamentHandlers";
 export { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
