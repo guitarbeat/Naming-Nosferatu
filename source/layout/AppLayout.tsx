@@ -5,9 +5,9 @@
  */
 
 import { useMemo } from "react";
+import { Loading, OfflineIndicator } from "@/layout";
 import { ScrollToTopButton } from "@/layout/Button";
 import { ErrorBoundary, ErrorComponent } from "@/layout/Error";
-import { Loading, OfflineIndicator } from "@/layout/StatusIndicators";
 import useAppStore from "@/store/appStore";
 import CatBackground from "./CatBackground";
 import { FluidNav } from "./FluidNav";

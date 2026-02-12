@@ -12,9 +12,9 @@ import {
 	TableRow,
 } from "@heroui/react";
 import React, { useCallback, useMemo } from "react";
+import { PerformanceBadges } from "@/layout";
 import { Card } from "@/layout/Card";
 import { CollapsibleHeader } from "@/layout/CollapsibleHeader";
-import { PerformanceBadges } from "@/layout/StatusIndicators";
 import { devError, formatDate, getMetricLabel, getRankDisplay } from "@/utils/basic";
 import type { ConsolidatedName, NameWithInsight, SummaryStats } from "./analyticsService";
 
