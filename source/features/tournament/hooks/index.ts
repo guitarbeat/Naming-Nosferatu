@@ -4,11 +4,16 @@
  * This consolidates hook imports across the tournament feature.
  */
 
-export { useAudioManager } from "./useAudioManager";
+// Consolidated helper hooks
+export {
+	useAudioManager,
+	useProfileNotifications,
+	useTournamentSelectionSaver,
+} from "./useHelpers";
+
+// Re-export from original files
 export { useNameManagementView } from "./useNameManagementView";
-export { useProfile } from "./useProfile";
 export { useTournament } from "./useTournament";
 export { useTournamentHandlers } from "./useTournamentHandlers";
-export { useTournamentSelectionSaver } from "./useTournamentSelectionSaver";
 export { useTournamentState } from "./useTournamentState";
 export { useTournamentVote } from "./useTournamentVote";

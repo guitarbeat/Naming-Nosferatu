@@ -7,7 +7,7 @@ import { coreAPI, statsAPI } from "@supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
-import { useTournamentSelectionSaver } from "@/features/tournament/hooks/useTournamentSelectionSaver";
+import { useTournamentSelectionSaver } from "@/features/tournament/hooks/useHelpers";
 import { useValidatedForm } from "@/hooks/useValidatedForm";
 import { useToast } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";

@@ -5,7 +5,7 @@ import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
-import { useAudioManager } from "../hooks/useAudioManager";
+import { useAudioManager } from "../hooks/useHelpers";
 import { useTournamentState } from "../hooks/useTournamentState";
 import { useTournamentVote } from "../hooks/useTournamentVote";
 
