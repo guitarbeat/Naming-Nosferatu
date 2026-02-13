@@ -40,6 +40,19 @@ import {
 // Internal Utilities
 // ═══════════════════════════════════════════════════════════════════════════════
 
+/**
+ * Simple debounce utility for internal use.
+ */
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+	let timeout: ReturnType<typeof setTimeout>;
+	const debounced = (...args: Parameters<T>) => {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func(...args), wait);
+	};
+	debounced.cancel = () => clearTimeout(timeout);
+	return debounced;
+}
+
 const IS_BROWSER = typeof window !== "undefined";
 const HAS_NAVIGATOR = typeof navigator !== "undefined";
 
@@ -411,12 +424,14 @@ export function useBrowserState(breakpoints?: Partial<Breakpoints>): BrowserStat
 			});
 		};
 
+		const onResize = debounce(scheduleUpdate, 150);
+
 		const onMotionChange = (e: MediaQueryListEvent) => {
 			currentMotion = e.matches;
 			scheduleUpdate();
 		};
 
-		window.addEventListener("resize", scheduleUpdate, { passive: true });
+		window.addEventListener("resize", onResize, { passive: true });
 		window.addEventListener("online", scheduleUpdate);
 		window.addEventListener("offline", scheduleUpdate);
 		motionMql.addEventListener("change", onMotionChange);
@@ -429,7 +444,8 @@ export function useBrowserState(breakpoints?: Partial<Breakpoints>): BrowserStat
 			if (rafId !== null) {
 				cancelAnimationFrame(rafId);
 			}
-			window.removeEventListener("resize", scheduleUpdate);
+			onResize.cancel();
+			window.removeEventListener("resize", onResize);
 			window.removeEventListener("online", scheduleUpdate);
 			window.removeEventListener("offline", scheduleUpdate);
 			motionMql.removeEventListener("change", onMotionChange);
