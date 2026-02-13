@@ -65,6 +65,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[visibleNames],
 	);
 
+	// idToName dependency captures visibleNames changes through memoization
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};

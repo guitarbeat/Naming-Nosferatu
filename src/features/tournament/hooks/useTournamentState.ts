@@ -96,7 +96,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, ratings, round, matchNumber, sorter, elo.calculateNewRatings],
+		[currentMatch, ratings, round, matchNumber, sorter, elo],
 	);
 
 	const handleUndo = useCallback(() => {
