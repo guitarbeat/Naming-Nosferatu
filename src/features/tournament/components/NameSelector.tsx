@@ -101,7 +101,9 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const cardsToRender = visibleCards.slice(0, 3);
 
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
-		if (!userName) return;
+		if (!userName) {
+			return;
+		}
 		try {
 			if (isCurrentlyHidden) {
 				await hiddenNamesAPI.unhideName(userName, nameId);
@@ -159,13 +161,18 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 									}`}
 								>
-									<div className="aspect-square w-full relative" onClick={(e) => e.stopPropagation()}>
-										<lightbox-image dialog-id="shared-lightbox-dialog"><CatImage
-											src={catImage}
-											alt={nameItem.name}
-											containerClassName="w-full h-full"
-											imageClassName="w-full h-full object-cover"
-										/></lightbox-image>
+									<div
+										className="aspect-square w-full relative"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<lightbox-image dialog-id="shared-lightbox-dialog">
+											<CatImage
+												src={catImage}
+												alt={nameItem.name}
+												containerClassName="w-full h-full"
+												imageClassName="w-full h-full object-cover"
+											/>
+										</lightbox-image>
 									</div>
 									<div className="p-3 flex flex-col gap-1">
 										<div className="flex items-center justify-between gap-2">
@@ -301,14 +308,18 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 														</>
 													)}
 
-													<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center relative" onClick={(e) => e.stopPropagation()}>
-														<lightbox-image dialog-id="shared-lightbox-dialog"><CatImage
-															src={catImage}
-															alt={nameItem.name}
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
-														/></lightbox-image>
-
+													<div
+														className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center relative"
+														onClick={(e) => e.stopPropagation()}
+													>
+														<lightbox-image dialog-id="shared-lightbox-dialog">
+															<CatImage
+																src={catImage}
+																alt={nameItem.name}
+																containerClassName="w-full h-full"
+																imageClassName="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
+															/>
+														</lightbox-image>
 													</div>
 
 													<div className="text-center pb-4 z-10 w-full">
@@ -360,8 +371,6 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 					</Button>
 				</div>
 			</div>
-
-
 		</Card>
 	);
 }

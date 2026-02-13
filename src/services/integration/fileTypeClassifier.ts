@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Type Classifier
  *

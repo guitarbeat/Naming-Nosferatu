@@ -121,18 +121,18 @@ export class LightBoxImage extends HTMLElement {
 	}
 
 	moveImage(fn: () => void) {
-		// @ts-ignore
-		if (!document.startViewTransition) {
-			fn();
-		} else {
+		// @ts-expect-error
+		if (document.startViewTransition) {
 			this.handleViewTransition(fn);
+		} else {
+			fn();
 		}
 	}
 
 	async handleViewTransition(fn: () => void) {
 		if (this.image) {
 			this.image.style.viewTransitionName = "active-lightbox-image";
-			// @ts-ignore
+			// @ts-expect-error
 			const transition = document.startViewTransition(() => fn());
 			try {
 				await transition.finished;
@@ -169,7 +169,7 @@ export class LightBoxImage extends HTMLElement {
 		try {
 			this.dialog.removeEventListener("click", this);
 			this.dialog.removeEventListener("cancel", this);
-		} catch (e) {
+		} catch (_e) {
 			// ignore
 		}
 	}
