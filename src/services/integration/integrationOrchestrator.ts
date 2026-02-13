@@ -431,7 +431,12 @@ export class IntegrationOrchestrator {
 			}
 
 			// Perform integration
-			const result = integrateFile(analysis, referenceContent, this.config.mergeStrategy);
+			const result = integrateFile(
+				analysis,
+				referenceContent,
+				this.config.mergeStrategy,
+				this.projectRoot,
+			);
 
 			return result;
 		} catch (error) {

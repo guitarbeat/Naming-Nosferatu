@@ -9,8 +9,13 @@ import { useNamesCache } from "@/hooks/useNamesCache";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
+<<<<<<< HEAD
 import { Lightbox } from "@/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
+=======
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
 import { getRandomCatImage } from "@/utils/basic";
@@ -86,6 +91,27 @@ export function NameSelector() {
 		fetchNames();
 	}, [retryCount, getCachedData, setCachedData]);
 
+<<<<<<< HEAD
+	const toggleName = useCallback(
+		(nameId: IdType) => {
+			setSelectedNames((prev) => {
+				const next = new Set(prev);
+				if (next.has(nameId)) {
+					next.delete(nameId);
+				} else {
+					next.add(nameId);
+				}
+
+				// Sync with global store
+				const selectedNameItems = names.filter((n) => next.has(n.id));
+				tournamentActions.setSelection(selectedNameItems);
+
+				return next;
+			});
+		},
+		[names, tournamentActions],
+	);
+=======
 	const toggleName = (nameId: IdType) => {
 		setSelectedNames((prev) => {
 			const next = new Set(prev);
@@ -102,15 +128,19 @@ export function NameSelector() {
 			return next;
 		});
 	};
+>>>>>>> 9881bea (style: fix biome linting issues)
 
 	// Add haptic feedback for better UX
-	const handleToggleName = (nameId: IdType) => {
-		// Add subtle haptic feedback if supported
-		if ("vibrate" in navigator) {
-			navigator.vibrate(50);
-		}
-		toggleName(nameId);
-	};
+	const handleToggleName = useCallback(
+		(nameId: IdType) => {
+			// Add subtle haptic feedback if supported
+			if ("vibrate" in navigator) {
+				navigator.vibrate(50);
+			}
+			toggleName(nameId);
+		},
+		[toggleName],
+	);
 
 	// Trigger haptic feedback if available
 	const triggerHaptic = useCallback(() => {
@@ -123,14 +153,19 @@ export function NameSelector() {
 		(nameId: IdType, direction: "left" | "right", velocity: number = 0) => {
 			if (direction === "right") {
 				setSelectedNames((prev) => {
-					const next = new Set([...prev, nameId]);
+					const next = new Set(prev);
+					next.add(nameId);
 					// Sync with global store
 					const selectedNameItems = names.filter((n) => next.has(n.id));
 					tournamentActions.setSelection(selectedNameItems);
 					return next;
 				});
 			}
-			setSwipedIds((prev) => new Set([...prev, nameId]));
+			setSwipedIds((prev) => {
+				const next = new Set(prev);
+				next.add(nameId);
+				return next;
+			});
 			setSwipeHistory((prev) => [...prev, { id: nameId, direction, timestamp: Date.now() }]);
 			triggerHaptic();
 
@@ -185,6 +220,7 @@ export function NameSelector() {
 			return next;
 		});
 
+<<<<<<< HEAD
 		// If it was a right swipe, remove from selected names and sync with store
 		if (lastSwipe.direction === "right") {
 			setSelectedNames((prev) => {
@@ -195,6 +231,36 @@ export function NameSelector() {
 				tournamentActions.setSelection(selectedNameItems);
 				return next;
 			});
+=======
+	const handleStart = () => {
+		if (selectedNames.size < 2) {
+			return;
+		}
+		const selectedNameItems = names.filter((n) => selectedNames.has(n.id));
+		onStart(selectedNameItems);
+	};
+
+	const handleSwipe = (nameId: IdType, direction: "left" | "right") => {
+		if (direction === "right") {
+			setSelectedNames((prev) => new Set([...prev, nameId]));
+		}
+		setSwipedIds((prev) => new Set([...prev, nameId]));
+		setTimeout(() => {
+			setDragDirection(null);
+			setDragOffset(0);
+		}, 300);
+	};
+
+	const handleDragEnd = (nameId: IdType, info: PanInfo) => {
+		const offset = info.offset.x;
+		const velocity = info.velocity.x;
+		const threshold = 100;
+		const velocityThreshold = 500;
+
+		if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
+			setDragOffset(0);
+			return;
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 		}
 
 		triggerHaptic();
@@ -202,6 +268,16 @@ export function NameSelector() {
 
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
+
+<<<<<<< HEAD
+	// Create a mapping from name id to image index for efficient lookup
+	const nameIndexMap = useMemo(() => {
+		const map = new Map<IdType, number>();
+		names.forEach((name, index) => {
+			map.set(name.id, index);
+		});
+		return map;
+	}, [names]);
 
 	// Keyboard navigation for swipe mode
 	useEffect(() => {
@@ -260,6 +336,8 @@ export function NameSelector() {
 		[names],
 	);
 
+=======
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
 			return;
@@ -367,6 +445,77 @@ export function NameSelector() {
 				</div>
 
 				{isSwipeMode ? (
+<<<<<<< HEAD
+=======
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+						{names.map((nameItem) => {
+							const isSelected = selectedNames.has(nameItem.id);
+							const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+							return (
+								<button
+									key={nameItem.id}
+									type="button"
+									onClick={() => toggleName(nameItem.id)}
+									className={`relative rounded-xl border-2 transition-all overflow-hidden group ${
+										isSelected
+											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
+											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+									}`}
+								>
+									<div
+										className="aspect-square w-full relative"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<lightbox-image dialog-id="shared-lightbox-dialog">
+											<CatImage
+												src={catImage}
+												alt={nameItem.name}
+												containerClassName="w-full h-full"
+												imageClassName="w-full h-full object-cover"
+											/>
+										</lightbox-image>
+									</div>
+									<div className="p-3 flex flex-col gap-1">
+										<div className="flex items-center justify-between gap-2">
+											<span className="font-medium text-white text-sm">{nameItem.name}</span>
+											{isSelected && (
+												<div className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+													<Check size={14} className="text-white" />
+												</div>
+											)}
+										</div>
+										{nameItem.description && (
+											<p className="text-xs text-white/60 text-left">{nameItem.description}</p>
+										)}
+										{isAdmin && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+												}}
+												className="mt-1 flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
+											>
+												{nameItem.isHidden ? (
+													<>
+														<Eye size={12} />
+														<span>Unhide</span>
+													</>
+												) : (
+													<>
+														<EyeOff size={12} />
+														<span>Hide</span>
+													</>
+												)}
+											</button>
+										)}
+									</div>
+								</button>
+							);
+						})}
+					</div>
+				) : (
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 					<div
 						className="relative w-full flex items-center justify-center"
 						style={{ minHeight: "600px" }}
@@ -374,7 +523,11 @@ export function NameSelector() {
 						<AnimatePresence mode="popLayout">
 							{visibleCards.length > 0 ? (
 								cardsToRender.map((nameItem, index) => {
-									const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+									const imageIndex = nameIndexMap.get(nameItem.id);
+									const catImage =
+										imageIndex !== undefined
+											? allCatImages[imageIndex]
+											: getRandomCatImage(nameItem.id, CAT_IMAGES);
 									return (
 										<motion.div
 											key={nameItem.id}
@@ -568,7 +721,11 @@ export function NameSelector() {
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 						{names.map((nameItem) => {
 							const isSelected = selectedNames.has(nameItem.id);
-							const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+							const imageIndex = nameIndexMap.get(nameItem.id);
+							const catImage =
+								imageIndex !== undefined
+									? allCatImages[imageIndex]
+									: getRandomCatImage(nameItem.id, CAT_IMAGES);
 							return (
 								<button
 									key={nameItem.id}
