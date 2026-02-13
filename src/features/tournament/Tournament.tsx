@@ -34,19 +34,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const [_showMatchResult, setShowMatchResult] = useState(false);
 	const [_votingError, setVotingError] = useState<unknown>(null);
 
-<<<<<<< HEAD
-=======
-	const handleVote = useCallback(
-		(winnerId: string, loserId: string) => {
-			handleVoteInternal(winnerId, loserId);
-			if (onVote) {
-				onVote({ winnerId, loserId } as any);
-			}
-		},
-		[handleVoteInternal, onVote],
-	);
-
->>>>>>> origin/main
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results = Object.entries(ratings).map(([name, rating]) => ({
@@ -68,12 +55,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		isProcessing,
 		isTransitioning,
 		currentMatch,
-<<<<<<< HEAD
-=======
-		handleVote: (winnerId: string, loserId: string) => handleVote(winnerId, loserId),
-		onVote: onVote as any,
-		audioManager,
->>>>>>> origin/main
 		setIsProcessing,
 		setIsTransitioning,
 		setSelectedOption,

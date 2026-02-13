@@ -7,7 +7,7 @@ const VOTE_COOLDOWN = 300;
 
 export interface UseTournamentVoteResult {
 	isVoting: boolean;
-	handleVoteWithAnimation: (winnerId: string, loserId: string) => void;
+	handleVoteWithAnimation: (winnerIdOrSide: string, loserId?: string) => void;
 	handleUndoWithAnimation: () => void;
 }
 
@@ -55,18 +55,47 @@ export function useTournamentVote({
     const actualCurrentMatch = tournamentState?.currentMatch;
 
 	const handleVoteWithAnimation = useCallback(
-		(winnerId: string, loserId: string) => {
+		(winnerIdOrSide: string, loserId?: string) => {
 			if (isVoting) {
 				return;
 			}
 
-            const isLeft = actualCurrentMatch && (
-                (typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left) === winnerId
-            );
+			// Handle both "left"/"right" (single param) and direct IDs (two params)
+			let winnerId: string;
+			let loserIdFinal: string;
+			let side: "left" | "right" | null = null;
 
-            if (setSelectedOption && actualCurrentMatch) {
-                setSelectedOption(isLeft ? "left" : "right");
-            }
+			if (loserId === undefined) {
+				// Single parameter mode: "left" or "right"
+				if (!actualCurrentMatch) {
+					return;
+				}
+				
+				side = winnerIdOrSide as "left" | "right";
+				if (side === "left") {
+					winnerId = String(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left);
+					loserIdFinal = String(typeof actualCurrentMatch.right === 'object' ? actualCurrentMatch.right.id : actualCurrentMatch.right);
+				} else {
+					winnerId = String(typeof actualCurrentMatch.right === 'object' ? actualCurrentMatch.right.id : actualCurrentMatch.right);
+					loserIdFinal = String(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left);
+				}
+				
+				if (setSelectedOption) {
+					setSelectedOption(side);
+				}
+			} else {
+				// Two parameter mode: direct IDs
+				winnerId = winnerIdOrSide;
+				loserIdFinal = loserId;
+				
+				const isLeft = actualCurrentMatch && (
+					(typeof actualCurrentMatch.left === 'object' ? actualCurrentMatch.left.id : actualCurrentMatch.left) === winnerId
+				);
+				
+				if (setSelectedOption && actualCurrentMatch) {
+					setSelectedOption(isLeft ? "left" : "right");
+				}
+			}
 
             if (setIsTransitioning) {
                 setIsTransitioning(true);
@@ -76,8 +105,8 @@ export function useTournamentVote({
 			audioManager.playVoteSound();
 
 			setTimeout(() => {
-				actualHandleVote?.(winnerId, loserId);
-				onVote?.(winnerId, loserId);
+				actualHandleVote?.(winnerId, loserIdFinal);
+				onVote?.(winnerId, loserIdFinal);
 				setVoting(false);
                 if (setIsTransitioning) setIsTransitioning(false);
                 if (setSelectedOption) setSelectedOption(null);
@@ -88,7 +117,7 @@ export function useTournamentVote({
 
 	const handleUndoWithAnimation = useCallback(() => {
 		if (!actualCanUndo) {
-			toast?.("No more moves to undo", "warning");
+			toast.showWarning("No more moves to undo");
 			return;
 		}
 
