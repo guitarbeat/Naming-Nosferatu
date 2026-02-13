@@ -203,7 +203,7 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											)}
 										</div>
 										{nameItem.description && (
-											<p className="text-xs text-white/60 text-left ">{nameItem.description}</p>
+											<p className="text-xs text-white/60 text-left">{nameItem.description}</p>
 										)}
 										{isAdmin && (
 											<button
@@ -352,7 +352,12 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 															{nameItem.name}
 														</h3>
 														{nameItem.description && (
-															<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto overflow-y-auto max-h-[120px]">
+															<p
+																className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto overflow-y-auto max-h-[120px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+																tabIndex={0}
+																role="region"
+																aria-label={`${nameItem.name} description`}
+															>
 																{nameItem.description}
 															</p>
 														)}
