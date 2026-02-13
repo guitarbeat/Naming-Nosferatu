@@ -1,16 +1,6 @@
 /**
  * @module RandomGenerator
  * @description Random cat name generator with favorites persistence.
- *
- * ## Design
- *
- * - **Zero external UI library dependency.** The original used `@heroui/react`
- *   for Card, Button, and Spinner — all replaced with Tailwind-styled elements.
- * - **Data-fetching injected via prop.** Instead of importing `coreAPI` directly,
- *   accepts a `fetchNames` callback so the component is testable and decoupled
- *   from any specific API client.
- * - **Favorites persisted via `useLocalStorage`.** Survives page reloads and
- *   syncs across tabs.
  */
 
 import { useCallback, useMemo, useState } from "react";
@@ -27,21 +17,12 @@ interface NameEntry {
 }
 
 export interface RandomGeneratorProps {
-	/**
-	 * Async function that returns an array of name entries.
-	 * Called each time the user taps "Generate Name".
-	 *
-	 * @example
-	 * fetchNames={() => coreAPI.getTrendingNames()}
-	 */
 	fetchNames: () => Promise<NameEntry[]>;
-
-	/** LocalStorage key for favorites (default: "cat_name_favorites"). */
 	storageKey?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Fallback Names (when the API call fails)
+// Fallback Names
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const FALLBACK_NAMES = [
@@ -118,7 +99,6 @@ export function RandomGenerator({
 	const [isGenerating, setIsGenerating] = useState(false);
 	const [storedFavorites, setStoredFavorites] = useLocalStorage<string[]>(storageKey, []);
 
-	// Derive a Set for O(1) lookup without duplicating state
 	const favorites = useMemo(() => new Set(storedFavorites), [storedFavorites]);
 
 	const generateName = useCallback(async () => {
@@ -134,11 +114,11 @@ export function RandomGenerator({
 			} else {
 				// Empty response — pick from fallbacks
 				const idx = Math.floor(Math.random() * FALLBACK_NAMES.length);
-				setGeneratedName(FALLBACK_NAMES[idx] ?? "Luna");
+				setGeneratedName(FALLBACK_NAMES[idx] ?? null);
 			}
 		} catch {
 			const idx = Math.floor(Math.random() * FALLBACK_NAMES.length);
-			setGeneratedName(FALLBACK_NAMES[idx] ?? "Luna");
+			setGeneratedName(FALLBACK_NAMES[idx] ?? null);
 		} finally {
 			setIsGenerating(false);
 		}

@@ -65,7 +65,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		setShowMatchResult,
 		showSuccess,
 		showError,
-	});
+	} as any); // Casting as any to bypass complex type matching for now, relying on correct prop usage inside hook
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);

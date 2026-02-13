@@ -56,9 +56,6 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
-
-	// Accessing private property 'currentIndex' via any cast or public getter if available.
-	// Assuming for now we cast to any to bypass TS error as temporary fix if getter missing.
 	const matchNumber = (sorter as any).currentIndex + 1;
 	const round = Math.floor((sorter as any).currentIndex / Math.max(1, names.length)) + 1;
 
@@ -94,7 +91,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 			// Record preference in sorter
 			sorter.addPreference(winnerId, loserId, 1);
-			(sorter as any).currentIndex++; // Increment manual counter if needed, but addPreference usually advances
+			(sorter as any).currentIndex++;
 
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
@@ -108,16 +105,13 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 
 		const lastEntry = history[history.length - 1];
-		if (lastEntry) {
-			setRatings(lastEntry.ratings);
-			setHistory((prev) => prev.slice(0, -1));
-
-			// Undo in sorter
-			sorter.undoLastPreference();
-
-			// Trigger re-render
-			setRefreshKey((k) => k + 1);
+		if (!lastEntry) {
+			return;
 		}
+		setRatings(lastEntry.ratings);
+		setHistory((prev) => prev.slice(0, -1));
+		sorter.undoLastPreference();
+		setRefreshKey((k) => k + 1);
 	}, [history, sorter]);
 
 	return {

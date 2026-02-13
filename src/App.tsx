@@ -29,6 +29,12 @@ const DashboardLazy = routeComponents.DashboardLazy;
 function App() {
 	const { isLoading } = useAuth();
 	const isInitialized = !isLoading;
+	const { user, tournamentActions } = useAppStore();
+
+	const tournamentHandlers = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
 	useEffect(() => {
 		initializePerformanceMonitoring();
@@ -40,13 +46,7 @@ function App() {
 	}, []);
 
 	useAppStoreInitialization();
-	const { user, tournamentActions } = useAppStore();
 	useOfflineSync();
-
-	const tournamentHandlers = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
-	});
 
 	if (!isInitialized) {
 		return (

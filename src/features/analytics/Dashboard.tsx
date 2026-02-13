@@ -8,6 +8,7 @@ import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
+import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
@@ -16,7 +17,6 @@ import { RandomGenerator } from "../tournament/components/RandomGenerator";
 interface DashboardProps {
 	personalRatings?: Record<string, unknown>;
 	currentTournamentNames?: NameItem[];
-	onUpdateRatings?: (ratings: Record<string, unknown>) => void;
 	onStartNew?: () => void;
 	userName?: string;
 	isAdmin?: boolean;
@@ -286,3 +286,6 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 		</div>
 	);
 }
+
+// Alias for compatibility
+export { Dashboard as AnalysisDashboard };

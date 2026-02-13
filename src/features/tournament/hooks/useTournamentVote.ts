@@ -36,7 +36,7 @@ export function useTournamentVote({
 	setIsProcessing,
 	setIsTransitioning,
 	setSelectedOption,
-    handleVote, // Capture handleVote passed from parent if needed, but tournamentState usually has it
+    handleVote,
 }: UseTournamentVoteProps): UseTournamentVoteResult {
 	const [isVotingLocal, setIsVotingLocal] = useState(false);
 	const isVoting = isVotingLocal;
