@@ -359,7 +359,7 @@ const DEFAULT_BREAKPOINTS: Breakpoints = {
 
 /**
  * All-in-one hook for responsive design, network status, and accessibility prefs.
- * Internally coalesces updates via `requestAnimationFrame`.
+ * Internally coalesces updates via `requestAnimationFrame` and debounces resize events (150ms).
  *
  * @example
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
