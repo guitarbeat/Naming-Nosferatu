@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import { useToast } from "@/providers/Providers";
@@ -20,7 +20,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		currentMatch,
 		ratings,
-		handleVote: handleVoteInternal,
 		isComplete,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
@@ -35,16 +34,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const [_showMatchResult, setShowMatchResult] = useState(false);
 	const [_votingError, setVotingError] = useState<unknown>(null);
 
-	const handleVote = useCallback(
-		(winnerId: string, loserId: string) => {
-			handleVoteInternal(winnerId, loserId);
-			if (onVote) {
-				onVote({ winnerId, loserId } as any);
-			}
-		},
-		[handleVoteInternal, onVote],
-	);
-
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results = Object.entries(ratings).map(([name, rating]) => ({
@@ -56,12 +45,16 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	}, [isComplete, ratings, onComplete]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
+		tournamentState: tournament,
+		audioManager,
+		onVote: (winnerId, loserId) => {
+			if (onVote) {
+				(onVote as any)(winnerId, loserId);
+			}
+		},
 		isProcessing,
 		isTransitioning,
 		currentMatch,
-		handleVote: (winnerId: string, loserId: string) => handleVote(winnerId, loserId),
-		onVote: onVote as any,
-		audioManager,
 		setIsProcessing,
 		setIsTransitioning,
 		setSelectedOption,
@@ -160,7 +153,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("left")}
+						onClick={() => {
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(leftId, rightId);
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
@@ -201,7 +198,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("right")}
+						onClick={() => {
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(rightId, leftId);
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
