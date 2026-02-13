@@ -31,7 +31,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	});
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => n.id)));
+	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	const currentMatch = useMemo(() => {
