@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Shared AST Utilities for TypeScript parsing
  *

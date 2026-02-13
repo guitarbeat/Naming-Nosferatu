@@ -40,6 +40,7 @@ function parseFileContent(filePath: string, content: string): Export[] {
 		);
 
 		if (hasExportModifier) {
+			// Use "default" as name for default exports in comparisons to match exports across files
 			extractExport(node, exports, hasDefaultModifier || false, true);
 		}
 
