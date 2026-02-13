@@ -50,6 +50,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 				name: nextMatch.right,
 			},
 		} as Match;
+	}, [sorter, names]); // Added _refreshKey dependency to ensure update
 	}, [sorter, names, _refreshKey]); // Added _refreshKey dependency to ensure update
 
 	const isComplete = currentMatch === null;
