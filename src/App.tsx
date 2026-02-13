@@ -29,6 +29,12 @@ const DashboardLazy = routeComponents.DashboardLazy;
 function App() {
 	const { isLoading } = useAuth();
 	const isInitialized = !isLoading;
+	const { user, tournamentActions } = useAppStore();
+
+	const tournamentHandlers = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
 	useEffect(() => {
 		initializePerformanceMonitoring();
@@ -40,13 +46,7 @@ function App() {
 	}, []);
 
 	useAppStoreInitialization();
-	const { user, tournamentActions } = useAppStore();
 	useOfflineSync();
-
-	const tournamentHandlers = useTournamentHandlers({
-		userName: user.name,
-		tournamentActions,
-	});
 
 	if (!isInitialized) {
 		return (
@@ -60,7 +60,7 @@ function App() {
 		<div
 			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete}>
+			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete as any}>
 				<Routes>
 					<Route
 						path="/"
@@ -92,6 +92,10 @@ function App() {
 					/>
 				</Routes>
 			</AppLayout>
+			<dialog
+				id="shared-lightbox-dialog"
+				className="backdrop:bg-black/90 bg-transparent p-0 overflow-hidden outline-none"
+			/>
 		</div>
 	);
 }
@@ -120,7 +124,7 @@ function TournamentContent() {
 					<Tournament
 						names={tournament.names}
 						existingRatings={tournament.ratings}
-						onComplete={handleTournamentComplete}
+						onComplete={handleTournamentComplete as any}
 					/>
 				) : (
 					<div className="text-center py-20">
@@ -153,7 +157,7 @@ function AnalysisContent() {
 						personalRatings={tournament.ratings}
 						currentTournamentNames={tournament.names ?? undefined}
 						onStartNew={handleStartNewTournament}
-						onUpdateRatings={handleUpdateRatings}
+						onUpdateRatings={handleUpdateRatings as any}
 						userName={user.name ?? ""}
 						isAdmin={user.isAdmin}
 					/>

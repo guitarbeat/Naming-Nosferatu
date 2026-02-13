@@ -153,6 +153,16 @@ interface NameRow {
 	created_at: string;
 }
 
+interface SiteStatsRpcResult {
+	totalNames: number;
+	hiddenNames: number;
+	activeNames: number;
+	totalUsers: number;
+	totalRatings: number;
+	totalSelections: number;
+	avgRating: number;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // analyticsAPI
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -161,40 +171,21 @@ export const analyticsAPI = {
 	/** Get top selected names based on selection history. */
 	getTopSelectedNames: async (limit: number | null = 20) => {
 		return withSupabase(async (client) => {
-			const { data, error } = await (client
-				.from("cat_tournament_selections")
-				.select("name_id, name") as unknown as Promise<{
-				data: SelectionRow[] | null;
-				error: unknown;
-			}>);
+			const { data, error } = await client.rpc("get_top_selections", {
+				limit_count: limit || 20,
+			});
 
 			if (error || !data) {
 				return [];
 			}
 
-			const counts = new Map<
-				string | number,
-				{ name_id: string | number; name: string; count: number }
-			>();
-			for (const row of data) {
-				const existing = counts.get(row.name_id);
-				if (existing) {
-					existing.count += 1;
-				} else {
-					counts.set(row.name_id, { name_id: row.name_id, name: row.name, count: 0 + 1 });
-				}
-			}
-
-			let results = Array.from(counts.values()).sort((a, b) => b.count - a.count);
-			if (limit) {
-				results = results.slice(0, limit);
-			}
-
-			return results.map((item) => ({
-				name_id: String(item.name_id),
-				name: item.name,
-				times_selected: item.count,
-			}));
+			return (data as unknown as { name_id: string; name: string; count: number }[]).map(
+				(item) => ({
+					name_id: String(item.name_id),
+					name: item.name,
+					times_selected: item.count,
+				}),
+			);
 		}, []);
 	},
 
@@ -205,92 +196,27 @@ export const analyticsAPI = {
 		currentUserName: string | null = null,
 	) => {
 		return withSupabase(async (client) => {
-			let selectionsQuery = client
-				.from("cat_tournament_selections")
-				.select("name_id, name, user_name");
-			let ratingsQuery = client
-				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses, user_name");
-
-			if (userFilter && userFilter !== "all") {
-				const target = userFilter === "current" ? currentUserName : userFilter;
-				if (target) {
-					selectionsQuery = selectionsQuery.eq("user_name", target);
-					ratingsQuery = ratingsQuery.eq("user_name", target);
-				}
-			}
-
-			const [selectionsResult, ratingsResult, namesResult] = await Promise.all([
-				selectionsQuery as unknown as Promise<{ data: SelectionRow[] | null; error: unknown }>,
-				ratingsQuery as unknown as Promise<{ data: RatingRow[] | null; error: unknown }>,
-				client
-					.from("cat_name_options")
-					.select("id, name, description, avg_rating, categories, created_at")
-					.eq("is_active", true)
-					.eq("is_hidden", false) as unknown as Promise<{ data: NameRow[] | null; error: unknown }>,
-			]);
-
-			const selections = selectionsResult.data ?? [];
-			const ratings = ratingsResult.data ?? [];
-			const names = namesResult.data ?? [];
-
-			// Aggregate selections
-			const selStats = new Map<string | number, { count: number; users: Set<string> }>();
-			for (const s of selections) {
-				const existing = selStats.get(s.name_id);
-				if (existing) {
-					existing.count += 1;
-					existing.users.add(s.user_name);
-				} else {
-					selStats.set(s.name_id, { count: 1, users: new Set([s.user_name]) });
-				}
-			}
-
-			// Aggregate ratings
-			const ratStats = new Map<
-				string | number,
-				{ totalRating: number; count: number; wins: number; losses: number }
-			>();
-			for (const r of ratings) {
-				const existing = ratStats.get(r.name_id);
-				if (existing) {
-					existing.totalRating += Number(r.rating) || 1500;
-					existing.count += 1;
-					existing.wins += r.wins || 0;
-					existing.losses += r.losses || 0;
-				} else {
-					ratStats.set(r.name_id, {
-						totalRating: Number(r.rating) || 1500,
-						count: 1,
-						wins: r.wins || 0,
-						losses: r.losses || 0,
-					});
-				}
-			}
-
-			const analytics = names.map((name) => {
-				const sel = selStats.get(name.id) ?? { count: 0 };
-				const rat = ratStats.get(name.id) ?? { totalRating: 0, count: 0, wins: 0, losses: 0 };
-
-				const avgRating = rat.count > 0 ? Math.round(rat.totalRating / rat.count) : 1500;
-				const popularityScore = Math.round(
-					sel.count * 2 + rat.wins * 1.5 + (avgRating - 1500) * 0.5,
-				);
-
-				return {
-					name_id: name.id,
-					name: name.name,
-					description: name.description,
-					category: name.categories?.[0] ?? null,
-					times_selected: sel.count,
-					avg_rating: avgRating,
-					popularity_score: popularityScore,
-					created_at: name.created_at || null,
-				};
+			const { data, error } = await client.rpc("get_popularity_scores", {
+				p_limit: limit,
+				p_user_filter: userFilter,
+				p_current_user_name: currentUserName,
 			});
 
-			const sorted = analytics.sort((a, b) => b.popularity_score - a.popularity_score);
-			return limit ? sorted.slice(0, limit) : sorted;
+			if (error) {
+				console.error("Error fetching popularity scores:", error);
+				return [];
+			}
+
+			return (data || []).map((item: any) => ({
+				name_id: item.name_id,
+				name: item.name,
+				description: item.description,
+				category: item.category,
+				times_selected: Number(item.times_selected),
+				avg_rating: Number(item.avg_rating),
+				popularity_score: Number(item.popularity_score),
+				created_at: item.created_at,
+			}));
 		}, []);
 	},
 
@@ -521,60 +447,18 @@ export const statsAPI = {
 	/** Get global site statistics. */
 	getSiteStats: async () => {
 		return withSupabase(async (client) => {
-			const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
-				await Promise.all([
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_active", true) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_hidden", true) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client
-						.from("cat_app_users")
-						.select("user_name", { count: "exact", head: true }) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client.from("cat_name_ratings").select("rating") as unknown as Promise<{
-						data: Array<{ rating: number }> | null;
-						error: unknown;
-					}>,
-					client
-						.from("cat_tournament_selections")
-						.select("id", { count: "exact", head: true }) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-				]);
+			const { data, error } = await client.rpc("get_site_stats");
 
-			const totalNames = namesResult.count ?? 0;
-			const ratingRows = ratingsResult.data ?? [];
-			const avgRating =
-				ratingRows.length > 0
-					? Math.round(ratingRows.reduce((s, r) => s + Number(r.rating), 0) / ratingRows.length)
-					: 1500;
+			if (error) {
+				console.error("Failed to fetch site stats:", error);
+				throw error;
+			}
 
-			return {
-				totalNames,
-				hiddenNames: hiddenResult.count ?? 0,
-				activeNames: totalNames - (hiddenResult.count ?? 0),
-				totalUsers: usersResult.count ?? 0,
-				totalRatings: ratingRows.length,
-				totalSelections: selectionsResult.count ?? 0,
-				avgRating,
-			};
+			if (!data) {
+				return null;
+			}
+
+			return data as unknown as SiteStatsRpcResult;
 		}, null);
 	},
 

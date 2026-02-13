@@ -8,12 +8,11 @@ import { useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
-import { Lightbox } from "@/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
-import { Check, Eye, EyeOff, Heart, X, ZoomIn } from "@/utils/icons";
+import { Check, Eye, EyeOff, Heart, X } from "@/utils/icons";
 import CatImage from "./CatImage";
 
 interface NameSelectorProps {
@@ -30,8 +29,6 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const [dragOffset, setDragOffset] = useState(0);
 	const [names, setNames] = useState<NameItem[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [lightboxOpen, setLightboxOpen] = useState(false);
-	const [lightboxIndex, setLightboxIndex] = useState(0);
 
 	// Fetch names from Supabase on mount
 	useEffect(() => {
@@ -103,16 +100,6 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
 
-	const handleOpenLightbox = (nameId: IdType) => {
-		const index = names.findIndex((n) => n.id === nameId);
-		if (index !== -1) {
-			setLightboxIndex(index);
-			setLightboxOpen(true);
-		}
-	};
-
-	const allCatImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
-
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
 			return;
@@ -174,24 +161,18 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
 									}`}
 								>
-									<div className="aspect-square w-full relative">
-										<CatImage
-											src={catImage}
-											alt={nameItem.name}
-											containerClassName="w-full h-full"
-											imageClassName="w-full h-full object-cover"
-										/>
-										<button
-											type="button"
-											onClick={(e) => {
-												e.stopPropagation();
-												handleOpenLightbox(nameItem.id);
-											}}
-											className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-											aria-label="View full size"
-										>
-											<ZoomIn size={16} />
-										</button>
+									<div
+										className="aspect-square w-full relative"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<lightbox-image dialog-id="shared-lightbox-dialog">
+											<CatImage
+												src={catImage}
+												alt={nameItem.name}
+												containerClassName="w-full h-full"
+												imageClassName="w-full h-full object-cover"
+											/>
+										</lightbox-image>
 									</div>
 									<div className="p-3 flex flex-col gap-1">
 										<div className="flex items-center justify-between gap-2">
@@ -203,9 +184,7 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											)}
 										</div>
 										{nameItem.description && (
-											<p className="text-xs text-white/60 text-left line-clamp-2">
-												{nameItem.description}
-											</p>
+											<p className="text-xs text-white/60 text-left">{nameItem.description}</p>
 										)}
 										{isAdmin && (
 											<button
@@ -327,26 +306,18 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 														</>
 													)}
 
-													<div className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center relative">
-														<CatImage
-															src={catImage}
-															alt={nameItem.name}
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
-														/>
-														{index === 0 && (
-															<button
-																type="button"
-																onClick={(e) => {
-																	e.stopPropagation();
-																	handleOpenLightbox(nameItem.id);
-																}}
-																className="absolute top-3 right-3 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70 z-20"
-																aria-label="View full size"
-															>
-																<ZoomIn size={18} />
-															</button>
-														)}
+													<div
+														className="w-full aspect-square rounded-xl overflow-hidden border-0 mb-4 bg-white/10 backdrop-blur-md flex items-center justify-center relative"
+														onClick={(e) => e.stopPropagation()}
+													>
+														<lightbox-image dialog-id="shared-lightbox-dialog">
+															<CatImage
+																src={catImage}
+																alt={nameItem.name}
+																containerClassName="w-full h-full"
+																imageClassName="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700"
+															/>
+														</lightbox-image>
 													</div>
 
 													<div className="text-center pb-4 z-10 w-full">
@@ -354,7 +325,12 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 															{nameItem.name}
 														</h3>
 														{nameItem.description && (
-															<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto line-clamp-3">
+															<p
+																className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto overflow-y-auto max-h-[120px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+																tabIndex={0}
+																role="region"
+																aria-label={`${nameItem.name} description`}
+															>
 																{nameItem.description}
 															</p>
 														)}
@@ -398,15 +374,6 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 					</Button>
 				</div>
 			</div>
-
-			{lightboxOpen && (
-				<Lightbox
-					images={allCatImages}
-					currentIndex={lightboxIndex}
-					onClose={() => setLightboxOpen(false)}
-					onNavigate={setLightboxIndex}
-				/>
-			)}
 		</Card>
 	);
 }

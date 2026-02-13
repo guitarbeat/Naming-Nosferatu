@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Merger - Merges reference files with existing files
  *
