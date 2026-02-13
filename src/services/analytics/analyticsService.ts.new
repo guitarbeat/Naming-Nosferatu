@@ -1,0 +1,215 @@
+/**
+ * @module analyticsService
+ * @description Analytics data service and shared types for the analysis dashboard.
+ *
+ * Exports three API namespaces:
+ * - `analyticsAPI`  — selection popularity, popularity scores, ranking history
+ * - `leaderboardAPI` — global leaderboard rankings
+ * - `statsAPI` — site-wide statistics and user-specific stats
+ *
+ * All queries go through `withSupabase`, which handles client resolution and
+ * returns a typed fallback on failure.
+ *
+ * ## Snake_case fields
+ *
+ * Types with `snake_case` properties (`name_id`, `avg_rating`, `created_at`,
+ * etc.) mirror Supabase column names. They cannot be renamed without updating
+ * the corresponding database views/tables.
+ */
+
+import { withSupabase } from "@/services/supabase-client/client";
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Public Types (used by hooks and UI components)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface ConsolidatedName {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins: number;
+	selected: number;
+	dateSubmitted: string | null;
+	insights?: string[];
+	ratingPercentile?: number;
+	selectedPercentile?: number;
+	[key: string]: unknown;
+}
+
+export interface NameWithInsight {
+	id: string | number;
+	name: string;
+	rating: number;
+	wins: number;
+	selected: number;
+	dateSubmitted: string | null;
+	insights: string[];
+	ratingPercentile?: number;
+	selectedPercentile?: number;
+}
+
+export interface SummaryStats {
+	maxRating?: number;
+	maxWins?: number;
+	maxSelected?: number;
+	avgRating: number;
+	avgWins?: number;
+	totalSelected?: number;
+	totalSelections?: number;
+	topName?: {
+		id: string | number;
+		name: string;
+		rating: number;
+		wins: number;
+		selected: number;
+		dateSubmitted: string | null;
+	};
+	totalNames?: number;
+	hiddenNames?: number;
+	activeNames?: number;
+	totalUsers?: number;
+	totalRatings?: number;
+	neverSelectedCount?: number;
+	neverSelectedNames?: string[];
+}
+
+/** Database leaderboard row — field names match Supabase columns. */
+export interface LeaderboardItem {
+	name_id: string | number;
+	name: string;
+	avg_rating?: number;
+	wins?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+/** Database selection popularity row. */
+export interface SelectionPopularityItem {
+	name_id: string | number;
+	name: string;
+	times_selected?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+/** Database analytics row (admin view). */
+export interface AnalyticsDataItem {
+	name_id: string | number;
+	name: string;
+	avg_rating?: number;
+	total_wins?: number;
+	times_selected?: number;
+	created_at?: string | null;
+	date_submitted?: string | null;
+}
+
+export interface HighlightItem {
+	id: string;
+	name: string;
+	value?: number;
+	avg_rating?: number;
+}
+
+export interface AnalysisDashboardProps {
+	highlights?: { topRated?: HighlightItem[]; mostWins?: HighlightItem[] };
+	userName?: string | null;
+	showGlobalLeaderboard?: boolean;
+	defaultCollapsed?: boolean;
+	isAdmin?: boolean;
+	onNameHidden?: (id: string) => void;
+}
+
+export interface GeneralInsight {
+	type: string;
+	message: string;
+	icon: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Internal Row Types (match raw Supabase query results)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface SelectionRow {
+	name_id: string | number;
+	name: string;
+	user_name: string;
+	selected_at: string;
+}
+
+interface RatingRow {
+	name_id: string | number;
+	rating: number;
+	wins: number;
+	losses: number;
+	user_name: string;
+}
+
+interface NameRow {
+	id: string | number;
+	name: string;
+	description: string;
+	avg_rating: number;
+	categories: string[] | null;
+	created_at: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// analyticsAPI
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const analyticsAPI = {
+	/** Get top selected names based on selection history. */
+	getTopSelectedNames: async (limit: number | null = 20) => {
+		return withSupabase(async (client) => {
+			// Optimized: Use server-side aggregation via RPC
+			const { data, error } = await client.rpc("get_top_selections", {
+				limit_count: limit || 20,
+			});
+
+			if (error || !data) {
+				return [];
+			}
+
+			// Map RPC result (count) to expected interface (times_selected)
+			return (data as { name_id: string; name: string; count: number }[]).map((item) => ({
+				name_id: String(item.name_id),
+				name: item.name,
+				times_selected: item.count,
+			}));
+		}, []);
+	},
+
+	/** Get comprehensive popularity scores based on ratings. */
+	getPopularityScores: async (limit: number | null = 20) => {
+		return withSupabase(async (client) => {
+			const { data, error } = await client
+				.from("cat_name_options")
+				.select("id, name, avg_rating, created_at, provenance, is_hidden")
+				.eq("is_active", true)
+				.order("avg_rating", { ascending: false });
+
+			if (error || !data) {
+				return [];
+			}
+
+			let results = data.map((item) => ({
+				name_id: item.id,
+				name: item.name,
+				avg_rating: item.avg_rating,
+				created_at: item.created_at,
+			}));
+
+			if (limit) {
+				results = results.slice(0, limit);
+			}
+			return results;
+		}, []);
+	},
+
+	/** Get historical ranking data over time. */
+	getRankingHistory: async (periods = 30, topN = 10) => {
+		return withSupabase(
+			async (client) => {
+				const periodCount = Math.max(
+					7,
+					periods ? (typeof periods === "string" ? (PERIOD_MAP[periodEOF

@@ -34,6 +34,19 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const [_showMatchResult, setShowMatchResult] = useState(false);
 	const [_votingError, setVotingError] = useState<unknown>(null);
 
+<<<<<<< HEAD
+=======
+	const handleVote = useCallback(
+		(winnerId: string, loserId: string) => {
+			handleVoteInternal(winnerId, loserId);
+			if (onVote) {
+				onVote({ winnerId, loserId } as any);
+			}
+		},
+		[handleVoteInternal, onVote],
+	);
+
+>>>>>>> origin/main
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results = Object.entries(ratings).map(([name, rating]) => ({
@@ -55,6 +68,12 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		isProcessing,
 		isTransitioning,
 		currentMatch,
+<<<<<<< HEAD
+=======
+		handleVote: (winnerId: string, loserId: string) => handleVote(winnerId, loserId),
+		onVote: onVote as any,
+		audioManager,
+>>>>>>> origin/main
 		setIsProcessing,
 		setIsTransitioning,
 		setSelectedOption,
@@ -230,7 +249,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 				<button
 					type="button"
-					onClick={handleUndo}
+					onClick={() => handleUndo()}
 					className="mt-6 glass-panel py-2 px-6 rounded-full flex items-center gap-3 border border-primary/20 cursor-pointer hover:bg-white/5 transition-colors"
 				>
 					<span className="material-symbols-outlined text-sm text-primary">undo</span>

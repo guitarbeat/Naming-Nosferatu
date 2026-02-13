@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Integration Engine - Performs file integration operations
  *

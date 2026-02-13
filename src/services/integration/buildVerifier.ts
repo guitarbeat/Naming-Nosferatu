@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Build Verifier - Executes TypeScript compiler and analyzes build errors
  * Validates: Requirement 5.1

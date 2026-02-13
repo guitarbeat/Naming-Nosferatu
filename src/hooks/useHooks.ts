@@ -765,10 +765,17 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 		setColumnHeights(heights);
 	}, [itemCount, fixedCols, gap, minColWidth]);
 
-	// Observe container + item resizes via a single ResizeObserver
+	const calculateLayoutRef = useRef(calculateLayout);
+	useIsomorphicLayoutEffect(() => {
+		calculateLayoutRef.current = calculateLayout;
+	}, [calculateLayout]);
+
+	const observerRef = useRef<ResizeObserver | null>(null);
+
+	// Initialize observer once
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Observer must be stable
 	useEffect(() => {
-		// Defer initial layout until DOM refs are attached
-		const initTimer = setTimeout(calculateLayout, 0);
+		const initTimer = setTimeout(() => calculateLayoutRef.current(), 0);
 
 		let rafId: number | null = null;
 		const observer = new ResizeObserver(() => {
@@ -777,10 +784,12 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 			}
 			rafId = requestAnimationFrame(() => {
 				rafId = null;
-				calculateLayout();
+				calculateLayoutRef.current();
 			});
 		});
+		observerRef.current = observer;
 
+		// Initial observation of whatever is already there
 		if (containerRef.current) {
 			observer.observe(containerRef.current);
 		}
@@ -797,15 +806,39 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 				cancelAnimationFrame(rafId);
 			}
 			observer.disconnect();
+			observerRef.current = null;
 		};
-	}, [calculateLayout, itemCount]);
+	}, []); // Run once
+
+	// Observer logic for container updates
+	// We rely on itemCount change to re-check container observation as a fallback
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Trigger update on itemCount change
+	useEffect(() => {
+		const observer = observerRef.current;
+		if (observer && containerRef.current) {
+			observer.observe(containerRef.current);
+		}
+	}, [itemCount]);
 
 	// Batch ref updates into a single layout pass (10 ms window)
+	// Also handles observation of new items
 	const setItemRef = useCallback(
 		(index: number) => (el: HTMLDivElement | null) => {
 			if (itemRefs.current[index] === el) {
 				return;
 			}
+
+			const observer = observerRef.current;
+			if (observer) {
+				const oldEl = itemRefs.current[index];
+				if (oldEl) {
+					observer.unobserve(oldEl);
+				}
+				if (el) {
+					observer.observe(el);
+				}
+			}
+
 			itemRefs.current[index] = el;
 
 			if (batchTimer.current) {
@@ -840,7 +873,6 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 		recalculate: calculateLayout,
 	};
 }
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // useValidatedForm
 // ═══════════════════════════════════════════════════════════════════════════════
