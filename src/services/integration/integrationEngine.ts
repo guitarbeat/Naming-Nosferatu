@@ -29,8 +29,9 @@ export function integrateFile(
 	analysis: FileAnalysis,
 	referenceContent: string,
 	strategy: MergeStrategy,
+	projectRoot: string,
 ): IntegrationResult {
-	const targetPath = path.join(analysis.targetLocation, analysis.fileName);
+	const targetPath = path.join(projectRoot, analysis.targetLocation, analysis.fileName);
 	const actionsLog: string[] = [];
 
 	try {

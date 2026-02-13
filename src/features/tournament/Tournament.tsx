@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import useAppStore from "@/store/appStore";
@@ -60,9 +60,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		[onVote, currentMatch, ratings],
 	);
 
+	const idToName = useMemo(
+		() => new Map(visibleNames.map((n) => [String(n.id), n.name])),
+		[visibleNames],
+	);
+
+	// idToName memoizes based on visibleNames, so tracking idToName implicitly tracks visibleNames
 	useEffect(() => {
 		if (isComplete && onComplete) {
-			const idToName = new Map(visibleNames.map((n) => [String(n.id), n.name]));
 			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
 			for (const [id, rating] of Object.entries(ratings)) {
 				const name = idToName.get(id) ?? id;
@@ -70,7 +75,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 			}
 			onComplete(results);
 		}
-	}, [isComplete, ratings, onComplete, visibleNames]);
+	}, [isComplete, ratings, onComplete, idToName]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
 		tournamentState: tournament,

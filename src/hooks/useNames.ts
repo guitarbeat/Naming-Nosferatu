@@ -34,7 +34,7 @@ export function useNameData(_props: UseNameDataProps): UseNameDataResult {
 	const refetch = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const { coreAPI } = await import("@/services/supabase-client/client");
+			const { coreAPI } = await import("@/services/supabase/client");
 			const fetchedNames = await coreAPI.getTrendingNames(false);
 			if (tournamentActions?.setNames) {
 				tournamentActions.setNames(fetchedNames);
@@ -196,7 +196,10 @@ interface UseNameSuggestionResult {
 export function useNameSuggestion(props: UseNameSuggestionProps = {}): UseNameSuggestionResult {
 	const [values, setValues] = useState({ name: "", description: "" });
 	const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
-	const [touched, setTouched] = useState<{ name?: boolean; description?: boolean }>({});
+	const [touched, setTouched] = useState<{
+		name?: boolean;
+		description?: boolean;
+	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [globalError, setGlobalError] = useState("");
 	const [successMessage, setSuccessMessage] = useState("");

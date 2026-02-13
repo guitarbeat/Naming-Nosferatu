@@ -1,3 +1,5 @@
+<<<<<<< Updated upstream:src/services/supabase/api.ts
+=======
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
 import { QueryClient } from "@tanstack/react-query";
@@ -43,70 +45,19 @@ const resolveSupabaseClient = async () => {
 	}
 };
 
+>>>>>>> Stashed changes:src/services/supabase-client/client.ts
 /**
- * Set the current user context for RLS policies
+ * @module supabaseAPI
+ * @description Consolidated Supabase API combining image, name management, and site settings operations.
+ * Consolidates: imageService, nameService, siteSettingsService into a single API layer.
  */
-export const setSupabaseUserContext = (userName: string | null) => {
-	if (!supabaseInstance) {
-		return;
-	}
 
-	// Use custom header for simple RLS context passing if needed, or rely on RPC
-	// This is a client-side helper to set the context globally if the transport supports it
-	// For Supabase js, usually we rely on auth.session() or RPC parameters
+import type { NameItem } from "@/types/appTypes";
+import { withSupabase } from "./client";
 
-	// Example: setting a custom header if supported (not standard public API, but useful for middleware/hooks)
-	// @ts-expect-error - Accessing internal property
-	if (supabaseInstance.rest?.headers) {
-		if (userName) {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = userName;
-		} else {
-			// @ts-expect-error - Accessing internal Supabase client headers
-			supabaseInstance.rest.headers["x-user-name"] = undefined;
-		}
-	}
-};
-
-const isDev = typeof process !== "undefined" && process.env?.NODE_ENV === "development";
-
-export const isSupabaseAvailable = async () => {
-	const client = await resolveSupabaseClient();
-	if (!client) {
-		if (isDev) {
-			console.warn("Supabase not configured. Some features may not work.");
-		}
-		return false;
-	}
-	return true;
-};
-
-export async function withSupabase<T>(
-	operation: (client: SupabaseClient<Database>) => Promise<T>,
-	fallback: T,
-): Promise<T> {
-	try {
-		if (!(await isSupabaseAvailable())) {
-			return fallback;
-		}
-		const client = await resolveSupabaseClient();
-		if (!client) {
-			return fallback;
-		}
-		return await operation(client);
-	} catch (error) {
-		if (isDev) {
-			console.error("Supabase operation failed:", error);
-		}
-		return fallback;
-	}
-}
-
-export { resolveSupabaseClient as supabase };
-
-/* =========================================================================
+/* ==========================================================================
    IMAGES API
-   ========================================================================= */
+   ========================================================================== */
 
 export const imagesAPI = {
 	/**
@@ -119,6 +70,7 @@ export const imagesAPI = {
 				console.error("Error listing images:", error);
 				return [];
 			}
+			// Map to public URLs
 			return data.map((file) => {
 				const { data: urlData } = client.storage
 					.from("cat-photos")
@@ -150,10 +102,13 @@ export const imagesAPI = {
 	},
 };
 
-/* =========================================================================
+/* ==========================================================================
    NAMES API
-   ========================================================================= */
+   ========================================================================== */
 
+/**
+ * Database query result type - field names match Supabase column names (snake_case required)
+ */
 interface HiddenNameItem {
 	id: string;
 	name: string;
@@ -161,18 +116,21 @@ interface HiddenNameItem {
 	created_at: string;
 }
 
+/**
+ * Shared helper for updating hidden status of a single name
+ */
 async function updateHiddenStatus(userName: string, nameId: string | number, isHidden: boolean) {
 	return withSupabase(
 		async (client) => {
 			try {
-				await client.rpc("set_user_context", { user_name_param: userName } as any);
+				await client.rpc("set_user_context", { user_name_param: userName });
 			} catch {
 				/* ignore */
 			}
 
 			const { error } = await client
 				.from("cat_name_options")
-				.update({ is_hidden: isHidden } as any)
+				.update({ is_hidden: isHidden })
 				.eq("id", String(nameId));
 
 			if (error) {
@@ -196,6 +154,9 @@ async function updateHiddenStatus(userName: string, nameId: string | number, isH
 	);
 }
 
+/**
+ * Shared helper for updating hidden status of multiple names
+ */
 async function updateHiddenStatuses(
 	userName: string,
 	nameIds: (string | number)[],
@@ -204,7 +165,7 @@ async function updateHiddenStatuses(
 	return withSupabase(
 		async (client) => {
 			try {
-				await client.rpc("set_user_context", { user_name_param: userName } as any);
+				await client.rpc("set_user_context", { user_name_param: userName });
 			} catch {
 				/* ignore */
 			}
@@ -213,7 +174,7 @@ async function updateHiddenStatuses(
 				nameIds.map(async (id) => {
 					const { error } = await client
 						.from("cat_name_options")
-						.update({ is_hidden: isHidden } as any)
+						.update({ is_hidden: isHidden })
 						.eq("id", String(id));
 					return { nameId: id, success: !error, error: error?.message };
 				}),
@@ -228,6 +189,9 @@ async function updateHiddenStatuses(
 	);
 }
 
+/**
+ * Delete a name by ID
+ */
 async function deleteById(nameId: string | number) {
 	return withSupabase(
 		async (client) => {
@@ -248,15 +212,11 @@ async function deleteById(nameId: string | number) {
 }
 
 export const coreAPI = {
-	setContext: (context: { userName: string | null }) => {
-		setSupabaseUserContext(context.userName);
-	},
-
 	/**
 	 * Get all names with descriptions and ratings
 	 */
 	getTrendingNames: async (includeHidden: boolean = false) => {
-		const isAvailable = await isSupabaseAvailable();
+		const isAvailable = await import("@supabase/client").then((m) => m.isSupabaseAvailable());
 		if (!isAvailable) {
 			throw new Error("Supabase is not configured or unavailable");
 		}
@@ -303,7 +263,7 @@ export const coreAPI = {
 					try {
 						await client.rpc("set_user_context", {
 							user_name_param: userName.trim(),
-						} as any);
+						});
 					} catch {
 						/* ignore */
 					}
@@ -320,11 +280,11 @@ export const coreAPI = {
 								{
 									action: "created",
 									timestamp: new Date().toISOString(),
-									details: { source: "user_submission" },
+									details: { source: "user_input" },
 								},
 							],
 						},
-					] as any)
+					])
 					.select()
 					.single();
 
@@ -369,13 +329,6 @@ export const coreAPI = {
 	},
 
 	deleteById,
-
-	/**
-	 * Get cat's chosen name (proxy to siteSettingsAPI for convenience)
-	 */
-	getCatChosenName: async () => {
-		return siteSettingsAPI.getCatChosenName();
-	},
 };
 
 export const hiddenNamesAPI = {
@@ -383,18 +336,30 @@ export const hiddenNamesAPI = {
 		return updateHiddenStatus(userName, nameId, true);
 	},
 
+	/**
+	 * Unhide a name globally for all users (admin only).
+	 */
 	unhideName: async (userName: string, nameId: string | number) => {
 		return updateHiddenStatus(userName, nameId, false);
 	},
 
+	/**
+	 * Hide multiple names globally (admin only)
+	 */
 	hideNames: async (userName: string, nameIds: (string | number)[]) => {
 		return updateHiddenStatuses(userName, nameIds, true);
 	},
 
+	/**
+	 * Unhide multiple names globally (admin only)
+	 */
 	unhideNames: async (userName: string, nameIds: (string | number)[]) => {
 		return updateHiddenStatuses(userName, nameIds, false);
 	},
 
+	/**
+	 * Get globally hidden names (admin-set)
+	 */
 	getHiddenNames: async () => {
 		return withSupabase(async (client) => {
 			const { data, error } = await client
@@ -411,10 +376,13 @@ export const hiddenNamesAPI = {
 	},
 };
 
-/* =========================================================================
+/* ==========================================================================
    SITE SETTINGS API
-   ========================================================================= */
+   ========================================================================== */
 
+/**
+ * Database update payload - field names match Supabase column names (snake_case required)
+ */
 interface CatChosenNameUpdate {
 	first_name: string;
 	middle_names?: string | string[];
@@ -428,23 +396,20 @@ export const siteSettingsAPI = {
 	 * Get cat's chosen name
 	 */
 	getCatChosenName: async () => {
-		return withSupabase(
-			async (client) => {
-				const { data, error } = await client
-					.from("cat_chosen_name")
-					.select("*")
-					.order("created_at", { ascending: false })
-					.limit(1)
-					.single();
+		return withSupabase(async (client) => {
+			const { data, error } = await client
+				.from("cat_chosen_name")
+				.select("*")
+				.order("created_at", { ascending: false })
+				.limit(1)
+				.single();
 
-				if (error) {
-					console.error("Error fetching cat chosen name:", error);
-					return { data: null, error: error.message };
-				}
-				return { data, error: null };
-			},
-			{ data: null, error: "Supabase offline" },
-		);
+			if (error) {
+				console.error("Error fetching cat chosen name:", error);
+				return null;
+			}
+			return data;
+		}, null);
 	},
 
 	/**
@@ -456,7 +421,7 @@ export const siteSettingsAPI = {
 				try {
 					await client.rpc("set_user_context", {
 						user_name_param: userName,
-					} as any);
+					});
 				} catch (err) {
 					if (import.meta.env.DEV) {
 						console.warn("Could not set user context:", err);
@@ -465,7 +430,7 @@ export const siteSettingsAPI = {
 
 				const { data, error } = await client
 					.from("cat_chosen_name")
-					.insert([nameData] as any)
+					.insert([nameData])
 					.select()
 					.single();
 
@@ -479,10 +444,3 @@ export const siteSettingsAPI = {
 		);
 	},
 };
-
-/* =========================================================================
-   RE-EXPORTS
-   ========================================================================= */
-
-export * from "@/services/analytics/analyticsService";
-export { tournamentsAPI } from "@/services/coreServices";

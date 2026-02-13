@@ -32,6 +32,10 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
+<<<<<<< HEAD
+	const [elo] = useState(() => new EloRating());
+=======
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
@@ -77,7 +81,6 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 			]);
 
 			// Update ratings using ELO
-			const elo = new EloRating();
 			const winnerRating = ratings[winnerId] || 1500;
 			const loserRating = ratings[loserId] || 1500;
 
@@ -96,7 +99,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, ratings, round, matchNumber, sorter],
+		[currentMatch, ratings, round, matchNumber, sorter, elo],
 	);
 
 	const handleUndo = useCallback(() => {
