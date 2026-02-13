@@ -8,6 +8,8 @@ interface SoundConfig {
 	preload?: boolean;
 }
 
+export { type SoundConfig };
+
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
 	private defaultVolume = 0.3;
@@ -17,7 +19,7 @@ class SoundManager {
 	}
 
 	private preloadSounds() {
-		const sounds: string[] = [];
+		const sounds: string[] = ["vote", "undo"];
 
 		sounds.forEach((soundName) => {
 			const audio = new Audio(`/assets/sounds/${soundName}.mp3`);
@@ -29,10 +31,25 @@ class SoundManager {
 
 	play(soundName: string, config: SoundConfig = {}) {
 		try {
-			const audio = this.audioCache.get(soundName);
+			// Try to get from cache first
+			let audio = this.audioCache.get(soundName);
+			
+			// If not in cache, try to create it on-demand
 			if (!audio) {
-				console.warn(`Sound "${soundName}" not found in cache`);
-				return;
+				try {
+					audio = new Audio(`/assets/sounds/${soundName}.mp3`);
+					audio.volume = config.volume ?? this.defaultVolume;
+					this.audioCache.set(soundName, audio);
+				} catch (error) {
+					console.warn(`Failed to load sound "${soundName}":`, error);
+					// Fallback to console log for now
+					if (soundName === "vote") {
+						console.log("🔊 Vote sound (audio file not found)");
+					} else if (soundName === "undo") {
+						console.log("🔊 Undo sound (audio file not found)");
+					}
+					return;
+				}
 			}
 
 			const soundInstance = audio.cloneNode() as HTMLAudioElement;

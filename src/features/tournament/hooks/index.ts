@@ -9,6 +9,7 @@ export {
 	useAudioManager,
 	useProfileNotifications,
 	useTournamentSelectionSaver,
+	type UseAudioManagerResult,
 } from "./useHelpers";
 
 // Re-export from original files

@@ -10,28 +10,49 @@ import { useToast } from "@/providers/Providers";
 import type { NameItem } from "@/types/appTypes";
 import { devError, devLog } from "@/utils/basic";
 import { NOTIFICATION } from "@/utils/constants";
+import { playSound } from "@/utils/sound";
 
 /* =========================================================================
    AUDIO MANAGER HOOK
    ========================================================================= */
 
-export function useAudioManager() {
+export interface UseAudioManagerResult {
+	isMuted: boolean;
+	handleToggleMute: () => void;
+	playVoteSound: () => void;
+	playUndoSound: () => void;
+	volume: number;
+	handleVolumeChange: (_unused: unknown, v: number) => void;
+	playAudioTrack: () => void;
+	handleNextTrack: () => void;
+	isShuffle: boolean;
+	handleToggleShuffle: () => void;
+	currentTrack: null;
+	trackInfo: null;
+	audioError: null;
+	retryAudio: () => void;
+}
+
+export function useAudioManager(): UseAudioManagerResult {
 	const [isMuted, setIsMuted] = useState(false);
-	const [volume, setVolume] = useState(0.2);
+	const [volume, setVolume] = useState(0.3);
 
-	const playVoteSound = () => {
+	const playVoteSound = useCallback(() => {
 		if (!isMuted) {
-			// TODO: Implement sound playback
-			console.log("Playing vote sound");
+			playSound("vote", { volume });
 		}
-	};
+	}, [isMuted, volume]);
 
-	const playUndoSound = () => {
+	const playUndoSound = useCallback(() => {
 		if (!isMuted) {
-			// TODO: Implement sound playback
-			console.log("Playing undo sound");
+			playSound("undo", { volume });
 		}
-	};
+	}, [isMuted, volume]);
+
+	const handleVolumeChange = useCallback((_unused: unknown, v: number) => {
+		const newVolume = Math.min(1, Math.max(0, v));
+		setVolume(newVolume);
+	}, []);
 
 	return {
 		playAudioTrack: () => {
@@ -53,7 +74,7 @@ export function useAudioManager() {
 			/* No-op: handled by external audio services if available */
 		},
 		volume,
-		handleVolumeChange: (_unused: unknown, v: number) => setVolume(Math.min(1, Math.max(0, v))),
+		handleVolumeChange,
 		playVoteSound,
 		playUndoSound,
 	};

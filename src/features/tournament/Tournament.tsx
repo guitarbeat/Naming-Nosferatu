@@ -6,7 +6,7 @@ import type { TournamentProps } from "@/types/appTypes";
 import { getRandomCatImage, getVisibleNames } from "@/utils/basic";
 import { CAT_IMAGES } from "@/utils/constants";
 import CatImage from "./components/CatImage";
-import { useAudioManager } from "./hooks/useAudioManager";
+import { useAudioManager } from "./hooks/useHelpers";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
@@ -160,7 +160,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					padding="small"
 					variant="default"
 				>
-					<div className="flex gap-2">
+					<div className="flex gap-2 items-center">
 						<button
 							type="button"
 							onClick={audioManager.handleToggleMute}
@@ -173,6 +173,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 								{audioManager.isMuted ? "volume_off" : "volume_up"}
 							</span>
 						</button>
+						<input
+							type="range"
+							min="0"
+							max="1"
+							step="0.1"
+							value={audioManager.volume}
+							onChange={(e) => audioManager.handleVolumeChange(null, parseFloat(e.target.value))}
+							className="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+							aria-label="Volume control"
+							title={`Volume: ${Math.round(audioManager.volume * 100)}%`}
+						/>
 						{handleQuit && (
 							<button
 								type="button"
