@@ -1,18 +1,16 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
-import { useToast } from "@/providers/Providers";
-import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
-import type { RatingData, TournamentProps } from "@/types/appTypes";
-import { getVisibleNames } from "@/utils/basic";
+import type { TournamentProps } from "@/types/appTypes";
+import { getRandomCatImage, getVisibleNames } from "@/utils/basic";
+import { CAT_IMAGES } from "@/utils/constants";
 import CatImage from "./components/CatImage";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
-	const { showSuccess, showError } = useToast();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
@@ -20,6 +18,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		currentMatch,
 		ratings,
+		handleVote: _handleVoteInternal,
 		isComplete,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
@@ -27,17 +26,44 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		handleUndo,
 	} = tournament;
 
-	const [_selectedOption, setSelectedOption] = useState<"left" | "right" | null>(null);
-	const [isTransitioning, setIsTransitioning] = useState(false);
-	const [isProcessing, setIsProcessing] = useState(false);
-	const [_lastMatchResult, setLastMatchResult] = useState<string | null>(null);
-	const [_showMatchResult, setShowMatchResult] = useState(false);
-	const [_votingError, setVotingError] = useState<unknown>(null);
+	// Adapter to convert VoteData to winnerId/loserId for the hook
+	const handleVoteAdapter = useCallback(
+		(winnerId: string, _loserId: string) => {
+			if (onVote && currentMatch) {
+				const voteData = {
+					match: {
+						left: {
+							name:
+								typeof currentMatch.left === "object" ? currentMatch.left.name : currentMatch.left,
+							id: typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+							description: "",
+							outcome: winnerId === currentMatch.left ? "winner" : "loser",
+						},
+						right: {
+							name:
+								typeof currentMatch.right === "object"
+									? currentMatch.right.name
+									: currentMatch.right,
+							id:
+								typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
+							description: "",
+							outcome: winnerId === currentMatch.right ? "winner" : "loser",
+						},
+					},
+					result: winnerId === currentMatch.left ? 1 : 0,
+					ratings,
+					timestamp: new Date().toISOString(),
+				};
+				onVote(voteData);
+			}
+		},
+		[onVote, currentMatch, ratings],
+	);
 
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const idToName = new Map(visibleNames.map((n) => [String(n.id), n.name]));
-			const results: Record<string, RatingData> = {};
+			const results: Record<string, { rating: number; wins: number; losses: number }> = {};
 			for (const [id, rating] of Object.entries(ratings)) {
 				const name = idToName.get(id) ?? id;
 				results[name] = { rating, wins: 0, losses: 0 };
@@ -49,23 +75,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const { handleVoteWithAnimation } = useTournamentVote({
 		tournamentState: tournament,
 		audioManager,
-		onVote: (winnerId, loserId) => {
-			if (onVote) {
-				(onVote as any)(winnerId, loserId);
-			}
-		},
-		isProcessing,
-		isTransitioning,
-		currentMatch,
-		setIsProcessing,
-		setIsTransitioning,
-		setSelectedOption,
-		setVotingError,
-		setLastMatchResult,
-		setShowMatchResult,
-		showSuccess,
-		showError,
-	} as any); // Casting as any to bypass complex type matching for now, relying on correct prop usage inside hook
+		onVote: handleVoteAdapter,
+	});
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
 	const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
@@ -155,13 +166,21 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
 					<Card
 						interactive={true}
-						onClick={() => {
-							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
-							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
-							handleVoteWithAnimation(leftId, rightId);
-						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
+						onClick={() =>
+							currentMatch &&
+							handleVoteWithAnimation(
+								String(
+									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+								),
+								String(
+									typeof currentMatch.right === "object"
+										? currentMatch.right.id
+										: currentMatch.right,
+								),
+							)
+						}
 					>
 						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
 							{leftImg ? (
@@ -200,13 +219,21 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 					<Card
 						interactive={true}
-						onClick={() => {
-							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
-							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
-							handleVoteWithAnimation(rightId, leftId);
-						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
+						onClick={() =>
+							currentMatch &&
+							handleVoteWithAnimation(
+								String(
+									typeof currentMatch.right === "object"
+										? currentMatch.right.id
+										: currentMatch.right,
+								),
+								String(
+									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
+								),
+							)
+						}
 					>
 						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
 							{rightImg ? (

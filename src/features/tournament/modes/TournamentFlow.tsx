@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/layout/Card";
 import { Section } from "@/layout/Section";
 import useAppStore from "@/store/appStore";
-import type { NameItem } from "@/types/appTypes";
 import { NameSelector } from "../components/NameSelector";
 import { useTournamentHandlers } from "../hooks/useTournamentHandlers";
 
@@ -20,12 +19,6 @@ export default function TournamentFlow() {
 		userName: user.name,
 		tournamentActions,
 	});
-
-	const handleStartTournament = (selectedNames: NameItem[]) => {
-		tournamentActions.setNames(selectedNames);
-		// Navigate to tournament page
-		navigate("/tournament");
-	};
 
 	return (
 		<div className="w-full flex flex-col gap-8">
@@ -83,7 +76,7 @@ export default function TournamentFlow() {
 							exit={{ opacity: 0 }}
 							className="w-full flex justify-center py-10"
 						>
-							<NameSelector onStart={handleStartTournament} />
+							<NameSelector />
 						</motion.div>
 					)}
 				</AnimatePresence>

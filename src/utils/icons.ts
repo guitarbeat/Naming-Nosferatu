@@ -37,4 +37,5 @@ export {
 	User,
 	X,
 	ZoomIn,
+	ZoomOut,
 } from "lucide-react";

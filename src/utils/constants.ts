@@ -30,6 +30,7 @@ export const CAT_IMAGES = [
 	"/assets/images/75209580524__60DCC26F-55A1-4EF8-A0B2-14E80A026A8D.avif",
 ] as const;
 
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // Filter Options
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -128,7 +129,6 @@ export const TIMING = {
 	// Animations
 	RIPPLE_ANIMATION_DURATION_MS: 600,
 	EAR_TWITCH_DURATION_MS: 150,
-	LIGHTBOX_TRANSITION_DURATION_MS: 300,
 
 	// Debounce / throttle
 	SAVE_DEBOUNCE_DELAY_MS: 500,

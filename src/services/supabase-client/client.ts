@@ -164,14 +164,14 @@ async function updateHiddenStatus(userName: string, nameId: string | number, isH
 	return withSupabase(
 		async (client) => {
 			try {
-				await client.rpc("set_user_context", { user_name_param: userName });
+				await client.rpc("set_user_context", { user_name_param: userName } as any);
 			} catch {
 				/* ignore */
 			}
 
 			const { error } = await client
 				.from("cat_name_options")
-				.update({ is_hidden: isHidden })
+				.update({ is_hidden: isHidden } as any)
 				.eq("id", String(nameId));
 
 			if (error) {
@@ -203,7 +203,7 @@ async function updateHiddenStatuses(
 	return withSupabase(
 		async (client) => {
 			try {
-				await client.rpc("set_user_context", { user_name_param: userName });
+				await client.rpc("set_user_context", { user_name_param: userName } as any);
 			} catch {
 				/* ignore */
 			}
@@ -212,7 +212,7 @@ async function updateHiddenStatuses(
 				nameIds.map(async (id) => {
 					const { error } = await client
 						.from("cat_name_options")
-						.update({ is_hidden: isHidden })
+						.update({ is_hidden: isHidden } as any)
 						.eq("id", String(id));
 					return { nameId: id, success: !error, error: error?.message };
 				}),
@@ -299,7 +299,7 @@ export const coreAPI = {
 					try {
 						await client.rpc("set_user_context", {
 							user_name_param: userName.trim(),
-						});
+						} as any);
 					} catch {
 						/* ignore */
 					}
@@ -316,11 +316,11 @@ export const coreAPI = {
 								{
 									action: "created",
 									timestamp: new Date().toISOString(),
-									details: { source: "user_input" },
+									details: { source: "user_submission" },
 								},
 							],
 						},
-					])
+					] as any)
 					.select()
 					.single();
 
@@ -444,7 +444,7 @@ export const siteSettingsAPI = {
 				try {
 					await client.rpc("set_user_context", {
 						user_name_param: userName,
-					});
+					} as any);
 				} catch (err) {
 					if (import.meta.env.DEV) {
 						console.warn("Could not set user context:", err);
@@ -453,7 +453,7 @@ export const siteSettingsAPI = {
 
 				const { data, error } = await client
 					.from("cat_chosen_name")
-					.insert([nameData])
+					.insert([nameData] as any)
 					.select()
 					.single();
 

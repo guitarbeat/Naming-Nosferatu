@@ -244,6 +244,7 @@ export function FluidNav() {
 		// Suggest and Profile only exist on home; navigate first if on analysis
 		if ((key === "suggest" || key === "profile") && isAnalysisRoute) {
 			const id = keyToId[key];
+			if (!id) return;
 			navigate("/");
 			setActiveSection(id);
 			requestAnimationFrame(() => {
@@ -360,177 +361,308 @@ export function FluidNav() {
 			<motion.nav
 				className={cn(
 					"fixed z-[100] transition-all duration-500 ease-out",
-					"flex items-center justify-evenly gap-4",
 					"h-auto py-3 px-6",
 					"bottom-0 left-1/2 -translate-x-1/2",
 					"w-[95%]",
-					"bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
+					"backdrop-blur-xl bg-black/60 border border-white/20 rounded-2xl shadow-2xl",
 				)}
 				initial={{ y: 100, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
-				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
-				<AnimatedNavButton
-					id="pick"
-					icon={IconComponent}
-					label={buttonState.label}
-					isActive={isActive("pick")}
-					onClick={handleUnifiedButtonClick}
-					highlight={buttonState.highlight}
-					disabled={buttonState.disabled}
-					animateScale={buttonState.highlight}
-					customIcon={
-						<AnimatePresence mode="wait">
-							<motion.div
-								key={buttonState.icon.name}
-								initial={{ scale: 0.8, opacity: 0 }}
-								animate={{ scale: 1, opacity: 1 }}
-								exit={{ scale: 0.8, opacity: 0 }}
-							>
-								<IconComponent
-									className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
-									aria-hidden={true}
+				{buttonState.action === "start" && buttonState.highlight ? (
+					// Centered Start button layout when Start is available
+					<div className="flex items-center justify-center w-full gap-4">
+						{/* Left side items */}
+						<div className="flex items-center gap-2 flex-1 justify-center">
+							{/* View Mode Toggle */}
+							{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+								<motion.button
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
+									type="button"
+									onClick={() => setSwipeMode(!isSwipeMode)}
+									className={cn(
+										"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all flex-1 ",
+										"text-white/70 hover:text-white hover:bg-white/10",
+										isSwipeMode && "bg-purple-500/20 text-purple-400",
+									)}
+									aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+								>
+									<AnimatePresence mode="wait">
+										<motion.div
+											key={isSwipeMode ? "swipe" : "grid"}
+											initial={{ rotate: -90, opacity: 0 }}
+											animate={{ rotate: 0, opacity: 1 }}
+											exit={{ rotate: 90, opacity: 0 }}
+											transition={{ duration: 0.15 }}
+										>
+											{isSwipeMode ? (
+												<Layers className="w-5 h-5" aria-hidden={true} />
+											) : (
+												<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+											)}
+										</motion.div>
+									</AnimatePresence>
+									<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+								</motion.button>
+							)}
+						</div>
+
+						{/* Centered Start Button */}
+						<div className="flex-1 flex justify-center">
+							<AnimatedNavButton
+								id="pick"
+								icon={IconComponent}
+								label={buttonState.label}
+								isActive={isActive("pick")}
+								onClick={handleUnifiedButtonClick}
+								highlight={buttonState.highlight}
+								disabled={buttonState.disabled}
+								animateScale={buttonState.highlight}
+								className="flex-1 "
+								customIcon={
+									<AnimatePresence mode="wait">
+										<motion.div
+											key={buttonState.icon.name}
+											initial={{ scale: 0.8, opacity: 0 }}
+											animate={{ scale: 1, opacity: 1 }}
+											exit={{ scale: 0.8, opacity: 0 }}
+										>
+											<IconComponent
+												className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+												aria-hidden={true}
+											/>
+										</motion.div>
+									</AnimatePresence>
+								}
+							/>
+						</div>
+
+						{/* Right side items */}
+						<div className="flex items-center gap-2 flex-1 justify-center">
+							{/* Analyze Button - Only shows when tournament complete */}
+							{isComplete && (
+								<NavButton
+									id="analyze"
+									icon={BarChart3}
+									label="Analyze"
+									isActive={isActive("analyze")}
+									onClick={() => handleNavClick("analyze")}
+									className="flex-1 "
 								/>
-							</motion.div>
-						</AnimatePresence>
-					}
-				/>
+							)}
 
-				{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
-				{(isActive("pick") || isActive("play")) && !isTournamentActive && (
-					<motion.button
-						initial={{ opacity: 0, scale: 0.8 }}
-						animate={{ opacity: 1, scale: 1 }}
-						exit={{ opacity: 0, scale: 0.8 }}
-						type="button"
-						onClick={() => setSwipeMode(!isSwipeMode)}
-						className={cn(
-							"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
-							"text-white/70 hover:text-white hover:bg-white/10",
-							isSwipeMode && "bg-purple-500/20 text-purple-400",
-						)}
-						aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
-					>
-						<AnimatePresence mode="wait">
-							<motion.div
-								key={isSwipeMode ? "swipe" : "grid"}
-								initial={{ rotate: -90, opacity: 0 }}
-								animate={{ rotate: 0, opacity: 1 }}
-								exit={{ rotate: 90, opacity: 0 }}
-								transition={{ duration: 0.15 }}
-							>
-								{isSwipeMode ? (
-									<Layers className="w-5 h-5" aria-hidden={true} />
-								) : (
-									<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+							{/* Suggest Button */}
+							<NavButton
+								id="suggest"
+								icon={Lightbulb}
+								label="Idea?"
+								isActive={isSuggestExpanded}
+								onClick={handleSuggestClick}
+								ariaLabel="Suggest a name"
+								className="flex-1 "
+							/>
+
+							{/* Profile/Login Button */}
+							<NavButton
+								id="profile"
+								icon={User}
+								label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+								isActive={isLoginExpanded}
+								onClick={handleProfileClick}
+								ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
+								className="flex-1 "
+								customIcon={
+									isLoggedIn && avatarUrl ? (
+										<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+										</div>
+									) : (
+										<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+									)
+								}
+								badge={
+									isLoggedIn ? (
+										<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+									) : undefined
+								}
+							/>
+						</div>
+					</div>
+				) : (
+					// Default evenly distributed layout when Start is not available
+					<div className="flex items-center justify-center w-full gap-4">
+						{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+						<AnimatedNavButton
+							id="pick"
+							icon={IconComponent}
+							label={buttonState.label}
+							isActive={isActive("pick")}
+							onClick={handleUnifiedButtonClick}
+							highlight={buttonState.highlight}
+							disabled={buttonState.disabled}
+							animateScale={buttonState.highlight}
+							className="flex-1 "
+							customIcon={
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={buttonState.icon.name}
+										initial={{ scale: 0.8, opacity: 0 }}
+										animate={{ scale: 1, opacity: 1 }}
+										exit={{ scale: 0.8, opacity: 0 }}
+									>
+										<IconComponent
+											className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+											aria-hidden={true}
+										/>
+									</motion.div>
+								</AnimatePresence>
+							}
+						/>
+
+						{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
+						{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+							<motion.button
+								initial={{ opacity: 0, scale: 0.8 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.8 }}
+								type="button"
+								onClick={() => setSwipeMode(!isSwipeMode)}
+								className={cn(
+									"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all flex-1",
+									"text-white/70 hover:text-white hover:bg-white/10",
+									isSwipeMode && "bg-purple-500/20 text-purple-400",
 								)}
-							</motion.div>
-						</AnimatePresence>
-						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
-					</motion.button>
+								aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+							>
+								<AnimatePresence mode="wait">
+									<motion.div
+										key={isSwipeMode ? "swipe" : "grid"}
+										initial={{ rotate: -90, opacity: 0 }}
+										animate={{ rotate: 0, opacity: 1 }}
+										exit={{ rotate: 90, opacity: 0 }}
+										transition={{ duration: 0.15 }}
+									>
+										{isSwipeMode ? (
+											<Layers className="w-5 h-5" aria-hidden={true} />
+										) : (
+											<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+										)}
+									</motion.div>
+								</AnimatePresence>
+								<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+							</motion.button>
+						)}
+
+						{/* Analyze Button - Only shows when tournament complete */}
+						{isComplete && (
+							<NavButton
+								id="analyze"
+								icon={BarChart3}
+								label="Analyze"
+								isActive={isActive("analyze")}
+								onClick={() => handleNavClick("analyze")}
+								className="flex-1 "
+							/>
+						)}
+
+						{/* Suggest Button */}
+						<NavButton
+							id="suggest"
+							icon={Lightbulb}
+							label="Idea?"
+							isActive={isSuggestExpanded}
+							onClick={handleSuggestClick}
+							ariaLabel="Suggest a name"
+							className="flex-1 "
+						/>
+
+						{/* Profile/Login Button */}
+						<NavButton
+							id="profile"
+							icon={User}
+							label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+							isActive={isLoginExpanded}
+							onClick={handleProfileClick}
+							ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
+							className="flex-1 "
+							customIcon={
+								isLoggedIn && avatarUrl ? (
+									<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+										<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+									</div>
+								) : (
+									<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+								)
+							}
+							badge={
+								isLoggedIn ? (
+									<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+								) : undefined
+							}
+						/>
+					</div>
 				)}
-
-				{/* Analyze Button - Only shows when tournament complete */}
-				{isComplete && (
-					<NavButton
-						id="analyze"
-						icon={BarChart3}
-						label="Analyze"
-						isActive={isActive("analyze")}
-						onClick={() => handleNavClick("analyze")}
-					/>
-				)}
-
-				{/* Suggest Button */}
-				<NavButton
-					id="suggest"
-					icon={Lightbulb}
-					label="Idea?"
-					isActive={isSuggestExpanded}
-					onClick={handleSuggestClick}
-					ariaLabel="Suggest a name"
-				/>
-
-				{/* Profile/Login Button */}
-				<NavButton
-					id="profile"
-					icon={User}
-					label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
-					isActive={isLoginExpanded}
-					onClick={handleProfileClick}
-					ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
-					customIcon={
-						isLoggedIn && avatarUrl ? (
-							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-							</div>
-						) : (
-							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
-						)
-					}
-					badge={
-						isLoggedIn ? (
-							<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
-						) : undefined
-					}
-				/>
 			</motion.nav>
 
 			{/* Expandable Login Panel */}
 			<AnimatePresence>
 				{isLoginExpanded && (
 					<motion.div
-						initial={{ y: 100, opacity: 0 }}
-						animate={{ y: 0, opacity: 1 }}
-						exit={{ y: 100, opacity: 0 }}
+						initial={{ y: 100, opacity: 0, scale: 0.9 }}
+						animate={{ y: 0, opacity: 1, scale: 1 }}
+						exit={{ y: 100, opacity: 0, scale: 0.9 }}
 						transition={{ type: "spring", stiffness: 300, damping: 30 }}
 						className={cn(
-							"fixed z-[99] bottom-24 left-1/2 -translate-x-1/2",
-							"w-[95%] max-w-md",
-							"bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
-							"p-6",
+							"fixed z-[99] bottom-20 left-1/2 -translate-x-1/2",
+							"w-[90vw] h-[60vh] max-w-2xl",
+							"bg-black/95 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl",
+							"p-8 overflow-hidden",
 						)}
 					>
 						{isLoggedIn ? (
-							<div className="space-y-4">
-								<div className="flex items-center gap-3">
+							<div className="flex flex-col items-center justify-center h-full space-y-6">
+								<div className="flex flex-col items-center gap-4">
 									{avatarUrl && (
-										<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
+										<div className="w-20 h-20 rounded-full overflow-hidden border-3 border-purple-500/40 shadow-lg">
 											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 										</div>
 									)}
-									<div className="flex-1">
-										<h3 className="text-lg font-bold text-white">{userName}</h3>
-										<p className="text-sm text-white/60">Logged in</p>
+									<div className="text-center">
+										<h3 className="text-2xl font-bold text-white">{userName}</h3>
+										<p className="text-base text-white/70">Successfully logged in</p>
 									</div>
 								</div>
 								<Button
 									variant="ghost"
 									size="large"
 									onClick={handleLogout}
-									className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300"
+									className="w-full max-w-xs flex items-center justify-center gap-3 text-red-400 hover:text-red-300 py-4 text-lg"
 								>
-									<LogOut size={16} />
+									<LogOut size={20} />
 									Logout
 								</Button>
 							</div>
 						) : (
-							<div className="space-y-4">
-								<div className="text-center space-y-1">
-									<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+							<div className="flex flex-col items-center justify-center h-full space-y-8">
+								<div className="text-center space-y-3">
+									<h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
 										Who are you?
 									</h3>
-									<p className="text-sm text-white/60">Enter your name to track rankings</p>
+									<p className="text-lg text-white/70 max-w-md">
+										Enter your name to track rankings and compete with others
+									</p>
 								</div>
-								<div className="space-y-3">
+								<div className="w-full max-w-md space-y-6">
 									<Input
 										type="text"
 										value={editedName}
 										onChange={(e) => setEditedName(e.target.value)}
-										placeholder="Your name..."
+										placeholder="Enter your awesome name..."
 										onKeyDown={(e) => e.key === "Enter" && handleLoginSave()}
-										className="w-full h-12 px-4 font-medium"
+										className="w-full h-14 px-6 text-lg font-medium"
 										autoFocus={true}
 									/>
 									<Button
@@ -539,9 +671,9 @@ export function FluidNav() {
 										onClick={handleLoginSave}
 										disabled={!editedName.trim() || isSaving}
 										loading={isSaving}
-										className="w-full"
+										className="w-full h-14 text-lg font-semibold"
 									>
-										Let's Go
+										{isSaving ? 'Connecting...' : "Let's Go!"}
 									</Button>
 								</div>
 							</div>

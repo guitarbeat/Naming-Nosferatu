@@ -344,7 +344,22 @@ const FALLBACK_CAT_AVATARS = [
 	"https://images.unsplash.com/photo-1511044568932-338cba0ad803?w=150&h=150&fit=crop&crop=face",
 ] as const;
 
-/** Deterministic image selection based on a seed id. */
+// Cache for memoization to avoid redundant hash calculations
+const imageCache = new Map<string, string>();
+
+/**
+ * Robust hash function using FNV-1a algorithm for better distribution
+ */
+function hashString(str: string): number {
+	let hash = 2166136261;
+	for (let i = 0; i < str.length; i++) {
+		hash ^= str.charCodeAt(i);
+		hash *= 16777619;
+	}
+	return hash;
+}
+
+/** Deterministic image selection based on a seed id with memoization. */
 export function getRandomCatImage(
 	id: string | number | null | undefined,
 	images: readonly string[] = CAT_IMAGES,
@@ -353,13 +368,22 @@ export function getRandomCatImage(
 		return images[0] ?? "";
 	}
 
-	const seed =
-		typeof id === "string"
-			? id.split("").reduce((sum, ch) => sum + ch.charCodeAt(0), 0)
-			: Number(id);
+	const cacheKey = `${id}-${images.length}`;
 
+	// Check cache first
+	if (imageCache.has(cacheKey)) {
+		const cached = imageCache.get(cacheKey);
+		return cached || images[0] || "";
+	}
+
+	const seed = typeof id === "string" ? hashString(id) : Number(id);
 	const index = Math.abs(seed) % images.length;
-	return images[index] ?? images[0] ?? "";
+	const selectedImage = images[index] ?? images[0] ?? "";
+
+	// Cache the result
+	imageCache.set(cacheKey, selectedImage);
+
+	return selectedImage;
 }
 
 /**

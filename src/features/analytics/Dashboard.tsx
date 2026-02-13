@@ -7,7 +7,6 @@ import { Suspense, useEffect, useState } from "react";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
-import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
@@ -247,11 +246,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 							<EyeOff className="text-amber-400" size={24} />
 							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
 						</div>
-						<Button
-							variant="ghost"
-							size="small"
-							onClick={() => setShowHiddenNames(!showHiddenNames)}
-						>
+						<Button variant="ghost" size="small" onClick={() => setShowHiddenNames(!showHiddenNames)}>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>

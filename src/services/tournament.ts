@@ -1,6 +1,6 @@
 import { withSupabase } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
-import { CAT_IMAGES, ELO_RATING } from "@/utils/constants";
+import { ELO_RATING } from "@/utils/constants";
 
 /* =========================================================================
    SERVICE
@@ -100,7 +100,6 @@ export const tournamentsAPI = {
 						}
 					}
 				}
-
 				const ratingRecords = ratings
 					.filter((r) => nameToIdCache.has(r.name))
 					.map((r) => ({
@@ -116,7 +115,7 @@ export const tournamentsAPI = {
 				}
 				const { error } = await client
 					.from("cat_name_ratings")
-					.upsert(ratingRecords, { onConflict: "user_name,name_id" });
+					.upsert(ratingRecords as any, { onConflict: "user_name,name_id" });
 				return { success: !error, savedCount: ratingRecords.length };
 			},
 			{ success: false, error: "Supabase offline" },
@@ -258,10 +257,6 @@ export class PreferenceSorter {
 /* =========================================================================
    GENERAL UTILS
    ========================================================================= */
-
-export { CAT_IMAGES };
-
-export { getRandomCatImage } from "@/utils/basic";
 
 /**
  * Calculate bracket round based on number of names and current match
