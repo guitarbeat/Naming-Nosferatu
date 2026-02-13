@@ -936,7 +936,7 @@ interface MatchPair {
  */
 export class PreferenceSorter {
 	readonly preferences = new Map<string, number>();
-	private currentIndex = 0;
+	public currentIndex = 0;
 	private lastMatch: string | null = null;
 
 	constructor(public readonly items: string[]) {}

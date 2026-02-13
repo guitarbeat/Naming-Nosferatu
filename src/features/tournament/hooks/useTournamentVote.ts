@@ -23,7 +23,7 @@ export function useTournamentVote({
 	onVote,
 }: UseTournamentVoteProps): UseTournamentVoteResult {
 	const [isVoting, setIsVoting] = useState(false);
-	const toast = useToast();
+	const { showError } = useToast();
 
 	const handleVoteWithAnimation = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -45,13 +45,13 @@ export function useTournamentVote({
 
 	const handleUndoWithAnimation = useCallback(() => {
 		if (!tournamentState.canUndo) {
-			toast?.("No more moves to undo", "warning");
+			showError("No more moves to undo");
 			return;
 		}
 
 		audioManager.playUndoSound();
 		tournamentState.handleUndo();
-	}, [tournamentState, audioManager, toast]);
+	}, [tournamentState, audioManager, showError]);
 
 	return {
 		isVoting,

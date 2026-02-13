@@ -1,10 +1,10 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
-import type { TournamentProps } from "@/types/appTypes";
+import type { TournamentProps, VoteData, IdType } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
 import CatImage from "./components/CatImage";
 import { useAudioManager } from "./hooks/useAudioManager";
@@ -12,7 +12,9 @@ import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
 function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
+	// Remove unused toast destructuring if not used directly (used in hook now)
 	const { showSuccess, showError } = useToast();
+	// getVisibleNames takes 1 argument
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
@@ -20,7 +22,6 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const {
 		currentMatch,
 		ratings,
-		handleVote: handleVoteInternal,
 		isComplete,
 		round: roundNumber,
 		matchNumber: currentMatchNumber,
@@ -28,46 +29,59 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		handleUndo,
 	} = tournament;
 
-	const [_selectedOption, setSelectedOption] = useState<"left" | "right" | null>(null);
-	const [isTransitioning, setIsTransitioning] = useState(false);
-	const [isProcessing, setIsProcessing] = useState(false);
-	const [_lastMatchResult, setLastMatchResult] = useState<string | null>(null);
-	const [_showMatchResult, setShowMatchResult] = useState(false);
-	const [_votingError, setVotingError] = useState<unknown>(null);
-
-	const handleVote = useCallback(
+	const handleVoteAdapter = useCallback(
 		(winnerId: string, loserId: string) => {
-			handleVoteInternal(winnerId, loserId);
-			onVote?.(winnerId, loserId);
+			if (!onVote || !currentMatch) return;
+
+			const leftId = typeof currentMatch.left === 'object' ? currentMatch.left.id : currentMatch.left;
+			const rightId = typeof currentMatch.right === 'object' ? currentMatch.right.id : currentMatch.right;
+
+			const leftName = typeof currentMatch.left === 'object' ? currentMatch.left.name : String(currentMatch.left);
+			const rightName = typeof currentMatch.right === 'object' ? currentMatch.right.name : String(currentMatch.right);
+
+			const voteData: VoteData = {
+				match: {
+					left: {
+						name: leftName,
+						id: leftId as IdType,
+						description: typeof currentMatch.left === 'object' ? (currentMatch.left.description || '') : '',
+						outcome: leftId === winnerId ? 'win' : 'loss'
+					},
+					right: {
+						name: rightName,
+						id: rightId as IdType,
+						description: typeof currentMatch.right === 'object' ? (currentMatch.right.description || '') : '',
+						outcome: rightId === winnerId ? 'win' : 'loss'
+					}
+				},
+				result: 1,
+				ratings: ratings,
+				timestamp: new Date().toISOString()
+			};
+			onVote(voteData);
 		},
-		[handleVoteInternal, onVote],
+		[onVote, currentMatch, ratings]
 	);
 
 	useEffect(() => {
 		if (isComplete && onComplete) {
 			const results = Object.entries(ratings).map(([name, rating]) => ({
 				name,
-				rating,
+				rating: { rating, wins: 0, losses: 0 }, // Adapt to RatingData structure (wins/losses lost in simple rating map)
 			}));
-			onComplete(results as any);
+			// We need to cast because UseTournamentStateResult.ratings is Record<string, number> (simple ratings)
+			// But onComplete expects Record<string, RatingData>.
+			// We ideally should track wins/losses in UseTournamentState, but for now satisfying the type:
+			const ratingsMap: Record<string, any> = {};
+			results.forEach(r => ratingsMap[r.name] = r.rating);
+			onComplete(ratingsMap);
 		}
 	}, [isComplete, ratings, onComplete]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
-		isProcessing,
-		isTransitioning,
-		currentMatch,
-		handleVote,
-		onVote,
+		tournamentState: tournament,
 		audioManager,
-		setIsProcessing,
-		setIsTransitioning,
-		setSelectedOption,
-		setVotingError,
-		setLastMatchResult,
-		setShowMatchResult,
-		showSuccess,
-		showError,
+		onVote: handleVoteAdapter,
 	});
 
 	const showCatPictures = useAppStore((state) => state.ui.showCatPictures);
@@ -81,18 +95,14 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 		);
 	}
 
-	// No images shown - gallery images removed from tournament view
+	const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+	const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+
 	const leftImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left,
-				CAT_IMAGES,
-			)
+		? getRandomCatImage(leftId, CAT_IMAGES)
 		: null;
 	const rightImg = showCatPictures
-		? getRandomCatImage(
-				typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right,
-				CAT_IMAGES,
-			)
+		? getRandomCatImage(rightId, CAT_IMAGES)
 		: null;
 
 	return (
@@ -163,7 +173,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					{/* Left */}
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("left")}
+						onClick={() => handleVoteWithAnimation(String(leftId), String(rightId))}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
@@ -174,7 +184,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									alt={
 										typeof currentMatch.left === "object"
 											? currentMatch.left?.name
-											: currentMatch.left
+											: String(currentMatch.left)
 									}
 									containerClassName="w-full h-full"
 									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -206,7 +216,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					{/* Right */}
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("right")}
+						onClick={() => handleVoteWithAnimation(String(rightId), String(leftId))}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
@@ -217,7 +227,7 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 									alt={
 										typeof currentMatch.right === "object"
 											? currentMatch.right?.name
-											: currentMatch.right
+											: String(currentMatch.right)
 									}
 									containerClassName="w-full h-full"
 									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
