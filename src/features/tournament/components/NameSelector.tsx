@@ -201,7 +201,7 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											)}
 										</div>
 										{nameItem.description && (
-											<p className="text-xs text-white/60 text-left line-clamp-2">
+											<p className="text-xs text-white/60 text-left ">
 												{nameItem.description}
 											</p>
 										)}
@@ -352,7 +352,7 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 															{nameItem.name}
 														</h3>
 														{nameItem.description && (
-															<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto line-clamp-3">
+															<p className="text-white/60 text-sm leading-relaxed max-w-md mt-2 mx-auto overflow-y-auto max-h-[120px]">
 																{nameItem.description}
 															</p>
 														)}
