@@ -1,132 +1,50 @@
-/**
- * @module Supabase
- * @description Consolidated Supabase client and API operations
- * Combines: client setup, API operations (images, names, site settings)
- */
-
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { QueryClient } from "@tanstack/react-query";
+import { createClient } from "@supabase/supabase-js";
 import type { NameItem } from "@/types/appTypes";
-import { STORAGE_KEYS } from "@/utils/constants";
 import type { Database } from "./types";
 
-/* =========================================================================
-   TANSTACK QUERY CLIENT
-   ========================================================================= */
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
-export const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: 1000 * 60 * 5, // 5 minutes
-			retry: 1,
-			refetchOnWindowFocus: false,
-		},
-	},
-});
+let supabaseInstance: SupabaseClient<Database> | null = null;
 
-/* =========================================================================
-   SUPABASE CLIENT CONFIGURATION
-   ========================================================================= */
-
-declare global {
-	interface Window {
-		__supabaseClient?: SupabaseClient<Database>;
-	}
-}
-
-const getSupabaseCredentials = (): { url: string; key: string } => {
-	const url = import.meta.env.VITE_SUPABASE_URL;
-	const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-	if (!url || !key) {
-		throw new Error(
-			"Supabase credentials not found. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.",
-		);
+const resolveSupabaseClient = async () => {
+	if (supabaseInstance) {
+		return supabaseInstance;
 	}
 
-	return { url, key };
-};
-
-let supabaseInstance: SupabaseClient<Database> | null =
-	typeof window !== "undefined" ? (window.__supabaseClient ?? null) : null;
-let initializationPromise: Promise<SupabaseClient<Database> | null> | null = null;
-
-const createSupabaseClient = async (): Promise<SupabaseClient<Database> | null> => {
-	const { url: SupabaseUrl, key: SupabaseAnonKey } = getSupabaseCredentials();
+	if (!supabaseUrl || !supabaseAnonKey) {
+		return null;
+	}
 
 	try {
-		const { createClient } = await import("@supabase/supabase-js");
-		const authOptions = {
-			persistSession: true,
-			autoRefreshToken: true,
-			storage: (() => {
-				try {
-					return typeof window !== "undefined" ? window.localStorage : undefined;
-				} catch {
-					return undefined;
-				}
-			})(),
-		} as const;
-
-		let currentUserName: string | null = null;
-		try {
-			if (typeof window !== "undefined" && window.localStorage) {
-				currentUserName = window.localStorage.getItem(STORAGE_KEYS.USER);
-			}
-		} catch {
-			/* ignore */
-		}
-
-		const client = createClient<Database>(SupabaseUrl, SupabaseAnonKey, {
-			auth: authOptions,
-			global: {
-				headers: {
-					"X-Client-Info": "cat-name-tournament",
-					...(currentUserName ? { "x-user-name": currentUserName } : {}),
-				},
+		supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+			auth: {
+				persistSession: true,
+				autoRefreshToken: true,
 			},
-			db: { schema: "public" },
 		});
-
-		if (typeof window !== "undefined") {
-			window.__supabaseClient = client;
-		}
-		return client;
+		return supabaseInstance;
 	} catch (error) {
-		console.error("❌ Failed to create Supabase client:", error);
+		console.error("Failed to initialize Supabase client:", error);
 		return null;
 	}
 };
 
-const getSupabaseClient = async (retryCount = 0): Promise<SupabaseClient<Database> | null> => {
-	if (supabaseInstance) {
-		return supabaseInstance;
-	}
-	if (!initializationPromise) {
-		initializationPromise = createSupabaseClient()
-			.then((client) => {
-				supabaseInstance = client;
-				return client;
-			})
-			.catch(async (_error) => {
-				initializationPromise = null;
-				if (retryCount < 3) {
-					await new Promise((r) => setTimeout(r, 1000 * 2 ** retryCount));
-					return getSupabaseClient(retryCount + 1);
-				}
-				return null;
-			});
-	}
-	return initializationPromise;
-};
-
-export const resolveSupabaseClient = async () => supabaseInstance ?? (await getSupabaseClient());
-
-export const updateSupabaseUserContext = (userName: string | null): void => {
+/**
+ * Set the current user context for RLS policies
+ */
+export const setSupabaseUserContext = (userName: string | null) => {
 	if (!supabaseInstance) {
 		return;
 	}
-	// @ts-expect-error - accessing internal property
+
+	// Use custom header for simple RLS context passing if needed, or rely on RPC
+	// This is a client-side helper to set the context globally if the transport supports it
+	// For Supabase js, usually we rely on auth.session() or RPC parameters
+
+	// Example: setting a custom header if supported (not standard public API, but useful for middleware/hooks)
+	// @ts-expect-error - Accessing internal property
 	if (supabaseInstance.rest?.headers) {
 		if (userName) {
 			// @ts-expect-error - Accessing internal Supabase client headers
@@ -315,6 +233,10 @@ async function deleteById(nameId: string | number) {
 }
 
 export const coreAPI = {
+	setContext: (context: { userName: string | null }) => {
+		setSupabaseUserContext(context.userName);
+	},
+
 	/**
 	 * Get all names with descriptions and ratings
 	 */
@@ -424,6 +346,13 @@ export const coreAPI = {
 	},
 
 	deleteById,
+
+	/**
+	 * Get cat's chosen name (proxy to siteSettingsAPI for convenience)
+	 */
+	getCatChosenName: async () => {
+		return siteSettingsAPI.getCatChosenName();
+	},
 };
 
 export const hiddenNamesAPI = {
@@ -476,20 +405,23 @@ export const siteSettingsAPI = {
 	 * Get cat's chosen name
 	 */
 	getCatChosenName: async () => {
-		return withSupabase(async (client) => {
-			const { data, error } = await client
-				.from("cat_chosen_name")
-				.select("*")
-				.order("created_at", { ascending: false })
-				.limit(1)
-				.single();
+		return withSupabase(
+			async (client) => {
+				const { data, error } = await client
+					.from("cat_chosen_name")
+					.select("*")
+					.order("created_at", { ascending: false })
+					.limit(1)
+					.single();
 
-			if (error) {
-				console.error("Error fetching cat chosen name:", error);
-				return null;
-			}
-			return data;
-		}, null);
+				if (error) {
+					console.error("Error fetching cat chosen name:", error);
+					return { data: null, error: error.message };
+				}
+				return { data, error: null };
+			},
+			{ data: null, error: "Supabase offline" },
+		);
 	},
 
 	/**
@@ -530,3 +462,4 @@ export const siteSettingsAPI = {
    ========================================================================= */
 
 export * from "@/services/analytics/analyticsService";
+export { tournamentsAPI } from "@/services/coreServices";

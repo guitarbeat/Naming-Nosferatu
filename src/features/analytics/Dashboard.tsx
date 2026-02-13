@@ -24,7 +24,7 @@ interface DashboardProps {
 	onNameHidden?: (nameId: string) => void;
 }
 
-export function Dashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
+export function AnalysisDashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
 	const [leaderboard, setLeaderboard] = useState<
 		Array<{
 			name: string;
@@ -286,3 +286,6 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 		</div>
 	);
 }
+
+// Alias for compatibility
+export { AnalysisDashboard as Dashboard };

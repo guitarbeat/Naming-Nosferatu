@@ -19,10 +19,8 @@ export default function App() {
 
 	// Global State
 	const user = useAppStore((state) => state.user);
-	const _userActions = useAppStore((state) => state.userActions);
 	const tournament = useAppStore((state) => state.tournament);
 	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const _uiActions = useAppStore((state) => state.uiActions);
 	const siteSettingsActions = useAppStore((state) => state.siteSettingsActions);
 
 	// Initialize from storage
@@ -64,7 +62,7 @@ export default function App() {
 			} else if (result.offline) {
 				showToast("Saved offline (will sync later)", "warning");
 			} else {
-				showError(new Error(result.error || "Failed to save"));
+				showError(result.error || "Failed to save");
 			}
 		},
 		[user.name, tournamentActions, showToast, showError],
@@ -87,7 +85,7 @@ export default function App() {
 
 	return (
 		<Routes>
-			<Route element={<AppLayout />}>
+			<Route element={<AppLayout handleTournamentComplete={handleTournamentComplete} />}>
 				<Route path="/" element={<TournamentFlow />} />
 				<Route
 					path="/tournament"
