@@ -153,7 +153,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 				<div className="relative grid grid-cols-2 gap-4 w-full h-full max-h-[500px]">
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("left")}
+						onClick={() => {
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(leftId, rightId);
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
@@ -194,7 +198,11 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("right")}
+						onClick={() => {
+							const leftId = typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+							const rightId = typeof currentMatch.right === "object" ? currentMatch.right.id : currentMatch.right;
+							handleVoteWithAnimation(rightId, leftId);
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>

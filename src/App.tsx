@@ -92,6 +92,10 @@ function App() {
 					/>
 				</Routes>
 			</AppLayout>
+			<dialog
+				id="shared-lightbox-dialog"
+				className="backdrop:bg-black/90 bg-transparent p-0 overflow-hidden outline-none"
+			/>
 		</div>
 	);
 }
