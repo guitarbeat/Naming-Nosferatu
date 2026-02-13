@@ -70,9 +70,6 @@ export function NavButton({
 				{badge}
 			</div>
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
-<<<<<<< HEAD
-					</button>
-=======
 			{isActive && !highlight && (
 				<motion.div
 					layoutId="dockIndicator"
@@ -80,7 +77,6 @@ export function NavButton({
 				/>
 			)}
 		</button>
->>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	);
 }
 
@@ -119,6 +115,6 @@ export function AnimatedNavButton({
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">
 				{props.label}
 			</span>
-					</motion.button>
+		</motion.button>
 	);
 }

@@ -550,12 +550,12 @@ export function FluidNav() {
 										{isSaving ? 'Connecting...' : "Let's Go!"}
 									</Button>
 								</div>
-							</div >
+							</div>
 						)
 						}
-					</motion.div >
+					</motion.div>
 				)}
-			</AnimatePresence >
+			</AnimatePresence>
 
 			{/* Expandable Suggest Panel */}
 			<AnimatePresence>
@@ -621,7 +621,7 @@ export function FluidNav() {
 						</motion.div>
 					)
 				}
-			</AnimatePresence >
+			</AnimatePresence>
 		</>
 	);
 }

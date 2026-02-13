@@ -16,16 +16,11 @@ interface LightboxProps {
 }
 
 export function Lightbox({ images, currentIndex, onClose, onNavigate }: LightboxProps) {
-<<<<<<< HEAD
 	const lightboxRef = useRef<HTMLDivElement>(null);
 	const [isZoomed, setIsZoomed] = useState(false);
 	const [scale, setScale] = useState(1);
 	const [position, setPosition] = useState({ x: 0, y: 0 });
 	const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
-=======
-	const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-	const containerRef = useRef<HTMLDivElement | null>(null);
->>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 
 	// Preload adjacent images for better performance with cleanup
 	useEffect(() => {
@@ -172,7 +167,7 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 		const handleKeyDown = (e: KeyboardEvent) => {
 			// Prevent event propagation to avoid conflicts with other keyboard handlers
 			e.stopPropagation();
-			
+
 			switch (e.key) {
 				case "Escape":
 					e.preventDefault();
@@ -319,16 +314,11 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 				<button
 					type="button"
-<<<<<<< HEAD
 					onClick={(e) => {
 						e.stopPropagation();
 						handlePrevious();
 					}}
 					className="absolute left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-=======
-					className="absolute left-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
-					onClick={() => onNavigate(currentIndex === 0 ? images.length - 1 : currentIndex - 1)}
->>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 					aria-label="View previous image"
 					title="Previous (Left Arrow)"
 				>
@@ -380,16 +370,11 @@ export function Lightbox({ images, currentIndex, onClose, onNavigate }: Lightbox
 
 				<button
 					type="button"
-<<<<<<< HEAD
 					onClick={(e) => {
 						e.stopPropagation();
 						handleNext();
 					}}
 					className="absolute right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-=======
-					className="absolute right-4 top-1/2 -translate-y-1/2 z-[110] p-4 text-white/50 hover:text-white bg-black/20 hover:bg-white/10 backdrop-blur-lg rounded-full transition-all hidden md:block"
-					onClick={() => onNavigate(currentIndex === images.length - 1 ? 0 : currentIndex + 1)}
->>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 					aria-label="View next image"
 					title="Next (Right Arrow)"
 				>

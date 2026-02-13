@@ -32,10 +32,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
 	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
-<<<<<<< HEAD
 	const [elo] = useState(() => new EloRating());
-=======
->>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	// _refreshKey forces re-computation when sorter internal state changes (sorter is mutable)
