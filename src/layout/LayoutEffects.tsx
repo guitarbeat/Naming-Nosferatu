@@ -70,14 +70,14 @@ function LiquidGlass({
 	const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isInitialMountRef = useRef<boolean>(true);
 
-	const validWidth = useMemo(() => Math.max(1, width), [width]);
-	const validHeight = useMemo(() => Math.max(1, height), [height]);
-	const validRadius = useMemo(() => Math.max(0, radius), [radius]);
+	const validWidth = Math.max(1, width);
+	const validHeight = Math.max(1, height);
+	const validRadius = Math.max(0, radius);
 
-	const redChannelId = useMemo(() => `redchannel-${id}`, [id]);
-	const greenChannelId = useMemo(() => `greenchannel-${id}`, [id]);
-	const blueChannelId = useMemo(() => `bluechannel-${id}`, [id]);
-	const feGaussianBlurId = useMemo(() => `gaussianblur-${id}`, [id]);
+	const redChannelId = `redchannel-${id}`;
+	const greenChannelId = `greenchannel-${id}`;
+	const blueChannelId = `bluechannel-${id}`;
+	const feGaussianBlurId = `gaussianblur-${id}`;
 
 	const supportsBackdropFilterUrl = useMemo(() => {
 		if (typeof window === "undefined" || typeof document === "undefined") {
