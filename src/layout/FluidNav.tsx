@@ -166,7 +166,9 @@ export function FluidNav() {
 	};
 
 	const handleLoginSave = async () => {
-		if (!editedName.trim()) return;
+		if (!editedName.trim()) {
+			return;
+		}
 		setIsSaving(true);
 		try {
 			userActions.login(editedName.trim());
@@ -186,12 +188,16 @@ export function FluidNav() {
 
 	const handleProfileClick = () => {
 		setIsLoginExpanded(!isLoginExpanded);
-		if (isSuggestExpanded) setIsSuggestExpanded(false);
+		if (isSuggestExpanded) {
+			setIsSuggestExpanded(false);
+		}
 	};
 
 	const handleSuggestClick = () => {
 		setIsSuggestExpanded(!isSuggestExpanded);
-		if (isLoginExpanded) setIsLoginExpanded(false);
+		if (isLoginExpanded) {
+			setIsLoginExpanded(false);
+		}
 	};
 
 	const handleSuggestSubmit = async (e: React.FormEvent) => {
@@ -248,7 +254,9 @@ export function FluidNav() {
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
-			if (!element) return;
+			if (!element) {
+				return;
+			}
 
 			// If clicking the active section, toggle its visibility
 			if (activeSection === id) {
