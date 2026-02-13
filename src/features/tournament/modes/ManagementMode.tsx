@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { memo, useCallback } from "react";
-import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
-import { Layers, LayoutGrid } from "@/utils/icons";
 import Button from "@/layout/Button";
 import { CardStats } from "@/layout/Card";
 import { EmptyState } from "@/layout/EmptyState";
 import useAppStore from "@/store/appStore";
+import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
+import { Layers, LayoutGrid } from "@/utils/icons";
 import { NameGrid } from "../components/NameGrid";
 import { ProfileSection } from "../components/ProfileSection";
 import { SwipeableCards } from "../components/SwipeableCards";

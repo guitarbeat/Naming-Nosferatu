@@ -8,15 +8,13 @@ import { Button, Chip, Progress } from "@heroui/react";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { NameItem } from "@/types/appTypes";
-import { CAT_IMAGES } from "@/utils/constants";
-import { useMasonryLayout } from "@/hooks/useMasonryLayout";
-import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/utils/icons";
+import { useMasonryLayout } from "@/hooks/useHooks";
 import { Card, CardName } from "@/layout/Card";
 import { EmptyState } from "@/layout/EmptyState";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Lightbox } from "@/layout/Lightbox";
 import { getRandomCatImage } from "@/services/tournament";
+import type { NameItem } from "@/types/appTypes";
 import {
 	applyNameFilters,
 	cn,
@@ -25,6 +23,8 @@ import {
 	playSound,
 	selectedNamesToSet,
 } from "@/utils/basic";
+import { CAT_IMAGES } from "@/utils/constants";
+import { Check, ChevronLeft, ChevronRight, Heart, X } from "@/utils/icons";
 
 /* =========================================================================
    CAT IMAGE COMPONENT

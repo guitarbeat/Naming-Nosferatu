@@ -529,4 +529,4 @@ export const siteSettingsAPI = {
    RE-EXPORTS
    ========================================================================= */
 
-export * from "@/features/analytics/analyticsService";
+export * from "@/services/analytics/analyticsService";

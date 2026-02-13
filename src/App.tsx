@@ -7,26 +7,27 @@
  * @returns {JSX.Element} The complete application UI
  */
 
-import { Suspense, useCallback, useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { errorContexts, routeComponents } from "@/appConfig";
-import { ProfileSection } from "@/features/tournament/components/ProfileSection";
 import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
+import Tournament from "@/features/tournament/Tournament";
 import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout } from "@/layout/AppLayout";
+import Button from "@/layout/Button";
 import { ErrorBoundary, Loading } from "@/layout/FeedbackComponents";
 import { Section } from "@/layout/Section";
 import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
-import { cn, devError } from "@/utils/basic";
+import { cn } from "@/utils/basic";
 import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/utils/performance";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
 
 function App() {
-	const { login, isLoading } = useAuth();
+	const { isLoading } = useAuth();
 	const isInitialized = !isLoading;
 
 	useEffect(() => {
@@ -47,19 +48,6 @@ function App() {
 		tournamentActions,
 	});
 
-	const handleLogin = useCallback(
-		async (userName: string) => {
-			try {
-				const success = await login({ name: userName });
-				return success;
-			} catch (error) {
-				devError("Login error:", error);
-				throw error;
-			}
-		},
-		[login],
-	);
-
 	if (!isInitialized) {
 		return (
 			<div className="fixed inset-0 flex items-center justify-center bg-black">
@@ -79,7 +67,17 @@ function App() {
 						element={
 							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
 								<ErrorBoundary context={errorContexts.tournamentFlow}>
-									<HomeContent onLogin={handleLogin} />
+									<HomeContent />
+								</ErrorBoundary>
+							</div>
+						}
+					/>
+					<Route
+						path="/tournament"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context={errorContexts.tournamentFlow}>
+									<TournamentContent />
 								</ErrorBoundary>
 							</div>
 						}
@@ -98,17 +96,42 @@ function App() {
 	);
 }
 
-function HomeContent({ onLogin }: { onLogin: (name: string) => Promise<boolean | undefined> }) {
+function HomeContent() {
 	return (
-		<>
-			<div id="pick" className="absolute -top-20" />
-			<Section id="play" variant="minimal" padding="comfortable" maxWidth="full">
-				<Suspense fallback={<Loading variant="skeleton" height={400} />}>
-					<TournamentFlow />
-				</Suspense>
-			</Section>
-			<ProfileSection onLogin={onLogin} />
-		</>
+		<Section id="pick" variant="minimal" padding="comfortable" maxWidth="full">
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				<TournamentFlow />
+			</Suspense>
+		</Section>
+	);
+}
+
+function TournamentContent() {
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleTournamentComplete } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
+
+	return (
+		<Section id="tournament" variant="minimal" padding="comfortable" maxWidth="full">
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				{tournament.names && tournament.names.length > 0 ? (
+					<Tournament
+						names={tournament.names}
+						existingRatings={tournament.ratings}
+						onComplete={handleTournamentComplete}
+					/>
+				) : (
+					<div className="text-center py-20">
+						<p className="text-xl text-white/70 mb-4">No names selected for tournament</p>
+						<Button variant="gradient" onClick={() => window.history.back()}>
+							Go Back
+						</Button>
+					</div>
+				)}
+			</Suspense>
+		</Section>
 	);
 }
 

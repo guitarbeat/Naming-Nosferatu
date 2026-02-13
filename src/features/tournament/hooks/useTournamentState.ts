@@ -31,13 +31,31 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	});
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [matchIndex, setMatchIndex] = useState(0);
+	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => n.id)));
+	const [_refreshKey, setRefreshKey] = useState(0);
 
-	const sorter = useMemo(() => new PreferenceSorter(names.map((n) => n.id)), [names]);
-	const matches = useMemo(() => sorter.getMatches(), [sorter]);
+	const currentMatch = useMemo(() => {
+		const nextMatch = sorter.getNextMatch();
+		if (!nextMatch) {
+			return null;
+		}
 
-	const currentMatch = matches[matchIndex] || null;
-	const isComplete = matchIndex >= matches.length;
+		return {
+			left: names.find((n) => n.id === nextMatch.left) || {
+				id: nextMatch.left,
+				name: nextMatch.left,
+			},
+			right: names.find((n) => n.id === nextMatch.right) || {
+				id: nextMatch.right,
+				name: nextMatch.right,
+			},
+		} as Match;
+	}, [sorter, names]);
+
+	const isComplete = currentMatch === null;
+	const totalPairs = (names.length * (names.length - 1)) / 2;
+	const matchNumber = sorter.currentIndex + 1;
+	const round = Math.floor(sorter.currentIndex / Math.max(1, names.length)) + 1;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -51,32 +69,32 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 				{
 					match: currentMatch,
 					ratings: { ...ratings },
-					round: Math.floor(matchIndex / names.length) + 1,
-					matchNumber: matchIndex + 1,
+					round,
+					matchNumber,
 				},
 			]);
 
-			// Update ratings
+			// Update ratings using ELO
 			const elo = new EloRating();
-			const [newWinnerRating, newLoserRating] = elo.calculateNewRatings(
-				ratings[winnerId] || 1500,
-				ratings[loserId] || 1500,
-				1,
-			);
+			const winnerRating = ratings[winnerId] || 1500;
+			const loserRating = ratings[loserId] || 1500;
+
+			const result = elo.calculateNewRatings(winnerRating, loserRating, "left");
 
 			setRatings((prev) => ({
 				...prev,
-				[winnerId]: newWinnerRating,
-				[loserId]: newLoserRating,
+				[winnerId]: result.newRatingA,
+				[loserId]: result.newRatingB,
 			}));
 
-			// Record preference
-			sorter.recordPreference(winnerId, loserId);
+			// Record preference in sorter
+			sorter.addPreference(winnerId, loserId, 1);
+			sorter.currentIndex++;
 
-			// Move to next match
-			setMatchIndex((prev) => prev + 1);
+			// Trigger re-render to get next match
+			setRefreshKey((k) => k + 1);
 		},
-		[currentMatch, ratings, matchIndex, names.length, sorter],
+		[currentMatch, ratings, round, matchNumber, sorter],
 	);
 
 	const handleUndo = useCallback(() => {
@@ -86,16 +104,21 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 		const lastEntry = history[history.length - 1];
 		setRatings(lastEntry.ratings);
-		setMatchIndex((prev) => prev - 1);
 		setHistory((prev) => prev.slice(0, -1));
-	}, [history]);
+
+		// Undo in sorter
+		sorter.undoLastPreference();
+
+		// Trigger re-render
+		setRefreshKey((k) => k + 1);
+	}, [history, sorter]);
 
 	return {
 		currentMatch,
 		ratings,
-		round: Math.floor(matchIndex / names.length) + 1,
-		matchNumber: matchIndex + 1,
-		totalMatches: matches.length,
+		round,
+		matchNumber,
+		totalMatches: totalPairs,
 		isComplete,
 		handleVote,
 		handleUndo,

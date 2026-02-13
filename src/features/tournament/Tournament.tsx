@@ -1,41 +1,57 @@
-import { memo } from "react";
-import type { TournamentProps } from "@/types/appTypes";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Card } from "@/layout/Card";
 import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
 import { useToast } from "@/providers/Providers";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
+import type { TournamentProps } from "@/types/appTypes";
 import { getVisibleNames } from "@/utils/basic";
+import CatImage from "./components/CatImage";
 import { useAudioManager } from "./hooks/useAudioManager";
 import { useTournamentState } from "./hooks/useTournamentState";
 import { useTournamentVote } from "./hooks/useTournamentVote";
 
-function TournamentContent({
-	onComplete,
-	existingRatings = {},
-	names = [],
-	onVote,
-}: TournamentProps) {
+function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) {
 	const { showSuccess, showError } = useToast();
 	const visibleNames = getVisibleNames(names);
 	const audioManager = useAudioManager();
 
+	const tournament = useTournamentState(visibleNames);
 	const {
-		// selectedOption,
-		setSelectedOption,
-		isTransitioning,
-		setIsTransitioning,
-		isProcessing,
-		setIsProcessing,
-		setLastMatchResult,
-		setShowMatchResult,
-		setVotingError,
-		handleVote,
-		tournament,
-	} = useTournamentState(visibleNames, existingRatings, onComplete, onVote);
+		currentMatch,
+		ratings,
+		handleVote: handleVoteInternal,
+		isComplete,
+		round: roundNumber,
+		matchNumber: currentMatchNumber,
+		totalMatches,
+		handleUndo,
+	} = tournament;
 
-	const { currentMatch, progress, roundNumber, currentMatchNumber, totalMatches, handleUndo } =
-		tournament;
+	const [_selectedOption, setSelectedOption] = useState<"left" | "right" | null>(null);
+	const [isTransitioning, setIsTransitioning] = useState(false);
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [_lastMatchResult, setLastMatchResult] = useState<string | null>(null);
+	const [_showMatchResult, setShowMatchResult] = useState(false);
+	const [_votingError, setVotingError] = useState<unknown>(null);
+
+	const handleVote = useCallback(
+		(winnerId: string, loserId: string) => {
+			handleVoteInternal(winnerId, loserId);
+			onVote?.(winnerId, loserId);
+		},
+		[handleVoteInternal, onVote],
+	);
+
+	useEffect(() => {
+		if (isComplete && onComplete) {
+			const results = Object.entries(ratings).map(([name, rating]) => ({
+				name,
+				rating,
+			}));
+			onComplete(results as any);
+		}
+	}, [isComplete, ratings, onComplete]);
 
 	const { handleVoteWithAnimation } = useTournamentVote({
 		isProcessing,
@@ -92,7 +108,9 @@ function TournamentContent({
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="material-symbols-outlined text-stardust">workspace_premium</span>
-						<span className="text-xs font-bold">{progress}</span>
+						<span className="text-xs font-bold">
+							{currentMatchNumber} / {totalMatches}
+						</span>
 					</div>
 				</div>
 				<div className="flex flex-col gap-2">
@@ -149,11 +167,17 @@ function TournamentContent({
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
-						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
+						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
 							{leftImg ? (
-								<div
-									className="w-full h-full bg-cover bg-center"
-									style={{ backgroundImage: `url('${leftImg}')` }}
+								<CatImage
+									src={leftImg}
+									alt={
+										typeof currentMatch.left === "object"
+											? currentMatch.left?.name
+											: currentMatch.left
+									}
+									containerClassName="w-full h-full"
+									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 								/>
 							) : (
 								<span className="text-white/20 text-6xl font-bold select-none">
@@ -186,11 +210,17 @@ function TournamentContent({
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
-						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center">
+						<div className="w-full aspect-square rounded-xl overflow-hidden mb-4 bg-white/10 flex items-center justify-center relative">
 							{rightImg ? (
-								<div
-									className="w-full h-full bg-cover bg-center"
-									style={{ backgroundImage: `url('${rightImg}')` }}
+								<CatImage
+									src={rightImg}
+									alt={
+										typeof currentMatch.right === "object"
+											? currentMatch.right?.name
+											: currentMatch.right
+									}
+									containerClassName="w-full h-full"
+									imageClassName="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
 								/>
 							) : (
 								<span className="text-white/20 text-6xl font-bold select-none">

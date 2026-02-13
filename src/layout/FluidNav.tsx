@@ -1,14 +1,26 @@
 /**
  * @module FluidNav
- * @description Fluid navigation component using NavButton for DRY code.
+ * @description Fluid navigation component with expandable login panel
  */
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BarChart3, CheckCircle, Layers, LayoutGrid, Lightbulb, Trophy, User } from "@/utils/icons";
+import { useNameSuggestion } from "@/hooks/useNames";
+import Button from "@/layout/Button";
+import { Input, Textarea } from "@/layout/FormPrimitives";
 import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
+import {
+	BarChart3,
+	CheckCircle,
+	Layers,
+	LayoutGrid,
+	Lightbulb,
+	LogOut,
+	Trophy,
+	User,
+} from "@/utils/icons";
 import { AnimatedNavButton, NavButton } from "./NavButton";
 
 // Map nav keys to Section IDs
@@ -112,13 +124,26 @@ export function FluidNav() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
-	const { tournament, tournamentActions, user, ui, uiActions } = appStore;
+	const { tournament, tournamentActions, user, ui, uiActions, userActions } = appStore;
 	const { selectedNames } = tournament;
 	const { isLoggedIn, name: userName, avatarUrl } = user;
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState("pick");
+	const [isLoginExpanded, setIsLoginExpanded] = useState(false);
+	const [isSuggestExpanded, setIsSuggestExpanded] = useState(false);
+	const [editedName, setEditedName] = useState("");
+	const [isSaving, setIsSaving] = useState(false);
 	const isAnalysisRoute = location.pathname === "/analysis";
+	const isTournamentRoute = location.pathname === "/tournament";
+
+	// Name suggestion hook
+	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
+		useNameSuggestion({
+			onSuccess: () => {
+				setTimeout(() => setIsSuggestExpanded(false), 2000);
+			},
+		});
 
 	const { isComplete, names: tournamentNames } = tournament;
 	const isTournamentActive = !!tournamentNames;
@@ -134,20 +159,44 @@ export function FluidNav() {
 
 	const handleStartTournament = () => {
 		hapticTournamentStart();
-		if (isAnalysisRoute) {
-			navigate("/");
-		}
-		tournamentActions.resetTournament();
-		tournamentActions.setLoading(true);
 		if (selectedNames && selectedNames.length >= 2) {
 			tournamentActions.setNames(selectedNames);
+			navigate("/tournament");
 		}
-		setTimeout(() => {
-			tournamentActions.setLoading(false);
-			const element = document.getElementById("play");
-			element?.scrollIntoView({ behavior: "smooth" });
-			setActiveSection("play");
-		}, 100);
+	};
+
+	const handleLoginSave = async () => {
+		if (!editedName.trim()) return;
+		setIsSaving(true);
+		try {
+			userActions.login(editedName.trim());
+			setIsLoginExpanded(false);
+			setEditedName("");
+		} catch (err) {
+			console.error("Failed to login:", err);
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	const handleLogout = () => {
+		userActions.logout();
+		setIsLoginExpanded(false);
+	};
+
+	const handleProfileClick = () => {
+		setIsLoginExpanded(!isLoginExpanded);
+		if (isSuggestExpanded) setIsSuggestExpanded(false);
+	};
+
+	const handleSuggestClick = () => {
+		setIsSuggestExpanded(!isSuggestExpanded);
+		if (isLoginExpanded) setIsLoginExpanded(false);
+	};
+
+	const handleSuggestSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		await handleSubmit();
 	};
 
 	const handleUnifiedButtonClick = () => {
@@ -173,7 +222,7 @@ export function FluidNav() {
 		}
 	};
 
-	// Navigate or scroll to section
+	// Navigate or scroll to section, toggle visibility if already active
 	const handleNavClick = (key: string) => {
 		hapticNavTap();
 		if (key === "analyze") {
@@ -199,9 +248,38 @@ export function FluidNav() {
 		const id = keyToId[key];
 		if (id) {
 			const element = document.getElementById(id);
-			if (element) {
+			if (!element) return;
+
+			// If clicking the active section, toggle its visibility
+			if (activeSection === id) {
+				const isHidden = element.getAttribute("data-hidden") === "true";
+				element.setAttribute("data-hidden", String(!isHidden));
+				if (isHidden) {
+					// Showing - remove class and scroll to it
+					element.style.maxHeight = `${element.scrollHeight}px`;
+					element.style.opacity = "1";
+					element.style.overflow = "visible";
+					setTimeout(() => {
+						element.style.maxHeight = "";
+					}, 300);
+					element.scrollIntoView({ behavior: "smooth" });
+				} else {
+					// Hiding - add class for animation
+					element.style.maxHeight = `${element.scrollHeight}px`;
+					requestAnimationFrame(() => {
+						element.style.maxHeight = "0";
+						element.style.opacity = "0";
+						element.style.overflow = "hidden";
+					});
+				}
+			} else {
+				// Otherwise, scroll to it and make sure it's visible
 				element.scrollIntoView({ behavior: "smooth" });
 				setActiveSection(id);
+				element.setAttribute("data-hidden", "false");
+				element.style.maxHeight = "";
+				element.style.opacity = "1";
+				element.style.overflow = "visible";
 			}
 		}
 	};
@@ -262,127 +340,271 @@ export function FluidNav() {
 		return activeSection === targetId;
 	};
 
+	// Hide navbar on tournament page (after all hooks)
+	if (isTournamentRoute) {
+		return null;
+	}
+
 	const IconComponent = buttonState.icon;
 
 	return (
-		<motion.nav
-			className={cn(
-				"fixed z-[100] transition-all duration-500 ease-out",
-				"flex items-center justify-evenly gap-4",
-				"h-auto py-3 px-6",
-				"bottom-0 left-1/2 -translate-x-1/2",
-				"w-[95%]",
-				"bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
-			)}
-			initial={{ y: 100, opacity: 0 }}
-			animate={{ y: 0, opacity: 1 }}
-			transition={{ type: "spring", stiffness: 260, damping: 20 }}
-		>
-			{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
-			<AnimatedNavButton
-				id="pick"
-				icon={IconComponent}
-				label={buttonState.label}
-				isActive={isActive("pick")}
-				onClick={handleUnifiedButtonClick}
-				highlight={buttonState.highlight}
-				disabled={buttonState.disabled}
-				animateScale={buttonState.highlight}
-				customIcon={
-					<AnimatePresence mode="wait">
-						<motion.div
-							key={buttonState.icon.name}
-							initial={{ scale: 0.8, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							exit={{ scale: 0.8, opacity: 0 }}
-						>
-							<IconComponent
-								className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
-								aria-hidden={true}
-							/>
-						</motion.div>
-					</AnimatePresence>
-				}
-			/>
-
-			{/* View Mode Toggle - Shows when on pick section */}
-			{isActive("pick") && !isTournamentActive && (
-				<motion.button
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 0.8 }}
-					type="button"
-					onClick={() => setSwipeMode(!isSwipeMode)}
-					className={cn(
-						"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
-						"text-white/70 hover:text-white hover:bg-white/10",
-						isSwipeMode && "bg-purple-500/20 text-purple-400",
-					)}
-					aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
-				>
-					<AnimatePresence mode="wait">
-						<motion.div
-							key={isSwipeMode ? "swipe" : "grid"}
-							initial={{ rotate: -90, opacity: 0 }}
-							animate={{ rotate: 0, opacity: 1 }}
-							exit={{ rotate: 90, opacity: 0 }}
-							transition={{ duration: 0.15 }}
-						>
-							{isSwipeMode ? (
-								<Layers className="w-5 h-5" aria-hidden={true} />
-							) : (
-								<LayoutGrid className="w-5 h-5" aria-hidden={true} />
-							)}
-						</motion.div>
-					</AnimatePresence>
-					<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
-				</motion.button>
-			)}
-
-			{/* Analyze Button - Only shows when tournament complete */}
-			{isComplete && (
-				<NavButton
-					id="analyze"
-					icon={BarChart3}
-					label="Analyze"
-					isActive={isActive("analyze")}
-					onClick={() => handleNavClick("analyze")}
+		<>
+			<motion.nav
+				className={cn(
+					"fixed z-[100] transition-all duration-500 ease-out",
+					"flex items-center justify-evenly gap-4",
+					"h-auto py-3 px-6",
+					"bottom-0 left-1/2 -translate-x-1/2",
+					"w-[95%]",
+					"bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
+				)}
+				initial={{ y: 100, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+				transition={{ type: "spring", stiffness: 260, damping: 20 }}
+			>
+				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+				<AnimatedNavButton
+					id="pick"
+					icon={IconComponent}
+					label={buttonState.label}
+					isActive={isActive("pick")}
+					onClick={handleUnifiedButtonClick}
+					highlight={buttonState.highlight}
+					disabled={buttonState.disabled}
+					animateScale={buttonState.highlight}
+					customIcon={
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={buttonState.icon.name}
+								initial={{ scale: 0.8, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
+								exit={{ scale: 0.8, opacity: 0 }}
+							>
+								<IconComponent
+									className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+									aria-hidden={true}
+								/>
+							</motion.div>
+						</AnimatePresence>
+					}
 				/>
-			)}
 
-			{/* Suggest Button */}
-			<NavButton
-				id="suggest"
-				icon={Lightbulb}
-				label="Suggest"
-				isActive={isActive("suggest")}
-				onClick={() => handleNavClick("suggest")}
-				ariaLabel="Suggest a name"
-			/>
+				{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
+				{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+					<motion.button
+						initial={{ opacity: 0, scale: 0.8 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.8 }}
+						type="button"
+						onClick={() => setSwipeMode(!isSwipeMode)}
+						className={cn(
+							"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
+							"text-white/70 hover:text-white hover:bg-white/10",
+							isSwipeMode && "bg-purple-500/20 text-purple-400",
+						)}
+						aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+					>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={isSwipeMode ? "swipe" : "grid"}
+								initial={{ rotate: -90, opacity: 0 }}
+								animate={{ rotate: 0, opacity: 1 }}
+								exit={{ rotate: 90, opacity: 0 }}
+								transition={{ duration: 0.15 }}
+							>
+								{isSwipeMode ? (
+									<Layers className="w-5 h-5" aria-hidden={true} />
+								) : (
+									<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+								)}
+							</motion.div>
+						</AnimatePresence>
+						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+					</motion.button>
+				)}
 
-			{/* Profile/Login Button */}
-			<NavButton
-				id="profile"
-				icon={User}
-				label={isLoggedIn ? userName?.split(" ")[0] || "Profile" : "Login"}
-				isActive={isActive("profile")}
-				onClick={() => handleNavClick("profile")}
-				ariaLabel={isLoggedIn ? "Edit profile" : "Login"}
-				customIcon={
-					isLoggedIn && avatarUrl ? (
-						<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-							<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-						</div>
-					) : (
-						<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
-					)
-				}
-				badge={
-					isLoggedIn ? (
-						<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
-					) : undefined
-				}
-			/>
-		</motion.nav>
+				{/* Analyze Button - Only shows when tournament complete */}
+				{isComplete && (
+					<NavButton
+						id="analyze"
+						icon={BarChart3}
+						label="Analyze"
+						isActive={isActive("analyze")}
+						onClick={() => handleNavClick("analyze")}
+					/>
+				)}
+
+				{/* Suggest Button */}
+				<NavButton
+					id="suggest"
+					icon={Lightbulb}
+					label="Idea?"
+					isActive={isSuggestExpanded}
+					onClick={handleSuggestClick}
+					ariaLabel="Suggest a name"
+				/>
+
+				{/* Profile/Login Button */}
+				<NavButton
+					id="profile"
+					icon={User}
+					label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+					isActive={isLoginExpanded}
+					onClick={handleProfileClick}
+					ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
+					customIcon={
+						isLoggedIn && avatarUrl ? (
+							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+							</div>
+						) : (
+							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+						)
+					}
+					badge={
+						isLoggedIn ? (
+							<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+						) : undefined
+					}
+				/>
+			</motion.nav>
+
+			{/* Expandable Login Panel */}
+			<AnimatePresence>
+				{isLoginExpanded && (
+					<motion.div
+						initial={{ y: 100, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						exit={{ y: 100, opacity: 0 }}
+						transition={{ type: "spring", stiffness: 300, damping: 30 }}
+						className={cn(
+							"fixed z-[99] bottom-24 left-1/2 -translate-x-1/2",
+							"w-[95%] max-w-md",
+							"bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
+							"p-6",
+						)}
+					>
+						{isLoggedIn ? (
+							<div className="space-y-4">
+								<div className="flex items-center gap-3">
+									{avatarUrl && (
+										<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
+											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+										</div>
+									)}
+									<div className="flex-1">
+										<h3 className="text-lg font-bold text-white">{userName}</h3>
+										<p className="text-sm text-white/60">Logged in</p>
+									</div>
+								</div>
+								<Button
+									variant="ghost"
+									size="lg"
+									onClick={handleLogout}
+									className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300"
+								>
+									<LogOut size={16} />
+									Logout
+								</Button>
+							</div>
+						) : (
+							<div className="space-y-4">
+								<div className="text-center space-y-1">
+									<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+										Who are you?
+									</h3>
+									<p className="text-sm text-white/60">Enter your name to track rankings</p>
+								</div>
+								<div className="space-y-3">
+									<Input
+										type="text"
+										value={editedName}
+										onChange={(e) => setEditedName(e.target.value)}
+										placeholder="Your name..."
+										onKeyDown={(e) => e.key === "Enter" && handleLoginSave()}
+										className="w-full h-12 px-4 font-medium"
+										autoFocus={true}
+									/>
+									<Button
+										variant="gradient"
+										size="xl"
+										onClick={handleLoginSave}
+										disabled={!editedName.trim() || isSaving}
+										loading={isSaving}
+										className="w-full"
+									>
+										Let's Go
+									</Button>
+								</div>
+							</div>
+						)}
+					</motion.div>
+				)}
+			</AnimatePresence>
+
+			{/* Expandable Suggest Panel */}
+			<AnimatePresence>
+				{isSuggestExpanded && (
+					<motion.div
+						initial={{ y: 100, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						exit={{ y: 100, opacity: 0 }}
+						transition={{ type: "spring", stiffness: 300, damping: 30 }}
+						className={cn(
+							"fixed z-[99] bottom-24 left-1/2 -translate-x-1/2",
+							"w-[95%] max-w-md",
+							"bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
+							"p-6",
+						)}
+					>
+						<form onSubmit={handleSuggestSubmit} className="space-y-4">
+							<div className="text-center space-y-1">
+								<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+									Got a name?
+								</h3>
+								<p className="text-sm text-white/60">Share your brilliant idea</p>
+							</div>
+							<div className="space-y-3">
+								<Input
+									type="text"
+									value={values.name}
+									onChange={(e) => handleChange("name", e.target.value)}
+									placeholder="Name..."
+									className="w-full h-12 px-4 font-medium"
+									autoFocus={true}
+								/>
+								<Textarea
+									value={values.description}
+									onChange={(e) => handleChange("description", e.target.value)}
+									placeholder="Why is it perfect?"
+									rows={3}
+									className="w-full px-4 py-3 font-medium resize-none"
+								/>
+								{globalError && (
+									<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium text-center">
+										{globalError}
+									</div>
+								)}
+								{successMessage && (
+									<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium text-center">
+										{successMessage}
+									</div>
+								)}
+								<Button
+									type="submit"
+									variant="gradient"
+									size="xl"
+									disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
+									loading={isSubmitting}
+									className="w-full"
+								>
+									Submit
+								</Button>
+							</div>
+						</form>
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</>
 	);
 }

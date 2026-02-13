@@ -1,6 +1,6 @@
+import { withSupabase } from "@/services/supabase-client/client";
 import type { NameItem } from "@/types/appTypes";
 import { CAT_IMAGES, ELO_RATING } from "@/utils/constants";
-import { withSupabase } from "@/services/supabase-client/client";
 
 /* =========================================================================
    SERVICE

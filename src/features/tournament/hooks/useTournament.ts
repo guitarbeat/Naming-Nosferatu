@@ -1,5 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useLocalStorage } from "@/hooks/useHooks";
+import { useNameData, useNameSelection } from "@/hooks/useNames";
+import { useToast } from "@/providers/Providers";
+import { ErrorManager } from "@/services/errorManager";
+import {
+	calculateBracketRound,
+	EloRating,
+	PreferenceSorter,
+	tournamentsAPI,
+} from "@/services/tournament";
+import useAppStore from "@/store/appStore";
 import type {
 	AppState,
 	Match,
@@ -11,18 +22,6 @@ import type {
 	UseNameManagementViewProps,
 	UseNameManagementViewResult,
 } from "@/types/appTypes";
-import { FILTER_OPTIONS, NOTIFICATION, TOURNAMENT_TIMING } from "@/utils/constants";
-import useLocalStorage from "@/hooks/useBrowserState";
-import { useNameData, useNameSelection } from "@/hooks/useNames";
-import { useToast } from "@/providers/Providers";
-import { ErrorManager } from "@/services/errorManager";
-import {
-	calculateBracketRound,
-	EloRating,
-	PreferenceSorter,
-	tournamentsAPI,
-} from "@/services/tournament";
-import useAppStore from "@/store/appStore";
 import {
 	applyNameFilters,
 	clearTournamentCache,
@@ -35,6 +34,7 @@ import {
 	ratingsToObject,
 	shuffleArray,
 } from "@/utils/basic";
+import { FILTER_OPTIONS, NOTIFICATION, TOURNAMENT_TIMING } from "@/utils/constants";
 
 /* =========================================================================
    TYPES & INTERFACES

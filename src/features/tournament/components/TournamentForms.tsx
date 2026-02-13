@@ -5,9 +5,7 @@
  */
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { CAT_IMAGES } from "@/utils/constants";
 import { useNameSuggestion } from "@/hooks/useNames";
-import { LogOut, Pencil, Upload, User, X } from "@/utils/icons";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
 import { getGlassPreset } from "@/layout/GlassPresets";
@@ -16,6 +14,8 @@ import { Section } from "@/layout/Section";
 import { imagesAPI } from "@/services/supabase-client/client";
 import useAppStore from "@/store/appStore";
 import { compressImageFile, devError } from "@/utils/basic";
+import { CAT_IMAGES } from "@/utils/constants";
+import { LogOut, Pencil, Upload, User, X } from "@/utils/icons";
 
 /* =========================================================================
    NAME UPLOAD FORM COMPONENT

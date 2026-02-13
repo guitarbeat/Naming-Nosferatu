@@ -19,9 +19,9 @@ import React, {
 	useState,
 } from "react";
 import { useBrowserState } from "@/hooks/useBrowserState";
-import { Cat, Copy, Heart, PawPrint } from "@/utils/icons";
 import { ErrorManager } from "@/services/errorManager";
 import { cn } from "@/utils/basic";
+import { Cat, Copy, Heart, PawPrint } from "@/utils/icons";
 import { GLASS_PRESETS } from "./GlassPresets";
 import { BongoCat, LiquidGlass } from "./LayoutEffects";
 

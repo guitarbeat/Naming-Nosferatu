@@ -20,3 +20,150 @@
 .animate-float {
 	animation: float 15s ease-in-out infinite;
 }
+
+/* Cat Background with Sparkles */
+.cat-background {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	overflow: hidden;
+	pointer-events: none;
+	background: #0a0a0a;
+}
+
+.cat-background__gradient {
+	position: absolute;
+	inset: 0;
+	background:
+		radial-gradient(
+			circle at 50% 120%,
+			color-mix(in srgb, #fafafa 5%, transparent) 0%,
+			transparent 60%
+		),
+		radial-gradient(
+			circle at 80% 0%,
+			color-mix(in srgb, #3b82f6 25%, transparent) 0%,
+			transparent 50%
+		),
+		radial-gradient(
+			circle at 20% -10%,
+			color-mix(in srgb, #ec4899 25%, transparent) 0%,
+			transparent 45%
+		),
+		linear-gradient(to bottom, #0a0a0a 0%, #0a0a0a 30%, #0a0a0a 60%, #0a0a0a 100%);
+	background-attachment: fixed;
+	color: #fafafa;
+}
+
+@media (width <= 768px) {
+	.cat-background__gradient {
+		background-attachment: scroll;
+	}
+}
+
+.cat-background__sky,
+#sky {
+	position: absolute;
+	inset: 0;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.cat-background__star {
+	position: absolute;
+	color: color-mix(in srgb, #fafafa 95%, transparent);
+	font-family: Georgia, serif;
+	user-select: none;
+	will-change: transform, opacity, filter;
+	filter: blur(var(--twinkle-blur, 0));
+	opacity: var(--twinkle-alpha, 0.8);
+	transform: scale(var(--twinkle-scale, 1));
+	animation: twinkle var(--twinkle-duration, 3.2s) ease-in-out infinite;
+	animation-delay: var(--twinkle-delay, 0s);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	.cat-background__star {
+		animation: none;
+		transition: none;
+	}
+}
+
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0;
+		transform: scale(calc(var(--twinkle-scale, 1) * 0.6));
+	}
+
+	45% {
+		opacity: var(--twinkle-alpha, 0.85);
+		transform: scale(var(--twinkle-scale, 1));
+	}
+}
+
+/* App layout */
+.app .cat-background {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+}
+
+/* Global loading overlay */
+.global-loading-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(8px);
+}
+
+/* Animated blob background for tournament */
+@keyframes blob {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+	25% {
+		transform: translate(20px, -50px) scale(1.1);
+	}
+	50% {
+		transform: translate(-20px, 20px) scale(0.9);
+	}
+	75% {
+		transform: translate(50px, 50px) scale(1.05);
+	}
+}
+
+.animate-blob {
+	animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+	animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+	animation-delay: 4s;
+}
+
+/* Section visibility toggle animation */
+section[id] {
+	transition:
+		max-height 0.3s ease-in-out,
+		opacity 0.3s ease-in-out;
+}
+
+section[id][data-hidden="true"] {
+	max-height: 0 !important;
+	opacity: 0 !important;
+	overflow: hidden !important;
+	pointer-events: none;
+}

@@ -7,9 +7,9 @@
 import { cva } from "class-variance-authority";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { memo, useEffect, useId, useState } from "react";
-import { TIMING } from "@/utils/constants";
 import CatImage from "@/features/tournament/components/CatImage";
 import { cn } from "@/utils/basic";
+import { TIMING } from "@/utils/constants";
 import { DEFAULT_GLASS_CONFIG, LiquidGlass, resolveGlassConfig } from "./LayoutEffects";
 
 export type CardVariant =

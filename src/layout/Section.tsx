@@ -13,6 +13,8 @@ interface SectionProps {
 	padding?: "comfortable" | "compact" | "none";
 	maxWidth?: "full" | "lg" | "xl" | "2xl";
 	className?: string;
+	separator?: boolean;
+	scrollMargin?: boolean;
 }
 
 const paddingClasses = {
@@ -34,11 +36,16 @@ export function Section({
 	padding = "comfortable",
 	maxWidth = "full",
 	className = "",
+	separator = false,
+	scrollMargin = true,
 }: SectionProps) {
+	const separatorClass = separator ? "border-t border-white/10 mt-8" : "";
+	const scrollMarginClass = scrollMargin ? "scroll-mt-20" : "";
+
 	return (
 		<section
 			id={id}
-			className={`${paddingClasses[padding]} ${maxWidthClasses[maxWidth]} ${className}`}
+			className={`${paddingClasses[padding]} ${maxWidthClasses[maxWidth]} ${separatorClass} ${scrollMarginClass} ${className}`}
 		>
 			{children}
 		</section>
