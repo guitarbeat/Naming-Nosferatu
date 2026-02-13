@@ -31,7 +31,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	});
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => n.id)));
+	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	const currentMatch = useMemo(() => {
@@ -54,8 +54,8 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 	const isComplete = currentMatch === null;
 	const totalPairs = (names.length * (names.length - 1)) / 2;
-	const matchNumber = sorter.currentIndex + 1;
-	const round = Math.floor(sorter.currentIndex / Math.max(1, names.length)) + 1;
+	const matchNumber = (sorter as any).currentIndex + 1;
+	const round = Math.floor((sorter as any).currentIndex / Math.max(1, names.length)) + 1;
 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
@@ -89,7 +89,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 
 			// Record preference in sorter
 			sorter.addPreference(winnerId, loserId, 1);
-			sorter.currentIndex++;
+			(sorter as any).currentIndex++;
 
 			// Trigger re-render to get next match
 			setRefreshKey((k) => k + 1);
@@ -103,6 +103,9 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 
 		const lastEntry = history[history.length - 1];
+		if (!lastEntry) {
+			return;
+		}
 		setRatings(lastEntry.ratings);
 		setHistory((prev) => prev.slice(0, -1));
 

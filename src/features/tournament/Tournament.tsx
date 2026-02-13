@@ -38,9 +38,8 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 	const handleVote = useCallback(
 		(winnerId: string, loserId: string) => {
 			handleVoteInternal(winnerId, loserId);
-			onVote?.(winnerId, loserId);
 		},
-		[handleVoteInternal, onVote],
+		[handleVoteInternal],
 	);
 
 	useEffect(() => {
@@ -163,7 +162,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					{/* Left */}
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("left")}
+						onClick={() => {
+							if (currentMatch) {
+								const winner =
+									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+								const loser =
+									typeof currentMatch.right === "object"
+										? currentMatch.right.id
+										: currentMatch.right;
+								handleVoteWithAnimation(String(winner), String(loser));
+							}
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>
@@ -206,7 +215,17 @@ function TournamentContent({ onComplete, names = [], onVote }: TournamentProps) 
 					{/* Right */}
 					<Card
 						interactive={true}
-						onClick={() => handleVoteWithAnimation("right")}
+						onClick={() => {
+							if (currentMatch) {
+								const winner =
+									typeof currentMatch.right === "object"
+										? currentMatch.right.id
+										: currentMatch.right;
+								const loser =
+									typeof currentMatch.left === "object" ? currentMatch.left.id : currentMatch.left;
+								handleVoteWithAnimation(String(winner), String(loser));
+							}
+						}}
 						className="flex flex-col items-center justify-between relative overflow-hidden group cursor-pointer h-full"
 						variant="default"
 					>

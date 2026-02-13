@@ -134,11 +134,11 @@ export function RandomGenerator({
 			} else {
 				// Empty response — pick from fallbacks
 				const idx = Math.floor(Math.random() * FALLBACK_NAMES.length);
-				setGeneratedName(FALLBACK_NAMES[idx]);
+				setGeneratedName(FALLBACK_NAMES[idx] ?? null);
 			}
 		} catch {
 			const idx = Math.floor(Math.random() * FALLBACK_NAMES.length);
-			setGeneratedName(FALLBACK_NAMES[idx]);
+			setGeneratedName(FALLBACK_NAMES[idx] ?? null);
 		} finally {
 			setIsGenerating(false);
 		}
