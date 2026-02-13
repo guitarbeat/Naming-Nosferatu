@@ -65,42 +65,6 @@ export type Database = {
 				};
 				Relationships: [];
 			};
-			cat_chosen_name: {
-				Row: {
-					created_at: string;
-					first_name: string;
-					greeting_text: string | null;
-					id: string;
-					last_name: string | null;
-					middle_names: Json | null;
-					show_banner: boolean | null;
-					updated_at: string | null;
-					updated_by: string | null;
-				};
-				Insert: {
-					created_at?: string;
-					first_name: string;
-					greeting_text?: string | null;
-					id?: string;
-					last_name?: string | null;
-					middle_names?: Json | null;
-					show_banner?: boolean | null;
-					updated_at?: string | null;
-					updated_by?: string | null;
-				};
-				Update: {
-					created_at?: string;
-					first_name?: string;
-					greeting_text?: string | null;
-					id?: string;
-					last_name?: string | null;
-					middle_names?: Json | null;
-					show_banner?: boolean | null;
-					updated_at?: string | null;
-					updated_by?: string | null;
-				};
-				Relationships: [];
-			};
 			cat_name_options: {
 				Row: {
 					avg_rating: number | null;
@@ -310,6 +274,77 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			fin_charts: {
+				Row: {
+					created_at: string;
+					id: string;
+					name: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					name: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					name?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			fin_transactions: {
+				Row: {
+					created_at: string;
+					date: string;
+					enabled: boolean;
+					fin_chart_id: string | null;
+					id: string;
+					inflow: number;
+					name: string;
+					outflow: number;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					date: string;
+					enabled?: boolean;
+					fin_chart_id?: string | null;
+					id?: string;
+					inflow?: number;
+					name: string;
+					outflow?: number;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					date?: string;
+					enabled?: boolean;
+					fin_chart_id?: string | null;
+					id?: string;
+					inflow?: number;
+					name?: string;
+					outflow?: number;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "fin_transactions_fin_chart_id_fkey";
+						columns: ["fin_chart_id"];
+						isOneToOne: false;
+						referencedRelation: "fin_charts";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			flo_entries: {
 				Row: {
 					created_at: string;
@@ -361,12 +396,179 @@ export type Database = {
 				};
 				Relationships: [];
 			};
+			profile_access_audit: {
+				Row: {
+					accessed_profile_id: string | null;
+					action_type: string;
+					admin_user_id: string | null;
+					created_at: string;
+					id: string;
+					metadata: Json | null;
+				};
+				Insert: {
+					accessed_profile_id?: string | null;
+					action_type: string;
+					admin_user_id?: string | null;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+				};
+				Update: {
+					accessed_profile_id?: string | null;
+					action_type?: string;
+					admin_user_id?: string | null;
+					created_at?: string;
+					id?: string;
+					metadata?: Json | null;
+				};
+				Relationships: [];
+			};
+			profile_access_rate_limit: {
+				Row: {
+					access_count: number;
+					id: string;
+					is_blocked: boolean;
+					last_reset: string;
+					user_id: string;
+				};
+				Insert: {
+					access_count?: number;
+					id?: string;
+					is_blocked?: boolean;
+					last_reset?: string;
+					user_id: string;
+				};
+				Update: {
+					access_count?: number;
+					id?: string;
+					is_blocked?: boolean;
+					last_reset?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			profiles: {
+				Row: {
+					apps: string[] | null;
+					avatar_url: string | null;
+					created_at: string;
+					display_name: string | null;
+					email: string | null;
+					first_name: string | null;
+					has_custom_password: boolean;
+					id: string;
+					is_private: boolean;
+					pin_hash: string | null;
+					updated_at: string;
+					username: string | null;
+				};
+				Insert: {
+					apps?: string[] | null;
+					avatar_url?: string | null;
+					created_at?: string;
+					display_name?: string | null;
+					email?: string | null;
+					first_name?: string | null;
+					has_custom_password?: boolean;
+					id: string;
+					is_private?: boolean;
+					pin_hash?: string | null;
+					updated_at?: string;
+					username?: string | null;
+				};
+				Update: {
+					apps?: string[] | null;
+					avatar_url?: string | null;
+					created_at?: string;
+					display_name?: string | null;
+					email?: string | null;
+					first_name?: string | null;
+					has_custom_password?: boolean;
+					id?: string;
+					is_private?: boolean;
+					pin_hash?: string | null;
+					updated_at?: string;
+					username?: string | null;
+				};
+				Relationships: [];
+			};
+			user_credentials: {
+				Row: {
+					created_at: string;
+					id: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					created_at?: string;
+					id?: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					created_at?: string;
+					id?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [];
+			};
+			user_roles: {
+				Row: {
+					created_at: string | null;
+					id: string;
+					role: Database["public"]["Enums"]["app_role"];
+					user_id: string | null;
+					user_name: string | null;
+				};
+				Insert: {
+					created_at?: string | null;
+					id?: string;
+					role?: Database["public"]["Enums"]["app_role"];
+					user_id?: string | null;
+					user_name?: string | null;
+				};
+				Update: {
+					created_at?: string | null;
+					id?: string;
+					role?: Database["public"]["Enums"]["app_role"];
+					user_id?: string | null;
+					user_name?: string | null;
+				};
+				Relationships: [];
+			};
 		};
 		Views: {
-			[_ in never]: never;
+			public_profiles: {
+				Row: {
+					avatar_url: string | null;
+					created_at: string | null;
+					display_name: string | null;
+					id: string | null;
+					username: string | null;
+				};
+				Insert: {
+					avatar_url?: string | null;
+					created_at?: string | null;
+					display_name?: string | null;
+					id?: string | null;
+					username?: string | null;
+				};
+				Update: {
+					avatar_url?: string | null;
+					created_at?: string | null;
+					display_name?: string | null;
+					id?: string | null;
+					username?: string | null;
+				};
+				Relationships: [];
+			};
 		};
 		Functions: {
-			add_app_access_to_user: { Args: { app_name: string }; Returns: undefined };
+			add_app_access_to_user: {
+				Args: { app_name: string };
+				Returns: undefined;
+			};
 			calculate_elo_change: {
 				Args: {
 					current_rating: number;
@@ -452,23 +654,6 @@ export type Database = {
 					username: string;
 				}[];
 			};
-			get_popularity_scores: {
-				Args: {
-					p_current_user_name?: string;
-					p_limit?: number;
-					p_user_filter?: string;
-				};
-				Returns: {
-					avg_rating: number;
-					category: string;
-					created_at: string;
-					description: string;
-					name: string;
-					name_id: string;
-					popularity_score: number;
-					times_selected: number;
-				}[];
-			};
 			get_safe_profile_data: {
 				Args: { profile_user_id: string };
 				Returns: {
@@ -497,14 +682,6 @@ export type Database = {
 					id: string;
 					name: string;
 					total_ratings: number;
-				}[];
-			};
-			get_top_selections: {
-				Args: { limit_count: number };
-				Returns: {
-					count: number;
-					name: string;
-					name_id: string;
 				}[];
 			};
 			get_user_flo_data_admin: {

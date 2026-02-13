@@ -27,6 +27,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+      "@supabase/client": path.resolve(__dirname, "src/services/supabase/client.ts"),
+      "@supabase/types": path.resolve(__dirname, "supabase/types.ts"),
+      "@db": path.resolve(__dirname, "supabase"),
     },
   },
 });

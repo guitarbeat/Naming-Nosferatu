@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import "./LiquidGradient.css";
 
@@ -626,6 +627,10 @@ const LiquidGradientBackground: React.FC = () => {
 
 	// Initialize Three.js
 	useEffect(() => {
+<<<<<<< Updated upstream
+		if (!containerRef.current) {
+			return;
+=======
 		if (containerRef.current) {
 			managerRef.current = new LiquidGradientManager(containerRef.current);
 			managerRef.current.render();
@@ -661,7 +666,43 @@ const LiquidGradientBackground: React.FC = () => {
 				window.removeEventListener("touchmove", handleTouchMove);
 				managerRef.current?.cleanup();
 			};
+>>>>>>> Stashed changes
 		}
+
+		managerRef.current = new LiquidGradientManager(containerRef.current);
+		managerRef.current.render();
+
+		const handleResize = () => managerRef.current?.onResize();
+		window.addEventListener("resize", handleResize);
+
+		// Mouse/Touch listeners for fluid effect
+		const handleMouseMove = (e: MouseEvent) => {
+			managerRef.current?.onMouseMove(e.clientX, e.clientY);
+
+			// Custom cursor logic
+			if (cursorRef.current) {
+				cursorRef.current.style.left = `${e.clientX}px`;
+				cursorRef.current.style.top = `${e.clientY}px`;
+			}
+		};
+
+		const handleTouchMove = (e: TouchEvent) => {
+			const touch = e.touches[0];
+			if (!touch) {
+				return;
+			}
+			managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
+		};
+
+		window.addEventListener("mousemove", handleMouseMove);
+		window.addEventListener("touchmove", handleTouchMove);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+			window.removeEventListener("mousemove", handleMouseMove);
+			window.removeEventListener("touchmove", handleTouchMove);
+			managerRef.current?.cleanup();
+		};
 	}, []);
 
 	// Update Color Pickers when scheme changes
@@ -676,7 +717,6 @@ const LiquidGradientBackground: React.FC = () => {
 		const rgb = hexToRgb(hex);
 		if (rgb && managerRef.current) {
 			const uniforms = managerRef.current.gradientBackground.uniforms;
-			// @ts-expect-error
 			const colorUniform = uniforms[`uColor${index}`];
 			if (colorUniform) {
 				colorUniform.value.set(rgb.r, rgb.g, rgb.b);
@@ -804,9 +844,9 @@ function hexToRgb(hex: string) {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
 		? {
-				r: Number.parseInt(result[1], 16) / 255,
-				g: Number.parseInt(result[2], 16) / 255,
-				b: Number.parseInt(result[3], 16) / 255,
+				r: Number.parseInt(result[1] as string, 16) / 255,
+				g: Number.parseInt(result[2] as string, 16) / 255,
+				b: Number.parseInt(result[3] as string, 16) / 255,
 			}
 		: null;
 }

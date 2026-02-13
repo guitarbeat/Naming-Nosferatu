@@ -372,6 +372,26 @@ export function FluidNav() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
+<<<<<<< Updated upstream
+				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+				<AnimatedNavButton
+					id="pick"
+					icon={IconComponent}
+					label={buttonState.label}
+					isActive={isActive("pick")}
+					onClick={handleUnifiedButtonClick}
+					highlight={buttonState.highlight}
+					disabled={buttonState.disabled}
+					animateScale={buttonState.highlight}
+					className="flex-1 "
+					customIcon={
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={buttonState.icon.name}
+								initial={{ scale: 0.8, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
+								exit={{ scale: 0.8, opacity: 0 }}
+=======
 				{buttonState.action === "start" && buttonState.highlight ? (
 					// Centered Start button layout when Start is available
 					<div className="flex items-center justify-center w-full gap-4">
@@ -541,64 +561,51 @@ export function FluidNav() {
 									isSwipeMode && "bg-purple-500/20 text-purple-400",
 								)}
 								aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+>>>>>>> Stashed changes
 							>
-								<AnimatePresence mode="wait">
-									<motion.div
-										key={isSwipeMode ? "swipe" : "grid"}
-										initial={{ rotate: -90, opacity: 0 }}
-										animate={{ rotate: 0, opacity: 1 }}
-										exit={{ rotate: 90, opacity: 0 }}
-										transition={{ duration: 0.15 }}
-									>
-										{isSwipeMode ? (
-											<Layers className="w-5 h-5" aria-hidden={true} />
-										) : (
-											<LayoutGrid className="w-5 h-5" aria-hidden={true} />
-										)}
-									</motion.div>
-								</AnimatePresence>
-								<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
-							</motion.button>
+								<IconComponent
+									className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+									aria-hidden={true}
+								/>
+							</motion.div>
+						</AnimatePresence>
+					}
+				/>
+
+				{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
+				{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+					<motion.button
+						initial={{ opacity: 0, scale: 0.8 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.8 }}
+						type="button"
+						onClick={() => setSwipeMode(!isSwipeMode)}
+						className={cn(
+							"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all flex-1",
+							"text-white/70 hover:text-white hover:bg-white/10",
+							isSwipeMode && "bg-purple-500/20 text-purple-400",
 						)}
-
-						{/* Analyze Button - Only shows when tournament complete */}
-						{isComplete && (
-							<NavButton
-								id="analyze"
-								icon={BarChart3}
-								label="Analyze"
-								isActive={isActive("analyze")}
-								onClick={() => handleNavClick("analyze")}
-								className="flex-1 "
-							/>
-						)}
-
-						{/* Suggest Button */}
-						<NavButton
-							id="suggest"
-							icon={Lightbulb}
-							label="Idea?"
-							isActive={isSuggestExpanded}
-							onClick={handleSuggestClick}
-							ariaLabel="Suggest a name"
-							className="flex-1 "
-						/>
-
-						{/* Profile/Login Button */}
-						<NavButton
-							id="profile"
-							icon={User}
-							label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
-							isActive={isLoginExpanded}
-							onClick={handleProfileClick}
-							ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
-							className="flex-1 "
-							customIcon={
-								isLoggedIn && avatarUrl ? (
-									<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-										<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
-									</div>
+						aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+					>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={isSwipeMode ? "swipe" : "grid"}
+								initial={{ rotate: -90, opacity: 0 }}
+								animate={{ rotate: 0, opacity: 1 }}
+								exit={{ rotate: 90, opacity: 0 }}
+								transition={{ duration: 0.15 }}
+							>
+								{isSwipeMode ? (
+									<Layers className="w-5 h-5" aria-hidden={true} />
 								) : (
+<<<<<<< Updated upstream
+									<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+								)}
+							</motion.div>
+						</AnimatePresence>
+						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+					</motion.button>
+=======
 									<User
 										className={cn("w-5 h-5", isLoggedIn && "text-purple-400")}
 										aria-hidden={true}
@@ -612,7 +619,56 @@ export function FluidNav() {
 							}
 						/>
 					</div>
+>>>>>>> Stashed changes
 				)}
+
+				{/* Analyze Button - Only shows when tournament complete */}
+				{isComplete && (
+					<NavButton
+						id="analyze"
+						icon={BarChart3}
+						label="Analyze"
+						isActive={isActive("analyze")}
+						onClick={() => handleNavClick("analyze")}
+						className="flex-1 "
+					/>
+				)}
+
+				{/* Suggest Button */}
+				<NavButton
+					id="suggest"
+					icon={Lightbulb}
+					label="Idea?"
+					isActive={isSuggestExpanded}
+					onClick={handleSuggestClick}
+					ariaLabel="Suggest a name"
+					className="flex-1 "
+				/>
+
+				{/* Profile/Login Button */}
+				<NavButton
+					id="profile"
+					icon={User}
+					label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+					isActive={isLoginExpanded}
+					onClick={handleProfileClick}
+					ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
+					className="flex-1 "
+					customIcon={
+						isLoggedIn && avatarUrl ? (
+							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+							</div>
+						) : (
+							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+						)
+					}
+					badge={
+						isLoggedIn ? (
+							<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+						) : undefined
+					}
+				/>
 			</motion.nav>
 
 			{/* Expandable Login Panel */}
@@ -684,75 +740,78 @@ export function FluidNav() {
 										{isSaving ? "Connecting..." : "Let's Go!"}
 									</Button>
 								</div>
-							</div>
-						)}
-					</motion.div>
+							</div >
+						)
+						}
+					</motion.div >
 				)}
-			</AnimatePresence>
+			</AnimatePresence >
 
 			{/* Expandable Suggest Panel */}
 			<AnimatePresence>
-				{isSuggestExpanded && (
-					<motion.div
-						initial={{ y: 100, opacity: 0 }}
-						animate={{ y: 0, opacity: 1 }}
-						exit={{ y: 100, opacity: 0 }}
-						transition={{ type: "spring", stiffness: 300, damping: 30 }}
-						className={cn(
-							"fixed z-[99] bottom-24 left-1/2 -translate-x-1/2",
-							"w-[95%] max-w-md",
-							"bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
-							"p-6",
-						)}
-					>
-						<form onSubmit={handleSuggestSubmit} className="space-y-4">
-							<div className="text-center space-y-1">
-								<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-									Got a name?
-								</h3>
-								<p className="text-sm text-white/60">Share your brilliant idea</p>
-							</div>
-							<div className="space-y-3">
-								<Input
-									type="text"
-									value={values.name}
-									onChange={(e) => handleChange("name", e.target.value)}
-									placeholder="Name..."
-									className="w-full h-12 px-4 font-medium"
-									autoFocus={true}
-								/>
-								<Textarea
-									value={values.description}
-									onChange={(e) => handleChange("description", e.target.value)}
-									placeholder="Why is it perfect?"
-									rows={3}
-									className="w-full px-4 py-3 font-medium resize-none"
-								/>
-								{globalError && (
-									<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium text-center">
-										{globalError}
-									</div>
-								)}
-								{successMessage && (
-									<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium text-center">
-										{successMessage}
-									</div>
-								)}
-								<Button
-									type="submit"
-									variant="gradient"
-									size="xl"
-									disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
-									loading={isSubmitting}
-									className="w-full"
-								>
-									Submit
-								</Button>
-							</div>
-						</form>
-					</motion.div>
-				)}
-			</AnimatePresence>
+				{
+					isSuggestExpanded && (
+						<motion.div
+							initial={{ y: 100, opacity: 0 }}
+							animate={{ y: 0, opacity: 1 }}
+							exit={{ y: 100, opacity: 0 }}
+							transition={{ type: "spring", stiffness: 300, damping: 30 }}
+							className={cn(
+								"fixed z-[99] bottom-24 left-1/2 -translate-x-1/2",
+								"w-[95%] max-w-md",
+								"bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl",
+								"p-6",
+							)}
+						>
+							<form onSubmit={handleSuggestSubmit} className="space-y-4">
+								<div className="text-center space-y-1">
+									<h3 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+										Got a name?
+									</h3>
+									<p className="text-sm text-white/60">Share your brilliant idea</p>
+								</div>
+								<div className="space-y-3">
+									<Input
+										type="text"
+										value={values.name}
+										onChange={(e) => handleChange("name", e.target.value)}
+										placeholder="Name..."
+										className="w-full h-12 px-4 font-medium"
+										autoFocus={true}
+									/>
+									<Textarea
+										value={values.description}
+										onChange={(e) => handleChange("description", e.target.value)}
+										placeholder="Why is it perfect?"
+										rows={3}
+										className="w-full px-4 py-3 font-medium resize-none"
+									/>
+									{globalError && (
+										<div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm font-medium text-center">
+											{globalError}
+										</div>
+									)}
+									{successMessage && (
+										<div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-200 text-sm font-medium text-center">
+											{successMessage}
+										</div>
+									)}
+									<Button
+										type="submit"
+										variant="gradient"
+										size="xl"
+										disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
+										loading={isSubmitting}
+										className="w-full"
+									>
+										Submit
+									</Button>
+								</div>
+							</form>
+						</motion.div>
+					)
+				}
+			</AnimatePresence >
 		</>
 	);
 }
