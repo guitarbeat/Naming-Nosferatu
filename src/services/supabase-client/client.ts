@@ -1,7 +1,18 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@supabase/supabase-js";
+import { QueryClient } from "@tanstack/react-query";
 import type { NameItem } from "@/types/appTypes";
 import type { Database } from "./types";
+
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			staleTime: 1000 * 60 * 5, // 5 minutes
+			retry: 1,
+			refetchOnWindowFocus: false,
+		},
+	},
+});
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";

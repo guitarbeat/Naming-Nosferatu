@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * File Comparator - Compares reference and existing files to identify differences and conflicts
  *

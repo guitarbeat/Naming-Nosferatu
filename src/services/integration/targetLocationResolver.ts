@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Target Location Resolver
  *

@@ -1,121 +1,170 @@
-import { useCallback, useEffect } from "react";
+/**
+ * @module App
+ * @description Main application component with consolidated routing and layout.
+ * Routes, auth, and layout are now coordinated here.
+ *
+ * @component
+ * @returns {JSX.Element} The complete application UI
+ */
+
+import { Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import { AnalysisDashboard } from "@/features/analytics/Dashboard";
-import TournamentFlow from "@/features/tournament/modes/TournamentFlow";
+import { errorContexts, routeComponents } from "@/appConfig";
+import { useTournamentHandlers } from "@/features/tournament/hooks/useTournamentHandlers";
 import Tournament from "@/features/tournament/Tournament";
+import { useOfflineSync } from "@/hooks/useBrowserState";
 import { AppLayout } from "@/layout/AppLayout";
-import { ErrorComponent, Loading } from "@/layout/FeedbackComponents";
-import { useToast } from "@/providers/Providers";
-import { coreAPI, tournamentsAPI } from "@/services/supabase-client/client";
+import Button from "@/layout/Button";
+import { ErrorBoundary, Loading } from "@/layout/FeedbackComponents";
+import { Section } from "@/layout/Section";
+import { useAuth } from "@/providers/Providers";
+import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
-import type { RatingData } from "@/types/appTypes";
-import { initializePerformanceMonitoring } from "@/utils/performance";
+import { cn } from "@/utils/basic";
+import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/utils/performance";
 
-// Initialize performance monitoring in dev
-initializePerformanceMonitoring();
+const TournamentFlow = routeComponents.TournamentFlow;
+const DashboardLazy = routeComponents.DashboardLazy;
 
-export default function App() {
-	const { showToast, showError } = useToast();
+function App() {
+	const { isLoading } = useAuth();
+	const isInitialized = !isLoading;
+	const { user, tournamentActions } = useAppStore();
 
-	// Global State
-	const user = useAppStore((state) => state.user);
-	const tournament = useAppStore((state) => state.tournament);
-	const tournamentActions = useAppStore((state) => state.tournamentActions);
-	const siteSettingsActions = useAppStore((state) => state.siteSettingsActions);
-
-	// Initialize from storage
-	useAppStoreInitialization((name) => {
-		coreAPI.setContext({ userName: name });
+	const tournamentHandlers = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
 	});
 
-	// Load site settings once
 	useEffect(() => {
-		const loadSettings = async () => {
-			const { data } = await coreAPI.getCatChosenName();
-			siteSettingsActions.setCatChosenName(data);
-			siteSettingsActions.markSettingsLoaded();
+		initializePerformanceMonitoring();
+		const cleanup = ErrorManager.setupGlobalErrorHandling();
+		return () => {
+			cleanupPerformanceMonitoring();
+			cleanup();
 		};
-		loadSettings();
-	}, [siteSettingsActions]);
+	}, []);
 
-	const handleTournamentComplete = useCallback(
-		async (finalRatings: Record<string, RatingData>) => {
-			if (!user.name) {
-				return;
-			}
+	useAppStoreInitialization();
+	useOfflineSync();
 
-			tournamentActions.setRatings(finalRatings);
-			tournamentActions.setComplete(true);
-
-			// Convert Record<string, RatingData> to the array format expected by saveTournamentRatings
-			const ratingsArray = Object.entries(finalRatings).map(([name, data]) => ({
-				name,
-				rating: data.rating,
-				wins: data.wins,
-				losses: data.losses,
-			}));
-
-			const result = await tournamentsAPI.saveTournamentRatings(user.name, ratingsArray);
-
-			if (result.success) {
-				showToast("Tournament saved!", "success");
-			} else if (result.offline) {
-				showToast("Saved offline (will sync later)", "warning");
-			} else {
-				showError(result.error || "Failed to save");
-			}
-		},
-		[user.name, tournamentActions, showToast, showError],
-	);
-
-	const handleVote = useCallback(
-		(winnerId: string, loserId: string) => {
-			if (!user.name) {
-				return;
-			}
-
-			tournamentActions.addVote({
-				winnerId,
-				loserId,
-				timestamp: Date.now(),
-			});
-		},
-		[user.name, tournamentActions],
-	);
+	if (!isInitialized) {
+		return (
+			<div className="fixed inset-0 flex items-center justify-center bg-black">
+				<Loading variant="spinner" text="Preparing the tournament..." />
+			</div>
+		);
+	}
 
 	return (
-		<Routes>
-			<Route element={<AppLayout handleTournamentComplete={handleTournamentComplete} />}>
-				<Route path="/" element={<TournamentFlow />} />
-				<Route
-					path="/tournament"
-					element={
-						tournament.names ? (
-							<Tournament
-								names={tournament.names}
-								onComplete={handleTournamentComplete}
-								onVote={handleVote}
-							/>
-						) : (
-							<div className="flex h-full items-center justify-center">
-								<Loading text="Preparing tournament..." />
+		<div
+			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
+		>
+			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete as any}>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context={errorContexts.tournamentFlow}>
+									<HomeContent />
+								</ErrorBoundary>
 							</div>
-						)
-					}
-				/>
-				<Route path="/analysis" element={<AnalysisDashboard />} />
-				<Route
-					path="*"
-					element={
-						<div className="flex h-full items-center justify-center">
-							<ErrorComponent
-								error={new Error("Page not found")}
-								resetErrorBoundary={() => window.location.assign("/")}
-							/>
-						</div>
-					}
-				/>
-			</Route>
-		</Routes>
+						}
+					/>
+					<Route
+						path="/tournament"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<ErrorBoundary context={errorContexts.tournamentFlow}>
+									<TournamentContent />
+								</ErrorBoundary>
+							</div>
+						}
+					/>
+					<Route
+						path="/analysis"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<AnalysisContent />
+							</div>
+						}
+					/>
+				</Routes>
+			</AppLayout>
+			<dialog
+				id="shared-lightbox-dialog"
+				className="backdrop:bg-black/90 bg-transparent p-0 overflow-hidden outline-none"
+			/>
+		</div>
 	);
 }
+
+function HomeContent() {
+	return (
+		<Section id="pick" variant="minimal" padding="comfortable" maxWidth="full">
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				<TournamentFlow />
+			</Suspense>
+		</Section>
+	);
+}
+
+function TournamentContent() {
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleTournamentComplete } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
+
+	return (
+		<Section id="tournament" variant="minimal" padding="comfortable" maxWidth="full">
+			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
+				{tournament.names && tournament.names.length > 0 ? (
+					<Tournament
+						names={tournament.names}
+						existingRatings={tournament.ratings}
+						onComplete={handleTournamentComplete as any}
+					/>
+				) : (
+					<div className="text-center py-20">
+						<p className="text-xl text-white/70 mb-4">No names selected for tournament</p>
+						<Button variant="gradient" onClick={() => window.history.back()}>
+							Go Back
+						</Button>
+					</div>
+				)}
+			</Suspense>
+		</Section>
+	);
+}
+
+function AnalysisContent() {
+	const { user, tournament, tournamentActions } = useAppStore();
+	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
+
+	return (
+		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="full">
+			<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
+				The Victors Emerge
+			</h2>
+			<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+				<ErrorBoundary context={errorContexts.analysisDashboard}>
+					<DashboardLazy
+						personalRatings={tournament.ratings}
+						currentTournamentNames={tournament.names ?? undefined}
+						onStartNew={handleStartNewTournament}
+						onUpdateRatings={handleUpdateRatings as any}
+						userName={user.name ?? ""}
+						isAdmin={user.isAdmin}
+					/>
+				</ErrorBoundary>
+			</Suspense>
+		</Section>
+	);
+}
+
+export default App;

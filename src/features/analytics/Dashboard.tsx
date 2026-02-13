@@ -16,7 +16,6 @@ import { RandomGenerator } from "../tournament/components/RandomGenerator";
 interface DashboardProps {
 	personalRatings?: Record<string, unknown>;
 	currentTournamentNames?: NameItem[];
-	onUpdateRatings?: (ratings: Record<string, unknown>) => void;
 	onStartNew?: () => void;
 	userName?: string;
 	isAdmin?: boolean;
@@ -24,7 +23,7 @@ interface DashboardProps {
 	onNameHidden?: (nameId: string) => void;
 }
 
-export function AnalysisDashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
+export function Dashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
 	const [leaderboard, setLeaderboard] = useState<
 		Array<{
 			name: string;
@@ -288,4 +287,4 @@ export function AnalysisDashboard({ userName = "", isAdmin = false, onStartNew }
 }
 
 // Alias for compatibility
-export { AnalysisDashboard as Dashboard };
+export { Dashboard as AnalysisDashboard };
