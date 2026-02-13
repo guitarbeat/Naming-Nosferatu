@@ -4,15 +4,11 @@
  */
 
 import { Suspense, useEffect, useState } from "react";
-import { Card } from "@/layout/Card";
 import Button from "@/layout/Button";
+import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
+import { analyticsAPI, leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
-import {
-	analyticsAPI,
-	leaderboardAPI,
-	statsAPI,
-} from "@/services/analytics/analyticsService";
 import type { NameItem } from "@/types/appTypes";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
@@ -28,17 +24,15 @@ interface DashboardProps {
 	onNameHidden?: (nameId: string) => void;
 }
 
-export function Dashboard({
-	userName = "",
-	isAdmin = false,
-	onStartNew,
-}: DashboardProps) {
-	const [leaderboard, setLeaderboard] = useState<Array<{
-		name: string;
-		avg_rating: number;
-		wins: number;
-		total_ratings: number;
-	}>>([]);
+export function Dashboard({ userName = "", isAdmin = false, onStartNew }: DashboardProps) {
+	const [leaderboard, setLeaderboard] = useState<
+		Array<{
+			name: string;
+			avg_rating: number;
+			wins: number;
+			total_ratings: number;
+		}>
+	>([]);
 	const [siteStats, setSiteStats] = useState<{
 		totalNames: number;
 		activeNames: number;
@@ -194,12 +188,14 @@ export function Dashboard({
 								<div className="flex-1 min-w-0">
 									<p className="font-semibold text-white truncate">{entry.name}</p>
 									<p className="text-xs text-white/60">
-										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} • {entry.wins}{" "}
-										win{entry.wins !== 1 ? "s" : ""}
+										{entry.total_ratings} rating{entry.total_ratings !== 1 ? "s" : ""} •{" "}
+										{entry.wins} win{entry.wins !== 1 ? "s" : ""}
 									</p>
 								</div>
 								<div className="text-right">
-									<p className="text-lg font-bold text-purple-400">{Math.round(entry.avg_rating)}</p>
+									<p className="text-lg font-bold text-purple-400">
+										{Math.round(entry.avg_rating)}
+									</p>
 									<p className="text-xs text-white/60">rating</p>
 								</div>
 							</div>
@@ -249,11 +245,7 @@ export function Dashboard({
 							<EyeOff className="text-amber-400" size={24} />
 							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
 						</div>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={() => setShowHiddenNames(!showHiddenNames)}
-						>
+						<Button variant="ghost" size="sm" onClick={() => setShowHiddenNames(!showHiddenNames)}>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>

@@ -153,6 +153,16 @@ interface NameRow {
 	created_at: string;
 }
 
+interface SiteStatsRpcResult {
+	totalNames: number;
+	hiddenNames: number;
+	activeNames: number;
+	totalUsers: number;
+	totalRatings: number;
+	totalSelections: number;
+	avgRating: number;
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // analyticsAPI
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -521,60 +531,18 @@ export const statsAPI = {
 	/** Get global site statistics. */
 	getSiteStats: async () => {
 		return withSupabase(async (client) => {
-			const [namesResult, hiddenResult, usersResult, ratingsResult, selectionsResult] =
-				await Promise.all([
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_active", true) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client
-						.from("cat_name_options")
-						.select("id", { count: "exact", head: true })
-						.eq("is_hidden", true) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client
-						.from("cat_app_users")
-						.select("user_name", { count: "exact", head: true }) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-					client.from("cat_name_ratings").select("rating") as unknown as Promise<{
-						data: Array<{ rating: number }> | null;
-						error: unknown;
-					}>,
-					client
-						.from("cat_tournament_selections")
-						.select("id", { count: "exact", head: true }) as unknown as Promise<{
-						data: null;
-						error: unknown;
-						count: number | null;
-					}>,
-				]);
+			const { data, error } = await client.rpc("get_site_stats");
 
-			const totalNames = namesResult.count ?? 0;
-			const ratingRows = ratingsResult.data ?? [];
-			const avgRating =
-				ratingRows.length > 0
-					? Math.round(ratingRows.reduce((s, r) => s + Number(r.rating), 0) / ratingRows.length)
-					: 1500;
+			if (error) {
+				console.error("Failed to fetch site stats:", error);
+				throw error;
+			}
 
-			return {
-				totalNames,
-				hiddenNames: hiddenResult.count ?? 0,
-				activeNames: totalNames - (hiddenResult.count ?? 0),
-				totalUsers: usersResult.count ?? 0,
-				totalRatings: ratingRows.length,
-				totalSelections: selectionsResult.count ?? 0,
-				avgRating,
-			};
+			if (!data) {
+				return null;
+			}
+
+			return data as unknown as SiteStatsRpcResult;
 		}, null);
 	},
 
