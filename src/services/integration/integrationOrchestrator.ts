@@ -143,9 +143,7 @@ export class IntegrationOrchestrator {
 			let integrationOrder: string[];
 			try {
 				integrationOrder = getIntegrationOrder(graph);
-				console.log(
-					`Integration order determined: ${integrationOrder.length} files`,
-				);
+				console.log(`Integration order determined: ${integrationOrder.length} files`);
 			} catch (error) {
 				const errorMsg = `Failed to determine integration order: ${error instanceof Error ? error.message : String(error)}`;
 				console.error(errorMsg);
@@ -189,13 +187,8 @@ export class IntegrationOrchestrator {
 				integrationResults.push(result);
 
 				if (!result.success) {
-					console.error(
-						`Failed to integrate ${basename(filePath)}: ${result.error?.message}`,
-					);
-					this.stateManager.markFileFailed(
-						filePath,
-						result.error || new Error("Unknown error"),
-					);
+					console.error(`Failed to integrate ${basename(filePath)}: ${result.error?.message}`);
+					this.stateManager.markFileFailed(filePath, result.error || new Error("Unknown error"));
 
 					// Use error recovery system to handle the error
 					const canContinue = this.handleIntegrationError(
@@ -204,9 +197,7 @@ export class IntegrationOrchestrator {
 					);
 
 					if (!canContinue || this.config.stopOnError) {
-						errors.push(
-							`Integration stopped due to error in ${basename(filePath)}`,
-						);
+						errors.push(`Integration stopped due to error in ${basename(filePath)}`);
 						break;
 					}
 					continue;
@@ -219,9 +210,7 @@ export class IntegrationOrchestrator {
 					buildResult = verifyBuild();
 
 					if (!buildResult.success) {
-						console.error(
-							`Build verification failed after integrating ${basename(filePath)}`,
-						);
+						console.error(`Build verification failed after integrating ${basename(filePath)}`);
 						const diagnostic = diagnoseErrors(buildResult.errors);
 						console.error(`Error summary: ${diagnostic.errorSummary}`);
 
@@ -232,9 +221,7 @@ export class IntegrationOrchestrator {
 							}
 						}
 
-						errors.push(
-							`Build failed after ${basename(filePath)}: ${diagnostic.errorSummary}`,
-						);
+						errors.push(`Build failed after ${basename(filePath)}: ${diagnostic.errorSummary}`);
 
 						// Create a build error and use error recovery system
 						const buildError = new IntegrationError(
@@ -246,10 +233,7 @@ export class IntegrationOrchestrator {
 						this.stateManager.markFileFailed(filePath, buildError);
 
 						// Use error recovery system to handle the build error
-						const canContinue = this.handleIntegrationError(
-							buildError,
-							filePath,
-						);
+						const canContinue = this.handleIntegrationError(buildError, filePath);
 
 						if (!canContinue || this.config.stopOnError) {
 							errors.push("Integration stopped due to build failure");
@@ -264,10 +248,7 @@ export class IntegrationOrchestrator {
 				// Delete reference file if configured and conditions are met
 				// Requirements 6.1, 6.2, 6.3: Delete only after successful integration and verification
 				if (this.config.deleteAfterSuccess && result.success) {
-					const shouldDelete = this.shouldDeleteReferenceFile(
-						result,
-						buildResult,
-					);
+					const shouldDelete = this.shouldDeleteReferenceFile(result, buildResult);
 
 					if (shouldDelete) {
 						try {
@@ -279,9 +260,7 @@ export class IntegrationOrchestrator {
 							);
 						}
 					} else {
-						console.log(
-							"Preserving reference file: awaiting user input or verification",
-						);
+						console.log("Preserving reference file: awaiting user input or verification");
 					}
 				}
 
@@ -406,17 +385,11 @@ export class IntegrationOrchestrator {
 		const dependencies = importsToDependencies(parsed.imports);
 
 		// Resolve dependencies
-		const resolvedDependencies = resolveDependencies(
-			dependencies,
-			filePath,
-			this.projectRoot,
-		);
+		const resolvedDependencies = resolveDependencies(dependencies, filePath, this.projectRoot);
 
 		// Check if target file already exists
 		const fileName = basename(filePath);
-		const targetPath = targetLocation
-			? join(this.projectRoot, targetLocation, fileName)
-			: null;
+		const targetPath = targetLocation ? join(this.projectRoot, targetLocation, fileName) : null;
 		const hasExistingFile = targetPath ? fileExists(targetPath) : false;
 
 		return {
@@ -444,20 +417,14 @@ export class IntegrationOrchestrator {
 	 *
 	 * Requirements: 5.1, 5.4
 	 */
-	private async integrateFile(
-		analysis: FileAnalysis,
-	): Promise<IntegrationResult> {
+	private async integrateFile(analysis: FileAnalysis): Promise<IntegrationResult> {
 		try {
 			// Read reference file content
 			const referenceContent = readFile(analysis.filePath);
 
 			// Create backup if configured and target file exists
 			if (this.config.createBackups && analysis.hasExistingFile) {
-				const targetPath = join(
-					this.projectRoot,
-					analysis.targetLocation,
-					analysis.fileName,
-				);
+				const targetPath = join(this.projectRoot, analysis.targetLocation, analysis.fileName);
 				const backup = createBackup(targetPath);
 				this.stateManager.addBackup(backup);
 				console.log(`Created backup: ${basename(backup.backupPath)}`);
@@ -468,6 +435,7 @@ export class IntegrationOrchestrator {
 				analysis,
 				referenceContent,
 				this.config.mergeStrategy,
+				this.projectRoot,
 			);
 
 			return result;
@@ -475,11 +443,7 @@ export class IntegrationOrchestrator {
 			return {
 				success: false,
 				filePath: analysis.filePath,
-				targetPath: join(
-					this.projectRoot,
-					analysis.targetLocation,
-					analysis.fileName,
-				),
+				targetPath: join(this.projectRoot, analysis.targetLocation, analysis.fileName),
 				action: "skipped",
 				error: error instanceof Error ? error : new Error(String(error)),
 			};
@@ -498,10 +462,7 @@ export class IntegrationOrchestrator {
 	 * @param buildResult - Build verification result (null if not performed)
 	 * @returns true if the file should be deleted, false otherwise
 	 */
-	private shouldDeleteReferenceFile(
-		result: IntegrationResult,
-		buildResult: any,
-	): boolean {
+	private shouldDeleteReferenceFile(result: IntegrationResult, buildResult: any): boolean {
 		// Requirement 6.3: Do not delete if there are conflicts requiring user input
 		if (result.conflicts && result.conflicts.length > 0) {
 			return false;
@@ -538,14 +499,10 @@ export class IntegrationOrchestrator {
 		}
 
 		// Check if all reference files were successfully processed and deleted
-		const allFilesDeleted = referenceFiles.every(
-			(filePath) => !fileExists(filePath),
-		);
+		const allFilesDeleted = referenceFiles.every((filePath) => !fileExists(filePath));
 
 		if (!allFilesDeleted) {
-			console.log(
-				"Not all reference files were deleted - preserving source directory",
-			);
+			console.log("Not all reference files were deleted - preserving source directory");
 			return;
 		}
 
@@ -563,9 +520,7 @@ export class IntegrationOrchestrator {
 			// Directory is empty and all reference files were processed - safe to delete
 			console.log("\nCleaning up source directory...");
 			deleteDirectory(sourceDir);
-			console.log(
-				`Successfully removed directory: ${this.config.sourceDirectory}`,
-			);
+			console.log(`Successfully removed directory: ${this.config.sourceDirectory}`);
 		} catch (error) {
 			console.warn(
 				`Failed to clean up source directory: ${error instanceof Error ? error.message : String(error)}`,
@@ -595,10 +550,7 @@ export class IntegrationOrchestrator {
 	 *
 	 * Requirements: 10.1, 10.2, 10.3, 10.4
 	 */
-	private handleIntegrationError(
-		error: Error | unknown,
-		filePath: string,
-	): boolean {
+	private handleIntegrationError(error: Error | unknown, filePath: string): boolean {
 		// Create an IntegrationError with proper classification
 		const integrationError = createIntegrationError(error, filePath);
 
@@ -621,9 +573,7 @@ export class IntegrationOrchestrator {
 			if (rollbackSuccess) {
 				console.log("Rollback completed successfully");
 			} else {
-				console.error(
-					"Rollback encountered errors - manual intervention may be required",
-				);
+				console.error("Rollback encountered errors - manual intervention may be required");
 			}
 
 			// After rollback, stop integration
@@ -681,9 +631,7 @@ export class IntegrationOrchestrator {
 		}
 
 		if (result.restoredReferenceFiles.length > 0) {
-			console.log(
-				`Restored ${result.restoredReferenceFiles.length} reference files:`,
-			);
+			console.log(`Restored ${result.restoredReferenceFiles.length} reference files:`);
 			for (const file of result.restoredReferenceFiles) {
 				console.log(`  - ${basename(file)}`);
 			}

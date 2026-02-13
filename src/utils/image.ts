@@ -56,7 +56,7 @@ export function getRandomCatImage(
 		typeof id === "string"
 			? id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0)
 			: Number(id);
-	return images[Math.abs(seed) % images.length];
+	return images[Math.abs(seed) % images.length] ?? images[0];
 }
 
 /**
@@ -113,11 +113,7 @@ export async function compressImageFile(
 		ctx.drawImage(img, 0, 0, targetW, targetH);
 
 		const blob = await new Promise<Blob | null>((resolve) =>
-			canvas.toBlob(
-				resolve,
-				"image/webp",
-				Math.min(Math.max(quality, 0.1), 0.95),
-			),
+			canvas.toBlob(resolve, "image/webp", Math.min(Math.max(quality, 0.1), 0.95)),
 		);
 		if (!blob) {
 			return file;

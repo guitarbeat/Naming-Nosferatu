@@ -21,10 +21,7 @@ import { useAuth } from "@/providers/Providers";
 import { ErrorManager } from "@/services/errorManager";
 import useAppStore, { useAppStoreInitialization } from "@/store/appStore";
 import { cn } from "@/utils/basic";
-import {
-	cleanupPerformanceMonitoring,
-	initializePerformanceMonitoring,
-} from "@/utils/performance";
+import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@/utils/performance";
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
@@ -61,15 +58,9 @@ function App() {
 
 	return (
 		<div
-			className={cn(
-				"min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30",
-			)}
+			className={cn("min-h-screen w-full bg-black text-white font-sans selection:bg-purple-500/30")}
 		>
-			<AppLayout
-				handleTournamentComplete={
-					tournamentHandlers.handleTournamentComplete as any
-				}
-			>
+			<AppLayout handleTournamentComplete={tournamentHandlers.handleTournamentComplete as any}>
 				<Routes>
 					<Route
 						path="/"
@@ -127,12 +118,7 @@ function TournamentContent() {
 	});
 
 	return (
-		<Section
-			id="tournament"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="full"
-		>
+		<Section id="tournament" variant="minimal" padding="comfortable" maxWidth="full">
 			<Suspense fallback={<Loading variant="skeleton" height={400} />}>
 				{tournament.names && tournament.names.length > 0 ? (
 					<Tournament
@@ -142,9 +128,7 @@ function TournamentContent() {
 					/>
 				) : (
 					<div className="text-center py-20">
-						<p className="text-xl text-white/70 mb-4">
-							No names selected for tournament
-						</p>
+						<p className="text-xl text-white/70 mb-4">No names selected for tournament</p>
 						<Button variant="gradient" onClick={() => window.history.back()}>
 							Go Back
 						</Button>
@@ -157,19 +141,13 @@ function TournamentContent() {
 
 function AnalysisContent() {
 	const { user, tournament, tournamentActions } = useAppStore();
-	const { handleStartNewTournament, handleUpdateRatings } =
-		useTournamentHandlers({
-			userName: user.name,
-			tournamentActions,
-		});
+	const { handleStartNewTournament, handleUpdateRatings } = useTournamentHandlers({
+		userName: user.name,
+		tournamentActions,
+	});
 
 	return (
-		<Section
-			id="analysis"
-			variant="minimal"
-			padding="comfortable"
-			maxWidth="full"
-		>
+		<Section id="analysis" variant="minimal" padding="comfortable" maxWidth="full">
 			<h2 className="text-3xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent uppercase tracking-tighter">
 				The Victors Emerge
 			</h2>

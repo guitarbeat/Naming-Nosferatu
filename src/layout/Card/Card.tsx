@@ -10,10 +10,7 @@ import React, { memo, useEffect, useId, useState } from "react";
 import CatImage from "@/features/tournament/components/CatImage";
 import { cn } from "@/utils/basic";
 import { TIMING } from "@/utils/constants";
-import LiquidGlass, {
-	DEFAULT_GLASS_CONFIG,
-	resolveGlassConfig,
-} from "../LiquidGlass";
+import LiquidGlass, { DEFAULT_GLASS_CONFIG, resolveGlassConfig } from "../LiquidGlass";
 
 export type CardVariant =
 	| "default"
@@ -143,16 +140,8 @@ const CardBase = memo(
 			const mouseXSpring = useSpring(mouseX);
 			const mouseYSpring = useSpring(mouseY);
 
-			const rotateX = useTransform(
-				mouseYSpring,
-				[-0.5, 0.5],
-				["10deg", "-10deg"],
-			);
-			const rotateY = useTransform(
-				mouseXSpring,
-				[-0.5, 0.5],
-				["-10deg", "10deg"],
-			);
+			const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+			const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
 
 			const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
 				const rect = e.currentTarget.getBoundingClientRect();
@@ -187,9 +176,7 @@ const CardBase = memo(
 				shadow,
 				bordered: border,
 				background:
-					background !== "solid" && background !== "glass" && !liquidGlass
-						? background
-						: "solid",
+					background !== "solid" && background !== "glass" && !liquidGlass ? background : "solid",
 				className,
 			});
 
@@ -209,10 +196,7 @@ const CardBase = memo(
 			const glassId = useId();
 
 			if (shouldUseLiquidGlass) {
-				const glassConfig = resolveGlassConfig(
-					liquidGlass,
-					DEFAULT_GLASS_CONFIG,
-				) as GlassConfig;
+				const glassConfig = resolveGlassConfig(liquidGlass, DEFAULT_GLASS_CONFIG) as GlassConfig;
 				const {
 					width = 240,
 					height = 110,
@@ -253,12 +237,7 @@ const CardBase = memo(
 						}}
 						{...glassProps}
 					>
-						<Component
-							ref={ref}
-							className={contentClasses}
-							onClick={onClick}
-							{...props}
-						>
+						<Component ref={ref} className={contentClasses} onClick={onClick} {...props}>
 							{children}
 						</Component>
 					</LiquidGlass>
@@ -276,7 +255,6 @@ const CardBase = memo(
 					}
 				: { style };
 
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic component selection
 			const CommonComponent = (enableTilt ? motion.div : Component) as any;
 
 			return (
@@ -339,8 +317,7 @@ const CardStatsBase = memo(function CardStats({
 	...props
 }: CardStatsProps) {
 	const labelText = title || label || "Statistic";
-	const valueText =
-		typeof value === "string" || typeof value === "number" ? value : "";
+	const valueText = typeof value === "string" || typeof value === "number" ? value : "";
 	const ariaLabel = valueText ? `${labelText}: ${valueText}` : labelText;
 
 	// Determine top accent color based on variant
@@ -359,15 +336,11 @@ const CardStatsBase = memo(function CardStats({
 
 	const valueColor: Record<CardVariant, string> = {
 		default: "text-white",
-		primary:
-			"text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
-		success:
-			"text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
-		warning:
-			"text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
+		primary: "text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-purple-200",
+		success: "text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-200",
+		warning: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-200",
 		info: "text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-200",
-		danger:
-			"text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
+		danger: "text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-200",
 		secondary: "text-gray-400",
 		elevated: "text-white",
 		outlined: "text-white",
@@ -409,11 +382,7 @@ const CardStatsBase = memo(function CardStats({
 			>
 				{value}
 			</span>
-			{emoji && (
-				<span className={cn("text-2xl mt-2 drop-shadow-sm", emojiClassName)}>
-					{emoji}
-				</span>
-			)}
+			{emoji && <span className={cn("text-2xl mt-2 drop-shadow-sm", emojiClassName)}>{emoji}</span>}
 		</Card>
 	);
 });
@@ -481,10 +450,7 @@ const CardNameBase = memo(function CardName({
 
 	useEffect(() => {
 		if (isRippling) {
-			const timer = setTimeout(
-				() => setIsRippling(false),
-				TIMING.RIPPLE_ANIMATION_DURATION_MS,
-			);
+			const timer = setTimeout(() => setIsRippling(false), TIMING.RIPPLE_ANIMATION_DURATION_MS);
 			return () => clearTimeout(timer);
 		}
 		return undefined;
@@ -548,8 +514,7 @@ const CardNameBase = memo(function CardName({
 		return text.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
 	};
 
-	const isInteractive =
-		!disabled && (!!onClick || (isAdmin && !!onSelectionChange));
+	const isInteractive = !disabled && (!!onClick || (isAdmin && !!onSelectionChange));
 	const Component = isInteractive ? "button" : "div";
 
 	const cardContent = (
@@ -565,28 +530,21 @@ const CardNameBase = memo(function CardName({
 						? "border-purple-500 bg-gradient-to-br from-purple-900/40 to-purple-800/30 shadow-[0_0_30px_rgba(168,85,247,0.2)]"
 						: "border-white/10 bg-gradient-to-br from-white/10 to-white/5 shadow-lg hover:border-white/20 hover:bg-white/10",
 					disabled && "opacity-50 cursor-not-allowed filter grayscale",
-					isHidden &&
-						"opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
+					isHidden && "opacity-75 bg-amber-900/20 border-amber-500/50 grayscale-[0.4]",
 					image && "min-h-[220px]",
 					className,
 				)}
 				onClick={
-					isInteractive
-						? (handleInteraction as unknown as React.MouseEventHandler)
-						: undefined
+					isInteractive ? (handleInteraction as unknown as React.MouseEventHandler) : undefined
 				}
 				onKeyDown={
-					isInteractive
-						? (handleInteraction as unknown as React.KeyboardEventHandler)
-						: undefined
+					isInteractive ? (handleInteraction as unknown as React.KeyboardEventHandler) : undefined
 				}
 				// @ts-expect-error - Card props might not fully match HTML attributes
 				disabled={isInteractive ? disabled : undefined}
 				aria-pressed={isInteractive ? isSelected : undefined}
 				aria-label={getAriaLabel()}
-				aria-describedby={
-					description ? `${getSafeId(name)}-description` : undefined
-				}
+				aria-describedby={description ? `${getSafeId(name)}-description` : undefined}
 				aria-labelledby={`${getSafeId(name)}-title`}
 				type={isInteractive ? "button" : undefined}
 				role={isInteractive ? undefined : "article"}

@@ -47,9 +47,7 @@ const observers: PerformanceObserver[] = [];
  * (The legacy `performance.timing` property is deprecated.)
  */
 function reportNavigationMetrics(): void {
-	const entries = performance.getEntriesByType(
-		"navigation",
-	) as PerformanceNavigationTiming[];
+	const entries = performance.getEntriesByType("navigation") as PerformanceNavigationTiming[];
 	const nav = entries[0];
 	if (!nav) {
 		return;
@@ -68,14 +66,9 @@ function reportNavigationMetrics(): void {
  * Safely create and register a `PerformanceObserver` for a single entry type.
  * Returns silently if the entry type isn't supported in the current browser.
  */
-function observeWebVital(
-	type: string,
-	callback: (entries: PerformanceEntryList) => void,
-): void {
+function observeWebVital(type: string, callback: (entries: PerformanceEntryList) => void): void {
 	try {
-		const observer = new PerformanceObserver((list) =>
-			callback(list.getEntries()),
-		);
+		const observer = new PerformanceObserver((list) => callback(list.getEntries()));
 		observer.observe({ type, buffered: true });
 		observers.push(observer);
 	} catch {
@@ -94,11 +87,7 @@ export function initializePerformanceMonitoring(): void {
 	}
 
 	// Navigation timing (after full page load)
-	window.addEventListener(
-		"load",
-		() => setTimeout(reportNavigationMetrics, 0),
-		{ once: true },
-	);
+	window.addEventListener("load", () => setTimeout(reportNavigationMetrics, 0), { once: true });
 
 	if (!("PerformanceObserver" in window)) {
 		return;
@@ -119,9 +108,7 @@ export function initializePerformanceMonitoring(): void {
 			| (PerformanceEntry & { renderTime?: number; loadTime?: number })
 			| undefined;
 		if (last) {
-			metrics.lcp = Math.round(
-				last.renderTime || last.loadTime || last.startTime,
-			);
+			metrics.lcp = Math.round(last.renderTime || last.loadTime || last.startTime);
 			console.debug(`[Perf] LCP: ${metrics.lcp}ms`);
 		}
 	});
@@ -143,9 +130,7 @@ export function initializePerformanceMonitoring(): void {
 
 	// First Input Delay
 	observeWebVital("first-input", (entries) => {
-		const entry = entries[0] as
-			| (PerformanceEntry & { processingStart: number })
-			| undefined;
+		const entry = entries[0] as (PerformanceEntry & { processingStart: number }) | undefined;
 		if (entry) {
 			metrics.fid = Math.round(entry.processingStart - entry.startTime);
 			console.debug(`[Perf] FID: ${metrics.fid}ms`);

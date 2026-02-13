@@ -28,9 +28,7 @@ interface NameGridProps {
 	isAdmin?: boolean;
 	showSelectedOnly?: boolean;
 	showCatPictures?: boolean;
-	onNamesUpdate?: (
-		updater: NameItem[] | ((prev: NameItem[]) => NameItem[]),
-	) => void;
+	onNamesUpdate?: (updater: NameItem[] | ((prev: NameItem[]) => NameItem[])) => void;
 	imageList?: string[];
 	onToggleVisibility?: (id: string | number) => void;
 	onDelete?: (name: NameItem) => void;
@@ -78,15 +76,12 @@ export function NameGrid({
 		});
 
 	const selectedSet = useMemo(
-		() =>
-			selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
+		() => selectedNamesToSet(selectedNames as NameItem[] | Set<string | number>),
 		[selectedNames],
 	);
 
 	const processedNames = useMemo(() => {
-		const visibility = mapFilterStatusToVisibility(
-			filters.filterStatus || "visible",
-		);
+		const visibility = mapFilterStatusToVisibility(filters.filterStatus || "visible");
 
 		let result = applyNameFilters(names, {
 			visibility,
@@ -101,31 +96,15 @@ export function NameGrid({
 		}
 
 		return result;
-	}, [
-		names,
-		filters.filterStatus,
-		filters.category,
-		isAdmin,
-		showSelectedOnly,
-		selectedSet,
-	]);
+	}, [names, filters.filterStatus, isAdmin, showSelectedOnly, selectedSet]);
 
 	if (isLoading) {
 		return (
-			<div
-				className={cn(
-					"relative w-full mx-auto p-4 md:p-6 min-h-[50vh]",
-					className,
-				)}
-			>
+			<div className={cn("relative w-full mx-auto p-4 md:p-6 min-h-[50vh]", className)}>
 				<div className="relative w-full max-w-[95%] mx-auto grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
 					{Array.from({ length: 8 }).map((_, i) => (
 						<div key={`skeleton-${i}`} className="w-full h-40">
-							<Loading
-								variant="card-skeleton"
-								cardSkeletonVariant="mosaic-card"
-								size="medium"
-							/>
+							<Loading variant="card-skeleton" cardSkeletonVariant="mosaic-card" size="medium" />
 						</div>
 					))}
 					<div className="col-span-full flex justify-center py-8">
@@ -144,12 +123,7 @@ export function NameGrid({
 
 	if (processedNames.length === 0) {
 		return (
-			<div
-				className={cn(
-					"relative w-full mx-auto p-4 md:p-6 min-h-[50vh]",
-					className,
-				)}
-			>
+			<div className={cn("relative w-full mx-auto p-4 md:p-6 min-h-[50vh]", className)}>
 				<EmptyState
 					title="No names found"
 					description={
@@ -208,9 +182,7 @@ export function NameGrid({
 			{/* Admin Image Upload */}
 			<NameUploadForm
 				isAdmin={isAdmin}
-				onImagesUploaded={(uploaded) =>
-					setSuppImages((prev) => [...uploaded, ...prev])
-				}
+				onImagesUploaded={(uploaded) => setSuppImages((prev) => [...uploaded, ...prev])}
 			/>
 
 			{lightboxIndex !== null && (

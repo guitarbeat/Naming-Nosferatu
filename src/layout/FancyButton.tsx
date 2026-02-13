@@ -3,8 +3,7 @@ import { forwardRef } from "react";
 import { cn } from "@/utils/basic";
 import "./FancyButton.css";
 
-export interface FancyButtonProps
-	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface FancyButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode;
 }
 

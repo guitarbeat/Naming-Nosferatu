@@ -38,8 +38,7 @@ export function useAudioManager() {
 			/* No-op: handled by external audio services if available */
 		},
 		volume,
-		handleVolumeChange: (_unused: unknown, v: number) =>
-			setVolume(Math.min(1, Math.max(0, v))),
+		handleVolumeChange: (_unused: unknown, v: number) => setVolume(Math.min(1, Math.max(0, v))),
 	};
 }
 
@@ -152,10 +151,7 @@ export function useProfileNotifications() {
 	);
 
 	const showToast = useCallback(
-		(
-			message: string,
-			type: "success" | "error" | "info" | "warning" = "info",
-		) => {
+		(message: string, type: "success" | "error" | "info" | "warning" = "info") => {
 			devLog(`📢 [${type}]`, message);
 			showToastMessage(message, type, {
 				duration: type === "error" ? 7000 : 5000,

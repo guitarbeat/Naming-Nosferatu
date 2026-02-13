@@ -84,9 +84,7 @@ function isCustomHook(fileName: string, exports: Export[]): boolean {
 	}
 
 	// Must export at least one function
-	const hasFunctionExport = exports.some(
-		(exp) => exp.type === "function" || exp.type === "const",
-	);
+	const hasFunctionExport = exports.some((exp) => exp.type === "function" || exp.type === "const");
 
 	return hasFunctionExport;
 }
@@ -104,11 +102,7 @@ function isCustomHook(fileName: string, exports: Export[]): boolean {
  * @param exports - Exports from the file
  * @returns True if the file is a React component
  */
-function isReactComponent(
-	fileExt: string,
-	hasJSX: boolean,
-	exports: Export[],
-): boolean {
+function isReactComponent(fileExt: string, hasJSX: boolean, exports: Export[]): boolean {
 	// Must be a TSX or JSX file
 	if (fileExt !== ".tsx" && fileExt !== ".jsx") {
 		return false;
@@ -121,8 +115,7 @@ function isReactComponent(
 
 	// Must export at least one function or class (the component)
 	const hasComponentExport = exports.some(
-		(exp) =>
-			exp.type === "function" || exp.type === "class" || exp.type === "const",
+		(exp) => exp.type === "function" || exp.type === "class" || exp.type === "const",
 	);
 
 	return hasComponentExport;
@@ -144,9 +137,7 @@ function isTypeDefinition(exports: Export[]): boolean {
 	}
 
 	// All exports must be types or interfaces
-	return exports.every(
-		(exp) => exp.type === "type" || exp.type === "interface",
-	);
+	return exports.every((exp) => exp.type === "type" || exp.type === "interface");
 }
 
 /**
@@ -194,8 +185,7 @@ function isUtility(exports: Export[]): boolean {
 
 	// Must have at least one function or const export
 	const hasUtilityExport = exports.some(
-		(exp) =>
-			exp.type === "function" || exp.type === "const" || exp.type === "class",
+		(exp) => exp.type === "function" || exp.type === "const" || exp.type === "class",
 	);
 
 	return hasUtilityExport;

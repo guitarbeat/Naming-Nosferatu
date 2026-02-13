@@ -1,4 +1,4 @@
-import { withSupabase } from "@/services/supabase-client/client";
+import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/types/appTypes";
 import { devLog } from "@/utils/basic";
 import { ELO_RATING } from "@/utils/constants";
@@ -273,12 +273,7 @@ export class EloRating {
 	}
 
 	/** Apply the Elo update formula with adaptive K-factor. */
-	updateRating(
-		rating: number,
-		expected: number,
-		actual: number,
-		gameCount = 0,
-	): number {
+	updateRating(rating: number, expected: number, actual: number, gameCount = 0): number {
 		const k =
 			gameCount < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD
 				? this.kFactor * ELO_RATING.NEW_PLAYER_K_MULTIPLIER
@@ -424,10 +419,7 @@ export class PreferenceSorter {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Calculate which bracket round a match falls in. */
-export function calculateBracketRound(
-	totalNames: number,
-	currentMatch: number,
-): number {
+export function calculateBracketRound(totalNames: number, currentMatch: number): number {
 	if (totalNames <= 2) {
 		return 1;
 	}

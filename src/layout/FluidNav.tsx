@@ -370,6 +370,7 @@ export function FluidNav() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 			>
+<<<<<<< HEAD
 				{buttonState.action === "start" && buttonState.highlight ? (
 					// Centered Start button layout when Start is available
 					<div className="flex items-center justify-center w-full gap-4">
@@ -605,6 +606,113 @@ export function FluidNav() {
 						/>
 					</div>
 				)}
+=======
+				{/* Unified Pick/Start Button - Uses AnimatedNavButton for pulse effect */}
+				<AnimatedNavButton
+					id="pick"
+					icon={IconComponent}
+					label={buttonState.label}
+					isActive={isActive("pick")}
+					onClick={handleUnifiedButtonClick}
+					highlight={buttonState.highlight}
+					disabled={buttonState.disabled}
+					animateScale={buttonState.highlight}
+					customIcon={
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={buttonState.icon.name}
+								initial={{ scale: 0.8, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
+								exit={{ scale: 0.8, opacity: 0 }}
+							>
+								<IconComponent
+									className={cn("w-5 h-5", buttonState.highlight && "text-cyan-400")}
+									aria-hidden={true}
+								/>
+							</motion.div>
+						</AnimatePresence>
+					}
+				/>
+
+				{/* View Mode Toggle - Shows when on pick/play section and no tournament is active */}
+				{(isActive("pick") || isActive("play")) && !isTournamentActive && (
+					<motion.button
+						initial={{ opacity: 0, scale: 0.8 }}
+						animate={{ opacity: 1, scale: 1 }}
+						exit={{ opacity: 0, scale: 0.8 }}
+						type="button"
+						onClick={() => setSwipeMode(!isSwipeMode)}
+						className={cn(
+							"flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all",
+							"text-white/70 hover:text-white hover:bg-white/10",
+							isSwipeMode && "bg-purple-500/20 text-purple-400",
+						)}
+						aria-label={isSwipeMode ? "Switch to grid view" : "Switch to swipe view"}
+					>
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={isSwipeMode ? "swipe" : "grid"}
+								initial={{ rotate: -90, opacity: 0 }}
+								animate={{ rotate: 0, opacity: 1 }}
+								exit={{ rotate: 90, opacity: 0 }}
+								transition={{ duration: 0.15 }}
+							>
+								{isSwipeMode ? (
+									<Layers className="w-5 h-5" aria-hidden={true} />
+								) : (
+									<LayoutGrid className="w-5 h-5" aria-hidden={true} />
+								)}
+							</motion.div>
+						</AnimatePresence>
+						<span className="text-[10px] font-medium">{isSwipeMode ? "Swipe" : "Grid"}</span>
+					</motion.button>
+				)}
+
+				{/* Analyze Button - Only shows when tournament complete */}
+				{isComplete && (
+					<NavButton
+						id="analyze"
+						icon={BarChart3}
+						label="Analyze"
+						isActive={isActive("analyze")}
+						onClick={() => handleNavClick("analyze")}
+					/>
+				)}
+
+				{/* Suggest Button */}
+				<NavButton
+					id="suggest"
+					icon={Lightbulb}
+					label="Idea?"
+					isActive={isSuggestExpanded}
+					onClick={handleSuggestClick}
+					ariaLabel="Suggest a name"
+				/>
+
+				{/* Profile/Login Button */}
+				<NavButton
+					id="profile"
+					icon={User}
+					label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+					isActive={isLoginExpanded}
+					onClick={handleProfileClick}
+					ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}
+					customIcon={
+						isLoggedIn && avatarUrl ? (
+							<div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
+								<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+							</div>
+						) : (
+							<User className={cn("w-5 h-5", isLoggedIn && "text-purple-400")} aria-hidden={true} />
+						)
+					}
+					badge={
+						isLoggedIn ? (
+							<div className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full border border-black" />
+						) : undefined
+					}
+				/>
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 			</motion.nav>
 
 			{/* Expandable Login Panel */}
@@ -626,7 +734,11 @@ export function FluidNav() {
 							<div className="flex flex-col items-center justify-center h-full space-y-6">
 								<div className="flex flex-col items-center gap-4">
 									{avatarUrl && (
+<<<<<<< HEAD
 										<div className="w-20 h-20 rounded-full overflow-hidden border-3 border-purple-500/40 shadow-lg">
+=======
+										<div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/30">
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 											<img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
 										</div>
 									)}
@@ -651,9 +763,13 @@ export function FluidNav() {
 									<h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 bg-clip-text text-transparent">
 										Who are you?
 									</h3>
+<<<<<<< HEAD
 									<p className="text-lg text-white/70 max-w-md">
 										Enter your name to track rankings and compete with others
 									</p>
+=======
+									<p className="text-sm text-white/60">Enter your name to track rankings</p>
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 								</div>
 								<div className="w-full max-w-md space-y-6">
 									<Input

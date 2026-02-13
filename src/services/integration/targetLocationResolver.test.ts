@@ -9,10 +9,7 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import {
-	getFullTargetPath,
-	resolveTargetLocation,
-} from "./targetLocationResolver";
+import { getFullTargetPath, resolveTargetLocation } from "./targetLocationResolver";
 import { FileType } from "./types";
 
 describe("Target Location Resolver", () => {
@@ -78,10 +75,7 @@ describe("Target Location Resolver", () => {
 		describe("Layout Components", () => {
 			it('should map components with "Layout" in name to src/layout/', () => {
 				const testFile = join(testDir, "AppLayout.tsx");
-				writeFileSync(
-					testFile,
-					"export function AppLayout() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function AppLayout() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -89,10 +83,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Header component to src/layout/", () => {
 				const testFile = join(testDir, "Header.tsx");
-				writeFileSync(
-					testFile,
-					"export function Header() { return <header />; }",
-				);
+				writeFileSync(testFile, "export function Header() { return <header />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -100,10 +91,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Footer component to src/layout/", () => {
 				const testFile = join(testDir, "Footer.tsx");
-				writeFileSync(
-					testFile,
-					"export function Footer() { return <footer />; }",
-				);
+				writeFileSync(testFile, "export function Footer() { return <footer />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -111,10 +99,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Sidebar component to src/layout/", () => {
 				const testFile = join(testDir, "Sidebar.tsx");
-				writeFileSync(
-					testFile,
-					"export function Sidebar() { return <aside />; }",
-				);
+				writeFileSync(testFile, "export function Sidebar() { return <aside />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -122,10 +107,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Navigation component to src/layout/", () => {
 				const testFile = join(testDir, "Navigation.tsx");
-				writeFileSync(
-					testFile,
-					"export function Navigation() { return <nav />; }",
-				);
+				writeFileSync(testFile, "export function Navigation() { return <nav />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -149,10 +131,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Wrapper component to src/layout/", () => {
 				const testFile = join(testDir, "Wrapper.tsx");
-				writeFileSync(
-					testFile,
-					"export function Wrapper() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function Wrapper() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -160,10 +139,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Container component to src/layout/", () => {
 				const testFile = join(testDir, "Container.tsx");
-				writeFileSync(
-					testFile,
-					"export function Container() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function Container() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -187,10 +163,7 @@ describe("Target Location Resolver", () => {
 
 			it("should be case-insensitive for layout patterns", () => {
 				const testFile = join(testDir, "mainLayout.tsx");
-				writeFileSync(
-					testFile,
-					"export function mainLayout() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function mainLayout() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -200,10 +173,7 @@ describe("Target Location Resolver", () => {
 		describe("Feature Components", () => {
 			it("should map domain-specific components to src/features/", () => {
 				const testFile = join(testDir, "UserProfile.tsx");
-				writeFileSync(
-					testFile,
-					"export function UserProfile() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function UserProfile() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/features/");
@@ -211,10 +181,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map TaskList component to src/features/", () => {
 				const testFile = join(testDir, "TaskList.tsx");
-				writeFileSync(
-					testFile,
-					"export function TaskList() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function TaskList() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/features/");
@@ -222,10 +189,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map Dashboard component to src/features/", () => {
 				const testFile = join(testDir, "Dashboard.tsx");
-				writeFileSync(
-					testFile,
-					"export function Dashboard() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function Dashboard() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/features/");
@@ -233,10 +197,7 @@ describe("Target Location Resolver", () => {
 
 			it("should map components with multiple words to src/features/", () => {
 				const testFile = join(testDir, "UserProfileCard.tsx");
-				writeFileSync(
-					testFile,
-					"export function UserProfileCard() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function UserProfileCard() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/features/");
@@ -244,10 +205,7 @@ describe("Target Location Resolver", () => {
 
 			it("should default to src/features/ for ambiguous components", () => {
 				const testFile = join(testDir, "SomeComponent.tsx");
-				writeFileSync(
-					testFile,
-					"export function SomeComponent() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function SomeComponent() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/features/");
@@ -257,10 +215,7 @@ describe("Target Location Resolver", () => {
 		describe("Edge Cases", () => {
 			it("should handle components with layout in the middle of name", () => {
 				const testFile = join(testDir, "UserLayoutSettings.tsx");
-				writeFileSync(
-					testFile,
-					"export function UserLayoutSettings() { return <div />; }",
-				);
+				writeFileSync(testFile, "export function UserLayoutSettings() { return <div />; }");
 
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
 				expect(result).toBe("src/layout/");
@@ -268,10 +223,7 @@ describe("Target Location Resolver", () => {
 
 			it("should handle parsing errors gracefully", () => {
 				const testFile = join(testDir, "InvalidSyntax.tsx");
-				writeFileSync(
-					testFile,
-					"export function InvalidSyntax() { return <div> }",
-				); // Invalid JSX
+				writeFileSync(testFile, "export function InvalidSyntax() { return <div> }"); // Invalid JSX
 
 				// Should not throw and should default to features
 				const result = resolveTargetLocation(testFile, FileType.COMPONENT);
@@ -299,10 +251,7 @@ describe("Target Location Resolver", () => {
 
 		it("should return full path for layout component", () => {
 			const testFile = join(testDir, "Header.tsx");
-			writeFileSync(
-				testFile,
-				"export function Header() { return <header />; }",
-			);
+			writeFileSync(testFile, "export function Header() { return <header />; }");
 
 			const result = getFullTargetPath(testFile, FileType.COMPONENT);
 			expect(result).toBe("src/layout/Header.tsx");
@@ -310,10 +259,7 @@ describe("Target Location Resolver", () => {
 
 		it("should return full path for feature component", () => {
 			const testFile = join(testDir, "UserProfile.tsx");
-			writeFileSync(
-				testFile,
-				"export function UserProfile() { return <div />; }",
-			);
+			writeFileSync(testFile, "export function UserProfile() { return <div />; }");
 
 			const result = getFullTargetPath(testFile, FileType.COMPONENT);
 			expect(result).toBe("src/features/UserProfile.tsx");

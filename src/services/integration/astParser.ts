@@ -66,9 +66,7 @@ export function parseFile(filePath: string): ParsedFile {
 		}
 
 		// Check if this is a default export
-		const modifiers = ts.canHaveModifiers(node)
-			? ts.getModifiers(node)
-			: undefined;
+		const modifiers = ts.canHaveModifiers(node) ? ts.getModifiers(node) : undefined;
 		const hasDefaultModifier = modifiers?.some(
 			(m: ts.Modifier) => m.kind === ts.SyntaxKind.DefaultKeyword,
 		);
@@ -94,11 +92,7 @@ export function parseFile(filePath: string): ParsedFile {
 		}
 
 		// Detect JSX
-		if (
-			ts.isJsxElement(node) ||
-			ts.isJsxSelfClosingElement(node) ||
-			ts.isJsxFragment(node)
-		) {
+		if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node) || ts.isJsxFragment(node)) {
 			hasJSX = true;
 		}
 
@@ -118,11 +112,7 @@ export function parseFile(filePath: string): ParsedFile {
 /**
  * Extract export information from a node
  */
-function extractExport(
-	node: ts.Node,
-	exports: Export[],
-	isDefault: boolean,
-): void {
+function extractExport(node: ts.Node, exports: Export[], isDefault: boolean): void {
 	if (ts.isFunctionDeclaration(node) && node.name) {
 		exports.push({
 			name: node.name.text,
@@ -215,8 +205,7 @@ export function hasJSXContent(filePath: string): boolean {
 export function importsToDependencies(imports: string[]): Dependency[] {
 	return imports.map((importPath) => {
 		// External packages don't start with . or /
-		const isExternal =
-			!importPath.startsWith(".") && !importPath.startsWith("/");
+		const isExternal = !importPath.startsWith(".") && !importPath.startsWith("/");
 
 		return {
 			importPath,

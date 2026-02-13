@@ -119,10 +119,7 @@ const CatSpinnerContent: React.FC<{
 						<Heart size={iconSize} fill="currentColor" />
 					</motion.div>
 					{showFace && (
-						<Cat
-							size={iconSize * 0.6}
-							className="relative z-10 text-white drop-shadow-md"
-						/>
+						<Cat size={iconSize * 0.6} className="relative z-10 text-white drop-shadow-md" />
 					)}
 				</div>
 			);
@@ -195,11 +192,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 
 		// Handle legacy variant names
 		const effectiveVariant =
-			variant === "inline"
-				? "spinner"
-				: variant === "fullscreen"
-					? "spinner"
-					: variant;
+			variant === "inline" ? "spinner" : variant === "fullscreen" ? "spinner" : variant;
 
 		if (effectiveVariant === "suspense") {
 			if (!children) {
@@ -217,16 +210,10 @@ export const Loading: React.FC<LoadingProps> = memo(
 							loop={true}
 						/>
 					) : (
-						<img
-							src={randomAsset}
-							alt="Loading..."
-							className="w-24 h-24 object-contain"
-						/>
+						<img src={randomAsset} alt="Loading..." className="w-24 h-24 object-contain" />
 					)}
 					{displayMessage && (
-						<p className="text-sm font-medium text-white/70 animate-pulse">
-							{displayMessage}
-						</p>
+						<p className="text-sm font-medium text-white/70 animate-pulse">{displayMessage}</p>
 					)}
 					<span className="sr-only">Loading...</span>
 				</div>
@@ -278,9 +265,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						<Skeleton className="h-8 w-20 rounded-lg" />
 					</div>
 					{displayMessage && (
-						<div className="text-center text-xs text-white/50 pt-2">
-							{displayMessage}
-						</div>
+						<div className="text-center text-xs text-white/50 pt-2">{displayMessage}</div>
 					)}
 				</div>
 			);
@@ -305,9 +290,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 						/>
 					</div>
 					{displayMessage && (
-						<p className="text-sm font-medium text-white/70 animate-pulse">
-							{displayMessage}
-						</p>
+						<p className="text-sm font-medium text-white/70 animate-pulse">{displayMessage}</p>
 					)}
 					<span className="sr-only">Loading...</span>
 				</div>
@@ -319,13 +302,7 @@ export const Loading: React.FC<LoadingProps> = memo(
 			<div className={containerClasses} role="status" aria-label="Loading">
 				<Spinner
 					color="secondary"
-					size={
-						normalizedSize === "small"
-							? "sm"
-							: normalizedSize === "large"
-								? "lg"
-								: "md"
-					}
+					size={normalizedSize === "small" ? "sm" : normalizedSize === "large" ? "lg" : "md"}
 					label={displayMessage}
 					classNames={{ label: "text-white/70 font-medium mt-2" }}
 				/>
@@ -416,10 +393,7 @@ export const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({
    PERFORMANCE BADGE COMPONENTS
    ========================================================================== */
 
-const INSIGHT_CATEGORIES: Record<
-	string,
-	{ label: string; icon: string; description: string }
-> = {
+const INSIGHT_CATEGORIES: Record<string, { label: string; icon: string; description: string }> = {
 	top_rated: {
 		label: "Top Rated",
 		icon: "⭐",
@@ -458,12 +432,7 @@ interface PerformanceBadgeProps {
 	className?: string;
 }
 
-function PerformanceBadge({
-	type,
-	label,
-	variant = "md",
-	className = "",
-}: PerformanceBadgeProps) {
+function PerformanceBadge({ type, label, variant = "md", className = "" }: PerformanceBadgeProps) {
 	const category = getInsightCategory(type);
 
 	if (!category && !label) {
@@ -477,11 +446,7 @@ function PerformanceBadge({
 		`performance-badge performance-badge-${type} performance-badge-${variant} ${className}`.trim();
 
 	return (
-		<span
-			className={badgeClass}
-			aria-label={`${badgeLabel}: ${badgeDescription}`}
-			role="status"
-		>
+		<span className={badgeClass} aria-label={`${badgeLabel}: ${badgeDescription}`} role="status">
 			<span className="badge-icon" aria-hidden="true">
 				{badgeIcon}
 			</span>
@@ -497,10 +462,7 @@ interface PerformanceBadgesProps {
 	className?: string;
 }
 
-export function PerformanceBadges({
-	types = [],
-	className = "",
-}: PerformanceBadgesProps) {
+export function PerformanceBadges({ types = [], className = "" }: PerformanceBadgesProps) {
 	if (!types || types.length === 0) {
 		return null;
 	}
@@ -602,8 +564,7 @@ const toastVariants = cva(
 			},
 			isExiting: {
 				true: "translate-x-full opacity-0",
-				false:
-					"translate-x-0 opacity-100 animate-in slide-in-from-right-4 fade-in duration-300",
+				false: "translate-x-0 opacity-100 animate-in slide-in-from-right-4 fade-in duration-300",
 			},
 		},
 		defaultVariants: {
@@ -695,9 +656,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 				aria-atomic="true"
 			>
 				<div className="flex items-start gap-3 p-4 w-full">
-					<span className="text-xl select-none leading-none pt-0.5">
-						{getTypeIcon()}
-					</span>
+					<span className="text-xl select-none leading-none pt-0.5">{getTypeIcon()}</span>
 					<span className="flex-1 text-sm font-medium leading-tight pt-0.5 break-words text-white/90 drop-shadow-sm">
 						{message}
 					</span>
@@ -733,9 +692,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 							)}
 							style={{
 								width: "100%",
-								animation: isExiting
-									? "none"
-									: `progress-shrink ${duration}ms linear forwards`,
+								animation: isExiting ? "none" : `progress-shrink ${duration}ms linear forwards`,
 							}}
 						/>
 						<style>{`
@@ -787,8 +744,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 		"top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
 		"top-right": "top-4 right-4 items-end",
 		"bottom-left": "bottom-4 left-4 items-start flex-col-reverse",
-		"bottom-center":
-			"bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
+		"bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
 		"bottom-right": "bottom-4 right-4 items-end flex-col-reverse",
 	};
 
@@ -992,10 +948,7 @@ Timestamp: ${new Date().toISOString()}
 	);
 };
 
-export class ErrorBoundary extends Component<
-	ErrorBoundaryProps,
-	ErrorBoundaryState
-> {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 	constructor(props: ErrorBoundaryProps) {
 		super(props);
 		this.state = { hasError: false, error: null, errorId: null };
@@ -1137,8 +1090,7 @@ const ErrorInline: React.FC<ErrorInlineProps> = ({
 	if (!error) {
 		return null;
 	}
-	const msg =
-		typeof error === "string" ? error : (error as AppError).message || "Error";
+	const msg = typeof error === "string" ? error : (error as AppError).message || "Error";
 	return (
 		<div
 			className={cn(

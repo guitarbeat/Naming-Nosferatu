@@ -59,7 +59,9 @@ class TouchTexture {
 		// Use reverse iteration to safely remove items
 		for (let i = this.trail.length - 1; i >= 0; i--) {
 			const point = this.trail[i];
-			if (!point) continue;
+			if (!point) {
+				continue;
+			}
 			const f = point.force * speed * (1 - point.age / this.maxAge);
 			point.x += point.vx * f;
 			point.y += point.vy * f;
@@ -99,14 +101,7 @@ class TouchTexture {
 		this.trail.push({ x: point.x, y: point.y, age: 0, force, vx, vy });
 	}
 
-	drawPoint(point: {
-		x: number;
-		y: number;
-		age: number;
-		force: number;
-		vx: number;
-		vy: number;
-	}) {
+	drawPoint(point: { x: number; y: number; age: number; force: number; vx: number; vy: number }) {
 		const pos = {
 			x: point.x * this.width,
 			y: (1 - point.y) * this.height,
@@ -173,12 +168,7 @@ class GradientBackground {
 
 	init() {
 		const viewSize = this.sceneManager.getViewSize();
-		const geometry = new THREE.PlaneGeometry(
-			viewSize.width,
-			viewSize.height,
-			1,
-			1,
-		);
+		const geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
 
 		const material = new THREE.ShaderMaterial({
 			uniforms: this.uniforms,
@@ -394,12 +384,7 @@ class GradientBackground {
 		const viewSize = this.sceneManager.getViewSize();
 		if (this.mesh) {
 			this.mesh.geometry.dispose();
-			this.mesh.geometry = new THREE.PlaneGeometry(
-				viewSize.width,
-				viewSize.height,
-				1,
-				1,
-			);
+			this.mesh.geometry = new THREE.PlaneGeometry(viewSize.width, viewSize.height, 1, 1);
 		}
 		if (this.uniforms.uResolution) {
 			this.uniforms.uResolution.value.set(width, height);
@@ -452,8 +437,7 @@ class LiquidGradientManager {
 
 		this.touchTexture = new TouchTexture();
 		this.gradientBackground = new GradientBackground(this);
-		this.gradientBackground.uniforms.uTouchTexture.value =
-			this.touchTexture.texture;
+		this.gradientBackground.uniforms.uTouchTexture.value = this.touchTexture.texture;
 
 		this.mouse = { x: 0, y: 0 };
 
@@ -498,9 +482,7 @@ class LiquidGradientManager {
 
 	getViewSize() {
 		const fovInRadians = (this.camera.fov * Math.PI) / 180;
-		const height = Math.abs(
-			this.camera.position.z * Math.tan(fovInRadians / 2) * 2,
-		);
+		const height = Math.abs(this.camera.position.z * Math.tan(fovInRadians / 2) * 2);
 		return { width: height * this.camera.aspect, height };
 	}
 
@@ -632,12 +614,8 @@ const LiquidGradientBackground: React.FC = () => {
 
 		colors.forEach((color, index) => {
 			const hex = rgbToHex(color.x, color.y, color.z);
-			const picker = document.getElementById(
-				`liquidColorPicker${index + 1}`,
-			) as HTMLInputElement;
-			const display = document.getElementById(
-				`liquidColorValue${index + 1}`,
-			) as HTMLInputElement;
+			const picker = document.getElementById(`liquidColorPicker${index + 1}`) as HTMLInputElement;
+			const display = document.getElementById(`liquidColorValue${index + 1}`) as HTMLInputElement;
 			if (picker) {
 				picker.value = hex;
 			}
@@ -649,40 +627,44 @@ const LiquidGradientBackground: React.FC = () => {
 
 	// Initialize Three.js
 	useEffect(() => {
-		if (containerRef.current) {
-			managerRef.current = new LiquidGradientManager(containerRef.current);
-			managerRef.current.render();
-
-			const handleResize = () => managerRef.current?.onResize();
-			window.addEventListener("resize", handleResize);
-
-			// Mouse/Touch listeners for fluid effect
-			const handleMouseMove = (e: MouseEvent) => {
-				managerRef.current?.onMouseMove(e.clientX, e.clientY);
-
-				// Custom cursor logic
-				if (cursorRef.current) {
-					cursorRef.current.style.left = `${e.clientX}px`;
-					cursorRef.current.style.top = `${e.clientY}px`;
-				}
-			};
-
-			const handleTouchMove = (e: TouchEvent) => {
-				const touch = e.touches[0];
-				if (!touch) return;
-				managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
-			};
-
-			window.addEventListener("mousemove", handleMouseMove);
-			window.addEventListener("touchmove", handleTouchMove);
-
-			return () => {
-				window.removeEventListener("resize", handleResize);
-				window.removeEventListener("mousemove", handleMouseMove);
-				window.removeEventListener("touchmove", handleTouchMove);
-				managerRef.current?.cleanup();
-			};
+		if (!containerRef.current) {
+			return;
 		}
+
+		managerRef.current = new LiquidGradientManager(containerRef.current);
+		managerRef.current.render();
+
+		const handleResize = () => managerRef.current?.onResize();
+		window.addEventListener("resize", handleResize);
+
+		// Mouse/Touch listeners for fluid effect
+		const handleMouseMove = (e: MouseEvent) => {
+			managerRef.current?.onMouseMove(e.clientX, e.clientY);
+
+			// Custom cursor logic
+			if (cursorRef.current) {
+				cursorRef.current.style.left = `${e.clientX}px`;
+				cursorRef.current.style.top = `${e.clientY}px`;
+			}
+		};
+
+		const handleTouchMove = (e: TouchEvent) => {
+			const touch = e.touches[0];
+			if (!touch) {
+				return;
+			}
+			managerRef.current?.onMouseMove(touch.clientX, touch.clientY);
+		};
+
+		window.addEventListener("mousemove", handleMouseMove);
+		window.addEventListener("touchmove", handleTouchMove);
+
+		return () => {
+			window.removeEventListener("resize", handleResize);
+			window.removeEventListener("mousemove", handleMouseMove);
+			window.removeEventListener("touchmove", handleTouchMove);
+			managerRef.current?.cleanup();
+		};
 	}, []);
 
 	// Update Color Pickers when scheme changes
@@ -697,13 +679,10 @@ const LiquidGradientBackground: React.FC = () => {
 		const rgb = hexToRgb(hex);
 		if (rgb && managerRef.current) {
 			const uniforms = managerRef.current.gradientBackground.uniforms;
-			// @ts-expect-error
 			const colorUniform = uniforms[`uColor${index}`];
 			if (colorUniform) {
 				colorUniform.value.set(rgb.r, rgb.g, rgb.b);
-				const display = document.getElementById(
-					`liquidColorValue${index}`,
-				) as HTMLInputElement;
+				const display = document.getElementById(`liquidColorValue${index}`) as HTMLInputElement;
 				if (display) {
 					display.value = hex.toUpperCase();
 				}
@@ -712,9 +691,7 @@ const LiquidGradientBackground: React.FC = () => {
 	};
 
 	const copyColor = (index: number) => {
-		const display = document.getElementById(
-			`liquidColorValue${index}`,
-		) as HTMLInputElement;
+		const display = document.getElementById(`liquidColorValue${index}`) as HTMLInputElement;
 		if (display) {
 			navigator.clipboard.writeText(display.value);
 			// Optional: Add visual feedback logic here
@@ -724,9 +701,7 @@ const LiquidGradientBackground: React.FC = () => {
 	const exportColors = () => {
 		const colors = [];
 		for (let i = 1; i <= 6; i++) {
-			const display = document.getElementById(
-				`liquidColorValue${i}`,
-			) as HTMLInputElement;
+			const display = document.getElementById(`liquidColorValue${i}`) as HTMLInputElement;
 			if (display) {
 				colors.push(display.value);
 			}
@@ -800,11 +775,7 @@ const LiquidGradientBackground: React.FC = () => {
 									id={`liquidColorValue${i}`}
 									readOnly={true}
 								/>
-								<button
-									type="button"
-									className="liquid-copy-btn"
-									onClick={() => copyColor(i)}
-								>
+								<button type="button" className="liquid-copy-btn" onClick={() => copyColor(i)}>
 									Copy
 								</button>
 							</div>
@@ -812,11 +783,7 @@ const LiquidGradientBackground: React.FC = () => {
 					))}
 
 					<div className="liquid-adjuster-actions">
-						<button
-							type="button"
-							className="liquid-export-btn"
-							onClick={exportColors}
-						>
+						<button type="button" className="liquid-export-btn" onClick={exportColors}>
 							Export All Colors
 						</button>
 					</div>
@@ -839,9 +806,9 @@ function hexToRgb(hex: string) {
 	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 	return result
 		? {
-				r: Number.parseInt(result[1], 16) / 255,
-				g: Number.parseInt(result[2], 16) / 255,
-				b: Number.parseInt(result[3], 16) / 255,
+				r: Number.parseInt(result[1] as string, 16) / 255,
+				g: Number.parseInt(result[2] as string, 16) / 255,
+				b: Number.parseInt(result[3] as string, 16) / 255,
 			}
 		: null;
 }

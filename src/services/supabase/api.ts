@@ -17,9 +17,7 @@ export const imagesAPI = {
 	 */
 	list: async (path = "") => {
 		return withSupabase(async (client) => {
-			const { data, error } = await client.storage
-				.from("cat-photos")
-				.list(path);
+			const { data, error } = await client.storage.from("cat-photos").list(path);
 			if (error) {
 				console.error("Error listing images:", error);
 				return [];
@@ -41,18 +39,14 @@ export const imagesAPI = {
 		return withSupabase(
 			async (client) => {
 				const fileName = `${Date.now()}-${userName}-${(file as File).name || "blob"}`;
-				const { data, error } = await client.storage
-					.from("cat-photos")
-					.upload(fileName, file);
+				const { data, error } = await client.storage.from("cat-photos").upload(fileName, file);
 
 				if (error) {
 					console.error("Upload error:", error);
 					return { path: null, error: error.message };
 				}
 
-				const { data: urlData } = client.storage
-					.from("cat-photos")
-					.getPublicUrl(data.path);
+				const { data: urlData } = client.storage.from("cat-photos").getPublicUrl(data.path);
 				return { path: urlData.publicUrl, success: true };
 			},
 			{ path: null, error: "Supabase not configured" },
@@ -77,11 +71,7 @@ interface HiddenNameItem {
 /**
  * Shared helper for updating hidden status of a single name
  */
-async function updateHiddenStatus(
-	userName: string,
-	nameId: string | number,
-	isHidden: boolean,
-) {
+async function updateHiddenStatus(userName: string, nameId: string | number, isHidden: boolean) {
 	return withSupabase(
 		async (client) => {
 			try {
@@ -157,10 +147,7 @@ async function updateHiddenStatuses(
 async function deleteById(nameId: string | number) {
 	return withSupabase(
 		async (client) => {
-			const { error } = await client
-				.from("cat_name_options")
-				.delete()
-				.eq("id", String(nameId));
+			const { error } = await client.from("cat_name_options").delete().eq("id", String(nameId));
 			if (error) {
 				return {
 					success: false,
@@ -178,9 +165,7 @@ export const coreAPI = {
 	 * Get all names with descriptions and ratings
 	 */
 	getTrendingNames: async (includeHidden: boolean = false) => {
-		const isAvailable = await import("@supabase/client").then((m) =>
-			m.isSupabaseAvailable(),
-		);
+		const isAvailable = await import("@supabase/client").then((m) => m.isSupabaseAvailable());
 		if (!isAvailable) {
 			throw new Error("Supabase is not configured or unavailable");
 		}
@@ -220,11 +205,7 @@ export const coreAPI = {
 	/**
 	 * Add a new name option
 	 */
-	addName: async (
-		name: string,
-		description: string = "",
-		userName: string | null = null,
-	) => {
+	addName: async (name: string, description: string = "", userName: string | null = null) => {
 		return withSupabase(
 			async (client) => {
 				if (userName?.trim()) {
@@ -275,10 +256,7 @@ export const coreAPI = {
 	deleteByName: async (name: string) => {
 		return withSupabase(
 			async (client) => {
-				const { error } = await client
-					.from("cat_name_options")
-					.delete()
-					.eq("name", name);
+				const { error } = await client.from("cat_name_options").delete().eq("name", name);
 				if (error) {
 					return {
 						success: false,
@@ -378,10 +356,7 @@ export const siteSettingsAPI = {
 	/**
 	 * Update cat's chosen name
 	 */
-	updateCatChosenName: async (
-		nameData: CatChosenNameUpdate,
-		userName: string,
-	) => {
+	updateCatChosenName: async (nameData: CatChosenNameUpdate, userName: string) => {
 		return withSupabase(
 			async (client) => {
 				try {

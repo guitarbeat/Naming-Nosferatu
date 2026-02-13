@@ -9,8 +9,13 @@ import { useNamesCache } from "@/hooks/useNamesCache";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
+<<<<<<< HEAD
 import { Lightbox } from "@/layout/Lightbox";
 import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
+=======
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
+import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
 import { getRandomCatImage } from "@/utils/basic";
@@ -196,6 +201,7 @@ export function NameSelector() {
 			return next;
 		});
 
+<<<<<<< HEAD
 		// If it was a right swipe, remove from selected names and sync with store
 		if (lastSwipe.direction === "right") {
 			setSelectedNames((prev) => {
@@ -206,6 +212,36 @@ export function NameSelector() {
 				tournamentActions.setSelection(selectedNameItems);
 				return next;
 			});
+=======
+	const handleStart = () => {
+		if (selectedNames.size < 2) {
+			return;
+		}
+		const selectedNameItems = names.filter((n) => selectedNames.has(n.id));
+		onStart(selectedNameItems);
+	};
+
+	const handleSwipe = (nameId: IdType, direction: "left" | "right") => {
+		if (direction === "right") {
+			setSelectedNames((prev) => new Set([...prev, nameId]));
+		}
+		setSwipedIds((prev) => new Set([...prev, nameId]));
+		setTimeout(() => {
+			setDragDirection(null);
+			setDragOffset(0);
+		}, 300);
+	};
+
+	const handleDragEnd = (nameId: IdType, info: PanInfo) => {
+		const offset = info.offset.x;
+		const velocity = info.velocity.x;
+		const threshold = 100;
+		const velocityThreshold = 500;
+
+		if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
+			setDragOffset(0);
+			return;
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 		}
 
 		triggerHaptic();
@@ -214,6 +250,7 @@ export function NameSelector() {
 	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
 	const cardsToRender = visibleCards.slice(0, 3);
 
+<<<<<<< HEAD
 	// Create a mapping from name id to image index for efficient lookup
 	const nameIndexMap = useMemo(() => {
 		const map = new Map<IdType, number>();
@@ -280,6 +317,8 @@ export function NameSelector() {
 		[names],
 	);
 
+=======
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
 		if (!userName) {
 			return;
@@ -387,6 +426,77 @@ export function NameSelector() {
 				</div>
 
 				{isSwipeMode ? (
+<<<<<<< HEAD
+=======
+					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+						{names.map((nameItem) => {
+							const isSelected = selectedNames.has(nameItem.id);
+							const catImage = getRandomCatImage(nameItem.id, CAT_IMAGES);
+							return (
+								<button
+									key={nameItem.id}
+									type="button"
+									onClick={() => toggleName(nameItem.id)}
+									className={`relative rounded-xl border-2 transition-all overflow-hidden group ${
+										isSelected
+											? "border-purple-500 bg-purple-500/20 shadow-lg shadow-purple-500/20"
+											: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+									}`}
+								>
+									<div
+										className="aspect-square w-full relative"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<lightbox-image dialog-id="shared-lightbox-dialog">
+											<CatImage
+												src={catImage}
+												alt={nameItem.name}
+												containerClassName="w-full h-full"
+												imageClassName="w-full h-full object-cover"
+											/>
+										</lightbox-image>
+									</div>
+									<div className="p-3 flex flex-col gap-1">
+										<div className="flex items-center justify-between gap-2">
+											<span className="font-medium text-white text-sm">{nameItem.name}</span>
+											{isSelected && (
+												<div className="flex-shrink-0 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+													<Check size={14} className="text-white" />
+												</div>
+											)}
+										</div>
+										{nameItem.description && (
+											<p className="text-xs text-white/60 text-left">{nameItem.description}</p>
+										)}
+										{isAdmin && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+												}}
+												className="mt-1 flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
+											>
+												{nameItem.isHidden ? (
+													<>
+														<Eye size={12} />
+														<span>Unhide</span>
+													</>
+												) : (
+													<>
+														<EyeOff size={12} />
+														<span>Hide</span>
+													</>
+												)}
+											</button>
+										)}
+									</div>
+								</button>
+							);
+						})}
+					</div>
+				) : (
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 					<div
 						className="relative w-full flex items-center justify-center"
 						style={{ minHeight: "600px" }}

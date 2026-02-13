@@ -28,14 +28,8 @@ interface NameSuggestionProps {
 // ============================================================================
 
 function InlineNameSuggestion() {
-	const {
-		values,
-		isSubmitting,
-		handleChange,
-		handleSubmit,
-		globalError,
-		successMessage,
-	} = useNameSuggestion();
+	const { values, isSubmitting, handleChange, handleSubmit, globalError, successMessage } =
+		useNameSuggestion();
 
 	const handleLocalSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -76,11 +70,7 @@ function InlineNameSuggestion() {
 							type="submit"
 							variant="gradient"
 							size="xl"
-							disabled={
-								!values.name.trim() ||
-								!values.description.trim() ||
-								isSubmitting
-							}
+							disabled={!values.name.trim() || !values.description.trim() || isSubmitting}
 							loading={isSubmitting}
 							className="w-full sm:w-auto"
 						>
@@ -88,10 +78,7 @@ function InlineNameSuggestion() {
 						</Button>
 					</div>
 					<div className="flex flex-col gap-2">
-						<label
-							htmlFor="suggest-description"
-							className="text-sm font-medium text-white/80"
-						>
+						<label htmlFor="suggest-description" className="text-sm font-medium text-white/80">
 							Why this name? (optional but encouraged)
 						</label>
 						<Textarea
@@ -257,10 +244,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 					</div>
 
 					<div className="p-6">
-						<p
-							id="suggest-name-description"
-							className="text-sm text-white/70 mb-6"
-						>
+						<p id="suggest-name-description" className="text-sm text-white/70 mb-6">
 							Help us expand the list by suggesting new cat names!
 						</p>
 
@@ -320,12 +304,7 @@ function ModalNameSuggestion({ isOpen, onClose }: ModalNameSuggestionProps) {
 							)}
 
 							<div className="flex justify-end gap-3 mt-4 pt-4 border-t border-white/10">
-								<Button
-									type="button"
-									variant="ghost"
-									onClick={handleClose}
-									disabled={isSubmitting}
-								>
+								<Button type="button" variant="ghost" onClick={handleClose} disabled={isSubmitting}>
 									Cancel
 								</Button>
 								<Button

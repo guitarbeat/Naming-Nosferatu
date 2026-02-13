@@ -68,10 +68,7 @@ export function NameManagementView({
 	// * Feedback Side Effects
 	useEffect(() => {
 		if (isError && dataError) {
-			showToast(
-				dataError.message || "An error occurred while loading data",
-				"error",
-			);
+			showToast(dataError.message || "An error occurred while loading data", "error");
 		}
 	}, [isError, dataError, showToast]);
 
@@ -89,18 +86,14 @@ export function NameManagementView({
 				>
 					{extensions.header && (
 						<div className="w-full flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-							{typeof extensions.header === "function"
-								? extensions.header()
-								: extensions.header}
+							{typeof extensions.header === "function" ? extensions.header() : extensions.header}
 						</div>
 					)}
 					<section className="w-full flex-1 min-h-[500px] animate-in fade-in zoom-in-95 duration-500 delay-100">
 						{React.isValidElement(extensions.dashboard)
 							? extensions.dashboard
 							: typeof extensions.dashboard === "function"
-								? React.createElement(
-										extensions.dashboard as React.ComponentType,
-									)
+								? React.createElement(extensions.dashboard as React.ComponentType)
 								: extensions.dashboard}
 					</section>
 				</div>

@@ -16,12 +16,6 @@ const noop = (..._args: unknown[]) => {
  * Development-only logging utilities
  * Only log when NODE_ENV is "development"
  */
-export const devLog = isDev
-	? (...args: unknown[]) => console.log("[DEV]", ...args)
-	: noop;
-export const devWarn = isDev
-	? (...args: unknown[]) => console.warn("[DEV]", ...args)
-	: noop;
-export const devError = isDev
-	? (...args: unknown[]) => console.error("[DEV]", ...args)
-	: noop;
+export const devLog = isDev ? (...args: unknown[]) => console.log("[DEV]", ...args) : noop;
+export const devWarn = isDev ? (...args: unknown[]) => console.warn("[DEV]", ...args) : noop;
+export const devError = isDev ? (...args: unknown[]) => console.error("[DEV]", ...args) : noop;

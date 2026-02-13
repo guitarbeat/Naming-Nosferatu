@@ -63,9 +63,7 @@ export function parseTscOutput(output: string): {
 
 	for (const line of lines) {
 		// Match error pattern: file.ts(line,col): error TS####: message
-		const errorMatch = line.match(
-			/^(.+?)\((\d+),(\d+)\):\s+error\s+(TS\d+):\s+(.+)$/,
-		);
+		const errorMatch = line.match(/^(.+?)\((\d+),(\d+)\):\s+error\s+(TS\d+):\s+(.+)$/);
 
 		if (errorMatch) {
 			const [, file, lineStr, colStr, code, message] = errorMatch;
@@ -80,9 +78,7 @@ export function parseTscOutput(output: string): {
 		}
 
 		// Match warning pattern: file.ts(line,col): warning TS####: message
-		const warningMatch = line.match(
-			/^(.+?)\((\d+),(\d+)\):\s+warning\s+(TS\d+):\s+(.+)$/,
-		);
+		const warningMatch = line.match(/^(.+?)\((\d+),(\d+)\):\s+warning\s+(TS\d+):\s+(.+)$/);
 
 		if (warningMatch) {
 			const [, file, , , , message] = warningMatch;
@@ -102,9 +98,7 @@ export function parseTscOutput(output: string): {
  * @param errors - Array of build errors
  * @returns Map of error categories to errors
  */
-export function categorizeErrors(
-	errors: BuildError[],
-): Map<string, BuildError[]> {
+export function categorizeErrors(errors: BuildError[]): Map<string, BuildError[]> {
 	const categories = new Map<string, BuildError[]>();
 
 	for (const error of errors) {
@@ -171,9 +165,7 @@ function getErrorCategory(code: string): string {
  * @param errors - Array of build errors to diagnose
  * @returns DiagnosticResult with recovery info and suggested fixes
  */
-export function diagnoseErrors(
-	errors: BuildError[],
-): import("./types").DiagnosticResult {
+export function diagnoseErrors(errors: BuildError[]): import("./types").DiagnosticResult {
 	if (errors.length === 0) {
 		return {
 			canAutoRecover: true,
@@ -284,9 +276,7 @@ function diagnoseImportErrors(errors: BuildError[]): string[] {
 				`Module can only be default-imported in ${error.file}:${error.line} - use "import X from 'module'" instead`,
 			);
 		} else {
-			fixes.push(
-				`Fix import statement in ${error.file}:${error.line}: ${error.message}`,
-			);
+			fixes.push(`Fix import statement in ${error.file}:${error.line}: ${error.message}`);
 		}
 	}
 
@@ -302,9 +292,7 @@ function diagnoseTypeErrors(errors: BuildError[]): string[] {
 	for (const error of errors) {
 		if (error.code === "TS2304") {
 			// Cannot find name
-			const nameMatch = error.message.match(
-				/Cannot find name ['"]([^'"]+)['"]/,
-			);
+			const nameMatch = error.message.match(/Cannot find name ['"]([^'"]+)['"]/);
 			if (nameMatch) {
 				const name = nameMatch[1];
 				fixes.push(
@@ -313,18 +301,12 @@ function diagnoseTypeErrors(errors: BuildError[]): string[] {
 			}
 		} else if (error.code === "TS2322") {
 			// Type not assignable
-			fixes.push(
-				`Fix type mismatch in ${error.file}:${error.line} - ${error.message}`,
-			);
+			fixes.push(`Fix type mismatch in ${error.file}:${error.line} - ${error.message}`);
 		} else if (error.code === "TS2345") {
 			// Argument type error
-			fixes.push(
-				`Fix argument type in ${error.file}:${error.line} - ${error.message}`,
-			);
+			fixes.push(`Fix argument type in ${error.file}:${error.line} - ${error.message}`);
 		} else {
-			fixes.push(
-				`Fix type error in ${error.file}:${error.line}: ${error.message}`,
-			);
+			fixes.push(`Fix type error in ${error.file}:${error.line}: ${error.message}`);
 		}
 	}
 
@@ -348,9 +330,7 @@ function diagnosePropertyErrors(errors: BuildError[]): string[] {
 				);
 			}
 		} else {
-			fixes.push(
-				`Fix property error in ${error.file}:${error.line}: ${error.message}`,
-			);
+			fixes.push(`Fix property error in ${error.file}:${error.line}: ${error.message}`);
 		}
 	}
 
@@ -373,9 +353,7 @@ function diagnoseJsxErrors(errors: BuildError[]): string[] {
 				`JSX element type does not have construct signatures in ${error.file}:${error.line}`,
 			);
 		} else {
-			fixes.push(
-				`Fix JSX error in ${error.file}:${error.line}: ${error.message}`,
-			);
+			fixes.push(`Fix JSX error in ${error.file}:${error.line}: ${error.message}`);
 		}
 	}
 
@@ -389,9 +367,7 @@ function diagnoseSyntaxErrors(errors: BuildError[]): string[] {
 	const fixes: string[] = [];
 
 	for (const error of errors) {
-		fixes.push(
-			`Fix syntax error in ${error.file}:${error.line}: ${error.message}`,
-		);
+		fixes.push(`Fix syntax error in ${error.file}:${error.line}: ${error.message}`);
 	}
 
 	return fixes;

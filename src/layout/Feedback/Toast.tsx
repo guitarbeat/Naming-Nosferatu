@@ -22,8 +22,7 @@ const toastVariants = cva(
 			},
 			isExiting: {
 				true: "translate-x-full opacity-0",
-				false:
-					"translate-x-0 opacity-100 animate-in slide-in-from-right-4 fade-in duration-300",
+				false: "translate-x-0 opacity-100 animate-in slide-in-from-right-4 fade-in duration-300",
 			},
 		},
 		defaultVariants: {
@@ -115,9 +114,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 				aria-atomic="true"
 			>
 				<div className="flex items-start gap-3 p-4 w-full">
-					<span className="text-xl select-none leading-none pt-0.5">
-						{getTypeIcon()}
-					</span>
+					<span className="text-xl select-none leading-none pt-0.5">{getTypeIcon()}</span>
 					<span className="flex-1 text-sm font-medium leading-tight pt-0.5 break-words text-white/90 drop-shadow-sm">
 						{message}
 					</span>
@@ -153,9 +150,7 @@ const ToastItem: React.FC<ToastItemProps> = ({
 							)}
 							style={{
 								width: "100%",
-								animation: isExiting
-									? "none"
-									: `progress-shrink ${duration}ms linear forwards`,
+								animation: isExiting ? "none" : `progress-shrink ${duration}ms linear forwards`,
 							}}
 						/>
 						<style>{`
@@ -207,8 +202,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
 		"top-center": "top-4 left-1/2 -translate-x-1/2 items-center",
 		"top-right": "top-4 right-4 items-end",
 		"bottom-left": "bottom-4 left-4 items-start flex-col-reverse",
-		"bottom-center":
-			"bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
+		"bottom-center": "bottom-4 left-1/2 -translate-x-1/2 items-center flex-col-reverse",
 		"bottom-right": "bottom-4 right-4 items-end flex-col-reverse",
 	};
 

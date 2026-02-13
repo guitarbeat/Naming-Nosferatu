@@ -103,10 +103,7 @@ export function useEventListener<K extends keyof DocumentEventMap>(
 	element: RefObject<Document | null> | Document,
 	options?: boolean | AddEventListenerOptions,
 ): void;
-export function useEventListener<
-	K extends keyof HTMLElementEventMap,
-	T extends HTMLElement,
->(
+export function useEventListener<K extends keyof HTMLElementEventMap, T extends HTMLElement>(
 	eventName: K,
 	handler: (event: HTMLElementEventMap[K]) => void,
 	element: RefObject<T | null> | T,
@@ -368,17 +365,10 @@ const DEFAULT_BREAKPOINTS: Breakpoints = {
  * const { isMobile, isOnline, prefersReducedMotion } = useBrowserState();
  * const browser = useBrowserState({ mobile: 640, tablet: 1280 });
  */
-export function useBrowserState(
-	breakpoints?: Partial<Breakpoints>,
-): BrowserState {
+export function useBrowserState(breakpoints?: Partial<Breakpoints>): BrowserState {
 	const bp = useMemo(
 		() => ({ ...DEFAULT_BREAKPOINTS, ...breakpoints }),
-		[
-			breakpoints?.smallMobile,
-			breakpoints?.mobile,
-			breakpoints?.tablet,
-			breakpoints,
-		], // eslint-disable-line react-hooks/exhaustive-deps
+		[breakpoints?.smallMobile, breakpoints?.mobile, breakpoints?.tablet, breakpoints], // eslint-disable-line react-hooks/exhaustive-deps
 	);
 
 	const buildSnapshot = useCallback(
@@ -490,9 +480,7 @@ export interface OnlineStatusOptions {
  * });
  */
 export function useOnlineStatus(options: OnlineStatusOptions = {}): boolean {
-	const [isOnline, setIsOnline] = useState(() =>
-		HAS_NAVIGATOR ? navigator.onLine : true,
-	);
+	const [isOnline, setIsOnline] = useState(() => (HAS_NAVIGATOR ? navigator.onLine : true));
 
 	const optRef = useRef(options);
 	useIsomorphicLayoutEffect(() => {
@@ -572,8 +560,7 @@ export function useLocalStorage<T>(
 	const setValue = useCallback(
 		(next: SetStateAction<T>) => {
 			try {
-				const resolved =
-					next instanceof Function ? next(valueRef.current) : next;
+				const resolved = next instanceof Function ? next(valueRef.current) : next;
 				setStored(resolved);
 				valueRef.current = resolved;
 				if (IS_BROWSER) {
@@ -609,10 +596,7 @@ export function useLocalStorage<T>(
 				return;
 			}
 			try {
-				const parsed =
-					e.newValue !== null
-						? (JSON.parse(e.newValue) as T)
-						: initialRef.current;
+				const parsed = e.newValue !== null ? (JSON.parse(e.newValue) as T) : initialRef.current;
 				setStored(parsed);
 				valueRef.current = parsed;
 			} catch {
@@ -647,10 +631,7 @@ export interface CollapsibleReturn {
  * const sidebar = useCollapsible(false, "sidebar-collapsed");
  * <button onClick={sidebar.toggle}>{sidebar.isCollapsed ? "▶" : "▼"}</button>
  */
-export function useCollapsible(
-	defaultValue = false,
-	storageKey?: string,
-): CollapsibleReturn {
+export function useCollapsible(defaultValue = false, storageKey?: string): CollapsibleReturn {
 	const [value, setValueRaw] = useState<boolean>(() => {
 		if (storageKey && IS_BROWSER) {
 			try {
@@ -775,9 +756,7 @@ export function useMasonryLayout<T extends HTMLElement = HTMLDivElement>(
 			return;
 		}
 
-		const cols =
-			fixedCols ??
-			Math.max(1, Math.floor((containerWidth + gap) / (minColWidth + gap)));
+		const cols = fixedCols ?? Math.max(1, Math.floor((containerWidth + gap) / (minColWidth + gap)));
 
 		const totalGapWidth = (cols - 1) * gap;
 		const colWidth = (containerWidth - totalGapWidth) / cols;
@@ -939,12 +918,8 @@ export type FieldConfigs = Record<string, FieldConfig<any>>;
 export type FormValues<T extends FieldConfigs> = {
 	[K in keyof T]: T[K]["initialValue"];
 };
-export type FormErrors<T extends FieldConfigs> = Partial<
-	Record<keyof T, string>
->;
-export type FormTouched<T extends FieldConfigs> = Partial<
-	Record<keyof T, boolean>
->;
+export type FormErrors<T extends FieldConfigs> = Partial<Record<keyof T, string>>;
+export type FormTouched<T extends FieldConfigs> = Partial<Record<keyof T, boolean>>;
 
 export interface ValidatedFormReturn<T extends FieldConfigs> {
 	values: FormValues<T>;
@@ -953,17 +928,11 @@ export interface ValidatedFormReturn<T extends FieldConfigs> {
 	isValid: boolean;
 	isDirty: boolean;
 	isSubmitting: boolean;
-	handleChange: <K extends keyof T & string>(
-		field: K,
-		value: T[K]["initialValue"],
-	) => void;
+	handleChange: <K extends keyof T & string>(field: K, value: T[K]["initialValue"]) => void;
 	handleBlur: (field: keyof T & string) => void;
 	handleSubmit: (e?: React.FormEvent) => void;
 	reset: (overrides?: Partial<FormValues<T>>) => void;
-	setFieldValue: <K extends keyof T & string>(
-		field: K,
-		value: T[K]["initialValue"],
-	) => void;
+	setFieldValue: <K extends keyof T & string>(field: K, value: T[K]["initialValue"]) => void;
 	setFieldError: (field: keyof T & string, error: string) => void;
 	clearErrors: () => void;
 }
@@ -1034,11 +1003,7 @@ export function useValidatedForm<T extends FieldConfigs>(
 	// ── Validation helpers ────────────────────────────────────────────────
 
 	const validateField = useCallback(
-		(
-			name: string,
-			value: unknown,
-			allVals: Record<string, unknown>,
-		): string | undefined => {
+		(name: string, value: unknown, allVals: Record<string, unknown>): string | undefined => {
 			const rules = fieldsRef.current[name]?.validate;
 			if (!rules) {
 				return undefined;
@@ -1058,11 +1023,7 @@ export function useValidatedForm<T extends FieldConfigs>(
 		(vals: Values): Errors => {
 			const errs: Record<string, string> = {};
 			for (const key of Object.keys(fieldsRef.current)) {
-				const err = validateField(
-					key,
-					vals[key],
-					vals as Record<string, unknown>,
-				);
+				const err = validateField(key, vals[key], vals as Record<string, unknown>);
 				if (err) {
 					errs[key] = err;
 				}
@@ -1076,27 +1037,24 @@ export function useValidatedForm<T extends FieldConfigs>(
 	 * Shared helper: update errors for a single field.
 	 * Adds the error if present, removes the key if the field is now valid.
 	 */
-	const applyFieldError = useCallback(
-		(field: string, error: string | undefined) => {
-			setErrors((prev) => {
-				if (error) {
-					// Only update if error changed
-					if (prev[field as keyof T] === error) {
-						return prev;
-					}
-					return { ...prev, [field]: error };
-				}
-				// Remove the field's error
-				if (!(field in prev)) {
+	const applyFieldError = useCallback((field: string, error: string | undefined) => {
+		setErrors((prev) => {
+			if (error) {
+				// Only update if error changed
+				if (prev[field as keyof T] === error) {
 					return prev;
 				}
-				const next = { ...prev };
-				delete next[field as keyof T];
-				return next as Errors;
-			});
-		},
-		[],
-	);
+				return { ...prev, [field]: error };
+			}
+			// Remove the field's error
+			if (!(field in prev)) {
+				return prev;
+			}
+			const next = { ...prev };
+			delete next[field as keyof T];
+			return next as Errors;
+		});
+	}, []);
 
 	// ── Actions ───────────────────────────────────────────────────────────
 
@@ -1104,11 +1062,7 @@ export function useValidatedForm<T extends FieldConfigs>(
 		<K extends keyof T & string>(field: K, value: T[K]["initialValue"]) => {
 			setValues((prev) => {
 				const next = { ...prev, [field]: value };
-				const err = validateField(
-					field,
-					value,
-					next as Record<string, unknown>,
-				);
+				const err = validateField(field, value, next as Record<string, unknown>);
 				applyFieldError(field, err);
 				return next;
 			});
@@ -1126,11 +1080,7 @@ export function useValidatedForm<T extends FieldConfigs>(
 			});
 			// Re-validate with current values (read from ref, no state updater abuse)
 			const currentVals = valuesRef.current;
-			const err = validateField(
-				field,
-				currentVals[field],
-				currentVals as Record<string, unknown>,
-			);
+			const err = validateField(field, currentVals[field], currentVals as Record<string, unknown>);
 			applyFieldError(field, err);
 		},
 		[validateField, applyFieldError],
@@ -1185,12 +1135,9 @@ export function useValidatedForm<T extends FieldConfigs>(
 		[],
 	);
 
-	const setFieldError = useCallback(
-		(field: keyof T & string, error: string) => {
-			setErrors((prev) => ({ ...prev, [field]: error }));
-		},
-		[],
-	);
+	const setFieldError = useCallback((field: keyof T & string, error: string) => {
+		setErrors((prev) => ({ ...prev, [field]: error }));
+	}, []);
 
 	const clearErrors = useCallback(() => setErrors({}), []);
 

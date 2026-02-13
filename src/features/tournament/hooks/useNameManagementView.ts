@@ -45,8 +45,7 @@ export function useNameManagementView({
 		userName: userName ?? null,
 	});
 
-	const { errors, ui, errorActions, tournamentActions, tournament } =
-		useAppStore();
+	const { errors, ui, errorActions, tournamentActions, tournament } = useAppStore();
 
 	// * Sync selection with global store for Navbar access
 	useEffect(() => {
@@ -55,9 +54,7 @@ export function useNameManagementView({
 			const currentStoreSelection = tournament.selectedNames || [];
 			const hasChanged =
 				selectedNames.length !== currentStoreSelection.length ||
-				selectedNames.some(
-					(n: NameItem, i: number) => n.id !== currentStoreSelection[i]?.id,
-				);
+				selectedNames.some((n: NameItem, i: number) => n.id !== currentStoreSelection[i]?.id);
 
 			if (hasChanged) {
 				tournamentActions.setSelection(selectedNames);
@@ -76,22 +73,15 @@ export function useNameManagementView({
 
 	const { isSwipeMode, showCatPictures } = ui;
 
-	const [filterStatus, setFilterStatus] = useState(
-		FILTER_OPTIONS.VISIBILITY.VISIBLE,
-	);
+	const [filterStatus, setFilterStatus] = useState(FILTER_OPTIONS.VISIBILITY.VISIBLE);
 	const [localUserFilter, setLocalUserFilter] = useState("all");
-	const userFilter =
-		(profileProps.userFilter as "all" | "user" | "other") ?? localUserFilter;
+	const userFilter = (profileProps.userFilter as "all" | "user" | "other") ?? localUserFilter;
 	const setUserFilter =
 		(profileProps.setUserFilter as React.Dispatch<
 			React.SetStateAction<"all" | "user" | "other">
 		>) ?? setLocalUserFilter;
-	const [selectionFilter, setSelectionFilter] = useState<
-		"all" | "selected" | "unselected"
-	>("all");
-	const [dateFilter, setDateFilter] = useState<
-		"all" | "today" | "week" | "month"
-	>("all");
+	const [selectionFilter, setSelectionFilter] = useState<"all" | "selected" | "unselected">("all");
+	const [dateFilter, setDateFilter] = useState<"all" | "today" | "week" | "month">("all");
 	const [activeTab, setActiveTab] = useState("manage");
 	const [searchTerm, setSearchTerm] = useState("");
 
@@ -131,16 +121,13 @@ export function useNameManagementView({
 		if (searchTerm.trim()) {
 			const normalizedSearch = searchTerm.trim().toLowerCase();
 			result = result.filter((name) => {
-				const content =
-					`${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
+				const content = `${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
 				return content.includes(normalizedSearch);
 			});
 		}
 
 		if (showSelectedOnly) {
-			result = result.filter((name) =>
-				selectedNames.some((s: NameItem) => s.id === name.id),
-			);
+			result = result.filter((name) => selectedNames.some((s: NameItem) => s.id === name.id));
 		}
 
 		return result;
@@ -156,8 +143,7 @@ export function useNameManagementView({
 	]);
 
 	const filteredNames = useMemo(() => {
-		const activeFilterStatus =
-			mode === "tournament" && !analysisMode ? "visible" : filterStatus;
+		const activeFilterStatus = mode === "tournament" && !analysisMode ? "visible" : filterStatus;
 		const activeVisibility = mapFilterStatusToVisibility(activeFilterStatus);
 
 		let result = applyNameFilters(names, {
@@ -168,8 +154,7 @@ export function useNameManagementView({
 		if (searchTerm.trim()) {
 			const normalizedSearch = searchTerm.trim().toLowerCase();
 			result = result.filter((name) => {
-				const content =
-					`${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
+				const content = `${name.name ?? ""} ${name.description ?? ""}`.toLowerCase();
 				return content.includes(normalizedSearch);
 			});
 		}
@@ -216,15 +201,7 @@ export function useNameManagementView({
 				searchTerm,
 			};
 		}
-	}, [
-		mode,
-		filterStatus,
-		userFilter,
-		selectionFilter,
-		dateFilter,
-		analysisMode,
-		searchTerm,
-	]);
+	}, [mode, filterStatus, userFilter, selectionFilter, dateFilter, analysisMode, searchTerm]);
 
 	const handleFilterChange = useCallback(
 		(name: keyof TournamentFilters, value: string | number | boolean) => {
@@ -237,14 +214,10 @@ export function useNameManagementView({
 						setUserFilter(String(value) as "all" | "user" | "other");
 						break;
 					case "selectionFilter":
-						setSelectionFilter(
-							String(value) as "all" | "selected" | "unselected",
-						);
+						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
 						break;
 					case "dateFilter":
-						setDateFilter(
-							(String(value) as "all" | "today" | "week" | "month") || "all",
-						);
+						setDateFilter((String(value) as "all" | "today" | "week" | "month") || "all");
 						break;
 					case "searchTerm":
 						setSearchTerm(String(value));
@@ -261,9 +234,7 @@ export function useNameManagementView({
 						setUserFilter(String(value) as "all" | "user" | "other");
 						break;
 					case "selectionFilter":
-						setSelectionFilter(
-							String(value) as "all" | "selected" | "unselected",
-						);
+						setSelectionFilter(String(value) as "all" | "selected" | "unselected");
 						break;
 					case "searchTerm":
 						setSearchTerm(String(value));

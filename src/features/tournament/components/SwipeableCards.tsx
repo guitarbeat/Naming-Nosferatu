@@ -24,9 +24,7 @@ export const SwipeableCards = memo(
 		onStartTournament: (names: NameItem[]) => void;
 	}) => {
 		const [swipedIds, setSwipedIds] = useState<Set<string>>(new Set());
-		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(
-			null,
-		);
+		const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 		const [dragOffset, setDragOffset] = useState(0);
 
 		const visibleCards = useMemo(
@@ -47,10 +45,7 @@ export const SwipeableCards = memo(
 				const threshold = 100;
 				const velocityThreshold = 500;
 
-				if (
-					Math.abs(offset) < threshold &&
-					Math.abs(velocity) < velocityThreshold
-				) {
+				if (Math.abs(offset) < threshold && Math.abs(velocity) < velocityThreshold) {
 					setDragOffset(0);
 					return;
 				}
@@ -87,12 +82,7 @@ export const SwipeableCards = memo(
 							<span className="text-sm font-bold text-default-500 uppercase tracking-wider">
 								Progress
 							</span>
-							<Chip
-								size="sm"
-								variant="flat"
-								color="primary"
-								className="font-bold"
-							>
+							<Chip size="sm" variant="flat" color="primary" className="font-bold">
 								{swipedIds.size} / {names.length}
 							</Chip>
 						</div>
@@ -150,9 +140,7 @@ export const SwipeableCards = memo(
 										<Card
 											className={cn(
 												"relative flex flex-col items-center justify-between overflow-hidden group transition-all duration-200 h-full",
-												isSelected(card)
-													? "shadow-[0_0_30px_rgba(34,197,94,0.3)]"
-													: "",
+												isSelected(card) ? "shadow-[0_0_30px_rgba(34,197,94,0.3)]" : "",
 												index === 0 &&
 													"cursor-grab active:cursor-grabbing shadow-2xl active:scale-95",
 												index > 0 && "pointer-events-none",
@@ -173,9 +161,7 @@ export const SwipeableCards = memo(
 													>
 														<div className="flex items-center gap-2 px-6 py-3 bg-danger/90 backdrop-blur-md rounded-full border-2 border-danger shadow-lg rotate-[-20deg]">
 															<X size={24} className="text-white" />
-															<span className="text-white font-black text-lg uppercase">
-																Nope
-															</span>
+															<span className="text-white font-black text-lg uppercase">Nope</span>
 														</div>
 													</motion.div>
 
@@ -188,13 +174,8 @@ export const SwipeableCards = memo(
 														}}
 													>
 														<div className="flex items-center gap-2 px-6 py-3 bg-success/90 backdrop-blur-md rounded-full border-2 border-success shadow-lg rotate-[20deg]">
-															<Heart
-																size={24}
-																className="text-white fill-white"
-															/>
-															<span className="text-white font-black text-lg uppercase">
-																Like
-															</span>
+															<Heart size={24} className="text-white fill-white" />
+															<span className="text-white font-black text-lg uppercase">Like</span>
 														</div>
 													</motion.div>
 												</>
@@ -247,17 +228,13 @@ export const SwipeableCards = memo(
 								animate={{ opacity: 1, scale: 1 }}
 								className="flex flex-col items-center justify-center gap-6 p-12"
 							>
-								<Card
-									variant="default"
-									className="flex flex-col items-center text-center gap-6"
-								>
+								<Card variant="default" className="flex flex-col items-center text-center gap-6">
 									<div className="text-6xl">🎉</div>
 									<h2 className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
 										All Clear!
 									</h2>
 									<p className="text-white/60 max-w-md">
-										You've reviewed all {names.length} names. Ready to start the
-										tournament?
+										You've reviewed all {names.length} names. Ready to start the tournament?
 									</p>
 									{selectedNames.length >= 2 && (
 										<Button
@@ -284,16 +261,12 @@ export const SwipeableCards = memo(
 							size="lg"
 							variant="flat"
 							className="w-16 h-16 bg-danger/10 hover:bg-danger/20 border-2 border-danger/30 text-danger"
-							aria-label={
-								currentCard ? `Discard ${currentCard.name}` : "Discard"
-							}
+							aria-label={currentCard ? `Discard ${currentCard.name}` : "Discard"}
 							onClick={() => {
 								if (currentCard) {
 									setDragDirection("left");
 									playSound("wow");
-									setSwipedIds(
-										(prev) => new Set([...prev, String(currentCard.id)]),
-									);
+									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
 									setTimeout(() => setDragDirection(null), 300);
 								}
 							}}
@@ -325,9 +298,7 @@ export const SwipeableCards = memo(
 									if (!isSelected(currentCard)) {
 										onToggleName(currentCard);
 									}
-									setSwipedIds(
-										(prev) => new Set([...prev, String(currentCard.id)]),
-									);
+									setSwipedIds((prev) => new Set([...prev, String(currentCard.id)]));
 									setTimeout(() => setDragDirection(null), 300);
 								}
 							}}
@@ -346,9 +317,7 @@ export const SwipeableCards = memo(
 						className="flex items-center justify-center gap-3 text-default-400 text-sm"
 					>
 						<ChevronLeft size={16} className="animate-pulse" />
-						<span className="font-medium">
-							Swipe or tap buttons to review names
-						</span>
+						<span className="font-medium">Swipe or tap buttons to review names</span>
 						<ChevronRight size={16} className="animate-pulse" />
 					</motion.div>
 				)}

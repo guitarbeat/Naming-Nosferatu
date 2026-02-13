@@ -1,4 +1,4 @@
-import { withSupabase } from "@/services/supabase-client/client";
+import { withSupabase } from "@/services/supabase/client";
 import type { NameItem } from "@/types/appTypes";
 import { ELO_RATING } from "@/utils/constants";
 
@@ -46,10 +46,7 @@ export const tournamentsAPI = {
 			async (client) => {
 				// Call RPC function - type assertion needed for dynamic RPC calls
 				const rpcClient = client as unknown as {
-					rpc: (
-						name: string,
-						params: Record<string, unknown>,
-					) => Promise<unknown>;
+					rpc: (name: string, params: Record<string, unknown>) => Promise<unknown>;
 				};
 				await rpcClient.rpc("create_user_account", {
 					p_user_name: userName,
@@ -89,9 +86,7 @@ export const tournamentsAPI = {
 					return { success: false, error: "Missing data" };
 				}
 				const uniqueNames = [...new Set(ratings.map((r) => r.name))];
-				const missingNames = uniqueNames.filter(
-					(name) => !nameToIdCache.has(name),
-				);
+				const missingNames = uniqueNames.filter((name) => !nameToIdCache.has(name));
 
 				if (missingNames.length > 0) {
 					const { data: nameData } = await client
@@ -141,10 +136,7 @@ export class EloRating {
 		return 1 / (1 + 10 ** ((rb - ra) / ELO_RATING.RATING_DIVISOR));
 	}
 	updateRating(r: number, exp: number, act: number, games = 0) {
-		const k =
-			games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD
-				? this.kFactor * 2
-				: this.kFactor;
+		const k = games < ELO_RATING.NEW_PLAYER_GAME_THRESHOLD ? this.kFactor * 2 : this.kFactor;
 		return Math.round(r + k * (act - exp));
 	}
 	calculateNewRatings(
@@ -245,10 +237,7 @@ export class PreferenceSorter {
 			const b = this.items[j];
 
 			if (a && b) {
-				if (
-					!this.preferences.has(`${a}-${b}`) &&
-					!this.preferences.has(`${b}-${a}`)
-				) {
+				if (!this.preferences.has(`${a}-${b}`) && !this.preferences.has(`${b}-${a}`)) {
 					return { left: a, right: b };
 				}
 			}
@@ -272,10 +261,7 @@ export class PreferenceSorter {
 /**
  * Calculate bracket round based on number of names and current match
  */
-export function calculateBracketRound(
-	totalNames: number,
-	currentMatch: number,
-): number {
+export function calculateBracketRound(totalNames: number, currentMatch: number): number {
 	if (totalNames <= 2) {
 		return 1;
 	}

@@ -64,8 +64,7 @@ class SoundManager {
 		try {
 			const AudioContextClass =
 				window.AudioContext ||
-				(window as typeof window & { webkitAudioContext: typeof AudioContext })
-					.webkitAudioContext;
+				(window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
 			const audioContext = new AudioContextClass();
 			return audioContext.state !== "suspended";
 		} catch {

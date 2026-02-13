@@ -4,11 +4,11 @@
  */
 
 import { Suspense, useEffect, useState } from "react";
+import { leaderboardAPI, statsAPI } from "@/features/analytics/analyticsService";
 import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
-import { leaderboardAPI, statsAPI } from "@/services/analytics/analyticsService";
-import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase/client";
 import { BarChart3, Eye, EyeOff, Trophy } from "@/utils/icons";
 import { RandomGenerator } from "../tournament/components/RandomGenerator";
 

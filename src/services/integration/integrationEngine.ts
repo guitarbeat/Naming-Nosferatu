@@ -7,12 +7,7 @@
 
 import * as path from "node:path";
 import { compareFiles } from "./fileComparator";
-import {
-	createDirectory,
-	fileExists,
-	readFile,
-	writeFile,
-} from "./fileManager";
+import { createDirectory, fileExists, readFile, writeFile } from "./fileManager";
 import { mergeFiles } from "./fileMerger";
 import type { FileAnalysis, IntegrationResult, MergeStrategy } from "./types";
 
@@ -34,8 +29,9 @@ export function integrateFile(
 	analysis: FileAnalysis,
 	referenceContent: string,
 	strategy: MergeStrategy,
+	projectRoot: string,
 ): IntegrationResult {
-	const targetPath = path.join(analysis.targetLocation, analysis.fileName);
+	const targetPath = path.join(projectRoot, analysis.targetLocation, analysis.fileName);
 	const actionsLog: string[] = [];
 
 	try {
@@ -45,13 +41,7 @@ export function integrateFile(
 		if (fileExists(targetPath)) {
 			actionsLog.push(`Existing file found at ${targetPath}`);
 			// Existing file - merge files (Requirements 3.2, 3.3, 3.4)
-			return mergeWithExistingFile(
-				analysis,
-				referenceContent,
-				targetPath,
-				strategy,
-				actionsLog,
-			);
+			return mergeWithExistingFile(analysis, referenceContent, targetPath, strategy, actionsLog);
 		} else {
 			actionsLog.push(`No existing file found at ${targetPath}`);
 			// No existing file - create new file (Requirement 3.5)
@@ -200,9 +190,7 @@ function mergeWithExistingFile(
 			actionsLog,
 		};
 	} catch (error) {
-		actionsLog.push(
-			`Merge failed: ${error instanceof Error ? error.message : String(error)}`,
-		);
+		actionsLog.push(`Merge failed: ${error instanceof Error ? error.message : String(error)}`);
 		return {
 			success: false,
 			filePath: analysis.filePath,

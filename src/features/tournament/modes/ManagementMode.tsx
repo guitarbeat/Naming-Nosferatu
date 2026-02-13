@@ -3,10 +3,7 @@ import React, { memo, useCallback } from "react";
 import { Layers, LayoutGrid } from "@/icons";
 import { Button, CardStats, EmptyState } from "@/layout";
 import useAppStore from "@/store/appStore";
-import type {
-	NameManagementViewExtensions,
-	UseNameManagementViewResult,
-} from "@/types/appTypes";
+import type { NameManagementViewExtensions, UseNameManagementViewResult } from "@/types/appTypes";
 import { NameGrid } from "../components/NameGrid";
 import { ProfileSection } from "../components/ProfileSection";
 import { SwipeableCards } from "../components/SwipeableCards";
@@ -56,12 +53,8 @@ export const ManagementMode = memo<ManagementModeProps>(
 		// Get swipe mode state from global store
 		const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
 		const setSwipeMode = useAppStore((state) => state.uiActions.setSwipeMode);
-		const showCatPicturesGlobal = useAppStore(
-			(state) => state.ui.showCatPictures,
-		);
-		const setCatPictures = useAppStore(
-			(state) => state.uiActions.setCatPictures,
-		);
+		const showCatPicturesGlobal = useAppStore((state) => state.ui.showCatPictures);
+		const setCatPictures = useAppStore((state) => state.uiActions.setCatPictures);
 
 		// Direct mode setters instead of toggle
 		const setGridMode = useCallback(() => {
@@ -77,15 +70,12 @@ export const ManagementMode = memo<ManagementModeProps>(
 		}, [isSwipeMode, setSwipeMode]);
 
 		// Get handlers from tournamentProps
-		const onStartTournament = (tournamentProps?.onStartTournament ??
-			tournamentProps?.onStart) as
+		const onStartTournament = (tournamentProps?.onStartTournament ?? tournamentProps?.onStart) as
 			| ((names: typeof selectedNames) => void)
 			| undefined;
 
 		// Determine if we should show the progress bar (only in tournament setup with enough names)
-		const showProgress = Boolean(
-			isTournament && tournamentProps.showProgress && names.length > 0,
-		);
+		const showProgress = Boolean(isTournament && tournamentProps.showProgress && names.length > 0);
 		const targetSize = (tournamentProps.targetSize as number) || 16;
 
 		if (isError) {
@@ -118,12 +108,8 @@ export const ManagementMode = memo<ManagementModeProps>(
 				{!isTournament && (
 					<ProfileSection
 						onLogin={
-							(profileProps.onLogin as (
-								name: string,
-							) => Promise<boolean | undefined>) ||
-							(profileProps.onUpdate as (
-								name: string,
-							) => Promise<boolean | undefined>) ||
+							(profileProps.onLogin as (name: string) => Promise<boolean | undefined>) ||
+							(profileProps.onUpdate as (name: string) => Promise<boolean | undefined>) ||
 							(async (): Promise<boolean> => Promise.resolve(true))
 						}
 					/>
@@ -164,9 +150,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 										Swipe
 									</button>
 								</div>
-								<span className="text-xs text-white/50 font-medium">
-									{selectedCount} selected
-								</span>
+								<span className="text-xs text-white/50 font-medium">{selectedCount} selected</span>
 							</div>
 							<div className="tournament-toolbar-filters-container">
 								<div className="tournament-toolbar-filters-grid">
@@ -182,9 +166,7 @@ export const ManagementMode = memo<ManagementModeProps>(
 										/>
 									</div>
 									<div className="tournament-toolbar-filter-group">
-										<span className="tournament-toolbar-filter-label">
-											Visibility
-										</span>
+										<span className="tournament-toolbar-filter-label">Visibility</span>
 										<select
 											value={filterStatus}
 											onChange={(event) => setFilterStatus(event.target.value)}
@@ -197,18 +179,11 @@ export const ManagementMode = memo<ManagementModeProps>(
 										</select>
 									</div>
 									<div className="tournament-toolbar-filter-group">
-										<span className="tournament-toolbar-filter-label">
-											Selection
-										</span>
+										<span className="tournament-toolbar-filter-label">Selection</span>
 										<select
 											value={selectionFilter}
 											onChange={(event) =>
-												setSelectionFilter(
-													event.target.value as
-														| "all"
-														| "selected"
-														| "unselected",
-												)
+												setSelectionFilter(event.target.value as "all" | "selected" | "unselected")
 											}
 											className="tournament-toolbar-filter-select"
 										>

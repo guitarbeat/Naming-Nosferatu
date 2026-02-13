@@ -70,7 +70,17 @@ export function NavButton({
 				{badge}
 			</div>
 			<span className="text-[10px] font-medium tracking-wide truncate max-w-[60px]">{label}</span>
+<<<<<<< HEAD
 					</button>
+=======
+			{isActive && !highlight && (
+				<motion.div
+					layoutId="dockIndicator"
+					className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/80 rounded-b-full"
+				/>
+			)}
+		</button>
+>>>>>>> 7ce97e82 (refactor: consolidate duplicate analytics and supabase services)
 	);
 }
 

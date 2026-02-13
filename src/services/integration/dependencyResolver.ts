@@ -31,11 +31,7 @@ export function resolveDependencies(
 			return { ...dep, isResolved };
 		} else {
 			// Internal modules - check if the file exists
-			const resolvedPath = resolveInternalModule(
-				dep.importPath,
-				currentFilePath,
-				projectRoot,
-			);
+			const resolvedPath = resolveInternalModule(dep.importPath, currentFilePath, projectRoot);
 			return {
 				...dep,
 				isResolved: resolvedPath !== null,
@@ -52,15 +48,10 @@ export function resolveDependencies(
  * @param projectRoot - Root directory of the project
  * @returns True if the package exists in node_modules
  */
-export function checkExternalDependency(
-	packageName: string,
-	projectRoot: string,
-): boolean {
+export function checkExternalDependency(packageName: string, projectRoot: string): boolean {
 	// Extract the package name (handle scoped packages like @types/node)
 	const parts = packageName.split("/");
-	const pkgName = packageName.startsWith("@")
-		? `${parts[0]}/${parts[1]}`
-		: parts[0];
+	const pkgName = packageName.startsWith("@") ? `${parts[0]}/${parts[1]}` : parts[0];
 
 	const nodeModulesPath = resolve(projectRoot, "node_modules", pkgName);
 	return existsSync(nodeModulesPath);
@@ -130,9 +121,7 @@ export function classifyDependency(importPath: string): boolean {
  * @param dependencies - Array of dependencies to filter
  * @returns Array of unresolved dependencies
  */
-export function getUnresolvedDependencies(
-	dependencies: Dependency[],
-): Dependency[] {
+export function getUnresolvedDependencies(dependencies: Dependency[]): Dependency[] {
 	return dependencies.filter((dep) => !dep.isResolved);
 }
 
@@ -142,9 +131,7 @@ export function getUnresolvedDependencies(
  * @param dependencies - Array of dependencies to filter
  * @returns Array of external dependencies
  */
-export function getExternalDependencies(
-	dependencies: Dependency[],
-): Dependency[] {
+export function getExternalDependencies(dependencies: Dependency[]): Dependency[] {
 	return dependencies.filter((dep) => dep.isExternal);
 }
 
@@ -154,8 +141,6 @@ export function getExternalDependencies(
  * @param dependencies - Array of dependencies to filter
  * @returns Array of internal dependencies
  */
-export function getInternalDependencies(
-	dependencies: Dependency[],
-): Dependency[] {
+export function getInternalDependencies(dependencies: Dependency[]): Dependency[] {
 	return dependencies.filter((dep) => !dep.isExternal);
 }

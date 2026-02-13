@@ -176,12 +176,8 @@ export function BumpChart({
 		if (!svg) {
 			return;
 		}
-		const lines = svg.querySelectorAll(
-			".charts-bump-chart-line",
-		) as NodeListOf<SVGPathElement>;
-		const points = svg.querySelectorAll(
-			".charts-bump-chart-point",
-		) as NodeListOf<SVGCircleElement>;
+		const lines = svg.querySelectorAll(".charts-bump-chart-line") as NodeListOf<SVGPathElement>;
+		const points = svg.querySelectorAll(".charts-bump-chart-point") as NodeListOf<SVGCircleElement>;
 		const legends = svg.querySelectorAll(
 			".charts-bump-chart-legend-item",
 		) as NodeListOf<HTMLElement>;
@@ -205,8 +201,7 @@ export function BumpChart({
 
 			setTimeout(
 				() => {
-					point.style.transition =
-						"opacity 300ms ease-out, transform 300ms ease-out";
+					point.style.transition = "opacity 300ms ease-out, transform 300ms ease-out";
 					point.style.opacity = "1";
 					point.style.transform = "scale(1)";
 				},
@@ -247,18 +242,10 @@ export function BumpChart({
 				tabIndex={0}
 			>
 				<title>{title || "Ranking History"}</title>
-				<desc>
-					A bump chart showing the change in rankings over time for different
-					cat names.
-				</desc>
+				<desc>A bump chart showing the change in rankings over time for different cat names.</desc>
 				{/* Grid lines */}
 				<defs>
-					<pattern
-						id="grid"
-						width="40"
-						height="40"
-						patternUnits="userSpaceOnUse"
-					>
+					<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
 						<path
 							d="M 40 0 L 0 0 0 40"
 							fill="none"
@@ -317,13 +304,7 @@ export function BumpChart({
 
 				{/* Lines and points */}
 				{processedData.map((series) => {
-					const path = generatePath(
-						series.rankings,
-						chartWidth,
-						chartHeight,
-						padding,
-						rankToY,
-					);
+					const path = generatePath(series.rankings, chartWidth, chartHeight, padding, rankToY);
 					const isHovered = hoveredSeries === series.id;
 
 					return (
@@ -348,8 +329,7 @@ export function BumpChart({
 								const x = xPositions[pointIndex];
 								const y = rankToY(rank);
 								const isPointHovered =
-									hoveredPoint?.seriesId === series.id &&
-									hoveredPoint?.index === pointIndex;
+									hoveredPoint?.seriesId === series.id && hoveredPoint?.index === pointIndex;
 
 								return (
 									<g key={`${series.id}-${pointIndex}`}>
@@ -438,22 +418,18 @@ export function BumpChart({
 								className="charts-bump-chart-legend-color"
 								style={{ backgroundColor: series.color }}
 							/>
-							<span className="charts-bump-chart-legend-label">
-								{series.name}
-							</span>
+							<span className="charts-bump-chart-legend-label">{series.name}</span>
 							{showTrends && series.rankings && series.rankings.length >= 2 && (
 								<TrendIndicator
 									direction={
 										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
-										series.rankings[series.rankings.length - 1]! <
-										series.rankings[0]!
+										series.rankings[series.rankings.length - 1]! < series.rankings[0]!
 											? "up"
 											: "down"
 									}
 									percentChange={Math.abs(
 										// biome-ignore lint/style/noNonNullAssertion: rankings length checked above
-										series.rankings[series.rankings.length - 1]! -
-											series.rankings[0]!,
+										series.rankings[series.rankings.length - 1]! - series.rankings[0]!,
 									)}
 									compact={true}
 								/>
