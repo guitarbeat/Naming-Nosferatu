@@ -51,6 +51,7 @@ export function NameSelector() {
 	const [error, setError] = useState<string | null>(null);
 	const [retryCount, setRetryCount] = useState(0);
 	const [togglingHidden, setTogglingHidden] = useState<Set<IdType>>(new Set());
+	const [togglingLocked, setTogglingLocked] = useState<Set<IdType>>(new Set());
 	const { getCachedData, setCachedData, invalidateCache } = useNamesCache();
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -91,6 +92,12 @@ export function NameSelector() {
 				}
 
 				const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden names for everyone
+				console.log('[NameSelector] Fetched names debug:', {
+					total: fetchedNames.length,
+					hidden: fetchedNames.filter(n => n.isHidden).length,
+					locked: fetchedNames.filter(n => n.lockedIn || n.locked_in).length,
+					sampleHidden: fetchedNames.filter(n => n.isHidden)[0]
+				});
 				setNames(fetchedNames);
 				setCachedData(fetchedNames, false);
 				setRetryCount(0); // Reset retry count on success
@@ -121,6 +128,25 @@ export function NameSelector() {
 			}
 		};
 	}, [retryCount, getCachedData, setCachedData]);
+
+	// Auto-select locked-in names when names are loaded
+	useEffect(() => {
+		if (names.length > 0) {
+			const lockedInIds = new Set(
+				names
+					.filter(name => name.lockedIn || name.locked_in)
+					.map(name => name.id)
+			);
+			
+			if (lockedInIds.size > 0) {
+				setSelectedNames(prev => {
+					const newSelection = new Set(prev);
+					lockedInIds.forEach(id => newSelection.add(id));
+					return newSelection;
+				});
+			}
+		}
+	}, [names]);
 
 	const syncSelectionToStore = useCallback(
 		(nextSelectedIds: Set<IdType>) => {
@@ -273,7 +299,7 @@ export function NameSelector() {
 		triggerHaptic();
 	}, [swipeHistory, syncSelectionToStore, triggerHaptic]);
 
-	const visibleCards = names.filter((name) => !swipedIds.has(name.id));
+	const visibleCards = names.filter((name) => !swipedIds.has(name.id) && !(name.lockedIn || name.locked_in));
 	const cardsToRender = visibleCards.slice(0, 3);
 
 	// Keyboard navigation for swipe mode
@@ -383,6 +409,53 @@ export function NameSelector() {
 		},
 		[invalidateCache, setHiddenToggleLoading, updateNameHiddenState, userName],
 	);
+
+	// Handle toggle locked status
+	const handleToggleLocked = useCallback(async (nameId: IdType, isCurrentlyLocked: boolean) => {
+		if (!isAdmin) {
+			console.warn("Only admins can toggle locked status");
+			return;
+		}
+
+		setTogglingLocked(prev => new Set(prev).add(nameId));
+
+		try {
+			console.log('[NameSelector] Lock toggle attempt:', { nameId, isCurrentlyLocked, userName, isAdmin });
+			const { withSupabase } = await import("@/services/supabase/client");
+			await withSupabase(async (client) => {
+				// Set user context first
+				const contextResult = await client.rpc("set_user_context", { user_name_param: userName });
+				console.log('[NameSelector] User context set:', contextResult);
+				
+				// Then toggle lock
+				const result = await client.rpc('toggle_name_locked_in' as any, { 
+					p_name_id: String(nameId), 
+					p_locked_in: !isCurrentlyLocked 
+				});
+				
+				console.log('[NameSelector] Lock toggle result:', result);
+				
+				if (result.error) {
+					throw new Error(result.error.message || "Failed to toggle locked status");
+				}
+				return result.data;
+			}, null);
+
+			invalidateCache();
+			const fetchedNames = await coreAPI.getTrendingNames(true);
+			setNames(fetchedNames);
+			console.log('[NameSelector] Lock toggle successful, names refreshed');
+		} catch (error) {
+			console.error("Failed to toggle locked status:", error);
+			alert(`Failed to ${isCurrentlyLocked ? 'unlock' : 'lock'} name. Please try again.`);
+		} finally {
+			setTogglingLocked(prev => {
+				const newSet = new Set(prev);
+				newSet.delete(nameId);
+				return newSet;
+			});
+		}
+	}, [isAdmin, userName, invalidateCache]);
 
 	// Hidden names interaction handlers
 	const handleHiddenNameMouseDown = useCallback((nameId: IdType) => {
@@ -682,53 +755,24 @@ export function NameSelector() {
 							return lockedInNames.length > 0 && (
 								<div>
 									<h3 className="text-2xl font-bold text-white mb-6 text-center bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-										🔒 Locked In Names
+										🐱 My Cat's Names
 									</h3>
-									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-										{lockedInNames.map((nameItem) => {
-											const catImage = catImageById.get(nameItem.id) ?? getRandomCatImage(nameItem.id, CAT_IMAGES);
-											return (
-												<div
-													key={nameItem.id}
-													className="relative rounded-xl border-2 transition-all overflow-hidden group transform ring-2 ring-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] border-amber-500/30 bg-amber-500/10 cursor-not-allowed"
-												>
-													<div className="aspect-square w-full relative">
-														<CatImage
-															src={catImage}
-															alt={nameItem.name}
-															containerClassName="w-full h-full"
-															imageClassName="w-full h-full object-cover"
-														/>
-														<div className="absolute top-2 left-2 px-2 py-1 bg-amber-500/90 backdrop-blur-sm border border-amber-500 rounded-full text-xs font-bold text-white">
-															🔒 Locked In
-														</div>
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																handleOpenLightbox(nameItem.id);
-															}}
-															className="absolute top-2 right-2 p-2 rounded-full bg-black/50 backdrop-blur-sm text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-															aria-label="View full size"
-														>
-															<ZoomIn size={16} />
-														</button>
+									<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+										{lockedInNames.map((nameItem) => (
+											<div
+												key={nameItem.id}
+												className="p-3 border-2 transition-all ring-2 ring-amber-500/50 shadow-[0_0_20px_rgba(245,158,11,0.2)] border-amber-500/30 bg-amber-500/10 text-center group"
+											>
+												<h4 className="text-lg font-bold text-white mb-2">{nameItem.name}</h4>
+												{nameItem.description && (
+													<div className="relative h-0 overflow-hidden group-hover:h-auto transition-all duration-300">
+														<p className="text-white/60 leading-relaxed pt-2 border-t border-amber-500/30">
+															{nameItem.description}
+														</p>
 													</div>
-													<div className="p-3 flex flex-col gap-1">
-														<div className="flex items-center justify-between gap-2">
-															<span className="font-medium text-white text-sm">{nameItem.name}</span>
-															<div className="px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full flex items-center gap-1">
-																<CheckCircle size={10} className="text-amber-500" />
-																<span className="text-amber-500 font-bold text-xs">Locked</span>
-															</div>
-														</div>
-														{nameItem.description && (
-															<p className="text-white/60 text-xs line-clamp-2">{nameItem.description}</p>
-														)}
-													</div>
-												</div>
-											);
-										})}
+												)}
+											</div>
+										))}
 									</div>
 								</div>
 							);
@@ -740,7 +784,7 @@ export function NameSelector() {
 							return activeNames.length > 0 && (
 								<div>
 									<h3 className="text-2xl font-bold text-white mb-6 text-center">
-										Available Names
+										🏆 Cat Name Contenders
 									</h3>
 									<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
 										{activeNames.map((nameItem) => {
@@ -764,7 +808,7 @@ export function NameSelector() {
 															: "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
 													}`}
 												>
-													<div className="aspect-square w-full relative">
+													<div className="aspect-[4/3] w-full relative">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
@@ -798,11 +842,12 @@ export function NameSelector() {
 															)}
 														</div>
 														{nameItem.description && (
-															<p className="text-white/60 text-xs line-clamp-2">{nameItem.description}</p>
+															<p className="text-white/60 text-xs leading-relaxed">{nameItem.description}</p>
 														)}
 													</div>
 													{isAdmin && !isSwipeMode && (
-														<div className="px-3 pb-3">
+														<div className="px-3 pb-3 flex gap-2">
+															{/* Hide/Unhide Button */}
 															<button
 																type="button"
 																onClick={(e) => {
@@ -810,21 +855,58 @@ export function NameSelector() {
 																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
 																disabled={togglingHidden.has(nameItem.id)}
-																className={`mt-1 flex items-center gap-1 text-xs transition-colors ${
-																	togglingHidden.has(nameItem.id)
-																		? "text-slate-500 cursor-not-allowed"
-																		: "text-amber-400 hover:text-amber-300"
-																}`}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+																	nameItem.isHidden
+																		? "bg-green-600 hover:bg-green-700 text-white"
+																		: "bg-red-600 hover:bg-red-700 text-white"
+																} ${togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""}`}
 															>
 																{togglingHidden.has(nameItem.id) ? (
-																	<>
+																	<div className="flex items-center justify-center gap-1">
 																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
 																		<span>Processing...</span>
+																	</div>
+																) : nameItem.isHidden ? (
+																	<>
+																		<Eye size={12} className="mr-1" />
+																		Unhide
 																	</>
 																) : (
 																	<>
-																		<EyeOff size={12} />
-																		<span>Hide</span>
+																		<EyeOff size={12} className="mr-1" />
+																		Hide
+																	</>
+																)}
+															</button>
+
+															{/* Lock/Unlock Button */}
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleToggleLocked(nameItem.id, nameItem.lockedIn || nameItem.locked_in || false);
+																}}
+																disabled={togglingLocked.has(nameItem.id)}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+																	nameItem.lockedIn || nameItem.locked_in
+																		? "bg-gray-600 hover:bg-gray-700 text-white"
+																		: "bg-amber-600 hover:bg-amber-700 text-white"
+																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""}`}
+															>
+																{togglingLocked.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : (nameItem.lockedIn || nameItem.locked_in) ? (
+																	<>
+																		<CheckCircle size={12} className="mr-1" />
+																		Unlock
+																	</>
+																) : (
+																	<>
+																		<CheckCircle size={12} className="mr-1" />
+																		Lock
 																	</>
 																)}
 															</button>
@@ -841,10 +923,15 @@ export function NameSelector() {
 						{/* Hidden Names Container - Everyone can access with special interaction */}
 						{(() => {
 							const hiddenNames = names.filter(name => name.isHidden);
+							console.log('[NameSelector] Hidden names debug:', {
+								totalNames: names.length,
+								hiddenNames: hiddenNames.length,
+								hiddenNameIds: hiddenNames.map(n => n.id),
+							});
 							return hiddenNames.length > 0 && (
 								<div>
 									<h3 className="text-2xl font-bold text-white mb-4 text-center bg-gradient-to-r from-purple-400 to-indigo-500 bg-clip-text text-transparent">
-										� Hidden Names
+										🔍 Hidden Names
 									</h3>
 									<p className="text-center text-white/70 mb-6 text-sm">
 										Click and hold to reveal and select hidden names
@@ -871,7 +958,7 @@ export function NameSelector() {
 															: "border-purple-500/30 bg-purple-900/10 hover:border-purple-500/50 hover:bg-purple-900/20 cursor-pointer"
 													}`}
 												>
-													<div className="aspect-square w-full relative">
+													<div className="aspect-[4/3] w-full relative">
 														<CatImage
 															src={catImage}
 															alt={nameItem.name}
@@ -928,11 +1015,12 @@ export function NameSelector() {
 															)}
 														</div>
 														{nameItem.description && isRevealed && (
-															<p className="text-white/60 text-xs line-clamp-2">{nameItem.description}</p>
+															<p className="text-white/60 text-xs leading-relaxed">{nameItem.description}</p>
 														)}
 													</div>
 													{isAdmin && !isSwipeMode && isRevealed && (
-														<div className="px-3 pb-3">
+														<div className="px-3 pb-3 flex gap-2">
+															{/* Unhide Button */}
 															<button
 																type="button"
 																onClick={(e) => {
@@ -940,21 +1028,51 @@ export function NameSelector() {
 																	handleToggleHidden(nameItem.id, nameItem.isHidden || false);
 																}}
 																disabled={togglingHidden.has(nameItem.id)}
-																className={`mt-1 flex items-center gap-1 text-xs transition-colors ${
-																	togglingHidden.has(nameItem.id)
-																		? "text-slate-500 cursor-not-allowed"
-																		: "text-purple-400 hover:text-purple-300"
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-green-600 hover:bg-green-700 text-white ${
+																	togglingHidden.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""
 																}`}
 															>
 																{togglingHidden.has(nameItem.id) ? (
-																	<>
+																	<div className="flex items-center justify-center gap-1">
 																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
 																		<span>Processing...</span>
+																	</div>
+																) : (
+																	<>
+																		<Eye size={12} className="mr-1" />
+																		Unhide
+																	</>
+																)}
+															</button>
+
+															{/* Lock/Unlock Button */}
+															<button
+																type="button"
+																onClick={(e) => {
+																	e.stopPropagation();
+																	handleToggleLocked(nameItem.id, nameItem.lockedIn || nameItem.locked_in || false);
+																}}
+																disabled={togglingLocked.has(nameItem.id)}
+																className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+																	nameItem.lockedIn || nameItem.locked_in
+																		? "bg-gray-600 hover:bg-gray-700 text-white"
+																		: "bg-amber-600 hover:bg-amber-700 text-white"
+																} ${togglingLocked.has(nameItem.id) ? "opacity-50 cursor-not-allowed" : ""}`}
+															>
+																{togglingLocked.has(nameItem.id) ? (
+																	<div className="flex items-center justify-center gap-1">
+																		<div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+																		<span>Processing...</span>
+																	</div>
+																) : (nameItem.lockedIn || nameItem.locked_in) ? (
+																	<>
+																		<CheckCircle size={12} className="mr-1" />
+																		Unlock
 																	</>
 																) : (
 																	<>
-																		<Eye size={12} />
-																		<span>Unhide</span>
+																		<CheckCircle size={12} className="mr-1" />
+																		Lock
 																	</>
 																)}
 															</button>
