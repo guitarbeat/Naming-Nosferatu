@@ -30,9 +30,12 @@ export function LightboxImage({ src, alt, className, onError, onLoad }: Lightbox
 	const handleError = useCallback(() => {
 		if (retryCount < maxRetries) {
 			// Retry with a slight delay
-			setTimeout(() => {
-				setRetryCount(prev => prev + 1);
-			}, 1000 * (retryCount + 1));
+			setTimeout(
+				() => {
+					setRetryCount((prev) => prev + 1);
+				},
+				1000 * (retryCount + 1),
+			);
 		} else {
 			setIsLoading(false);
 			setHasError(true);

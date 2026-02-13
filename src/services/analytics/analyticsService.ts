@@ -144,15 +144,6 @@ interface RatingRow {
 	user_name: string;
 }
 
-interface NameRow {
-	id: string | number;
-	name: string;
-	description: string;
-	avg_rating: number;
-	categories: string[] | null;
-	created_at: string;
-}
-
 interface SiteStatsRpcResult {
 	totalNames: number;
 	hiddenNames: number;
@@ -373,68 +364,26 @@ export const leaderboardAPI = {
 	/** Get global leaderboard data. */
 	getLeaderboard: async (limit: number | null = 50) => {
 		return withSupabase(async (client) => {
-			const { data: ratings } = (await client
-				.from("cat_name_ratings")
-				.select("name_id, rating, wins, losses")) as unknown as {
-				data: RatingRow[] | null;
-				error: unknown;
-			};
+			const { data, error } = await client.rpc("get_leaderboard_stats", {
+				limit_count: limit || 50,
+			});
 
-			// Aggregate per name
-			const statsMap = new Map<
-				string | number,
-				{ totalRating: number; count: number; totalWins: number; totalLosses: number }
-			>();
-			for (const r of ratings ?? []) {
-				const existing = statsMap.get(r.name_id);
-				if (existing) {
-					existing.totalRating += Number(r.rating) || 1500;
-					existing.count += 1;
-					existing.totalWins += r.wins || 0;
-					existing.totalLosses += r.losses || 0;
-				} else {
-					statsMap.set(r.name_id, {
-						totalRating: Number(r.rating) || 1500,
-						count: 1,
-						totalWins: r.wins || 0,
-						totalLosses: r.losses || 0,
-					});
-				}
+			if (error) {
+				console.error("Failed to fetch leaderboard stats:", error);
+				return [];
 			}
 
-			const { data: names } = (await client
-				.from("cat_name_options")
-				.select("id, name, description, avg_rating, categories, created_at")
-				.eq("is_active", true)
-				.eq("is_hidden", false)
-				.order("avg_rating", { ascending: false })
-				.limit(limit ? limit * 2 : 100)) as unknown as {
-				data: NameRow[] | null;
-				error: unknown;
-			};
-
-			const leaderboard = (names ?? [])
-				.map((row) => {
-					const stats = statsMap.get(row.id);
-					const avgRating = stats
-						? Math.round(stats.totalRating / stats.count)
-						: row.avg_rating || 1500;
-					return {
-						name_id: row.id,
-						name: row.name,
-						description: row.description,
-						category: row.categories?.[0] ?? null,
-						avg_rating: avgRating,
-						total_ratings: stats?.count ?? 0,
-						wins: stats?.totalWins ?? 0,
-						losses: stats?.totalLosses ?? 0,
-						created_at: row.created_at || null,
-					};
-				})
-				.filter((row) => row.total_ratings > 0 || row.avg_rating > 1500)
-				.sort((a, b) => b.avg_rating - a.avg_rating);
-
-			return limit ? leaderboard.slice(0, limit) : leaderboard;
+			return (data || []).map((row: any) => ({
+				name_id: row.name_id,
+				name: row.name,
+				description: row.description,
+				category: row.category,
+				avg_rating: Number(row.avg_rating),
+				total_ratings: Number(row.total_ratings),
+				wins: Number(row.wins),
+				losses: Number(row.losses),
+				created_at: row.created_at || null,
+			}));
 		}, []);
 	},
 };
