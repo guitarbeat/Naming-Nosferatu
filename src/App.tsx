@@ -155,6 +155,7 @@ function AnalysisContent() {
 						onStartNew={handleStartNewTournament}
 						onUpdateRatings={handleUpdateRatings}
 						userName={user.name ?? ""}
+						isAdmin={user.isAdmin}
 					/>
 				</ErrorBoundary>
 			</Suspense>

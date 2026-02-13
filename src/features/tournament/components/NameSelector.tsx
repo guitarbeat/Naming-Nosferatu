@@ -9,11 +9,11 @@ import Button from "@/layout/Button";
 import { Card } from "@/layout/Card";
 import { Loading } from "@/layout/FeedbackComponents";
 import { Lightbox } from "@/layout/Lightbox";
-import { coreAPI } from "@/services/supabase-client/client";
+import { coreAPI, hiddenNamesAPI } from "@/services/supabase-client/client";
 import { CAT_IMAGES, getRandomCatImage } from "@/services/tournament";
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
-import { Check, Heart, X, ZoomIn } from "@/utils/icons";
+import { Check, Eye, EyeOff, Heart, X, ZoomIn } from "@/utils/icons";
 import CatImage from "./CatImage";
 
 interface NameSelectorProps {
@@ -23,6 +23,8 @@ interface NameSelectorProps {
 export function NameSelector({ onStart }: NameSelectorProps) {
 	const [selectedNames, setSelectedNames] = useState<Set<IdType>>(new Set());
 	const isSwipeMode = useAppStore((state) => state.ui.isSwipeMode);
+	const isAdmin = useAppStore((state) => state.user.isAdmin);
+	const userName = useAppStore((state) => state.user.name);
 	const [swipedIds, setSwipedIds] = useState<Set<IdType>>(new Set());
 	const [dragDirection, setDragDirection] = useState<"left" | "right" | null>(null);
 	const [dragOffset, setDragOffset] = useState(0);
@@ -111,6 +113,22 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 
 	const allCatImages = names.map((nameItem) => getRandomCatImage(nameItem.id, CAT_IMAGES));
 
+	const handleToggleHidden = async (nameId: IdType, isCurrentlyHidden: boolean) => {
+		if (!userName) return;
+		try {
+			if (isCurrentlyHidden) {
+				await hiddenNamesAPI.unhideName(userName, nameId);
+			} else {
+				await hiddenNamesAPI.hideName(userName, nameId);
+			}
+			// Refresh names list
+			const fetchedNames = await coreAPI.getTrendingNames(true); // Include hidden for admins
+			setNames(fetchedNames);
+		} catch (error) {
+			console.error("Failed to toggle hidden status:", error);
+		}
+	};
+
 	if (isLoading) {
 		return (
 			<Card padding="xl" shadow="xl" className="max-w-4xl mx-auto">
@@ -186,6 +204,28 @@ export function NameSelector({ onStart }: NameSelectorProps) {
 											<p className="text-xs text-white/60 text-left line-clamp-2">
 												{nameItem.description}
 											</p>
+										)}
+										{isAdmin && (
+											<button
+												type="button"
+												onClick={(e) => {
+													e.stopPropagation();
+													handleToggleHidden(nameItem.id, nameItem.isHidden || false);
+												}}
+												className="mt-1 flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 transition-colors"
+											>
+												{nameItem.isHidden ? (
+													<>
+														<Eye size={12} />
+														<span>Unhide</span>
+													</>
+												) : (
+													<>
+														<EyeOff size={12} />
+														<span>Hide</span>
+													</>
+												)}
+											</button>
 										)}
 									</div>
 								</button>

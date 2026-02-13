@@ -18,6 +18,8 @@ export {
 	ChevronRight,
 	Copy,
 	Download,
+	Eye,
+	EyeOff,
 	GripVertical,
 	Heart,
 	Layers,
