@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useNameSuggestion } from "@/hooks/useNames";
 import Button from "@/layout/Button";
 import { Input, Textarea } from "@/layout/FormPrimitives";
+import { useAuth } from "@/providers/Providers";
 import useAppStore from "@/store/appStore";
 import { cn, hapticNavTap, hapticTournamentStart } from "@/utils/basic";
 import {
@@ -124,9 +125,10 @@ export function FluidNav() {
 	const appStore = useAppStore();
 	const navigate = useNavigate();
 	const location = useLocation();
+	const { login, logout } = useAuth();
 	const { tournament, tournamentActions, user, ui, uiActions, userActions } = appStore;
 	const { selectedNames } = tournament;
-	const { isLoggedIn, name: userName, avatarUrl } = user;
+	const { isLoggedIn, name: userName, avatarUrl, isAdmin } = user;
 	const { isSwipeMode } = ui;
 	const { setSwipeMode } = uiActions;
 	const [activeSection, setActiveSection] = useState("pick");
@@ -171,9 +173,14 @@ export function FluidNav() {
 		}
 		setIsSaving(true);
 		try {
-			userActions.login(editedName.trim());
-			setIsLoginExpanded(false);
-			setEditedName("");
+			// Use auth adapter login
+			const success = await login({ name: editedName.trim() });
+			if (success) {
+				// Also update store for compatibility
+				userActions.login(editedName.trim());
+				setIsLoginExpanded(false);
+				setEditedName("");
+			}
 		} catch (err) {
 			console.error("Failed to login:", err);
 		} finally {
@@ -181,9 +188,14 @@ export function FluidNav() {
 		}
 	};
 
-	const handleLogout = () => {
-		userActions.logout();
-		setIsLoginExpanded(false);
+	const handleLogout = async () => {
+		try {
+			await logout();
+			userActions.logout();
+			setIsLoginExpanded(false);
+		} catch (err) {
+			console.error("Failed to logout:", err);
+		}
 	};
 
 	const handleProfileClick = () => {
@@ -460,7 +472,11 @@ export function FluidNav() {
 					<NavButton
 						id="profile"
 						icon={User}
-						label={isLoggedIn ? userName?.split(" ")[0] || "You" : "Name?"}
+						label={
+							isLoggedIn 
+								? `${userName?.split(" ")[0] || "You"}${isAdmin ? " 👑" : ""}`
+								: "Name?"
+						}
 						isActive={isLoginExpanded}
 						onClick={handleProfileClick}
 						ariaLabel={isLoggedIn ? "Profile" : "Enter your name"}

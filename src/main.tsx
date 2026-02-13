@@ -7,6 +7,7 @@ import { BrowserRouter } from "react-router-dom";
 import { queryClient } from "@/services/supabase/client";
 import App from "./App";
 import { Providers } from "./providers/Providers";
+import { authAdapter } from "./services/authAdapter";
 import "./index.css";
 
 const rootElement = document.getElementById("root");
@@ -18,7 +19,7 @@ if (!rootElement) {
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<Providers>
+			<Providers auth={{ adapter: authAdapter }}>
 				<BrowserRouter>
 					<App />
 					<Analytics />

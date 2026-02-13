@@ -33,11 +33,21 @@ export const imagesAPI = {
 	},
 
 	/**
-	 * Upload an image to the cat-photos bucket
+	 * Upload an image to the cat-photos bucket (admin only)
 	 */
 	upload: async (file: File | Blob, userName: string) => {
 		return withSupabase(
 			async (client) => {
+				// Check if user is admin
+				const { data: adminCheck } = await client.rpc('check_user_role_by_name', { 
+					required_role: 'admin',
+					user_name_param: userName 
+				});
+				
+				if (!adminCheck) {
+					return { path: null, error: "Admin access required for image uploads" };
+				}
+
 				const fileName = `${Date.now()}-${userName}-${(file as File).name || "blob"}`;
 				const { data, error } = await client.storage.from("cat-photos").upload(fileName, file);
 
@@ -174,7 +184,7 @@ export const coreAPI = {
 			let query = client
 				.from("cat_name_options")
 				.select(
-					"id, name, description, created_at, avg_rating, is_active, is_hidden, status, provenance",
+					"id, name, description, created_at, avg_rating, is_active, is_hidden, locked_in, status, provenance",
 				)
 				.eq("is_active", true)
 				.order("avg_rating", { ascending: false })

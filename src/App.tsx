@@ -25,11 +25,19 @@ import { cleanupPerformanceMonitoring, initializePerformanceMonitoring } from "@
 
 const TournamentFlow = routeComponents.TournamentFlow;
 const DashboardLazy = routeComponents.DashboardLazy;
+const AdminDashboardLazy = routeComponents.AdminDashboardLazy;
 
 function App() {
-	const { isLoading } = useAuth();
+	const { user: authUser, isLoading } = useAuth();
 	const isInitialized = !isLoading;
-	const { user, tournamentActions } = useAppStore();
+	const { user, tournamentActions, userActions } = useAppStore();
+
+	// Sync auth user with store
+	useEffect(() => {
+		if (authUser) {
+			userActions.setAdminStatus(authUser.isAdmin);
+			}
+	}, [authUser, userActions]);
 
 	useTournamentHandlers({
 		userName: user.name,
@@ -89,6 +97,14 @@ function App() {
 						element={
 							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
 								<AnalysisContent />
+							</div>
+						}
+					/>
+					<Route
+						path="/admin"
+						element={
+							<div className="flex flex-col gap-8 pb-[max(8rem,calc(120px+env(safe-area-inset-bottom)))]">
+								<AdminContent />
 							</div>
 						}
 					/>
@@ -165,6 +181,30 @@ function AnalysisContent() {
 				</ErrorBoundary>
 			</Suspense>
 		</Section>
+	);
+}
+
+function AdminContent() {
+	const { user } = useAppStore();
+
+	// Only allow admin users
+	if (!user.isAdmin) {
+		return (
+			<Section id="admin" variant="minimal" padding="comfortable" maxWidth="full">
+				<div className="text-center py-20">
+					<h2 className="text-3xl font-bold mb-4 text-red-400">Access Denied</h2>
+					<p className="text-white/60">Admin access required to view this page.</p>
+				</div>
+			</Section>
+		);
+	}
+
+	return (
+		<Suspense fallback={<Loading variant="skeleton" height={600} />}>
+			<ErrorBoundary context={errorContexts.analysisDashboard}>
+				<AdminDashboardLazy />
+			</ErrorBoundary>
+		</Suspense>
 	);
 }
 

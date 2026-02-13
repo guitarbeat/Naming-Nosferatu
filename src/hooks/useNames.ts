@@ -3,7 +3,7 @@
  * @description Hooks for managing name data, selection, and suggestions
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import useAppStore from "@/store/appStore";
 import type { IdType, NameItem } from "@/types/appTypes";
 
@@ -89,15 +89,31 @@ interface UseNameSelectionResult {
 export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelectionResult {
 	const { tournament, tournamentActions } = useAppStore();
 
+	// Get locked-in names and automatically include them
+	const lockedInNames = useMemo(() => names.filter(name => name.lockedIn || name.locked_in), [names]);
+	const lockedInIds = useMemo(() => new Set(lockedInNames.map(n => n.id)), [lockedInNames]);
+
 	// Use store selection for tournament mode, local state for management mode
 	const selectedNames = tournament.selectedNames || [];
 
-	const selectedIds: Set<IdType> = new Set(selectedNames.map((n) => n.id));
-	const selectedCount = selectedNames.length;
+	// Ensure all locked-in names are always selected
+	const finalSelectedNames = useMemo(() => {
+		const selectedIds = new Set(selectedNames.map(n => n.id));
+		const missingLockedIn = lockedInNames.filter(name => !selectedIds.has(name.id));
+		return [...selectedNames, ...missingLockedIn];
+	}, [selectedNames, lockedInNames]);
+
+	const selectedIds: Set<IdType> = new Set(finalSelectedNames.map((n) => n.id));
+	const selectedCount = finalSelectedNames.length;
 
 	const toggleName = useCallback(
 		(name: NameItem) => {
 			if (tournamentActions?.setSelection) {
+				// Prevent toggling locked-in names
+				if (lockedInIds.has(name.id)) {
+					return;
+				}
+				
 				const isCurrentlySelected = selectedIds.has(name.id);
 				const newSelection = isCurrentlySelected
 					? selectedNames.filter((n) => n.id !== name.id)
@@ -105,7 +121,7 @@ export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelec
 				tournamentActions.setSelection(newSelection);
 			}
 		},
-		[tournamentActions, selectedIds, selectedNames],
+		[tournamentActions, selectedIds, selectedNames, lockedInIds],
 	);
 
 	const toggleNameById = useCallback(
@@ -142,14 +158,15 @@ export function useNameSelection({ names }: UseNameSelectionProps): UseNameSelec
 
 	const clearSelection = useCallback(() => {
 		if (tournamentActions?.setSelection) {
-			tournamentActions.setSelection([]);
+			// Clear all non-locked-in names, but keep locked-in names
+			tournamentActions.setSelection(lockedInNames);
 		}
-	}, [tournamentActions]);
+	}, [tournamentActions, lockedInNames]);
 
 	const isSelected = useCallback((id: IdType) => selectedIds.has(id), [selectedIds]);
 
 	return {
-		selectedNames,
+		selectedNames: finalSelectedNames,
 		selectedIds,
 		toggleName,
 		toggleNameById,

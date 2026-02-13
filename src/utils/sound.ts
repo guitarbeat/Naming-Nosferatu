@@ -12,21 +12,108 @@ export type { SoundConfig };
 
 class SoundManager {
 	private audioCache: Map<string, HTMLAudioElement> = new Map();
+	private backgroundMusic: HTMLAudioElement | null = null;
 	private defaultVolume = 0.3;
+	private backgroundMusicVolume = 0.1;
+	private currentTrackIndex = 0;
+	
+	// Songs (large files, >1MB) - for background music
+	private backgroundTracks = [
+		"Main Menu 1 (Ruins)",
+		"AdhesiveWombat - Night Shade", 
+		"Lemon Demon - The Ultimate Showdown (8-Bit Remix)",
+		"what-is-love",
+		"MiseryBusiness"
+	];
+	
+	// Sound effects (small files, <200KB) - for actions/events
+	private soundEffects = [
+		"vote",
+		"undo", 
+		"level-up",
+		"wow",
+		"surprise"
+	];
 
 	constructor() {
 		this.preloadSounds();
+		this.preloadBackgroundMusic();
 	}
 
 	private preloadSounds() {
-		const sounds: string[] = ["vote", "undo"];
-
-		sounds.forEach((soundName) => {
+		// Preload only sound effects (small files)
+		this.soundEffects.forEach((soundName) => {
 			const audio = new Audio(`/assets/sounds/${soundName}.mp3`);
 			audio.preload = "auto";
 			audio.volume = this.defaultVolume;
 			this.audioCache.set(soundName, audio);
 		});
+	}
+
+	private preloadBackgroundMusic() {
+		// Preload first track as background music
+		const firstTrack = this.backgroundTracks[this.currentTrackIndex];
+		this.backgroundMusic = new Audio(`/assets/sounds/${firstTrack}.mp3`);
+		this.backgroundMusic.loop = true;
+		this.backgroundMusic.volume = this.backgroundMusicVolume;
+		this.backgroundMusic.preload = "auto";
+	}
+
+	playNextTrack() {
+		this.currentTrackIndex = (this.currentTrackIndex + 1) % this.backgroundTracks.length;
+		const nextTrack = this.backgroundTracks[this.currentTrackIndex];
+		if (nextTrack) {
+			this.loadBackgroundTrack(nextTrack);
+			if (this.backgroundMusic && this.canPlaySounds()) {
+				this.backgroundMusic.play().catch((error) => {
+					console.debug("Background music playback blocked:", error);
+				});
+			}
+		}
+	}
+
+	playPreviousTrack() {
+		this.currentTrackIndex = (this.currentTrackIndex - 1 + this.backgroundTracks.length) % this.backgroundTracks.length;
+		const prevTrack = this.backgroundTracks[this.currentTrackIndex];
+		if (prevTrack) {
+			this.loadBackgroundTrack(prevTrack);
+			if (this.backgroundMusic && this.canPlaySounds()) {
+				this.backgroundMusic.play().catch((error) => {
+					console.debug("Background music playback blocked:", error);
+				});
+			}
+		}
+	}
+
+	private loadBackgroundTrack(trackName: string) {
+		const wasPlaying = this.backgroundMusic && !this.backgroundMusic.paused;
+		this.backgroundMusic = new Audio(`/assets/sounds/${trackName}.mp3`);
+		this.backgroundMusic.loop = true;
+		this.backgroundMusic.volume = this.backgroundMusicVolume;
+		this.backgroundMusic.preload = "auto";
+		if (wasPlaying) {
+			this.backgroundMusic.play().catch(() => {});
+		}
+	}
+
+	getCurrentTrack(): string {
+		return this.backgroundTracks[this.currentTrackIndex] || "Unknown Track";
+	}
+
+	getAvailableSongs(): string[] {
+		return [...this.backgroundTracks];
+	}
+
+	getAvailableSoundEffects(): string[] {
+		return [...this.soundEffects];
+	}
+
+	isSong(soundName: string): boolean {
+		return this.backgroundTracks.includes(soundName);
+	}
+
+	isSoundEffect(soundName: string): boolean {
+		return this.soundEffects.includes(soundName);
 	}
 
 	play(soundName: string, config: SoundConfig = {}) {
@@ -72,6 +159,28 @@ class SoundManager {
 		this.defaultVolume = Math.max(0, Math.min(1, volume));
 	}
 
+	playBackgroundMusic() {
+		if (this.backgroundMusic && this.canPlaySounds()) {
+			this.backgroundMusic.play().catch((error) => {
+				console.debug("Background music playback blocked:", error);
+			});
+		}
+	}
+
+	stopBackgroundMusic() {
+		if (this.backgroundMusic) {
+			this.backgroundMusic.pause();
+			this.backgroundMusic.currentTime = 0;
+		}
+	}
+
+	setBackgroundMusicVolume(volume: number) {
+		this.backgroundMusicVolume = Math.max(0, Math.min(1, volume));
+		if (this.backgroundMusic) {
+			this.backgroundMusic.volume = this.backgroundMusicVolume;
+		}
+	}
+
 	canPlaySounds(): boolean {
 		const soundEnabled = localStorage.getItem("sound-enabled");
 		if (soundEnabled === "false") {
@@ -100,3 +209,28 @@ export const playSound = (soundName: string, config?: SoundConfig) => {
 		soundManager.play(soundName, config);
 	}
 };
+
+/**
+ * Background music controls
+ */
+export const playBackgroundMusic = () => soundManager.playBackgroundMusic();
+export const stopBackgroundMusic = () => soundManager.stopBackgroundMusic();
+export const setBackgroundMusicVolume = (volume: number) => soundManager.setBackgroundMusicVolume(volume);
+export const playNextTrack = () => soundManager.playNextTrack();
+export const playPreviousTrack = () => soundManager.playPreviousTrack();
+export const getCurrentTrack = () => soundManager.getCurrentTrack();
+
+/**
+ * Audio organization helpers
+ */
+export const getAvailableSongs = () => soundManager.getAvailableSongs();
+export const getAvailableSoundEffects = () => soundManager.getAvailableSoundEffects();
+export const isSong = (name: string) => soundManager.isSong(name);
+export const isSoundEffect = (name: string) => soundManager.isSoundEffect(name);
+
+/**
+ * Additional sound effects
+ */
+export const playLevelUpSound = (config?: SoundConfig) => playSound("level-up", config);
+export const playWowSound = (config?: SoundConfig) => playSound("wow", config);
+export const playSurpriseSound = (config?: SoundConfig) => playSound("surprise", config);

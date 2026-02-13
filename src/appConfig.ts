@@ -23,7 +23,14 @@ const DashboardLazy = lazy(() =>
 	})),
 );
 
+const AdminDashboardLazy = lazy(() =>
+	import("@/features/admin/AdminDashboard").then((m) => ({
+		default: m.AdminDashboard,
+	})),
+);
+
 export const routeComponents = {
 	TournamentFlow,
 	DashboardLazy,
+	AdminDashboardLazy,
 } as const;

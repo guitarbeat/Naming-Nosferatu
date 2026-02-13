@@ -41,6 +41,10 @@ export interface NameItem {
 	isHidden?: boolean;
 	is_hidden?: boolean;
 
+	// Admin controls
+	lockedIn?: boolean;
+	locked_in?: boolean;
+
 	// Ratings & stats
 	rating?: number;
 	avgRating?: number;

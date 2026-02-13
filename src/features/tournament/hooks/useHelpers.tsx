@@ -10,7 +10,18 @@ import { useToast } from "@/providers/Providers";
 import type { NameItem } from "@/types/appTypes";
 import { devError, devLog } from "@/utils/basic";
 import { NOTIFICATION } from "@/utils/constants";
-import { playSound } from "@/utils/sound";
+import { 
+	playSound, 
+	playBackgroundMusic, 
+	stopBackgroundMusic, 
+	setBackgroundMusicVolume,
+	playNextTrack,
+	playPreviousTrack,
+	getCurrentTrack,
+	playLevelUpSound,
+	playWowSound,
+	playSurpriseSound
+} from "@/utils/sound";
 
 /* =========================================================================
    AUDIO MANAGER HOOK
@@ -25,17 +36,27 @@ export interface UseAudioManagerResult {
 	handleVolumeChange: (_unused: unknown, v: number) => void;
 	playAudioTrack: () => void;
 	handleNextTrack: () => void;
+	handlePreviousTrack: () => void;
 	isShuffle: boolean;
 	handleToggleShuffle: () => void;
-	currentTrack: null;
+	currentTrack: string;
 	trackInfo: null;
 	audioError: null;
 	retryAudio: () => void;
+	backgroundMusicEnabled: boolean;
+	toggleBackgroundMusic: () => void;
+	backgroundMusicVolume: number;
+	handleBackgroundMusicVolumeChange: (volume: number) => void;
+	playLevelUpSound: () => void;
+	playWowSound: () => void;
+	playSurpriseSound: () => void;
 }
 
 export function useAudioManager(): UseAudioManagerResult {
 	const [isMuted, setIsMuted] = useState(false);
 	const [volume, setVolume] = useState(0.3);
+	const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(false);
+	const [backgroundMusicVolume, setBackgroundMusicVolumeState] = useState(0.1);
 
 	const playVoteSound = useCallback(() => {
 		if (!isMuted) {
@@ -49,9 +70,50 @@ export function useAudioManager(): UseAudioManagerResult {
 		}
 	}, [isMuted, volume]);
 
+	const playLevelUpEffect = useCallback(() => {
+		if (!isMuted) {
+			playLevelUpSound({ volume });
+		}
+	}, [isMuted, volume]);
+
+	const playWowEffect = useCallback(() => {
+		if (!isMuted) {
+			playWowSound({ volume });
+		}
+	}, [isMuted, volume]);
+
+	const playSurpriseEffect = useCallback(() => {
+		if (!isMuted) {
+			playSurpriseSound({ volume });
+		}
+	}, [isMuted, volume]);
+
 	const handleVolumeChange = useCallback((_unused: unknown, v: number) => {
 		const newVolume = Math.min(1, Math.max(0, v));
 		setVolume(newVolume);
+	}, []);
+
+	const toggleBackgroundMusic = useCallback(() => {
+		if (backgroundMusicEnabled) {
+			stopBackgroundMusic();
+		} else {
+			playBackgroundMusic();
+		}
+		setBackgroundMusicEnabled(!backgroundMusicEnabled);
+	}, [backgroundMusicEnabled]);
+
+	const handleBackgroundMusicVolumeChange = useCallback((volume: number) => {
+		const newVolume = Math.min(1, Math.max(0, volume));
+		setBackgroundMusicVolumeState(newVolume);
+		setBackgroundMusicVolume(newVolume);
+	}, []);
+
+	const handleNextTrack = useCallback(() => {
+		playNextTrack();
+	}, []);
+
+	const handlePreviousTrack = useCallback(() => {
+		playPreviousTrack();
 	}, []);
 
 	return {
@@ -60,14 +122,13 @@ export function useAudioManager(): UseAudioManagerResult {
 		},
 		isMuted,
 		handleToggleMute: () => setIsMuted((p) => !p),
-		handleNextTrack: () => {
-			/* No-op: logic not implemented for simple tournaments */
-		},
+		handleNextTrack,
+		handlePreviousTrack,
 		isShuffle: false,
 		handleToggleShuffle: () => {
 			/* No-op: logic not implemented for simple tournaments */
 		},
-		currentTrack: null,
+		currentTrack: getCurrentTrack(),
 		trackInfo: null,
 		audioError: null,
 		retryAudio: () => {
@@ -77,6 +138,13 @@ export function useAudioManager(): UseAudioManagerResult {
 		handleVolumeChange,
 		playVoteSound,
 		playUndoSound,
+		backgroundMusicEnabled,
+		toggleBackgroundMusic,
+		backgroundMusicVolume,
+		handleBackgroundMusicVolumeChange,
+		playLevelUpSound: playLevelUpEffect,
+		playWowSound: playWowEffect,
+		playSurpriseSound: playSurpriseEffect,
 	};
 }
 

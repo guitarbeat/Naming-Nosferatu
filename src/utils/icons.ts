@@ -26,6 +26,7 @@ export {
 	LayoutGrid,
 	Lightbulb,
 	Loader2,
+	Lock,
 	LogOut,
 	PawPrint,
 	Pencil,
