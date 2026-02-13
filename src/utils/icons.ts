@@ -34,4 +34,5 @@ export {
 	Upload,
 	User,
 	X,
+	ZoomIn,
 } from "lucide-react";
