@@ -159,7 +159,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 						<h3 className="text-xl font-semibold text-white">Top Names</h3>
 					</div>
 					{onStartNew && (
-						<Button variant="ghost" size="sm" onClick={onStartNew}>
+						<Button variant="ghost" size="small" onClick={onStartNew}>
 							Start New Tournament
 						</Button>
 					)}
@@ -247,7 +247,11 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 							<EyeOff className="text-amber-400" size={24} />
 							<h3 className="text-xl font-semibold text-amber-400">Admin: Hidden Names</h3>
 						</div>
-						<Button variant="ghost" size="sm" onClick={() => setShowHiddenNames(!showHiddenNames)}>
+						<Button
+							variant="ghost"
+							size="small"
+							onClick={() => setShowHiddenNames(!showHiddenNames)}
+						>
 							{showHiddenNames ? "Hide List" : "Show List"}
 						</Button>
 					</div>
@@ -263,7 +267,7 @@ export function Dashboard({ userName = "", isAdmin = false, onStartNew }: Dashbo
 										<span className="text-white font-medium">{name.name}</span>
 										<Button
 											variant="ghost"
-											size="sm"
+											size="small"
 											onClick={() => handleUnhideName(name.id)}
 											className="text-green-400 hover:text-green-300"
 										>

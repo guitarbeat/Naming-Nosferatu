@@ -507,7 +507,7 @@ export function FluidNav() {
 								</div>
 								<Button
 									variant="ghost"
-									size="lg"
+									size="large"
 									onClick={handleLogout}
 									className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300"
 								>

@@ -31,7 +31,7 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 	});
 
 	const [history, setHistory] = useState<HistoryEntry[]>([]);
-	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => n.id)));
+	const [sorter] = useState(() => new PreferenceSorter(names.map((n) => String(n.id))));
 	const [_refreshKey, setRefreshKey] = useState(0);
 
 	const currentMatch = useMemo(() => {
@@ -41,11 +41,11 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 
 		return {
-			left: names.find((n) => n.id === nextMatch.left) || {
+			left: names.find((n) => String(n.id) === nextMatch.left) || {
 				id: nextMatch.left,
 				name: nextMatch.left,
 			},
-			right: names.find((n) => n.id === nextMatch.right) || {
+			right: names.find((n) => String(n.id) === nextMatch.right) || {
 				id: nextMatch.right,
 				name: nextMatch.right,
 			},
@@ -103,6 +103,10 @@ export function useTournamentState(names: NameItem[]): UseTournamentStateResult 
 		}
 
 		const lastEntry = history[history.length - 1];
+		if (!lastEntry) {
+			return;
+		}
+
 		setRatings(lastEntry.ratings);
 		setHistory((prev) => prev.slice(0, -1));
 

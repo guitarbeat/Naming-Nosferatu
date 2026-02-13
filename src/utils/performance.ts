@@ -104,9 +104,15 @@ export function initializePerformanceMonitoring(): void {
 
 	// Largest Contentful Paint
 	observeWebVital("largest-contentful-paint", (entries) => {
-		const last = entries.at(-1) as
-			| (PerformanceEntry & { renderTime?: number; loadTime?: number })
-			| undefined;
+		// Use index access instead of .at(-1) for better compatibility
+		const last =
+			entries.length > 0
+				? (entries[entries.length - 1] as PerformanceEntry & {
+						renderTime?: number;
+						loadTime?: number;
+					})
+				: undefined;
+
 		if (last) {
 			metrics.lcp = Math.round(last.renderTime || last.loadTime || last.startTime);
 			console.debug(`[Perf] LCP: ${metrics.lcp}ms`);
