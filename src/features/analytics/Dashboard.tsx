@@ -16,7 +16,6 @@ import { RandomGenerator } from "../tournament/components/RandomGenerator";
 interface DashboardProps {
 	personalRatings?: Record<string, unknown>;
 	currentTournamentNames?: NameItem[];
-	onUpdateRatings?: (ratings: Record<string, unknown>) => void;
 	onStartNew?: () => void;
 	userName?: string;
 	isAdmin?: boolean;
